@@ -1,0 +1,250 @@
+import { create } from 'zustand'
+import type { Word, Collection, ReviewSession, AppError } from '../types/database'
+import { wordService, collectionService, getDevUserId } from '../lib/supabase'
+
+interface AppState {
+    // User data
+    currentUserId: string | null
+
+    // Words
+    words: Word[]
+    wordsLoading: boolean
+
+    // Collections
+    collections: Collection[]
+    collectionsLoading: boolean
+
+    // Review session
+    reviewSession: ReviewSession | null
+    reviewLoading: boolean
+
+    // Errors
+    error: AppError | null
+
+    // Actions
+    initializeApp: () => Promise<void>
+
+    // Word actions
+    fetchWords: () => Promise<void>
+    addNewWord: (word: string) => Promise<Word>
+    updateWordAfterReview: (wordId: string, assessment: any) => Promise<void>
+
+    // Collection actions
+    fetchCollections: () => Promise<void>
+    createNewCollection: (name: string) => Promise<Collection>
+
+    // Review session actions
+    startReviewSession: () => Promise<void>
+    submitReviewAssessment: (assessment: any) => Promise<void>
+    endReviewSession: () => void
+
+    // Error handling
+    setError: (error: AppError | null) => void
+    clearError: () => void
+}
+
+export const useAppStore = create<AppState>((set, get) => ({
+    // Initial state
+    currentUserId: null,
+    words: [],
+    wordsLoading: false,
+    collections: [],
+    collectionsLoading: false,
+    reviewSession: null,
+    reviewLoading: false,
+    error: null,
+
+    // Initialize app
+    initializeApp: async () => {
+        try {
+            // For development, use the dev user ID
+            const devUserId = getDevUserId()
+            set({ currentUserId: devUserId })
+
+            // Fetch initial data
+            await Promise.all([
+                get().fetchWords(),
+                get().fetchCollections(),
+            ])
+        } catch (error) {
+            get().setError({
+                message: 'Failed to initialize app',
+                details: error,
+            })
+        }
+    },
+
+    // Word actions
+    fetchWords: async () => {
+        const { currentUserId } = get()
+        if (!currentUserId) return
+
+        set({ wordsLoading: true })
+        try {
+            const words = await wordService.getUserWords(currentUserId)
+            set({ words, wordsLoading: false })
+        } catch (error) {
+            get().setError({
+                message: 'Failed to fetch words',
+                details: error,
+            })
+            set({ wordsLoading: false })
+        }
+    },
+
+    addNewWord: async (word: string) => {
+        const { currentUserId } = get()
+        if (!currentUserId) throw new Error('No user ID')
+
+        try {
+            // First, analyze the word with AI
+            const analysis = await wordService.analyzeWord(word)
+
+            // Prepare word data for database
+            const wordData = {
+                dutch_lemma: analysis.lemma,
+                dutch_original: word,
+                part_of_speech: analysis.part_of_speech,
+                is_irregular: analysis.is_irregular || false,
+                translations: analysis.translations,
+                examples: analysis.examples,
+                tts_url: analysis.tts_url,
+                // Initial SRS values
+                interval_days: 1,
+                repetition_count: 0,
+                easiness_factor: 2.5,
+                next_review_date: new Date().toISOString().split('T')[0],
+            }
+
+            // Add to database
+            const newWord = await wordService.addWord(wordData, currentUserId)
+
+            // Update local state
+            set(state => ({
+                words: [newWord, ...state.words],
+            }))
+
+            return newWord
+        } catch (error) {
+            get().setError({
+                message: 'Failed to add word',
+                details: error,
+            })
+            throw error
+        }
+    },
+
+    updateWordAfterReview: async (wordId: string, srsData: any) => {
+        try {
+            const updatedWord = await wordService.updateWordProgress(wordId, srsData)
+
+            // Update local state
+            set(state => ({
+                words: state.words.map(word =>
+                    word.word_id === wordId ? updatedWord : word
+                ),
+            }))
+        } catch (error) {
+            get().setError({
+                message: 'Failed to update word progress',
+                details: error,
+            })
+            throw error
+        }
+    },
+
+    // Collection actions
+    fetchCollections: async () => {
+        const { currentUserId } = get()
+        if (!currentUserId) return
+
+        set({ collectionsLoading: true })
+        try {
+            const collections = await collectionService.getUserCollections(currentUserId)
+            set({ collections, collectionsLoading: false })
+        } catch (error) {
+            get().setError({
+                message: 'Failed to fetch collections',
+                details: error,
+            })
+            set({ collectionsLoading: false })
+        }
+    },
+
+    createNewCollection: async (name: string) => {
+        const { currentUserId } = get()
+        if (!currentUserId) throw new Error('No user ID')
+
+        try {
+            const newCollection = await collectionService.createCollection(name, currentUserId)
+
+            set(state => ({
+                collections: [newCollection, ...state.collections],
+            }))
+
+            return newCollection
+        } catch (error) {
+            get().setError({
+                message: 'Failed to create collection',
+                details: error,
+            })
+            throw error
+        }
+    },
+
+    // Review session actions
+    startReviewSession: async () => {
+        const { currentUserId } = get()
+        if (!currentUserId) return
+
+        set({ reviewLoading: true })
+        try {
+            const reviewWords = await wordService.getWordsForReview(currentUserId)
+
+            if (reviewWords.length === 0) {
+                get().setError({
+                    message: 'No words available for review',
+                })
+                set({ reviewLoading: false })
+                return
+            }
+
+            const session: ReviewSession = {
+                words: reviewWords,
+                currentIndex: 0,
+                completedCount: 0,
+                againQueue: [],
+            }
+
+            set({ reviewSession: session, reviewLoading: false })
+        } catch (error) {
+            get().setError({
+                message: 'Failed to start review session',
+                details: error,
+            })
+            set({ reviewLoading: false })
+        }
+    },
+
+    submitReviewAssessment: async (assessment: any) => {
+        // This will be implemented with SRS logic
+        // For now, just placeholder
+        console.log('Review assessment:', assessment)
+    },
+
+    endReviewSession: () => {
+        set({ reviewSession: null })
+    },
+
+    // Error handling
+    setError: (error: AppError | null) => {
+        set({ error })
+    },
+
+    clearError: () => {
+        set({ error: null })
+    },
+}))
+
+// Export hook for easy usage in components
+export default useAppStore
