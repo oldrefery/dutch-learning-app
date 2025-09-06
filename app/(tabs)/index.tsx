@@ -3,9 +3,10 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
 } from 'react-native'
+import Toast from 'react-native-toast-message'
+import { router } from 'expo-router'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
 import type { Collection } from '@/types/database'
@@ -102,19 +103,25 @@ export default function CollectionsScreen() {
   }
 
   const handleCollectionPress = (collection: Collection) => {
-    Alert.alert('Collection', `Opening "${collection.name}" collection`)
+    Toast.show({
+      type: 'info',
+      text1: 'Collection',
+      text2: `Opening "${collection.name}" collection`,
+    })
+    // TODO: Navigate to collection detail screen
   }
 
   const handleStartReview = () => {
     if (stats.wordsForReview === 0) {
-      Alert.alert('No Words', 'No words are due for review right now!')
+      Toast.show({
+        type: 'info',
+        text1: 'No Words',
+        text2: 'No words are due for review right now!',
+      })
       return
     }
-    // TODO: Navigate to review screen
-    Alert.alert(
-      'Start Review',
-      `Starting review session with ${stats.wordsForReview} words`
-    )
+    // Navigate to review screen
+    router.push('/(tabs)/review')
   }
 
   const handleDismissError = () => {
