@@ -1,6 +1,16 @@
 import React, { useState } from 'react'
-import { StyleSheet, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native'
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+} from 'react-native'
+import { createAudioPlayer } from 'expo-audio'
+import { Ionicons } from '@expo/vector-icons'
+import Toast from 'react-native-toast-message'
 import { Text, View } from '@/components/Themed'
+import { useAppStore } from '@/stores/useAppStore'
 
 interface AnalysisResult {
   lemma: string
@@ -10,17 +20,50 @@ interface AnalysisResult {
     en: string[]
     ru?: string[]
   }
-  examples: Array<{
+  examples: {
     nl: string
     en: string
     ru?: string
-  }>
+  }[]
+  tts_url?: string
 }
 
 export default function AddWordScreen() {
   const [inputWord, setInputWord] = useState('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
+    null
+  )
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false)
+
+  const { addNewWord, error, clearError } = useAppStore()
+
+  const playPronunciation = async (ttsUrl: string) => {
+    if (isPlayingAudio) return
+
+    setIsPlayingAudio(true)
+    try {
+      // Use expo-audio createAudioPlayer API
+      const player = createAudioPlayer({ uri: ttsUrl })
+
+      // Play the audio
+      await player.play()
+
+      // Simple timeout to reset state (since event listeners might be complex)
+      setTimeout(() => {
+        setIsPlayingAudio(false)
+        player.release() // Clean up resources
+      }, 3000) // 3 seconds should be enough for TTS
+    } catch (error) {
+      console.error('Error playing audio:', error)
+      setIsPlayingAudio(false)
+      Toast.show({
+        type: 'error',
+        text1: 'Audio Error',
+        text2: 'Could not play pronunciation. Please try again.',
+      })
+    }
+  }
 
   const mockAnalyzeWord = async (word: string): Promise<AnalysisResult> => {
     // Simulate API delay
@@ -28,103 +71,113 @@ export default function AddWordScreen() {
 
     // Mock response based on input
     const mockResponses: Record<string, AnalysisResult> = {
-      'spreken': {
+      spreken: {
         lemma: 'spreken',
         part_of_speech: 'verb',
         is_irregular: true,
         translations: {
           en: ['to speak', 'to talk'],
-          ru: ['говорить', 'разговаривать']
+          ru: ['говорить', 'разговаривать'],
         },
         examples: [
           {
             nl: 'Kun je Nederlands spreken?',
             en: 'Can you speak Dutch?',
-            ru: 'Умеешь ли ты говорить по-голландски?'
+            ru: 'Умеешь ли ты говорить по-голландски?',
           },
           {
             nl: 'We spreken morgen af.',
             en: 'We will meet tomorrow.',
-            ru: 'Мы встретимся завтра.'
-          }
-        ]
+            ru: 'Мы встретимся завтра.',
+          },
+        ],
       },
-      'huis': {
+      huis: {
         lemma: 'huis',
         part_of_speech: 'noun',
         is_irregular: false,
         translations: {
           en: ['house', 'home'],
-          ru: ['дом']
+          ru: ['дом'],
         },
         examples: [
           {
             nl: 'Mijn huis is groot.',
             en: 'My house is big.',
-            ru: 'Мой дом большой.'
-          }
-        ]
-      }
+            ru: 'Мой дом большой.',
+          },
+        ],
+      },
     }
 
-    return mockResponses[word.toLowerCase()] || {
-      lemma: word,
-      part_of_speech: 'unknown',
-      is_irregular: false,
-      translations: {
-        en: ['[AI analysis would provide translation]'],
-        ru: ['[перевод будет предоставлен ИИ]']
-      },
-      examples: [
-        {
-          nl: `Example with ${word}...`,
-          en: `Example with ${word}...`,
-          ru: `Пример с ${word}...`
-        }
-      ]
-    }
+    return (
+      mockResponses[word.toLowerCase()] || {
+        lemma: word,
+        part_of_speech: 'unknown',
+        is_irregular: false,
+        translations: {
+          en: ['[AI analysis would provide translation]'],
+          ru: ['[перевод будет предоставлен ИИ]'],
+        },
+        examples: [
+          {
+            nl: `Example with ${word}...`,
+            en: `Example with ${word}...`,
+            ru: `Пример с ${word}...`,
+          },
+        ],
+      }
+    )
   }
 
   const handleAnalyze = async () => {
     if (!inputWord.trim()) {
-      Alert.alert('Error', 'Please enter a Dutch word')
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please enter a Dutch word',
+      })
       return
     }
 
     setIsAnalyzing(true)
+    clearError()
+
     try {
-      const result = await mockAnalyzeWord(inputWord.trim())
+      // Use real AI analysis from the store
+      const newWord = await addNewWord(inputWord.trim())
+
+      // Convert to display format
+      const result: AnalysisResult = {
+        lemma: newWord.dutch_lemma,
+        part_of_speech: newWord.part_of_speech,
+        is_irregular: newWord.is_irregular,
+        translations: newWord.translations,
+        examples: newWord.examples,
+        tts_url: newWord.tts_url,
+      }
+
       setAnalysisResult(result)
-    } catch (error) {
-      Alert.alert('Error', 'Failed to analyze word. Please try again.')
+      setInputWord('') // Clear input after successful analysis
+      Toast.show({
+        type: 'success',
+        text1: 'Success!',
+        text2: 'Word added successfully!',
+      })
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.message || 'Failed to analyze word. Please try again.',
+      })
     } finally {
       setIsAnalyzing(false)
     }
   }
 
-  const handleSaveWord = () => {
-    if (!analysisResult) return
-
-    Alert.alert(
-      'Word Saved!',
-      `"${analysisResult.lemma}" has been added to your collection.`,
-      [
-        {
-          text: 'Add Another',
-          onPress: () => {
-            setInputWord('')
-            setAnalysisResult(null)
-          }
-        },
-        {
-          text: 'Done',
-          onPress: () => {
-            setInputWord('')
-            setAnalysisResult(null)
-          }
-        }
-      ]
-    )
+  const handleAddAnother = () => {
+    setInputWord('')
+    setAnalysisResult(null)
   }
 
   const renderAnalysisResult = () => {
@@ -137,7 +190,22 @@ export default function AddWordScreen() {
 
           <View style={styles.resultRow}>
             <Text style={styles.resultLabel}>Word:</Text>
-            <Text style={styles.resultValue}>{analysisResult.lemma}</Text>
+            <View style={styles.wordWithPronunciation}>
+              <Text style={styles.resultValue}>{analysisResult.lemma}</Text>
+              {analysisResult.tts_url && (
+                <TouchableOpacity
+                  style={styles.pronunciationButton}
+                  onPress={() => playPronunciation(analysisResult.tts_url!)}
+                  disabled={isPlayingAudio}
+                >
+                  <Ionicons
+                    name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
+                    size={20}
+                    color="#2563eb"
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           <View style={styles.resultRow}>
@@ -181,8 +249,11 @@ export default function AddWordScreen() {
             ))}
           </View>
 
-          <TouchableOpacity style={styles.saveButton} onPress={handleSaveWord}>
-            <Text style={styles.saveButtonText}>Save Word</Text>
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={handleAddAnother}
+          >
+            <Text style={styles.saveButtonText}>Add Another Word</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -193,7 +264,9 @@ export default function AddWordScreen() {
     <View style={styles.container}>
       <View style={styles.inputSection}>
         <Text style={styles.title}>Add New Word</Text>
-        <Text style={styles.subtitle}>Enter a Dutch word to analyze with AI</Text>
+        <Text style={styles.subtitle}>
+          Enter a Dutch word to analyze with AI
+        </Text>
 
         <TextInput
           style={styles.textInput}
@@ -306,6 +379,17 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     flex: 1,
   },
+  wordWithPronunciation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 8,
+  },
+  pronunciationButton: {
+    padding: 4,
+    borderRadius: 4,
+    backgroundColor: '#f3f4f6',
+  },
   translationText: {
     fontSize: 14,
     color: '#1f2937',
@@ -342,4 +426,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-});
+})

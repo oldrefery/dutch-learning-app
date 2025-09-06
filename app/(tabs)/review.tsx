@@ -1,45 +1,156 @@
-import React, { useState } from 'react'
-import { StyleSheet, TouchableOpacity, Alert, Dimensions } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native'
+import { createAudioPlayer } from 'expo-audio'
+import { Ionicons } from '@expo/vector-icons'
+import Toast from 'react-native-toast-message'
 import { Text, View } from '@/components/Themed'
-import { getMockWordsForReview } from '@/data/mockData'
+import { useAppStore } from '@/stores/useAppStore'
 import type { Word } from '@/types/database'
 
 const { width } = Dimensions.get('window')
 
 export default function ReviewScreen() {
-  const [reviewWords] = useState(getMockWordsForReview())
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const {
+    reviewSession,
+    reviewLoading,
+    startReviewSession,
+    submitReviewAssessment,
+    endReviewSession,
+    error,
+    clearError,
+  } = useAppStore()
+
   const [showAnswer, setShowAnswer] = useState(false)
-  const [sessionComplete, setSessionComplete] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false)
+
+  useEffect(() => {
+    // Initialize review session when component mounts
+    if (!reviewSession && !reviewLoading) {
+      startReviewSession()
+    }
+  }, [reviewSession, reviewLoading, startReviewSession])
+
+  const reviewWords = reviewSession?.words || []
+  const currentIndex = reviewSession?.currentIndex || 0
+  const sessionComplete = currentIndex >= reviewWords.length
 
   const currentWord = reviewWords[currentIndex]
+
+  const playPronunciation = async (ttsUrl: string) => {
+    if (isPlayingAudio) return
+
+    setIsPlayingAudio(true)
+    try {
+      // Use expo-audio createAudioPlayer API
+      const player = createAudioPlayer({ uri: ttsUrl })
+
+      // Play the audio
+      await player.play()
+
+      // Simple timeout to reset state (since event listeners might be complex)
+      setTimeout(() => {
+        setIsPlayingAudio(false)
+        player.release() // Clean up resources
+      }, 3000) // 3 seconds should be enough for TTS
+    } catch (error) {
+      console.error('Error playing audio:', error)
+      setIsPlayingAudio(false)
+      Toast.show({
+        type: 'error',
+        text1: 'Audio Error',
+        text2: 'Could not play pronunciation. Please try again.',
+      })
+    }
+  }
 
   const handleCardFlip = () => {
     setShowAnswer(!showAnswer)
   }
 
-  const handleSRSResponse = (difficulty: 'again' | 'hard' | 'good' | 'easy') => {
+  const handleSRSResponse = async (
+    difficulty: 'again' | 'hard' | 'good' | 'easy'
+  ) => {
     if (!showAnswer) {
-      Alert.alert('Please review the answer first', 'Tap the card to see the translation and examples')
+      Toast.show({
+        type: 'info',
+        text1: 'Review First',
+        text2: 'Tap the card to see the translation and examples',
+      })
       return
     }
 
-    // Move to next word
-    if (currentIndex < reviewWords.length - 1) {
-      setCurrentIndex(currentIndex + 1)
-      setShowAnswer(false)
-    } else {
-      setSessionComplete(true)
-    }
+    if (!currentWord) return
 
-    // Mock SRS processing
-    console.log(`Marked word "${currentWord?.dutch_lemma}" as ${difficulty}`)
+    setIsLoading(true)
+
+    try {
+      // Submit the assessment through the store
+      await submitReviewAssessment({
+        wordId: currentWord.word_id,
+        quality: difficulty,
+      })
+
+      console.log(`Marked word "${currentWord.dutch_lemma}" as ${difficulty}`)
+
+      // Move to next word or complete session
+      if (currentIndex < reviewWords.length - 1) {
+        // Next word logic handled by store
+        setShowAnswer(false)
+      } else {
+        // Session completed - handled by store
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to save progress. Please try again.',
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const restartSession = () => {
-    setCurrentIndex(0)
     setShowAnswer(false)
-    setSessionComplete(false)
+    startReviewSession()
+  }
+
+  // Loading state
+  if (reviewLoading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#3b82f6" />
+          <Text style={styles.loadingText}>Loading review session...</Text>
+        </View>
+      </View>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Error: {error.message}</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={() => {
+              clearError()
+              startReviewSession()
+            }}
+          >
+            <Text style={styles.retryButtonText}>Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
   }
 
   if (reviewWords.length === 0) {
@@ -48,7 +159,8 @@ export default function ReviewScreen() {
         <View style={styles.emptyState}>
           <Text style={styles.emptyTitle}>No words to review! 🎉</Text>
           <Text style={styles.emptySubtitle}>
-            All your words are scheduled for future review. Come back later or add new words to practice.
+            All your words are scheduled for future review. Come back later or
+            add new words to practice.
           </Text>
         </View>
       </View>
@@ -63,7 +175,10 @@ export default function ReviewScreen() {
           <Text style={styles.completionStats}>
             You reviewed {reviewWords.length} words
           </Text>
-          <TouchableOpacity style={styles.restartButton} onPress={restartSession}>
+          <TouchableOpacity
+            style={styles.restartButton}
+            onPress={restartSession}
+          >
             <Text style={styles.restartButtonText}>Review Again</Text>
           </TouchableOpacity>
         </View>
@@ -80,26 +195,64 @@ export default function ReviewScreen() {
           {!showAnswer ? (
             // Front of card - Dutch word
             <View style={styles.cardFront}>
-              <Text style={styles.dutchWord}>{currentWord.dutch_lemma}</Text>
-              <Text style={styles.partOfSpeech}>{currentWord.part_of_speech}</Text>
+              <View style={styles.wordWithPronunciation}>
+                <Text style={styles.dutchWord}>{currentWord.dutch_lemma}</Text>
+                {currentWord.tts_url && (
+                  <TouchableOpacity
+                    style={styles.pronunciationButton}
+                    onPress={() => playPronunciation(currentWord.tts_url!)}
+                    disabled={isPlayingAudio}
+                  >
+                    <Ionicons
+                      name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
+                      size={24}
+                      color="#2563eb"
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+              <Text style={styles.partOfSpeech}>
+                {currentWord.part_of_speech}
+              </Text>
               <Text style={styles.tapHint}>Tap to see translation</Text>
             </View>
           ) : (
-            // Back of card - Translations and examples  
+            // Back of card - Translations and examples
             <View style={styles.cardBack}>
-              <Text style={styles.dutchWordSmall}>{currentWord.dutch_lemma}</Text>
+              <View style={styles.wordWithPronunciationSmall}>
+                <Text style={styles.dutchWordSmall}>
+                  {currentWord.dutch_lemma}
+                </Text>
+                {currentWord.tts_url && (
+                  <TouchableOpacity
+                    style={styles.pronunciationButtonSmall}
+                    onPress={() => playPronunciation(currentWord.tts_url!)}
+                    disabled={isPlayingAudio}
+                  >
+                    <Ionicons
+                      name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
+                      size={18}
+                      color="#2563eb"
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
 
               <View style={styles.translationsSection}>
                 <Text style={styles.sectionTitle}>English:</Text>
                 {currentWord.translations.en.map((translation, index) => (
-                  <Text key={index} style={styles.translationText}>• {translation}</Text>
+                  <Text key={index} style={styles.translationText}>
+                    • {translation}
+                  </Text>
                 ))}
 
                 {currentWord.translations.ru && (
                   <>
                     <Text style={styles.sectionTitle}>Russian:</Text>
                     {currentWord.translations.ru.map((translation, index) => (
-                      <Text key={index} style={styles.translationText}>• {translation}</Text>
+                      <Text key={index} style={styles.translationText}>
+                        • {translation}
+                      </Text>
                     ))}
                   </>
                 )}
@@ -108,8 +261,12 @@ export default function ReviewScreen() {
               {currentWord.examples && currentWord.examples.length > 0 && (
                 <View style={styles.exampleSection}>
                   <Text style={styles.sectionTitle}>Example:</Text>
-                  <Text style={styles.exampleDutch}>{currentWord.examples[0].nl}</Text>
-                  <Text style={styles.exampleTranslation}>{currentWord.examples[0].en}</Text>
+                  <Text style={styles.exampleDutch}>
+                    {currentWord.examples[0].nl}
+                  </Text>
+                  <Text style={styles.exampleTranslation}>
+                    {currentWord.examples[0].en}
+                  </Text>
                 </View>
               )}
             </View>
@@ -129,7 +286,7 @@ export default function ReviewScreen() {
           <View
             style={[
               styles.progressFill,
-              { width: `${((currentIndex + 1) / reviewWords.length) * 100}%` }
+              { width: `${((currentIndex + 1) / reviewWords.length) * 100}%` },
             ]}
           />
         </View>
@@ -244,6 +401,30 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  wordWithPronunciation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  wordWithPronunciationSmall: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  pronunciationButton: {
+    marginLeft: 12,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#f3f4f6',
+  },
+  pronunciationButtonSmall: {
+    marginLeft: 8,
+    padding: 6,
+    borderRadius: 16,
+    backgroundColor: '#f3f4f6',
   },
   partOfSpeech: {
     fontSize: 16,
@@ -371,5 +552,41 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  // Loading states
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#6b7280',
+    marginTop: 12,
+  },
+  // Error states
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#dc2626',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  retryButton: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
   },
 })

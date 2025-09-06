@@ -1,16 +1,15 @@
-module.exports = [
+const { defineConfig } = require('eslint/config')
+const expoConfig = require('eslint-config-expo/flat')
+
+module.exports = defineConfig([
+  expoConfig,
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
     ignores: [
-      'node_modules/',
-      'dist/',
-      'build/',
-      '.expo/',
-      'supabase/functions/',
+      'dist/*',
+      '.expo/*',
+      'ios/*',
+      'android/*',
+      'supabase/functions/*',
     ],
-    rules: {
-      'no-unused-vars': 'warn',
-      'no-console': 'warn',
-    },
   },
-]
+])

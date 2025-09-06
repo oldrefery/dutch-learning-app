@@ -10,6 +10,8 @@ web-build/
 expo-env.d.ts
 
 # Native
+ios/
+android/
 .kotlin/
 *.orig.*
 *.jks
@@ -42,3 +44,8 @@ supabase/.temp/
 
 # IDE
 .cursor/
+
+# Temporary test files
+test-*.js
+test-*.ts
+*.test.local.*

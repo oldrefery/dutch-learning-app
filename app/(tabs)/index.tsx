@@ -1,15 +1,28 @@
 import React from 'react'
-import { StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native'
+import {
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from 'react-native'
 import { Text, View } from '@/components/Themed'
-import { mockCollections, getMockCollectionStats, getMockOverallStats } from '@/data/mockData'
+import { useAppStore } from '@/stores/useAppStore'
+import type { Collection } from '@/types/database'
 
 interface CollectionCardProps {
-  collection: typeof mockCollections[0]
+  collection: Collection
   onPress: () => void
 }
 
 function CollectionCard({ collection, onPress }: CollectionCardProps) {
-  const stats = getMockCollectionStats(collection.collection_id)
+  // For now, we'll use placeholder stats until we implement proper collection stats
+  const stats = {
+    totalWords: 0,
+    masteredWords: 0,
+    wordsToReview: 0,
+    progressPercentage: 0,
+  }
 
   return (
     <TouchableOpacity style={styles.collectionCard} onPress={onPress}>
@@ -22,7 +35,7 @@ function CollectionCard({ collection, onPress }: CollectionCardProps) {
       <View style={styles.collectionStats}>
         <Text style={styles.statText}>{stats.totalWords} words</Text>
         <Text style={[styles.statText, styles.dueText]}>
-          {stats.dueForReview} due
+          {stats.wordsToReview} due
         </Text>
         <Text style={[styles.statText, styles.masteredText]}>
           {stats.masteredWords} mastered
@@ -33,22 +46,31 @@ function CollectionCard({ collection, onPress }: CollectionCardProps) {
 }
 
 function StatsCard() {
-  const stats = getMockOverallStats()
+  const { words } = useAppStore()
+
+  const stats = {
+    totalWords: words.length,
+    wordsLearned: words.filter(w => w.repetition_count > 2).length,
+    wordsForReview: words.filter(
+      w => new Date(w.next_review_date) <= new Date()
+    ).length,
+    streakDays: 7, // placeholder
+  }
 
   return (
     <View style={styles.statsCard}>
-      <Text style={styles.statsTitle}>Today's Progress</Text>
+      <Text style={styles.statsTitle}>Today&apos;s Progress</Text>
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.dailyProgress}</Text>
-          <Text style={styles.statLabel}>Reviewed</Text>
+          <Text style={styles.statNumber}>{stats.totalWords}</Text>
+          <Text style={styles.statLabel}>Total Words</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.dailyGoal}</Text>
-          <Text style={styles.statLabel}>Daily Goal</Text>
+          <Text style={styles.statNumber}>{stats.wordsForReview}</Text>
+          <Text style={styles.statLabel}>For Review</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.currentStreak}</Text>
+          <Text style={styles.statNumber}>{stats.streakDays}</Text>
           <Text style={styles.statLabel}>Day Streak</Text>
         </View>
       </View>
@@ -56,7 +78,9 @@ function StatsCard() {
         <View
           style={[
             styles.progressFill,
-            { width: `${(stats.dailyProgress / stats.dailyGoal) * 100}%` }
+            {
+              width: `${stats.totalWords > 0 ? (stats.wordsLearned / stats.totalWords) * 100 : 0}%`,
+            },
           ]}
         />
       </View>
@@ -65,23 +89,51 @@ function StatsCard() {
 }
 
 export default function CollectionsScreen() {
-  const stats = getMockOverallStats()
+  const { collections, collectionsLoading, words, error, clearError } =
+    useAppStore()
 
-  const handleCollectionPress = (collection: typeof mockCollections[0]) => {
-    Alert.alert(
-      collection.name,
-      `This will open collection details\n\nStats:\n• ${getMockCollectionStats(collection.collection_id).totalWords} total words\n• ${getMockCollectionStats(collection.collection_id).dueForReview} due for review`
-    )
+  const stats = {
+    totalWords: words.length,
+    wordsLearned: words.filter(w => w.repetition_count > 2).length,
+    wordsForReview: words.filter(
+      w => new Date(w.next_review_date) <= new Date()
+    ).length,
+    streakDays: 7, // placeholder
+  }
+
+  const handleCollectionPress = (collection: Collection) => {
+    Alert.alert('Collection', `Opening "${collection.name}" collection`)
   }
 
   const handleStartReview = () => {
+    if (stats.wordsForReview === 0) {
+      Alert.alert('No Words', 'No words are due for review right now!')
+      return
+    }
+    // TODO: Navigate to review screen
     Alert.alert(
       'Start Review',
-      `You have ${stats.wordsForReview} words ready for review. Start session?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Start', onPress: () => console.log('Starting review session') },
-      ]
+      `Starting review session with ${stats.wordsForReview} words`
+    )
+  }
+
+  const handleDismissError = () => {
+    clearError()
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Error: {error.message}</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={handleDismissError}
+          >
+            <Text style={styles.retryButtonText}>Dismiss</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     )
   }
 
@@ -90,7 +142,10 @@ export default function CollectionsScreen() {
       <StatsCard />
 
       <View style={styles.reviewSection}>
-        <TouchableOpacity style={styles.reviewButton} onPress={handleStartReview}>
+        <TouchableOpacity
+          style={styles.reviewButton}
+          onPress={handleStartReview}
+        >
           <Text style={styles.reviewButtonText}>
             Review {stats.wordsForReview} Words
           </Text>
@@ -99,17 +154,32 @@ export default function CollectionsScreen() {
 
       <View style={styles.collectionsSection}>
         <Text style={styles.sectionTitle}>My Collections</Text>
-        <FlatList
-          data={mockCollections}
-          keyExtractor={(item) => item.collection_id}
-          renderItem={({ item }) => (
-            <CollectionCard
-              collection={item}
-              onPress={() => handleCollectionPress(item)}
-            />
-          )}
-          showsVerticalScrollIndicator={false}
-        />
+        {collectionsLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#3b82f6" />
+            <Text style={styles.loadingText}>Loading collections...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={collections}
+            keyExtractor={item => item.collection_id}
+            renderItem={({ item }) => (
+              <CollectionCard
+                collection={item}
+                onPress={() => handleCollectionPress(item)}
+              />
+            )}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No collections yet</Text>
+                <Text style={styles.emptySubtext}>
+                  Start by adding some words!
+                </Text>
+              </View>
+            }
+          />
+        )}
       </View>
     </View>
   )
@@ -226,4 +296,58 @@ const styles = StyleSheet.create({
     color: '#16a34a',
     fontWeight: '500',
   },
-});
+  // Error states
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#dc2626',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  retryButton: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  // Loading states
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#6b7280',
+    marginTop: 12,
+  },
+  // Empty states
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: '#374151',
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+})
