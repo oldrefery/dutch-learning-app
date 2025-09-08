@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# Check for high cognitive complexity in staged files
+echo "🧠 Checking cognitive complexity..."
+
+# Get list of staged TypeScript/JavaScript files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$')
+
+if [ -z "$STAGED_FILES" ]; then
+  echo "✅ No TypeScript/JavaScript files to check"
+  exit 0
+fi
+
+# Run complexity check on staged files only
+COMPLEXITY_ISSUES=$(npx eslint $STAGED_FILES --rule "sonarjs/cognitive-complexity: [error, 20]" --format=compact 2>/dev/null | grep "cognitive-complexity" | wc -l | tr -d ' ')
+
+if [ "$COMPLEXITY_ISSUES" -gt 0 ]; then
+  echo ""
+  echo "⚠️  HIGH COGNITIVE COMPLEXITY DETECTED!"
+  echo "📁 Files with complexity > 20:"
+  echo ""
+  npx eslint $STAGED_FILES --rule "sonarjs/cognitive-complexity: [error, 20]" --format=compact 2>/dev/null | grep "cognitive-complexity"
+  echo ""
+  echo "💡 Consider refactoring before committing:"
+  echo "   - Break large functions into smaller ones"
+  echo "   - Extract complex conditions into helper functions"
+  echo "   - Use early returns to reduce nesting"
+  echo ""
+  echo "📖 See docs/CODE_COMPLEXITY.md for refactoring strategies"
+  echo ""
+  echo "⚡ To check current complexity: npm run complexity"
+  echo "🔍 To see all issues: npm run complexity:strict"
+  echo ""
+fi
+
+# Always allow commit but warn about moderate complexity (15-20)
+MODERATE_ISSUES=$(npx eslint $STAGED_FILES --rule "sonarjs/cognitive-complexity: [warn, 15]" --format=compact 2>/dev/null | grep "cognitive-complexity" | wc -l | tr -d ' ')
+
+if [ "$MODERATE_ISSUES" -gt 0 ] && [ "$COMPLEXITY_ISSUES" -eq 0 ]; then
+  echo ""
+  echo "📊 Moderate complexity detected (15-20)"
+  echo "💭 Consider refactoring when convenient"
+  echo ""
+fi
+
+echo "✅ Complexity check completed"

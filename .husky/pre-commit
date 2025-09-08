@@ -6,3 +6,6 @@ npx lint-staged
 
 # Check for constants changes and warn about deployment
 .husky/check-constants
+
+# Check for high cognitive complexity
+.husky/check-complexity
