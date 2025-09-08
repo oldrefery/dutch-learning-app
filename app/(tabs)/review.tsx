@@ -157,7 +157,7 @@ export default function ReviewScreen() {
       } else {
         // Session completed - handled by store
       }
-    } catch (error) {
+    } catch {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -187,7 +187,7 @@ export default function ReviewScreen() {
         text1: 'Image Updated',
         text2: 'Word image has been changed successfully.',
       })
-    } catch (error) {
+    } catch {
       Toast.show({
         type: 'error',
         text1: 'Update Failed',

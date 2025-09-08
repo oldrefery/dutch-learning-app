@@ -11,6 +11,11 @@ import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
 import type { Collection } from '@/types/database'
 
+// Constants to avoid string duplication
+const FLEX_JUSTIFY_CONTENT = {
+  SPACE_BETWEEN: 'space-between' as const,
+} as const
+
 interface CollectionCardProps {
   collection: Collection
   onPress: () => void
@@ -210,7 +215,7 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: FLEX_JUSTIFY_CONTENT.SPACE_BETWEEN,
     marginBottom: 12,
   },
   statItem: {
@@ -275,7 +280,7 @@ const styles = StyleSheet.create({
   },
   collectionHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: FLEX_JUSTIFY_CONTENT.SPACE_BETWEEN,
     alignItems: 'center',
     marginBottom: 8,
   },
@@ -289,7 +294,7 @@ const styles = StyleSheet.create({
   },
   collectionStats: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: FLEX_JUSTIFY_CONTENT.SPACE_BETWEEN,
   },
   statText: {
     fontSize: 14,

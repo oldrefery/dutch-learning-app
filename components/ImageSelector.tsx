@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -55,9 +55,9 @@ export default function ImageSelector({
       setImages([])
       setError(null)
     }
-  }, [visible, englishTranslation, partOfSpeech])
+  }, [visible, englishTranslation, partOfSpeech, loadImages])
 
-  const loadImages = async () => {
+  const loadImages = useCallback(async () => {
     setLoading(true)
     setError(null)
     setImages([]) // Clear previous images
@@ -95,7 +95,7 @@ export default function ImageSelector({
     } finally {
       setLoading(false)
     }
-  }
+  }, [englishTranslation, partOfSpeech, examples])
 
   const handleImageSelect = (imageUrl: string) => {
     onSelect(imageUrl)

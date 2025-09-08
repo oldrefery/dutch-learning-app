@@ -39,7 +39,7 @@ export default function AddWordScreen() {
   )
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
 
-  const { addNewWord, error, clearError } = useAppStore()
+  const { addNewWord, clearError } = useAppStore()
 
   const playPronunciation = async (ttsUrl: string) => {
     if (isPlayingAudio) return
@@ -66,71 +66,6 @@ export default function AddWordScreen() {
         text2: 'Could not play pronunciation. Please try again.',
       })
     }
-  }
-
-  const mockAnalyzeWord = async (word: string): Promise<AnalysisResult> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    // Mock response based on input
-    const mockResponses: Record<string, AnalysisResult> = {
-      spreken: {
-        lemma: 'spreken',
-        part_of_speech: 'verb',
-        is_irregular: true,
-        translations: {
-          en: ['to speak', 'to talk'],
-          ru: ['говорить', 'разговаривать'],
-        },
-        examples: [
-          {
-            nl: 'Kun je Nederlands spreken?',
-            en: 'Can you speak Dutch?',
-            ru: 'Умеешь ли ты говорить по-голландски?',
-          },
-          {
-            nl: 'We spreken morgen af.',
-            en: 'We will meet tomorrow.',
-            ru: 'Мы встретимся завтра.',
-          },
-        ],
-      },
-      huis: {
-        lemma: 'huis',
-        part_of_speech: 'noun',
-        is_irregular: false,
-        translations: {
-          en: ['house', 'home'],
-          ru: ['дом'],
-        },
-        examples: [
-          {
-            nl: 'Mijn huis is groot.',
-            en: 'My house is big.',
-            ru: 'Мой дом большой.',
-          },
-        ],
-      },
-    }
-
-    return (
-      mockResponses[word.toLowerCase()] || {
-        lemma: word,
-        part_of_speech: 'unknown',
-        is_irregular: false,
-        translations: {
-          en: ['[AI analysis would provide translation]'],
-          ru: ['[перевод будет предоставлен ИИ]'],
-        },
-        examples: [
-          {
-            nl: `Example with ${word}...`,
-            en: `Example with ${word}...`,
-            ru: `Пример с ${word}...`,
-          },
-        ],
-      }
-    )
   }
 
   const handleAnalyze = async () => {
