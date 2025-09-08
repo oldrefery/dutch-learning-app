@@ -41,7 +41,7 @@ export const useReviewScreen = () => {
         audioPlayer.unloadAsync()
       }
     }
-  }, [])
+  }, [audioPlayer])
 
   // Start review session when component mounts
   useEffect(() => {
@@ -122,7 +122,7 @@ export const useReviewScreen = () => {
         text1: 'Correct!',
         text2: 'Well done!',
       })
-    } catch (error) {
+    } catch {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -144,7 +144,7 @@ export const useReviewScreen = () => {
         text1: 'Incorrect',
         text2: 'Keep practicing!',
       })
-    } catch (error) {
+    } catch {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -165,7 +165,7 @@ export const useReviewScreen = () => {
         text1: 'Word Deleted',
         text2: 'Word has been removed from collection',
       })
-    } catch (error) {
+    } catch {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -195,7 +195,7 @@ export const useReviewScreen = () => {
           text1: 'Image Updated',
           text2: 'Word image has been changed',
         })
-      } catch (error) {
+      } catch {
         Toast.show({
           type: 'error',
           text1: 'Error',

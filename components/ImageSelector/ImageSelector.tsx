@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
-import { IMAGE_CONFIG, UI_CONFIG } from '@/constants/AppConfig'
+import { IMAGE_CONFIG } from '@/constants/AppConfig'
 import { supabase } from '@/lib/supabaseClient'
 import { imageSelectorStyles } from './styles'
 import type { ImageOption, ImageSelectorProps } from './types'
@@ -117,6 +117,92 @@ export default function ImageSelector({
     onClose()
   }
 
+  const renderLoadingState = () => (
+    <View style={imageSelectorStyles.loadingContainer}>
+      <ActivityIndicator size="large" color="#3b82f6" />
+      <Text style={imageSelectorStyles.loadingText}>
+        Finding better images...
+      </Text>
+    </View>
+  )
+
+  const renderErrorState = () => (
+    <View style={imageSelectorStyles.errorContainer}>
+      <Text style={imageSelectorStyles.errorText}>{error}</Text>
+      <TouchableOpacity
+        onPress={loadImages}
+        style={imageSelectorStyles.retryButton}
+      >
+        <Text style={imageSelectorStyles.retryButtonText}>Try Again</Text>
+      </TouchableOpacity>
+    </View>
+  )
+
+  const renderImageGrid = () => (
+    <ScrollView
+      style={imageSelectorStyles.imageGrid}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={imageSelectorStyles.gridContainer}>
+        {images.map((image, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              imageSelectorStyles.imageOption,
+              currentImageUrl === image.url && imageSelectorStyles.currentImage,
+            ]}
+            onPress={() => handleImageSelect(image.url)}
+          >
+            <Image
+              source={{ uri: image.url }}
+              style={imageSelectorStyles.optionImage}
+            />
+            {currentImageUrl === image.url && (
+              <View style={imageSelectorStyles.currentBadge}>
+                <Ionicons name="checkmark-circle" size={20} color="#10b981" />
+                <Text style={imageSelectorStyles.currentText}>Current</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Load More Button */}
+      {images.length > 0 && (
+        <View style={imageSelectorStyles.loadMoreContainer}>
+          <TouchableOpacity
+            style={[
+              imageSelectorStyles.loadMoreButton,
+              loadingMore && imageSelectorStyles.loadMoreButtonDisabled,
+            ]}
+            onPress={loadMoreImages}
+            disabled={loadingMore}
+          >
+            {loadingMore ? (
+              <ActivityIndicator size="small" color="#3b82f6" />
+            ) : (
+              <Text style={imageSelectorStyles.loadMoreText}>
+                Load More Images
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+    </ScrollView>
+  )
+
+  const renderContent = () => {
+    if (loading) {
+      return renderLoadingState()
+    }
+
+    if (error) {
+      return renderErrorState()
+    }
+
+    return renderImageGrid()
+  }
+
   return (
     <Modal
       visible={visible}
@@ -138,82 +224,7 @@ export default function ImageSelector({
           Select a better image for &quot;{englishTranslation}&quot;
         </Text>
 
-        {loading ? (
-          <View style={imageSelectorStyles.loadingContainer}>
-            <ActivityIndicator size="large" color="#3b82f6" />
-            <Text style={imageSelectorStyles.loadingText}>
-              Finding better images...
-            </Text>
-          </View>
-        ) : error ? (
-          <View style={imageSelectorStyles.errorContainer}>
-            <Text style={imageSelectorStyles.errorText}>{error}</Text>
-            <TouchableOpacity
-              onPress={loadImages}
-              style={imageSelectorStyles.retryButton}
-            >
-              <Text style={imageSelectorStyles.retryButtonText}>Try Again</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <ScrollView
-            style={imageSelectorStyles.imageGrid}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={imageSelectorStyles.gridContainer}>
-              {images.map((image, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    imageSelectorStyles.imageOption,
-                    currentImageUrl === image.url &&
-                      imageSelectorStyles.currentImage,
-                  ]}
-                  onPress={() => handleImageSelect(image.url)}
-                >
-                  <Image
-                    source={{ uri: image.url }}
-                    style={imageSelectorStyles.optionImage}
-                  />
-                  {currentImageUrl === image.url && (
-                    <View style={imageSelectorStyles.currentBadge}>
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={20}
-                        color="#10b981"
-                      />
-                      <Text style={imageSelectorStyles.currentText}>
-                        Current
-                      </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Load More Button */}
-            {images.length > 0 && (
-              <View style={imageSelectorStyles.loadMoreContainer}>
-                <TouchableOpacity
-                  style={[
-                    imageSelectorStyles.loadMoreButton,
-                    loadingMore && imageSelectorStyles.loadMoreButtonDisabled,
-                  ]}
-                  onPress={loadMoreImages}
-                  disabled={loadingMore}
-                >
-                  {loadingMore ? (
-                    <ActivityIndicator size="small" color="#3b82f6" />
-                  ) : (
-                    <Text style={imageSelectorStyles.loadMoreText}>
-                      Load More Images
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            )}
-          </ScrollView>
-        )}
+        {renderContent()}
       </View>
     </Modal>
   )

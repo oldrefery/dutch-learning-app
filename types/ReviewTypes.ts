@@ -1,8 +1,10 @@
 import { GestureResponderEvent } from 'react-native'
 import { AudioPlayer } from 'expo-audio'
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ReviewScreenProps {
-  // Props can be added here if needed
+  // This interface is intentionally empty for future extensibility
+  // Add props here when needed
 }
 
 export interface UseReviewScreenReturn {

@@ -1,6 +1,8 @@
 import { wordService } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
-import { appStoreUtils } from '@/utils/appStoreUtils'
+
+const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
+const UNKNOWN_ERROR = 'Unknown error'
 
 export const createWordActions = (set: any, get: any) => ({
   fetchWords: async () => {
@@ -8,7 +10,7 @@ export const createWordActions = (set: any, get: any) => ({
       set({ wordsLoading: true })
       const userId = get().currentUserId
       if (!userId) {
-        throw new Error('User not authenticated')
+        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
       }
       const words = await wordService.getUserWords(userId)
       set({ words, wordsLoading: false })
@@ -17,7 +19,7 @@ export const createWordActions = (set: any, get: any) => ({
       set({
         error: {
           message: APP_STORE_CONSTANTS.ERROR_MESSAGES.WORDS_FETCH_FAILED,
-          details: error instanceof Error ? error.message : 'Unknown error',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
         wordsLoading: false,
       })
@@ -28,7 +30,7 @@ export const createWordActions = (set: any, get: any) => ({
     try {
       const userId = get().currentUserId
       if (!userId) {
-        throw new Error('User not authenticated')
+        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
       }
 
       // First analyze the word
@@ -51,7 +53,7 @@ export const createWordActions = (set: any, get: any) => ({
       set({
         error: {
           message: APP_STORE_CONSTANTS.ERROR_MESSAGES.WORD_ADD_FAILED,
-          details: error instanceof Error ? error.message : 'Unknown error',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
       throw error
@@ -87,7 +89,7 @@ export const createWordActions = (set: any, get: any) => ({
       set({
         error: {
           message: APP_STORE_CONSTANTS.ERROR_MESSAGES.WORD_UPDATE_FAILED,
-          details: error instanceof Error ? error.message : 'Unknown error',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
     }
@@ -106,7 +108,7 @@ export const createWordActions = (set: any, get: any) => ({
       set({
         error: {
           message: APP_STORE_CONSTANTS.ERROR_MESSAGES.WORD_DELETE_FAILED,
-          details: error instanceof Error ? error.message : 'Unknown error',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
     }

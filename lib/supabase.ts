@@ -28,7 +28,7 @@ export const initDevSession = async () => {
     if (!user || user.id !== devUserId) {
       // Sign in with real development user
       // In production, this will be replaced with real authentication
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: devUserEmail,
         password: devUserPassword,
       })
@@ -36,11 +36,9 @@ export const initDevSession = async () => {
       if (error) {
         console.error('Dev auth error:', error.message)
         throw new Error(`Development authentication failed: ${error.message}`)
-      } else {
       }
-    } else {
     }
-  } catch (error) {
+  } catch {
     // Continue without auth - we'll handle this gracefully
   }
 }

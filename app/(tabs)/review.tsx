@@ -22,7 +22,6 @@ export default function ReviewScreen() {
     handleCorrect,
     handleIncorrect,
     handleDeleteWord,
-    handleEndSession,
     handleImageChange,
     restartSession,
     hasWordsForReview,
@@ -30,14 +29,8 @@ export default function ReviewScreen() {
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
-  const {
-    reviewSession,
-    currentWord,
-    currentIndex,
-    sessionComplete,
-    reviewWords,
-    isLoading,
-  } = useReviewSession()
+  const { currentWord, currentIndex, sessionComplete, reviewWords, isLoading } =
+    useReviewSession()
 
   // Check if we should show empty state first
   if (!hasWordsForReview || reviewWords.length === 0) {

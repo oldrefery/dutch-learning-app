@@ -1,5 +1,4 @@
 import { Dimensions } from 'react-native'
-import { UI_CONFIG, TOUCH_CONFIG } from '@/constants/AppConfig'
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 

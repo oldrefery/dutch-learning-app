@@ -1,6 +1,5 @@
 import { wordService } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
-import { appStoreUtils } from '@/utils/appStoreUtils'
 
 export const createReviewActions = (set: any, get: any) => ({
   startReviewSession: async () => {
