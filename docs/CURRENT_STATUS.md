@@ -145,6 +145,11 @@ DutchLearningApp/
 
 ### Recently Completed Features ✅
 
+- **Centralized Constants System**: Unified configuration management
+  - Single source: `supabase/functions/_shared/constants.ts`
+  - React Native integration: `constants/AppConfig.ts`
+  - Auto-deploy NPM scripts and Git hooks
+  - Eliminated magic numbers across app and Edge Functions
 - **Dutch Articles Support**: Added automatic detection and display of articles (de/het) for nouns
   - Database migration: `002_add_article_to_words.sql`
   - AI prompt enhanced to detect articles
