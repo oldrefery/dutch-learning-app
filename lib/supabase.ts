@@ -112,9 +112,45 @@ export const wordService = {
 
   // Add new word
   async addWord(wordData: any, userId: string) {
+    // Ensure required fields are present
+    const wordToInsert = {
+      dutch_original:
+        wordData.dutch_original || wordData.word || wordData.lemma || '',
+      dutch_lemma:
+        wordData.dutch_lemma ||
+        wordData.lemma ||
+        wordData.dutch_original ||
+        wordData.word ||
+        '',
+      part_of_speech: wordData.part_of_speech || 'unknown',
+      translations: wordData.translations || { en: [], ru: [] },
+      examples: wordData.examples || [],
+      image_url: wordData.image_url || '',
+      is_expression: wordData.is_expression || false,
+      is_irregular: wordData.is_irregular || false,
+      is_reflexive: wordData.is_reflexive || false,
+      is_separable: wordData.is_separable || false,
+      prefix_part: wordData.prefix_part || null,
+      root_verb: wordData.root_verb || null,
+      article: wordData.article || null,
+      expression_type: wordData.expression_type || null,
+      tts_url: wordData.tts_url || '',
+      easiness_factor: 2.5,
+      interval_days: 1,
+      repetition_count: 0,
+      next_review_date: new Date().toISOString().split('T')[0],
+      user_id: userId,
+      ...wordData, // Override with any additional fields from wordData
+    }
+
+    // Remove fields that don't exist in the database schema
+    const { lemma, ...cleanWordData } = wordToInsert
+
+    console.log('Word data to insert:', cleanWordData)
+
     const { data, error } = await supabase
       .from('words')
-      .insert({ ...wordData, user_id: userId })
+      .insert(cleanWordData)
       .select()
       .single()
 

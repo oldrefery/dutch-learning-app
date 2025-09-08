@@ -45,10 +45,18 @@ export const useReviewScreen = () => {
 
   // Start review session when component mounts
   useEffect(() => {
-    if (!reviewSession && !reviewLoading) {
+    if (!reviewSession && !reviewLoading && hasWordsForReview) {
       startReviewSession()
     }
-  }, [reviewSession, reviewLoading, startReviewSession])
+  }, [reviewSession, reviewLoading, hasWordsForReview, startReviewSession])
+
+  // Check if there are words available for review
+  const { words } = useAppStore()
+  const hasWordsForReview = words.some(word => {
+    if (!word.next_review_date) return true
+    const today = new Date().toISOString().split('T')[0]
+    return word.next_review_date <= today
+  })
 
   // Reset card state when word changes
   useEffect(() => {
@@ -213,8 +221,9 @@ export const useReviewScreen = () => {
     reviewSession,
     currentWord,
     isFlipped,
-    isLoading: isLoading || reviewLoading,
+    isLoading: isLoading || (reviewLoading && hasWordsForReview),
     audioPlayer,
+    hasWordsForReview,
 
     // Actions
     playAudio,
