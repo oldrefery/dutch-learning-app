@@ -49,3 +49,6 @@ supabase/.temp/
 test-*.js
 test-*.ts
 *.test.local.*
+
+# Reports and analysis
+reports/
