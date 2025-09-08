@@ -81,6 +81,7 @@ function StatsCard() {
   return (
     <View style={styles.statsCard}>
       <Text style={styles.statsTitle}>Today&apos;s Progress</Text>
+      <Text style={styles.statsSubtitle}>Across all collections</Text>
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <Text style={styles.statNumber}>{stats.totalWords}</Text>
@@ -124,12 +125,7 @@ export default function CollectionsScreen() {
   }
 
   const handleCollectionPress = (collection: Collection) => {
-    Toast.show({
-      type: 'info',
-      text1: 'Collection',
-      text2: `Opening "${collection.name}" collection`,
-    })
-    // TODO: Navigate to collection detail screen
+    router.push(`/collection/${collection.collection_id}`)
   }
 
   const handleStartReview = () => {
@@ -174,8 +170,9 @@ export default function CollectionsScreen() {
           style={styles.reviewButton}
           onPress={handleStartReview}
         >
-          <Text style={styles.reviewButtonText}>
-            Review {stats.wordsForReview} Words
+          <Text style={styles.reviewButtonText}>Review All Collections</Text>
+          <Text style={styles.reviewButtonSubtext}>
+            {stats.wordsForReview} words ready for review
           </Text>
         </TouchableOpacity>
       </View>
@@ -244,6 +241,11 @@ const styles = StyleSheet.create({
   statsTitle: {
     fontSize: 18,
     fontWeight: '600',
+    marginBottom: 4,
+  },
+  statsSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
     marginBottom: 12,
   },
   statsRow: {
@@ -288,6 +290,11 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+    marginBottom: 4,
+  },
+  reviewButtonSubtext: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
   },
   collectionsSection: {
     flex: 1,
