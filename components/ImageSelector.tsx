@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -46,11 +46,21 @@ export default function ImageSelector({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const loadImages = async () => {
-    if (images.length > 0) return // Already loaded
+  // Load images when modal opens or word changes
+  useEffect(() => {
+    if (visible && englishTranslation) {
+      loadImages()
+    } else if (!visible) {
+      // Clear images when modal closes to save memory
+      setImages([])
+      setError(null)
+    }
+  }, [visible, englishTranslation, partOfSpeech])
 
+  const loadImages = async () => {
     setLoading(true)
     setError(null)
+    setImages([]) // Clear previous images
 
     try {
       const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
@@ -87,12 +97,6 @@ export default function ImageSelector({
     }
   }
 
-  const handleModalShow = () => {
-    if (visible) {
-      loadImages()
-    }
-  }
-
   const handleImageSelect = (imageUrl: string) => {
     onSelect(imageUrl)
     onClose()
@@ -103,7 +107,6 @@ export default function ImageSelector({
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
-      onShow={handleModalShow}
     >
       <View style={styles.container}>
         <View style={styles.header}>

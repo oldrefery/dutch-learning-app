@@ -26,6 +26,7 @@ export default function ReviewScreen() {
     startReviewSession,
     submitReviewAssessment,
     clearError,
+    error,
   } = useAppStore()
 
   const [showAnswer, setShowAnswer] = useState(false)
