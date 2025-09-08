@@ -196,7 +196,10 @@ export default function ReviewScreen() {
             // Front of card - Dutch word
             <View style={styles.cardFront}>
               <View style={styles.wordWithPronunciation}>
-                <Text style={styles.dutchWord}>{currentWord.dutch_lemma}</Text>
+                <Text style={styles.dutchWord}>
+                  {currentWord.article ? `${currentWord.article} ` : ''}
+                  {currentWord.dutch_lemma}
+                </Text>
                 {currentWord.tts_url && (
                   <TouchableOpacity
                     style={styles.pronunciationButton}
@@ -221,6 +224,7 @@ export default function ReviewScreen() {
             <View style={styles.cardBack}>
               <View style={styles.wordWithPronunciationSmall}>
                 <Text style={styles.dutchWordSmall}>
+                  {currentWord.article ? `${currentWord.article} ` : ''}
                   {currentWord.dutch_lemma}
                 </Text>
                 {currentWord.tts_url && (

@@ -16,6 +16,7 @@ interface AnalysisResult {
   lemma: string
   part_of_speech: string
   is_irregular: boolean
+  article?: 'de' | 'het' // Article for nouns
   translations: {
     en: string[]
     ru?: string[]
@@ -152,6 +153,7 @@ export default function AddWordScreen() {
         lemma: newWord.dutch_lemma,
         part_of_speech: newWord.part_of_speech,
         is_irregular: newWord.is_irregular,
+        article: newWord.article || undefined, // Include article for nouns
         translations: newWord.translations,
         examples: newWord.examples,
         tts_url: newWord.tts_url,
@@ -213,6 +215,7 @@ export default function AddWordScreen() {
             <Text style={styles.resultValue}>
               {analysisResult.part_of_speech}
               {analysisResult.is_irregular ? ' (irregular)' : ''}
+              {analysisResult.article ? ` (${analysisResult.article})` : ''}
             </Text>
           </View>
 

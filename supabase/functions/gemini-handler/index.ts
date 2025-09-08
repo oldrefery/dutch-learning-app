@@ -15,6 +15,7 @@ interface WordAnalysisResponse {
   lemma: string
   part_of_speech: string
   is_irregular?: boolean
+  article?: 'de' | 'het' // For nouns only
   translations: {
     en: string[]
     ru?: string[]
@@ -56,6 +57,7 @@ Analyze the Dutch word "${word}" and provide a JSON response with the following 
   "lemma": "base form of the word (infinitive for verbs, singular for nouns)",
   "part_of_speech": "verb|noun|adjective|adverb|preposition|conjunction|interjection",
   "is_irregular": true/false (only for verbs),
+  "article": "de|het" (MANDATORY for nouns, omit for other parts of speech),
   "translations": {
     "en": ["primary English translation", "alternative translation"],
     "ru": ["primary Russian translation", "alternative translation"] 
@@ -75,9 +77,13 @@ IMPORTANT INSTRUCTIONS:
   2. Past perfect/perfectum (ik heb/ben [ge-verb]) - MANDATORY for verbs
   3. Future tense (ik ga [verb])
   4. Past simple (if commonly used)
-- For NOUNS, provide examples with different contexts (definite/indefinite, plural)
+- For NOUNS, MANDATORY requirements:
+  1. ALWAYS specify the correct article: "de" or "het" 
+  2. Provide examples with definite article: "de/het [noun]"
+  3. Include plural form if applicable: "de [nouns]" 
+  4. Show indefinite usage: "een [noun]"
 - Provide 2-3 most common English translations and 1-2 Russian translations
-- Include 4-5 practical example sentences showing different forms, ALWAYS include past perfect
+- Include 4-5 practical example sentences showing different forms
 - Respond only with valid JSON, no additional text.
 
 Example for verb "wandelen":
@@ -85,6 +91,12 @@ Example for verb "wandelen":
 - "Ik heb gisteren lang gewandeld" (past perfect - REQUIRED)
 - "We gaan morgen wandelen" (future)  
 - "Hij wandelde elke dag" (past simple)
+
+Example for noun "huis":
+- "Het huis is groot" (definite article + noun)
+- "Ik woon in een huis" (indefinite article)
+- "De huizen zijn duur" (plural form)
+- "Het mooie huis staat te koop" (with adjective)
 `
 
     // Call Gemini API
@@ -152,6 +164,7 @@ Example for verb "wandelen":
       lemma: analysisResult.lemma,
       part_of_speech: analysisResult.part_of_speech,
       is_irregular: analysisResult.is_irregular || false,
+      article: analysisResult.article, // Include article for nouns
       translations: analysisResult.translations,
       examples: analysisResult.examples || [],
       tts_url: ttsUrl,
