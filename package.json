@@ -12,7 +12,12 @@
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy:edge-functions": "npx supabase functions deploy gemini-handler && npx supabase functions deploy get-multiple-images && npx supabase functions deploy data-migration",
+    "deploy:constants": "echo '🚀 Deploying Edge Functions due to constants change...' && npm run deploy:edge-functions && echo '✅ Edge Functions updated with new constants!'",
+    "deploy:gemini": "npx supabase functions deploy gemini-handler",
+    "deploy:images": "npx supabase functions deploy get-multiple-images",
+    "deploy:migration": "npx supabase functions deploy data-migration"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

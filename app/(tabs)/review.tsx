@@ -6,13 +6,16 @@ import {
   ActivityIndicator,
   Image,
   ScrollView,
+  View as RNView,
+  GestureResponderEvent,
 } from 'react-native'
 import { createAudioPlayer } from 'expo-audio'
 import { Ionicons } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
-import type { Word } from '@/types/database'
+import ImageSelector from '@/components/ImageSelector'
+import { TOUCH_CONFIG, UI_CONFIG } from '@/constants/AppConfig'
 
 const { width } = Dimensions.get('window')
 
@@ -22,14 +25,22 @@ export default function ReviewScreen() {
     reviewLoading,
     startReviewSession,
     submitReviewAssessment,
-    endReviewSession,
-    error,
     clearError,
   } = useAppStore()
 
   const [showAnswer, setShowAnswer] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [, setIsLoading] = useState(false)
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
+
+  // Touch handling state
+  const [touchStart, setTouchStart] = useState<{
+    time: number
+    x: number
+    y: number
+  } | null>(null)
+
+  // Image selector state
+  const [showImageSelector, setShowImageSelector] = useState(false)
 
   useEffect(() => {
     // Initialize review session when component mounts
@@ -73,6 +84,45 @@ export default function ReviewScreen() {
 
   const handleCardFlip = () => {
     setShowAnswer(!showAnswer)
+  }
+
+  const handleTouchStart = (event: GestureResponderEvent) => {
+    const { pageX, pageY } = event.nativeEvent
+    setTouchStart({
+      time: Date.now(),
+      x: pageX,
+      y: pageY,
+    })
+  }
+
+  const handleTouchEnd = (event: GestureResponderEvent) => {
+    if (!touchStart) return
+
+    const { pageX, pageY } = event.nativeEvent
+    const touchEnd = {
+      time: Date.now(),
+      x: pageX,
+      y: pageY,
+    }
+
+    // Calculate touch duration and distance
+    const touchDuration = touchEnd.time - touchStart.time
+    const touchDistance = Math.sqrt(
+      Math.pow(touchEnd.x - touchStart.x, 2) +
+        Math.pow(touchEnd.y - touchStart.y, 2)
+    )
+
+    // Use constants for gesture recognition
+    const isQuickTap =
+      touchDuration < TOUCH_CONFIG.MAX_TAP_DURATION &&
+      touchDistance < TOUCH_CONFIG.MAX_TAP_DISTANCE
+
+    if (isQuickTap) {
+      handleCardFlip()
+    }
+
+    // Reset touch state
+    setTouchStart(null)
   }
 
   const handleSRSResponse = async (
@@ -121,6 +171,29 @@ export default function ReviewScreen() {
   const restartSession = () => {
     setShowAnswer(false)
     startReviewSession()
+  }
+
+  const handleImageChange = async (newImageUrl: string) => {
+    if (!currentWord) return
+
+    try {
+      // Here you would call a function to update the word's image in the database
+      // For now, we'll just update the local state
+      const { updateWordImage } = useAppStore.getState()
+      await updateWordImage(currentWord.word_id, newImageUrl)
+
+      Toast.show({
+        type: 'success',
+        text1: 'Image Updated',
+        text2: 'Word image has been changed successfully.',
+      })
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Update Failed',
+        text2: 'Could not update image. Please try again.',
+      })
+    }
   }
 
   // Loading state
@@ -192,7 +265,11 @@ export default function ReviewScreen() {
     if (!currentWord) return null
 
     return (
-      <TouchableOpacity style={styles.flashcard} onPress={handleCardFlip}>
+      <RNView
+        style={styles.flashcard}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <View style={styles.cardContent}>
           {!showAnswer ? (
             // Front of card - Dutch word
@@ -289,7 +366,16 @@ export default function ReviewScreen() {
               {/* Image */}
               {currentWord.image_url && (
                 <View style={styles.imageSection}>
-                  <Text style={styles.sectionTitle}>🖼️ Visual</Text>
+                  <View style={styles.imageSectionHeader}>
+                    <Text style={styles.sectionTitle}>🖼️ Visual</Text>
+                    <TouchableOpacity
+                      style={styles.changeImageButton}
+                      onPress={() => setShowImageSelector(true)}
+                    >
+                      <Ionicons name="refresh" size={16} color="#6b7280" />
+                      <Text style={styles.changeImageText}>Change</Text>
+                    </TouchableOpacity>
+                  </View>
                   <Image
                     source={{ uri: currentWord.image_url }}
                     style={styles.wordImage}
@@ -320,7 +406,7 @@ export default function ReviewScreen() {
             </ScrollView>
           )}
         </View>
-      </TouchableOpacity>
+      </RNView>
     )
   }
 
@@ -377,6 +463,19 @@ export default function ReviewScreen() {
           </TouchableOpacity>
         </View>
       )}
+
+      {/* Image Selector Modal */}
+      {currentWord && (
+        <ImageSelector
+          visible={showImageSelector}
+          onClose={() => setShowImageSelector(false)}
+          onSelect={handleImageChange}
+          currentImageUrl={currentWord.image_url || undefined}
+          englishTranslation={currentWord.translations.en[0] || ''}
+          partOfSpeech={currentWord.part_of_speech || ''}
+          examples={currentWord.examples || undefined}
+        />
+      )}
     </View>
   )
 }
@@ -410,7 +509,7 @@ const styles = StyleSheet.create({
   },
   flashcard: {
     width: width - 32,
-    minHeight: 500,
+    minHeight: UI_CONFIG.CARD_MIN_HEIGHT,
     marginBottom: 20,
   },
   cardContent: {
@@ -673,6 +772,25 @@ const styles = StyleSheet.create({
   },
   imageSection: {
     marginBottom: 16,
+  },
+  imageSectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  changeImageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: '#f3f4f6',
+  },
+  changeImageText: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginLeft: 4,
+    fontWeight: '500',
   },
   wordImage: {
     width: '100%',

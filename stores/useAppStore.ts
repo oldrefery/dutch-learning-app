@@ -190,6 +190,38 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
+  updateWordImage: async (wordId: string, imageUrl: string) => {
+    try {
+      const updatedWord = await wordService.updateWordImage(wordId, imageUrl)
+
+      // Update local state
+      set(state => ({
+        words: state.words.map(word =>
+          word.word_id === wordId ? { ...word, image_url: imageUrl } : word
+        ),
+        // Also update review session if this word is currently being reviewed
+        reviewSession: state.reviewSession
+          ? {
+              ...state.reviewSession,
+              words: state.reviewSession.words.map(word =>
+                word.word_id === wordId
+                  ? { ...word, image_url: imageUrl }
+                  : word
+              ),
+            }
+          : null,
+      }))
+
+      return updatedWord
+    } catch (error) {
+      get().setError({
+        message: 'Failed to update word image',
+        details: error,
+      })
+      throw error
+    }
+  },
+
   // Collection actions
   fetchCollections: async () => {
     const { currentUserId } = get()

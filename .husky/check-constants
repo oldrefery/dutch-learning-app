@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Check if constants file was modified
+CONSTANTS_FILE="supabase/functions/_shared/constants.ts"
+
+if git diff --cached --name-only | grep -q "$CONSTANTS_FILE"; then
+  echo ""
+  echo "⚠️  CONSTANTS CHANGED DETECTED!"
+  echo "📁 File: $CONSTANTS_FILE"
+  echo ""
+  echo "🚀 Action Required:"
+  echo "   After this commit, run: npm run deploy:constants"
+  echo ""
+  echo "💡 Or deploy specific functions:"
+  echo "   npm run deploy:gemini     # Deploy gemini-handler"
+  echo "   npm run deploy:images     # Deploy get-multiple-images"
+  echo "   npm run deploy:migration  # Deploy data-migration"
+  echo ""
+  echo "✅ This ensures Edge Functions use the updated constants."
+  echo ""
+fi

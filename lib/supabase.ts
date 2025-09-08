@@ -5,7 +5,6 @@ import { calculateNextReview } from '../utils/srs'
 // Load environment variables
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!
-const supabaseServiceKey = process.env.EXPO_PUBLIC_SUPABASE_SERVICE_KEY!
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
 const devUserPassword = process.env.EXPO_PUBLIC_DEV_USER_PASSWORD!
 
@@ -187,6 +186,22 @@ export const wordService = {
 
     if (error) {
       throw new Error(`Failed to update word progress: ${error.message}`)
+    }
+
+    return data
+  },
+
+  // Update word image
+  async updateWordImage(wordId: string, imageUrl: string) {
+    const { data, error } = await supabase
+      .from('words')
+      .update({ image_url: imageUrl })
+      .eq('word_id', wordId)
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to update word image: ${error.message}`)
     }
 
     return data
