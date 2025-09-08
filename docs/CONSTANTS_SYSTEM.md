@@ -6,17 +6,28 @@ The Dutch Learning App uses a centralized constants system to eliminate magic nu
 
 ## Architecture
 
-### Single Source of Truth
+### Dual Structure
+
+#### For React Native Application
+
+- **Location**: `constants/` directory
+- **Files**:
+  - `AppConfig.ts` - Main app configuration
+  - `ReviewConstants.ts` - Review screen constants
+  - `GeminiConstants.ts` - Gemini AI constants
+- **Usage**: `import { REVIEW_CONSTANTS } from '@/constants/ReviewConstants'`
+
+#### For Supabase Edge Functions (Deno)
 
 - **Location**: `supabase/functions/_shared/constants.ts`
-- **Purpose**: Contains ALL application constants
-- **Accessibility**: Used by both React Native app and Edge Functions
+- **Purpose**: Contains ALL application constants for Edge Functions
+- **Usage**: `import { IMAGE_CONFIG, TOUCH_CONFIG } from '../_shared/constants.ts'`
 
-### React Native Integration
+### Why This Structure?
 
-- **Location**: `constants/AppConfig.ts`
-- **Purpose**: Re-exports all constants from the shared file
-- **Usage**: `import { IMAGE_CONFIG, TOUCH_CONFIG } from '@/constants/AppConfig'`
+1. **Edge Functions Limitation**: Cannot import from root project folders
+2. **Separation of Concerns**: Different environments, different needs
+3. **Maintainability**: Clear organization by feature and environment
 
 ## Available Constants
 

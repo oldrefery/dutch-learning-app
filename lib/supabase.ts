@@ -1,18 +1,10 @@
 import 'react-native-url-polyfill/auto'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from './supabaseClient'
 import { calculateNextReview } from '../utils/srs'
 
 // Load environment variables
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
 const devUserPassword = process.env.EXPO_PUBLIC_DEV_USER_PASSWORD!
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing Supabase environment variables. Please check your .env file.'
-  )
-}
 
 if (!devUserEmail || !devUserPassword) {
   throw new Error(
@@ -20,13 +12,8 @@ if (!devUserEmail || !devUserPassword) {
   )
 }
 
-// Create Supabase client with anon key (standard approach)
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-})
+// Re-export the client for backward compatibility
+export { supabase }
 
 // Development helper: sign in as dev user for RLS to work
 export const initDevSession = async () => {
@@ -39,8 +26,6 @@ export const initDevSession = async () => {
     } = await supabase.auth.getUser()
 
     if (!user || user.id !== devUserId) {
-      console.log('Setting up development session for user:', devUserId)
-
       // Sign in with real development user
       // In production, this will be replaced with real authentication
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -52,24 +37,16 @@ export const initDevSession = async () => {
         console.error('Dev auth error:', error.message)
         throw new Error(`Development authentication failed: ${error.message}`)
       } else {
-        console.log('Dev session established:', data.user?.id)
       }
     } else {
-      console.log('Using existing session for user:', user.id)
     }
   } catch (error) {
-    console.log('Dev session setup error:', error)
     // Continue without auth - we'll handle this gracefully
   }
 }
 
 // Create separate client for Edge Functions (also uses anon key)
-export const supabaseFunctions = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-})
+export const supabaseFunctions = supabase
 
 // Development helper to get dev user ID (hardcoded for simplicity)
 export const getDevUserId = (): string => {

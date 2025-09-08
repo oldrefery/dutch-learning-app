@@ -20,7 +20,9 @@
     "complexity": "eslint . --ext .ts,.tsx,.js,.jsx --format stylish",
     "complexity:strict": "eslint . --ext .ts,.tsx,.js,.jsx --rule 'sonarjs/cognitive-complexity: [error, 10]'",
     "complexity:report": "eslint . --ext .ts,.tsx,.js,.jsx --format json --output-file reports/complexity-report.json",
-    "complexity:summary": "echo '📊 Running cognitive complexity analysis...' && npm run complexity 2>&1 | grep -E 'cognitive-complexity|no-duplicate-string|no-identical-functions' | wc -l && echo 'issues found. Run npm run complexity for details.'"
+    "complexity:summary": "echo '📊 Running cognitive complexity analysis...' && npm run complexity 2>&1 | grep -E 'cognitive-complexity|no-duplicate-string|no-identical-functions' | wc -l && echo 'issues found. Run npm run complexity for details.'",
+    "file-length": "find . -name '*.tsx' -o -name '*.ts' | grep -v node_modules | grep -v ios | grep -v android | grep -v '.expo' | grep -v dist | xargs wc -l | sort -nr | head -10",
+    "file-length:check": ".husky/check-file-length"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -36,6 +38,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-navigation/native": "^7.1.6",
     "@supabase/supabase-js": "^2.57.0",
     "expo": "~53.0.22",

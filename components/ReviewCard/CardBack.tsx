@@ -60,7 +60,7 @@ export function CardBack({
 const styles = StyleSheet.create({
   cardBack: {
     flex: 1,
-    padding: 4,
+    padding: 32,
   },
   deleteButton: {
     flexDirection: 'row',

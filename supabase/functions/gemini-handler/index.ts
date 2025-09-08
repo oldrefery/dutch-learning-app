@@ -8,52 +8,22 @@ import {
   getPreferredUnsplashUrl,
   generateImageHash,
 } from '../_shared/constants.ts'
-
-// Separable verb prefixes for fallback detection
-const SEPARABLE_PREFIXES = [
-  'aan',
-  'af',
-  'bij',
-  'door',
-  'in',
-  'mee',
-  'na',
-  'om',
-  'onder',
-  'op',
-  'over',
-  'toe',
-  'uit',
-  'vast',
-  'weg',
-  'voorbij',
-  'terug',
-  'voor',
-  'na',
-]
-
-// Helper function to detect separable verbs if Gemini missed them
-function analyzeSeparableVerb(lemma: string, partOfSpeech: string) {
-  if (partOfSpeech !== 'verb') {
-    return { is_separable: false, prefix_part: null, root_verb: null }
-  }
-
-  for (const prefix of SEPARABLE_PREFIXES) {
-    if (lemma.startsWith(prefix)) {
-      const rootVerb = lemma.substring(prefix.length)
-      // Check if root verb is reasonable (at least 3 chars, common verb patterns)
-      if (rootVerb.length >= 3) {
-        return {
-          is_separable: true,
-          prefix_part: prefix,
-          root_verb: rootVerb,
-        }
-      }
-    }
-  }
-
-  return { is_separable: false, prefix_part: null, root_verb: null }
-}
+import {
+  analyzeSeparableVerb,
+  createSmartSearchQuery,
+  validateWordInput,
+  cleanExamples,
+  formatTranslations,
+} from '../_shared/geminiUtils.ts'
+import type {
+  WordAnalysisRequest,
+  WordAnalysisResponse,
+  GeminiAnalysisResult,
+} from '../_shared/types.ts'
+import {
+  GEMINI_PROMPTS,
+  formatWordAnalysisPrompt,
+} from '../_shared/geminiPrompts.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -61,115 +31,9 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type',
 }
 
-interface WordAnalysisRequest {
-  word: string
-}
+// Types are now imported from ./types.ts
 
-interface WordAnalysisResponse {
-  lemma: string
-  part_of_speech: string
-  is_irregular?: boolean
-  is_separable?: boolean
-  prefix_part?: string
-  root_verb?: string
-  article?: 'de' | 'het' // For nouns only
-  translations: {
-    en: string[]
-    ru?: string[]
-  }
-  examples: Array<{
-    nl: string
-    en: string
-    ru?: string
-  }>
-  tts_url: string
-  image_url?: string // Associated image for visual learning
-}
-
-// Helper function to create smart search queries
-function createSmartSearchQuery(
-  englishTranslation: string,
-  partOfSpeech: string,
-  examples?: Array<{ nl: string; en: string; ru?: string }>
-): string[] {
-  const queries = []
-  const baseTranslation = englishTranslation.toLowerCase()
-
-  // Base query
-  queries.push(baseTranslation)
-
-  // Smart queries based on part of speech
-  switch (partOfSpeech) {
-    case 'verb':
-      // For verbs, add action context
-      if (
-        baseTranslation.includes('leave') ||
-        baseTranslation.includes('depart')
-      ) {
-        queries.push(
-          'departure train station',
-          'leaving journey',
-          'travel departure'
-        )
-      } else if (baseTranslation.includes('walk')) {
-        queries.push('person walking', 'walking path', 'pedestrian walking')
-      } else if (
-        baseTranslation.includes('buy') ||
-        baseTranslation.includes('purchase')
-      ) {
-        queries.push('shopping buying', 'purchase store', 'buying goods')
-      } else if (baseTranslation.includes('eat')) {
-        queries.push('eating food', 'person eating', 'dining meal')
-      } else {
-        queries.push(`${baseTranslation} action`, `person ${baseTranslation}`)
-      }
-      break
-
-    case 'noun':
-      // For nouns, be more specific
-      if (
-        baseTranslation.includes('house') ||
-        baseTranslation.includes('home')
-      ) {
-        queries.push('house building', 'residential home', 'house exterior')
-      } else if (baseTranslation.includes('cat')) {
-        queries.push('domestic cat', 'house cat', 'cat animal')
-      } else if (baseTranslation.includes('book')) {
-        queries.push('book reading', 'open book', 'books library')
-      } else {
-        queries.push(`${baseTranslation} object`, `${baseTranslation} thing`)
-      }
-      break
-
-    case 'adjective':
-      // For adjectives, show the quality
-      queries.push(`${baseTranslation} concept`, `${baseTranslation} feeling`)
-      break
-
-    default:
-      queries.push(`${baseTranslation} concept`)
-  }
-
-  // Add context from examples if available
-  if (examples && examples.length > 0) {
-    const firstExample = examples[0].en.toLowerCase()
-    // Extract key words from example
-    const contextWords = firstExample
-      .split(' ')
-      .filter(
-        word =>
-          word.length > SEARCH_CONFIG.MIN_CONTEXT_WORD_LENGTH &&
-          !SEARCH_CONFIG.STOP_WORDS.includes(word)
-      )
-
-    if (contextWords.length > 0) {
-      const contextWord = contextWords[0]
-      queries.push(`${baseTranslation} ${contextWord}`)
-    }
-  }
-
-  return queries
-}
+// Helper functions are now imported from ./utils.ts
 
 // Helper function to get multiple image options for word
 async function getMultipleImagesForWord(
@@ -308,100 +172,7 @@ serve(async req => {
     }
 
     // Prepare prompt for Gemini
-    const prompt = `
-Analyze the Dutch word "${word}" and provide a comprehensive JSON response. 
-
-CRITICAL: For words with multiple meanings, always list the MOST COMMON/FREQUENT meaning first in translations, and provide examples for ALL major meanings.
-
-JSON structure:
-{
-  "lemma": "base form of the word (infinitive for verbs, singular for nouns)",
-  "part_of_speech": "verb|noun|adjective|adverb|preposition|conjunction|interjection",
-  "is_irregular": true/false (only for verbs),
-  "is_separable": true/false (only for verbs with separable prefixes),
-  "prefix_part": "separable prefix (if applicable, e.g., 'op' from 'opgeven')",
-  "root_verb": "root verb part (if applicable, e.g., 'geven' from 'opgeven')",
-  "article": "de|het" (MANDATORY for nouns, omit for other parts of speech),
-  "translations": {
-    "en": ["primary English translation", "alternative translation"],
-    "ru": ["primary Russian translation", "alternative translation"] 
-  },
-  "examples": [
-    {
-      "nl": "Dutch example sentence",
-      "en": "English translation", 
-      "ru": "Russian translation"
-    }
-  ]
-}
-
-IMPORTANT INSTRUCTIONS:
-- For VERBS, provide examples with different verb forms and tenses:
-  1. Present tense (ik [verb], we [verb]en) 
-  2. Past perfect/perfectum (ik heb/ben [ge-verb]) - MANDATORY for verbs
-  3. Future tense (ik ga [verb])
-  4. Past simple (if commonly used)
-- For SEPARABLE VERBS (scheidbare werkwoorden), CRITICAL ANALYSIS:
-  1. ANALYZE ONLY THE EXACT WORD PROVIDED: "${word}"
-  2. Check if THIS EXACT WORD begins with a separable prefix
-  3. Common separable prefixes: aan, af, bij, door, in, mee, na, om, onder, op, over, toe, uit, vast, weg, voorbij, terug
-  4. EXAMPLES: uitgaan=uit+gaan, meenemen=mee+nemen, opgeven=op+geven, aankomen=aan+komen, toegeven=toe+geven
-  5. IMPORTANT: If the word does NOT start with a prefix, set is_separable=false
-  6. Do NOT confuse with similar verbs (e.g., "strijken" ≠ "uitstrijken")
-  7. Only if THIS EXACT WORD starts with a prefix:
-     - prefix_part: the separable part (e.g., "uit" from "uitgaan")
-     - root_verb: the remaining part (e.g., "gaan" from "uitgaan")
-  8. Show examples with separated forms: "Ik ga uit" (present), "Ik ben uitgegaan" (past perfect)
-- For NOUNS, MANDATORY requirements:
-  1. ALWAYS specify the correct article: "de" or "het" 
-  2. Provide examples with definite article: "de/het [noun]"
-  3. Include plural form if applicable: "de [nouns]" 
-  4. Show indefinite usage: "een [noun]"
-- For TRANSLATIONS: 
-  1. PRIORITIZE the most frequent/common meaning first
-  2. List 2-3 most common English translations (most frequent first)
-  3. List 1-2 Russian translations (most frequent first)
-  4. For multi-meaning words, ensure primary meaning comes first
-- For EXAMPLES:
-  1. Include 4-6 practical example sentences
-  2. MANDATORY: Show examples for ALL major meanings/uses of the word
-  3. If word has multiple meanings, provide at least 1-2 examples per meaning
-  4. Show different verb forms and tenses
-- Respond only with valid JSON, no additional text.
-
-Example for regular verb "wandelen":
-- "Ik wandel graag in het park" (present)
-- "Ik heb gisteren lang gewandeld" (past perfect - REQUIRED)
-- "We gaan morgen wandelen" (future)  
-- "Hij wandelde elke dag" (past simple)
-
-Example for separable verb "uitgaan" (uit + gaan):
-- "Ik ga uit" (present - prefix separated)
-- "Ik ben uitgegaan" (past perfect - prefix attached) 
-- "We gaan uitgaan" (future - prefix attached)
-- "Hij ging uit gisteren" (past simple - prefix separated)
-
-Example for separable verb "meenemen" (mee + nemen):
-- "Ik neem het mee" (present - prefix separated)
-- "Ik heb het meegenomen" (past perfect - prefix attached)
-- "We gaan het meenemen" (future - prefix attached)
-
-Example for noun "huis":
-- "Het huis is groot" (definite article + noun)
-- "Ik woon in een huis" (indefinite article)
-- "De huizen zijn duur" (plural form)
-- "Het mooie huis staat te koop" (with adjective)
-
-Example for multi-meaning verb "uitgeven" (uit + geven):
-TRANSLATIONS (most common first): ["to spend (money)", "to publish", "to issue"]
-EXAMPLES covering ALL meanings:
-- "Ik geef veel geld uit aan eten" (spending money - MOST COMMON)
-- "Hoeveel gaf je uit voor die schoenen?" (spending money)
-- "De uitgever geeft dit boek uit" (publishing)
-- "Het ministerie geeft nieuwe regels uit" (issuing/releasing)
-- "Ik heb al mijn geld uitgegeven" (past perfect - spending)
-- "Dit boek werd vorig jaar uitgegeven" (past - publishing)
-`
+    const prompt = formatWordAnalysisPrompt(word)
 
     // Call Gemini API
     const geminiResponse = await fetch(

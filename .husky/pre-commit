@@ -9,3 +9,6 @@ npx lint-staged
 
 # Check for high cognitive complexity
 .husky/check-complexity
+
+# Check for file length limits
+.husky/check-file-length

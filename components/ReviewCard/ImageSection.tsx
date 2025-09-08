@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   wordImage: {
     width: '100%',
-    height: 200,
+    height: 250,
     borderRadius: 12,
     backgroundColor: '#f3f4f6',
   },

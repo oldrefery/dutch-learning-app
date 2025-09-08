@@ -27,6 +27,7 @@ interface AppState {
   // Review session
   reviewSession: ReviewSession | null
   reviewLoading: boolean
+  currentWord: Word | null
 
   // Errors
   error: AppError | null
@@ -49,6 +50,14 @@ interface AppState {
   submitReviewAssessment: (assessment: any) => Promise<void>
   endReviewSession: () => void
 
+  // Review actions
+  markCorrect: (wordId: string) => Promise<void>
+  markIncorrect: (wordId: string) => Promise<void>
+  flipCard: () => void
+
+  // Computed values
+  currentWord: Word | null
+
   // Error handling
   setError: (error: AppError | null) => void
   clearError: () => void
@@ -63,6 +72,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   collectionsLoading: false,
   reviewSession: null,
   reviewLoading: false,
+  currentWord: null,
   error: null,
 
   // Initialize app
@@ -74,8 +84,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       // For development, use the dev user ID
       const devUserId = getDevUserId()
       set({ currentUserId: devUserId })
-
-      console.log('Initializing app for user:', devUserId)
 
       // Fetch initial data
       await Promise.all([get().fetchWords(), get().fetchCollections()])
@@ -322,9 +330,13 @@ export const useAppStore = create<AppState>((set, get) => ({
         completedCount: 0,
         againQueue: [],
       }
-
-      set({ reviewSession: session, reviewLoading: false })
+      set({
+        reviewSession: session,
+        currentWord: reviewWords[0] || null,
+        reviewLoading: false,
+      })
     } catch (error) {
+      console.error('Failed to start review session:', error)
       get().setError({
         message: 'Failed to start review session',
         details: error,
@@ -366,6 +378,7 @@ export const useAppStore = create<AppState>((set, get) => ({
                 completedCount: state.reviewSession.completedCount + 1,
               }
             : null,
+          currentWord: state.reviewSession?.words[nextIndex] || null,
         }))
       } else {
         // Check if there are words in again queue
@@ -401,7 +414,27 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   endReviewSession: () => {
-    set({ reviewSession: null })
+    set({ reviewSession: null, currentWord: null })
+  },
+
+  // Review actions
+  markCorrect: async (wordId: string) => {
+    await get().submitReviewAssessment({
+      wordId,
+      quality: 'good',
+    })
+  },
+
+  markIncorrect: async (wordId: string) => {
+    await get().submitReviewAssessment({
+      wordId,
+      quality: 'again',
+    })
+  },
+
+  flipCard: () => {
+    // This is handled by the component state
+    // The store doesn't need to track card flip state
   },
 
   // Error handling
