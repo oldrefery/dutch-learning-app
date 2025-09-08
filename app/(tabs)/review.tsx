@@ -4,17 +4,16 @@ import {
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
-  Image,
-  ScrollView,
   View as RNView,
   GestureResponderEvent,
 } from 'react-native'
 import { createAudioPlayer } from 'expo-audio'
-import { Ionicons } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
 import ImageSelector from '@/components/ImageSelector'
+import { CardFront } from '@/components/ReviewCard/CardFront'
+import { CardBack } from '@/components/ReviewCard/CardBack'
 import { TOUCH_CONFIG, UI_CONFIG } from '@/constants/AppConfig'
 
 const { width } = Dimensions.get('window')
@@ -273,138 +272,18 @@ export default function ReviewScreen() {
       >
         <View style={styles.cardContent}>
           {!showAnswer ? (
-            // Front of card - Dutch word
-            <View style={styles.cardFront}>
-              <View style={styles.wordWithPronunciation}>
-                <Text style={styles.dutchWord}>
-                  {currentWord.article ? `${currentWord.article} ` : ''}
-                  {currentWord.dutch_lemma}
-                </Text>
-                {currentWord.tts_url && (
-                  <TouchableOpacity
-                    style={styles.pronunciationButton}
-                    onPress={() => playPronunciation(currentWord.tts_url!)}
-                    disabled={isPlayingAudio}
-                  >
-                    <Ionicons
-                      name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
-                      size={24}
-                      color="#2563eb"
-                    />
-                  </TouchableOpacity>
-                )}
-              </View>
-              <Text style={styles.partOfSpeech}>
-                {currentWord.part_of_speech}
-              </Text>
-              <Text style={styles.tapHint}>Tap to see translation</Text>
-            </View>
+            <CardFront
+              currentWord={currentWord}
+              isPlayingAudio={isPlayingAudio}
+              onPlayPronunciation={playPronunciation}
+            />
           ) : (
-            // Back of card - Full detailed information
-            <ScrollView
-              style={styles.cardBack}
-              showsVerticalScrollIndicator={false}
-            >
-              <View style={styles.wordHeader}>
-                <View style={styles.wordWithPronunciationSmall}>
-                  <Text style={styles.dutchWordSmall}>
-                    {currentWord.article ? `${currentWord.article} ` : ''}
-                    {currentWord.dutch_lemma}
-                  </Text>
-                  {currentWord.tts_url && (
-                    <TouchableOpacity
-                      style={styles.pronunciationButtonSmall}
-                      onPress={() => playPronunciation(currentWord.tts_url!)}
-                      disabled={isPlayingAudio}
-                    >
-                      <Ionicons
-                        name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
-                        size={18}
-                        color="#2563eb"
-                      />
-                    </TouchableOpacity>
-                  )}
-                </View>
-
-                {/* Word metadata */}
-                <View style={styles.metadataRow}>
-                  <Text style={styles.metadataText}>
-                    {currentWord.part_of_speech}
-                    {currentWord.is_irregular ? ' • irregular' : ''}
-                    {currentWord.is_reflexive ? ' • reflexive' : ''}
-                    {currentWord.is_expression
-                      ? ` • ${currentWord.expression_type || 'expression'}`
-                      : ''}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Translations */}
-              <View style={styles.translationsSection}>
-                <Text style={styles.sectionTitle}>💬 Translations</Text>
-                <View style={styles.translationGroup}>
-                  <Text style={styles.languageLabel}>🇬🇧 English:</Text>
-                  {currentWord.translations.en.map((translation, index) => (
-                    <Text key={index} style={styles.translationText}>
-                      • {translation}
-                    </Text>
-                  ))}
-                </View>
-
-                {currentWord.translations.ru &&
-                  currentWord.translations.ru.length > 0 && (
-                    <View style={styles.translationGroup}>
-                      <Text style={styles.languageLabel}>🇷🇺 Russian:</Text>
-                      {currentWord.translations.ru.map((translation, index) => (
-                        <Text key={index} style={styles.translationText}>
-                          • {translation}
-                        </Text>
-                      ))}
-                    </View>
-                  )}
-              </View>
-
-              {/* Image */}
-              {currentWord.image_url && (
-                <View style={styles.imageSection}>
-                  <View style={styles.imageSectionHeader}>
-                    <Text style={styles.sectionTitle}>🖼️ Visual</Text>
-                    <TouchableOpacity
-                      style={styles.changeImageButton}
-                      onPress={() => setShowImageSelector(true)}
-                    >
-                      <Ionicons name="refresh" size={16} color="#6b7280" />
-                      <Text style={styles.changeImageText}>Change</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <Image
-                    source={{ uri: currentWord.image_url }}
-                    style={styles.wordImage}
-                    resizeMode="cover"
-                  />
-                </View>
-              )}
-
-              {/* Examples */}
-              {currentWord.examples && currentWord.examples.length > 0 && (
-                <View style={styles.examplesSection}>
-                  <Text style={styles.sectionTitle}>📝 Examples</Text>
-                  {currentWord.examples.map((example, index) => (
-                    <View key={index} style={styles.exampleItem}>
-                      <Text style={styles.exampleDutch}>{example.nl}</Text>
-                      <Text style={styles.exampleTranslation}>
-                        🇬🇧 {example.en}
-                      </Text>
-                      {example.ru && (
-                        <Text style={styles.exampleTranslation}>
-                          🇷🇺 {example.ru}
-                        </Text>
-                      )}
-                    </View>
-                  ))}
-                </View>
-              )}
-            </ScrollView>
+            <CardBack
+              currentWord={currentWord}
+              onChangeImage={() => setShowImageSelector(true)}
+              isPlayingAudio={isPlayingAudio}
+              onPlayPronunciation={playPronunciation}
+            />
           )}
         </View>
       </RNView>
