@@ -18,6 +18,12 @@ interface AnalysisResult {
   part_of_speech: string
   is_irregular: boolean
   article?: 'de' | 'het' // Article for nouns
+  is_reflexive?: boolean // For reflexive verbs
+  is_expression?: boolean // For expressions/idioms
+  expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound' // Type of expression
+  is_separable?: boolean // For separable verbs
+  prefix_part?: string // Separable prefix (op, aan, etc.)
+  root_verb?: string // Root verb part
   translations: {
     en: string[]
     ru?: string[]
@@ -88,12 +94,18 @@ export default function AddWordScreen() {
       // Convert to display format
       const result: AnalysisResult = {
         lemma: newWord.dutch_lemma,
-        part_of_speech: newWord.part_of_speech,
+        part_of_speech: newWord.part_of_speech || 'unknown',
         is_irregular: newWord.is_irregular,
         article: newWord.article || undefined, // Include article for nouns
+        is_reflexive: newWord.is_reflexive || false, // Include reflexive info
+        is_expression: newWord.is_expression || false, // Include expression info
+        expression_type: newWord.expression_type || undefined, // Include expression type
+        is_separable: newWord.is_separable || false, // Include separable verb info
+        prefix_part: newWord.prefix_part || undefined, // Include prefix part
+        root_verb: newWord.root_verb || undefined, // Include root verb
         translations: newWord.translations,
-        examples: newWord.examples,
-        tts_url: newWord.tts_url,
+        examples: newWord.examples || [], // Ensure examples is not null
+        tts_url: newWord.tts_url || undefined, // Ensure tts_url is not null
         image_url: newWord.image_url || undefined, // Include associated image
       }
 
@@ -154,8 +166,27 @@ export default function AddWordScreen() {
               {analysisResult.part_of_speech}
               {analysisResult.is_irregular ? ' (irregular)' : ''}
               {analysisResult.article ? ` (${analysisResult.article})` : ''}
+              {analysisResult.is_reflexive ? ' (reflexive)' : ''}
+              {analysisResult.is_expression
+                ? ` (${analysisResult.expression_type || 'expression'})`
+                : ''}
+              {analysisResult.is_separable ? ' (separable)' : ''}
             </Text>
           </View>
+
+          {analysisResult.is_separable &&
+            analysisResult.prefix_part &&
+            analysisResult.root_verb && (
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>Parts:</Text>
+                <Text style={styles.resultValue}>
+                  <Text style={styles.prefixText}>
+                    {analysisResult.prefix_part}
+                  </Text>{' '}
+                  + {analysisResult.root_verb}
+                </Text>
+              </View>
+            )}
 
           <View style={styles.resultSection}>
             <Text style={styles.resultLabel}>English:</Text>
@@ -384,5 +415,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginLeft: 16,
     marginTop: 8,
+  },
+  prefixText: {
+    fontWeight: 'bold',
+    color: '#dc2626', // Red color to highlight the separable prefix
   },
 })

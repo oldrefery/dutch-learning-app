@@ -72,7 +72,6 @@ npm run deploy:constants
 # Deploy specific functions
 npm run deploy:gemini      # gemini-handler only
 npm run deploy:images      # get-multiple-images only
-npm run deploy:migration   # data-migration only
 npm run deploy:edge-functions  # All functions (no notification)
 ```
 

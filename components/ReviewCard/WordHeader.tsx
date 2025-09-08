@@ -14,11 +14,72 @@ export function WordHeader({
   isPlayingAudio,
   onPlayPronunciation,
 }: WordHeaderProps) {
+  const detectSeparableVerbFallback = () => {
+    const separablePrefixes = [
+      'aan',
+      'af',
+      'bij',
+      'door',
+      'in',
+      'mee',
+      'na',
+      'om',
+      'onder',
+      'op',
+      'over',
+      'toe',
+      'uit',
+      'vast',
+      'weg',
+      'voorbij',
+      'terug',
+      'voor',
+    ]
+    const lemma = currentWord.dutch_lemma
+
+    for (const prefix of separablePrefixes) {
+      if (lemma.startsWith(prefix)) {
+        const root = lemma.substring(prefix.length)
+        if (root.length >= 3) {
+          return { prefix, root }
+        }
+      }
+    }
+    return null
+  }
+
+  const getSeparableVerbInfo = () => {
+    // Use database data first
+    if (
+      currentWord.is_separable &&
+      currentWord.prefix_part &&
+      currentWord.root_verb
+    ) {
+      return {
+        prefix: currentWord.prefix_part,
+        root: currentWord.root_verb,
+      }
+    }
+
+    // Frontend fallback for old words
+    if (currentWord.part_of_speech === 'verb') {
+      return detectSeparableVerbFallback()
+    }
+
+    return null
+  }
+
   const buildMetadataText = () => {
     const parts = [currentWord.part_of_speech]
 
     if (currentWord.is_irregular) parts.push('irregular')
     if (currentWord.is_reflexive) parts.push('reflexive')
+
+    const separableInfo = getSeparableVerbInfo()
+    if (separableInfo) {
+      parts.push(`separable (${separableInfo.prefix} + ${separableInfo.root})`)
+    }
+
     if (currentWord.is_expression) {
       parts.push(currentWord.expression_type || 'expression')
     }

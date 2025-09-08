@@ -9,6 +9,52 @@ import {
   generateImageHash,
 } from '../_shared/constants.ts'
 
+// Separable verb prefixes for fallback detection
+const SEPARABLE_PREFIXES = [
+  'aan',
+  'af',
+  'bij',
+  'door',
+  'in',
+  'mee',
+  'na',
+  'om',
+  'onder',
+  'op',
+  'over',
+  'toe',
+  'uit',
+  'vast',
+  'weg',
+  'voorbij',
+  'terug',
+  'voor',
+  'na',
+]
+
+// Helper function to detect separable verbs if Gemini missed them
+function analyzeSeparableVerb(lemma: string, partOfSpeech: string) {
+  if (partOfSpeech !== 'verb') {
+    return { is_separable: false, prefix_part: null, root_verb: null }
+  }
+
+  for (const prefix of SEPARABLE_PREFIXES) {
+    if (lemma.startsWith(prefix)) {
+      const rootVerb = lemma.substring(prefix.length)
+      // Check if root verb is reasonable (at least 3 chars, common verb patterns)
+      if (rootVerb.length >= 3) {
+        return {
+          is_separable: true,
+          prefix_part: prefix,
+          root_verb: rootVerb,
+        }
+      }
+    }
+  }
+
+  return { is_separable: false, prefix_part: null, root_verb: null }
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
@@ -23,6 +69,9 @@ interface WordAnalysisResponse {
   lemma: string
   part_of_speech: string
   is_irregular?: boolean
+  is_separable?: boolean
+  prefix_part?: string
+  root_verb?: string
   article?: 'de' | 'het' // For nouns only
   translations: {
     en: string[]
@@ -265,6 +314,9 @@ Analyze the Dutch word "${word}" and provide a JSON response with the following 
   "lemma": "base form of the word (infinitive for verbs, singular for nouns)",
   "part_of_speech": "verb|noun|adjective|adverb|preposition|conjunction|interjection",
   "is_irregular": true/false (only for verbs),
+  "is_separable": true/false (only for verbs with separable prefixes),
+  "prefix_part": "separable prefix (if applicable, e.g., 'op' from 'opgeven')",
+  "root_verb": "root verb part (if applicable, e.g., 'geven' from 'opgeven')",
   "article": "de|het" (MANDATORY for nouns, omit for other parts of speech),
   "translations": {
     "en": ["primary English translation", "alternative translation"],
@@ -285,6 +337,14 @@ IMPORTANT INSTRUCTIONS:
   2. Past perfect/perfectum (ik heb/ben [ge-verb]) - MANDATORY for verbs
   3. Future tense (ik ga [verb])
   4. Past simple (if commonly used)
+- For SEPARABLE VERBS (scheidbare werkwoorden), CRITICAL ANALYSIS:
+  1. CAREFULLY check if the verb begins with a separable prefix
+  2. Common separable prefixes: aan, af, bij, door, in, mee, na, om, onder, op, over, toe, uit, vast, weg, voorbij, terug
+  3. EXAMPLES: uitgaan=uit+gaan, meenemen=mee+nemen, opgeven=op+geven, aankomen=aan+komen, toegeven=toe+geven
+  4. If the verb starts with any of these prefixes, set is_separable=true
+  5. prefix_part: the separable part (e.g., "uit" from "uitgaan", "mee" from "meenemen")
+  6. root_verb: the base verb (e.g., "gaan" from "uitgaan", "nemen" from "meenemen")  
+  7. Show examples with separated forms: "Ik ga uit" (present), "Ik ben uitgegaan" (past perfect)
 - For NOUNS, MANDATORY requirements:
   1. ALWAYS specify the correct article: "de" or "het" 
   2. Provide examples with definite article: "de/het [noun]"
@@ -294,11 +354,22 @@ IMPORTANT INSTRUCTIONS:
 - Include 4-5 practical example sentences showing different forms
 - Respond only with valid JSON, no additional text.
 
-Example for verb "wandelen":
+Example for regular verb "wandelen":
 - "Ik wandel graag in het park" (present)
 - "Ik heb gisteren lang gewandeld" (past perfect - REQUIRED)
 - "We gaan morgen wandelen" (future)  
 - "Hij wandelde elke dag" (past simple)
+
+Example for separable verb "uitgaan" (uit + gaan):
+- "Ik ga uit" (present - prefix separated)
+- "Ik ben uitgegaan" (past perfect - prefix attached) 
+- "We gaan uitgaan" (future - prefix attached)
+- "Hij ging uit gisteren" (past simple - prefix separated)
+
+Example for separable verb "meenemen" (mee + nemen):
+- "Ik neem het mee" (present - prefix separated)
+- "Ik heb het meegenomen" (past perfect - prefix attached)
+- "We gaan het meenemen" (future - prefix attached)
 
 Example for noun "huis":
 - "Het huis is groot" (definite article + noun)
@@ -378,11 +449,26 @@ Example for noun "huis":
       )
     }
 
+    // Apply fallback separable verb detection if Gemini missed it
+    const separableInfo = analysisResult.is_separable
+      ? {
+          is_separable: analysisResult.is_separable,
+          prefix_part: analysisResult.prefix_part,
+          root_verb: analysisResult.root_verb,
+        }
+      : analyzeSeparableVerb(
+          analysisResult.lemma,
+          analysisResult.part_of_speech
+        )
+
     // Prepare final response
     const response: WordAnalysisResponse = {
       lemma: analysisResult.lemma,
       part_of_speech: analysisResult.part_of_speech,
       is_irregular: analysisResult.is_irregular || false,
+      is_separable: separableInfo.is_separable,
+      prefix_part: separableInfo.prefix_part,
+      root_verb: separableInfo.root_verb,
       article: analysisResult.article, // Include article for nouns
       translations: analysisResult.translations,
       examples: analysisResult.examples || [],

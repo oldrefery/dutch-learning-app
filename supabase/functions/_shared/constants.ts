@@ -13,7 +13,6 @@
  *   npm run deploy:constants    # Deploy all Edge Functions
  *   npm run deploy:gemini       # Deploy gemini-handler only
  *   npm run deploy:images       # Deploy get-multiple-images only
- *   npm run deploy:migration    # Deploy data-migration only
  *
  * Git hooks will automatically remind you about this when committing changes.
  */

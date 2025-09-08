@@ -141,6 +141,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         dutch_original: word,
         part_of_speech: analysis.part_of_speech,
         is_irregular: analysis.is_irregular || false,
+        is_separable: analysis.is_separable || false,
+        prefix_part: analysis.prefix_part || null,
+        root_verb: analysis.root_verb || null,
         article: analysis.article || null, // Include article for nouns
         translations: analysis.translations,
         examples: analysis.examples,

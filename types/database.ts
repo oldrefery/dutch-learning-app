@@ -35,6 +35,9 @@ export interface Word {
   is_reflexive: boolean
   is_expression: boolean
   expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound'
+  is_separable: boolean // True for separable verbs (opgeven, aankomen)
+  prefix_part: string | null // The prefix part (op, aan, uit, etc.)
+  root_verb: string | null // The root verb part (geven, komen, gaan)
   article: 'de' | 'het' | null // Article for nouns
   translations: WordTranslations
   examples: WordExample[] | null
@@ -58,6 +61,9 @@ export interface GeminiWordAnalysis {
   is_reflexive?: boolean
   is_expression?: boolean
   expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound'
+  is_separable?: boolean
+  prefix_part?: string
+  root_verb?: string
   article?: 'de' | 'het' // Article for nouns
   translations: WordTranslations
   examples: WordExample[]
