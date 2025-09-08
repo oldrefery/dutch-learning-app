@@ -144,8 +144,6 @@ export const wordService = {
     // Remove fields that don't exist in the database schema
     const { lemma, ...cleanWordData } = wordToInsert
 
-    console.log('Word data to insert:', cleanWordData)
-
     const { data, error } = await supabase
       .from('words')
       .insert(cleanWordData)

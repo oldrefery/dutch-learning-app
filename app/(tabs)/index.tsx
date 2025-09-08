@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   StyleSheet,
   FlatList,
@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message'
 import { router } from 'expo-router'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
+import CreateCollectionModal from '@/components/CreateCollectionModal'
 import type { Collection, Word } from '@/types/database'
 
 // Constants to avoid string duplication
@@ -109,6 +110,7 @@ function StatsCard() {
 }
 
 export default function CollectionsScreen() {
+  const [showCreateModal, setShowCreateModal] = useState(false)
   const { collections, collectionsLoading, words, error, clearError } =
     useAppStore()
 
@@ -179,7 +181,15 @@ export default function CollectionsScreen() {
       </View>
 
       <View style={styles.collectionsSection}>
-        <Text style={styles.sectionTitle}>My Collections</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>My Collections</Text>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setShowCreateModal(true)}
+          >
+            <Text style={styles.addButtonText}>+ Add</Text>
+          </TouchableOpacity>
+        </View>
         {collectionsLoading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#3b82f6" />
@@ -208,6 +218,14 @@ export default function CollectionsScreen() {
           />
         )}
       </View>
+
+      <CreateCollectionModal
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCollectionCreated={() => {
+          // Collection will be automatically added to the list via the store
+        }}
+      />
     </View>
   )
 }
@@ -376,5 +394,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6b7280',
     textAlign: 'center',
+  },
+  // Section header
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  addButton: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
   },
 })

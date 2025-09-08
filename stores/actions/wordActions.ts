@@ -26,7 +26,7 @@ export const createWordActions = (set: any, get: any) => ({
     }
   },
 
-  addNewWord: async (word: string) => {
+  addNewWord: async (word: string, collectionId?: string) => {
     try {
       const userId = get().currentUserId
       if (!userId) {
@@ -36,11 +36,14 @@ export const createWordActions = (set: any, get: any) => ({
       // First analyze the word
       const analysis = await wordService.analyzeWord(word)
 
-      console.log('Word analysis result:', analysis)
-
       // Check if analysis was successful
       if (!analysis || typeof analysis !== 'object') {
         throw new Error('Failed to analyze word - invalid response')
+      }
+
+      // Add collection_id to analysis if provided
+      if (collectionId) {
+        analysis.collection_id = collectionId
       }
 
       // Then add it to the database

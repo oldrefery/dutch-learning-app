@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   StyleSheet,
   TextInput,
@@ -13,6 +13,9 @@ import Toast from 'react-native-toast-message'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
 import ImageSelector from '@/components/ImageSelector'
+import CollectionSelector from '@/components/CollectionSelector'
+import { useCollections } from '@/hooks/useCollections'
+import type { Collection } from '@/types/database'
 
 interface AnalysisResult {
   lemma: string
@@ -46,8 +49,18 @@ export default function AddWordScreen() {
   )
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
   const [showImageSelector, setShowImageSelector] = useState(false)
+  const [selectedCollection, setSelectedCollection] =
+    useState<Collection | null>(null)
 
   const { addNewWord, clearError } = useAppStore()
+  const { collections } = useCollections()
+
+  // Auto-select first collection if available and none selected
+  useEffect(() => {
+    if (collections.length > 0 && !selectedCollection) {
+      setSelectedCollection(collections[0])
+    }
+  }, [collections, selectedCollection])
 
   const playPronunciation = async (ttsUrl: string) => {
     if (isPlayingAudio) return
@@ -91,7 +104,10 @@ export default function AddWordScreen() {
 
     try {
       // Use real AI analysis from the store
-      const newWord = await addNewWord(inputWord.trim())
+      const newWord = await addNewWord(
+        inputWord.trim(),
+        selectedCollection?.collection_id
+      )
 
       // Convert to display format
       const result: AnalysisResult = {
@@ -280,6 +296,17 @@ export default function AddWordScreen() {
           autoCapitalize="none"
           autoCorrect={false}
         />
+
+        <View style={styles.collectionSection}>
+          <Text style={styles.collectionLabel}>
+            Add to Collection (Optional)
+          </Text>
+          <CollectionSelector
+            selectedCollectionId={selectedCollection?.collection_id || null}
+            onCollectionSelect={setSelectedCollection}
+            placeholder="Select a collection..."
+          />
+        </View>
 
         <TouchableOpacity
           style={[styles.analyzeButton, isAnalyzing && styles.buttonDisabled]}
@@ -471,5 +498,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#3b82f6',
     fontWeight: '500',
+  },
+  // Collection section
+  collectionSection: {
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  collectionLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 8,
   },
 })
