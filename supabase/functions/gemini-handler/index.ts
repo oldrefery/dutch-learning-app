@@ -26,6 +26,65 @@ interface WordAnalysisResponse {
     ru?: string
   }>
   tts_url: string
+  image_url?: string // Associated image for visual learning
+}
+
+// Helper function to get relevant image from Unsplash API
+async function getImageForWord(
+  englishTranslation: string,
+  partOfSpeech: string
+): Promise<string | null> {
+  try {
+    // Get Unsplash API key from environment (if configured)
+    const unsplashKey = Deno.env.get('UNSPLASH_ACCESS_KEY')
+
+    if (!unsplashKey) {
+      // Fallback to Lorem Picsum if no Unsplash key
+      const searchTerm = englishTranslation.toLowerCase()
+      let hash = 0
+      for (let i = 0; i < searchTerm.length; i++) {
+        const char = searchTerm.charCodeAt(i)
+        hash = (hash << 5) - hash + char
+        hash = hash & hash
+      }
+      const imageId = (Math.abs(hash) % 1000) + 1
+      return `https://picsum.photos/600/400?random=${imageId}`
+    }
+
+    // Use official Unsplash API
+    const searchTerm = englishTranslation.toLowerCase()
+    const apiUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchTerm)}&client_id=${unsplashKey}&per_page=1&orientation=landscape`
+
+    const response = await fetch(apiUrl)
+    if (!response.ok) {
+      throw new Error(`Unsplash API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    if (data.results && data.results.length > 0) {
+      const photo = data.results[0]
+      // Return the regular size image URL
+      return photo.urls.regular || photo.urls.small
+    }
+
+    // Fallback to Lorem Picsum if no results
+    const hash = englishTranslation.split('').reduce((a, b) => {
+      a = (a << 5) - a + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    const imageId = (Math.abs(hash) % 1000) + 1
+    return `https://picsum.photos/600/400?random=${imageId}`
+  } catch (error) {
+    console.warn('Failed to fetch image:', error)
+    // Always return a fallback image
+    const hash = englishTranslation.split('').reduce((a, b) => {
+      a = (a << 5) - a + b.charCodeAt(0)
+      return a & a
+    }, 0)
+    const imageId = (Math.abs(hash) % 1000) + 1
+    return `https://picsum.photos/600/400?random=${imageId}`
+  }
 }
 
 serve(async req => {
@@ -159,6 +218,16 @@ Example for noun "huis":
     const ttsText = encodeURIComponent(analysisResult.lemma)
     const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=nl&client=tw-ob&q=${ttsText}`
 
+    // Get associated image for visual learning
+    // Use the primary English translation and part of speech for smart image search
+    let imageUrl: string | null = null
+    if (analysisResult.translations?.en?.[0]) {
+      imageUrl = await getImageForWord(
+        analysisResult.translations.en[0],
+        analysisResult.part_of_speech
+      )
+    }
+
     // Prepare final response
     const response: WordAnalysisResponse = {
       lemma: analysisResult.lemma,
@@ -168,6 +237,7 @@ Example for noun "huis":
       translations: analysisResult.translations,
       examples: analysisResult.examples || [],
       tts_url: ttsUrl,
+      image_url: imageUrl, // Include associated image
     }
 
     return new Response(JSON.stringify(response), {

@@ -145,6 +145,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         translations: analysis.translations,
         examples: analysis.examples,
         tts_url: analysis.tts_url,
+        image_url: analysis.image_url || null, // Include associated image
         // Initial SRS values
         interval_days: 1,
         repetition_count: 0,

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Image,
 } from 'react-native'
 import { createAudioPlayer } from 'expo-audio'
 import { Ionicons } from '@expo/vector-icons'
@@ -27,6 +28,7 @@ interface AnalysisResult {
     ru?: string
   }[]
   tts_url?: string
+  image_url?: string // Associated image for visual learning
 }
 
 export default function AddWordScreen() {
@@ -157,6 +159,7 @@ export default function AddWordScreen() {
         translations: newWord.translations,
         examples: newWord.examples,
         tts_url: newWord.tts_url,
+        image_url: newWord.image_url || undefined, // Include associated image
       }
 
       setAnalysisResult(result)
@@ -236,6 +239,17 @@ export default function AddWordScreen() {
                   • {translation}
                 </Text>
               ))}
+            </View>
+          )}
+
+          {analysisResult.image_url && (
+            <View style={styles.resultSection}>
+              <Text style={styles.resultLabel}>Visual:</Text>
+              <Image
+                source={{ uri: analysisResult.image_url }}
+                style={styles.associationImage}
+                resizeMode="cover"
+              />
             </View>
           )}
 
@@ -428,5 +442,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  associationImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginLeft: 16,
+    marginTop: 8,
   },
 })

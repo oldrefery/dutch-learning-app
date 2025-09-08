@@ -32,6 +32,9 @@ export interface Word {
   dutch_original: string | null
   part_of_speech: string | null
   is_irregular: boolean
+  is_reflexive: boolean
+  is_expression: boolean
+  expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound'
   article: 'de' | 'het' | null // Article for nouns
   translations: WordTranslations
   examples: WordExample[] | null
@@ -52,10 +55,14 @@ export interface GeminiWordAnalysis {
   lemma: string
   part_of_speech: string
   is_irregular?: boolean
+  is_reflexive?: boolean
+  is_expression?: boolean
+  expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound'
   article?: 'de' | 'het' // Article for nouns
   translations: WordTranslations
   examples: WordExample[]
   tts_url: string
+  image_url?: string // Associated image for visual learning
 }
 
 // SRS Assessment types

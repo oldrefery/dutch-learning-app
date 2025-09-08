@@ -58,6 +58,12 @@ This document outlines the development of the Dutch Learning App in distinct pha
 
 **Goal:** Add more varied and engaging ways to practice vocabulary.
 
+- **Data Migration System:** 🔄 IN PROGRESS
+  - **Migration Function:** Create a Supabase Edge Function for updating existing words
+  - **Article Migration:** Add Dutch articles (de/het) to existing nouns in database
+  - **Image Migration:** Add associated images to existing words using Unsplash API
+  - **Admin Endpoint:** Create secure endpoint for running data migrations
+  - **Extensible Framework:** Design system to handle future feature additions
 - **New Practice Modes:**
   - **Typing Quiz:** Show the translation and ask the user to type the Dutch word.
   - **Listening Quiz:** Play the audio and ask the user to type what they hear.

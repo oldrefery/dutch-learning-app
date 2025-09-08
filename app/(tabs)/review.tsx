@@ -4,6 +4,8 @@ import {
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
+  Image,
+  ScrollView,
 } from 'react-native'
 import { createAudioPlayer } from 'expo-audio'
 import { Ionicons } from '@expo/vector-icons'
@@ -220,60 +222,102 @@ export default function ReviewScreen() {
               <Text style={styles.tapHint}>Tap to see translation</Text>
             </View>
           ) : (
-            // Back of card - Translations and examples
-            <View style={styles.cardBack}>
-              <View style={styles.wordWithPronunciationSmall}>
-                <Text style={styles.dutchWordSmall}>
-                  {currentWord.article ? `${currentWord.article} ` : ''}
-                  {currentWord.dutch_lemma}
-                </Text>
-                {currentWord.tts_url && (
-                  <TouchableOpacity
-                    style={styles.pronunciationButtonSmall}
-                    onPress={() => playPronunciation(currentWord.tts_url!)}
-                    disabled={isPlayingAudio}
-                  >
-                    <Ionicons
-                      name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
-                      size={18}
-                      color="#2563eb"
-                    />
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              <View style={styles.translationsSection}>
-                <Text style={styles.sectionTitle}>English:</Text>
-                {currentWord.translations.en.map((translation, index) => (
-                  <Text key={index} style={styles.translationText}>
-                    • {translation}
+            // Back of card - Full detailed information
+            <ScrollView
+              style={styles.cardBack}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.wordHeader}>
+                <View style={styles.wordWithPronunciationSmall}>
+                  <Text style={styles.dutchWordSmall}>
+                    {currentWord.article ? `${currentWord.article} ` : ''}
+                    {currentWord.dutch_lemma}
                   </Text>
-                ))}
+                  {currentWord.tts_url && (
+                    <TouchableOpacity
+                      style={styles.pronunciationButtonSmall}
+                      onPress={() => playPronunciation(currentWord.tts_url!)}
+                      disabled={isPlayingAudio}
+                    >
+                      <Ionicons
+                        name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
+                        size={18}
+                        color="#2563eb"
+                      />
+                    </TouchableOpacity>
+                  )}
+                </View>
 
-                {currentWord.translations.ru && (
-                  <>
-                    <Text style={styles.sectionTitle}>Russian:</Text>
-                    {currentWord.translations.ru.map((translation, index) => (
-                      <Text key={index} style={styles.translationText}>
-                        • {translation}
-                      </Text>
-                    ))}
-                  </>
-                )}
-              </View>
-
-              {currentWord.examples && currentWord.examples.length > 0 && (
-                <View style={styles.exampleSection}>
-                  <Text style={styles.sectionTitle}>Example:</Text>
-                  <Text style={styles.exampleDutch}>
-                    {currentWord.examples[0].nl}
-                  </Text>
-                  <Text style={styles.exampleTranslation}>
-                    {currentWord.examples[0].en}
+                {/* Word metadata */}
+                <View style={styles.metadataRow}>
+                  <Text style={styles.metadataText}>
+                    {currentWord.part_of_speech}
+                    {currentWord.is_irregular ? ' • irregular' : ''}
+                    {currentWord.is_reflexive ? ' • reflexive' : ''}
+                    {currentWord.is_expression
+                      ? ` • ${currentWord.expression_type || 'expression'}`
+                      : ''}
                   </Text>
                 </View>
+              </View>
+
+              {/* Translations */}
+              <View style={styles.translationsSection}>
+                <Text style={styles.sectionTitle}>💬 Translations</Text>
+                <View style={styles.translationGroup}>
+                  <Text style={styles.languageLabel}>🇬🇧 English:</Text>
+                  {currentWord.translations.en.map((translation, index) => (
+                    <Text key={index} style={styles.translationText}>
+                      • {translation}
+                    </Text>
+                  ))}
+                </View>
+
+                {currentWord.translations.ru &&
+                  currentWord.translations.ru.length > 0 && (
+                    <View style={styles.translationGroup}>
+                      <Text style={styles.languageLabel}>🇷🇺 Russian:</Text>
+                      {currentWord.translations.ru.map((translation, index) => (
+                        <Text key={index} style={styles.translationText}>
+                          • {translation}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
+              </View>
+
+              {/* Image */}
+              {currentWord.image_url && (
+                <View style={styles.imageSection}>
+                  <Text style={styles.sectionTitle}>🖼️ Visual</Text>
+                  <Image
+                    source={{ uri: currentWord.image_url }}
+                    style={styles.wordImage}
+                    resizeMode="cover"
+                  />
+                </View>
               )}
-            </View>
+
+              {/* Examples */}
+              {currentWord.examples && currentWord.examples.length > 0 && (
+                <View style={styles.examplesSection}>
+                  <Text style={styles.sectionTitle}>📝 Examples</Text>
+                  {currentWord.examples.map((example, index) => (
+                    <View key={index} style={styles.exampleItem}>
+                      <Text style={styles.exampleDutch}>{example.nl}</Text>
+                      <Text style={styles.exampleTranslation}>
+                        🇬🇧 {example.en}
+                      </Text>
+                      {example.ru && (
+                        <Text style={styles.exampleTranslation}>
+                          🇷🇺 {example.ru}
+                        </Text>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              )}
+            </ScrollView>
           )}
         </View>
       </TouchableOpacity>
@@ -366,7 +410,7 @@ const styles = StyleSheet.create({
   },
   flashcard: {
     width: width - 32,
-    height: 400,
+    minHeight: 500,
     marginBottom: 20,
   },
   cardContent: {
@@ -390,7 +434,6 @@ const styles = StyleSheet.create({
   },
   cardBack: {
     flex: 1,
-    justifyContent: 'space-between',
   },
   dutchWord: {
     fontSize: 32,
@@ -442,35 +485,70 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
   },
+  wordHeader: {
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  metadataRow: {
+    marginTop: 8,
+  },
+  metadataText: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
   translationsSection: {
-    flex: 1,
+    marginBottom: 16,
+  },
+  translationGroup: {
+    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#374151',
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'left',
+  },
+  languageLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4b5563',
+    marginBottom: 6,
   },
   translationText: {
     fontSize: 15,
     color: '#1f2937',
     marginBottom: 4,
-    marginLeft: 8,
+    marginLeft: 16,
+    lineHeight: 20,
   },
-  exampleSection: {
-    backgroundColor: '#f3f4f6',
-    padding: 16,
+  examplesSection: {
+    marginBottom: 16,
+  },
+  exampleItem: {
+    backgroundColor: '#f8fafc',
+    padding: 12,
     borderRadius: 8,
+    marginBottom: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#3b82f6',
   },
   exampleDutch: {
     fontSize: 15,
     fontWeight: '600',
     color: '#1f2937',
-    marginBottom: 4,
+    marginBottom: 6,
+    lineHeight: 20,
   },
   exampleTranslation: {
     fontSize: 14,
     color: '#6b7280',
+    marginBottom: 2,
+    lineHeight: 18,
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -592,5 +670,14 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '500',
+  },
+  imageSection: {
+    marginBottom: 16,
+  },
+  wordImage: {
+    width: '100%',
+    height: 140,
+    borderRadius: 8,
+    marginTop: 8,
   },
 })
