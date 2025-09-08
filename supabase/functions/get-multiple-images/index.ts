@@ -23,6 +23,7 @@ interface GetImagesRequest {
     ru?: string
   }>
   count?: number
+  offset?: number
 }
 
 interface ImageOption {
@@ -39,8 +40,7 @@ function createSmartSearchQuery(
   const queries = []
   const baseTranslation = englishTranslation.toLowerCase()
 
-  // Base query
-  queries.push(baseTranslation)
+  // Don't add base query first - we'll add it at the end if no specific queries are found
 
   // Smart queries based on part of speech
   switch (partOfSpeech) {
@@ -64,6 +64,61 @@ function createSmartSearchQuery(
         queries.push('shopping buying', 'purchase store', 'buying goods')
       } else if (baseTranslation.includes('eat')) {
         queries.push('eating food', 'person eating', 'dining meal')
+      } else if (baseTranslation.includes('iron')) {
+        queries.push(
+          'ironing clothes',
+          'person ironing',
+          'ironing board',
+          'clothes iron',
+          'ironing shirt',
+          'pressing clothes'
+        )
+      } else if (
+        baseTranslation.includes('wash') ||
+        baseTranslation.includes('clean')
+      ) {
+        queries.push(
+          'washing clothes',
+          'laundry',
+          'person washing',
+          'cleaning house',
+          'household cleaning'
+        )
+      } else if (
+        baseTranslation.includes('cook') ||
+        baseTranslation.includes('bake')
+      ) {
+        queries.push(
+          'cooking food',
+          'person cooking',
+          'kitchen cooking',
+          'baking bread',
+          'chef cooking'
+        )
+      } else if (baseTranslation.includes('read')) {
+        queries.push(
+          'person reading',
+          'reading book',
+          'reading newspaper',
+          'student reading',
+          'library reading'
+        )
+      } else if (baseTranslation.includes('write')) {
+        queries.push(
+          'person writing',
+          'writing paper',
+          'handwriting',
+          'student writing',
+          'office writing'
+        )
+      } else if (baseTranslation.includes('sleep')) {
+        queries.push(
+          'person sleeping',
+          'bedroom',
+          'sleeping in bed',
+          'peaceful sleep',
+          'bed sleep'
+        )
       } else {
         queries.push(`${baseTranslation} action`, `person ${baseTranslation}`)
       }
@@ -96,20 +151,70 @@ function createSmartSearchQuery(
 
   // Add context from examples if available
   if (examples && examples.length > 0) {
-    const firstExample = examples[0].en.toLowerCase()
-    // Extract key words from example
-    const contextWords = firstExample
-      .split(' ')
-      .filter(
-        word =>
-          word.length > SEARCH_CONFIG.MIN_CONTEXT_WORD_LENGTH &&
-          !SEARCH_CONFIG.STOP_WORDS.includes(word)
-      )
+    // For verbs, look for more specific context from examples
+    if (partOfSpeech === 'verb') {
+      for (const example of examples.slice(0, 2)) {
+        // Check first 2 examples
+        const exampleText = example.en.toLowerCase()
 
-    if (contextWords.length > 0) {
-      const contextWord = contextWords[0]
-      queries.push(`${baseTranslation} ${contextWord}`)
+        // Look for specific objects/contexts in examples
+        if (
+          exampleText.includes('clothes') ||
+          exampleText.includes('shirt') ||
+          exampleText.includes('dress')
+        ) {
+          queries.push('ironing clothes', 'pressing clothes', 'clothes iron')
+        }
+        if (
+          exampleText.includes('food') ||
+          exampleText.includes('meal') ||
+          exampleText.includes('dinner')
+        ) {
+          queries.push('cooking food', 'preparing meal', 'kitchen cooking')
+        }
+        if (
+          exampleText.includes('book') ||
+          exampleText.includes('newspaper') ||
+          exampleText.includes('magazine')
+        ) {
+          queries.push('reading book', 'person reading', 'library reading')
+        }
+        if (
+          exampleText.includes('car') ||
+          exampleText.includes('vehicle') ||
+          exampleText.includes('driving')
+        ) {
+          queries.push('driving car', 'person driving', 'car driving')
+        }
+        if (
+          exampleText.includes('house') ||
+          exampleText.includes('home') ||
+          exampleText.includes('room')
+        ) {
+          queries.push('household activity', 'home activity', 'domestic work')
+        }
+      }
+    } else {
+      // For other parts of speech, use the original logic
+      const firstExample = examples[0].en.toLowerCase()
+      const contextWords = firstExample
+        .split(' ')
+        .filter(
+          word =>
+            word.length > SEARCH_CONFIG.MIN_CONTEXT_WORD_LENGTH &&
+            !SEARCH_CONFIG.STOP_WORDS.includes(word)
+        )
+
+      if (contextWords.length > 0) {
+        const contextWord = contextWords[0]
+        queries.push(`${baseTranslation} ${contextWord}`)
+      }
     }
+  }
+
+  // Add base query at the end if no specific queries were found
+  if (queries.length === 0) {
+    queries.push(baseTranslation)
   }
 
   return queries
@@ -120,7 +225,8 @@ async function getMultipleImagesForWord(
   englishTranslation: string,
   partOfSpeech: string,
   examples?: Array<{ nl: string; en: string; ru?: string }>,
-  count: number = IMAGE_CONFIG.DEFAULT_QUERY_COUNT
+  count: number = IMAGE_CONFIG.DEFAULT_QUERY_COUNT,
+  offset: number = 0
 ): Promise<Array<{ url: string; alt: string }>> {
   try {
     const unsplashKey = Deno.env.get('UNSPLASH_ACCESS_KEY')
@@ -131,11 +237,11 @@ async function getMultipleImagesForWord(
       for (let i = 0; i < count; i++) {
         const imageId = generateImageHash(
           englishTranslation.toLowerCase(),
-          i * 100
+          (offset + i) * 100
         )
         images.push({
           url: createPicsumUrl(imageId),
-          alt: `${englishTranslation} (option ${i + 1})`,
+          alt: `${englishTranslation} (option ${offset + i + 1})`,
         })
       }
       return images
@@ -149,12 +255,17 @@ async function getMultipleImagesForWord(
     )
     const images = []
 
-    // Try different search queries until we have enough images
-    for (const query of searchQueries) {
+    // For pagination (offset > 0), use only the first query with proper page calculation
+    // For initial load (offset = 0), try multiple queries
+    const queriesToUse = offset > 0 ? [searchQueries[0]] : searchQueries
+
+    for (const query of queriesToUse) {
       if (images.length >= count) break
 
       try {
-        const apiUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${unsplashKey}&per_page=${count}&orientation=${IMAGE_CONFIG.UNSPLASH.ORIENTATION}`
+        // Calculate page for Unsplash API (1-based)
+        const page = offset > 0 ? Math.floor(offset / count) + 1 : 1
+        const apiUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${unsplashKey}&per_page=${count}&page=${page}&orientation=${IMAGE_CONFIG.UNSPLASH.ORIENTATION}`
 
         const response = await fetch(apiUrl)
         if (!response.ok) continue
@@ -219,6 +330,7 @@ serve(async req => {
       partOfSpeech,
       examples,
       count = IMAGE_CONFIG.DEFAULT_QUERY_COUNT,
+      offset = 0,
     }: GetImagesRequest = await req.json()
 
     if (!englishTranslation || !partOfSpeech) {
@@ -237,7 +349,8 @@ serve(async req => {
       englishTranslation,
       partOfSpeech,
       examples,
-      count
+      count,
+      offset
     )
 
     return new Response(JSON.stringify({ images }), {

@@ -38,6 +38,7 @@ interface AppState {
   fetchWords: () => Promise<void>
   addNewWord: (word: string) => Promise<Word>
   updateWordAfterReview: (wordId: string, assessment: any) => Promise<void>
+  deleteWord: (wordId: string) => Promise<void>
 
   // Collection actions
   fetchCollections: () => Promise<void>
@@ -106,7 +107,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   addNewWord: async (word: string) => {
-    const { currentUserId, words } = get()
+    const { currentUserId, words, collections } = get()
     if (!currentUserId) throw new Error('No user ID')
 
     // FIRST CHECK: Exact word match (before AI call to save API requests)
@@ -121,6 +122,18 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
 
     try {
+      // Ensure we have a collection to add the word to
+      let targetCollectionId = null
+      if (collections.length === 0) {
+        // Create default collection if none exists
+        const defaultCollection =
+          await get().createNewCollection('My Dutch Words')
+        targetCollectionId = defaultCollection.collection_id
+      } else {
+        // Use the first (most recent) collection
+        targetCollectionId = collections[0].collection_id
+      }
+
       // Analyze the word with AI to get the lemma
       const analysis = await wordService.analyzeWord(word)
 
@@ -145,6 +158,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         prefix_part: analysis.prefix_part || null,
         root_verb: analysis.root_verb || null,
         article: analysis.article || null, // Include article for nouns
+        collection_id: targetCollectionId, // Add to collection
         translations: analysis.translations,
         examples: analysis.examples,
         tts_url: analysis.tts_url,
@@ -187,6 +201,23 @@ export const useAppStore = create<AppState>((set, get) => ({
     } catch (error) {
       get().setError({
         message: 'Failed to update word progress',
+        details: error,
+      })
+      throw error
+    }
+  },
+
+  deleteWord: async (wordId: string) => {
+    try {
+      await wordService.deleteWord(wordId)
+
+      // Update local state - remove the word
+      set(state => ({
+        words: state.words.filter(word => word.word_id !== wordId),
+      }))
+    } catch (error) {
+      get().setError({
+        message: 'Failed to delete word',
         details: error,
       })
       throw error

@@ -44,7 +44,9 @@ export default function ImageSelector({
 }: ImageSelectorProps) {
   const [images, setImages] = useState<ImageOption[]>([])
   const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [offset, setOffset] = useState(0)
 
   // Load images when modal opens or word changes
   useEffect(() => {
@@ -54,6 +56,7 @@ export default function ImageSelector({
       // Clear images when modal closes to save memory
       setImages([])
       setError(null)
+      setOffset(0)
     }
   }, [visible, englishTranslation, partOfSpeech, loadImages])
 
@@ -61,6 +64,7 @@ export default function ImageSelector({
     setLoading(true)
     setError(null)
     setImages([]) // Clear previous images
+    setOffset(0) // Reset offset
 
     try {
       const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
@@ -96,6 +100,54 @@ export default function ImageSelector({
       setLoading(false)
     }
   }, [englishTranslation, partOfSpeech, examples])
+
+  const loadMoreImages = useCallback(async () => {
+    setLoadingMore(true)
+    setError(null)
+
+    try {
+      const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
+      const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+      const nextOffset = offset + IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/get-multiple-images`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            englishTranslation,
+            partOfSpeech,
+            examples,
+            count: IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT,
+            offset: nextOffset,
+          }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      const data = await response.json()
+      const newImages = data.images || []
+
+      if (newImages.length > 0) {
+        setImages(prevImages => [...prevImages, ...newImages])
+        setOffset(nextOffset)
+      } else {
+        setError('No more images available for this search.')
+      }
+    } catch (err) {
+      console.error('Failed to load more images:', err)
+      setError('Failed to load more images. Please try again.')
+    } finally {
+      setLoadingMore(false)
+    }
+  }, [englishTranslation, partOfSpeech, examples, offset])
 
   const handleImageSelect = (imageUrl: string) => {
     onSelect(imageUrl)
@@ -164,6 +216,26 @@ export default function ImageSelector({
                 </TouchableOpacity>
               ))}
             </View>
+
+            {/* Load More Button */}
+            {images.length > 0 && (
+              <View style={styles.loadMoreContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.loadMoreButton,
+                    loadingMore && styles.loadMoreButtonDisabled,
+                  ]}
+                  onPress={loadMoreImages}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? (
+                    <ActivityIndicator size="small" color="#3b82f6" />
+                  ) : (
+                    <Text style={styles.loadMoreText}>Load More Images</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
           </ScrollView>
         )}
       </View>
@@ -292,5 +364,25 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#10b981',
     marginLeft: 4,
+  },
+  loadMoreContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  loadMoreButton: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  loadMoreButtonDisabled: {
+    backgroundColor: '#9ca3af',
+  },
+  loadMoreText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
   },
 })

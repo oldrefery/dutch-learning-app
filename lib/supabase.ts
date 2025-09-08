@@ -206,6 +206,18 @@ export const wordService = {
 
     return data
   },
+
+  // Delete word
+  async deleteWord(wordId: string) {
+    const { error } = await supabase
+      .from('words')
+      .delete()
+      .eq('word_id', wordId)
+
+    if (error) {
+      throw new Error(`Failed to delete word: ${error.message}`)
+    }
+  },
 }
 
 export const collectionService = {

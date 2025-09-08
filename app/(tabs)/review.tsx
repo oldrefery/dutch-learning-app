@@ -24,6 +24,8 @@ export default function ReviewScreen() {
     reviewLoading,
     startReviewSession,
     submitReviewAssessment,
+    endReviewSession,
+    deleteWord,
     clearError,
     error,
   } = useAppStore()
@@ -84,6 +86,54 @@ export default function ReviewScreen() {
 
   const handleCardFlip = () => {
     setShowAnswer(!showAnswer)
+  }
+
+  const handleDeleteWord = async () => {
+    if (!reviewSession) return
+
+    const currentWord = reviewSession.words[reviewSession.currentIndex]
+    if (!currentWord) return
+
+    try {
+      await deleteWord(currentWord.word_id)
+
+      Toast.show({
+        type: 'success',
+        text1: 'Word Deleted',
+        text2: `"${currentWord.dutch_lemma}" has been removed from your collection`,
+      })
+
+      // If this was the last word, end the session
+      if (reviewSession.words.length <= 1) {
+        endReviewSession()
+      } else {
+        // Move to next word or previous if at the end
+        const nextIndex =
+          reviewSession.currentIndex >= reviewSession.words.length - 1
+            ? reviewSession.currentIndex - 1
+            : reviewSession.currentIndex
+
+        // Update the review session state
+        const { set } = useAppStore.getState()
+        set(state => ({
+          reviewSession: state.reviewSession
+            ? {
+                ...state.reviewSession,
+                currentIndex: nextIndex,
+                words: state.reviewSession.words.filter(
+                  w => w.word_id !== currentWord.word_id
+                ),
+              }
+            : null,
+        }))
+      }
+    } catch {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to delete word. Please try again.',
+      })
+    }
   }
 
   const handleTouchStart = (event: GestureResponderEvent) => {
@@ -283,6 +333,7 @@ export default function ReviewScreen() {
               onChangeImage={() => setShowImageSelector(true)}
               isPlayingAudio={isPlayingAudio}
               onPlayPronunciation={playPronunciation}
+              onDeleteWord={handleDeleteWord}
             />
           )}
         </View>

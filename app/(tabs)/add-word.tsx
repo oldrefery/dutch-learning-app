@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
+import ImageSelector from '@/components/ImageSelector'
 
 interface AnalysisResult {
   lemma: string
@@ -44,6 +45,7 @@ export default function AddWordScreen() {
     null
   )
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
+  const [showImageSelector, setShowImageSelector] = useState(false)
 
   const { addNewWord, clearError } = useAppStore()
 
@@ -132,6 +134,15 @@ export default function AddWordScreen() {
     setAnalysisResult(null)
   }
 
+  const handleImageChange = (newImageUrl: string) => {
+    if (analysisResult) {
+      setAnalysisResult({
+        ...analysisResult,
+        image_url: newImageUrl,
+      })
+    }
+  }
+
   const renderAnalysisResult = () => {
     if (!analysisResult) return null
 
@@ -211,11 +222,20 @@ export default function AddWordScreen() {
           {analysisResult.image_url && (
             <View style={styles.resultSection}>
               <Text style={styles.resultLabel}>Visual:</Text>
-              <Image
-                source={{ uri: analysisResult.image_url }}
-                style={styles.associationImage}
-                resizeMode="cover"
-              />
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{ uri: analysisResult.image_url }}
+                  style={styles.associationImage}
+                  resizeMode="cover"
+                />
+                <TouchableOpacity
+                  style={styles.changeImageButton}
+                  onPress={() => setShowImageSelector(true)}
+                >
+                  <Ionicons name="images" size={16} color="#3b82f6" />
+                  <Text style={styles.changeImageText}>Change Image</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
 
@@ -275,6 +295,18 @@ export default function AddWordScreen() {
       </View>
 
       {renderAnalysisResult()}
+
+      {analysisResult && (
+        <ImageSelector
+          visible={showImageSelector}
+          onClose={() => setShowImageSelector(false)}
+          onSelect={handleImageChange}
+          currentImageUrl={analysisResult.image_url}
+          englishTranslation={analysisResult.translations.en[0] || ''}
+          partOfSpeech={analysisResult.part_of_speech}
+          examples={analysisResult.examples}
+        />
+      )}
     </View>
   )
 }
@@ -419,5 +451,25 @@ const styles = StyleSheet.create({
   prefixText: {
     fontWeight: 'bold',
     color: '#dc2626', // Red color to highlight the separable prefix
+  },
+  imageContainer: {
+    marginLeft: 16,
+    marginTop: 8,
+  },
+  changeImageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginTop: 8,
+    alignSelf: 'flex-start',
+  },
+  changeImageText: {
+    marginLeft: 6,
+    fontSize: 14,
+    color: '#3b82f6',
+    fontWeight: '500',
   },
 })

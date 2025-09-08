@@ -20,4 +20,5 @@ export interface CardBackProps extends ReviewCardProps {
   onChangeImage: () => void
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
+  onDeleteWord: () => void
 }

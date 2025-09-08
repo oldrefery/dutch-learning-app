@@ -309,7 +309,11 @@ serve(async req => {
 
     // Prepare prompt for Gemini
     const prompt = `
-Analyze the Dutch word "${word}" and provide a JSON response with the following structure:
+Analyze the Dutch word "${word}" and provide a comprehensive JSON response. 
+
+CRITICAL: For words with multiple meanings, always list the MOST COMMON/FREQUENT meaning first in translations, and provide examples for ALL major meanings.
+
+JSON structure:
 {
   "lemma": "base form of the word (infinitive for verbs, singular for nouns)",
   "part_of_speech": "verb|noun|adjective|adverb|preposition|conjunction|interjection",
@@ -338,20 +342,31 @@ IMPORTANT INSTRUCTIONS:
   3. Future tense (ik ga [verb])
   4. Past simple (if commonly used)
 - For SEPARABLE VERBS (scheidbare werkwoorden), CRITICAL ANALYSIS:
-  1. CAREFULLY check if the verb begins with a separable prefix
-  2. Common separable prefixes: aan, af, bij, door, in, mee, na, om, onder, op, over, toe, uit, vast, weg, voorbij, terug
-  3. EXAMPLES: uitgaan=uit+gaan, meenemen=mee+nemen, opgeven=op+geven, aankomen=aan+komen, toegeven=toe+geven
-  4. If the verb starts with any of these prefixes, set is_separable=true
-  5. prefix_part: the separable part (e.g., "uit" from "uitgaan", "mee" from "meenemen")
-  6. root_verb: the base verb (e.g., "gaan" from "uitgaan", "nemen" from "meenemen")  
-  7. Show examples with separated forms: "Ik ga uit" (present), "Ik ben uitgegaan" (past perfect)
+  1. ANALYZE ONLY THE EXACT WORD PROVIDED: "${word}"
+  2. Check if THIS EXACT WORD begins with a separable prefix
+  3. Common separable prefixes: aan, af, bij, door, in, mee, na, om, onder, op, over, toe, uit, vast, weg, voorbij, terug
+  4. EXAMPLES: uitgaan=uit+gaan, meenemen=mee+nemen, opgeven=op+geven, aankomen=aan+komen, toegeven=toe+geven
+  5. IMPORTANT: If the word does NOT start with a prefix, set is_separable=false
+  6. Do NOT confuse with similar verbs (e.g., "strijken" ≠ "uitstrijken")
+  7. Only if THIS EXACT WORD starts with a prefix:
+     - prefix_part: the separable part (e.g., "uit" from "uitgaan")
+     - root_verb: the remaining part (e.g., "gaan" from "uitgaan")
+  8. Show examples with separated forms: "Ik ga uit" (present), "Ik ben uitgegaan" (past perfect)
 - For NOUNS, MANDATORY requirements:
   1. ALWAYS specify the correct article: "de" or "het" 
   2. Provide examples with definite article: "de/het [noun]"
   3. Include plural form if applicable: "de [nouns]" 
   4. Show indefinite usage: "een [noun]"
-- Provide 2-3 most common English translations and 1-2 Russian translations
-- Include 4-5 practical example sentences showing different forms
+- For TRANSLATIONS: 
+  1. PRIORITIZE the most frequent/common meaning first
+  2. List 2-3 most common English translations (most frequent first)
+  3. List 1-2 Russian translations (most frequent first)
+  4. For multi-meaning words, ensure primary meaning comes first
+- For EXAMPLES:
+  1. Include 4-6 practical example sentences
+  2. MANDATORY: Show examples for ALL major meanings/uses of the word
+  3. If word has multiple meanings, provide at least 1-2 examples per meaning
+  4. Show different verb forms and tenses
 - Respond only with valid JSON, no additional text.
 
 Example for regular verb "wandelen":
@@ -376,6 +391,16 @@ Example for noun "huis":
 - "Ik woon in een huis" (indefinite article)
 - "De huizen zijn duur" (plural form)
 - "Het mooie huis staat te koop" (with adjective)
+
+Example for multi-meaning verb "uitgeven" (uit + geven):
+TRANSLATIONS (most common first): ["to spend (money)", "to publish", "to issue"]
+EXAMPLES covering ALL meanings:
+- "Ik geef veel geld uit aan eten" (spending money - MOST COMMON)
+- "Hoeveel gaf je uit voor die schoenen?" (spending money)
+- "De uitgever geeft dit boek uit" (publishing)
+- "Het ministerie geeft nieuwe regels uit" (issuing/releasing)
+- "Ik heb al mijn geld uitgegeven" (past perfect - spending)
+- "Dit boek werd vorig jaar uitgegeven" (past - publishing)
 `
 
     // Call Gemini API

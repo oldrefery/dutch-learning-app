@@ -9,7 +9,7 @@ import Toast from 'react-native-toast-message'
 import { router } from 'expo-router'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
-import type { Collection } from '@/types/database'
+import type { Collection, Word } from '@/types/database'
 
 // Constants to avoid string duplication
 const FLEX_JUSTIFY_CONTENT = {
@@ -18,16 +18,30 @@ const FLEX_JUSTIFY_CONTENT = {
 
 interface CollectionCardProps {
   collection: Collection
+  words: Word[]
   onPress: () => void
 }
 
-function CollectionCard({ collection, onPress }: CollectionCardProps) {
-  // For now, we'll use placeholder stats until we implement proper collection stats
+function CollectionCard({ collection, words, onPress }: CollectionCardProps) {
+  // Calculate real stats for this collection
+  const collectionWords = words.filter(
+    word => word.collection_id === collection.collection_id
+  )
+
   const stats = {
-    totalWords: 0,
-    masteredWords: 0,
-    wordsToReview: 0,
-    progressPercentage: 0,
+    totalWords: collectionWords.length,
+    masteredWords: collectionWords.filter(w => w.repetition_count > 2).length,
+    wordsToReview: collectionWords.filter(
+      w => new Date(w.next_review_date) <= new Date()
+    ).length,
+    progressPercentage:
+      collectionWords.length > 0
+        ? Math.round(
+            (collectionWords.filter(w => w.repetition_count > 2).length /
+              collectionWords.length) *
+              100
+          )
+        : 0,
   }
 
   return (
@@ -60,7 +74,7 @@ function StatsCard() {
     wordsForReview: words.filter(
       w => new Date(w.next_review_date) <= new Date()
     ).length,
-    streakDays: 7, // placeholder
+    streakDays: 0, // TODO: implement actual streak calculation
   }
 
   return (
@@ -104,7 +118,7 @@ export default function CollectionsScreen() {
     wordsForReview: words.filter(
       w => new Date(w.next_review_date) <= new Date()
     ).length,
-    streakDays: 7, // placeholder
+    streakDays: 0, // TODO: implement actual streak calculation
   }
 
   const handleCollectionPress = (collection: Collection) => {
@@ -178,6 +192,7 @@ export default function CollectionsScreen() {
             renderItem={({ item }) => (
               <CollectionCard
                 collection={item}
+                words={words}
                 onPress={() => handleCollectionPress(item)}
               />
             )}
