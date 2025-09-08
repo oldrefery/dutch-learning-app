@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
+import { wordService } from '@/lib/supabase'
 import ImageSelector from '@/components/ImageSelector'
 import CollectionSelector from '@/components/CollectionSelector'
 import { useCollections } from '@/hooks/useCollections'
@@ -44,6 +45,7 @@ interface AnalysisResult {
 export default function AddWordScreen() {
   const [inputWord, setInputWord] = useState('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [isAdding, setIsAdding] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
     null
   )
@@ -103,45 +105,87 @@ export default function AddWordScreen() {
     clearError()
 
     try {
-      // Use real AI analysis from the store
-      const newWord = await addNewWord(
-        inputWord.trim(),
-        selectedCollection?.collection_id
-      )
+      // Only analyze the word, don't add it yet
+      const analysis = await wordService.analyzeWord(inputWord.trim())
 
       // Convert to display format
       const result: AnalysisResult = {
-        lemma: newWord.dutch_lemma,
-        part_of_speech: newWord.part_of_speech || 'unknown',
-        is_irregular: newWord.is_irregular,
-        article: newWord.article || undefined, // Include article for nouns
-        is_reflexive: newWord.is_reflexive || false, // Include reflexive info
-        is_expression: newWord.is_expression || false, // Include expression info
-        expression_type: newWord.expression_type || undefined, // Include expression type
-        is_separable: newWord.is_separable || false, // Include separable verb info
-        prefix_part: newWord.prefix_part || undefined, // Include prefix part
-        root_verb: newWord.root_verb || undefined, // Include root verb
-        translations: newWord.translations,
-        examples: newWord.examples || [], // Ensure examples is not null
-        tts_url: newWord.tts_url || undefined, // Ensure tts_url is not null
-        image_url: newWord.image_url || undefined, // Include associated image
+        lemma: analysis.lemma,
+        part_of_speech: analysis.part_of_speech || 'unknown',
+        is_irregular: analysis.is_irregular,
+        article: analysis.article || undefined,
+        is_reflexive: analysis.is_reflexive || false,
+        is_expression: analysis.is_expression || false,
+        expression_type: analysis.expression_type || undefined,
+        is_separable: analysis.is_separable || false,
+        prefix_part: analysis.prefix_part || undefined,
+        root_verb: analysis.root_verb || undefined,
+        translations: analysis.translations,
+        examples: analysis.examples || [],
+        tts_url: analysis.tts_url || undefined,
+        image_url: analysis.image_url || undefined,
       }
 
       setAnalysisResult(result)
-      setInputWord('') // Clear input after successful analysis
       Toast.show({
         type: 'success',
-        text1: 'Success!',
-        text2: 'Word added successfully!',
+        text1: 'Analysis Complete',
+        text2: 'Word has been analyzed successfully',
       })
     } catch (error: any) {
       Toast.show({
         type: 'error',
-        text1: 'Error',
-        text2: error.message || 'Failed to analyze word. Please try again.',
+        text1: 'Analysis Failed',
+        text2: error.message || 'Could not analyze word. Please try again.',
       })
     } finally {
       setIsAnalyzing(false)
+    }
+  }
+
+  const handleAddWord = async () => {
+    if (!selectedCollection) {
+      Toast.show({
+        type: 'error',
+        text1: 'Collection Required',
+        text2: 'Please select a collection to add the word',
+      })
+      return
+    }
+
+    if (!analysisResult) {
+      Toast.show({
+        type: 'error',
+        text1: 'No Analysis',
+        text2: 'Please analyze a word first',
+      })
+      return
+    }
+
+    setIsAdding(true)
+
+    try {
+      // Add the analyzed word to the selected collection
+      await addNewWord(inputWord.trim(), selectedCollection.collection_id)
+
+      Toast.show({
+        type: 'success',
+        text1: 'Word Added',
+        text2: `"${inputWord}" has been added to "${selectedCollection.name}"`,
+      })
+
+      // Clear everything after successful addition
+      setAnalysisResult(null)
+      setInputWord('')
+      setSelectedCollection(null)
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Add Failed',
+        text2: error.message || 'Could not add word. Please try again.',
+      })
+    } finally {
+      setIsAdding(false)
     }
   }
 
@@ -268,12 +312,61 @@ export default function AddWordScreen() {
             ))}
           </View>
 
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={handleAddAnother}
-          >
-            <Text style={styles.saveButtonText}>Add Another Word</Text>
-          </TouchableOpacity>
+          <View style={styles.addToCollectionSection}>
+            <Text style={styles.addToCollectionTitle}>Add to Collection</Text>
+
+            <View style={styles.collectionSelectorContainer}>
+              <Text style={styles.collectionLabel}>Select Collection *</Text>
+              <CollectionSelector
+                selectedCollectionId={selectedCollection?.collection_id || null}
+                onCollectionSelect={setSelectedCollection}
+                placeholder="Choose a collection..."
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.addButton,
+                (!selectedCollection || isAdding) && styles.addButtonDisabled,
+              ]}
+              onPress={handleAddWord}
+              disabled={!selectedCollection || isAdding}
+            >
+              {isAdding ? (
+                <View style={styles.addButtonLoading}>
+                  <ActivityIndicator size="small" color="white" />
+                  <Text style={styles.addButtonText}>Adding...</Text>
+                </View>
+              ) : (
+                <Text
+                  style={[
+                    styles.addButtonText,
+                    !selectedCollection && styles.addButtonTextDisabled,
+                  ]}
+                >
+                  Add Word to Collection
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.cancelButton,
+                isAdding && styles.cancelButtonDisabled,
+              ]}
+              onPress={handleAddAnother}
+              disabled={isAdding}
+            >
+              <Text
+                style={[
+                  styles.cancelButtonText,
+                  isAdding && styles.cancelButtonTextDisabled,
+                ]}
+              >
+                Cancel & Start Over
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     )
@@ -296,17 +389,6 @@ export default function AddWordScreen() {
           autoCapitalize="none"
           autoCorrect={false}
         />
-
-        <View style={styles.collectionSection}>
-          <Text style={styles.collectionLabel}>
-            Add to Collection (Optional)
-          </Text>
-          <CollectionSelector
-            selectedCollectionId={selectedCollection?.collection_id || null}
-            onCollectionSelect={setSelectedCollection}
-            placeholder="Select a collection..."
-          />
-        </View>
 
         <TouchableOpacity
           style={[styles.analyzeButton, isAnalyzing && styles.buttonDisabled]}
@@ -499,15 +581,70 @@ const styles = StyleSheet.create({
     color: '#3b82f6',
     fontWeight: '500',
   },
-  // Collection section
-  collectionSection: {
-    marginTop: 16,
-    marginBottom: 24,
+  // Add to collection section
+  addToCollectionSection: {
+    marginTop: 24,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  addToCollectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  collectionSelectorContainer: {
+    marginBottom: 20,
   },
   collectionLabel: {
     fontSize: 16,
     fontWeight: '500',
     color: '#374151',
     marginBottom: 8,
+  },
+  addButton: {
+    backgroundColor: '#3B82F6',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  addButtonDisabled: {
+    backgroundColor: '#9CA3AF',
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  addButtonTextDisabled: {
+    color: '#6B7280',
+  },
+  addButtonLoading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+  },
+  cancelButtonText: {
+    color: '#6B7280',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  cancelButtonDisabled: {
+    opacity: 0.5,
+  },
+  cancelButtonTextDisabled: {
+    color: '#9CA3AF',
   },
 })
