@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
+import { Colors } from '@/constants/Colors'
 import type { ReviewCardProps } from './types'
 import type { TapGestureHandler } from 'react-native-gesture-handler'
 
@@ -52,18 +53,18 @@ const styles = StyleSheet.create({
   dutchWord: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: Colors.neutral[700],
     textAlign: 'center',
   },
   partOfSpeech: {
     fontSize: 16,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     fontStyle: 'italic',
     marginBottom: 24,
   },
   tapHint: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: Colors.neutral[400],
     textAlign: 'center',
   },
 })

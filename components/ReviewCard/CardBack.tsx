@@ -6,6 +6,7 @@ import { WordHeader } from './WordHeader'
 import { TranslationsSection } from './TranslationsSection'
 import { ImageSection } from './ImageSection'
 import { ExamplesSection } from './ExamplesSection'
+import { Colors } from '@/constants/Colors'
 import type { CardBackProps } from './types'
 import type { TapGestureHandler } from 'react-native-gesture-handler'
 
@@ -57,7 +58,7 @@ export function CardBack({
           )
         }}
       >
-        <Ionicons name="trash-outline" size={20} color="#dc2626" />
+        <Ionicons name="trash-outline" size={20} color={Colors.error.DEFAULT} />
         <Text style={styles.deleteButtonText}>Delete Word</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -73,9 +74,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fef2f2',
+    backgroundColor: Colors.error.light,
     borderWidth: 1,
-    borderColor: '#fecaca',
+    borderColor: Colors.error.border,
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -86,6 +87,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 16,
     fontWeight: '500',
-    color: '#dc2626',
+    color: Colors.error.DEFAULT,
   },
 })

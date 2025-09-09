@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import type { ReviewCardProps } from './types'
 
 export function ExamplesSection({ currentWord }: ReviewCardProps) {
@@ -31,26 +32,26 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: Colors.neutral[700],
     marginBottom: 12,
   },
   exampleItem: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: Colors.background.secondary,
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
     borderLeftWidth: 4,
-    borderLeftColor: '#3b82f6',
+    borderLeftColor: Colors.primary.DEFAULT,
   },
   exampleDutch: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: Colors.neutral[700],
     marginBottom: 8,
   },
   exampleTranslation: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     marginBottom: 4,
   },
 })

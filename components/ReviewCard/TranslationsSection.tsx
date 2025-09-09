@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import type { ReviewCardProps } from './types'
 
 export function TranslationsSection({ currentWord }: ReviewCardProps) {
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: Colors.neutral[700],
     marginBottom: 12,
   },
   translationGroup: {
@@ -50,12 +51,12 @@ const styles = StyleSheet.create({
   languageLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: Colors.neutral[700],
     marginBottom: 4,
   },
   translationText: {
     fontSize: 16,
-    color: '#4b5563',
+    color: Colors.neutral[600],
     marginBottom: 2,
     paddingLeft: 8,
   },

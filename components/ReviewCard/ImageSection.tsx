@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, TouchableOpacity, Image } from 'react-native'
 import { Text, View } from '@/components/Themed'
 import { Ionicons } from '@expo/vector-icons'
+import { Colors } from '@/constants/Colors'
 import type { ImageSectionProps } from './types'
 
 export function ImageSection({
@@ -18,7 +19,7 @@ export function ImageSection({
           style={styles.changeImageButton}
           onPress={onChangeImage}
         >
-          <Ionicons name="refresh" size={16} color="#6b7280" />
+          <Ionicons name="refresh" size={16} color={Colors.neutral[500]} />
           <Text style={styles.changeImageText}>Change</Text>
         </TouchableOpacity>
       </View>
@@ -44,25 +45,25 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: Colors.neutral[700],
   },
   changeImageButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 8,
     borderRadius: 6,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.neutral[100],
   },
   changeImageText: {
     marginLeft: 4,
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     fontWeight: '500',
   },
   wordImage: {
     width: '100%',
     height: 250,
     borderRadius: 12,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.neutral[100],
   },
 })

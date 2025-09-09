@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { TapGestureHandler, State } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
+import { Colors } from '@/constants/Colors'
 import type { PronunciationProps } from './types'
 
 export const PronunciationButton = forwardRef<
@@ -32,7 +33,7 @@ export const PronunciationButton = forwardRef<
         <Ionicons
           name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
           size={iconSize}
-          color="#2563eb"
+          color={Colors.primary.dark}
         />
       </View>
     </TapGestureHandler>
