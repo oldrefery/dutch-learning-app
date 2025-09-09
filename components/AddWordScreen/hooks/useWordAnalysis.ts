@@ -1,0 +1,83 @@
+import { useState } from 'react'
+import Toast from 'react-native-toast-message'
+import { wordService } from '@/lib/supabase'
+import type { AnalysisResult } from '../types/AddWordTypes'
+
+export const useWordAnalysis = () => {
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
+    null
+  )
+
+  const analyzeWord = async (inputWord: string) => {
+    if (!inputWord.trim()) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please enter a Dutch word',
+      })
+      return
+    }
+
+    setIsAnalyzing(true)
+
+    try {
+      // Only analyze the word, don't add it yet
+      const analysis = await wordService.analyzeWord(inputWord.trim())
+
+      // Convert to display format
+      const result: AnalysisResult = {
+        dutch_lemma: analysis.lemma,
+        part_of_speech: analysis.part_of_speech || 'unknown',
+        is_irregular: analysis.is_irregular,
+        article: analysis.article || undefined,
+        is_reflexive: analysis.is_reflexive || false,
+        is_expression: analysis.is_expression || false,
+        expression_type: analysis.expression_type || undefined,
+        is_separable: analysis.is_separable || false,
+        prefix_part: analysis.prefix_part || undefined,
+        root_verb: analysis.root_verb || undefined,
+        translations: analysis.translations,
+        examples: analysis.examples || [],
+        tts_url: analysis.tts_url || undefined,
+        image_url: analysis.image_url || undefined,
+      }
+
+      setAnalysisResult(result)
+      Toast.show({
+        type: 'success',
+        text1: 'Analysis Complete',
+        text2: 'Word has been analyzed successfully',
+      })
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Analysis Failed',
+        text2: error.message || 'Could not analyze word. Please try again.',
+      })
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }
+
+  const clearAnalysis = () => {
+    setAnalysisResult(null)
+  }
+
+  const updateImageUrl = (newImageUrl: string) => {
+    if (analysisResult) {
+      setAnalysisResult({
+        ...analysisResult,
+        image_url: newImageUrl,
+      })
+    }
+  }
+
+  return {
+    isAnalyzing,
+    analysisResult,
+    analyzeWord,
+    clearAnalysis,
+    updateImageUrl,
+  }
+}
