@@ -1,13 +1,16 @@
 import { collectionService } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
 
+const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
+const UNKNOWN_ERROR = 'Unknown error'
+
 export const createCollectionActions = (set: any, get: any) => ({
   fetchCollections: async () => {
     try {
       set({ collectionsLoading: true })
       const userId = get().currentUserId
       if (!userId) {
-        throw new Error('User not authenticated')
+        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
       }
       const collections = await collectionService.getUserCollections(userId)
       set({ collections, collectionsLoading: false })
@@ -16,7 +19,7 @@ export const createCollectionActions = (set: any, get: any) => ({
       set({
         error: {
           message: APP_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTIONS_FETCH_FAILED,
-          details: error instanceof Error ? error.message : 'Unknown error',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
         collectionsLoading: false,
       })
@@ -27,7 +30,7 @@ export const createCollectionActions = (set: any, get: any) => ({
     try {
       const userId = get().currentUserId
       if (!userId) {
-        throw new Error('User not authenticated')
+        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
       }
       const newCollection = await collectionService.createCollection(
         name,
@@ -41,7 +44,31 @@ export const createCollectionActions = (set: any, get: any) => ({
       set({
         error: {
           message: APP_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_CREATE_FAILED,
-          details: error instanceof Error ? error.message : 'Unknown error',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+        },
+      })
+      throw error
+    }
+  },
+
+  deleteCollection: async (collectionId: string) => {
+    try {
+      const userId = get().currentUserId
+      if (!userId) {
+        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
+      }
+      await collectionService.deleteCollection(collectionId, userId)
+      const currentCollections = get().collections
+      const updatedCollections = currentCollections.filter(
+        (collection: any) => collection.collection_id !== collectionId
+      )
+      set({ collections: updatedCollections })
+    } catch (error) {
+      console.error('Error deleting collection:', error)
+      set({
+        error: {
+          message: APP_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_DELETE_FAILED,
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
       throw error

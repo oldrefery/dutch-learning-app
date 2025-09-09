@@ -8,6 +8,7 @@ export const APP_STORE_CONSTANTS = {
     WORD_UPDATE_FAILED: 'Failed to update word',
     WORD_DELETE_FAILED: 'Failed to delete word',
     COLLECTION_CREATE_FAILED: 'Failed to create collection',
+    COLLECTION_DELETE_FAILED: 'Failed to delete collection',
     REVIEW_SESSION_START_FAILED: 'Failed to start review session',
     REVIEW_ASSESSMENT_SUBMIT_FAILED: 'Failed to submit review assessment',
   },

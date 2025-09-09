@@ -259,4 +259,30 @@ export const collectionService = {
 
     return data
   },
+
+  // Delete collection
+  async deleteCollection(collectionId: string, userId: string) {
+    // First delete all words in this collection
+    const { error: wordsError } = await supabase
+      .from('words')
+      .delete()
+      .eq('collection_id', collectionId)
+
+    if (wordsError) {
+      throw new Error(
+        `Failed to delete words in collection: ${wordsError.message}`
+      )
+    }
+
+    // Then delete the collection itself
+    const { error } = await supabase
+      .from('collections')
+      .delete()
+      .eq('collection_id', collectionId)
+      .eq('user_id', userId)
+
+    if (error) {
+      throw new Error(`Failed to delete collection: ${error.message}`)
+    }
+  },
 }
