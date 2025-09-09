@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 
 interface SectionHeaderProps {
   title: string
@@ -19,7 +20,7 @@ export default function SectionHeader({
       <Text style={styles.sectionTitle}>{title}</Text>
       {showAddButton && onAddPress && (
         <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
-          <Ionicons name="add" size={20} color="#3b82f6" />
+          <Ionicons name="add" size={20} color={Colors.primary.DEFAULT} />
           <Text style={styles.addButtonText}>Add</Text>
         </TouchableOpacity>
       )}
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.neutral[900],
   },
   addButton: {
     flexDirection: 'row',
@@ -45,12 +46,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.neutral[100],
   },
   addButtonText: {
     marginLeft: 4,
     fontSize: 14,
     fontWeight: '500',
-    color: '#3b82f6',
+    color: Colors.primary.DEFAULT,
   },
 })

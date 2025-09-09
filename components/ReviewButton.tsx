@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 
 interface ReviewButtonProps {
   wordsForReview: number
@@ -31,31 +32,31 @@ export default function ReviewButton({
 
 const styles = StyleSheet.create({
   reviewButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     marginBottom: 24,
   },
   reviewButtonText: {
-    color: 'white',
+    color: Colors.background.primary,
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
   },
   reviewButtonSubtext: {
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: Colors.neutral[100],
     fontSize: 12,
   },
   disabledButton: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.neutral[100],
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     marginBottom: 24,
   },
   disabledButtonText: {
-    color: '#6b7280',
+    color: Colors.neutral[500],
     fontSize: 16,
     fontWeight: '500',
   },

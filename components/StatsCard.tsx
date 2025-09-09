@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 
 interface StatsCardProps {
   stats: {
@@ -42,7 +43,7 @@ export default function StatsCard({ stats }: StatsCardProps) {
 
 const styles = StyleSheet.create({
   statsCard: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
   },
   statsSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: Colors.neutral[500],
     marginBottom: 12,
   },
   statsRow: {
@@ -69,11 +70,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    color: Colors.neutral[900],
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
   },
 })
