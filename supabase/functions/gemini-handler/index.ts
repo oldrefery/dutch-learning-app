@@ -8,7 +8,6 @@ import {
   validateWordInput,
   cleanExamples,
   formatTranslations,
-  analyzeSeparableVerb,
 } from './geminiUtils.ts'
 import {
   GEMINI_PROMPTS,
@@ -50,9 +49,6 @@ serve(async req => {
     const geminiResponse = await callGeminiAPI(prompt)
     const analysis: GeminiAnalysisResult = parseGeminiResponse(geminiResponse)
 
-    // Analyze separable verb
-    const separableAnalysis = analyzeSeparableVerb(word)
-
     // Get multiple image options
     const imageOptions = await getMultipleImagesForWord(
       analysis.translations.en[0] || word,
@@ -75,13 +71,12 @@ serve(async req => {
       translations: formattedTranslations,
       examples: cleanedExamples,
       image_url: imageOptions[0]?.url || '',
-      image_options: imageOptions,
       is_expression: analysis.is_expression || false,
       is_irregular: analysis.is_irregular || false,
       is_reflexive: analysis.is_reflexive || false,
-      is_separable: separableAnalysis.isSeparable,
-      prefix_part: separableAnalysis.prefix,
-      root_verb: separableAnalysis.root,
+      is_separable: analysis.is_separable || false,
+      prefix_part: analysis.prefix_part || null,
+      root_verb: analysis.root_verb || null,
       article: analysis.article,
       expression_type: analysis.expression_type,
       tts_url: ttsUrl,

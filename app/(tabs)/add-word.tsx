@@ -19,7 +19,7 @@ import { useCollections } from '@/hooks/useCollections'
 import type { Collection } from '@/types/database'
 
 interface AnalysisResult {
-  lemma: string
+  dutch_lemma: string
   part_of_speech: string
   is_irregular: boolean
   article?: 'de' | 'het' // Article for nouns
@@ -110,7 +110,7 @@ export default function AddWordScreen() {
 
       // Convert to display format
       const result: AnalysisResult = {
-        lemma: analysis.lemma,
+        dutch_lemma: analysis.lemma,
         part_of_speech: analysis.part_of_speech || 'unknown',
         is_irregular: analysis.is_irregular,
         article: analysis.article || undefined,
@@ -333,10 +333,7 @@ export default function AddWordScreen() {
               disabled={!selectedCollection || isAdding}
             >
               {isAdding ? (
-                <View style={styles.addButtonLoading}>
-                  <ActivityIndicator size="small" color="white" />
-                  <Text style={styles.addButtonText}>Adding...</Text>
-                </View>
+                <ActivityIndicator color="white" />
               ) : (
                 <Text
                   style={[
@@ -391,11 +388,14 @@ export default function AddWordScreen() {
         />
 
         <TouchableOpacity
-          style={[styles.analyzeButton, isAnalyzing && styles.buttonDisabled]}
+          style={[
+            styles.analyzeButton,
+            (isAnalyzing || isAdding) && styles.buttonDisabled,
+          ]}
           onPress={handleAnalyze}
-          disabled={isAnalyzing}
+          disabled={isAnalyzing || isAdding}
         >
-          {isAnalyzing ? (
+          {isAnalyzing || isAdding ? (
             <ActivityIndicator color="white" />
           ) : (
             <Text style={styles.analyzeButtonText}>Analyze with AI</Text>

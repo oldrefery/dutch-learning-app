@@ -1,33 +1,43 @@
-import React from 'react'
-import { TouchableOpacity, StyleSheet } from 'react-native'
+import React, { forwardRef } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { TapGestureHandler, State } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
 import type { PronunciationProps } from './types'
 
-export function PronunciationButton({
-  ttsUrl,
-  isPlayingAudio,
-  onPress,
-  size = 'normal',
-}: PronunciationProps) {
+export const PronunciationButton = forwardRef<
+  TapGestureHandler,
+  PronunciationProps
+>(function PronunciationButton(
+  { ttsUrl, isPlayingAudio, onPress, size = 'normal' },
+  ref
+) {
   if (!ttsUrl) return null
 
   const iconSize = size === 'small' ? 18 : 24
   const buttonStyle = size === 'small' ? styles.buttonSmall : styles.button
 
+  const handlePress = ({ nativeEvent }: any) => {
+    if (nativeEvent.state === State.ACTIVE) {
+      onPress(ttsUrl)
+    }
+  }
+
   return (
-    <TouchableOpacity
-      style={buttonStyle}
-      onPress={() => onPress(ttsUrl)}
-      disabled={isPlayingAudio}
+    <TapGestureHandler
+      ref={ref}
+      onHandlerStateChange={handlePress}
+      enabled={!isPlayingAudio}
     >
-      <Ionicons
-        name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
-        size={iconSize}
-        color="#2563eb"
-      />
-    </TouchableOpacity>
+      <View style={buttonStyle}>
+        <Ionicons
+          name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
+          size={iconSize}
+          color="#2563eb"
+        />
+      </View>
+    </TapGestureHandler>
   )
-}
+})
 
 const styles = StyleSheet.create({
   button: {

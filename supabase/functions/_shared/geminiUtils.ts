@@ -3,32 +3,6 @@
 import { SEPARABLE_PREFIXES, MIN_ROOT_VERB_LENGTH } from './constants.ts'
 import type { SeparableVerbAnalysis } from './types.ts'
 
-// Helper function to detect separable verbs if Gemini missed them
-export function analyzeSeparableVerb(
-  lemma: string,
-  partOfSpeech: string
-): SeparableVerbAnalysis {
-  if (partOfSpeech !== 'verb') {
-    return { is_separable: false, prefix_part: null, root_verb: null }
-  }
-
-  for (const prefix of SEPARABLE_PREFIXES) {
-    if (lemma.startsWith(prefix)) {
-      const rootVerb = lemma.substring(prefix.length)
-      // Check if root verb is reasonable (at least 3 chars, common verb patterns)
-      if (rootVerb.length >= MIN_ROOT_VERB_LENGTH) {
-        return {
-          is_separable: true,
-          prefix_part: prefix,
-          root_verb: rootVerb,
-        }
-      }
-    }
-  }
-
-  return { is_separable: false, prefix_part: null, root_verb: null }
-}
-
 // Helper function to create smart search queries for images
 export function createSmartSearchQuery(
   dutchLemma: string,

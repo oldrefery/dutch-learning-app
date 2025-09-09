@@ -7,6 +7,11 @@ import { TranslationsSection } from './TranslationsSection'
 import { ImageSection } from './ImageSection'
 import { ExamplesSection } from './ExamplesSection'
 import type { CardBackProps } from './types'
+import type { TapGestureHandler } from 'react-native-gesture-handler'
+
+interface CardBackPropsWithRef extends CardBackProps {
+  pronunciationRef?: React.RefObject<TapGestureHandler | null>
+}
 
 export function CardBack({
   currentWord,
@@ -14,13 +19,15 @@ export function CardBack({
   isPlayingAudio,
   onPlayPronunciation,
   onDeleteWord,
-}: CardBackProps) {
+  pronunciationRef,
+}: CardBackPropsWithRef) {
   return (
     <ScrollView style={styles.cardBack} showsVerticalScrollIndicator={false}>
       <WordHeader
         currentWord={currentWord}
         isPlayingAudio={isPlayingAudio}
         onPlayPronunciation={onPlayPronunciation}
+        pronunciationRef={pronunciationRef}
       />
 
       <TranslationsSection currentWord={currentWord} />

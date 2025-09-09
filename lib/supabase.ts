@@ -72,7 +72,7 @@ export const wordService = {
       throw new Error(`Word analysis failed: ${error.message}`)
     }
 
-    return data
+    return data.data
   },
 
   // Get all words for user

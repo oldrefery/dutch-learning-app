@@ -23,6 +23,14 @@ export const useReviewScreen = () => {
   const [touchStartY, setTouchStartY] = useState(0)
   const [isScrolling, setIsScrolling] = useState(false)
 
+  // Check if there are words available for review
+  const { words } = useAppStore()
+  const hasWordsForReview = words.some(word => {
+    if (!word.next_review_date) return true
+    const today = new Date().toISOString().split('T')[0]
+    return word.next_review_date <= today
+  })
+
   // Initialize audio player
   useEffect(() => {
     const initAudio = async () => {
@@ -37,8 +45,15 @@ export const useReviewScreen = () => {
     initAudio()
 
     return () => {
+      // Cleanup will be handled by the component unmount
+    }
+  }, [])
+
+  // Cleanup audio player when component unmounts
+  useEffect(() => {
+    return () => {
       if (audioPlayer) {
-        audioPlayer.unloadAsync()
+        audioPlayer.remove()
       }
     }
   }, [audioPlayer])
@@ -50,38 +65,36 @@ export const useReviewScreen = () => {
     }
   }, [reviewSession, reviewLoading, hasWordsForReview, startReviewSession])
 
-  // Check if there are words available for review
-  const { words } = useAppStore()
-  const hasWordsForReview = words.some(word => {
-    if (!word.next_review_date) return true
-    const today = new Date().toISOString().split('T')[0]
-    return word.next_review_date <= today
-  })
-
   // Reset card state when word changes
   useEffect(() => {
     setIsFlipped(false)
     setIsScrolling(false)
   }, [currentWord?.word_id])
 
-  const playAudio = useCallback(async () => {
-    if (!audioPlayer || !currentWord?.dutch_lemma) return
+  const playAudio = useCallback(
+    async (url?: string) => {
+      if (!audioPlayer || !currentWord?.dutch_lemma) return
 
-    try {
-      await audioPlayer.unloadAsync()
-      await audioPlayer.loadAsync({
-        uri: `https://api.dictionaryapi.dev/api/v2/entries/en/${currentWord.dutch_lemma}`,
-      })
-      await audioPlayer.playAsync()
-    } catch (error) {
-      console.error('Failed to play audio:', error)
-      Toast.show({
-        type: 'error',
-        text1: 'Audio Error',
-        text2: 'Could not play pronunciation',
-      })
-    }
-  }, [audioPlayer, currentWord?.dutch_lemma])
+      try {
+        const audioUrl =
+          url ||
+          currentWord.tts_url ||
+          `https://api.dictionaryapi.dev/api/v2/entries/en/${currentWord.dutch_lemma}`
+        audioPlayer.replace({
+          uri: audioUrl,
+        })
+        audioPlayer.play()
+      } catch (error) {
+        console.error('Failed to play audio:', error)
+        Toast.show({
+          type: 'error',
+          text1: 'Audio Error',
+          text2: 'Could not play pronunciation',
+        })
+      }
+    },
+    [audioPlayer, currentWord?.dutch_lemma, currentWord?.tts_url]
+  )
 
   const handleCardPress = useCallback(() => {
     if (isScrolling) return
@@ -116,7 +129,7 @@ export const useReviewScreen = () => {
 
     setIsLoading(true)
     try {
-      await markCorrect(currentWord.word_id)
+      await markCorrect()
       Toast.show({
         type: 'success',
         text1: 'Correct!',
@@ -138,7 +151,7 @@ export const useReviewScreen = () => {
 
     setIsLoading(true)
     try {
-      await markIncorrect(currentWord.word_id)
+      await markIncorrect()
       Toast.show({
         type: 'info',
         text1: 'Incorrect',

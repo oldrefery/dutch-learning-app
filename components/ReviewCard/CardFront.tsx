@@ -3,16 +3,19 @@ import { StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import type { ReviewCardProps } from './types'
+import type { TapGestureHandler } from 'react-native-gesture-handler'
 
 interface CardFrontProps extends ReviewCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
+  pronunciationRef?: React.RefObject<TapGestureHandler | null>
 }
 
 export function CardFront({
   currentWord,
   isPlayingAudio,
   onPlayPronunciation,
+  pronunciationRef,
 }: CardFrontProps) {
   return (
     <View style={styles.cardFront}>
@@ -22,6 +25,7 @@ export function CardFront({
           {currentWord.dutch_lemma}
         </Text>
         <PronunciationButton
+          ref={pronunciationRef}
           ttsUrl={currentWord.tts_url}
           isPlayingAudio={isPlayingAudio}
           onPress={onPlayPronunciation}

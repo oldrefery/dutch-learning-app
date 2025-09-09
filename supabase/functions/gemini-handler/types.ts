@@ -24,10 +24,6 @@ export interface WordAnalysisResult {
     ru?: string
   }>
   image_url: string
-  image_options: Array<{
-    url: string
-    alt: string
-  }>
   is_expression: boolean
   is_irregular: boolean
   is_reflexive: boolean

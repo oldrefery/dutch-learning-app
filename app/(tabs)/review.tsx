@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useRef } from 'react'
 // Review screen for spaced repetition learning
 import { TouchableOpacity, ActivityIndicator } from 'react-native'
+import { TapGestureHandler, State } from 'react-native-gesture-handler'
 import Toast from 'react-native-toast-message'
 import { Text, View } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
@@ -13,6 +14,8 @@ import { reviewScreenStyles } from '@/styles/ReviewScreenStyles'
 import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
 
 export default function ReviewScreen() {
+  const pronunciationRef = useRef<TapGestureHandler | null>(null)
+
   const {
     isFlipped,
     playAudio,
@@ -89,28 +92,38 @@ export default function ReviewScreen() {
     if (!currentWord) return null
 
     return (
-      <View
-        style={reviewScreenStyles.flashcard}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleCardPress}
+      <TapGestureHandler
+        onHandlerStateChange={({ nativeEvent }) => {
+          if (nativeEvent.state === State.ACTIVE) {
+            handleCardPress()
+          }
+        }}
+        waitFor={pronunciationRef}
       >
-        {!isFlipped ? (
-          <CardFront
-            currentWord={currentWord}
-            isPlayingAudio={false}
-            onPlayPronunciation={playAudio}
-          />
-        ) : (
-          <CardBack
-            currentWord={currentWord}
-            onChangeImage={openImageSelector}
-            isPlayingAudio={false}
-            onPlayPronunciation={playAudio}
-            onDeleteWord={handleDeleteWord}
-          />
-        )}
-      </View>
+        <View
+          style={reviewScreenStyles.flashcard}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+        >
+          {!isFlipped ? (
+            <CardFront
+              currentWord={currentWord}
+              isPlayingAudio={false}
+              onPlayPronunciation={playAudio}
+              pronunciationRef={pronunciationRef}
+            />
+          ) : (
+            <CardBack
+              currentWord={currentWord}
+              onChangeImage={openImageSelector}
+              isPlayingAudio={false}
+              onPlayPronunciation={playAudio}
+              onDeleteWord={handleDeleteWord}
+              pronunciationRef={pronunciationRef}
+            />
+          )}
+        </View>
+      </TapGestureHandler>
     )
   }
 
