@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import { useCollections } from '@/hooks/useCollections'
 import Toast from 'react-native-toast-message'
 
@@ -76,7 +77,7 @@ export default function CreateCollectionModal({
             style={styles.closeButton}
             disabled={isCreating}
           >
-            <Ionicons name="close" size={24} color="#374151" />
+            <Ionicons name="close" size={24} color={Colors.neutral[700]} />
           </TouchableOpacity>
         </View>
 
@@ -87,7 +88,7 @@ export default function CreateCollectionModal({
             value={collectionName}
             onChangeText={setCollectionName}
             placeholder="Enter collection name..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={Colors.neutral[400]}
             autoFocus
             maxLength={50}
             editable={!isCreating}
@@ -116,7 +117,10 @@ export default function CreateCollectionModal({
             disabled={!collectionName.trim() || isCreating}
           >
             {isCreating ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator
+                size="small"
+                color={Colors.background.primary}
+              />
             ) : (
               <Text style={styles.createButtonText}>Create Collection</Text>
             )}
@@ -130,7 +134,7 @@ export default function CreateCollectionModal({
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.background.primary,
   },
   header: {
     flexDirection: 'row' as const,
@@ -140,12 +144,12 @@ const styles = {
     paddingTop: 60,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.neutral[200],
   },
   title: {
     fontSize: 20,
     fontWeight: '600' as const,
-    color: '#111827',
+    color: Colors.neutral[900],
   },
   closeButton: {
     padding: 8,
@@ -157,22 +161,22 @@ const styles = {
   label: {
     fontSize: 16,
     fontWeight: '500' as const,
-    color: '#374151',
+    color: Colors.neutral[700],
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.neutral[300],
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    color: '#111827',
-    backgroundColor: '#FFFFFF',
+    color: Colors.neutral[900],
+    backgroundColor: Colors.background.primary,
   },
   helperText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: Colors.neutral[500],
     marginTop: 4,
   },
   actions: {
@@ -188,24 +192,24 @@ const styles = {
     justifyContent: 'center' as const,
   },
   cancelButton: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.neutral[100],
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.neutral[300],
   },
   cancelButtonText: {
     fontSize: 16,
     fontWeight: '500' as const,
-    color: '#374151',
+    color: Colors.neutral[700],
   },
   createButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primary.DEFAULT,
   },
   createButtonText: {
     fontSize: 16,
     fontWeight: '500' as const,
-    color: '#FFFFFF',
+    color: Colors.background.primary,
   },
   disabledButton: {
-    backgroundColor: '#9CA3AF',
+    backgroundColor: Colors.neutral[400],
   },
 }

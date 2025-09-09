@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Animated } from 'react-native'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 
 interface CollectionStatsProps {
   stats: {
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.background.primary,
     margin: 16,
     borderRadius: 12,
     padding: 16,
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   statsTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.neutral[900],
     marginBottom: 16,
   },
   statsGrid: {
@@ -100,11 +101,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    color: Colors.neutral[900],
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
   },
 })

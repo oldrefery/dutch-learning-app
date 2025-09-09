@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import type { Word } from '@/types/database'
 
 interface WordItemProps {
@@ -12,9 +13,9 @@ interface WordItemProps {
 
 export default function WordItem({ word, index, onPress }: WordItemProps) {
   const getStatusColor = () => {
-    if (word.repetition_count > 2) return '#10b981' // Green - mastered
-    if (word.repetition_count > 0) return '#f59e0b' // Yellow - learning
-    return '#6b7280' // Gray - new
+    if (word.repetition_count > 2) return Colors.success.DEFAULT // Green - mastered
+    if (word.repetition_count > 0) return Colors.warning.DEFAULT // Yellow - learning
+    return Colors.neutral[500] // Gray - new
   }
 
   const getStatusText = () => {
@@ -59,20 +60,20 @@ export default function WordItem({ word, index, onPress }: WordItemProps) {
         </View>
       </View>
 
-      <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+      <Ionicons name="chevron-forward" size={20} color={Colors.neutral[400]} />
     </TouchableOpacity>
   )
 }
 
 const styles = StyleSheet.create({
   wordItem: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 8,
     padding: 16,
     marginBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: Colors.legacy.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.neutral[100],
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
   wordNumberText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: Colors.neutral[500],
   },
   wordContent: {
     flex: 1,
@@ -103,16 +104,16 @@ const styles = StyleSheet.create({
   wordText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.neutral[900],
   },
   articleText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     marginLeft: 8,
   },
   translationText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     marginBottom: 8,
   },
   wordFooter: {
@@ -128,10 +129,10 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontWeight: '500',
-    color: 'white',
+    color: Colors.background.primary,
   },
   reviewBadge: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: Colors.warning.light,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -139,6 +140,6 @@ const styles = StyleSheet.create({
   reviewText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#92400e',
+    color: Colors.warning.dark,
   },
 })
