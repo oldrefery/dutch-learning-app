@@ -1,18 +1,19 @@
 import { StyleSheet } from 'react-native'
+import { Colors } from '@/constants/Colors'
 
 export const addToCollectionStyles = StyleSheet.create({
   addToCollectionSection: {
     marginTop: 24,
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: Colors.neutral[200],
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   addToCollectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.neutral[900],
     marginBottom: 16,
   },
   collectionSelectorContainer: {
@@ -21,11 +22,11 @@ export const addToCollectionStyles = StyleSheet.create({
   collectionLabel: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#374151',
+    color: Colors.neutral[700],
     marginBottom: 8,
   },
   addButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primary.DEFAULT,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
@@ -33,10 +34,10 @@ export const addToCollectionStyles = StyleSheet.create({
     marginBottom: 12,
   },
   addButtonDisabled: {
-    backgroundColor: '#9CA3AF',
+    backgroundColor: Colors.neutral[400],
   },
   addButtonText: {
-    color: 'white',
+    color: Colors.background.primary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -53,10 +54,10 @@ export const addToCollectionStyles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.neutral[300],
   },
   cancelButtonText: {
-    color: '#6B7280',
+    color: Colors.neutral[500],
     fontSize: 16,
     fontWeight: '500',
   },
@@ -64,6 +65,6 @@ export const addToCollectionStyles = StyleSheet.create({
     opacity: 0.5,
   },
   cancelButtonTextDisabled: {
-    color: '#9CA3AF',
+    color: Colors.neutral[400],
   },
 })

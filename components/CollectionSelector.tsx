@@ -7,6 +7,7 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import { useCollections } from '@/hooks/useCollections'
 import type { Collection } from '@/types/database'
 
@@ -66,7 +67,7 @@ export default function CollectionSelector({
         </Text>
       </View>
       {selectedCollectionId === item.collection_id && (
-        <Ionicons name="checkmark" size={20} color="#3B82F6" />
+        <Ionicons name="checkmark" size={20} color={Colors.primary.DEFAULT} />
       )}
     </TouchableOpacity>
   )
@@ -75,7 +76,7 @@ export default function CollectionSelector({
     if (collectionsLoading) {
       return (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3B82F6" />
+          <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
           <Text style={styles.loadingText}>Loading collections...</Text>
         </View>
       )
@@ -84,7 +85,11 @@ export default function CollectionSelector({
     if (collections.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <Ionicons name="folder-outline" size={48} color="#9CA3AF" />
+          <Ionicons
+            name="folder-outline"
+            size={48}
+            color={Colors.neutral[400]}
+          />
           <Text style={styles.emptyText}>No collections found</Text>
           <Text style={styles.emptySubtext}>
             Create your first collection to get started
@@ -115,7 +120,9 @@ export default function CollectionSelector({
           <Ionicons
             name="folder-outline"
             size={20}
-            color={selectedCollection ? '#374151' : '#9CA3AF'}
+            color={
+              selectedCollection ? Colors.neutral[700] : Colors.neutral[400]
+            }
           />
           <Text
             style={[
@@ -129,7 +136,7 @@ export default function CollectionSelector({
         <Ionicons
           name="chevron-down"
           size={20}
-          color={disabled ? '#D1D5DB' : '#6B7280'}
+          color={disabled ? Colors.neutral[300] : Colors.neutral[500]}
         />
       </TouchableOpacity>
 
@@ -146,7 +153,7 @@ export default function CollectionSelector({
               onPress={() => setIsVisible(false)}
               style={styles.closeButton}
             >
-              <Ionicons name="close" size={24} color="#374151" />
+              <Ionicons name="close" size={24} color={Colors.neutral[700]} />
             </TouchableOpacity>
           </View>
 
@@ -166,17 +173,6 @@ export default function CollectionSelector({
   )
 }
 
-const COLORS = {
-  PRIMARY: '#3B82F6',
-  TEXT_PRIMARY: '#374151',
-  TEXT_SECONDARY: '#6B7280',
-  BORDER: '#D1D5DB',
-  BACKGROUND: '#FFFFFF',
-  DISABLED: '#9CA3AF',
-  LIGHT_GRAY: '#F9FAFB',
-  BORDER_LIGHT: '#E5E7EB',
-} as const
-
 const LAYOUT = {
   SPACE_BETWEEN: 'space-between' as const,
 } as const
@@ -184,18 +180,18 @@ const LAYOUT = {
 const styles = {
   selector: {
     borderWidth: 1,
-    borderColor: COLORS.BORDER,
+    borderColor: Colors.neutral[300],
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 12,
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: Colors.background.primary,
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     justifyContent: LAYOUT.SPACE_BETWEEN,
   },
   disabledSelector: {
-    backgroundColor: COLORS.LIGHT_GRAY,
-    borderColor: COLORS.BORDER_LIGHT,
+    backgroundColor: Colors.neutral[50],
+    borderColor: Colors.neutral[200],
   },
   selectorContent: {
     flexDirection: 'row' as const,
@@ -204,15 +200,15 @@ const styles = {
   },
   selectorText: {
     fontSize: 16,
-    color: COLORS.TEXT_PRIMARY,
+    color: Colors.neutral[700],
     marginLeft: 8,
   },
   placeholderText: {
-    color: COLORS.DISABLED,
+    color: Colors.neutral[400],
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.BACKGROUND,
+    backgroundColor: Colors.background.primary,
   },
   modalHeader: {
     flexDirection: 'row' as const,
@@ -222,12 +218,12 @@ const styles = {
     paddingTop: 60,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.neutral[200],
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: '600' as const,
-    color: '#111827',
+    color: Colors.neutral[900],
   },
   closeButton: {
     padding: 8,
@@ -245,10 +241,10 @@ const styles = {
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.neutral[100],
   },
   selectedItem: {
-    backgroundColor: '#EBF4FF',
+    backgroundColor: Colors.primary.light,
   },
   collectionInfo: {
     flex: 1,
@@ -256,15 +252,15 @@ const styles = {
   collectionName: {
     fontSize: 16,
     fontWeight: '500' as const,
-    color: '#374151',
+    color: Colors.neutral[700],
     marginBottom: 4,
   },
   selectedText: {
-    color: '#1D4ED8',
+    color: Colors.primary.dark,
   },
   collectionDate: {
     fontSize: 14,
-    color: '#6B7280',
+    color: Colors.neutral[500],
   },
   loadingContainer: {
     flex: 1,
@@ -275,7 +271,7 @@ const styles = {
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: '#6B7280',
+    color: Colors.neutral[500],
   },
   emptyContainer: {
     flex: 1,
@@ -286,30 +282,30 @@ const styles = {
   emptyText: {
     fontSize: 18,
     fontWeight: '500' as const,
-    color: '#374151',
+    color: Colors.neutral[700],
     marginTop: 16,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#6B7280',
+    color: Colors.neutral[500],
     marginTop: 8,
     textAlign: 'center' as const,
   },
   modalActions: {
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: Colors.neutral[200],
   },
   clearButton: {
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: Colors.neutral[100],
     alignItems: 'center' as const,
   },
   clearButtonText: {
     fontSize: 16,
     fontWeight: '500' as const,
-    color: '#6B7280',
+    color: Colors.neutral[500],
   },
 }

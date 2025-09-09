@@ -7,6 +7,7 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import type { WordInputSectionProps } from '../types/AddWordTypes'
 import { wordInputStyles } from '../styles/WordInputSection.styles'
 
@@ -29,7 +30,7 @@ export function WordInputSection({
           value={inputWord}
           onChangeText={setInputWord}
           placeholder="Enter Dutch word (e.g., 'hallo', 'fiets')"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={Colors.neutral[400]}
           autoCapitalize="none"
           autoCorrect={false}
           returnKeyType="search"
@@ -44,16 +45,20 @@ export function WordInputSection({
           disabled={isAnalyzing}
         >
           {isAnalyzing ? (
-            <ActivityIndicator size="small" color="white" />
+            <ActivityIndicator size="small" color={Colors.background.primary} />
           ) : (
-            <Ionicons name="search" size={20} color="white" />
+            <Ionicons
+              name="search"
+              size={20}
+              color={Colors.background.primary}
+            />
           )}
         </TouchableOpacity>
       </View>
 
       {isAnalyzing && (
         <View style={wordInputStyles.loadingContainer}>
-          <ActivityIndicator size="small" color="#3B82F6" />
+          <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
           <Text style={wordInputStyles.loadingText}>
             Analyzing word with AI...
           </Text>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity, Animated } from 'react-native'
 import { Text } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 
 interface CollectionReviewButtonProps {
   wordsForReview: number
@@ -62,13 +63,13 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   reviewButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: Colors.primary.DEFAULT,
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
   reviewButtonText: {
-    color: 'white',
+    color: Colors.background.primary,
     fontSize: 16,
     fontWeight: '600',
   },

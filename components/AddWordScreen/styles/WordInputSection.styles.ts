@@ -1,45 +1,46 @@
 import { StyleSheet } from 'react-native'
+import { Colors } from '@/constants/Colors'
 
 export const wordInputStyles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: Colors.background.primary,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.neutral[900],
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: Colors.neutral[500],
     marginBottom: 24,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: Colors.neutral[50],
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.neutral[200],
     paddingHorizontal: 16,
     paddingVertical: 4,
   },
   textInput: {
     flex: 1,
     fontSize: 16,
-    color: '#111827',
+    color: Colors.neutral[900],
     paddingVertical: 12,
   },
   analyzeButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 8,
     padding: 12,
     marginLeft: 8,
   },
   analyzeButtonDisabled: {
-    backgroundColor: '#9CA3AF',
+    backgroundColor: Colors.neutral[400],
   },
   loadingContainer: {
     flexDirection: 'row',
@@ -50,6 +51,6 @@ export const wordInputStyles = StyleSheet.create({
   loadingText: {
     marginLeft: 8,
     fontSize: 14,
-    color: '#6B7280',
+    color: Colors.neutral[500],
   },
 })

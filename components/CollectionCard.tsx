@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import type { Collection, Word } from '@/types/database'
 
 interface CollectionCardProps {
@@ -71,11 +72,11 @@ export default function CollectionCard({
 
 const styles = StyleSheet.create({
   collectionCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.background.primary,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: Colors.legacy.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -87,35 +88,35 @@ const styles = StyleSheet.create({
   collectionName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.neutral[900],
     marginBottom: 4,
   },
   collectionStats: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
   },
   collectionProgress: {
     marginBottom: 12,
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: Colors.neutral[200],
     borderRadius: 4,
     overflow: 'hidden',
     marginBottom: 8,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 4,
   },
   progressText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     textAlign: 'center',
   },
   reviewBadge: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: Colors.warning.light,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -124,6 +125,6 @@ const styles = StyleSheet.create({
   reviewBadgeText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#92400e',
+    color: Colors.warning.dark,
   },
 })
