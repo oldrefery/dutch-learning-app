@@ -64,7 +64,10 @@ export const wordService = {
     const { data, error } = await supabaseFunctions.functions.invoke(
       'gemini-handler',
       {
-        body: { word },
+        body: {
+          word,
+          userId: getDevUserId(),
+        },
       }
     )
 

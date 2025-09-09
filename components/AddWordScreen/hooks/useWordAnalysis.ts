@@ -27,7 +27,7 @@ export const useWordAnalysis = () => {
 
       // Convert to display format
       const result: AnalysisResult = {
-        dutch_lemma: analysis.lemma,
+        dutch_lemma: analysis.dutch_lemma,
         part_of_speech: analysis.part_of_speech || 'unknown',
         is_irregular: analysis.is_irregular,
         article: analysis.article || undefined,

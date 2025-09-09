@@ -1,3 +1,5 @@
+import type { Collection } from '@/types/database'
+
 export interface AnalysisResult {
   dutch_lemma: string
   part_of_speech: string
@@ -38,10 +40,10 @@ export interface AnalysisResultCardProps {
 }
 
 export interface AddToCollectionSectionProps {
-  selectedCollection: any | null
-  onCollectionSelect: (collection: any) => void
+  selectedCollection: Collection | null
+  onCollectionSelect: (collection: Collection | null) => void
   onAddWord: () => void
   onCancel: () => void
   isAdding: boolean
-  collections: any[]
+  collections: Collection[]
 }

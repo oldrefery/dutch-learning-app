@@ -26,6 +26,7 @@ export interface AppState {
   // Word actions
   fetchWords: () => Promise<void>
   addNewWord: (word: string) => Promise<Word>
+  saveAnalyzedWord: (analyzedWord: any, collectionId?: string) => Promise<Word>
   updateWordAfterReview: (wordId: string, assessment: any) => Promise<void>
   deleteWord: (wordId: string) => Promise<void>
 

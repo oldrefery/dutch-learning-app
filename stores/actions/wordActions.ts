@@ -63,6 +63,55 @@ export const createWordActions = (set: any, get: any) => ({
     }
   },
 
+  // Save already analyzed word (skip analysis step)
+  saveAnalyzedWord: async (analyzedWord: any, collectionId?: string) => {
+    try {
+      const userId = get().currentUserId
+      if (!userId) {
+        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
+      }
+
+      // Validate analyzed word object
+      console.log(
+        'saveAnalyzedWord received:',
+        JSON.stringify(analyzedWord, null, 2)
+      )
+
+      if (!analyzedWord || typeof analyzedWord !== 'object') {
+        throw new Error('Invalid analyzed word object')
+      }
+
+      console.log('dutch_lemma:', analyzedWord.dutch_lemma)
+      console.log('part_of_speech:', analyzedWord.part_of_speech)
+
+      if (!analyzedWord.dutch_lemma || !analyzedWord.part_of_speech) {
+        throw new Error(
+          `Analyzed word missing required fields. dutch_lemma: ${analyzedWord.dutch_lemma}, part_of_speech: ${analyzedWord.part_of_speech}`
+        )
+      }
+
+      // Add collection_id to analysis if provided
+      if (collectionId) {
+        analyzedWord.collection_id = collectionId
+      }
+
+      // Add to the database directly
+      const newWord = await wordService.addWord(analyzedWord, userId)
+      const currentWords = get().words
+      set({ words: [...currentWords, newWord] })
+      return newWord
+    } catch (error) {
+      console.error('Error saving analyzed word:', error)
+      set({
+        error: {
+          message: 'Failed to save analyzed word',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+        },
+      })
+      throw error
+    }
+  },
+
   updateWordAfterReview: async (wordId: string, assessment: any) => {
     try {
       // Update in database using the existing service

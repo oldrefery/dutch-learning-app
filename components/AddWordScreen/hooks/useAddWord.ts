@@ -10,7 +10,7 @@ export const useAddWord = () => {
     useState<Collection | null>(null)
   const [showImageSelector, setShowImageSelector] = useState(false)
 
-  const { addNewWord, clearError } = useAppStore()
+  const { saveAnalyzedWord, clearError } = useAppStore()
   const { collections } = useCollections()
 
   // Auto-select first collection if available and none selected
@@ -34,7 +34,7 @@ export const useAddWord = () => {
     clearError()
 
     try {
-      await addNewWord(analysisResult, selectedCollection.collection_id)
+      await saveAnalyzedWord(analysisResult, selectedCollection.collection_id)
       Toast.show({
         type: 'success',
         text1: 'Word Added!',

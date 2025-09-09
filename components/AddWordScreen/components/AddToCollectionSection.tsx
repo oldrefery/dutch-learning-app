@@ -24,9 +24,8 @@ export function AddToCollectionSection({
           Select Collection:
         </Text>
         <CollectionSelector
-          selectedCollection={selectedCollection}
-          onSelectCollection={onCollectionSelect}
-          collections={collections}
+          selectedCollectionId={selectedCollection?.collection_id || null}
+          onCollectionSelect={onCollectionSelect}
         />
       </View>
 

@@ -9,34 +9,39 @@ import {
   cleanExamples,
   formatTranslations,
 } from './geminiUtils.ts'
-import {
-  GEMINI_PROMPTS,
-  formatWordAnalysisPrompt,
-} from '../_shared/geminiPrompts.ts'
-import type {
-  WordAnalysisRequest,
-  WordAnalysisResponse,
-  WordAnalysisResult,
-  GeminiAnalysisResult,
-} from './types.ts'
+import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
 
 serve(async req => {
+  console.log('=== GEMINI HANDLER START ===')
+  console.log('Request method:', req.method)
+  console.log('Request URL:', req.url)
+
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request')
     return new Response('ok', { headers: CORS_HEADERS })
   }
 
   try {
-    // Parse request body
-    const { word, collectionId, userId }: WordAnalysisRequest = await req.json()
+    console.log('Parsing request body...')
+    const requestBody = await req.json()
+    console.log('Request body:', JSON.stringify(requestBody, null, 2))
+    console.log('Request body type:', typeof requestBody)
+    console.log('Request body keys:', Object.keys(requestBody))
 
-    // Validate input
-    if (!validateWordInput(word)) {
+    const { word, collectionId, userId } = requestBody
+    console.log('Extracted word:', word)
+    console.log('Word type:', typeof word)
+
+    // This function only analyzes strings - objects should use save-word endpoint
+    if (typeof word !== 'string') {
+      console.log('Error: gemini-handler expects string, got:', typeof word)
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Invalid word input. Please provide a valid Dutch word.',
-        } as WordAnalysisResponse),
+          error:
+            'gemini-handler only analyzes strings. Use save-word endpoint for saving objects.',
+        }),
         {
           status: 400,
           headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
@@ -44,27 +49,57 @@ serve(async req => {
       )
     }
 
+    console.log('Analyzing word string:', word)
+
+    // Validate input
+    if (!validateWordInput(word)) {
+      console.log('Word validation failed for:', word)
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Invalid word input. Please provide a valid Dutch word.',
+        }),
+        {
+          status: 400,
+          headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+    console.log('Word validation passed')
+
     // Call Gemini API for word analysis
+    console.log('Creating prompt for word:', word)
     const prompt = formatWordAnalysisPrompt(word)
+    console.log('Prompt created, calling Gemini API...')
+
     const geminiResponse = await callGeminiAPI(prompt)
-    const analysis: GeminiAnalysisResult = parseGeminiResponse(geminiResponse)
+    console.log('Gemini API response received, parsing...')
+
+    const analysis = parseGeminiResponse(geminiResponse)
+    console.log('Analysis parsed:', JSON.stringify(analysis, null, 2))
 
     // Get multiple image options
+    console.log('Getting image options...')
     const imageOptions = await getMultipleImagesForWord(
       analysis.translations.en[0] || word,
       analysis.part_of_speech,
       analysis.examples
     )
+    console.log('Image options received:', imageOptions.length, 'images')
 
     // Clean and format data
+    console.log('Cleaning and formatting data...')
     const cleanedExamples = cleanExamples(analysis.examples)
     const formattedTranslations = formatTranslations(analysis.translations)
+    console.log('Data cleaned and formatted')
 
     // Create TTS URL
+    console.log('Creating TTS URL...')
     const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=nl&client=tw-ob&q=${encodeURIComponent(word)}`
 
     // Build final result
-    const result: WordAnalysisResult = {
+    console.log('Building final result...')
+    const result = {
       dutch_original: word,
       dutch_lemma: analysis.dutch_lemma || word,
       part_of_speech: analysis.part_of_speech,
@@ -82,25 +117,38 @@ serve(async req => {
       tts_url: ttsUrl,
     }
 
+    console.log('Sending successful response...')
+    console.log('Final result:', JSON.stringify(result, null, 2))
+
     return new Response(
       JSON.stringify({
         success: true,
         data: result,
-      } as WordAnalysisResponse),
+      }),
       {
         status: 200,
         headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
       }
     )
   } catch (error) {
-    console.error('Error in gemini-handler:', error)
+    console.error('=== ERROR IN GEMINI HANDLER ===')
+    console.error('Error type:', typeof error)
+    console.error(
+      'Error message:',
+      error instanceof Error ? error.message : 'Unknown error'
+    )
+    console.error(
+      'Error stack:',
+      error instanceof Error ? error.stack : 'No stack trace'
+    )
+    console.error('Full error object:', error)
 
     return new Response(
       JSON.stringify({
         success: false,
         error:
           error instanceof Error ? error.message : 'Unknown error occurred',
-      } as WordAnalysisResponse),
+      }),
       {
         status: 500,
         headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
