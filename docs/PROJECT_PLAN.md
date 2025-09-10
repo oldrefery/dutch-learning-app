@@ -58,21 +58,43 @@ This document outlines the development of the Dutch Learning App in distinct pha
 
 **Goal:** Add more varied and engaging ways to practice vocabulary.
 
-- **Data Migration System:** 🔄 IN PROGRESS
-  - **Migration Function:** Create a Supabase Edge Function for updating existing words
-  - **Article Migration:** Add Dutch articles (de/het) to existing nouns in database
-  - **Image Migration:** Add associated images to existing words using Unsplash API
-  - **Admin Endpoint:** Create secure endpoint for running data migrations
-  - **Extensible Framework:** Design system to handle future feature additions
+- **Data Migration System:** ✅ COMPLETED
+  - **Migration Function:** ✅ Create a Supabase Edge Function for updating existing words
+  - **Article Migration:** ✅ Add Dutch articles (de/het) to existing nouns in database
+  - **Image Migration:** ✅ Add associated images to existing words using Unsplash API
+  - **Admin Endpoint:** ✅ Create secure endpoint for running data migrations
+  - **Extensible Framework:** ✅ Design system to handle future feature additions
 - **New Practice Modes:**
   - **Typing Quiz:** Show the translation and ask the user to type the Dutch word.
   - **Listening Quiz:** Play the audio and ask the user to type what they hear.
 - **UI/UX Improvements:**
   - Add animations and transitions using Reanimated or Skia to make the UI feel more fluid.
   - Implement loading states and skeletons for a better perceived performance.
-- **Word Management:**
-  - Allow users to edit or delete words from their collections.
-  - Allow creating and naming multiple collections.
+- **Word Management:** ✅ COMPLETED
+  - **Delete Words:** ✅ Allow users to delete words from their collections (swipe to delete)
+  - **Create Collections:** ✅ Allow creating and naming multiple collections
+  - **Delete Collections:** ✅ Allow deleting collections with confirmation
+
+### **Phase 3.1: Review & Analysis UI Enhancements** 🔄 IN PROGRESS
+
+**Goal:** Improve user experience in review sessions and word analysis.
+
+- **Review Session Improvements:**
+  - **Swipe Navigation:** Add left/right swipe gestures to navigate between review cards
+  - **Image Management in Review:** ✅ Allow changing images on the back side of review cards without flipping the card
+- **Collection View Enhancements:**
+  - **Collection Swipe Navigation:** Add swipe gestures to navigate between multiple collections
+  - **Word Detail View:** Add tap-to-view functionality for individual words showing stored analysis data
+- **Analysis Screen Optimization:**
+  - **Maximize Analysis Information:** Optimize UI to show maximum analysis information on screen
+  - **Minimize Other Components:** Reduce space occupied by non-essential components
+  - **Better Space Utilization:** Improve overall screen real estate usage
+- **Image Selection Enhancement:**
+  - **Contextual Image Search:** Add ability to input words/phrases to generate more relevant image suggestions
+  - **Improved Relevance:** Enhance image selection algorithm for better contextual matches
+- **Future: Word Type Selection:**
+  - **Multiple Word Meanings:** Allow selection of specific word types (e.g., "koop" as noun vs verb)
+  - **Precise Word Addition:** Enable more accurate word categorization during addition
 
 ### **Phase 4: Gamification & Motivation**
 

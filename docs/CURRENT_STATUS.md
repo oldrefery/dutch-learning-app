@@ -176,10 +176,22 @@ DutchLearningApp/
 
 - [x] **Dutch Articles Support**: Added de/het articles for nouns ✅
 - [x] **Image Associations**: Unsplash integration for word visuals ✅
+- [x] **Toast Notification System**: Centralized toast management with enums ✅
+- [x] **Duplicate Word Prevention**: Pre-analysis duplicate checking ✅
 - [ ] Audio/TTS integration for pronunciation
 - [ ] Offline mode and data synchronization
 - [ ] Advanced SRS analytics and progress tracking
 - [ ] Collection sharing and import/export
+
+### 3. Phase 3.1: Review & Analysis UI Enhancements 📋 IN PROGRESS
+
+- [ ] **Swipe Navigation in Review**: Add left/right swipe gestures for card navigation
+- [x] **Image Management in Review**: Allow changing images on back side without card flip ✅
+- [ ] **Collection Swipe Navigation**: Add swipe gestures to navigate between multiple collections
+- [ ] **Word Detail View**: Add tap-to-view functionality for individual words showing stored analysis data
+- [ ] **Analysis Screen Optimization**: Maximize analysis info display, minimize other components
+- [ ] **Contextual Image Search**: Add word/phrase input for more relevant image suggestions
+- [ ] **Future: Word Type Selection**: Multiple word meanings selection (e.g., "koop" as noun vs verb)
 
 ### 3. Production Readiness (Future)
 
