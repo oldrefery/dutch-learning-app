@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
+  runOnJS,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -26,8 +29,16 @@ export default function SwipeableWordItem({
   onDelete,
 }: SwipeableWordItemProps) {
   const translateX = useSharedValue(0)
+  const opacity = useSharedValue(0)
+  const translateY = useSharedValue(20)
   const SWIPE_THRESHOLD = -80
   const MAX_SWIPE = -100
+
+  useEffect(() => {
+    const delay = index * 50 // 50ms for each item
+    opacity.value = withTiming(1, { duration: 300 }, () => {})
+    translateY.value = withTiming(0, { duration: 400 }, () => {})
+  }, [])
 
   const getStatusColor = () => {
     if (word.repetition_count > 2) return Colors.success.DEFAULT
@@ -47,7 +58,11 @@ export default function SwipeableWordItem({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: translateX.value }],
+      transform: [
+        { translateX: translateX.value },
+        { translateY: translateY.value },
+      ],
+      opacity: opacity.value,
     }
   })
 
@@ -63,6 +78,8 @@ export default function SwipeableWordItem({
       if (translationX < SWIPE_THRESHOLD || velocityX < -500) {
         // Show delete
         translateX.value = withSpring(MAX_SWIPE)
+        runOnJS(console.log)('!!! Haptic feedback should trigger now !!!')
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium)
       } else {
         // Reset position
         translateX.value = withSpring(0)

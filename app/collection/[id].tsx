@@ -17,6 +17,7 @@ import Animated, {
   interpolate,
   Extrapolation,
 } from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
 import CollectionStats from '@/components/CollectionStats'
@@ -98,6 +99,7 @@ export default function CollectionDetailScreen() {
   }
 
   const handleStartReview = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     if (stats.wordsForReview === 0) {
       ToastService.showInfo(
         ToastMessageType.NO_WORDS_FOR_REVIEW,
