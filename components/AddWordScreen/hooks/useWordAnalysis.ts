@@ -69,10 +69,7 @@ export const useWordAnalysis = () => {
       }
 
       setAnalysisResult(result)
-      ToastService.showSuccess(
-        ToastMessageType.WORD_ADDED,
-        'Word has been analyzed successfully'
-      )
+      ToastService.showSuccess(ToastMessageType.WORD_ANALYZED)
     } catch (error: any) {
       ToastService.showError(ToastMessageType.ANALYSIS_FAILED, error.message)
     } finally {

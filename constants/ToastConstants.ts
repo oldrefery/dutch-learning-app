@@ -9,6 +9,7 @@
 export enum ToastMessageType {
   // Success messages
   WORD_ADDED = 'WORD_ADDED',
+  WORD_ANALYZED = 'WORD_ANALYZED',
   COLLECTION_DELETED = 'COLLECTION_DELETED',
   WORD_DELETED = 'WORD_DELETED',
   SESSION_COMPLETE = 'SESSION_COMPLETE',
@@ -49,6 +50,10 @@ export const TOAST_MESSAGES: Record<ToastMessageType, ToastMessage> = {
   [ToastMessageType.WORD_ADDED]: {
     text1: 'Word Added!',
     text2: 'Word has been successfully added to collection',
+  },
+  [ToastMessageType.WORD_ANALYZED]: {
+    text1: 'Analysis Complete',
+    text2: 'Word has been analyzed successfully',
   },
   [ToastMessageType.COLLECTION_DELETED]: {
     text1: 'Collection Deleted',
