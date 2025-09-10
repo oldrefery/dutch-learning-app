@@ -23,7 +23,13 @@ export default function CollectionDetailScreen() {
   const scrollY = useRef(new Animated.Value(0)).current
 
   const collection = collections.find(c => c.collection_id === id)
-  const collectionWords = words.filter(word => word.collection_id === id)
+  const collectionWords = words
+    .filter(word => word.collection_id === id)
+    .sort((a, b) => {
+      const wordA = a.dutch_lemma.toLowerCase()
+      const wordB = b.dutch_lemma.toLowerCase()
+      return wordA.localeCompare(wordB)
+    })
 
   const stats = {
     totalWords: collectionWords.length,
