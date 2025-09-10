@@ -1,6 +1,7 @@
 import { wordService } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
-import Toast from 'react-native-toast-message'
+import { ToastService } from '@/components/AppToast'
+import { ToastMessageType } from '@/constants/ToastConstants'
 
 const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
 const UNKNOWN_ERROR = 'Unknown error'
@@ -42,11 +43,10 @@ export const createWordActions = (set: any, get: any) => ({
         normalizedWord
       )
       if (existingWord) {
-        Toast.show({
-          type: 'info',
-          text1: 'Word Already Exists',
-          text2: `"${existingWord.dutch_lemma}" is already in your collection`,
-        })
+        ToastService.showInfo(
+          ToastMessageType.COLLECTION_NAME_REQUIRED,
+          `"${existingWord.dutch_lemma}" is already in your collection`
+        )
         return null
       }
 
@@ -64,11 +64,10 @@ export const createWordActions = (set: any, get: any) => ({
         analysis.dutch_lemma
       )
       if (finalExistingWord) {
-        Toast.show({
-          type: 'info',
-          text1: 'Word Already Exists',
-          text2: `"${analysis.dutch_lemma}" is already in your collection`,
-        })
+        ToastService.showInfo(
+          ToastMessageType.COLLECTION_NAME_REQUIRED,
+          `"${analysis.dutch_lemma}" is already in your collection`
+        )
         return null
       }
 
@@ -127,11 +126,10 @@ export const createWordActions = (set: any, get: any) => ({
         analyzedWord.dutch_lemma
       )
       if (existingWord) {
-        Toast.show({
-          type: 'info',
-          text1: 'Word Already Exists',
-          text2: `"${analyzedWord.dutch_lemma}" is already in your collection`,
-        })
+        ToastService.showInfo(
+          ToastMessageType.COLLECTION_NAME_REQUIRED,
+          `"${analyzedWord.dutch_lemma}" is already in your collection`
+        )
         return null
       }
 

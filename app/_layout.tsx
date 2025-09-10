@@ -10,7 +10,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
-import Toast from 'react-native-toast-message'
+import { AppToast } from '@/components/AppToast'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import { useAppStore } from '@/stores/useAppStore'
@@ -68,7 +68,7 @@ function RootLayoutNav() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>
-        <Toast />
+        <AppToast />
       </ThemeProvider>
     </GestureHandlerRootView>
   )

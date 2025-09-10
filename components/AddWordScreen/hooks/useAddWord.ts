@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import Toast from 'react-native-toast-message'
+import { ToastService } from '@/components/AppToast'
+import { ToastMessageType } from '@/constants/ToastConstants'
 import { useAppStore } from '@/stores/useAppStore'
 import { useCollections } from '@/hooks/useCollections'
 import type { Collection } from '@/types/database'
@@ -22,11 +23,7 @@ export const useAddWord = () => {
 
   const addWord = async (analysisResult: any) => {
     if (!selectedCollection) {
-      Toast.show({
-        type: 'error',
-        text1: 'No Collection Selected',
-        text2: 'Please select a collection to add the word to',
-      })
+      ToastService.showError(ToastMessageType.NO_COLLECTION_SELECTED)
       return
     }
 
@@ -35,18 +32,13 @@ export const useAddWord = () => {
 
     try {
       await saveAnalyzedWord(analysisResult, selectedCollection.collection_id)
-      Toast.show({
-        type: 'success',
-        text1: 'Word Added!',
-        text2: `"${analysisResult.dutch_lemma}" has been added to "${selectedCollection.name}"`,
-      })
+      ToastService.showWordAdded(
+        analysisResult.dutch_lemma,
+        selectedCollection.name
+      )
       return true
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error Adding Word',
-        text2: error.message || 'Could not add word. Please try again.',
-      })
+      ToastService.showWordError(error.message)
       return false
     } finally {
       setIsAdding(false)

@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 // Review screen for spaced repetition learning
 import { TouchableOpacity, ActivityIndicator } from 'react-native'
 import { TapGestureHandler, State } from 'react-native-gesture-handler'
-import Toast from 'react-native-toast-message'
+// Toast is now handled globally in _layout.tsx
 import { Text, View } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { CardFront } from '@/components/ReviewCard/CardFront'
@@ -198,7 +198,7 @@ export default function ReviewScreen() {
         />
       )}
 
-      <Toast />
+      {/* Toast is now handled globally in _layout.tsx */}
     </View>
   )
 }

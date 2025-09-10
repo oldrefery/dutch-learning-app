@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import Toast from 'react-native-toast-message'
+import { ToastService } from '@/components/AppToast'
+import { ToastMessageType } from '@/constants/ToastConstants'
 import { wordService } from '@/lib/supabase'
 import { useAppStore } from '@/stores/useAppStore'
 import type { AnalysisResult } from '../types/AddWordTypes'
@@ -13,11 +14,10 @@ export const useWordAnalysis = () => {
 
   const analyzeWord = async (inputWord: string) => {
     if (!inputWord.trim()) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Please enter a Dutch word',
-      })
+      ToastService.showError(
+        ToastMessageType.ANALYSIS_FAILED,
+        'Please enter a Dutch word'
+      )
       return
     }
 
@@ -31,11 +31,10 @@ export const useWordAnalysis = () => {
           normalizedWord
         )
         if (existingWord) {
-          Toast.show({
-            type: 'info',
-            text1: 'Word Already Exists',
-            text2: `"${existingWord.dutch_lemma}" is already in your collection`,
-          })
+          ToastService.showInfo(
+            ToastMessageType.COLLECTION_NAME_REQUIRED,
+            `"${existingWord.dutch_lemma}" is already in your collection`
+          )
           return
         }
       } catch (error) {
@@ -70,17 +69,12 @@ export const useWordAnalysis = () => {
       }
 
       setAnalysisResult(result)
-      Toast.show({
-        type: 'success',
-        text1: 'Analysis Complete',
-        text2: 'Word has been analyzed successfully',
-      })
+      ToastService.showSuccess(
+        ToastMessageType.WORD_ADDED,
+        'Word has been analyzed successfully'
+      )
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Analysis Failed',
-        text2: error.message || 'Could not analyze word. Please try again.',
-      })
+      ToastService.showError(ToastMessageType.ANALYSIS_FAILED, error.message)
     } finally {
       setIsAnalyzing(false)
     }

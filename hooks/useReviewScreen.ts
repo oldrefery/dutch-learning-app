@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAppStore } from '@/stores/useAppStore'
 import { createAudioPlayer, AudioPlayer } from 'expo-audio'
-import { Toast } from 'react-native-toast-message/lib/src/Toast'
+import { ToastService } from '@/components/AppToast'
+import { ToastMessageType } from '@/constants/ToastConstants'
 
 export const useReviewScreen = () => {
   const {
@@ -86,11 +87,7 @@ export const useReviewScreen = () => {
         audioPlayer.play()
       } catch (error) {
         console.error('Failed to play audio:', error)
-        Toast.show({
-          type: 'error',
-          text1: 'Audio Error',
-          text2: 'Could not play pronunciation',
-        })
+        ToastService.showError(ToastMessageType.AUDIO_PLAYBACK_FAILED)
       }
     },
     [audioPlayer, currentWord?.dutch_lemma, currentWord?.tts_url]
@@ -130,17 +127,9 @@ export const useReviewScreen = () => {
     setIsLoading(true)
     try {
       await markCorrect()
-      Toast.show({
-        type: 'success',
-        text1: 'Correct!',
-        text2: 'Well done!',
-      })
+      // Success feedback is handled by the SRS system
     } catch {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to mark as correct',
-      })
+      ToastService.showError(ToastMessageType.MARK_INCORRECT_FAILED)
     } finally {
       setIsLoading(false)
     }
@@ -152,17 +141,9 @@ export const useReviewScreen = () => {
     setIsLoading(true)
     try {
       await markIncorrect()
-      Toast.show({
-        type: 'info',
-        text1: 'Incorrect',
-        text2: 'Keep practicing!',
-      })
+      ToastService.showReviewMessage('incorrect')
     } catch {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to mark as incorrect',
-      })
+      ToastService.showError(ToastMessageType.MARK_INCORRECT_FAILED)
     } finally {
       setIsLoading(false)
     }
@@ -173,27 +154,15 @@ export const useReviewScreen = () => {
 
     try {
       await deleteWord(currentWord.word_id)
-      Toast.show({
-        type: 'success',
-        text1: 'Word Deleted',
-        text2: 'Word has been removed from collection',
-      })
+      ToastService.showSuccess(ToastMessageType.WORD_DELETED)
     } catch {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to delete word',
-      })
+      ToastService.showError(ToastMessageType.DELETE_WORD_FAILED)
     }
   }, [currentWord, deleteWord])
 
   const handleEndSession = useCallback(() => {
     endReviewSession()
-    Toast.show({
-      type: 'success',
-      text1: 'Session Complete',
-      text2: 'Great job! Review session finished.',
-    })
+    ToastService.showReviewMessage('complete')
   }, [endReviewSession])
 
   const handleImageChange = useCallback(
@@ -203,17 +172,9 @@ export const useReviewScreen = () => {
       try {
         // This would need to be implemented in the store
         // await updateWordImage(currentWord.word_id, imageUrl)
-        Toast.show({
-          type: 'success',
-          text1: 'Image Updated',
-          text2: 'Word image has been changed',
-        })
+        ToastService.showSuccess(ToastMessageType.IMAGE_UPDATED)
       } catch {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to update image',
-        })
+        ToastService.showError(ToastMessageType.UPDATE_IMAGE_FAILED)
       }
     },
     [currentWord]
@@ -222,11 +183,7 @@ export const useReviewScreen = () => {
   const restartSession = useCallback(() => {
     // This would need to be implemented in the store
     // For now, just show a message
-    Toast.show({
-      type: 'info',
-      text1: 'Restart',
-      text2: 'Session restart functionality coming soon',
-    })
+    ToastService.showInfo(ToastMessageType.RESTART_SESSION)
   }, [])
 
   return {

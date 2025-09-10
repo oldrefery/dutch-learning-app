@@ -10,7 +10,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useCollections } from '@/hooks/useCollections'
-import Toast from 'react-native-toast-message'
+import { ToastService } from '@/components/AppToast'
+import { ToastMessageType } from '@/constants/ToastConstants'
 
 interface CreateCollectionModalProps {
   visible: boolean
@@ -29,7 +30,7 @@ export default function CreateCollectionModal({
 
   const handleCreate = async () => {
     if (!collectionName.trim()) {
-      Alert.alert('Error', 'Please enter a collection name')
+      ToastService.showInfo(ToastMessageType.COLLECTION_NAME_REQUIRED)
       return
     }
 
@@ -37,21 +38,13 @@ export default function CreateCollectionModal({
       setIsCreating(true)
       const newCollection = await createNewCollection(collectionName.trim())
 
-      Toast.show({
-        type: 'success',
-        text1: 'Collection Created',
-        text2: `"${collectionName}" has been created successfully`,
-      })
+      ToastService.showCollectionSuccess('created', collectionName.trim())
 
       setCollectionName('')
       onCollectionCreated?.(newCollection)
       onClose()
     } catch {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to create collection. Please try again.',
-      })
+      ToastService.showCollectionError('create')
     } finally {
       setIsCreating(false)
     }

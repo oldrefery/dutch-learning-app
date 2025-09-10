@@ -33,6 +33,7 @@ export interface AppState {
   // Collection actions
   fetchCollections: () => Promise<void>
   createNewCollection: (name: string) => Promise<Collection>
+  deleteCollection: (collectionId: string) => Promise<void>
 
   // Review session actions
   startReviewSession: () => Promise<void>

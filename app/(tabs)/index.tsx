@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
-import Toast from 'react-native-toast-message'
+import { ToastService } from '@/components/AppToast'
+import { ToastMessageType } from '@/constants/ToastConstants'
 import { router } from 'expo-router'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
@@ -30,27 +31,15 @@ export default function CollectionsScreen() {
   const handleDeleteCollection = async (collectionId: string) => {
     try {
       await deleteCollection(collectionId)
-      Toast.show({
-        type: 'success',
-        text1: 'Collection Deleted',
-        text2: 'Collection and all its words have been deleted',
-      })
+      ToastService.showCollectionSuccess('deleted')
     } catch {
-      Toast.show({
-        type: 'error',
-        text1: 'Delete Failed',
-        text2: 'Failed to delete collection. Please try again.',
-      })
+      ToastService.showCollectionError('delete')
     }
   }
 
   const handleStartReview = () => {
     if (stats.wordsForReview === 0) {
-      Toast.show({
-        type: 'info',
-        text1: 'No Words',
-        text2: 'No words are due for review right now!',
-      })
+      ToastService.showReviewMessage('no_words')
       return
     }
     // Navigate to review screen
