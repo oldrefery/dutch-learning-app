@@ -1,11 +1,5 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
-import Animated, {
-  useAnimatedStyle,
-  interpolate,
-  Extrapolation,
-  SharedValue,
-} from 'react-native-reanimated'
 import { Text, View } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
@@ -16,53 +10,11 @@ interface CollectionStatsProps {
     wordsForReview: number
     newWords: number
   }
-  scrollY: SharedValue<number>
 }
 
-export default function CollectionStats({
-  stats,
-  scrollY,
-}: CollectionStatsProps) {
-  const animatedStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      scrollY.value,
-      [0, 100],
-      [1, 0],
-      Extrapolation.CLAMP
-    )
-
-    const translateY = interpolate(
-      scrollY.value,
-      [0, 100],
-      [0, -50],
-      Extrapolation.CLAMP
-    )
-
-    const height = interpolate(
-      scrollY.value,
-      [0, 100],
-      [200, 0],
-      Extrapolation.CLAMP
-    )
-
-    const marginBottom = interpolate(
-      scrollY.value,
-      [0, 100],
-      [16, 0],
-      Extrapolation.CLAMP
-    )
-
-    return {
-      opacity,
-      transform: [{ translateY }],
-      height,
-      marginBottom,
-      overflow: 'hidden',
-    }
-  })
-
+export default function CollectionStats({ stats }: CollectionStatsProps) {
   return (
-    <Animated.View style={[styles.statsCard, animatedStyle]}>
+    <View style={styles.statsCard}>
       <Text style={styles.statsTitle}>Collection Statistics</Text>
       <View style={styles.statsGrid}>
         <View style={styles.statItem}>
@@ -82,7 +34,7 @@ export default function CollectionStats({
           <Text style={styles.statLabel}>New</Text>
         </View>
       </View>
-    </Animated.View>
+    </View>
   )
 }
 

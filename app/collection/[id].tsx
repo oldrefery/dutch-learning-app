@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   FlatList,
+  StatusBar,
 } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -12,6 +13,9 @@ import { ToastMessageType } from '@/constants/ToastConstants'
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
+  useAnimatedStyle,
+  interpolate,
+  Extrapolation,
 } from 'react-native-reanimated'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
@@ -54,6 +58,19 @@ export default function CollectionDetailScreen() {
 
   const scrollHandler = useAnimatedScrollHandler(event => {
     scrollY.value = event.contentOffset.y
+  })
+
+  const headerAnimatedStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      scrollY.value,
+      [0, 295], // Only animate based on content height, not status bar
+      [0, -295],
+      Extrapolation.CLAMP
+    )
+
+    return {
+      transform: [{ translateY }],
+    }
   })
 
   const handleRefresh = async () => {
@@ -103,6 +120,9 @@ export default function CollectionDetailScreen() {
     }
   }
 
+  const STATUS_BAR_HEIGHT = StatusBar.currentHeight || 0
+  const HEADER_HEIGHT = 295 + STATUS_BAR_HEIGHT // Height of CollectionStats + CollectionReviewButton with margins + status bar
+
   if (!collection) {
     return (
       <View style={styles.container}>
@@ -128,46 +148,43 @@ export default function CollectionDetailScreen() {
         }}
       />
       <View style={styles.container}>
-        <CollectionStats stats={stats} scrollY={scrollY} />
-        <CollectionReviewButton
-          wordsForReview={stats.wordsForReview}
-          onPress={handleStartReview}
-          scrollY={scrollY}
-        />
-        <View style={styles.wordsSection}>
-          <AnimatedFlatList
-            data={collectionWords}
-            keyExtractor={(item: Word) => item.word_id}
-            renderItem={({ item, index }: { item: Word; index: number }) => (
-              <SwipeableWordItem
-                word={item}
-                index={index}
-                onPress={() => handleWordPress(item)}
-                onDelete={handleDeleteWord}
-              />
-            )}
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <Ionicons name="book-outline" size={48} color="#9CA3AF" />
-                <Text style={styles.emptyText}>
-                  No words in this collection
-                </Text>
-                <Text style={styles.emptySubtext}>
-                  Add some words to get started
-                </Text>
-              </View>
-            }
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-              />
-            }
-            showsVerticalScrollIndicator={false}
-            onScroll={scrollHandler}
-            scrollEventThrottle={16}
+        <Animated.View style={[styles.headerContainer, headerAnimatedStyle]}>
+          <CollectionStats stats={stats} />
+          <CollectionReviewButton
+            wordsForReview={stats.wordsForReview}
+            onPress={handleStartReview}
           />
-        </View>
+        </Animated.View>
+
+        <AnimatedFlatList
+          style={styles.wordsSection}
+          contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}
+          data={collectionWords}
+          keyExtractor={(item: Word) => item.word_id}
+          renderItem={({ item, index }: { item: Word; index: number }) => (
+            <SwipeableWordItem
+              word={item}
+              index={index}
+              onPress={() => handleWordPress(item)}
+              onDelete={handleDeleteWord}
+            />
+          )}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="book-outline" size={48} color="#9CA3AF" />
+              <Text style={styles.emptyText}>No words in this collection</Text>
+              <Text style={styles.emptySubtext}>
+                Add some words to get started
+              </Text>
+            </View>
+          }
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+          showsVerticalScrollIndicator={false}
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+        />
       </View>
 
       <WordDetailModal
@@ -183,6 +200,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',
+  },
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1, // Ensures header stays above the list
+    paddingTop: StatusBar.currentHeight || 0,
   },
   wordsSection: {
     flex: 1,

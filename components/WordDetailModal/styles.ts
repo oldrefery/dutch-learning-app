@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     backgroundColor: Colors.background.primary,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: screenHeight * 0.85, // 85% of screen
+    height: screenHeight * 0.8, // 80% of screen
     minHeight: screenHeight * 0.7,
   },
   dragIndicator: {
