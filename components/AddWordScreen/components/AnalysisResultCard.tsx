@@ -11,11 +11,29 @@ export function AnalysisResultCard({
   onPlayPronunciation,
   onImageChange,
   onShowImageSelector,
+  isAlreadyInCollection = false,
+  isCheckingDuplicate = false,
 }: AnalysisResultCardProps) {
   return (
     <ScrollView style={analysisResultStyles.resultContainer}>
       <View style={analysisResultStyles.resultCard}>
-        <Text style={analysisResultStyles.resultTitle}>Analysis Result</Text>
+        <View style={analysisResultStyles.titleContainer}>
+          <Text style={analysisResultStyles.resultTitle}>Analysis Result</Text>
+          {isCheckingDuplicate && (
+            <View style={analysisResultStyles.checkingBadge}>
+              <Ionicons name="hourglass" size={16} color="#6b7280" />
+              <Text style={analysisResultStyles.checkingText}>Checking...</Text>
+            </View>
+          )}
+          {isAlreadyInCollection && !isCheckingDuplicate && (
+            <View style={analysisResultStyles.alreadyExistsBadge}>
+              <Ionicons name="checkmark-circle" size={16} color="#059669" />
+              <Text style={analysisResultStyles.alreadyExistsText}>
+                Already in collection
+              </Text>
+            </View>
+          )}
+        </View>
 
         <View style={analysisResultStyles.resultRow}>
           <Text style={analysisResultStyles.resultLabel}>Word:</Text>

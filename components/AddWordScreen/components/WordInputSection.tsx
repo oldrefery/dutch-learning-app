@@ -16,6 +16,7 @@ export function WordInputSection({
   setInputWord,
   onAnalyze,
   isAnalyzing,
+  isCheckingDuplicate = false,
 }: WordInputSectionProps) {
   return (
     <View style={wordInputStyles.container}>
@@ -39,12 +40,13 @@ export function WordInputSection({
         <TouchableOpacity
           style={[
             wordInputStyles.analyzeButton,
-            isAnalyzing && wordInputStyles.analyzeButtonDisabled,
+            (isAnalyzing || isCheckingDuplicate) &&
+              wordInputStyles.analyzeButtonDisabled,
           ]}
           onPress={onAnalyze}
-          disabled={isAnalyzing}
+          disabled={isAnalyzing || isCheckingDuplicate}
         >
-          {isAnalyzing ? (
+          {isAnalyzing || isCheckingDuplicate ? (
             <ActivityIndicator size="small" color={Colors.background.primary} />
           ) : (
             <Ionicons
@@ -56,11 +58,13 @@ export function WordInputSection({
         </TouchableOpacity>
       </View>
 
-      {isAnalyzing && (
+      {(isAnalyzing || isCheckingDuplicate) && (
         <View style={wordInputStyles.loadingContainer}>
           <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
           <Text style={wordInputStyles.loadingText}>
-            Analyzing word with AI...
+            {isCheckingDuplicate
+              ? 'Checking for duplicates...'
+              : 'Analyzing word with AI...'}
           </Text>
         </View>
       )}

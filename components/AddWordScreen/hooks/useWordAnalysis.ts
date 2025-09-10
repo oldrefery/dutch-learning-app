@@ -22,27 +22,6 @@ export const useWordAnalysis = () => {
     }
 
     const normalizedWord = inputWord.trim().toLowerCase()
-
-    // Check if word already exists before analysis
-    if (currentUserId) {
-      try {
-        const existingWord = await wordService.checkWordExists(
-          currentUserId,
-          normalizedWord
-        )
-        if (existingWord) {
-          ToastService.showInfo(
-            ToastMessageType.WORD_ALREADY_EXISTS,
-            `"${existingWord.dutch_lemma}" is already in your collection`
-          )
-          return
-        }
-      } catch (error) {
-        console.error('Error checking word existence:', error)
-        // Continue with analysis if check fails
-      }
-    }
-
     setIsAnalyzing(true)
 
     try {

@@ -29,6 +29,7 @@ export interface WordInputSectionProps {
   setInputWord: (word: string) => void
   onAnalyze: () => void
   isAnalyzing: boolean
+  isCheckingDuplicate?: boolean
 }
 
 export interface AnalysisResultCardProps {
@@ -37,6 +38,8 @@ export interface AnalysisResultCardProps {
   onPlayPronunciation: (url: string) => void
   onImageChange: (url: string) => void
   onShowImageSelector: () => void
+  isAlreadyInCollection?: boolean
+  isCheckingDuplicate?: boolean
 }
 
 export interface AddToCollectionSectionProps {
