@@ -1,5 +1,7 @@
 import type { Word, Collection, ReviewSession, AppError } from './database'
 
+export type { AppError }
+
 export interface AppState {
   // User data
   currentUserId: string | null
@@ -74,6 +76,7 @@ export interface AnalyzedWord {
   image_url?: string
   tts_url?: string
   analysis_metadata?: Record<string, unknown>
+  collection_id?: string
 }
 
 export interface StoreSetFunction {

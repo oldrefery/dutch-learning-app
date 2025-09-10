@@ -1,14 +1,14 @@
-import React, { useRef } from 'react'
-// Review screen for spaced repetition learning
+import React, { useRef, useState } from 'react'
 import {
   TouchableOpacity,
   ActivityIndicator,
   View as RNView,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-// Toast handled globally in _layout.tsx
+import { runOnJS } from 'react-native-reanimated'
 import { Text, View } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
+import WordDetailModal from '@/components/WordDetailModal'
 import { CardFront } from '@/components/ReviewCard/CardFront'
 import { CardBack } from '@/components/ReviewCard/CardBack'
 import { useReviewScreen } from '@/hooks/useReviewScreen'
@@ -18,6 +18,8 @@ import { reviewScreenStyles } from '@/styles/ReviewScreenStyles'
 import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
 
 export default function ReviewScreen() {
+  const [selectedWord, setSelectedWord] = useState(null)
+  const [modalVisible, setModalVisible] = useState(false)
   const pronunciationRef = useRef<RNView>(null)
 
   const {
@@ -37,6 +39,18 @@ export default function ReviewScreen() {
     useImageSelector()
   const { currentWord, currentIndex, sessionComplete, reviewWords, isLoading } =
     useReviewSession()
+
+  const handleWordPress = () => {
+    if (currentWord) {
+      setSelectedWord(currentWord)
+      setModalVisible(true)
+    }
+  }
+
+  const handleCloseModal = () => {
+    setModalVisible(false)
+    setSelectedWord(null)
+  }
 
   // Check if we should show empty state first
   if (!hasWordsForReview || reviewWords.length === 0) {
@@ -94,9 +108,21 @@ export default function ReviewScreen() {
   const renderCard = () => {
     if (!currentWord) return null
 
-    // Combine gestures - pan for swipe navigation, tap for card flip
-    // Use Exclusive to prevent both gestures from firing at the same time
-    const combinedGesture = Gesture.Exclusive(panGesture(), tapGesture())
+    // Create double tap gesture with callback
+    const doubleTapWithCallback = Gesture.Tap()
+      .numberOfTaps(2)
+      .maxDuration(400)
+      .maxDistance(10)
+      .onEnd(() => {
+        'worklet'
+        runOnJS(handleWordPress)()
+      })
+
+    // Combine gestures - pan for swipe navigation, tap for card flip, double tap for word detail
+    const combinedGesture = Gesture.Exclusive(
+      panGesture(),
+      Gesture.Simultaneous(tapGesture(), doubleTapWithCallback)
+    )
 
     return (
       <GestureDetector gesture={combinedGesture}>
@@ -193,6 +219,13 @@ export default function ReviewScreen() {
           examples={currentWord.examples || undefined}
         />
       )}
+
+      {/* Word Detail Modal */}
+      <WordDetailModal
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        word={selectedWord}
+      />
 
       {/* Toast handled globally in _layout.tsx */}
     </View>

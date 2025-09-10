@@ -1,5 +1,11 @@
 import React from 'react'
-import { StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import {
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  View as RNView,
+} from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text } from '@/components/Themed'
 import { WordHeader } from './WordHeader'
@@ -10,7 +16,7 @@ import { Colors } from '@/constants/Colors'
 import type { CardBackProps } from './types'
 
 interface CardBackPropsWithRef extends CardBackProps {
-  pronunciationRef?: React.RefObject<View>
+  pronunciationRef?: React.RefObject<RNView | null>
 }
 
 export function CardBack({

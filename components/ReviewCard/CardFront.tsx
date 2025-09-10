@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View as RNView } from 'react-native'
 import { Text, View } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { Colors } from '@/constants/Colors'
@@ -8,7 +8,7 @@ import type { ReviewCardProps } from './types'
 interface CardFrontProps extends ReviewCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
-  pronunciationRef?: React.RefObject<View>
+  pronunciationRef?: React.RefObject<RNView | null>
 }
 
 export function CardFront({

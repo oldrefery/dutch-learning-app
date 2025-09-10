@@ -102,11 +102,25 @@ export const createReviewActions = (
   },
 
   markCorrect: () => {
-    get().submitReviewAssessment('good')
+    const state = get()
+    if (state.currentWord) {
+      get().submitReviewAssessment({
+        wordId: state.currentWord.word_id,
+        assessment: 'good',
+        timestamp: new Date(),
+      })
+    }
   },
 
   markIncorrect: () => {
-    get().submitReviewAssessment('again')
+    const state = get()
+    if (state.currentWord) {
+      get().submitReviewAssessment({
+        wordId: state.currentWord.word_id,
+        assessment: 'again',
+        timestamp: new Date(),
+      })
+    }
   },
 
   flipCard: () => {

@@ -181,6 +181,21 @@ export const useReviewScreen = () => {
       })
   }, [isScrolling, lastTouchTime, flipCard, isFlipped])
 
+  // Create double tap gesture for word detail
+  const doubleTapGesture = useCallback(() => {
+    return Gesture.Tap()
+      .numberOfTaps(2)
+      .maxDuration(400)
+      .maxDistance(10)
+      .onEnd(() => {
+        'worklet'
+        if (!isScrolling) {
+          // This will be handled by the parent component
+          // We'll pass a callback function
+        }
+      })
+  }, [isScrolling])
+
   // Create pan gesture for swipe navigation
   const panGesture = useCallback(() => {
     return Gesture.Pan()
@@ -221,6 +236,7 @@ export const useReviewScreen = () => {
     handleImageChange,
     restartSession,
     tapGesture,
+    doubleTapGesture,
     panGesture,
   }
 }

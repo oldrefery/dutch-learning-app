@@ -28,18 +28,6 @@ export default function ImageSelector({
   const [error, setError] = useState<string | null>(null)
   const [offset, setOffset] = useState(0)
 
-  // Load images when modal opens or word changes
-  useEffect(() => {
-    if (visible && englishTranslation) {
-      loadImages()
-    } else if (!visible) {
-      // Clear images when modal closes to save memory
-      setImages([])
-      setError(null)
-      setOffset(0)
-    }
-  }, [visible, englishTranslation, partOfSpeech, loadImages])
-
   const loadImages = useCallback(async () => {
     setLoading(true)
     setError(null)
@@ -111,6 +99,18 @@ export default function ImageSelector({
       setLoadingMore(false)
     }
   }, [englishTranslation, partOfSpeech, examples, offset])
+
+  // Load images when modal opens or word changes
+  useEffect(() => {
+    if (visible && englishTranslation) {
+      loadImages()
+    } else if (!visible) {
+      // Clear images when modal closes to save memory
+      setImages([])
+      setError(null)
+      setOffset(0)
+    }
+  }, [visible, englishTranslation, partOfSpeech, loadImages])
 
   const handleImageSelect = (imageUrl: string) => {
     onSelect(imageUrl)

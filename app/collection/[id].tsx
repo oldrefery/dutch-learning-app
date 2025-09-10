@@ -13,14 +13,17 @@ import { useAppStore } from '@/stores/useAppStore'
 import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
+import WordDetailModal from '@/components/WordDetailModal'
 import type { Word } from '@/types/database'
 
 export default function CollectionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const [refreshing, setRefreshing] = useState(false)
+  const [selectedWord, setSelectedWord] = useState<Word | null>(null)
+  const [modalVisible, setModalVisible] = useState(false)
+  const scrollY = useRef(new Animated.Value(0)).current
   const { words, collections, fetchWords, fetchCollections, deleteWord } =
     useAppStore()
-  const scrollY = useRef(new Animated.Value(0)).current
 
   const collection = collections.find(c => c.collection_id === id)
   const collectionWords = words
@@ -56,12 +59,13 @@ export default function CollectionDetailScreen() {
   }
 
   const handleWordPress = (word: Word) => {
-    // TODO: Navigate to word detail screen
-    Toast.show({
-      type: 'info',
-      text1: 'Word Detail',
-      text2: `Viewing "${word.dutch_original || word.dutch_lemma}"`,
-    })
+    setSelectedWord(word)
+    setModalVisible(true)
+  }
+
+  const handleCloseModal = () => {
+    setModalVisible(false)
+    setSelectedWord(null)
   }
 
   const handleStartReview = () => {
@@ -175,6 +179,13 @@ export default function CollectionDetailScreen() {
           />
         </Animated.View>
       </View>
+
+      {/* Word Detail Modal */}
+      <WordDetailModal
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        word={selectedWord}
+      />
     </>
   )
 }
