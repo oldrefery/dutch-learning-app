@@ -32,6 +32,7 @@ export enum ToastMessageType {
   INCORRECT_ANSWER = 'INCORRECT_ANSWER',
   RESTART_SESSION = 'RESTART_SESSION',
   COLLECTION_NAME_REQUIRED = 'COLLECTION_NAME_REQUIRED',
+  WORD_ALREADY_EXISTS = 'WORD_ALREADY_EXISTS',
 
   // Warning messages
   NETWORK_ERROR = 'NETWORK_ERROR',
@@ -130,6 +131,10 @@ export const TOAST_MESSAGES: Record<ToastMessageType, ToastMessage> = {
   [ToastMessageType.COLLECTION_NAME_REQUIRED]: {
     text1: 'Name Required',
     text2: 'Please enter a collection name',
+  },
+  [ToastMessageType.WORD_ALREADY_EXISTS]: {
+    text1: 'Word Already Exists',
+    text2: 'This word is already in your collection',
   },
 
   // Warning messages

@@ -32,7 +32,7 @@ export const useWordAnalysis = () => {
         )
         if (existingWord) {
           ToastService.showInfo(
-            ToastMessageType.COLLECTION_NAME_REQUIRED,
+            ToastMessageType.WORD_ALREADY_EXISTS,
             `"${existingWord.dutch_lemma}" is already in your collection`
           )
           return

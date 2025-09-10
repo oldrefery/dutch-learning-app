@@ -44,7 +44,7 @@ export const createWordActions = (set: any, get: any) => ({
       )
       if (existingWord) {
         ToastService.showInfo(
-          ToastMessageType.COLLECTION_NAME_REQUIRED,
+          ToastMessageType.WORD_ALREADY_EXISTS,
           `"${existingWord.dutch_lemma}" is already in your collection`
         )
         return null
@@ -65,7 +65,7 @@ export const createWordActions = (set: any, get: any) => ({
       )
       if (finalExistingWord) {
         ToastService.showInfo(
-          ToastMessageType.COLLECTION_NAME_REQUIRED,
+          ToastMessageType.WORD_ALREADY_EXISTS,
           `"${analysis.dutch_lemma}" is already in your collection`
         )
         return null
@@ -127,7 +127,7 @@ export const createWordActions = (set: any, get: any) => ({
       )
       if (existingWord) {
         ToastService.showInfo(
-          ToastMessageType.COLLECTION_NAME_REQUIRED,
+          ToastMessageType.WORD_ALREADY_EXISTS,
           `"${analyzedWord.dutch_lemma}" is already in your collection`
         )
         return null
