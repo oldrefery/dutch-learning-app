@@ -12,13 +12,14 @@ import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
 import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
-import WordItem from '@/components/WordItem'
+import SwipeableWordItem from '@/components/SwipeableWordItem'
 import type { Word } from '@/types/database'
 
 export default function CollectionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const [refreshing, setRefreshing] = useState(false)
-  const { words, collections, fetchWords, fetchCollections } = useAppStore()
+  const { words, collections, fetchWords, fetchCollections, deleteWord } =
+    useAppStore()
   const scrollY = useRef(new Animated.Value(0)).current
 
   const collection = collections.find(c => c.collection_id === id)
@@ -70,6 +71,23 @@ export default function CollectionDetailScreen() {
     router.push('/(tabs)/review')
   }
 
+  const handleDeleteWord = async (wordId: string) => {
+    try {
+      await deleteWord(wordId)
+      Toast.show({
+        type: 'success',
+        text1: 'Word Deleted',
+        text2: 'Word has been removed from collection',
+      })
+    } catch (error: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Delete Failed',
+        text2: error.message || 'Could not delete word',
+      })
+    }
+  }
+
   if (!collection) {
     return (
       <View style={styles.container}>
@@ -118,10 +136,11 @@ export default function CollectionDetailScreen() {
             data={collectionWords}
             keyExtractor={item => item.word_id}
             renderItem={({ item, index }) => (
-              <WordItem
+              <SwipeableWordItem
                 word={item}
                 index={index}
                 onPress={() => handleWordPress(item)}
+                onDelete={handleDeleteWord}
               />
             )}
             ListEmptyComponent={
@@ -191,6 +210,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#ef4444',
     marginBottom: 16,
+  },
+  backButton: {
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#f3f4f6',
   },
   backButtonText: {
     color: '#3b82f6',
