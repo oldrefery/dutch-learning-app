@@ -21,7 +21,7 @@ JSON structure:
       "ru": "Russian translation of example"
     }
   ],
-  "article": "de" or "het" or null,
+  "article": "de" or "het" or null (ONLY for nouns, null for other parts of speech),
   "is_irregular": true|false,
   "is_reflexive": true|false,
   "is_separable": true|false,
@@ -48,17 +48,26 @@ EXPERT INSTRUCTIONS:
   1. Create 4-6 authentic, natural example sentences
   2. Use examples from real Dutch usage - books, articles, conversations
   3. Show examples for ALL major meanings/uses of the word
-  4. Demonstrate different verb forms, tenses, and contexts
+  4. For VERBS: Demonstrate different conjugations and tenses:
+     - Present tense (ik straal, jij straalt, hij straalt)
+     - Past tense (ik straalde, jij straalde, hij straalde)
+     - Perfect tense (ik heb gestraald, jij hebt gestraald)
+     - Future tense (ik zal stralen, jij zult stralen)
   5. For separable verbs: Use correct Dutch word order (e.g., "ik denk na" not "ik nadenk")
   6. Make examples sound natural and authentic to native speakers
   7. Include both formal and informal usage where appropriate
+  8. Show the verb in different contexts and meanings
 
 - For GRAMMATICAL ANALYSIS:
   1. Use your linguistic expertise to determine part of speech
-  2. For verbs: Determine if irregular, reflexive, separable based on your knowledge
-  3. For separable verbs: Identify the prefix and root verb correctly
-  4. For nouns: Determine the correct article (de/het) based on Dutch grammar rules
-  5. Be precise and accurate in all grammatical classifications
+  2. For verbs: ALWAYS return the INFINITIVE form in dutch_lemma field
+  3. For verbs: Determine if irregular, reflexive, separable based on your knowledge
+  4. For separable verbs: Identify the prefix and root verb correctly
+  5. For nouns: Determine the correct article (de/het) based on Dutch grammar rules
+  6. For adjectives, adverbs, verbs, prepositions, conjunctions: article = null
+  7. Be precise and accurate in all grammatical classifications
+  8. CRITICAL: If input is a conjugated verb form, find and return the infinitive
+  9. CRITICAL: Only nouns get articles (de/het), all other parts of speech get null
 
 - For SEPARABLE VERBS (scheidbare werkwoorden):
   1. Use your expertise to identify if the word is separable
@@ -109,6 +118,32 @@ SEPARABLE VERB DETECTION:
 - If word starts with these prefixes + valid verb, it's separable
 - Examples: nadenken (na+denken), uitgaan (uit+gaan), meenemen (mee+nemen)
 - ALWAYS show separation in present tense: "ik denk na" not "ik nadenk"
+
+VERB CONJUGATION ANALYSIS:
+- CRITICAL: Always return the INFINITIVE form in dutch_lemma field
+- If input is conjugated verb (straalde, straalt, gestraald), find infinitive (stralen)
+- Common patterns:
+  - Past tense: -de/-te ending → infinitive (straalde → stralen)
+  - Present tense: -t ending → infinitive (straalt → stralen) 
+  - Perfect tense: ge- prefix → infinitive (gestraald → stralen)
+- For irregular verbs, use your expertise to find correct infinitive
+- Examples:
+  - "straalde" → dutch_lemma: "stralen"
+  - "kocht" → dutch_lemma: "kopen" 
+  - "ging" → dutch_lemma: "gaan"
+  - "was" → dutch_lemma: "zijn"
+
+ARTICLE USAGE RULES:
+- CRITICAL: Only NOUNS get articles (de/het)
+- All other parts of speech get article = null
+- Examples:
+  - "huis" (noun) → article: "het" (het huis)
+  - "verloofd" (adjective) → article: null
+  - "lopen" (verb) → article: null
+  - "mooi" (adjective) → article: null
+  - "snel" (adverb) → article: null
+  - "in" (preposition) → article: null
+- NEVER use articles with adjectives, verbs, adverbs, prepositions, conjunctions
 
 You are the Dutch language expert - trust your knowledge and provide the most accurate analysis possible.
 
