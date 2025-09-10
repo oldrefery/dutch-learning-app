@@ -1,12 +1,18 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity, Animated } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
+import Animated, {
+  useAnimatedStyle,
+  interpolate,
+  Extrapolation,
+  SharedValue,
+} from 'react-native-reanimated'
 import { Text } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
 interface CollectionReviewButtonProps {
   wordsForReview: number
   onPress: () => void
-  scrollY: Animated.Value
+  scrollY: SharedValue<number>
 }
 
 export default function CollectionReviewButton({
@@ -14,36 +20,48 @@ export default function CollectionReviewButton({
   onPress,
   scrollY,
 }: CollectionReviewButtonProps) {
+  const animatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      scrollY.value,
+      [0, 100],
+      [1, 0],
+      Extrapolation.CLAMP
+    )
+
+    const translateY = interpolate(
+      scrollY.value,
+      [0, 100],
+      [0, -30],
+      Extrapolation.CLAMP
+    )
+
+    const height = interpolate(
+      scrollY.value,
+      [0, 100],
+      [60, 0],
+      Extrapolation.CLAMP
+    )
+
+    const marginBottom = interpolate(
+      scrollY.value,
+      [0, 100],
+      [16, 0],
+      Extrapolation.CLAMP
+    )
+
+    return {
+      opacity,
+      transform: [{ translateY }],
+      height,
+      marginBottom,
+      overflow: 'hidden',
+    }
+  })
+
   if (wordsForReview === 0) return null
 
-  const statsOpacity = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [1, 0],
-    extrapolate: 'clamp',
-  })
-
-  const statsTranslateY = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, -100],
-    extrapolate: 'clamp',
-  })
-
   return (
-    <Animated.View
-      style={[
-        styles.reviewButtonContainer,
-        {
-          opacity: statsOpacity,
-          transform: [{ translateY: statsTranslateY }],
-          height: scrollY.interpolate({
-            inputRange: [0, 100],
-            outputRange: [60, 0], // Button height to 0
-            extrapolate: 'clamp',
-          }),
-          overflow: 'hidden',
-        },
-      ]}
-    >
+    <Animated.View style={[styles.reviewButtonContainer, animatedStyle]}>
       <TouchableOpacity style={styles.reviewButton} onPress={onPress}>
         <Text style={styles.reviewButtonText}>
           Review {wordsForReview} Words
@@ -55,12 +73,7 @@ export default function CollectionReviewButton({
 
 const styles = StyleSheet.create({
   reviewButtonContainer: {
-    position: 'absolute',
-    top: 200, // Adjust based on stats card height
-    left: 0,
-    right: 0,
     marginHorizontal: 16,
-    zIndex: 10,
   },
   reviewButton: {
     backgroundColor: Colors.primary.DEFAULT,

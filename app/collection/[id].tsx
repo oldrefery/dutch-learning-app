@@ -1,13 +1,18 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
-  Animated,
+  FlatList,
 } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-import Toast from 'react-native-toast-message'
+import { ToastService } from '@/components/AppToast'
+import { ToastMessageType } from '@/constants/ToastConstants'
+import Animated, {
+  useSharedValue,
+  useAnimatedScrollHandler,
+} from 'react-native-reanimated'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
 import CollectionStats from '@/components/CollectionStats'
@@ -16,12 +21,16 @@ import SwipeableWordItem from '@/components/SwipeableWordItem'
 import WordDetailModal from '@/components/WordDetailModal'
 import type { Word } from '@/types/database'
 
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<Word>)
+
 export default function CollectionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const [refreshing, setRefreshing] = useState(false)
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
-  const scrollY = useRef(new Animated.Value(0)).current
+
+  const scrollY = useSharedValue(0)
+
   const { words, collections, fetchWords, fetchCollections, deleteWord } =
     useAppStore()
 
@@ -43,16 +52,19 @@ export default function CollectionDetailScreen() {
     newWords: collectionWords.filter(w => w.repetition_count === 0).length,
   }
 
+  const scrollHandler = useAnimatedScrollHandler(event => {
+    scrollY.value = event.contentOffset.y
+  })
+
   const handleRefresh = async () => {
     setRefreshing(true)
     try {
       await Promise.all([fetchWords(), fetchCollections()])
     } catch {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to refresh data',
-      })
+      ToastService.showError(
+        ToastMessageType.NETWORK_ERROR,
+        'Failed to refresh data'
+      )
     } finally {
       setRefreshing(false)
     }
@@ -70,31 +82,24 @@ export default function CollectionDetailScreen() {
 
   const handleStartReview = () => {
     if (stats.wordsForReview === 0) {
-      Toast.show({
-        type: 'info',
-        text1: 'No Words',
-        text2: 'No words are due for review in this collection',
-      })
+      ToastService.showInfo(
+        ToastMessageType.NO_WORDS_FOR_REVIEW,
+        'No words are due for review in this collection'
+      )
       return
     }
-    // Navigate to review screen
     router.push('/(tabs)/review')
   }
 
   const handleDeleteWord = async (wordId: string) => {
     try {
       await deleteWord(wordId)
-      Toast.show({
-        type: 'success',
-        text1: 'Word Deleted',
-        text2: 'Word has been removed from collection',
-      })
+      ToastService.showSuccess(ToastMessageType.WORD_DELETED)
     } catch (error: any) {
-      Toast.show({
-        type: 'error',
-        text1: 'Delete Failed',
-        text2: error.message || 'Could not delete word',
-      })
+      ToastService.showError(
+        ToastMessageType.DELETE_WORD_FAILED,
+        error.message || 'Could not delete word'
+      )
     }
   }
 
@@ -129,23 +134,11 @@ export default function CollectionDetailScreen() {
           onPress={handleStartReview}
           scrollY={scrollY}
         />
-
-        <Animated.View
-          style={[
-            styles.wordsSection,
-            {
-              paddingTop: scrollY.interpolate({
-                inputRange: [0, 100],
-                outputRange: [280, 16], // Start with space for stats, end with normal padding
-                extrapolate: 'clamp',
-              }),
-            },
-          ]}
-        >
-          <Animated.FlatList
+        <View style={styles.wordsSection}>
+          <AnimatedFlatList
             data={collectionWords}
-            keyExtractor={item => item.word_id}
-            renderItem={({ item, index }) => (
+            keyExtractor={(item: Word) => item.word_id}
+            renderItem={({ item, index }: { item: Word; index: number }) => (
               <SwipeableWordItem
                 word={item}
                 index={index}
@@ -171,16 +164,12 @@ export default function CollectionDetailScreen() {
               />
             }
             showsVerticalScrollIndicator={false}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: false }
-            )}
+            onScroll={scrollHandler}
             scrollEventThrottle={16}
           />
-        </Animated.View>
+        </View>
       </View>
 
-      {/* Word Detail Modal */}
       <WordDetailModal
         visible={modalVisible}
         onClose={handleCloseModal}

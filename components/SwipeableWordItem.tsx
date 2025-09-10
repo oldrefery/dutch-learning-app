@@ -1,20 +1,15 @@
-import React, { useRef } from 'react'
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  View as RNView,
-} from 'react-native'
+import React from 'react'
+import { StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  runOnJS,
 } from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { WordStatusType } from '@/components/WordDetailModal/types'
 import type { Word } from '@/types/database'
 
 interface SwipeableWordItemProps {
@@ -37,13 +32,15 @@ export default function SwipeableWordItem({
   const getStatusColor = () => {
     if (word.repetition_count > 2) return Colors.success.DEFAULT
     if (word.repetition_count > 0) return Colors.warning.DEFAULT
+
     return Colors.neutral[500]
   }
 
   const getStatusText = () => {
-    if (word.repetition_count > 2) return 'Mastered'
-    if (word.repetition_count > 0) return 'Learning'
-    return 'New'
+    if (word.repetition_count > 2) return WordStatusType.MASTERED
+    if (word.repetition_count > 0) return WordStatusType.LEARNING
+
+    return WordStatusType.NEW
   }
 
   const isDueForReview = new Date(word.next_review_date) <= new Date()
@@ -71,6 +68,8 @@ export default function SwipeableWordItem({
         translateX.value = withSpring(0)
       }
     })
+    .activeOffsetX([-10, 10]) //Activate swipe only after 10px horizontally
+    .failOffsetY([-5, 5]) //Cancel swipe if movement vertically > 5px
 
   const handleDelete = () => {
     Alert.alert(

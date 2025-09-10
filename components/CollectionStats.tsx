@@ -1,5 +1,11 @@
 import React from 'react'
-import { StyleSheet, Animated } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Animated, {
+  useAnimatedStyle,
+  interpolate,
+  Extrapolation,
+  SharedValue,
+} from 'react-native-reanimated'
 import { Text, View } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
@@ -10,43 +16,53 @@ interface CollectionStatsProps {
     wordsForReview: number
     newWords: number
   }
-  scrollY: Animated.Value
+  scrollY: SharedValue<number>
 }
 
 export default function CollectionStats({
   stats,
   scrollY,
 }: CollectionStatsProps) {
-  const statsOpacity = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [1, 0],
-    extrapolate: 'clamp',
-  })
+  const animatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      scrollY.value,
+      [0, 100],
+      [1, 0],
+      Extrapolation.CLAMP
+    )
 
-  const statsTranslateY = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [0, -100],
-    extrapolate: 'clamp',
-  })
+    const translateY = interpolate(
+      scrollY.value,
+      [0, 100],
+      [0, -50],
+      Extrapolation.CLAMP
+    )
 
-  const statsHeight = scrollY.interpolate({
-    inputRange: [0, 100],
-    outputRange: [280, 0], // Full height to 0
-    extrapolate: 'clamp',
+    const height = interpolate(
+      scrollY.value,
+      [0, 100],
+      [200, 0],
+      Extrapolation.CLAMP
+    )
+
+    const marginBottom = interpolate(
+      scrollY.value,
+      [0, 100],
+      [16, 0],
+      Extrapolation.CLAMP
+    )
+
+    return {
+      opacity,
+      transform: [{ translateY }],
+      height,
+      marginBottom,
+      overflow: 'hidden',
+    }
   })
 
   return (
-    <Animated.View
-      style={[
-        styles.statsCard,
-        {
-          opacity: statsOpacity,
-          transform: [{ translateY: statsTranslateY }],
-          height: statsHeight,
-          overflow: 'hidden',
-        },
-      ]}
-    >
+    <Animated.View style={[styles.statsCard, animatedStyle]}>
       <Text style={styles.statsTitle}>Collection Statistics</Text>
       <View style={styles.statsGrid}>
         <View style={styles.statItem}>
@@ -72,15 +88,11 @@ export default function CollectionStats({
 
 const styles = StyleSheet.create({
   statsCard: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     backgroundColor: Colors.background.primary,
-    margin: 16,
+    marginHorizontal: 16,
+    marginTop: 16,
     borderRadius: 12,
     padding: 16,
-    zIndex: 10,
   },
   statsTitle: {
     fontSize: 18,

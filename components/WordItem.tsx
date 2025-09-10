@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { WordStatusType } from '@/components/WordDetailModal/types'
 import type { Word } from '@/types/database'
 
 interface WordItemProps {
@@ -19,9 +20,9 @@ export default function WordItem({ word, index, onPress }: WordItemProps) {
   }
 
   const getStatusText = () => {
-    if (word.repetition_count > 2) return 'Mastered'
-    if (word.repetition_count > 0) return 'Learning'
-    return 'New'
+    if (word.repetition_count > 2) return WordStatusType.MASTERED
+    if (word.repetition_count > 0) return WordStatusType.LEARNING
+    return WordStatusType.NEW
   }
 
   const isDueForReview = new Date(word.next_review_date) <= new Date()
