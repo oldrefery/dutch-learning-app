@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Toast from 'react-native-toast-message'
 import { wordService } from '@/lib/supabase'
+import { useAppStore } from '@/stores/useAppStore'
 import type { AnalysisResult } from '../types/AddWordTypes'
 
 export const useWordAnalysis = () => {
@@ -8,6 +9,7 @@ export const useWordAnalysis = () => {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
     null
   )
+  const { currentUserId } = useAppStore()
 
   const analyzeWord = async (inputWord: string) => {
     if (!inputWord.trim()) {
@@ -19,11 +21,35 @@ export const useWordAnalysis = () => {
       return
     }
 
+    const normalizedWord = inputWord.trim().toLowerCase()
+
+    // Check if word already exists before analysis
+    if (currentUserId) {
+      try {
+        const existingWord = await wordService.checkWordExists(
+          currentUserId,
+          normalizedWord
+        )
+        if (existingWord) {
+          Toast.show({
+            type: 'info',
+            text1: 'Word Already Exists',
+            text2: `"${existingWord.dutch_lemma}" is already in your collection`,
+          })
+          return
+        }
+      } catch (error) {
+        console.error('Error checking word existence:', error)
+        // Continue with analysis if check fails
+      }
+    }
+
     setIsAnalyzing(true)
 
     try {
       // Only analyze the word, don't add it yet
-      const analysis = await wordService.analyzeWord(inputWord.trim())
+      // Convert to lowercase before sending to analysis
+      const analysis = await wordService.analyzeWord(normalizedWord)
 
       // Convert to display format
       const result: AnalysisResult = {

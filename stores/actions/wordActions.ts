@@ -1,5 +1,6 @@
 import { wordService } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
+import Toast from 'react-native-toast-message'
 
 const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
 const UNKNOWN_ERROR = 'Unknown error'
@@ -33,12 +34,42 @@ export const createWordActions = (set: any, get: any) => ({
         throw new Error(USER_NOT_AUTHENTICATED_ERROR)
       }
 
-      // First analyze the word
-      const analysis = await wordService.analyzeWord(word)
+      const normalizedWord = word.toLowerCase()
+
+      // Check if word already exists before analysis
+      const existingWord = await wordService.checkWordExists(
+        userId,
+        normalizedWord
+      )
+      if (existingWord) {
+        Toast.show({
+          type: 'info',
+          text1: 'Word Already Exists',
+          text2: `"${existingWord.dutch_lemma}" is already in your collection`,
+        })
+        return null
+      }
+
+      // First analyze the word - convert to lowercase before analysis
+      const analysis = await wordService.analyzeWord(normalizedWord)
 
       // Check if analysis was successful
       if (!analysis || typeof analysis !== 'object') {
         throw new Error('Failed to analyze word - invalid response')
+      }
+
+      // Double-check for duplicates after analysis (in case dutch_lemma differs from input)
+      const finalExistingWord = await wordService.checkWordExists(
+        userId,
+        analysis.dutch_lemma
+      )
+      if (finalExistingWord) {
+        Toast.show({
+          type: 'info',
+          text1: 'Word Already Exists',
+          text2: `"${analysis.dutch_lemma}" is already in your collection`,
+        })
+        return null
       }
 
       // Add collection_id to analysis if provided
@@ -88,6 +119,20 @@ export const createWordActions = (set: any, get: any) => ({
         throw new Error(
           `Analyzed word missing required fields. dutch_lemma: ${analyzedWord.dutch_lemma}, part_of_speech: ${analyzedWord.part_of_speech}`
         )
+      }
+
+      // Check if word already exists by dutch_lemma before adding
+      const existingWord = await wordService.checkWordExists(
+        userId,
+        analyzedWord.dutch_lemma
+      )
+      if (existingWord) {
+        Toast.show({
+          type: 'info',
+          text1: 'Word Already Exists',
+          text2: `"${analyzedWord.dutch_lemma}" is already in your collection`,
+        })
+        return null
       }
 
       // Add collection_id to analysis if provided
@@ -163,6 +208,57 @@ export const createWordActions = (set: any, get: any) => ({
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
+    }
+  },
+
+  // Get duplicate words
+  getDuplicateWords: async () => {
+    try {
+      const userId = get().currentUserId
+      if (!userId) {
+        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
+      }
+
+      return await wordService.getDuplicateWords(userId)
+    } catch (error) {
+      console.error('Error getting duplicate words:', error)
+      set({
+        error: {
+          message: 'Failed to get duplicate words',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+        },
+      })
+      throw error
+    }
+  },
+
+  // Remove duplicate word
+  removeDuplicateWord: async (wordId: string) => {
+    try {
+      const userId = get().currentUserId
+      if (!userId) {
+        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
+      }
+
+      await wordService.removeDuplicateWord(userId, wordId)
+
+      // Remove from local state
+      const currentWords = get().words
+      const updatedWords = currentWords.filter(
+        (word: any) => word.word_id !== wordId
+      )
+      set({ words: updatedWords })
+
+      return true
+    } catch (error) {
+      console.error('Error removing duplicate word:', error)
+      set({
+        error: {
+          message: 'Failed to remove duplicate word',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+        },
+      })
+      throw error
     }
   },
 })

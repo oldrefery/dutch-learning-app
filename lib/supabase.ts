@@ -93,6 +93,67 @@ export const wordService = {
     return data
   },
 
+  // Check if word already exists (by dutch_lemma)
+  async checkWordExists(userId: string, dutchLemma: string) {
+    const normalizedLemma = dutchLemma.trim().toLowerCase()
+
+    const { data, error } = await supabase
+      .from('words')
+      .select('word_id, dutch_lemma, collection_id')
+      .eq('user_id', userId)
+      .eq('dutch_lemma', normalizedLemma)
+
+    if (error) {
+      throw new Error(`Failed to check word existence: ${error.message}`)
+    }
+
+    return data.length > 0 ? data[0] : null
+  },
+
+  // Get duplicate words (same dutch_lemma)
+  async getDuplicateWords(userId: string) {
+    const { data, error } = await supabase
+      .from('words')
+      .select('dutch_lemma, word_id, created_at')
+      .eq('user_id', userId)
+      .order('dutch_lemma')
+
+    if (error) {
+      throw new Error(
+        `Failed to fetch words for duplicate check: ${error.message}`
+      )
+    }
+
+    // Group by dutch_lemma and find duplicates
+    const grouped = data.reduce(
+      (acc, word) => {
+        const lemma = word.dutch_lemma
+        if (!acc[lemma]) {
+          acc[lemma] = []
+        }
+        acc[lemma].push(word)
+        return acc
+      },
+      {} as Record<string, any[]>
+    )
+
+    // Return only groups with more than one word
+    return Object.values(grouped).filter(group => group.length > 1)
+  },
+
+  // Remove duplicate word (keep the oldest one)
+  async removeDuplicateWord(userId: string, wordId: string) {
+    const { error } = await supabase
+      .from('words')
+      .delete()
+      .eq('word_id', wordId)
+      .eq('user_id', userId)
+
+    if (error) {
+      throw new Error(`Failed to remove duplicate word: ${error.message}`)
+    }
+  },
+
   // Get words due for review
   async getWordsForReview(userId: string) {
     const today = new Date().toISOString().split('T')[0]
