@@ -1,6 +1,11 @@
 import React, { useRef } from 'react'
-import { StyleSheet, TouchableOpacity, Alert, Animated } from 'react-native'
-import { PanGestureHandler, State } from 'react-native-gesture-handler'
+import { StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
 import type { Collection, Word } from '@/types/database'
@@ -18,8 +23,8 @@ export default function SwipeableCollectionCard({
   onPress,
   onDelete,
 }: SwipeableCollectionCardProps) {
-  const translateX = useRef(new Animated.Value(0)).current
-  const lastGestureX = useRef(0)
+  const translateX = useSharedValue(0)
+  const lastGestureX = useRef<number>(0)
 
   // Calculate real stats for this collection
   const collectionWords = words.filter(
@@ -60,31 +65,30 @@ export default function SwipeableCollectionCard({
     )
   }
 
-  const onGestureEvent = Animated.event(
-    [{ nativeEvent: { translationX: translateX } }],
-    { useNativeDriver: true }
-  )
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+    }
+  })
 
-  const onHandlerStateChange = (event: any) => {
-    if (event.nativeEvent.state === State.END) {
-      const { translationX } = event.nativeEvent
+  const panGesture = Gesture.Pan()
+    .onUpdate(event => {
+      'worklet'
+      translateX.value = event.translationX
+    })
+    .onEnd(event => {
+      'worklet'
+      const { translationX } = event
       lastGestureX.current = translationX
 
       if (translationX < -80) {
         // Swipe left - show delete button
-        Animated.spring(translateX, {
-          toValue: -80,
-          useNativeDriver: true,
-        }).start()
+        translateX.value = withSpring(-80)
       } else {
         // Return to original position
-        Animated.spring(translateX, {
-          toValue: 0,
-          useNativeDriver: true,
-        }).start()
+        translateX.value = withSpring(0)
       }
-    }
-  }
+    })
 
   return (
     <View style={styles.container}>
@@ -100,18 +104,8 @@ export default function SwipeableCollectionCard({
       </View>
 
       {/* Swipeable card */}
-      <PanGestureHandler
-        onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-      >
-        <Animated.View
-          style={[
-            styles.card,
-            {
-              transform: [{ translateX }],
-            },
-          ]}
-        >
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.card, animatedStyle]}>
           <TouchableOpacity style={styles.cardContent} onPress={onPress}>
             <View style={styles.collectionHeader}>
               <Text style={styles.collectionName}>{collection.name}</Text>
@@ -143,7 +137,7 @@ export default function SwipeableCollectionCard({
             )}
           </TouchableOpacity>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   )
 }

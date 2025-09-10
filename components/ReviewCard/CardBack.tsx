@@ -8,10 +8,9 @@ import { ImageSection } from './ImageSection'
 import { ExamplesSection } from './ExamplesSection'
 import { Colors } from '@/constants/Colors'
 import type { CardBackProps } from './types'
-import type { TapGestureHandler } from 'react-native-gesture-handler'
 
 interface CardBackPropsWithRef extends CardBackProps {
-  pronunciationRef?: React.RefObject<TapGestureHandler | null>
+  pronunciationRef?: React.RefObject<View>
 }
 
 export function CardBack({

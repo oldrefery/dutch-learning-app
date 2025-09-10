@@ -3,6 +3,11 @@ import { useAppStore } from '@/stores/useAppStore'
 import { createAudioPlayer, AudioPlayer } from 'expo-audio'
 import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
+import {
+  Gesture,
+  PanGestureHandlerEventPayload,
+} from 'react-native-gesture-handler'
+import { runOnJS } from 'react-native-reanimated'
 
 export const useReviewScreen = () => {
   const {
@@ -15,13 +20,14 @@ export const useReviewScreen = () => {
     deleteWord,
     startReviewSession,
     reviewLoading,
+    goToNextWord,
+    goToPreviousWord,
   } = useAppStore()
 
   const [audioPlayer, setAudioPlayer] = useState<AudioPlayer | null>(null)
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [lastTouchTime, setLastTouchTime] = useState(0)
-  const [touchStartY, setTouchStartY] = useState(0)
   const [isScrolling, setIsScrolling] = useState(false)
 
   // Check if there are words available for review
@@ -46,7 +52,7 @@ export const useReviewScreen = () => {
     initAudio()
 
     return () => {
-      // Cleanup will be handled by the component unmount
+      // Cleanup handled by component unmount
     }
   }, [])
 
@@ -69,7 +75,6 @@ export const useReviewScreen = () => {
   // Reset card state when word changes
   useEffect(() => {
     setIsFlipped(false)
-    setIsScrolling(false)
   }, [currentWord?.word_id])
 
   const playAudio = useCallback(
@@ -93,41 +98,13 @@ export const useReviewScreen = () => {
     [audioPlayer, currentWord?.dutch_lemma, currentWord?.tts_url]
   )
 
-  const handleCardPress = useCallback(() => {
-    if (isScrolling) return
-
-    const now = Date.now()
-    if (now - lastTouchTime < 300) return // Prevent double tap
-
-    setLastTouchTime(now)
-    flipCard()
-    setIsFlipped(!isFlipped)
-  }, [isScrolling, lastTouchTime, flipCard, isFlipped])
-
-  const handleTouchStart = useCallback((event: any) => {
-    setTouchStartY(event.nativeEvent.pageY)
-    setIsScrolling(false)
-  }, [])
-
-  const handleTouchMove = useCallback(
-    (event: any) => {
-      const currentY = event.nativeEvent.pageY
-      const deltaY = Math.abs(currentY - touchStartY)
-
-      if (deltaY > 10) {
-        setIsScrolling(true)
-      }
-    },
-    [touchStartY]
-  )
-
   const handleCorrect = useCallback(async () => {
     if (!currentWord) return
 
     setIsLoading(true)
     try {
       await markCorrect()
-      // Success feedback is handled by the SRS system
+      // Success feedback handled by SRS system
     } catch {
       ToastService.showError(ToastMessageType.MARK_INCORRECT_FAILED)
     } finally {
@@ -170,7 +147,7 @@ export const useReviewScreen = () => {
       if (!currentWord) return
 
       try {
-        // This would need to be implemented in the store
+        // TODO: Implement updateWordImage in store
         // await updateWordImage(currentWord.word_id, imageUrl)
         ToastService.showSuccess(ToastMessageType.IMAGE_UPDATED)
       } catch {
@@ -181,10 +158,50 @@ export const useReviewScreen = () => {
   )
 
   const restartSession = useCallback(() => {
-    // This would need to be implemented in the store
+    // TODO: Implement restartSession in store
     // For now, just show a message
     ToastService.showInfo(ToastMessageType.RESTART_SESSION)
   }, [])
+
+  // Create tap gesture for card flip
+  const tapGesture = useCallback(() => {
+    return Gesture.Tap()
+      .maxDuration(200) // Very short tap duration
+      .maxDistance(5) // Very small movement allowed
+      .onEnd(() => {
+        'worklet'
+        if (!isScrolling) {
+          const now = Date.now()
+          if (now - lastTouchTime < 300) return // Prevent double tap
+
+          runOnJS(setLastTouchTime)(now)
+          runOnJS(flipCard)()
+          runOnJS(setIsFlipped)(!isFlipped)
+        }
+      })
+  }, [isScrolling, lastTouchTime, flipCard, isFlipped])
+
+  // Create pan gesture for swipe navigation
+  const panGesture = useCallback(() => {
+    return Gesture.Pan()
+      .minDistance(20) // Minimum distance to start pan (higher than tap maxDistance)
+      .onEnd((event: PanGestureHandlerEventPayload) => {
+        'worklet'
+        const swipeThreshold = 50
+
+        // Only handle navigation if it's a significant swipe
+        if (Math.abs(event.translationX) > swipeThreshold) {
+          if (event.translationX < -swipeThreshold) {
+            // Swipe left - go to next word
+            runOnJS(goToNextWord)()
+          } else if (event.translationX > swipeThreshold) {
+            // Swipe right - go to previous word
+            runOnJS(goToPreviousWord)()
+          }
+        }
+      })
+      .enabled(!isFlipped) // Only enable swiping on front side
+  }, [isFlipped, goToNextWord, goToPreviousWord])
 
   return {
     // State
@@ -197,14 +214,13 @@ export const useReviewScreen = () => {
 
     // Actions
     playAudio,
-    handleCardPress,
-    handleTouchStart,
-    handleTouchMove,
     handleCorrect,
     handleIncorrect,
     handleDeleteWord,
     handleEndSession,
     handleImageChange,
     restartSession,
+    tapGesture,
+    panGesture,
   }
 }

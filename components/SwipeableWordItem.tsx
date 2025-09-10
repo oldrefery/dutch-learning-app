@@ -1,6 +1,17 @@
 import React, { useRef } from 'react'
-import { StyleSheet, TouchableOpacity, Animated, Alert } from 'react-native'
-import { PanGestureHandler, State } from 'react-native-gesture-handler'
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  View as RNView,
+} from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  runOnJS,
+} from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -19,14 +30,14 @@ export default function SwipeableWordItem({
   onPress,
   onDelete,
 }: SwipeableWordItemProps) {
-  const translateX = useRef(new Animated.Value(0)).current
+  const translateX = useSharedValue(0)
   const SWIPE_THRESHOLD = -80
   const MAX_SWIPE = -100
 
   const getStatusColor = () => {
-    if (word.repetition_count > 2) return Colors.success.DEFAULT // Green - mastered
-    if (word.repetition_count > 0) return Colors.warning.DEFAULT // Yellow - learning
-    return Colors.neutral[500] // Gray - new
+    if (word.repetition_count > 2) return Colors.success.DEFAULT
+    if (word.repetition_count > 0) return Colors.warning.DEFAULT
+    return Colors.neutral[500]
   }
 
   const getStatusText = () => {
@@ -37,30 +48,29 @@ export default function SwipeableWordItem({
 
   const isDueForReview = new Date(word.next_review_date) <= new Date()
 
-  const onGestureEvent = Animated.event(
-    [{ nativeEvent: { translationX: translateX } }],
-    { useNativeDriver: true }
-  )
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+    }
+  })
 
-  const onHandlerStateChange = (event: any) => {
-    if (event.nativeEvent.state === State.END) {
-      const { translationX, velocityX } = event.nativeEvent
+  const panGesture = Gesture.Pan()
+    .onUpdate(event => {
+      'worklet'
+      translateX.value = event.translationX
+    })
+    .onEnd(event => {
+      'worklet'
+      const { translationX, velocityX } = event
 
       if (translationX < SWIPE_THRESHOLD || velocityX < -500) {
-        // Show delete action
-        Animated.spring(translateX, {
-          toValue: MAX_SWIPE,
-          useNativeDriver: true,
-        }).start()
+        // Show delete
+        translateX.value = withSpring(MAX_SWIPE)
       } else {
         // Reset position
-        Animated.spring(translateX, {
-          toValue: 0,
-          useNativeDriver: true,
-        }).start()
+        translateX.value = withSpring(0)
       }
-    }
-  }
+    })
 
   const handleDelete = () => {
     Alert.alert(
@@ -71,11 +81,8 @@ export default function SwipeableWordItem({
           text: 'Cancel',
           style: 'cancel',
           onPress: () => {
-            // Reset position
-            Animated.spring(translateX, {
-              toValue: 0,
-              useNativeDriver: true,
-            }).start()
+            // Reset
+            translateX.value = withSpring(0)
           },
         },
         {
@@ -83,11 +90,8 @@ export default function SwipeableWordItem({
           style: 'destructive',
           onPress: () => {
             onDelete(word.word_id)
-            // Reset position
-            Animated.spring(translateX, {
-              toValue: 0,
-              useNativeDriver: true,
-            }).start()
+            // Reset
+            translateX.value = withSpring(0)
           },
         },
       ]
@@ -108,19 +112,8 @@ export default function SwipeableWordItem({
       </View>
 
       {/* Main word item with gesture handler */}
-      <PanGestureHandler
-        onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-        activeOffsetX={[-10, 10]}
-      >
-        <Animated.View
-          style={[
-            styles.wordItem,
-            {
-              transform: [{ translateX }],
-            },
-          ]}
-        >
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.wordItem, animatedStyle]}>
           <TouchableOpacity style={styles.wordContent} onPress={onPress}>
             <View style={styles.wordNumber}>
               <Text style={styles.wordNumberText}>{index + 1}</Text>
@@ -164,7 +157,7 @@ export default function SwipeableWordItem({
             />
           </TouchableOpacity>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   )
 }

@@ -1,7 +1,15 @@
 import { getDevUserId, initDevSession } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
+import type {
+  StoreSetFunction,
+  StoreGetFunction,
+  AppError,
+} from '@/types/AppStoreTypes'
 
-export const createAppInitializationActions = (set: any, get: any) => ({
+export const createAppInitializationActions = (
+  set: StoreSetFunction,
+  get: StoreGetFunction
+) => ({
   initializeApp: async () => {
     try {
       // Initialize development session
@@ -22,7 +30,7 @@ export const createAppInitializationActions = (set: any, get: any) => ({
     }
   },
 
-  setError: (error: any) => {
+  setError: (error: AppError) => {
     set({ error })
   },
 

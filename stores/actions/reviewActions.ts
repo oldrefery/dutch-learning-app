@@ -1,7 +1,15 @@
 import { wordService } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
+import type {
+  StoreSetFunction,
+  StoreGetFunction,
+  ReviewAssessment,
+} from '@/types/AppStoreTypes'
 
-export const createReviewActions = (set: any, get: any) => ({
+export const createReviewActions = (
+  set: StoreSetFunction,
+  get: StoreGetFunction
+) => ({
   startReviewSession: async () => {
     try {
       set({ reviewLoading: true })
@@ -47,7 +55,7 @@ export const createReviewActions = (set: any, get: any) => ({
     }
   },
 
-  submitReviewAssessment: async (assessment: any) => {
+  submitReviewAssessment: async (assessment: ReviewAssessment) => {
     try {
       const { reviewSession, currentWord } = get()
       if (!reviewSession || !currentWord) return
@@ -104,5 +112,44 @@ export const createReviewActions = (set: any, get: any) => ({
   flipCard: () => {
     // This would be handled by the UI component
     // The store doesn't need to track card flip state
+  },
+
+  // Navigation functions for swipe gestures
+  goToNextWord: () => {
+    const { reviewSession, currentWord } = get()
+    if (!reviewSession || !currentWord) return
+
+    const nextIndex = reviewSession.currentIndex + 1
+    const nextWord = reviewSession.words[nextIndex]
+
+    // Only allow navigation to unassessed words within the session
+    if (nextWord && nextIndex < reviewSession.words.length) {
+      set({
+        reviewSession: {
+          ...reviewSession,
+          currentIndex: nextIndex,
+        },
+        currentWord: nextWord,
+      })
+    }
+  },
+
+  goToPreviousWord: () => {
+    const { reviewSession, currentWord } = get()
+    if (!reviewSession || !currentWord) return
+
+    const prevIndex = reviewSession.currentIndex - 1
+
+    // Only allow navigation to previous words (not beyond the start)
+    if (prevIndex >= 0) {
+      const prevWord = reviewSession.words[prevIndex]
+      set({
+        reviewSession: {
+          ...reviewSession,
+          currentIndex: prevIndex,
+        },
+        currentWord: prevWord,
+      })
+    }
   },
 })

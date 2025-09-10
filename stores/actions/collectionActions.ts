@@ -1,10 +1,14 @@
 import { collectionService } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
+import type { StoreSetFunction, StoreGetFunction } from '@/types/AppStoreTypes'
 
 const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
 const UNKNOWN_ERROR = 'Unknown error'
 
-export const createCollectionActions = (set: any, get: any) => ({
+export const createCollectionActions = (
+  set: StoreSetFunction,
+  get: StoreGetFunction
+) => ({
   fetchCollections: async () => {
     try {
       set({ collectionsLoading: true })
@@ -60,7 +64,7 @@ export const createCollectionActions = (set: any, get: any) => ({
       await collectionService.deleteCollection(collectionId, userId)
       const currentCollections = get().collections
       const updatedCollections = currentCollections.filter(
-        (collection: any) => collection.collection_id !== collectionId
+        collection => collection.collection_id !== collectionId
       )
       set({ collections: updatedCollections })
     } catch (error) {

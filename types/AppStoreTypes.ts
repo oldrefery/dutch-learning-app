@@ -26,8 +26,14 @@ export interface AppState {
   // Word actions
   fetchWords: () => Promise<void>
   addNewWord: (word: string) => Promise<Word>
-  saveAnalyzedWord: (analyzedWord: any, collectionId?: string) => Promise<Word>
-  updateWordAfterReview: (wordId: string, assessment: any) => Promise<void>
+  saveAnalyzedWord: (
+    analyzedWord: AnalyzedWord,
+    collectionId?: string
+  ) => Promise<Word>
+  updateWordAfterReview: (
+    wordId: string,
+    assessment: ReviewAssessment
+  ) => Promise<void>
   deleteWord: (wordId: string) => Promise<void>
 
   // Collection actions
@@ -37,11 +43,13 @@ export interface AppState {
 
   // Review session actions
   startReviewSession: () => Promise<void>
-  submitReviewAssessment: (assessment: any) => Promise<void>
+  submitReviewAssessment: (assessment: ReviewAssessment) => Promise<void>
   endReviewSession: () => void
   markCorrect: () => void
   markIncorrect: () => void
   flipCard: () => void
+  goToNextWord: () => void
+  goToPreviousWord: () => void
 
   // Error handling
   setError: (error: AppError) => void
@@ -53,4 +61,26 @@ export interface ReviewAssessment {
   assessment: 'again' | 'hard' | 'good' | 'easy'
   responseTime?: number
   timestamp: Date
+}
+
+export interface AnalyzedWord {
+  dutch_lemma: string
+  dutch_original?: string
+  translations: {
+    en: string[]
+  }
+  part_of_speech: string
+  examples?: string[]
+  image_url?: string
+  tts_url?: string
+  analysis_metadata?: Record<string, unknown>
+}
+
+export interface StoreSetFunction {
+  (partial: Partial<AppState>): void
+  (fn: (state: AppState) => Partial<AppState>): void
+}
+
+export interface StoreGetFunction {
+  (): AppState
 }

@@ -2,11 +2,20 @@ import { wordService } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
 import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
+import type {
+  StoreSetFunction,
+  StoreGetFunction,
+  AnalyzedWord,
+  ReviewAssessment,
+} from '@/types/AppStoreTypes'
 
 const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
 const UNKNOWN_ERROR = 'Unknown error'
 
-export const createWordActions = (set: any, get: any) => ({
+export const createWordActions = (
+  set: StoreSetFunction,
+  get: StoreGetFunction
+) => ({
   fetchWords: async () => {
     try {
       set({ wordsLoading: true })
@@ -94,7 +103,10 @@ export const createWordActions = (set: any, get: any) => ({
   },
 
   // Save already analyzed word (skip analysis step)
-  saveAnalyzedWord: async (analyzedWord: any, collectionId?: string) => {
+  saveAnalyzedWord: async (
+    analyzedWord: AnalyzedWord,
+    collectionId?: string
+  ) => {
     try {
       const userId = get().currentUserId
       if (!userId) {
@@ -155,14 +167,17 @@ export const createWordActions = (set: any, get: any) => ({
     }
   },
 
-  updateWordAfterReview: async (wordId: string, assessment: any) => {
+  updateWordAfterReview: async (
+    wordId: string,
+    assessment: ReviewAssessment
+  ) => {
     try {
       // Update in database using the existing service
       await wordService.updateWordProgress(wordId, { quality: assessment })
 
       // Update word in local store without full refresh
       const currentWords = get().words
-      const wordIndex = currentWords.findIndex((w: any) => w.word_id === wordId)
+      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
 
       if (wordIndex !== -1) {
         // Update the word locally with new review date
@@ -194,9 +209,7 @@ export const createWordActions = (set: any, get: any) => ({
     try {
       await wordService.deleteWord(wordId)
       const currentWords = get().words
-      const filteredWords = currentWords.filter(
-        (w: any) => w.word_id !== wordId
-      )
+      const filteredWords = currentWords.filter(w => w.word_id !== wordId)
       set({ words: filteredWords })
     } catch (error) {
       console.error('Error deleting word:', error)
@@ -242,9 +255,7 @@ export const createWordActions = (set: any, get: any) => ({
 
       // Remove from local state
       const currentWords = get().words
-      const updatedWords = currentWords.filter(
-        (word: any) => word.word_id !== wordId
-      )
+      const updatedWords = currentWords.filter(word => word.word_id !== wordId)
       set({ words: updatedWords })
 
       return true

@@ -1,44 +1,41 @@
 import React, { forwardRef } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { TapGestureHandler, State } from 'react-native-gesture-handler'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { runOnJS } from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors'
 import type { PronunciationProps } from './types'
 
-export const PronunciationButton = forwardRef<
-  TapGestureHandler,
-  PronunciationProps
->(function PronunciationButton(
-  { ttsUrl, isPlayingAudio, onPress, size = 'normal' },
-  ref
-) {
-  if (!ttsUrl) return null
+export const PronunciationButton = forwardRef<View, PronunciationProps>(
+  function PronunciationButton(
+    { ttsUrl, isPlayingAudio, onPress, size = 'normal' },
+    ref
+  ) {
+    if (!ttsUrl) return null
 
-  const iconSize = size === 'small' ? 18 : 24
-  const buttonStyle = size === 'small' ? styles.buttonSmall : styles.button
+    const iconSize = size === 'small' ? 18 : 24
+    const buttonStyle = size === 'small' ? styles.buttonSmall : styles.button
 
-  const handlePress = ({ nativeEvent }: any) => {
-    if (nativeEvent.state === State.ACTIVE) {
-      onPress(ttsUrl)
-    }
+    const tapGesture = Gesture.Tap().onEnd(() => {
+      'worklet'
+      if (!isPlayingAudio) {
+        runOnJS(onPress)(ttsUrl)
+      }
+    })
+
+    return (
+      <GestureDetector gesture={tapGesture}>
+        <View style={buttonStyle} ref={ref}>
+          <Ionicons
+            name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
+            size={iconSize}
+            color={Colors.primary.dark}
+          />
+        </View>
+      </GestureDetector>
+    )
   }
-
-  return (
-    <TapGestureHandler
-      ref={ref}
-      onHandlerStateChange={handlePress}
-      enabled={!isPlayingAudio}
-    >
-      <View style={buttonStyle}>
-        <Ionicons
-          name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
-          size={iconSize}
-          color={Colors.primary.dark}
-        />
-      </View>
-    </TapGestureHandler>
-  )
-})
+)
 
 const styles = StyleSheet.create({
   button: {

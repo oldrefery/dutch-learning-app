@@ -1,8 +1,12 @@
 import React, { useRef } from 'react'
 // Review screen for spaced repetition learning
-import { TouchableOpacity, ActivityIndicator } from 'react-native'
-import { TapGestureHandler, State } from 'react-native-gesture-handler'
-// Toast is now handled globally in _layout.tsx
+import {
+  TouchableOpacity,
+  ActivityIndicator,
+  View as RNView,
+} from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+// Toast handled globally in _layout.tsx
 import { Text, View } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { CardFront } from '@/components/ReviewCard/CardFront'
@@ -14,20 +18,19 @@ import { reviewScreenStyles } from '@/styles/ReviewScreenStyles'
 import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
 
 export default function ReviewScreen() {
-  const pronunciationRef = useRef<TapGestureHandler | null>(null)
+  const pronunciationRef = useRef<RNView>(null)
 
   const {
     isFlipped,
     playAudio,
-    handleCardPress,
-    handleTouchStart,
-    handleTouchMove,
     handleCorrect,
     handleIncorrect,
     handleDeleteWord,
     handleImageChange,
     restartSession,
     hasWordsForReview,
+    tapGesture,
+    panGesture,
   } = useReviewScreen()
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
@@ -91,20 +94,13 @@ export default function ReviewScreen() {
   const renderCard = () => {
     if (!currentWord) return null
 
+    // Combine gestures - pan for swipe navigation, tap for card flip
+    // Use Exclusive to prevent both gestures from firing at the same time
+    const combinedGesture = Gesture.Exclusive(panGesture(), tapGesture())
+
     return (
-      <TapGestureHandler
-        onHandlerStateChange={({ nativeEvent }) => {
-          if (nativeEvent.state === State.ACTIVE) {
-            handleCardPress()
-          }
-        }}
-        waitFor={pronunciationRef}
-      >
-        <View
-          style={reviewScreenStyles.flashcard}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-        >
+      <GestureDetector gesture={combinedGesture}>
+        <View style={reviewScreenStyles.flashcard}>
           {!isFlipped ? (
             <CardFront
               currentWord={currentWord}
@@ -123,7 +119,7 @@ export default function ReviewScreen() {
             />
           )}
         </View>
-      </TapGestureHandler>
+      </GestureDetector>
     )
   }
 
@@ -198,7 +194,7 @@ export default function ReviewScreen() {
         />
       )}
 
-      {/* Toast is now handled globally in _layout.tsx */}
+      {/* Toast handled globally in _layout.tsx */}
     </View>
   )
 }

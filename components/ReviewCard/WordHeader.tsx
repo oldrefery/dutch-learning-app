@@ -4,12 +4,11 @@ import { Text, View } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { Colors } from '@/constants/Colors'
 import type { ReviewCardProps } from './types'
-import type { TapGestureHandler } from 'react-native-gesture-handler'
 
 interface WordHeaderProps extends ReviewCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
-  pronunciationRef?: React.RefObject<TapGestureHandler | null>
+  pronunciationRef?: React.RefObject<any>
 }
 
 export function WordHeader({
