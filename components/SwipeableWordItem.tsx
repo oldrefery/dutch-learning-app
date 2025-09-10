@@ -2,13 +2,11 @@ import React, { useEffect } from 'react'
 import { StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
-  runOnJS,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
-import * as Haptics from 'expo-haptics'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -78,8 +76,9 @@ export default function SwipeableWordItem({
       if (translationX < SWIPE_THRESHOLD || velocityX < -500) {
         // Show delete
         translateX.value = withSpring(MAX_SWIPE)
-        runOnJS(console.log)('!!! Haptic feedback should trigger now !!!')
-        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium)
+        // TODO: Uncomment this when we have haptic feedback
+        // runOnJS(console.log)('!!! Haptic feedback should trigger now !!!')
+        // runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Heavy)
       } else {
         // Reset position
         translateX.value = withSpring(0)
