@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { Button } from 'react-native'
+import * as Sentry from '@sentry/react-native'
 import { View } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { WordInputSection } from './components/WordInputSection'
@@ -135,6 +137,12 @@ export function AddWordScreen() {
 
   return (
     <View style={addWordScreenStyles.container}>
+      {/* <Button
+        title="Try!"
+        onPress={() => {
+          Sentry.captureException(new Error('First error'))
+        }}
+      /> */}
       <WordInputSection
         inputWord={inputWord}
         setInputWord={setInputWord}

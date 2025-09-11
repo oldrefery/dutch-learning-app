@@ -10,10 +10,19 @@ import * as SplashScreen from 'expo-splash-screen'
 import { useEffect } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
+import * as Sentry from '@sentry/react-native'
 import { AppToast } from '@/components/AppToast'
 
 import { useColorScheme } from '@/components/useColorScheme'
 import { useAppStore } from '@/stores/useAppStore'
+
+Sentry.init({
+  dsn: 'https://b9380e4ad548d88fe5c8bfecabcdf2e3@o4506263035904000.ingest.us.sentry.io/4509999490727936',
+  debug: __DEV__,
+  integrations: [Sentry.reactNativeTracingIntegration({})],
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+})
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -28,7 +37,7 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -50,7 +59,7 @@ export default function RootLayout() {
   }
 
   return <RootLayoutNav />
-}
+})
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme()
