@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native'
 import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
+import { Colors } from '@/constants/Colors'
 
 export const reviewScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: REVIEW_SCREEN_CONSTANTS.COLORS.BACKGROUND,
+    backgroundColor: Colors.neutral[100],
   },
 
   loadingContainer: {
@@ -17,7 +18,7 @@ export const reviewScreenStyles = StyleSheet.create({
   loadingText: {
     marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
-    color: REVIEW_SCREEN_CONSTANTS.COLORS.TEXT_SECONDARY,
+    color: Colors.neutral[500],
   },
 
   emptyContainer: {
@@ -29,14 +30,14 @@ export const reviewScreenStyles = StyleSheet.create({
 
   emptyText: {
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.LARGE,
-    color: REVIEW_SCREEN_CONSTANTS.COLORS.TEXT_SECONDARY,
+    color: Colors.neutral[500],
     textAlign: 'center',
     marginBottom: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
   },
 
   emptySubtext: {
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
-    color: REVIEW_SCREEN_CONSTANTS.COLORS.TEXT_SECONDARY,
+    color: Colors.neutral[500],
     textAlign: 'center',
   },
 
@@ -47,9 +48,9 @@ export const reviewScreenStyles = StyleSheet.create({
 
   flashcard: {
     flex: 1,
-    backgroundColor: REVIEW_SCREEN_CONSTANTS.COLORS.CARD_BACKGROUND,
+    backgroundColor: Colors.background.primary,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: Colors.legacy.black,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -77,23 +78,23 @@ export const reviewScreenStyles = StyleSheet.create({
   },
 
   againButton: {
-    backgroundColor: REVIEW_SCREEN_CONSTANTS.COLORS.ERROR,
+    backgroundColor: Colors.error.DEFAULT,
   },
 
   hardButton: {
-    backgroundColor: REVIEW_SCREEN_CONSTANTS.COLORS.WARNING,
+    backgroundColor: Colors.warning.DEFAULT,
   },
 
   goodButton: {
-    backgroundColor: REVIEW_SCREEN_CONSTANTS.COLORS.SUCCESS,
+    backgroundColor: Colors.success.DEFAULT,
   },
 
   easyButton: {
-    backgroundColor: REVIEW_SCREEN_CONSTANTS.COLORS.PRIMARY,
+    backgroundColor: Colors.primary.DEFAULT,
   },
 
   buttonText: {
-    color: '#FFFFFF',
+    color: Colors.legacy.white,
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
     fontWeight: '600',
   },
@@ -105,7 +106,7 @@ export const reviewScreenStyles = StyleSheet.create({
 
   progressText: {
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
-    color: REVIEW_SCREEN_CONSTANTS.COLORS.TEXT_SECONDARY,
+    color: Colors.neutral[500],
     textAlign: 'center',
   },
 })

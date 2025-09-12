@@ -52,6 +52,7 @@ export interface AppState {
   flipCard: () => void
   goToNextWord: () => void
   goToPreviousWord: () => void
+  deleteWordFromReview: (wordId: string) => void
 
   // Error handling
   setError: (error: AppError) => void

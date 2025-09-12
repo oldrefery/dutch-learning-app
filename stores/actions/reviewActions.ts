@@ -166,4 +166,46 @@ export const createReviewActions = (
       })
     }
   },
+
+  // Delete word from current review session
+  deleteWordFromReview: (wordId: string) => {
+    const { reviewSession, currentWord } = get()
+    if (!reviewSession || !currentWord) return
+
+    // Remove the word from review session words array
+    const updatedWords = reviewSession.words.filter(
+      word => word.word_id !== wordId
+    )
+    const currentIndex = reviewSession.currentIndex
+
+    if (updatedWords.length === 0) {
+      // No more words in session, end the session
+      set({
+        reviewSession: null,
+        currentWord: null,
+      })
+      return
+    }
+
+    // Adjust current index if we deleted a word before the current position
+    let newIndex = currentIndex
+    if (currentIndex >= updatedWords.length) {
+      // If current index is beyond the new array length, go to the last word
+      newIndex = updatedWords.length - 1
+    } else if (currentWord.word_id === wordId) {
+      // If we deleted the current word, stay at the same index (next word will be shown)
+      newIndex = Math.min(currentIndex, updatedWords.length - 1)
+    }
+
+    const nextWord = updatedWords[newIndex]
+
+    set({
+      reviewSession: {
+        ...reviewSession,
+        words: updatedWords,
+        currentIndex: newIndex,
+      },
+      currentWord: nextWord,
+    })
+  },
 })

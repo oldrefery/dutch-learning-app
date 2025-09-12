@@ -18,6 +18,7 @@ export const useReviewScreen = () => {
     markIncorrect,
     endReviewSession,
     deleteWord,
+    deleteWordFromReview,
     startReviewSession,
     reviewLoading,
     goToNextWord,
@@ -130,12 +131,17 @@ export const useReviewScreen = () => {
     if (!currentWord) return
 
     try {
+      // Delete word from database and global state
       await deleteWord(currentWord.word_id)
+
+      // Remove word from current review session and navigate to next word
+      deleteWordFromReview(currentWord.word_id)
+
       ToastService.showSuccess(ToastMessageType.WORD_DELETED)
     } catch {
       ToastService.showError(ToastMessageType.DELETE_WORD_FAILED)
     }
-  }, [currentWord, deleteWord])
+  }, [currentWord, deleteWord, deleteWordFromReview])
 
   const handleEndSession = useCallback(() => {
     endReviewSession()

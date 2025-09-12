@@ -69,7 +69,6 @@ export default function ReviewScreen() {
     )
   }
 
-  // Loading state
   if (isLoading) {
     return (
       <View style={reviewScreenStyles.container}>
@@ -193,7 +192,6 @@ export default function ReviewScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Image Selector Modal */}
       {currentWord && (
         <ImageSelector
           visible={showImageSelector}
@@ -206,14 +204,11 @@ export default function ReviewScreen() {
         />
       )}
 
-      {/* Word Detail Modal */}
       <WordDetailModal
         visible={modalVisible}
         onClose={handleCloseModal}
         word={selectedWord}
       />
-
-      {/* Toast handled globally in _layout.tsx */}
     </View>
   )
 }
