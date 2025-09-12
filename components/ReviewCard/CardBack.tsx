@@ -1,11 +1,6 @@
 import React from 'react'
-import {
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  View as RNView,
-} from 'react-native'
+import { StyleSheet, ScrollView, Alert, View as RNView } from 'react-native'
+import { Pressable } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
 import { Text } from '@/components/Themed'
 import { WordHeader } from './WordHeader'
@@ -43,7 +38,7 @@ export function CardBack({
       <ExamplesSection currentWord={currentWord} />
 
       {/* Delete Word Button */}
-      <TouchableOpacity
+      <Pressable
         style={styles.deleteButton}
         onPress={() => {
           Alert.alert(
@@ -65,7 +60,7 @@ export function CardBack({
       >
         <Ionicons name="trash-outline" size={20} color={Colors.error.DEFAULT} />
         <Text style={styles.deleteButtonText}>Delete Word</Text>
-      </TouchableOpacity>
+      </Pressable>
     </ScrollView>
   )
 }

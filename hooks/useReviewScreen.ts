@@ -134,8 +134,9 @@ export const useReviewScreen = () => {
       // Delete word from database and global state
       await deleteWord(currentWord.word_id)
 
-      // Remove word from current review session and navigate to next word
       deleteWordFromReview(currentWord.word_id)
+
+      setIsFlipped(false)
 
       ToastService.showSuccess(ToastMessageType.WORD_DELETED)
     } catch {
