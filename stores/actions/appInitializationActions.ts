@@ -1,4 +1,4 @@
-import { getDevUserId, initDevSession } from '@/lib/supabase'
+import { supabase } from '@/lib/supabaseClient'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
 import type {
   StoreSetFunction,
@@ -10,17 +10,22 @@ export const createAppInitializationActions = (
   set: StoreSetFunction,
   get: StoreGetFunction
 ) => ({
-  initializeApp: async () => {
+  initializeApp: async (userId?: string) => {
     try {
-      // Initialize development session
-      await initDevSession()
+      if (userId) {
+        // User is authenticated, set the user ID and fetch data
+        set({ currentUserId: userId })
 
-      // For development, use the dev user ID
-      const devUserId = getDevUserId()
-      set({ currentUserId: devUserId })
-
-      // Fetch initial data
-      await Promise.all([get().fetchWords(), get().fetchCollections()])
+        // Fetch initial data for authenticated user
+        await Promise.all([get().fetchWords(), get().fetchCollections()])
+      } else {
+        // No user, clear data
+        set({
+          currentUserId: null,
+          words: [],
+          collections: [],
+        })
+      }
     } catch (error) {
       console.error('App initialization error:', error)
       get().setError({

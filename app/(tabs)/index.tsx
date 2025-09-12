@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { ToastService } from '@/components/AppToast'
-import { ToastMessageType } from '@/constants/ToastConstants'
 import { router } from 'expo-router'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'

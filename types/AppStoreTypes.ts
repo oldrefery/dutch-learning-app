@@ -23,7 +23,7 @@ export interface AppState {
   error: AppError | null
 
   // Actions
-  initializeApp: () => Promise<void>
+  initializeApp: (userId?: string) => Promise<void>
 
   // Word actions
   fetchWords: () => Promise<void>
