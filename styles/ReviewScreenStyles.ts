@@ -70,11 +70,10 @@ export const reviewScreenStyles = StyleSheet.create({
 
   srsButton: {
     flex: 1,
-    paddingVertical: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
-    paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.LG,
+    paddingVertical: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
+    paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
     borderRadius: 12,
     alignItems: 'center',
-    minHeight: 48,
   },
 
   againButton: {
@@ -95,7 +94,7 @@ export const reviewScreenStyles = StyleSheet.create({
 
   buttonText: {
     color: '#FFFFFF',
-    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
     fontWeight: '600',
   },
 

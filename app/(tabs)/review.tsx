@@ -159,53 +159,39 @@ export default function ReviewScreen() {
 
       <View style={reviewScreenStyles.cardContainer}>{renderCard()}</View>
 
-      {isFlipped && (
-        <View style={reviewScreenStyles.buttonsContainer}>
-          <TouchableOpacity
-            style={[
-              reviewScreenStyles.srsButton,
-              reviewScreenStyles.againButton,
-            ]}
-            onPress={handleIncorrect}
-            disabled={isLoading}
-          >
-            <Text style={reviewScreenStyles.buttonText}>Again</Text>
-          </TouchableOpacity>
+      <View style={reviewScreenStyles.buttonsContainer}>
+        <TouchableOpacity
+          style={[reviewScreenStyles.srsButton, reviewScreenStyles.againButton]}
+          onPress={handleIncorrect}
+          disabled={isLoading}
+        >
+          <Text style={reviewScreenStyles.buttonText}>Again</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              reviewScreenStyles.srsButton,
-              reviewScreenStyles.hardButton,
-            ]}
-            onPress={handleIncorrect}
-            disabled={isLoading}
-          >
-            <Text style={reviewScreenStyles.buttonText}>Hard</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={[reviewScreenStyles.srsButton, reviewScreenStyles.hardButton]}
+          onPress={handleIncorrect}
+          disabled={isLoading}
+        >
+          <Text style={reviewScreenStyles.buttonText}>Hard</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              reviewScreenStyles.srsButton,
-              reviewScreenStyles.goodButton,
-            ]}
-            onPress={handleCorrect}
-            disabled={isLoading}
-          >
-            <Text style={reviewScreenStyles.buttonText}>Good</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={[reviewScreenStyles.srsButton, reviewScreenStyles.goodButton]}
+          onPress={handleCorrect}
+          disabled={isLoading}
+        >
+          <Text style={reviewScreenStyles.buttonText}>Good</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              reviewScreenStyles.srsButton,
-              reviewScreenStyles.easyButton,
-            ]}
-            onPress={handleCorrect}
-            disabled={isLoading}
-          >
-            <Text style={reviewScreenStyles.buttonText}>Easy</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        <TouchableOpacity
+          style={[reviewScreenStyles.srsButton, reviewScreenStyles.easyButton]}
+          onPress={handleCorrect}
+          disabled={isLoading}
+        >
+          <Text style={reviewScreenStyles.buttonText}>Easy</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Image Selector Modal */}
       {currentWord && (
