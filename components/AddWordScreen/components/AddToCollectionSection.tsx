@@ -38,31 +38,10 @@ export function AddToCollectionSection({
         disabled={isAdding || !selectedCollection}
       >
         {isAdding ? (
-          <View style={addToCollectionStyles.addButtonLoading}>
-            <ActivityIndicator size="small" color="white" />
-            <Text style={addToCollectionStyles.addButtonText}>Adding...</Text>
-          </View>
+          <ActivityIndicator size="small" color="white" />
         ) : (
           <Text style={addToCollectionStyles.addButtonText}>Add Word</Text>
         )}
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[
-          addToCollectionStyles.cancelButton,
-          isAdding && addToCollectionStyles.cancelButtonDisabled,
-        ]}
-        onPress={onCancel}
-        disabled={isAdding}
-      >
-        <Text
-          style={[
-            addToCollectionStyles.cancelButtonText,
-            isAdding && addToCollectionStyles.cancelButtonTextDisabled,
-          ]}
-        >
-          Cancel & Start Over
-        </Text>
       </TouchableOpacity>
     </View>
   )
