@@ -45,7 +45,7 @@ JSON structure:
 - **For TRANSLATIONS (Based on Van Dale):**
   1.  Provide multiple, distinct meanings. For "aflopen", include meanings like "to slope down", "to come to an end", "to visit (shops)", "to go off (alarm)".
   2.  List 2-4 most common English translations.
-  3.  List 1-2 Russian translations.
+  3.  **Provide Russian translations that correspond to ALL English meanings provided.**
 
 - **For EXAMPLES:**
   1.  Create 4-6 authentic, natural example sentences that cover the main meanings.
@@ -68,13 +68,15 @@ JSON structure:
     -   \`"dutch_lemma": "vermoedelijk"\`, \`"part_of_speech": "adverb"\`
 
 CRITICAL ANALYSIS RULES:
-1. ANALYZE ONLY THE EXACT WORD PROVIDED
-2. Check if THIS EXACT WORD begins with a separable prefix
-3. IMPORTANT: If the word does NOT start with a prefix, set is_separable=false
-4. Do NOT confuse with similar verbs (e.g., "strijken" ≠ "uitstrijken")
-5. For separable verbs, ensure the root verb is a valid Dutch verb
-6. Provide accurate, practical examples that native speakers would use
-7. Focus on the most common meanings and uses
+1. **NOUNS ARE NOT VERBS:** If a word is a known noun (like "uitstoot"), you MUST classify it as a noun. Do NOT mistake it for a separable verb (like "uitstoten") even if the spelling is similar. A noun cannot be "separable". If part_of_speech is "noun", then is_separable MUST be false.
+2. ANALYZE ONLY THE EXACT WORD PROVIDED.
+3. Check if THIS EXACT WORD begins with a separable prefix.
+4. IMPORTANT: If the word does NOT start with a prefix, set is_separable=false.
+5. Do NOT confuse with similar verbs (e.g., "strijken" ≠ "uitstrijken").
+6. For separable verbs, ensure the root verb is a valid Dutch verb.
+7. Provide accurate, practical examples that native speakers would use
+8. Focus on the most common meanings and uses
+
 
 SEPARABLE VERB DETECTION:
 - Common separable prefixes: aan, af, bij, door, in, mee, na, om, onder, op, over, toe, uit, vast, weg, voorbij, terug, voor
