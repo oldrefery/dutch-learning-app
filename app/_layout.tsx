@@ -13,7 +13,7 @@ import 'react-native-reanimated'
 import { Sentry } from '@/lib/sentry'
 import { AppToast } from '@/components/AppToast'
 
-import { useColorScheme } from '@/components/useColorScheme'
+import { useColorScheme } from 'react-native'
 import { SimpleAuthProvider } from '@/contexts/SimpleAuthProvider'
 
 export {

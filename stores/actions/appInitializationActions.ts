@@ -1,4 +1,3 @@
-import { supabase } from '@/lib/supabaseClient'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
 import type {
   StoreSetFunction,

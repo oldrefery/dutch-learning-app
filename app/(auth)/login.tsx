@@ -13,6 +13,7 @@ import { AuthInput } from '@/components/auth/AuthInput'
 import { AuthButton } from '@/components/auth/AuthButton'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Colors } from '@/constants/Colors'
+import { Sentry } from '@/lib/sentry'
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('')
@@ -68,6 +69,7 @@ export default function LoginScreen() {
       await testSignIn({ email: email.trim(), password })
     } catch (error) {
       // Error handled by SimpleAuthProvider
+      Sentry.captureException(error)
     }
   }
 
@@ -125,7 +127,7 @@ export default function LoginScreen() {
             <View style={styles.footer}>
               <Text style={styles.footerText}>
                 Don&apos;t have an account?{' '}
-                <Link href="/(auth)/signup" asChild>
+                <Link href="/signup" asChild>
                   <Text style={styles.linkText}>Sign up</Text>
                 </Link>
               </Text>

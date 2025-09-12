@@ -15,7 +15,7 @@ import { useReviewScreen } from '@/hooks/useReviewScreen'
 import { useImageSelector } from '@/hooks/useImageSelector'
 import { useReviewSession } from '@/hooks/useReviewSession'
 import { reviewScreenStyles } from '@/styles/ReviewScreenStyles'
-import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
+import { Colors } from '@/constants/Colors'
 
 export default function ReviewScreen() {
   const [selectedWord, setSelectedWord] = useState(null)
@@ -75,7 +75,8 @@ export default function ReviewScreen() {
         <View style={reviewScreenStyles.loadingContainer}>
           <ActivityIndicator
             size="large"
-            color={REVIEW_SCREEN_CONSTANTS.COLORS.PRIMARY}
+            // color={REVIEW_SCREEN_CONSTANTS.COLORS.PRIMARY}
+            color={Colors.primary.DEFAULT}
           />
           <Text style={reviewScreenStyles.loadingText}>
             Loading review session...

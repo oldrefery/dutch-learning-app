@@ -3,7 +3,8 @@
  * Following best practices for design system color management
  */
 
-export const Colors = {
+// Color palette
+const colorPalette = {
   // Primary colors - used for main actions, buttons, links
   primary: {
     DEFAULT: '#3B82F6',
@@ -59,20 +60,29 @@ export const Colors = {
   },
 }
 
-// Default export for backward compatibility
-export default {
+// Theme configurations
+const themes = {
   light: {
-    text: Colors.neutral[900],
-    background: Colors.background.primary,
-    tint: Colors.legacy.tintColorLight,
-    tabIconDefault: Colors.legacy.lightGray,
-    tabIconSelected: Colors.legacy.tintColorLight,
+    text: colorPalette.neutral[900],
+    background: colorPalette.background.primary,
+    tint: colorPalette.legacy.tintColorLight,
+    tabIconDefault: colorPalette.legacy.lightGray,
+    tabIconSelected: colorPalette.legacy.tintColorLight,
   },
   dark: {
-    text: Colors.background.primary,
-    background: Colors.legacy.black,
-    tint: Colors.background.primary,
-    tabIconDefault: Colors.legacy.lightGray,
-    tabIconSelected: Colors.background.primary,
+    text: colorPalette.background.primary,
+    background: colorPalette.legacy.black,
+    tint: colorPalette.background.primary,
+    tabIconDefault: colorPalette.legacy.lightGray,
+    tabIconSelected: colorPalette.background.primary,
   },
 }
+
+// Single named export with both palette and themes
+export const Colors = {
+  ...colorPalette,
+  ...themes,
+}
+
+// Default export for backward compatibility
+export default themes
