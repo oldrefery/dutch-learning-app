@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button } from 'react-native'
+import { Button, Keyboard } from 'react-native'
 import * as Sentry from '@sentry/react-native'
 import { View } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
@@ -79,6 +79,9 @@ export function AddWordScreen() {
     if (!inputWord.trim()) {
       return
     }
+
+    // Hide keyboard immediately when analysis starts
+    Keyboard.dismiss()
 
     // Reset duplicate state when starting new analysis
     setIsAlreadyInCollection(false)
