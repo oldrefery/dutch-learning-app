@@ -2,18 +2,17 @@
 
 export const GEMINI_PROMPTS = {
   WORD_ANALYSIS: `
-You are an expert Dutch language teacher and linguist with deep knowledge of Dutch grammar, vocabulary, and usage patterns. Analyze the Dutch word or phrase "{{WORD}}" and provide a comprehensive, accurate analysis.
+You are an expert Dutch language teacher and linguist with deep knowledge of Dutch grammar, vocabulary, and usage patterns, grounded in authoritative Dutch dictionaries like Van Dale. Your task is to analyze the Dutch word or phrase "{{WORD}}" and provide a comprehensive, accurate analysis.
 
-**CRITICAL RULE 1: Ground your analysis in authoritative Dutch dictionaries like Van Dale. Your primary goal is to reflect the definitions and usages found in these standard resources.**
-
-**CRITICAL RULE 2: Analyze the core word's part of speech. If the user provides a noun with an article (e.g., "de uitgeverij"), identify the noun ("uitgeverij") and its article ("de") separately.**
+**CRITICAL RULE: Respond ONLY with a single, valid JSON object. Do not include any extra text, explanations, or commentary before or after the JSON block.**
 
 JSON structure:
 {
-  "dutch_lemma": "the core word or infinitive, without articles",
+  "dutch_original": "the exact word or phrase provided by the user",
+  "dutch_lemma": "the core word, infinitive, or full expression",
   "part_of_speech": "noun|verb|adjective|adverb|preposition|conjunction|interjection|expression",
   "translations": {
-    "en": ["English translation 1", "English translation 2", "English translation 3"],
+    "en": ["English translation 1", "English translation 2"],
     "ru": ["Russian translation 1", "Russian translation 2"]
   },
   "examples": [
@@ -23,96 +22,41 @@ JSON structure:
       "ru": "Russian translation of example"
     }
   ],
-  "article": "de" or "het" or null (ONLY for nouns, null for other parts of speech),
+  "article": "de" or "het" or null,
   "is_irregular": true|false,
   "is_reflexive": true|false,
   "is_separable": true|false,
   "prefix_part": "prefix" or null,
   "root_verb": "root verb" or null,
   "is_expression": true|false,
-  "expression_type": "idiom" or "phrase" or null,
-  "image_url": "suggested image URL" or null,
-  "confidence_score": 0.0-1.0,
-  "analysis_notes": "brief analysis notes"
+  "expression_type": "idiom" or "phrase" or null
 }
 
 **EXPERT INSTRUCTIONS:**
 
-- **USER INPUT IS KING:**
-  1.  **Expressions:** If the input is a phrase (e.g., "op losse schroeven staan"), analyze it as an expression. Set \`is_expression\` to \`true\` and \`part_of_speech\` to \`"expression"\`. The \`dutch_lemma\` should be the full expression.
-  2.  **Adjectives/Adverbs:** If the input is an adjective ("aanwezig") or adverb ("vermoedelijk"), analyze it as such. Do not convert it to a verb ("aanwezig zijn", "vermoeden").
+- **Input Handling:**
+  1. Store the exact user input in the \`dutch_original\` field.
+  2. If the input is a multi-word phrase (e.g., "op losse schroeven staan"), analyze it as an expression. The \`dutch_lemma\` should be the full phrase, and \`part_of_speech\` and \`is_expression\` should reflect this.
+  3. For adjectives or adverbs (e.g., "aanwezig"), analyze them as provided in the input, without converting to a verb or other part of speech.
+- **For Nouns:**
+  1. Separate the article (e.g., "de") from the noun itself. Put the noun in \`dutch_lemma\` and the article in the \`article\` field. If no article is provided in the input, determine the correct one and add it to the \`article\` field.
+- **For Verbs:**
+  1. Always return the **infinitive** form in \`dutch_lemma\`, regardless of the tense in the input. For a past tense word like "kocht", the \`dutch_lemma\` must be "kopen".
+  2. **Reflexive Verbs:** To ensure consistency, if a verb is *exclusively* reflexive (e.g., \`zich aanmelden\`), its \`dutch_lemma\` MUST be formatted as "zich [infinitive verb]". Set \`is_reflexive: true\`.
+  3. **Separable Verbs:** Use your linguistic expertise to determine if a verb is separable. If it is, set \`is_separable: true\` and accurately fill in \`prefix_part\` and \`root_verb\`.
+- **For Translations & Examples:**
+  1. Provide 2-4 of the most common and relevant English translations.
+  2. Provide Russian translations that correspond to **EACH** English meaning listed.
+  3. Generate 4-6 authentic, natural example sentences that illustrate the main meanings from your translation list. For separable verbs, at least one example MUST demonstrate the separation of the prefix from the root verb (e.g., "Ik meld me aan voor de cursus Nederlands.").
 
-- **For TRANSLATIONS (Based on Van Dale):**
-  1.  Provide multiple, distinct meanings. For "aflopen", include meanings like "to slope down", "to come to an end", "to visit (shops)", "to go off (alarm)".
-  2.  List 2-4 most common English translations.
-  3.  **Provide Russian translations that correspond to ALL English meanings provided.**
-
-- **For EXAMPLES:**
-  1.  Create 4-6 authentic, natural example sentences that cover the main meanings.
-  2.  For VERBS: Demonstrate different conjugations and tenses.
-
-- **For GRAMMATICAL ANALYSIS:**
-  1.  For single-word verbs, return the infinitive in \`dutch_lemma\`.
-  2.  For nouns, **if the user provides an article, separate it**. The \`dutch_lemma\` should be the noun itself, and the \`article\` field should contain the article.
-  3.  For nouns provided without an article, determine the correct article.
-
-**EXAMPLES OF CORRECT ANALYSIS:**
-
--   Input: \`"de uitgeverij"\` OR \`"uitgeverij"\`
-    -   \`"dutch_lemma": "uitgeverij"\`, \`"part_of_speech": "noun"\`, \`"article": "de"\`
--   Input: \`"Aanwezig"\`
-    -   \`"dutch_lemma": "aanwezig"\`, \`"part_of_speech": "adjective"\`, \`"translations": { "en": ["present", "in attendance", "available"], "ru": ["присутствующий", "в наличии"] }\`
--   Input: \`"op losse schroeven staan"\`
-    -   \`"dutch_lemma": "op losse schroeven staan"\`, \`"part_of_speech": "expression"\`, \`"is_expression": true\`
--   Input: \`"vermoedelijk"\`
-    -   \`"dutch_lemma": "vermoedelijk"\`, \`"part_of_speech": "adverb"\`
-
-CRITICAL ANALYSIS RULES:
-1. **NOUNS ARE NOT VERBS:** If a word is a known noun (like "uitstoot"), you MUST classify it as a noun. Do NOT mistake it for a separable verb (like "uitstoten") even if the spelling is similar. A noun cannot be "separable". If part_of_speech is "noun", then is_separable MUST be false.
-2. ANALYZE ONLY THE EXACT WORD PROVIDED.
-3. Check if THIS EXACT WORD begins with a separable prefix.
-4. IMPORTANT: If the word does NOT start with a prefix, set is_separable=false.
-5. Do NOT confuse with similar verbs (e.g., "strijken" ≠ "uitstrijken").
-6. For separable verbs, ensure the root verb is a valid Dutch verb.
-7. Provide accurate, practical examples that native speakers would use
-8. Focus on the most common meanings and uses
-
-
-SEPARABLE VERB DETECTION:
-- Common separable prefixes: aan, af, bij, door, in, mee, na, om, onder, op, over, toe, uit, vast, weg, voorbij, terug, voor
-- If word starts with these prefixes + valid verb, it's separable
-- Examples: nadenken (na+denken), uitgaan (uit+gaan), meenemen (mee+nemen)
-- ALWAYS show separation in present tense: "ik denk na" not "ik nadenk"
-
-VERB CONJUGATION ANALYSIS:
-- CRITICAL: Always return the INFINITIVE form in dutch_lemma field for single-word verbs.
-- If input is conjugated verb (straalde, straalt, gestraald), find infinitive (stralen)
-- Common patterns:
-  - Past tense: -de/-te ending → infinitive (straalde → stralen)
-  - Present tense: -t ending → infinitive (straalt → stralen)
-  - Perfect tense: ge- prefix → infinitive (gestraald → stralen)
-- For irregular verbs, use your expertise to find correct infinitive
-- Examples:
-  - "straalde" → dutch_lemma: "stralen"
-  - "kocht" → dutch_lemma: "kopen"
-  - "ging" → dutch_lemma: "gaan"
-  - "was" → dutch_lemma: "zijn"
-
-ARTICLE USAGE RULES:
-- CRITICAL: Only NOUNS get articles (de/het)
-- All other parts of speech get article = null
-- Examples:
-  - "huis" (noun) → article: "het" (het huis)
-  - "verloofd" (adjective) → article: null
-  - "lopen" (verb) → article: null
-  - "mooi" (adjective) → article: null
-  - "snel" (adverb) → article: null
-  - "in" (preposition) → article: null
-- NEVER use articles with adjectives, verbs, adverbs, prepositions, conjunctions
-
-You are the Dutch language expert. Your knowledge is based on standard, authoritative dictionaries.
-
-Respond ONLY with valid JSON, no additional text.`,
+**CRITICAL ANALYSIS RULES:**
+1. **NOUNS ARE NOT VERBS:** If a word is a known noun (like "uitstoot"), it must be classified as \`part_of_speech: "noun"\`, and \`is_separable\` MUST be \`false\`. A noun cannot be a separable verb.
+2. **ARTICLE LOGIC:** Only nouns can have a non-null \`article\`. All other parts of speech must have \`article: null\`.
+3. **LEMMA ACCURACY:** For single-word verbs, the \`dutch_lemma\` must always be the correct infinitive, not a conjugated form.
+4. **SEPARABLE VERB CHECK:** If \`is_separable\` is \`true\`, then \`prefix_part\` and \`root_verb\` must be provided, and they must form a valid Dutch verb.
+5. **INPUT INTEGRITY:** Analyze only the exact word provided in the \`{{WORD}}\` placeholder.
+6. **TRANSLATION CONSISTENCY:** The provided Russian translations MUST directly correspond to each English translation listed.
+`,
 
   ERROR_MESSAGES: {
     INVALID_WORD: 'Invalid word provided',
