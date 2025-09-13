@@ -172,25 +172,24 @@ export const createWordActions = (
     assessment: ReviewAssessment
   ) => {
     try {
-      // Update in database using the existing service
-      await wordService.updateWordProgress(wordId, { quality: assessment })
+      // Update in database using the existing service and get the updated data
+      const updatedWordData = await wordService.updateWordProgress(wordId, {
+        quality: assessment,
+      })
 
-      // Update word in local store without full refresh
+      // Update word in local store with the actual data from database
       const currentWords = get().words
       const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
 
       if (wordIndex !== -1) {
-        // Update the word locally with new review date
         const updatedWords = [...currentWords]
-        const today = new Date()
-        const nextReviewDate = new Date(today)
-        nextReviewDate.setDate(today.getDate() + 1) // Add 1 day for next review
-
         updatedWords[wordIndex] = {
           ...updatedWords[wordIndex],
-          last_reviewed_at: today.toISOString(),
-          next_review_date: nextReviewDate.toISOString().split('T')[0],
-          repetition_count: (updatedWords[wordIndex].repetition_count || 0) + 1,
+          last_reviewed_at: updatedWordData.last_reviewed_at,
+          next_review_date: updatedWordData.next_review_date,
+          repetition_count: updatedWordData.repetition_count,
+          interval_days: updatedWordData.interval_days,
+          easiness_factor: updatedWordData.easiness_factor,
         }
         set({ words: updatedWords })
       }

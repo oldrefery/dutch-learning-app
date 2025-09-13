@@ -27,18 +27,29 @@ export default function ReviewScreen() {
     playAudio,
     handleCorrect,
     handleIncorrect,
+    handleAgain,
+    handleHard,
+    handleGood,
+    handleEasy,
     handleDeleteWord,
     handleImageChange,
     restartSession,
-    hasWordsForReview,
     tapGesture,
     panGesture,
   } = useReviewScreen()
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
-  const { currentWord, currentIndex, sessionComplete, reviewWords, isLoading } =
-    useReviewSession()
+  const {
+    currentWord,
+    currentIndex,
+    sessionComplete,
+    reviewWords,
+    reviewSession,
+    isLoading,
+    totalWords,
+    currentWordNumber,
+  } = useReviewSession()
 
   const handleWordPress = () => {
     if (currentWord) {
@@ -53,7 +64,7 @@ export default function ReviewScreen() {
   }
 
   // Check if we should show empty state first
-  if (!hasWordsForReview || reviewWords.length === 0) {
+  if (reviewWords.length === 0 && !isLoading) {
     return (
       <View style={reviewScreenStyles.container}>
         <View style={reviewScreenStyles.emptyContainer}>
@@ -153,7 +164,7 @@ export default function ReviewScreen() {
     <View style={reviewScreenStyles.container}>
       <View style={reviewScreenStyles.progressContainer}>
         <Text style={reviewScreenStyles.progressText}>
-          {currentIndex + 1} / {reviewWords.length}
+          {currentWordNumber} / {totalWords}
         </Text>
       </View>
 
@@ -162,7 +173,7 @@ export default function ReviewScreen() {
       <View style={reviewScreenStyles.buttonsContainer}>
         <TouchableOpacity
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.againButton]}
-          onPress={handleIncorrect}
+          onPress={handleAgain}
           disabled={isLoading}
         >
           <Text style={reviewScreenStyles.buttonText}>Again</Text>
@@ -170,7 +181,7 @@ export default function ReviewScreen() {
 
         <TouchableOpacity
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.hardButton]}
-          onPress={handleIncorrect}
+          onPress={handleHard}
           disabled={isLoading}
         >
           <Text style={reviewScreenStyles.buttonText}>Hard</Text>
@@ -178,7 +189,7 @@ export default function ReviewScreen() {
 
         <TouchableOpacity
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.goodButton]}
-          onPress={handleCorrect}
+          onPress={handleGood}
           disabled={isLoading}
         >
           <Text style={reviewScreenStyles.buttonText}>Good</Text>
@@ -186,7 +197,7 @@ export default function ReviewScreen() {
 
         <TouchableOpacity
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.easyButton]}
-          onPress={handleCorrect}
+          onPress={handleEasy}
           disabled={isLoading}
         >
           <Text style={reviewScreenStyles.buttonText}>Easy</Text>

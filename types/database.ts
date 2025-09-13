@@ -88,7 +88,6 @@ export interface ReviewSession {
   words: Word[]
   currentIndex: number
   completedCount: number
-  againQueue: Word[]
 }
 
 export interface AppError {

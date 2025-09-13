@@ -1,6 +1,6 @@
 import 'react-native-url-polyfill/auto'
 import { supabase } from './supabaseClient'
-import { calculateNextReview } from '../utils/srs'
+import { calculateNextReview } from '@/utils/srs'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -236,12 +236,16 @@ export const wordService = {
       )
     }
 
+    // Extract assessment value from the nested object structure
+    const assessmentValue =
+      assessment.quality?.assessment || assessment.assessment || assessment
+
     // Calculate new SRS values using existing function
     const srsUpdate = calculateNextReview({
       interval_days: currentWord.interval_days,
       repetition_count: currentWord.repetition_count,
       easiness_factor: currentWord.easiness_factor,
-      assessment: assessment.quality,
+      assessment: assessmentValue,
     })
 
     const { data, error } = await supabase

@@ -14,8 +14,6 @@ export const useReviewScreen = () => {
     reviewSession,
     currentWord,
     flipCard,
-    markCorrect,
-    markIncorrect,
     endReviewSession,
     deleteWord,
     deleteWordFromReview,
@@ -30,14 +28,6 @@ export const useReviewScreen = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [lastTouchTime, setLastTouchTime] = useState(0)
   const [isScrolling, setIsScrolling] = useState(false)
-
-  // Check if there are words available for review
-  const { words } = useAppStore()
-  const hasWordsForReview = words.some(word => {
-    if (!word.next_review_date) return true
-    const today = new Date().toISOString().split('T')[0]
-    return word.next_review_date <= today
-  })
 
   // Initialize audio player
   useEffect(() => {
@@ -66,12 +56,10 @@ export const useReviewScreen = () => {
     }
   }, [audioPlayer])
 
-  // Start review session when component mounts
+  // Start review session when component mounts - only once
   useEffect(() => {
-    if (!reviewSession && !reviewLoading && hasWordsForReview) {
-      startReviewSession()
-    }
-  }, [reviewSession, reviewLoading, hasWordsForReview, startReviewSession])
+    startReviewSession()
+  }, []) // Empty dependency array - run only on mount
 
   // Reset card state when word changes
   useEffect(() => {
@@ -99,33 +87,53 @@ export const useReviewScreen = () => {
     [audioPlayer, currentWord?.dutch_lemma, currentWord?.tts_url]
   )
 
-  const handleCorrect = useCallback(async () => {
-    if (!currentWord) return
+  const handleAssessment = useCallback(
+    async (assessment: 'again' | 'hard' | 'good' | 'easy') => {
+      if (!currentWord) return
 
-    setIsLoading(true)
-    try {
-      await markCorrect()
-      // Success feedback handled by SRS system
-    } catch {
-      ToastService.showError(ToastMessageType.MARK_INCORRECT_FAILED)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [currentWord, markCorrect])
+      setIsLoading(true)
+      try {
+        // Get the store actions
+        const store = useAppStore.getState()
 
-  const handleIncorrect = useCallback(async () => {
-    if (!currentWord) return
+        // Call submitReviewAssessment directly with the correct assessment
+        await store.submitReviewAssessment({
+          wordId: currentWord.word_id,
+          assessment: assessment,
+          timestamp: new Date(),
+        })
 
-    setIsLoading(true)
-    try {
-      await markIncorrect()
-      ToastService.showReviewMessage('incorrect')
-    } catch {
-      ToastService.showError(ToastMessageType.MARK_INCORRECT_FAILED)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [currentWord, markIncorrect])
+        // No toast for 'again' - it's a normal retry, not an error
+      } catch (error) {
+        console.error('Assessment error:', error)
+        ToastService.showError(ToastMessageType.MARK_INCORRECT_FAILED)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [currentWord]
+  )
+
+  const handleAgain = useCallback(
+    () => handleAssessment('again'),
+    [handleAssessment]
+  )
+  const handleHard = useCallback(
+    () => handleAssessment('hard'),
+    [handleAssessment]
+  )
+  const handleGood = useCallback(
+    () => handleAssessment('good'),
+    [handleAssessment]
+  )
+  const handleEasy = useCallback(
+    () => handleAssessment('easy'),
+    [handleAssessment]
+  )
+
+  // Keep old functions for compatibility
+  const handleCorrect = handleGood
+  const handleIncorrect = handleAgain
 
   const handleDeleteWord = useCallback(async () => {
     if (!currentWord) return
@@ -230,14 +238,17 @@ export const useReviewScreen = () => {
     reviewSession,
     currentWord,
     isFlipped,
-    isLoading: isLoading || (reviewLoading && hasWordsForReview),
+    isLoading: isLoading || reviewLoading,
     audioPlayer,
-    hasWordsForReview,
 
     // Actions
     playAudio,
     handleCorrect,
     handleIncorrect,
+    handleAgain,
+    handleHard,
+    handleGood,
+    handleEasy,
     handleDeleteWord,
     handleEndSession,
     handleImageChange,

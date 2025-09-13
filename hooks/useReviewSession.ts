@@ -7,6 +7,8 @@ export interface UseReviewSessionReturn {
   sessionComplete: boolean
   reviewWords: any[]
   isLoading: boolean
+  totalWords: number
+  currentWordNumber: number
 }
 
 export function useReviewSession(): UseReviewSessionReturn {
@@ -14,7 +16,15 @@ export function useReviewSession(): UseReviewSessionReturn {
 
   const reviewWords = reviewSession?.words || []
   const currentIndex = reviewSession?.currentIndex || 0
-  const sessionComplete = currentIndex >= reviewWords.length
+
+  // Total words is just the original words length
+  const totalWords = reviewWords.length
+
+  // Calculate current position - simple approach
+  const currentWordNumber = currentIndex + 1
+
+  // Session is complete when all words are done OR no current word
+  const sessionComplete = currentIndex >= reviewWords.length && !currentWord
   const isLoading = reviewLoading
 
   return {
@@ -24,5 +34,7 @@ export function useReviewSession(): UseReviewSessionReturn {
     sessionComplete,
     reviewWords,
     isLoading,
+    totalWords,
+    currentWordNumber,
   }
 }

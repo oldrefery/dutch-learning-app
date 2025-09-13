@@ -20,6 +20,14 @@ export const createReviewActions = (
       }
 
       const reviewWords = await wordService.getWordsForReview(userId)
+      console.log('📊 Server returned', reviewWords.length, 'words for review')
+      if (reviewWords.length > 0) {
+        reviewWords.forEach(word => {
+          console.log(
+            `📝 Review word: ${word.dutch_lemma}, next_review: ${word.next_review_date}`
+          )
+        })
+      }
 
       if (reviewWords.length === 0) {
         set({
@@ -34,7 +42,6 @@ export const createReviewActions = (
         words: reviewWords,
         currentIndex: 0,
         completedCount: 0,
-        againQueue: [],
       }
 
       set({
@@ -60,14 +67,24 @@ export const createReviewActions = (
       const { reviewSession, currentWord } = get()
       if (!reviewSession || !currentWord) return
 
-      // Update word in database and store
+      console.log(
+        `💯 ${assessment.assessment.toUpperCase()} clicked for word:`,
+        currentWord.dutch_lemma
+      )
+
+      // Classic SRS: All assessments update the word in database
       await get().updateWordAfterReview(currentWord.word_id, assessment)
+      console.log(
+        `💾 Word ${currentWord.dutch_lemma} updated in database with assessment: ${assessment.assessment}`
+      )
 
       // Move to next word
       const nextIndex = reviewSession.currentIndex + 1
       const nextWord = reviewSession.words[nextIndex] || null
 
-      if (nextWord) {
+      if (nextWord && nextIndex < reviewSession.words.length) {
+        // Continue with next word
+        console.log('➡️ Moving to next word:', nextWord.dutch_lemma)
         set({
           reviewSession: {
             ...reviewSession,
@@ -77,6 +94,7 @@ export const createReviewActions = (
         })
       } else {
         // Session complete
+        console.log('🏁 Session complete')
         set({
           reviewSession: null,
           currentWord: null,

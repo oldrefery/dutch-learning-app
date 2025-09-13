@@ -1,11 +1,10 @@
-import type { SRSAssessment, SRSResult } from '../types/database'
-
 /**
  * Spaced Repetition System (SRS) algorithm based on SM-2
  *
  * This implements a simplified version of the SuperMemo SM-2 algorithm
  * for optimal spacing of flashcard reviews.
  */
+import { SRSAssessment, SRSResult } from '@/types/database'
 
 interface SRSInput {
   interval_days: number
@@ -28,17 +27,16 @@ export function calculateNextReview({
   switch (assessment) {
     case 'again':
       // Reset card to beginning, reduce easiness factor significantly
-      // Set interval to 0 to keep in today's review queue
       newEasinessFactor = Math.max(1.3, easiness_factor - 0.2)
       newRepetitionCount = 0
-      newInterval = 0
+      newInterval = 0 // Available today (will show on restart)
       break
 
     case 'hard':
-      // Reduce easiness factor, restart repetition sequence
+      // Reduce easiness factor, small interval increase
       newEasinessFactor = Math.max(1.3, easiness_factor - 0.15)
-      newRepetitionCount = 0
-      newInterval = Math.max(1, Math.floor(interval_days * 0.6))
+      newRepetitionCount = repetition_count + 1
+      newInterval = Math.max(1, Math.round(interval_days * 1.2)) // 20% increase
       break
 
     case 'good':
