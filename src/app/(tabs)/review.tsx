@@ -3,6 +3,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   View as RNView,
+  ScrollView,
+  RefreshControl,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { runOnJS } from 'react-native-reanimated'
@@ -16,10 +18,12 @@ import { useImageSelector } from '@/hooks/useImageSelector'
 import { useReviewSession } from '@/hooks/useReviewSession'
 import { reviewScreenStyles } from '@/styles/ReviewScreenStyles'
 import { Colors } from '@/constants/Colors'
+import { useAppStore } from '@/stores/useAppStore'
 
 export default function ReviewScreen() {
   const [selectedWord, setSelectedWord] = useState(null)
   const [modalVisible, setModalVisible] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
   const pronunciationRef = useRef<RNView>(null)
 
   const {
@@ -47,6 +51,9 @@ export default function ReviewScreen() {
     currentWordNumber,
   } = useReviewSession()
 
+  // Get startReviewSession from store
+  const startReviewSession = useAppStore(state => state.startReviewSession)
+
   const handleWordPress = () => {
     if (currentWord) {
       setSelectedWord(currentWord)
@@ -59,20 +66,38 @@ export default function ReviewScreen() {
     setSelectedWord(null)
   }
 
+  const onRefresh = async () => {
+    setRefreshing(true)
+    try {
+      await startReviewSession()
+    } catch (error) {
+      console.error('Error refreshing review session:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
   // Check if we should show empty state first
   if (reviewWords.length === 0 && !isLoading) {
     return (
-      <View style={reviewScreenStyles.container}>
-        <View style={reviewScreenStyles.emptyContainer}>
-          <Text style={reviewScreenStyles.emptyText}>
-            No words to review! 🎉
-          </Text>
-          <Text style={reviewScreenStyles.emptySubtext}>
-            All your words are scheduled for future review. Come back later or
-            add new words to practice.
-          </Text>
-        </View>
-      </View>
+      <ScrollView
+        style={reviewScreenStyles.container}
+        contentContainerStyle={reviewScreenStyles.emptyContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary.DEFAULT]}
+            tintColor={Colors.primary.DEFAULT}
+          />
+        }
+      >
+        <Text style={reviewScreenStyles.emptyText}>No words to review! 🎉</Text>
+        <Text style={reviewScreenStyles.emptySubtext}>
+          All your words are scheduled for future review. Pull to refresh or add
+          new words to practice.
+        </Text>
+      </ScrollView>
     )
   }
 
