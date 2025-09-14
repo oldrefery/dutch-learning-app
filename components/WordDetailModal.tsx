@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedScrollHandler,
 } from 'react-native-reanimated'
 import { View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import type { Word } from '@/types/database'
 import { styles } from './WordDetailModal/styles'
 import {
@@ -139,7 +140,7 @@ export default function WordDetailModal({
   return (
     <>
       <StatusBar
-        backgroundColor="rgba(0, 0, 0, 0.5)"
+        backgroundColor={Colors.transparent.modalOverlay}
         barStyle="light-content"
       />
       <Animated.View style={[styles.overlay, animatedBackdropStyle]}>

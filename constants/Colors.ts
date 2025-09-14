@@ -50,6 +50,34 @@ const colorPalette = {
     secondary: '#F8FAFC',
   },
 
+  // Link colors
+  link: {
+    DEFAULT: '#2e78b7',
+  },
+
+  // iOS system colors
+  ios: {
+    systemBlue: '#007AFF',
+  },
+
+  // Transparent/overlay colors - for backgrounds, overlays, and semi-transparent elements
+  transparent: {
+    // Modal overlays
+    modalOverlay: 'rgba(0, 0, 0, 0.5)',
+
+    // Text with transparency for different themes
+    textLight: 'rgba(0, 0, 0, 0.8)',
+    textDark: 'rgba(255, 255, 255, 0.8)',
+
+    // Background overlays for different themes
+    backgroundLight: 'rgba(0, 0, 0, 0.05)',
+    backgroundDark: 'rgba(255, 255, 255, 0.05)',
+
+    // White overlays with different opacity levels
+    white10: 'rgba(255, 255, 255, 0.1)',
+    white20: 'rgba(255, 255, 255, 0.2)',
+  },
+
   // Legacy colors for compatibility (will be gradually replaced)
   legacy: {
     tintColorLight: '#2f95dc',

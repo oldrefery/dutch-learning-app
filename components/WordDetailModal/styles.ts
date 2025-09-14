@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: Colors.transparent.modalOverlay,
     zIndex: 1000,
   },
   container: {
@@ -190,7 +190,7 @@ export const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: Colors.transparent.modalOverlay,
   },
   statusBadge: {
     paddingHorizontal: 12,

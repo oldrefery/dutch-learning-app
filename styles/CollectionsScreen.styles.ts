@@ -1,13 +1,14 @@
 import { StyleSheet } from 'react-native'
+import { Colors } from '@/constants/Colors'
 
 const COLORS = {
-  WHITE: '#ffffff',
-  GRAY_600: '#6b7280',
-  GRAY_700: '#374151',
-  GRAY_800: '#1f2937',
-  BLUE_600: '#3b82f6',
-  RED_600: '#dc2626',
-  GREEN_600: '#16a34a',
+  WHITE: Colors.background.primary,
+  GRAY_600: Colors.neutral[500],
+  GRAY_700: Colors.neutral[700],
+  GRAY_800: Colors.neutral[800],
+  BLUE_600: Colors.primary.DEFAULT,
+  RED_600: Colors.error.DEFAULT,
+  GREEN_600: Colors.success.DEFAULT,
 } as const
 
 const LAYOUT = {

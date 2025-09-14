@@ -1,16 +1,17 @@
 import { StyleSheet } from 'react-native'
+import { Colors } from '@/constants/Colors'
 
 export const analysisResultStyles = StyleSheet.create({
   resultContainer: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: Colors.neutral[50],
   },
   resultCard: {
-    backgroundColor: 'white',
+    backgroundColor: Colors.background.primary,
     margin: 16,
     borderRadius: 12,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: Colors.legacy.black,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -28,12 +29,12 @@ export const analysisResultStyles = StyleSheet.create({
   resultTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: Colors.neutral[900],
   },
   checkingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.neutral[100],
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -42,12 +43,12 @@ export const analysisResultStyles = StyleSheet.create({
   checkingText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#6b7280',
+    color: Colors.neutral[500],
   },
   alreadyExistsBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#d1fae5',
+    backgroundColor: Colors.success.light,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -56,7 +57,7 @@ export const analysisResultStyles = StyleSheet.create({
   alreadyExistsText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#059669',
+    color: Colors.success.DEFAULT,
   },
   resultRow: {
     flexDirection: 'row',
@@ -69,13 +70,13 @@ export const analysisResultStyles = StyleSheet.create({
   resultLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: Colors.neutral[700],
     width: 80,
     marginRight: 12,
   },
   resultValue: {
     fontSize: 14,
-    color: '#1f2937',
+    color: Colors.neutral[800],
     flex: 1,
   },
   wordWithPronunciation: {
@@ -87,16 +88,16 @@ export const analysisResultStyles = StyleSheet.create({
   pronunciationButton: {
     padding: 4,
     borderRadius: 4,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.neutral[100],
   },
   translationText: {
     fontSize: 14,
-    color: '#1f2937',
+    color: Colors.neutral[800],
     marginLeft: 16,
     marginBottom: 4,
   },
   exampleCard: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: Colors.neutral[50],
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
@@ -105,12 +106,12 @@ export const analysisResultStyles = StyleSheet.create({
   exampleDutch: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1f2937',
+    color: Colors.neutral[800],
     marginBottom: 4,
   },
   exampleTranslation: {
     fontSize: 13,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     marginBottom: 2,
   },
   associationImage: {
@@ -122,7 +123,7 @@ export const analysisResultStyles = StyleSheet.create({
   },
   prefixText: {
     fontWeight: 'bold',
-    color: '#dc2626', // Red color to highlight the separable prefix
+    color: Colors.error.DEFAULT, // Red color to highlight the separable prefix
   },
   imageContainer: {
     marginLeft: 16,
@@ -131,7 +132,7 @@ export const analysisResultStyles = StyleSheet.create({
   changeImageButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.neutral[100],
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -141,7 +142,7 @@ export const analysisResultStyles = StyleSheet.create({
   changeImageText: {
     marginLeft: 6,
     fontSize: 14,
-    color: '#3b82f6',
+    color: Colors.primary.DEFAULT,
     fontWeight: '500',
   },
 })

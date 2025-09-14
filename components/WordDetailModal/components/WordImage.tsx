@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { View, Image, ActivityIndicator } from 'react-native'
+import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 
 interface WordImageProps {
@@ -15,7 +16,7 @@ export default function WordImage({ imageUrl }: WordImageProps) {
     <View style={styles.imageContainer}>
       {imageLoading && (
         <View style={styles.imageLoadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large" color={Colors.ios.systemBlue} />
         </View>
       )}
       <Image

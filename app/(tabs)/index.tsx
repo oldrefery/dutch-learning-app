@@ -3,6 +3,7 @@ import { FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { ToastService } from '@/components/AppToast'
 import { router } from 'expo-router'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import { useAppStore } from '@/stores/useAppStore'
 import CreateCollectionModal from '@/components/CreateCollectionModal'
 import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
@@ -93,7 +94,7 @@ export default function CollectionsScreen() {
         />
         {collectionsLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#3b82f6" />
+            <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
             <Text style={styles.loadingText}>Loading collections...</Text>
           </View>
         ) : (

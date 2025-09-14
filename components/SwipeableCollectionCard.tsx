@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import type { Collection, Word } from '@/types/database'
 
 interface SwipeableCollectionCardProps {
@@ -150,9 +151,9 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.background.primary,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: Colors.legacy.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -168,35 +169,35 @@ const styles = StyleSheet.create({
   collectionName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: Colors.neutral[900],
     marginBottom: 4,
   },
   collectionStats: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
   },
   collectionProgress: {
     marginBottom: 12,
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: Colors.neutral[200],
     borderRadius: 4,
     overflow: 'hidden',
     marginBottom: 8,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: Colors.primary.DEFAULT,
     borderRadius: 4,
   },
   progressText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     textAlign: 'center',
   },
   reviewBadge: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: Colors.warning.light,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
   reviewBadgeText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#92400e',
+    color: Colors.warning.dark,
   },
   deleteButton: {
     position: 'absolute',
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 80,
-    backgroundColor: '#ef4444',
+    backgroundColor: Colors.error.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
   },

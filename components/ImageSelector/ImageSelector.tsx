@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import { IMAGE_CONFIG } from '@/constants/AppConfig'
 import { supabase } from '@/lib/supabaseClient'
 import { imageSelectorStyles } from './styles'
@@ -119,7 +120,7 @@ export default function ImageSelector({
 
   const renderLoadingState = () => (
     <View style={imageSelectorStyles.loadingContainer}>
-      <ActivityIndicator size="large" color="#3b82f6" />
+      <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
       <Text style={imageSelectorStyles.loadingText}>
         Finding better images...
       </Text>
@@ -159,7 +160,11 @@ export default function ImageSelector({
             />
             {currentImageUrl === image.url && (
               <View style={imageSelectorStyles.currentBadge}>
-                <Ionicons name="checkmark-circle" size={20} color="#10b981" />
+                <Ionicons
+                  name="checkmark-circle"
+                  size={20}
+                  color={Colors.success.DEFAULT}
+                />
                 <Text style={imageSelectorStyles.currentText}>Current</Text>
               </View>
             )}
@@ -179,7 +184,7 @@ export default function ImageSelector({
             disabled={loadingMore}
           >
             {loadingMore ? (
-              <ActivityIndicator size="small" color="#3b82f6" />
+              <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
             ) : (
               <Text style={imageSelectorStyles.loadMoreText}>
                 Load More Images
@@ -216,7 +221,7 @@ export default function ImageSelector({
             onPress={onClose}
             style={imageSelectorStyles.closeButton}
           >
-            <Ionicons name="close" size={24} color="#374151" />
+            <Ionicons name="close" size={24} color={Colors.neutral[700]} />
           </TouchableOpacity>
         </View>
 

@@ -2,6 +2,7 @@ import React from 'react'
 import { ScrollView, TouchableOpacity, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Text, View } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import type { AnalysisResultCardProps } from '../types/AddWordTypes'
 import { analysisResultStyles } from '../styles/AnalysisResultCard.styles'
 
@@ -21,13 +22,21 @@ export function AnalysisResultCard({
           <Text style={analysisResultStyles.resultTitle}>Analysis Result</Text>
           {isCheckingDuplicate && (
             <View style={analysisResultStyles.checkingBadge}>
-              <Ionicons name="hourglass" size={16} color="#6b7280" />
+              <Ionicons
+                name="hourglass"
+                size={16}
+                color={Colors.neutral[500]}
+              />
               <Text style={analysisResultStyles.checkingText}>Checking...</Text>
             </View>
           )}
           {isAlreadyInCollection && !isCheckingDuplicate && (
             <View style={analysisResultStyles.alreadyExistsBadge}>
-              <Ionicons name="checkmark-circle" size={16} color="#059669" />
+              <Ionicons
+                name="checkmark-circle"
+                size={16}
+                color={Colors.success.DEFAULT}
+              />
               <Text style={analysisResultStyles.alreadyExistsText}>
                 Already in collection
               </Text>
@@ -50,7 +59,7 @@ export function AnalysisResultCard({
                 <Ionicons
                   name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
                   size={20}
-                  color="#2563eb"
+                  color={Colors.primary.DEFAULT}
                 />
               </TouchableOpacity>
             )}

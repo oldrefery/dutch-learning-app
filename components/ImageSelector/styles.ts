@@ -1,11 +1,12 @@
 import { StyleSheet, Dimensions } from 'react-native'
+import { Colors } from '@/constants/Colors'
 
 const { width } = Dimensions.get('window')
 
 export const imageSelectorStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: Colors.neutral[50],
   },
   header: {
     flexDirection: 'row',
@@ -14,19 +15,19 @@ export const imageSelectorStyles = StyleSheet.create({
     padding: 16,
     backgroundColor: 'white',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: Colors.neutral[200],
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: Colors.neutral[800],
   },
   closeButton: {
     padding: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     textAlign: 'center',
     marginVertical: 16,
     paddingHorizontal: 16,
@@ -39,7 +40,7 @@ export const imageSelectorStyles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     marginTop: 12,
   },
   errorContainer: {
@@ -50,12 +51,12 @@ export const imageSelectorStyles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: '#dc2626',
+    color: Colors.error.DEFAULT,
     textAlign: 'center',
     marginBottom: 16,
   },
   retryButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: Colors.primary.DEFAULT,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
@@ -82,7 +83,7 @@ export const imageSelectorStyles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: 'white',
-    shadowColor: '#000',
+    shadowColor: Colors.legacy.black,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -97,7 +98,7 @@ export const imageSelectorStyles = StyleSheet.create({
   },
   currentImage: {
     borderWidth: 3,
-    borderColor: '#10b981',
+    borderColor: Colors.success.DEFAULT,
   },
   currentBadge: {
     position: 'absolute',
@@ -109,7 +110,7 @@ export const imageSelectorStyles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: Colors.legacy.black,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -121,7 +122,7 @@ export const imageSelectorStyles = StyleSheet.create({
   currentText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#10b981',
+    color: Colors.success.DEFAULT,
     marginLeft: 4,
   },
   loadMoreContainer: {
@@ -129,7 +130,7 @@ export const imageSelectorStyles = StyleSheet.create({
     alignItems: 'center',
   },
   loadMoreButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: Colors.primary.DEFAULT,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -137,7 +138,7 @@ export const imageSelectorStyles = StyleSheet.create({
     alignItems: 'center',
   },
   loadMoreButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: Colors.neutral[400],
   },
   loadMoreText: {
     color: 'white',
