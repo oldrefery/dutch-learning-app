@@ -20,7 +20,8 @@
       "infoPlist": {
         "UIBackgroundModes": ["audio", "audio"],
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "appleTeamId": "7FQ395U52U"
     },
     "android": {
       "adaptiveIcon": {

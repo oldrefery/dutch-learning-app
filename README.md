@@ -129,21 +129,27 @@ The application uses a modern Backend-as-a-Service (BaaS) architecture, which mi
 
 ## 6. Technology Stack
 
-- **Platform**: React Native with Expo (for iOS, Android, and Web)
+- **Platform**: React Native with Expo SDK 54 (for iOS, Android, and Web)
+- **React**: React 19.1.0 with React Native 0.81.4
+- **Architecture**: New Architecture enabled (Reanimated 4.0)
 - **Navigation**: expo-router (file-based routing)
 - **Backend**: Supabase (PostgreSQL Database, Auth, Edge Functions)
 - **AI Integration**: Google Gemini, accessed securely via Supabase Edge Functions
 - **Language**: TypeScript
 - **State Management**: Zustand
-- **Animation**: React Native Reanimated / Skia
+- **Animation**: React Native Reanimated 4.0 + Worklets
+- **Gestures**: React Native Gesture Handler 2.28.0
 - **Testing**: Jest & React Native Testing Library
 - **Code Quality**: ESLint & Prettier
+- **Node.js**: Version 20+ required
 
 ## 7. Project Status 🎉
 
 ✅ **Phase 0 Complete** - Supabase infrastructure fully deployed and tested
 ✅ **Phase 1 Foundation Complete** - React Native app initialized and running
-🚀 **Ready for MVP Development** - Core features implementation
+✅ **Phase 2 Complete** - Backend integration and MVP features
+✅ **Phase 3 Complete** - Modern stack upgrade (SDK 54, React 19.1, Reanimated 4.0)
+🚀 **Ready for Enhanced Features** - Advanced functionality development
 
 ### Current Architecture:
 
