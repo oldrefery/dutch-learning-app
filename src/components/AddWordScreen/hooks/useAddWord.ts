@@ -3,7 +3,7 @@ import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
 import { useAppStore } from '@/stores/useAppStore'
 import { useCollections } from '@/hooks/useCollections'
-import type { Collection } from '@/types/database'
+import type { Collection, GeminiWordAnalysis } from '@/types/database'
 
 export const useAddWord = () => {
   const [isAdding, setIsAdding] = useState(false)
@@ -21,7 +21,7 @@ export const useAddWord = () => {
     }
   }, [collections, selectedCollection])
 
-  const addWord = async (analysisResult: any) => {
+  const addWord = async (analysisResult: GeminiWordAnalysis) => {
     if (!selectedCollection) {
       ToastService.showError(ToastMessageType.NO_COLLECTION_SELECTED)
       return
@@ -37,8 +37,10 @@ export const useAddWord = () => {
         selectedCollection.name
       )
       return true
-    } catch (error: any) {
-      ToastService.showWordError(error.message)
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to add word'
+      ToastService.showWordError(errorMessage)
       return false
     } finally {
       setIsAdding(false)

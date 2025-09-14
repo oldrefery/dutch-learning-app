@@ -1,4 +1,5 @@
 import * as SentryLib from '@sentry/react-native'
+import type React from 'react'
 
 // Flag to prevent multiple initializations
 let sentryInitialized = false
@@ -34,7 +35,7 @@ initializeSentry()
 export const Sentry = __DEV__
   ? {
       // Provide no-op functions for development
-      wrap: (component: any) => component, // Just return the component without wrapping
+      wrap: <T extends React.ComponentType>(component: T) => component, // Just return the component without wrapping
       captureException: () => {},
       captureMessage: () => {},
       addBreadcrumb: () => {},

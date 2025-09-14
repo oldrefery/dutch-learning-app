@@ -1,11 +1,12 @@
 import { useAppStore } from '@/stores/useAppStore'
+import type { Word, ReviewSession } from '@/types/database'
 
 export interface UseReviewSessionReturn {
-  reviewSession: any
-  currentWord: any
+  reviewSession: ReviewSession | null
+  currentWord: Word | null
   currentIndex: number
   sessionComplete: boolean
-  reviewWords: any[]
+  reviewWords: Word[]
   isLoading: boolean
   totalWords: number
   currentWordNumber: number

@@ -11,11 +11,12 @@ import { Colors } from '@/constants/Colors'
 import { useCollections } from '@/hooks/useCollections'
 import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
+import type { Collection } from '@/types/database'
 
 interface CreateCollectionModalProps {
   visible: boolean
   onClose: () => void
-  onCollectionCreated?: (collection: any) => void
+  onCollectionCreated?: (collection: Collection) => void
 }
 
 export default function CreateCollectionModal({

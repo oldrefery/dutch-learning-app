@@ -26,14 +26,14 @@ export function calculateNextReview({
   // Adjust easiness factor based on assessment
   switch (assessment) {
     case 'again':
-      // Reset card to beginning, reduce easiness factor significantly
+      // Reset card to beginning, reduce the easiness factor significantly
       newEasinessFactor = Math.max(1.3, easiness_factor - 0.2)
       newRepetitionCount = 0
       newInterval = 0 // Available today (will show on restart)
       break
 
     case 'hard':
-      // Reduce easiness factor, small interval increase
+      // Reduce an easiness factor, small interval increase
       newEasinessFactor = Math.max(1.3, easiness_factor - 0.15)
       newRepetitionCount = repetition_count + 1
       newInterval = Math.max(1, Math.round(interval_days * 1.2)) // 20% increase
@@ -54,7 +54,7 @@ export function calculateNextReview({
       break
 
     case 'easy':
-      // Increase easiness factor, accelerate interval
+      // Increase easiness factor, speed up an interval
       newEasinessFactor = Math.min(2.5, easiness_factor + 0.15)
       newRepetitionCount = repetition_count + 1
 
@@ -68,7 +68,7 @@ export function calculateNextReview({
       break
   }
 
-  // Calculate next review date
+  // Calculate the next review date
   const nextReviewDate = new Date()
   nextReviewDate.setDate(nextReviewDate.getDate() + newInterval)
 
@@ -77,58 +77,5 @@ export function calculateNextReview({
     repetition_count: newRepetitionCount,
     easiness_factor: Number(newEasinessFactor.toFixed(2)),
     next_review_date: nextReviewDate.toISOString().split('T')[0],
-  }
-}
-
-/**
- * Get the next word from review session, handling the relearning queue
- */
-export function getNextReviewWord(
-  words: any[],
-  currentIndex: number,
-  againQueue: any[]
-): { word: any | null; isFromAgainQueue: boolean; newIndex: number } {
-  // First, check if there are words in the "again" queue
-  if (againQueue.length > 0) {
-    return {
-      word: againQueue[0],
-      isFromAgainQueue: true,
-      newIndex: currentIndex,
-    }
-  }
-
-  // Otherwise, get next word from main sequence
-  if (currentIndex < words.length) {
-    return {
-      word: words[currentIndex],
-      isFromAgainQueue: false,
-      newIndex: currentIndex + 1,
-    }
-  }
-
-  // No more words
-  return {
-    word: null,
-    isFromAgainQueue: false,
-    newIndex: currentIndex,
-  }
-}
-
-/**
- * Calculate review session statistics
- */
-export function calculateSessionStats(
-  totalWords: number,
-  completedWords: number,
-  againQueueSize: number
-) {
-  const progress = totalWords > 0 ? (completedWords / totalWords) * 100 : 0
-  const remaining = totalWords - completedWords + againQueueSize
-
-  return {
-    progress: Math.round(progress),
-    completed: completedWords,
-    remaining,
-    total: totalWords,
   }
 }

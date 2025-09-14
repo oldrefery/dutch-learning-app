@@ -27,7 +27,7 @@ export const useReviewScreen = () => {
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [lastTouchTime, setLastTouchTime] = useState(0)
-  const [isScrolling, setIsScrolling] = useState(false)
+  const [isScrolling] = useState(false)
 
   // Initialize audio player
   useEffect(() => {
@@ -59,7 +59,7 @@ export const useReviewScreen = () => {
   // Start review session when component mounts - only once
   useEffect(() => {
     startReviewSession()
-  }, []) // Empty dependency array - run only on mount
+  }, [startReviewSession])
 
   // Reset card state when word changes
   useEffect(() => {

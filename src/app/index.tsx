@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Redirect } from 'expo-router'
 import { supabase } from '@/lib/supabaseClient'
 import { useAppStore } from '@/stores/useAppStore'
@@ -12,9 +12,9 @@ export default function Index() {
 
   useEffect(() => {
     checkAuthState()
-  }, [])
+  }, [checkAuthState])
 
-  const checkAuthState = async () => {
+  const checkAuthState = useCallback(async () => {
     try {
       const {
         data: { session },
@@ -30,12 +30,12 @@ export default function Index() {
       } else {
         setIsAuthenticated(false)
       }
-    } catch (error) {
+    } catch {
       setIsAuthenticated(false)
     }
 
     setIsLoading(false)
-  }
+  }, [initializeApp])
 
   if (isLoading) {
     return <LoadingScreen />

@@ -80,7 +80,7 @@ export function SimpleAuthProvider({
       } else {
         setError('Registration successful! You can now sign in.')
       }
-    } catch (error) {
+    } catch {
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
@@ -118,7 +118,7 @@ export function SimpleAuthProvider({
       } else {
         setError('Login successful! (Session created but not stored)')
       }
-    } catch (error) {
+    } catch {
       setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)

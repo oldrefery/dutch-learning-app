@@ -1,10 +1,11 @@
 import { useAppStore } from '@/stores/useAppStore'
+import type { Collection } from '@/types/database'
 
 export interface UseCollectionsReturn {
-  collections: any[]
+  collections: Collection[]
   collectionsLoading: boolean
   fetchCollections: () => Promise<void>
-  createNewCollection: (name: string) => Promise<any>
+  createNewCollection: (name: string) => Promise<Collection>
 }
 
 export function useCollections(): UseCollectionsReturn {

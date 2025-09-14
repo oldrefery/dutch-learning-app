@@ -33,10 +33,9 @@ export default function SwipeableWordItem({
   const MAX_SWIPE = -100
 
   useEffect(() => {
-    const delay = index * 50 // 50ms for each item
     opacity.value = withTiming(1, { duration: 300 }, () => {})
     translateY.value = withTiming(0, { duration: 400 }, () => {})
-  }, [])
+  }, [opacity, translateY])
 
   const getStatusColor = () => {
     if (word.repetition_count > 2) return Colors.success.DEFAULT

@@ -1,4 +1,13 @@
-import type { Word, Collection, ReviewSession, AppError } from './database'
+import type {
+  Word,
+  Collection,
+  ReviewSession,
+  AppError,
+  GeminiWordAnalysis,
+  SRSAssessment,
+  WordTranslations,
+  WordExample,
+} from './database'
 
 export type { AppError }
 
@@ -27,14 +36,14 @@ export interface AppState {
 
   // Word actions
   fetchWords: () => Promise<void>
-  addNewWord: (word: string) => Promise<Word>
+  addNewWord: (word: string, collectionId?: string) => Promise<Word>
   saveAnalyzedWord: (
-    analyzedWord: AnalyzedWord,
+    analyzedWord: AnalyzedWord | GeminiWordAnalysis,
     collectionId?: string
   ) => Promise<Word>
   updateWordAfterReview: (
     wordId: string,
-    assessment: ReviewAssessment
+    assessment: SRSAssessment
   ) => Promise<void>
   deleteWord: (wordId: string) => Promise<void>
 
@@ -69,15 +78,21 @@ export interface ReviewAssessment {
 export interface AnalyzedWord {
   dutch_lemma: string
   dutch_original?: string
-  translations: {
-    en: string[]
-  }
+  translations: WordTranslations
   part_of_speech: string
-  examples?: string[]
+  examples?: WordExample[]
   image_url?: string
   tts_url?: string
   analysis_metadata?: Record<string, unknown>
   collection_id?: string
+  is_irregular?: boolean
+  is_reflexive?: boolean
+  is_expression?: boolean
+  expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound'
+  is_separable?: boolean
+  prefix_part?: string
+  root_verb?: string
+  article?: 'de' | 'het'
 }
 
 export interface StoreSetFunction {

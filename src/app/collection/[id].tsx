@@ -86,11 +86,10 @@ export default function CollectionDetailScreen() {
     try {
       await deleteWord(wordId)
       ToastService.showSuccess(ToastMessageType.WORD_DELETED)
-    } catch (error: any) {
-      ToastService.showError(
-        ToastMessageType.DELETE_WORD_FAILED,
-        error.message || 'Could not delete word'
-      )
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Could not delete word'
+      ToastService.showError(ToastMessageType.DELETE_WORD_FAILED, errorMessage)
     }
   }
 

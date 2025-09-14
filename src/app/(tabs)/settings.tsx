@@ -24,7 +24,7 @@ export default function SettingsScreen() {
 
             // Navigate to login
             router.replace('/(auth)/login')
-          } catch (error) {
+          } catch {
             Alert.alert('Error', 'An unexpected error occurred.')
           }
         },

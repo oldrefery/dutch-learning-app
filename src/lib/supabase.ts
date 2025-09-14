@@ -1,6 +1,7 @@
 import 'react-native-url-polyfill/auto'
 import { supabase } from './supabaseClient'
 import { calculateNextReview } from '@/utils/srs'
+import type { Word, SRSAssessment } from '@/types/database'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -134,7 +135,10 @@ export const wordService = {
         acc[lemma].push(word)
         return acc
       },
-      {} as Record<string, any[]>
+      {} as Record<
+        string,
+        { dutch_lemma: string; word_id: string; created_at: string }[]
+      >
     )
 
     // Return only groups with more than one word
@@ -173,17 +177,11 @@ export const wordService = {
   },
 
   // Add new word
-  async addWord(wordData: any, userId: string) {
+  async addWord(wordData: Partial<Word>, userId: string) {
     // Ensure required fields are present
     const wordToInsert = {
-      dutch_original:
-        wordData.dutch_original || wordData.word || wordData.lemma || '',
-      dutch_lemma:
-        wordData.dutch_lemma ||
-        wordData.lemma ||
-        wordData.dutch_original ||
-        wordData.word ||
-        '',
+      dutch_original: wordData.dutch_original || '',
+      dutch_lemma: wordData.dutch_lemma || wordData.dutch_original || '',
       part_of_speech: wordData.part_of_speech || 'unknown',
       translations: wordData.translations || { en: [], ru: [] },
       examples: wordData.examples || [],
@@ -205,8 +203,8 @@ export const wordService = {
       ...wordData, // Override with any additional fields from wordData
     }
 
-    // Remove fields that don't exist in the database schema
-    const { lemma, ...cleanWordData } = wordToInsert
+    // Use the prepared word data directly
+    const cleanWordData = wordToInsert
 
     const { data, error } = await supabase
       .from('words')
@@ -222,7 +220,7 @@ export const wordService = {
   },
 
   // Update word after review
-  async updateWordProgress(wordId: string, assessment: any) {
+  async updateWordProgress(wordId: string, assessment: SRSAssessment) {
     // First get current word data
     const { data: currentWord, error: fetchError } = await supabase
       .from('words')
@@ -236,9 +234,8 @@ export const wordService = {
       )
     }
 
-    // Extract assessment value from the nested object structure
-    const assessmentValue =
-      assessment.quality?.assessment || assessment.assessment || assessment
+    // Use assessment directly as it's already typed as SRSAssessment
+    const assessmentValue = assessment
 
     // Calculate new SRS values using existing function
     const srsUpdate = calculateNextReview({

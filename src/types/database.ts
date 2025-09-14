@@ -1,11 +1,5 @@
 // Database types based on our Supabase schema
 
-export interface User {
-  id: string
-  username: string | null
-  created_at: string
-}
-
 export interface Collection {
   collection_id: string
   user_id: string
@@ -56,6 +50,7 @@ export interface Word {
 
 export interface GeminiWordAnalysis {
   lemma: string
+  dutch_lemma: string
   part_of_speech: string
   is_irregular?: boolean
   is_reflexive?: boolean
@@ -69,6 +64,7 @@ export interface GeminiWordAnalysis {
   examples: WordExample[]
   tts_url: string
   image_url?: string // Associated image for visual learning
+  collection_id?: string // Collection this word belongs to
 }
 
 // SRS Assessment types
@@ -93,5 +89,5 @@ export interface ReviewSession {
 export interface AppError {
   message: string
   code?: string
-  details?: any
+  details?: string | Record<string, unknown>
 }

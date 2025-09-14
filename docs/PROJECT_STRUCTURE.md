@@ -142,11 +142,6 @@ export const REVIEW_CONSTANTS = {
   /* constants */
 }
 
-// src/types/ReviewTypes.ts
-export interface ReviewScreenProps {
-  /* types */
-}
-
 // src/app/(tabs)/review.tsx
 export default function ReviewScreen() {
   // Clean, focused component
