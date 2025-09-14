@@ -4,36 +4,25 @@ import {
   TouchableOpacity,
   RefreshControl,
   FlatList,
-  StatusBar,
 } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
-import Animated, {
-  useSharedValue,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  interpolate,
-  Extrapolation,
-} from 'react-native-reanimated'
 import { Text, View } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
+import { Colors } from '@/constants/Colors'
 import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
 import WordDetailModal from '@/components/WordDetailModal'
 import type { Word } from '@/types/database'
 
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<Word>)
-
 export default function CollectionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const [refreshing, setRefreshing] = useState(false)
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
-
-  const scrollY = useSharedValue(0)
 
   const { words, collections, fetchWords, fetchCollections, deleteWord } =
     useAppStore()
@@ -55,23 +44,6 @@ export default function CollectionDetailScreen() {
     ).length,
     newWords: collectionWords.filter(w => w.repetition_count === 0).length,
   }
-
-  const scrollHandler = useAnimatedScrollHandler(event => {
-    scrollY.value = event.contentOffset.y
-  })
-
-  const headerAnimatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(
-      scrollY.value,
-      [0, 295], // Only animate based on content height, not status bar
-      [0, -295],
-      Extrapolation.CLAMP
-    )
-
-    return {
-      transform: [{ translateY }],
-    }
-  })
 
   const handleRefresh = async () => {
     setRefreshing(true)
@@ -122,8 +94,7 @@ export default function CollectionDetailScreen() {
     }
   }
 
-  const STATUS_BAR_HEIGHT = StatusBar.currentHeight || 0
-  const HEADER_HEIGHT = 295 + STATUS_BAR_HEIGHT // Height of CollectionStats + CollectionReviewButton with margins + status bar
+  // Clean approach - no need for manual height calculations
 
   if (!collection) {
     return (
@@ -147,21 +118,28 @@ export default function CollectionDetailScreen() {
         options={{
           title: collection?.name || 'Collection',
           headerBackTitle: 'Back',
+          headerStyle: {
+            backgroundColor: Colors.background.secondary,
+          },
+          headerTitleStyle: {
+            fontWeight: '600',
+            fontSize: 18,
+          },
         }}
       />
       <View style={styles.container}>
-        <Animated.View style={[styles.headerContainer, headerAnimatedStyle]}>
-          <CollectionStats stats={stats} />
-          <CollectionReviewButton
-            wordsForReview={stats.wordsForReview}
-            onPress={handleStartReview}
-          />
-        </Animated.View>
-
-        <AnimatedFlatList
+        <FlatList
           style={styles.wordsSection}
-          contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}
           data={collectionWords}
+          ListHeaderComponent={() => (
+            <View style={styles.headerContent}>
+              <CollectionStats stats={stats} />
+              <CollectionReviewButton
+                wordsForReview={stats.wordsForReview}
+                onPress={handleStartReview}
+              />
+            </View>
+          )}
           keyExtractor={(item: Word) => item.word_id}
           renderItem={({ item, index }: { item: Word; index: number }) => (
             <SwipeableWordItem
@@ -173,7 +151,11 @@ export default function CollectionDetailScreen() {
           )}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="book-outline" size={48} color="#9CA3AF" />
+              <Ionicons
+                name="book-outline"
+                size={48}
+                color={Colors.neutral[400]}
+              />
               <Text style={styles.emptyText}>No words in this collection</Text>
               <Text style={styles.emptySubtext}>
                 Add some words to get started
@@ -184,8 +166,6 @@ export default function CollectionDetailScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
           showsVerticalScrollIndicator={false}
-          onScroll={scrollHandler}
-          scrollEventThrottle={16}
         />
       </View>
 
@@ -201,15 +181,12 @@ export default function CollectionDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: Colors.background.secondary,
   },
-  headerContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1, // Ensures header stays above the list
-    paddingTop: StatusBar.currentHeight || 0,
+  headerContent: {
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
   },
   wordsSection: {
     flex: 1,
@@ -223,14 +200,14 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    color: '#374151',
+    color: Colors.neutral[700],
     fontWeight: '500',
     marginTop: 16,
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     textAlign: 'center',
   },
   errorContainer: {
@@ -241,16 +218,16 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 18,
-    color: '#ef4444',
+    color: Colors.error.DEFAULT,
     marginBottom: 16,
   },
   backButton: {
     padding: 12,
     borderRadius: 8,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: Colors.neutral[100],
   },
   backButtonText: {
-    color: '#3b82f6',
+    color: Colors.primary.DEFAULT,
     fontSize: 16,
     fontWeight: '500',
   },
