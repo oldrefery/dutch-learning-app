@@ -42,7 +42,7 @@ export default function CollectionsScreen() {
       ToastService.showReviewMessage('no_words')
       return
     }
-    // Navigate to review screen
+    // Navigate to the review screen
     router.push('/(tabs)/review')
   }
 
@@ -77,7 +77,7 @@ export default function CollectionsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatsCard stats={stats} />
+      <StatsCard stats={stats} loading={collectionsLoading} />
 
       <View style={styles.reviewSection}>
         <ReviewButton

@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet } from 'react-native'
 import { Text, View } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { SkeletonNumber } from '@/components/SkeletonLoader'
 
 interface StatsCardProps {
   stats: {
@@ -10,30 +11,62 @@ interface StatsCardProps {
     wordsForReview: number
     streakDays: number
   }
+  loading?: boolean
 }
 
-export default function StatsCard({ stats }: StatsCardProps) {
+export default function StatsCard({ stats, loading = false }: StatsCardProps) {
   return (
     <View style={styles.statsCard}>
       <Text style={styles.statsTitle}>Today&apos;s Progress</Text>
       <Text style={styles.statsSubtitle}>Across all collections</Text>
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.totalWords}</Text>
+          {loading ? (
+            <SkeletonNumber width={48} height={32} style={styles.statNumber} />
+          ) : (
+            <Text style={styles.statNumber}>{stats.totalWords}</Text>
+          )}
           <Text style={styles.statLabel}>Total Words</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.masteredWords}</Text>
+          {loading ? (
+            <SkeletonNumber
+              width={42}
+              height={32}
+              delay={150}
+              style={styles.statNumber}
+            />
+          ) : (
+            <Text style={styles.statNumber}>{stats.masteredWords}</Text>
+          )}
           <Text style={styles.statLabel}>Mastered</Text>
         </View>
       </View>
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.wordsForReview}</Text>
+          {loading ? (
+            <SkeletonNumber
+              width={36}
+              height={32}
+              delay={300}
+              style={styles.statNumber}
+            />
+          ) : (
+            <Text style={styles.statNumber}>{stats.wordsForReview}</Text>
+          )}
           <Text style={styles.statLabel}>For Review</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.streakDays}</Text>
+          {loading ? (
+            <SkeletonNumber
+              width={28}
+              height={32}
+              delay={450}
+              style={styles.statNumber}
+            />
+          ) : (
+            <Text style={styles.statNumber}>{stats.streakDays}</Text>
+          )}
           <Text style={styles.statLabel}>Day Streak</Text>
         </View>
       </View>
