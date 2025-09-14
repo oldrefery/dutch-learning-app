@@ -1,7 +1,0 @@
-export { default as WordTranslations } from './WordTranslations'
-export { default as WordExamples } from './WordExamples'
-export { default as WordProgress } from './WordProgress'
-export { default as WordImage } from './WordImage'
-export { default as WordStatus } from './WordStatus'
-export { default as WordDetailHeader } from './WordDetailHeader'
-export { default as WordPartOfSpeech } from './WordPartOfSpeech'
