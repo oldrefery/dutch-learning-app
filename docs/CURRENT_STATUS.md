@@ -1,4 +1,4 @@
-что (# Dutch Learning App - Current Status
+# Dutch Learning App - Current Status
 
 ## 📅 Last Updated: September 7, 2025
 
@@ -37,26 +37,29 @@
 
 ```
 DutchLearningApp/
-├── app/                               ✅ Expo Router screens
-│   ├── (tabs)/
-│   │   ├── _layout.tsx                ✅ Tab navigation configured
-│   │   ├── index.tsx                  ✅ Collections screen with mock data
-│   │   ├── add-word.tsx               ✅ Add word screen with AI analysis
-│   │   └── review.tsx                 ✅ Review screen with SRS flashcards
-│   ├── _layout.tsx                    ✅ Root layout
-│   └── modal.tsx                      ✅ Info modal
-├── components/                        ✅ Expo components & custom themed components
-├── data/
-│   └── mockData.ts                    ✅ Complete mock dataset for development
-├── lib/
-│   └── supabase.ts                    ✅ Supabase client & services
-├── stores/
-│   └── useAppStore.ts                 ✅ Zustand state management
-├── types/
-│   └── database.ts                    ✅ TypeScript definitions
-├── utils/
-│   └── srs.ts                         ✅ Spaced repetition algorithm
-├── supabase/
+├── src/                               ✅ Source code root (restructured)
+│   ├── app/                           ✅ Expo Router screens
+│   │   ├── (tabs)/
+│   │   │   ├── _layout.tsx            ✅ Tab navigation configured
+│   │   │   ├── index.tsx              ✅ Collections screen with mock data
+│   │   │   ├── add-word.tsx           ✅ Add word screen with AI analysis
+│   │   │   └── review.tsx             ✅ Review screen with SRS flashcards
+│   │   ├── _layout.tsx                ✅ Root layout
+│   │   └── modal.tsx                  ✅ Info modal
+│   ├── components/                    ✅ Expo components & custom themed components
+│   ├── constants/                     ✅ Centralized constants
+│   │   ├── AppConfig.ts               ✅ Re-exports from supabase
+│   │   └── Colors.ts                  ✅ Centralized color system
+│   ├── assets/                        ✅ Static assets (icons, fonts, images)
+│   ├── lib/
+│   │   └── supabase.ts                ✅ Supabase client & services
+│   ├── stores/
+│   │   └── useAppStore.ts             ✅ Zustand state management
+│   ├── types/
+│   │   └── database.ts                ✅ TypeScript definitions
+│   └── utils/
+│       └── srs.ts                     ✅ Spaced repetition algorithm
+├── supabase/                          ✅ Backend services (kept in root)
 │   ├── migrations/
 │   │   └── 001_initial_schema.sql     ✅ Applied
 │   └── functions/
@@ -105,14 +108,15 @@ DutchLearningApp/
 - **Expo Project**: Initialized with tabs template and TypeScript
 - **Code Quality**: ESLint, Prettier, Husky configured
 - **Dependencies**: Supabase client, Zustand, Reanimated installed
-- **Structure**: Proper folder organization with lib/, hooks/, stores/, types/, utils/
+- **Structure**: Modern src/ directory organization with centralized constants and colors
 
 ### 6. Core Architecture ✅
 
-- **Supabase Client**: Connected and configured (`lib/supabase.ts`)
-- **TypeScript Types**: Complete type definitions (`types/database.ts`)
-- **State Management**: Zustand store setup (`stores/useAppStore.ts`)
-- **SRS Algorithm**: Implemented spaced repetition logic (`utils/srs.ts`)
+- **Supabase Client**: Connected and configured (`src/lib/supabase.ts`)
+- **TypeScript Types**: Complete type definitions (`src/types/database.ts`)
+- **State Management**: Zustand store setup (`src/stores/useAppStore.ts`)
+- **SRS Algorithm**: Implemented spaced repetition logic (`src/utils/srs.ts`)
+- **Constants System**: Centralized colors and config (`src/constants/`)
 - **App Tested**: Expo dev server running successfully
 
 ### 7. MVP UI Implementation ✅
@@ -152,9 +156,10 @@ DutchLearningApp/
   - NPM scripts for complexity analysis and reporting
 - **Centralized Constants System**: Unified configuration management
   - Single source: `supabase/functions/_shared/constants.ts`
-  - React Native integration: `constants/AppConfig.ts`
+  - React Native integration: `src/constants/AppConfig.ts`
+  - Color system: `src/constants/Colors.ts` (69+ colors centralized)
   - Auto-deploy NPM scripts and Git hooks
-  - Eliminated magic numbers across app and Edge Functions
+  - Eliminated magic numbers and hardcoded colors across app and Edge Functions
 - **Dutch Articles Support**: Added automatic detection and display of articles (de/het) for nouns
   - Database migration: `002_add_article_to_words.sql`
   - AI prompt enhanced to detect articles

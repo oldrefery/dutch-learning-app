@@ -162,6 +162,9 @@ Detailed project documentation is available in the `docs/` folder:
 - 📝 [Task Breakdown](docs/TASK_BREAKDOWN.md) - Detailed development tasks
 - ⚙️ [Setup Instructions](docs/SETUP_INSTRUCTIONS.md) - Manual configuration steps
 - 📊 [Current Status](docs/CURRENT_STATUS.md) - Real-time project progress
+- 🎯 [Project Structure](docs/PROJECT_STRUCTURE.md) - Code organization and best practices
+- 🔄 [SRS Algorithm](docs/SRS_ALGORITHM.md) - Spaced repetition system details
+- 🎨 [Constants System](docs/CONSTANTS_SYSTEM.md) - Centralized configuration
 
 ## 9. Next Steps
 
@@ -172,4 +175,4 @@ The project is ready for MVP feature implementation:
 3. **Create review session UI** with SRS algorithm
 4. **Add flashcard animations** and user interactions
 
-Start development by modifying `app/(tabs)/index.tsx` for the home screen.# dutch-learning-app
+Start development by modifying `src/app/(tabs)/index.tsx` for the home screen.

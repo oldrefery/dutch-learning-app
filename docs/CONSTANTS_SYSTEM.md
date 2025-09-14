@@ -10,12 +10,12 @@ The Dutch Learning App uses a centralized constants system to eliminate magic nu
 
 #### For React Native Application
 
-- **Location**: `constants/` directory
+- **Location**: `src/constants/` directory
 - **Files**:
-  - `AppConfig.ts` - Main app configuration
-  - `ReviewConstants.ts` - Review screen constants
-  - `GeminiConstants.ts` - Gemini AI constants
-- **Usage**: `import { REVIEW_CONSTANTS } from '@/constants/ReviewConstants'`
+  - `AppConfig.ts` - Main app configuration (re-exports from supabase)
+  - `Colors.ts` - Centralized color constants
+- **Usage**: `import { REVIEW_CONSTANTS } from '@/constants/AppConfig'`
+- **Colors Usage**: `import { Colors } from '@/constants/Colors'`
 
 #### For Supabase Edge Functions (Deno)
 
@@ -108,6 +108,7 @@ npm run deploy:edge-functions  # All functions (no notification)
 
 ```typescript
 import { TOUCH_CONFIG, UI_CONFIG } from '@/constants/AppConfig'
+import { Colors } from '@/constants/Colors'
 
 // In component
 const isQuickTap =
@@ -117,6 +118,8 @@ const isQuickTap =
 const styles = StyleSheet.create({
   card: {
     minHeight: UI_CONFIG.CARD_MIN_HEIGHT,
+    backgroundColor: Colors.background,
+    borderColor: Colors.primary,
   },
 })
 ```

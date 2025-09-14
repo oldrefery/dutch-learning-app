@@ -5,42 +5,50 @@
 ### React Native Application
 
 ```
-types/                 # TypeScript type definitions
-├── database.ts        # Database types (generated)
-├── GeminiTypes.ts     # Gemini AI analysis types
-└── ...
-
-constants/             # Application constants
-├── AppConfig.ts       # Main app configuration
-├── ReviewConstants.ts # Review screen constants
-├── GeminiConstants.ts # Gemini AI constants
-└── ...
-
-utils/                 # Utility functions
-├── srs.ts            # Spaced Repetition System
-├── geminiUtils.ts    # Gemini AI utilities
-└── ...
-
-hooks/                 # Custom React hooks
-├── useReviewScreen.ts # Review screen logic
-└── ...
-
-components/            # Reusable UI components
-├── ReviewCard/       # Card components
-├── ImageSelector.tsx # Image selection modal
-└── ...
-
-stores/               # State management (Zustand)
-└── useAppStore.ts
-
-lib/                  # Utility libraries
-├── supabaseClient.ts # Supabase client configuration
-├── supabase.ts       # Supabase services and helpers
-└── ...
-
-app/                  # App screens (Expo Router)
-├── (tabs)/          # Tab navigation screens
-└── ...
+src/                   # Source code root
+├── types/             # TypeScript type definitions
+│   ├── database.ts    # Database types (generated)
+│   ├── GeminiTypes.ts # Gemini AI analysis types
+│   └── ...
+│
+├── constants/         # Application constants
+│   ├── AppConfig.ts   # Main app configuration (re-exports from supabase)
+│   ├── Colors.ts      # Centralized color constants
+│   └── ...
+│
+├── utils/             # Utility functions
+│   ├── srs.ts         # Spaced Repetition System
+│   ├── geminiUtils.ts # Gemini AI utilities
+│   └── ...
+│
+├── hooks/             # Custom React hooks
+│   ├── useReviewScreen.ts # Review screen logic
+│   └── ...
+│
+├── components/        # Reusable UI components
+│   ├── ReviewCard/    # Card components
+│   ├── ImageSelector.tsx # Image selection modal
+│   └── ...
+│
+├── stores/            # State management (Zustand)
+│   └── useAppStore.ts
+│
+├── lib/               # Utility libraries
+│   ├── supabaseClient.ts # Supabase client configuration
+│   ├── supabase.ts    # Supabase services and helpers
+│   └── ...
+│
+├── assets/            # Static assets
+│   ├── images/        # App icons, splash screens
+│   └── fonts/         # Custom fonts
+│
+├── styles/            # StyleSheet definitions
+│   └── CollectionsScreenStyles.ts
+│
+└── app/               # App screens (Expo Router)
+    ├── (auth)/        # Authentication screens
+    ├── (tabs)/        # Tab navigation screens
+    └── ...
 ```
 
 ### Supabase Edge Functions (Deno)
@@ -80,13 +88,14 @@ supabase/functions/
 ### 3. **Import Paths**
 
 ```typescript
-// React Native app
+// React Native app (using src/ structure with @ alias)
 import { REVIEW_CONSTANTS } from '@/constants/ReviewConstants'
+import { Colors } from '@/constants/Colors'
 import { useReviewScreen } from '@/hooks/useReviewScreen'
 import { supabase } from '@/lib/supabaseClient'
 import type { WordAnalysisRequest } from '@/types/GeminiTypes'
 
-// Edge Functions (Deno)
+// Edge Functions (Deno) - remain in supabase/ folder structure
 import { analyzeSeparableVerb } from '../_shared/geminiUtils.ts'
 import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
 import type { WordAnalysisRequest } from '../_shared/types.ts'
@@ -123,22 +132,22 @@ export default function ReviewScreen() {
 }
 
 // After: Extracted structure
-// hooks/useReviewScreen.ts
+// src/hooks/useReviewScreen.ts
 export const useReviewScreen = () => {
   /* logic */
 }
 
-// constants/ReviewConstants.ts
+// src/constants/ReviewConstants.ts
 export const REVIEW_CONSTANTS = {
   /* constants */
 }
 
-// types/ReviewTypes.ts
+// src/types/ReviewTypes.ts
 export interface ReviewScreenProps {
   /* types */
 }
 
-// app/(tabs)/review.tsx
+// src/app/(tabs)/review.tsx
 export default function ReviewScreen() {
   // Clean, focused component
 }
