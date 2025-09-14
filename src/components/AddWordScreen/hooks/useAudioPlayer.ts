@@ -1,0 +1,36 @@
+import { useState } from 'react'
+import { createAudioPlayer } from 'expo-audio'
+import { ToastService } from '@/components/AppToast'
+import { ToastMessageType } from '@/constants/ToastConstants'
+
+export const useAudioPlayer = () => {
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false)
+
+  const playPronunciation = async (ttsUrl: string) => {
+    if (isPlayingAudio) return
+
+    setIsPlayingAudio(true)
+    try {
+      // Use expo-audio createAudioPlayer API
+      const player = createAudioPlayer({ uri: ttsUrl })
+
+      // Play the audio
+      await player.play()
+
+      // Simple timeout to reset state (since event listeners might be complex)
+      setTimeout(() => {
+        setIsPlayingAudio(false)
+        player.release() // Clean up resources
+      }, 3000) // 3 seconds should be enough for TTS
+    } catch (error) {
+      console.error('Error playing audio:', error)
+      setIsPlayingAudio(false)
+      ToastService.showError(ToastMessageType.AUDIO_PLAYBACK_FAILED)
+    }
+  }
+
+  return {
+    isPlayingAudio,
+    playPronunciation,
+  }
+}
