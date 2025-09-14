@@ -11,8 +11,7 @@ import Animated, {
   Extrapolation,
   useAnimatedScrollHandler,
 } from 'react-native-reanimated'
-import { View, Text } from '@/components/Themed'
-import { Colors } from '@/constants/Colors'
+import { View } from '@/components/Themed'
 import type { Word } from '@/types/database'
 import { styles } from './WordDetailModal/styles'
 import {
@@ -24,7 +23,6 @@ import {
   WordDetailHeader,
   WordPartOfSpeech,
 } from './WordDetailModal/components'
-import { WordStatusType } from './WordDetailModal/types'
 
 interface WordDetailModalProps {
   visible: boolean
@@ -42,8 +40,9 @@ export default function WordDetailModal({
   const translateY = useSharedValue(screenHeight)
   const backdropOpacity = useSharedValue(0)
   const scrollOffset = useSharedValue(0)
+  const isDragging = useSharedValue(false)
 
-  // Create native gesture for ScrollView
+  // Create a native gesture for ScrollView
   const nativeScrollGesture = Gesture.Native()
 
   // Animate modal appearance
@@ -55,25 +54,7 @@ export default function WordDetailModal({
       translateY.value = withTiming(screenHeight, { duration: 300 })
       backdropOpacity.value = withTiming(0, { duration: 300 })
     }
-  }, [visible])
-
-  const getStatusColor = () => {
-    if (!word) return Colors.neutral[500]
-    if (word.repetition_count > 2) return Colors.success.DEFAULT
-    if (word.repetition_count > 0) return Colors.warning.DEFAULT
-    return Colors.neutral[500]
-  }
-
-  const getStatusText = () => {
-    if (!word) return WordStatusType.NEW
-    if (word.repetition_count > 2) return WordStatusType.MASTERED
-    if (word.repetition_count > 0) return WordStatusType.LEARNING
-    return WordStatusType.NEW
-  }
-
-  const isDueForReview = word
-    ? new Date(word.next_review_date) <= new Date()
-    : false
+  }, [backdropOpacity, translateY, visible])
 
   // Handle closing modal
   const closeModal = () => {
@@ -87,8 +68,12 @@ export default function WordDetailModal({
   const panGesture = Gesture.Pan()
     .onUpdate(event => {
       'worklet'
-      // Move modal ONLY if scroll is at top and moving down
-      if (scrollOffset.value <= 0 && event.translationY > 0) {
+      // Start dismiss gesture only if:
+      // 1. We're at the top of scroll AND
+      // 2. Moving down (positive translationY) AND
+      // 3. Have moved at least 10 px down to confirm intent
+      if (scrollOffset.value <= 0 && event.translationY > 10) {
+        isDragging.value = true
         translateY.value = event.translationY
         // Update backdrop opacity based on drag distance
         const progress = Math.min(event.translationY / screenHeight, 1)
@@ -98,20 +83,31 @@ export default function WordDetailModal({
           [1, 0],
           Extrapolation.CLAMP
         )
+      } else if (event.translationY <= 0) {
+        // Reset if moving up
+        isDragging.value = false
+        translateY.value = 0
+        backdropOpacity.value = 1
       }
     })
     .onEnd(event => {
       'worklet'
-      // Closing logic remains almost the same
-      const shouldClose = translateY.value > 100 || event.velocityY > 500
+      if (!isDragging.value) return
+
+      // Closing conditions: significant distance OR high velocity
+      const dismissThreshold = screenHeight * 0.2 // 20% of screen height
+      const shouldClose =
+        translateY.value > dismissThreshold || event.velocityY > 800
 
       if (shouldClose) {
         runOnJS(closeModal)()
       } else {
-        // Return to original position if not closed
+        // Return to the original position if not closed
         translateY.value = withSpring(0)
         backdropOpacity.value = withTiming(1)
       }
+
+      isDragging.value = false
     })
     // Link with native scroll gesture
     .simultaneousWithExternalGesture(nativeScrollGesture)
