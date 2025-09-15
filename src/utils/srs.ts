@@ -5,6 +5,7 @@
  * for optimal spacing of flashcard reviews.
  */
 import { SRSAssessment, SRSResult } from '@/types/database'
+import { SRS_ASSESSMENT, SRS_PARAMS } from '@/constants/SRSConstants'
 
 interface SRSInput {
   interval_days: number
@@ -19,52 +20,87 @@ export function calculateNextReview({
   easiness_factor,
   assessment,
 }: SRSInput): SRSResult {
+  console.log('⚡ SRS ALGORITHM START for', assessment, ', input:', {
+    interval_days,
+    repetition_count,
+    easiness_factor,
+  })
   let newEasinessFactor = easiness_factor
   let newRepetitionCount = repetition_count
   let newInterval = interval_days
 
   // Adjust easiness factor based on assessment
   switch (assessment) {
-    case 'again':
+    case SRS_ASSESSMENT.AGAIN:
       // Reset card to beginning, reduce the easiness factor significantly
-      newEasinessFactor = Math.max(1.3, easiness_factor - 0.2)
+      newEasinessFactor = Math.max(
+        SRS_PARAMS.EASINESS_BOUNDS.MIN,
+        easiness_factor + SRS_PARAMS.EASINESS_ADJUSTMENT.AGAIN
+      )
       newRepetitionCount = 0
-      newInterval = 0 // Available today (will show on restart)
+      newInterval = SRS_PARAMS.INITIAL.INTERVAL_DAYS // Available today
+      console.log('❌ AGAIN case: newInterval set to', newInterval)
       break
 
-    case 'hard':
-      // Reduce an easiness factor, small interval increase
-      newEasinessFactor = Math.max(1.3, easiness_factor - 0.15)
+    case SRS_ASSESSMENT.HARD:
+      // Reduce the easiness factor, small interval increase
+      newEasinessFactor = Math.max(
+        SRS_PARAMS.EASINESS_BOUNDS.MIN,
+        easiness_factor + SRS_PARAMS.EASINESS_ADJUSTMENT.HARD
+      )
       newRepetitionCount = repetition_count + 1
-      newInterval = Math.max(1, Math.round(interval_days * 1.2)) // 20% increase
+      // Special case: if an interval is 0 (new word or after "again"), set to 1
+      // Otherwise increase by 20% with a minimum of 1 day
+      newInterval =
+        interval_days === 0
+          ? 1
+          : Math.max(1, Math.round(interval_days * SRS_PARAMS.MULTIPLIERS.HARD))
+      console.log('🟡 HARD case: newInterval set to', newInterval)
       break
 
-    case 'good':
+    case SRS_ASSESSMENT.GOOD:
       // Standard progression
-      newEasinessFactor = easiness_factor
+      newEasinessFactor = easiness_factor + SRS_PARAMS.EASINESS_ADJUSTMENT.GOOD
       newRepetitionCount = repetition_count + 1
 
       if (newRepetitionCount === 1) {
-        newInterval = 1
+        newInterval = SRS_PARAMS.FIRST_INTERVALS.GOOD.FIRST
       } else if (newRepetitionCount === 2) {
-        newInterval = 6
+        newInterval = SRS_PARAMS.FIRST_INTERVALS.GOOD.SECOND
       } else {
         newInterval = Math.round(interval_days * easiness_factor)
       }
+      console.log(
+        '🟢 GOOD case: repetition',
+        newRepetitionCount,
+        ', newInterval set to',
+        newInterval
+      )
       break
 
-    case 'easy':
-      // Increase easiness factor, speed up an interval
-      newEasinessFactor = Math.min(2.5, easiness_factor + 0.15)
+    case SRS_ASSESSMENT.EASY:
+      // Increase easiness factor, speed up progression
+      newEasinessFactor = Math.min(
+        SRS_PARAMS.EASINESS_BOUNDS.MAX,
+        easiness_factor + SRS_PARAMS.EASINESS_ADJUSTMENT.EASY
+      )
       newRepetitionCount = repetition_count + 1
 
       if (newRepetitionCount === 1) {
-        newInterval = 4
+        newInterval = SRS_PARAMS.FIRST_INTERVALS.EASY.FIRST
       } else if (newRepetitionCount === 2) {
-        newInterval = 10
+        newInterval = SRS_PARAMS.FIRST_INTERVALS.EASY.SECOND
       } else {
-        newInterval = Math.round(interval_days * easiness_factor * 1.3)
+        newInterval = Math.round(
+          interval_days * easiness_factor * SRS_PARAMS.MULTIPLIERS.EASY
+        )
       }
+      console.log(
+        '🔵 EASY case: repetition',
+        newRepetitionCount,
+        ', newInterval set to',
+        newInterval
+      )
       break
   }
 
@@ -72,10 +108,14 @@ export function calculateNextReview({
   const nextReviewDate = new Date()
   nextReviewDate.setDate(nextReviewDate.getDate() + newInterval)
 
-  return {
+  const result = {
     interval_days: newInterval,
     repetition_count: newRepetitionCount,
     easiness_factor: Number(newEasinessFactor.toFixed(2)),
     next_review_date: nextReviewDate.toISOString().split('T')[0],
   }
+
+  console.log('⚡ SRS ALGORITHM END, result:', result)
+
+  return result
 }

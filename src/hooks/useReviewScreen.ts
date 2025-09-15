@@ -8,6 +8,7 @@ import {
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler'
 import { runOnJS } from 'react-native-reanimated'
+import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 
 export const useReviewScreen = () => {
   const {
@@ -88,7 +89,7 @@ export const useReviewScreen = () => {
   )
 
   const handleAssessment = useCallback(
-    async (assessment: 'again' | 'hard' | 'good' | 'easy') => {
+    async (assessment: keyof typeof SRS_ASSESSMENT) => {
       if (!currentWord) return
 
       setIsLoading(true)
@@ -99,7 +100,7 @@ export const useReviewScreen = () => {
         // Call submitReviewAssessment directly with the correct assessment
         await store.submitReviewAssessment({
           wordId: currentWord.word_id,
-          assessment: assessment,
+          assessment: SRS_ASSESSMENT[assessment],
           timestamp: new Date(),
         })
 
@@ -115,19 +116,19 @@ export const useReviewScreen = () => {
   )
 
   const handleAgain = useCallback(
-    () => handleAssessment('again'),
+    () => handleAssessment('AGAIN'),
     [handleAssessment]
   )
   const handleHard = useCallback(
-    () => handleAssessment('hard'),
+    () => handleAssessment('HARD'),
     [handleAssessment]
   )
   const handleGood = useCallback(
-    () => handleAssessment('good'),
+    () => handleAssessment('GOOD'),
     [handleAssessment]
   )
   const handleEasy = useCallback(
-    () => handleAssessment('easy'),
+    () => handleAssessment('EASY'),
     [handleAssessment]
   )
 

@@ -1,5 +1,6 @@
 import { wordService } from '@/lib/supabase'
 import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
+import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -124,7 +125,7 @@ export const createReviewActions = (
     if (state.currentWord) {
       get().submitReviewAssessment({
         wordId: state.currentWord.word_id,
-        assessment: 'good',
+        assessment: SRS_ASSESSMENT.GOOD,
         timestamp: new Date(),
       })
     }
@@ -135,7 +136,7 @@ export const createReviewActions = (
     if (state.currentWord) {
       get().submitReviewAssessment({
         wordId: state.currentWord.word_id,
-        assessment: 'again',
+        assessment: SRS_ASSESSMENT.AGAIN,
         timestamp: new Date(),
       })
     }

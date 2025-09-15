@@ -4,8 +4,9 @@ import type {
   StoreSetFunction,
   StoreGetFunction,
   AnalyzedWord,
+  ReviewAssessment,
 } from '@/types/AppStoreTypes'
-import type { GeminiWordAnalysis, SRSAssessment } from '@/types/database'
+import type { GeminiWordAnalysis } from '@/types/database'
 
 const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
 const UNKNOWN_ERROR = 'Unknown error'
@@ -95,7 +96,10 @@ export const createWordActions = (
     }
   },
 
-  updateWordAfterReview: async (wordId: string, assessment: SRSAssessment) => {
+  updateWordAfterReview: async (
+    wordId: string,
+    assessment: ReviewAssessment
+  ) => {
     try {
       const updatedWordData = await wordService.updateWordProgress(
         wordId,

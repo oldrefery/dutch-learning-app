@@ -1,7 +1,9 @@
 import 'react-native-url-polyfill/auto'
 import { supabase } from './supabaseClient'
 import { calculateNextReview } from '@/utils/srs'
-import type { Word, SRSAssessment } from '@/types/database'
+import type { Word } from '@/types/database'
+import type { ReviewAssessment } from '@/types/AppStoreTypes'
+import { SRS_PARAMS } from '@/constants/SRSConstants'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -195,9 +197,9 @@ export const wordService = {
       article: wordData.article || null,
       expression_type: wordData.expression_type || null,
       tts_url: wordData.tts_url || '',
-      easiness_factor: 2.5,
-      interval_days: 1,
-      repetition_count: 0,
+      easiness_factor: SRS_PARAMS.INITIAL.EASINESS_FACTOR,
+      interval_days: SRS_PARAMS.INITIAL.INTERVAL_DAYS,
+      repetition_count: SRS_PARAMS.INITIAL.REPETITION_COUNT,
       next_review_date: new Date().toISOString().split('T')[0],
       user_id: userId,
       ...wordData, // Override with any additional fields from wordData
@@ -220,7 +222,7 @@ export const wordService = {
   },
 
   // Update word after review
-  async updateWordProgress(wordId: string, assessment: SRSAssessment) {
+  async updateWordProgress(wordId: string, assessment: ReviewAssessment) {
     // First get current word data
     const { data: currentWord, error: fetchError } = await supabase
       .from('words')
@@ -234,8 +236,8 @@ export const wordService = {
       )
     }
 
-    // Use assessment directly as it's already typed as SRSAssessment
-    const assessmentValue = assessment
+    // Extract the assessment string from the assessment object
+    const assessmentValue = assessment.assessment
 
     // Calculate new SRS values using existing function
     const srsUpdate = calculateNextReview({

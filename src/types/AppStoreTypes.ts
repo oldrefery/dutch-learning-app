@@ -43,7 +43,7 @@ export interface AppState {
   ) => Promise<Word>
   updateWordAfterReview: (
     wordId: string,
-    assessment: SRSAssessment
+    assessment: ReviewAssessment
   ) => Promise<void>
   deleteWord: (wordId: string) => Promise<void>
 
@@ -70,7 +70,7 @@ export interface AppState {
 
 export interface ReviewAssessment {
   wordId: string
-  assessment: 'again' | 'hard' | 'good' | 'easy'
+  assessment: SRSAssessment
   responseTime?: number
   timestamp: Date
 }

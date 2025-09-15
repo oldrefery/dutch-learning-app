@@ -1,5 +1,8 @@
 // Database types based on our Supabase schema
 
+// SRS Assessment types
+import { SRSAssessmentType } from '@/constants/SRSConstants'
+
 export interface Collection {
   collection_id: string
   user_id: string
@@ -67,9 +70,7 @@ export interface GeminiWordAnalysis {
   collection_id?: string // Collection this word belongs to
 }
 
-// SRS Assessment types
-
-export type SRSAssessment = 'again' | 'hard' | 'good' | 'easy'
+export type SRSAssessment = SRSAssessmentType
 
 export interface SRSResult {
   interval_days: number
