@@ -1,6 +1,6 @@
 import React from 'react'
 import { TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
-import { Text } from '@/components/Themed'
+import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
 interface AuthButtonProps {
@@ -41,7 +41,7 @@ export function AuthButton({
           size="small"
         />
       ) : (
-        <Text
+        <TextThemed
           style={[
             styles.buttonText,
             variant === 'primary'
@@ -50,7 +50,7 @@ export function AuthButton({
           ]}
         >
           {title}
-        </Text>
+        </TextThemed>
       )}
     </TouchableOpacity>
   )

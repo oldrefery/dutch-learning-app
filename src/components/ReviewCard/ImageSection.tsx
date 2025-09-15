@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity, Image } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors'
 import type { ImageSectionProps } from './types'
@@ -12,23 +12,23 @@ export function ImageSection({
   if (!currentWord.image_url) return null
 
   return (
-    <View style={styles.imageSection}>
-      <View style={styles.imageSectionHeader}>
-        <Text style={styles.sectionTitle}>🖼️ Visual</Text>
+    <ViewThemed style={styles.imageSection}>
+      <ViewThemed style={styles.imageSectionHeader}>
+        <TextThemed style={styles.sectionTitle}>🖼️ Visual</TextThemed>
         <TouchableOpacity
           style={styles.changeImageButton}
           onPress={onChangeImage}
         >
           <Ionicons name="refresh" size={16} color={Colors.neutral[500]} />
-          <Text style={styles.changeImageText}>Change</Text>
+          <TextThemed style={styles.changeImageText}>Change</TextThemed>
         </TouchableOpacity>
-      </View>
+      </ViewThemed>
       <Image
         source={{ uri: currentWord.image_url }}
         style={styles.wordImage}
         resizeMode="cover"
       />
-    </View>
+    </ViewThemed>
   )
 }
 

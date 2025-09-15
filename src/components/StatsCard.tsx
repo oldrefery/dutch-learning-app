@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { SkeletonNumber } from '@/components/SkeletonLoader'
 
@@ -16,19 +16,23 @@ interface StatsCardProps {
 
 export default function StatsCard({ stats, loading = false }: StatsCardProps) {
   return (
-    <View style={styles.statsCard}>
-      <Text style={styles.statsTitle}>Today&apos;s Progress</Text>
-      <Text style={styles.statsSubtitle}>Across all collections</Text>
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
+    <ViewThemed style={styles.statsCard}>
+      <TextThemed style={styles.statsTitle}>Today&apos;s Progress</TextThemed>
+      <TextThemed style={styles.statsSubtitle}>
+        Across all collections
+      </TextThemed>
+      <ViewThemed style={styles.statsRow}>
+        <ViewThemed style={styles.statItem}>
           {loading ? (
             <SkeletonNumber width={48} height={32} style={styles.statNumber} />
           ) : (
-            <Text style={styles.statNumber}>{stats.totalWords}</Text>
+            <TextThemed style={styles.statNumber}>
+              {stats.totalWords}
+            </TextThemed>
           )}
-          <Text style={styles.statLabel}>Total Words</Text>
-        </View>
-        <View style={styles.statItem}>
+          <TextThemed style={styles.statLabel}>Total Words</TextThemed>
+        </ViewThemed>
+        <ViewThemed style={styles.statItem}>
           {loading ? (
             <SkeletonNumber
               width={42}
@@ -37,13 +41,15 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
               style={styles.statNumber}
             />
           ) : (
-            <Text style={styles.statNumber}>{stats.masteredWords}</Text>
+            <TextThemed style={styles.statNumber}>
+              {stats.masteredWords}
+            </TextThemed>
           )}
-          <Text style={styles.statLabel}>Mastered</Text>
-        </View>
-      </View>
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
+          <TextThemed style={styles.statLabel}>Mastered</TextThemed>
+        </ViewThemed>
+      </ViewThemed>
+      <ViewThemed style={styles.statsRow}>
+        <ViewThemed style={styles.statItem}>
           {loading ? (
             <SkeletonNumber
               width={36}
@@ -52,11 +58,13 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
               style={styles.statNumber}
             />
           ) : (
-            <Text style={styles.statNumber}>{stats.wordsForReview}</Text>
+            <TextThemed style={styles.statNumber}>
+              {stats.wordsForReview}
+            </TextThemed>
           )}
-          <Text style={styles.statLabel}>For Review</Text>
-        </View>
-        <View style={styles.statItem}>
+          <TextThemed style={styles.statLabel}>For Review</TextThemed>
+        </ViewThemed>
+        <ViewThemed style={styles.statItem}>
           {loading ? (
             <SkeletonNumber
               width={28}
@@ -65,12 +73,14 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
               style={styles.statNumber}
             />
           ) : (
-            <Text style={styles.statNumber}>{stats.streakDays}</Text>
+            <TextThemed style={styles.statNumber}>
+              {stats.streakDays}
+            </TextThemed>
           )}
-          <Text style={styles.statLabel}>Day Streak</Text>
-        </View>
-      </View>
-    </View>
+          <TextThemed style={styles.statLabel}>Day Streak</TextThemed>
+        </ViewThemed>
+      </ViewThemed>
+    </ViewThemed>
   )
 }
 

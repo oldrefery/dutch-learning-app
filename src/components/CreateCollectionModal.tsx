@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useCollections } from '@/hooks/useCollections'
 import { ToastService } from '@/components/AppToast'
@@ -62,9 +62,9 @@ export default function CreateCollectionModal({
       presentationStyle="pageSheet"
       onRequestClose={handleClose}
     >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Create New Collection</Text>
+      <ViewThemed style={styles.container}>
+        <ViewThemed style={styles.header}>
+          <TextThemed style={styles.title}>Create New Collection</TextThemed>
           <TouchableOpacity
             onPress={handleClose}
             style={styles.closeButton}
@@ -72,10 +72,10 @@ export default function CreateCollectionModal({
           >
             <Ionicons name="close" size={24} color={Colors.neutral[700]} />
           </TouchableOpacity>
-        </View>
+        </ViewThemed>
 
-        <View style={styles.content}>
-          <Text style={styles.label}>Collection Name</Text>
+        <ViewThemed style={styles.content}>
+          <TextThemed style={styles.label}>Collection Name</TextThemed>
           <TextInput
             style={styles.input}
             value={collectionName}
@@ -86,18 +86,18 @@ export default function CreateCollectionModal({
             maxLength={50}
             editable={!isCreating}
           />
-          <Text style={styles.helperText}>
+          <TextThemed style={styles.helperText}>
             {collectionName.length}/50 characters
-          </Text>
-        </View>
+          </TextThemed>
+        </ViewThemed>
 
-        <View style={styles.actions}>
+        <ViewThemed style={styles.actions}>
           <TouchableOpacity
             style={[styles.button, styles.cancelButton]}
             onPress={handleClose}
             disabled={isCreating}
           >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+            <TextThemed style={styles.cancelButtonText}>Cancel</TextThemed>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -115,11 +115,13 @@ export default function CreateCollectionModal({
                 color={Colors.background.primary}
               />
             ) : (
-              <Text style={styles.createButtonText}>Create Collection</Text>
+              <TextThemed style={styles.createButtonText}>
+                Create Collection
+              </TextThemed>
             )}
           </TouchableOpacity>
-        </View>
-      </View>
+        </ViewThemed>
+      </ViewThemed>
     </Modal>
   )
 }

@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { WordStatusType } from '@/components/WordDetailModal/types'
 import type { Word } from '@/types/database'
@@ -113,9 +113,9 @@ export default function SwipeableWordItem({
   }
 
   return (
-    <View style={styles.container}>
+    <ViewThemed style={styles.container}>
       {/* Delete button background */}
-      <View style={styles.deleteBackground}>
+      <ViewThemed style={styles.deleteBackground}>
         <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
           <Ionicons
             name="trash-outline"
@@ -123,46 +123,52 @@ export default function SwipeableWordItem({
             color={Colors.background.primary}
           />
         </TouchableOpacity>
-      </View>
+      </ViewThemed>
 
       {/* Main word item with gesture handler */}
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.wordItem, animatedStyle]}>
           <TouchableOpacity style={styles.wordContent} onPress={onPress}>
-            <View style={styles.wordNumber}>
-              <Text style={styles.wordNumberText}>{index + 1}</Text>
-            </View>
-            <View style={styles.wordInfo}>
-              <View style={styles.wordHeader}>
-                <Text style={styles.wordText}>
+            <ViewThemed style={styles.wordNumber}>
+              <TextThemed style={styles.wordNumberText}>{index + 1}</TextThemed>
+            </ViewThemed>
+            <ViewThemed style={styles.wordInfo}>
+              <ViewThemed style={styles.wordHeader}>
+                <TextThemed style={styles.wordText}>
                   {word.dutch_original || word.dutch_lemma}
-                </Text>
+                </TextThemed>
                 {word.article && (
-                  <Text style={styles.articleText}>({word.article})</Text>
+                  <TextThemed style={styles.articleText}>
+                    ({word.article})
+                  </TextThemed>
                 )}
-              </View>
+              </ViewThemed>
 
-              <Text style={styles.translationText}>
+              <TextThemed style={styles.translationText}>
                 {word.translations.en?.[0] || 'No translation'}
-              </Text>
+              </TextThemed>
 
-              <View style={styles.wordFooter}>
-                <View
+              <ViewThemed style={styles.wordFooter}>
+                <ViewThemed
                   style={[
                     styles.statusBadge,
                     { backgroundColor: getStatusColor() },
                   ]}
                 >
-                  <Text style={styles.statusText}>{getStatusText()}</Text>
-                </View>
+                  <TextThemed style={styles.statusText}>
+                    {getStatusText()}
+                  </TextThemed>
+                </ViewThemed>
 
                 {isDueForReview && (
-                  <View style={styles.reviewBadge}>
-                    <Text style={styles.reviewText}>Due for review</Text>
-                  </View>
+                  <ViewThemed style={styles.reviewBadge}>
+                    <TextThemed style={styles.reviewText}>
+                      Due for review
+                    </TextThemed>
+                  </ViewThemed>
                 )}
-              </View>
-            </View>
+              </ViewThemed>
+            </ViewThemed>
 
             <Ionicons
               name="chevron-forward"
@@ -172,7 +178,7 @@ export default function SwipeableWordItem({
           </TouchableOpacity>
         </Animated.View>
       </GestureDetector>
-    </View>
+    </ViewThemed>
   )
 }
 

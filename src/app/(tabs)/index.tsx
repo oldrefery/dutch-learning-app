@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { ToastService } from '@/components/AppToast'
 import { router } from 'expo-router'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useAppStore } from '@/stores/useAppStore'
 import CreateCollectionModal from '@/components/CreateCollectionModal'
@@ -52,17 +52,19 @@ export default function CollectionsScreen() {
 
   if (error) {
     return (
-      <View style={styles.container}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Error: {error.message}</Text>
+      <ViewThemed style={styles.container}>
+        <ViewThemed style={styles.errorContainer}>
+          <TextThemed style={styles.errorText}>
+            Error: {error.message}
+          </TextThemed>
           <TouchableOpacity
             style={styles.retryButton}
             onPress={handleDismissError}
           >
-            <Text style={styles.retryButtonText}>Dismiss</Text>
+            <TextThemed style={styles.retryButtonText}>Dismiss</TextThemed>
           </TouchableOpacity>
-        </View>
-      </View>
+        </ViewThemed>
+      </ViewThemed>
     )
   }
 
@@ -76,27 +78,29 @@ export default function CollectionsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ViewThemed style={styles.container}>
       <StatsCard stats={stats} loading={collectionsLoading} />
 
-      <View style={styles.reviewSection}>
+      <ViewThemed style={styles.reviewSection}>
         <ReviewButton
           wordsForReview={stats.wordsForReview}
           onPress={handleStartReview}
         />
-      </View>
+      </ViewThemed>
 
-      <View style={styles.collectionsSection}>
+      <ViewThemed style={styles.collectionsSection}>
         <SectionHeader
           title="My Collections"
           showAddButton={true}
           onAddPress={() => setShowCreateModal(true)}
         />
         {collectionsLoading ? (
-          <View style={styles.loadingContainer}>
+          <ViewThemed style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
-            <Text style={styles.loadingText}>Loading collections...</Text>
-          </View>
+            <TextThemed style={styles.loadingText}>
+              Loading collections...
+            </TextThemed>
+          </ViewThemed>
         ) : (
           <FlatList
             data={collections}
@@ -111,16 +115,18 @@ export default function CollectionsScreen() {
             )}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>No collections yet</Text>
-                <Text style={styles.emptySubtext}>
+              <ViewThemed style={styles.emptyContainer}>
+                <TextThemed style={styles.emptyText}>
+                  No collections yet
+                </TextThemed>
+                <TextThemed style={styles.emptySubtext}>
                   Start by adding some words!
-                </Text>
-              </View>
+                </TextThemed>
+              </ViewThemed>
             }
           />
         )}
-      </View>
+      </ViewThemed>
 
       <CreateCollectionModal
         visible={showCreateModal}
@@ -129,6 +135,6 @@ export default function CollectionsScreen() {
           // Collection will be automatically added to the list via the store
         }}
       />
-    </View>
+    </ViewThemed>
   )
 }

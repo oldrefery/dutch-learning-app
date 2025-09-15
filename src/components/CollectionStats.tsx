@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
 interface CollectionStatsProps {
@@ -14,27 +14,31 @@ interface CollectionStatsProps {
 
 export default function CollectionStats({ stats }: CollectionStatsProps) {
   return (
-    <View style={styles.statsCard}>
-      <Text style={styles.statsTitle}>Collection Statistics</Text>
-      <View style={styles.statsGrid}>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.totalWords}</Text>
-          <Text style={styles.statLabel}>Total Words</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.masteredWords}</Text>
-          <Text style={styles.statLabel}>Mastered</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.wordsForReview}</Text>
-          <Text style={styles.statLabel}>For Review</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{stats.newWords}</Text>
-          <Text style={styles.statLabel}>New</Text>
-        </View>
-      </View>
-    </View>
+    <ViewThemed style={styles.statsCard}>
+      <TextThemed style={styles.statsTitle}>Collection Statistics</TextThemed>
+      <ViewThemed style={styles.statsGrid}>
+        <ViewThemed style={styles.statItem}>
+          <TextThemed style={styles.statNumber}>{stats.totalWords}</TextThemed>
+          <TextThemed style={styles.statLabel}>Total Words</TextThemed>
+        </ViewThemed>
+        <ViewThemed style={styles.statItem}>
+          <TextThemed style={styles.statNumber}>
+            {stats.masteredWords}
+          </TextThemed>
+          <TextThemed style={styles.statLabel}>Mastered</TextThemed>
+        </ViewThemed>
+        <ViewThemed style={styles.statItem}>
+          <TextThemed style={styles.statNumber}>
+            {stats.wordsForReview}
+          </TextThemed>
+          <TextThemed style={styles.statLabel}>For Review</TextThemed>
+        </ViewThemed>
+        <ViewThemed style={styles.statItem}>
+          <TextThemed style={styles.statNumber}>{stats.newWords}</TextThemed>
+          <TextThemed style={styles.statLabel}>New</TextThemed>
+        </ViewThemed>
+      </ViewThemed>
+    </ViewThemed>
   )
 }
 

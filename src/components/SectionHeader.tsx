@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
 interface SectionHeaderProps {
@@ -16,15 +16,15 @@ export default function SectionHeader({
   onAddPress,
 }: SectionHeaderProps) {
   return (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+    <ViewThemed style={styles.sectionHeader}>
+      <TextThemed style={styles.sectionTitle}>{title}</TextThemed>
       {showAddButton && onAddPress && (
         <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
           <Ionicons name="add" size={20} color={Colors.primary.DEFAULT} />
-          <Text style={styles.addButtonText}>Add</Text>
+          <TextThemed style={styles.addButtonText}>Add</TextThemed>
         </TouchableOpacity>
       )}
-    </View>
+    </ViewThemed>
   )
 }
 

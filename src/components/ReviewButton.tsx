@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
 interface ReviewButtonProps {
@@ -14,18 +14,22 @@ export default function ReviewButton({
 }: ReviewButtonProps) {
   if (wordsForReview === 0) {
     return (
-      <View style={styles.disabledButton}>
-        <Text style={styles.disabledButtonText}>No words for review</Text>
-      </View>
+      <ViewThemed style={styles.disabledButton}>
+        <TextThemed style={styles.disabledButtonText}>
+          No words for review
+        </TextThemed>
+      </ViewThemed>
     )
   }
 
   return (
     <TouchableOpacity style={styles.reviewButton} onPress={onPress}>
-      <Text style={styles.reviewButtonText}>Review All Collections</Text>
-      <Text style={styles.reviewButtonSubtext}>
+      <TextThemed style={styles.reviewButtonText}>
+        Review All Collections
+      </TextThemed>
+      <TextThemed style={styles.reviewButtonSubtext}>
         {wordsForReview} words ready for review
-      </Text>
+      </TextThemed>
     </TouchableOpacity>
   )
 }

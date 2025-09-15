@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, ActivityIndicator } from 'react-native'
-import { View, Text } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
 export function LoadingScreen() {
@@ -18,11 +18,11 @@ export function LoadingScreen() {
   }, [])
 
   return (
-    <View style={styles.container}>
+    <ViewThemed style={styles.container}>
       <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
-      <Text style={styles.text}>Loading{dots}</Text>
-      <Text style={styles.subText}>Checking authentication</Text>
-    </View>
+      <TextThemed style={styles.text}>Loading{dots}</TextThemed>
+      <TextThemed style={styles.subText}>Checking authentication</TextThemed>
+    </ViewThemed>
   )
 }
 

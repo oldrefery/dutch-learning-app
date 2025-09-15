@@ -11,7 +11,7 @@ import Animated, {
   Extrapolation,
   useAnimatedScrollHandler,
 } from 'react-native-reanimated'
-import { View } from '@/components/Themed'
+import { ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { Word } from '@/types/database'
 import { styles } from './WordDetailModal/styles'
@@ -151,7 +151,7 @@ export default function WordDetailModal({
         />
         <GestureDetector gesture={panGesture}>
           <Animated.View style={[styles.container, animatedContainerStyle]}>
-            <View style={styles.dragIndicator} />
+            <ViewThemed style={styles.dragIndicator} />
             <WordDetailHeader
               dutchOriginal={word?.dutch_original || null}
               dutchLemma={word?.dutch_lemma || null}

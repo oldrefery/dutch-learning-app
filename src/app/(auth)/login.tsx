@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import { Link } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { View, Text } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import { AuthInput } from '@/components/auth/AuthInput'
 import { AuthButton } from '@/components/auth/AuthButton'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
@@ -84,15 +84,15 @@ export default function LoginScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.content}>
-            <View style={styles.header}>
-              <Text style={styles.title}>Welcome Back</Text>
-              <Text style={styles.subtitle}>
+          <ViewThemed style={styles.content}>
+            <ViewThemed style={styles.header}>
+              <TextThemed style={styles.title}>Welcome Back</TextThemed>
+              <TextThemed style={styles.subtitle}>
                 Sign in to continue learning Dutch
-              </Text>
-            </View>
+              </TextThemed>
+            </ViewThemed>
 
-            <View style={styles.form}>
+            <ViewThemed style={styles.form}>
               <AuthInput
                 label="Email"
                 value={email}
@@ -112,9 +112,9 @@ export default function LoginScreen() {
               />
 
               {error && (
-                <View style={styles.errorContainer}>
-                  <Text style={styles.errorText}>{error}</Text>
-                </View>
+                <ViewThemed style={styles.errorContainer}>
+                  <TextThemed style={styles.errorText}>{error}</TextThemed>
+                </ViewThemed>
               )}
 
               <AuthButton
@@ -122,15 +122,15 @@ export default function LoginScreen() {
                 onPress={handleSignIn}
                 loading={loading}
               />
-            </View>
+            </ViewThemed>
 
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>
+            <ViewThemed style={styles.footer}>
+              <TextThemed style={styles.footerText}>
                 Don&apos;t have an account?{' '}
                 <Link href="/signup" asChild>
-                  <Text style={styles.linkText}>Sign up</Text>
+                  <TextThemed style={styles.linkText}>Sign up</TextThemed>
                 </Link>
-              </Text>
+              </TextThemed>
 
               {__DEV__ && (
                 <TouchableOpacity
@@ -140,11 +140,13 @@ export default function LoginScreen() {
                     setPassword('test')
                   }}
                 >
-                  <Text style={styles.devButtonText}>DEV: Fill Test Data</Text>
+                  <TextThemed style={styles.devButtonText}>
+                    DEV: Fill Test Data
+                  </TextThemed>
                 </TouchableOpacity>
               )}
-            </View>
-          </View>
+            </ViewThemed>
+          </ViewThemed>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

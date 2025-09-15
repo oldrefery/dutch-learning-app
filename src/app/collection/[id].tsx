@@ -9,7 +9,7 @@ import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { useAppStore } from '@/stores/useAppStore'
 import { Colors } from '@/constants/Colors'
 import CollectionStats from '@/components/CollectionStats'
@@ -97,17 +97,17 @@ export default function CollectionDetailScreen() {
 
   if (!collection) {
     return (
-      <View style={styles.container}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Collection not found</Text>
+      <ViewThemed style={styles.container}>
+        <ViewThemed style={styles.errorContainer}>
+          <TextThemed style={styles.errorText}>Collection not found</TextThemed>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
           >
-            <Text style={styles.backButtonText}>Go Back</Text>
+            <TextThemed style={styles.backButtonText}>Go Back</TextThemed>
           </TouchableOpacity>
-        </View>
-      </View>
+        </ViewThemed>
+      </ViewThemed>
     )
   }
 
@@ -126,18 +126,18 @@ export default function CollectionDetailScreen() {
           },
         }}
       />
-      <View style={styles.container}>
+      <ViewThemed style={styles.container}>
         <FlatList
           style={styles.wordsSection}
           data={collectionWords}
           ListHeaderComponent={() => (
-            <View style={styles.headerContent}>
+            <ViewThemed style={styles.headerContent}>
               <CollectionStats stats={stats} />
               <CollectionReviewButton
                 wordsForReview={stats.wordsForReview}
                 onPress={handleStartReview}
               />
-            </View>
+            </ViewThemed>
           )}
           keyExtractor={(item: Word) => item.word_id}
           renderItem={({ item, index }: { item: Word; index: number }) => (
@@ -149,24 +149,26 @@ export default function CollectionDetailScreen() {
             />
           )}
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
+            <ViewThemed style={styles.emptyContainer}>
               <Ionicons
                 name="book-outline"
                 size={48}
                 color={Colors.neutral[400]}
               />
-              <Text style={styles.emptyText}>No words in this collection</Text>
-              <Text style={styles.emptySubtext}>
+              <TextThemed style={styles.emptyText}>
+                No words in this collection
+              </TextThemed>
+              <TextThemed style={styles.emptySubtext}>
                 Add some words to get started
-              </Text>
-            </View>
+              </TextThemed>
+            </ViewThemed>
           }
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
           }
           showsVerticalScrollIndicator={false}
         />
-      </View>
+      </ViewThemed>
 
       <WordDetailModal
         visible={modalVisible}

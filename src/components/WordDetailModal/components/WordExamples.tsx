@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import { styles } from '../styles'
 
 interface WordExample {
@@ -15,24 +15,26 @@ interface WordExamplesProps {
 export default function WordExamples({ examples }: WordExamplesProps) {
   if (!examples || examples.length === 0) {
     return (
-      <View style={styles.section}>
-        <Text style={styles.noExamplesText}>No examples available.</Text>
-      </View>
+      <ViewThemed style={styles.section}>
+        <TextThemed style={styles.noExamplesText}>
+          No examples available.
+        </TextThemed>
+      </ViewThemed>
     )
   }
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Examples</Text>
+    <ViewThemed style={styles.section}>
+      <TextThemed style={styles.sectionTitle}>Examples</TextThemed>
       {examples.map((example, index) => (
-        <View key={index} style={styles.exampleItem}>
-          <Text style={styles.exampleDutch}>{example.nl}</Text>
-          <Text style={styles.exampleEnglish}>{example.en}</Text>
+        <ViewThemed key={index} style={styles.exampleItem}>
+          <TextThemed style={styles.exampleDutch}>{example.nl}</TextThemed>
+          <TextThemed style={styles.exampleEnglish}>{example.en}</TextThemed>
           {example.ru && (
-            <Text style={styles.exampleRussian}>{example.ru}</Text>
+            <TextThemed style={styles.exampleRussian}>{example.ru}</TextThemed>
           )}
-        </View>
+        </ViewThemed>
       ))}
-    </View>
+    </ViewThemed>
   )
 }

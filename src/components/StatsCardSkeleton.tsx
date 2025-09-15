@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
-import { View } from '@/components/Themed'
+import { ViewThemed } from '@/components/Themed'
 import { SkeletonNumber, SkeletonText } from '@/components/SkeletonLoader'
 import { Colors } from '@/constants/Colors'
 
@@ -12,7 +12,7 @@ import { Colors } from '@/constants/Colors'
  */
 export default function StatsCardSkeleton() {
   return (
-    <View style={styles.statsCard}>
+    <ViewThemed style={styles.statsCard}>
       {/* Title skeleton */}
       <SkeletonText width={140} height={22} style={styles.titleSkeleton} />
 
@@ -25,8 +25,8 @@ export default function StatsCardSkeleton() {
       />
 
       {/* First row of stats */}
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
+      <ViewThemed style={styles.statsRow}>
+        <ViewThemed style={styles.statItem}>
           <SkeletonNumber
             width={48}
             height={32}
@@ -39,8 +39,8 @@ export default function StatsCardSkeleton() {
             delay={300}
             style={styles.labelSkeleton}
           />
-        </View>
-        <View style={styles.statItem}>
+        </ViewThemed>
+        <ViewThemed style={styles.statItem}>
           <SkeletonNumber
             width={42}
             height={32}
@@ -53,12 +53,12 @@ export default function StatsCardSkeleton() {
             delay={350}
             style={styles.labelSkeleton}
           />
-        </View>
-      </View>
+        </ViewThemed>
+      </ViewThemed>
 
       {/* Second row of stats */}
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
+      <ViewThemed style={styles.statsRow}>
+        <ViewThemed style={styles.statItem}>
           <SkeletonNumber
             width={36}
             height={32}
@@ -71,8 +71,8 @@ export default function StatsCardSkeleton() {
             delay={400}
             style={styles.labelSkeleton}
           />
-        </View>
-        <View style={styles.statItem}>
+        </ViewThemed>
+        <ViewThemed style={styles.statItem}>
           <SkeletonNumber
             width={28}
             height={32}
@@ -85,9 +85,9 @@ export default function StatsCardSkeleton() {
             delay={450}
             style={styles.labelSkeleton}
           />
-        </View>
-      </View>
-    </View>
+        </ViewThemed>
+      </ViewThemed>
+    </ViewThemed>
   )
 }
 

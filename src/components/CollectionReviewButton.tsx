@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
-import { Text } from '@/components/Themed'
+import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
 interface CollectionReviewButtonProps {
@@ -17,9 +17,9 @@ export default function CollectionReviewButton({
   return (
     <View style={styles.reviewButtonContainer}>
       <TouchableOpacity style={styles.reviewButton} onPress={onPress}>
-        <Text style={styles.reviewButtonText}>
+        <TextThemed style={styles.reviewButtonText}>
           Review {wordsForReview} Words
-        </Text>
+        </TextThemed>
       </TouchableOpacity>
     </View>
   )

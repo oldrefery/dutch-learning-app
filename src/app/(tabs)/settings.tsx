@@ -2,7 +2,7 @@ import React from 'react'
 import { StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { View, Text } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import { supabase } from '@/lib/supabaseClient'
 import { Colors } from '@/constants/Colors'
 
@@ -34,31 +34,33 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Settings</Text>
-          <Text style={styles.subtitle}>
+      <ViewThemed style={styles.content}>
+        <ViewThemed style={styles.header}>
+          <TextThemed style={styles.title}>Settings</TextThemed>
+          <TextThemed style={styles.subtitle}>
             Manage your account and app preferences
-          </Text>
-        </View>
+          </TextThemed>
+        </ViewThemed>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
+        <ViewThemed style={styles.section}>
+          <TextThemed style={styles.sectionTitle}>Account</TextThemed>
 
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutButtonText}>Logout</Text>
+            <TextThemed style={styles.logoutButtonText}>Logout</TextThemed>
           </TouchableOpacity>
 
-          <Text style={styles.logoutDescription}>
+          <TextThemed style={styles.logoutDescription}>
             This will clear your session and return you to the login screen.
-          </Text>
-        </View>
+          </TextThemed>
+        </ViewThemed>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
-          <Text style={styles.debugText}>Dutch Learning App - Version 1.0</Text>
-        </View>
-      </View>
+        <ViewThemed style={styles.section}>
+          <TextThemed style={styles.sectionTitle}>About</TextThemed>
+          <TextThemed style={styles.debugText}>
+            Dutch Learning App - Version 1.0
+          </TextThemed>
+        </ViewThemed>
+      </ViewThemed>
     </SafeAreaView>
   )
 }

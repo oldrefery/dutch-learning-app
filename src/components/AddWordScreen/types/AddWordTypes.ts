@@ -1,6 +1,7 @@
 import type { Collection } from '@/types/database'
 
 export interface AnalysisResult {
+  lemma: string
   dutch_lemma: string
   part_of_speech: string
   is_irregular: boolean
@@ -20,7 +21,7 @@ export interface AnalysisResult {
     en: string
     ru?: string
   }[]
-  tts_url?: string
+  tts_url: string
   image_url?: string // Associated image for visual learning
 }
 

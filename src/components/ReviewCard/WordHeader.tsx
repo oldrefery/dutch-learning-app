@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { Colors } from '@/constants/Colors'
 import type { ReviewCardProps } from './types'
@@ -91,12 +91,12 @@ export function WordHeader({
   }
 
   return (
-    <View style={styles.wordHeader}>
-      <View style={styles.wordWithPronunciationSmall}>
-        <Text style={styles.dutchWordSmall}>
+    <ViewThemed style={styles.wordHeader}>
+      <ViewThemed style={styles.wordWithPronunciationSmall}>
+        <TextThemed style={styles.dutchWordSmall}>
           {currentWord.article ? `${currentWord.article} ` : ''}
           {currentWord.dutch_lemma}
-        </Text>
+        </TextThemed>
         <PronunciationButton
           ref={pronunciationRef}
           ttsUrl={currentWord.tts_url}
@@ -104,12 +104,14 @@ export function WordHeader({
           onPress={onPlayPronunciation}
           size="small"
         />
-      </View>
+      </ViewThemed>
 
-      <View style={styles.metadataRow}>
-        <Text style={styles.metadataText}>{buildMetadataText()}</Text>
-      </View>
-    </View>
+      <ViewThemed style={styles.metadataRow}>
+        <TextThemed style={styles.metadataText}>
+          {buildMetadataText()}
+        </TextThemed>
+      </ViewThemed>
+    </ViewThemed>
   )
 }
 

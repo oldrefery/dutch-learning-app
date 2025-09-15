@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Text } from '@/components/Themed'
+import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
 interface AuthInputProps extends TextInputProps {
@@ -28,7 +28,7 @@ export function AuthInput({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <TextThemed style={styles.label}>{label}</TextThemed>
       <View
         style={[styles.inputContainer, error && styles.inputContainerError]}
       >
@@ -54,7 +54,7 @@ export function AuthInput({
           </TouchableOpacity>
         )}
       </View>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {error ? <TextThemed style={styles.errorText}>{error}</TextThemed> : null}
     </View>
   )
 }

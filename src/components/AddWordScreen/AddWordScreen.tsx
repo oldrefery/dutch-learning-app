@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Keyboard } from 'react-native'
-import { View } from '@/components/Themed'
+import { ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { WordInputSection } from './components/WordInputSection'
 import { AnalysisResultCard } from './components/AnalysisResultCard'
@@ -79,10 +79,10 @@ export function AddWordScreen() {
       return
     }
 
-    // Hide keyboard immediately when analysis starts
+    // Hide the keyboard immediately when analysis starts
     Keyboard.dismiss()
 
-    // Reset duplicate state when starting new analysis
+    // Reset the duplicate state when starting new analysis
     setIsAlreadyInCollection(false)
     setIsCheckingDuplicate(true)
     // Clear previous analysis result
@@ -108,7 +108,7 @@ export function AddWordScreen() {
         }
       } catch (error) {
         console.error('Error checking word existence:', error)
-        // Continue with analysis if check fails
+        // Continue with analysis if the check fails
       }
     }
 
@@ -138,7 +138,7 @@ export function AddWordScreen() {
   }
 
   return (
-    <View style={addWordScreenStyles.container}>
+    <ViewThemed style={addWordScreenStyles.container}>
       {/* <Button
         title="Try!"
         onPress={() => {
@@ -165,7 +165,7 @@ export function AddWordScreen() {
             isCheckingDuplicate={isCheckingDuplicate}
           />
 
-          {/* Only show add to collection section if word is not already in collection */}
+          {/* Only show add to a collection section if the word is not already in a collection */}
           {!isAlreadyInCollection && (
             <AddToCollectionSection
               selectedCollection={selectedCollection}
@@ -191,6 +191,6 @@ export function AddWordScreen() {
           examples={analysisResult.examples || undefined}
         />
       )}
-    </View>
+    </ViewThemed>
   )
 }

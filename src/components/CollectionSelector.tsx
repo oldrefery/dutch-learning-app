@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useCollections } from '@/hooks/useCollections'
 import type { Collection } from '@/types/database'
@@ -53,19 +53,19 @@ export default function CollectionSelector({
       ]}
       onPress={() => handleSelect(item)}
     >
-      <View style={styles.collectionInfo}>
-        <Text
+      <ViewThemed style={styles.collectionInfo}>
+        <TextThemed
           style={[
             styles.collectionName,
             selectedCollectionId === item.collection_id && styles.selectedText,
           ]}
         >
           {item.name}
-        </Text>
-        <Text style={styles.collectionDate}>
+        </TextThemed>
+        <TextThemed style={styles.collectionDate}>
           {new Date(item.created_at).toLocaleDateString()}
-        </Text>
-      </View>
+        </TextThemed>
+      </ViewThemed>
       {selectedCollectionId === item.collection_id && (
         <Ionicons name="checkmark" size={20} color={Colors.primary.DEFAULT} />
       )}
@@ -75,26 +75,28 @@ export default function CollectionSelector({
   const renderContent = () => {
     if (collectionsLoading) {
       return (
-        <View style={styles.loadingContainer}>
+        <ViewThemed style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
-          <Text style={styles.loadingText}>Loading collections...</Text>
-        </View>
+          <TextThemed style={styles.loadingText}>
+            Loading collections...
+          </TextThemed>
+        </ViewThemed>
       )
     }
 
     if (collections.length === 0) {
       return (
-        <View style={styles.emptyContainer}>
+        <ViewThemed style={styles.emptyContainer}>
           <Ionicons
             name="folder-outline"
             size={48}
             color={Colors.neutral[400]}
           />
-          <Text style={styles.emptyText}>No collections found</Text>
-          <Text style={styles.emptySubtext}>
+          <TextThemed style={styles.emptyText}>No collections found</TextThemed>
+          <TextThemed style={styles.emptySubtext}>
             Create your first collection to get started
-          </Text>
-        </View>
+          </TextThemed>
+        </ViewThemed>
       )
     }
 
@@ -116,7 +118,7 @@ export default function CollectionSelector({
         onPress={handleOpen}
         disabled={disabled}
       >
-        <View style={styles.selectorContent}>
+        <ViewThemed style={styles.selectorContent}>
           <Ionicons
             name="folder-outline"
             size={20}
@@ -124,15 +126,15 @@ export default function CollectionSelector({
               selectedCollection ? Colors.neutral[700] : Colors.neutral[400]
             }
           />
-          <Text
+          <TextThemed
             style={[
               styles.selectorText,
               !selectedCollection && styles.placeholderText,
             ]}
           >
             {selectedCollection ? selectedCollection.name : placeholder}
-          </Text>
-        </View>
+          </TextThemed>
+        </ViewThemed>
         <Ionicons
           name="chevron-down"
           size={20}
@@ -146,28 +148,30 @@ export default function CollectionSelector({
         presentationStyle="pageSheet"
         onRequestClose={() => setIsVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Select Collection</Text>
+        <ViewThemed style={styles.modalContainer}>
+          <ViewThemed style={styles.modalHeader}>
+            <TextThemed style={styles.modalTitle}>Select Collection</TextThemed>
             <TouchableOpacity
               onPress={() => setIsVisible(false)}
               style={styles.closeButton}
             >
               <Ionicons name="close" size={24} color={Colors.neutral[700]} />
             </TouchableOpacity>
-          </View>
+          </ViewThemed>
 
-          <View style={styles.modalContent}>{renderContent()}</View>
+          <ViewThemed style={styles.modalContent}>{renderContent()}</ViewThemed>
 
-          <View style={styles.modalActions}>
+          <ViewThemed style={styles.modalActions}>
             <TouchableOpacity
               style={styles.clearButton}
               onPress={() => handleSelect(null)}
             >
-              <Text style={styles.clearButtonText}>No Collection</Text>
+              <TextThemed style={styles.clearButtonText}>
+                No Collection
+              </TextThemed>
             </TouchableOpacity>
-          </View>
-        </View>
+          </ViewThemed>
+        </ViewThemed>
       </Modal>
     </>
   )

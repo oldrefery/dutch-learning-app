@@ -2,13 +2,13 @@ import React, { useRef, useState } from 'react'
 import {
   TouchableOpacity,
   ActivityIndicator,
-  View as RNView,
+  View,
   ScrollView,
   RefreshControl,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { runOnJS } from 'react-native-reanimated'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import WordDetailModal from '@/components/WordDetailModal'
 import { CardFront } from '@/components/ReviewCard/CardFront'
@@ -19,12 +19,13 @@ import { useReviewSession } from '@/hooks/useReviewSession'
 import { reviewScreenStyles } from '@/styles/ReviewScreenStyles'
 import { Colors } from '@/constants/Colors'
 import { useAppStore } from '@/stores/useAppStore'
+import type { Word } from '@/types/database'
 
 export default function ReviewScreen() {
-  const [selectedWord, setSelectedWord] = useState(null)
+  const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
-  const pronunciationRef = useRef<RNView>(null)
+  const pronunciationRef = useRef<View>(null)
 
   const {
     isFlipped,
@@ -92,48 +93,54 @@ export default function ReviewScreen() {
           />
         }
       >
-        <Text style={reviewScreenStyles.emptyText}>No words to review! 🎉</Text>
-        <Text style={reviewScreenStyles.emptySubtext}>
+        <TextThemed style={reviewScreenStyles.emptyText}>
+          No words to review! 🎉
+        </TextThemed>
+        <TextThemed style={reviewScreenStyles.emptySubtext}>
           All your words are scheduled for future review. Pull to refresh or add
           new words to practice.
-        </Text>
+        </TextThemed>
       </ScrollView>
     )
   }
 
   if (isLoading) {
     return (
-      <View style={reviewScreenStyles.container}>
-        <View style={reviewScreenStyles.loadingContainer}>
+      <ViewThemed style={reviewScreenStyles.container}>
+        <ViewThemed style={reviewScreenStyles.loadingContainer}>
           <ActivityIndicator
             size="large"
             // color={REVIEW_SCREEN_CONSTANTS.COLORS.PRIMARY}
             color={Colors.primary.DEFAULT}
           />
-          <Text style={reviewScreenStyles.loadingText}>
+          <TextThemed style={reviewScreenStyles.loadingText}>
             Loading review session...
-          </Text>
-        </View>
-      </View>
+          </TextThemed>
+        </ViewThemed>
+      </ViewThemed>
     )
   }
 
   if (sessionComplete) {
     return (
-      <View style={reviewScreenStyles.container}>
-        <View style={reviewScreenStyles.emptyContainer}>
-          <Text style={reviewScreenStyles.emptyText}>Session Complete! 🎉</Text>
-          <Text style={reviewScreenStyles.emptySubtext}>
+      <ViewThemed style={reviewScreenStyles.container}>
+        <ViewThemed style={reviewScreenStyles.emptyContainer}>
+          <TextThemed style={reviewScreenStyles.emptyText}>
+            Session Complete! 🎉
+          </TextThemed>
+          <TextThemed style={reviewScreenStyles.emptySubtext}>
             You reviewed {reviewWords.length} words
-          </Text>
+          </TextThemed>
           <TouchableOpacity
             style={reviewScreenStyles.srsButton}
             onPress={restartSession}
           >
-            <Text style={reviewScreenStyles.buttonText}>Review Again</Text>
+            <TextThemed style={reviewScreenStyles.buttonText}>
+              Review Again
+            </TextThemed>
           </TouchableOpacity>
-        </View>
-      </View>
+        </ViewThemed>
+      </ViewThemed>
     )
   }
 
@@ -158,7 +165,7 @@ export default function ReviewScreen() {
 
     return (
       <GestureDetector gesture={combinedGesture}>
-        <View style={reviewScreenStyles.flashcard}>
+        <ViewThemed style={reviewScreenStyles.flashcard}>
           {!isFlipped ? (
             <CardFront
               currentWord={currentWord}
@@ -176,28 +183,30 @@ export default function ReviewScreen() {
               pronunciationRef={pronunciationRef}
             />
           )}
-        </View>
+        </ViewThemed>
       </GestureDetector>
     )
   }
 
   return (
-    <View style={reviewScreenStyles.container}>
-      <View style={reviewScreenStyles.progressContainer}>
-        <Text style={reviewScreenStyles.progressText}>
+    <ViewThemed style={reviewScreenStyles.container}>
+      <ViewThemed style={reviewScreenStyles.progressContainer}>
+        <TextThemed style={reviewScreenStyles.progressText}>
           {currentWordNumber} / {totalWords}
-        </Text>
-      </View>
+        </TextThemed>
+      </ViewThemed>
 
-      <View style={reviewScreenStyles.cardContainer}>{renderCard()}</View>
+      <ViewThemed style={reviewScreenStyles.cardContainer}>
+        {renderCard()}
+      </ViewThemed>
 
-      <View style={reviewScreenStyles.buttonsContainer}>
+      <ViewThemed style={reviewScreenStyles.buttonsContainer}>
         <TouchableOpacity
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.againButton]}
           onPress={handleAgain}
           disabled={isLoading}
         >
-          <Text style={reviewScreenStyles.buttonText}>Again</Text>
+          <TextThemed style={reviewScreenStyles.buttonText}>Again</TextThemed>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -205,7 +214,7 @@ export default function ReviewScreen() {
           onPress={handleHard}
           disabled={isLoading}
         >
-          <Text style={reviewScreenStyles.buttonText}>Hard</Text>
+          <TextThemed style={reviewScreenStyles.buttonText}>Hard</TextThemed>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -213,7 +222,7 @@ export default function ReviewScreen() {
           onPress={handleGood}
           disabled={isLoading}
         >
-          <Text style={reviewScreenStyles.buttonText}>Good</Text>
+          <TextThemed style={reviewScreenStyles.buttonText}>Good</TextThemed>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -221,9 +230,9 @@ export default function ReviewScreen() {
           onPress={handleEasy}
           disabled={isLoading}
         >
-          <Text style={reviewScreenStyles.buttonText}>Easy</Text>
+          <TextThemed style={reviewScreenStyles.buttonText}>Easy</TextThemed>
         </TouchableOpacity>
-      </View>
+      </ViewThemed>
 
       {currentWord && (
         <ImageSelector
@@ -242,6 +251,6 @@ export default function ReviewScreen() {
         onClose={handleCloseModal}
         word={selectedWord}
       />
-    </View>
+    </ViewThemed>
   )
 }

@@ -1,8 +1,8 @@
 import React from 'react'
-import { StyleSheet, ScrollView, Alert, View as RNView } from 'react-native'
+import { StyleSheet, ScrollView, Alert, View } from 'react-native'
 import { Pressable } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
-import { Text } from '@/components/Themed'
+import { TextThemed } from '@/components/Themed'
 import { WordHeader } from './WordHeader'
 import { TranslationsSection } from './TranslationsSection'
 import { ImageSection } from './ImageSection'
@@ -11,7 +11,7 @@ import { Colors } from '@/constants/Colors'
 import type { CardBackProps } from './types'
 
 interface CardBackPropsWithRef extends CardBackProps {
-  pronunciationRef?: React.RefObject<RNView | null>
+  pronunciationRef?: React.RefObject<View | null>
 }
 
 export function CardBack({
@@ -59,7 +59,7 @@ export function CardBack({
         }}
       >
         <Ionicons name="trash-outline" size={20} color={Colors.error.DEFAULT} />
-        <Text style={styles.deleteButtonText}>Delete Word</Text>
+        <TextThemed style={styles.deleteButtonText}>Delete Word</TextThemed>
       </Pressable>
     </ScrollView>
   )

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import { styles } from '../styles'
 
 interface WordPartOfSpeechProps {
@@ -12,9 +12,9 @@ export default function WordPartOfSpeech({
   if (!partOfSpeech) return null
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Part of Speech</Text>
-      <Text style={styles.partOfSpeechText}>{partOfSpeech}</Text>
-    </View>
+    <ViewThemed style={styles.section}>
+      <TextThemed style={styles.sectionTitle}>Part of Speech</TextThemed>
+      <TextThemed style={styles.partOfSpeechText}>{partOfSpeech}</TextThemed>
+    </ViewThemed>
   )
 }

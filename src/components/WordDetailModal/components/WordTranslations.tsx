@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import { styles } from '../styles'
 
 interface WordTranslationsProps {
@@ -15,20 +15,24 @@ export default function WordTranslations({
   if (!translations) return null
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Translations</Text>
-      <View style={styles.translationsContainer}>
+    <ViewThemed style={styles.section}>
+      <TextThemed style={styles.sectionTitle}>Translations</TextThemed>
+      <ViewThemed style={styles.translationsContainer}>
         {translations.en?.map((translation, index) => (
-          <View key={index} style={styles.translationItem}>
-            <Text style={styles.translationText}>{translation}</Text>
-          </View>
+          <ViewThemed key={index} style={styles.translationItem}>
+            <TextThemed style={styles.translationText}>
+              {translation}
+            </TextThemed>
+          </ViewThemed>
         ))}
         {translations.ru?.map((translation, index) => (
-          <View key={`ru-${index}`} style={styles.translationItem}>
-            <Text style={styles.translationTextRussian}>{translation}</Text>
-          </View>
+          <ViewThemed key={`ru-${index}`} style={styles.translationItem}>
+            <TextThemed style={styles.translationTextRussian}>
+              {translation}
+            </TextThemed>
+          </ViewThemed>
         ))}
-      </View>
-    </View>
+      </ViewThemed>
+    </ViewThemed>
   )
 }

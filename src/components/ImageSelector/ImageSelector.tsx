@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { IMAGE_CONFIG } from '@/constants/AppConfig'
 import { supabase } from '@/lib/supabaseClient'
@@ -119,24 +119,26 @@ export default function ImageSelector({
   }
 
   const renderLoadingState = () => (
-    <View style={imageSelectorStyles.loadingContainer}>
+    <ViewThemed style={imageSelectorStyles.loadingContainer}>
       <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
-      <Text style={imageSelectorStyles.loadingText}>
+      <TextThemed style={imageSelectorStyles.loadingText}>
         Finding better images...
-      </Text>
-    </View>
+      </TextThemed>
+    </ViewThemed>
   )
 
   const renderErrorState = () => (
-    <View style={imageSelectorStyles.errorContainer}>
-      <Text style={imageSelectorStyles.errorText}>{error}</Text>
+    <ViewThemed style={imageSelectorStyles.errorContainer}>
+      <TextThemed style={imageSelectorStyles.errorText}>{error}</TextThemed>
       <TouchableOpacity
         onPress={loadImages}
         style={imageSelectorStyles.retryButton}
       >
-        <Text style={imageSelectorStyles.retryButtonText}>Try Again</Text>
+        <TextThemed style={imageSelectorStyles.retryButtonText}>
+          Try Again
+        </TextThemed>
       </TouchableOpacity>
-    </View>
+    </ViewThemed>
   )
 
   const renderImageGrid = () => (
@@ -144,7 +146,7 @@ export default function ImageSelector({
       style={imageSelectorStyles.imageGrid}
       showsVerticalScrollIndicator={false}
     >
-      <View style={imageSelectorStyles.gridContainer}>
+      <ViewThemed style={imageSelectorStyles.gridContainer}>
         {images.map((image, index) => (
           <TouchableOpacity
             key={index}
@@ -159,22 +161,24 @@ export default function ImageSelector({
               style={imageSelectorStyles.optionImage}
             />
             {currentImageUrl === image.url && (
-              <View style={imageSelectorStyles.currentBadge}>
+              <ViewThemed style={imageSelectorStyles.currentBadge}>
                 <Ionicons
                   name="checkmark-circle"
                   size={20}
                   color={Colors.success.DEFAULT}
                 />
-                <Text style={imageSelectorStyles.currentText}>Current</Text>
-              </View>
+                <TextThemed style={imageSelectorStyles.currentText}>
+                  Current
+                </TextThemed>
+              </ViewThemed>
             )}
           </TouchableOpacity>
         ))}
-      </View>
+      </ViewThemed>
 
       {/* Load More Button */}
       {images.length > 0 && (
-        <View style={imageSelectorStyles.loadMoreContainer}>
+        <ViewThemed style={imageSelectorStyles.loadMoreContainer}>
           <TouchableOpacity
             style={[
               imageSelectorStyles.loadMoreButton,
@@ -186,12 +190,12 @@ export default function ImageSelector({
             {loadingMore ? (
               <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
             ) : (
-              <Text style={imageSelectorStyles.loadMoreText}>
+              <TextThemed style={imageSelectorStyles.loadMoreText}>
                 Load More Images
-              </Text>
+              </TextThemed>
             )}
           </TouchableOpacity>
-        </View>
+        </ViewThemed>
       )}
     </ScrollView>
   )
@@ -214,23 +218,25 @@ export default function ImageSelector({
       animationType="slide"
       presentationStyle="pageSheet"
     >
-      <View style={imageSelectorStyles.container}>
-        <View style={imageSelectorStyles.header}>
-          <Text style={imageSelectorStyles.title}>Choose Image</Text>
+      <ViewThemed style={imageSelectorStyles.container}>
+        <ViewThemed style={imageSelectorStyles.header}>
+          <TextThemed style={imageSelectorStyles.title}>
+            Choose Image
+          </TextThemed>
           <TouchableOpacity
             onPress={onClose}
             style={imageSelectorStyles.closeButton}
           >
             <Ionicons name="close" size={24} color={Colors.neutral[700]} />
           </TouchableOpacity>
-        </View>
+        </ViewThemed>
 
-        <Text style={imageSelectorStyles.subtitle}>
+        <TextThemed style={imageSelectorStyles.subtitle}>
           Select a better image for &quot;{englishTranslation}&quot;
-        </Text>
+        </TextThemed>
 
         {renderContent()}
-      </View>
+      </ViewThemed>
     </Modal>
   )
 }

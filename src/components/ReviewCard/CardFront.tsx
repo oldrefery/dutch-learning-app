@@ -1,6 +1,6 @@
 import React from 'react'
-import { StyleSheet, View as RNView } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { StyleSheet, View } from 'react-native'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { Colors } from '@/constants/Colors'
 import type { ReviewCardProps } from './types'
@@ -8,7 +8,7 @@ import type { ReviewCardProps } from './types'
 interface CardFrontProps extends ReviewCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
-  pronunciationRef?: React.RefObject<RNView | null>
+  pronunciationRef?: React.RefObject<View | null>
 }
 
 export function CardFront({
@@ -18,22 +18,24 @@ export function CardFront({
   pronunciationRef,
 }: CardFrontProps) {
   return (
-    <View style={styles.cardFront}>
-      <View style={styles.wordWithPronunciation}>
-        <Text style={styles.dutchWord}>
+    <ViewThemed style={styles.cardFront}>
+      <ViewThemed style={styles.wordWithPronunciation}>
+        <TextThemed style={styles.dutchWord}>
           {currentWord.article ? `${currentWord.article} ` : ''}
           {currentWord.dutch_lemma}
-        </Text>
+        </TextThemed>
         <PronunciationButton
           ref={pronunciationRef}
           ttsUrl={currentWord.tts_url}
           isPlayingAudio={isPlayingAudio}
           onPress={onPlayPronunciation}
         />
-      </View>
-      <Text style={styles.partOfSpeech}>{currentWord.part_of_speech}</Text>
-      <Text style={styles.tapHint}>Tap to see translation</Text>
-    </View>
+      </ViewThemed>
+      <TextThemed style={styles.partOfSpeech}>
+        {currentWord.part_of_speech}
+      </TextThemed>
+      <TextThemed style={styles.tapHint}>Tap to see translation</TextThemed>
+    </ViewThemed>
   )
 }
 

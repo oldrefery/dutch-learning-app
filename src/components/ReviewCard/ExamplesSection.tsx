@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { ReviewCardProps } from './types'
 
@@ -10,18 +10,22 @@ export function ExamplesSection({ currentWord }: ReviewCardProps) {
   if (!hasExamples) return null
 
   return (
-    <View style={styles.examplesSection}>
-      <Text style={styles.sectionTitle}>📝 Examples</Text>
+    <ViewThemed style={styles.examplesSection}>
+      <TextThemed style={styles.sectionTitle}>📝 Examples</TextThemed>
       {currentWord.examples!.map((example, index) => (
-        <View key={index} style={styles.exampleItem}>
-          <Text style={styles.exampleDutch}>{example.nl}</Text>
-          <Text style={styles.exampleTranslation}>🇬🇧 {example.en}</Text>
+        <ViewThemed key={index} style={styles.exampleItem}>
+          <TextThemed style={styles.exampleDutch}>{example.nl}</TextThemed>
+          <TextThemed style={styles.exampleTranslation}>
+            🇬🇧 {example.en}
+          </TextThemed>
           {example.ru && (
-            <Text style={styles.exampleTranslation}>🇷🇺 {example.ru}</Text>
+            <TextThemed style={styles.exampleTranslation}>
+              🇷🇺 {example.ru}
+            </TextThemed>
           )}
-        </View>
+        </ViewThemed>
       ))}
-    </View>
+    </ViewThemed>
   )
 }
 

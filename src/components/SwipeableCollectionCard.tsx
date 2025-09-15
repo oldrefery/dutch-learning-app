@@ -7,7 +7,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { Collection, Word } from '@/types/database'
 
@@ -83,63 +83,65 @@ export default function SwipeableCollectionCard({
       lastGestureX.current = translationX
 
       if (translationX < -80) {
-        // Swipe left - show delete button
+        // Swipe left - show the delete button
         translateX.value = withSpring(-80)
       } else {
-        // Return to original position
+        // Return to the original position
         translateX.value = withSpring(0)
       }
     })
 
   return (
-    <View style={styles.container}>
-      {/* Delete button background */}
-      <View style={styles.deleteButton}>
+    <ViewThemed style={styles.container}>
+      {/* Delete a button background */}
+      <ViewThemed style={styles.deleteButton}>
         <TouchableOpacity
           style={styles.deleteButtonContent}
           onPress={handleDelete}
         >
           <Ionicons name="trash" size={20} color="white" />
-          <Text style={styles.deleteButtonText}>Delete</Text>
+          <TextThemed style={styles.deleteButtonText}>Delete</TextThemed>
         </TouchableOpacity>
-      </View>
+      </ViewThemed>
 
       {/* Swipeable card */}
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.card, animatedStyle]}>
           <TouchableOpacity style={styles.cardContent} onPress={onPress}>
-            <View style={styles.collectionHeader}>
-              <Text style={styles.collectionName}>{collection.name}</Text>
-              <Text style={styles.collectionStats}>
+            <ViewThemed style={styles.collectionHeader}>
+              <TextThemed style={styles.collectionName}>
+                {collection.name}
+              </TextThemed>
+              <TextThemed style={styles.collectionStats}>
                 {stats.totalWords} words • {stats.progressPercentage}% mastered
-              </Text>
-            </View>
+              </TextThemed>
+            </ViewThemed>
 
-            <View style={styles.collectionProgress}>
-              <View style={styles.progressBar}>
-                <View
+            <ViewThemed style={styles.collectionProgress}>
+              <ViewThemed style={styles.progressBar}>
+                <ViewThemed
                   style={[
                     styles.progressFill,
                     { width: `${stats.progressPercentage}%` },
                   ]}
                 />
-              </View>
-              <Text style={styles.progressText}>
+              </ViewThemed>
+              <TextThemed style={styles.progressText}>
                 {stats.masteredWords}/{stats.totalWords} mastered
-              </Text>
-            </View>
+              </TextThemed>
+            </ViewThemed>
 
             {stats.wordsToReview > 0 && (
-              <View style={styles.reviewBadge}>
-                <Text style={styles.reviewBadgeText}>
+              <ViewThemed style={styles.reviewBadge}>
+                <TextThemed style={styles.reviewBadgeText}>
                   {stats.wordsToReview} for review
-                </Text>
-              </View>
+                </TextThemed>
+              </ViewThemed>
             )}
           </TouchableOpacity>
         </Animated.View>
       </GestureDetector>
-    </View>
+    </ViewThemed>
   )
 }
 

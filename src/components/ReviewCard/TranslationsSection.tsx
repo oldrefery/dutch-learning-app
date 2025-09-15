@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { ReviewCardProps } from './types'
 
@@ -9,29 +9,29 @@ export function TranslationsSection({ currentWord }: ReviewCardProps) {
     currentWord.translations.ru && currentWord.translations.ru.length > 0
 
   return (
-    <View style={styles.translationsSection}>
-      <Text style={styles.sectionTitle}>💬 Translations</Text>
+    <ViewThemed style={styles.translationsSection}>
+      <TextThemed style={styles.sectionTitle}>💬 Translations</TextThemed>
 
-      <View style={styles.translationGroup}>
-        <Text style={styles.languageLabel}>🇬🇧 English:</Text>
+      <ViewThemed style={styles.translationGroup}>
+        <TextThemed style={styles.languageLabel}>🇬🇧 English:</TextThemed>
         {currentWord.translations.en.map((translation, index) => (
-          <Text key={index} style={styles.translationText}>
+          <TextThemed key={index} style={styles.translationText}>
             • {translation}
-          </Text>
+          </TextThemed>
         ))}
-      </View>
+      </ViewThemed>
 
       {hasRussianTranslations && (
-        <View style={styles.translationGroup}>
-          <Text style={styles.languageLabel}>🇷🇺 Russian:</Text>
+        <ViewThemed style={styles.translationGroup}>
+          <TextThemed style={styles.languageLabel}>🇷🇺 Russian:</TextThemed>
           {currentWord.translations.ru!.map((translation, index) => (
-            <Text key={index} style={styles.translationText}>
+            <TextThemed key={index} style={styles.translationText}>
               • {translation}
-            </Text>
+            </TextThemed>
           ))}
-        </View>
+        </ViewThemed>
       )}
-    </View>
+    </ViewThemed>
   )
 }
 

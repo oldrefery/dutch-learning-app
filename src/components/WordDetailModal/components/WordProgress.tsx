@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 import { WordStatusType } from '../types'
@@ -28,26 +28,28 @@ export default function WordProgress({
   }
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Progress</Text>
-      <View style={styles.progressContainer}>
-        <Text style={styles.progressText}>Repetitions: {repetitionCount}</Text>
-        <Text style={styles.progressText}>
+    <ViewThemed style={styles.section}>
+      <TextThemed style={styles.sectionTitle}>Progress</TextThemed>
+      <ViewThemed style={styles.progressContainer}>
+        <TextThemed style={styles.progressText}>
+          Repetitions: {repetitionCount}
+        </TextThemed>
+        <TextThemed style={styles.progressText}>
           Next review:{' '}
           {nextReviewDate
             ? new Date(nextReviewDate).toLocaleDateString()
             : 'N/A'}
-        </Text>
-        <Text style={styles.progressText}>
+        </TextThemed>
+        <TextThemed style={styles.progressText}>
           Easiness factor: {easinessFactor?.toFixed(2) || 'N/A'}
-        </Text>
-        <View style={styles.statusContainer}>
-          <View
+        </TextThemed>
+        <ViewThemed style={styles.statusContainer}>
+          <ViewThemed
             style={[styles.statusDot, { backgroundColor: getStatusColor() }]}
           />
-          <Text style={styles.statusText}>{getStatusText()}</Text>
-        </View>
-      </View>
-    </View>
+          <TextThemed style={styles.statusText}>{getStatusText()}</TextThemed>
+        </ViewThemed>
+      </ViewThemed>
+    </ViewThemed>
   )
 }

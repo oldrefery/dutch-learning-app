@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 import { Link, router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { View, Text } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import { AuthInput } from '@/components/auth/AuthInput'
 import { AuthButton } from '@/components/auth/AuthButton'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
@@ -105,15 +105,15 @@ export default function SignupScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.content}>
-            <View style={styles.header}>
-              <Text style={styles.title}>Create Account</Text>
-              <Text style={styles.subtitle}>
+          <ViewThemed style={styles.content}>
+            <ViewThemed style={styles.header}>
+              <TextThemed style={styles.title}>Create Account</TextThemed>
+              <TextThemed style={styles.subtitle}>
                 Join us to start your Dutch learning journey
-              </Text>
-            </View>
+              </TextThemed>
+            </ViewThemed>
 
-            <View style={styles.form}>
+            <ViewThemed style={styles.form}>
               <AuthInput
                 label="Email"
                 value={email}
@@ -141,20 +141,20 @@ export default function SignupScreen() {
                 isPassword
               />
 
-              <View style={styles.passwordRequirements}>
-                <Text style={styles.requirementsTitle}>
+              <ViewThemed style={styles.passwordRequirements}>
+                <TextThemed style={styles.requirementsTitle}>
                   Password requirements:
-                </Text>
-                <Text style={styles.requirementText}>
+                </TextThemed>
+                <TextThemed style={styles.requirementText}>
                   • At least 6 characters long
-                </Text>
-                <Text style={styles.requirementText}>
+                </TextThemed>
+                <TextThemed style={styles.requirementText}>
                   • Contains at least one letter and one number
-                </Text>
-              </View>
+                </TextThemed>
+              </ViewThemed>
 
               {error && (
-                <View
+                <ViewThemed
                   style={[
                     styles.messageContainer,
                     error.includes('check your email')
@@ -162,7 +162,7 @@ export default function SignupScreen() {
                       : styles.errorContainer,
                   ]}
                 >
-                  <Text
+                  <TextThemed
                     style={[
                       styles.messageText,
                       error.includes('check your email')
@@ -171,8 +171,8 @@ export default function SignupScreen() {
                     ]}
                   >
                     {error}
-                  </Text>
-                </View>
+                  </TextThemed>
+                </ViewThemed>
               )}
 
               <AuthButton
@@ -180,17 +180,17 @@ export default function SignupScreen() {
                 onPress={handleSignUp}
                 loading={loading}
               />
-            </View>
+            </ViewThemed>
 
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>
+            <ViewThemed style={styles.footer}>
+              <TextThemed style={styles.footerText}>
                 Already have an account?{' '}
                 <Link href="/login" asChild>
-                  <Text style={styles.linkText}>Sign in</Text>
+                  <TextThemed style={styles.linkText}>Sign in</TextThemed>
                 </Link>
-              </Text>
-            </View>
-          </View>
+              </TextThemed>
+            </ViewThemed>
+          </ViewThemed>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

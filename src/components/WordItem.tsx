@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { WordStatusType } from '@/components/WordDetailModal/types'
 import type { Word } from '@/types/database'
@@ -29,37 +29,37 @@ export default function WordItem({ word, index, onPress }: WordItemProps) {
 
   return (
     <TouchableOpacity style={styles.wordItem} onPress={onPress}>
-      <View style={styles.wordNumber}>
-        <Text style={styles.wordNumberText}>{index + 1}</Text>
-      </View>
-      <View style={styles.wordContent}>
-        <View style={styles.wordHeader}>
-          <Text style={styles.wordText}>
+      <ViewThemed style={styles.wordNumber}>
+        <TextThemed style={styles.wordNumberText}>{index + 1}</TextThemed>
+      </ViewThemed>
+      <ViewThemed style={styles.wordContent}>
+        <ViewThemed style={styles.wordHeader}>
+          <TextThemed style={styles.wordText}>
             {word.dutch_original || word.dutch_lemma}
-          </Text>
+          </TextThemed>
           {word.article && (
-            <Text style={styles.articleText}>({word.article})</Text>
+            <TextThemed style={styles.articleText}>({word.article})</TextThemed>
           )}
-        </View>
+        </ViewThemed>
 
-        <Text style={styles.translationText}>
+        <TextThemed style={styles.translationText}>
           {word.translations.en?.[0] || 'No translation'}
-        </Text>
+        </TextThemed>
 
-        <View style={styles.wordFooter}>
-          <View
+        <ViewThemed style={styles.wordFooter}>
+          <ViewThemed
             style={[styles.statusBadge, { backgroundColor: getStatusColor() }]}
           >
-            <Text style={styles.statusText}>{getStatusText()}</Text>
-          </View>
+            <TextThemed style={styles.statusText}>{getStatusText()}</TextThemed>
+          </ViewThemed>
 
           {isDueForReview && (
-            <View style={styles.reviewBadge}>
-              <Text style={styles.reviewText}>Due for review</Text>
-            </View>
+            <ViewThemed style={styles.reviewBadge}>
+              <TextThemed style={styles.reviewText}>Due for review</TextThemed>
+            </ViewThemed>
           )}
-        </View>
-      </View>
+        </ViewThemed>
+      </ViewThemed>
 
       <Ionicons name="chevron-forward" size={20} color={Colors.neutral[400]} />
     </TouchableOpacity>

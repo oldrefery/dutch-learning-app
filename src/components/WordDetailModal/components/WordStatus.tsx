@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 import { WordStatusType, WordStatusMessage } from '../types'
@@ -22,22 +22,22 @@ export default function WordStatus({ nextReviewDate }: WordStatusProps) {
   }
 
   return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Status</Text>
-      <View style={styles.statusContainer}>
-        <View
+    <ViewThemed style={styles.section}>
+      <TextThemed style={styles.sectionTitle}>Status</TextThemed>
+      <ViewThemed style={styles.statusContainer}>
+        <ViewThemed
           style={[styles.statusBadge, { backgroundColor: getStatusColor() }]}
         >
-          <Text style={styles.statusText}>{getStatusText()}</Text>
-        </View>
+          <TextThemed style={styles.statusText}>{getStatusText()}</TextThemed>
+        </ViewThemed>
         {nextReviewDate && new Date(nextReviewDate) <= new Date() && (
-          <View style={styles.reviewBadge}>
-            <Text style={styles.reviewText}>
+          <ViewThemed style={styles.reviewBadge}>
+            <TextThemed style={styles.reviewText}>
               {WordStatusMessage.REVIEW_NEEDED}
-            </Text>
-          </View>
+            </TextThemed>
+          </ViewThemed>
         )}
-      </View>
-    </View>
+      </ViewThemed>
+    </ViewThemed>
   )
 }

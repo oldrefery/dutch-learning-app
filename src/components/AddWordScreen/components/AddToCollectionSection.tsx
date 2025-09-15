@@ -1,6 +1,6 @@
 import React from 'react'
 import { TouchableOpacity, ActivityIndicator } from 'react-native'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import CollectionSelector from '@/components/CollectionSelector'
 import type { AddToCollectionSectionProps } from '../types/AddWordTypes'
 import { addToCollectionStyles } from '../styles/AddToCollectionSection.styles'
@@ -12,20 +12,20 @@ export function AddToCollectionSection({
   isAdding,
 }: AddToCollectionSectionProps) {
   return (
-    <View style={addToCollectionStyles.addToCollectionSection}>
-      <Text style={addToCollectionStyles.addToCollectionTitle}>
+    <ViewThemed style={addToCollectionStyles.addToCollectionSection}>
+      <TextThemed style={addToCollectionStyles.addToCollectionTitle}>
         Add to Collection
-      </Text>
+      </TextThemed>
 
-      <View style={addToCollectionStyles.collectionSelectorContainer}>
-        <Text style={addToCollectionStyles.collectionLabel}>
+      <ViewThemed style={addToCollectionStyles.collectionSelectorContainer}>
+        <TextThemed style={addToCollectionStyles.collectionLabel}>
           Select Collection:
-        </Text>
+        </TextThemed>
         <CollectionSelector
           selectedCollectionId={selectedCollection?.collection_id || null}
           onCollectionSelect={onCollectionSelect}
         />
-      </View>
+      </ViewThemed>
 
       <TouchableOpacity
         style={[
@@ -38,9 +38,11 @@ export function AddToCollectionSection({
         {isAdding ? (
           <ActivityIndicator size="small" color="white" />
         ) : (
-          <Text style={addToCollectionStyles.addButtonText}>Add Word</Text>
+          <TextThemed style={addToCollectionStyles.addButtonText}>
+            Add Word
+          </TextThemed>
         )}
       </TouchableOpacity>
-    </View>
+    </ViewThemed>
   )
 }

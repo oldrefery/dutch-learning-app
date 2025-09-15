@@ -1,7 +1,7 @@
 import React from 'react'
 import { TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Text, View } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { WordInputSectionProps } from '../types/AddWordTypes'
 import { wordInputStyles } from '../styles/WordInputSection.styles'
@@ -14,13 +14,13 @@ export function WordInputSection({
   isCheckingDuplicate = false,
 }: WordInputSectionProps) {
   return (
-    <View style={wordInputStyles.container}>
-      <Text style={wordInputStyles.title}>Add New Dutch Word</Text>
-      <Text style={wordInputStyles.subtitle}>
+    <ViewThemed style={wordInputStyles.container}>
+      <TextThemed style={wordInputStyles.title}>Add New Dutch Word</TextThemed>
+      <TextThemed style={wordInputStyles.subtitle}>
         Enter a Dutch word to analyze and add to your collection
-      </Text>
+      </TextThemed>
 
-      <View style={wordInputStyles.inputContainer}>
+      <ViewThemed style={wordInputStyles.inputContainer}>
         <TextInput
           style={wordInputStyles.textInput}
           value={inputWord}
@@ -51,18 +51,18 @@ export function WordInputSection({
             />
           )}
         </TouchableOpacity>
-      </View>
+      </ViewThemed>
 
       {(isAnalyzing || isCheckingDuplicate) && (
-        <View style={wordInputStyles.loadingContainer}>
+        <ViewThemed style={wordInputStyles.loadingContainer}>
           <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
-          <Text style={wordInputStyles.loadingText}>
+          <TextThemed style={wordInputStyles.loadingText}>
             {isCheckingDuplicate
               ? 'Checking for duplicates...'
               : 'Analyzing word with AI...'}
-          </Text>
-        </View>
+          </TextThemed>
+        </ViewThemed>
       )}
-    </View>
+    </ViewThemed>
   )
 }
