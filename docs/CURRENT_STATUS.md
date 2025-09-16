@@ -185,7 +185,7 @@ DutchLearningApp/
   - Images displayed in Add Word analysis and Review flashcards
   - Secure API key management through Supabase secrets
 
-## 🚀 CURRENT WORK (Phase 4 - Enhanced Learning Experience)
+## ✅ COMPLETED: Phase 3.1 - Review & Analysis UI Enhancements (September 16, 2025)
 
 ### 1. Database Clean-up ✅ COMPLETED
 
@@ -199,20 +199,82 @@ DutchLearningApp/
 - [x] **Image Associations**: Unsplash integration for word visuals ✅
 - [x] **Toast Notification System**: Centralized toast management with enums ✅
 - [x] **Duplicate Word Prevention**: Pre-analysis duplicate checking ✅
-- [ ] Audio/TTS integration for pronunciation
-- [ ] Offline mode and data synchronization
-- [ ] Advanced SRS analytics and progress tracking
-- [ ] Collection sharing and import/export
 
-### 3. Phase 3.1: Review & Analysis UI Enhancements 📋 IN PROGRESS
+### 3. Phase 3.1: Review & Analysis UI Enhancements ✅ COMPLETED
 
-- [ ] **Swipe Navigation in Review**: Add left/right swipe gestures for card navigation
+- [x] **Swipe Navigation in Review**: Left/right swipe gestures for card navigation ✅
+  - Implementation: `review.tsx:41,164` with `panGesture()` and `GestureDetector`
+  - Users can swipe between review cards naturally
 - [x] **Image Management in Review**: Allow changing images on back side without card flip ✅
-- [ ] **Collection Swipe Navigation**: Add swipe gestures to navigate between multiple collections
-- [ ] **Word Detail View**: Add tap-to-view functionality for individual words showing stored analysis data
-- [ ] **Analysis Screen Optimization**: Maximize analysis info display, minimize other components
-- [ ] **Contextual Image Search**: Add word/phrase input for more relevant image suggestions
-- [ ] **Future: Word Type Selection**: Multiple word meanings selection (e.g., "koop" as noun vs verb)
+- [x] **Word Detail View**: Tap-to-view functionality for individual words ✅
+  - Implementation: `collection/[id].tsx:62,147` - tap opens `WordDetailModal`
+  - Double-tap in review mode: `review.tsx:60,155` for detailed word analysis
+- [x] **Analysis Screen Optimization**: Maximized analysis info display ✅
+  - Implementation: `AddWordScreen.tsx:156-180` - optimized screen real estate
+  - Minimized non-essential components, focus on AI analysis data
+- [x] **Contextual Image Search**: Word/phrase input for relevant image suggestions ✅
+  - Implementation: `ImageSelector.tsx:39-49` using `englishTranslation`, `partOfSpeech`, `examples`
+  - Edge Function `get-multiple-images` provides contextually relevant images
+- [x] **Additional UI Enhancements**: Comprehensive swipe and gesture system ✅
+  - Swipe-to-delete words in collections (`SwipeableWordItem`)
+  - Pull-to-refresh in collections and review screens
+  - Gesture-based navigation throughout the app
+
+## 🚀 CURRENT WORK (Phase 4.0 - Access Control & Smart Analysis)
+
+### 1. Tiered Access Control System 📋 PLANNED
+
+- [ ] **Email Allowlist Table**: Create `email_allowlist` table for pre-approved users
+- [ ] **Access Levels**: Implement `full` and `read_only` access tiers
+- [ ] **Auto-Assignment**: Trigger to set access level upon user registration
+- [ ] **Database Schema**: Add `access_level` field to users table
+- [ ] **RLS Policies**: Restrict AI analysis and content creation to full access users
+
+### 2. Smart Word Analysis Cache 📋 PLANNED
+
+- [ ] **Cross-User Word Search**: Check existing words from all users before AI analysis
+- [ ] **Cache Hit Detection**: Identify when analysis already exists in database
+- [ ] **Force Re-Analysis Option**: Allow manual AI re-analysis with improved prompts
+- [ ] **API Cost Optimization**: Reduce Gemini API calls through intelligent caching
+- [ ] **Cache Statistics**: Track cache hit rate and API savings
+
+### 3. Read-Only User Experience 📋 PLANNED
+
+- [ ] **Limited Add Word Screen**: Show import-only interface for read-only users
+- [ ] **Collection Import Focus**: Replace creation buttons with import functionality
+- [ ] **Disabled Image Editing**: Remove image change options for read-only users
+- [ ] **Access Level Awareness**: Adapt UI based on user's access level
+- [ ] **Upgrade Messaging**: Inform read-only users about full access benefits
+
+### 4. Review Screen Info Button 📋 PLANNED
+
+- [ ] **Minimal Info Button**: Add small info icon to review screen header
+- [ ] **Word Details Modal**: Show collection name, SRS data, and next review date
+- [ ] **Non-Intrusive Design**: Preserve focus on learning without screen clutter
+- [ ] **Context Information**: Display word metadata without disrupting flow
+
+## ⏳ FUTURE PHASES
+
+### Phase 4.1: Collection Sharing & Word Management
+
+- [ ] **Share Collection Button**: Add header action button for sharing collections
+- [ ] **Share Code Generation**: Create unique 8-character codes (e.g., ABC123XY)
+- [ ] **Context Menu System**: Long press on words for management actions
+- [ ] **Deep Link Handling**: Process `dutchapp://share/[code]` URLs
+- [ ] **Selective Word Import**: Choose which words to import and target collection
+
+### Phase 5: Gamification & Motivation
+
+- [ ] **Streak System**: Track consecutive days of study
+- [ ] **Daily Goals**: User-defined daily word review targets
+- [ ] **Achievement System**: Badges and milestones for learning progress
+- [ ] **Progress Dashboard**: Visual statistics and learning analytics
+
+### Phase 6: Advanced Features
+
+- [ ] **Advanced Practice Modes**: Typing tests, listening quizzes
+- [ ] **Offline Mode**: Data synchronization capabilities
+- [ ] **Advanced SRS Analytics**: Detailed progress tracking
 
 ### 3. Production Readiness (Future)
 

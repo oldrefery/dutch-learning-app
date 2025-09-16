@@ -75,28 +75,78 @@ This document outlines the development of the Dutch Learning App in distinct pha
   - **Create Collections:** ✅ Allow creating and naming multiple collections
   - **Delete Collections:** ✅ Allow deleting collections with confirmation
 
-### **Phase 3.1: Review & Analysis UI Enhancements** 🔄 IN PROGRESS
+### **✅ Phase 3.1: Review & Analysis UI Enhancements (COMPLETED September 16, 2025)**
 
 **Goal:** Improve user experience in review sessions and word analysis.
 
-- **Review Session Improvements:**
-  - **Swipe Navigation:** Add left/right swipe gestures to navigate between review cards
-  - **Image Management in Review:** ✅ Allow changing images on the back side of review cards without flipping the card
-- **Collection View Enhancements:**
-  - **Collection Swipe Navigation:** Add swipe gestures to navigate between multiple collections
-  - **Word Detail View:** Add tap-to-view functionality for individual words showing stored analysis data
-- **Analysis Screen Optimization:**
-  - **Maximize Analysis Information:** Optimize UI to show maximum analysis information on screen
-  - **Minimize Other Components:** Reduce space occupied by non-essential components
-  - **Better Space Utilization:** Improve overall screen real estate usage
-- **Image Selection Enhancement:**
-  - **Contextual Image Search:** Add ability to input words/phrases to generate more relevant image suggestions
-  - **Improved Relevance:** Enhance image selection algorithm for better contextual matches
-- **Future: Word Type Selection:**
-  - **Multiple Word Meanings:** Allow selection of specific word types (e.g., "koop" as noun vs verb)
-  - **Precise Word Addition:** Enable more accurate word categorization during addition
+- **Review Session Improvements:** ✅ COMPLETED
+  - **Swipe Navigation:** ✅ Left/right swipe gestures implemented for review card navigation
+    - Implementation: `review.tsx:41,164` with `panGesture()` and `GestureDetector`
+  - **Image Management in Review:** ✅ Allow changing images on the back side without flipping the card
+- **Collection View Enhancements:** ✅ COMPLETED
+  - **Word Detail View:** ✅ Tap-to-view functionality for individual words implemented
+    - Implementation: `collection/[id].tsx:62,147` - tap opens `WordDetailModal`
+    - Double-tap in review: `review.tsx:60,155` for detailed word analysis
+- **Analysis Screen Optimization:** ✅ COMPLETED
+  - **Maximize Analysis Information:** ✅ UI optimized to show maximum AI analysis data
+    - Implementation: `AddWordScreen.tsx:156-180` - optimized screen real estate
+  - **Minimize Other Components:** ✅ Non-essential components minimized
+  - **Better Space Utilization:** ✅ Improved overall screen usage
+- **Image Selection Enhancement:** ✅ COMPLETED
+  - **Contextual Image Search:** ✅ Word/phrase input for relevant image suggestions implemented
+    - Implementation: `ImageSelector.tsx:39-49` using context data
+    - Edge Function `get-multiple-images` provides contextually relevant images
+  - **Improved Relevance:** ✅ Enhanced image selection with context matching
+- **Additional UI Enhancements:** ✅ COMPLETED
+  - **Comprehensive Gesture System:** ✅ Swipe-to-delete, pull-to-refresh throughout app
+  - **Enhanced Navigation:** ✅ Gesture-based navigation system implemented
 
-### **Phase 4: Gamification & Motivation**
+### **Phase 4.0: Access Control & Smart Analysis (CURRENT PHASE)**
+
+**Goal:** Implement tiered access control and smart word analysis caching to control API costs while enabling broader user access.
+
+- **Tiered Access Control System:**
+  - **Email Pre-Approval:** Pre-register email addresses with access levels
+  - **Full Access Users:** Can create words, collections, use AI analysis, change images
+  - **Read-Only Users:** Can import shared collections and learn, but cannot create content
+  - **Automatic Access Assignment:** Users get appropriate access level upon registration
+  - **API Cost Protection:** Only full access users consume Gemini API quota
+
+- **Smart Word Analysis Cache:**
+  - **Cross-User Word Search:** Check existing words from all users before AI analysis
+  - **Cache Hit Notifications:** Show when using existing analysis to save API calls
+  - **Force Re-Analysis Option:** Allow manual AI re-analysis for improved prompts
+  - **Seamless Integration:** Use existing words table as analysis cache
+
+- **Review Screen Enhancements:**
+  - **Info Button:** Minimal info button in header for word details
+  - **Word Context Modal:** Show collection name, SRS data, next review date
+  - **Non-Intrusive Design:** Preserve focus on learning process
+
+### **Phase 4.1: Collection Sharing & Word Management**
+
+**Goal:** Enable users to share collections and better manage their words across collections.
+
+- **Collection Sharing System:**
+  - **Share Collection:** Add header button to generate shareable links
+  - **Share Code Generation:** Create unique codes for collection sharing
+  - **Import Preview:** Screen to preview shared collections before importing
+  - **Selective Import:** Choose which words to import and target collection
+  - **Deep Links:** Handle `dutchapp://share/[code]` and web URLs
+
+- **Enhanced Word Management:**
+  - **Context Menu System:** Long press on words for management actions
+  - **Move Words:** Transfer words between existing collections
+  - **Copy Words:** Duplicate words to multiple collections (separate SRS progress)
+  - **Unified Actions:** Remove swipe-to-delete, use consistent context menus
+  - **Collection Actions:** Move Share/Delete to header actions (platform-compliant)
+
+- **UX Improvements:**
+  - **Platform-Native Patterns:** Follow iOS HIG and Material Design guidelines
+  - **Accessibility:** Screen reader friendly action labels
+  - **Consistent Interactions:** Unified gesture patterns across the app
+
+### **Phase 5: Gamification & Motivation**
 
 **Goal:** Introduce elements that encourage daily use and long-term engagement.
 
@@ -107,7 +157,7 @@ This document outlines the development of the Dutch Learning App in distinct pha
   - Create a simple dashboard or stats screen showing basic progress (total words learned, streak count, etc.).
   - Implement achievements/badges for milestones (e.g., "First 100 words learned").
 
-### **Phase 5: Scaling & User Management**
+### **Phase 6: Scaling & User Management**
 
 **Goal:** Prepare the app for multiple users and add advanced features.
 
@@ -123,7 +173,7 @@ This document outlines the development of the Dutch Learning App in distinct pha
   - Use a local or cloud-based OCR library to extract text.
   - Allow the user to tap on extracted words to add them to their collections via the AI flow.
 
-### **Phase 6 & 7: Future Vision (The "Wow" Features)**
+### **Phase 7 & 8: Future Vision (The "Wow" Features)**
 
 **Goal:** Implement unique features that set the app apart from competitors.
 
