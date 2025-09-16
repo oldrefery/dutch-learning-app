@@ -4,7 +4,7 @@ import { ToastService } from '@/components/AppToast'
 import { router } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
-import { useAppStore } from '@/stores/useAppStore'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import CreateCollectionModal from '@/components/CreateCollectionModal'
 import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
 import StatsCard from '@/components/StatsCard'
@@ -22,7 +22,7 @@ export default function CollectionsScreen() {
     error,
     clearError,
     deleteCollection,
-  } = useAppStore()
+  } = useApplicationStore()
 
   const handleCollectionPress = (collection: Collection) => {
     router.push(`/collection/${collection.collection_id}`)

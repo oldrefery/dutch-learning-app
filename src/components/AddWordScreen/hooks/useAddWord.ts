@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
-import { useAppStore } from '@/stores/useAppStore'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useCollections } from '@/hooks/useCollections'
 import type { Collection, GeminiWordAnalysis } from '@/types/database'
 
@@ -11,7 +11,7 @@ export const useAddWord = () => {
     useState<Collection | null>(null)
   const [showImageSelector, setShowImageSelector] = useState(false)
 
-  const { saveAnalyzedWord, clearError } = useAppStore()
+  const { saveAnalyzedWord, clearError } = useApplicationStore()
   const { collections } = useCollections()
 
   // Auto-select the first collection if available and none selected

@@ -9,7 +9,7 @@ import { useAudioPlayer } from './hooks/useAudioPlayer'
 import { useWordAnalysis } from './hooks/useWordAnalysis'
 import { useAddWord } from './hooks/useAddWord'
 import { useCollections } from '@/hooks/useCollections'
-import { useAppStore } from '@/stores/useAppStore'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import { wordService } from '@/lib/supabase'
 import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
@@ -20,7 +20,7 @@ export function AddWordScreen() {
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
 
-  const { currentUserId } = useAppStore()
+  const { currentUserId } = useApplicationStore()
   const { isPlayingAudio, playPronunciation } = useAudioPlayer()
   const {
     isAnalyzing,

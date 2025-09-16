@@ -31,7 +31,7 @@ src/                   # Source code root
 │   └── ...
 │
 ├── stores/            # State management (Zustand)
-│   └── useAppStore.ts
+│   └── useApplicationStore.ts
 │
 ├── lib/               # Utility libraries
 │   ├── supabaseClient.ts # Supabase client configuration

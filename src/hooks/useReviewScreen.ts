@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useAppStore } from '@/stores/useAppStore'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import { createAudioPlayer, AudioPlayer } from 'expo-audio'
 import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
@@ -22,7 +22,7 @@ export const useReviewScreen = () => {
     reviewLoading,
     goToNextWord,
     goToPreviousWord,
-  } = useAppStore()
+  } = useApplicationStore()
 
   const [audioPlayer, setAudioPlayer] = useState<AudioPlayer | null>(null)
   const [isFlipped, setIsFlipped] = useState(false)
@@ -95,7 +95,7 @@ export const useReviewScreen = () => {
       setIsLoading(true)
       try {
         // Get the store actions
-        const store = useAppStore.getState()
+        const store = useApplicationStore.getState()
 
         // Call submitReviewAssessment directly with the correct assessment
         await store.submitReviewAssessment({

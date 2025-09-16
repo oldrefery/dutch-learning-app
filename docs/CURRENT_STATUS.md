@@ -54,7 +54,7 @@ DutchLearningApp/
 │   ├── lib/
 │   │   └── supabase.ts                ✅ Supabase client & services
 │   ├── stores/
-│   │   └── useAppStore.ts             ✅ Zustand state management
+│   │   └── useApplicationStore.ts     ✅ Zustand state management
 │   ├── types/
 │   │   └── database.ts                ✅ TypeScript definitions
 │   └── utils/
@@ -114,7 +114,7 @@ DutchLearningApp/
 
 - **Supabase Client**: Connected and configured (`src/lib/supabase.ts`)
 - **TypeScript Types**: Complete type definitions (`src/types/database.ts`)
-- **State Management**: Zustand store setup (`src/stores/useAppStore.ts`)
+- **State Management**: Zustand store setup (`src/stores/useApplicationStore.ts`)
 - **SRS Algorithm**: Implemented spaced repetition logic (`src/utils/srs.ts`)
 - **Constants System**: Centralized colors and config (`src/constants/`)
 - **App Tested**: Expo dev server running successfully

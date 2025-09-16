@@ -1,11 +1,11 @@
 import { wordService } from '@/lib/supabase'
-import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
+import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import type {
   StoreSetFunction,
   StoreGetFunction,
   AnalyzedWord,
   ReviewAssessment,
-} from '@/types/AppStoreTypes'
+} from '@/types/ApplicationStoreTypes'
 import type { GeminiWordAnalysis } from '@/types/database'
 
 const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
@@ -28,7 +28,8 @@ export const createWordActions = (
       console.error('Error fetching words:', error)
       set({
         error: {
-          message: APP_STORE_CONSTANTS.ERROR_MESSAGES.WORDS_FETCH_FAILED,
+          message:
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.WORDS_FETCH_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
         wordsLoading: false,
@@ -58,7 +59,7 @@ export const createWordActions = (
       console.error('Error adding word:', error)
       set({
         error: {
-          message: APP_STORE_CONSTANTS.ERROR_MESSAGES.WORD_ADD_FAILED,
+          message: APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.WORD_ADD_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })

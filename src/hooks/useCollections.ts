@@ -1,4 +1,4 @@
-import { useAppStore } from '@/stores/useAppStore'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Collection } from '@/types/database'
 
 export interface UseCollectionsReturn {
@@ -14,7 +14,7 @@ export function useCollections(): UseCollectionsReturn {
     collectionsLoading,
     fetchCollections,
     createNewCollection,
-  } = useAppStore()
+  } = useApplicationStore()
 
   return {
     collections,

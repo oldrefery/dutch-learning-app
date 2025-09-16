@@ -1,4 +1,4 @@
-import { useAppStore } from '@/stores/useAppStore'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word, ReviewSession } from '@/types/database'
 
 export interface UseReviewSessionReturn {
@@ -13,7 +13,7 @@ export interface UseReviewSessionReturn {
 }
 
 export function useReviewSession(): UseReviewSessionReturn {
-  const { reviewSession, currentWord, reviewLoading } = useAppStore()
+  const { reviewSession, currentWord, reviewLoading } = useApplicationStore()
 
   const reviewWords = reviewSession?.words || []
   const currentIndex = reviewSession?.currentIndex || 0

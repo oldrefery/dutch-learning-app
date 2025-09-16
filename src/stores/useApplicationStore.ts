@@ -1,11 +1,11 @@
 import { create } from 'zustand'
-import type { AppState } from '@/types/AppStoreTypes'
+import type { ApplicationState } from '@/types/ApplicationStoreTypes'
 import { createWordActions } from './actions/wordActions'
 import { createCollectionActions } from './actions/collectionActions'
 import { createReviewActions } from './actions/reviewActions'
 import { createAppInitializationActions } from './actions/appInitializationActions'
 
-export const useAppStore = create<AppState>((set, get) => {
+export const useApplicationStore = create<ApplicationState>((set, get) => {
   return {
     // Initial state
     currentUserId: null,

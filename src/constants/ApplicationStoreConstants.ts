@@ -1,4 +1,4 @@
-export const APP_STORE_CONSTANTS = {
+export const APPLICATION_STORE_CONSTANTS = {
   // Error messages
   ERROR_MESSAGES: {
     APP_INITIALIZATION_FAILED: 'Failed to initialize app',

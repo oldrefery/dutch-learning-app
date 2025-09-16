@@ -18,7 +18,7 @@ import { useImageSelector } from '@/hooks/useImageSelector'
 import { useReviewSession } from '@/hooks/useReviewSession'
 import { reviewScreenStyles } from '@/styles/ReviewScreenStyles'
 import { Colors } from '@/constants/Colors'
-import { useAppStore } from '@/stores/useAppStore'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word } from '@/types/database'
 
 export default function ReviewScreen() {
@@ -53,7 +53,9 @@ export default function ReviewScreen() {
   } = useReviewSession()
 
   // Get startReviewSession from store
-  const startReviewSession = useAppStore(state => state.startReviewSession)
+  const startReviewSession = useApplicationStore(
+    state => state.startReviewSession
+  )
 
   const handleWordPress = () => {
     if (currentWord) {

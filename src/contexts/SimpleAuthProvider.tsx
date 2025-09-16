@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import { router } from 'expo-router'
 import { supabase } from '@/lib/supabaseClient'
-import { useAppStore } from '@/stores/useAppStore'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { LoginCredentials, SignupCredentials } from '@/types/AuthTypes'
 
 interface SimpleAuthState {
@@ -34,7 +34,7 @@ export function SimpleAuthProvider({
 }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const initializeApp = useAppStore(state => state.initializeApp)
+  const initializeApp = useApplicationStore(state => state.initializeApp)
 
   const testSignUp = async (credentials: SignupCredentials) => {
     try {

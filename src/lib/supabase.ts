@@ -2,7 +2,7 @@ import 'react-native-url-polyfill/auto'
 import { supabase } from './supabaseClient'
 import { calculateNextReview } from '@/utils/srs'
 import type { Word } from '@/types/database'
-import type { ReviewAssessment } from '@/types/AppStoreTypes'
+import type { ReviewAssessment } from '@/types/ApplicationStoreTypes'
 import { SRS_PARAMS } from '@/constants/SRSConstants'
 
 // Load environment variables

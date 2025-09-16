@@ -11,7 +11,7 @@ import type {
 
 export type { AppError }
 
-export interface AppState {
+export interface ApplicationState {
   // User data
   currentUserId: string | null
 
@@ -96,10 +96,10 @@ export interface AnalyzedWord {
 }
 
 export interface StoreSetFunction {
-  (partial: Partial<AppState>): void
-  (fn: (state: AppState) => Partial<AppState>): void
+  (partial: Partial<ApplicationState>): void
+  (fn: (state: ApplicationState) => Partial<ApplicationState>): void
 }
 
 export interface StoreGetFunction {
-  (): AppState
+  (): ApplicationState
 }

@@ -10,7 +10,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
 import { TextThemed, ViewThemed } from '@/components/Themed'
-import { useAppStore } from '@/stores/useAppStore'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import { Colors } from '@/constants/Colors'
 import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
@@ -25,7 +25,7 @@ export default function CollectionDetailScreen() {
   const [modalVisible, setModalVisible] = useState(false)
 
   const { words, collections, fetchWords, fetchCollections, deleteWord } =
-    useAppStore()
+    useApplicationStore()
 
   const collection = collections.find(c => c.collection_id === id)
   const collectionWords = words

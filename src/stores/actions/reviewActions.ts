@@ -1,11 +1,11 @@
 import { wordService } from '@/lib/supabase'
-import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
+import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 import type {
   StoreSetFunction,
   StoreGetFunction,
   ReviewAssessment,
-} from '@/types/AppStoreTypes'
+} from '@/types/ApplicationStoreTypes'
 
 export const createReviewActions = (
   set: StoreSetFunction,
@@ -55,7 +55,8 @@ export const createReviewActions = (
       set({
         error: {
           message:
-            APP_STORE_CONSTANTS.ERROR_MESSAGES.REVIEW_SESSION_START_FAILED,
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+              .REVIEW_SESSION_START_FAILED,
           details: error instanceof Error ? error.message : 'Unknown error',
         },
         reviewLoading: false,
@@ -106,7 +107,8 @@ export const createReviewActions = (
       set({
         error: {
           message:
-            APP_STORE_CONSTANTS.ERROR_MESSAGES.REVIEW_ASSESSMENT_SUBMIT_FAILED,
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+              .REVIEW_ASSESSMENT_SUBMIT_FAILED,
           details: error instanceof Error ? error.message : 'Unknown error',
         },
       })

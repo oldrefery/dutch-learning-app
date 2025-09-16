@@ -1,6 +1,9 @@
 import { collectionService } from '@/lib/supabase'
-import { APP_STORE_CONSTANTS } from '@/constants/AppStoreConstants'
-import type { StoreSetFunction, StoreGetFunction } from '@/types/AppStoreTypes'
+import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
+import type {
+  StoreSetFunction,
+  StoreGetFunction,
+} from '@/types/ApplicationStoreTypes'
 
 const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
 const UNKNOWN_ERROR = 'Unknown error'
@@ -22,7 +25,8 @@ export const createCollectionActions = (
       console.error('Error fetching collections:', error)
       set({
         error: {
-          message: APP_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTIONS_FETCH_FAILED,
+          message:
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTIONS_FETCH_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
         collectionsLoading: false,
@@ -47,7 +51,8 @@ export const createCollectionActions = (
       console.error('Error creating collection:', error)
       set({
         error: {
-          message: APP_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_CREATE_FAILED,
+          message:
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_CREATE_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
@@ -71,7 +76,8 @@ export const createCollectionActions = (
       console.error('Error deleting collection:', error)
       set({
         error: {
-          message: APP_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_DELETE_FAILED,
+          message:
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_DELETE_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
