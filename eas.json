@@ -23,7 +23,6 @@
     },
     "production": {
       "autoIncrement": true,
-      "autoSubmit": true,
       "ios": {
         "simulator": false
       }

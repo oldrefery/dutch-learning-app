@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import { StyleSheet, TouchableOpacity, Alert, Button } from 'react-native'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ViewThemed, TextThemed } from '@/components/Themed'
@@ -41,6 +41,13 @@ export default function SettingsScreen() {
             Manage your account and app preferences
           </TextThemed>
         </ViewThemed>
+
+        <Button
+          title="Test Crash"
+          onPress={() => {
+            throw new Error('Test crash for Sentry')
+          }}
+        />
 
         <ViewThemed style={styles.section}>
           <TextThemed style={styles.sectionTitle}>Account</TextThemed>
