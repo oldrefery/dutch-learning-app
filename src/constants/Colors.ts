@@ -30,6 +30,8 @@ const colorPalette = {
   success: {
     DEFAULT: '#10B981',
     light: '#ECFDF5',
+    lightest: '#F0FDF4',
+    border: '#BBF7D0',
   },
 
   warning: {
@@ -41,6 +43,7 @@ const colorPalette = {
   error: {
     DEFAULT: '#EF4444',
     light: '#FEF2F2',
+    lightest: '#FEF2F2',
     border: '#FECACA',
   },
 
@@ -106,9 +109,18 @@ const themes = {
   },
 }
 
+// Add text color objects to match usage in components
+const textColors = {
+  text: {
+    primary: colorPalette.neutral[900],
+    secondary: colorPalette.neutral[600],
+  },
+}
+
 // Single named export with both palette and themes
 export const Colors = {
   ...colorPalette,
+  ...textColors,
   ...themes,
 }
 

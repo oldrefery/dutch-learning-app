@@ -21,6 +21,12 @@ export interface WordExample {
   ru?: string
 }
 
+export interface WordConjugation {
+  present: string
+  simple_past: string
+  past_participle: string
+}
+
 export interface Word {
   word_id: string
   user_id: string
@@ -36,8 +42,13 @@ export interface Word {
   prefix_part: string | null // The prefix part (op, aan, uit, etc.)
   root_verb: string | null // The root verb part (geven, komen, gaan)
   article: 'de' | 'het' | null // Article for nouns
+  plural: string | null // Plural form for nouns
   translations: WordTranslations
   examples: WordExample[] | null
+  synonyms: string[]
+  antonyms: string[]
+  conjugation: WordConjugation | null // Verb conjugation forms
+  preposition: string | null // Fixed preposition (e.g., "van" for "genieten van")
   image_url: string | null
   tts_url: string
   // SRS fields

@@ -1,0 +1,7 @@
+export { HeaderSection } from './HeaderSection'
+export { TranslationsSection } from './TranslationsSection'
+export { ExamplesSection } from './ExamplesSection'
+export { ImageSection } from './ImageSection'
+export { SynonymsAntonymsSection } from './SynonymsAntonymsSection'
+export { ConjugationSection } from './ConjugationSection'
+export { ActionsSection } from './ActionsSection'
