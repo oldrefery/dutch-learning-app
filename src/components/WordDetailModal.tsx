@@ -25,6 +25,8 @@ interface WordDetailModalProps {
   visible: boolean
   onClose: () => void
   word: Word | null
+  onChangeImage?: () => void
+  onDeleteWord?: () => void
 }
 
 const { height: screenHeight } = Dimensions.get('window')
@@ -33,6 +35,8 @@ export default function WordDetailModal({
   visible,
   onClose,
   word,
+  onChangeImage,
+  onDeleteWord,
 }: WordDetailModalProps) {
   const translateY = useSharedValue(screenHeight)
   const backdropOpacity = useSharedValue(0)
@@ -169,7 +173,11 @@ export default function WordDetailModal({
                     ...WordCardPresets.modal.config,
                     scrollable: false, // Modal handles scrolling
                   }}
-                  actions={WordCardPresets.modal.actions}
+                  actions={{
+                    ...WordCardPresets.modal.actions,
+                    onDelete: onDeleteWord,
+                  }}
+                  onChangeImage={onChangeImage}
                 />
               </Animated.ScrollView>
             </GestureDetector>

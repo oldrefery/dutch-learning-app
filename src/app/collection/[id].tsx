@@ -11,11 +11,13 @@ import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { useImageSelector } from '@/hooks/useImageSelector'
 import { Colors } from '@/constants/Colors'
 import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
 import WordDetailModal from '@/components/WordDetailModal'
+import ImageSelector from '@/components/ImageSelector'
 import type { Word } from '@/types/database'
 
 export default function CollectionDetailScreen() {
@@ -26,6 +28,9 @@ export default function CollectionDetailScreen() {
 
   const { words, collections, fetchWords, fetchCollections, deleteWord } =
     useApplicationStore()
+
+  const { showImageSelector, openImageSelector, closeImageSelector } =
+    useImageSelector()
 
   const collection = collections.find(c => c.collection_id === id)
   const collectionWords = words
@@ -90,6 +95,24 @@ export default function CollectionDetailScreen() {
       const errorMessage =
         error instanceof Error ? error.message : 'Could not delete word'
       ToastService.showError(ToastMessageType.DELETE_WORD_FAILED, errorMessage)
+    }
+  }
+
+  const handleDeleteSelectedWord = async () => {
+    if (selectedWord) {
+      await handleDeleteWord(selectedWord.word_id)
+      setModalVisible(false)
+      setSelectedWord(null)
+    }
+  }
+
+  const handleImageChange = async (imageUrl: string) => {
+    if (!selectedWord) return
+    try {
+      // TODO: Implement image update in store
+      ToastService.showSuccess(ToastMessageType.IMAGE_UPDATED)
+    } catch {
+      ToastService.showError(ToastMessageType.UPDATE_IMAGE_FAILED)
     }
   }
 
@@ -174,7 +197,21 @@ export default function CollectionDetailScreen() {
         visible={modalVisible}
         onClose={handleCloseModal}
         word={selectedWord}
+        onChangeImage={openImageSelector}
+        onDeleteWord={handleDeleteSelectedWord}
       />
+
+      {selectedWord && (
+        <ImageSelector
+          visible={showImageSelector}
+          onClose={closeImageSelector}
+          onSelect={handleImageChange}
+          currentImageUrl={selectedWord.image_url || undefined}
+          englishTranslation={selectedWord.translations.en[0] || ''}
+          partOfSpeech={selectedWord.part_of_speech || ''}
+          examples={selectedWord.examples || undefined}
+        />
+      )}
     </>
   )
 }

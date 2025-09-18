@@ -317,6 +317,8 @@ export default function ReviewScreen() {
         visible={modalVisible}
         onClose={handleCloseModal}
         word={selectedWord}
+        onChangeImage={openImageSelector}
+        onDeleteWord={handleDeleteWord}
       />
     </ViewThemed>
   )

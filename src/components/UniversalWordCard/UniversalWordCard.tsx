@@ -17,7 +17,7 @@ import {
   ActionsSection,
 } from './sections'
 
-// Default configuration - максимальная информация
+// Default configuration
 const FULL_CONFIG: WordCardConfig = {
   showHeader: true,
   showTranslations: true,
@@ -55,7 +55,7 @@ export function UniversalWordCard({
     return null
   }
 
-  // Merge with full config - максимальная информация по умолчанию
+  // Merge with full config
   const finalConfig = { ...FULL_CONFIG, ...config }
   const finalActions = { ...DEFAULT_ACTIONS, ...actions }
 
@@ -101,59 +101,61 @@ export function UniversalWordCard({
   return <ViewThemed style={[styles.container, style]}>{content}</ViewThemed>
 }
 
-// Preset configurations - показывают только отличия от FULL_CONFIG
+// Preset configurations
 export const WordCardPresets = {
-  // Полная конфигурация (по умолчанию) - максимальная информация
+  // Full configuration (default)
   full: {
-    config: {}, // Без изменений = максимальная информация
+    config: {},
     actions: {},
   },
 
-  // For word detail modal (from collections) - добавляем прогресс и статус
+  // For word detail modal (from collections)
   modal: {
     config: {
       scrollable: false, // Modal handles scrolling
+      enableImageChange: true,
     },
     actions: {
-      showProgressInfo: true, // + прогресс обучения
-      showStatusInfo: true, // + статус следующего повтора
+      showProgressInfo: true,
+      showStatusInfo: true,
+      showDeleteButton: true,
     },
   },
 
-  // For word analysis (add word screen) - добавляем проверку дубликатов
+  // For word analysis (add word screen)
   analysis: {
-    config: {}, // Максимальная информация
+    config: {},
     actions: {
-      showDuplicateCheck: true, // + проверка дубликатов
-      showSaveButton: true, // + кнопка сохранения
+      showDuplicateCheck: true,
+      showSaveButton: true,
     },
   },
 
-  // For review card back - убираем лишнее для фокуса на изучении
+  // For review card back
   review: {
     config: {
-      showSynonyms: false, // - убираем синонимы (отвлекают)
-      showAntonyms: false, // - убираем антонимы (отвлекают)
-      showGrammarInfo: false, // - убираем грамматику (уже на лицевой стороне)
-      showConjugation: false, // - убираем спряжения (слишком много)
-      compact: false, // + используем полный размер для review
+      showSynonyms: false,
+      showAntonyms: false,
+      showGrammarInfo: false,
+      showConjugation: false,
+      compact: false,
     },
     actions: {
-      showDeleteButton: true, // + кнопка удаления
+      showDeleteButton: true,
     },
   },
 
-  // Compact version for lists - минимум информации
+  // Compact version for lists
   compact: {
     config: {
-      showExamples: false, // - убираем примеры
-      showImage: false, // - убираем изображение
-      showSynonyms: false, // - убираем синонимы
-      showAntonyms: false, // - убираем антонимы
-      showConjugation: false, // - убираем спряжения
-      enableImageChange: false, // - запрещаем смену картинок
-      scrollable: false, // - без скролла
-      compact: true, // + компактный вид
+      showExamples: false,
+      showImage: false,
+      showSynonyms: false,
+      showAntonyms: false,
+      showConjugation: false,
+      enableImageChange: false,
+      scrollable: false,
+      compact: true,
     },
     actions: {},
   },
