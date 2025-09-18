@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
+import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { Colors } from '@/constants/Colors'
 import type { ReviewCardProps } from './types'
 
@@ -97,13 +98,15 @@ export function WordHeader({
           {currentWord.article ? `${currentWord.article} ` : ''}
           {currentWord.dutch_lemma}
         </TextThemed>
-        <PronunciationButton
-          ref={pronunciationRef}
-          ttsUrl={currentWord.tts_url}
-          isPlayingAudio={isPlayingAudio}
-          onPress={onPlayPronunciation}
-          size="small"
-        />
+        <NonSwipeableArea>
+          <PronunciationButton
+            ref={pronunciationRef}
+            ttsUrl={currentWord.tts_url}
+            isPlayingAudio={isPlayingAudio}
+            onPress={onPlayPronunciation}
+            size="small"
+          />
+        </NonSwipeableArea>
       </ViewThemed>
 
       <ViewThemed style={styles.metadataRow}>

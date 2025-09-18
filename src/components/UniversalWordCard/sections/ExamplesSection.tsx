@@ -1,5 +1,6 @@
 import React from 'react'
 import { TextThemed, ViewThemed } from '@/components/Themed'
+import { SelectableText } from '@/components/SelectableText'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
 
@@ -30,33 +31,36 @@ export function ExamplesSection({ word, config }: WordSectionProps) {
             config.compact && styles.compactExampleCard,
           ]}
         >
-          <TextThemed
+          <SelectableText
             style={[
               styles.exampleDutch,
               config.compact && styles.compactExampleDutch,
             ]}
+            copyText={example.nl}
           >
             {example.nl}
-          </TextThemed>
+          </SelectableText>
 
-          <TextThemed
+          <SelectableText
             style={[
               styles.exampleTranslation,
               config.compact && styles.compactExampleTranslation,
             ]}
+            copyText={example.en}
           >
             🇬🇧 {example.en}
-          </TextThemed>
+          </SelectableText>
 
           {example.ru && (
-            <TextThemed
+            <SelectableText
               style={[
                 styles.exampleTranslation,
                 config.compact && styles.compactExampleTranslation,
               ]}
+              copyText={example.ru}
             >
               🇷🇺 {example.ru}
-            </TextThemed>
+            </SelectableText>
           )}
         </ViewThemed>
       ))}

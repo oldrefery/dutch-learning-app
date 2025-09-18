@@ -26,6 +26,11 @@ export const analysisResultStyles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  titleActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   resultTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -144,5 +149,10 @@ export const analysisResultStyles = StyleSheet.create({
     fontSize: 14,
     color: Colors.primary.DEFAULT,
     fontWeight: '500',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 })

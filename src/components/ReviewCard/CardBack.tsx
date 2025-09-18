@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, ScrollView, Alert, View } from 'react-native'
-import { Pressable } from 'react-native-gesture-handler'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
 import { WordHeader } from './WordHeader'
@@ -22,6 +23,31 @@ export function CardBack({
   onDeleteWord,
   pronunciationRef,
 }: CardBackPropsWithRef) {
+  const handleDeletePress = () => {
+    Alert.alert(
+      'Delete Word',
+      `Are you sure you want to delete "${currentWord.dutch_lemma}"?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: onDeleteWord,
+        },
+      ]
+    )
+  }
+
+  const deleteGesture = Gesture.Tap()
+    .onEnd(() => {
+      'worklet'
+      scheduleOnRN(handleDeletePress)
+    })
+    .blocksExternalGesture()
+
   return (
     <ScrollView style={styles.cardBack} showsVerticalScrollIndicator={false}>
       <WordHeader
@@ -38,29 +64,16 @@ export function CardBack({
       <ExamplesSection currentWord={currentWord} />
 
       {/* Delete Word Button */}
-      <Pressable
-        style={styles.deleteButton}
-        onPress={() => {
-          Alert.alert(
-            'Delete Word',
-            `Are you sure you want to delete "${currentWord.dutch_lemma}"?`,
-            [
-              {
-                text: 'Cancel',
-                style: 'cancel',
-              },
-              {
-                text: 'Delete',
-                style: 'destructive',
-                onPress: onDeleteWord,
-              },
-            ]
-          )
-        }}
-      >
-        <Ionicons name="trash-outline" size={20} color={Colors.error.DEFAULT} />
-        <TextThemed style={styles.deleteButtonText}>Delete Word</TextThemed>
-      </Pressable>
+      <GestureDetector gesture={deleteGesture}>
+        <View style={styles.deleteButton}>
+          <Ionicons
+            name="trash-outline"
+            size={20}
+            color={Colors.error.DEFAULT}
+          />
+          <TextThemed style={styles.deleteButtonText}>Delete Word</TextThemed>
+        </View>
+      </GestureDetector>
     </ScrollView>
   )
 }

@@ -1,4 +1,5 @@
 import type { Word } from '@/types/database'
+import React from 'react'
 
 // Shared props for review card components
 export interface ReviewCardProps {
@@ -6,7 +7,7 @@ export interface ReviewCardProps {
 }
 
 export interface PronunciationProps {
-  ttsUrl?: string
+  ttsUrl: string | null
   isPlayingAudio: boolean
   onPress: (url: string) => void
   size?: 'small' | 'normal'

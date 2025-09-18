@@ -7,7 +7,7 @@ import {
   Gesture,
   PanGestureHandlerEventPayload,
 } from 'react-native-gesture-handler'
-import { runOnJS } from 'react-native-reanimated'
+import { scheduleOnRN } from 'react-native-worklets'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 
 export const useReviewScreen = () => {
@@ -184,15 +184,34 @@ export const useReviewScreen = () => {
     return Gesture.Tap()
       .maxDuration(200) // Very short tap duration
       .maxDistance(5) // Very small movement allowed
+      .onBegin(() => {
+        'worklet'
+        console.log('🟢 TAP GESTURE: onBegin triggered')
+      })
+      .onStart(() => {
+        'worklet'
+        console.log('🟡 TAP GESTURE: onStart triggered')
+      })
       .onEnd(() => {
         'worklet'
-        if (!isScrolling) {
-          const now = Date.now()
-          if (now - lastTouchTime < 300) return // Prevent double tap
+        try {
+          console.log('🔴 TAP GESTURE: onEnd triggered')
+          if (!isScrolling) {
+            const now = Date.now()
+            if (now - lastTouchTime < 300) {
+              console.log('❌ TAP GESTURE: Prevented double tap')
+              return
+            }
 
-          runOnJS(setLastTouchTime)(now)
-          runOnJS(flipCard)()
-          runOnJS(setIsFlipped)(!isFlipped)
+            console.log('✅ TAP GESTURE: Flipping card')
+            scheduleOnRN(setLastTouchTime, now)
+            scheduleOnRN(flipCard)
+            scheduleOnRN(setIsFlipped, !isFlipped)
+          } else {
+            console.log('❌ TAP GESTURE: Prevented due to scrolling')
+          }
+        } catch (error) {
+          console.log('💥 TAP GESTURE: Error occurred:', error)
         }
       })
   }, [isScrolling, lastTouchTime, flipCard, isFlipped])
@@ -224,10 +243,10 @@ export const useReviewScreen = () => {
         if (Math.abs(event.translationX) > swipeThreshold) {
           if (event.translationX < -swipeThreshold) {
             // Swipe left - go to next word
-            runOnJS(goToNextWord)()
+            scheduleOnRN(goToNextWord)
           } else if (event.translationX > swipeThreshold) {
             // Swipe right - go to previous word
-            runOnJS(goToPreviousWord)()
+            scheduleOnRN(goToPreviousWord)
           }
         }
       })

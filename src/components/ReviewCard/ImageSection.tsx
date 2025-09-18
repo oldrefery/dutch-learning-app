@@ -1,5 +1,7 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Image, View } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { scheduleOnRN } from 'react-native-worklets'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors'
@@ -11,17 +13,23 @@ export function ImageSection({
 }: ImageSectionProps) {
   if (!currentWord.image_url) return null
 
+  const changeImageGesture = Gesture.Tap()
+    .onEnd(() => {
+      'worklet'
+      scheduleOnRN(onChangeImage)
+    })
+    .blocksExternalGesture()
+
   return (
     <ViewThemed style={styles.imageSection}>
       <ViewThemed style={styles.imageSectionHeader}>
         <TextThemed style={styles.sectionTitle}>🖼️ Visual</TextThemed>
-        <TouchableOpacity
-          style={styles.changeImageButton}
-          onPress={onChangeImage}
-        >
-          <Ionicons name="refresh" size={16} color={Colors.neutral[500]} />
-          <TextThemed style={styles.changeImageText}>Change</TextThemed>
-        </TouchableOpacity>
+        <GestureDetector gesture={changeImageGesture}>
+          <View style={styles.changeImageButton}>
+            <Ionicons name="refresh" size={16} color={Colors.neutral[500]} />
+            <TextThemed style={styles.changeImageText}>Change</TextThemed>
+          </View>
+        </GestureDetector>
       </ViewThemed>
       <Image
         source={{ uri: currentWord.image_url }}

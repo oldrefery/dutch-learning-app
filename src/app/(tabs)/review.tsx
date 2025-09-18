@@ -7,7 +7,7 @@ import {
   RefreshControl,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import { runOnJS } from 'react-native-reanimated'
+import { scheduleOnRN } from 'react-native-worklets'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import WordDetailModal from '@/components/WordDetailModal'
@@ -16,6 +16,7 @@ import {
   UniversalWordCard,
   WordCardPresets,
 } from '@/components/UniversalWordCard'
+import { GestureErrorBoundary } from '@/components/GestureErrorBoundary'
 import { useReviewScreen } from '@/hooks/useReviewScreen'
 import { useImageSelector } from '@/hooks/useImageSelector'
 import { useReviewSession } from '@/hooks/useReviewSession'
@@ -25,6 +26,8 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word } from '@/types/database'
 
 export default function ReviewScreen() {
+  console.log('🔍 REVIEW SCREEN: Component rendering')
+
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
@@ -44,6 +47,8 @@ export default function ReviewScreen() {
     panGesture,
   } = useReviewScreen()
 
+  console.log('🔍 REVIEW SCREEN: Hooks initialized, isFlipped:', isFlipped)
+
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
   const {
@@ -54,6 +59,15 @@ export default function ReviewScreen() {
     totalWords,
     currentWordNumber,
   } = useReviewSession()
+
+  console.log(
+    '🔍 REVIEW SCREEN: Session state - currentWord:',
+    currentWord?.dutch_lemma,
+    'isLoading:',
+    isLoading,
+    'sessionComplete:',
+    sessionComplete
+  )
 
   // Get startReviewSession from store
   const startReviewSession = useApplicationStore(
@@ -150,51 +164,95 @@ export default function ReviewScreen() {
   }
 
   const renderCard = () => {
-    if (!currentWord) return null
-
-    // Create double tap gesture with callback
-    const doubleTapWithCallback = Gesture.Tap()
-      .numberOfTaps(2)
-      .maxDuration(400)
-      .maxDistance(10)
-      .onEnd(() => {
-        'worklet'
-        runOnJS(handleWordPress)()
-      })
-
-    // Combine gestures - pan for swipe navigation, tap for card flip, double tap for word detail
-    const combinedGesture = Gesture.Exclusive(
-      panGesture(),
-      Gesture.Simultaneous(tapGesture(), doubleTapWithCallback)
+    console.log(
+      '🔍 RENDER CARD: Function called, currentWord:',
+      currentWord?.dutch_lemma
     )
 
-    return (
-      <GestureDetector gesture={combinedGesture}>
+    if (!currentWord) {
+      console.log('🔍 RENDER CARD: No currentWord, returning null')
+      return null
+    }
+
+    try {
+      console.log('🔍 RENDER CARD: Creating gestures...')
+
+      // Create double tap gesture with callback
+      const doubleTapWithCallback = Gesture.Tap()
+        .numberOfTaps(2)
+        .maxDuration(400)
+        .maxDistance(10)
+        .onEnd(() => {
+          'worklet'
+          console.log('🔍 DOUBLE TAP: Triggered')
+          scheduleOnRN(handleWordPress)()
+        })
+
+      console.log('🔍 RENDER CARD: Double tap gesture created')
+
+      // Get tap and pan gestures
+      const tapGestureInstance = tapGesture()
+      const panGestureInstance = panGesture()
+
+      console.log('🔍 RENDER CARD: Tap and pan gestures obtained')
+
+      // Combine gestures - pan for swipe navigation, tap for card flip, double tap for word detail
+      const combinedGesture = Gesture.Exclusive(
+        panGestureInstance,
+        Gesture.Simultaneous(tapGestureInstance, doubleTapWithCallback)
+      )
+
+      console.log('🔍 RENDER CARD: Combined gesture created')
+
+      console.log('🔍 RENDER CARD: About to render GestureDetector')
+
+      return (
+        <GestureErrorBoundary>
+          <GestureDetector gesture={combinedGesture}>
+            <ViewThemed style={reviewScreenStyles.flashcard}>
+              {!isFlipped ? (
+                <>
+                  {console.log('🔍 RENDER CARD: Rendering CardFront')}
+                  <CardFront
+                    currentWord={currentWord}
+                    isPlayingAudio={false}
+                    onPlayPronunciation={playAudio}
+                    pronunciationRef={pronunciationRef}
+                  />
+                </>
+              ) : (
+                <>
+                  {console.log('🔍 RENDER CARD: Rendering UniversalWordCard')}
+                  <UniversalWordCard
+                    word={currentWord}
+                    config={WordCardPresets.review.config}
+                    actions={{
+                      ...WordCardPresets.review.actions,
+                      onDelete: handleDeleteWord,
+                    }}
+                    isPlayingAudio={false}
+                    onPlayPronunciation={playAudio}
+                    onChangeImage={openImageSelector}
+                    style={reviewScreenStyles.universalWordCard}
+                  />
+                </>
+              )}
+            </ViewThemed>
+          </GestureDetector>
+        </GestureErrorBoundary>
+      )
+    } catch (error) {
+      console.error('🚨 RENDER CARD: Error occurred:', error)
+      console.error(
+        '🚨 RENDER CARD: Error stack:',
+        error instanceof Error ? error.stack : 'No stack'
+      )
+      return (
         <ViewThemed style={reviewScreenStyles.flashcard}>
-          {!isFlipped ? (
-            <CardFront
-              currentWord={currentWord}
-              isPlayingAudio={false}
-              onPlayPronunciation={playAudio}
-              pronunciationRef={pronunciationRef}
-            />
-          ) : (
-            <UniversalWordCard
-              word={currentWord}
-              config={WordCardPresets.review.config}
-              actions={{
-                ...WordCardPresets.review.actions,
-                onDelete: handleDeleteWord,
-              }}
-              isPlayingAudio={false}
-              onPlayPronunciation={playAudio}
-              onChangeImage={openImageSelector}
-              style={reviewScreenStyles.universalWordCard}
-            />
-          )}
+          <TextThemed>Error rendering card</TextThemed>
         </ViewThemed>
-      </GestureDetector>
-    )
+      )
+    }
   }
 
   return (

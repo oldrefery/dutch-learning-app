@@ -1,5 +1,4 @@
 import * as SentryLib from '@sentry/react-native'
-import type React from 'react'
 
 // Flag to prevent multiple initializations
 let sentryInitialized = false
@@ -9,20 +8,25 @@ export function initializeSentry() {
     return
   }
 
-  // Skip Sentry initialization entirely in development to avoid interference
-  if (__DEV__) {
-    console.log('Sentry disabled in development mode')
-    sentryInitialized = true
-    return
-  }
+  // Enable Sentry in development for debugging crashes
+  console.log(
+    '🛡️ SENTRY: Initializing Sentry 7.x in development mode for debugging'
+  )
 
+  // Always initialize Sentry (removed development check for debugging)
   SentryLib.init({
     dsn: 'https://b9380e4ad548d88fe5c8bfecabcdf2e3@o4506263035904000.ingest.us.sentry.io/4509999490727936',
-    debug: false,
-    integrations: [SentryLib.reactNativeTracingIntegration({})],
+    debug: true, // Enable debug in development
+    sendDefaultPii: true,
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
-    tracesSampleRate: 1.0,
+    enableLogs: true,
+    integrations: [
+      SentryLib.reactNativeTracingIntegration({}),
+      SentryLib.mobileReplayIntegration(),
+    ],
   })
 
   sentryInitialized = true
@@ -31,16 +35,5 @@ export function initializeSentry() {
 // Initialize Sentry immediately when this module is imported
 initializeSentry()
 
-// Create a Sentry object with fallbacks for development
-export const Sentry = __DEV__
-  ? {
-      // Provide no-op functions for development
-      wrap: <T extends React.ComponentType>(component: T) => component, // Just return the component without wrapping
-      captureException: () => {},
-      captureMessage: () => {},
-      addBreadcrumb: () => {},
-      setUser: () => {},
-      setTag: () => {},
-      setContext: () => {},
-    }
-  : SentryLib
+// Always export the full Sentry for crash collection in development
+export const Sentry = SentryLib

@@ -39,6 +39,7 @@ export function SynonymsAntonymsSection({ word, config }: WordSectionProps) {
               >
                 <TextThemed
                   style={[styles.wordChipText, styles.synonymChipText]}
+                  selectable
                 >
                   {synonym}
                 </TextThemed>
@@ -71,6 +72,7 @@ export function SynonymsAntonymsSection({ word, config }: WordSectionProps) {
               >
                 <TextThemed
                   style={[styles.wordChipText, styles.antonymChipText]}
+                  selectable
                 >
                   {antonym}
                 </TextThemed>

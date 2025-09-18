@@ -1,5 +1,6 @@
 import React from 'react'
 import { TextThemed, ViewThemed } from '@/components/Themed'
+import { SelectableText } from '@/components/SelectableText'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
 
@@ -35,14 +36,15 @@ export function TranslationsSection({ word, config }: WordSectionProps) {
           {word.translations.en!.map((translation, index) => (
             <ViewThemed key={index} style={styles.translationItem}>
               <TextThemed style={styles.translationBullet}>•</TextThemed>
-              <TextThemed
+              <SelectableText
                 style={[
                   styles.translationText,
                   config.compact && styles.compactTranslationText,
                 ]}
+                copyText={translation}
               >
                 {translation}
-              </TextThemed>
+              </SelectableText>
             </ViewThemed>
           ))}
         </ViewThemed>
@@ -54,14 +56,15 @@ export function TranslationsSection({ word, config }: WordSectionProps) {
           {word.translations.ru!.map((translation, index) => (
             <ViewThemed key={index} style={styles.translationItem}>
               <TextThemed style={styles.translationBullet}>•</TextThemed>
-              <TextThemed
+              <SelectableText
                 style={[
                   styles.translationText,
                   config.compact && styles.compactTranslationText,
                 ]}
+                copyText={translation}
               >
                 {translation}
-              </TextThemed>
+              </SelectableText>
             </ViewThemed>
           ))}
         </ViewThemed>

@@ -2,7 +2,10 @@ import React from 'react'
 import { ScrollView, TouchableOpacity, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
+import { SelectableText } from '@/components/SelectableText'
 import { Colors } from '@/constants/Colors'
+import { CopyButton } from '@/components/CopyButton'
+import { formatAnalysisResultForCopying } from '@/utils/wordTextFormatter'
 import type { AnalysisResultCardProps } from '../types/AddWordTypes'
 import { analysisResultStyles } from '../styles/AnalysisResultCard.styles'
 
@@ -21,30 +24,37 @@ export function AnalysisResultCard({
           <TextThemed style={analysisResultStyles.resultTitle}>
             Analysis Result
           </TextThemed>
-          {isCheckingDuplicate && (
-            <ViewThemed style={analysisResultStyles.checkingBadge}>
-              <Ionicons
-                name="hourglass"
-                size={16}
-                color={Colors.neutral[500]}
-              />
-              <TextThemed style={analysisResultStyles.checkingText}>
-                Checking...
-              </TextThemed>
-            </ViewThemed>
-          )}
-          {isAlreadyInCollection && !isCheckingDuplicate && (
-            <ViewThemed style={analysisResultStyles.alreadyExistsBadge}>
-              <Ionicons
-                name="checkmark-circle"
-                size={16}
-                color={Colors.success.DEFAULT}
-              />
-              <TextThemed style={analysisResultStyles.alreadyExistsText}>
-                Already in collection
-              </TextThemed>
-            </ViewThemed>
-          )}
+          <ViewThemed style={analysisResultStyles.titleActions}>
+            <CopyButton
+              text={formatAnalysisResultForCopying(analysisResult)}
+              size={20}
+              color={Colors.primary.DEFAULT}
+            />
+            {isCheckingDuplicate && (
+              <ViewThemed style={analysisResultStyles.checkingBadge}>
+                <Ionicons
+                  name="hourglass"
+                  size={16}
+                  color={Colors.neutral[500]}
+                />
+                <TextThemed style={analysisResultStyles.checkingText}>
+                  Checking...
+                </TextThemed>
+              </ViewThemed>
+            )}
+            {isAlreadyInCollection && !isCheckingDuplicate && (
+              <ViewThemed style={analysisResultStyles.alreadyExistsBadge}>
+                <Ionicons
+                  name="checkmark-circle"
+                  size={16}
+                  color={Colors.success.DEFAULT}
+                />
+                <TextThemed style={analysisResultStyles.alreadyExistsText}>
+                  Already in collection
+                </TextThemed>
+              </ViewThemed>
+            )}
+          </ViewThemed>
         </ViewThemed>
 
         <ViewThemed style={analysisResultStyles.resultRow}>
@@ -52,7 +62,7 @@ export function AnalysisResultCard({
             Word:
           </TextThemed>
           <ViewThemed style={analysisResultStyles.wordWithPronunciation}>
-            <TextThemed style={analysisResultStyles.resultValue}>
+            <TextThemed style={analysisResultStyles.resultValue} selectable>
               {analysisResult.dutch_lemma}
             </TextThemed>
             {analysisResult.tts_url && (
@@ -75,7 +85,7 @@ export function AnalysisResultCard({
           <TextThemed style={analysisResultStyles.resultLabel}>
             Type:
           </TextThemed>
-          <TextThemed style={analysisResultStyles.resultValue}>
+          <TextThemed style={analysisResultStyles.resultValue} selectable>
             {analysisResult.part_of_speech}
             {analysisResult.is_irregular ? ' (irregular)' : ''}
             {analysisResult.article ? ` (${analysisResult.article})` : ''}
@@ -94,7 +104,7 @@ export function AnalysisResultCard({
               <TextThemed style={analysisResultStyles.resultLabel}>
                 Parts:
               </TextThemed>
-              <TextThemed style={analysisResultStyles.resultValue}>
+              <TextThemed style={analysisResultStyles.resultValue} selectable>
                 <TextThemed style={analysisResultStyles.prefixText}>
                   {analysisResult.prefix_part}
                 </TextThemed>{' '}
@@ -108,12 +118,13 @@ export function AnalysisResultCard({
             English:
           </TextThemed>
           {analysisResult.translations.en.map((translation, index) => (
-            <TextThemed
+            <SelectableText
               key={index}
               style={analysisResultStyles.translationText}
+              copyText={translation}
             >
               • {translation}
-            </TextThemed>
+            </SelectableText>
           ))}
         </ViewThemed>
 
@@ -123,12 +134,13 @@ export function AnalysisResultCard({
               Russian:
             </TextThemed>
             {analysisResult.translations.ru.map((translation, index) => (
-              <TextThemed
+              <SelectableText
                 key={index}
                 style={analysisResultStyles.translationText}
+                copyText={translation}
               >
                 • {translation}
-              </TextThemed>
+              </SelectableText>
             ))}
           </ViewThemed>
         )}
@@ -164,16 +176,25 @@ export function AnalysisResultCard({
             </TextThemed>
             {analysisResult.examples.map((example, index) => (
               <ViewThemed key={index} style={analysisResultStyles.exampleCard}>
-                <TextThemed style={analysisResultStyles.exampleDutch}>
+                <SelectableText
+                  style={analysisResultStyles.exampleDutch}
+                  copyText={example.nl}
+                >
                   {example.nl}
-                </TextThemed>
-                <TextThemed style={analysisResultStyles.exampleTranslation}>
+                </SelectableText>
+                <SelectableText
+                  style={analysisResultStyles.exampleTranslation}
+                  copyText={example.en}
+                >
                   {example.en}
-                </TextThemed>
+                </SelectableText>
                 {example.ru && (
-                  <TextThemed style={analysisResultStyles.exampleTranslation}>
+                  <SelectableText
+                    style={analysisResultStyles.exampleTranslation}
+                    copyText={example.ru}
+                  >
                     {example.ru}
-                  </TextThemed>
+                  </SelectableText>
                 )}
               </ViewThemed>
             ))}

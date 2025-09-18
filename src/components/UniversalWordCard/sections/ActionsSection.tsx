@@ -2,6 +2,7 @@ import React from 'react'
 import { TouchableOpacity, Alert } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
+import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 import type { WordCardData, WordCardActionConfig } from '../types'
@@ -99,55 +100,60 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
         )}
 
       {/* Action buttons */}
-      {actions.showSaveButton && actions.onSave && (
-        <TouchableOpacity
-          style={[styles.actionButton, styles.saveButton]}
-          onPress={actions.onSave}
-        >
-          <Ionicons
-            name="checkmark-circle"
-            size={20}
-            color={Colors.success.DEFAULT}
-          />
-          <TextThemed style={[styles.actionButtonText, styles.saveButtonText]}>
-            Save to Collection
-          </TextThemed>
-        </TouchableOpacity>
-      )}
-
-      {actions.showDeleteButton && actions.onDelete && (
-        <TouchableOpacity
-          style={[styles.actionButton, styles.deleteButton]}
-          onPress={() => {
-            Alert.alert(
-              'Delete Word',
-              `Are you sure you want to delete "${word.dutch_lemma}"?`,
-              [
-                {
-                  text: 'Cancel',
-                  style: 'cancel',
-                },
-                {
-                  text: 'Delete',
-                  style: 'destructive',
-                  onPress: actions.onDelete,
-                },
-              ]
-            )
-          }}
-        >
-          <Ionicons
-            name="trash-outline"
-            size={20}
-            color={Colors.error.DEFAULT}
-          />
-          <TextThemed
-            style={[styles.actionButtonText, styles.deleteButtonText]}
+      <NonSwipeableArea>
+        {actions.showSaveButton && actions.onSave && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.saveButton]}
+            onPress={actions.onSave}
           >
-            Delete Word
-          </TextThemed>
-        </TouchableOpacity>
-      )}
+            <Ionicons
+              name="checkmark-circle"
+              size={20}
+              color={Colors.success.DEFAULT}
+            />
+            <TextThemed
+              style={[styles.actionButtonText, styles.saveButtonText]}
+            >
+              Save to Collection
+            </TextThemed>
+          </TouchableOpacity>
+        )}
+
+        {actions.showDeleteButton && actions.onDelete && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.deleteButton]}
+            onPress={() => {
+              console.log('🗑️ DELETE BUTTON: onPress triggered')
+              Alert.alert(
+                'Delete Word',
+                `Are you sure you want to delete "${word.dutch_lemma}"?`,
+                [
+                  {
+                    text: 'Cancel',
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: actions.onDelete,
+                  },
+                ]
+              )
+            }}
+          >
+            <Ionicons
+              name="trash-outline"
+              size={20}
+              color={Colors.error.DEFAULT}
+            />
+            <TextThemed
+              style={[styles.actionButtonText, styles.deleteButtonText]}
+            >
+              Delete Word
+            </TextThemed>
+          </TouchableOpacity>
+        )}
+      </NonSwipeableArea>
     </ViewThemed>
   )
 }

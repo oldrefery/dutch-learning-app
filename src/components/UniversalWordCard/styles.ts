@@ -28,6 +28,11 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 8,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   wordTitle: {
     fontSize: 24,
     fontWeight: '700',
@@ -340,5 +345,12 @@ export const styles = StyleSheet.create({
   },
   alreadyExistsText: {
     color: Colors.success.DEFAULT,
+  },
+
+  // Section header with copy button
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 })
