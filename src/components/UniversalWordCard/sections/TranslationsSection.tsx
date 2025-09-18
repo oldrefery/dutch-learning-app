@@ -4,12 +4,16 @@ import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
 
 export function TranslationsSection({ word, config }: WordSectionProps) {
-  if (!config.showTranslations || !word.translations) return null
+  if (!config.showTranslations || !word.translations) {
+    return null
+  }
 
   const hasEnglish = word.translations.en?.length > 0
   const hasRussian = word.translations.ru && word.translations.ru.length > 0
 
-  if (!hasEnglish && !hasRussian) return null
+  if (!hasEnglish && !hasRussian) {
+    return null
+  }
 
   return (
     <ViewThemed

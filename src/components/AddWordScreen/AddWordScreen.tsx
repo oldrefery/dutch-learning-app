@@ -3,7 +3,10 @@ import { Keyboard } from 'react-native'
 import { ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { WordInputSection } from './components/WordInputSection'
-import { AnalysisResultCard } from './components/AnalysisResultCard'
+import {
+  UniversalWordCard,
+  WordCardPresets,
+} from '@/components/UniversalWordCard'
 import { AddToCollectionSection } from './components/AddToCollectionSection'
 import { useAudioPlayer } from './hooks/useAudioPlayer'
 import { useWordAnalysis } from './hooks/useWordAnalysis'
@@ -39,6 +42,34 @@ export function AddWordScreen() {
     closeImageSelector,
   } = useAddWord()
   const { collections } = useCollections()
+
+  // DEBUG: Log analysis result details
+  useEffect(() => {
+    if (analysisResult) {
+      console.log(
+        '🔍 ANALYSIS RESULT DEBUG:',
+        JSON.stringify(
+          {
+            full_result: analysisResult,
+            has_synonyms: 'synonyms' in analysisResult,
+            synonyms: analysisResult.synonyms || 'NOT_FOUND',
+            synonyms_length: analysisResult.synonyms?.length || 0,
+            has_antonyms: 'antonyms' in analysisResult,
+            antonyms: analysisResult.antonyms || 'NOT_FOUND',
+            antonyms_length: analysisResult.antonyms?.length || 0,
+            has_conjugation: 'conjugation' in analysisResult,
+            conjugation: analysisResult.conjugation || 'NOT_FOUND',
+            has_plural: 'plural' in analysisResult,
+            plural: analysisResult.plural || 'NOT_FOUND',
+            has_preposition: 'preposition' in analysisResult,
+            preposition: analysisResult.preposition || 'NOT_FOUND',
+          },
+          null,
+          2
+        )
+      )
+    }
+  }, [analysisResult])
 
   // Check for duplicates after analysis is complete
   useEffect(() => {
@@ -154,29 +185,37 @@ export function AddWordScreen() {
       />
 
       {analysisResult && (
-        <>
-          <AnalysisResultCard
-            analysisResult={analysisResult}
-            isPlayingAudio={isPlayingAudio}
-            onPlayPronunciation={playPronunciation}
-            onImageChange={handleImageChange}
-            onShowImageSelector={openImageSelector}
-            isAlreadyInCollection={isAlreadyInCollection}
-            isCheckingDuplicate={isCheckingDuplicate}
-          />
-
-          {/* Only show add to a collection section if the word is not already in a collection */}
-          {!isAlreadyInCollection && (
-            <AddToCollectionSection
-              selectedCollection={selectedCollection}
-              onCollectionSelect={setSelectedCollection}
-              onAddWord={handleAddWord}
-              onCancel={handleCancel}
-              isAdding={isAdding}
-              collections={collections}
+        <ViewThemed style={addWordScreenStyles.analysisContainer}>
+          {/* UniversalWordCard takes most of the space */}
+          <ViewThemed style={addWordScreenStyles.wordCardContainer}>
+            <UniversalWordCard
+              word={analysisResult}
+              actions={{
+                ...WordCardPresets.analysis.actions,
+                isDuplicateChecking: isCheckingDuplicate,
+                isAlreadyInCollection: isAlreadyInCollection,
+              }}
+              isPlayingAudio={isPlayingAudio}
+              onPlayPronunciation={playPronunciation}
+              onChangeImage={openImageSelector}
+              style={addWordScreenStyles.universalWordCard}
             />
+          </ViewThemed>
+
+          {/* Compact AddToCollectionSection at the bottom */}
+          {!isAlreadyInCollection && (
+            <ViewThemed style={addWordScreenStyles.addToCollectionContainer}>
+              <AddToCollectionSection
+                selectedCollection={selectedCollection}
+                onCollectionSelect={setSelectedCollection}
+                onAddWord={handleAddWord}
+                onCancel={handleCancel}
+                isAdding={isAdding}
+                collections={collections}
+              />
+            </ViewThemed>
           )}
-        </>
+        </ViewThemed>
       )}
 
       {/* Image Selector Modal */}

@@ -14,16 +14,12 @@ import Animated, {
 import { ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { Word } from '@/types/database'
-import { styles } from './WordDetailModal/styles'
 import {
-  WordTranslations,
-  WordExamples,
-  WordProgress,
-  WordImage,
-  WordStatus,
-  WordDetailHeader,
-  WordPartOfSpeech,
-} from './WordDetailModal/components'
+  UniversalWordCard,
+  WordCardPresets,
+} from '@/components/UniversalWordCard'
+import { styles } from './WordDetailModal/styles'
+import { WordDetailHeader } from './WordDetailModal/components'
 
 interface WordDetailModalProps {
   visible: boolean
@@ -69,8 +65,8 @@ export default function WordDetailModal({
   const panGesture = Gesture.Pan()
     .onUpdate(event => {
       'worklet'
-      // Start dismiss gesture only if:
-      // 1. We're at the top of scroll AND
+      // Start dismissing gesture only if:
+      // 1. We're at the top of the scroll AND
       // 2. Moving down (positive translationY) AND
       // 3. Have moved at least 10 px down to confirm intent
       if (scrollOffset.value <= 0 && event.translationY > 10) {
@@ -167,15 +163,13 @@ export default function WordDetailModal({
                 scrollEventThrottle={16}
                 onScroll={scrollHandler}
               >
-                <WordImage imageUrl={word?.image_url || null} />
-                <WordTranslations translations={word?.translations || {}} />
-                <WordPartOfSpeech partOfSpeech={word?.part_of_speech || null} />
-                <WordExamples examples={word?.examples || []} />
-                <WordStatus nextReviewDate={word?.next_review_date || null} />
-                <WordProgress
-                  repetitionCount={word?.repetition_count || 0}
-                  nextReviewDate={word?.next_review_date || null}
-                  easinessFactor={word?.easiness_factor || null}
+                <UniversalWordCard
+                  word={word}
+                  config={{
+                    ...WordCardPresets.modal.config,
+                    scrollable: false, // Modal handles scrolling
+                  }}
+                  actions={WordCardPresets.modal.actions}
                 />
               </Animated.ScrollView>
             </GestureDetector>

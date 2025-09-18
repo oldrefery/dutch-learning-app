@@ -20,7 +20,9 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
     actions.showStatusInfo ||
     actions.showDuplicateCheck
 
-  if (!hasAnyActions) return null
+  if (!hasAnyActions) {
+    return null
+  }
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Never'

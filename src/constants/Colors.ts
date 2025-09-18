@@ -88,6 +88,7 @@ const colorPalette = {
     white: '#FFFFFF',
     lightGray: '#CCCCCC',
     darkGray: '#EEEEEE',
+    transparent: 'transparent',
   },
 }
 

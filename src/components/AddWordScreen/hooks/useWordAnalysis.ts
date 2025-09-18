@@ -42,6 +42,12 @@ export const useWordAnalysis = () => {
         examples: analysis.examples || [],
         tts_url: analysis.tts_url || undefined,
         image_url: analysis.image_url || undefined,
+        // Enhanced fields from the new Gemini prompt
+        synonyms: analysis.synonyms || [],
+        antonyms: analysis.antonyms || [],
+        plural: analysis.plural || undefined,
+        conjugation: analysis.conjugation || null,
+        preposition: analysis.preposition || undefined,
       }
 
       setAnalysisResult(result)

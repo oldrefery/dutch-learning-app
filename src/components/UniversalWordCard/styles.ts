@@ -5,6 +5,8 @@ export const styles = StyleSheet.create({
   // Main container
   container: {
     backgroundColor: Colors.background.primary,
+    minHeight: 100,
+    width: '100%',
   },
   scrollContainer: {
     flex: 1,

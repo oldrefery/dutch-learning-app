@@ -1,7 +1,8 @@
 import type { Word } from '@/types/database'
 import type { WordAnalysisResponse } from '@/types/GeminiTypes'
+import type { AnalysisResult } from '@/components/AddWordScreen/types/AddWordTypes'
 
-export type WordCardData = Word | WordAnalysisResponse
+export type WordCardData = Word | WordAnalysisResponse | AnalysisResult
 
 export interface WordCardConfig {
   // Content sections visibility
@@ -44,7 +45,7 @@ export interface WordCardActionConfig {
 
 export interface UniversalWordCardProps {
   word: WordCardData
-  config?: WordCardConfig
+  config?: Partial<WordCardConfig> // Опциональный, принимает частичные изменения
   actions?: WordCardActionConfig
 
   // Audio functionality
@@ -68,10 +69,22 @@ export interface WordSectionProps {
 }
 
 // Helper type guards
-export function isAnalysisResult(
+export function isGeminiAnalysisResult(
   word: WordCardData
 ): word is WordAnalysisResponse {
   return 'confidence_score' in word || 'analysis_notes' in word
+}
+
+export function isLegacyAnalysisResult(
+  word: WordCardData
+): word is AnalysisResult {
+  return 'lemma' in word && 'tts_url' in word
+}
+
+export function isAnalysisResult(
+  word: WordCardData
+): word is WordAnalysisResponse | AnalysisResult {
+  return isGeminiAnalysisResult(word) || isLegacyAnalysisResult(word)
 }
 
 export function isWordFromDB(word: WordCardData): word is Word {

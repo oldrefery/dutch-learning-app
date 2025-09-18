@@ -12,7 +12,10 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import WordDetailModal from '@/components/WordDetailModal'
 import { CardFront } from '@/components/ReviewCard/CardFront'
-import { CardBack } from '@/components/ReviewCard/CardBack'
+import {
+  UniversalWordCard,
+  WordCardPresets,
+} from '@/components/UniversalWordCard'
 import { useReviewScreen } from '@/hooks/useReviewScreen'
 import { useImageSelector } from '@/hooks/useImageSelector'
 import { useReviewSession } from '@/hooks/useReviewSession'
@@ -176,13 +179,17 @@ export default function ReviewScreen() {
               pronunciationRef={pronunciationRef}
             />
           ) : (
-            <CardBack
-              currentWord={currentWord}
-              onChangeImage={openImageSelector}
+            <UniversalWordCard
+              word={currentWord}
+              config={WordCardPresets.review.config}
+              actions={{
+                ...WordCardPresets.review.actions,
+                onDelete: handleDeleteWord,
+              }}
               isPlayingAudio={false}
               onPlayPronunciation={playAudio}
-              onDeleteWord={handleDeleteWord}
-              pronunciationRef={pronunciationRef}
+              onChangeImage={openImageSelector}
+              style={reviewScreenStyles.universalWordCard}
             />
           )}
         </ViewThemed>

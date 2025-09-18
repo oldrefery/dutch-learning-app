@@ -12,13 +12,12 @@ export function HeaderSection({
   isPlayingAudio,
   onPlayPronunciation,
 }: WordSectionProps) {
-  if (!config.showHeader) return null
+  if (!config.showHeader) {
+    return null
+  }
 
   const getTTSUrl = (): string | null => {
-    if ('tts_url' in word && typeof word.tts_url === 'string')
-      return word.tts_url
-    if ('audio_url' in word && typeof word.audio_url === 'string')
-      return word.audio_url
+    if ('tts_url' in word && word.tts_url) return word.tts_url
     return null
   }
 
@@ -66,7 +65,7 @@ export function HeaderSection({
             </ViewThemed>
           )}
 
-          {word.plural && (
+          {'plural' in word && word.plural && (
             <ViewThemed style={styles.grammarTag}>
               <TextThemed style={styles.grammarTagText}>
                 plural: {word.plural}
@@ -94,7 +93,7 @@ export function HeaderSection({
             </ViewThemed>
           )}
 
-          {word.preposition && (
+          {'preposition' in word && word.preposition && (
             <ViewThemed style={styles.grammarTag}>
               <TextThemed style={styles.grammarTagText}>
                 + {word.preposition}

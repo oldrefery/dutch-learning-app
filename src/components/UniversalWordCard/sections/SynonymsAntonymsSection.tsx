@@ -7,8 +7,10 @@ import type { WordSectionProps } from '../types'
 export function SynonymsAntonymsSection({ word, config }: WordSectionProps) {
   if (!config.showSynonyms && !config.showAntonyms) return null
 
-  const hasSynonyms = word.synonyms && word.synonyms.length > 0
-  const hasAntonyms = word.antonyms && word.antonyms.length > 0
+  const synonyms = 'synonyms' in word ? word.synonyms : []
+  const antonyms = 'antonyms' in word ? word.antonyms : []
+  const hasSynonyms = synonyms && synonyms.length > 0
+  const hasAntonyms = antonyms && antonyms.length > 0
 
   if (!hasSynonyms && !hasAntonyms) return null
 
@@ -29,7 +31,7 @@ export function SynonymsAntonymsSection({ word, config }: WordSectionProps) {
           </TextThemed>
 
           <ViewThemed style={styles.wordList}>
-            {word.synonyms!.map((synonym, index) => (
+            {synonyms.map((synonym, index) => (
               <TouchableOpacity
                 key={index}
                 style={[styles.wordChip, styles.synonymChip]}
@@ -61,7 +63,7 @@ export function SynonymsAntonymsSection({ word, config }: WordSectionProps) {
           </TextThemed>
 
           <ViewThemed style={styles.wordList}>
-            {word.antonyms!.map((antonym, index) => (
+            {antonyms.map((antonym, index) => (
               <TouchableOpacity
                 key={index}
                 style={[styles.wordChip, styles.antonymChip]}

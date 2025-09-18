@@ -1,7 +1,6 @@
 import type { Collection } from '@/types/database'
 
 export interface AnalysisResult {
-  lemma: string
   dutch_lemma: string
   part_of_speech: string
   is_irregular: boolean
@@ -21,8 +20,18 @@ export interface AnalysisResult {
     en: string
     ru?: string
   }[]
-  tts_url: string
+  tts_url?: string
   image_url?: string // Associated image for visual learning
+  // Enhanced fields from new Gemini prompt
+  synonyms?: string[]
+  antonyms?: string[]
+  plural?: string // Plural form for nouns
+  conjugation?: {
+    present: string
+    simple_past: string
+    past_participle: string
+  } | null
+  preposition?: string // Fixed preposition (e.g., "van" for "genieten van")
 }
 
 export interface WordInputSectionProps {

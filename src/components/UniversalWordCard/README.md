@@ -14,119 +14,109 @@
 ## Быстрый старт
 
 ```tsx
-import {
-  UniversalWordCard,
-  WordCardPresets,
-} from '@/components/UniversalWordCard'
+import { UniversalWordCard, WordCardPresets } from '@/components/UniversalWordCard'
 
-// Простое использование с пресетом
-;<UniversalWordCard
+// По умолчанию - максимальная информация!
+<UniversalWordCard word={wordData} />
+
+// С пресетом (переопределяет только отличия)
+<UniversalWordCard
   word={wordData}
   config={WordCardPresets.modal.config}
   actions={WordCardPresets.modal.actions}
 />
 ```
 
-## Пресеты для разных случаев
+## Пресеты - только отличия!
 
-### 1. Modal (WordDetailModal)
+**Основной принцип:** По умолчанию показывается **максимальная информация**. Пресеты переопределяют только то, что нужно изменить.
 
-Полная информация о слове в модальном окне:
+### 1. Full (по умолчанию)
+
+```tsx
+// Максимальная информация - все поля видимы
+<UniversalWordCard word={word} />
+// ИЛИ явно
+<UniversalWordCard word={word} config={WordCardPresets.full.config} />
+```
+
+### 2. Modal - добавляет прогресс изучения
 
 ```tsx
 <UniversalWordCard
   word={word}
-  config={WordCardPresets.modal.config}
-  actions={WordCardPresets.modal.actions}
-  isPlayingAudio={isPlaying}
-  onPlayPronunciation={handlePlayAudio}
+  config={WordCardPresets.modal.config} // scrollable: false
+  actions={WordCardPresets.modal.actions} // + прогресс + статус
 />
 ```
 
-### 2. Analysis (AddWordScreen)
-
-Анализ нового слова с возможностью сохранения:
+### 3. Analysis - добавляет проверку дубликатов
 
 ```tsx
 <UniversalWordCard
   word={analysisResult}
-  config={WordCardPresets.analysis.config}
+  config={WordCardPresets.analysis.config} // максимальная информация
   actions={{
-    ...WordCardPresets.analysis.actions,
+    ...WordCardPresets.analysis.actions, // + дубликаты + сохранение
     isDuplicateChecking: isChecking,
-    isAlreadyInCollection: isDuplicate,
-    onSave: handleSaveWord,
+    onSave: handleSave,
   }}
-  onChangeImage={handleImageChange}
 />
 ```
 
-### 3. Review (ReviewCard back)
-
-Компактный вид для ревью:
+### 4. Review - убирает отвлекающие элементы
 
 ```tsx
 <UniversalWordCard
   word={currentWord}
-  config={WordCardPresets.review.config}
+  config={WordCardPresets.review.config} // - синонимы/антонимы/грамматика
   actions={{
-    ...WordCardPresets.review.actions,
-    onDelete: handleDeleteWord,
+    ...WordCardPresets.review.actions, // + удаление
+    onDelete: handleDelete,
   }}
 />
 ```
 
-### 4. Compact (списки)
-
-Минимальная информация:
+### 5. Compact - минимум информации
 
 ```tsx
-<UniversalWordCard word={word} config={WordCardPresets.compact.config} />
+<UniversalWordCard
+  word={word}
+  config={WordCardPresets.compact.config} // только основное
+/>
 ```
 
 ## Кастомная конфигурация
 
 ```tsx
+// По умолчанию ВСЕ поля включены! Отключаем только то, что не нужно
 <UniversalWordCard
   word={word}
   config={{
-    // Секции контента
-    showHeader: true,
-    showTranslations: true,
-    showExamples: true,
-    showImage: true,
-    showSynonyms: true, // 🆕 Новое!
-    showAntonyms: true, // 🆕 Новое!
-    showGrammarInfo: true,
-    showConjugation: true, // 🆕 Новое!
-
-    // Интерактивность
-    enablePronunciation: true,
-    enableImageChange: true,
-
-    // Внешний вид
-    scrollable: true,
-    compact: false,
+    // Убрать примеры и изображения
+    showExamples: false,
+    showImage: false,
   }}
   actions={{
-    // Кнопки действий
+    // Добавить кнопку удаления
     showDeleteButton: true,
-    showSaveButton: false,
-
-    // Информация о прогрессе
-    showProgressInfo: true,
-    showStatusInfo: true,
-
-    // Проверка дубликатов
-    showDuplicateCheck: false,
-    isDuplicateChecking: false,
-    isAlreadyInCollection: false,
-
-    // Обработчики
-    onDelete: () => handleDelete(),
-    onSave: () => handleSave(),
+    onDelete: handleDelete,
   }}
 />
+
+// Максимально полная конфигурация (по умолчанию):
+// showHeader: true ✅
+// showTranslations: true ✅
+// showExamples: true ✅
+// showImage: true ✅
+// showSynonyms: true ✅ 🆕
+// showAntonyms: true ✅ 🆕
+// showGrammarInfo: true ✅
+// showConjugation: true ✅ 🆕
+// enablePronunciation: true ✅
+// enableImageChange: true ✅
+// scrollable: true ✅
+// compact: false ✅
 ```
 
 ## Новые поля в действии

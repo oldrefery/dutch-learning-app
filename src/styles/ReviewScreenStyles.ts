@@ -99,6 +99,10 @@ export const reviewScreenStyles = StyleSheet.create({
     fontWeight: '600',
   },
 
+  universalWordCard: {
+    flex: 1,
+  },
+
   progressContainer: {
     paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
     paddingVertical: REVIEW_SCREEN_CONSTANTS.SPACING.SM,

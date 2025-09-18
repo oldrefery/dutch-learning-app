@@ -17,8 +17,8 @@ import {
   ActionsSection,
 } from './sections'
 
-// Default configurations
-const DEFAULT_CONFIG: WordCardConfig = {
+// Default configuration - максимальная информация
+const FULL_CONFIG: WordCardConfig = {
   showHeader: true,
   showTranslations: true,
   showExamples: true,
@@ -43,7 +43,7 @@ const DEFAULT_ACTIONS: WordCardActionConfig = {
 
 export function UniversalWordCard({
   word,
-  config = DEFAULT_CONFIG,
+  config,
   actions = DEFAULT_ACTIONS,
   isPlayingAudio = false,
   onPlayPronunciation,
@@ -51,8 +51,12 @@ export function UniversalWordCard({
   style,
   contentStyle,
 }: UniversalWordCardProps) {
-  // Merge with default configs
-  const finalConfig = { ...DEFAULT_CONFIG, ...config }
+  if (!word) {
+    return null
+  }
+
+  // Merge with full config - максимальная информация по умолчанию
+  const finalConfig = { ...FULL_CONFIG, ...config }
   const finalActions = { ...DEFAULT_ACTIONS, ...actions }
 
   const sectionProps = {
@@ -97,88 +101,59 @@ export function UniversalWordCard({
   return <ViewThemed style={[styles.container, style]}>{content}</ViewThemed>
 }
 
-// Preset configurations for common use cases
+// Preset configurations - показывают только отличия от FULL_CONFIG
 export const WordCardPresets = {
-  // For word detail modal (from collections)
+  // Полная конфигурация (по умолчанию) - максимальная информация
+  full: {
+    config: {}, // Без изменений = максимальная информация
+    actions: {},
+  },
+
+  // For word detail modal (from collections) - добавляем прогресс и статус
   modal: {
     config: {
-      showHeader: true,
-      showTranslations: true,
-      showExamples: true,
-      showImage: true,
-      showSynonyms: true,
-      showAntonyms: true,
-      showGrammarInfo: true,
-      showConjugation: true,
-      enablePronunciation: true,
-      enableImageChange: true,
       scrollable: false, // Modal handles scrolling
-      compact: false,
     },
     actions: {
-      showProgressInfo: true,
-      showStatusInfo: true,
+      showProgressInfo: true, // + прогресс обучения
+      showStatusInfo: true, // + статус следующего повтора
     },
   },
 
-  // For word analysis (add word screen)
+  // For word analysis (add word screen) - добавляем проверку дубликатов
   analysis: {
-    config: {
-      showHeader: true,
-      showTranslations: true,
-      showExamples: true,
-      showImage: true,
-      showSynonyms: true,
-      showAntonyms: true,
-      showGrammarInfo: true,
-      showConjugation: true,
-      enablePronunciation: true,
-      enableImageChange: true,
-      scrollable: true,
-      compact: false,
-    },
+    config: {}, // Максимальная информация
     actions: {
-      showDuplicateCheck: true,
-      showSaveButton: true,
+      showDuplicateCheck: true, // + проверка дубликатов
+      showSaveButton: true, // + кнопка сохранения
     },
   },
 
-  // For review card back
+  // For review card back - убираем лишнее для фокуса на изучении
   review: {
     config: {
-      showHeader: true,
-      showTranslations: true,
-      showExamples: true,
-      showImage: true,
-      showSynonyms: false, // Keep review focused
-      showAntonyms: false,
-      showGrammarInfo: false,
-      showConjugation: false,
-      enablePronunciation: true,
-      enableImageChange: true,
-      scrollable: true,
-      compact: true,
+      showSynonyms: false, // - убираем синонимы (отвлекают)
+      showAntonyms: false, // - убираем антонимы (отвлекают)
+      showGrammarInfo: false, // - убираем грамматику (уже на лицевой стороне)
+      showConjugation: false, // - убираем спряжения (слишком много)
+      compact: false, // + используем полный размер для review
     },
     actions: {
-      showDeleteButton: true,
+      showDeleteButton: true, // + кнопка удаления
     },
   },
 
-  // Compact version for lists or smaller spaces
+  // Compact version for lists - минимум информации
   compact: {
     config: {
-      showHeader: true,
-      showTranslations: true,
-      showExamples: false,
-      showImage: false,
-      showSynonyms: false,
-      showAntonyms: false,
-      showGrammarInfo: true,
-      showConjugation: false,
-      enablePronunciation: true,
-      enableImageChange: false,
-      scrollable: false,
-      compact: true,
+      showExamples: false, // - убираем примеры
+      showImage: false, // - убираем изображение
+      showSynonyms: false, // - убираем синонимы
+      showAntonyms: false, // - убираем антонимы
+      showConjugation: false, // - убираем спряжения
+      enableImageChange: false, // - запрещаем смену картинок
+      scrollable: false, // - без скролла
+      compact: true, // + компактный вид
     },
     actions: {},
   },

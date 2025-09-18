@@ -115,6 +115,12 @@ serve(async req => {
       article: analysis.article,
       expression_type: analysis.expression_type,
       tts_url: ttsUrl,
+      // New fields from enhanced Gemini prompt
+      synonyms: analysis.synonyms || [],
+      antonyms: analysis.antonyms || [],
+      plural: analysis.plural || null,
+      conjugation: analysis.conjugation || null,
+      preposition: analysis.preposition || null,
     }
 
     console.log('Sending successful response...')

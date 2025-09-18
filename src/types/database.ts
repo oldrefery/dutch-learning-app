@@ -50,7 +50,7 @@ export interface Word {
   conjugation: WordConjugation | null // Verb conjugation forms
   preposition: string | null // Fixed preposition (e.g., "van" for "genieten van")
   image_url: string | null
-  tts_url: string
+  tts_url: string | null
   // SRS fields
   interval_days: number
   repetition_count: number
@@ -63,7 +63,6 @@ export interface Word {
 // API Response types
 
 export interface GeminiWordAnalysis {
-  lemma: string
   dutch_lemma: string
   part_of_speech: string
   is_irregular?: boolean
@@ -76,7 +75,7 @@ export interface GeminiWordAnalysis {
   article?: 'de' | 'het' // Article for nouns
   translations: WordTranslations
   examples: WordExample[]
-  tts_url: string
+  tts_url?: string
   image_url?: string // Associated image for visual learning
   collection_id?: string // Collection this word belongs to
 }
