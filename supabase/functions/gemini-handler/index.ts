@@ -95,7 +95,7 @@ serve(async req => {
 
     // Create TTS URL
     console.log('Creating TTS URL...')
-    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=nl&client=tw-ob&q=${encodeURIComponent(word)}`
+    const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=nl&client=tw-ob&q=${encodeURIComponent(analysis.dutch_lemma)}`
 
     // Build final result
     console.log('Building final result...')

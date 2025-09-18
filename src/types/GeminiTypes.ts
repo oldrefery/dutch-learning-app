@@ -13,10 +13,19 @@ export interface WordAnalysisResponse {
     en: string[]
     ru: string[]
   }
-  examples: string[]
+  examples: {
+    nl: string
+    en: string
+    ru: string
+  }[]
 
-  // Article for nouns
-  article?: 'de' | 'het'
+  // Synonyms and antonyms
+  synonyms: string[]
+  antonyms: string[]
+
+  // Article and plural for nouns
+  article: 'de' | 'het' | null
+  plural: string | null
 
   // Verb properties
   is_irregular?: boolean
@@ -24,6 +33,16 @@ export interface WordAnalysisResponse {
   is_separable?: boolean
   prefix_part?: string | null
   root_verb?: string | null
+  conjugation?: {
+    present: string
+    simple_past: string
+    past_participle: string
+  } | null
+  preposition?: string | null
+
+  // Expression properties
+  is_expression?: boolean
+  expression_type?: 'idiom' | 'phrase' | null
 
   // Image URL
   image_url?: string
@@ -40,13 +59,28 @@ export interface GeminiAnalysisResult {
     en: string[]
     ru: string[]
   }
-  examples: string[]
-  article?: 'de' | 'het'
+  examples: {
+    nl: string
+    en: string
+    ru: string
+  }[]
+  synonyms: string[]
+  antonyms: string[]
+  article: 'de' | 'het' | null
+  plural: string | null
   is_irregular?: boolean
   is_reflexive?: boolean
   is_separable?: boolean
   prefix_part?: string | null
   root_verb?: string | null
+  conjugation?: {
+    present: string
+    simple_past: string
+    past_participle: string
+  } | null
+  preposition?: string | null
+  is_expression?: boolean
+  expression_type?: 'idiom' | 'phrase' | null
   image_url?: string
   confidence_score?: number
   analysis_notes?: string
