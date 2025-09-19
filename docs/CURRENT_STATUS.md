@@ -220,6 +220,90 @@ DutchLearningApp/
   - Pull-to-refresh in collections and review screens
   - Gesture-based navigation throughout the app
 
+## ✅ COMPLETED: Build 5 (1.0.0) - New User Experience & Quality Improvements (January 19, 2025)
+
+### 1. Automatic Collection Creation ✅ COMPLETED
+
+- [x] **Default Collection Creation**: Automatically create "My Dutch Words" collection for new users ✅
+- [x] **Seamless Onboarding**: Remove collection creation barrier for first-time users ✅
+- [x] **Enhanced UX Messaging**: Updated UI to reflect automatic collection creation ✅
+- [x] **Error Handling**: Proper fallback and error handling for collection creation failures ✅
+
+### Technical Implementation ✅
+
+- **Modified `useAddWord` hook**: Auto-creates collection when user has no collections during word addition
+- **Updated UI Components**:
+  - `AddToCollectionSection` now shows "Add Word & Create Collection" for new users
+  - `CollectionSelector` displays user-friendly messaging about automatic collection creation
+  - Removed requirement for collection selection before adding words
+- **Improved User Flow**: New users can immediately start adding words without manual collection setup
+- **Code Quality**: Fixed ESLint issues and removed nested ternary operators for better readability
+
+### Build 5 (1.0.0) Release Summary ✅
+
+**Features included in TestFlight Build 5:**
+
+- ✅ Seamless new user onboarding with automatic collection creation
+- ✅ Enhanced collection rename functionality via swipe gestures
+- ✅ Improved dark theme support for authentication screens
+- ✅ Better error handling and user feedback
+- ✅ Code quality improvements and type safety enhancements
+- ✅ Optimized UI components with smoother animations
+
+**Previous Build 4 contained:** Account deletion functionality
+
+**Known Issues for Next Build:**
+
+- Collection auto-selection logic needs improvement when no collection is selected but collections exist
+
+## ✅ COMPLETED: Additional Features Already Implemented
+
+### 1. Collection Management ✅ COMPLETED
+
+- [x] **Collection Rename Functionality**: Full rename modal with validation and error handling ✅
+  - Implementation: `RenameCollectionModal.tsx` with input validation
+  - Integration: Connected to collection cards with rename action
+- [x] **Swipe-to-Delete Collections**: Gesture-based collection management ✅
+  - Implementation: `SwipeableCollectionCard.tsx` with animated swipe gestures
+  - Features: Delete and rename actions accessible via swipe
+
+### 2. Word Management ✅ COMPLETED
+
+- [x] **Swipe-to-Delete Words**: Individual word deletion via swipe gestures ✅
+  - Implementation: `SwipeableWordItem.tsx` with smooth animations
+  - Visual feedback: Red delete background with trash icon
+- [x] **Word Detail Modal**: Comprehensive word information display ✅
+  - Implementation: `WordDetailModal.tsx` with full word analysis
+  - Access: Tap to view from collection screens
+
+### 3. Image Management ✅ COMPLETED
+
+- [x] **Image Selector with Multiple Options**: AI-powered contextual image search ✅
+  - Implementation: `ImageSelector.tsx` with Unsplash/Lorem Picsum integration
+  - Features: Multiple image options based on word context and part of speech
+- [x] **Dynamic Image Updates**: Change word images without disrupting learning flow ✅
+  - Integration: Available in Add Word screen and Word Detail modal
+
+### 4. Enhanced UX ✅ COMPLETED
+
+- [x] **Dark Theme Support**: Complete dark/light theme system ✅
+  - Implementation: Comprehensive color system in `Colors.ts`
+  - Coverage: All components support both themes seamlessly
+
+## 🚨 URGENT FIXES NEEDED
+
+### Collection Auto-Selection Bug 🐛 HIGH PRIORITY
+
+**Issue**: When no collection is selected but collections exist, the user cannot add words efficiently
+**Required Fix**: Auto-select available collection in these scenarios:
+
+1. When user has collections but none is selected during word addition
+2. When currently selected collection is deleted and other collections exist
+3. Ensure seamless word addition flow without manual collection selection
+
+**Impact**: Blocks efficient word addition for existing users
+**Target**: Next hotfix build
+
 ## 🚀 CURRENT WORK (Phase 4.0 - Access Control & Smart Analysis)
 
 ### 1. Tiered Access Control System 📋 PLANNED
@@ -255,13 +339,15 @@ DutchLearningApp/
 
 ## ⏳ FUTURE PHASES
 
-### Phase 4.1: Collection Sharing & Word Management
+### Phase 4.1: Collection Sharing & Enhanced Word Management
 
 - [ ] **Share Collection Button**: Add header action button for sharing collections
 - [ ] **Share Code Generation**: Create unique 8-character codes (e.g., ABC123XY)
-- [ ] **Context Menu System**: Long press on words for management actions
 - [ ] **Deep Link Handling**: Process `dutchapp://share/[code]` URLs
 - [ ] **Selective Word Import**: Choose which words to import and target collection
+- [x] **Context Menu System**: Already implemented via swipe gestures for delete/rename ✅
+- [x] **Collection Rename**: Full modal with validation already implemented ✅
+- [x] **Word Detail Access**: Tap-to-view word details already implemented ✅
 
 ### Phase 5: Gamification & Motivation
 

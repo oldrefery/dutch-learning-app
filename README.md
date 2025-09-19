@@ -90,6 +90,10 @@ The core of the MVP is the intelligent word addition flow. Instead of manual dat
 
 6. The user can review, make minor edits if needed, and save the word to their collection. A new, comprehensive flashcard is created in seconds.
 
+### New User Experience:
+
+For new users who don&apos;t have any collections yet, the app automatically creates a default collection called &quot;My Dutch Words&quot; when they add their first word. This eliminates the barrier of having to create a collection before being able to add words, making the onboarding experience seamless and intuitive.
+
 ## 5. Architecture Diagram
 
 The application uses a modern Backend-as-a-Service (BaaS) architecture, which minimizes the need for a traditional, self-hosted backend.
