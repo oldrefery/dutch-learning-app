@@ -45,7 +45,7 @@ export interface WordCardActionConfig {
 
 export interface UniversalWordCardProps {
   word: WordCardData
-  config?: Partial<WordCardConfig> // Опциональный, принимает частичные изменения
+  config?: Partial<WordCardConfig> // Optional, accepts partial configuration changes
   actions?: WordCardActionConfig
 
   // Audio functionality

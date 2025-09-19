@@ -29,4 +29,11 @@ module.exports = defineConfig([
       'sonarjs/prefer-single-boolean-return': 'warn',
     },
   },
+  {
+    // Disable duplicate string rule for style files
+    files: ['**/*styles.ts', '**/*Styles.ts', '**/styles/*.ts'],
+    rules: {
+      'sonarjs/no-duplicate-string': 'off',
+    },
+  },
 ])

@@ -51,8 +51,8 @@ export const supabaseFunctions = supabase
 
 // Development helper to get dev user ID (hardcoded for simplicity)
 export const getDevUserId = (): string => {
-  // Захардкоженный UUID для разработки
-  // В продакшене это будет браться из реальной авторизации
+  // Hardcoded UUID for development
+  // In production this will be taken from real authentication
   return (
     process.env.EXPO_PUBLIC_DEV_USER_ID ||
     '00000000-0000-0000-0000-000000000000'

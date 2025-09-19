@@ -185,7 +185,7 @@ export default function ReviewScreen() {
         .onEnd(() => {
           'worklet'
           console.log('🔍 DOUBLE TAP: Triggered')
-          scheduleOnRN(handleWordPress)()
+          scheduleOnRN(handleWordPress)
         })
 
       console.log('🔍 RENDER CARD: Double tap gesture created')

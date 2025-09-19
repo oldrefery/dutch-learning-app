@@ -3,7 +3,7 @@ import { View, Text } from 'react-native'
 import { UniversalWordCard } from './UniversalWordCard'
 import type { AnalysisResult } from '@/components/AddWordScreen/types/AddWordTypes'
 
-// Тестовые данные для отладки
+// Test data for debugging
 const testAnalysisResult: AnalysisResult = {
   dutch_lemma: 'kopen',
   part_of_speech: 'verb',

@@ -1,98 +1,146 @@
 import type { Word } from '@/types/database'
+import type { WordAnalysisResponse } from '@/types/GeminiTypes'
 import type { AnalysisResult } from '@/components/AddWordScreen/types/AddWordTypes'
+import type { WordCardData } from '@/components/UniversalWordCard/types'
 
-export function formatWordForCopying(word: Word): string {
-  const sections: string[] = []
+// Type guards for identifying different word data types
+function isWord(data: WordCardData): data is Word {
+  return 'word_id' in data && 'user_id' in data && 'collection_id' in data
+}
 
-  // Word and type
-  sections.push(`Word: ${word.dutch_lemma}`)
+function isWordAnalysisResponse(
+  data: WordCardData
+): data is WordAnalysisResponse {
+  return 'dutch_lemma' in data && !('word_id' in data) && 'synonyms' in data
+}
 
-  if (word.part_of_speech) {
-    let typeInfo = word.part_of_speech
-    if (word.is_irregular) typeInfo += ' (irregular)'
-    if (word.article) typeInfo += ` (${word.article})`
-    if (word.is_reflexive) typeInfo += ' (reflexive)'
-    if (word.is_expression)
-      typeInfo += ` (${word.expression_type || 'expression'})`
-    if (word.is_separable) typeInfo += ' (separable)'
-    sections.push(`Type: ${typeInfo}`)
-  }
+function isAnalysisResult(data: WordCardData): data is AnalysisResult {
+  return 'dutch_lemma' in data && !('word_id' in data) && !('synonyms' in data)
+}
 
-  // Separable verb parts
+// Constants for repeated strings
+const TYPE_MODIFIERS = {
+  IRREGULAR: ' (irregular)',
+  REFLEXIVE: ' (reflexive)',
+  SEPARABLE: ' (separable)',
+} as const
+
+// Helper functions for building sections
+function buildTypeInfo(word: WordCardData): string {
+  if (!word.part_of_speech) return ''
+
+  let typeInfo = word.part_of_speech
+  if (word.is_irregular) typeInfo += TYPE_MODIFIERS.IRREGULAR
+  if (word.article) typeInfo += ` (${word.article})`
+  if (word.is_reflexive) typeInfo += TYPE_MODIFIERS.REFLEXIVE
+  if (word.is_expression)
+    typeInfo += ` (${word.expression_type || 'expression'})`
+  if (word.is_separable) typeInfo += TYPE_MODIFIERS.SEPARABLE
+
+  return `Type: ${typeInfo}`
+}
+
+function buildSeparableParts(word: WordCardData): string | null {
   if (word.is_separable && word.prefix_part && word.root_verb) {
-    sections.push(`Parts: ${word.prefix_part} + ${word.root_verb}`)
+    return `Parts: ${word.prefix_part} + ${word.root_verb}`
   }
+  return null
+}
 
-  // Translations
+function buildTranslations(word: WordCardData): string[] {
+  const translations: string[] = []
+
   if (word.translations) {
     if (word.translations.en && word.translations.en.length > 0) {
-      sections.push(`English: ${word.translations.en.join(', ')}`)
+      translations.push(`English: ${word.translations.en.join(', ')}`)
     }
     if (word.translations.ru && word.translations.ru.length > 0) {
-      sections.push(`Russian: ${word.translations.ru.join(', ')}`)
+      translations.push(`Russian: ${word.translations.ru.join(', ')}`)
     }
   }
 
-  // Examples
-  if (word.examples && word.examples.length > 0) {
-    sections.push('Examples:')
-    word.examples.forEach(example => {
-      sections.push(
-        `• ${example.nl} - ${example.en}${example.ru ? ` - ${example.ru}` : ''}`
-      )
-    })
-  }
+  return translations
+}
 
-  // Synonyms
+function buildExamples(word: WordCardData): string[] {
+  if (!word.examples || word.examples.length === 0) return []
+
+  const examples = ['Examples:']
+  word.examples.forEach(example => {
+    examples.push(
+      `• ${example.nl} - ${example.en}${example.ru ? ` - ${example.ru}` : ''}`
+    )
+  })
+
+  return examples
+}
+
+function buildSynonymsAntonyms(word: WordCardData): string[] {
+  const result: string[] = []
+
+  // Synonyms - different logic for different types
   if ('synonyms' in word && word.synonyms && word.synonyms.length > 0) {
-    sections.push(`Synonyms: ${word.synonyms.join(', ')}`)
+    result.push(`Synonyms: ${word.synonyms.join(', ')}`)
   }
 
-  // Antonyms
+  // Antonyms - different logic for different types
   if ('antonyms' in word && word.antonyms && word.antonyms.length > 0) {
-    sections.push(`Antonyms: ${word.antonyms.join(', ')}`)
+    result.push(`Antonyms: ${word.antonyms.join(', ')}`)
   }
+
+  return result
+}
+
+// Unified formatting function
+function formatWordDataUnified(word: WordCardData): string {
+  const sections: string[] = []
+
+  // Word title
+  sections.push(`Word: ${word.dutch_lemma}`)
+
+  // Type information
+  const typeInfo = buildTypeInfo(word)
+  if (typeInfo) sections.push(typeInfo)
+
+  // Separable parts
+  const separableParts = buildSeparableParts(word)
+  if (separableParts) sections.push(separableParts)
+
+  // Translations
+  sections.push(...buildTranslations(word))
+
+  // Examples
+  sections.push(...buildExamples(word))
+
+  // Synonyms and antonyms
+  sections.push(...buildSynonymsAntonyms(word))
 
   return sections.join('\n\n')
 }
 
+// Type-specific formatters (for backward compatibility)
+function formatWordData(word: Word): string {
+  return formatWordDataUnified(word)
+}
+
+function formatWordAnalysisResponseData(word: WordAnalysisResponse): string {
+  return formatWordDataUnified(word)
+}
+
+// Main function that works with all WordCardData types
+export function formatWordForCopying(word: WordCardData): string {
+  if (isWord(word)) {
+    return formatWordData(word)
+  } else if (isWordAnalysisResponse(word)) {
+    return formatWordAnalysisResponseData(word)
+  } else if (isAnalysisResult(word)) {
+    return formatAnalysisResultForCopying(word)
+  }
+
+  // Fallback for unexpected types (should never happen with proper types)
+  return `Word: ${(word as any).dutch_lemma || 'Unknown'}`
+}
+
 export function formatAnalysisResultForCopying(result: AnalysisResult): string {
-  const sections: string[] = []
-
-  // Word and type
-  sections.push(`Word: ${result.dutch_lemma}`)
-
-  let typeInfo = result.part_of_speech
-  if (result.is_irregular) typeInfo += ' (irregular)'
-  if (result.article) typeInfo += ` (${result.article})`
-  if (result.is_reflexive) typeInfo += ' (reflexive)'
-  if (result.is_expression)
-    typeInfo += ` (${result.expression_type || 'expression'})`
-  if (result.is_separable) typeInfo += ' (separable)'
-  sections.push(`Type: ${typeInfo}`)
-
-  // Separable verb parts
-  if (result.is_separable && result.prefix_part && result.root_verb) {
-    sections.push(`Parts: ${result.prefix_part} + ${result.root_verb}`)
-  }
-
-  // Translations
-  if (result.translations.en && result.translations.en.length > 0) {
-    sections.push(`English: ${result.translations.en.join(', ')}`)
-  }
-  if (result.translations.ru && result.translations.ru.length > 0) {
-    sections.push(`Russian: ${result.translations.ru.join(', ')}`)
-  }
-
-  // Examples
-  if (result.examples && result.examples.length > 0) {
-    sections.push('Examples:')
-    result.examples.forEach(example => {
-      sections.push(
-        `• ${example.nl} - ${example.en}${example.ru ? ` - ${example.ru}` : ''}`
-      )
-    })
-  }
-
-  return sections.join('\n\n')
+  return formatWordDataUnified(result)
 }
