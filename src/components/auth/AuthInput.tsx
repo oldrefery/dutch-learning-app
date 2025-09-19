@@ -4,10 +4,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInputProps,
-  View,
+  useColorScheme,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { TextThemed } from '@/components/Themed'
+import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
 interface AuthInputProps extends TextInputProps {
@@ -25,16 +25,51 @@ export function AuthInput({
 }: AuthInputProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const inputRef = useRef<TextInput>(null)
+  const colorScheme = useColorScheme() ?? 'light'
+
+  const inputBackgroundColor =
+    colorScheme === 'dark'
+      ? Colors.dark.backgroundSecondary
+      : Colors.background.primary
+
+  const borderColor = error
+    ? Colors.error.DEFAULT
+    : colorScheme === 'dark'
+      ? Colors.neutral[600]
+      : Colors.neutral[300]
+
+  const textColor =
+    colorScheme === 'dark' ? Colors.dark.text : Colors.neutral[900]
+
+  const placeholderColor =
+    colorScheme === 'dark' ? Colors.dark.textSecondary : Colors.neutral[500]
+
+  const iconColor =
+    colorScheme === 'dark' ? Colors.dark.textSecondary : Colors.neutral[400]
 
   return (
-    <View style={styles.container}>
-      <TextThemed style={styles.label}>{label}</TextThemed>
-      <View
-        style={[styles.inputContainer, error && styles.inputContainerError]}
+    <ViewThemed style={styles.container}>
+      <TextThemed
+        style={styles.label}
+        lightColor={Colors.neutral[700]}
+        darkColor={Colors.dark.textSecondary}
+      >
+        {label}
+      </TextThemed>
+      <ViewThemed
+        style={[
+          styles.inputContainer,
+          error && styles.inputContainerError,
+          {
+            backgroundColor: inputBackgroundColor,
+            borderColor: borderColor,
+          },
+        ]}
       >
         <TextInput
           ref={inputRef}
-          style={[styles.input, style]}
+          style={[styles.input, { color: textColor }, style]}
+          placeholderTextColor={placeholderColor}
           secureTextEntry={isPassword && !isPasswordVisible}
           autoCapitalize="none"
           autoCorrect={false}
@@ -49,13 +84,13 @@ export function AuthInput({
             <Ionicons
               name={isPasswordVisible ? 'eye-off' : 'eye'}
               size={20}
-              color={Colors.neutral[400]}
+              color={iconColor}
             />
           </TouchableOpacity>
         )}
-      </View>
+      </ViewThemed>
       {error ? <TextThemed style={styles.errorText}>{error}</TextThemed> : null}
-    </View>
+    </ViewThemed>
   )
 }
 
@@ -66,18 +101,15 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: Colors.neutral[700],
     marginBottom: 6,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.neutral[300],
     borderRadius: 8,
     paddingHorizontal: 12,
     minHeight: 48,
-    backgroundColor: Colors.background.primary,
   },
   inputContainerError: {
     borderColor: Colors.error.DEFAULT,
@@ -85,7 +117,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: Colors.neutral[900],
     paddingVertical: 12,
   },
   eyeIcon: {
