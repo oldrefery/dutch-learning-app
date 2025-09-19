@@ -4,7 +4,6 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  TouchableOpacity,
 } from 'react-native'
 import { Link } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -74,89 +73,93 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+    <ViewThemed style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardView}
         >
-          <ViewThemed style={styles.content}>
-            <ViewThemed style={styles.header}>
-              <TextThemed style={styles.title}>Welcome Back</TextThemed>
-              <TextThemed style={styles.subtitle}>
-                Sign in to continue learning Dutch
-              </TextThemed>
-            </ViewThemed>
-
-            <ViewThemed style={styles.form}>
-              <AuthInput
-                label="Email"
-                value={email}
-                onChangeText={handleEmailChange}
-                error={emailError}
-                placeholder="Enter your email"
-                keyboardType="email-address"
-              />
-
-              <AuthInput
-                label="Password"
-                value={password}
-                onChangeText={handlePasswordChange}
-                error={passwordError}
-                placeholder="Enter your password"
-                isPassword
-              />
-
-              {error && (
-                <ViewThemed style={styles.errorContainer}>
-                  <TextThemed style={styles.errorText}>{error}</TextThemed>
-                </ViewThemed>
-              )}
-
-              <AuthButton
-                title="Sign In"
-                onPress={handleSignIn}
-                loading={loading}
-              />
-            </ViewThemed>
-
-            <ViewThemed style={styles.footer}>
-              <TextThemed style={styles.footerText}>
-                Don&apos;t have an account?{' '}
-                <Link href="/signup" asChild>
-                  <TextThemed style={styles.linkText}>Sign up</TextThemed>
-                </Link>
-              </TextThemed>
-
-              {__DEV__ && (
-                <TouchableOpacity
-                  style={styles.devButton}
-                  onPress={() => {
-                    setEmail('test@test.com')
-                    setPassword('test')
-                  }}
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <ViewThemed style={styles.content}>
+              <ViewThemed style={styles.header}>
+                <TextThemed
+                  style={styles.title}
+                  lightColor={Colors.neutral[900]}
+                  darkColor={Colors.dark.text}
                 >
-                  <TextThemed style={styles.devButtonText}>
-                    DEV: Fill Test Data
-                  </TextThemed>
-                </TouchableOpacity>
-              )}
+                  Welcome Back
+                </TextThemed>
+                <TextThemed
+                  style={styles.subtitle}
+                  lightColor={Colors.neutral[600]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  Sign in to continue learning Dutch
+                </TextThemed>
+              </ViewThemed>
+
+              <ViewThemed style={styles.form}>
+                <AuthInput
+                  label="Email"
+                  value={email}
+                  onChangeText={handleEmailChange}
+                  error={emailError}
+                  placeholder="Enter your email"
+                  keyboardType="email-address"
+                />
+
+                <AuthInput
+                  label="Password"
+                  value={password}
+                  onChangeText={handlePasswordChange}
+                  error={passwordError}
+                  placeholder="Enter your password"
+                  isPassword
+                />
+
+                {error && (
+                  <ViewThemed style={styles.errorContainer}>
+                    <TextThemed style={styles.errorText}>{error}</TextThemed>
+                  </ViewThemed>
+                )}
+
+                <AuthButton
+                  title="Sign In"
+                  onPress={handleSignIn}
+                  loading={loading}
+                />
+              </ViewThemed>
+
+              <ViewThemed style={styles.footer}>
+                <TextThemed
+                  style={styles.footerText}
+                  lightColor={Colors.neutral[600]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  Don&apos;t have an account?{' '}
+                  <Link href="/signup" asChild>
+                    <TextThemed style={styles.linkText}>Sign up</TextThemed>
+                  </Link>
+                </TextThemed>
+              </ViewThemed>
             </ViewThemed>
-          </ViewThemed>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </ViewThemed>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
+  },
+  safeArea: {
+    flex: 1,
   },
   keyboardView: {
     flex: 1,
@@ -179,13 +182,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: Colors.neutral[900],
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.neutral[600],
     textAlign: 'center',
   },
   form: {
@@ -209,22 +210,9 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: Colors.neutral[600],
   },
   linkText: {
     color: Colors.primary.DEFAULT,
-    fontWeight: '600',
-  },
-  devButton: {
-    marginTop: 16,
-    padding: 8,
-    backgroundColor: Colors.warning.DEFAULT,
-    borderRadius: 4,
-    alignItems: 'center',
-  },
-  devButtonText: {
-    color: Colors.background.primary,
-    fontSize: 12,
     fontWeight: '600',
   },
 })

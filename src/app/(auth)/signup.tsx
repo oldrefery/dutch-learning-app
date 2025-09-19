@@ -95,112 +95,142 @@ export default function SignupScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+    <ViewThemed style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardView}
         >
-          <ViewThemed style={styles.content}>
-            <ViewThemed style={styles.header}>
-              <TextThemed style={styles.title}>Create Account</TextThemed>
-              <TextThemed style={styles.subtitle}>
-                Join us to start your Dutch learning journey
-              </TextThemed>
-            </ViewThemed>
-
-            <ViewThemed style={styles.form}>
-              <AuthInput
-                label="Email"
-                value={email}
-                onChangeText={handleEmailChange}
-                error={emailError}
-                placeholder="Enter your email"
-                keyboardType="email-address"
-              />
-
-              <AuthInput
-                label="Password"
-                value={password}
-                onChangeText={handlePasswordChange}
-                error={passwordError}
-                placeholder="Create a password"
-                isPassword
-              />
-
-              <AuthInput
-                label="Confirm Password"
-                value={confirmPassword}
-                onChangeText={handleConfirmPasswordChange}
-                error={confirmPasswordError}
-                placeholder="Confirm your password"
-                isPassword
-              />
-
-              <ViewThemed style={styles.passwordRequirements}>
-                <TextThemed style={styles.requirementsTitle}>
-                  Password requirements:
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <ViewThemed style={styles.content}>
+              <ViewThemed style={styles.header}>
+                <TextThemed
+                  style={styles.title}
+                  lightColor={Colors.neutral[900]}
+                  darkColor={Colors.dark.text}
+                >
+                  Create Account
                 </TextThemed>
-                <TextThemed style={styles.requirementText}>
-                  • At least 6 characters long
-                </TextThemed>
-                <TextThemed style={styles.requirementText}>
-                  • Contains at least one letter and one number
+                <TextThemed
+                  style={styles.subtitle}
+                  lightColor={Colors.neutral[600]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  Join us to start your Dutch learning journey
                 </TextThemed>
               </ViewThemed>
 
-              {error && (
-                <ViewThemed
-                  style={[
-                    styles.messageContainer,
-                    error.includes('check your email')
-                      ? styles.successContainer
-                      : styles.errorContainer,
-                  ]}
-                >
+              <ViewThemed style={styles.form}>
+                <AuthInput
+                  label="Email"
+                  value={email}
+                  onChangeText={handleEmailChange}
+                  error={emailError}
+                  placeholder="Enter your email"
+                  keyboardType="email-address"
+                />
+
+                <AuthInput
+                  label="Password"
+                  value={password}
+                  onChangeText={handlePasswordChange}
+                  error={passwordError}
+                  placeholder="Create a password"
+                  isPassword
+                />
+
+                <AuthInput
+                  label="Confirm Password"
+                  value={confirmPassword}
+                  onChangeText={handleConfirmPasswordChange}
+                  error={confirmPasswordError}
+                  placeholder="Confirm your password"
+                  isPassword
+                />
+
+                <ViewThemed style={styles.passwordRequirements}>
                   <TextThemed
-                    style={[
-                      styles.messageText,
-                      error.includes('check your email')
-                        ? styles.successText
-                        : styles.errorText,
-                    ]}
+                    style={styles.requirementsTitle}
+                    lightColor={Colors.neutral[700]}
+                    darkColor={Colors.dark.textSecondary}
                   >
-                    {error}
+                    Password requirements:
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.requirementText}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    • At least 6 characters long
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.requirementText}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    • Contains at least one letter and one number
                   </TextThemed>
                 </ViewThemed>
-              )}
 
-              <AuthButton
-                title="Create Account"
-                onPress={handleSignUp}
-                loading={loading}
-              />
-            </ViewThemed>
+                {error && (
+                  <ViewThemed
+                    style={[
+                      styles.messageContainer,
+                      error.includes('check your email')
+                        ? styles.successContainer
+                        : styles.errorContainer,
+                    ]}
+                  >
+                    <TextThemed
+                      style={[
+                        styles.messageText,
+                        error.includes('check your email')
+                          ? styles.successText
+                          : styles.errorText,
+                      ]}
+                    >
+                      {error}
+                    </TextThemed>
+                  </ViewThemed>
+                )}
 
-            <ViewThemed style={styles.footer}>
-              <TextThemed style={styles.footerText}>
-                Already have an account?{' '}
-                <Link href="/login" asChild>
-                  <TextThemed style={styles.linkText}>Sign in</TextThemed>
-                </Link>
-              </TextThemed>
+                <AuthButton
+                  title="Create Account"
+                  onPress={handleSignUp}
+                  loading={loading}
+                />
+              </ViewThemed>
+
+              <ViewThemed style={styles.footer}>
+                <TextThemed
+                  style={styles.footerText}
+                  lightColor={Colors.neutral[600]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  Already have an account?{' '}
+                  <Link href="/login" asChild>
+                    <TextThemed style={styles.linkText}>Sign in</TextThemed>
+                  </Link>
+                </TextThemed>
+              </ViewThemed>
             </ViewThemed>
-          </ViewThemed>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </ViewThemed>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
+  },
+  safeArea: {
+    flex: 1,
   },
   keyboardView: {
     flex: 1,
@@ -223,13 +253,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: Colors.neutral[900],
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.neutral[600],
     textAlign: 'center',
   },
   form: {
@@ -242,12 +270,10 @@ const styles = StyleSheet.create({
   requirementsTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.neutral[700],
     marginBottom: 4,
   },
   requirementText: {
     fontSize: 12,
-    color: Colors.neutral[600],
     lineHeight: 16,
   },
   messageContainer: {
@@ -279,7 +305,6 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: Colors.neutral[600],
   },
   linkText: {
     color: Colors.primary.DEFAULT,

@@ -1,5 +1,10 @@
 import React from 'react'
-import { TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native'
+import {
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  useColorScheme,
+} from 'react-native'
 import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
@@ -19,6 +24,15 @@ export function AuthButton({
   variant = 'primary',
 }: AuthButtonProps) {
   const isDisabled = loading || disabled
+  const colorScheme = useColorScheme() ?? 'light'
+
+  const primaryTextColor =
+    colorScheme === 'dark' ? Colors.dark.background : Colors.background.primary
+
+  const secondaryTextColor = Colors.primary.DEFAULT
+
+  const activityIndicatorColor =
+    variant === 'primary' ? primaryTextColor : secondaryTextColor
 
   return (
     <TouchableOpacity
@@ -32,21 +46,14 @@ export function AuthButton({
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator
-          color={
-            variant === 'primary'
-              ? Colors.background.primary
-              : Colors.primary.DEFAULT
-          }
-          size="small"
-        />
+        <ActivityIndicator color={activityIndicatorColor} size="small" />
       ) : (
         <TextThemed
           style={[
             styles.buttonText,
             variant === 'primary'
-              ? styles.primaryButtonText
-              : styles.secondaryButtonText,
+              ? { color: primaryTextColor }
+              : { color: secondaryTextColor },
           ]}
         >
           {title}
@@ -84,11 +91,5 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
-  },
-  primaryButtonText: {
-    color: Colors.background.primary,
-  },
-  secondaryButtonText: {
-    color: Colors.primary.DEFAULT,
   },
 })
