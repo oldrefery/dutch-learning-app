@@ -396,6 +396,27 @@ export const collectionService = {
     return data
   },
 
+  // Update collection
+  async updateCollection(
+    collectionId: string,
+    updates: { name: string },
+    userId: string
+  ) {
+    const { data, error } = await supabase
+      .from('collections')
+      .update(updates)
+      .eq('collection_id', collectionId)
+      .eq('user_id', userId)
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to update collection: ${error.message}`)
+    }
+
+    return data
+  },
+
   // Delete collection
   async deleteCollection(collectionId: string, userId: string) {
     // First, delete all words in this collection

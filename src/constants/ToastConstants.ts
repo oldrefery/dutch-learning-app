@@ -20,6 +20,7 @@ export enum ToastMessageType {
   // Error messages
   NO_COLLECTION_SELECTED = 'NO_COLLECTION_SELECTED',
   DELETE_FAILED = 'DELETE_FAILED',
+  UPDATE_FAILED = 'UPDATE_FAILED',
   ADD_WORD_FAILED = 'ADD_WORD_FAILED',
   DELETE_WORD_FAILED = 'DELETE_WORD_FAILED',
   UPDATE_IMAGE_FAILED = 'UPDATE_IMAGE_FAILED',
@@ -47,6 +48,18 @@ export enum ToastConfigType {
   ERROR = 'ERROR',
   INFO = 'INFO',
   WARNING = 'WARNING',
+}
+
+export enum CollectionOperation {
+  CREATED = 'CREATED',
+  DELETED = 'DELETED',
+  UPDATED = 'UPDATED',
+}
+
+export enum CollectionErrorOperation {
+  CREATE = 'CREATE',
+  DELETE = 'DELETE',
+  UPDATE = 'UPDATE',
 }
 
 export const TOAST_MESSAGES: Record<ToastMessageType, ToastMessage> = {
@@ -92,6 +105,10 @@ export const TOAST_MESSAGES: Record<ToastMessageType, ToastMessage> = {
   [ToastMessageType.DELETE_FAILED]: {
     text1: 'Delete Failed',
     text2: 'Failed to delete collection. Please try again.',
+  },
+  [ToastMessageType.UPDATE_FAILED]: {
+    text1: 'Update Failed',
+    text2: 'Failed to update collection. Please try again.',
   },
   [ToastMessageType.ADD_WORD_FAILED]: {
     text1: 'Error Adding Word',

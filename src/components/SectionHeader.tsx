@@ -7,12 +7,14 @@ import { Colors } from '@/constants/Colors'
 interface SectionHeaderProps {
   title: string
   showAddButton?: boolean
+  addButtonText?: string
   onAddPress?: () => void
 }
 
 export default function SectionHeader({
   title,
   showAddButton = false,
+  addButtonText = 'Add',
   onAddPress,
 }: SectionHeaderProps) {
   return (
@@ -21,7 +23,7 @@ export default function SectionHeader({
       {showAddButton && onAddPress && (
         <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
           <Ionicons name="add" size={20} color={Colors.primary.DEFAULT} />
-          <TextThemed style={styles.addButtonText}>Add</TextThemed>
+          <TextThemed style={styles.addButtonText}>{addButtonText}</TextThemed>
         </TouchableOpacity>
       )}
     </ViewThemed>

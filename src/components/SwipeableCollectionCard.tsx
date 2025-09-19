@@ -10,6 +10,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  runOnJS,
 } from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
@@ -21,6 +22,7 @@ interface SwipeableCollectionCardProps {
   words: Word[]
   onPress: () => void
   onDelete: (collectionId: string) => void
+  onRename: (collectionId: string, currentName: string) => Promise<void>
 }
 
 export default function SwipeableCollectionCard({
@@ -28,6 +30,7 @@ export default function SwipeableCollectionCard({
   words,
   onPress,
   onDelete,
+  onRename,
 }: SwipeableCollectionCardProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
@@ -62,14 +65,40 @@ export default function SwipeableCollectionCard({
         {
           text: 'Cancel',
           style: 'cancel',
+          onPress: () => {
+            // Reset position when user cancels deletion
+            translateX.value = withSpring(0)
+          },
         },
         {
           text: 'Delete',
           style: 'destructive',
           onPress: () => onDelete(collection.collection_id),
         },
-      ]
+      ],
+      {
+        onDismiss: () => {
+          // Reset position when alert is dismissed by tapping outside
+          translateX.value = withSpring(0)
+        },
+      }
     )
+  }
+
+  const handleRename = async () => {
+    try {
+      await onRename(collection.collection_id, collection.name)
+      // Reset position after successful rename
+      translateX.value = withSpring(0)
+    } catch (error) {
+      // Reset position on cancel/error
+      translateX.value = withSpring(0)
+
+      // Only log actual errors, not cancellations
+      if (error instanceof Error && error.name !== 'CancelledError') {
+        console.error('Rename failed:', error)
+      }
+    }
   }
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -78,7 +107,14 @@ export default function SwipeableCollectionCard({
     }
   })
 
+  const tapGesture = Gesture.Tap().onEnd(() => {
+    'worklet'
+    runOnJS(onPress)()
+  })
+
   const panGesture = Gesture.Pan()
+    .activeOffsetX([-15, 15]) // Only activate after 15px horizontal movement
+    .failOffsetY([-20, 20]) // Fail if vertical movement exceeds 20px
     .onUpdate(event => {
       'worklet'
       translateX.value = event.translationX
@@ -88,18 +124,42 @@ export default function SwipeableCollectionCard({
       const { translationX } = event
       lastGestureX.current = translationX
 
-      if (translationX < -80) {
-        // Swipe left - show the delete button
+      if (translationX < -150) {
+        // Long swipe left - trigger immediate deletion
+        translateX.value = withSpring(-300, {}, () => {
+          'worklet'
+          // Trigger deletion after animation
+          runOnJS(handleDelete)()
+        })
+      } else if (translationX < -80) {
+        // Short swipe left - show the delete button
         translateX.value = withSpring(-80)
+      } else if (translationX > 80) {
+        // Swipe right - show the rename button
+        translateX.value = withSpring(80)
       } else {
         // Return to the original position
         translateX.value = withSpring(0)
       }
     })
 
+  // Combine gestures - tap gesture will fail if pan gesture activates
+  const combinedGesture = Gesture.Simultaneous(panGesture, tapGesture)
+
   return (
     <ViewThemed style={styles.container}>
-      {/* Delete a button background */}
+      {/* Rename button background (left side) */}
+      <ViewThemed style={styles.renameButton}>
+        <TouchableOpacity
+          style={styles.renameButtonContent}
+          onPress={handleRename}
+        >
+          <Ionicons name="pencil" size={20} color="white" />
+          <TextThemed style={styles.renameButtonText}>Rename</TextThemed>
+        </TouchableOpacity>
+      </ViewThemed>
+
+      {/* Delete button background (right side) */}
       <ViewThemed style={styles.deleteButton}>
         <TouchableOpacity
           style={styles.deleteButtonContent}
@@ -111,7 +171,7 @@ export default function SwipeableCollectionCard({
       </ViewThemed>
 
       {/* Swipeable card */}
-      <GestureDetector gesture={panGesture}>
+      <GestureDetector gesture={combinedGesture}>
         <Animated.View
           style={[
             styles.card,
@@ -124,7 +184,7 @@ export default function SwipeableCollectionCard({
             },
           ]}
         >
-          <TouchableOpacity style={styles.cardContent} onPress={onPress}>
+          <ViewThemed style={styles.cardContent}>
             <ViewThemed style={styles.collectionHeader}>
               <TextThemed style={styles.collectionName}>
                 {collection.name}
@@ -177,7 +237,7 @@ export default function SwipeableCollectionCard({
                 </TextThemed>
               </ViewThemed>
             )}
-          </TouchableOpacity>
+          </ViewThemed>
         </Animated.View>
       </GestureDetector>
     </ViewThemed>
@@ -244,6 +304,27 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     color: Colors.warning.dark,
+  },
+  renameButton: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 80,
+    backgroundColor: Colors.primary.DEFAULT,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  renameButtonContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  renameButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 4,
   },
   deleteButton: {
     position: 'absolute',

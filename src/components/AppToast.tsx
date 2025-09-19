@@ -14,6 +14,8 @@ import {
   ToastType,
   ToastMessageType,
   ToastConfigType,
+  CollectionOperation,
+  CollectionErrorOperation,
 } from '@/constants/ToastConstants'
 
 interface AppToastProps {
@@ -49,7 +51,7 @@ export const AppToast: React.FC<AppToastProps> = ({
  */
 export class ToastService {
   /**
-   * Show a success toast with predefined message
+   * Show a success toast with a predefined message
    */
   static showSuccess = (
     messageType: ToastMessageType,
@@ -64,7 +66,7 @@ export class ToastService {
   }
 
   /**
-   * Show an error toast with predefined message
+   * Show an error toast with a predefined message
    */
   static showError = (messageType: ToastMessageType, customText2?: string) => {
     const message = TOAST_MESSAGES[messageType]
@@ -76,7 +78,7 @@ export class ToastService {
   }
 
   /**
-   * Show an info toast with predefined message
+   * Show an info toast with a predefined message
    */
   static showInfo = (messageType: ToastMessageType, customText2?: string) => {
     const message = TOAST_MESSAGES[messageType]
@@ -88,7 +90,7 @@ export class ToastService {
   }
 
   /**
-   * Show a warning toast with predefined message
+   * Show a warning toast with a predefined message
    */
   static showWarning = (
     messageType: ToastMessageType,
@@ -145,16 +147,24 @@ export class ToastService {
    * Show a collection operation success toast
    */
   static showCollectionSuccess = (
-    operation: 'created' | 'deleted',
+    operation: CollectionOperation,
     collectionName?: string
   ) => {
-    if (operation === 'created') {
+    if (operation === CollectionOperation.CREATED) {
       Toast.show({
         ...TOAST_CONFIGS[ToastConfigType.SUCCESS],
         text1: TOAST_MESSAGES[ToastMessageType.COLLECTION_CREATED].text1,
         text2: collectionName
           ? `"${collectionName}" has been created successfully`
           : TOAST_MESSAGES[ToastMessageType.COLLECTION_CREATED].text2,
+      })
+    } else if (operation === CollectionOperation.UPDATED) {
+      Toast.show({
+        ...TOAST_CONFIGS[ToastConfigType.SUCCESS],
+        text1: 'Collection Updated',
+        text2: collectionName
+          ? `"${collectionName}" has been renamed successfully`
+          : 'Collection has been updated successfully',
       })
     } else {
       Toast.show({
@@ -171,13 +181,18 @@ export class ToastService {
    * Show a collection operation error toast
    */
   static showCollectionError = (
-    operation: 'create' | 'delete',
+    operation: CollectionErrorOperation,
     error?: string
   ) => {
-    const messageType =
-      operation === 'create'
-        ? ToastMessageType.CREATE_COLLECTION_FAILED
-        : ToastMessageType.DELETE_FAILED
+    let messageType: ToastMessageType
+    if (operation === CollectionErrorOperation.CREATE) {
+      messageType = ToastMessageType.CREATE_COLLECTION_FAILED
+    } else if (operation === CollectionErrorOperation.UPDATE) {
+      messageType = ToastMessageType.UPDATE_FAILED
+    } else {
+      messageType = ToastMessageType.DELETE_FAILED
+    }
+
     const message = TOAST_MESSAGES[messageType]
 
     Toast.show({

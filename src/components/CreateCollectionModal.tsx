@@ -10,7 +10,11 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useCollections } from '@/hooks/useCollections'
 import { ToastService } from '@/components/AppToast'
-import { ToastMessageType } from '@/constants/ToastConstants'
+import {
+  ToastMessageType,
+  CollectionOperation,
+  CollectionErrorOperation,
+} from '@/constants/ToastConstants'
 import type { Collection } from '@/types/database'
 
 interface CreateCollectionModalProps {
@@ -38,13 +42,16 @@ export default function CreateCollectionModal({
       setIsCreating(true)
       const newCollection = await createNewCollection(collectionName.trim())
 
-      ToastService.showCollectionSuccess('created', collectionName.trim())
+      ToastService.showCollectionSuccess(
+        CollectionOperation.CREATED,
+        collectionName.trim()
+      )
 
       setCollectionName('')
       onCollectionCreated?.(newCollection)
       onClose()
     } catch {
-      ToastService.showCollectionError('create')
+      ToastService.showCollectionError(CollectionErrorOperation.CREATE)
     } finally {
       setIsCreating(false)
     }
