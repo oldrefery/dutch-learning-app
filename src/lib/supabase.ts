@@ -18,7 +18,7 @@ if (!devUserEmail || !devUserPassword) {
 // Re-export the client for backward compatibility
 export { supabase }
 
-// Development helper: sign in as dev user for RLS to work
+// Development helper: sign in as a dev user for RLS to work
 export const initDevSession = async () => {
   const devUserId = getDevUserId()
 
@@ -29,7 +29,7 @@ export const initDevSession = async () => {
     } = await supabase.auth.getUser()
 
     if (!user || user.id !== devUserId) {
-      // Sign in with real development user
+      // Sign in with a real development user
       // In production, this will be replaced with real authentication
       const { error } = await supabase.auth.signInWithPassword({
         email: devUserEmail,
@@ -46,7 +46,7 @@ export const initDevSession = async () => {
   }
 }
 
-// Create separate client for Edge Functions (also uses anon key)
+// Create a separate client for Edge Functions (also uses an anon key)
 export const supabaseFunctions = supabase
 
 // Development helper to get dev user ID (hardcoded for simplicity)
@@ -81,7 +81,7 @@ export const wordService = {
     return data.data
   },
 
-  // Get all words for user
+  // Get all words for the user
   async getUserWords(userId: string) {
     const { data, error } = await supabase
       .from('words')
@@ -96,7 +96,7 @@ export const wordService = {
     return data
   },
 
-  // Check if word already exists (by dutch_lemma)
+  // Check if the word already exists (by dutch_lemma)
   async checkWordExists(userId: string, dutchLemma: string) {
     const normalizedLemma = dutchLemma.trim().toLowerCase()
 
@@ -202,7 +202,7 @@ export const wordService = {
       repetition_count: SRS_PARAMS.INITIAL.REPETITION_COUNT,
       next_review_date: new Date().toISOString().split('T')[0],
       user_id: userId,
-      ...wordData, // Override with any additional fields from wordData
+      ...wordData, // Override with any additional fields from the wordData
     }
 
     // Use the prepared word data directly
@@ -223,7 +223,7 @@ export const wordService = {
 
   // Update word after review
   async updateWordProgress(wordId: string, assessment: ReviewAssessment) {
-    // First get current word data
+    // First, get current word data
     const { data: currentWord, error: fetchError } = await supabase
       .from('words')
       .select('interval_days, repetition_count, easiness_factor')
@@ -239,7 +239,7 @@ export const wordService = {
     // Extract the assessment string from the assessment object
     const assessmentValue = assessment.assessment
 
-    // Calculate new SRS values using existing function
+    // Calculate new SRS values using the existing function
     const srsUpdate = calculateNextReview({
       interval_days: currentWord.interval_days,
       repetition_count: currentWord.repetition_count,
@@ -296,6 +296,75 @@ export const wordService = {
   },
 }
 
+export const userService = {
+  // Delete a user account and all associated data
+  async deleteAccount() {
+    try {
+      console.log('🗑️ Starting account deletion process...')
+
+      // Get the current session for authorization
+      console.log('📱 Getting current session...')
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession()
+
+      console.log('📱 Session result:', {
+        sessionExists: !!session,
+        sessionError: sessionError?.message,
+        userId: session?.user?.id,
+        tokenExists: !!session?.access_token,
+      })
+
+      if (sessionError || !session) {
+        console.error('❌ No active session found:', sessionError?.message)
+        throw new Error('No active session found')
+      }
+
+      // Call Edge Function with auth token
+      console.log('🚀 Calling delete-account Edge Function...')
+      const { data, error } = await supabase.functions.invoke(
+        'delete-account',
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      )
+
+      // If deletion succeeded, immediately sign out to invalidate any remaining tokens
+      if (!error && data?.success) {
+        console.log(
+          '🔐 Account deleted successfully, signing out to invalidate tokens...'
+        )
+        await supabase.auth.signOut()
+      }
+
+      console.log('🚀 Edge Function response:', {
+        data,
+        error: error?.message,
+        errorDetails: error,
+      })
+
+      if (error) {
+        console.error('❌ Edge Function error:', error)
+        throw new Error(`Failed to delete account: ${error.message}`)
+      }
+
+      if (!data.success) {
+        console.error('❌ Account deletion failed:', data.error)
+        throw new Error(data.error || 'Account deletion failed')
+      }
+
+      console.log('✅ Account successfully deleted!')
+      return { success: true }
+    } catch (error) {
+      console.error('💥 Account deletion error:', error)
+      throw error
+    }
+  },
+}
+
 export const collectionService = {
   // Get user collections
   async getUserCollections(userId: string) {
@@ -312,7 +381,7 @@ export const collectionService = {
     return data
   },
 
-  // Create new collection
+  // Create a new collection
   async createCollection(name: string, userId: string) {
     const { data, error } = await supabase
       .from('collections')
@@ -329,7 +398,7 @@ export const collectionService = {
 
   // Delete collection
   async deleteCollection(collectionId: string, userId: string) {
-    // First delete all words in this collection
+    // First, delete all words in this collection
     const { error: wordsError } = await supabase
       .from('words')
       .delete()

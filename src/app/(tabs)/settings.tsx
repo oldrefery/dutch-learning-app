@@ -4,7 +4,10 @@ import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { supabase } from '@/lib/supabaseClient'
+import { userService } from '@/lib/supabase'
 import { Colors } from '@/constants/Colors'
+import { ToastService } from '@/components/AppToast'
+import { ToastMessageType } from '@/constants/ToastConstants'
 
 export default function SettingsScreen() {
   const handleLogout = async () => {
@@ -18,18 +21,75 @@ export default function SettingsScreen() {
             const { error } = await supabase.auth.signOut()
 
             if (error) {
-              Alert.alert('Error', 'Failed to logout. Please try again.')
+              ToastService.showError(ToastMessageType.LOGOUT_FAILED)
               return
             }
 
             // Navigate to login
             router.replace('/(auth)/login')
           } catch {
-            Alert.alert('Error', 'An unexpected error occurred.')
+            ToastService.showError(ToastMessageType.LOGOUT_FAILED)
           }
         },
       },
     ])
+  }
+
+  const handleDeleteAccount = async () => {
+    // First confirmation - explain what will happen
+    Alert.alert(
+      'Delete Account',
+      'This will permanently delete your account and all your data, including:\n\n• All your saved words and collections\n• Your learning progress\n• Account information\n\nThis action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Continue',
+          style: 'destructive',
+          onPress: () => {
+            // Second confirmation - final warning
+            Alert.alert(
+              'Are you absolutely sure?',
+              'Your account and all data will be permanently deleted. This cannot be undone.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Delete My Account',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      console.log('🎯 User confirmed account deletion')
+                      await userService.deleteAccount()
+
+                      console.log('✅ Showing success toast')
+                      ToastService.showSuccess(ToastMessageType.ACCOUNT_DELETED)
+
+                      // Navigate to login after a short delay
+                      setTimeout(() => {
+                        console.log('🔄 Navigating to login screen')
+                        router.replace('/(auth)/login')
+                      }, 2000)
+                    } catch (error) {
+                      console.error(
+                        '💥 UI error during account deletion:',
+                        error
+                      )
+                      const errorMessage =
+                        error instanceof Error
+                          ? error.message
+                          : 'Unknown error occurred'
+                      ToastService.showError(
+                        ToastMessageType.ACCOUNT_DELETE_FAILED,
+                        errorMessage
+                      )
+                    }
+                  },
+                },
+              ]
+            )
+          },
+        },
+      ]
+    )
   }
 
   return (
@@ -58,6 +118,20 @@ export default function SettingsScreen() {
 
           <TextThemed style={styles.logoutDescription}>
             This will clear your session and return you to the login screen.
+          </TextThemed>
+
+          <TouchableOpacity
+            style={styles.deleteAccountButton}
+            onPress={handleDeleteAccount}
+          >
+            <TextThemed style={styles.deleteAccountButtonText}>
+              Delete Account
+            </TextThemed>
+          </TouchableOpacity>
+
+          <TextThemed style={styles.deleteAccountDescription}>
+            Permanently delete your account and all data. This action cannot be
+            undone.
           </TextThemed>
         </ViewThemed>
 
@@ -126,6 +200,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.neutral[600],
     textAlign: 'center',
+    marginBottom: 20,
+  },
+  deleteAccountButton: {
+    backgroundColor: Colors.error.DEFAULT,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: Colors.error.DEFAULT,
+  },
+  deleteAccountButtonText: {
+    color: Colors.background.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  deleteAccountDescription: {
+    fontSize: 12,
+    color: Colors.error.DEFAULT,
+    textAlign: 'center',
+    fontWeight: '500',
   },
   debugText: {
     fontSize: 14,

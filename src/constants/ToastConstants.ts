@@ -15,6 +15,7 @@ export enum ToastMessageType {
   SESSION_COMPLETE = 'SESSION_COMPLETE',
   IMAGE_UPDATED = 'IMAGE_UPDATED',
   COLLECTION_CREATED = 'COLLECTION_CREATED',
+  ACCOUNT_DELETED = 'ACCOUNT_DELETED',
 
   // Error messages
   NO_COLLECTION_SELECTED = 'NO_COLLECTION_SELECTED',
@@ -26,6 +27,8 @@ export enum ToastMessageType {
   CREATE_COLLECTION_FAILED = 'CREATE_COLLECTION_FAILED',
   ANALYSIS_FAILED = 'ANALYSIS_FAILED',
   AUDIO_PLAYBACK_FAILED = 'AUDIO_PLAYBACK_FAILED',
+  ACCOUNT_DELETE_FAILED = 'ACCOUNT_DELETE_FAILED',
+  LOGOUT_FAILED = 'LOGOUT_FAILED',
 
   // Info messages
   NO_WORDS_FOR_REVIEW = 'NO_WORDS_FOR_REVIEW',
@@ -76,6 +79,10 @@ export const TOAST_MESSAGES: Record<ToastMessageType, ToastMessage> = {
     text1: 'Collection Created',
     text2: 'New collection has been created successfully',
   },
+  [ToastMessageType.ACCOUNT_DELETED]: {
+    text1: 'Account Deleted',
+    text2: 'Your account has been successfully deleted',
+  },
 
   // Error messages
   [ToastMessageType.NO_COLLECTION_SELECTED]: {
@@ -113,6 +120,14 @@ export const TOAST_MESSAGES: Record<ToastMessageType, ToastMessage> = {
   [ToastMessageType.AUDIO_PLAYBACK_FAILED]: {
     text1: 'Audio Error',
     text2: 'Could not play pronunciation',
+  },
+  [ToastMessageType.ACCOUNT_DELETE_FAILED]: {
+    text1: 'Delete Failed',
+    text2: 'Failed to delete account. Please try again.',
+  },
+  [ToastMessageType.LOGOUT_FAILED]: {
+    text1: 'Logout Failed',
+    text2: 'Please try again',
   },
 
   // Info messages
