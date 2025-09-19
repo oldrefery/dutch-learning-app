@@ -5,7 +5,6 @@ import { Colors } from '@/constants/Colors'
 export const reviewScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.neutral[100],
   },
 
   loadingContainer: {

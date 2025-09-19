@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity, Alert } from 'react-native'
+import { TouchableOpacity, Alert, useColorScheme } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
@@ -14,6 +14,7 @@ interface ActionsSectionProps {
 }
 
 export function ActionsSection({ word, actions }: ActionsSectionProps) {
+  const colorScheme = useColorScheme() ?? 'light'
   const hasAnyActions =
     actions.showDeleteButton ||
     actions.showSaveButton ||
@@ -121,7 +122,14 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
 
         {actions.showDeleteButton && actions.onDelete && (
           <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
+            style={[
+              styles.actionButton,
+              styles.deleteButton,
+              colorScheme === 'dark' && {
+                backgroundColor: Colors.error.darkModeChip,
+                borderColor: Colors.error.darkMode,
+              },
+            ]}
             onPress={() => {
               console.log('🗑️ DELETE BUTTON: onPress triggered')
               Alert.alert(
@@ -144,10 +152,18 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
             <Ionicons
               name="trash-outline"
               size={20}
-              color={Colors.error.DEFAULT}
+              color={
+                colorScheme === 'dark'
+                  ? Colors.error.darkMode
+                  : Colors.error.DEFAULT
+              }
             />
             <TextThemed
-              style={[styles.actionButtonText, styles.deleteButtonText]}
+              style={[
+                styles.actionButtonText,
+                styles.deleteButtonText,
+                colorScheme === 'dark' && { color: Colors.error.darkMode },
+              ]}
             >
               Delete Word
             </TextThemed>

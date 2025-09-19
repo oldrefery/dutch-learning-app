@@ -1,6 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import {
-  DarkTheme,
+  DarkTheme as NavigationDarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native'
@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
 import { Sentry } from '@/lib/sentry'
 import { AppToast } from '@/components/AppToast'
+import { Colors } from '@/constants/Colors'
 
 import { useColorScheme } from 'react-native'
 import { SimpleAuthProvider } from '@/contexts/SimpleAuthProvider'
@@ -56,9 +57,24 @@ export default Sentry.wrap(function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme()
 
+  // Create custom dark theme with our color palette
+  const CustomDarkTheme = {
+    ...NavigationDarkTheme,
+    colors: {
+      ...NavigationDarkTheme.colors,
+      background: Colors.dark.background, // Our main background #1C1C1E
+      card: Colors.dark.backgroundSecondary, // Navigation card background
+      text: Colors.dark.text, // Main text
+      border: Colors.neutral[700], // Borders (e.g., header bottom)
+      primary: Colors.dark.tint, // Active elements
+    },
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider
+        value={colorScheme === 'dark' ? CustomDarkTheme : DefaultTheme}
+      >
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

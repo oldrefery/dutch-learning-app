@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   FlatList,
+  useColorScheme,
 } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -25,6 +26,7 @@ export default function CollectionDetailScreen() {
   const [refreshing, setRefreshing] = useState(false)
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
+  const colorScheme = useColorScheme() ?? 'light'
 
   const { words, collections, fetchWords, fetchCollections, deleteWord } =
     useApplicationStore()
@@ -120,7 +122,11 @@ export default function CollectionDetailScreen() {
 
   if (!collection) {
     return (
-      <ViewThemed style={styles.container}>
+      <ViewThemed
+        style={styles.container}
+        lightColor={Colors.background.secondary}
+        darkColor={Colors.dark.background}
+      >
         <ViewThemed style={styles.errorContainer}>
           <TextThemed style={styles.errorText}>Collection not found</TextThemed>
           <TouchableOpacity
@@ -141,7 +147,10 @@ export default function CollectionDetailScreen() {
           title: collection?.name || 'Collection',
           headerBackTitle: 'Back',
           headerStyle: {
-            backgroundColor: Colors.background.secondary,
+            backgroundColor:
+              colorScheme === 'dark'
+                ? Colors.dark.backgroundSecondary
+                : Colors.background.secondary,
           },
           headerTitleStyle: {
             fontWeight: '600',
@@ -149,7 +158,11 @@ export default function CollectionDetailScreen() {
           },
         }}
       />
-      <ViewThemed style={styles.container}>
+      <ViewThemed
+        style={styles.container}
+        lightColor={Colors.background.secondary}
+        darkColor={Colors.dark.background}
+      >
         <FlatList
           style={styles.wordsSection}
           data={collectionWords}
@@ -176,12 +189,24 @@ export default function CollectionDetailScreen() {
               <Ionicons
                 name="book-outline"
                 size={48}
-                color={Colors.neutral[400]}
+                color={
+                  colorScheme === 'dark'
+                    ? Colors.dark.textTertiary
+                    : Colors.neutral[400]
+                }
               />
-              <TextThemed style={styles.emptyText}>
+              <TextThemed
+                style={styles.emptyText}
+                lightColor={Colors.neutral[700]}
+                darkColor={Colors.dark.text}
+              >
                 No words in this collection
               </TextThemed>
-              <TextThemed style={styles.emptySubtext}>
+              <TextThemed
+                style={styles.emptySubtext}
+                lightColor={Colors.neutral[500]}
+                darkColor={Colors.dark.textSecondary}
+              >
                 Add some words to get started
               </TextThemed>
             </ViewThemed>
@@ -219,7 +244,6 @@ export default function CollectionDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.secondary,
   },
   headerContent: {
     paddingTop: 16,
@@ -238,14 +262,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    color: Colors.neutral[700],
     fontWeight: '500',
     marginTop: 16,
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    color: Colors.neutral[500],
     textAlign: 'center',
   },
   errorContainer: {

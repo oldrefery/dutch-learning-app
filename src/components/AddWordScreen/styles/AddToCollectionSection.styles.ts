@@ -6,14 +6,12 @@ export const addToCollectionStyles = StyleSheet.create({
     marginTop: 24,
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: Colors.neutral[200],
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   addToCollectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: Colors.neutral[900],
     marginBottom: 16,
   },
   collectionSelectorContainer: {
@@ -22,11 +20,9 @@ export const addToCollectionStyles = StyleSheet.create({
   collectionLabel: {
     fontSize: 16,
     fontWeight: '500',
-    color: Colors.neutral[700],
     marginBottom: 8,
   },
   addButton: {
-    backgroundColor: Colors.primary.DEFAULT,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,

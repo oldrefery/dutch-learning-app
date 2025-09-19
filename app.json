@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./src/assets/icons/ios-light.png",
     "scheme": "dutchlearning",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./src/assets/icons/splash-icon-light.png",

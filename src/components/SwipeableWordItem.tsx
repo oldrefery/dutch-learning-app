@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react'
-import { StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  useColorScheme,
+} from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   useSharedValue,
@@ -26,6 +31,7 @@ export default function SwipeableWordItem({
   onPress,
   onDelete,
 }: SwipeableWordItemProps) {
+  const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
   const opacity = useSharedValue(0)
   const translateY = useSharedValue(20)
@@ -37,11 +43,39 @@ export default function SwipeableWordItem({
     translateY.value = withTiming(0, { duration: 400 }, () => {})
   }, [opacity, translateY])
 
-  const getStatusColor = () => {
-    if (word.repetition_count > 2) return Colors.success.DEFAULT
-    if (word.repetition_count > 0) return Colors.warning.DEFAULT
-
-    return Colors.neutral[500]
+  const getStatusStyle = () => {
+    if (word.repetition_count > 2)
+      return {
+        backgroundColor:
+          colorScheme === 'dark'
+            ? Colors.success.darkModeChip
+            : Colors.success.light,
+        textColor:
+          colorScheme === 'dark'
+            ? Colors.success.darkModeChipText
+            : Colors.success.DEFAULT,
+      }
+    if (word.repetition_count > 0)
+      return {
+        backgroundColor:
+          colorScheme === 'dark'
+            ? Colors.warning.darkModeBadge
+            : Colors.warning.light,
+        textColor:
+          colorScheme === 'dark'
+            ? Colors.warning.darkModeBadgeText
+            : Colors.warning.dark,
+      }
+    return {
+      backgroundColor:
+        colorScheme === 'dark'
+          ? Colors.dark.backgroundTertiary
+          : Colors.neutral[200],
+      textColor:
+        colorScheme === 'dark'
+          ? Colors.dark.textSecondary
+          : Colors.neutral[600],
+    }
   }
 
   const getStatusText = () => {
@@ -51,6 +85,7 @@ export default function SwipeableWordItem({
     return WordStatusType.NEW
   }
 
+  const statusStyle = getStatusStyle()
   const isDueForReview = new Date(word.next_review_date) <= new Date()
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -127,10 +162,43 @@ export default function SwipeableWordItem({
 
       {/* Main word item with gesture handler */}
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.wordItem, animatedStyle]}>
+        <Animated.View
+          style={[
+            styles.wordItem,
+            animatedStyle,
+            {
+              backgroundColor:
+                colorScheme === 'dark'
+                  ? Colors.dark.backgroundSecondary
+                  : Colors.background.primary,
+            },
+          ]}
+        >
           <TouchableOpacity style={styles.wordContent} onPress={onPress}>
-            <ViewThemed style={styles.wordNumber}>
-              <TextThemed style={styles.wordNumberText}>{index + 1}</TextThemed>
+            <ViewThemed
+              style={[
+                styles.wordNumber,
+                {
+                  backgroundColor:
+                    colorScheme === 'dark'
+                      ? Colors.dark.backgroundSecondary
+                      : Colors.neutral[100],
+                },
+              ]}
+            >
+              <TextThemed
+                style={[
+                  styles.wordNumberText,
+                  {
+                    color:
+                      colorScheme === 'dark'
+                        ? Colors.dark.textSecondary
+                        : Colors.neutral[500],
+                  },
+                ]}
+              >
+                {index + 1}
+              </TextThemed>
             </ViewThemed>
             <ViewThemed style={styles.wordInfo}>
               <ViewThemed style={styles.wordHeader}>
@@ -138,13 +206,33 @@ export default function SwipeableWordItem({
                   {word.dutch_original || word.dutch_lemma}
                 </TextThemed>
                 {word.article && (
-                  <TextThemed style={styles.articleText}>
+                  <TextThemed
+                    style={[
+                      styles.articleText,
+                      {
+                        color:
+                          colorScheme === 'dark'
+                            ? Colors.dark.textSecondary
+                            : Colors.neutral[500],
+                      },
+                    ]}
+                  >
                     ({word.article})
                   </TextThemed>
                 )}
               </ViewThemed>
 
-              <TextThemed style={styles.translationText}>
+              <TextThemed
+                style={[
+                  styles.translationText,
+                  {
+                    color:
+                      colorScheme === 'dark'
+                        ? Colors.dark.textSecondary
+                        : Colors.neutral[500],
+                  },
+                ]}
+              >
                 {word.translations.en?.[0] || 'No translation'}
               </TextThemed>
 
@@ -152,17 +240,36 @@ export default function SwipeableWordItem({
                 <ViewThemed
                   style={[
                     styles.statusBadge,
-                    { backgroundColor: getStatusColor() },
+                    { backgroundColor: statusStyle.backgroundColor },
                   ]}
                 >
-                  <TextThemed style={styles.statusText}>
+                  <TextThemed
+                    style={[
+                      styles.statusText,
+                      { color: statusStyle.textColor },
+                    ]}
+                  >
                     {getStatusText()}
                   </TextThemed>
                 </ViewThemed>
 
                 {isDueForReview && (
-                  <ViewThemed style={styles.reviewBadge}>
-                    <TextThemed style={styles.reviewText}>
+                  <ViewThemed
+                    style={[
+                      styles.reviewBadge,
+                      colorScheme === 'dark' && {
+                        backgroundColor: Colors.warning.darkModeBadge,
+                      },
+                    ]}
+                  >
+                    <TextThemed
+                      style={[
+                        styles.reviewText,
+                        colorScheme === 'dark' && {
+                          color: Colors.warning.darkModeBadgeText,
+                        },
+                      ]}
+                    >
                       Due for review
                     </TextThemed>
                   </ViewThemed>
@@ -173,7 +280,11 @@ export default function SwipeableWordItem({
             <Ionicons
               name="chevron-forward"
               size={20}
-              color={Colors.neutral[400]}
+              color={
+                colorScheme === 'dark'
+                  ? Colors.dark.textTertiary
+                  : Colors.neutral[400]
+              }
             />
           </TouchableOpacity>
         </Animated.View>
@@ -207,7 +318,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   wordItem: {
-    backgroundColor: Colors.background.primary,
     borderRadius: 8,
     shadowColor: Colors.legacy.black,
     shadowOffset: { width: 0, height: 1 },
@@ -224,7 +334,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.neutral[100],
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -232,7 +341,6 @@ const styles = StyleSheet.create({
   wordNumberText: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.neutral[500],
   },
   wordInfo: {
     flex: 1,
@@ -245,16 +353,13 @@ const styles = StyleSheet.create({
   wordText: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.neutral[900],
   },
   articleText: {
     fontSize: 14,
-    color: Colors.neutral[500],
     marginLeft: 8,
   },
   translationText: {
     fontSize: 14,
-    color: Colors.neutral[500],
     marginBottom: 8,
   },
   wordFooter: {
@@ -270,7 +375,6 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontWeight: '500',
-    color: Colors.background.primary,
   },
   reviewBadge: {
     backgroundColor: Colors.warning.light,

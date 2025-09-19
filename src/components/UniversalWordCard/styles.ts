@@ -4,7 +4,6 @@ import { Colors } from '@/constants/Colors'
 export const styles = StyleSheet.create({
   // Main container
   container: {
-    backgroundColor: Colors.background.primary,
     minHeight: 100,
     width: '100%',
   },
@@ -36,7 +35,6 @@ export const styles = StyleSheet.create({
   wordTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: Colors.text.primary,
     flex: 1,
   },
   compactWordTitle: {
@@ -96,7 +94,6 @@ export const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.text.primary,
     marginBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
@@ -132,7 +129,6 @@ export const styles = StyleSheet.create({
   },
   translationText: {
     fontSize: 16,
-    color: Colors.text.primary,
     flex: 1,
   },
   compactTranslationText: {
@@ -141,7 +137,6 @@ export const styles = StyleSheet.create({
 
   // Examples
   exampleCard: {
-    backgroundColor: Colors.background.secondary,
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
@@ -154,7 +149,6 @@ export const styles = StyleSheet.create({
   exampleDutch: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.text.primary,
     marginBottom: 4,
   },
   compactExampleDutch: {
@@ -162,7 +156,6 @@ export const styles = StyleSheet.create({
   },
   exampleTranslation: {
     fontSize: 14,
-    color: Colors.text.secondary,
     marginBottom: 2,
   },
   compactExampleTranslation: {
@@ -285,9 +278,7 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
     marginLeft: 8,
   },
-  deleteButtonText: {
-    color: Colors.error.DEFAULT,
-  },
+  deleteButtonText: {},
   saveButtonText: {
     color: Colors.success.DEFAULT,
   },
@@ -297,7 +288,7 @@ export const styles = StyleSheet.create({
     backgroundColor: Colors.background.secondary,
     padding: 12,
     borderRadius: 8,
-    marginBottom: 8,
+    marginBottom: 16,
   },
   statusRow: {
     flexDirection: 'row',
@@ -306,11 +297,9 @@ export const styles = StyleSheet.create({
   },
   statusLabel: {
     fontSize: 14,
-    color: Colors.text.secondary,
   },
   statusValue: {
     fontSize: 14,
-    color: Colors.text.primary,
     fontWeight: '500',
   },
 

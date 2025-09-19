@@ -1,10 +1,13 @@
 import React from 'react'
+import { useColorScheme } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { SelectableText } from '@/components/SelectableText'
 import { styles } from '../styles'
+import { Colors } from '@/constants/Colors'
 import type { WordSectionProps } from '../types'
 
 export function ExamplesSection({ word, config }: WordSectionProps) {
+  const colorScheme = useColorScheme() ?? 'light'
   if (!config.showExamples || !word.examples || word.examples.length === 0) {
     return null
   }
@@ -30,6 +33,8 @@ export function ExamplesSection({ word, config }: WordSectionProps) {
             styles.exampleCard,
             config.compact && styles.compactExampleCard,
           ]}
+          lightColor={Colors.background.secondary}
+          darkColor={Colors.dark.backgroundSecondary}
         >
           <SelectableText
             style={[
@@ -45,6 +50,12 @@ export function ExamplesSection({ word, config }: WordSectionProps) {
             style={[
               styles.exampleTranslation,
               config.compact && styles.compactExampleTranslation,
+              {
+                color:
+                  colorScheme === 'dark'
+                    ? Colors.dark.textSecondary
+                    : Colors.text.secondary,
+              },
             ]}
             copyText={example.en}
           >
@@ -56,6 +67,12 @@ export function ExamplesSection({ word, config }: WordSectionProps) {
               style={[
                 styles.exampleTranslation,
                 config.compact && styles.compactExampleTranslation,
+                {
+                  color:
+                    colorScheme === 'dark'
+                      ? Colors.dark.textSecondary
+                      : Colors.text.secondary,
+                },
               ]}
               copyText={example.ru}
             >

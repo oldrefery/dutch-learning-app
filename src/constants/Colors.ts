@@ -1,6 +1,11 @@
 /**
  * Centralized color system with semantic naming
  * Following best practices for design system color management
+ *
+ * TODO: Consider platform-specific color variants in future updates
+ * - iOS: Current implementation (#1C1C1E background)
+ * - Android: Could use Material Design (#121212 background)
+ * - Implementation: Platform.select() for dark theme backgrounds
  */
 
 // Color palette
@@ -10,6 +15,7 @@ const colorPalette = {
     DEFAULT: '#3B82F6',
     dark: '#1D4ED8',
     light: '#EBF4FF',
+    darkMode: '#409CFF', // Less saturated blue for dark backgrounds
   },
 
   // Neutral colors - used for text, borders, backgrounds
@@ -29,28 +35,58 @@ const colorPalette = {
   // Status colors - used for feedback and states
   success: {
     DEFAULT: '#10B981',
+    dark: '#34D399', // Lighter version for dark backgrounds
     light: '#ECFDF5',
     lightest: '#F0FDF4',
     border: '#BBF7D0',
+    darkModeChip: 'rgba(52, 211, 153, 0.15)', // Chip background for dark mode
+    darkModeChipText: '#34D399', // Chip text for dark mode
   },
 
   warning: {
     DEFAULT: '#F59E0B',
+    dark: '#FBBF24', // Lighter version for dark backgrounds
     light: '#FEF3C7',
-    dark: '#92400E',
+    darkTheme: '#92400E',
+    darkModeBadge: 'rgba(245, 158, 11, 0.2)', // Semi-transparent bg for badges in dark mode
+    darkModeBadgeText: '#FBBF24', // Bright text for badges in dark mode
   },
 
   error: {
     DEFAULT: '#EF4444',
+    dark: '#F87171', // Lighter version for dark backgrounds
     light: '#FEF2F2',
     lightest: '#FEF2F2',
     border: '#FECACA',
+    darkMode: '#FF453A', // Apple HIG compliant red for dark theme
+    darkModeChip: 'rgba(255, 69, 58, 0.15)', // Chip background for dark mode
+    darkModeChipText: '#FF453A', // Chip text for dark mode
   },
 
   // Surface colors - used for backgrounds and containers
   background: {
     primary: '#FFFFFF',
     secondary: '#F8FAFC',
+  },
+
+  // Surface system for elevation and hierarchy
+  surface: {
+    // Light theme surfaces
+    light: {
+      primary: '#FFFFFF', // Main background
+      secondary: '#F8FAFC', // Secondary background
+      tertiary: '#F1F5F9', // Cards, containers
+      elevated: '#FFFFFF', // Modal, popover backgrounds
+      overlay: 'rgba(0, 0, 0, 0.05)', // Overlays
+    },
+    // Dark theme surfaces
+    dark: {
+      primary: '#1C1C1E', // Main background (iOS style)
+      secondary: '#2C2C2E', // Secondary background
+      tertiary: '#3A3A3C', // Cards, containers
+      elevated: '#48484A', // Modal, popover backgrounds
+      overlay: 'rgba(255, 255, 255, 0.05)', // Overlays
+    },
   },
 
   // Link colors
@@ -92,29 +128,68 @@ const colorPalette = {
   },
 }
 
-// Theme configurations
+// Enhanced theme configurations following 2025 guidelines
 const themes = {
   light: {
-    text: colorPalette.neutral[900],
-    background: colorPalette.background.primary,
-    tint: colorPalette.legacy.tintColorLight,
-    tabIconDefault: colorPalette.legacy.lightGray,
-    tabIconSelected: colorPalette.legacy.tintColorLight,
+    // Text colors
+    text: colorPalette.neutral[900], // Primary text
+    textSecondary: colorPalette.neutral[600], // Secondary text
+    textTertiary: colorPalette.neutral[500], // Tertiary text
+
+    // Background colors
+    background: colorPalette.surface.light.primary,
+    backgroundSecondary: colorPalette.surface.light.secondary,
+    backgroundTertiary: colorPalette.surface.light.tertiary,
+    backgroundElevated: colorPalette.surface.light.elevated,
+
+    // Interactive colors
+    tint: colorPalette.primary.DEFAULT,
+    tabIconDefault: colorPalette.neutral[400],
+    tabIconSelected: colorPalette.primary.DEFAULT,
+
+    // Status colors for light theme
+    success: colorPalette.success.DEFAULT,
+    warning: colorPalette.warning.DEFAULT,
+    error: colorPalette.error.DEFAULT,
   },
   dark: {
-    text: colorPalette.background.primary,
-    background: colorPalette.legacy.black,
-    tint: colorPalette.background.primary,
-    tabIconDefault: colorPalette.legacy.lightGray,
-    tabIconSelected: colorPalette.background.primary,
+    // Text colors - optimized contrast for dark theme
+    text: '#E5E5E7', // Primary text (softer than pure white)
+    textSecondary: 'rgba(255, 255, 255, 0.6)', // Secondary text
+    textTertiary: 'rgba(255, 255, 255, 0.4)', // Tertiary text
+
+    // Background colors - modern dark theme hierarchy
+    background: colorPalette.surface.dark.primary, // #1C1C1E
+    backgroundSecondary: colorPalette.surface.dark.secondary, // #2C2C2E
+    backgroundTertiary: colorPalette.surface.dark.tertiary, // #3A3A3C
+    backgroundElevated: colorPalette.surface.dark.elevated, // #48484A
+
+    // Interactive colors
+    tint: colorPalette.primary.darkMode, // Use darkMode primary for better contrast
+    tabIconDefault: colorPalette.neutral[500],
+    tabIconSelected: '#E5E5E7',
+
+    // Status colors adapted for dark theme
+    success: colorPalette.success.dark, // #34D399
+    warning: colorPalette.warning.dark, // #FBBF24
+    error: colorPalette.error.darkMode, // #FF453A (Apple HIG)
   },
 }
 
-// Add text color objects to match usage in components
+// Enhanced text color system for both themes
 const textColors = {
   text: {
-    primary: colorPalette.neutral[900],
-    secondary: colorPalette.neutral[600],
+    // Light theme text colors
+    primary: colorPalette.neutral[900], // Main text
+    secondary: colorPalette.neutral[600], // Secondary text
+    tertiary: colorPalette.neutral[500], // Tertiary text
+    disabled: colorPalette.neutral[400], // Disabled text
+
+    // Dark theme text colors
+    primaryDark: '#E5E5E7', // Main text in dark theme
+    secondaryDark: 'rgba(255, 255, 255, 0.6)', // Secondary text in dark theme
+    tertiaryDark: 'rgba(255, 255, 255, 0.4)', // Tertiary text in dark theme
+    disabledDark: 'rgba(255, 255, 255, 0.3)', // Disabled text in dark theme
   },
 }
 

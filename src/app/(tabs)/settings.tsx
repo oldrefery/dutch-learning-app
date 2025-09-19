@@ -1,5 +1,11 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity, Alert, Button } from 'react-native'
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Button,
+  useColorScheme,
+} from 'react-native'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ViewThemed, TextThemed } from '@/components/Themed'
@@ -10,6 +16,7 @@ import { ToastService } from '@/components/AppToast'
 import { ToastMessageType } from '@/constants/ToastConstants'
 
 export default function SettingsScreen() {
+  const colorScheme = useColorScheme() ?? 'light'
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
@@ -97,7 +104,11 @@ export default function SettingsScreen() {
       <ViewThemed style={styles.content}>
         <ViewThemed style={styles.header}>
           <TextThemed style={styles.title}>Settings</TextThemed>
-          <TextThemed style={styles.subtitle}>
+          <TextThemed
+            style={styles.subtitle}
+            lightColor={Colors.neutral[600]}
+            darkColor={Colors.dark.textSecondary}
+          >
             Manage your account and app preferences
           </TextThemed>
         </ViewThemed>
@@ -109,19 +120,50 @@ export default function SettingsScreen() {
           }}
         />
 
-        <ViewThemed style={styles.section}>
+        <ViewThemed
+          style={styles.section}
+          lightColor={Colors.background.secondary}
+          darkColor={Colors.dark.backgroundSecondary}
+        >
           <TextThemed style={styles.sectionTitle}>Account</TextThemed>
 
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <TouchableOpacity
+            style={[
+              styles.logoutButton,
+              {
+                backgroundColor:
+                  colorScheme === 'dark'
+                    ? Colors.dark.error
+                    : Colors.error.DEFAULT,
+              },
+            ]}
+            onPress={handleLogout}
+          >
             <TextThemed style={styles.logoutButtonText}>Logout</TextThemed>
           </TouchableOpacity>
 
-          <TextThemed style={styles.logoutDescription}>
+          <TextThemed
+            style={styles.logoutDescription}
+            lightColor={Colors.neutral[600]}
+            darkColor={Colors.dark.textSecondary}
+          >
             This will clear your session and return you to the login screen.
           </TextThemed>
 
           <TouchableOpacity
-            style={styles.deleteAccountButton}
+            style={[
+              styles.deleteAccountButton,
+              {
+                backgroundColor:
+                  colorScheme === 'dark'
+                    ? Colors.dark.error
+                    : Colors.error.DEFAULT,
+                borderColor:
+                  colorScheme === 'dark'
+                    ? Colors.dark.error
+                    : Colors.error.DEFAULT,
+              },
+            ]}
             onPress={handleDeleteAccount}
           >
             <TextThemed style={styles.deleteAccountButtonText}>
@@ -129,15 +171,33 @@ export default function SettingsScreen() {
             </TextThemed>
           </TouchableOpacity>
 
-          <TextThemed style={styles.deleteAccountDescription}>
+          <TextThemed
+            style={[
+              styles.deleteAccountDescription,
+              {
+                color:
+                  colorScheme === 'dark'
+                    ? Colors.dark.error
+                    : Colors.error.DEFAULT,
+              },
+            ]}
+          >
             Permanently delete your account and all data. This action cannot be
             undone.
           </TextThemed>
         </ViewThemed>
 
-        <ViewThemed style={styles.section}>
+        <ViewThemed
+          style={styles.section}
+          lightColor={Colors.background.secondary}
+          darkColor={Colors.dark.backgroundSecondary}
+        >
           <TextThemed style={styles.sectionTitle}>About</TextThemed>
-          <TextThemed style={styles.debugText}>
+          <TextThemed
+            style={styles.debugText}
+            lightColor={Colors.neutral[600]}
+            darkColor={Colors.dark.textSecondary}
+          >
             Dutch Learning App - Version 1.0
           </TextThemed>
         </ViewThemed>
@@ -149,7 +209,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
   },
   content: {
     flex: 1,
@@ -162,29 +221,24 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: Colors.neutral[900],
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: Colors.neutral[600],
     textAlign: 'center',
   },
   section: {
     marginBottom: 32,
     padding: 20,
-    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: Colors.neutral[900],
     marginBottom: 16,
   },
   logoutButton: {
-    backgroundColor: Colors.error.DEFAULT,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
@@ -198,19 +252,16 @@ const styles = StyleSheet.create({
   },
   logoutDescription: {
     fontSize: 14,
-    color: Colors.neutral[600],
     textAlign: 'center',
     marginBottom: 20,
   },
   deleteAccountButton: {
-    backgroundColor: Colors.error.DEFAULT,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 12,
     borderWidth: 2,
-    borderColor: Colors.error.DEFAULT,
   },
   deleteAccountButtonText: {
     color: Colors.background.primary,
@@ -219,13 +270,11 @@ const styles = StyleSheet.create({
   },
   deleteAccountDescription: {
     fontSize: 12,
-    color: Colors.error.DEFAULT,
     textAlign: 'center',
     fontWeight: '500',
   },
   debugText: {
     fontSize: 14,
-    color: Colors.neutral[600],
     fontStyle: 'italic',
   },
 })

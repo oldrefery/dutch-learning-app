@@ -155,6 +155,17 @@
    - Create word details modal with collection name and SRS data
    - Preserve learning focus while providing contextual information
 
+## 🎨 FUTURE UI/UX IMPROVEMENTS
+
+### Platform-Specific Theming (Phase 6+)
+
+- **Platform-dependent dark theme colors**:
+  - iOS: `#1C1C1E` background (current implementation)
+  - Android: `#121212` background (Material Design)
+  - Implementation via `Platform.select()` for optimal native experience
+- **Platform-specific surface hierarchies**
+- **Native-feeling status colors and interactions**
+
 ---
 
 ## 🎉 ACHIEVEMENT SUMMARY

@@ -1,5 +1,10 @@
 import React, { useRef } from 'react'
-import { StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  useColorScheme,
+} from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   useSharedValue,
@@ -24,6 +29,7 @@ export default function SwipeableCollectionCard({
   onPress,
   onDelete,
 }: SwipeableCollectionCardProps) {
+  const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
   const lastGestureX = useRef<number>(0)
 
@@ -106,13 +112,28 @@ export default function SwipeableCollectionCard({
 
       {/* Swipeable card */}
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.card, animatedStyle]}>
+        <Animated.View
+          style={[
+            styles.card,
+            animatedStyle,
+            {
+              backgroundColor:
+                colorScheme === 'dark'
+                  ? Colors.dark.backgroundSecondary
+                  : Colors.background.primary,
+            },
+          ]}
+        >
           <TouchableOpacity style={styles.cardContent} onPress={onPress}>
             <ViewThemed style={styles.collectionHeader}>
               <TextThemed style={styles.collectionName}>
                 {collection.name}
               </TextThemed>
-              <TextThemed style={styles.collectionStats}>
+              <TextThemed
+                style={styles.collectionStats}
+                lightColor={Colors.neutral[500]}
+                darkColor={Colors.dark.textSecondary}
+              >
                 {stats.totalWords} words • {stats.progressPercentage}% mastered
               </TextThemed>
             </ViewThemed>
@@ -126,14 +147,32 @@ export default function SwipeableCollectionCard({
                   ]}
                 />
               </ViewThemed>
-              <TextThemed style={styles.progressText}>
+              <TextThemed
+                style={styles.progressText}
+                lightColor={Colors.neutral[500]}
+                darkColor={Colors.dark.textSecondary}
+              >
                 {stats.masteredWords}/{stats.totalWords} mastered
               </TextThemed>
             </ViewThemed>
 
             {stats.wordsToReview > 0 && (
-              <ViewThemed style={styles.reviewBadge}>
-                <TextThemed style={styles.reviewBadgeText}>
+              <ViewThemed
+                style={[
+                  styles.reviewBadge,
+                  colorScheme === 'dark' && {
+                    backgroundColor: Colors.warning.darkModeBadge,
+                  },
+                ]}
+              >
+                <TextThemed
+                  style={[
+                    styles.reviewBadgeText,
+                    colorScheme === 'dark' && {
+                      color: Colors.warning.darkModeBadgeText,
+                    },
+                  ]}
+                >
                   {stats.wordsToReview} for review
                 </TextThemed>
               </ViewThemed>
@@ -153,7 +192,6 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   card: {
-    backgroundColor: Colors.background.primary,
     padding: 16,
     shadowColor: Colors.legacy.black,
     shadowOffset: { width: 0, height: 2 },
@@ -171,12 +209,10 @@ const styles = StyleSheet.create({
   collectionName: {
     fontSize: 18,
     fontWeight: '600',
-    color: Colors.neutral[900],
     marginBottom: 4,
   },
   collectionStats: {
     fontSize: 14,
-    color: Colors.neutral[500],
   },
   collectionProgress: {
     marginBottom: 12,
@@ -195,7 +231,6 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 12,
-    color: Colors.neutral[500],
     textAlign: 'center',
   },
   reviewBadge: {

@@ -16,9 +16,17 @@ interface StatsCardProps {
 
 export default function StatsCard({ stats, loading = false }: StatsCardProps) {
   return (
-    <ViewThemed style={styles.statsCard}>
+    <ViewThemed
+      style={styles.statsCard}
+      lightColor={Colors.background.secondary}
+      darkColor={Colors.dark.backgroundSecondary}
+    >
       <TextThemed style={styles.statsTitle}>Today&apos;s Progress</TextThemed>
-      <TextThemed style={styles.statsSubtitle}>
+      <TextThemed
+        style={styles.statsSubtitle}
+        lightColor={Colors.neutral[500]}
+        darkColor={Colors.dark.textSecondary}
+      >
         Across all collections
       </TextThemed>
       <ViewThemed style={styles.statsRow}>
@@ -30,7 +38,13 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
               {stats.totalWords}
             </TextThemed>
           )}
-          <TextThemed style={styles.statLabel}>Total Words</TextThemed>
+          <TextThemed
+            style={styles.statLabel}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            Total Words
+          </TextThemed>
         </ViewThemed>
         <ViewThemed style={styles.statItem}>
           {loading ? (
@@ -45,7 +59,13 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
               {stats.masteredWords}
             </TextThemed>
           )}
-          <TextThemed style={styles.statLabel}>Mastered</TextThemed>
+          <TextThemed
+            style={styles.statLabel}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            Mastered
+          </TextThemed>
         </ViewThemed>
       </ViewThemed>
       <ViewThemed style={styles.statsRow}>
@@ -62,7 +82,13 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
               {stats.wordsForReview}
             </TextThemed>
           )}
-          <TextThemed style={styles.statLabel}>For Review</TextThemed>
+          <TextThemed
+            style={styles.statLabel}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            For Review
+          </TextThemed>
         </ViewThemed>
         <ViewThemed style={styles.statItem}>
           {loading ? (
@@ -77,7 +103,13 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
               {stats.streakDays}
             </TextThemed>
           )}
-          <TextThemed style={styles.statLabel}>Day Streak</TextThemed>
+          <TextThemed
+            style={styles.statLabel}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            Day Streak
+          </TextThemed>
         </ViewThemed>
       </ViewThemed>
     </ViewThemed>
@@ -86,7 +118,6 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
 
 const styles = StyleSheet.create({
   statsCard: {
-    backgroundColor: Colors.background.secondary,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
@@ -98,7 +129,6 @@ const styles = StyleSheet.create({
   },
   statsSubtitle: {
     fontSize: 14,
-    color: Colors.neutral[500],
     marginBottom: 12,
   },
   statsRow: {
@@ -113,11 +143,9 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: Colors.neutral[900],
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 14,
-    color: Colors.neutral[500],
   },
 })

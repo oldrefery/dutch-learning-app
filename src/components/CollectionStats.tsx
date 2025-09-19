@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, useColorScheme } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
@@ -13,8 +13,20 @@ interface CollectionStatsProps {
 }
 
 export default function CollectionStats({ stats }: CollectionStatsProps) {
+  const colorScheme = useColorScheme() ?? 'light'
+
   return (
-    <ViewThemed style={styles.statsCard}>
+    <ViewThemed
+      style={[
+        styles.statsCard,
+        {
+          backgroundColor:
+            colorScheme === 'dark'
+              ? Colors.dark.backgroundSecondary
+              : Colors.background.primary,
+        },
+      ]}
+    >
       <TextThemed style={styles.statsTitle}>Collection Statistics</TextThemed>
       <ViewThemed style={styles.statsGrid}>
         <ViewThemed style={styles.statItem}>
@@ -44,7 +56,6 @@ export default function CollectionStats({ stats }: CollectionStatsProps) {
 
 const styles = StyleSheet.create({
   statsCard: {
-    backgroundColor: Colors.background.primary,
     marginHorizontal: 16,
     marginTop: 16,
     borderRadius: 12,
@@ -53,7 +64,6 @@ const styles = StyleSheet.create({
   statsTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: Colors.neutral[900],
     marginBottom: 16,
   },
   statsGrid: {
@@ -69,11 +79,9 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: '700',
-    color: Colors.neutral[900],
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 14,
-    color: Colors.neutral[500],
   },
 })
