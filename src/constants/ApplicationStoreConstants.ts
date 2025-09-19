@@ -9,6 +9,7 @@ export const APPLICATION_STORE_CONSTANTS = {
     WORD_DELETE_FAILED: 'Failed to delete word',
     COLLECTION_CREATE_FAILED: 'Failed to create collection',
     COLLECTION_DELETE_FAILED: 'Failed to delete collection',
+    COLLECTION_UPDATE_FAILED: 'Failed to update collection',
     REVIEW_SESSION_START_FAILED: 'Failed to start review session',
     REVIEW_ASSESSMENT_SUBMIT_FAILED: 'Failed to submit review assessment',
   },

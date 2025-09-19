@@ -51,6 +51,7 @@ export interface ApplicationState {
   fetchCollections: () => Promise<void>
   createNewCollection: (name: string) => Promise<Collection>
   deleteCollection: (collectionId: string) => Promise<void>
+  renameCollection: (collectionId: string, newName: string) => Promise<void>
 
   // Review session actions
   startReviewSession: () => Promise<void>
