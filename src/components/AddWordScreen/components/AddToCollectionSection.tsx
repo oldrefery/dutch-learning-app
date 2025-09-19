@@ -59,13 +59,13 @@ export function AddToCollectionSection({
           isAdding && addToCollectionStyles.addButtonDisabled,
         ]}
         onPress={onAddWord}
-        disabled={isAdding || !selectedCollection}
+        disabled={isAdding}
       >
         {isAdding ? (
           <ActivityIndicator size="small" color="white" />
         ) : (
           <TextThemed style={addToCollectionStyles.addButtonText}>
-            Add Word
+            {selectedCollection ? 'Add Word' : 'Add Word & Create Collection'}
           </TextThemed>
         )}
       </TouchableOpacity>

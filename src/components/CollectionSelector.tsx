@@ -153,14 +153,15 @@ export default function CollectionSelector({
         lightColor={Colors.neutral[700]}
         darkColor={Colors.dark.text}
       >
-        No collections found
+        No collections yet
       </TextThemed>
       <TextThemed
         style={styles.emptySubtext}
         lightColor={Colors.neutral[500]}
         darkColor={Colors.dark.textSecondary}
       >
-        Create your first collection to get started
+        Don&apos;t worry! A default collection will be created automatically
+        when you add your first word
       </TextThemed>
     </ViewThemed>
   )
@@ -214,7 +215,12 @@ export default function CollectionSelector({
             lightColor={Colors.neutral[700]}
             darkColor={Colors.dark.text}
           >
-            {selectedCollection ? selectedCollection.name : placeholder}
+            {(() => {
+              if (selectedCollection) return selectedCollection.name
+              if (collections.length === 0)
+                return 'Will create default collection'
+              return placeholder
+            })()}
           </TextThemed>
         </ViewThemed>
         <Ionicons
