@@ -22,19 +22,33 @@ export const useAddWord = () => {
   }, [collections, selectedCollection])
 
   const addWord = async (analysisResult: GeminiWordAnalysis) => {
-    if (!selectedCollection) {
-      ToastService.showError(ToastMessageType.NO_COLLECTION_SELECTED)
-      return
-    }
-
     setIsAdding(true)
     clearError()
 
     try {
-      await saveAnalyzedWord(analysisResult, selectedCollection.collection_id)
+      let targetCollection = selectedCollection
+
+      if (!targetCollection && collections.length === 0) {
+        try {
+          targetCollection = await useApplicationStore
+            .getState()
+            .createNewCollection('My Dutch Words')
+          setSelectedCollection(targetCollection)
+        } catch {
+          ToastService.showError(ToastMessageType.CREATE_COLLECTION_FAILED)
+          return false
+        }
+      }
+
+      if (!targetCollection) {
+        ToastService.showError(ToastMessageType.NO_COLLECTION_SELECTED)
+        return false
+      }
+
+      await saveAnalyzedWord(analysisResult, targetCollection.collection_id)
       ToastService.showWordAdded(
         analysisResult.dutch_lemma,
-        selectedCollection.name
+        targetCollection.name
       )
       return true
     } catch (error: unknown) {
