@@ -4,7 +4,8 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
 import * as Clipboard from 'expo-clipboard'
-import Toast from 'react-native-toast-message'
+import { ToastService } from '@/components/AppToast'
+import { ToastType } from '@/constants/ToastConstants'
 import { Colors } from '@/constants/Colors'
 
 interface CopyButtonProps {
@@ -28,24 +29,16 @@ export function CopyButton({
       await Clipboard.setStringAsync(text)
       console.log('📋 COPY BUTTON: Text copied successfully')
       if (showFeedback) {
-        Toast.show({
-          type: 'success',
-          text1: 'Copied!',
-          text2: 'Word information copied to clipboard',
-          position: 'bottom',
-          visibilityTime: 2000,
-        })
+        ToastService.show(
+          'Word information copied to clipboard',
+          ToastType.SUCCESS
+        )
       }
       onCopySuccess?.()
     } catch (error) {
       console.error('📋 COPY BUTTON: Failed to copy text:', error)
       if (showFeedback) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to copy text',
-          position: 'bottom',
-        })
+        ToastService.show('Failed to copy text', ToastType.ERROR)
       }
     }
   }

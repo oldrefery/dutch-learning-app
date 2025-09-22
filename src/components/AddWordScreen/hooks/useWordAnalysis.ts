@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ToastService } from '@/components/AppToast'
-import { ToastMessageType } from '@/constants/ToastConstants'
+import { ToastType } from '@/constants/ToastConstants'
 import { wordService } from '@/lib/supabase'
 import type { AnalysisResult } from '../types/AddWordTypes'
 
@@ -11,10 +11,7 @@ export const useWordAnalysis = () => {
   )
   const analyzeWord = async (inputWord: string) => {
     if (!inputWord.trim()) {
-      ToastService.showError(
-        ToastMessageType.ANALYSIS_FAILED,
-        'Please enter a Dutch word'
-      )
+      ToastService.show('Please enter a Dutch word', ToastType.ERROR)
       return
     }
 
@@ -51,11 +48,13 @@ export const useWordAnalysis = () => {
       }
 
       setAnalysisResult(result)
-      ToastService.showSuccess(ToastMessageType.WORD_ANALYZED)
+      ToastService.show('Word analyzed successfully', ToastType.SUCCESS)
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Analysis failed'
-      ToastService.showError(ToastMessageType.ANALYSIS_FAILED, errorMessage)
+        error instanceof Error
+          ? error.message
+          : 'Could not analyze word. Please try again.'
+      ToastService.show(errorMessage, ToastType.ERROR)
     } finally {
       setIsAnalyzing(false)
     }

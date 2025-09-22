@@ -9,7 +9,7 @@ import {
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { ToastService } from '@/components/AppToast'
-import { ToastMessageType } from '@/constants/ToastConstants'
+import { ToastType } from '@/constants/ToastConstants'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useImageSelector } from '@/hooks/useImageSelector'
@@ -57,10 +57,7 @@ export default function CollectionDetailScreen() {
     try {
       await Promise.all([fetchWords(), fetchCollections()])
     } catch {
-      ToastService.showError(
-        ToastMessageType.NETWORK_ERROR,
-        'Failed to refresh data'
-      )
+      ToastService.show('Failed to refresh data', ToastType.ERROR)
     } finally {
       setRefreshing(false)
     }
@@ -80,9 +77,9 @@ export default function CollectionDetailScreen() {
     // TODO: Uncomment this when we have haptic feedback
     // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     if (stats.wordsForReview === 0) {
-      ToastService.showInfo(
-        ToastMessageType.NO_WORDS_FOR_REVIEW,
-        'No words are due for review in this collection'
+      ToastService.show(
+        'No words are due for review in this collection',
+        ToastType.INFO
       )
       return
     }
@@ -92,11 +89,11 @@ export default function CollectionDetailScreen() {
   const handleDeleteWord = async (wordId: string) => {
     try {
       await deleteWord(wordId)
-      ToastService.showSuccess(ToastMessageType.WORD_DELETED)
+      ToastService.show('Word deleted', ToastType.SUCCESS)
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Could not delete word'
-      ToastService.showError(ToastMessageType.DELETE_WORD_FAILED, errorMessage)
+      ToastService.show(errorMessage, ToastType.ERROR)
     }
   }
 
@@ -112,9 +109,9 @@ export default function CollectionDetailScreen() {
     if (!selectedWord) return
     try {
       // TODO: Implement image update in store
-      ToastService.showSuccess(ToastMessageType.IMAGE_UPDATED)
+      ToastService.show('Image updated', ToastType.SUCCESS)
     } catch {
-      ToastService.showError(ToastMessageType.UPDATE_IMAGE_FAILED)
+      ToastService.show('Failed to update image', ToastType.ERROR)
     }
   }
 

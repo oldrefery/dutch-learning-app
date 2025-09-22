@@ -10,11 +10,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useCollections } from '@/hooks/useCollections'
 import { ToastService } from '@/components/AppToast'
-import {
-  ToastMessageType,
-  CollectionOperation,
-  CollectionErrorOperation,
-} from '@/constants/ToastConstants'
+import { ToastType } from '@/constants/ToastConstants'
 import type { Collection } from '@/types/database'
 
 interface CreateCollectionModalProps {
@@ -34,7 +30,7 @@ export default function CreateCollectionModal({
 
   const handleCreate = async () => {
     if (!collectionName.trim()) {
-      ToastService.showInfo(ToastMessageType.COLLECTION_NAME_REQUIRED)
+      ToastService.show('Please enter a collection name', ToastType.INFO)
       return
     }
 
@@ -42,16 +38,19 @@ export default function CreateCollectionModal({
       setIsCreating(true)
       const newCollection = await createNewCollection(collectionName.trim())
 
-      ToastService.showCollectionSuccess(
-        CollectionOperation.CREATED,
-        collectionName.trim()
+      ToastService.show(
+        `Collection "${collectionName.trim()}" created successfully`,
+        ToastType.SUCCESS
       )
 
       setCollectionName('')
       onCollectionCreated?.(newCollection)
       onClose()
     } catch {
-      ToastService.showCollectionError(CollectionErrorOperation.CREATE)
+      ToastService.show(
+        'Failed to create collection. Please try again.',
+        ToastType.ERROR
+      )
     } finally {
       setIsCreating(false)
     }

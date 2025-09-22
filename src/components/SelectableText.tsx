@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { TextThemed } from '@/components/Themed'
 import * as Clipboard from 'expo-clipboard'
-import Toast from 'react-native-toast-message'
+import { ToastService } from '@/components/AppToast'
+import { ToastType } from '@/constants/ToastConstants'
 import { Colors } from '@/constants/Colors'
 import type { TextProps } from '@/components/Themed'
 
@@ -28,24 +29,13 @@ export function SelectableText({
       if (textToCopy) {
         await Clipboard.setStringAsync(textToCopy)
         if (showCopyFeedback) {
-          Toast.show({
-            type: 'success',
-            text1: 'Copied!',
-            text2: 'Text copied to clipboard',
-            position: 'bottom',
-            visibilityTime: 1500,
-          })
+          ToastService.show('Text copied to clipboard', ToastType.SUCCESS)
         }
       }
     } catch (error) {
       console.error('Failed to copy text:', error)
       if (showCopyFeedback) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to copy text',
-          position: 'bottom',
-        })
+        ToastService.show('Failed to copy text', ToastType.ERROR)
       }
     }
   }
@@ -60,7 +50,9 @@ export function SelectableText({
       onPressOut={handlePressOut}
       activeOpacity={0.7}
       style={{
-        backgroundColor: isPressed ? Colors.primary.lightest : 'transparent',
+        backgroundColor: isPressed
+          ? Colors.primary.light
+          : Colors.legacy.transparent,
         borderRadius: 4,
         padding: 2,
         margin: -2,
