@@ -1,6 +1,5 @@
 // Edge Function for account deletion
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
+import { createClient } from '@supabase/supabase-js'
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -9,7 +8,7 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-serve(async req => {
+Deno.serve(async (req: Request) => {
   console.log('=== DELETE ACCOUNT FUNCTION START ===')
   console.log('Request method:', req.method)
   console.log('Request headers:', Object.fromEntries(req.headers.entries()))
@@ -52,23 +51,19 @@ serve(async req => {
 
     // Create regular client to verify user
     console.log('Creating Supabase client for user verification...')
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
     console.log('Supabase URL exists:', !!supabaseUrl)
     console.log('Supabase ANON key exists:', !!supabaseAnonKey)
 
     // Create client with proper auth context (best practice from docs)
-    const supabaseClient = createClient(
-      supabaseUrl ?? '',
-      supabaseAnonKey ?? '',
-      {
-        global: {
-          headers: { Authorization: authHeader },
-        },
-      }
-    )
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: { Authorization: authHeader },
+      },
+    })
 
-    // Extract JWT token from Authorization header (2025 best practice)
+    // Extract JWT token from the Authorization header (2025 best practice)
     const token = authHeader.replace('Bearer ', '')
     console.log('JWT token extracted, length:', token.length)
 
@@ -100,7 +95,7 @@ serve(async req => {
 
     // Create Supabase admin client for user deletion
     console.log('Creating admin client...')
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     console.log('Service role key exists:', !!supabaseServiceKey)
     console.log('Service role key length:', supabaseServiceKey?.length || 0)
 
@@ -119,15 +114,15 @@ serve(async req => {
       )
     }
 
-    // Create admin client with service role key (has admin privileges)
-    const supabaseAdmin = createClient(supabaseUrl ?? '', supabaseServiceKey, {
+    // Create an admin client with a service role key (has admin privileges)
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
       },
     })
 
-    // Delete the user account using admin client
+    // Delete the user account using the admin client
     // This will cascade delete all related data due to foreign key constraints
     console.log('Attempting to delete user account...')
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
@@ -172,7 +167,7 @@ serve(async req => {
       JSON.stringify({
         success: false,
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       }),
       {
         status: 500,

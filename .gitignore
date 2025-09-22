@@ -1,5 +1,9 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# IDEs
+.idea/*
+!.idea/deno.xml
+
 # dependencies
 node_modules/
 

@@ -1,8 +1,6 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import {
   IMAGE_CONFIG,
   SEARCH_CONFIG,
-  API_CONFIG,
   createPicsumUrl,
   getPreferredUnsplashUrl,
   generateImageHash,
@@ -26,11 +24,6 @@ interface GetImagesRequest {
   offset?: number
 }
 
-interface ImageOption {
-  url: string
-  alt: string
-}
-
 // Helper function to create smart search queries
 function createSmartSearchQuery(
   englishTranslation: string,
@@ -40,7 +33,7 @@ function createSmartSearchQuery(
   const queries = []
   const baseTranslation = englishTranslation.toLowerCase()
 
-  // Don't add base query first - we'll add it at the end if no specific queries are found
+  // Don't add a base query first - we'll add it at the end if no specific queries are found
 
   // Smart queries based on part of speech
   switch (partOfSpeech) {
@@ -154,7 +147,7 @@ function createSmartSearchQuery(
     // For verbs, look for more specific context from examples
     if (partOfSpeech === 'verb') {
       for (const example of examples.slice(0, 2)) {
-        // Check first 2 examples
+        // Check the first 2 examples
         const exampleText = example.en.toLowerCase()
 
         // Look for specific objects/contexts in examples
@@ -200,9 +193,9 @@ function createSmartSearchQuery(
       const contextWords = firstExample
         .split(' ')
         .filter(
-          word =>
+          (word: string) =>
             word.length > SEARCH_CONFIG.MIN_CONTEXT_WORD_LENGTH &&
-            !SEARCH_CONFIG.STOP_WORDS.includes(word)
+            !SEARCH_CONFIG.STOP_WORDS.includes(word as any)
         )
 
       if (contextWords.length > 0) {
@@ -212,7 +205,7 @@ function createSmartSearchQuery(
     }
   }
 
-  // Add base query at the end if no specific queries were found
+  // Add a base query at the end if no specific queries were found
   if (queries.length === 0) {
     queries.push(baseTranslation)
   }
@@ -220,7 +213,7 @@ function createSmartSearchQuery(
   return queries
 }
 
-// Helper function to get multiple image options for word
+// Helper function to get multiple image options for a word
 async function getMultipleImagesForWord(
   englishTranslation: string,
   partOfSpeech: string,
@@ -233,7 +226,7 @@ async function getMultipleImagesForWord(
 
     if (!unsplashKey) {
       // Fallback to Lorem Picsum with different seeds
-      const images = []
+      const images: Array<{ url: string; alt: string }> = []
       for (let i = 0; i < count; i++) {
         const imageId = generateImageHash(
           englishTranslation.toLowerCase(),
@@ -253,10 +246,10 @@ async function getMultipleImagesForWord(
       partOfSpeech,
       examples
     )
-    const images = []
+    const images: Array<{ url: string; alt: string }> = []
 
     // For pagination (offset > 0), use only the first query with proper page calculation
-    // For initial load (offset = 0), try multiple queries
+    // For an initial load (offset = 0), try multiple queries
     const queriesToUse = offset > 0 ? [searchQueries[0]] : searchQueries
 
     for (const query of queriesToUse) {
@@ -289,11 +282,10 @@ async function getMultipleImagesForWord(
         }
       } catch (queryError) {
         console.warn(`Query "${query}" failed:`, queryError)
-        continue
       }
     }
 
-    // Fill remaining slots with Lorem Picsum if needed
+    // Fill the remaining slots with Lorem Picsum if needed
     while (images.length < count) {
       const imageId = generateImageHash(englishTranslation, images.length * 50)
       images.push({
@@ -306,7 +298,7 @@ async function getMultipleImagesForWord(
   } catch (error) {
     console.warn('Failed to fetch multiple images:', error)
     // Return fallback images
-    const images = []
+    const images: Array<{ url: string; alt: string }> = []
     for (let i = 0; i < count; i++) {
       const imageId = generateImageHash(englishTranslation, i * 25)
       images.push({
@@ -318,7 +310,7 @@ async function getMultipleImagesForWord(
   }
 }
 
-serve(async req => {
+Deno.serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -360,7 +352,7 @@ serve(async req => {
     console.error('Get multiple images error:', error)
     return new Response(
       JSON.stringify({
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Unknown error',
         images: [],
       }),
       {
