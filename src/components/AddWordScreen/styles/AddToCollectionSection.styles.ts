@@ -44,7 +44,7 @@ export const addToCollectionStyles = StyleSheet.create({
     gap: 8,
   },
   cancelButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: Colors.legacy.transparent,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,

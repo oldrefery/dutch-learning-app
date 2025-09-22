@@ -1,10 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { ToastService } from '@/components/AppToast'
-import {
-  CollectionOperation,
-  CollectionErrorOperation,
-} from '@/constants/ToastConstants'
+import { ToastType } from '@/constants/ToastConstants'
 import { router } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -51,9 +48,12 @@ export default function CollectionsScreen() {
   const handleDeleteCollection = async (collectionId: string) => {
     try {
       await deleteCollection(collectionId)
-      ToastService.showCollectionSuccess(CollectionOperation.DELETED)
+      ToastService.show('Collection deleted', ToastType.SUCCESS)
     } catch {
-      ToastService.showCollectionError(CollectionErrorOperation.DELETE)
+      ToastService.show(
+        'Failed to delete collection. Please try again.',
+        ToastType.ERROR
+      )
     }
   }
 
@@ -76,7 +76,10 @@ export default function CollectionsScreen() {
   const handleModalRename = async (newName: string) => {
     try {
       await renameCollection(renameModal.collectionId, newName)
-      ToastService.showCollectionSuccess(CollectionOperation.UPDATED, newName)
+      ToastService.show(
+        `Collection "${newName}" renamed successfully`,
+        ToastType.SUCCESS
+      )
 
       // Resolve the promise to notify SwipeableCollectionCard
       if (renameModalPromiseRef.current) {
@@ -84,7 +87,10 @@ export default function CollectionsScreen() {
         renameModalPromiseRef.current = null
       }
     } catch (error) {
-      ToastService.showCollectionError(CollectionErrorOperation.UPDATE)
+      ToastService.show(
+        'Failed to update collection. Please try again.',
+        ToastType.ERROR
+      )
 
       // Reject the promise
       if (renameModalPromiseRef.current) {
@@ -115,7 +121,10 @@ export default function CollectionsScreen() {
 
   const handleStartReview = () => {
     if (stats.wordsForReview === 0) {
-      ToastService.showReviewMessage('no_words')
+      ToastService.show(
+        'No words are due for review right now!',
+        ToastType.INFO
+      )
       return
     }
     // Navigate to the review screen

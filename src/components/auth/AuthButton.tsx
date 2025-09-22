@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   secondaryButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: Colors.legacy.transparent,
     borderWidth: 1,
     borderColor: Colors.primary.DEFAULT,
   },

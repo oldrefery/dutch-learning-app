@@ -13,7 +13,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { userService } from '@/lib/supabase'
 import { Colors } from '@/constants/Colors'
 import { ToastService } from '@/components/AppToast'
-import { ToastMessageType } from '@/constants/ToastConstants'
+import { ToastType } from '@/constants/ToastConstants'
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme() ?? 'light'
@@ -28,14 +28,20 @@ export default function SettingsScreen() {
             const { error } = await supabase.auth.signOut()
 
             if (error) {
-              ToastService.showError(ToastMessageType.LOGOUT_FAILED)
+              ToastService.show(
+                'Logout failed. Please try again.',
+                ToastType.ERROR
+              )
               return
             }
 
             // Navigate to login
             router.replace('/(auth)/login')
           } catch {
-            ToastService.showError(ToastMessageType.LOGOUT_FAILED)
+            ToastService.show(
+              'Logout failed. Please try again.',
+              ToastType.ERROR
+            )
           }
         },
       },
@@ -68,7 +74,10 @@ export default function SettingsScreen() {
                       await userService.deleteAccount()
 
                       console.log('✅ Showing success toast')
-                      ToastService.showSuccess(ToastMessageType.ACCOUNT_DELETED)
+                      ToastService.show(
+                        'Account deleted successfully',
+                        ToastType.SUCCESS
+                      )
 
                       // Navigate to login after a short delay
                       setTimeout(() => {
@@ -84,10 +93,7 @@ export default function SettingsScreen() {
                         error instanceof Error
                           ? error.message
                           : 'Unknown error occurred'
-                      ToastService.showError(
-                        ToastMessageType.ACCOUNT_DELETE_FAILED,
-                        errorMessage
-                      )
+                      ToastService.show(errorMessage, ToastType.ERROR)
                     }
                   },
                 },

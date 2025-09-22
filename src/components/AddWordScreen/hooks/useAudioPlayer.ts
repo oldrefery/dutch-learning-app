@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createAudioPlayer } from 'expo-audio'
 import { ToastService } from '@/components/AppToast'
-import { ToastMessageType } from '@/constants/ToastConstants'
+import { ToastType } from '@/constants/ToastConstants'
 
 export const useAudioPlayer = () => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
@@ -25,7 +25,7 @@ export const useAudioPlayer = () => {
     } catch (error) {
       console.error('Error playing audio:', error)
       setIsPlayingAudio(false)
-      ToastService.showError(ToastMessageType.AUDIO_PLAYBACK_FAILED)
+      ToastService.show('Could not play pronunciation', ToastType.ERROR)
     }
   }
 

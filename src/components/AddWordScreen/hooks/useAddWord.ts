@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ToastService } from '@/components/AppToast'
-import { ToastMessageType } from '@/constants/ToastConstants'
+import { ToastType } from '@/constants/ToastConstants'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useCollections } from '@/hooks/useCollections'
 import type { Collection, GeminiWordAnalysis } from '@/types/database'
@@ -35,26 +35,34 @@ export const useAddWord = () => {
             .createNewCollection('My Dutch Words')
           setSelectedCollection(targetCollection)
         } catch {
-          ToastService.showError(ToastMessageType.CREATE_COLLECTION_FAILED)
+          ToastService.show(
+            'Failed to create collection. Please try again.',
+            ToastType.ERROR
+          )
           return false
         }
       }
 
       if (!targetCollection) {
-        ToastService.showError(ToastMessageType.NO_COLLECTION_SELECTED)
+        ToastService.show(
+          'Please select a collection to add the word to',
+          ToastType.ERROR
+        )
         return false
       }
 
       await saveAnalyzedWord(analysisResult, targetCollection.collection_id)
-      ToastService.showWordAdded(
-        analysisResult.dutch_lemma,
-        targetCollection.name
+      ToastService.show(
+        `"${analysisResult.dutch_lemma}" added to "${targetCollection.name}"`,
+        ToastType.SUCCESS
       )
       return true
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to add word'
-      ToastService.showWordError(errorMessage)
+        error instanceof Error
+          ? error.message
+          : 'Could not add word. Please try again.'
+      ToastService.show(errorMessage, ToastType.ERROR)
       return false
     } finally {
       setIsAdding(false)

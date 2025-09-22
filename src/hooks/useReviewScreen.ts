@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { createAudioPlayer, AudioPlayer } from 'expo-audio'
 import { ToastService } from '@/components/AppToast'
-import { ToastMessageType } from '@/constants/ToastConstants'
+import { ToastType } from '@/constants/ToastConstants'
 import {
   Gesture,
   PanGestureHandlerEventPayload,
@@ -82,7 +82,7 @@ export const useReviewScreen = () => {
         audioPlayer.play()
       } catch (error) {
         console.error('Failed to play audio:', error)
-        ToastService.showError(ToastMessageType.AUDIO_PLAYBACK_FAILED)
+        ToastService.show('Could not play pronunciation', ToastType.ERROR)
       }
     },
     [audioPlayer, currentWord?.dutch_lemma, currentWord?.tts_url]
@@ -107,7 +107,7 @@ export const useReviewScreen = () => {
         // No toast for 'again' - it's a normal retry, not an error
       } catch (error) {
         console.error('Assessment error:', error)
-        ToastService.showError(ToastMessageType.MARK_INCORRECT_FAILED)
+        ToastService.show('Failed to mark as incorrect', ToastType.ERROR)
       } finally {
         setIsLoading(false)
       }
@@ -147,15 +147,15 @@ export const useReviewScreen = () => {
 
       setIsFlipped(false)
 
-      ToastService.showSuccess(ToastMessageType.WORD_DELETED)
+      ToastService.show('Word deleted', ToastType.SUCCESS)
     } catch {
-      ToastService.showError(ToastMessageType.DELETE_WORD_FAILED)
+      ToastService.show('Failed to delete word', ToastType.ERROR)
     }
   }, [currentWord, deleteWord, deleteWordFromReview])
 
   const handleEndSession = useCallback(() => {
     endReviewSession()
-    ToastService.showReviewMessage('complete')
+    ToastService.show('Great job! Review session finished.', ToastType.SUCCESS)
   }, [endReviewSession])
 
   const handleImageChange = useCallback(
@@ -165,9 +165,9 @@ export const useReviewScreen = () => {
       try {
         // TODO: Implement updateWordImage in store
         // await updateWordImage(currentWord.word_id, imageUrl)
-        ToastService.showSuccess(ToastMessageType.IMAGE_UPDATED)
+        ToastService.show('Image updated', ToastType.SUCCESS)
       } catch {
-        ToastService.showError(ToastMessageType.UPDATE_IMAGE_FAILED)
+        ToastService.show('Failed to update image', ToastType.ERROR)
       }
     },
     [currentWord]
@@ -176,7 +176,10 @@ export const useReviewScreen = () => {
   const restartSession = useCallback(() => {
     // TODO: Implement restartSession in store
     // For now, just show a message
-    ToastService.showInfo(ToastMessageType.RESTART_SESSION)
+    ToastService.show(
+      'Session restart functionality coming soon',
+      ToastType.INFO
+    )
   }, [])
 
   // Create tap gesture for card flip

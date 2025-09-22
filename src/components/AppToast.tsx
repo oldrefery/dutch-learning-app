@@ -7,16 +7,10 @@
  */
 
 import React from 'react'
-import Toast from 'react-native-toast-message'
-import {
-  TOAST_MESSAGES,
-  TOAST_CONFIGS,
-  ToastType,
-  ToastMessageType,
-  ToastConfigType,
-  CollectionOperation,
-  CollectionErrorOperation,
-} from '@/constants/ToastConstants'
+import { useColorScheme } from 'react-native'
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message'
+import { ToastType, TOAST_CONFIG } from '@/constants/ToastConstants'
+import { Colors } from '@/constants/Colors'
 
 interface AppToastProps {
   // Optional custom configuration
@@ -28,6 +22,7 @@ interface AppToastProps {
 
 /**
  * Centralized toast component with predefined messages
+ * Custom configuration following Apple HIG guidelines for both themes
  */
 export const AppToast: React.FC<AppToastProps> = ({
   position = 'top',
@@ -35,8 +30,93 @@ export const AppToast: React.FC<AppToastProps> = ({
   bottomOffset = 60,
   visibilityTime = 3000,
 }) => {
+  const colorScheme = useColorScheme() ?? 'light'
+  const isDark = colorScheme === 'dark'
+
+  const toastConfig = {
+    success: (props: any) => (
+      <BaseToast
+        {...props}
+        style={{
+          borderLeftColor: isDark
+            ? Colors.success.dark
+            : Colors.success.DEFAULT,
+          backgroundColor: isDark
+            ? Colors.dark.backgroundElevated
+            : Colors.light.backgroundElevated,
+        }}
+        contentContainerStyle={{
+          paddingHorizontal: 15,
+        }}
+        text1Style={{
+          fontSize: 15,
+          fontWeight: '600',
+          color: isDark ? Colors.dark.text : Colors.light.text,
+        }}
+        text2Style={{
+          fontSize: 13,
+          color: isDark
+            ? Colors.dark.textSecondary
+            : Colors.light.textSecondary,
+        }}
+      />
+    ),
+    error: (props: any) => (
+      <ErrorToast
+        {...props}
+        style={{
+          borderLeftColor: isDark
+            ? Colors.error.darkMode
+            : Colors.error.DEFAULT,
+          backgroundColor: isDark
+            ? Colors.dark.backgroundElevated
+            : Colors.light.backgroundElevated,
+        }}
+        text1Style={{
+          fontSize: 15,
+          fontWeight: '600',
+          color: isDark ? Colors.dark.text : Colors.light.text,
+        }}
+        text2Style={{
+          fontSize: 13,
+          color: isDark
+            ? Colors.dark.textSecondary
+            : Colors.light.textSecondary,
+        }}
+      />
+    ),
+    info: (props: any) => (
+      <BaseToast
+        {...props}
+        style={{
+          borderLeftColor: isDark
+            ? Colors.primary.darkMode
+            : Colors.primary.DEFAULT,
+          backgroundColor: isDark
+            ? Colors.dark.backgroundElevated
+            : Colors.light.backgroundElevated,
+        }}
+        contentContainerStyle={{
+          paddingHorizontal: 15,
+        }}
+        text1Style={{
+          fontSize: 15,
+          fontWeight: '600',
+          color: isDark ? Colors.dark.text : Colors.light.text,
+        }}
+        text2Style={{
+          fontSize: 13,
+          color: isDark
+            ? Colors.dark.textSecondary
+            : Colors.light.textSecondary,
+        }}
+      />
+    ),
+  }
+
   return (
     <Toast
+      config={toastConfig}
       position={position}
       topOffset={topOffset}
       bottomOffset={bottomOffset}
@@ -46,186 +126,24 @@ export const AppToast: React.FC<AppToastProps> = ({
 }
 
 /**
- * Toast service with predefined message methods
- * This provides a clean API for showing common toast messages
+ * Simplified toast service following UX best practices
+ * One method for all toast notifications with minimal types
  */
 export class ToastService {
   /**
-   * Show a success toast with a predefined message
+   * Show a toast notification
+   * @param message - The message to display
+   * @param type - Type of notification (success, error, info)
    */
-  static showSuccess = (
-    messageType: ToastMessageType,
-    customText2?: string
-  ) => {
-    const message = TOAST_MESSAGES[messageType]
-    Toast.show({
-      ...TOAST_CONFIGS[ToastConfigType.SUCCESS],
-      text1: message.text1,
-      text2: customText2 || message.text2,
-    })
-  }
-
-  /**
-   * Show an error toast with a predefined message
-   */
-  static showError = (messageType: ToastMessageType, customText2?: string) => {
-    const message = TOAST_MESSAGES[messageType]
-    Toast.show({
-      ...TOAST_CONFIGS[ToastConfigType.ERROR],
-      text1: message.text1,
-      text2: customText2 || message.text2,
-    })
-  }
-
-  /**
-   * Show an info toast with a predefined message
-   */
-  static showInfo = (messageType: ToastMessageType, customText2?: string) => {
-    const message = TOAST_MESSAGES[messageType]
-    Toast.show({
-      ...TOAST_CONFIGS[ToastConfigType.INFO],
-      text1: message.text1,
-      text2: customText2 || message.text2,
-    })
-  }
-
-  /**
-   * Show a warning toast with a predefined message
-   */
-  static showWarning = (
-    messageType: ToastMessageType,
-    customText2?: string
-  ) => {
-    const message = TOAST_MESSAGES[messageType]
-    Toast.show({
-      ...TOAST_CONFIGS[ToastConfigType.WARNING],
-      text1: message.text1,
-      text2: customText2 || message.text2,
-    })
-  }
-
-  /**
-   * Show a custom toast with full control over content
-   */
-  static showCustom = (
-    type: ToastType,
-    text1: string,
-    text2?: string,
-    duration?: number
-  ) => {
-    Toast.show({
-      type,
-      text1,
-      text2,
-      visibilityTime: duration,
-    })
-  }
-
-  /**
-   * Show a success toast for word operations
-   */
-  static showWordAdded = (word: string, collection: string) => {
-    Toast.show({
-      ...TOAST_CONFIGS[ToastConfigType.SUCCESS],
-      text1: TOAST_MESSAGES[ToastMessageType.WORD_ADDED].text1,
-      text2: `"${word}" has been added to "${collection}"`,
-    })
-  }
-
-  /**
-   * Show an error toast for word operations
-   */
-  static showWordError = (error: string) => {
-    Toast.show({
-      ...TOAST_CONFIGS[ToastConfigType.ERROR],
-      text1: TOAST_MESSAGES[ToastMessageType.ADD_WORD_FAILED].text1,
-      text2: error || TOAST_MESSAGES[ToastMessageType.ADD_WORD_FAILED].text2,
-    })
-  }
-
-  /**
-   * Show a collection operation success toast
-   */
-  static showCollectionSuccess = (
-    operation: CollectionOperation,
-    collectionName?: string
-  ) => {
-    if (operation === CollectionOperation.CREATED) {
-      Toast.show({
-        ...TOAST_CONFIGS[ToastConfigType.SUCCESS],
-        text1: TOAST_MESSAGES[ToastMessageType.COLLECTION_CREATED].text1,
-        text2: collectionName
-          ? `"${collectionName}" has been created successfully`
-          : TOAST_MESSAGES[ToastMessageType.COLLECTION_CREATED].text2,
-      })
-    } else if (operation === CollectionOperation.UPDATED) {
-      Toast.show({
-        ...TOAST_CONFIGS[ToastConfigType.SUCCESS],
-        text1: 'Collection Updated',
-        text2: collectionName
-          ? `"${collectionName}" has been renamed successfully`
-          : 'Collection has been updated successfully',
-      })
-    } else {
-      Toast.show({
-        ...TOAST_CONFIGS[ToastConfigType.SUCCESS],
-        text1: TOAST_MESSAGES[ToastMessageType.COLLECTION_DELETED].text1,
-        text2: collectionName
-          ? `"${collectionName}" has been deleted`
-          : TOAST_MESSAGES[ToastMessageType.COLLECTION_DELETED].text2,
-      })
-    }
-  }
-
-  /**
-   * Show a collection operation error toast
-   */
-  static showCollectionError = (
-    operation: CollectionErrorOperation,
-    error?: string
-  ) => {
-    let messageType: ToastMessageType
-    if (operation === CollectionErrorOperation.CREATE) {
-      messageType = ToastMessageType.CREATE_COLLECTION_FAILED
-    } else if (operation === CollectionErrorOperation.UPDATE) {
-      messageType = ToastMessageType.UPDATE_FAILED
-    } else {
-      messageType = ToastMessageType.DELETE_FAILED
-    }
-
-    const message = TOAST_MESSAGES[messageType]
+  static show = (message: string, type: ToastType = ToastType.INFO) => {
+    const config = TOAST_CONFIG[type]
 
     Toast.show({
-      ...TOAST_CONFIGS[ToastConfigType.ERROR],
-      text1: message.text1,
-      text2: error || message.text2,
+      type: config.type,
+      text1: message,
+      visibilityTime: config.visibilityTime,
+      position: 'top',
     })
-  }
-
-  /**
-   * Show a review session related toast
-   */
-  static showReviewMessage = (type: 'complete' | 'incorrect' | 'no_words') => {
-    switch (type) {
-      case 'complete':
-        Toast.show({
-          ...TOAST_CONFIGS[ToastConfigType.SUCCESS],
-          ...TOAST_MESSAGES[ToastMessageType.SESSION_COMPLETE],
-        })
-        break
-      case 'incorrect':
-        Toast.show({
-          ...TOAST_CONFIGS[ToastConfigType.INFO],
-          ...TOAST_MESSAGES[ToastMessageType.INCORRECT_ANSWER],
-        })
-        break
-      case 'no_words':
-        Toast.show({
-          ...TOAST_CONFIGS[ToastConfigType.INFO],
-          ...TOAST_MESSAGES[ToastMessageType.NO_WORDS_FOR_REVIEW],
-        })
-        break
-    }
   }
 }
 

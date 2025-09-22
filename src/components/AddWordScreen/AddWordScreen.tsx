@@ -15,7 +15,7 @@ import { useCollections } from '@/hooks/useCollections'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { wordService } from '@/lib/supabase'
 import { ToastService } from '@/components/AppToast'
-import { ToastMessageType } from '@/constants/ToastConstants'
+import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 
 export function AddWordScreen() {
@@ -89,9 +89,9 @@ export function AddWordScreen() {
         setIsAlreadyInCollection(isDuplicate)
 
         if (isDuplicate) {
-          ToastService.showInfo(
-            ToastMessageType.WORD_ALREADY_EXISTS,
-            `"${analysisResult.dutch_lemma}" is already in your collection`
+          ToastService.show(
+            `"${analysisResult.dutch_lemma}" is already in your collection`,
+            ToastType.INFO
           )
         }
       } catch (error) {
@@ -131,9 +131,9 @@ export function AddWordScreen() {
         if (existingWord) {
           setIsAlreadyInCollection(true)
           setIsCheckingDuplicate(false)
-          ToastService.showInfo(
-            ToastMessageType.WORD_ALREADY_EXISTS,
-            `"${normalizedWord}" is already in your collection`
+          ToastService.show(
+            `"${normalizedWord}" is already in your collection`,
+            ToastType.INFO
           )
           return
         }
