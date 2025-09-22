@@ -1,5 +1,4 @@
 // Edge Function for secure Gemini AI integration
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts'
 import { CORS_HEADERS } from './constants.ts'
 import { getMultipleImagesForWord } from './imageUtils.ts'
 import {
@@ -11,7 +10,7 @@ import {
 } from './geminiUtils.ts'
 import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
 
-serve(async req => {
+Deno.serve(async (req: Request) => {
   console.log('=== GEMINI HANDLER START ===')
   console.log('Request method:', req.method)
   console.log('Request URL:', req.url)
@@ -29,7 +28,7 @@ serve(async req => {
     console.log('Request body type:', typeof requestBody)
     console.log('Request body keys:', Object.keys(requestBody))
 
-    const { word, collectionId, userId } = requestBody
+    const { word } = requestBody
     console.log('Extracted word:', word)
     console.log('Word type:', typeof word)
 

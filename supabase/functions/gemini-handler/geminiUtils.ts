@@ -2,7 +2,7 @@ import { API_CONFIG } from './constants.ts'
 
 // Helper function to call Gemini API
 export async function callGeminiAPI(prompt: string): Promise<any> {
-  const apiKey = Deno.env.get('GEMINI_API_KEY')
+  const apiKey = Deno.env.get('GEMINI_API_KEY')!
 
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY environment variable is required')
@@ -39,8 +39,7 @@ export async function callGeminiAPI(prompt: string): Promise<any> {
     )
   }
 
-  const data = await response.json()
-  return data
+  return await response.json()
 }
 
 // Helper function to parse Gemini response
@@ -48,11 +47,11 @@ export function parseGeminiResponse(response: any): any {
   try {
     const content = response.candidates?.[0]?.content?.parts?.[0]?.text
     if (!content) {
-      throw new Error('No content in Gemini response')
+      return { content: 'No content available' }
     }
 
     // Try to parse as JSON
-    const jsonMatch = content.match(/\{[\s\S]*\}/)
+    const jsonMatch = content.match(/{[\s\S]*}/)
     if (jsonMatch) {
       return JSON.parse(jsonMatch[0])
     }
@@ -61,7 +60,7 @@ export function parseGeminiResponse(response: any): any {
     return { content }
   } catch (error) {
     console.error('Error parsing Gemini response:', error)
-    throw new Error('Failed to parse Gemini response')
+    return { content: response }
   }
 }
 
@@ -113,45 +112,11 @@ export function formatTranslations(translations: any): {
   const ru = Array.isArray(translations.ru) ? translations.ru : []
 
   return {
-    en: en.filter(t => t && typeof t === 'string').map(t => t.trim()),
-    ru: ru.filter(t => t && typeof t === 'string').map(t => t.trim()),
+    en: en
+      .filter((t: any) => t && typeof t === 'string')
+      .map((t: string) => t.trim()),
+    ru: ru
+      .filter((t: any) => t && typeof t === 'string')
+      .map((t: string) => t.trim()),
   }
-}
-
-// Helper function to analyze separable verb
-export function analyzeSeparableVerb(word: string): {
-  isSeparable: boolean
-  prefix?: string
-  root?: string
-} {
-  const separablePrefixes = [
-    'aan',
-    'af',
-    'bij',
-    'door',
-    'in',
-    'mee',
-    'naar',
-    'om',
-    'op',
-    'over',
-    'rond',
-    'terug',
-    'uit',
-    'voor',
-    'weg',
-    'zonder',
-  ]
-
-  for (const prefix of separablePrefixes) {
-    if (word.toLowerCase().startsWith(prefix)) {
-      return {
-        isSeparable: true,
-        prefix: prefix,
-        root: word.substring(prefix.length),
-      }
-    }
-  }
-
-  return { isSeparable: false }
 }
