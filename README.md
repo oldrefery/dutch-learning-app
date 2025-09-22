@@ -161,12 +161,14 @@ The application uses a modern Backend-as-a-Service (BaaS) architecture, which mi
 - Edge Function for Gemini AI ✅
 - TypeScript types and Zustand store ✅
 - Expo app running on iOS simulator ✅
+- Analysis notes system with HIG compliance ✅
 
 ## 8. Documentation
 
 Detailed project documentation is available in the `docs/` folder:
 
 - 📋 [Project Plan](docs/PROJECT_PLAN.md) - Phased development approach
+- 📝 [Changelog](CHANGELOG.md) - Release notes and version history
 - 🗃️ [Database Schema](docs/DATABASE_SCHEMA.md) - Complete database structure
 - 🤖 [AI Strategy](docs/FEATURE_ENRICHMENT_STRATEGY.md) - Gemini integration approach
 - 📝 [Task Breakdown](docs/TASK_BREAKDOWN.md) - Detailed development tasks

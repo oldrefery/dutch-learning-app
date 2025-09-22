@@ -32,6 +32,7 @@ export interface AnalysisResult {
     past_participle: string
   } | null
   preposition?: string // Fixed preposition (e.g., "van" for "genieten van")
+  analysis_notes?: string // User notes for word analysis
 }
 
 export interface WordInputSectionProps {

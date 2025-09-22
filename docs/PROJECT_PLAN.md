@@ -122,6 +122,11 @@ This document outlines the development of the Dutch Learning App in distinct pha
   - **Info Button:** Minimal info button in header for word details
   - **Word Context Modal:** Show collection name, SRS data, next review date
   - **Non-Intrusive Design:** Preserve focus on learning process
+- **Analysis Notes System:** ✅ COMPLETED
+  - **Read-Only Notes Display:** Show analysis notes in all word display modes
+  - **Database Schema:** Added analysis_notes column to words table
+  - **Apple HIG Compliance:** Empty state placeholder following design guidelines
+  - **Universal Display:** Notes visible in analysis, modal, and review modes
 
 ### **Phase 4.1: Collection Sharing & Word Management**
 

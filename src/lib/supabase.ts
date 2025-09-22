@@ -197,6 +197,7 @@ export const wordService = {
       article: wordData.article || null,
       expression_type: wordData.expression_type || null,
       tts_url: wordData.tts_url || '',
+      analysis_notes: wordData.analysis_notes || null,
       easiness_factor: SRS_PARAMS.INITIAL.EASINESS_FACTOR,
       interval_days: SRS_PARAMS.INITIAL.INTERVAL_DAYS,
       repetition_count: SRS_PARAMS.INITIAL.REPETITION_COUNT,
