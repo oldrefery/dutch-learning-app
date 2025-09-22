@@ -14,6 +14,7 @@ import {
   ImageSection,
   SynonymsAntonymsSection,
   ConjugationSection,
+  NotesSection,
   ActionsSection,
 } from './sections'
 
@@ -27,6 +28,7 @@ const FULL_CONFIG: WordCardConfig = {
   showAntonyms: true,
   showGrammarInfo: true,
   showConjugation: true,
+  showNotes: true,
   enablePronunciation: true,
   enableImageChange: true,
   scrollable: true,
@@ -80,6 +82,7 @@ export function UniversalWordCard({
       <ImageSection {...sectionProps} />
       <SynonymsAntonymsSection {...sectionProps} />
       <ConjugationSection {...sectionProps} />
+      <NotesSection {...sectionProps} />
       <ActionsSection word={word} actions={finalActions} />
     </ViewThemed>
   )
@@ -134,10 +137,10 @@ export const WordCardPresets = {
   // For review card back
   review: {
     config: {
-      showSynonyms: false,
-      showAntonyms: false,
-      showGrammarInfo: false,
-      showConjugation: false,
+      showSynonyms: true,
+      showAntonyms: true,
+      showGrammarInfo: true,
+      showConjugation: true,
       compact: false,
     },
     actions: {
@@ -153,6 +156,7 @@ export const WordCardPresets = {
       showSynonyms: false,
       showAntonyms: false,
       showConjugation: false,
+      showNotes: false,
       enableImageChange: false,
       scrollable: false,
       compact: true,

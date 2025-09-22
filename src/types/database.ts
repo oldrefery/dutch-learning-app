@@ -57,6 +57,7 @@ export interface Word {
   easiness_factor: number
   next_review_date: string
   last_reviewed_at: string | null
+  analysis_notes: string | null
   created_at: string
 }
 
@@ -77,6 +78,7 @@ export interface GeminiWordAnalysis {
   examples: WordExample[]
   tts_url?: string
   image_url?: string // Associated image for visual learning
+  analysis_notes?: string // User notes from analysis
   collection_id?: string // Collection this word belongs to
 }
 

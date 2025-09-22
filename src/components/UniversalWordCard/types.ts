@@ -14,6 +14,7 @@ export interface WordCardConfig {
   showAntonyms?: boolean
   showGrammarInfo?: boolean
   showConjugation?: boolean
+  showNotes?: boolean
 
   // Interactive features
   enablePronunciation?: boolean

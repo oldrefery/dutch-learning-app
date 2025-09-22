@@ -342,4 +342,23 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+
+  // Notes section
+  notesContainer: {
+    backgroundColor: Colors.background.secondary,
+    borderRadius: 8,
+    padding: 12,
+    minHeight: 60,
+  },
+  notesText: {
+    fontSize: 14,
+    color: Colors.text.primary,
+    lineHeight: 20,
+  },
+  notesPlaceholder: {
+    fontSize: 14,
+    color: Colors.neutral[400],
+    lineHeight: 20,
+    fontStyle: 'italic',
+  },
 })
