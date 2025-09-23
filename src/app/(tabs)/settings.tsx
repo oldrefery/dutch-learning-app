@@ -1,15 +1,16 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  Button,
   useColorScheme,
+  Platform,
+  ScrollView,
 } from 'react-native'
 import { router } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import Constants from 'expo-constants'
 import { ViewThemed, TextThemed } from '@/components/Themed'
-import { supabase } from '@/lib/supabaseClient'
+import { supabase, type User } from '@/lib/supabaseClient'
 import { userService } from '@/lib/supabase'
 import { Colors } from '@/constants/Colors'
 import { ToastService } from '@/components/AppToast'
@@ -17,6 +18,37 @@ import { ToastType } from '@/constants/ToastConstants'
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme() ?? 'light'
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      setUser(user)
+    }
+
+    getUser()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const getAppVersion = () => {
+    const version = Constants.expoConfig?.version || '1.0.0'
+    const buildNumber =
+      Platform.OS === 'ios'
+        ? Constants.expoConfig?.ios?.buildNumber
+        : Constants.expoConfig?.android?.versionCode
+
+    return buildNumber ? `${version} (${buildNumber})` : version
+  }
+
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
@@ -79,7 +111,7 @@ export default function SettingsScreen() {
                         ToastType.SUCCESS
                       )
 
-                      // Navigate to login after a short delay
+                      // Navigate to log in after a short delay
                       setTimeout(() => {
                         console.log('🔄 Navigating to login screen')
                         router.replace('/(auth)/login')
@@ -106,26 +138,12 @@ export default function SettingsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ViewThemed style={styles.content}>
-        <ViewThemed style={styles.header}>
-          <TextThemed style={styles.title}>Settings</TextThemed>
-          <TextThemed
-            style={styles.subtitle}
-            lightColor={Colors.neutral[600]}
-            darkColor={Colors.dark.textSecondary}
-          >
-            Manage your account and app preferences
-          </TextThemed>
-        </ViewThemed>
-
-        <Button
-          title="Test Crash"
-          onPress={() => {
-            throw new Error('Test crash for Sentry')
-          }}
-        />
-
+    <ViewThemed style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <ViewThemed
           style={styles.section}
           lightColor={Colors.background.secondary}
@@ -198,17 +216,42 @@ export default function SettingsScreen() {
           lightColor={Colors.background.secondary}
           darkColor={Colors.dark.backgroundSecondary}
         >
-          <TextThemed style={styles.sectionTitle}>About</TextThemed>
-          <TextThemed
-            style={styles.debugText}
-            lightColor={Colors.neutral[600]}
-            darkColor={Colors.dark.textSecondary}
-          >
-            Dutch Learning App - Version 1.0
-          </TextThemed>
+          <TextThemed style={styles.sectionTitle}>User Information</TextThemed>
+          {user?.email && (
+            <ViewThemed style={styles.userInfoContainer}>
+              <TextThemed
+                style={styles.userInfoLabel}
+                lightColor={Colors.neutral[600]}
+                darkColor={Colors.dark.textSecondary}
+              >
+                Email:
+              </TextThemed>
+              <TextThemed style={styles.userInfoValue}>{user.email}</TextThemed>
+            </ViewThemed>
+          )}
         </ViewThemed>
-      </ViewThemed>
-    </SafeAreaView>
+
+        <ViewThemed
+          style={styles.section}
+          lightColor={Colors.background.secondary}
+          darkColor={Colors.dark.backgroundSecondary}
+        >
+          <TextThemed style={styles.sectionTitle}>About</TextThemed>
+          <ViewThemed style={styles.appInfoContainer}>
+            <TextThemed
+              style={styles.appInfoLabel}
+              lightColor={Colors.neutral[600]}
+              darkColor={Colors.dark.textSecondary}
+            >
+              De Woordenaar
+            </TextThemed>
+            <TextThemed style={styles.appInfoVersion}>
+              Version {getAppVersion()}
+            </TextThemed>
+          </ViewThemed>
+        </ViewThemed>
+      </ScrollView>
+    </ViewThemed>
   )
 }
 
@@ -216,26 +259,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  content: {
     padding: 24,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
+    paddingTop: 16,
   },
   section: {
-    marginBottom: 32,
+    marginBottom: 24,
     padding: 20,
     borderRadius: 12,
   },
@@ -282,5 +314,30 @@ const styles = StyleSheet.create({
   debugText: {
     fontSize: 14,
     fontStyle: 'italic',
+  },
+  userInfoContainer: {
+    marginBottom: 8,
+  },
+  userInfoLabel: {
+    fontSize: 14,
+    marginBottom: 4,
+    fontWeight: '500',
+  },
+  userInfoValue: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  appInfoContainer: {
+    alignItems: 'center',
+  },
+  appInfoLabel: {
+    fontSize: 16,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  appInfoVersion: {
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 })
