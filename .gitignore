@@ -60,3 +60,10 @@ test-*.ts
 
 # Reports and analysis
 reports/
+
+# Build artifacts
+builds/
+*.ipa
+*.apk
+*.aab
+/android-apps-473016-7616fdc8cf35.json
