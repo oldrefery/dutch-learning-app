@@ -9,6 +9,7 @@ import {
   formatTranslations,
 } from './geminiUtils.ts'
 import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
+import { getCachedAnalysis, saveToCache, normalizeWord } from './cacheUtils.ts'
 
 Deno.serve(async (req: Request) => {
   console.log('=== GEMINI HANDLER START ===')
@@ -28,9 +29,10 @@ Deno.serve(async (req: Request) => {
     console.log('Request body type:', typeof requestBody)
     console.log('Request body keys:', Object.keys(requestBody))
 
-    const { word } = requestBody
+    const { word, forceRefresh } = requestBody
     console.log('Extracted word:', word)
     console.log('Word type:', typeof word)
+    console.log('Force refresh:', forceRefresh)
 
     // This function only analyzes strings - objects should use save-word endpoint
     if (typeof word !== 'string') {
@@ -66,7 +68,59 @@ Deno.serve(async (req: Request) => {
     }
     console.log('Word validation passed')
 
-    // Call Gemini API for word analysis
+    // Normalize word for cache operations
+    const normalizedWord = normalizeWord(word)
+    console.log('Normalized word:', normalizedWord)
+
+    // Check the cache first (unless force refresh is requested)
+    if (!forceRefresh) {
+      console.log('Checking cache for word:', normalizedWord)
+      const cachedAnalysis = await getCachedAnalysis(normalizedWord)
+
+      if (cachedAnalysis) {
+        console.log('Returning cached analysis for:', normalizedWord)
+
+        // Build result from a cache
+        const result = {
+          dutch_original: word,
+          dutch_lemma: cachedAnalysis.dutch_lemma,
+          part_of_speech: cachedAnalysis.part_of_speech,
+          translations: cachedAnalysis.translations,
+          examples: cachedAnalysis.examples || [],
+          image_url: cachedAnalysis.image_url || '',
+          is_expression: cachedAnalysis.is_expression,
+          is_irregular: cachedAnalysis.is_irregular,
+          is_reflexive: cachedAnalysis.is_reflexive,
+          is_separable: cachedAnalysis.is_separable,
+          prefix_part: cachedAnalysis.prefix_part,
+          root_verb: cachedAnalysis.root_verb,
+          article: cachedAnalysis.article,
+          expression_type: cachedAnalysis.expression_type,
+          tts_url: cachedAnalysis.tts_url,
+          synonyms: cachedAnalysis.synonyms || [],
+          antonyms: cachedAnalysis.antonyms || [],
+          plural: cachedAnalysis.plural,
+          conjugation: cachedAnalysis.conjugation,
+          preposition: cachedAnalysis.preposition,
+          analysis_notes: cachedAnalysis.analysis_notes || '',
+        }
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: result,
+          }),
+          {
+            status: 200,
+            headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+          }
+        )
+      }
+    } else {
+      console.log('Force refresh requested, skipping cache check')
+    }
+
+    // Cache miss or force refresh - call Gemini API
     console.log('Creating prompt for word:', word)
     const prompt = formatWordAnalysisPrompt(word)
     console.log('Prompt created, calling Gemini API...')
@@ -120,7 +174,37 @@ Deno.serve(async (req: Request) => {
       plural: analysis.plural || null,
       conjugation: analysis.conjugation || null,
       preposition: analysis.preposition || null,
+      analysis_notes: analysis.analysis_notes || '',
     }
+
+    // Save to cache for future use (async, don't wait for completion)
+    console.log('Saving analysis to cache...')
+    saveToCache({
+      dutch_original: word,
+      dutch_lemma: normalizedWord, // Use a normalized version as a cache key
+      part_of_speech: analysis.part_of_speech,
+      is_irregular: analysis.is_irregular || false,
+      article: analysis.article,
+      is_reflexive: analysis.is_reflexive || false,
+      is_expression: analysis.is_expression || false,
+      expression_type: analysis.expression_type,
+      is_separable: analysis.is_separable || false,
+      prefix_part: analysis.prefix_part,
+      root_verb: analysis.root_verb,
+      translations: formattedTranslations,
+      examples: cleanedExamples,
+      tts_url: ttsUrl,
+      image_url: imageOptions[0]?.url || '',
+      synonyms: analysis.synonyms || [],
+      antonyms: analysis.antonyms || [],
+      plural: analysis.plural,
+      conjugation: analysis.conjugation,
+      preposition: analysis.preposition,
+      analysis_notes: analysis.analysis_notes || '',
+    }).catch(error => {
+      console.error('Error saving to cache:', error)
+      // Don't fail the request if cache save fails
+    })
 
     console.log('Sending successful response...')
     console.log('Final result:', JSON.stringify(result, null, 2))
