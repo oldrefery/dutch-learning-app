@@ -28,8 +28,10 @@ export function AddWordScreen() {
   const {
     isAnalyzing,
     analysisResult,
+    analysisMetadata,
     analyzeWord,
     clearAnalysis,
+    forceRefreshAnalysis,
     updateImageUrl,
   } = useWordAnalysis()
   const {
@@ -42,34 +44,6 @@ export function AddWordScreen() {
     closeImageSelector,
   } = useAddWord()
   const { collections } = useCollections()
-
-  // DEBUG: Log analysis result details
-  useEffect(() => {
-    if (analysisResult) {
-      console.log(
-        '🔍 ANALYSIS RESULT DEBUG:',
-        JSON.stringify(
-          {
-            full_result: analysisResult,
-            has_synonyms: 'synonyms' in analysisResult,
-            synonyms: analysisResult.synonyms || 'NOT_FOUND',
-            synonyms_length: analysisResult.synonyms?.length || 0,
-            has_antonyms: 'antonyms' in analysisResult,
-            antonyms: analysisResult.antonyms || 'NOT_FOUND',
-            antonyms_length: analysisResult.antonyms?.length || 0,
-            has_conjugation: 'conjugation' in analysisResult,
-            conjugation: analysisResult.conjugation || 'NOT_FOUND',
-            has_plural: 'plural' in analysisResult,
-            plural: analysisResult.plural || 'NOT_FOUND',
-            has_preposition: 'preposition' in analysisResult,
-            preposition: analysisResult.preposition || 'NOT_FOUND',
-          },
-          null,
-          2
-        )
-      )
-    }
-  }, [analysisResult])
 
   // Check for duplicates after analysis is complete
   useEffect(() => {
@@ -163,6 +137,11 @@ export function AddWordScreen() {
     clearAnalysis()
   }
 
+  const handleForceRefresh = async () => {
+    if (!inputWord.trim()) return
+    await forceRefreshAnalysis(inputWord)
+  }
+
   const handleImageChange = (newImageUrl: string) => {
     updateImageUrl(newImageUrl)
     closeImageSelector()
@@ -190,6 +169,7 @@ export function AddWordScreen() {
           <ViewThemed style={addWordScreenStyles.wordCardContainer}>
             <UniversalWordCard
               word={analysisResult}
+              metadata={analysisMetadata}
               actions={{
                 ...WordCardPresets.analysis.actions,
                 isDuplicateChecking: isCheckingDuplicate,
@@ -198,6 +178,7 @@ export function AddWordScreen() {
               isPlayingAudio={isPlayingAudio}
               onPlayPronunciation={playPronunciation}
               onChangeImage={openImageSelector}
+              onForceRefresh={handleForceRefresh}
               style={addWordScreenStyles.universalWordCard}
             />
           </ViewThemed>

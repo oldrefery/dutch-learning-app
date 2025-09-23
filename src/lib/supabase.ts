@@ -63,13 +63,14 @@ export const getDevUserId = (): string => {
 
 export const wordService = {
   // Analyze word using Gemini AI
-  async analyzeWord(word: string) {
+  async analyzeWord(word: string, options?: { forceRefresh?: boolean }) {
     const { data, error } = await supabaseFunctions.functions.invoke(
       'gemini-handler',
       {
         body: {
           word,
           userId: getDevUserId(),
+          forceRefresh: options?.forceRefresh || false,
         },
       }
     )
@@ -78,7 +79,7 @@ export const wordService = {
       throw new Error(`Word analysis failed: ${error.message}`)
     }
 
-    return data.data
+    return data
   },
 
   // Get all words for the user
