@@ -22,7 +22,7 @@
       }
     },
     "production": {
-      "autoIncrement": true,
+      "autoIncrement": false,
       "ios": {
         "simulator": false
       },
@@ -43,6 +43,9 @@
     "production": {
       "ios": {
         "appleTeamId": "7FQ395U52U"
+      },
+      "android": {
+        "releaseStatus": "draft"
       }
     }
   }
