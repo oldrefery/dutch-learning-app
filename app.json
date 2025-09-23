@@ -3,7 +3,7 @@
     "name": "Dutch Learning App",
     "slug": "dutch-learning-app",
     "description": "AI-powered Dutch vocabulary learning app with spaced repetition system",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./src/assets/icons/ios-light.png",
     "scheme": "dutchlearning",
