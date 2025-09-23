@@ -77,7 +77,12 @@ get_android_version_code() {
 increment_build_numbers() {
     local current_ios_build=$1
     local current_android_build=$2
-    local new_build=$((current_ios_build + 1))
+    # Take the maximum of both values and increment
+    local max_build=$current_ios_build
+    if [ $current_android_build -gt $current_ios_build ]; then
+        max_build=$current_android_build
+    fi
+    local new_build=$((max_build + 1))
 
     # Update both iOS buildNumber and Android versionCode to the same value
     node -e "
@@ -175,16 +180,18 @@ if [[ "$SUBMIT" == "true" ]]; then
     # Submit iOS
     if [[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]]; then
         echo -e "${GREEN}Submitting iOS to App Store Connect...${NC}"
-        echo -e "${YELLOW}Running: eas submit -p ios --latest${NC}"
-        eas submit -p ios --latest
+        IOS_FILE="builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa"
+        echo -e "${YELLOW}Running: eas submit -p ios --path ${IOS_FILE}${NC}"
+        eas submit -p ios --path "$IOS_FILE"
         echo -e "${GREEN}✅ iOS submission completed!${NC}"
     fi
 
     # Submit Android
     if [[ "$PLATFORM" == "android" || "$PLATFORM" == "both" ]]; then
         echo -e "${GREEN}Submitting Android to Google Play...${NC}"
-        echo -e "${YELLOW}Running: eas submit -p android --latest${NC}"
-        eas submit -p android --latest
+        ANDROID_FILE="builds/app-${NEW_VERSION}-${NEW_BUILD}.aab"
+        echo -e "${YELLOW}Running: eas submit -p android --path ${ANDROID_FILE}${NC}"
+        eas submit -p android --path "$ANDROID_FILE"
         echo -e "${GREEN}✅ Android submission completed!${NC}"
     fi
 else
