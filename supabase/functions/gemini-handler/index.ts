@@ -12,31 +12,21 @@ import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
 import { getCachedAnalysis, saveToCache, normalizeWord } from './cacheUtils.ts'
 
 Deno.serve(async (req: Request) => {
-  console.log('=== GEMINI HANDLER START ===')
-  console.log('Request method:', req.method)
-  console.log('Request URL:', req.url)
-
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    console.log('Handling CORS preflight request')
     return new Response('ok', { headers: CORS_HEADERS })
   }
 
   try {
-    console.log('Parsing request body...')
     const requestBody = await req.json()
-    console.log('Request body:', JSON.stringify(requestBody, null, 2))
-    console.log('Request body type:', typeof requestBody)
-    console.log('Request body keys:', Object.keys(requestBody))
-
     const { word, forceRefresh } = requestBody
-    console.log('Extracted word:', word)
-    console.log('Word type:', typeof word)
-    console.log('Force refresh:', forceRefresh)
+
+    console.log(
+      `📝 Analyzing word: "${word}", forceRefresh: ${forceRefresh || false}`
+    )
 
     // This function only analyzes strings - objects should use save-word endpoint
     if (typeof word !== 'string') {
-      console.log('Error: gemini-handler expects string, got:', typeof word)
       return new Response(
         JSON.stringify({
           success: false,
@@ -50,11 +40,8 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    console.log('Analyzing word string:', word)
-
     // Validate input
     if (!validateWordInput(word)) {
-      console.log('Word validation failed for:', word)
       return new Response(
         JSON.stringify({
           success: false,
@@ -66,19 +53,18 @@ Deno.serve(async (req: Request) => {
         }
       )
     }
-    console.log('Word validation passed')
 
     // Normalize word for cache operations
     const normalizedWord = normalizeWord(word)
-    console.log('Normalized word:', normalizedWord)
 
     // Check the cache first (unless force refresh is requested)
     if (!forceRefresh) {
-      console.log('Checking cache for word:', normalizedWord)
       const cachedAnalysis = await getCachedAnalysis(normalizedWord)
 
       if (cachedAnalysis) {
-        console.log('Returning cached analysis for:', normalizedWord)
+        console.log(
+          `✅ Cache hit: "${normalizedWord}" (usage: ${cachedAnalysis.usage_count})`
+        )
 
         // Build result from a cache
         const result = {
@@ -109,6 +95,12 @@ Deno.serve(async (req: Request) => {
           JSON.stringify({
             success: true,
             data: result,
+            meta: {
+              source: 'cache',
+              cached_at: cachedAnalysis.created_at,
+              usage_count: cachedAnalysis.usage_count,
+              cache_hit: true,
+            },
           }),
           {
             status: 200,
@@ -116,42 +108,31 @@ Deno.serve(async (req: Request) => {
           }
         )
       }
-    } else {
-      console.log('Force refresh requested, skipping cache check')
     }
 
     // Cache miss or force refresh - call Gemini API
-    console.log('Creating prompt for word:', word)
+    const source = forceRefresh ? 'force refresh' : 'cache miss'
+    console.log(`🤖 ${source} - calling Gemini API for: "${word}"`)
+
     const prompt = formatWordAnalysisPrompt(word)
-    console.log('Prompt created, calling Gemini API...')
-
     const geminiResponse = await callGeminiAPI(prompt)
-    console.log('Gemini API response received, parsing...')
-
     const analysis = parseGeminiResponse(geminiResponse)
-    console.log('Analysis parsed:', JSON.stringify(analysis, null, 2))
 
     // Get multiple image options
-    console.log('Getting image options...')
     const imageOptions = await getMultipleImagesForWord(
       analysis.translations.en[0] || word,
       analysis.part_of_speech,
       analysis.examples
     )
-    console.log('Image options received:', imageOptions.length, 'images')
 
     // Clean and format data
-    console.log('Cleaning and formatting data...')
     const cleanedExamples = cleanExamples(analysis.examples)
     const formattedTranslations = formatTranslations(analysis.translations)
-    console.log('Data cleaned and formatted')
 
     // Create TTS URL
-    console.log('Creating TTS URL...')
     const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=nl&client=tw-ob&q=${encodeURIComponent(analysis.dutch_lemma)}`
 
     // Build final result
-    console.log('Building final result...')
     const result = {
       dutch_original: word,
       dutch_lemma: analysis.dutch_lemma || word,
@@ -178,7 +159,6 @@ Deno.serve(async (req: Request) => {
     }
 
     // Save to cache for future use (async, don't wait for completion)
-    console.log('Saving analysis to cache...')
     saveToCache({
       dutch_original: word,
       dutch_lemma: normalizedWord, // Use a normalized version as a cache key
@@ -202,17 +182,22 @@ Deno.serve(async (req: Request) => {
       preposition: analysis.preposition,
       analysis_notes: analysis.analysis_notes || '',
     }).catch(error => {
-      console.error('Error saving to cache:', error)
+      console.error('❌ Cache save error:', error)
       // Don't fail the request if cache save fails
     })
 
-    console.log('Sending successful response...')
-    console.log('Final result:', JSON.stringify(result, null, 2))
+    console.log(`✅ Fresh analysis completed for: "${word}"`)
 
     return new Response(
       JSON.stringify({
         success: true,
         data: result,
+        meta: {
+          source: 'gemini',
+          cache_hit: false,
+          force_refresh: forceRefresh || false,
+          processed_at: new Date().toISOString(),
+        },
       }),
       {
         status: 200,
@@ -220,17 +205,10 @@ Deno.serve(async (req: Request) => {
       }
     )
   } catch (error) {
-    console.error('=== ERROR IN GEMINI HANDLER ===')
-    console.error('Error type:', typeof error)
     console.error(
-      'Error message:',
+      '❌ Gemini handler error:',
       error instanceof Error ? error.message : 'Unknown error'
     )
-    console.error(
-      'Error stack:',
-      error instanceof Error ? error.stack : 'No stack trace'
-    )
-    console.error('Full error object:', error)
 
     return new Response(
       JSON.stringify({

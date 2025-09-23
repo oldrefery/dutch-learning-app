@@ -35,6 +35,15 @@ export interface AnalysisResult {
   analysis_notes?: string // User notes for word analysis
 }
 
+export interface AnalysisMetadata {
+  source: 'cache' | 'gemini'
+  cache_hit?: boolean
+  cached_at?: string
+  usage_count?: number
+  force_refresh?: boolean
+  processed_at?: string
+}
+
 export interface WordInputSectionProps {
   inputWord: string
   setInputWord: (word: string) => void

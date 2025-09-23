@@ -30,6 +30,8 @@ export interface CacheEntry {
   preposition: string | null
   analysis_notes: string
   usage_count: number
+  created_at: string
+  last_used_at: string
 }
 
 export interface WordAnalysisData {
@@ -63,30 +65,24 @@ export async function getCachedAnalysis(
   normalizedWord: string
 ): Promise<CacheEntry | null> {
   try {
-    console.log('Checking cache for word:', normalizedWord)
-
     const { data, error } = await supabase.rpc('get_valid_cache_entry', {
       lemma: normalizedWord,
     })
 
     if (error) {
-      console.error('Cache lookup error:', error)
+      console.error('❌ Cache lookup error:', error)
       return null
     }
 
     if (data && data.length > 0) {
-      console.log('Cache hit for word:', normalizedWord)
-
       // Update usage statistics
       await supabase.rpc('increment_cache_usage', { lemma: normalizedWord })
-
       return data[0] as CacheEntry
     }
 
-    console.log('Cache miss for word:', normalizedWord)
     return null
   } catch (error) {
-    console.error('Error checking cache:', error)
+    console.error('❌ Cache check error:', error)
     return null
   }
 }
@@ -98,8 +94,6 @@ export async function saveToCache(
   analysisData: WordAnalysisData
 ): Promise<void> {
   try {
-    console.log('Saving to cache:', analysisData.dutch_lemma)
-
     const { error } = await supabase.from('word_analysis_cache').upsert(
       {
         dutch_lemma: analysisData.dutch_lemma,
@@ -136,12 +130,10 @@ export async function saveToCache(
     )
 
     if (error) {
-      console.error('Error saving to cache:', error)
-    } else {
-      console.log('Successfully saved to cache:', analysisData.dutch_lemma)
+      console.error('❌ Cache save error:', error)
     }
   } catch (error) {
-    console.error('Error saving to cache:', error)
+    console.error('❌ Cache save error:', error)
   }
 }
 

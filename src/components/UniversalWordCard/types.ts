@@ -1,6 +1,9 @@
 import type { Word } from '@/types/database'
 import type { WordAnalysisResponse } from '@/types/GeminiTypes'
-import type { AnalysisResult } from '@/components/AddWordScreen/types/AddWordTypes'
+import type {
+  AnalysisResult,
+  AnalysisMetadata,
+} from '@/components/AddWordScreen/types/AddWordTypes'
 
 export type WordCardData = Word | WordAnalysisResponse | AnalysisResult
 
@@ -39,7 +42,7 @@ export interface WordCardActionConfig {
   isDuplicateChecking?: boolean
   isAlreadyInCollection?: boolean
 
-  // Save to collection
+  // Save to a collection
   showSaveButton?: boolean
   onSave?: () => void
 }
@@ -48,6 +51,10 @@ export interface UniversalWordCardProps {
   word: WordCardData
   config?: Partial<WordCardConfig> // Optional, accepts partial configuration changes
   actions?: WordCardActionConfig
+
+  // Cache functionality
+  metadata?: AnalysisMetadata | null
+  onForceRefresh?: () => void
 
   // Audio functionality
   isPlayingAudio?: boolean
@@ -64,6 +71,8 @@ export interface UniversalWordCardProps {
 export interface WordSectionProps {
   word: WordCardData
   config: WordCardConfig
+  metadata?: AnalysisMetadata | null
+  onForceRefresh?: () => void
   isPlayingAudio?: boolean
   onPlayPronunciation?: (url: string) => void
   onChangeImage?: () => void

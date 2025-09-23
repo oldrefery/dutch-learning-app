@@ -336,7 +336,7 @@ export const styles = StyleSheet.create({
     color: Colors.success.DEFAULT,
   },
 
-  // Section header with copy button
+  // Section header with the copy button
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -359,6 +359,46 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.neutral[400],
     lineHeight: 20,
+    fontStyle: 'italic',
+  },
+
+  // Cache status elements
+  cacheStatusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginRight: 8,
+  },
+  cacheBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cacheBadgeFromCache: {
+    backgroundColor: Colors.primary.light,
+  },
+  cacheBadgeFromGemini: {
+    backgroundColor: Colors.success.light,
+  },
+  cacheBadgeText: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: Colors.primary.DEFAULT,
+  },
+  forceRefreshButton: {
+    padding: 4,
+    borderRadius: 12,
+    backgroundColor: Colors.primary.light,
+  },
+  cacheTimestamp: {
+    marginTop: 4,
+    alignItems: 'flex-end',
+  },
+  cacheTimestampText: {
+    fontSize: 10,
+    color: Colors.neutral[500],
     fontStyle: 'italic',
   },
 })

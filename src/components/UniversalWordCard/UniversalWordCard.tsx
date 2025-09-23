@@ -47,6 +47,8 @@ export function UniversalWordCard({
   word,
   config,
   actions = DEFAULT_ACTIONS,
+  metadata,
+  onForceRefresh,
   isPlayingAudio = false,
   onPlayPronunciation,
   onChangeImage,
@@ -64,6 +66,8 @@ export function UniversalWordCard({
   const sectionProps = {
     word,
     config: finalConfig,
+    metadata,
+    onForceRefresh,
     isPlayingAudio,
     onPlayPronunciation,
     onChangeImage,

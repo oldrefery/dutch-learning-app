@@ -12,6 +12,8 @@ import type { WordSectionProps } from '../types'
 export function HeaderSection({
   word,
   config,
+  metadata,
+  onForceRefresh,
   isPlayingAudio,
   onPlayPronunciation,
 }: WordSectionProps) {
@@ -39,6 +41,38 @@ export function HeaderSection({
         </TextThemed>
 
         <NonSwipeableArea style={styles.headerActions}>
+          {/* Cache Status Badge */}
+          {metadata && (
+            <ViewThemed style={styles.cacheStatusContainer}>
+              <ViewThemed
+                style={[
+                  styles.cacheBadge,
+                  metadata.source === 'cache'
+                    ? styles.cacheBadgeFromCache
+                    : styles.cacheBadgeFromGemini,
+                ]}
+              >
+                <TextThemed style={styles.cacheBadgeText}>
+                  {metadata.source === 'cache' ? '📁 Cache' : '🤖 AI'}
+                </TextThemed>
+              </ViewThemed>
+
+              {/* Force Refresh Button - only show for cached results */}
+              {metadata.source === 'cache' && onForceRefresh && (
+                <TouchableOpacity
+                  style={styles.forceRefreshButton}
+                  onPress={onForceRefresh}
+                >
+                  <Ionicons
+                    name="refresh"
+                    size={16}
+                    color={Colors.primary.DEFAULT}
+                  />
+                </TouchableOpacity>
+              )}
+            </ViewThemed>
+          )}
+
           <CopyButton
             text={formatWordForCopying(word)}
             size={22}
@@ -47,10 +81,7 @@ export function HeaderSection({
           {canPlayAudio && (
             <TouchableOpacity
               style={styles.pronunciationButton}
-              onPress={() => {
-                console.log('🔊 PRONUNCIATION BUTTON: onPress triggered')
-                onPlayPronunciation(ttsUrl)
-              }}
+              onPress={() => onPlayPronunciation(ttsUrl)}
               disabled={isPlayingAudio}
             >
               <Ionicons
@@ -129,6 +160,15 @@ export function HeaderSection({
             </TextThemed>
             {' + '}
             {word.root_verb}
+          </TextThemed>
+        </ViewThemed>
+      )}
+
+      {/* Cache Timestamp - subtle display for cached data */}
+      {metadata && metadata.source === 'cache' && metadata.cached_at && (
+        <ViewThemed style={styles.cacheTimestamp}>
+          <TextThemed style={styles.cacheTimestampText}>
+            Cached: {new Date(metadata.cached_at).toLocaleDateString()}
           </TextThemed>
         </ViewThemed>
       )}

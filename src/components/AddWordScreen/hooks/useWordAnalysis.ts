@@ -2,14 +2,19 @@ import { useState } from 'react'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { wordService } from '@/lib/supabase'
-import type { AnalysisResult } from '../types/AddWordTypes'
+import type { AnalysisResult, AnalysisMetadata } from '../types/AddWordTypes'
 
 export const useWordAnalysis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
     null
   )
-  const analyzeWord = async (inputWord: string) => {
+  const [analysisMetadata, setAnalysisMetadata] =
+    useState<AnalysisMetadata | null>(null)
+  const analyzeWord = async (
+    inputWord: string,
+    forceRefresh: boolean = false
+  ) => {
     if (!inputWord.trim()) {
       ToastService.show('Please enter a Dutch word', ToastType.ERROR)
       return
@@ -21,7 +26,10 @@ export const useWordAnalysis = () => {
     try {
       // Only analyze the word, don't add it yet
       // Convert to lowercase before sending to analysis
-      const analysis = await wordService.analyzeWord(normalizedWord)
+      const response = await wordService.analyzeWord(normalizedWord, {
+        forceRefresh,
+      })
+      const analysis = response.data
 
       // Convert to display format
       const result: AnalysisResult = {
@@ -49,7 +57,25 @@ export const useWordAnalysis = () => {
       }
 
       setAnalysisResult(result)
-      ToastService.show('Word analyzed successfully', ToastType.SUCCESS)
+
+      // Extract metadata from response
+      if (response.meta) {
+        setAnalysisMetadata(response.meta)
+
+        // Show cache-specific toast messages
+        if (response.meta.cache_hit) {
+          ToastService.show(
+            `Word loaded from cache (used ${response.meta.usage_count} times)`,
+            ToastType.INFO
+          )
+        } else {
+          ToastService.show('Word analyzed with fresh AI', ToastType.SUCCESS)
+        }
+      } else {
+        // Fallback for responses without metadata
+        setAnalysisMetadata({ source: 'gemini' })
+        ToastService.show('Word analyzed successfully', ToastType.SUCCESS)
+      }
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error
@@ -63,6 +89,11 @@ export const useWordAnalysis = () => {
 
   const clearAnalysis = () => {
     setAnalysisResult(null)
+    setAnalysisMetadata(null)
+  }
+
+  const forceRefreshAnalysis = async (inputWord: string) => {
+    await analyzeWord(inputWord, true)
   }
 
   const updateImageUrl = (newImageUrl: string) => {
@@ -77,8 +108,10 @@ export const useWordAnalysis = () => {
   return {
     isAnalyzing,
     analysisResult,
+    analysisMetadata,
     analyzeWord,
     clearAnalysis,
+    forceRefreshAnalysis,
     updateImageUrl,
   }
 }
