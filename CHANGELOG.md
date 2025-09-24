@@ -17,6 +17,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0 Build 21] - 2025-09-24
+
+### Added
+
+- **Complete Image Change Functionality**: Full image replacement system across the application
+  - Image changing in review mode (card back side) with database and session state updates
+  - Image changing in collection detail modal with immediate UI feedback
+  - Cross-user image selection with 6+ image options per word
+  - Database integration with proper state management for both contexts
+
+### Fixed
+
+- **Gesture System Improvements**: Enhanced interaction handling in review mode
+  - Fixed audio button triggering unwanted card flips on review card back
+  - Fixed delete button triggering card flips during deletion confirmation
+  - Fixed image change button triggering card flips when selecting new images
+  - All functional buttons now use GestureDetector with .blocksExternalGesture() for proper isolation
+
+- **Word Analysis Display Issues**: Resolved separable verb information problems
+  - Fixed "unknown" part of speech display for separable verbs (now correctly shows "verb")
+  - Added missing separable verb grammar tags in word detail display
+  - Fixed cache/fresh data inconsistencies in Edge Function responses
+  - Improved fallback logic for cached data with null values
+
+- **Dark Theme Support**: ImageSelector modal now fully supports dark mode
+  - Replaced hardcoded light colors with adaptive color scheme system
+  - Fixed container, header, text, and image card backgrounds for proper dark mode display
+  - Updated close icon and all text elements to use appropriate colors
+  - Enhanced shadow opacity and contrast for better dark mode visibility
+
+### Technical
+
+- Added updateWordImage and updateCurrentWordImage store actions with TypeScript support
+- Enhanced gesture system architecture with consistent GestureDetector patterns
+- Improved Edge Function caching logic with better fallback handling
+- Created adaptive styling system for better dark theme support
+- Fixed deprecated Sentry configuration options for latest SDK compatibility
+
+---
+
 ## [1.1.0 Build 20] - 2025-09-24
 
 ### Fixed
