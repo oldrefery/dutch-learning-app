@@ -155,6 +155,36 @@
    - Create word details modal with collection name and SRS data
    - Preserve learning focus while providing contextual information
 
+4. **Word Reset Functionality** (Phase 4.1+)
+   - Add swipe-right action on word items in collections to reset word statistics
+   - Reset SRS data to initial values (easiness_factor, interval_days, repetition_count)
+   - Set next_review_date to today to make word available for immediate review
+   - Provide "Reset to New Word" functionality for words that need re-learning
+
+5. **Collection Management Enhancement** (Phase 4.1+)
+   - **Sorting Options**: Multiple sort criteria with ascending/descending options
+     - Alphabetical (A-Z / Z-A) by dutch_lemma
+     - Date Added (Newest First / Oldest First) by created_at
+     - Learning Difficulty (Easy to Hard / Hard to Easy) by easiness_factor
+     - Review Status (Due First / Mastered First) by next_review_date vs repetition_count
+   - **Persistent Sort Preferences**: Remember user's sorting choice at app level using AsyncStorage
+   - **Search Functionality**: Real-time search filter for large collections
+     - Search by Dutch word (dutch_lemma or dutch_original)
+     - Search by English translation
+     - Partial word matching with highlighting
+     - Clear search with X button
+   - **UI Components**: Sort/filter header bar with dropdown and search input
+
+6. **Word Collection Transfer** (Phase 4.1+)
+   - **Move Word Action**: Add option to transfer word to different collection
+   - **Collection Picker**: Present list of available collections (excluding current one)
+   - **Transfer Methods**: Multiple access points for better UX
+     - Long press on word item with context menu
+     - Word detail modal with "Move to..." button
+     - Batch selection for moving multiple words at once
+   - **Data Integrity**: Maintain all word data (SRS stats, analysis, etc.) during transfer
+   - **User Feedback**: Toast confirmation with undo option for accidental moves
+
 ## 🎨 FUTURE UI/UX IMPROVEMENTS
 
 ### Platform-Specific Theming (Phase 6+)
