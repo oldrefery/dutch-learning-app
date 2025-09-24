@@ -18,7 +18,6 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: Colors.background.primary,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     height: screenHeight * 0.8, // 80% of screen from bottom
@@ -49,13 +48,12 @@ export const styles = StyleSheet.create({
   wordTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.neutral[900],
     marginRight: 8,
   },
   articleText: {
     fontSize: 18,
-    color: Colors.neutral[600],
     fontStyle: 'italic',
+    opacity: 0.7,
   },
   closeButton: {
     padding: 8,
@@ -94,14 +92,12 @@ export const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: Colors.neutral[900],
     marginBottom: 12,
   },
   translationsContainer: {
     gap: 8,
   },
   translationItem: {
-    backgroundColor: Colors.neutral[50],
     padding: 12,
     borderRadius: 8,
     borderLeftWidth: 3,
@@ -109,14 +105,13 @@ export const styles = StyleSheet.create({
   },
   translationText: {
     fontSize: 16,
-    color: Colors.neutral[900],
     lineHeight: 22,
   },
   translationTextRussian: {
     fontSize: 16,
-    color: Colors.neutral[600],
     lineHeight: 22,
     fontStyle: 'italic',
+    opacity: 0.7,
   },
   partOfSpeechText: {
     fontSize: 16,
@@ -157,10 +152,14 @@ export const styles = StyleSheet.create({
   },
   progressContainer: {
     gap: 8,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.neutral[200],
   },
   progressText: {
     fontSize: 14,
-    color: Colors.neutral[600],
+    opacity: 0.7,
   },
   statusContainer: {
     flexDirection: 'row',
@@ -175,7 +174,6 @@ export const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontWeight: '500',
-    color: Colors.neutral[900],
   },
   noExamplesText: {
     fontSize: 14,

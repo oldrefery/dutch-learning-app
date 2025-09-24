@@ -1,6 +1,6 @@
 import React from 'react'
-import { TouchableOpacity } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
 import { isGeminiAnalysisResult } from '../types'
@@ -25,14 +25,18 @@ export function NotesSection({ word, config }: WordSectionProps) {
         Analysis Notes
       </TextThemed>
 
-      <TouchableOpacity style={styles.notesContainer} activeOpacity={0.7}>
+      <ViewThemed
+        style={styles.notesContainer}
+        lightColor={hasNotes ? undefined : Colors.light.backgroundSecondary}
+        darkColor={hasNotes ? undefined : Colors.dark.backgroundSecondary}
+      >
         <TextThemed
           style={[styles.notesText, !hasNotes && styles.notesPlaceholder]}
           selectable={hasNotes}
         >
           {hasNotes ? notes : 'No analysis notes available'}
         </TextThemed>
-      </TouchableOpacity>
+      </ViewThemed>
     </ViewThemed>
   )
 }

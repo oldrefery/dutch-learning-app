@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
   },
   collectionDate: {
     fontSize: 12,
-    color: '#6b7280',
+    color: Colors.neutral[500],
   },
   collectionStats: {
     flexDirection: 'row',
@@ -65,14 +65,14 @@ export const styles = StyleSheet.create({
   },
   statText: {
     fontSize: 14,
-    color: '#4b5563',
+    color: Colors.neutral[600],
   },
   dueText: {
-    color: '#dc2626',
+    color: Colors.error.DEFAULT,
     fontWeight: '500',
   },
   masteredText: {
-    color: '#16a34a',
+    color: Colors.success.DEFAULT,
     fontWeight: '500',
   },
   // Error states
@@ -84,12 +84,12 @@ export const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: '#dc2626',
+    color: Colors.error.DEFAULT,
     textAlign: 'center',
     marginBottom: 16,
   },
   retryButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: Colors.primary.DEFAULT,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
@@ -108,7 +108,7 @@ export const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     marginTop: 12,
   },
   // Empty states
@@ -120,13 +120,13 @@ export const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    color: '#374151',
+    color: Colors.neutral[700],
     fontWeight: '500',
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#6b7280',
+    color: Colors.neutral[500],
     textAlign: 'center',
   },
   // Section header
@@ -137,7 +137,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   addButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: Colors.primary.DEFAULT,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,

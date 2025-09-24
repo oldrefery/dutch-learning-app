@@ -17,6 +17,11 @@ export const styles = StyleSheet.create({
     padding: 12,
   },
 
+  darkMode: {
+    backgroundColor: Colors.error.darkModeChip,
+    borderColor: Colors.error.darkMode,
+  },
+
   // Header section
   headerSection: {
     marginBottom: 16,
@@ -56,7 +61,7 @@ export const styles = StyleSheet.create({
   grammarTag: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: Colors.neutral[100],
+    // Remove backgroundColor to let ViewThemed handle it
     borderRadius: 12,
     borderWidth: 1,
     borderColor: Colors.neutral[200],
@@ -72,8 +77,9 @@ export const styles = StyleSheet.create({
     marginTop: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.neutral[200],
   },
   separableText: {
     fontSize: 14,
@@ -201,7 +207,6 @@ export const styles = StyleSheet.create({
   wordChip: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    backgroundColor: Colors.background.secondary,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: Colors.neutral[200],
@@ -225,11 +230,12 @@ export const styles = StyleSheet.create({
     color: Colors.error.DEFAULT,
   },
 
-  // Conjugation table
+  // Conjugation table - using theme-aware colors
   conjugationTable: {
-    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
     padding: 12,
+    borderWidth: 1,
+    borderColor: Colors.neutral[200],
   },
   conjugationRow: {
     flexDirection: 'row',
@@ -238,12 +244,11 @@ export const styles = StyleSheet.create({
   },
   conjugationLabel: {
     fontSize: 14,
-    color: Colors.text.secondary,
     fontWeight: '500',
+    opacity: 0.7, // For secondary text appearance
   },
   conjugationValue: {
     fontSize: 14,
-    color: Colors.text.primary,
     fontWeight: '600',
   },
 
@@ -285,10 +290,11 @@ export const styles = StyleSheet.create({
 
   // Status and progress info
   statusInfo: {
-    backgroundColor: Colors.background.secondary,
     padding: 12,
     borderRadius: 8,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: Colors.neutral[200],
   },
   statusRow: {
     flexDirection: 'row',
@@ -314,8 +320,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: Colors.neutral[100],
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.neutral[200],
   },
   alreadyExistsBadge: {
     flexDirection: 'row',
@@ -343,23 +350,23 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  // Notes section
+  // Notes section - using theme-aware colors
   notesContainer: {
-    backgroundColor: Colors.background.secondary,
     borderRadius: 8,
     padding: 12,
     minHeight: 60,
+    borderWidth: 1,
+    borderColor: Colors.neutral[200],
   },
   notesText: {
     fontSize: 14,
-    color: Colors.text.primary,
     lineHeight: 20,
   },
   notesPlaceholder: {
     fontSize: 14,
-    color: Colors.neutral[400],
     lineHeight: 20,
     fontStyle: 'italic',
+    opacity: 0.6, // For placeholder appearance
   },
 
   // Cache status elements

@@ -66,7 +66,11 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
       {/* Progress and Status info */}
       {(actions.showProgressInfo || actions.showStatusInfo) &&
         isWordFromDB(word) && (
-          <ViewThemed style={styles.statusInfo}>
+          <ViewThemed
+            style={styles.statusInfo}
+            lightColor={Colors.light.backgroundSecondary}
+            darkColor={Colors.dark.backgroundSecondary}
+          >
             {actions.showProgressInfo && (
               <>
                 <ViewThemed style={styles.statusRow}>
@@ -125,10 +129,7 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
             style={[
               styles.actionButton,
               styles.deleteButton,
-              colorScheme === 'dark' && {
-                backgroundColor: Colors.error.darkModeChip,
-                borderColor: Colors.error.darkMode,
-              },
+              colorScheme === 'dark' && styles.darkMode,
             ]}
             onPress={() => {
               console.log('🗑️ DELETE BUTTON: onPress triggered')

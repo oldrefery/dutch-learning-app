@@ -1,5 +1,6 @@
 import React from 'react'
 import { TextThemed, ViewThemed } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
 
@@ -21,7 +22,11 @@ export function ConjugationSection({ word, config }: WordSectionProps) {
         Conjugation
       </TextThemed>
 
-      <ViewThemed style={styles.conjugationTable}>
+      <ViewThemed
+        style={styles.conjugationTable}
+        lightColor={Colors.light.backgroundSecondary}
+        darkColor={Colors.dark.backgroundSecondary}
+      >
         {conjugation.present && (
           <ViewThemed style={styles.conjugationRow}>
             <TextThemed style={styles.conjugationLabel}>

@@ -31,17 +31,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.background.primary,
   },
   text: {
     marginTop: 16,
     fontSize: 16,
     fontWeight: '500',
-    color: Colors.neutral[700],
   },
   subText: {
     marginTop: 4,
     fontSize: 14,
-    color: Colors.neutral[500],
   },
 })

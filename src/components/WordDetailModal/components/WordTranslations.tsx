@@ -1,5 +1,6 @@
 import React from 'react'
 import { ViewThemed, TextThemed } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 
 interface WordTranslationsProps {
@@ -19,14 +20,24 @@ export default function WordTranslations({
       <TextThemed style={styles.sectionTitle}>Translations</TextThemed>
       <ViewThemed style={styles.translationsContainer}>
         {translations.en?.map((translation, index) => (
-          <ViewThemed key={index} style={styles.translationItem}>
+          <ViewThemed
+            key={index}
+            style={styles.translationItem}
+            lightColor={Colors.light.backgroundSecondary}
+            darkColor={Colors.dark.backgroundSecondary}
+          >
             <TextThemed style={styles.translationText}>
               {translation}
             </TextThemed>
           </ViewThemed>
         ))}
         {translations.ru?.map((translation, index) => (
-          <ViewThemed key={`ru-${index}`} style={styles.translationItem}>
+          <ViewThemed
+            key={`ru-${index}`}
+            style={styles.translationItem}
+            lightColor={Colors.light.backgroundSecondary}
+            darkColor={Colors.dark.backgroundSecondary}
+          >
             <TextThemed style={styles.translationTextRussian}>
               {translation}
             </TextThemed>
