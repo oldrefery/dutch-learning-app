@@ -42,6 +42,7 @@
 | **Phase 2**: Backend Integration              | ✅ COMPLETED | September 7, 2025      |
 | **Phase 3**: Enhanced Learning Experience     | ✅ COMPLETED | September 16, 2025     |
 | **Phase 3.1**: UI Enhancements                | ✅ COMPLETED | **September 16, 2025** |
+| **Phase 3.2**: Image Change & Gesture Fixes   | ✅ COMPLETED | **September 24, 2025** |
 | **Phase 4.0**: Access Control & Smart Cache   | 🔄 NEXT      | Pending                |
 | **Phase 4.1**: Collection Sharing & Word Mgmt | ⏳ FUTURE    | Pending                |
 | **Phase 5**: Gamification & Motivation        | ⏳ FUTURE    | Pending                |
@@ -134,6 +135,45 @@
   - Pull-to-refresh throughout the app
   - Gesture-based navigation system
 
+## 🎉 NEW MILESTONE ACHIEVED: Minor Fixes & UX Improvements COMPLETED ✅
+
+### What We Accomplished (September 24, 2025):
+
+#### ✅ **Complete Image Change Functionality**
+
+- **Review Mode Integration**: Image changing on card back side with proper gesture isolation
+  - Implementation: Custom `ChangeImageButton` with GestureDetector (`ImageSection.tsx:17-39`)
+  - Database updates through `updateWordImage` store action
+  - Review session state updates through `updateCurrentWordImage` action
+- **Collection Modal Integration**: Image changing in word detail modal with immediate feedback
+  - Implementation: Enhanced `handleImageChange` in collection screen (`collection/[id].tsx:108-118`)
+  - Local state updates for instant UI feedback alongside database persistence
+- **Cross-User Image Selection**: 6+ contextually relevant image options per word
+  - Smart image search using English translation, part of speech, and examples
+  - ImageSelector modal with dark theme support and adaptive styling
+
+#### ✅ **Gesture System Improvements**
+
+- **Card Flip Prevention**: All functional buttons now properly isolated from card flip gestures
+  - Audio button: Replaced TouchableOpacity with GestureDetector + blocksExternalGesture
+  - Delete button: Custom component with gesture blocking for confirmation dialogs
+  - Image change button: Consistent GestureDetector implementation across components
+- **Architecture Enhancement**: Standardized gesture handling pattern across all interactive elements
+
+#### ✅ **Word Analysis Display Fixes**
+
+- **Separable Verb Support**: Fixed "unknown" part of speech display for separable verbs
+  - Implementation: Smart fallback logic in both client (`useWordAnalysis.ts:38-40`) and server (`gemini-handler/index.ts:139-140`)
+  - Grammar tag display for separable verb information (`HeaderSection.tsx:193-203`)
+  - Edge Function cache consistency improvements for reliable data display
+
+#### ✅ **Dark Theme Enhancement**
+
+- **ImageSelector Modal**: Complete dark mode support with adaptive styling system
+  - Implementation: `getImageSelectorStyles(colorScheme)` function for dynamic theming
+  - Proper contrast ratios and shadow adjustments for dark backgrounds
+  - Background, text, and UI element colors adapt seamlessly to user theme preference
+
 ## 🔄 IMMEDIATE NEXT STEPS (Phase 4.0 - Access Control & Smart Analysis)
 
 ### Priority Tasks:
@@ -154,6 +194,36 @@
    - Add minimal info button to review screen header
    - Create word details modal with collection name and SRS data
    - Preserve learning focus while providing contextual information
+
+4. **Word Reset Functionality** (Phase 4.1+)
+   - Add swipe-right action on word items in collections to reset word statistics
+   - Reset SRS data to initial values (easiness_factor, interval_days, repetition_count)
+   - Set next_review_date to today to make word available for immediate review
+   - Provide "Reset to New Word" functionality for words that need re-learning
+
+5. **Collection Management Enhancement** (Phase 4.1+)
+   - **Sorting Options**: Multiple sort criteria with ascending/descending options
+     - Alphabetical (A-Z / Z-A) by dutch_lemma
+     - Date Added (Newest First / Oldest First) by created_at
+     - Learning Difficulty (Easy to Hard / Hard to Easy) by easiness_factor
+     - Review Status (Due First / Mastered First) by next_review_date vs repetition_count
+   - **Persistent Sort Preferences**: Remember user's sorting choice at app level using AsyncStorage
+   - **Search Functionality**: Real-time search filter for large collections
+     - Search by Dutch word (dutch_lemma or dutch_original)
+     - Search by English translation
+     - Partial word matching with highlighting
+     - Clear search with X button
+   - **UI Components**: Sort/filter header bar with dropdown and search input
+
+6. **Word Collection Transfer** (Phase 4.1+)
+   - **Move Word Action**: Add option to transfer word to different collection
+   - **Collection Picker**: Present list of available collections (excluding current one)
+   - **Transfer Methods**: Multiple access points for better UX
+     - Long press on word item with context menu
+     - Word detail modal with "Move to..." button
+     - Batch selection for moving multiple words at once
+   - **Data Integrity**: Maintain all word data (SRS stats, analysis, etc.) during transfer
+   - **User Feedback**: Toast confirmation with undo option for accidental moves
 
 ## 🎨 FUTURE UI/UX IMPROVEMENTS
 
@@ -185,6 +255,10 @@
 - **NEW:** Advanced swipe and tap interactions throughout the app
 - **NEW:** Contextual image search with smart relevance matching
 - **NEW:** Optimized screen layouts for maximum information density
+- **LATEST:** Full image change functionality across review and collection modes
+- **LATEST:** Enhanced gesture system with proper button isolation from card flip
+- **LATEST:** Complete dark theme support for ImageSelector modal
+- **LATEST:** Fixed word analysis display issues for separable verbs
 
 **Ready for:** App Store deployment, user acquisition, tiered access control, smart analysis caching
 

@@ -1,5 +1,7 @@
 import React from 'react'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -8,6 +10,40 @@ import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { formatWordForCopying } from '@/utils/wordTextFormatter'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
+
+// Audio button component with gesture blocking
+interface AudioButtonProps {
+  ttsUrl: string
+  isPlayingAudio: boolean
+  onPress: (url: string) => void
+}
+
+function AudioButton({ ttsUrl, isPlayingAudio, onPress }: AudioButtonProps) {
+  const handleAudioPress = () => {
+    if (!isPlayingAudio) {
+      onPress(ttsUrl)
+    }
+  }
+
+  const tapGesture = Gesture.Tap()
+    .onEnd(() => {
+      'worklet'
+      scheduleOnRN(handleAudioPress)
+    })
+    .blocksExternalGesture()
+
+  return (
+    <GestureDetector gesture={tapGesture}>
+      <View style={styles.pronunciationButton}>
+        <Ionicons
+          name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
+          size={20}
+          color={Colors.primary.DEFAULT}
+        />
+      </View>
+    </GestureDetector>
+  )
+}
 
 export function HeaderSection({
   word,
@@ -79,17 +115,11 @@ export function HeaderSection({
             color={Colors.primary.DEFAULT}
           />
           {canPlayAudio && (
-            <TouchableOpacity
-              style={styles.pronunciationButton}
-              onPress={() => onPlayPronunciation(ttsUrl)}
-              disabled={isPlayingAudio}
-            >
-              <Ionicons
-                name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
-                size={20}
-                color={Colors.primary.DEFAULT}
-              />
-            </TouchableOpacity>
+            <AudioButton
+              ttsUrl={ttsUrl}
+              isPlayingAudio={isPlayingAudio || false}
+              onPress={onPlayPronunciation}
+            />
           )}
         </NonSwipeableArea>
       </ViewThemed>
@@ -130,6 +160,14 @@ export function HeaderSection({
             <ViewThemed style={styles.grammarTag}>
               <TextThemed style={styles.grammarTagText} selectable>
                 reflexive
+              </TextThemed>
+            </ViewThemed>
+          )}
+
+          {word.is_separable && (
+            <ViewThemed style={styles.grammarTag}>
+              <TextThemed style={styles.grammarTagText} selectable>
+                separable
               </TextThemed>
             </ViewThemed>
           )}

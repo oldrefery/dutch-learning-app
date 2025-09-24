@@ -5,13 +5,14 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
+  useColorScheme,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { IMAGE_CONFIG } from '@/constants/AppConfig'
 import { supabase } from '@/lib/supabaseClient'
-import { imageSelectorStyles } from './styles'
+import { getImageSelectorStyles } from './styles'
 import type { ImageOption, ImageSelectorProps } from './types'
 
 export default function ImageSelector({
@@ -28,6 +29,8 @@ export default function ImageSelector({
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [offset, setOffset] = useState(0)
+  const colorScheme = useColorScheme() ?? 'light'
+  const styles = getImageSelectorStyles(colorScheme)
 
   const loadImages = useCallback(async () => {
     setLoading(true)
@@ -119,57 +122,44 @@ export default function ImageSelector({
   }
 
   const renderLoadingState = () => (
-    <ViewThemed style={imageSelectorStyles.loadingContainer}>
+    <ViewThemed style={styles.loadingContainer}>
       <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
-      <TextThemed style={imageSelectorStyles.loadingText}>
+      <TextThemed style={styles.loadingText}>
         Finding better images...
       </TextThemed>
     </ViewThemed>
   )
 
   const renderErrorState = () => (
-    <ViewThemed style={imageSelectorStyles.errorContainer}>
-      <TextThemed style={imageSelectorStyles.errorText}>{error}</TextThemed>
-      <TouchableOpacity
-        onPress={loadImages}
-        style={imageSelectorStyles.retryButton}
-      >
-        <TextThemed style={imageSelectorStyles.retryButtonText}>
-          Try Again
-        </TextThemed>
+    <ViewThemed style={styles.errorContainer}>
+      <TextThemed style={styles.errorText}>{error}</TextThemed>
+      <TouchableOpacity onPress={loadImages} style={styles.retryButton}>
+        <TextThemed style={styles.retryButtonText}>Try Again</TextThemed>
       </TouchableOpacity>
     </ViewThemed>
   )
 
   const renderImageGrid = () => (
-    <ScrollView
-      style={imageSelectorStyles.imageGrid}
-      showsVerticalScrollIndicator={false}
-    >
-      <ViewThemed style={imageSelectorStyles.gridContainer}>
+    <ScrollView style={styles.imageGrid} showsVerticalScrollIndicator={false}>
+      <ViewThemed style={styles.gridContainer}>
         {images.map((image, index) => (
           <TouchableOpacity
             key={index}
             style={[
-              imageSelectorStyles.imageOption,
-              currentImageUrl === image.url && imageSelectorStyles.currentImage,
+              styles.imageOption,
+              currentImageUrl === image.url && styles.currentImage,
             ]}
             onPress={() => handleImageSelect(image.url)}
           >
-            <Image
-              source={{ uri: image.url }}
-              style={imageSelectorStyles.optionImage}
-            />
+            <Image source={{ uri: image.url }} style={styles.optionImage} />
             {currentImageUrl === image.url && (
-              <ViewThemed style={imageSelectorStyles.currentBadge}>
+              <ViewThemed style={styles.currentBadge}>
                 <Ionicons
                   name="checkmark-circle"
                   size={20}
                   color={Colors.success.DEFAULT}
                 />
-                <TextThemed style={imageSelectorStyles.currentText}>
-                  Current
-                </TextThemed>
+                <TextThemed style={styles.currentText}>Current</TextThemed>
               </ViewThemed>
             )}
           </TouchableOpacity>
@@ -178,11 +168,11 @@ export default function ImageSelector({
 
       {/* Load More Button */}
       {images.length > 0 && (
-        <ViewThemed style={imageSelectorStyles.loadMoreContainer}>
+        <ViewThemed style={styles.loadMoreContainer}>
           <TouchableOpacity
             style={[
-              imageSelectorStyles.loadMoreButton,
-              loadingMore && imageSelectorStyles.loadMoreButtonDisabled,
+              styles.loadMoreButton,
+              loadingMore && styles.loadMoreButtonDisabled,
             ]}
             onPress={loadMoreImages}
             disabled={loadingMore}
@@ -190,7 +180,7 @@ export default function ImageSelector({
             {loadingMore ? (
               <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
             ) : (
-              <TextThemed style={imageSelectorStyles.loadMoreText}>
+              <TextThemed style={styles.loadMoreText}>
                 Load More Images
               </TextThemed>
             )}
@@ -218,20 +208,23 @@ export default function ImageSelector({
       animationType="slide"
       presentationStyle="pageSheet"
     >
-      <ViewThemed style={imageSelectorStyles.container}>
-        <ViewThemed style={imageSelectorStyles.header}>
-          <TextThemed style={imageSelectorStyles.title}>
-            Choose Image
-          </TextThemed>
-          <TouchableOpacity
-            onPress={onClose}
-            style={imageSelectorStyles.closeButton}
-          >
-            <Ionicons name="close" size={24} color={Colors.neutral[700]} />
+      <ViewThemed style={styles.container}>
+        <ViewThemed style={styles.header}>
+          <TextThemed style={styles.title}>Choose Image</TextThemed>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Ionicons
+              name="close"
+              size={24}
+              color={
+                colorScheme === 'dark'
+                  ? Colors.dark.textSecondary
+                  : Colors.light.textSecondary
+              }
+            />
           </TouchableOpacity>
         </ViewThemed>
 
-        <TextThemed style={imageSelectorStyles.subtitle}>
+        <TextThemed style={styles.subtitle}>
           Select a better image for &quot;{englishTranslation}&quot;
         </TextThemed>
 

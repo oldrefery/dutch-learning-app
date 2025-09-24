@@ -74,18 +74,18 @@ export const createReviewActions = (
         currentWord.dutch_lemma
       )
 
-      // Classic SRS: All assessments update the word in database
+      // Classic SRS: All assessments update the word in the database
       await get().updateWordAfterReview(currentWord.word_id, assessment)
       console.log(
         `💾 Word ${currentWord.dutch_lemma} updated in database with assessment: ${assessment.assessment}`
       )
 
-      // Move to next word
+      // Move to the next word
       const nextIndex = reviewSession.currentIndex + 1
       const nextWord = reviewSession.words[nextIndex] || null
 
       if (nextWord && nextIndex < reviewSession.words.length) {
-        // Continue with next word
+        // Continue with the next word
         console.log('➡️ Moving to next word:', nextWord.dutch_lemma)
         set({
           reviewSession: {
@@ -188,19 +188,19 @@ export const createReviewActions = (
     }
   },
 
-  // Delete word from current review session
+  // Delete word from the current review session
   deleteWordFromReview: (wordId: string) => {
     const { reviewSession, currentWord } = get()
     if (!reviewSession || !currentWord) return
 
-    // Remove the word from review session words array
+    // Remove the word from the review session words array
     const updatedWords = reviewSession.words.filter(
       word => word.word_id !== wordId
     )
     const currentIndex = reviewSession.currentIndex
 
     if (updatedWords.length === 0) {
-      // No more words in session, end the session
+      // No more words in the session, end the session
       set({
         reviewSession: null,
         currentWord: null,
@@ -208,13 +208,13 @@ export const createReviewActions = (
       return
     }
 
-    // Adjust current index if we deleted a word before the current position
+    // Adjust the current index if we deleted a word before the current position
     let newIndex = currentIndex
     if (currentIndex >= updatedWords.length) {
-      // If current index is beyond the new array length, go to the last word
+      // If the current index is beyond the new array length, go to the last word
       newIndex = updatedWords.length - 1
     } else if (currentWord.word_id === wordId) {
-      // If we deleted the current word, stay at the same index (next word will be shown)
+      // If we deleted the current word, stay at the same index (the next word will be shown)
       newIndex = Math.min(currentIndex, updatedWords.length - 1)
     }
 
@@ -227,6 +227,30 @@ export const createReviewActions = (
         currentIndex: newIndex,
       },
       currentWord: nextWord,
+    })
+  },
+
+  updateCurrentWordImage: (imageUrl: string) => {
+    const { currentWord, reviewSession } = get()
+
+    if (!currentWord || !reviewSession) return
+
+    // Update current word
+    const updatedCurrentWord = { ...currentWord, image_url: imageUrl }
+
+    // Update word in the review session
+    const updatedWords = reviewSession.words.map(word =>
+      word.word_id === currentWord.word_id
+        ? { ...word, image_url: imageUrl }
+        : word
+    )
+
+    set({
+      currentWord: updatedCurrentWord,
+      reviewSession: {
+        ...reviewSession,
+        words: updatedWords,
+      },
     })
   },
 })

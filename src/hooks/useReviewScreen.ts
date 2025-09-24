@@ -22,6 +22,7 @@ export const useReviewScreen = () => {
     reviewLoading,
     goToNextWord,
     goToPreviousWord,
+    updateCurrentWordImage,
   } = useApplicationStore()
 
   const [audioPlayer, setAudioPlayer] = useState<AudioPlayer | null>(null)
@@ -44,11 +45,11 @@ export const useReviewScreen = () => {
     initAudio()
 
     return () => {
-      // Cleanup handled by component unmount
+      // Cleanup handled by the component unmount
     }
   }, [])
 
-  // Cleanup audio player when component unmounts
+  // Clean up audio player when component unmounts
   useEffect(() => {
     return () => {
       if (audioPlayer) {
@@ -62,7 +63,7 @@ export const useReviewScreen = () => {
     startReviewSession()
   }, [startReviewSession])
 
-  // Reset card state when word changes
+  // Reset card state when the word changes
   useEffect(() => {
     setIsFlipped(false)
   }, [currentWord?.word_id])
@@ -140,7 +141,7 @@ export const useReviewScreen = () => {
     if (!currentWord) return
 
     try {
-      // Delete word from database and global state
+      // Delete word from the database and global state
       await deleteWord(currentWord.word_id)
 
       deleteWordFromReview(currentWord.word_id)
@@ -163,14 +164,17 @@ export const useReviewScreen = () => {
       if (!currentWord) return
 
       try {
-        // TODO: Implement updateWordImage in store
-        // await updateWordImage(currentWord.word_id, imageUrl)
+        const store = useApplicationStore.getState()
+        // Update in database
+        await store.updateWordImage(currentWord.word_id, imageUrl)
+        // Update in the current review session
+        updateCurrentWordImage(imageUrl)
         ToastService.show('Image updated', ToastType.SUCCESS)
       } catch {
         ToastService.show('Failed to update image', ToastType.ERROR)
       }
     },
-    [currentWord]
+    [currentWord, updateCurrentWordImage]
   )
 
   const restartSession = useCallback(() => {
@@ -182,7 +186,7 @@ export const useReviewScreen = () => {
     )
   }, [])
 
-  // Create tap gesture for card flip
+  // Create a tap gesture for card flip
   const tapGesture = useCallback(() => {
     return Gesture.Tap()
       .maxDuration(200) // Very short tap duration
@@ -219,7 +223,7 @@ export const useReviewScreen = () => {
       })
   }, [isScrolling, lastTouchTime, flipCard, isFlipped])
 
-  // Create double tap gesture for word detail
+  // Create a double tap gesture for word detail
   const doubleTapGesture = useCallback(() => {
     return Gesture.Tap()
       .numberOfTaps(2)
@@ -234,7 +238,7 @@ export const useReviewScreen = () => {
       })
   }, [isScrolling])
 
-  // Create pan gesture for swipe navigation
+  // Create a pan gesture for swipe navigation
   const panGesture = useCallback(() => {
     return Gesture.Pan()
       .minDistance(20) // Minimum distance to start pan (higher than tap maxDistance)
@@ -245,15 +249,15 @@ export const useReviewScreen = () => {
         // Only handle navigation if it's a significant swipe
         if (Math.abs(event.translationX) > swipeThreshold) {
           if (event.translationX < -swipeThreshold) {
-            // Swipe left - go to next word
+            // Swipe left - go to the next word
             scheduleOnRN(goToNextWord)
           } else if (event.translationX > swipeThreshold) {
-            // Swipe right - go to previous word
+            // Swipe right - go to the previous word
             scheduleOnRN(goToPreviousWord)
           }
         }
       })
-      .enabled(!isFlipped) // Only enable swiping on front side
+      .enabled(!isFlipped) // Only enable swiping on the front side
   }, [isFlipped, goToNextWord, goToPreviousWord])
 
   return {

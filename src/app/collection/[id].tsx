@@ -28,8 +28,14 @@ export default function CollectionDetailScreen() {
   const [modalVisible, setModalVisible] = useState(false)
   const colorScheme = useColorScheme() ?? 'light'
 
-  const { words, collections, fetchWords, fetchCollections, deleteWord } =
-    useApplicationStore()
+  const {
+    words,
+    collections,
+    fetchWords,
+    fetchCollections,
+    deleteWord,
+    updateWordImage,
+  } = useApplicationStore()
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
@@ -108,7 +114,9 @@ export default function CollectionDetailScreen() {
   const handleImageChange = async (imageUrl: string) => {
     if (!selectedWord) return
     try {
-      // TODO: Implement image update in store
+      await updateWordImage(selectedWord.word_id, imageUrl)
+      // Update selected word state to reflect new image immediately
+      setSelectedWord({ ...selectedWord, image_url: imageUrl })
       ToastService.show('Image updated', ToastType.SUCCESS)
     } catch {
       ToastService.show('Failed to update image', ToastType.ERROR)

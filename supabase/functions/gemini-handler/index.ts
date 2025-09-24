@@ -136,7 +136,8 @@ Deno.serve(async (req: Request) => {
     const result = {
       dutch_original: word,
       dutch_lemma: analysis.dutch_lemma || word,
-      part_of_speech: analysis.part_of_speech,
+      part_of_speech:
+        analysis.part_of_speech || (analysis.is_separable ? 'verb' : null),
       translations: formattedTranslations,
       examples: cleanedExamples,
       image_url: imageOptions[0]?.url || '',
@@ -162,7 +163,8 @@ Deno.serve(async (req: Request) => {
     saveToCache({
       dutch_original: word,
       dutch_lemma: normalizedWord, // Use a normalized version as a cache key
-      part_of_speech: analysis.part_of_speech,
+      part_of_speech:
+        analysis.part_of_speech || (analysis.is_separable ? 'verb' : null),
       is_irregular: analysis.is_irregular || false,
       article: analysis.article,
       is_reflexive: analysis.is_reflexive || false,
