@@ -280,12 +280,14 @@ DutchLearningApp/
 - [x] **Swipe-to-Delete Collections**: Gesture-based collection management ✅
   - Implementation: `SwipeableCollectionCard.tsx` with animated swipe gestures
   - Features: Delete and rename actions accessible via swipe
+  - **Enhanced**: Fixed gesture conflicts, improved UI visibility, and migrated to modern scheduleOnRN API
 
 ### 2. Word Management ✅ COMPLETED
 
 - [x] **Swipe-to-Delete Words**: Individual word deletion via swipe gestures ✅
   - Implementation: `SwipeableWordItem.tsx` with smooth animations
   - Visual feedback: Red delete background with trash icon
+  - **Enhanced**: Added confirmation dialogs, fixed deprecated API usage, and improved partial swipe visibility
 - [x] **Word Detail Modal**: Comprehensive word information display ✅
   - Implementation: `WordDetailModal.tsx` with full word analysis
   - Access: Tap to view from collection screens

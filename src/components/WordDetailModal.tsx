@@ -11,11 +11,11 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
   interpolate,
   Extrapolation,
   useAnimatedScrollHandler,
 } from 'react-native-reanimated'
+import { scheduleOnRN } from 'react-native-worklets'
 import { ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { Word } from '@/types/database'
@@ -67,7 +67,7 @@ export default function WordDetailModal({
   const closeModal = () => {
     translateY.value = withTiming(screenHeight, { duration: 300 })
     backdropOpacity.value = withTiming(0, { duration: 300 }, () => {
-      runOnJS(onClose)()
+      scheduleOnRN(onClose)
     })
   }
 
@@ -107,7 +107,7 @@ export default function WordDetailModal({
         translateY.value > dismissThreshold || event.velocityY > 800
 
       if (shouldClose) {
-        runOnJS(closeModal)()
+        scheduleOnRN(closeModal)
       } else {
         // Return to the original position if not closed
         translateY.value = withSpring(0)

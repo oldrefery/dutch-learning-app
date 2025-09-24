@@ -47,9 +47,6 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# Supabase
-supabase/.temp/
-
 # IDE
 .cursor/
 
@@ -67,3 +64,5 @@ builds/
 *.apk
 *.aab
 /android-apps-473016-7616fdc8cf35.json
+!/.sentryclirc
+/.sentryclirc

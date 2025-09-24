@@ -64,7 +64,18 @@ EXPO_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
 SENTRY_AUTH_TOKEN=your_sentry_auth_token_here
 ```
 
-### 4. Run the application:
+### 4. Setup Sentry Configuration (Required for Local Production Builds):
+
+For proper source map uploads to Sentry during local production builds, create a `.sentryclirc` file in the project root:
+
+```
+[auth]
+token=your_sentry_auth_token_here
+```
+
+This file is required for the local build script to properly upload source maps to Sentry for crash reporting. Note: EAS builds in the cloud handle Sentry configuration automatically through environment variables.
+
+### 5. Run the application:
 
 ```
 npm start
@@ -211,3 +222,34 @@ The project is ready for MVP feature implementation:
 4. **Add flashcard animations** and user interactions
 
 Start development by modifying `src/app/(tabs)/index.tsx` for the home screen.
+
+## 10. Production Build
+
+The project includes an automated build script for creating **local** production builds:
+
+```bash
+# Build and submit for both platforms
+./scripts/build-and-submit.sh
+
+# Build for specific platform only
+./scripts/build-and-submit.sh --platform ios
+./scripts/build-and-submit.sh --platform android
+
+# Build only (don't submit to stores)
+./scripts/build-and-submit.sh --build-only
+```
+
+**Requirements for Local Builds:**
+
+- `.sentryclirc` file must be present in the project root with valid Sentry auth token
+- EAS CLI must be configured with proper credentials
+- Apple ID and Google Play credentials must be set up in EAS
+
+The script automatically:
+
+- Increments build numbers for both platforms
+- Builds locally for faster performance
+- Uploads source maps to Sentry for crash reporting
+- Submits to App Store Connect and Google Play Store
+
+**Note:** This configuration is only needed for local builds. EAS cloud builds handle Sentry configuration automatically through environment variables and don't require the `.sentryclirc` file.
