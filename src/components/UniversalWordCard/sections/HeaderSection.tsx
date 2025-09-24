@@ -134,6 +134,14 @@ export function HeaderSection({
             </ViewThemed>
           )}
 
+          {word.is_separable && (
+            <ViewThemed style={styles.grammarTag}>
+              <TextThemed style={styles.grammarTagText} selectable>
+                separable
+              </TextThemed>
+            </ViewThemed>
+          )}
+
           {word.is_expression && (
             <ViewThemed style={styles.grammarTag}>
               <TextThemed style={styles.grammarTagText} selectable>

@@ -32,9 +32,12 @@ export const useWordAnalysis = () => {
       const analysis = response.data
 
       // Convert to display format
+
       const result: AnalysisResult = {
         dutch_lemma: analysis.dutch_lemma,
-        part_of_speech: analysis.part_of_speech || 'unknown',
+        part_of_speech:
+          analysis.part_of_speech ||
+          (analysis.is_separable ? 'verb' : 'unknown'),
         is_irregular: analysis.is_irregular,
         article: analysis.article || undefined,
         is_reflexive: analysis.is_reflexive || false,
