@@ -1,5 +1,7 @@
 import React from 'react'
-import { TouchableOpacity, Alert, useColorScheme } from 'react-native'
+import { TouchableOpacity, Alert, useColorScheme, View } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
@@ -7,6 +9,72 @@ import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 import type { WordCardData, WordCardActionConfig } from '../types'
 import { isWordFromDB } from '../types'
+
+// Delete the button component with gesture blocking
+interface DeleteButtonProps {
+  word: WordCardData
+  onDelete: () => void
+  colorScheme: 'light' | 'dark'
+}
+
+function DeleteButton({ word, onDelete, colorScheme }: DeleteButtonProps) {
+  const handleDeletePress = () => {
+    console.log('🗑️ DELETE BUTTON: onPress triggered')
+    Alert.alert(
+      'Delete Word',
+      `Are you sure you want to delete "${word.dutch_lemma}"?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: onDelete,
+        },
+      ]
+    )
+  }
+
+  const tapGesture = Gesture.Tap()
+    .onEnd(() => {
+      'worklet'
+      scheduleOnRN(handleDeletePress)
+    })
+    .blocksExternalGesture()
+
+  return (
+    <GestureDetector gesture={tapGesture}>
+      <View
+        style={[
+          styles.actionButton,
+          styles.deleteButton,
+          colorScheme === 'dark' && styles.darkMode,
+        ]}
+      >
+        <Ionicons
+          name="trash-outline"
+          size={20}
+          color={
+            colorScheme === 'dark'
+              ? Colors.error.darkMode
+              : Colors.error.DEFAULT
+          }
+        />
+        <TextThemed
+          style={[
+            styles.actionButtonText,
+            styles.deleteButtonText,
+            colorScheme === 'dark' && { color: Colors.error.darkMode },
+          ]}
+        >
+          Delete Word
+        </TextThemed>
+      </View>
+    </GestureDetector>
+  )
+}
 
 interface ActionsSectionProps {
   word: WordCardData
@@ -125,50 +193,11 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
         )}
 
         {actions.showDeleteButton && actions.onDelete && (
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              styles.deleteButton,
-              colorScheme === 'dark' && styles.darkMode,
-            ]}
-            onPress={() => {
-              console.log('🗑️ DELETE BUTTON: onPress triggered')
-              Alert.alert(
-                'Delete Word',
-                `Are you sure you want to delete "${word.dutch_lemma}"?`,
-                [
-                  {
-                    text: 'Cancel',
-                    style: 'cancel',
-                  },
-                  {
-                    text: 'Delete',
-                    style: 'destructive',
-                    onPress: actions.onDelete,
-                  },
-                ]
-              )
-            }}
-          >
-            <Ionicons
-              name="trash-outline"
-              size={20}
-              color={
-                colorScheme === 'dark'
-                  ? Colors.error.darkMode
-                  : Colors.error.DEFAULT
-              }
-            />
-            <TextThemed
-              style={[
-                styles.actionButtonText,
-                styles.deleteButtonText,
-                colorScheme === 'dark' && { color: Colors.error.darkMode },
-              ]}
-            >
-              Delete Word
-            </TextThemed>
-          </TouchableOpacity>
+          <DeleteButton
+            word={word}
+            onDelete={actions.onDelete}
+            colorScheme={colorScheme}
+          />
         )}
       </NonSwipeableArea>
     </ViewThemed>
