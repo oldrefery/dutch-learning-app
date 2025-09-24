@@ -10,7 +10,7 @@ import type { WordSectionProps } from '../types'
 
 // Change the image button component with gesture blocking
 interface ChangeImageButtonProps {
-  imageUrl: string | undefined
+  imageUrl: string | null | undefined
   onPress: () => void
 }
 

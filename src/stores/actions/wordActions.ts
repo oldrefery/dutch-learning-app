@@ -50,7 +50,7 @@ export const createWordActions = (
         analysis.collection_id = collectionId
       }
 
-      // Add to database
+      // Add to the database
       const newWord = await wordService.addWord(analysis, userId)
       const currentWords = get().words
       set({ words: [...currentWords, newWord] })
@@ -137,6 +137,32 @@ export const createWordActions = (
       set({
         error: {
           message: 'Failed to delete word',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+        },
+      })
+      throw error
+    }
+  },
+
+  updateWordImage: async (wordId: string, imageUrl: string) => {
+    try {
+      const updatedWordData = await wordService.updateWordImage(
+        wordId,
+        imageUrl
+      )
+      const currentWords = get().words
+      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
+
+      if (wordIndex !== -1) {
+        const updatedWords = [...currentWords]
+        updatedWords[wordIndex] = updatedWordData
+        set({ words: updatedWords })
+      }
+    } catch (error) {
+      console.error('Error updating word image:', error)
+      set({
+        error: {
+          message: 'Failed to update word image',
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })

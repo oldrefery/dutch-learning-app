@@ -22,7 +22,6 @@ export function initializeSentry() {
     profilesSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
-    enableLogs: true,
     integrations: [
       SentryLib.reactNativeTracingIntegration({}),
       SentryLib.mobileReplayIntegration(),

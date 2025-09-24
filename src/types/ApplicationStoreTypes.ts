@@ -46,6 +46,7 @@ export interface ApplicationState {
     assessment: ReviewAssessment
   ) => Promise<void>
   deleteWord: (wordId: string) => Promise<void>
+  updateWordImage: (wordId: string, imageUrl: string) => Promise<void>
 
   // Collection actions
   fetchCollections: () => Promise<void>
@@ -63,6 +64,7 @@ export interface ApplicationState {
   goToNextWord: () => void
   goToPreviousWord: () => void
   deleteWordFromReview: (wordId: string) => void
+  updateCurrentWordImage: (imageUrl: string) => void
 
   // Error handling
   setError: (error: AppError) => void

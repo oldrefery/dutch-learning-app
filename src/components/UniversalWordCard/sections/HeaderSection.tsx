@@ -117,7 +117,7 @@ export function HeaderSection({
           {canPlayAudio && (
             <AudioButton
               ttsUrl={ttsUrl}
-              isPlayingAudio={isPlayingAudio}
+              isPlayingAudio={isPlayingAudio || false}
               onPress={onPlayPronunciation}
             />
           )}
