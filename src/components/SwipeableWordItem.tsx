@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback, useState } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
+import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -35,13 +36,53 @@ export default function SwipeableWordItem({
   const translateX = useSharedValue(0)
   const opacity = useSharedValue(0)
   const translateY = useSharedValue(20)
-  const SWIPE_THRESHOLD = -80
-  const MAX_SWIPE = -100
+  const [shouldShowDeleteDialog, setShouldShowDeleteDialog] = useState(false)
+
+  const handleDelete = useCallback(() => {
+    Alert.alert(
+      'Delete Word',
+      `Are you sure you want to delete "${word.dutch_original || word.dutch_lemma}"?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+          onPress: () => {
+            // Reset position when a user cancels deletion
+            translateX.value = withSpring(0)
+          },
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => onDelete(word.word_id),
+        },
+      ],
+      {
+        onDismiss: () => {
+          // Reset position when the alert is dismissed by tapping outside
+          translateX.value = withSpring(0)
+        },
+      }
+    )
+  }, [
+    word.dutch_original,
+    word.dutch_lemma,
+    word.word_id,
+    onDelete,
+    translateX,
+  ])
 
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 300 }, () => {})
     translateY.value = withTiming(0, { duration: 400 }, () => {})
   }, [opacity, translateY])
+
+  useEffect(() => {
+    if (shouldShowDeleteDialog) {
+      handleDelete()
+      setShouldShowDeleteDialog(false)
+    }
+  }, [shouldShowDeleteDialog, handleDelete])
 
   const getStatusStyle = () => {
     if (word.repetition_count > 2)
@@ -98,59 +139,62 @@ export default function SwipeableWordItem({
     }
   })
 
+  const deleteButtonAnimatedStyle = useAnimatedStyle(() => {
+    // Only expand on long swipe left (>= 150px)
+    const isLongSwipeLeft = translateX.value <= -150
+    return {
+      width: isLongSwipeLeft ? Math.abs(translateX.value) + 80 : 80,
+    }
+  })
+
+  const tapGesture = Gesture.Tap()
+    .maxDistance(10) // Tap must be within 10 px of the start point
+    .maxDuration(300) // Tap must be under 300 ms
+    .onEnd(() => {
+      'worklet'
+      // Only trigger tap if card is in resting position
+      if (Math.abs(translateX.value) < 5) {
+        scheduleOnRN(onPress)
+      }
+    })
+
   const panGesture = Gesture.Pan()
+    .activeOffsetX([-15, 15]) // Only activate after 15 px horizontal movement
+    .failOffsetY([-20, 20]) // Fail if vertical movement exceeds 20 px
+    .maxPointers(1) // Only allow a single finger swipe
     .onUpdate(event => {
       'worklet'
       translateX.value = event.translationX
     })
     .onEnd(event => {
       'worklet'
-      const { translationX, velocityX } = event
+      const { translationX } = event
 
-      if (translationX < SWIPE_THRESHOLD || velocityX < -500) {
-        // Show delete
-        translateX.value = withSpring(MAX_SWIPE)
-        // TODO: Uncomment this when we have haptic feedback
-        // runOnJS(console.log)('!!! Haptic feedback should trigger now !!!')
-        // runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Heavy)
+      if (translationX < -150) {
+        // Long swipe left - show deletion dialog
+        translateX.value = withSpring(-300, {}, () => {
+          'worklet'
+          // Show deletion dialog after animation
+          scheduleOnRN(setShouldShowDeleteDialog, true)
+        })
+      } else if (translationX < -80) {
+        // Short swipe left - show the delete button
+        translateX.value = withSpring(-100)
       } else {
-        // Reset position
+        // Return to the original position
         translateX.value = withSpring(0)
       }
     })
-    .activeOffsetX([-10, 10]) //Activate swipe only after 10px horizontally
-    .failOffsetY([-5, 5]) //Cancel swipe if movement vertically > 5px
 
-  const handleDelete = () => {
-    Alert.alert(
-      'Delete Word',
-      `Are you sure you want to delete "${word.dutch_original || word.dutch_lemma}"?`,
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-          onPress: () => {
-            // Reset
-            translateX.value = withSpring(0)
-          },
-        },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            onDelete(word.word_id)
-            // Reset
-            translateX.value = withSpring(0)
-          },
-        },
-      ]
-    )
-  }
+  // Use Race to ensure only one gesture can win
+  const combinedGesture = Gesture.Race(panGesture, tapGesture)
 
   return (
     <ViewThemed style={styles.container}>
-      {/* Delete button background */}
-      <ViewThemed style={styles.deleteBackground}>
+      {/* Delete a button background */}
+      <Animated.View
+        style={[styles.deleteBackground, deleteButtonAnimatedStyle]}
+      >
         <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
           <Ionicons
             name="trash-outline"
@@ -158,10 +202,10 @@ export default function SwipeableWordItem({
             color={Colors.background.primary}
           />
         </TouchableOpacity>
-      </ViewThemed>
+      </Animated.View>
 
       {/* Main word item with gesture handler */}
-      <GestureDetector gesture={panGesture}>
+      <GestureDetector gesture={combinedGesture}>
         <Animated.View
           style={[
             styles.wordItem,
@@ -174,7 +218,7 @@ export default function SwipeableWordItem({
             },
           ]}
         >
-          <TouchableOpacity style={styles.wordContent} onPress={onPress}>
+          <ViewThemed style={styles.wordContent}>
             <ViewThemed
               style={[
                 styles.wordNumber,
@@ -286,7 +330,7 @@ export default function SwipeableWordItem({
                   : Colors.neutral[400]
               }
             />
-          </TouchableOpacity>
+          </ViewThemed>
         </Animated.View>
       </GestureDetector>
     </ViewThemed>

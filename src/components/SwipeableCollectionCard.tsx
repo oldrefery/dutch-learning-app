@@ -10,8 +10,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  runOnJS,
 } from 'react-native-reanimated'
+import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -108,18 +108,18 @@ export default function SwipeableCollectionCard({
   })
 
   const deleteButtonAnimatedStyle = useAnimatedStyle(() => {
-    // When swiping left (negative translateX), expand a delete button background
-    const isSwipingLeft = translateX.value < 0
+    // Only expand on long swipe left (>= 150px)
+    const isLongSwipeLeft = translateX.value <= -150
     return {
-      width: isSwipingLeft ? Math.abs(translateX.value) + 80 : 80,
+      width: isLongSwipeLeft ? Math.abs(translateX.value) + 80 : 80,
     }
   })
 
   const renameButtonAnimatedStyle = useAnimatedStyle(() => {
-    // When swiping right (positive translateX), expand the rename button background
-    const isSwipingRight = translateX.value > 0
+    // Only expand on long swipe right (>= 150px)
+    const isLongSwipeRight = translateX.value >= 150
     return {
-      width: isSwipingRight ? translateX.value + 80 : 80,
+      width: isLongSwipeRight ? translateX.value + 80 : 80,
     }
   })
 
@@ -130,7 +130,7 @@ export default function SwipeableCollectionCard({
       'worklet'
       // Only trigger tap if card is in resting position
       if (Math.abs(translateX.value) < 5) {
-        runOnJS(onPress)()
+        scheduleOnRN(onPress)
       }
     })
 
@@ -152,14 +152,14 @@ export default function SwipeableCollectionCard({
         translateX.value = withSpring(-300, {}, () => {
           'worklet'
           // Trigger deletion after animation
-          runOnJS(handleDelete)()
+          scheduleOnRN(handleDelete)
         })
       } else if (translationX > 150) {
         // Long swipe right - trigger immediate rename
         translateX.value = withSpring(300, {}, () => {
           'worklet'
           // Trigger rename after animation
-          runOnJS(handleRename)()
+          scheduleOnRN(handleRename)
         })
       } else if (translationX < -80) {
         // Short swipe left - show the delete button
