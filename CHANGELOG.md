@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Replaced all hardcoded colors with centralized Colors system constants
   - Enhanced theme-aware backgrounds for notes, conjugation, and translation containers
 
+- **Swipe Gesture Improvements**: Enhanced swipe-to-delete and swipe-to-rename functionality
+  - Implemented symmetric swipe actions with Apple HIG compliance for collection cards
+  - Added dynamic button expansion with proper race gesture composition to prevent conflicts
+  - Fixed deprecated runOnJS usage by migrating to scheduleOnRN for React Native Worklets compatibility
+  - Improved word deletion UX with confirmation dialogs matching collection deletion pattern
+  - Enhanced partial swipe visibility - icons and text now fully visible on short swipes
+  - Optimized button expansion to occur only on long swipes (≥150px) for better readability
+
 ### Technical
 
 ---
