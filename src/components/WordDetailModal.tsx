@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react'
-import { TouchableOpacity, Dimensions, StatusBar } from 'react-native'
+import {
+  TouchableOpacity,
+  Dimensions,
+  StatusBar,
+  useColorScheme,
+} from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   useSharedValue,
@@ -42,6 +47,7 @@ export default function WordDetailModal({
   const backdropOpacity = useSharedValue(0)
   const scrollOffset = useSharedValue(0)
   const isDragging = useSharedValue(false)
+  const colorScheme = useColorScheme() ?? 'light'
 
   // Create a native gesture for ScrollView
   const nativeScrollGesture = Gesture.Native()
@@ -150,7 +156,18 @@ export default function WordDetailModal({
           onPress={closeModal}
         />
         <GestureDetector gesture={panGesture}>
-          <Animated.View style={[styles.container, animatedContainerStyle]}>
+          <Animated.View
+            style={[
+              styles.container,
+              animatedContainerStyle,
+              {
+                backgroundColor:
+                  colorScheme === 'dark'
+                    ? Colors.dark.background
+                    : Colors.light.background,
+              },
+            ]}
+          >
             <ViewThemed style={styles.dragIndicator} />
             <WordDetailHeader
               dutchOriginal={word?.dutch_original || null}

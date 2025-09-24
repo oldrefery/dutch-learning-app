@@ -30,7 +30,11 @@ export default function WordProgress({
   return (
     <ViewThemed style={styles.section}>
       <TextThemed style={styles.sectionTitle}>Progress</TextThemed>
-      <ViewThemed style={styles.progressContainer}>
+      <ViewThemed
+        style={styles.progressContainer}
+        lightColor={Colors.light.backgroundSecondary}
+        darkColor={Colors.dark.backgroundSecondary}
+      >
         <TextThemed style={styles.progressText}>
           Repetitions: {repetitionCount}
         </TextThemed>

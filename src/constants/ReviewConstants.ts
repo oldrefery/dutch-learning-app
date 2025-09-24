@@ -1,4 +1,5 @@
 import { Dimensions } from 'react-native'
+import { Colors } from './Colors'
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 
@@ -28,17 +29,17 @@ export const REVIEW_CONSTANTS = {
   BUTTON_MARGIN: 10,
   CARD_PADDING: 20,
 
-  // Colors (using shared constants)
+  // Colors (using a centralized Colors system)
   COLORS: {
-    PRIMARY: '#3b82f6',
-    SUCCESS: '#10b981',
-    ERROR: '#ef4444',
-    WARNING: '#f59e0b',
-    BACKGROUND: '#f8fafc',
-    CARD_BACKGROUND: '#ffffff',
-    TEXT_PRIMARY: '#1f2937',
-    TEXT_SECONDARY: '#6b7280',
-    BORDER: '#e5e7eb',
+    PRIMARY: Colors.primary.DEFAULT,
+    SUCCESS: Colors.success.DEFAULT,
+    ERROR: Colors.error.DEFAULT,
+    WARNING: Colors.warning.DEFAULT,
+    BACKGROUND: Colors.background.secondary,
+    CARD_BACKGROUND: Colors.background.primary,
+    TEXT_PRIMARY: Colors.neutral[900],
+    TEXT_SECONDARY: Colors.neutral[500],
+    BORDER: Colors.neutral[200],
   },
 
   // Typography

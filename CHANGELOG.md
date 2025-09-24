@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Dark Theme Support**: Comprehensive dark theme improvements across all components
+  - Fixed LoadingScreen background to properly adapt to dark theme
+  - Improved readability of Analysis Notes and Conjugation sections in dark theme
+  - Fixed WordDetailModal Progress section (Reviews, Easy Factor, Next Review) display
+  - Resolved light background issues in various word card sections
+  - Replaced all hardcoded colors with centralized Colors system constants
+  - Enhanced theme-aware backgrounds for notes, conjugation, and translation containers
+
 ### Technical
 
 ---

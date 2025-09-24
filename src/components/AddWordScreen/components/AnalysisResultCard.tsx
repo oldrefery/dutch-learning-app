@@ -160,7 +160,11 @@ export function AnalysisResultCard({
                 style={analysisResultStyles.changeImageButton}
                 onPress={onShowImageSelector}
               >
-                <Ionicons name="images" size={16} color="#3b82f6" />
+                <Ionicons
+                  name="images"
+                  size={16}
+                  color={Colors.primary.DEFAULT}
+                />
                 <TextThemed style={analysisResultStyles.changeImageText}>
                   Change Image
                 </TextThemed>

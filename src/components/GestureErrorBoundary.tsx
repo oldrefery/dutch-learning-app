@@ -1,6 +1,7 @@
 import React from 'react'
 import { View } from 'react-native'
 import { TextThemed } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
 import { Sentry } from '@/lib/sentry'
 
 interface Props {
@@ -46,12 +47,18 @@ export class GestureErrorBoundary extends React.Component<Props, State> {
 
       return (
         this.props.fallback || (
-          <View style={{ padding: 20, backgroundColor: '#ffebee' }}>
-            <TextThemed style={{ color: '#c62828', textAlign: 'center' }}>
+          <View style={{ padding: 20, backgroundColor: Colors.error.light }}>
+            <TextThemed
+              style={{ color: Colors.error.DEFAULT, textAlign: 'center' }}
+            >
               Gesture Error: {this.state.error?.message || 'Unknown error'}
             </TextThemed>
             <TextThemed
-              style={{ color: '#666', textAlign: 'center', marginTop: 8 }}
+              style={{
+                color: Colors.neutral[500],
+                textAlign: 'center',
+                marginTop: 8,
+              }}
             >
               Please try refreshing the screen
             </TextThemed>
