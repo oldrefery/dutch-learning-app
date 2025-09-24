@@ -7,6 +7,17 @@ set -e  # Exit on any error
 
 echo "🚀 Starting build and submit process..."
 
+# Check for required Sentry configuration
+if [ ! -f ".sentryclirc" ]; then
+    echo -e "${RED}Error: .sentryclirc file not found in project root${NC}"
+    echo -e "${YELLOW}For proper source map uploads to Sentry, create a .sentryclirc file with:${NC}"
+    echo -e "${YELLOW}[auth]${NC}"
+    echo -e "${YELLOW}token=[your_sentry_auth_token]${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ Found .sentryclirc configuration${NC}"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'

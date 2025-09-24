@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+### Technical
+
+---
+
+## [1.1.0 Build 20] - 2025-09-24
+
+### Fixed
+
 - **Dark Theme Support**: Comprehensive dark theme improvements across all components
   - Fixed LoadingScreen background to properly adapt to dark theme
   - Improved readability of Analysis Notes and Conjugation sections in dark theme
@@ -30,6 +38,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Optimized button expansion to occur only on long swipes (≥150px) for better readability
 
 ### Technical
+
+- Enhanced crash reporting with proper Sentry source map uploads
+- Improved gesture system stability with React Native Worklets migration
+- Updated color system architecture for consistent theming
 
 ---
 
