@@ -28,14 +28,15 @@ export async function callGeminiAPI(prompt: string): Promise<any> {
         temperature: 0.7,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 8192,
       },
     }),
   })
 
   if (!response.ok) {
+    const errorText = await response.text()
     throw new Error(
-      `Gemini API error: ${response.status} ${response.statusText}`
+      `Gemini API error: ${response.status} ${response.statusText} - ${errorText}`
     )
   }
 

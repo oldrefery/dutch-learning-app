@@ -118,16 +118,18 @@ Deno.serve(async (req: Request) => {
     const geminiResponse = await callGeminiAPI(prompt)
     const analysis = parseGeminiResponse(geminiResponse)
 
-    // Get multiple image options
-    const imageOptions = await getMultipleImagesForWord(
-      analysis.translations.en[0] || word,
-      analysis.part_of_speech,
-      analysis.examples
-    )
-
     // Clean and format data
     const cleanedExamples = cleanExamples(analysis.examples)
     const formattedTranslations = formatTranslations(analysis.translations)
+
+    // Get multiple image options
+    const imageOptions = await getMultipleImagesForWord(
+      formattedTranslations.en?.[0] || analysis.translations?.en?.[0] || word,
+      analysis.part_of_speech,
+      cleanedExamples
+    )
+
+    // Data already cleaned above
 
     // Create TTS URL
     const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=nl&client=tw-ob&q=${encodeURIComponent(analysis.dutch_lemma)}`
@@ -183,12 +185,11 @@ Deno.serve(async (req: Request) => {
       conjugation: analysis.conjugation,
       preposition: analysis.preposition,
       analysis_notes: analysis.analysis_notes || '',
-    }).catch(error => {
-      console.error('❌ Cache save error:', error)
+    }).catch(() => {
       // Don't fail the request if cache save fails
     })
 
-    console.log(`✅ Fresh analysis completed for: "${word}"`)
+    console.log(`✅ Analysis completed for: "${word}"`)
 
     return new Response(
       JSON.stringify({
@@ -211,6 +212,43 @@ Deno.serve(async (req: Request) => {
       '❌ Gemini handler error:',
       error instanceof Error ? error.message : 'Unknown error'
     )
+
+    // Send to Sentry
+    try {
+      const sentryDsn = Deno.env.get('SENTRY_DSN')
+      if (sentryDsn) {
+        await fetch('https://sentry.io/api/0/envelope/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-sentry-envelope',
+          },
+          body: JSON.stringify({
+            event_id: crypto.randomUUID(),
+            timestamp: new Date().toISOString(),
+            platform: 'javascript',
+            sdk: { name: 'custom', version: '1.0.0' },
+            exception: {
+              values: [
+                {
+                  type: error instanceof Error ? error.name : 'Error',
+                  value:
+                    error instanceof Error ? error.message : 'Unknown error',
+                  stacktrace:
+                    error instanceof Error ? { frames: [] } : undefined,
+                },
+              ],
+            },
+            extra: {
+              context: 'gemini-handler',
+              word: requestBody?.word,
+              forceRefresh: requestBody?.forceRefresh,
+            },
+          }),
+        }).catch(() => {}) // Silent fail for Sentry
+      }
+    } catch (sentryError) {
+      // Silent fail for Sentry reporting
+    }
 
     return new Response(
       JSON.stringify({
