@@ -11,7 +11,10 @@ interface SimpleAuthState {
 
 interface SimpleAuthActions {
   testSignUp: (credentials: SignupCredentials) => Promise<void>
-  testSignIn: (credentials: LoginCredentials) => Promise<void>
+  testSignIn: (
+    credentials: LoginCredentials,
+    redirectUrl?: string
+  ) => Promise<void>
   clearError: () => void
 }
 
@@ -87,7 +90,10 @@ export function SimpleAuthProvider({
     }
   }
 
-  const testSignIn = async (credentials: LoginCredentials) => {
+  const testSignIn = async (
+    credentials: LoginCredentials,
+    redirectUrl?: string
+  ) => {
     try {
       setLoading(true)
       setError(null)
@@ -110,11 +116,17 @@ export function SimpleAuthProvider({
       }
 
       if (data.session) {
-        // Session is automatically saved by Supabase client to SecureStore
+        // Session is automatically saved by a Supabase client to SecureStore
         // Initialize app store with user data
         await initializeApp(data.user?.id)
-        // Navigate to main app
-        router.replace('/(tabs)')
+
+        // Handle deferred deep linking
+        if (redirectUrl) {
+          router.replace(redirectUrl)
+        } else {
+          // Navigate to the main app
+          router.replace('/(tabs)')
+        }
       } else {
         setError('Login successful! (Session created but not stored)')
       }
