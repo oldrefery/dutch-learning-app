@@ -5,6 +5,7 @@ import {
   RefreshControl,
   FlatList,
   useColorScheme,
+  ActivityIndicator,
 } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -14,6 +15,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useImageSelector } from '@/hooks/useImageSelector'
 import { Colors } from '@/constants/Colors'
+import { sharingUtils } from '@/utils/sharingUtils'
 import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
@@ -26,6 +28,7 @@ export default function CollectionDetailScreen() {
   const [refreshing, setRefreshing] = useState(false)
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
+  const [isSharing, setIsSharing] = useState(false)
   const colorScheme = useColorScheme() ?? 'light'
 
   const {
@@ -35,6 +38,7 @@ export default function CollectionDetailScreen() {
     fetchCollections,
     deleteWord,
     updateWordImage,
+    shareCollection,
   } = useApplicationStore()
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
@@ -123,6 +127,64 @@ export default function CollectionDetailScreen() {
     }
   }
 
+  const handleShareCollection = async () => {
+    if (!collection?.collection_id) {
+      console.log('❌ [handleShareCollection] No collection or collection_id')
+      return
+    }
+
+    console.log('🔄 [handleShareCollection] Starting share flow', {
+      collectionId: collection.collection_id,
+      collectionName: collection.name,
+    })
+    setIsSharing(true)
+    try {
+      const shareToken = await shareCollection(collection.collection_id)
+      console.log('📥 [handleShareCollection] shareCollection result', {
+        shareToken,
+      })
+
+      if (!shareToken) {
+        console.log('❌ [handleShareCollection] No share token returned')
+        ToastService.show('Failed to share collection', ToastType.ERROR)
+        return
+      }
+
+      console.log(
+        '🔄 [handleShareCollection] Calling sharingUtils.shareCollectionUrl',
+        { shareToken, collectionName: collection.name }
+      )
+      const shareResult = await sharingUtils.shareCollectionUrl(
+        shareToken,
+        collection.name,
+        {
+          dialogTitle: `Share "${collection.name}" collection`,
+        }
+      )
+      console.log('📥 [handleShareCollection] sharingUtils result', {
+        success: shareResult.success,
+        error: shareResult.error,
+      })
+
+      if (shareResult.success) {
+        ToastService.show('Collection shared successfully', ToastType.SUCCESS)
+      } else {
+        ToastService.show(
+          shareResult.error || 'Failed to share collection',
+          ToastType.ERROR
+        )
+      }
+    } catch (error) {
+      console.error('❌ [handleShareCollection] Unexpected error:', error)
+      ToastService.show('Failed to share collection', ToastType.ERROR)
+    } finally {
+      console.log(
+        '🔄 [handleShareCollection] Finishing share flow, setting isSharing to false'
+      )
+      setIsSharing(false)
+    }
+  }
+
   // Clean approach - no need for manual height calculations
 
   if (!collection) {
@@ -161,6 +223,41 @@ export default function CollectionDetailScreen() {
             fontWeight: '600',
             fontSize: 18,
           },
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={handleShareCollection}
+              disabled={isSharing || !collection?.collection_id}
+              style={[
+                styles.shareButton,
+                {
+                  opacity: isSharing ? 0.6 : 1,
+                },
+              ]}
+              accessibilityLabel="Share collection"
+              accessibilityHint="Share this collection with others"
+            >
+              {isSharing ? (
+                <ActivityIndicator
+                  size="small"
+                  color={
+                    colorScheme === 'dark'
+                      ? Colors.dark.tint
+                      : Colors.primary.DEFAULT
+                  }
+                />
+              ) : (
+                <Ionicons
+                  name="share-outline"
+                  size={24}
+                  color={
+                    colorScheme === 'dark'
+                      ? Colors.dark.tint
+                      : Colors.primary.DEFAULT
+                  }
+                />
+              )}
+            </TouchableOpacity>
+          ),
         }}
       />
       <ViewThemed
@@ -258,6 +355,15 @@ const styles = StyleSheet.create({
   wordsSection: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  shareButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    // marginRight: 0,
+    // padding: 0,
   },
   emptyContainer: {
     flex: 1,

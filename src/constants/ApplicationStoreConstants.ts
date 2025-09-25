@@ -10,8 +10,21 @@ export const APPLICATION_STORE_CONSTANTS = {
     COLLECTION_CREATE_FAILED: 'Failed to create collection',
     COLLECTION_DELETE_FAILED: 'Failed to delete collection',
     COLLECTION_UPDATE_FAILED: 'Failed to update collection',
+    COLLECTION_SHARE_FAILED: 'Failed to share collection',
+    COLLECTION_UNSHARE_FAILED: 'Failed to unshare collection',
+    COLLECTION_SHARE_STATUS_FAILED: 'Failed to get collection share status',
     REVIEW_SESSION_START_FAILED: 'Failed to start review session',
     REVIEW_ASSESSMENT_SUBMIT_FAILED: 'Failed to submit review assessment',
+  },
+
+  // Authentication errors
+  AUTH_ERRORS: {
+    USER_NOT_AUTHENTICATED: 'User not authenticated',
+  },
+
+  // Generic errors
+  GENERIC_ERRORS: {
+    UNKNOWN_ERROR: 'Unknown error occurred',
   },
 
   // Default values
