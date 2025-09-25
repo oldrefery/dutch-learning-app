@@ -6,6 +6,7 @@ import {
   FlatList,
   useColorScheme,
   ActivityIndicator,
+  Alert,
 } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -39,6 +40,7 @@ export default function CollectionDetailScreen() {
     deleteWord,
     updateWordImage,
     shareCollection,
+    unshareCollection,
   } = useApplicationStore()
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
@@ -127,31 +129,79 @@ export default function CollectionDetailScreen() {
     }
   }
 
-  const handleShareCollection = async () => {
+  const handleShareToggle = async () => {
     if (!collection?.collection_id) {
-      console.log('❌ [handleShareCollection] No collection or collection_id')
+      console.log('❌ [handleShareToggle] No collection or collection_id')
       return
     }
 
-    console.log('🔄 [handleShareCollection] Starting share flow', {
-      collectionId: collection.collection_id,
-      collectionName: collection.name,
-    })
+    if (collection.is_shared) {
+      // Show confirmation dialog for unshare (destructive action)
+      Alert.alert(
+        'Stop Sharing',
+        `Stop sharing "${collection.name}"?\n\nPeople will no longer be able to import words from this collection. You can always share it again later if needed.`,
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Stop Sharing',
+            style: 'destructive',
+            onPress: async () => {
+              setIsSharing(true)
+              try {
+                console.log('🔄 [handleShareToggle] Unsharing collection', {
+                  collectionId: collection.collection_id,
+                })
+                const success = await unshareCollection(
+                  collection.collection_id
+                )
+                if (success) {
+                  ToastService.show('Collection unshared', ToastType.SUCCESS)
+                } else {
+                  ToastService.show(
+                    'Failed to unshare collection',
+                    ToastType.ERROR
+                  )
+                }
+              } catch (error) {
+                console.error('❌ [handleShareToggle] Unexpected error:', error)
+                ToastService.show(
+                  'Failed to unshare collection',
+                  ToastType.ERROR
+                )
+              } finally {
+                setIsSharing(false)
+              }
+            },
+          },
+        ]
+      )
+      return
+    }
+
+    // Share collection (no confirmation needed)
     setIsSharing(true)
     try {
+      // Share collection
+      console.log('🔄 [handleShareToggle] Starting share flow', {
+        collectionId: collection.collection_id,
+        collectionName: collection.name,
+      })
       const shareToken = await shareCollection(collection.collection_id)
-      console.log('📥 [handleShareCollection] shareCollection result', {
+      console.log('📥 [handleShareToggle] shareCollection result', {
         shareToken,
       })
 
       if (!shareToken) {
-        console.log('❌ [handleShareCollection] No share token returned')
+        console.log('❌ [handleShareToggle] No share token returned')
         ToastService.show('Failed to share collection', ToastType.ERROR)
         return
       }
 
       console.log(
-        '🔄 [handleShareCollection] Calling sharingUtils.shareCollectionUrl',
+        '🔄 [handleShareToggle] Calling sharingUtils.shareCollectionUrl',
         { shareToken, collectionName: collection.name }
       )
       const shareResult = await sharingUtils.shareCollectionUrl(
@@ -161,7 +211,7 @@ export default function CollectionDetailScreen() {
           dialogTitle: `Share "${collection.name}" collection`,
         }
       )
-      console.log('📥 [handleShareCollection] sharingUtils result', {
+      console.log('📥 [handleShareToggle] sharingUtils result', {
         success: shareResult.success,
         error: shareResult.error,
       })
@@ -175,11 +225,11 @@ export default function CollectionDetailScreen() {
         )
       }
     } catch (error) {
-      console.error('❌ [handleShareCollection] Unexpected error:', error)
+      console.error('❌ [handleShareToggle] Unexpected error:', error)
       ToastService.show('Failed to share collection', ToastType.ERROR)
     } finally {
       console.log(
-        '🔄 [handleShareCollection] Finishing share flow, setting isSharing to false'
+        '🔄 [handleShareToggle] Finishing share flow, setting isSharing to false'
       )
       setIsSharing(false)
     }
@@ -225,7 +275,7 @@ export default function CollectionDetailScreen() {
           },
           headerRight: () => (
             <TouchableOpacity
-              onPress={handleShareCollection}
+              onPress={handleShareToggle}
               disabled={isSharing || !collection?.collection_id}
               style={[
                 styles.shareButton,
@@ -233,8 +283,16 @@ export default function CollectionDetailScreen() {
                   opacity: isSharing ? 0.6 : 1,
                 },
               ]}
-              accessibilityLabel="Share collection"
-              accessibilityHint="Share this collection with others"
+              accessibilityLabel={
+                collection?.is_shared
+                  ? 'Unshare collection'
+                  : 'Share collection'
+              }
+              accessibilityHint={
+                collection?.is_shared
+                  ? 'Stop sharing this collection'
+                  : 'Share this collection with others'
+              }
             >
               {isSharing ? (
                 <ActivityIndicator
@@ -247,12 +305,18 @@ export default function CollectionDetailScreen() {
                 />
               ) : (
                 <Ionicons
-                  name="share-outline"
+                  name={
+                    collection?.is_shared
+                      ? 'person-remove-outline'
+                      : 'share-outline'
+                  }
                   size={24}
                   color={
-                    colorScheme === 'dark'
-                      ? Colors.dark.tint
-                      : Colors.primary.DEFAULT
+                    collection?.is_shared
+                      ? Colors.error.DEFAULT // Destructive action - red color
+                      : colorScheme === 'dark'
+                        ? Colors.dark.tint
+                        : Colors.primary.DEFAULT
                   }
                 />
               )}

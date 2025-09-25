@@ -108,7 +108,7 @@ export default function SwipeableCollectionCard({
   })
 
   const deleteButtonAnimatedStyle = useAnimatedStyle(() => {
-    // Only expand on long swipe left (>= 150px)
+    // Only expand on the long swipe left (>= 150 px)
     const isLongSwipeLeft = translateX.value <= -150
     return {
       width: isLongSwipeLeft ? Math.abs(translateX.value) + 80 : 80,
@@ -116,7 +116,7 @@ export default function SwipeableCollectionCard({
   })
 
   const renameButtonAnimatedStyle = useAnimatedStyle(() => {
-    // Only expand on long swipe right (>= 150px)
+    // Only expand on the long swipe right (>= 150 px)
     const isLongSwipeRight = translateX.value >= 150
     return {
       width: isLongSwipeRight ? translateX.value + 80 : 80,
@@ -216,9 +216,37 @@ export default function SwipeableCollectionCard({
         >
           <ViewThemed style={styles.cardContent}>
             <ViewThemed style={styles.collectionHeader}>
-              <TextThemed style={styles.collectionName}>
-                {collection.name}
-              </TextThemed>
+              <ViewThemed style={styles.collectionNameRow}>
+                <TextThemed style={styles.collectionName}>
+                  {collection.name}
+                </TextThemed>
+                {collection.is_shared && (
+                  <ViewThemed style={styles.sharedBadge}>
+                    <Ionicons
+                      name="share-outline"
+                      size={14}
+                      color={
+                        colorScheme === 'dark'
+                          ? Colors.dark.tint
+                          : Colors.primary.DEFAULT
+                      }
+                    />
+                    <TextThemed
+                      style={[
+                        styles.sharedBadgeText,
+                        {
+                          color:
+                            colorScheme === 'dark'
+                              ? Colors.dark.tint
+                              : Colors.primary.DEFAULT,
+                        },
+                      ]}
+                    >
+                      Shared
+                    </TextThemed>
+                  </ViewThemed>
+                )}
+              </ViewThemed>
               <TextThemed
                 style={styles.collectionStats}
                 lightColor={Colors.neutral[500]}
@@ -296,10 +324,32 @@ const styles = StyleSheet.create({
   collectionHeader: {
     marginBottom: 12,
   },
+  collectionNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
   collectionName: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 4,
+    flex: 1,
+  },
+  sharedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'currentColor',
+    marginLeft: 8,
+  },
+  sharedBadgeText: {
+    fontSize: 11,
+    fontWeight: '500',
+    marginLeft: 4,
   },
   collectionStats: {
     fontSize: 14,

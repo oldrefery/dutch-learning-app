@@ -91,7 +91,8 @@ class SharingUtils {
   ): string {
     const appName = 'Dutch Learning App'
 
-    return `Check out "${collectionName}" collection in ${appName}!\n\nOpen in app: ${deepLinkUrl}\n\nView in browser: ${webShareUrl}\n\nGreat for learning Dutch vocabulary with spaced repetition!`
+    // TODO: Add web version back when we have it deployed
+    return `Check out "${collectionName}" collection in ${appName}!\n\n${deepLinkUrl}\n\nGreat for learning Dutch vocabulary with spaced repetition!`
   }
 
   async canShare(): Promise<boolean> {

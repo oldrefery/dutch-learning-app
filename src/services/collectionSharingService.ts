@@ -390,6 +390,9 @@ class CollectionSharingService {
   }
 
   generateWebShareUrl(shareToken: string): string {
+    // TODO: Implement web version for Universal Links
+    // This will be a Next.js app that handles shared collection imports
+    // and redirects to app if installed, or shows web preview if not
     return `https://dutch-learning-app.vercel.app/share/${shareToken}`
   }
 }
