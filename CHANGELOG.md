@@ -17,6 +17,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0 Build 24] - 2025-09-26
+
+### Added
+
+- **Collection Sharing System**: Complete implementation of collection sharing functionality
+  - Database schema for shared collections with proper RLS policies and constraints
+  - Share button UI with centered positioning and improved visual feedback
+  - Collection sharing UX with streamlined flow and enhanced user experience
+
+### Changed
+
+- **Import Screen Architecture**: Optimized screen architecture for better performance and maintainability
+- **Shared Collection Components**: Extracted and refactored reusable components for better code organization
+
+### Fixed
+
+- **Gemini API Integration**: Updated error handling and improved API integration reliability
+- **Share Button**: Resolved centering issues and improved sharing implementation
+
+### Technical
+
+- Enhanced database schema for collection sharing with proper constraints and indexes
+- Improved component architecture with extracted reusable shared collection components
+- Optimized import screen implementation for better performance
+- Updated API integration with enhanced error handling and reliability
+
+---
+
 ## [1.1.0 Build 23] - 2025-09-24
 
 ### Added
