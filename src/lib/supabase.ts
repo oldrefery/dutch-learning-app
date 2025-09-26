@@ -97,15 +97,24 @@ export const wordService = {
     return data
   },
 
-  // Check if the word already exists (by dutch_lemma)
-  async checkWordExists(userId: string, dutchLemma: string) {
+  // Check if the word already exists (by dutch_lemma + part_of_speech + article)
+  async checkWordExists(
+    userId: string,
+    dutchLemma: string,
+    partOfSpeech?: string,
+    article?: string
+  ) {
     const normalizedLemma = dutchLemma.trim().toLowerCase()
+    const normalizedPartOfSpeech = partOfSpeech || 'unknown'
+    const normalizedArticle = article || ''
 
     const { data, error } = await supabase
       .from('words')
-      .select('word_id, dutch_lemma, collection_id')
+      .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
       .eq('user_id', userId)
       .eq('dutch_lemma', normalizedLemma)
+      .eq('part_of_speech', normalizedPartOfSpeech)
+      .eq('article', normalizedArticle)
 
     if (error) {
       throw new Error(`Failed to check word existence: ${error.message}`)

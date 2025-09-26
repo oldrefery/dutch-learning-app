@@ -121,3 +121,39 @@ export function formatTranslations(translations: any): {
       .map((t: string) => t.trim()),
   }
 }
+
+// Helper function to parse input word and detect article/lemma
+export function parseWordInput(input: string): {
+  dutch_lemma: string
+  article?: string
+  part_of_speech?: string
+} {
+  // Normalize: trim, remove periods, replace multiple spaces with single space
+  const normalized = input
+    .trim()
+    .toLowerCase()
+    .replace(/\./g, '')
+    .replace(/\s+/g, ' ')
+
+  // Check for definite articles (de/het)
+  if (normalized.startsWith('de ')) {
+    return {
+      dutch_lemma: normalized.substring(3).trim(),
+      article: 'de',
+      part_of_speech: 'noun',
+    }
+  }
+
+  if (normalized.startsWith('het ')) {
+    return {
+      dutch_lemma: normalized.substring(4).trim(),
+      article: 'het',
+      part_of_speech: 'noun',
+    }
+  }
+
+  // No article detected - just return the lemma
+  return {
+    dutch_lemma: normalized,
+  }
+}

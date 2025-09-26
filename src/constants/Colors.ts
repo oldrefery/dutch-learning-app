@@ -151,6 +151,7 @@ const themes = {
     success: colorPalette.success.DEFAULT,
     warning: colorPalette.warning.DEFAULT,
     error: colorPalette.error.DEFAULT,
+    border: colorPalette.neutral[200],
   },
   dark: {
     // Text colors - optimized contrast for dark theme
@@ -173,6 +174,7 @@ const themes = {
     success: colorPalette.success.dark, // #34D399
     warning: colorPalette.warning.dark, // #FBBF24
     error: colorPalette.error.darkMode, // #FF453A (Apple HIG)
+    border: colorPalette.neutral[700],
   },
 }
 
