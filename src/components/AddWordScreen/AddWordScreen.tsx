@@ -57,14 +57,19 @@ export function AddWordScreen() {
       try {
         const existingWord = await wordService.checkWordExists(
           currentUserId,
-          analysisResult.dutch_lemma
+          analysisResult.dutch_lemma,
+          analysisResult.part_of_speech,
+          analysisResult.article
         )
         const isDuplicate = !!existingWord
         setIsAlreadyInCollection(isDuplicate)
 
         if (isDuplicate) {
+          const articleText = analysisResult.article
+            ? `${analysisResult.article} `
+            : ''
           ToastService.show(
-            `"${analysisResult.dutch_lemma}" is already in your collection`,
+            `"${articleText}${analysisResult.dutch_lemma}" (${analysisResult.part_of_speech}) is already in your collection`,
             ToastType.INFO
           )
         }
@@ -106,7 +111,7 @@ export function AddWordScreen() {
           setIsAlreadyInCollection(true)
           setIsCheckingDuplicate(false)
           ToastService.show(
-            `"${normalizedWord}" is already in your collection`,
+            `A variant of "${normalizedWord}" is already in your collection`,
             ToastType.INFO
           )
           return
@@ -149,12 +154,6 @@ export function AddWordScreen() {
 
   return (
     <ViewThemed style={addWordScreenStyles.container}>
-      {/* <Button
-        title="Try!"
-        onPress={() => {
-          Sentry.captureException(new Error('First error'))
-        }}
-      /> */}
       <WordInputSection
         inputWord={inputWord}
         setInputWord={setInputWord}

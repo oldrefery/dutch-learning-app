@@ -121,3 +121,34 @@ export function formatTranslations(translations: any): {
       .map((t: string) => t.trim()),
   }
 }
+
+// Helper function to parse input word and detect article/lemma
+export function parseWordInput(input: string): {
+  dutch_lemma: string
+  article?: string
+  part_of_speech?: string
+} {
+  const trimmed = input.trim().toLowerCase()
+
+  // Check for definite articles (de/het)
+  if (trimmed.startsWith('de ')) {
+    return {
+      dutch_lemma: trimmed.substring(3).trim(),
+      article: 'de',
+      part_of_speech: 'noun',
+    }
+  }
+
+  if (trimmed.startsWith('het ')) {
+    return {
+      dutch_lemma: trimmed.substring(4).trim(),
+      article: 'het',
+      part_of_speech: 'noun',
+    }
+  }
+
+  // No article detected - just return the lemma
+  return {
+    dutch_lemma: trimmed,
+  }
+}

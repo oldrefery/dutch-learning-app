@@ -79,7 +79,10 @@ export function useImportSelection(token: string) {
           const existingWord = existingWords.find(
             existing =>
               existing.dutch_lemma.toLowerCase() ===
-              word.dutch_lemma.toLowerCase()
+                word.dutch_lemma.toLowerCase() &&
+              (existing.part_of_speech || 'unknown') ===
+                (word.part_of_speech || 'unknown') &&
+              (existing.article || '') === (word.article || '')
           )
 
           return {

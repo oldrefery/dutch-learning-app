@@ -7,9 +7,15 @@ import {
   validateWordInput,
   cleanExamples,
   formatTranslations,
+  parseWordInput,
 } from './geminiUtils.ts'
 import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
-import { getCachedAnalysis, saveToCache, normalizeWord } from './cacheUtils.ts'
+import {
+  getCachedAnalysis,
+  getCachedVariants,
+  saveToCache,
+  normalizeWord,
+} from './cacheUtils.ts'
 
 Deno.serve(async (req: Request) => {
   // Handle CORS preflight requests
@@ -20,10 +26,6 @@ Deno.serve(async (req: Request) => {
   try {
     const requestBody = await req.json()
     const { word, forceRefresh } = requestBody
-
-    console.log(
-      `📝 Analyzing word: "${word}", forceRefresh: ${forceRefresh || false}`
-    )
 
     // This function only analyzes strings - objects should use save-word endpoint
     if (typeof word !== 'string') {
@@ -54,19 +56,39 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    // Normalize word for cache operations
-    const normalizedWord = normalizeWord(word)
+    // Parse input to detect article and determine search strategy
+    const parsedInput = parseWordInput(word)
+    const normalizedLemma = normalizeWord(parsedInput.dutch_lemma)
 
-    // Check the cache first (unless force refresh is requested)
+    // Smart cache lookup strategy
+    let cachedAnalysis = null
+    let cacheStrategy = 'miss'
+
     if (!forceRefresh) {
-      const cachedAnalysis = await getCachedAnalysis(normalizedWord)
+      if (parsedInput.article && parsedInput.part_of_speech) {
+        // User provided article (e.g., "het haar") - exact semantic search
+        cachedAnalysis = await getCachedAnalysis(
+          normalizedLemma,
+          parsedInput.part_of_speech,
+          parsedInput.article
+        )
+        cacheStrategy = cachedAnalysis ? 'exact_hit' : 'exact_miss'
+      } else {
+        // User provided only lemma (e.g., "haar") - check for variants
+        const variants = await getCachedVariants(normalizedLemma)
+
+        if (variants.length > 0) {
+          // For now, return the most used variant
+          // TODO: In future, we could return all variants and let user choose
+          cachedAnalysis = variants[0]
+          cacheStrategy = 'variant_hit'
+        } else {
+          cacheStrategy = 'variant_miss'
+        }
+      }
 
       if (cachedAnalysis) {
-        console.log(
-          `✅ Cache hit: "${normalizedWord}" (usage: ${cachedAnalysis.usage_count})`
-        )
-
-        // Build result from a cache
+        // Build result from the cache
         const result = {
           dutch_original: word,
           dutch_lemma: cachedAnalysis.dutch_lemma,
@@ -97,6 +119,7 @@ Deno.serve(async (req: Request) => {
             data: result,
             meta: {
               source: 'cache',
+              cache_strategy: cacheStrategy,
               cached_at: cachedAnalysis.created_at,
               usage_count: cachedAnalysis.usage_count,
               cache_hit: true,
@@ -111,8 +134,6 @@ Deno.serve(async (req: Request) => {
     }
 
     // Cache miss or force refresh - call Gemini API
-    const source = forceRefresh ? 'force refresh' : 'cache miss'
-    console.log(`🤖 ${source} - calling Gemini API for: "${word}"`)
 
     const prompt = formatWordAnalysisPrompt(word)
     const geminiResponse = await callGeminiAPI(prompt)
@@ -164,7 +185,7 @@ Deno.serve(async (req: Request) => {
     // Save to cache for future use (async, don't wait for completion)
     saveToCache({
       dutch_original: word,
-      dutch_lemma: normalizedWord, // Use a normalized version as a cache key
+      dutch_lemma: normalizedLemma, // Use parsed and normalized lemma as a cache key
       part_of_speech:
         analysis.part_of_speech || (analysis.is_separable ? 'verb' : null),
       is_irregular: analysis.is_irregular || false,
@@ -185,8 +206,9 @@ Deno.serve(async (req: Request) => {
       conjugation: analysis.conjugation,
       preposition: analysis.preposition,
       analysis_notes: analysis.analysis_notes || '',
-    }).catch(() => {
-      // Don't fail the request if cache save fails
+    }).catch(error => {
+      // Don't fail the request if cache save fails, but log the error
+      console.error('❌ Cache save error (non-critical):', error)
     })
 
     console.log(`✅ Analysis completed for: "${word}"`)
@@ -213,7 +235,7 @@ Deno.serve(async (req: Request) => {
       error instanceof Error ? error.message : 'Unknown error'
     )
 
-    // Send to Sentry
+    // Send it to the Sentry
     try {
       const sentryDsn = Deno.env.get('SENTRY_DSN')
       if (sentryDsn) {

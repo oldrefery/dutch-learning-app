@@ -60,14 +60,30 @@ export interface WordAnalysisData {
 
 /**
  * Get cached word analysis if it exists and is still valid
+ * Now supports semantic uniqueness based on a lemma + part_of_speech + article
  */
 export async function getCachedAnalysis(
-  normalizedWord: string
+  normalizedWord: string,
+  partOfSpeech?: string,
+  article?: string
 ): Promise<CacheEntry | null> {
   try {
-    const { data, error } = await supabase.rpc('get_valid_cache_entry', {
-      lemma: normalizedWord,
-    })
+    // For semantic cache lookup, we need to check the specific combination
+    const normalizedPartOfSpeech = partOfSpeech || 'unknown'
+    const normalizedArticle = article || ''
+
+    const { data, error } = await supabase
+      .from('word_analysis_cache')
+      .select('*')
+      .eq('dutch_lemma', normalizedWord)
+      .eq('part_of_speech', normalizedPartOfSpeech)
+      .eq('article', normalizedArticle)
+      .gte(
+        'created_at',
+        new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+      ) // 30 days TTL
+      .order('last_used_at', { ascending: false })
+      .limit(1)
 
     if (error) {
       console.error('❌ Cache lookup error:', error)
@@ -76,7 +92,7 @@ export async function getCachedAnalysis(
 
     if (data && data.length > 0) {
       // Update usage statistics
-      await supabase.rpc('increment_cache_usage', { lemma: normalizedWord })
+      await updateCacheUsage(data[0].cache_id)
       return data[0] as CacheEntry
     }
 
@@ -88,46 +104,88 @@ export async function getCachedAnalysis(
 }
 
 /**
+ * Get all cached variants of a word (by lemma only) - for showing suggestions
+ * when user inputs word without an article
+ */
+export async function getCachedVariants(
+  normalizedWord: string
+): Promise<CacheEntry[]> {
+  try {
+    const { data, error } = await supabase
+      .from('word_analysis_cache')
+      .select('*')
+      .eq('dutch_lemma', normalizedWord)
+      .gte(
+        'created_at',
+        new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+      ) // 30 days TTL
+      .order('usage_count', { ascending: false })
+
+    if (error) {
+      console.error('❌ Cache variants lookup error:', error)
+      return []
+    }
+
+    return (data || []) as CacheEntry[]
+  } catch (error) {
+    console.error('❌ Cache variants check error:', error)
+    return []
+  }
+}
+
+/**
+ * Update cache usage statistics for a specific entry
+ */
+async function updateCacheUsage(cacheId: string): Promise<void> {
+  try {
+    await supabase
+      .from('word_analysis_cache')
+      .update({
+        usage_count: supabase.rpc('increment_usage'),
+        last_used_at: new Date().toISOString(),
+      })
+      .eq('cache_id', cacheId)
+  } catch (error) {
+    console.error('❌ Cache usage update error:', error)
+  }
+}
+
+/**
  * Save word analysis to cache
+ * Now supports semantic uniqueness based on a lemma + part_of_speech + article
  */
 export async function saveToCache(
   analysisData: WordAnalysisData
 ): Promise<void> {
   try {
-    const { error } = await supabase.from('word_analysis_cache').upsert(
-      {
-        dutch_lemma: analysisData.dutch_lemma,
-        dutch_original: analysisData.dutch_original,
-        part_of_speech: analysisData.part_of_speech,
-        is_irregular: analysisData.is_irregular,
-        article: analysisData.article || null,
-        is_reflexive: analysisData.is_reflexive,
-        is_expression: analysisData.is_expression,
-        expression_type: analysisData.expression_type || null,
-        is_separable: analysisData.is_separable,
-        prefix_part: analysisData.prefix_part || null,
-        root_verb: analysisData.root_verb || null,
-        translations: analysisData.translations,
-        examples: analysisData.examples,
-        tts_url: analysisData.tts_url || null,
-        image_url: analysisData.image_url || null,
-        synonyms: analysisData.synonyms,
-        antonyms: analysisData.antonyms,
-        plural: analysisData.plural || null,
-        conjugation: analysisData.conjugation || null,
-        preposition: analysisData.preposition || null,
-        analysis_notes: analysisData.analysis_notes,
-        // Cache management fields will use defaults
-        usage_count: 1,
-        last_used_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-      {
-        onConflict: 'dutch_lemma',
-        ignoreDuplicates: false,
-      }
-    )
+    const { error } = await supabase.from('word_analysis_cache').upsert({
+      dutch_lemma: analysisData.dutch_lemma,
+      dutch_original: analysisData.dutch_original,
+      part_of_speech: analysisData.part_of_speech,
+      is_irregular: analysisData.is_irregular,
+      article: analysisData.article || null,
+      is_reflexive: analysisData.is_reflexive,
+      is_expression: analysisData.is_expression,
+      expression_type: analysisData.expression_type || null,
+      is_separable: analysisData.is_separable,
+      prefix_part: analysisData.prefix_part || null,
+      root_verb: analysisData.root_verb || null,
+      translations: analysisData.translations,
+      examples: analysisData.examples,
+      tts_url: analysisData.tts_url || null,
+      image_url: analysisData.image_url || null,
+      synonyms: analysisData.synonyms,
+      antonyms: analysisData.antonyms,
+      plural: analysisData.plural || null,
+      conjugation: analysisData.conjugation || null,
+      preposition: analysisData.preposition || null,
+      analysis_notes: analysisData.analysis_notes,
+      // Cache management fields will use defaults
+      usage_count: 1,
+      last_used_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
 
     if (error) {
       console.error('❌ Cache save error:', error)
