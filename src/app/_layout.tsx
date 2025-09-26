@@ -18,6 +18,7 @@ import { ROUTES } from '@/constants/Routes'
 
 import { useColorScheme } from 'react-native'
 import { SimpleAuthProvider } from '@/contexts/SimpleAuthProvider'
+import { AudioProvider } from '@/contexts/AudioContext'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -51,7 +52,9 @@ export default Sentry.wrap(function RootLayout() {
   // SIMPLE: No session handling, just show auth screens with a simple provider
   return (
     <SimpleAuthProvider>
-      <RootLayoutNav />
+      <AudioProvider>
+        <RootLayoutNav />
+      </AudioProvider>
     </SimpleAuthProvider>
   )
 })

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import {
   TouchableOpacity,
   Dimensions,
@@ -18,6 +18,7 @@ import Animated, {
 import { scheduleOnRN } from 'react-native-worklets'
 import { ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { useAudio } from '@/contexts/AudioContext'
 import type { Word } from '@/types/database'
 import {
   UniversalWordCard,
@@ -48,6 +49,15 @@ export default function WordDetailModal({
   const scrollOffset = useSharedValue(0)
   const isDragging = useSharedValue(false)
   const colorScheme = useColorScheme() ?? 'light'
+  const { playWord, isPlaying } = useAudio()
+
+  const handlePlayAudio = useCallback(
+    async (url?: string) => {
+      if (!word?.dutch_lemma) return
+      await playWord(word.dutch_lemma, word.tts_url)
+    },
+    [playWord, word?.dutch_lemma, word?.tts_url]
+  )
 
   // Create a native gesture for ScrollView
   const nativeScrollGesture = Gesture.Native()
@@ -187,11 +197,14 @@ export default function WordDetailModal({
                   config={{
                     ...WordCardPresets.modal.config,
                     scrollable: false, // Modal handles scrolling
+                    enablePronunciation: true, // Enable audio button
                   }}
                   actions={{
                     ...WordCardPresets.modal.actions,
                     onDelete: onDeleteWord,
                   }}
+                  isPlayingAudio={isPlaying}
+                  onPlayPronunciation={handlePlayAudio}
                   onChangeImage={onChangeImage}
                 />
               </Animated.ScrollView>

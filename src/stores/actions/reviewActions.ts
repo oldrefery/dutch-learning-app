@@ -25,7 +25,7 @@ export const createReviewActions = (
       if (reviewWords.length > 0) {
         reviewWords.forEach(word => {
           console.log(
-            `📝 Review word: ${word.dutch_lemma}, next_review: ${word.next_review_date}`
+            `📝 мReview word: ${word.dutch_lemma}, next_review: ${word.next_review_date}`
           )
         })
       }

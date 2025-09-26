@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import { createAudioPlayer, AudioPlayer } from 'expo-audio'
+import { useAudioPlayer } from '@/hooks/useAudioPlayer'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import {
@@ -25,68 +25,28 @@ export const useReviewScreen = () => {
     updateCurrentWordImage,
   } = useApplicationStore()
 
-  const [audioPlayer, setAudioPlayer] = useState<AudioPlayer | null>(null)
+  const { playAudio, isPlaying: isPlayingAudio } = useAudioPlayer()
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [lastTouchTime, setLastTouchTime] = useState(0)
   const [isScrolling] = useState(false)
 
-  // Initialize audio player
-  useEffect(() => {
-    const initAudio = async () => {
-      try {
-        const player = await createAudioPlayer()
-        setAudioPlayer(player)
-      } catch (error) {
-        console.error('Failed to initialize audio player:', error)
-      }
-    }
-
-    initAudio()
-
-    return () => {
-      // Cleanup handled by the component unmount
-    }
-  }, [])
-
-  // Clean up audio player when component unmounts
-  useEffect(() => {
-    return () => {
-      if (audioPlayer) {
-        audioPlayer.remove()
-      }
-    }
-  }, [audioPlayer])
-
   // Start review session when component mounts - only once
   useEffect(() => {
     startReviewSession()
-  }, [startReviewSession])
+  }, []) // Remove startReviewSession from deps to prevent infinite loop
 
   // Reset card state when the word changes
   useEffect(() => {
     setIsFlipped(false)
   }, [currentWord?.word_id])
 
-  const playAudio = useCallback(
-    async (url?: string) => {
-      if (!audioPlayer || !currentWord?.dutch_lemma) return
-
-      try {
-        const audioUrl =
-          url ||
-          currentWord.tts_url ||
-          `https://api.dictionaryapi.dev/api/v2/entries/en/${currentWord.dutch_lemma}`
-        audioPlayer.replace({
-          uri: audioUrl,
-        })
-        audioPlayer.play()
-      } catch (error) {
-        console.error('Failed to play audio:', error)
-        ToastService.show('Could not play pronunciation', ToastType.ERROR)
-      }
+  const handlePlayAudio = useCallback(
+    (url?: string) => {
+      if (!currentWord?.dutch_lemma) return
+      playAudio(url, currentWord.dutch_lemma, currentWord.tts_url)
     },
-    [audioPlayer, currentWord?.dutch_lemma, currentWord?.tts_url]
+    [playAudio, currentWord?.dutch_lemma, currentWord?.tts_url]
   )
 
   const handleAssessment = useCallback(
@@ -186,7 +146,7 @@ export const useReviewScreen = () => {
     )
   }, [])
 
-  // Create a tap gesture for card flip
+  // Create a tap gesture for card flip - remove dependencies to prevent recreation
   const tapGesture = useCallback(() => {
     return Gesture.Tap()
       .maxDuration(200) // Very short tap duration
@@ -203,7 +163,7 @@ export const useReviewScreen = () => {
         'worklet'
         try {
           console.log('🔴 TAP GESTURE: onEnd triggered')
-          if (!isScrolling) {
+          scheduleOnRN(() => {
             const now = Date.now()
             if (now - lastTouchTime < 300) {
               console.log('❌ TAP GESTURE: Prevented double tap')
@@ -211,17 +171,15 @@ export const useReviewScreen = () => {
             }
 
             console.log('✅ TAP GESTURE: Flipping card')
-            scheduleOnRN(setLastTouchTime, now)
-            scheduleOnRN(flipCard)
-            scheduleOnRN(setIsFlipped, !isFlipped)
-          } else {
-            console.log('❌ TAP GESTURE: Prevented due to scrolling')
-          }
+            setLastTouchTime(now)
+            flipCard()
+            setIsFlipped(prev => !prev)
+          })
         } catch (error) {
           console.log('💥 TAP GESTURE: Error occurred:', error)
         }
       })
-  }, [isScrolling, lastTouchTime, flipCard, isFlipped])
+  }, [flipCard])
 
   // Create a double tap gesture for word detail
   const doubleTapGesture = useCallback(() => {
@@ -238,7 +196,7 @@ export const useReviewScreen = () => {
       })
   }, [isScrolling])
 
-  // Create a pan gesture for swipe navigation
+  // Create a pan gesture for swipe navigation - remove isFlipped dependency
   const panGesture = useCallback(() => {
     return Gesture.Pan()
       .minDistance(20) // Minimum distance to start pan (higher than tap maxDistance)
@@ -257,19 +215,31 @@ export const useReviewScreen = () => {
           }
         }
       })
-      .enabled(!isFlipped) // Only enable swiping on the front side
-  }, [isFlipped, goToNextWord, goToPreviousWord])
+  }, [goToNextWord, goToPreviousWord])
+
+  const reviewWords = reviewSession?.words || []
+  const currentIndex = reviewSession?.currentIndex || 0
+  const totalWords = reviewWords.length
+  const currentWordNumber = currentIndex + 1
+  const sessionComplete = currentIndex >= reviewWords.length && !currentWord
 
   return {
-    // State
+    // State from useReviewSession compatibility
     reviewSession,
     currentWord,
-    isFlipped,
+    currentIndex,
+    sessionComplete,
+    reviewWords,
+    totalWords,
+    currentWordNumber,
     isLoading: isLoading || reviewLoading,
-    audioPlayer,
+
+    // useReviewScreen specific state
+    isFlipped,
+    isPlayingAudio,
 
     // Actions
-    playAudio,
+    playAudio: handlePlayAudio,
     handleCorrect,
     handleIncorrect,
     handleAgain,

@@ -9,14 +9,11 @@ export function initializeSentry() {
   }
 
   // Enable Sentry in development for debugging crashes
-  console.log(
-    '🛡️ SENTRY: Initializing Sentry 7.x in development mode for debugging'
-  )
-
+  const isDevelopment = __DEV__
   // Always initialize Sentry (removed development check for debugging)
   SentryLib.init({
     dsn: 'https://b9380e4ad548d88fe5c8bfecabcdf2e3@o4506263035904000.ingest.us.sentry.io/4509999490727936',
-    debug: true, // Enable debug in development
+    debug: !isDevelopment, // Enable debug in development
     sendDefaultPii: true,
     tracesSampleRate: 1.0,
     profilesSampleRate: 1.0,
