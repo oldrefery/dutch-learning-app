@@ -5,6 +5,8 @@ import {
   RefreshControl,
   FlatList,
   useColorScheme,
+  ActivityIndicator,
+  Alert,
 } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -14,6 +16,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useImageSelector } from '@/hooks/useImageSelector'
 import { Colors } from '@/constants/Colors'
+import { sharingUtils } from '@/utils/sharingUtils'
 import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
@@ -26,6 +29,7 @@ export default function CollectionDetailScreen() {
   const [refreshing, setRefreshing] = useState(false)
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
+  const [isSharing, setIsSharing] = useState(false)
   const colorScheme = useColorScheme() ?? 'light'
 
   const {
@@ -35,6 +39,8 @@ export default function CollectionDetailScreen() {
     fetchCollections,
     deleteWord,
     updateWordImage,
+    shareCollection,
+    unshareCollection,
   } = useApplicationStore()
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
@@ -123,6 +129,112 @@ export default function CollectionDetailScreen() {
     }
   }
 
+  const handleShareToggle = async () => {
+    if (!collection?.collection_id) {
+      console.log('❌ [handleShareToggle] No collection or collection_id')
+      return
+    }
+
+    if (collection.is_shared) {
+      // Show confirmation dialog for unshare (destructive action)
+      Alert.alert(
+        'Stop Sharing',
+        `Stop sharing "${collection.name}"?\n\nPeople will no longer be able to import words from this collection. You can always share it again later if needed.`,
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Stop Sharing',
+            style: 'destructive',
+            onPress: async () => {
+              setIsSharing(true)
+              try {
+                console.log('🔄 [handleShareToggle] Unsharing collection', {
+                  collectionId: collection.collection_id,
+                })
+                const success = await unshareCollection(
+                  collection.collection_id
+                )
+                if (success) {
+                  ToastService.show('Collection unshared', ToastType.SUCCESS)
+                } else {
+                  ToastService.show(
+                    'Failed to unshare collection',
+                    ToastType.ERROR
+                  )
+                }
+              } catch (error) {
+                console.error('❌ [handleShareToggle] Unexpected error:', error)
+                ToastService.show(
+                  'Failed to unshare collection',
+                  ToastType.ERROR
+                )
+              } finally {
+                setIsSharing(false)
+              }
+            },
+          },
+        ]
+      )
+      return
+    }
+
+    // Share collection (no confirmation needed)
+    setIsSharing(true)
+    try {
+      // Share collection
+      console.log('🔄 [handleShareToggle] Starting share flow', {
+        collectionId: collection.collection_id,
+        collectionName: collection.name,
+      })
+      const shareToken = await shareCollection(collection.collection_id)
+      console.log('📥 [handleShareToggle] shareCollection result', {
+        shareToken,
+      })
+
+      if (!shareToken) {
+        console.log('❌ [handleShareToggle] No share token returned')
+        ToastService.show('Failed to share collection', ToastType.ERROR)
+        return
+      }
+
+      console.log(
+        '🔄 [handleShareToggle] Calling sharingUtils.shareCollectionUrl',
+        { shareToken, collectionName: collection.name }
+      )
+      const shareResult = await sharingUtils.shareCollectionUrl(
+        shareToken,
+        collection.name,
+        {
+          dialogTitle: `Share "${collection.name}" collection`,
+        }
+      )
+      console.log('📥 [handleShareToggle] sharingUtils result', {
+        success: shareResult.success,
+        error: shareResult.error,
+      })
+
+      if (shareResult.success) {
+        ToastService.show('Collection shared successfully', ToastType.SUCCESS)
+      } else {
+        ToastService.show(
+          shareResult.error || 'Failed to share collection',
+          ToastType.ERROR
+        )
+      }
+    } catch (error) {
+      console.error('❌ [handleShareToggle] Unexpected error:', error)
+      ToastService.show('Failed to share collection', ToastType.ERROR)
+    } finally {
+      console.log(
+        '🔄 [handleShareToggle] Finishing share flow, setting isSharing to false'
+      )
+      setIsSharing(false)
+    }
+  }
+
   // Clean approach - no need for manual height calculations
 
   if (!collection) {
@@ -161,6 +273,55 @@ export default function CollectionDetailScreen() {
             fontWeight: '600',
             fontSize: 18,
           },
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={handleShareToggle}
+              disabled={isSharing || !collection?.collection_id}
+              style={[
+                styles.shareButton,
+                {
+                  opacity: isSharing ? 0.6 : 1,
+                },
+              ]}
+              accessibilityLabel={
+                collection?.is_shared
+                  ? 'Unshare collection'
+                  : 'Share collection'
+              }
+              accessibilityHint={
+                collection?.is_shared
+                  ? 'Stop sharing this collection'
+                  : 'Share this collection with others'
+              }
+            >
+              {isSharing ? (
+                <ActivityIndicator
+                  size="small"
+                  color={
+                    colorScheme === 'dark'
+                      ? Colors.dark.tint
+                      : Colors.primary.DEFAULT
+                  }
+                />
+              ) : (
+                <Ionicons
+                  name={
+                    collection?.is_shared
+                      ? 'person-remove-outline'
+                      : 'share-outline'
+                  }
+                  size={24}
+                  color={
+                    collection?.is_shared
+                      ? Colors.error.DEFAULT // Destructive action - red color
+                      : colorScheme === 'dark'
+                        ? Colors.dark.tint
+                        : Colors.primary.DEFAULT
+                  }
+                />
+              )}
+            </TouchableOpacity>
+          ),
         }}
       />
       <ViewThemed
@@ -258,6 +419,15 @@ const styles = StyleSheet.create({
   wordsSection: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  shareButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    // marginRight: 0,
+    // padding: 0,
   },
   emptyContainer: {
     flex: 1,

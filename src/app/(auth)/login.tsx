@@ -5,7 +5,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native'
-import { Link } from 'expo-router'
+import { Link, useLocalSearchParams } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { AuthInput } from '@/components/auth/AuthInput'
@@ -15,6 +15,7 @@ import { Colors } from '@/constants/Colors'
 import { Sentry } from '@/lib/sentry'
 
 export default function LoginScreen() {
+  const { redirect } = useLocalSearchParams<{ redirect?: string }>()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [emailError, setEmailError] = useState('')
@@ -65,7 +66,7 @@ export default function LoginScreen() {
     }
 
     try {
-      await testSignIn({ email: email.trim(), password })
+      await testSignIn({ email: email.trim(), password }, redirect)
     } catch (error) {
       // Error handled by SimpleAuthProvider
       Sentry.captureException(error)
@@ -98,7 +99,9 @@ export default function LoginScreen() {
                   lightColor={Colors.neutral[600]}
                   darkColor={Colors.dark.textSecondary}
                 >
-                  Sign in to continue learning Dutch
+                  {redirect
+                    ? 'Sign in to access the shared collection'
+                    : 'Sign in to continue learning Dutch'}
                 </TextThemed>
               </ViewThemed>
 

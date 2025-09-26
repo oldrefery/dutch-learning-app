@@ -5,8 +5,9 @@ import {
   ThemeProvider,
 } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { Stack } from 'expo-router'
+import { Stack, useRouter } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
+import * as Linking from 'expo-linking'
 import { useEffect } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
@@ -46,7 +47,7 @@ export default Sentry.wrap(function RootLayout() {
     return null
   }
 
-  // SIMPLE: No session handling, just show auth screens with simple provider
+  // SIMPLE: No session handling, just show auth screens with a simple provider
   return (
     <SimpleAuthProvider>
       <RootLayoutNav />
@@ -56,8 +57,44 @@ export default Sentry.wrap(function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme()
+  const router = useRouter()
 
-  // Create custom dark theme with our color palette
+  // Handle deep links
+  useEffect(() => {
+    const handleDeepLink = (url: string) => {
+      console.log('🔗 [RootLayoutNav] Deep link received:', url)
+
+      const { hostname, path, queryParams } = Linking.parse(url)
+
+      // Handle dutchlearning://share/TOKEN
+      if (hostname === 'share' && path) {
+        const token = path.replace('/', '') // Remove the leading slash
+        if (token) {
+          console.log('🔗 [RootLayoutNav] Navigating to share screen', {
+            token,
+          })
+          router.push(`/share/${token}`)
+        }
+      }
+    }
+
+    // Handle initial URL if app was opened by a deep link
+    Linking.getInitialURL().then(url => {
+      if (url) {
+        console.log('🔗 [RootLayoutNav] Initial URL:', url)
+        handleDeepLink(url)
+      }
+    })
+
+    // Handle later deep links while the app is running
+    const subscription = Linking.addEventListener('url', ({ url }) => {
+      handleDeepLink(url)
+    })
+
+    return () => subscription?.remove()
+  }, [router])
+
+  // Create a custom dark theme with our color palette
   const CustomDarkTheme = {
     ...NavigationDarkTheme,
     colors: {
@@ -82,6 +119,8 @@ function RootLayoutNav() {
             name="collection/[id]"
             options={{ headerShown: true }}
           />
+          <Stack.Screen name="share/[token]" options={{ headerShown: true }} />
+          <Stack.Screen name="import/[token]" options={{ headerShown: true }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>
         <AppToast />

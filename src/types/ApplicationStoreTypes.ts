@@ -54,6 +54,15 @@ export interface ApplicationState {
   deleteCollection: (collectionId: string) => Promise<void>
   renameCollection: (collectionId: string, newName: string) => Promise<void>
 
+  // Collection sharing actions
+  shareCollection: (collectionId: string) => Promise<string | null>
+  unshareCollection: (collectionId: string) => Promise<boolean>
+  getCollectionShareStatus: (collectionId: string) => Promise<{
+    is_shared: boolean
+    share_token: string | null
+    shared_at: string | null
+  } | null>
+
   // Review session actions
   startReviewSession: () => Promise<void>
   submitReviewAssessment: (assessment: ReviewAssessment) => Promise<void>

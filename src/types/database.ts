@@ -8,6 +8,9 @@ export interface Collection {
   user_id: string
   name: string
   created_at: string
+  is_shared: boolean
+  share_token: string | null
+  shared_at: string | null
 }
 
 export interface WordTranslations {
