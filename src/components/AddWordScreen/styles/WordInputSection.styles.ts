@@ -19,7 +19,8 @@ export const wordInputStyles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     borderWidth: 1,
-    paddingHorizontal: 16,
+    paddingLeft: 16,
+    paddingRight: 4,
     paddingVertical: 4,
   },
   textInput: {

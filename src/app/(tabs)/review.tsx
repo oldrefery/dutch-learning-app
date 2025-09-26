@@ -69,7 +69,7 @@ export default function ReviewScreen() {
     sessionComplete
   )
 
-  // Get startReviewSession from store
+  // Get startReviewSession from the store
   const startReviewSession = useApplicationStore(
     state => state.startReviewSession
   )
@@ -97,7 +97,7 @@ export default function ReviewScreen() {
     }
   }
 
-  // Check if we should show empty state first
+  // Check if we should show the empty state first
   if (reviewWords.length === 0 && !isLoading) {
     return (
       <ScrollView
@@ -177,7 +177,7 @@ export default function ReviewScreen() {
     try {
       console.log('🔍 RENDER CARD: Creating gestures...')
 
-      // Create double tap gesture with callback
+      // Create a double tap gesture with callback
       const doubleTapWithCallback = Gesture.Tap()
         .numberOfTaps(2)
         .maxDuration(400)
@@ -211,31 +211,25 @@ export default function ReviewScreen() {
           <GestureDetector gesture={combinedGesture}>
             <ViewThemed style={reviewScreenStyles.flashcard}>
               {!isFlipped ? (
-                <>
-                  {console.log('🔍 RENDER CARD: Rendering CardFront')}
-                  <CardFront
-                    currentWord={currentWord}
-                    isPlayingAudio={false}
-                    onPlayPronunciation={playAudio}
-                    pronunciationRef={pronunciationRef}
-                  />
-                </>
+                <CardFront
+                  currentWord={currentWord}
+                  isPlayingAudio={false}
+                  onPlayPronunciation={playAudio}
+                  pronunciationRef={pronunciationRef}
+                />
               ) : (
-                <>
-                  {console.log('🔍 RENDER CARD: Rendering UniversalWordCard')}
-                  <UniversalWordCard
-                    word={currentWord}
-                    config={WordCardPresets.review.config}
-                    actions={{
-                      ...WordCardPresets.review.actions,
-                      onDelete: handleDeleteWord,
-                    }}
-                    isPlayingAudio={false}
-                    onPlayPronunciation={playAudio}
-                    onChangeImage={openImageSelector}
-                    style={reviewScreenStyles.universalWordCard}
-                  />
-                </>
+                <UniversalWordCard
+                  word={currentWord}
+                  config={WordCardPresets.review.config}
+                  actions={{
+                    ...WordCardPresets.review.actions,
+                    onDelete: handleDeleteWord,
+                  }}
+                  isPlayingAudio={false}
+                  onPlayPronunciation={playAudio}
+                  onChangeImage={openImageSelector}
+                  style={reviewScreenStyles.universalWordCard}
+                />
               )}
             </ViewThemed>
           </GestureDetector>

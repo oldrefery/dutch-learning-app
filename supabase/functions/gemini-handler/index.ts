@@ -210,6 +210,8 @@ Deno.serve(async (req: Request) => {
       // Don't fail the request if cache save fails
     })
 
+    console.log(`✅ Analysis completed for: "${word}"`)
+
     return new Response(
       JSON.stringify({
         success: true,

@@ -28,6 +28,51 @@ export function WordSelectionList({
 }: WordSelectionListProps) {
   const colorScheme = useColorScheme() ?? 'light'
 
+  const getItemBackgroundColor = (item: WordSelection) => {
+    if (item.isDuplicate) {
+      return colorScheme === 'dark'
+        ? Colors.dark.backgroundSecondary
+        : Colors.neutral[100]
+    }
+    if (item.selected) {
+      return colorScheme === 'dark' ? Colors.primary.dark : Colors.primary.light
+    }
+    return colorScheme === 'dark'
+      ? Colors.dark.backgroundSecondary
+      : Colors.neutral[50]
+  }
+
+  const getItemBorderColor = (item: WordSelection) => {
+    if (item.isDuplicate) {
+      return colorScheme === 'dark' ? Colors.dark.border : Colors.neutral[300]
+    }
+    if (item.selected) {
+      return Colors.primary.DEFAULT
+    }
+    return colorScheme === 'dark' ? Colors.dark.border : Colors.neutral[200]
+  }
+
+  const getIconName = (item: WordSelection) => {
+    if (item.isDuplicate || item.selected) {
+      return 'checkmark-circle'
+    }
+    return 'ellipse-outline'
+  }
+
+  const getIconColor = (item: WordSelection) => {
+    if (item.isDuplicate) {
+      return colorScheme === 'dark'
+        ? Colors.dark.textTertiary
+        : Colors.neutral[400]
+    }
+    if (item.selected) {
+      return Colors.primary.DEFAULT
+    }
+    return colorScheme === 'dark'
+      ? Colors.dark.textTertiary
+      : Colors.neutral[400]
+  }
+
   return (
     <ViewThemed style={styles.wordsSection}>
       <TextThemed style={styles.sectionTitle}>Words</TextThemed>
@@ -37,26 +82,8 @@ export function WordSelectionList({
           style={[
             styles.wordItem,
             {
-              backgroundColor: item.isDuplicate
-                ? colorScheme === 'dark'
-                  ? Colors.dark.backgroundSecondary
-                  : Colors.neutral[100]
-                : item.selected
-                  ? colorScheme === 'dark'
-                    ? Colors.primary.dark
-                    : Colors.primary.light
-                  : colorScheme === 'dark'
-                    ? Colors.dark.backgroundSecondary
-                    : Colors.neutral[50],
-              borderColor: item.isDuplicate
-                ? colorScheme === 'dark'
-                  ? Colors.dark.border
-                  : Colors.neutral[300]
-                : item.selected
-                  ? Colors.primary.DEFAULT
-                  : colorScheme === 'dark'
-                    ? Colors.dark.border
-                    : Colors.neutral[200],
+              backgroundColor: getItemBackgroundColor(item),
+              borderColor: getItemBorderColor(item),
               opacity: item.isDuplicate ? 0.6 : 1,
             },
           ]}
@@ -110,25 +137,9 @@ export function WordSelectionList({
               )}
             </ViewThemed>
             <Ionicons
-              name={
-                item.isDuplicate
-                  ? 'checkmark-circle'
-                  : item.selected
-                    ? 'checkmark-circle'
-                    : 'ellipse-outline'
-              }
+              name={getIconName(item)}
               size={24}
-              color={
-                item.isDuplicate
-                  ? colorScheme === 'dark'
-                    ? Colors.dark.textTertiary
-                    : Colors.neutral[400]
-                  : item.selected
-                    ? Colors.primary.DEFAULT
-                    : colorScheme === 'dark'
-                      ? Colors.dark.textTertiary
-                      : Colors.neutral[400]
-              }
+              color={getIconColor(item)}
             />
           </ViewThemed>
         </TouchableOpacity>

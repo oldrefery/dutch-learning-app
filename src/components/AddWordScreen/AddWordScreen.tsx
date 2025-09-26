@@ -170,12 +170,6 @@ export function AddWordScreen() {
 
   return (
     <ViewThemed style={addWordScreenStyles.container}>
-      {/* <Button
-        title="Try!"
-        onPress={() => {
-          Sentry.captureException(new Error('First error'))
-        }}
-      /> */}
       <WordInputSection
         inputWord={inputWord}
         setInputWord={setInputWord}
