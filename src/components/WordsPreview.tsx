@@ -41,7 +41,7 @@ export function WordsPreview({
             lightColor={Colors.neutral[600]}
             darkColor={Colors.dark.textSecondary}
           >
-            {word.translations.en[0] || 'No translation'}
+            {word.translations?.en?.[0] || 'No translation'}
           </TextThemed>
         </ViewThemed>
       ))}

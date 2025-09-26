@@ -29,46 +29,7 @@ export default function SharedCollectionScreen() {
   const [error, setError] = useState<string | null>(null)
   const colorScheme = useColorScheme() ?? 'light'
 
-  useEffect(() => {
-    checkAuthAndLoad()
-  }, [checkAuthAndLoad])
-
-  const checkAuthAndLoad = useCallback(async () => {
-    try {
-      // First, check if the user is authenticated
-      const {
-        data: { session },
-        error: authError,
-      } = await supabase.auth.getSession()
-
-      if (authError || !session) {
-        // Save the current deep link URL for deferred deep linking
-        const currentUrl = `/share/${token}`
-
-        // Store the intended destination in query params
-        router.replace(
-          `/(auth)/login?redirect=${encodeURIComponent(currentUrl)}`
-        )
-        return
-      }
-
-      // Now proceed with loading the shared collection
-      if (!token) {
-        setError('Invalid share link')
-        setLoading(false)
-        return
-      }
-
-      loadSharedCollection()
-    } catch (err) {
-      console.error('Auth check failed:', err)
-      // Also preserve a deep link on error
-      const currentUrl = `/share/${token}`
-      router.replace(`/(auth)/login?redirect=${encodeURIComponent(currentUrl)}`)
-    }
-  }, [loadSharedCollection, token])
-
-  const loadSharedCollection = async () => {
+  const loadSharedCollection = useCallback(async () => {
     try {
       console.log('🔄 [SharedCollectionScreen] Loading shared collection', {
         token,
@@ -124,7 +85,46 @@ export default function SharedCollectionScreen() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [token])
+
+  const checkAuthAndLoad = useCallback(async () => {
+    try {
+      // First, check if the user is authenticated
+      const {
+        data: { session },
+        error: authError,
+      } = await supabase.auth.getSession()
+
+      if (authError || !session) {
+        // Save the current deep link URL for deferred deep linking
+        const currentUrl = `/share/${token}`
+
+        // Store the intended destination in query params
+        router.replace(
+          `/(auth)/login?redirect=${encodeURIComponent(currentUrl)}`
+        )
+        return
+      }
+
+      // Now proceed with loading the shared collection
+      if (!token) {
+        setError('Invalid share link')
+        setLoading(false)
+        return
+      }
+
+      await loadSharedCollection()
+    } catch (err) {
+      console.error('Auth check failed:', err)
+      // Also preserve a deep link on error
+      const currentUrl = `/share/${token}`
+      router.replace(`/(auth)/login?redirect=${encodeURIComponent(currentUrl)}`)
+    }
+  }, [loadSharedCollection, token])
+
+  useEffect(() => {
+    checkAuthAndLoad()
+  }, [checkAuthAndLoad])
 
   const getErrorMessage = (error: string): string => {
     switch (error) {

@@ -147,10 +147,13 @@ const themes = {
     tabIconDefault: colorPalette.neutral[400],
     tabIconSelected: colorPalette.primary.DEFAULT,
 
-    // Status colors for light theme
+    // Status colors for the light theme
     success: colorPalette.success.DEFAULT,
     warning: colorPalette.warning.DEFAULT,
     error: colorPalette.error.DEFAULT,
+
+    // Border color for a light theme
+    border: colorPalette.neutral[200],
   },
   dark: {
     // Text colors - optimized contrast for dark theme
@@ -169,10 +172,13 @@ const themes = {
     tabIconDefault: colorPalette.neutral[500],
     tabIconSelected: '#E5E5E7',
 
-    // Status colors adapted for dark theme
+    // Status colors adapted for the dark theme
     success: colorPalette.success.dark, // #34D399
     warning: colorPalette.warning.dark, // #FBBF24
     error: colorPalette.error.darkMode, // #FF453A (Apple HIG)
+
+    // Border color for a dark theme
+    border: colorPalette.neutral[600],
   },
 }
 
@@ -186,10 +192,10 @@ const textColors = {
     disabled: colorPalette.neutral[400], // Disabled text
 
     // Dark theme text colors
-    primaryDark: '#E5E5E7', // Main text in dark theme
-    secondaryDark: 'rgba(255, 255, 255, 0.6)', // Secondary text in dark theme
-    tertiaryDark: 'rgba(255, 255, 255, 0.4)', // Tertiary text in dark theme
-    disabledDark: 'rgba(255, 255, 255, 0.3)', // Disabled text in dark theme
+    primaryDark: '#E5E5E7', // Main text in a dark theme
+    secondaryDark: 'rgba(255, 255, 255, 0.6)', // Secondary text in the dark theme
+    tertiaryDark: 'rgba(255, 255, 255, 0.4)', // Tertiary text in the dark theme
+    disabledDark: 'rgba(255, 255, 255, 0.3)', // Disabled text in the dark theme
   },
 }
 

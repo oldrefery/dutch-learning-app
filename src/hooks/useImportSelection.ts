@@ -9,7 +9,15 @@ import type { Word } from '@/types/database'
 import type { SharedCollectionWords } from '@/services/collectionSharingService'
 
 interface WordSelectionItem {
-  word: Word
+  word: Omit<
+    Word,
+    | 'user_id'
+    | 'easiness_factor'
+    | 'interval_days'
+    | 'repetition_count'
+    | 'next_review_date'
+    | 'last_reviewed_at'
+  >
   selected: boolean
   isDuplicate: boolean
   existingInCollection?: string
@@ -51,37 +59,49 @@ export function useImportSelection(token: string) {
     }
   }, [])
 
-  const checkForDuplicates = useCallback(async (words: Word[]) => {
-    try {
-      // Get existing words from the store to check duplicates
-      const { words: existingWords } = useApplicationStore.getState()
+  const checkForDuplicates = useCallback(
+    async (
+      words: Omit<
+        Word,
+        | 'user_id'
+        | 'easiness_factor'
+        | 'interval_days'
+        | 'repetition_count'
+        | 'next_review_date'
+        | 'last_reviewed_at'
+      >[]
+    ) => {
+      try {
+        // Get existing words from the store to check duplicates
+        const { words: existingWords } = useApplicationStore.getState()
 
-      const selections: WordSelectionItem[] = words.map(word => {
-        const existingWord = existingWords.find(
-          existing =>
-            existing.dutch_lemma.toLowerCase() ===
-            word.dutch_lemma.toLowerCase()
-        )
+        const selections: WordSelectionItem[] = words.map(word => {
+          const existingWord = existingWords.find(
+            existing =>
+              existing.dutch_lemma.toLowerCase() ===
+              word.dutch_lemma.toLowerCase()
+          )
 
-        return {
+          return {
+            word,
+            selected: !existingWord,
+            isDuplicate: !!existingWord,
+            existingInCollection: existingWord?.collection_id || undefined,
+          }
+        })
+
+        setWordSelections(selections)
+      } catch (err) {
+        const selections: WordSelectionItem[] = words.map(word => ({
           word,
-          selected: !existingWord,
-          isDuplicate: !!existingWord,
-          existingInCollection: existingWord?.collection_name,
-        }
-      })
-
-      setWordSelections(selections)
-    } catch (err) {
-      console.error('Failed to check duplicates:', err)
-      const selections: WordSelectionItem[] = words.map(word => ({
-        word,
-        selected: true,
-        isDuplicate: false,
-      }))
-      setWordSelections(selections)
-    }
-  }, [])
+          selected: true,
+          isDuplicate: false,
+        }))
+        setWordSelections(selections)
+      }
+    },
+    []
+  )
 
   const loadSharedCollection = useCallback(async () => {
     try {
@@ -194,17 +214,19 @@ export function useImportSelection(token: string) {
     try {
       const { addNewWord } = useApplicationStore.getState()
       const results = await Promise.all(
-        selectedWords.map(word => addNewWord(word, targetCollectionId))
+        selectedWords.map(word =>
+          addNewWord(word.dutch_lemma, targetCollectionId)
+        )
       )
 
-      const successCount = results.filter(result => result.success).length
+      const successCount = results.filter(result => result !== undefined).length
 
       if (successCount === selectedWords.length) {
         ToastService.show(
           `Successfully imported ${successCount} word${successCount !== 1 ? 's' : ''}`,
           ToastType.SUCCESS
         )
-        router.replace('/(tabs)/')
+        router.replace('/(tabs)')
       } else {
         ToastService.show('Some words could not be imported', ToastType.ERROR)
       }

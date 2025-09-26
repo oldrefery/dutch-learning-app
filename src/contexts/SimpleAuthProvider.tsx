@@ -90,6 +90,35 @@ export function SimpleAuthProvider({
     }
   }
 
+  const handleSignInError = (error: any) => {
+    if (error.message.includes('Invalid login credentials')) {
+      setError('Invalid email or password. Please check your credentials.')
+    } else if (error.message.includes('Email not confirmed')) {
+      setError('Please check your email and click the confirmation link.')
+    } else {
+      setError(`Login failed: ${error.message}`)
+    }
+  }
+
+  const handleRedirect = (redirectUrl?: string) => {
+    if (!redirectUrl) {
+      router.replace('/(tabs)')
+      return
+    }
+
+    if (redirectUrl.startsWith('/share/')) {
+      const token = redirectUrl.replace('/share/', '')
+      router.push(`/share/${token}`)
+    } else if (redirectUrl.startsWith('/import/')) {
+      const token = redirectUrl.replace('/import/', '')
+      router.push(`/import/${token}`)
+    } else if (redirectUrl === '/') {
+      router.replace('/')
+    } else {
+      router.replace('/(tabs)')
+    }
+  }
+
   const testSignIn = async (
     credentials: LoginCredentials,
     redirectUrl?: string
@@ -104,29 +133,13 @@ export function SimpleAuthProvider({
       })
 
       if (error) {
-        // User-friendly error messages
-        if (error.message.includes('Invalid login credentials')) {
-          setError('Invalid email or password. Please check your credentials.')
-        } else if (error.message.includes('Email not confirmed')) {
-          setError('Please check your email and click the confirmation link.')
-        } else {
-          setError(`Login failed: ${error.message}`)
-        }
+        handleSignInError(error)
         return
       }
 
       if (data.session) {
-        // Session is automatically saved by a Supabase client to SecureStore
-        // Initialize app store with user data
         await initializeApp(data.user?.id)
-
-        // Handle deferred deep linking
-        if (redirectUrl) {
-          router.replace(redirectUrl)
-        } else {
-          // Navigate to the main app
-          router.replace('/(tabs)')
-        }
+        handleRedirect(redirectUrl)
       } else {
         setError('Login successful! (Session created but not stored)')
       }
