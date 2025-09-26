@@ -85,9 +85,18 @@ export function AddWordScreen() {
   }, [analysisResult, currentUserId])
 
   const handleAnalyze = async () => {
-    if (!inputWord.trim()) {
+    // Normalize input: trim, remove periods, and replace multiple spaces with a single space
+    const normalizedWord = inputWord
+      .trim()
+      .replace(/\./g, '')
+      .replace(/\s+/g, ' ')
+
+    if (!normalizedWord) {
       return
     }
+
+    // Update the input field with normalized text
+    setInputWord(normalizedWord)
 
     // Hide the keyboard immediately when analysis starts
     Keyboard.dismiss()
@@ -98,20 +107,20 @@ export function AddWordScreen() {
     // Clear previous analysis result
     clearAnalysis()
 
-    const normalizedWord = inputWord.trim().toLowerCase()
+    const lowercaseWord = normalizedWord.toLowerCase()
 
     // Check for duplicates before analysis
     if (currentUserId) {
       try {
         const existingWord = await wordService.checkWordExists(
           currentUserId,
-          normalizedWord
+          lowercaseWord
         )
         if (existingWord) {
           setIsAlreadyInCollection(true)
           setIsCheckingDuplicate(false)
           ToastService.show(
-            `A variant of "${normalizedWord}" is already in your collection`,
+            `A variant of "${lowercaseWord}" is already in your collection`,
             ToastType.INFO
           )
           return
@@ -123,7 +132,7 @@ export function AddWordScreen() {
     }
 
     setIsCheckingDuplicate(false)
-    analyzeWord(inputWord)
+    analyzeWord(normalizedWord)
   }
 
   const handleAddWord = async () => {
@@ -143,8 +152,15 @@ export function AddWordScreen() {
   }
 
   const handleForceRefresh = async () => {
-    if (!inputWord.trim()) return
-    await forceRefreshAnalysis(inputWord)
+    const normalizedWord = inputWord
+      .trim()
+      .replace(/\./g, '')
+      .replace(/\s+/g, ' ')
+    if (!normalizedWord) return
+
+    // Update the input field with normalized text
+    setInputWord(normalizedWord)
+    await forceRefreshAnalysis(normalizedWord)
   }
 
   const handleImageChange = (newImageUrl: string) => {

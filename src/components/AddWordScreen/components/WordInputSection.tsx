@@ -63,6 +63,10 @@ export function WordInputSection({
           }
           autoCapitalize="none"
           autoCorrect={false}
+          autoComplete="off"
+          textContentType="none"
+          spellCheck={false}
+          keyboardType="ascii-capable"
           returnKeyType="search"
           onSubmitEditing={onAnalyze}
         />

@@ -128,20 +128,25 @@ export function parseWordInput(input: string): {
   article?: string
   part_of_speech?: string
 } {
-  const trimmed = input.trim().toLowerCase()
+  // Normalize: trim, remove periods, replace multiple spaces with a single space
+  const normalized = input
+    .trim()
+    .toLowerCase()
+    .replace(/\./g, '')
+    .replace(/\s+/g, ' ')
 
   // Check for definite articles (de/het)
-  if (trimmed.startsWith('de ')) {
+  if (normalized.startsWith('de ')) {
     return {
-      dutch_lemma: trimmed.substring(3).trim(),
+      dutch_lemma: normalized.substring(3).trim(),
       article: 'de',
       part_of_speech: 'noun',
     }
   }
 
-  if (trimmed.startsWith('het ')) {
+  if (normalized.startsWith('het ')) {
     return {
-      dutch_lemma: trimmed.substring(4).trim(),
+      dutch_lemma: normalized.substring(4).trim(),
       article: 'het',
       part_of_speech: 'noun',
     }
@@ -149,6 +154,6 @@ export function parseWordInput(input: string): {
 
   // No article detected - just return the lemma
   return {
-    dutch_lemma: trimmed,
+    dutch_lemma: normalized,
   }
 }
