@@ -41,6 +41,7 @@ export function useImportSelection(token: string) {
     null
   )
   const [importing, setImporting] = useState(false)
+  const [hideDuplicates, setHideDuplicates] = useState(true) // Hide duplicates by default
 
   const loadCollections = useCallback(async () => {
     try {
@@ -73,8 +74,9 @@ export function useImportSelection(token: string) {
       >[]
     ) => {
       try {
-        // Get existing words from the store to check duplicates
-        const { words: existingWords } = useApplicationStore.getState()
+        // Get existing words and collections from the store to check duplicates
+        const { words: existingWords, collections: storeCollections } =
+          useApplicationStore.getState()
 
         const selections: WordSelectionItem[] = words.map(word => {
           const existingWord = existingWords.find(
@@ -86,11 +88,20 @@ export function useImportSelection(token: string) {
               (existing.article || '') === (word.article || '')
           )
 
+          // Find collection name by ID
+          let existingInCollectionName: string | undefined
+          if (existingWord?.collection_id) {
+            const collection = storeCollections.find(
+              c => c.collection_id === existingWord.collection_id
+            )
+            existingInCollectionName = collection?.name
+          }
+
           return {
             word,
             selected: !existingWord,
             isDuplicate: !!existingWord,
-            existingInCollection: existingWord?.collection_id || undefined,
+            existingInCollection: existingInCollectionName,
           }
         })
 
@@ -244,6 +255,10 @@ export function useImportSelection(token: string) {
     router.back()
   }
 
+  const toggleHideDuplicates = () => {
+    setHideDuplicates(prev => !prev)
+  }
+
   useEffect(() => {
     void checkAuthAndLoad()
   }, [checkAuthAndLoad])
@@ -253,20 +268,27 @@ export function useImportSelection(token: string) {
   const availableWords = wordSelections.filter(item => !item.isDuplicate)
   const allAvailableSelected = availableWords.every(item => item.selected)
 
+  // Filter words based on hideDuplicates setting
+  const filteredWordSelections = hideDuplicates
+    ? wordSelections.filter(item => !item.isDuplicate)
+    : wordSelections
+
   return {
     loading,
     sharedData,
     error,
-    wordSelections,
+    wordSelections: filteredWordSelections,
     collections,
     targetCollectionId,
     importing,
     selectedCount,
     duplicateCount,
     allAvailableSelected,
+    hideDuplicates,
     setTargetCollectionId,
     toggleWordSelection,
     toggleSelectAll,
+    toggleHideDuplicates,
     handleImport,
     handleGoBack,
   }

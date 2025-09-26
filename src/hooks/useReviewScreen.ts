@@ -253,5 +253,8 @@ export const useReviewScreen = () => {
     tapGesture,
     doubleTapGesture,
     panGesture,
+    flipCard,
+    goToNextWord,
+    goToPreviousWord,
   }
 }
