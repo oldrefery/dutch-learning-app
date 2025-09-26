@@ -152,7 +152,7 @@ const themes = {
     warning: colorPalette.warning.DEFAULT,
     error: colorPalette.error.DEFAULT,
 
-    // Border color for a light theme
+    // Border color for light theme
     border: colorPalette.neutral[200],
   },
   dark: {
@@ -177,8 +177,8 @@ const themes = {
     warning: colorPalette.warning.dark, // #FBBF24
     error: colorPalette.error.darkMode, // #FF453A (Apple HIG)
 
-    // Border color for a dark theme
-    border: colorPalette.neutral[600],
+    // Border color for dark theme
+    border: colorPalette.neutral[700],
   },
 }
 

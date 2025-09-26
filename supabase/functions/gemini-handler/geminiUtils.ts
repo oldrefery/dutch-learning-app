@@ -128,7 +128,7 @@ export function parseWordInput(input: string): {
   article?: string
   part_of_speech?: string
 } {
-  // Normalize: trim, remove periods, replace multiple spaces with a single space
+  // Normalize: trim, remove periods, replace multiple spaces with single space
   const normalized = input
     .trim()
     .toLowerCase()

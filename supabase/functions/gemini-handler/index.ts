@@ -88,7 +88,7 @@ Deno.serve(async (req: Request) => {
       }
 
       if (cachedAnalysis) {
-        // Build result from the cache
+        // Build result from cache
         const result = {
           dutch_original: word,
           dutch_lemma: cachedAnalysis.dutch_lemma,
@@ -185,7 +185,7 @@ Deno.serve(async (req: Request) => {
     // Save to cache for future use (async, don't wait for completion)
     saveToCache({
       dutch_original: word,
-      dutch_lemma: normalizedLemma, // Use parsed and normalized lemma as a cache key
+      dutch_lemma: normalizedLemma, // Use parsed and normalized lemma as cache key
       part_of_speech:
         analysis.part_of_speech || (analysis.is_separable ? 'verb' : null),
       is_irregular: analysis.is_irregular || false,
@@ -206,9 +206,8 @@ Deno.serve(async (req: Request) => {
       conjugation: analysis.conjugation,
       preposition: analysis.preposition,
       analysis_notes: analysis.analysis_notes || '',
-    }).catch(error => {
-      // Don't fail the request if cache save fails, but log the error
-      console.error('❌ Cache save error (non-critical):', error)
+    }).catch(() => {
+      // Don't fail the request if cache save fails
     })
 
     console.log(`✅ Analysis completed for: "${word}"`)
@@ -235,7 +234,7 @@ Deno.serve(async (req: Request) => {
       error instanceof Error ? error.message : 'Unknown error'
     )
 
-    // Send it to the Sentry
+    // Send to Sentry
     try {
       const sentryDsn = Deno.env.get('SENTRY_DSN')
       if (sentryDsn) {

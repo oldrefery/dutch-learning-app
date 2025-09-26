@@ -60,7 +60,7 @@ export interface WordAnalysisData {
 
 /**
  * Get cached word analysis if it exists and is still valid
- * Now supports semantic uniqueness based on a lemma + part_of_speech + article
+ * Now supports semantic uniqueness based on lemma + part_of_speech + article
  */
 export async function getCachedAnalysis(
   normalizedWord: string,
@@ -86,7 +86,6 @@ export async function getCachedAnalysis(
       .limit(1)
 
     if (error) {
-      console.error('❌ Cache lookup error:', error)
       return null
     }
 
@@ -98,14 +97,13 @@ export async function getCachedAnalysis(
 
     return null
   } catch (error) {
-    console.error('❌ Cache check error:', error)
     return null
   }
 }
 
 /**
  * Get all cached variants of a word (by lemma only) - for showing suggestions
- * when user inputs word without an article
+ * when user inputs word without article
  */
 export async function getCachedVariants(
   normalizedWord: string
@@ -122,13 +120,11 @@ export async function getCachedVariants(
       .order('usage_count', { ascending: false })
 
     if (error) {
-      console.error('❌ Cache variants lookup error:', error)
       return []
     }
 
     return (data || []) as CacheEntry[]
   } catch (error) {
-    console.error('❌ Cache variants check error:', error)
     return []
   }
 }
@@ -146,13 +142,13 @@ async function updateCacheUsage(cacheId: string): Promise<void> {
       })
       .eq('cache_id', cacheId)
   } catch (error) {
-    console.error('❌ Cache usage update error:', error)
+    // Silent fail
   }
 }
 
 /**
  * Save word analysis to cache
- * Now supports semantic uniqueness based on a lemma + part_of_speech + article
+ * Now supports semantic uniqueness based on lemma + part_of_speech + article
  */
 export async function saveToCache(
   analysisData: WordAnalysisData
@@ -188,10 +184,10 @@ export async function saveToCache(
     })
 
     if (error) {
-      console.error('❌ Cache save error:', error)
+      // Silent fail
     }
   } catch (error) {
-    console.error('❌ Cache save error:', error)
+    // Silent fail
   }
 }
 

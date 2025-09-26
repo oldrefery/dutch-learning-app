@@ -24,8 +24,6 @@ import WordDetailModal from '@/components/WordDetailModal'
 import ImageSelector from '@/components/ImageSelector'
 import type { Word } from '@/types/database'
 
-const SHARE_ERROR_MESSAGE = 'Failed to share collection'
-
 export default function CollectionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const [refreshing, setRefreshing] = useState(false)
@@ -133,10 +131,12 @@ export default function CollectionDetailScreen() {
 
   const handleShareToggle = async () => {
     if (!collection?.collection_id) {
+      console.log('❌ [handleShareToggle] No collection or collection_id')
       return
     }
 
     if (collection.is_shared) {
+      // Show confirmation dialog for unshare (destructive action)
       Alert.alert(
         'Stop Sharing',
         `Stop sharing "${collection.name}"?\n\nPeople will no longer be able to import words from this collection. You can always share it again later if needed.`,
@@ -151,6 +151,9 @@ export default function CollectionDetailScreen() {
             onPress: async () => {
               setIsSharing(true)
               try {
+                console.log('🔄 [handleShareToggle] Unsharing collection', {
+                  collectionId: collection.collection_id,
+                })
                 const success = await unshareCollection(
                   collection.collection_id
                 )
@@ -163,6 +166,7 @@ export default function CollectionDetailScreen() {
                   )
                 }
               } catch (error) {
+                console.error('❌ [handleShareToggle] Unexpected error:', error)
                 ToastService.show(
                   'Failed to unshare collection',
                   ToastType.ERROR
@@ -181,14 +185,25 @@ export default function CollectionDetailScreen() {
     setIsSharing(true)
     try {
       // Share collection
+      console.log('🔄 [handleShareToggle] Starting share flow', {
+        collectionId: collection.collection_id,
+        collectionName: collection.name,
+      })
       const shareToken = await shareCollection(collection.collection_id)
+      console.log('📥 [handleShareToggle] shareCollection result', {
+        shareToken,
+      })
 
       if (!shareToken) {
-        ToastService.show(SHARE_ERROR_MESSAGE, ToastType.ERROR)
-
+        console.log('❌ [handleShareToggle] No share token returned')
+        ToastService.show('Failed to share collection', ToastType.ERROR)
         return
       }
 
+      console.log(
+        '🔄 [handleShareToggle] Calling sharingUtils.shareCollectionUrl',
+        { shareToken, collectionName: collection.name }
+      )
       const shareResult = await sharingUtils.shareCollectionUrl(
         shareToken,
         collection.name,
@@ -196,18 +211,26 @@ export default function CollectionDetailScreen() {
           dialogTitle: `Share "${collection.name}" collection`,
         }
       )
+      console.log('📥 [handleShareToggle] sharingUtils result', {
+        success: shareResult.success,
+        error: shareResult.error,
+      })
 
       if (shareResult.success) {
         ToastService.show('Collection shared successfully', ToastType.SUCCESS)
       } else {
         ToastService.show(
-          shareResult.error || SHARE_ERROR_MESSAGE,
+          shareResult.error || 'Failed to share collection',
           ToastType.ERROR
         )
       }
     } catch (error) {
-      ToastService.show(SHARE_ERROR_MESSAGE, ToastType.ERROR)
+      console.error('❌ [handleShareToggle] Unexpected error:', error)
+      ToastService.show('Failed to share collection', ToastType.ERROR)
     } finally {
+      console.log(
+        '🔄 [handleShareToggle] Finishing share flow, setting isSharing to false'
+      )
       setIsSharing(false)
     }
   }

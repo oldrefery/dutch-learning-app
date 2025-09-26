@@ -85,7 +85,7 @@ export function AddWordScreen() {
   }, [analysisResult, currentUserId])
 
   const handleAnalyze = async () => {
-    // Normalize input: trim, remove periods, and replace multiple spaces with a single space
+    // Normalize input: trim, remove periods, replace multiple spaces with single space
     const normalizedWord = inputWord
       .trim()
       .replace(/\./g, '')
@@ -95,7 +95,7 @@ export function AddWordScreen() {
       return
     }
 
-    // Update the input field with normalized text
+    // Update input field with normalized text
     setInputWord(normalizedWord)
 
     // Hide the keyboard immediately when analysis starts
@@ -158,7 +158,7 @@ export function AddWordScreen() {
       .replace(/\s+/g, ' ')
     if (!normalizedWord) return
 
-    // Update the input field with normalized text
+    // Update input field with normalized text
     setInputWord(normalizedWord)
     await forceRefreshAnalysis(normalizedWord)
   }

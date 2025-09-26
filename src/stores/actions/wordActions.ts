@@ -72,7 +72,6 @@ export const createWordActions = (
       return newWord
     } catch (error) {
       console.error('Error adding word:', error)
-      const userId = get().currentUserId
       Sentry.captureException(error, {
         tags: { operation: 'addNewWord' },
         extra: { word, collectionId, userId },
@@ -113,7 +112,6 @@ export const createWordActions = (
       return newWord
     } catch (error) {
       console.error('Error saving analyzed word:', error)
-      const userId = get().currentUserId
       Sentry.captureException(error, {
         tags: { operation: 'saveAnalyzedWord' },
         extra: { analyzedWord, collectionId, userId },
@@ -267,7 +265,6 @@ export const createWordActions = (
       return addedWords.length === words.length
     } catch (error) {
       console.error('❌ [addWordsToCollection] Batch import failed:', error)
-      const userId = get().currentUserId
       Sentry.captureException(error, {
         tags: { operation: 'addWordsToCollection' },
         extra: { collectionId, wordCount: words.length, userId },

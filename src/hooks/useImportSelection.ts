@@ -217,19 +217,17 @@ export function useImportSelection(token: string) {
     try {
       const { addNewWord } = useApplicationStore.getState()
       const results = await Promise.all(
-        selectedWords.map(word =>
-          addNewWord(word.dutch_lemma, targetCollectionId)
-        )
+        selectedWords.map(word => addNewWord(word, targetCollectionId))
       )
 
-      const successCount = results.filter(result => result !== undefined).length
+      const successCount = results.filter(result => result.success).length
 
       if (successCount === selectedWords.length) {
         ToastService.show(
           `Successfully imported ${successCount} word${successCount !== 1 ? 's' : ''}`,
           ToastType.SUCCESS
         )
-        router.replace('/(tabs)')
+        router.replace('/(tabs)/')
       } else {
         ToastService.show('Some words could not be imported', ToastType.ERROR)
       }

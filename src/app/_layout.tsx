@@ -64,7 +64,7 @@ function RootLayoutNav() {
     const handleDeepLink = (url: string) => {
       console.log('🔗 [RootLayoutNav] Deep link received:', url)
 
-      const { hostname, path } = Linking.parse(url)
+      const { hostname, path, queryParams } = Linking.parse(url)
 
       // Handle dutchlearning://share/TOKEN
       if (hostname === 'share' && path) {
