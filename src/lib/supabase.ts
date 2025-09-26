@@ -190,13 +190,18 @@ export const wordService = {
 
   // Add new word
   async addWord(wordData: Partial<Word>, userId: string) {
-    // Ensure required fields are present
+    // Create a clean word object with only valid database fields
     const wordToInsert = {
       dutch_original: wordData.dutch_original || '',
       dutch_lemma: wordData.dutch_lemma || wordData.dutch_original || '',
       part_of_speech: wordData.part_of_speech || 'unknown',
       translations: wordData.translations || { en: [], ru: [] },
       examples: wordData.examples || [],
+      synonyms: wordData.synonyms || [],
+      antonyms: wordData.antonyms || [],
+      conjugation: wordData.conjugation || null,
+      preposition: wordData.preposition || null,
+      plural: wordData.plural || null,
       image_url: wordData.image_url || '',
       is_expression: wordData.is_expression || false,
       is_irregular: wordData.is_irregular || false,
@@ -213,7 +218,7 @@ export const wordService = {
       repetition_count: SRS_PARAMS.INITIAL.REPETITION_COUNT,
       next_review_date: new Date().toISOString().split('T')[0],
       user_id: userId,
-      ...wordData, // Override with any additional fields from the wordData
+      collection_id: wordData.collection_id || null,
     }
 
     // Use the prepared word data directly

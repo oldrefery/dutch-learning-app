@@ -26,8 +26,6 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word } from '@/types/database'
 
 export default function ReviewScreen() {
-  console.log('🔍 REVIEW SCREEN: Component rendering')
-
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [refreshing, setRefreshing] = useState(false)

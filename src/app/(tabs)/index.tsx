@@ -12,6 +12,7 @@ import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
 import StatsCard from '@/components/StatsCard'
 import SectionHeader from '@/components/SectionHeader'
 import ReviewButton from '@/components/ReviewButton'
+import { ROUTES } from '@/constants/Routes'
 import { styles } from '@/styles/CollectionsScreen.styles'
 import type { Collection } from '@/types/database'
 
@@ -42,7 +43,7 @@ export default function CollectionsScreen() {
   } = useApplicationStore()
 
   const handleCollectionPress = (collection: Collection) => {
-    router.push(`/collection/${collection.collection_id}`)
+    router.push(ROUTES.COLLECTION_DETAIL(collection.collection_id))
   }
 
   const handleDeleteCollection = async (collectionId: string) => {
@@ -128,7 +129,7 @@ export default function CollectionsScreen() {
       return
     }
     // Navigate to the review screen
-    router.push('/(tabs)/review')
+    router.push(ROUTES.TABS.REVIEW)
   }
 
   const handleDismissError = () => {

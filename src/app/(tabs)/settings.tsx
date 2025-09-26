@@ -15,10 +15,13 @@ import { userService } from '@/lib/supabase'
 import { Colors } from '@/constants/Colors'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
+import { ROUTES } from '@/constants/Routes'
+import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme() ?? 'light'
   const [user, setUser] = useState<User | null>(null)
+  const { signOut, loading: authLoading } = useSimpleAuth()
 
   useEffect(() => {
     const getUser = async () => {
@@ -56,25 +59,7 @@ export default function SettingsScreen() {
         text: 'Logout',
         style: 'destructive',
         onPress: async () => {
-          try {
-            const { error } = await supabase.auth.signOut()
-
-            if (error) {
-              ToastService.show(
-                'Logout failed. Please try again.',
-                ToastType.ERROR
-              )
-              return
-            }
-
-            // Navigate to login
-            router.replace('/(auth)/login')
-          } catch {
-            ToastService.show(
-              'Logout failed. Please try again.',
-              ToastType.ERROR
-            )
-          }
+          await signOut()
         },
       },
     ])
@@ -114,7 +99,7 @@ export default function SettingsScreen() {
                       // Navigate to log in after a short delay
                       setTimeout(() => {
                         console.log('🔄 Navigating to login screen')
-                        router.replace('/(auth)/login')
+                        router.replace(ROUTES.AUTH.LOGIN)
                       }, 2000)
                     } catch (error) {
                       console.error(
@@ -159,11 +144,15 @@ export default function SettingsScreen() {
                   colorScheme === 'dark'
                     ? Colors.dark.error
                     : Colors.error.DEFAULT,
+                opacity: authLoading ? 0.7 : 1,
               },
             ]}
             onPress={handleLogout}
+            disabled={authLoading}
           >
-            <TextThemed style={styles.logoutButtonText}>Logout</TextThemed>
+            <TextThemed style={styles.logoutButtonText}>
+              {authLoading ? 'Logging out...' : 'Logout'}
+            </TextThemed>
           </TouchableOpacity>
 
           <TextThemed

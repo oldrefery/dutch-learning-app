@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { ROUTES, RouteHelpers } from '@/constants/Routes'
 import {
   collectionSharingService,
   type SharedCollectionWords,
@@ -97,12 +98,10 @@ export default function SharedCollectionScreen() {
 
       if (authError || !session) {
         // Save the current deep link URL for deferred deep linking
-        const currentUrl = `/share/${token}`
+        const currentUrl = ROUTES.SHARE_COLLECTION(token)
 
         // Store the intended destination in query params
-        router.replace(
-          `/(auth)/login?redirect=${encodeURIComponent(currentUrl)}`
-        )
+        router.replace(RouteHelpers.createAuthRedirect(currentUrl))
         return
       }
 
@@ -117,8 +116,8 @@ export default function SharedCollectionScreen() {
     } catch (err) {
       console.error('Auth check failed:', err)
       // Also preserve a deep link on error
-      const currentUrl = `/share/${token}`
-      router.replace(`/(auth)/login?redirect=${encodeURIComponent(currentUrl)}`)
+      const currentUrl = ROUTES.SHARE_COLLECTION(token)
+      router.replace(RouteHelpers.createAuthRedirect(currentUrl))
     }
   }, [loadSharedCollection, token])
 
@@ -156,12 +155,12 @@ export default function SharedCollectionScreen() {
       wordCount: sharedData.words.length,
     })
 
-    router.push(`/import/${token}`)
+    router.push(ROUTES.IMPORT_COLLECTION(token))
   }
 
   const handleGoBack = () => {
     // Force proper app initialization through index.tsx
-    router.replace('/')
+    router.replace(ROUTES.ROOT)
   }
 
   if (loading) {

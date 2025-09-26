@@ -14,6 +14,7 @@ import 'react-native-reanimated'
 import { Sentry } from '@/lib/sentry'
 import { AppToast } from '@/components/AppToast'
 import { Colors } from '@/constants/Colors'
+import { ROUTES } from '@/constants/Routes'
 
 import { useColorScheme } from 'react-native'
 import { SimpleAuthProvider } from '@/contexts/SimpleAuthProvider'
@@ -64,7 +65,7 @@ function RootLayoutNav() {
     const handleDeepLink = (url: string) => {
       console.log('🔗 [RootLayoutNav] Deep link received:', url)
 
-      const { hostname, path, queryParams } = Linking.parse(url)
+      const { hostname, path } = Linking.parse(url)
 
       // Handle dutchlearning://share/TOKEN
       if (hostname === 'share' && path) {
@@ -73,7 +74,7 @@ function RootLayoutNav() {
           console.log('🔗 [RootLayoutNav] Navigating to share screen', {
             token,
           })
-          router.push(`/share/${token}`)
+          router.push(ROUTES.SHARE_COLLECTION(token))
         }
       }
     }

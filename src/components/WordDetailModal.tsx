@@ -170,12 +170,10 @@ export default function WordDetailModal({
           >
             <ViewThemed style={styles.dragIndicator} />
             <WordDetailHeader
-              dutchOriginal={word?.dutch_original || null}
               dutchLemma={word?.dutch_lemma || null}
               article={word?.article || null}
               onClose={closeModal}
             />
-
             <GestureDetector gesture={nativeScrollGesture}>
               <Animated.ScrollView
                 style={styles.content}

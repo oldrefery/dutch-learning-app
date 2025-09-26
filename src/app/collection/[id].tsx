@@ -22,6 +22,7 @@ import CollectionReviewButton from '@/components/CollectionReviewButton'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
 import WordDetailModal from '@/components/WordDetailModal'
 import ImageSelector from '@/components/ImageSelector'
+import { ROUTES } from '@/constants/Routes'
 import type { Word } from '@/types/database'
 
 export default function CollectionDetailScreen() {
@@ -95,7 +96,7 @@ export default function CollectionDetailScreen() {
       )
       return
     }
-    router.push('/(tabs)/review')
+    router.push(ROUTES.TABS.REVIEW)
   }
 
   const handleDeleteWord = async (wordId: string) => {
@@ -136,7 +137,7 @@ export default function CollectionDetailScreen() {
     }
 
     if (collection.is_shared) {
-      // Show confirmation dialog for unshare (destructive action)
+      // Show a confirmation dialog for unshare (destructive action)
       Alert.alert(
         'Stop Sharing',
         `Stop sharing "${collection.name}"?\n\nPeople will no longer be able to import words from this collection. You can always share it again later if needed.`,

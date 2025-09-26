@@ -21,7 +21,7 @@ export const createReviewActions = (
       }
 
       const reviewWords = await wordService.getWordsForReview(userId)
-      console.log('📊 Server returned', reviewWords.length, 'words for review')
+
       if (reviewWords.length > 0) {
         reviewWords.forEach(word => {
           console.log(
