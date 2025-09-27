@@ -9,6 +9,8 @@ interface SectionHeaderProps {
   showAddButton?: boolean
   addButtonText?: string
   onAddPress?: () => void
+  showImportButton?: boolean
+  onImportPress?: () => void
 }
 
 export default function SectionHeader({
@@ -16,16 +18,32 @@ export default function SectionHeader({
   showAddButton = false,
   addButtonText = 'Add',
   onAddPress,
+  showImportButton = false,
+  onImportPress,
 }: SectionHeaderProps) {
   return (
     <ViewThemed style={styles.sectionHeader}>
       <TextThemed style={styles.sectionTitle}>{title}</TextThemed>
-      {showAddButton && onAddPress && (
-        <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
-          <Ionicons name="add" size={20} color={Colors.primary.DEFAULT} />
-          <TextThemed style={styles.addButtonText}>{addButtonText}</TextThemed>
-        </TouchableOpacity>
-      )}
+      <ViewThemed style={styles.buttonsContainer}>
+        {showImportButton && onImportPress && (
+          <TouchableOpacity style={styles.importButton} onPress={onImportPress}>
+            <Ionicons
+              name="cloud-download-outline"
+              size={20}
+              color={Colors.primary.DEFAULT}
+            />
+            <TextThemed style={styles.importButtonText}>Import</TextThemed>
+          </TouchableOpacity>
+        )}
+        {showAddButton && onAddPress && (
+          <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
+            <Ionicons name="add" size={20} color={Colors.primary.DEFAULT} />
+            <TextThemed style={styles.addButtonText}>
+              {addButtonText}
+            </TextThemed>
+          </TouchableOpacity>
+        )}
+      </ViewThemed>
     </ViewThemed>
   )
 }
@@ -42,6 +60,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.neutral[900],
   },
+  buttonsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -51,6 +73,20 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.neutral[100],
   },
   addButtonText: {
+    marginLeft: 4,
+    fontSize: 14,
+    fontWeight: '500',
+    color: Colors.primary.DEFAULT,
+  },
+  importButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: Colors.neutral[100],
+  },
+  importButtonText: {
     marginLeft: 4,
     fontSize: 14,
     fontWeight: '500',
