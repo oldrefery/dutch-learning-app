@@ -22,14 +22,6 @@ export const createReviewActions = (
 
       const reviewWords = await wordService.getWordsForReview(userId)
 
-      if (reviewWords.length > 0) {
-        reviewWords.forEach(word => {
-          console.log(
-            `📝 мReview word: ${word.dutch_lemma}, next_review: ${word.next_review_date}`
-          )
-        })
-      }
-
       if (reviewWords.length === 0) {
         set({
           reviewSession: null,
@@ -67,7 +59,15 @@ export const createReviewActions = (
   submitReviewAssessment: async (assessment: ReviewAssessment) => {
     try {
       const { reviewSession, currentWord } = get()
-      if (!reviewSession || !currentWord) return
+      if (!reviewSession || !currentWord) {
+        console.warn('submitReviewAssessment: Missing session or word data')
+        return
+      }
+
+      // Validate assessment object
+      if (!assessment || typeof assessment.assessment !== 'string') {
+        throw new Error('Invalid assessment object')
+      }
 
       console.log(
         `💯 ${assessment.assessment.toUpperCase()} clicked for word:`,
@@ -80,16 +80,31 @@ export const createReviewActions = (
         `💾 Word ${currentWord.dutch_lemma} updated in database with assessment: ${assessment.assessment}`
       )
 
-      // Move to the next word
-      const nextIndex = reviewSession.currentIndex + 1
-      const nextWord = reviewSession.words[nextIndex] || null
+      // Get fresh state after database update to ensure consistency
+      const freshState = get()
+      const freshReviewSession = freshState.reviewSession
 
-      if (nextWord && nextIndex < reviewSession.words.length) {
+      if (!freshReviewSession) {
+        console.warn('Review session was cleared during update')
+        return
+      }
+
+      // Move to the next word
+      const nextIndex = freshReviewSession.currentIndex + 1
+      const nextWord = freshReviewSession.words[nextIndex] || null
+
+      if (nextWord && nextIndex < freshReviewSession.words.length) {
+        // Validate next word before setting
+        if (!nextWord.word_id || !nextWord.dutch_lemma) {
+          console.error('Invalid next word data:', nextWord)
+          throw new Error('Invalid word data in review session')
+        }
+
         // Continue with the next word
         console.log('➡️ Moving to next word:', nextWord.dutch_lemma)
         set({
           reviewSession: {
-            ...reviewSession,
+            ...freshReviewSession,
             currentIndex: nextIndex,
           },
           currentWord: nextWord,
@@ -112,6 +127,7 @@ export const createReviewActions = (
           details: error instanceof Error ? error.message : 'Unknown error',
         },
       })
+      // Don't throw - let caller handle via store state
     }
   },
 

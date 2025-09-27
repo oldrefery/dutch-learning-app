@@ -49,9 +49,7 @@ export default function ReviewScreen() {
     handleDeleteWord,
     handleImageChange,
     restartSession,
-    tapGesture,
-    panGesture,
-    flipCard,
+    handleFlipCard,
     goToNextWord,
     goToPreviousWord,
   } = useReviewScreen()
@@ -109,13 +107,9 @@ export default function ReviewScreen() {
       })
       .onEnd(() => {
         'worklet'
-        scheduleOnRN(() => {
-          const now = Date.now()
-          // flipCard already handles the state change
-          flipCard()
-        })
+        scheduleOnRN(handleFlipCard)
       })
-  }, [flipCard]) // Only depend on flipCard
+  }, [handleFlipCard]) // Only depend on handleFlipCard
 
   const panGestureInstance = useMemo(() => {
     return Gesture.Pan()

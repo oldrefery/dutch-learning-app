@@ -1,20 +1,14 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useAudioPlayer } from '@/hooks/useAudioPlayer'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
-import {
-  Gesture,
-  PanGestureHandlerEventPayload,
-} from 'react-native-gesture-handler'
-import { scheduleOnRN } from 'react-native-worklets'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 
 export const useReviewScreen = () => {
   const {
     reviewSession,
     currentWord,
-    flipCard,
     endReviewSession,
     deleteWord,
     deleteWordFromReview,
@@ -29,12 +23,19 @@ export const useReviewScreen = () => {
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [lastTouchTime, setLastTouchTime] = useState(0)
-  const [isScrolling] = useState(false)
+  const isMountedRef = useRef(true)
 
   // Start review session when component mounts - only once
   useEffect(() => {
     startReviewSession()
   }, []) // Remove startReviewSession from deps to prevent infinite loop
+
+  // Cleanup on unmounting
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   // Reset card state when the word changes
   useEffect(() => {
@@ -68,9 +69,14 @@ export const useReviewScreen = () => {
         // No toast for 'again' - it's a normal retry, not an error
       } catch (error) {
         console.error('Assessment error:', error)
-        ToastService.show('Failed to mark as incorrect', ToastType.ERROR)
+        ToastService.show('Failed to submit assessment', ToastType.ERROR)
       } finally {
-        setIsLoading(false)
+        // Check if the component is still mounted before updating the state
+        try {
+          setIsLoading(false)
+        } catch (stateError) {
+          console.warn('Component unmounted during assessment:', stateError)
+        }
       }
     },
     [currentWord]
@@ -146,76 +152,19 @@ export const useReviewScreen = () => {
     )
   }, [])
 
-  // Create a tap gesture for card flip - remove dependencies to prevent recreation
-  const tapGesture = useCallback(() => {
-    return Gesture.Tap()
-      .maxDuration(200) // Very short tap duration
-      .maxDistance(5) // Very small movement allowed
-      .onBegin(() => {
-        'worklet'
-        console.log('🟢 TAP GESTURE: onBegin triggered')
-      })
-      .onStart(() => {
-        'worklet'
-        console.log('🟡 TAP GESTURE: onStart triggered')
-      })
-      .onEnd(() => {
-        'worklet'
-        try {
-          console.log('🔴 TAP GESTURE: onEnd triggered')
-          scheduleOnRN(() => {
-            const now = Date.now()
-            if (now - lastTouchTime < 300) {
-              console.log('❌ TAP GESTURE: Prevented double tap')
-              return
-            }
-
-            console.log('✅ TAP GESTURE: Flipping card')
-            setLastTouchTime(now)
-            flipCard()
-            setIsFlipped(prev => !prev)
-          })
-        } catch (error) {
-          console.log('💥 TAP GESTURE: Error occurred:', error)
-        }
-      })
-  }, [flipCard])
-
-  // Create a double tap gesture for word detail
-  const doubleTapGesture = useCallback(() => {
-    return Gesture.Tap()
-      .numberOfTaps(2)
-      .maxDuration(400)
-      .maxDistance(10)
-      .onEnd(() => {
-        'worklet'
-        if (!isScrolling) {
-          // This will be handled by the parent component
-          // We'll pass a callback function
-        }
-      })
-  }, [isScrolling])
-
-  // Create a pan gesture for swipe navigation - remove isFlipped dependency
-  const panGesture = useCallback(() => {
-    return Gesture.Pan()
-      .minDistance(20) // Minimum distance to start pan (higher than tap maxDistance)
-      .onEnd((event: PanGestureHandlerEventPayload) => {
-        'worklet'
-        const swipeThreshold = 50
-
-        // Only handle navigation if it's a significant swipe
-        if (Math.abs(event.translationX) > swipeThreshold) {
-          if (event.translationX < -swipeThreshold) {
-            // Swipe left - go to the next word
-            scheduleOnRN(goToNextWord)
-          } else if (event.translationX > swipeThreshold) {
-            // Swipe right - go to the previous word
-            scheduleOnRN(goToPreviousWord)
-          }
-        }
-      })
-  }, [goToNextWord, goToPreviousWord])
+  // Simple flip function for external use
+  const handleFlipCard = useCallback(() => {
+    if (isMountedRef.current) {
+      const now = Date.now()
+      if (now - lastTouchTime < 300) {
+        console.log('❌ Prevented double flip')
+        return
+      }
+      setLastTouchTime(now)
+      setIsFlipped(prev => !prev)
+      console.log('✅ Card flipped')
+    }
+  }, [lastTouchTime])
 
   const reviewWords = reviewSession?.words || []
   const currentIndex = reviewSession?.currentIndex || 0
@@ -250,10 +199,7 @@ export const useReviewScreen = () => {
     handleEndSession,
     handleImageChange,
     restartSession,
-    tapGesture,
-    doubleTapGesture,
-    panGesture,
-    flipCard,
+    handleFlipCard,
     goToNextWord,
     goToPreviousWord,
   }

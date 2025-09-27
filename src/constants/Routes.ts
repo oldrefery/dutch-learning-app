@@ -23,7 +23,6 @@ export const ROUTES = {
 
   // Dynamic routes - use functions for type safety
   COLLECTION_DETAIL: (id: string) => `/collection/${id}` as const,
-  SHARE_COLLECTION: (token: string) => `/share/${token}` as const,
   IMPORT_COLLECTION: (token: string) => `/import/${token}` as const,
 
   // Other routes
@@ -52,7 +51,6 @@ export const RouteHelpers = {
  */
 export type RouteParams = {
   'collection/[id]': { id: string }
-  'share/[token]': { token: string }
   'import/[token]': { token: string }
 }
 

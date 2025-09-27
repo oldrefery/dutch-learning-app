@@ -70,14 +70,17 @@ function RootLayoutNav() {
 
       const { hostname, path } = Linking.parse(url)
 
-      // Handle dutchlearning://share/TOKEN
+      // Handle dutchlearning://share/TOKEN - redirect directly to import screen
       if (hostname === 'share' && path) {
         const token = path.replace('/', '') // Remove the leading slash
         if (token) {
-          console.log('🔗 [RootLayoutNav] Navigating to share screen', {
-            token,
-          })
-          router.push(ROUTES.SHARE_COLLECTION(token))
+          console.log(
+            '🔗 [RootLayoutNav] Navigating directly to import screen',
+            {
+              token,
+            }
+          )
+          router.push(ROUTES.IMPORT_COLLECTION(token))
         }
       }
     }
@@ -123,7 +126,6 @@ function RootLayoutNav() {
             name="collection/[id]"
             options={{ headerShown: true }}
           />
-          <Stack.Screen name="share/[token]" options={{ headerShown: true }} />
           <Stack.Screen name="import/[token]" options={{ headerShown: true }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>
