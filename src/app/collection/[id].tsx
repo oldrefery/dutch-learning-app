@@ -44,6 +44,7 @@ export default function CollectionDetailScreen() {
     updateWordImage,
     shareCollection,
     getCollectionShareStatus,
+    unshareCollection,
   } = useApplicationStore()
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
@@ -207,6 +208,28 @@ export default function CollectionDetailScreen() {
     }
   }
 
+  const handleStopSharing = async () => {
+    if (!collection?.collection_id) {
+      console.log('❌ [handleStopSharing] No collection or collection_id')
+      return
+    }
+
+    setIsSharing(true)
+    try {
+      const success = await unshareCollection(collection.collection_id)
+      if (success) {
+        ToastService.show('Collection sharing stopped', ToastType.SUCCESS)
+      } else {
+        ToastService.show('Failed to stop sharing collection', ToastType.ERROR)
+      }
+    } catch (error) {
+      console.error('❌ [handleStopSharing] Failed to stop sharing:', error)
+      ToastService.show('Failed to stop sharing collection', ToastType.ERROR)
+    } finally {
+      setIsSharing(false)
+    }
+  }
+
   // Clean approach - no need for manual height calculations
 
   if (!collection) {
@@ -245,51 +268,96 @@ export default function CollectionDetailScreen() {
             fontWeight: '600',
             fontSize: 18,
           },
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={handleHeaderAction}
-              disabled={isSharing || !collection?.collection_id}
-              style={[
-                styles.shareButton,
-                {
-                  opacity: isSharing ? 0.6 : 1,
-                },
-              ]}
-              accessibilityLabel={
-                collection?.is_shared
-                  ? 'Copy collection code'
-                  : 'Share collection'
-              }
-              accessibilityHint={
-                collection?.is_shared
-                  ? 'Copy the collection code to clipboard'
-                  : 'Share this collection with others'
-              }
-            >
-              {isSharing ? (
-                <ActivityIndicator
-                  size="small"
-                  color={
-                    colorScheme === 'dark'
-                      ? Colors.dark.tint
-                      : Colors.primary.DEFAULT
-                  }
-                />
-              ) : (
-                <Ionicons
-                  name={
-                    collection?.is_shared ? 'copy-outline' : 'share-outline'
-                  }
-                  size={24}
-                  color={
-                    colorScheme === 'dark'
-                      ? Colors.dark.tint
-                      : Colors.primary.DEFAULT
-                  }
-                />
-              )}
-            </TouchableOpacity>
-          ),
+          headerRight: () =>
+            collection?.is_shared ? (
+              <ViewThemed style={styles.headerButtonsContainer}>
+                <TouchableOpacity
+                  onPress={handleHeaderAction}
+                  disabled={isSharing || !collection?.collection_id}
+                  style={[
+                    styles.shareButton,
+                    {
+                      opacity: isSharing ? 0.6 : 1,
+                    },
+                  ]}
+                  accessibilityLabel="Copy collection code"
+                  accessibilityHint="Copy the collection code to clipboard"
+                >
+                  {isSharing ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={
+                        colorScheme === 'dark'
+                          ? Colors.dark.tint
+                          : Colors.primary.DEFAULT
+                      }
+                    />
+                  ) : (
+                    <Ionicons
+                      name="copy-outline"
+                      size={24}
+                      color={
+                        colorScheme === 'dark'
+                          ? Colors.dark.tint
+                          : Colors.primary.DEFAULT
+                      }
+                    />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleStopSharing}
+                  disabled={isSharing || !collection?.collection_id}
+                  style={[
+                    styles.shareButton,
+                    {
+                      opacity: isSharing ? 0.6 : 1,
+                    },
+                  ]}
+                  accessibilityLabel="Stop sharing collection"
+                  accessibilityHint="Stop sharing this collection"
+                >
+                  <Ionicons
+                    name="person-remove-outline"
+                    size={24}
+                    color={Colors.error.DEFAULT}
+                  />
+                </TouchableOpacity>
+              </ViewThemed>
+            ) : (
+              <TouchableOpacity
+                onPress={handleHeaderAction}
+                disabled={isSharing || !collection?.collection_id}
+                style={[
+                  styles.shareButton,
+                  {
+                    opacity: isSharing ? 0.6 : 1,
+                  },
+                ]}
+                accessibilityLabel="Share collection"
+                accessibilityHint="Share this collection with others"
+              >
+                {isSharing ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={
+                      colorScheme === 'dark'
+                        ? Colors.dark.tint
+                        : Colors.primary.DEFAULT
+                    }
+                  />
+                ) : (
+                  <Ionicons
+                    name="share-outline"
+                    size={24}
+                    color={
+                      colorScheme === 'dark'
+                        ? Colors.dark.tint
+                        : Colors.primary.DEFAULT
+                    }
+                  />
+                )}
+              </TouchableOpacity>
+            ),
         }}
       />
       <ViewThemed
@@ -387,6 +455,11 @@ const styles = StyleSheet.create({
   wordsSection: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  headerButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   shareButton: {
     width: 36,

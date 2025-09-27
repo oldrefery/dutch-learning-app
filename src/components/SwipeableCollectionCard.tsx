@@ -27,6 +27,7 @@ interface SwipeableCollectionCardProps {
   onRename: (collectionId: string, currentName: string) => Promise<void>
   onShare?: (collectionId: string) => void
   onCopyCode?: (collectionId: string) => void
+  onStopSharing?: (collectionId: string) => void
 }
 
 export default function SwipeableCollectionCard({
@@ -37,6 +38,7 @@ export default function SwipeableCollectionCard({
   onRename,
   onShare,
   onCopyCode,
+  onStopSharing,
 }: SwipeableCollectionCardProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
@@ -112,20 +114,25 @@ export default function SwipeableCollectionCard({
 
     if (Platform.OS === 'ios') {
       const options = isShared
-        ? ['Copy Code', 'Cancel']
+        ? ['Copy Code', 'Stop Sharing', 'Cancel']
         : ['Share Collection', 'Cancel']
 
       ActionSheetIOS.showActionSheetWithOptions(
         {
           options,
           cancelButtonIndex: options.length - 1,
+          destructiveButtonIndex: isShared ? 1 : undefined,
           title: collection.name,
         },
         buttonIndex => {
-          if (buttonIndex === 0) {
-            if (isShared && onCopyCode) {
+          if (isShared) {
+            if (buttonIndex === 0 && onCopyCode) {
               onCopyCode(collection.collection_id)
-            } else if (!isShared && onShare) {
+            } else if (buttonIndex === 1 && onStopSharing) {
+              onStopSharing(collection.collection_id)
+            }
+          } else {
+            if (buttonIndex === 0 && onShare) {
               onShare(collection.collection_id)
             }
           }

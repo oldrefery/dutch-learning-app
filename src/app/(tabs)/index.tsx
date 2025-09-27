@@ -45,6 +45,7 @@ export default function CollectionsScreen() {
     renameCollection,
     shareCollection,
     getCollectionShareStatus,
+    unshareCollection,
   } = useApplicationStore()
 
   const handleCollectionPress = (collection: Collection) => {
@@ -176,6 +177,22 @@ export default function CollectionsScreen() {
     }
   }
 
+  const handleStopSharingCollection = async (collectionId: string) => {
+    try {
+      const success = await unshareCollection(collectionId)
+      if (success) {
+        ToastService.show('Collection sharing stopped', ToastType.SUCCESS)
+      } else {
+        ToastService.show('Failed to stop sharing collection', ToastType.ERROR)
+      }
+    } catch {
+      ToastService.show(
+        'Failed to stop sharing collection. Please try again.',
+        ToastType.ERROR
+      )
+    }
+  }
+
   if (error) {
     return (
       <ViewThemed style={styles.container}>
@@ -243,6 +260,7 @@ export default function CollectionsScreen() {
                 onRename={handleRenameCollection}
                 onShare={handleShareCollection}
                 onCopyCode={handleCopyCollectionCode}
+                onStopSharing={handleStopSharingCollection}
               />
             )}
             showsVerticalScrollIndicator={false}
