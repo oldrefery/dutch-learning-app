@@ -1,20 +1,14 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import { createAudioPlayer, AudioPlayer } from 'expo-audio'
+import { useAudioPlayer } from '@/hooks/useAudioPlayer'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
-import {
-  Gesture,
-  PanGestureHandlerEventPayload,
-} from 'react-native-gesture-handler'
-import { scheduleOnRN } from 'react-native-worklets'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 
 export const useReviewScreen = () => {
   const {
     reviewSession,
     currentWord,
-    flipCard,
     endReviewSession,
     deleteWord,
     deleteWordFromReview,
@@ -25,68 +19,35 @@ export const useReviewScreen = () => {
     updateCurrentWordImage,
   } = useApplicationStore()
 
-  const [audioPlayer, setAudioPlayer] = useState<AudioPlayer | null>(null)
+  const { playAudio, isPlaying: isPlayingAudio } = useAudioPlayer()
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [lastTouchTime, setLastTouchTime] = useState(0)
-  const [isScrolling] = useState(false)
-
-  // Initialize audio player
-  useEffect(() => {
-    const initAudio = async () => {
-      try {
-        const player = await createAudioPlayer()
-        setAudioPlayer(player)
-      } catch (error) {
-        console.error('Failed to initialize audio player:', error)
-      }
-    }
-
-    initAudio()
-
-    return () => {
-      // Cleanup handled by the component unmount
-    }
-  }, [])
-
-  // Clean up audio player when component unmounts
-  useEffect(() => {
-    return () => {
-      if (audioPlayer) {
-        audioPlayer.remove()
-      }
-    }
-  }, [audioPlayer])
+  const isMountedRef = useRef(true)
 
   // Start review session when component mounts - only once
   useEffect(() => {
     startReviewSession()
   }, [startReviewSession])
 
+  // Cleanup on unmounting
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
   // Reset card state when the word changes
   useEffect(() => {
     setIsFlipped(false)
   }, [currentWord?.word_id])
 
-  const playAudio = useCallback(
-    async (url?: string) => {
-      if (!audioPlayer || !currentWord?.dutch_lemma) return
-
-      try {
-        const audioUrl =
-          url ||
-          currentWord.tts_url ||
-          `https://api.dictionaryapi.dev/api/v2/entries/en/${currentWord.dutch_lemma}`
-        audioPlayer.replace({
-          uri: audioUrl,
-        })
-        audioPlayer.play()
-      } catch (error) {
-        console.error('Failed to play audio:', error)
-        ToastService.show('Could not play pronunciation', ToastType.ERROR)
-      }
+  const handlePlayAudio = useCallback(
+    (url?: string) => {
+      if (!currentWord?.dutch_lemma) return
+      playAudio(url, currentWord.dutch_lemma, currentWord.tts_url)
     },
-    [audioPlayer, currentWord?.dutch_lemma, currentWord?.tts_url]
+    [playAudio, currentWord?.dutch_lemma, currentWord?.tts_url]
   )
 
   const handleAssessment = useCallback(
@@ -108,9 +69,14 @@ export const useReviewScreen = () => {
         // No toast for 'again' - it's a normal retry, not an error
       } catch (error) {
         console.error('Assessment error:', error)
-        ToastService.show('Failed to mark as incorrect', ToastType.ERROR)
+        ToastService.show('Failed to submit assessment', ToastType.ERROR)
       } finally {
-        setIsLoading(false)
+        // Check if the component is still mounted before updating the state
+        try {
+          setIsLoading(false)
+        } catch (stateError) {
+          console.warn('Component unmounted during assessment:', stateError)
+        }
       }
     },
     [currentWord]
@@ -186,90 +152,43 @@ export const useReviewScreen = () => {
     )
   }, [])
 
-  // Create a tap gesture for card flip
-  const tapGesture = useCallback(() => {
-    return Gesture.Tap()
-      .maxDuration(200) // Very short tap duration
-      .maxDistance(5) // Very small movement allowed
-      .onBegin(() => {
-        'worklet'
-        console.log('🟢 TAP GESTURE: onBegin triggered')
-      })
-      .onStart(() => {
-        'worklet'
-        console.log('🟡 TAP GESTURE: onStart triggered')
-      })
-      .onEnd(() => {
-        'worklet'
-        try {
-          console.log('🔴 TAP GESTURE: onEnd triggered')
-          if (!isScrolling) {
-            const now = Date.now()
-            if (now - lastTouchTime < 300) {
-              console.log('❌ TAP GESTURE: Prevented double tap')
-              return
-            }
+  // Simple flip function for external use
+  const handleFlipCard = useCallback(() => {
+    if (isMountedRef.current) {
+      const now = Date.now()
+      if (now - lastTouchTime < 300) {
+        console.log('❌ Prevented double flip')
+        return
+      }
+      setLastTouchTime(now)
+      setIsFlipped(prev => !prev)
+      console.log('✅ Card flipped')
+    }
+  }, [lastTouchTime])
 
-            console.log('✅ TAP GESTURE: Flipping card')
-            scheduleOnRN(setLastTouchTime, now)
-            scheduleOnRN(flipCard)
-            scheduleOnRN(setIsFlipped, !isFlipped)
-          } else {
-            console.log('❌ TAP GESTURE: Prevented due to scrolling')
-          }
-        } catch (error) {
-          console.log('💥 TAP GESTURE: Error occurred:', error)
-        }
-      })
-  }, [isScrolling, lastTouchTime, flipCard, isFlipped])
-
-  // Create a double tap gesture for word detail
-  const doubleTapGesture = useCallback(() => {
-    return Gesture.Tap()
-      .numberOfTaps(2)
-      .maxDuration(400)
-      .maxDistance(10)
-      .onEnd(() => {
-        'worklet'
-        if (!isScrolling) {
-          // This will be handled by the parent component
-          // We'll pass a callback function
-        }
-      })
-  }, [isScrolling])
-
-  // Create a pan gesture for swipe navigation
-  const panGesture = useCallback(() => {
-    return Gesture.Pan()
-      .minDistance(20) // Minimum distance to start pan (higher than tap maxDistance)
-      .onEnd((event: PanGestureHandlerEventPayload) => {
-        'worklet'
-        const swipeThreshold = 50
-
-        // Only handle navigation if it's a significant swipe
-        if (Math.abs(event.translationX) > swipeThreshold) {
-          if (event.translationX < -swipeThreshold) {
-            // Swipe left - go to the next word
-            scheduleOnRN(goToNextWord)
-          } else if (event.translationX > swipeThreshold) {
-            // Swipe right - go to the previous word
-            scheduleOnRN(goToPreviousWord)
-          }
-        }
-      })
-      .enabled(!isFlipped) // Only enable swiping on the front side
-  }, [isFlipped, goToNextWord, goToPreviousWord])
+  const reviewWords = reviewSession?.words || []
+  const currentIndex = reviewSession?.currentIndex || 0
+  const totalWords = reviewWords.length
+  const currentWordNumber = currentIndex + 1
+  const sessionComplete = currentIndex >= reviewWords.length && !currentWord
 
   return {
-    // State
+    // State from useReviewSession compatibility
     reviewSession,
     currentWord,
-    isFlipped,
+    currentIndex,
+    sessionComplete,
+    reviewWords,
+    totalWords,
+    currentWordNumber,
     isLoading: isLoading || reviewLoading,
-    audioPlayer,
+
+    // useReviewScreen specific state
+    isFlipped,
+    isPlayingAudio,
 
     // Actions
-    playAudio,
+    playAudio: handlePlayAudio,
     handleCorrect,
     handleIncorrect,
     handleAgain,
@@ -280,8 +199,8 @@ export const useReviewScreen = () => {
     handleEndSession,
     handleImageChange,
     restartSession,
-    tapGesture,
-    doubleTapGesture,
-    panGesture,
+    handleFlipCard,
+    goToNextWord,
+    goToPreviousWord,
   }
 }

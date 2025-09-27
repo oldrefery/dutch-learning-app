@@ -74,7 +74,7 @@ export const createWordActions = (
       console.error('Error adding word:', error)
       Sentry.captureException(error, {
         tags: { operation: 'addNewWord' },
-        extra: { word, collectionId, userId },
+        extra: { word, collectionId, userId: get().currentUserId },
       })
       set({
         error: {
@@ -114,7 +114,7 @@ export const createWordActions = (
       console.error('Error saving analyzed word:', error)
       Sentry.captureException(error, {
         tags: { operation: 'saveAnalyzedWord' },
-        extra: { analyzedWord, collectionId, userId },
+        extra: { analyzedWord, collectionId, userId: get().currentUserId },
       })
       set({
         error: {
@@ -131,10 +131,24 @@ export const createWordActions = (
     assessment: ReviewAssessment
   ) => {
     try {
+      // Validate inputs
+      if (!wordId || typeof wordId !== 'string') {
+        throw new Error('Invalid wordId provided')
+      }
+      if (!assessment || typeof assessment.assessment !== 'string') {
+        throw new Error('Invalid assessment provided')
+      }
+
       const updatedWordData = await wordService.updateWordProgress(
         wordId,
         assessment
       )
+
+      // Validate response from service
+      if (!updatedWordData || !updatedWordData.word_id) {
+        throw new Error('Invalid response from word service')
+      }
+
       const currentWords = get().words
       const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
 
@@ -142,6 +156,9 @@ export const createWordActions = (
         const updatedWords = [...currentWords]
         updatedWords[wordIndex] = updatedWordData
         set({ words: updatedWords })
+        console.log(`✅ Word ${wordId} successfully updated in store`)
+      } else {
+        console.warn(`Word ${wordId} not found in current words array`)
       }
     } catch (error) {
       console.error('Error updating word after review:', error)
@@ -155,7 +172,8 @@ export const createWordActions = (
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
-      // Don't throw - let caller handle via store state
+      // Re-throw to allow caller to handle appropriately
+      throw error
     }
   },
 
@@ -267,7 +285,11 @@ export const createWordActions = (
       console.error('❌ [addWordsToCollection] Batch import failed:', error)
       Sentry.captureException(error, {
         tags: { operation: 'addWordsToCollection' },
-        extra: { collectionId, wordCount: words.length, userId },
+        extra: {
+          collectionId,
+          wordCount: words.length,
+          userId: get().currentUserId,
+        },
       })
       set({
         error: {

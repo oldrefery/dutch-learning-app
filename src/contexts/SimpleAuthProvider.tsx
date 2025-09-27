@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import { router } from 'expo-router'
 import { supabase } from '@/lib/supabaseClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { ROUTES } from '@/constants/Routes'
 import type { LoginCredentials, SignupCredentials } from '@/types/AuthTypes'
 
 interface SimpleAuthState {
@@ -13,8 +14,9 @@ interface SimpleAuthActions {
   testSignUp: (credentials: SignupCredentials) => Promise<void>
   testSignIn: (
     credentials: LoginCredentials,
-    redirectUrl?: string
+    redirectUrl?: string | { pathname: string; params?: any }
   ) => Promise<void>
+  signOut: () => Promise<void>
   clearError: () => void
 }
 
@@ -38,6 +40,73 @@ export function SimpleAuthProvider({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const initializeApp = useApplicationStore(state => state.initializeApp)
+
+  // Check for the existing session on app start
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      try {
+        console.log('🔍 [SimpleAuthProvider] Checking for existing session...')
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession()
+
+        if (sessionError) {
+          console.error(
+            '❌ [SimpleAuthProvider] Session check error:',
+            sessionError
+          )
+          return
+        }
+
+        if (session?.user?.id) {
+          console.log(
+            '✅ [SimpleAuthProvider] Found existing session, initializing app...',
+            {
+              userId: session.user.id,
+            }
+          )
+          await initializeApp(session.user.id)
+        } else {
+          console.log('ℹ️ [SimpleAuthProvider] No existing session found')
+          // Initialize with no user to clear any stale data
+          await initializeApp()
+        }
+      } catch (error) {
+        console.error('❌ [SimpleAuthProvider] Error checking session:', error)
+        // Initialize with no user to clear any stale data
+        await initializeApp()
+      }
+    }
+
+    checkExistingSession()
+
+    // Listen for auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 [SimpleAuthProvider] Auth state changed:', {
+        event,
+        userId: session?.user?.id,
+      })
+
+      if (event === 'SIGNED_OUT' || !session?.user?.id) {
+        console.log(
+          '🚪 [SimpleAuthProvider] User signed out, clearing app data'
+        )
+        await initializeApp() // Clear user data
+      } else if (event === 'SIGNED_IN' && session?.user?.id) {
+        console.log(
+          '🚪 [SimpleAuthProvider] User signed in, initializing app data'
+        )
+        await initializeApp(session.user.id)
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [initializeApp])
 
   const testSignUp = async (credentials: SignupCredentials) => {
     try {
@@ -92,7 +161,7 @@ export function SimpleAuthProvider({
 
   const testSignIn = async (
     credentials: LoginCredentials,
-    redirectUrl?: string
+    redirectUrl?: string | { pathname: string; params?: any }
   ) => {
     try {
       setLoading(true)
@@ -122,16 +191,41 @@ export function SimpleAuthProvider({
 
         // Handle deferred deep linking
         if (redirectUrl) {
-          router.replace(redirectUrl)
+          router.replace(redirectUrl as any)
         } else {
           // Navigate to the main app
-          router.replace('/(tabs)')
+          router.replace(ROUTES.TABS.ROOT)
         }
       } else {
         setError('Login successful! (Session created but not stored)')
       }
     } catch {
       setError('An unexpected error occurred. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const signOut = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      console.log('🚪 [SimpleAuthProvider] Signing out user...')
+
+      const { error } = await supabase.auth.signOut()
+
+      if (error) {
+        console.error('❌ [SimpleAuthProvider] Sign out error:', error)
+        setError('Failed to sign out. Please try again.')
+        return
+      }
+
+      console.log('✅ [SimpleAuthProvider] User signed out successfully')
+      // The onAuthStateChange listener will handle clearing the app data
+      router.replace(ROUTES.AUTH.LOGIN)
+    } catch (error) {
+      console.error('❌ [SimpleAuthProvider] Unexpected sign out error:', error)
+      setError('An unexpected error occurred during sign out.')
     } finally {
       setLoading(false)
     }
@@ -146,6 +240,7 @@ export function SimpleAuthProvider({
     error,
     testSignUp,
     testSignIn,
+    signOut,
     clearError,
   }
 

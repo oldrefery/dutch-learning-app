@@ -47,6 +47,10 @@ export interface ApplicationState {
   ) => Promise<void>
   deleteWord: (wordId: string) => Promise<void>
   updateWordImage: (wordId: string, imageUrl: string) => Promise<void>
+  addWordsToCollection: (
+    collectionId: string,
+    words: Partial<Word>[]
+  ) => Promise<boolean>
 
   // Collection actions
   fetchCollections: () => Promise<void>

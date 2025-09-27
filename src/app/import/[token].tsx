@@ -24,9 +24,11 @@ export default function ImportSelectionScreen() {
     selectedCount,
     duplicateCount,
     allAvailableSelected,
+    hideDuplicates,
     setTargetCollectionId,
     toggleWordSelection,
     toggleSelectAll,
+    toggleHideDuplicates,
     handleImport,
     handleGoBack,
   } = useImportSelection(token || '')
@@ -97,9 +99,11 @@ export default function ImportSelectionScreen() {
         selectedCount={selectedCount}
         duplicateCount={duplicateCount}
         allAvailableSelected={allAvailableSelected}
+        hideDuplicates={hideDuplicates}
         onSelectCollection={setTargetCollectionId}
         onToggleSelectAll={toggleSelectAll}
         onToggleWord={toggleWordSelection}
+        onToggleHideDuplicates={toggleHideDuplicates}
       />
     </>
   )

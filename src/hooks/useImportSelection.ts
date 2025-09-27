@@ -5,6 +5,7 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import { collectionSharingService } from '@/services/collectionSharingService'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
+import { ROUTES, RouteHelpers } from '@/constants/Routes'
 import type { Word } from '@/types/database'
 import type { SharedCollectionWords } from '@/services/collectionSharingService'
 
@@ -40,6 +41,7 @@ export function useImportSelection(token: string) {
     null
   )
   const [importing, setImporting] = useState(false)
+  const [hideDuplicates, setHideDuplicates] = useState(true) // Hide duplicates by default
 
   const loadCollections = useCallback(async () => {
     try {
@@ -72,8 +74,9 @@ export function useImportSelection(token: string) {
       >[]
     ) => {
       try {
-        // Get existing words from the store to check duplicates
-        const { words: existingWords } = useApplicationStore.getState()
+        // Get existing words and collections from the store to check duplicates
+        const { words: existingWords, collections: storeCollections } =
+          useApplicationStore.getState()
 
         const selections: WordSelectionItem[] = words.map(word => {
           const existingWord = existingWords.find(
@@ -85,16 +88,25 @@ export function useImportSelection(token: string) {
               (existing.article || '') === (word.article || '')
           )
 
+          // Find collection name by ID
+          let existingInCollectionName: string | undefined
+          if (existingWord?.collection_id) {
+            const collection = storeCollections.find(
+              c => c.collection_id === existingWord.collection_id
+            )
+            existingInCollectionName = collection?.name
+          }
+
           return {
             word,
             selected: !existingWord,
             isDuplicate: !!existingWord,
-            existingInCollection: existingWord?.collection_id || undefined,
+            existingInCollection: existingInCollectionName,
           }
         })
 
         setWordSelections(selections)
-      } catch (err) {
+      } catch {
         const selections: WordSelectionItem[] = words.map(word => ({
           word,
           selected: true,
@@ -136,10 +148,8 @@ export function useImportSelection(token: string) {
       } = await supabase.auth.getSession()
 
       if (authError || !session) {
-        const currentUrl = `/import/${token}`
-        router.replace(
-          `/(auth)/login?redirect=${encodeURIComponent(currentUrl)}`
-        )
+        const currentUrl = ROUTES.IMPORT_COLLECTION(token)
+        router.replace(RouteHelpers.createAuthRedirect(currentUrl))
         return
       }
 
@@ -153,8 +163,8 @@ export function useImportSelection(token: string) {
       await loadCollections()
     } catch (err) {
       console.error('Auth check failed:', err)
-      const currentUrl = `/import/${token}`
-      router.replace(`/(auth)/login?redirect=${encodeURIComponent(currentUrl)}`)
+      const currentUrl = ROUTES.IMPORT_COLLECTION(token)
+      router.replace(RouteHelpers.createAuthRedirect(currentUrl))
     }
   }, [token, loadSharedCollection, loadCollections])
 
@@ -215,19 +225,18 @@ export function useImportSelection(token: string) {
     setImporting(true)
 
     try {
-      const { addNewWord } = useApplicationStore.getState()
-      const results = await Promise.all(
-        selectedWords.map(word => addNewWord(word, targetCollectionId))
+      const { addWordsToCollection } = useApplicationStore.getState()
+      const success = await addWordsToCollection(
+        targetCollectionId,
+        selectedWords
       )
 
-      const successCount = results.filter(result => result.success).length
-
-      if (successCount === selectedWords.length) {
+      if (success) {
         ToastService.show(
-          `Successfully imported ${successCount} word${successCount !== 1 ? 's' : ''}`,
+          `Successfully imported ${selectedWords.length} word${selectedWords.length !== 1 ? 's' : ''}`,
           ToastType.SUCCESS
         )
-        router.replace('/(tabs)/')
+        router.replace(ROUTES.TABS.ROOT)
       } else {
         ToastService.show('Some words could not be imported', ToastType.ERROR)
       }
@@ -246,6 +255,10 @@ export function useImportSelection(token: string) {
     router.back()
   }
 
+  const toggleHideDuplicates = () => {
+    setHideDuplicates(prev => !prev)
+  }
+
   useEffect(() => {
     void checkAuthAndLoad()
   }, [checkAuthAndLoad])
@@ -255,20 +268,27 @@ export function useImportSelection(token: string) {
   const availableWords = wordSelections.filter(item => !item.isDuplicate)
   const allAvailableSelected = availableWords.every(item => item.selected)
 
+  // Filter words based on the hideDuplicates setting
+  const filteredWordSelections = hideDuplicates
+    ? wordSelections.filter(item => !item.isDuplicate)
+    : wordSelections
+
   return {
     loading,
     sharedData,
     error,
-    wordSelections,
+    wordSelections: filteredWordSelections,
     collections,
     targetCollectionId,
     importing,
     selectedCount,
     duplicateCount,
     allAvailableSelected,
+    hideDuplicates,
     setTargetCollectionId,
     toggleWordSelection,
     toggleSelectAll,
+    toggleHideDuplicates,
     handleImport,
     handleGoBack,
   }

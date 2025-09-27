@@ -4,6 +4,7 @@ import { ViewThemed } from '@/components/Themed'
 import { ImportCollectionHeader } from '@/components/ImportCollectionHeader'
 import { ImportTargetSection } from '@/components/ImportTargetSection'
 import { SelectAllToggle } from '@/components/SelectAllToggle'
+import { DuplicateFilterToggle } from '@/components/DuplicateFilterToggle'
 import { WordSelectionList } from '@/components/WordSelectionList'
 import type { SharedCollectionWords } from '@/services/collectionSharingService'
 
@@ -33,9 +34,11 @@ interface ImportScreenContentProps {
   selectedCount: number
   duplicateCount: number
   allAvailableSelected: boolean
+  hideDuplicates: boolean
   onSelectCollection: (collectionId: string) => void
   onToggleSelectAll: () => void
   onToggleWord: (wordId: string) => void
+  onToggleHideDuplicates: () => void
 }
 
 export function ImportScreenContent({
@@ -46,9 +49,11 @@ export function ImportScreenContent({
   selectedCount,
   duplicateCount,
   allAvailableSelected,
+  hideDuplicates,
   onSelectCollection,
   onToggleSelectAll,
   onToggleWord,
+  onToggleHideDuplicates,
 }: ImportScreenContentProps) {
   return (
     <ViewThemed style={styles.container}>
@@ -72,6 +77,12 @@ export function ImportScreenContent({
         <SelectAllToggle
           allSelected={allAvailableSelected}
           onToggle={onToggleSelectAll}
+          duplicateCount={duplicateCount}
+        />
+
+        <DuplicateFilterToggle
+          hideDuplicates={hideDuplicates}
+          onToggle={onToggleHideDuplicates}
           duplicateCount={duplicateCount}
         />
 

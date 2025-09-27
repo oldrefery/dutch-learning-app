@@ -9,11 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Duplicate Word Filter**: Added toggle filter in import screen to hide/show already added words (hidden by default)
+- **Collection Name Display**: Enhanced import screen to show actual collection names instead of collection ID codes
+
 ### Changed
+
+- **Share Link Flow**: Streamlined collection sharing by redirecting share deep links directly to import screen, bypassing redundant preview screen
 
 ### Fixed
 
+- **Review Screen Gesture Crashes**: Resolved critical crashes during card flip gestures in review mode
+  - Fixed scheduleOnRN implementation with proper worklet context handling
+  - Simplified gesture architecture following proven patterns from main branch
+  - Implemented proper component unmounting protection for async operations
+- **Import Screen UX**: Improved word selection interface with duplicate detection and collection name resolution
+
 ### Technical
+
+- **Gesture Handler Architecture**: Refactored review screen gesture handling to use inline gesture creation with scheduleOnRN from react-native-worklets
+- **Import Screen Logic**: Enhanced duplicate word detection with proper collection name resolution from store collections
+- **Deep Link Optimization**: Removed redundant share preview screen, implementing direct navigation to import functionality
+- **Error Handling**: Added comprehensive async operation protection with component lifecycle management
 
 ---
 

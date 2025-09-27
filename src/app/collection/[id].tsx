@@ -22,7 +22,10 @@ import CollectionReviewButton from '@/components/CollectionReviewButton'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
 import WordDetailModal from '@/components/WordDetailModal'
 import ImageSelector from '@/components/ImageSelector'
+import { ROUTES } from '@/constants/Routes'
 import type { Word } from '@/types/database'
+
+const SHARE_ERROR_MESSAGE = 'Failed to share collection'
 
 export default function CollectionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -95,7 +98,7 @@ export default function CollectionDetailScreen() {
       )
       return
     }
-    router.push('/(tabs)/review')
+    router.push(ROUTES.TABS.REVIEW)
   }
 
   const handleDeleteWord = async (wordId: string) => {
@@ -136,7 +139,7 @@ export default function CollectionDetailScreen() {
     }
 
     if (collection.is_shared) {
-      // Show confirmation dialog for unshare (destructive action)
+      // Show a confirmation dialog for unshare (destructive action)
       Alert.alert(
         'Stop Sharing',
         `Stop sharing "${collection.name}"?\n\nPeople will no longer be able to import words from this collection. You can always share it again later if needed.`,
@@ -196,7 +199,7 @@ export default function CollectionDetailScreen() {
 
       if (!shareToken) {
         console.log('❌ [handleShareToggle] No share token returned')
-        ToastService.show('Failed to share collection', ToastType.ERROR)
+        ToastService.show(SHARE_ERROR_MESSAGE, ToastType.ERROR)
         return
       }
 
@@ -220,7 +223,7 @@ export default function CollectionDetailScreen() {
         ToastService.show('Collection shared successfully', ToastType.SUCCESS)
       } else {
         ToastService.show(
-          shareResult.error || 'Failed to share collection',
+          shareResult.error || SHARE_ERROR_MESSAGE,
           ToastType.ERROR
         )
       }

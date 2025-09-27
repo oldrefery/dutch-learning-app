@@ -6,24 +6,20 @@ import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 
 interface WordHeaderProps {
-  dutchOriginal: string | null
   dutchLemma: string | null
   article: string | null
   onClose: () => void
 }
 
 export default function WordHeader({
-  dutchOriginal,
   dutchLemma,
   article,
   onClose,
 }: WordHeaderProps) {
-  const displayWord = dutchOriginal || dutchLemma
-
   return (
     <View style={styles.header}>
       <View style={styles.headerContent}>
-        <TextThemed style={styles.wordTitle}>{displayWord}</TextThemed>
+        <TextThemed style={styles.wordTitle}>{dutchLemma}</TextThemed>
         {article && (
           <TextThemed style={styles.articleText}>({article})</TextThemed>
         )}

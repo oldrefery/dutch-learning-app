@@ -14,9 +14,11 @@ import 'react-native-reanimated'
 import { Sentry } from '@/lib/sentry'
 import { AppToast } from '@/components/AppToast'
 import { Colors } from '@/constants/Colors'
+import { ROUTES } from '@/constants/Routes'
 
 import { useColorScheme } from 'react-native'
 import { SimpleAuthProvider } from '@/contexts/SimpleAuthProvider'
+import { AudioProvider } from '@/contexts/AudioContext'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -50,7 +52,9 @@ export default Sentry.wrap(function RootLayout() {
   // SIMPLE: No session handling, just show auth screens with a simple provider
   return (
     <SimpleAuthProvider>
-      <RootLayoutNav />
+      <AudioProvider>
+        <RootLayoutNav />
+      </AudioProvider>
     </SimpleAuthProvider>
   )
 })
@@ -64,16 +68,19 @@ function RootLayoutNav() {
     const handleDeepLink = (url: string) => {
       console.log('🔗 [RootLayoutNav] Deep link received:', url)
 
-      const { hostname, path, queryParams } = Linking.parse(url)
+      const { hostname, path } = Linking.parse(url)
 
-      // Handle dutchlearning://share/TOKEN
+      // Handle dutchlearning://share/TOKEN - redirect directly to import screen
       if (hostname === 'share' && path) {
         const token = path.replace('/', '') // Remove the leading slash
         if (token) {
-          console.log('🔗 [RootLayoutNav] Navigating to share screen', {
-            token,
-          })
-          router.push(`/share/${token}`)
+          console.log(
+            '🔗 [RootLayoutNav] Navigating directly to import screen',
+            {
+              token,
+            }
+          )
+          router.push(ROUTES.IMPORT_COLLECTION(token))
         }
       }
     }
@@ -119,7 +126,6 @@ function RootLayoutNav() {
             name="collection/[id]"
             options={{ headerShown: true }}
           />
-          <Stack.Screen name="share/[token]" options={{ headerShown: true }} />
           <Stack.Screen name="import/[token]" options={{ headerShown: true }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>

@@ -12,6 +12,7 @@ import { AuthInput } from '@/components/auth/AuthInput'
 import { AuthButton } from '@/components/auth/AuthButton'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Colors } from '@/constants/Colors'
+import { ROUTES } from '@/constants/Routes'
 
 export default function SignupScreen() {
   const [email, setEmail] = useState('')
@@ -88,7 +89,7 @@ export default function SignupScreen() {
         confirmPassword,
       })
 
-      router.push('/(auth)/login')
+      router.push(ROUTES.AUTH.LOGIN)
     } catch (error) {
       console.log('Signup failed:', error)
     }
