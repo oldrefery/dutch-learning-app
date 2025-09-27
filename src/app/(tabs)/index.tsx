@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
+import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { router } from 'expo-router'
@@ -8,6 +9,7 @@ import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import CreateCollectionModal from '@/components/CreateCollectionModal'
 import RenameCollectionModal from '@/components/RenameCollectionModal'
+import ImportByTokenModal from '@/components/ImportByTokenModal'
 import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
 import StatsCard from '@/components/StatsCard'
 import SectionHeader from '@/components/SectionHeader'
@@ -18,6 +20,7 @@ import type { Collection } from '@/types/database'
 
 export default function CollectionsScreen() {
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
   const [renameModal, setRenameModal] = useState<{
     visible: boolean
     collectionId: string
@@ -40,6 +43,9 @@ export default function CollectionsScreen() {
     clearError,
     deleteCollection,
     renameCollection,
+    shareCollection,
+    getCollectionShareStatus,
+    unshareCollection,
   } = useApplicationStore()
 
   const handleCollectionPress = (collection: Collection) => {
@@ -136,6 +142,57 @@ export default function CollectionsScreen() {
     clearError()
   }
 
+  const handleShareCollection = async (collectionId: string) => {
+    try {
+      const shareToken = await shareCollection(collectionId)
+      if (shareToken) {
+        await Clipboard.setStringAsync(shareToken)
+        ToastService.show(
+          'Collection shared and code copied!',
+          ToastType.SUCCESS
+        )
+      }
+    } catch {
+      ToastService.show(
+        'Failed to share collection. Please try again.',
+        ToastType.ERROR
+      )
+    }
+  }
+
+  const handleCopyCollectionCode = async (collectionId: string) => {
+    try {
+      const shareStatus = await getCollectionShareStatus(collectionId)
+      if (shareStatus?.share_token) {
+        await Clipboard.setStringAsync(shareStatus.share_token)
+        ToastService.show('Collection code copied!', ToastType.SUCCESS)
+      } else {
+        ToastService.show('No share code available', ToastType.ERROR)
+      }
+    } catch {
+      ToastService.show(
+        'Failed to copy collection code. Please try again.',
+        ToastType.ERROR
+      )
+    }
+  }
+
+  const handleStopSharingCollection = async (collectionId: string) => {
+    try {
+      const success = await unshareCollection(collectionId)
+      if (success) {
+        ToastService.show('Collection sharing stopped', ToastType.SUCCESS)
+      } else {
+        ToastService.show('Failed to stop sharing collection', ToastType.ERROR)
+      }
+    } catch {
+      ToastService.show(
+        'Failed to stop sharing collection. Please try again.',
+        ToastType.ERROR
+      )
+    }
+  }
+
   if (error) {
     return (
       <ViewThemed style={styles.container}>
@@ -180,6 +237,8 @@ export default function CollectionsScreen() {
           showAddButton={true}
           addButtonText="Create Collection"
           onAddPress={() => setShowCreateModal(true)}
+          showImportButton={true}
+          onImportPress={() => setShowImportModal(true)}
         />
         {collectionsLoading ? (
           <ViewThemed style={styles.loadingContainer}>
@@ -199,6 +258,9 @@ export default function CollectionsScreen() {
                 onPress={() => handleCollectionPress(item)}
                 onDelete={handleDeleteCollection}
                 onRename={handleRenameCollection}
+                onShare={handleShareCollection}
+                onCopyCode={handleCopyCollectionCode}
+                onStopSharing={handleStopSharingCollection}
               />
             )}
             showsVerticalScrollIndicator={false}
@@ -229,6 +291,11 @@ export default function CollectionsScreen() {
         currentName={renameModal.currentName}
         onClose={handleCloseRenameModal}
         onRename={handleModalRename}
+      />
+
+      <ImportByTokenModal
+        visible={showImportModal}
+        onClose={() => setShowImportModal(false)}
       />
     </ViewThemed>
   )

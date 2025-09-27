@@ -4,6 +4,8 @@ import {
   TouchableOpacity,
   Alert,
   useColorScheme,
+  ActionSheetIOS,
+  Platform,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
@@ -23,6 +25,9 @@ interface SwipeableCollectionCardProps {
   onPress: () => void
   onDelete: (collectionId: string) => void
   onRename: (collectionId: string, currentName: string) => Promise<void>
+  onShare?: (collectionId: string) => void
+  onCopyCode?: (collectionId: string) => void
+  onStopSharing?: (collectionId: string) => void
 }
 
 export default function SwipeableCollectionCard({
@@ -31,6 +36,9 @@ export default function SwipeableCollectionCard({
   onPress,
   onDelete,
   onRename,
+  onShare,
+  onCopyCode,
+  onStopSharing,
 }: SwipeableCollectionCardProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
@@ -101,6 +109,44 @@ export default function SwipeableCollectionCard({
     }
   }
 
+  const handleLongPress = () => {
+    const isShared = collection.is_shared
+
+    if (Platform.OS === 'ios') {
+      const options = isShared
+        ? ['Copy Code', 'Stop Sharing', 'Cancel']
+        : ['Share Collection', 'Cancel']
+
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex: options.length - 1,
+          destructiveButtonIndex: isShared ? 1 : undefined,
+          title: collection.name,
+        },
+        buttonIndex => {
+          if (isShared) {
+            if (buttonIndex === 0 && onCopyCode) {
+              onCopyCode(collection.collection_id)
+            } else if (buttonIndex === 1 && onStopSharing) {
+              onStopSharing(collection.collection_id)
+            }
+          } else {
+            if (buttonIndex === 0 && onShare) {
+              onShare(collection.collection_id)
+            }
+          }
+        }
+      )
+    } else {
+      if (isShared && onCopyCode) {
+        onCopyCode(collection.collection_id)
+      } else if (!isShared && onShare) {
+        onShare(collection.collection_id)
+      }
+    }
+  }
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: translateX.value }],
@@ -131,6 +177,16 @@ export default function SwipeableCollectionCard({
       // Only trigger tap if card is in resting position
       if (Math.abs(translateX.value) < 5) {
         scheduleOnRN(onPress)
+      }
+    })
+
+  const longPressGesture = Gesture.LongPress()
+    .minDuration(500)
+    .onStart(() => {
+      'worklet'
+      // Only trigger long press if card is in resting position
+      if (Math.abs(translateX.value) < 5) {
+        scheduleOnRN(handleLongPress)
       }
     })
 
@@ -174,7 +230,7 @@ export default function SwipeableCollectionCard({
     })
 
   // Use Race to ensure only one gesture can win
-  const combinedGesture = Gesture.Race(panGesture, tapGesture)
+  const combinedGesture = Gesture.Race(panGesture, longPressGesture, tapGesture)
 
   return (
     <ViewThemed style={styles.container}>

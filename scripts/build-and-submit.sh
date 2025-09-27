@@ -171,15 +171,16 @@ echo -e "${BLUE}Building for platform(s): ${PLATFORM}${NC}"
 if [[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]]; then
     echo -e "${GREEN}Building iOS app locally...${NC}"
     echo -e "${YELLOW}Running: eas build --platform ios --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa${NC}"
-    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive
-    echo -e "${GREEN}✅ iOS build completed!${NC}"
+#    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive
+    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive --json > builds/ios-build-metadata.json    echo -e "${GREEN}✅ iOS build completed!${NC}"
 fi
 
 # Build Android
 if [[ "$PLATFORM" == "android" || "$PLATFORM" == "both" ]]; then
     echo -e "${GREEN}Building Android app locally...${NC}"
     echo -e "${YELLOW}Running: eas build --platform android --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.aab${NC}"
-    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive
+#    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive
+    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive --json > builds/android-build-metadata.json
     echo -e "${GREEN}✅ Android build completed!${NC}"
 fi
 
