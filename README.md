@@ -122,6 +122,22 @@ The core of the app is the intelligent word addition flow. Instead of manual dat
 - **Usage Statistics**: Toast messages show how many times a word has been cached
 - **Timestamp Display**: Subtle indication of when data was cached
 
+### 📤 Collection Sharing System
+
+Complete collection sharing functionality that allows users to share their word collections with others:
+
+- **Secure Sharing**: UUID-based share tokens with proper access controls and RLS policies
+- **Share Button UI**: Intuitive sharing interface with visual feedback and user-friendly UX
+- **Import Flow**: Streamlined import experience with duplicate detection and word selection
+- **Direct Deep Links**: Share links bypass preview screens and navigate directly to import functionality
+
+#### Import Screen Features:
+
+- **Duplicate Word Filter**: Toggle to hide/show already added words (hidden by default for cleaner UX)
+- **Collection Name Display**: Shows actual collection names instead of technical IDs
+- **Smart Word Selection**: Automatic detection and marking of duplicate words with collection source
+- **Batch Import**: Select multiple words for efficient batch importing to target collections
+
 ### New User Experience:
 
 For new users who don&apos;t have any collections yet, the app automatically creates a default collection called &quot;My Dutch Words&quot; when they add their first word. This eliminates the barrier of having to create a collection before being able to add words, making the onboarding experience seamless and intuitive.
