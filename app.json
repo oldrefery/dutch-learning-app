@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.oldrefery.dutch-learning-app",
-      "buildNumber": "28",
+      "buildNumber": "29",
       "icon": {
         "light": "./src/assets/icons/ios-light.png",
         "dark": "./src/assets/icons/ios-dark.png",
@@ -34,7 +34,7 @@
       "appleTeamId": "7FQ395U52U"
     },
     "android": {
-      "versionCode": 28,
+      "versionCode": 29,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
