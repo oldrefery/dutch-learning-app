@@ -188,8 +188,61 @@ export const wordService = {
     return data
   },
 
+  // Check if word with same semantic properties already exists
+  async checkSemanticDuplicate(
+    userId: string,
+    dutchLemma: string,
+    partOfSpeech: string = 'unknown',
+    article: string = ''
+  ): Promise<Word | null> {
+    // Normalize article: empty string should be treated as null for query
+    const normalizedArticle = article || null
+    const normalizedPartOfSpeech = partOfSpeech || 'unknown'
+
+    let query = supabase
+      .from('words')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('dutch_lemma', dutchLemma)
+      .eq('part_of_speech', normalizedPartOfSpeech)
+
+    // Handle null vs empty string for article
+    if (normalizedArticle === null) {
+      query = query.is('article', null)
+    } else {
+      query = query.eq('article', normalizedArticle)
+    }
+
+    const { data, error } = await query.single()
+
+    if (error && error.code !== 'PGRST116') {
+      // PGRST116 is "not found" which is expected when no duplicate exists
+      throw new Error(`Failed to check for duplicate: ${error.message}`)
+    }
+
+    return data || null
+  },
+
   // Add new word
   async addWord(wordData: Partial<Word>, userId: string) {
+    // Check for semantic duplicate before inserting
+    const dutchLemma = wordData.dutch_lemma || wordData.dutch_original || ''
+    const partOfSpeech = wordData.part_of_speech || 'unknown'
+    const article = wordData.article || '' // Keep as empty string for consistency
+
+    const existingWord = await this.checkSemanticDuplicate(
+      userId,
+      dutchLemma,
+      partOfSpeech,
+      article
+    )
+
+    if (existingWord) {
+      throw new Error(
+        `Word "${dutchLemma}" with the same properties already exists in your vocabulary`
+      )
+    }
+
     // Create a clean word object with only valid database fields
     const wordToInsert = {
       dutch_original: wordData.dutch_original || '',

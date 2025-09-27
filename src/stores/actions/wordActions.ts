@@ -112,13 +112,28 @@ export const createWordActions = (
       return newWord
     } catch (error) {
       console.error('Error saving analyzed word:', error)
-      Sentry.captureException(error, {
-        tags: { operation: 'saveAnalyzedWord' },
-        extra: { analyzedWord, collectionId, userId: get().currentUserId },
-      })
+
+      // Check if it's a duplicate word error
+      const isDuplicateError =
+        error instanceof Error &&
+        (error.message.includes('already exists in your vocabulary') ||
+          error.message.includes(
+            'duplicate key value violates unique constraint'
+          ))
+
+      // Only log to Sentry if it's not a user-facing duplicate error
+      if (!isDuplicateError) {
+        Sentry.captureException(error, {
+          tags: { operation: 'saveAnalyzedWord' },
+          extra: { analyzedWord, collectionId, userId: get().currentUserId },
+        })
+      }
+
       set({
         error: {
-          message: 'Failed to save analyzed word',
+          message: isDuplicateError
+            ? 'Word already exists'
+            : 'Failed to save analyzed word',
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
