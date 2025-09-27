@@ -9,27 +9,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Duplicate Word Filter**: Added toggle filter in import screen to hide/show already added words (hidden by default)
-- **Collection Name Display**: Enhanced import screen to show actual collection names instead of collection ID codes
-
 ### Changed
-
-- **Share Link Flow**: Streamlined collection sharing by redirecting share deep links directly to import screen, bypassing redundant preview screen
 
 ### Fixed
 
-- **Review Screen Gesture Crashes**: Resolved critical crashes during card flip gestures in review mode
-  - Fixed scheduleOnRN implementation with proper worklet context handling
-  - Simplified gesture architecture following proven patterns from main branch
-  - Implemented proper component unmounting protection for async operations
-- **Import Screen UX**: Improved word selection interface with duplicate detection and collection name resolution
+### Technical
+
+---
+
+## [1.1.0 Build 29] - 2025-09-27
+
+### Added
+
+- **In-App Collection Import**: Complete in-app collection sharing without deeplinks
+  - Import modal with collection code input and validation
+  - Long press context menus for collection sharing actions
+  - Stop sharing functionality with confirmation dialogs
+- **Enhanced Collection Management**: Improved collection sharing UX
+  - Copy collection code directly from collection cards and detail screens
+  - Start/stop sharing toggle with visual feedback
+  - Native context menus (iOS ActionSheet, Android fallback)
+
+### Changed
+
+- **Collection Detail Screen Architecture**: Refactored large screen component following 2025 best practices
+  - Extracted business logic into `useCollectionDetail` custom hook
+  - Split UI into `CollectionDetailHeader` and `CollectionContent` components
+  - Reduced cognitive complexity from 23 to under 15
+- **Modern API Usage**: Updated to expo-clipboard for better performance and compatibility
+
+### Fixed
+
+- **Modal UX Improvements**: Enhanced import modal appearance and behavior
+  - Auto-focus on input field when modal opens
+  - Improved dark theme contrast with elevated background colors
+  - Better visual separation with borders and shadows
+- **Duplicate Detection**: Pre-import validation prevents importing existing words
+- **Error Messages**: User-friendly error messages for invalid collection codes
 
 ### Technical
 
-- **Gesture Handler Architecture**: Refactored review screen gesture handling to use inline gesture creation with scheduleOnRN from react-native-worklets
-- **Import Screen Logic**: Enhanced duplicate word detection with proper collection name resolution from store collections
-- **Deep Link Optimization**: Removed redundant share preview screen, implementing direct navigation to import functionality
-- **Error Handling**: Added comprehensive async operation protection with component lifecycle management
+- **Component Architecture**: Implemented separation of concerns following Expo Router 2025 patterns
+  - Business logic isolated in custom hooks
+  - UI components focused on presentation only
+  - Screen components handle navigation only
+- **TypeScript Improvements**: Enhanced type safety without any type usage
+- **Performance Optimizations**: Reduced bundle size through better component composition
 
 ---
 

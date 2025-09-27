@@ -126,10 +126,10 @@ The core of the app is the intelligent word addition flow. Instead of manual dat
 
 Complete collection sharing functionality that allows users to share their word collections with others:
 
+- **In-App Collection Import**: Import collections directly in the app using collection codes (no deeplinks required)
 - **Secure Sharing**: UUID-based share tokens with proper access controls and RLS policies
-- **Share Button UI**: Intuitive sharing interface with visual feedback and user-friendly UX
-- **Import Flow**: Streamlined import experience with duplicate detection and word selection
-- **Direct Deep Links**: Share links bypass preview screens and navigate directly to import functionality
+- **Native Sharing UX**: Long press collections for context menus with copy/share/stop sharing options
+- **Enhanced Import Flow**: Streamlined import experience with duplicate detection and word selection
 
 #### Import Screen Features:
 
@@ -212,6 +212,26 @@ The application uses a modern Backend-as-a-Service (BaaS) architecture, which mi
 - Analysis notes system with HIG compliance ✅
 - Smart word analysis cache with 80-90% cost reduction ✅
 - Apple HIG cache UI with status indicators ✅
+
+## Recent Updates (Build 29)
+
+### ✨ New Features
+
+- **In-App Collection Import**: Complete in-app collection sharing without deeplinks required
+- **Enhanced Sharing UX**: Native context menus and improved collection management controls
+- **Smart Import Modal**: Auto-focus input, duplicate detection, and better error handling
+
+### 🛠️ Architecture Improvements
+
+- **Modern Component Structure**: Refactored collection screens following 2025 best practices
+- **Custom Hooks**: Extracted business logic into reusable `useCollectionDetail` hook
+- **Component Composition**: Split large screens into focused, testable components
+
+### 🎨 UX Enhancements
+
+- **Dark Theme Support**: Improved modal contrast and HIG-compliant styling
+- **Native iOS Menus**: ActionSheetIOS integration for collection actions
+- **Visual Feedback**: Better loading states and error messaging
 
 ## 8. Documentation
 
