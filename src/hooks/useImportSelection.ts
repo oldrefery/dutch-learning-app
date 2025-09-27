@@ -106,7 +106,7 @@ export function useImportSelection(token: string) {
         })
 
         setWordSelections(selections)
-      } catch (err) {
+      } catch {
         const selections: WordSelectionItem[] = words.map(word => ({
           word,
           selected: true,
@@ -268,7 +268,7 @@ export function useImportSelection(token: string) {
   const availableWords = wordSelections.filter(item => !item.isDuplicate)
   const allAvailableSelected = availableWords.every(item => item.selected)
 
-  // Filter words based on hideDuplicates setting
+  // Filter words based on the hideDuplicates setting
   const filteredWordSelections = hideDuplicates
     ? wordSelections.filter(item => !item.isDuplicate)
     : wordSelections

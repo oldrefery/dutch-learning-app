@@ -28,7 +28,7 @@ export const useReviewScreen = () => {
   // Start review session when component mounts - only once
   useEffect(() => {
     startReviewSession()
-  }, []) // Remove startReviewSession from deps to prevent infinite loop
+  }, [startReviewSession])
 
   // Cleanup on unmounting
   useEffect(() => {
