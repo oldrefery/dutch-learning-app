@@ -23,6 +23,9 @@ interface CollectionContentProps {
   onWordPress: (word: Word) => void
   onDeleteWord: (wordId: string) => void
   onStartReview: () => void
+  onMoveToCollection?: (wordId: string) => void
+  moveModalVisible?: boolean
+  wordBeingMoved?: string | null
 }
 
 export default function CollectionContent({
@@ -33,6 +36,9 @@ export default function CollectionContent({
   onWordPress,
   onDeleteWord,
   onStartReview,
+  onMoveToCollection,
+  moveModalVisible,
+  wordBeingMoved,
 }: CollectionContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
 
@@ -86,6 +92,9 @@ export default function CollectionContent({
           index={index}
           onPress={() => onWordPress(item)}
           onDelete={onDeleteWord}
+          onMoveToCollection={onMoveToCollection}
+          moveModalVisible={moveModalVisible}
+          wordBeingMoved={wordBeingMoved}
         />
       )}
       ListEmptyComponent={renderEmptyComponent}

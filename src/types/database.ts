@@ -2,6 +2,7 @@
 
 // SRS Assessment types
 import { SRSAssessmentType } from '@/constants/SRSConstants'
+import { ExpressionType } from './ExpressionTypes'
 
 export interface Collection {
   collection_id: string
@@ -40,7 +41,7 @@ export interface Word {
   is_irregular: boolean
   is_reflexive: boolean
   is_expression: boolean
-  expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound'
+  expression_type?: ExpressionType
   is_separable: boolean // True for separable verbs (opgeven, aankomen)
   prefix_part: string | null // The prefix part (op, aan, uit, etc.)
   root_verb: string | null // The root verb part (geven, komen, gaan)
@@ -72,7 +73,7 @@ export interface GeminiWordAnalysis {
   is_irregular?: boolean
   is_reflexive?: boolean
   is_expression?: boolean
-  expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound'
+  expression_type?: ExpressionType
   is_separable?: boolean
   prefix_part?: string
   root_verb?: string

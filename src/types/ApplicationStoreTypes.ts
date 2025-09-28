@@ -8,6 +8,7 @@ import type {
   WordTranslations,
   WordExample,
 } from './database'
+import { ExpressionType } from './ExpressionTypes'
 
 export type { AppError }
 
@@ -47,6 +48,10 @@ export interface ApplicationState {
   ) => Promise<void>
   deleteWord: (wordId: string) => Promise<void>
   updateWordImage: (wordId: string, imageUrl: string) => Promise<void>
+  moveWordToCollection: (
+    wordId: string,
+    newCollectionId: string
+  ) => Promise<Word>
   addWordsToCollection: (
     collectionId: string,
     words: Partial<Word>[]

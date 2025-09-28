@@ -5,6 +5,7 @@ import {
   Alert,
   useColorScheme,
 } from 'react-native'
+import * as Haptics from 'expo-haptics'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   useSharedValue,
@@ -24,6 +25,9 @@ interface SwipeableWordItemProps {
   index: number
   onPress: () => void
   onDelete: (wordId: string) => void
+  onMoveToCollection?: (wordId: string) => void
+  moveModalVisible?: boolean
+  wordBeingMoved?: string | null
 }
 
 export default function SwipeableWordItem({
@@ -31,12 +35,18 @@ export default function SwipeableWordItem({
   index,
   onPress,
   onDelete,
+  onMoveToCollection,
+  moveModalVisible,
+  wordBeingMoved,
 }: SwipeableWordItemProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
   const opacity = useSharedValue(0)
   const translateY = useSharedValue(20)
   const [shouldShowDeleteDialog, setShouldShowDeleteDialog] = useState(false)
+  const [shouldShowMoveDialog, setShouldShowMoveDialog] = useState(false)
+  const [wasModalVisibleForThisWord, setWasModalVisibleForThisWord] =
+    useState(false)
 
   const handleDelete = useCallback(() => {
     Alert.alert(
@@ -72,6 +82,17 @@ export default function SwipeableWordItem({
     translateX,
   ])
 
+  const resetPosition = useCallback(() => {
+    translateX.value = withSpring(0)
+  }, [translateX])
+
+  const handleMoveToCollection = useCallback(() => {
+    if (!onMoveToCollection) return
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+    onMoveToCollection(word.word_id)
+  }, [word.word_id, onMoveToCollection])
+
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 300 }, () => {})
     translateY.value = withTiming(0, { duration: 400 }, () => {})
@@ -83,6 +104,28 @@ export default function SwipeableWordItem({
       setShouldShowDeleteDialog(false)
     }
   }, [shouldShowDeleteDialog, handleDelete])
+
+  useEffect(() => {
+    if (shouldShowMoveDialog) {
+      handleMoveToCollection()
+      setShouldShowMoveDialog(false)
+    }
+  }, [shouldShowMoveDialog, handleMoveToCollection])
+
+  // Track when modal becomes visible for this word
+  useEffect(() => {
+    if (moveModalVisible && wordBeingMoved === word.word_id) {
+      setWasModalVisibleForThisWord(true)
+    }
+  }, [moveModalVisible, wordBeingMoved, word.word_id])
+
+  // Reset position when modal is closed and this word had the modal open
+  useEffect(() => {
+    if (!moveModalVisible && wasModalVisibleForThisWord) {
+      resetPosition()
+      setWasModalVisibleForThisWord(false)
+    }
+  }, [moveModalVisible, wasModalVisibleForThisWord, resetPosition])
 
   const getStatusStyle = () => {
     if (word.repetition_count > 2)
@@ -140,10 +183,18 @@ export default function SwipeableWordItem({
   })
 
   const deleteButtonAnimatedStyle = useAnimatedStyle(() => {
-    // Only expand on long swipe left (>= 150px)
+    // Only expand on the long swipe left (>= 150 px)
     const isLongSwipeLeft = translateX.value <= -150
     return {
       width: isLongSwipeLeft ? Math.abs(translateX.value) + 80 : 80,
+    }
+  })
+
+  const moveButtonAnimatedStyle = useAnimatedStyle(() => {
+    // Only expand on the long swipe right (>= 150 px)
+    const isLongSwipeRight = translateX.value >= 150
+    return {
+      width: isLongSwipeRight ? Math.abs(translateX.value) + 80 : 80,
     }
   })
 
@@ -170,7 +221,17 @@ export default function SwipeableWordItem({
       'worklet'
       const { translationX } = event
 
-      if (translationX < -150) {
+      if (translationX > 150 && onMoveToCollection) {
+        // Long swipe right - show move to collection dialog
+        translateX.value = withSpring(300, {}, () => {
+          'worklet'
+          // Show the move dialog after animation
+          scheduleOnRN(setShouldShowMoveDialog, true)
+        })
+      } else if (translationX > 80 && onMoveToCollection) {
+        // Short swipe right - show the move button
+        translateX.value = withSpring(100)
+      } else if (translationX < -150) {
         // Long swipe left - show deletion dialog
         translateX.value = withSpring(-300, {}, () => {
           'worklet'
@@ -191,7 +252,22 @@ export default function SwipeableWordItem({
 
   return (
     <ViewThemed style={styles.container}>
-      {/* Delete a button background */}
+      {/* Move button background */}
+      {onMoveToCollection && (
+        <Animated.View style={[styles.moveBackground, moveButtonAnimatedStyle]}>
+          <TouchableOpacity
+            style={styles.moveButton}
+            onPress={handleMoveToCollection}
+          >
+            <Ionicons
+              name="folder-outline"
+              size={24}
+              color={Colors.background.primary}
+            />
+          </TouchableOpacity>
+        </Animated.View>
+      )}
+
       <Animated.View
         style={[styles.deleteBackground, deleteButtonAnimatedStyle]}
       >
@@ -341,6 +417,25 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
     marginBottom: 8,
+  },
+  moveBackground: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 80,
+    backgroundColor: Colors.primary.DEFAULT,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  moveButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.transparent.white20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   deleteBackground: {
     position: 'absolute',

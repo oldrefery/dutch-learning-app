@@ -5,13 +5,15 @@ import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import type { Word } from '@/types/database'
+import type { Word, Collection } from '@/types/database'
 
 export function useCollectionDetail(collectionId: string) {
   const [refreshing, setRefreshing] = useState(false)
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [isSharing, setIsSharing] = useState(false)
+  const [moveModalVisible, setMoveModalVisible] = useState(false)
+  const [wordToMove, setWordToMove] = useState<string | null>(null)
 
   const {
     words,
@@ -20,6 +22,7 @@ export function useCollectionDetail(collectionId: string) {
     fetchCollections,
     deleteWord,
     updateWordImage,
+    moveWordToCollection,
     shareCollection,
     getCollectionShareStatus,
     unshareCollection,
@@ -184,6 +187,35 @@ export function useCollectionDetail(collectionId: string) {
     }
   }
 
+  const handleMoveToCollection = (wordId: string) => {
+    setWordToMove(wordId)
+    setMoveModalVisible(true)
+  }
+
+  const handleCloseMoveModal = () => {
+    setMoveModalVisible(false)
+    setWordToMove(null)
+  }
+
+  const handleSelectTargetCollection = async (targetCollection: Collection) => {
+    if (!wordToMove) return
+
+    try {
+      await moveWordToCollection(wordToMove, targetCollection.collection_id)
+      ToastService.show(
+        `Word moved to "${targetCollection.name}"`,
+        ToastType.SUCCESS
+      )
+      handleCloseMoveModal()
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Could not move word to collection'
+      ToastService.show(errorMessage, ToastType.ERROR)
+    }
+  }
+
   return {
     // State
     collection,
@@ -193,6 +225,10 @@ export function useCollectionDetail(collectionId: string) {
     selectedWord,
     modalVisible,
     isSharing,
+    moveModalVisible,
+    wordToMove,
+    collections,
+    words,
 
     // Actions
     handleRefresh,
@@ -205,6 +241,9 @@ export function useCollectionDetail(collectionId: string) {
     handleCopyCode,
     handleShareCollection,
     handleStopSharing,
+    handleMoveToCollection,
+    handleCloseMoveModal,
+    handleSelectTargetCollection,
 
     // Setters for external use
     setSelectedWord,

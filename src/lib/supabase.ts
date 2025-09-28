@@ -195,7 +195,7 @@ export const wordService = {
     partOfSpeech: string = 'unknown',
     article: string = ''
   ): Promise<Word | null> {
-    // Normalize article: empty string should be treated as null for query
+    // Normalize article: empty string should be treated as null for the query
     const normalizedArticle = article || null
     const normalizedPartOfSpeech = partOfSpeech || 'unknown'
 
@@ -347,6 +347,22 @@ export const wordService = {
 
     if (error) {
       throw new Error(`Failed to update word image: ${error.message}`)
+    }
+
+    return data
+  },
+
+  // Move word to a different collection
+  async moveWordToCollection(wordId: string, newCollectionId: string) {
+    const { data, error } = await supabase
+      .from('words')
+      .update({ collection_id: newCollectionId })
+      .eq('word_id', wordId)
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to move word to collection: ${error.message}`)
     }
 
     return data
