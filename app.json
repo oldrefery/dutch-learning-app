@@ -45,6 +45,7 @@
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.VIBRATE"
       ],
+      "softwareKeyboardLayoutMode": "pan",
       "package": "com.oldrefery.dutchlearningapp"
     },
     "web": {
