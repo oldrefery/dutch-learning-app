@@ -17,6 +17,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.1 Build 31] - 2025-09-28
+
+### Fixed
+
+- **Keyboard Interaction Improvements**: Enhanced import modal keyboard handling
+  - Fixed keyboard covering input field when importing collections on Android
+  - Added platform-specific keyboard avoidance behavior (iOS: padding, Android: pan mode)
+  - Configured softwareKeyboardLayoutMode in app.json for optimal Android experience
+  - Improved focus management and input accessibility
+
+- **Collection Action Menu Enhancement**: Added visual icons to collection management actions
+  - Integrated Ionicons in collection long-press menus matching detail screen consistency
+  - Added share, copy code, and stop sharing icons for better visual recognition
+  - Maintained platform-native behavior (iOS ActionSheet text-only, Android custom sheet with icons)
+  - Enhanced user experience with consistent iconography across app
+
+### Technical
+
+- **Platform-Specific UI Optimization**: Implemented adaptive UI patterns for iOS and Android
+  - KeyboardAvoidingView with conditional platform behavior
+  - Custom ActionSheet component for Android with icon support
+  - Preserved native iOS ActionSheet limitations while enhancing Android experience
+- **Build System Improvements**: Enhanced build and deployment workflow
+  - Updated build scripts with proper error handling and color output
+  - Implemented source map generation and Sentry integration
+  - Added automated build number synchronization between platforms
+
+---
+
 ## [1.1.0 Build 29] - 2025-09-27
 
 ### Added

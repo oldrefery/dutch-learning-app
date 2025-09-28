@@ -1,12 +1,29 @@
 # Dutch Learning App - Current Status
 
-## 📅 Last Updated: September 27, 2025
+## 📅 Last Updated: September 28, 2025
 
-## 🎯 Current Phase: Build 25 - Collection Sharing & Import Enhancements - COMPLETED ✅
+## 🎯 Current Phase: Build 31 - UI/UX Bug Fixes - COMPLETED ✅
 
 ---
 
 ## ✅ COMPLETED TASKS
+
+### Latest: Build 31 - UI/UX Bug Fixes ✅ COMPLETED
+
+- **Keyboard Interaction Improvements**: Fixed keyboard covering input field during collection import on Android
+  - Implemented platform-specific KeyboardAvoidingView behavior (iOS: padding, Android: pan mode)
+  - Added softwareKeyboardLayoutMode configuration in app.json for optimal Android experience
+  - Enhanced focus management and input accessibility across platforms
+
+- **Collection Action Menu Enhancement**: Added visual icons to collection management actions
+  - Integrated Ionicons in collection long-press menus for better visual recognition
+  - Maintained platform-native behavior (iOS ActionSheet text-only, Android custom sheet with icons)
+  - Achieved consistent iconography matching collection detail screen
+
+- **Build System Improvements**: Enhanced deployment and monitoring workflow
+  - Updated build scripts with proper error handling and colored output
+  - Implemented source map generation and Sentry integration for better crash reporting
+  - Added automated build number synchronization between iOS and Android platforms
 
 ### 1. Supabase Infrastructure ✅
 
