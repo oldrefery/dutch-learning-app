@@ -5,6 +5,13 @@
 
 set -e  # Exit on any error
 
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
 echo "🚀 Starting build and submit process..."
 
 # Check for required Sentry configuration
@@ -17,13 +24,6 @@ if [ ! -f ".sentryclirc" ]; then
 fi
 
 echo -e "${GREEN}✓ Found .sentryclirc configuration${NC}"
-
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
 
 # Default values
 PLATFORM="both"
@@ -150,7 +150,7 @@ NEW_BUILD=$(increment_build_numbers $CURRENT_IOS_BUILD $CURRENT_ANDROID_BUILD)
 echo -e "${GREEN}Will increment build numbers to: ${NEW_BUILD}${NC}"
 
 # Commit version changes if any
-if [ "$NEW_VERSION" != "$CURRENT_VERSION" ] || [ "$NEW_BUILD" != "$CURRENT_IOS_BUILD" ]; then
+if [ "$NEW_VERSION" != "$CURRENT_VERSION" ] || [ "$NEW_BUILD" != "$CURRENT_IOS_BUILD" ] || [ "$NEW_BUILD" != "$CURRENT_ANDROID_BUILD" ]; then
     echo -e "${BLUE}Committing version changes...${NC}"
     git add app.json
 
@@ -171,17 +171,26 @@ echo -e "${BLUE}Building for platform(s): ${PLATFORM}${NC}"
 if [[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]]; then
     echo -e "${GREEN}Building iOS app locally...${NC}"
     echo -e "${YELLOW}Running: eas build --platform ios --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa${NC}"
-#    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive
-    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive --json > builds/ios-build-metadata.json    echo -e "${GREEN}✅ iOS build completed!${NC}"
+
+    if EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive --json > builds/ios-build-metadata.json; then
+        echo -e "${GREEN}✅ iOS build completed!${NC}"
+    else
+        echo -e "${RED}❌ iOS build failed!${NC}"
+        exit 1
+    fi
 fi
 
 # Build Android
 if [[ "$PLATFORM" == "android" || "$PLATFORM" == "both" ]]; then
     echo -e "${GREEN}Building Android app locally...${NC}"
     echo -e "${YELLOW}Running: eas build --platform android --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.aab${NC}"
-#    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive
-    EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive --json > builds/android-build-metadata.json
-    echo -e "${GREEN}✅ Android build completed!${NC}"
+
+    if EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive --json > builds/android-build-metadata.json; then
+        echo -e "${GREEN}✅ Android build completed!${NC}"
+    else
+        echo -e "${RED}❌ Android build failed!${NC}"
+        exit 1
+    fi
 fi
 
 # Submit to stores if requested
@@ -225,3 +234,4 @@ fi
 
 echo ""
 echo -e "${YELLOW}Build artifacts saved in ./builds/ directory${NC}"
+echo -e "${YELLOW}Next step: Run scripts/upload-sourcemaps.sh to upload source maps to Sentry${NC}"

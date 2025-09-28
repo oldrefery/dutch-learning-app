@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -17,6 +17,7 @@ import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import CollectionActionSheet from '@/components/CollectionActionSheet'
 import type { Collection, Word } from '@/types/database'
 
 interface SwipeableCollectionCardProps {
@@ -43,6 +44,7 @@ export default function SwipeableCollectionCard({
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
   const lastGestureX = useRef<number>(0)
+  const [showActionSheet, setShowActionSheet] = useState(false)
 
   // Calculate real stats for this collection
   const collectionWords = words.filter(
@@ -110,9 +112,8 @@ export default function SwipeableCollectionCard({
   }
 
   const handleLongPress = () => {
-    const isShared = collection.is_shared
-
     if (Platform.OS === 'ios') {
+      const isShared = collection.is_shared
       const options = isShared
         ? ['Copy Code', 'Stop Sharing', 'Cancel']
         : ['Share Collection', 'Cancel']
@@ -139,11 +140,8 @@ export default function SwipeableCollectionCard({
         }
       )
     } else {
-      if (isShared && onCopyCode) {
-        onCopyCode(collection.collection_id)
-      } else if (!isShared && onShare) {
-        onShare(collection.collection_id)
-      }
+      // Android: show a custom action sheet with icons
+      setShowActionSheet(true)
     }
   }
 
@@ -354,6 +352,22 @@ export default function SwipeableCollectionCard({
           </ViewThemed>
         </Animated.View>
       </GestureDetector>
+
+      <CollectionActionSheet
+        visible={showActionSheet}
+        onClose={() => setShowActionSheet(false)}
+        collectionName={collection.name}
+        isShared={collection.is_shared}
+        onShare={onShare ? () => onShare(collection.collection_id) : undefined}
+        onCopyCode={
+          onCopyCode ? () => onCopyCode(collection.collection_id) : undefined
+        }
+        onStopSharing={
+          onStopSharing
+            ? () => onStopSharing(collection.collection_id)
+            : undefined
+        }
+      />
     </ViewThemed>
   )
 }

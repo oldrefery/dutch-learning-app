@@ -233,7 +233,7 @@ export default function CollectionsScreen() {
 
       <ViewThemed style={styles.collectionsSection}>
         <SectionHeader
-          title="My Collections"
+          title="Collections"
           showAddButton={true}
           addButtonText="Create Collection"
           onAddPress={() => setShowCreateModal(true)}
