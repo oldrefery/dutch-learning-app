@@ -16,7 +16,10 @@ import ImageSelector from '@/components/ImageSelector'
 import MoveToCollectionModal from '@/components/MoveToCollectionModal'
 
 export default function CollectionDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>()
+  const { id, highlightWordId } = useLocalSearchParams<{
+    id: string
+    highlightWordId?: string
+  }>()
   const colorScheme = useColorScheme() ?? 'light'
 
   const {
@@ -120,6 +123,7 @@ export default function CollectionDetailScreen() {
           onMoveToCollection={handleMoveToCollection}
           moveModalVisible={moveModalVisible}
           wordBeingMoved={wordToMove}
+          highlightWordId={highlightWordId}
         />
 
         {/* Floating Action Button */}

@@ -4,7 +4,7 @@ import { Colors } from '@/constants/Colors'
 export const addWordScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.legacy.transparent, // Will inherit from navigation theme
+    padding: 16,
   },
   analysisContainer: {
     flex: 1,

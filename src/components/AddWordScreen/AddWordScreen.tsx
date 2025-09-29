@@ -1,31 +1,45 @@
 import React, { useState, useEffect } from 'react'
 import { Keyboard } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native'
 import { ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
-import { WordInputSection } from './components/WordInputSection'
+import { FloatingActionButton } from '@/components/FloatingActionButton'
+import { CompactWordInput } from './components/CompactWordInput'
+import { DuplicateBanner } from './components/DuplicateBanner'
 import {
   UniversalWordCard,
   WordCardPresets,
 } from '@/components/UniversalWordCard'
-import { AddToCollectionSection } from './components/AddToCollectionSection'
 import { useAudioPlayer } from './hooks/useAudioPlayer'
 import { useWordAnalysis } from './hooks/useWordAnalysis'
 import { useAddWord } from './hooks/useAddWord'
 import { useCollections } from '@/hooks/useCollections'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { wordService } from '@/lib/supabase'
-import { ToastService } from '@/components/AppToast'
-import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
+
+interface DuplicateWordData {
+  word_id: string
+  dutch_lemma: string
+  collection_id: string
+  part_of_speech: string
+  article?: string
+}
 
 interface AddWordScreenProps {
   preselectedCollectionId?: string
 }
 
 export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
+  const insets = useSafeAreaInsets()
   const [inputWord, setInputWord] = useState('')
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
+  const [duplicateWordInfo, setDuplicateWordInfo] =
+    useState<DuplicateWordData | null>(null)
+  const [hasNavigatedToCollection, setHasNavigatedToCollection] =
+    useState(false)
 
   const { currentUserId } = useApplicationStore()
   const { isPlayingAudio, playPronunciation } = useAudioPlayer()
@@ -54,10 +68,13 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     const checkForDuplicates = async () => {
       if (!analysisResult || !currentUserId) {
         setIsAlreadyInCollection(false)
+        setDuplicateWordInfo(null)
+        setIsCheckingDuplicate(false)
         return
       }
 
       setIsCheckingDuplicate(true)
+
       try {
         const existingWord = await wordService.checkWordExists(
           currentUserId,
@@ -66,20 +83,13 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           analysisResult.article
         )
         const isDuplicate = !!existingWord
-        setIsAlreadyInCollection(isDuplicate)
 
-        if (isDuplicate) {
-          const articleText = analysisResult.article
-            ? `${analysisResult.article} `
-            : ''
-          ToastService.show(
-            `"${articleText}${analysisResult.dutch_lemma}" (${analysisResult.part_of_speech}) is already in your collection`,
-            ToastType.INFO
-          )
-        }
+        setIsAlreadyInCollection(isDuplicate)
+        setDuplicateWordInfo(existingWord)
       } catch (error) {
-        console.error('Error checking word existence:', error)
+        console.error('Error checking for duplicate word:', error)
         setIsAlreadyInCollection(false)
+        setDuplicateWordInfo(null)
       } finally {
         setIsCheckingDuplicate(false)
       }
@@ -104,35 +114,11 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     Keyboard.dismiss()
 
     setIsAlreadyInCollection(false)
+    setDuplicateWordInfo(null)
     setIsCheckingDuplicate(true)
+    setHasNavigatedToCollection(false)
 
     clearAnalysis()
-
-    const lowercaseWord = normalizedWord.toLowerCase()
-
-    // Check for duplicates before analysis
-    if (currentUserId) {
-      try {
-        const existingWord = await wordService.checkWordExists(
-          currentUserId,
-          lowercaseWord
-        )
-        if (existingWord) {
-          setIsAlreadyInCollection(true)
-          setIsCheckingDuplicate(false)
-          ToastService.show(
-            `A variant of "${lowercaseWord}" is already in your collection`,
-            ToastType.INFO
-          )
-          return
-        }
-      } catch (error) {
-        console.error('Error checking word existence:', error)
-        // Continue with analysis if the check fails
-      }
-    }
-
-    setIsCheckingDuplicate(false)
     analyzeWord(normalizedWord)
   }
 
@@ -150,6 +136,9 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const handleCancel = () => {
     setInputWord('')
     clearAnalysis()
+    setIsAlreadyInCollection(false)
+    setDuplicateWordInfo(null)
+    setHasNavigatedToCollection(false)
   }
 
   const handleForceRefresh = async () => {
@@ -159,7 +148,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
       .replace(/\s+/g, ' ')
     if (!normalizedWord) return
 
-    // Update input field with normalized text
     setInputWord(normalizedWord)
     await forceRefreshAnalysis(normalizedWord)
   }
@@ -169,53 +157,77 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     closeImageSelector()
   }
 
+  // Reset navigation flag when returning to the screen
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reset the navigation flag if it was set, but preserve all duplicate state
+      if (hasNavigatedToCollection) {
+        setHasNavigatedToCollection(false)
+      }
+    }, [hasNavigatedToCollection])
+  )
+
   return (
-    <ViewThemed style={addWordScreenStyles.container}>
-      <WordInputSection
+    <ViewThemed
+      style={[
+        addWordScreenStyles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+        },
+      ]}
+    >
+      <CompactWordInput
         inputWord={inputWord}
         setInputWord={setInputWord}
         onAnalyze={handleAnalyze}
         isAnalyzing={isAnalyzing}
         isCheckingDuplicate={isCheckingDuplicate}
+        selectedCollection={selectedCollection}
+        collections={collections}
+        onCollectionSelect={setSelectedCollection}
+        onCancel={handleCancel}
       />
 
-      {analysisResult && (
-        <ViewThemed style={addWordScreenStyles.analysisContainer}>
-          {/* UniversalWordCard takes most of the space */}
-          <ViewThemed style={addWordScreenStyles.wordCardContainer}>
-            <UniversalWordCard
-              word={analysisResult}
-              metadata={analysisMetadata}
-              actions={{
-                ...WordCardPresets.analysis.actions,
-                isDuplicateChecking: isCheckingDuplicate,
-                isAlreadyInCollection: isAlreadyInCollection,
-              }}
-              isPlayingAudio={isPlayingAudio}
-              onPlayPronunciation={playPronunciation}
-              onChangeImage={openImageSelector}
-              onForceRefresh={handleForceRefresh}
-              style={addWordScreenStyles.universalWordCard}
-            />
-          </ViewThemed>
+      {/* Duplicate banner when the word already exists */}
+      {isAlreadyInCollection && duplicateWordInfo && (
+        <DuplicateBanner
+          duplicateWord={duplicateWordInfo}
+          collections={collections}
+          onNavigateToCollection={() => setHasNavigatedToCollection(true)}
+        />
+      )}
 
-          {/* Compact AddToCollectionSection at the bottom */}
-          {!isAlreadyInCollection && (
-            <ViewThemed style={addWordScreenStyles.addToCollectionContainer}>
-              <AddToCollectionSection
-                selectedCollection={selectedCollection}
-                onCollectionSelect={setSelectedCollection}
-                onAddWord={handleAddWord}
-                onCancel={handleCancel}
-                isAdding={isAdding}
-                collections={collections}
-              />
-            </ViewThemed>
-          )}
+      {/* Word information takes maximum space */}
+      {analysisResult && !isCheckingDuplicate && (
+        <ViewThemed style={{ flex: 1, marginTop: 8 }}>
+          <UniversalWordCard
+            word={analysisResult}
+            metadata={analysisMetadata}
+            actions={{
+              ...WordCardPresets.analysis.actions,
+              isDuplicateChecking: isCheckingDuplicate,
+              isAlreadyInCollection: isAlreadyInCollection,
+            }}
+            isPlayingAudio={isPlayingAudio}
+            onPlayPronunciation={playPronunciation}
+            onChangeImage={openImageSelector}
+            onForceRefresh={handleForceRefresh}
+            style={{ flex: 1 }}
+          />
         </ViewThemed>
       )}
 
-      {/* Image Selector Modal */}
+      {analysisResult && !isAlreadyInCollection && !isCheckingDuplicate && (
+        <FloatingActionButton
+          onPress={handleAddWord}
+          disabled={isAdding}
+          loading={isAdding}
+          icon="checkmark"
+          label={`Add to ${selectedCollection?.name || 'Collection'}`}
+        />
+      )}
+
       {analysisResult && (
         <ImageSelector
           visible={showImageSelector}

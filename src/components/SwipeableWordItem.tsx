@@ -28,6 +28,7 @@ interface SwipeableWordItemProps {
   onMoveToCollection?: (wordId: string) => void
   moveModalVisible?: boolean
   wordBeingMoved?: string | null
+  highlighted: boolean
 }
 
 export default function SwipeableWordItem({
@@ -38,10 +39,10 @@ export default function SwipeableWordItem({
   onMoveToCollection,
   moveModalVisible,
   wordBeingMoved,
+  highlighted,
 }: SwipeableWordItemProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
-  const opacity = useSharedValue(0)
   const translateY = useSharedValue(20)
   const [shouldShowDeleteDialog, setShouldShowDeleteDialog] = useState(false)
   const [shouldShowMoveDialog, setShouldShowMoveDialog] = useState(false)
@@ -94,9 +95,8 @@ export default function SwipeableWordItem({
   }, [word.word_id, onMoveToCollection])
 
   useEffect(() => {
-    opacity.value = withTiming(1, { duration: 300 }, () => {})
     translateY.value = withTiming(0, { duration: 400 }, () => {})
-  }, [opacity, translateY])
+  }, [translateY])
 
   useEffect(() => {
     if (shouldShowDeleteDialog) {
@@ -178,7 +178,6 @@ export default function SwipeableWordItem({
         { translateX: translateX.value },
         { translateY: translateY.value },
       ],
-      opacity: opacity.value,
     }
   })
 
@@ -292,6 +291,7 @@ export default function SwipeableWordItem({
                   ? Colors.dark.backgroundSecondary
                   : Colors.background.primary,
             },
+            { borderWidth: highlighted ? 2 : 0 },
           ]}
         >
           <ViewThemed style={styles.wordContent}>
@@ -463,6 +463,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
+    zIndex: 2,
   },
   wordContent: {
     flexDirection: 'row',

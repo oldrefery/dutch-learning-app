@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import { FlatList, RefreshControl, useColorScheme } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
@@ -26,6 +26,7 @@ interface CollectionContentProps {
   onMoveToCollection?: (wordId: string) => void
   moveModalVisible?: boolean
   wordBeingMoved?: string | null
+  highlightWordId?: string
 }
 
 export default function CollectionContent({
@@ -39,8 +40,31 @@ export default function CollectionContent({
   onMoveToCollection,
   moveModalVisible,
   wordBeingMoved,
+  highlightWordId,
 }: CollectionContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
+  const flatListRef = useRef<FlatList>(null)
+
+  // Scroll to highlighted word when component mounts or words change
+  useEffect(() => {
+    if (highlightWordId && words.length > 0) {
+      const wordIndex = words.findIndex(
+        word => word.word_id === highlightWordId
+      )
+      if (wordIndex !== -1) {
+        // Small delay to ensure FlatList is fully rendered
+        const timer = setTimeout(() => {
+          flatListRef.current?.scrollToIndex({
+            index: wordIndex,
+            animated: true,
+            viewPosition: 0.3, // Position highlighted item at 30% from the top
+          })
+        }, 500)
+
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [highlightWordId, words])
 
   const renderHeader = () => (
     <ViewThemed style={styles.headerContent}>
@@ -80,23 +104,39 @@ export default function CollectionContent({
     </ViewThemed>
   )
 
+  const keyExtractor = (item: Word) => item.word_id
+
+  const renderItem = ({ item, index }: { item: Word; index: number }) => (
+    <SwipeableWordItem
+      word={item}
+      index={index}
+      onPress={() => onWordPress(item)}
+      onDelete={onDeleteWord}
+      onMoveToCollection={onMoveToCollection}
+      moveModalVisible={moveModalVisible}
+      wordBeingMoved={wordBeingMoved}
+      highlighted={highlightWordId === item.word_id}
+    />
+  )
+
   return (
     <FlatList
+      ref={flatListRef}
       style={styles.wordsSection}
       data={words}
       ListHeaderComponent={renderHeader}
-      keyExtractor={(item: Word) => item.word_id}
-      renderItem={({ item, index }: { item: Word; index: number }) => (
-        <SwipeableWordItem
-          word={item}
-          index={index}
-          onPress={() => onWordPress(item)}
-          onDelete={onDeleteWord}
-          onMoveToCollection={onMoveToCollection}
-          moveModalVisible={moveModalVisible}
-          wordBeingMoved={wordBeingMoved}
-        />
-      )}
+      keyExtractor={keyExtractor}
+      onScrollToIndexFailed={info => {
+        // Fallback: scroll to offset if the index scroll fails
+        const wait = new Promise(resolve => setTimeout(resolve, 500))
+        wait.then(() => {
+          flatListRef.current?.scrollToOffset({
+            offset: info.averageItemLength * info.index,
+            animated: true,
+          })
+        })
+      }}
+      renderItem={renderItem}
       ListEmptyComponent={renderEmptyComponent}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -118,18 +158,18 @@ const styles = {
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 40,
   },
   emptyText: {
     fontSize: 18,
-    fontWeight: '500' as const,
+    fontWeight: '500',
     marginTop: 16,
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    textAlign: 'center' as const,
+    textAlign: 'center',
   },
 }
