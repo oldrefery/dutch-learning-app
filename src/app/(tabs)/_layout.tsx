@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
-import { Tabs, router } from 'expo-router'
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs'
+import { router } from 'expo-router'
 import {
   ActivityIndicator,
   View,
   useColorScheme,
-  TouchableOpacity,
   StyleSheet,
+  Platform,
 } from 'react-native'
 import { BlurView } from 'expo-blur'
 import * as Haptics from 'expo-haptics'
@@ -16,76 +17,12 @@ import { useClientOnlyValue } from '@/components/useClientOnlyValue'
 import { supabase } from '@/lib/supabaseClient'
 import { ROUTES } from '@/constants/Routes'
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name']
-  color: string
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />
-}
-
-function LiquidGlassAddButton({
-  color,
-  focused,
-}: {
-  color: string
-  focused: boolean
-}) {
-  const colorScheme = useColorScheme()
-
-  const handlePress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-    router.push(ROUTES.TABS.ADD_WORD)
-  }
-
-  return (
-    <TouchableOpacity
-      style={[
-        styles.liquidGlassButton,
-        {
-          shadowColor: focused ? Colors.primary.DEFAULT : Colors.legacy.black,
-          shadowOpacity: focused ? 0.3 : 0.1,
-        },
-      ]}
-      onPress={handlePress}
-      activeOpacity={0.8}
-    >
-      <BlurView
-        style={styles.liquidGlassBlur}
-        intensity={80}
-        tint={colorScheme === 'dark' ? 'dark' : 'light'}
-      >
-        <View
-          style={[
-            styles.liquidGlassInner,
-            {
-              backgroundColor: focused
-                ? colorScheme === 'dark'
-                  ? Colors.primary.darkMode
-                  : Colors.primary.DEFAULT
-                : colorScheme === 'dark'
-                  ? Colors.dark.backgroundTertiary
-                  : Colors.background.primary,
-            },
-          ]}
-        >
-          <FontAwesome
-            name="plus"
-            size={24}
-            color={focused ? Colors.background.primary : color}
-          />
-        </View>
-      </BlurView>
-    </TouchableOpacity>
-  )
-}
-
 export default function TabLayout() {
   const colorScheme = useColorScheme()
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
-  // Call this unconditionally to follow the rules of hooks
-  const useClientOnly = useClientOnlyValue(false, true)
+  // Call this unconditionally to follow the rules of hooks (not used in Native Tabs)
+  useClientOnlyValue(false, true)
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -171,73 +108,138 @@ export default function TabLayout() {
   }
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on the web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnly,
-      }}
-    >
-      <Tabs.Screen
+    <NativeTabs>
+      {/* Navigation tabs - left side following HIG order */}
+      <NativeTabs.Trigger
         name="index"
-        options={{
-          title: 'Collections',
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="add-word"
-        options={{
-          title: 'Add Word',
-          tabBarIcon: ({ color, focused }) => (
-            <LiquidGlassAddButton color={color} focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="review"
-        options={{
-          title: 'Review',
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="graduation-cap" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
+        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+      >
+        <Label>Collections</Label>
+        {Platform.OS === 'ios' ? (
+          <Icon sf="house.fill" />
+        ) : (
+          <FontAwesome name="home" size={24} />
+        )}
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger
         name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} />,
-        }}
-      />
-    </Tabs>
+        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+      >
+        <Label>Settings</Label>
+        {Platform.OS === 'ios' ? (
+          <Icon sf="gear" />
+        ) : (
+          <FontAwesome name="cog" size={24} />
+        )}
+      </NativeTabs.Trigger>
+
+      {/* Primary action tabs - right side following HIG guidelines */}
+      <NativeTabs.Trigger
+        name="add-word"
+        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
+      >
+        <Label>Add Word</Label>
+        {Platform.OS === 'ios' ? (
+          <Icon sf="plus.circle.fill" />
+        ) : (
+          <View
+            style={[
+              styles.primaryIconContainer,
+              {
+                shadowColor: Colors.primary.DEFAULT,
+                shadowOpacity: 0.3,
+              },
+            ]}
+          >
+            <BlurView
+              style={styles.primaryIconBlur}
+              intensity={80}
+              tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            >
+              <View style={[styles.primaryIconInner]}>
+                <FontAwesome
+                  name="plus"
+                  size={22}
+                  color={Colors.primary.DEFAULT}
+                  style={styles.primaryIcon}
+                />
+              </View>
+            </BlurView>
+          </View>
+        )}
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger
+        name="review"
+        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
+      >
+        <Label>Review</Label>
+        {Platform.OS === 'ios' ? (
+          <Icon sf="brain.head.profile" />
+        ) : (
+          <View
+            style={[
+              styles.primaryIconContainer,
+              {
+                shadowColor: Colors.primary.DEFAULT,
+                shadowOpacity: 0.3,
+              },
+            ]}
+          >
+            <BlurView
+              style={styles.primaryIconBlur}
+              intensity={80}
+              tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            >
+              <View style={[styles.primaryIconInner]}>
+                <FontAwesome
+                  name="graduation-cap"
+                  size={20}
+                  color={Colors.primary.DEFAULT}
+                  style={styles.primaryIcon}
+                />
+              </View>
+            </BlurView>
+          </View>
+        )}
+      </NativeTabs.Trigger>
+    </NativeTabs>
   )
 }
 
 const styles = StyleSheet.create({
-  liquidGlassButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    marginBottom: 20,
+  // HIG compliant 46x46 primary icon container for liquid glass effect
+  primaryIconContainer: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    marginBottom: 4,
     shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    shadowRadius: 12,
     elevation: 8,
+    shadowColor: Colors.primary.DEFAULT,
+    shadowOpacity: 0.3,
   },
-  liquidGlassBlur: {
+  primaryIconBlur: {
     width: '100%',
     height: '100%',
-    borderRadius: 28,
+    borderRadius: 23,
     overflow: 'hidden',
   },
-  liquidGlassInner: {
+  primaryIconInner: {
     width: '100%',
     height: '100%',
-    borderRadius: 28,
+    borderRadius: 23,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  primaryIcon: {
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
 })
