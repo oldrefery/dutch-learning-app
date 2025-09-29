@@ -269,18 +269,30 @@ export default function CollectionsScreen() {
           <FlatList
             data={collections}
             keyExtractor={item => item.collection_id}
-            renderItem={({ item }) => (
-              <SwipeableCollectionCard
-                collection={item}
-                words={words}
-                onPress={() => handleCollectionPress(item)}
-                onDelete={handleDeleteCollection}
-                onRename={handleRenameCollection}
-                onShare={handleShareCollection}
-                onCopyCode={handleCopyCollectionCode}
-                onStopSharing={handleStopSharingCollection}
-              />
-            )}
+            renderItem={({ item, index }) => {
+              const isLast = index === collections.length - 1
+              return (
+                <ViewThemed>
+                  <SwipeableCollectionCard
+                    collection={item}
+                    words={words}
+                    onPress={() => handleCollectionPress(item)}
+                    onDelete={handleDeleteCollection}
+                    onRename={handleRenameCollection}
+                    onShare={handleShareCollection}
+                    onCopyCode={handleCopyCollectionCode}
+                    onStopSharing={handleStopSharingCollection}
+                  />
+                  {!isLast && (
+                    <ViewThemed
+                      style={styles.separator}
+                      lightColor={Colors.light.separator}
+                      darkColor={Colors.dark.separator}
+                    />
+                  )}
+                </ViewThemed>
+              )
+            }}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <ViewThemed style={styles.emptyContainer}>

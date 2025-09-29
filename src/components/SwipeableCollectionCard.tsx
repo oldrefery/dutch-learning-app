@@ -15,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
+import { SymbolView } from 'expo-symbols'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import CollectionActionSheet from '@/components/CollectionActionSheet'
@@ -269,38 +270,10 @@ export default function SwipeableCollectionCard({
           ]}
         >
           <ViewThemed style={styles.cardContent}>
-            <ViewThemed style={styles.collectionHeader}>
-              <ViewThemed style={styles.collectionNameRow}>
-                <TextThemed style={styles.collectionName}>
-                  {collection.name}
-                </TextThemed>
-                {collection.is_shared && (
-                  <ViewThemed style={styles.sharedBadge}>
-                    <Ionicons
-                      name="share-outline"
-                      size={14}
-                      color={
-                        colorScheme === 'dark'
-                          ? Colors.dark.tint
-                          : Colors.primary.DEFAULT
-                      }
-                    />
-                    <TextThemed
-                      style={[
-                        styles.sharedBadgeText,
-                        {
-                          color:
-                            colorScheme === 'dark'
-                              ? Colors.dark.tint
-                              : Colors.primary.DEFAULT,
-                        },
-                      ]}
-                    >
-                      Shared
-                    </TextThemed>
-                  </ViewThemed>
-                )}
-              </ViewThemed>
+            <ViewThemed style={styles.textContainer}>
+              <TextThemed style={styles.collectionName}>
+                {collection.name}
+              </TextThemed>
               <TextThemed
                 style={styles.collectionStats}
                 lightColor={Colors.neutral[500]}
@@ -309,46 +282,53 @@ export default function SwipeableCollectionCard({
                 {stats.totalWords} words • {stats.progressPercentage}% mastered
               </TextThemed>
             </ViewThemed>
-
-            <ViewThemed style={styles.collectionProgress}>
-              <ViewThemed style={styles.progressBar}>
-                <ViewThemed
-                  style={[
-                    styles.progressFill,
-                    { width: `${stats.progressPercentage}%` },
-                  ]}
+            <ViewThemed style={styles.accessoryContainer}>
+              {collection.is_shared && Platform.OS === 'ios' && (
+                <SymbolView
+                  name="person.2.fill"
+                  size={16}
+                  type="hierarchical"
+                  tintColor={
+                    colorScheme === 'dark'
+                      ? Colors.dark.textSecondary
+                      : Colors.neutral[400]
+                  }
+                  style={styles.sharedIcon}
+                  fallback={
+                    <Ionicons
+                      name="people"
+                      size={18}
+                      color={
+                        colorScheme === 'dark'
+                          ? Colors.dark.textSecondary
+                          : Colors.neutral[400]
+                      }
+                    />
+                  }
                 />
-              </ViewThemed>
-              <TextThemed
-                style={styles.progressText}
-                lightColor={Colors.neutral[500]}
-                darkColor={Colors.dark.textSecondary}
-              >
-                {stats.masteredWords}/{stats.totalWords} mastered
-              </TextThemed>
+              )}
+              {collection.is_shared && Platform.OS !== 'ios' && (
+                <Ionicons
+                  name="people"
+                  size={18}
+                  color={
+                    colorScheme === 'dark'
+                      ? Colors.dark.textSecondary
+                      : Colors.neutral[400]
+                  }
+                  style={styles.sharedIcon}
+                />
+              )}
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={
+                  colorScheme === 'dark'
+                    ? Colors.dark.textTertiary
+                    : Colors.neutral[400]
+                }
+              />
             </ViewThemed>
-
-            {stats.wordsToReview > 0 && (
-              <ViewThemed
-                style={[
-                  styles.reviewBadge,
-                  colorScheme === 'dark' && {
-                    backgroundColor: Colors.warning.darkModeBadge,
-                  },
-                ]}
-              >
-                <TextThemed
-                  style={[
-                    styles.reviewBadgeText,
-                    colorScheme === 'dark' && {
-                      color: Colors.warning.darkModeBadgeText,
-                    },
-                  ]}
-                >
-                  {stats.wordsToReview} for review
-                </TextThemed>
-              </ViewThemed>
-            )}
           </ViewThemed>
         </Animated.View>
       </GestureDetector>
@@ -374,86 +354,39 @@ export default function SwipeableCollectionCard({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 12,
-    borderRadius: 12,
-    overflow: 'hidden',
     position: 'relative',
   },
   card: {
-    padding: 16,
-    shadowColor: Colors.legacy.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    minHeight: 60,
+    zIndex: 2,
   },
   cardContent: {
-    flex: 1,
-  },
-  collectionHeader: {
-    marginBottom: 12,
-  },
-  collectionNameRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 4,
+  },
+  textContainer: {
+    flex: 1,
+    marginRight: 12,
   },
   collectionName: {
-    fontSize: 18,
-    fontWeight: '600',
-    flex: 1,
-  },
-  sharedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: 'currentColor',
-    marginLeft: 8,
-  },
-  sharedBadgeText: {
-    fontSize: 11,
-    fontWeight: '500',
-    marginLeft: 4,
+    fontSize: 17,
+    fontWeight: '400',
+    marginBottom: 2,
   },
   collectionStats: {
-    fontSize: 14,
+    fontSize: 15,
   },
-  collectionProgress: {
-    marginBottom: 12,
+  accessoryContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  progressBar: {
-    height: 8,
-    backgroundColor: Colors.neutral[200],
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: Colors.primary.DEFAULT,
-    borderRadius: 4,
-  },
-  progressText: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  reviewBadge: {
-    backgroundColor: Colors.warning.light,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-  },
-  reviewBadgeText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: Colors.warning.dark,
+  sharedIcon: {
+    marginRight: 6,
+    width: 20,
+    height: 20,
   },
   renameButton: {
     position: 'absolute',

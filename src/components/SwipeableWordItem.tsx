@@ -33,7 +33,6 @@ interface SwipeableWordItemProps {
 
 export default function SwipeableWordItem({
   word,
-  index,
   onPress,
   onDelete,
   onMoveToCollection,
@@ -295,31 +294,6 @@ export default function SwipeableWordItem({
           ]}
         >
           <ViewThemed style={styles.wordContent}>
-            <ViewThemed
-              style={[
-                styles.wordNumber,
-                {
-                  backgroundColor:
-                    colorScheme === 'dark'
-                      ? Colors.dark.backgroundSecondary
-                      : Colors.neutral[100],
-                },
-              ]}
-            >
-              <TextThemed
-                style={[
-                  styles.wordNumberText,
-                  {
-                    color:
-                      colorScheme === 'dark'
-                        ? Colors.dark.textSecondary
-                        : Colors.neutral[500],
-                  },
-                ]}
-              >
-                {index + 1}
-              </TextThemed>
-            </ViewThemed>
             <ViewThemed style={styles.wordInfo}>
               <ViewThemed style={styles.wordHeader}>
                 <TextThemed style={styles.wordText}>
@@ -355,46 +329,42 @@ export default function SwipeableWordItem({
               >
                 {word.translations.en?.[0] || 'No translation'}
               </TextThemed>
+            </ViewThemed>
 
-              <ViewThemed style={styles.wordFooter}>
+            <ViewThemed style={styles.accessoryContent}>
+              <ViewThemed
+                style={[
+                  styles.statusBadge,
+                  { backgroundColor: statusStyle.backgroundColor },
+                ]}
+              >
+                <TextThemed
+                  style={[styles.statusText, { color: statusStyle.textColor }]}
+                >
+                  {getStatusText()}
+                </TextThemed>
+              </ViewThemed>
+              {isDueForReview && (
                 <ViewThemed
                   style={[
-                    styles.statusBadge,
-                    { backgroundColor: statusStyle.backgroundColor },
+                    styles.reviewBadge,
+                    colorScheme === 'dark' && {
+                      backgroundColor: Colors.warning.darkModeBadge,
+                    },
                   ]}
                 >
                   <TextThemed
                     style={[
-                      styles.statusText,
-                      { color: statusStyle.textColor },
-                    ]}
-                  >
-                    {getStatusText()}
-                  </TextThemed>
-                </ViewThemed>
-
-                {isDueForReview && (
-                  <ViewThemed
-                    style={[
-                      styles.reviewBadge,
+                      styles.reviewText,
                       colorScheme === 'dark' && {
-                        backgroundColor: Colors.warning.darkModeBadge,
+                        color: Colors.warning.darkModeBadgeText,
                       },
                     ]}
                   >
-                    <TextThemed
-                      style={[
-                        styles.reviewText,
-                        colorScheme === 'dark' && {
-                          color: Colors.warning.darkModeBadgeText,
-                        },
-                      ]}
-                    >
-                      Due for review
-                    </TextThemed>
-                  </ViewThemed>
-                )}
-              </ViewThemed>
+                    Review
+                  </TextThemed>
+                </ViewThemed>
+              )}
             </ViewThemed>
 
             <Ionicons
@@ -416,7 +386,6 @@ export default function SwipeableWordItem({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    marginBottom: 8,
   },
   moveBackground: {
     position: 'absolute',
@@ -425,7 +394,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 80,
     backgroundColor: Colors.primary.DEFAULT,
-    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -444,7 +412,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 80,
     backgroundColor: Colors.error.DEFAULT,
-    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -457,30 +424,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   wordItem: {
-    borderRadius: 8,
-    shadowColor: Colors.legacy.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
     zIndex: 2,
   },
   wordContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-  },
-  wordNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  wordNumberText: {
-    fontSize: 14,
-    fontWeight: '600',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    minHeight: 60,
   },
   wordInfo: {
     flex: 1,
@@ -488,29 +439,29 @@ const styles = StyleSheet.create({
   wordHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   wordText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '400',
   },
   articleText: {
-    fontSize: 14,
+    fontSize: 15,
     marginLeft: 8,
   },
   translationText: {
-    fontSize: 14,
-    marginBottom: 8,
+    fontSize: 15,
   },
-  wordFooter: {
+  accessoryContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 6,
+    marginRight: 8,
   },
   statusBadge: {
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
   },
   statusText: {
     fontSize: 12,

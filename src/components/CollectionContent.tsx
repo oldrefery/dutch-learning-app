@@ -52,17 +52,14 @@ export default function CollectionContent({
   const flatListRef = useRef<FlatList>(null)
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Filter words based on search query (Dutch lemma only)
   const filteredWords = useMemo(() => {
     if (!searchQuery.trim()) {
       return words
     }
 
     const query = searchQuery.toLowerCase().trim()
-    return words.filter(word => {
-      // Search only in Dutch lemma (main word)
-      return word.dutch_lemma.toLowerCase().includes(query)
-    })
+
+    return words.filter(word => word.dutch_lemma.toLowerCase().includes(query))
   }, [words, searchQuery])
 
   // Scroll to highlighted word when component mounts or words change
@@ -139,18 +136,31 @@ export default function CollectionContent({
 
   const keyExtractor = (item: Word) => item.word_id
 
-  const renderItem = ({ item, index }: { item: Word; index: number }) => (
-    <SwipeableWordItem
-      word={item}
-      index={index}
-      onPress={() => onWordPress(item)}
-      onDelete={onDeleteWord}
-      onMoveToCollection={onMoveToCollection}
-      moveModalVisible={moveModalVisible}
-      wordBeingMoved={wordBeingMoved}
-      highlighted={highlightWordId === item.word_id}
-    />
-  )
+  const renderItem = ({ item, index }: { item: Word; index: number }) => {
+    const isLast = index === filteredWords.length - 1
+
+    return (
+      <ViewThemed>
+        <SwipeableWordItem
+          word={item}
+          index={index}
+          onPress={() => onWordPress(item)}
+          onDelete={onDeleteWord}
+          onMoveToCollection={onMoveToCollection}
+          moveModalVisible={moveModalVisible}
+          wordBeingMoved={wordBeingMoved}
+          highlighted={highlightWordId === item.word_id}
+        />
+        {!isLast && (
+          <ViewThemed
+            style={styles.separator}
+            lightColor={Colors.light.separator}
+            darkColor={Colors.dark.separator}
+          />
+        )}
+      </ViewThemed>
+    )
+  }
 
   return (
     <FlatList
@@ -188,6 +198,10 @@ const styles = StyleSheet.create({
   wordsSection: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  separator: {
+    height: 1,
+    marginLeft: 16,
   },
   emptyContainer: {
     flex: 1,
