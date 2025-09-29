@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
-import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs'
+import {
+  NativeTabs,
+  Icon,
+  Label,
+  Badge,
+} from 'expo-router/unstable-native-tabs'
 import { router } from 'expo-router'
 import {
   ActivityIndicator,
@@ -16,10 +21,14 @@ import { Colors } from '@/constants/Colors'
 import { useClientOnlyValue } from '@/components/useClientOnlyValue'
 import { supabase } from '@/lib/supabaseClient'
 import { ROUTES } from '@/constants/Routes'
+import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+
+  // Get review words count for badge
+  const { reviewWordsCount } = useReviewWordsCount()
 
   // Call this unconditionally to follow the rules of hooks (not used in Native Tabs)
   useClientOnlyValue(false, true)
@@ -175,6 +184,22 @@ export default function TabLayout() {
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
       >
         <Label>Review</Label>
+        {/* Smart badge showing review words count */}
+        {reviewWordsCount > 0 && (
+          <Badge
+            style={[
+              styles.reviewBadge,
+              {
+                backgroundColor:
+                  colorScheme === 'dark'
+                    ? Colors.error.darkMode
+                    : Colors.error.DEFAULT,
+              },
+            ]}
+          >
+            {reviewWordsCount > 99 ? '99+' : reviewWordsCount.toString()}
+          </Badge>
+        )}
         {Platform.OS === 'ios' ? (
           <Icon sf="brain.head.profile" />
         ) : (
@@ -241,5 +266,24 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
+  },
+  // HIG-compliant badge styling for review count
+  reviewBadge: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    borderWidth: 2,
+    borderColor: Colors.background.primary,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 6,
   },
 })
