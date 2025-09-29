@@ -6,7 +6,7 @@ import { ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
 import { CompactWordInput } from './components/CompactWordInput'
-import { DuplicateWordInfo } from './components/DuplicateWordInfo'
+import { DuplicateBanner } from './components/DuplicateBanner'
 import {
   UniversalWordCard,
   WordCardPresets,
@@ -19,6 +19,14 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import { wordService } from '@/lib/supabase'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 
+interface DuplicateWordData {
+  word_id: string
+  dutch_lemma: string
+  collection_id: string
+  part_of_speech: string
+  article?: string
+}
+
 interface AddWordScreenProps {
   preselectedCollectionId?: string
 }
@@ -28,10 +36,8 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const [inputWord, setInputWord] = useState('')
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
-  const [duplicateWordInfo, setDuplicateWordInfo] = useState<any>(null)
-  const [lastDuplicateCheck, setLastDuplicateCheck] = useState<string | null>(
-    null
-  )
+  const [duplicateWordInfo, setDuplicateWordInfo] =
+    useState<DuplicateWordData | null>(null)
   const [hasNavigatedToCollection, setHasNavigatedToCollection] =
     useState(false)
 
@@ -80,9 +86,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
         setIsAlreadyInCollection(isDuplicate)
         setDuplicateWordInfo(existingWord)
-        if (isDuplicate) {
-          setLastDuplicateCheck(analysisResult.dutch_lemma)
-        }
       } catch (error) {
         console.error('Error checking for duplicate word:', error)
         setIsAlreadyInCollection(false)
@@ -135,16 +138,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     clearAnalysis()
     setIsAlreadyInCollection(false)
     setDuplicateWordInfo(null)
-    setLastDuplicateCheck(null)
-    setHasNavigatedToCollection(false)
-  }
-
-  const handleDismissDuplicate = () => {
-    setInputWord('')
-    clearAnalysis()
-    setIsAlreadyInCollection(false)
-    setDuplicateWordInfo(null)
-    setLastDuplicateCheck(null)
     setHasNavigatedToCollection(false)
   }
 
@@ -196,17 +189,17 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         onCancel={handleCancel}
       />
 
+      {/* Duplicate banner when the word already exists */}
       {isAlreadyInCollection && duplicateWordInfo && (
-        <DuplicateWordInfo
+        <DuplicateBanner
           duplicateWord={duplicateWordInfo}
           collections={collections}
-          onDismiss={handleDismissDuplicate}
           onNavigateToCollection={() => setHasNavigatedToCollection(true)}
         />
       )}
 
       {/* Word information takes maximum space */}
-      {analysisResult && !isAlreadyInCollection && !isCheckingDuplicate && (
+      {analysisResult && !isCheckingDuplicate && (
         <ViewThemed style={{ flex: 1, marginTop: 8 }}>
           <UniversalWordCard
             word={analysisResult}
