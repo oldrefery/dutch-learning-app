@@ -5,6 +5,7 @@ import { ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
 import { CompactWordInput } from './components/CompactWordInput'
+import { DuplicateWordInfo } from './components/DuplicateWordInfo'
 import {
   UniversalWordCard,
   WordCardPresets,
@@ -15,8 +16,6 @@ import { useAddWord } from './hooks/useAddWord'
 import { useCollections } from '@/hooks/useCollections'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { wordService } from '@/lib/supabase'
-import { ToastService } from '@/components/AppToast'
-import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 
 interface AddWordScreenProps {
@@ -28,6 +27,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const [inputWord, setInputWord] = useState('')
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
+  const [duplicateWordInfo, setDuplicateWordInfo] = useState<any>(null)
 
   const { currentUserId } = useApplicationStore()
   const { isPlayingAudio, playPronunciation } = useAudioPlayer()
@@ -56,6 +56,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     const checkForDuplicates = async () => {
       if (!analysisResult || !currentUserId) {
         setIsAlreadyInCollection(false)
+        setDuplicateWordInfo(null)
         return
       }
 
@@ -69,19 +70,11 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         )
         const isDuplicate = !!existingWord
         setIsAlreadyInCollection(isDuplicate)
-
-        if (isDuplicate) {
-          const articleText = analysisResult.article
-            ? `${analysisResult.article} `
-            : ''
-          ToastService.show(
-            `"${articleText}${analysisResult.dutch_lemma}" (${analysisResult.part_of_speech}) is already in your collection`,
-            ToastType.INFO
-          )
-        }
+        setDuplicateWordInfo(existingWord)
       } catch (error) {
         console.error('Error checking word existence:', error)
         setIsAlreadyInCollection(false)
+        setDuplicateWordInfo(null)
       } finally {
         setIsCheckingDuplicate(false)
       }
@@ -106,6 +99,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     Keyboard.dismiss()
 
     setIsAlreadyInCollection(false)
+    setDuplicateWordInfo(null)
     setIsCheckingDuplicate(true)
 
     clearAnalysis()
@@ -121,11 +115,8 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         )
         if (existingWord) {
           setIsAlreadyInCollection(true)
+          setDuplicateWordInfo(existingWord)
           setIsCheckingDuplicate(false)
-          ToastService.show(
-            `A variant of "${lowercaseWord}" is already in your collection`,
-            ToastType.INFO
-          )
           return
         }
       } catch (error) {
@@ -152,6 +143,13 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const handleCancel = () => {
     setInputWord('')
     clearAnalysis()
+    setIsAlreadyInCollection(false)
+    setDuplicateWordInfo(null)
+  }
+
+  const handleDismissDuplicate = () => {
+    setIsAlreadyInCollection(false)
+    setDuplicateWordInfo(null)
   }
 
   const handleForceRefresh = async () => {
@@ -192,6 +190,14 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         onCancel={handleCancel}
       />
 
+      {isAlreadyInCollection && duplicateWordInfo && (
+        <DuplicateWordInfo
+          duplicateWord={duplicateWordInfo}
+          collections={collections}
+          onDismiss={handleDismissDuplicate}
+        />
+      )}
+
       {/* Word information takes maximum space */}
       {analysisResult && !isAlreadyInCollection && (
         <ViewThemed style={{ flex: 1, marginTop: 8 }}>
@@ -212,7 +218,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         </ViewThemed>
       )}
 
-      {/* Floating Action Button for Add Word */}
       {analysisResult && !isAlreadyInCollection && (
         <FloatingActionButton
           onPress={handleAddWord}
@@ -223,7 +228,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         />
       )}
 
-      {/* Image Selector Modal */}
       {analysisResult && (
         <ImageSelector
           visible={showImageSelector}
