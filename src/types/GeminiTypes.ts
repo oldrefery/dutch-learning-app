@@ -1,4 +1,5 @@
 // Types for Gemini AI word analysis
+import { ExpressionType } from './ExpressionTypes'
 
 export interface WordAnalysisRequest {
   word: string
@@ -42,7 +43,7 @@ export interface WordAnalysisResponse {
 
   // Expression properties
   is_expression?: boolean
-  expression_type?: 'idiom' | 'phrase' | null
+  expression_type?: ExpressionType | null
 
   // Image URL
   image_url?: string
@@ -80,7 +81,7 @@ export interface GeminiAnalysisResult {
   } | null
   preposition?: string | null
   is_expression?: boolean
-  expression_type?: 'idiom' | 'phrase' | null
+  expression_type?: ExpressionType | null
   image_url?: string
   confidence_score?: number
   analysis_notes?: string

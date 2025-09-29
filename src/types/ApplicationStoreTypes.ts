@@ -109,7 +109,7 @@ export interface AnalyzedWord {
   is_irregular?: boolean
   is_reflexive?: boolean
   is_expression?: boolean
-  expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound'
+  expression_type?: ExpressionType
   is_separable?: boolean
   prefix_part?: string
   root_verb?: string
