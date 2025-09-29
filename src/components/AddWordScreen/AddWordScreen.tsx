@@ -3,12 +3,12 @@ import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
-import { WordInputSection } from './components/WordInputSection'
+import { FloatingActionButton } from '@/components/FloatingActionButton'
+import { CompactWordInput } from './components/CompactWordInput'
 import {
   UniversalWordCard,
   WordCardPresets,
 } from '@/components/UniversalWordCard'
-import { AddToCollectionSection } from './components/AddToCollectionSection'
 import { useAudioPlayer } from './hooks/useAudioPlayer'
 import { useWordAnalysis } from './hooks/useWordAnalysis'
 import { useAddWord } from './hooks/useAddWord'
@@ -161,7 +161,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
       .replace(/\s+/g, ' ')
     if (!normalizedWord) return
 
-    // Update input field with normalized text
     setInputWord(normalizedWord)
     await forceRefreshAnalysis(normalizedWord)
   }
@@ -177,52 +176,51 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         addWordScreenStyles.container,
         {
           paddingTop: insets.top,
-          paddingBottom: insets.bottom + 30, // Add extra space for tab bar
+          paddingBottom: insets.bottom,
         },
       ]}
     >
-      <WordInputSection
+      <CompactWordInput
         inputWord={inputWord}
         setInputWord={setInputWord}
         onAnalyze={handleAnalyze}
         isAnalyzing={isAnalyzing}
         isCheckingDuplicate={isCheckingDuplicate}
+        selectedCollection={selectedCollection}
+        collections={collections}
+        onCollectionSelect={setSelectedCollection}
+        onCancel={handleCancel}
       />
 
-      {analysisResult && (
-        <ViewThemed style={addWordScreenStyles.analysisContainer}>
-          {/* UniversalWordCard takes most of the space */}
-          <ViewThemed style={addWordScreenStyles.wordCardContainer}>
-            <UniversalWordCard
-              word={analysisResult}
-              metadata={analysisMetadata}
-              actions={{
-                ...WordCardPresets.analysis.actions,
-                isDuplicateChecking: isCheckingDuplicate,
-                isAlreadyInCollection: isAlreadyInCollection,
-              }}
-              isPlayingAudio={isPlayingAudio}
-              onPlayPronunciation={playPronunciation}
-              onChangeImage={openImageSelector}
-              onForceRefresh={handleForceRefresh}
-              style={addWordScreenStyles.universalWordCard}
-            />
-          </ViewThemed>
-
-          {/* Compact AddToCollectionSection at the bottom */}
-          {!isAlreadyInCollection && (
-            <ViewThemed style={addWordScreenStyles.addToCollectionContainer}>
-              <AddToCollectionSection
-                selectedCollection={selectedCollection}
-                onCollectionSelect={setSelectedCollection}
-                onAddWord={handleAddWord}
-                onCancel={handleCancel}
-                isAdding={isAdding}
-                collections={collections}
-              />
-            </ViewThemed>
-          )}
+      {/* Word information takes maximum space */}
+      {analysisResult && !isAlreadyInCollection && (
+        <ViewThemed style={{ flex: 1, marginTop: 8 }}>
+          <UniversalWordCard
+            word={analysisResult}
+            metadata={analysisMetadata}
+            actions={{
+              ...WordCardPresets.analysis.actions,
+              isDuplicateChecking: isCheckingDuplicate,
+              isAlreadyInCollection: isAlreadyInCollection,
+            }}
+            isPlayingAudio={isPlayingAudio}
+            onPlayPronunciation={playPronunciation}
+            onChangeImage={openImageSelector}
+            onForceRefresh={handleForceRefresh}
+            style={{ flex: 1 }}
+          />
         </ViewThemed>
+      )}
+
+      {/* Floating Action Button for Add Word */}
+      {analysisResult && !isAlreadyInCollection && (
+        <FloatingActionButton
+          onPress={handleAddWord}
+          disabled={isAdding}
+          loading={isAdding}
+          icon="checkmark"
+          label={`Add to ${selectedCollection?.name || 'Collection'}`}
+        />
       )}
 
       {/* Image Selector Modal */}
