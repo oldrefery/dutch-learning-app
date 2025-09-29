@@ -18,34 +18,6 @@ if (!devUserEmail || !devUserPassword) {
 // Re-export the client for backward compatibility
 export { supabase }
 
-// Development helper: sign in as a dev user for RLS to work
-export const initDevSession = async () => {
-  const devUserId = getDevUserId()
-
-  try {
-    // For development, we'll use the existing user session if available
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user || user.id !== devUserId) {
-      // Sign in with a real development user
-      // In production, this will be replaced with real authentication
-      const { error } = await supabase.auth.signInWithPassword({
-        email: devUserEmail,
-        password: devUserPassword,
-      })
-
-      if (error) {
-        console.error('Dev auth error:', error.message)
-        throw new Error(`Development authentication failed: ${error.message}`)
-      }
-    }
-  } catch {
-    // Continue without auth - we'll handle this gracefully
-  }
-}
-
 // Create a separate client for Edge Functions (also uses an anon key)
 export const supabaseFunctions = supabase
 
@@ -106,68 +78,50 @@ export const wordService = {
   ) {
     const normalizedLemma = dutchLemma.trim().toLowerCase()
     const normalizedPartOfSpeech = partOfSpeech || 'unknown'
-    const normalizedArticle = article || ''
+    // Normalize article: empty string or undefined should be treated as null for proper DB comparison
+    const normalizedArticle =
+      article && article.trim() !== '' ? article.trim() : null
 
-    const { data, error } = await supabase
+    console.log('🔍 WordService.checkWordExists called with:', {
+      userId,
+      originalLemma: dutchLemma,
+      normalizedLemma,
+      partOfSpeech,
+      normalizedPartOfSpeech,
+      article,
+      normalizedArticle,
+    })
+
+    let query = supabase
       .from('words')
       .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
       .eq('user_id', userId)
       .eq('dutch_lemma', normalizedLemma)
       .eq('part_of_speech', normalizedPartOfSpeech)
-      .eq('article', normalizedArticle)
+
+    // Handle null vs non-null article properly
+    if (normalizedArticle === null) {
+      query = query.is('article', null)
+    } else {
+      query = query.eq('article', normalizedArticle)
+    }
+
+    const { data, error } = await query
+
+    console.log('🔍 Database query result:', {
+      resultCount: data?.length || 0,
+      data,
+      error: error?.message,
+    })
 
     if (error) {
       throw new Error(`Failed to check word existence: ${error.message}`)
     }
 
-    return data.length > 0 ? data[0] : null
-  },
+    const result = data.length > 0 ? data[0] : null
+    console.log('🔍 WordService.checkWordExists returning:', result)
 
-  // Get duplicate words (same dutch_lemma)
-  async getDuplicateWords(userId: string) {
-    const { data, error } = await supabase
-      .from('words')
-      .select('dutch_lemma, word_id, created_at')
-      .eq('user_id', userId)
-      .order('dutch_lemma')
-
-    if (error) {
-      throw new Error(
-        `Failed to fetch words for duplicate check: ${error.message}`
-      )
-    }
-
-    // Group by dutch_lemma and find duplicates
-    const grouped = data.reduce(
-      (acc, word) => {
-        const lemma = word.dutch_lemma
-        if (!acc[lemma]) {
-          acc[lemma] = []
-        }
-        acc[lemma].push(word)
-        return acc
-      },
-      {} as Record<
-        string,
-        { dutch_lemma: string; word_id: string; created_at: string }[]
-      >
-    )
-
-    // Return only groups with more than one word
-    return Object.values(grouped).filter(group => group.length > 1)
-  },
-
-  // Remove duplicate word (keep the oldest one)
-  async removeDuplicateWord(userId: string, wordId: string) {
-    const { error } = await supabase
-      .from('words')
-      .delete()
-      .eq('word_id', wordId)
-      .eq('user_id', userId)
-
-    if (error) {
-      throw new Error(`Failed to remove duplicate word: ${error.message}`)
-    }
+    return result
   },
 
   // Get words due for review
@@ -244,7 +198,7 @@ export const wordService = {
     }
 
     // Create a clean word object with only valid database fields
-    const wordToInsert = {
+    const cleanWordData = {
       dutch_original: wordData.dutch_original || '',
       dutch_lemma: wordData.dutch_lemma || wordData.dutch_original || '',
       part_of_speech: wordData.part_of_speech || 'unknown',
@@ -273,9 +227,6 @@ export const wordService = {
       user_id: userId,
       collection_id: wordData.collection_id || null,
     }
-
-    // Use the prepared word data directly
-    const cleanWordData = wordToInsert
 
     const { data, error } = await supabase
       .from('words')

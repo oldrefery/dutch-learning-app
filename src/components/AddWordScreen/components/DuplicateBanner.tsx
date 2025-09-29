@@ -28,9 +28,17 @@ export function DuplicateBanner({
 }: DuplicateBannerProps) {
   const colorScheme = useColorScheme() ?? 'light'
 
+  console.log('🖼️ DuplicateBanner rendering with:', {
+    duplicateWord,
+    collectionsCount: collections.length,
+    colorScheme,
+  })
+
   const collection = collections.find(
     c => c.collection_id === duplicateWord.collection_id
   )
+
+  console.log('🖼️ Collection found:', collection)
 
   const handleNavigateToCollection = () => {
     onNavigateToCollection?.()
@@ -50,9 +58,8 @@ export function DuplicateBanner({
               ? Colors.dark.backgroundSecondary
               : Colors.background.secondary,
           borderColor:
-            colorScheme === 'dark'
-              ? Colors.dark.backgroundTertiary
-              : Colors.neutral[200],
+            colorScheme === 'dark' ? Colors.dark.tint : Colors.primary.DEFAULT,
+          borderWidth: 2,
         },
       ]}
     >
@@ -101,7 +108,6 @@ export function DuplicateBanner({
 const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
-    borderWidth: 1,
     padding: 16,
     marginHorizontal: 16,
     marginBottom: 8,

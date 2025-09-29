@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
-import { ViewThemed } from '@/components/Themed'
+import { ViewThemed, TextThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
 import { CompactWordInput } from './components/CompactWordInput'
@@ -17,6 +17,8 @@ import { useAddWord } from './hooks/useAddWord'
 import { useCollections } from '@/hooks/useCollections'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { wordService } from '@/lib/supabase'
+import { ToastService } from '@/components/AppToast'
+import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 
 interface DuplicateWordData {
@@ -67,11 +69,21 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   useEffect(() => {
     const checkForDuplicates = async () => {
       if (!analysisResult || !currentUserId) {
+        console.log('🔍 Duplicate check skipped - missing requirements:', {
+          hasAnalysisResult: !!analysisResult,
+          hasCurrentUserId: !!currentUserId,
+        })
         setIsAlreadyInCollection(false)
         setDuplicateWordInfo(null)
         setIsCheckingDuplicate(false)
         return
       }
+
+      console.log('🔍 Starting duplicate check for word:', {
+        word: analysisResult.dutch_lemma,
+        partOfSpeech: analysisResult.part_of_speech,
+        article: analysisResult.article,
+      })
 
       setIsCheckingDuplicate(true)
 
@@ -84,10 +96,31 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         )
         const isDuplicate = !!existingWord
 
+        console.log('🔍 Duplicate check result:', {
+          isDuplicate,
+          existingWord: existingWord
+            ? {
+                wordId: existingWord.word_id,
+                collectionId: existingWord.collection_id,
+                lemma: existingWord.dutch_lemma,
+              }
+            : null,
+        })
+
         setIsAlreadyInCollection(isDuplicate)
         setDuplicateWordInfo(existingWord)
+
+        if (isDuplicate) {
+          console.log(
+            '⚠️ Duplicate word detected! Banner should be visible now'
+          )
+          ToastService.show(
+            `Word "${analysisResult.dutch_lemma}" already exists in collection`,
+            ToastType.ERROR
+          )
+        }
       } catch (error) {
-        console.error('Error checking for duplicate word:', error)
+        console.error('❌ Error checking for duplicate word:', error)
         setIsAlreadyInCollection(false)
         setDuplicateWordInfo(null)
       } finally {
@@ -190,6 +223,15 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
       />
 
       {/* Duplicate banner when the word already exists */}
+      {(() => {
+        console.log('🖼️ Banner render conditions:', {
+          isAlreadyInCollection,
+          hasDuplicateWordInfo: !!duplicateWordInfo,
+          isCheckingDuplicate,
+          shouldShowBanner: isAlreadyInCollection && duplicateWordInfo,
+        })
+        return null
+      })()}
       {isAlreadyInCollection && duplicateWordInfo && (
         <DuplicateBanner
           duplicateWord={duplicateWordInfo}
@@ -199,7 +241,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
       )}
 
       {/* Word information takes maximum space */}
-      {analysisResult && !isCheckingDuplicate && (
+      {analysisResult && (
         <ViewThemed style={{ flex: 1, marginTop: 8 }}>
           <UniversalWordCard
             word={analysisResult}
@@ -215,6 +257,27 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
             onForceRefresh={handleForceRefresh}
             style={{ flex: 1 }}
           />
+
+          {/* Loading indicator while checking duplicates */}
+          {isCheckingDuplicate && (
+            <ViewThemed
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 12,
+              }}
+            >
+              <TextThemed style={{ fontSize: 14, opacity: 0.7 }}>
+                Checking for duplicates...
+              </TextThemed>
+            </ViewThemed>
+          )}
         </ViewThemed>
       )}
 
