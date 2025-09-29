@@ -4,6 +4,7 @@ import { calculateNextReview } from '@/utils/srs'
 import type { Word } from '@/types/database'
 import type { ReviewAssessment } from '@/types/ApplicationStoreTypes'
 import { SRS_PARAMS } from '@/constants/SRSConstants'
+import * as Sentry from '@sentry/react-native'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -17,34 +18,6 @@ if (!devUserEmail || !devUserPassword) {
 
 // Re-export the client for backward compatibility
 export { supabase }
-
-// Development helper: sign in as a dev user for RLS to work
-export const initDevSession = async () => {
-  const devUserId = getDevUserId()
-
-  try {
-    // For development, we'll use the existing user session if available
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user || user.id !== devUserId) {
-      // Sign in with a real development user
-      // In production, this will be replaced with real authentication
-      const { error } = await supabase.auth.signInWithPassword({
-        email: devUserEmail,
-        password: devUserPassword,
-      })
-
-      if (error) {
-        console.error('Dev auth error:', error.message)
-        throw new Error(`Development authentication failed: ${error.message}`)
-      }
-    }
-  } catch {
-    // Continue without auth - we'll handle this gracefully
-  }
-}
 
 // Create a separate client for Edge Functions (also uses an anon key)
 export const supabaseFunctions = supabase
@@ -106,68 +79,31 @@ export const wordService = {
   ) {
     const normalizedLemma = dutchLemma.trim().toLowerCase()
     const normalizedPartOfSpeech = partOfSpeech || 'unknown'
-    const normalizedArticle = article || ''
+    // Normalize article: empty string or undefined should be treated as null for proper DB comparison
+    const normalizedArticle =
+      article && article.trim() !== '' ? article.trim() : null
 
-    const { data, error } = await supabase
+    let query = supabase
       .from('words')
       .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
       .eq('user_id', userId)
       .eq('dutch_lemma', normalizedLemma)
       .eq('part_of_speech', normalizedPartOfSpeech)
-      .eq('article', normalizedArticle)
+
+    // Handle null vs non-null article properly
+    if (normalizedArticle === null) {
+      query = query.is('article', null)
+    } else {
+      query = query.eq('article', normalizedArticle)
+    }
+
+    const { data, error } = await query
 
     if (error) {
       throw new Error(`Failed to check word existence: ${error.message}`)
     }
 
     return data.length > 0 ? data[0] : null
-  },
-
-  // Get duplicate words (same dutch_lemma)
-  async getDuplicateWords(userId: string) {
-    const { data, error } = await supabase
-      .from('words')
-      .select('dutch_lemma, word_id, created_at')
-      .eq('user_id', userId)
-      .order('dutch_lemma')
-
-    if (error) {
-      throw new Error(
-        `Failed to fetch words for duplicate check: ${error.message}`
-      )
-    }
-
-    // Group by dutch_lemma and find duplicates
-    const grouped = data.reduce(
-      (acc, word) => {
-        const lemma = word.dutch_lemma
-        if (!acc[lemma]) {
-          acc[lemma] = []
-        }
-        acc[lemma].push(word)
-        return acc
-      },
-      {} as Record<
-        string,
-        { dutch_lemma: string; word_id: string; created_at: string }[]
-      >
-    )
-
-    // Return only groups with more than one word
-    return Object.values(grouped).filter(group => group.length > 1)
-  },
-
-  // Remove duplicate word (keep the oldest one)
-  async removeDuplicateWord(userId: string, wordId: string) {
-    const { error } = await supabase
-      .from('words')
-      .delete()
-      .eq('word_id', wordId)
-      .eq('user_id', userId)
-
-    if (error) {
-      throw new Error(`Failed to remove duplicate word: ${error.message}`)
-    }
   },
 
   // Get words due for review
@@ -244,7 +180,7 @@ export const wordService = {
     }
 
     // Create a clean word object with only valid database fields
-    const wordToInsert = {
+    const cleanWordData = {
       dutch_original: wordData.dutch_original || '',
       dutch_lemma: wordData.dutch_lemma || wordData.dutch_original || '',
       part_of_speech: wordData.part_of_speech || 'unknown',
@@ -273,9 +209,6 @@ export const wordService = {
       user_id: userId,
       collection_id: wordData.collection_id || null,
     }
-
-    // Use the prepared word data directly
-    const cleanWordData = wordToInsert
 
     const { data, error } = await supabase
       .from('words')
@@ -385,29 +318,20 @@ export const userService = {
   // Delete a user account and all associated data
   async deleteAccount() {
     try {
-      console.log('🗑️ Starting account deletion process...')
-
       // Get the current session for authorization
-      console.log('📱 Getting current session...')
       const {
         data: { session },
         error: sessionError,
       } = await supabase.auth.getSession()
 
-      console.log('📱 Session result:', {
-        sessionExists: !!session,
-        sessionError: sessionError?.message,
-        userId: session?.user?.id,
-        tokenExists: !!session?.access_token,
-      })
-
       if (sessionError || !session) {
-        console.error('❌ No active session found:', sessionError?.message)
-        throw new Error('No active session found')
+        Sentry.captureException(
+          '❌ No active session found:',
+          sessionError?.message
+        )
       }
 
       // Call Edge Function with auth token
-      console.log('🚀 Calling delete-account Edge Function...')
       const { data, error } = await supabase.functions.invoke(
         'delete-account',
         {
@@ -419,33 +343,24 @@ export const userService = {
 
       // If deletion succeeded, immediately sign out to invalidate any remaining tokens
       if (!error && data?.success) {
-        console.log(
-          '🔐 Account deleted successfully, signing out to invalidate tokens...'
-        )
         await supabase.auth.signOut()
       }
 
-      console.log('🚀 Edge Function response:', {
-        data,
-        error: error?.message,
-        errorDetails: error,
-      })
-
       if (error) {
-        console.error('❌ Edge Function error:', error)
-        throw new Error(`Failed to delete account: ${error.message}`)
+        Sentry.captureException(
+          '❌ Edge Function error:',
+          error,
+          `\nFailed to delete account: ${error.message}`
+        )
       }
 
       if (!data.success) {
-        console.error('❌ Account deletion failed:', data.error)
-        throw new Error(data.error || 'Account deletion failed')
+        Sentry.captureException('❌ Account deletion failed:', data.error)
       }
 
-      console.log('✅ Account successfully deleted!')
       return { success: true }
     } catch (error) {
-      console.error('💥 Account deletion error:', error)
-      throw error
+      Sentry.captureException('💥 Account deletion error:', error)
     }
   },
 }

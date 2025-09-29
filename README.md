@@ -138,6 +138,25 @@ Complete collection sharing functionality that allows users to share their word 
 - **Smart Word Selection**: Automatic detection and marking of duplicate words with collection source
 - **Batch Import**: Select multiple words for efficient batch importing to target collections
 
+### 🔍 Collection Search
+
+Fast and intuitive search functionality within collections:
+
+- **Real-time Search**: Instant search with 300ms debounce for optimal performance
+- **Dutch Word Focus**: Search specifically by Dutch lemma for precise results
+- **Substring Matching**: Find words by typing any part of the word (beginning, middle, or end)
+- **Smart Result Counter**: Shows "X of Y words" to indicate search results
+- **HIG-Compliant Design**: 44px touch targets and platform-specific clear buttons
+- **Theme Support**: Full dark/light mode with proper contrast and accessibility
+- **Empty State Handling**: Different messages for "no search results" vs "no words in collection"
+
+#### Search Features:
+
+- **Debounced Input**: Prevents excessive filtering while maintaining responsive feedback
+- **Local State Management**: Text appears instantly while search is optimized in the background
+- **Platform-Specific UX**: Native iOS clear button, custom Android implementation
+- **Accessibility**: Proper focus states, semantic colors, and touch target sizes
+
 ### New User Experience:
 
 For new users who don&apos;t have any collections yet, the app automatically creates a default collection called &quot;My Dutch Words&quot; when they add their first word. This eliminates the barrier of having to create a collection before being able to add words, making the onboarding experience seamless and intuitive.

@@ -9,11 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Collection Search**: Real-time search functionality for words in collections
+  - Debounced search input (300ms delay) with instant visual feedback
+  - Search by Dutch lemma with substring matching support
+  - Result counter showing "X of Y words" when searching
+  - Platform-specific clear button behavior (iOS native, Android custom)
+  - Full dark/light theme support with HIG-compliant design
+  - Empty state handling for search results vs no words scenarios
+
 ### Changed
 
 ### Fixed
 
+- **Duplicate Word Detection**: Enhanced duplicate detection with improved UX
+  - Fixed article handling in database queries (null vs empty string)
+  - Added visual enhancements to duplicate banner with colored borders
+  - Improved loading states during duplicate checking process
+  - Added toast notifications when duplicates are detected
+
 ### Technical
+
+- **New Components**: Added reusable search infrastructure
+  - `CollectionSearchBar`: Feature-complete search input component
+  - `useDebounce`: Reusable hook for performance optimization
+  - `UIConstants`: Centralized timing and interaction constants
+- **Performance Optimizations**: Optimized search and filtering
+  - Memoized word filtering with `useMemo` for efficient re-renders
+  - Local state management for responsive text input
+  - Debounced search calls to reduce unnecessary filtering operations
 
 ---
 
