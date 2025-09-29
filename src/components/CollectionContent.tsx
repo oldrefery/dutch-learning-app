@@ -1,10 +1,16 @@
-import React, { useRef, useEffect } from 'react'
-import { FlatList, RefreshControl, useColorScheme } from 'react-native'
+import React, { useRef, useEffect, useState, useMemo } from 'react'
+import {
+  FlatList,
+  RefreshControl,
+  useColorScheme,
+  StyleSheet,
+} from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
+import CollectionSearchBar from '@/components/CollectionSearchBar'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
 import type { Word } from '@/types/database'
 
@@ -44,11 +50,25 @@ export default function CollectionContent({
 }: CollectionContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const flatListRef = useRef<FlatList>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Filter words based on search query (Dutch lemma only)
+  const filteredWords = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return words
+    }
+
+    const query = searchQuery.toLowerCase().trim()
+    return words.filter(word => {
+      // Search only in Dutch lemma (main word)
+      return word.dutch_lemma.toLowerCase().includes(query)
+    })
+  }, [words, searchQuery])
 
   // Scroll to highlighted word when component mounts or words change
   useEffect(() => {
-    if (highlightWordId && words.length > 0) {
-      const wordIndex = words.findIndex(
+    if (highlightWordId && filteredWords.length > 0) {
+      const wordIndex = filteredWords.findIndex(
         word => word.word_id === highlightWordId
       )
       if (wordIndex !== -1) {
@@ -64,7 +84,7 @@ export default function CollectionContent({
         return () => clearTimeout(timer)
       }
     }
-  }, [highlightWordId, words])
+  }, [highlightWordId, filteredWords])
 
   const renderHeader = () => (
     <ViewThemed style={styles.headerContent}>
@@ -73,36 +93,49 @@ export default function CollectionContent({
         wordsForReview={stats.wordsForReview}
         onPress={onStartReview}
       />
+      <CollectionSearchBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        placeholder="Search Dutch words..."
+        resultCount={filteredWords.length}
+        totalCount={words.length}
+      />
     </ViewThemed>
   )
 
-  const renderEmptyComponent = () => (
-    <ViewThemed style={styles.emptyContainer}>
-      <Ionicons
-        name="book-outline"
-        size={48}
-        color={
-          colorScheme === 'dark'
-            ? Colors.dark.textTertiary
-            : Colors.neutral[400]
-        }
-      />
-      <TextThemed
-        style={styles.emptyText}
-        lightColor={Colors.neutral[700]}
-        darkColor={Colors.dark.text}
-      >
-        No words in this collection
-      </TextThemed>
-      <TextThemed
-        style={styles.emptySubtext}
-        lightColor={Colors.neutral[500]}
-        darkColor={Colors.dark.textSecondary}
-      >
-        Add some words to get started
-      </TextThemed>
-    </ViewThemed>
-  )
+  const renderEmptyComponent = () => {
+    const isSearching = searchQuery.trim().length > 0
+
+    return (
+      <ViewThemed style={styles.emptyContainer}>
+        <Ionicons
+          name={isSearching ? 'search-outline' : 'book-outline'}
+          size={48}
+          color={
+            colorScheme === 'dark'
+              ? Colors.dark.textTertiary
+              : Colors.neutral[400]
+          }
+        />
+        <TextThemed
+          style={styles.emptyText}
+          lightColor={Colors.neutral[700]}
+          darkColor={Colors.dark.text}
+        >
+          {isSearching ? 'No words found' : 'No words in this collection'}
+        </TextThemed>
+        <TextThemed
+          style={styles.emptySubtext}
+          lightColor={Colors.neutral[500]}
+          darkColor={Colors.dark.textSecondary}
+        >
+          {isSearching
+            ? `No words match "${searchQuery}"`
+            : 'Add some words to get started'}
+        </TextThemed>
+      </ViewThemed>
+    )
+  }
 
   const keyExtractor = (item: Word) => item.word_id
 
@@ -123,7 +156,7 @@ export default function CollectionContent({
     <FlatList
       ref={flatListRef}
       style={styles.wordsSection}
-      data={words}
+      data={filteredWords}
       ListHeaderComponent={renderHeader}
       keyExtractor={keyExtractor}
       onScrollToIndexFailed={info => {
@@ -146,7 +179,7 @@ export default function CollectionContent({
   )
 }
 
-const styles = {
+const styles = StyleSheet.create({
   headerContent: {
     paddingTop: 16,
     paddingHorizontal: 16,
@@ -172,4 +205,4 @@ const styles = {
     fontSize: 14,
     textAlign: 'center',
   },
-}
+})
