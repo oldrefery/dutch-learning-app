@@ -17,6 +17,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.2 Build 32] - 2025-09-29
+
+### Added
+
+- **Collection Word Management**: Complete word management system within collections
+  - Leading swipe gesture on words to move between collections with haptic feedback
+  - Liquid Glass design tab bar center button for quick word addition
+  - Floating action button in collection detail screens with blur effects
+  - Move to Collection modal with Liquid Glass effects using expo-blur
+  - Word count display in collection selectors for better visibility
+
+- **Enhanced Expression Type System**: Comprehensive expression classification support
+  - Added 5 new expression types: proverb, saying, fixed_expression, interjection, abbreviation
+  - Created ExpressionType enum with 9 total expression types for consistency
+  - Updated Gemini AI prompts with detailed instructions for all expression types
+  - Enhanced validation to support punctuation marks for interjections and expressions
+
+- **Settings Screen Enhancement**: Improved user information display
+  - Added user profile information display
+  - Enhanced app version details and build information
+  - Improved layout and visual hierarchy
+
+### Changed
+
+- **Expression Type Architecture**: Migrated from string literals to TypeScript enum
+  - Centralized ExpressionType enum for type safety across all components
+  - Updated all type definitions to use consistent ExpressionType enum
+  - Enhanced Gemini prompts with comprehensive expression type classification
+
+### Fixed
+
+- **Swipe Gesture Issues**: Resolved swipe position reset problems
+  - Fixed leading swipe not returning to original position when modal is cancelled
+  - Added proper state tracking for modal visibility per word
+  - Improved swipe reset logic when user cancels collection selection
+
+- **Collection Word Count Display**: Fixed incorrect word count in collection selectors
+  - Implemented accurate word count calculation for collection move modal
+  - Enhanced collection display with real-time word count updates
+
+- **Expression Type Validation**: Fixed database constraint violations for new expression types
+  - Updated Supabase database constraint to allow all 9 expression types
+  - Fixed Edge Function validation to support punctuation marks (!, ?, ., etc.)
+  - Enhanced error handling and logging for expression type processing
+
+### Technical
+
+- **iOS Design System Integration**: Implemented Apple HIG and Liquid Glass design patterns
+  - Added expo-blur library for authentic glass effects
+  - Integrated haptic feedback throughout gesture interactions
+  - Created reusable Liquid Glass components for consistent UI
+  - Followed iOS 26 design guidelines for gesture patterns
+
+- **Database Schema Updates**: Enhanced expression type support
+  - Database migration for expression_type constraint with all 9 types
+  - Updated Edge Function validation to support extended character sets
+  - Improved error logging and debugging capabilities
+
+- **Gesture System Enhancement**: Advanced swipe gesture implementation
+  - React Native Gesture Handler integration for smooth swipe interactions
+  - Progressive disclosure pattern (short vs long swipe behaviors)
+  - Proper gesture composition to prevent conflicts with other touch handlers
+
+---
+
 ## [1.2.1 Build 31] - 2025-09-28
 
 ### Fixed

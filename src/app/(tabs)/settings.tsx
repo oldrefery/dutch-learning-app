@@ -134,6 +134,45 @@ export default function SettingsScreen() {
           lightColor={Colors.background.secondary}
           darkColor={Colors.dark.backgroundSecondary}
         >
+          <TextThemed style={styles.sectionTitle}>About</TextThemed>
+          <ViewThemed style={styles.appInfoContainer}>
+            <TextThemed
+              style={styles.appInfoLabel}
+              lightColor={Colors.neutral[600]}
+              darkColor={Colors.dark.textSecondary}
+            >
+              De Woordenaar
+            </TextThemed>
+            <TextThemed style={styles.appInfoVersion}>
+              Version {getAppVersion()}
+            </TextThemed>
+          </ViewThemed>
+        </ViewThemed>
+
+        <ViewThemed
+          style={styles.section}
+          lightColor={Colors.background.secondary}
+          darkColor={Colors.dark.backgroundSecondary}
+        >
+          <TextThemed style={styles.sectionTitle}>User Information</TextThemed>
+          {user?.email && (
+            <ViewThemed style={styles.userInfoContainer}>
+              <TextThemed
+                style={styles.userInfoLabel}
+                lightColor={Colors.neutral[600]}
+                darkColor={Colors.dark.textSecondary}
+              >
+                Email:
+              </TextThemed>
+              <TextThemed style={styles.userInfoValue}>{user.email}</TextThemed>
+            </ViewThemed>
+          )}
+        </ViewThemed>
+        <ViewThemed
+          style={styles.section}
+          lightColor={Colors.background.secondary}
+          darkColor={Colors.dark.backgroundSecondary}
+        >
           <TextThemed style={styles.sectionTitle}>Account</TextThemed>
 
           <TouchableOpacity
@@ -198,46 +237,6 @@ export default function SettingsScreen() {
             Permanently delete your account and all data. This action cannot be
             undone.
           </TextThemed>
-        </ViewThemed>
-
-        <ViewThemed
-          style={styles.section}
-          lightColor={Colors.background.secondary}
-          darkColor={Colors.dark.backgroundSecondary}
-        >
-          <TextThemed style={styles.sectionTitle}>User Information</TextThemed>
-          {user?.email && (
-            <ViewThemed style={styles.userInfoContainer}>
-              <TextThemed
-                style={styles.userInfoLabel}
-                lightColor={Colors.neutral[600]}
-                darkColor={Colors.dark.textSecondary}
-              >
-                Email:
-              </TextThemed>
-              <TextThemed style={styles.userInfoValue}>{user.email}</TextThemed>
-            </ViewThemed>
-          )}
-        </ViewThemed>
-
-        <ViewThemed
-          style={styles.section}
-          lightColor={Colors.background.secondary}
-          darkColor={Colors.dark.backgroundSecondary}
-        >
-          <TextThemed style={styles.sectionTitle}>About</TextThemed>
-          <ViewThemed style={styles.appInfoContainer}>
-            <TextThemed
-              style={styles.appInfoLabel}
-              lightColor={Colors.neutral[600]}
-              darkColor={Colors.dark.textSecondary}
-            >
-              De Woordenaar
-            </TextThemed>
-            <TextThemed style={styles.appInfoVersion}>
-              Version {getAppVersion()}
-            </TextThemed>
-          </ViewThemed>
         </ViewThemed>
       </ScrollView>
     </ViewThemed>

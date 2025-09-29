@@ -5,7 +5,7 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useCollections } from '@/hooks/useCollections'
 import type { Collection, GeminiWordAnalysis } from '@/types/database'
 
-export const useAddWord = () => {
+export const useAddWord = (preselectedCollectionId?: string) => {
   const [isAdding, setIsAdding] = useState(false)
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null)
@@ -14,12 +14,21 @@ export const useAddWord = () => {
   const { saveAnalyzedWord, clearError } = useApplicationStore()
   const { collections } = useCollections()
 
-  // Auto-select the first collection if available and none selected
+  // Auto-select a preselected collection or first collection if available and none selected
   useEffect(() => {
     if (collections.length > 0 && !selectedCollection) {
+      if (preselectedCollectionId) {
+        const preselectedCollection = collections.find(
+          c => c.collection_id === preselectedCollectionId
+        )
+        if (preselectedCollection) {
+          setSelectedCollection(preselectedCollection)
+          return
+        }
+      }
       setSelectedCollection(collections[0])
     }
-  }, [collections, selectedCollection])
+  }, [collections, selectedCollection, preselectedCollectionId])
 
   const addWord = async (analysisResult: GeminiWordAnalysis) => {
     setIsAdding(true)

@@ -1,4 +1,5 @@
 import type { Collection } from '@/types/database'
+import { ExpressionType } from '@/types/ExpressionTypes'
 
 export interface AnalysisResult {
   dutch_lemma: string
@@ -7,7 +8,7 @@ export interface AnalysisResult {
   article?: 'de' | 'het' // Article for nouns
   is_reflexive?: boolean // For reflexive verbs
   is_expression?: boolean // For expressions/idioms
-  expression_type?: 'idiom' | 'phrase' | 'collocation' | 'compound' // Type of expression
+  expression_type?: ExpressionType // Type of expression
   is_separable?: boolean // For separable verbs
   prefix_part?: string // Separable prefix (op, aan, etc.)
   root_verb?: string // Root verb part

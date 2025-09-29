@@ -18,7 +18,11 @@ import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 
-export function AddWordScreen() {
+interface AddWordScreenProps {
+  preselectedCollectionId?: string
+}
+
+export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const [inputWord, setInputWord] = useState('')
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
@@ -42,7 +46,7 @@ export function AddWordScreen() {
     addWord,
     openImageSelector,
     closeImageSelector,
-  } = useAddWord()
+  } = useAddWord(preselectedCollectionId)
   const { collections } = useCollections()
 
   // Check for duplicates after analysis is complete
@@ -85,7 +89,7 @@ export function AddWordScreen() {
   }, [analysisResult, currentUserId])
 
   const handleAnalyze = async () => {
-    // Normalize input: trim, remove periods, replace multiple spaces with single space
+    // Normalize input: trim, remove periods, replace multiple spaces with a single space
     const normalizedWord = inputWord
       .trim()
       .replace(/\./g, '')
@@ -95,16 +99,13 @@ export function AddWordScreen() {
       return
     }
 
-    // Update input field with normalized text
     setInputWord(normalizedWord)
 
-    // Hide the keyboard immediately when analysis starts
     Keyboard.dismiss()
 
-    // Reset the duplicate state when starting new analysis
     setIsAlreadyInCollection(false)
     setIsCheckingDuplicate(true)
-    // Clear previous analysis result
+
     clearAnalysis()
 
     const lowercaseWord = normalizedWord.toLowerCase()

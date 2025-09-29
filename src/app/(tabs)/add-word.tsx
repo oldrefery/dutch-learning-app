@@ -1,6 +1,9 @@
 import React from 'react'
+import { useLocalSearchParams } from 'expo-router'
 import { AddWordScreen } from '@/components/AddWordScreen'
 
 export default function AddWordScreenPage() {
-  return <AddWordScreen />
+  const { collectionId } = useLocalSearchParams<{ collectionId?: string }>()
+
+  return <AddWordScreen preselectedCollectionId={collectionId} />
 }

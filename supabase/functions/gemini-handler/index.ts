@@ -134,7 +134,6 @@ Deno.serve(async (req: Request) => {
     }
 
     // Cache miss or force refresh - call Gemini API
-
     const prompt = formatWordAnalysisPrompt(word)
     const geminiResponse = await callGeminiAPI(prompt)
     const analysis = parseGeminiResponse(geminiResponse)
@@ -231,7 +230,9 @@ Deno.serve(async (req: Request) => {
   } catch (error) {
     console.error(
       '❌ Gemini handler error:',
-      error instanceof Error ? error.message : 'Unknown error'
+      error instanceof Error ? error.message : 'Unknown error',
+      'Stack:',
+      error instanceof Error ? error.stack : 'No stack trace'
     )
 
     // Send to Sentry

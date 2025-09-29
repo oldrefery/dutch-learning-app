@@ -76,9 +76,9 @@ export function validateWordInput(word: string): boolean {
     return false
   }
 
-  // Check for valid Dutch characters
+  // Check for valid Dutch characters, including punctuation for interjections
   const dutchPattern =
-    /^[a-zA-ZàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞß\s\-']+$/
+    /^[a-zA-ZàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞß\s\-'!?.,;:]+$/
   return dutchPattern.test(trimmedWord)
 }
 

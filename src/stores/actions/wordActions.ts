@@ -244,6 +244,37 @@ export const createWordActions = (
     }
   },
 
+  moveWordToCollection: async (wordId: string, newCollectionId: string) => {
+    try {
+      const updatedWordData = await wordService.moveWordToCollection(
+        wordId,
+        newCollectionId
+      )
+      const currentWords = get().words
+      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
+
+      if (wordIndex !== -1) {
+        const updatedWords = [...currentWords]
+        updatedWords[wordIndex] = updatedWordData
+        set({ words: updatedWords })
+      }
+      return updatedWordData
+    } catch (error) {
+      console.error('Error moving word to collection:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'moveWordToCollection' },
+        extra: { wordId, newCollectionId },
+      })
+      set({
+        error: {
+          message: 'Failed to move word to collection',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+        },
+      })
+      throw error
+    }
+  },
+
   addWordsToCollection: async (
     collectionId: string,
     words: Partial<import('@/types/database').Word>[]

@@ -1,14 +1,19 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity, useColorScheme } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
+import { BlurView } from 'expo-blur'
+import { Ionicons } from '@expo/vector-icons'
+import * as Haptics from 'expo-haptics'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { useImageSelector } from '@/hooks/useImageSelector'
 import { useCollectionDetail } from '@/hooks/useCollectionDetail'
 import { Colors } from '@/constants/Colors'
+import { ROUTES } from '@/constants/Routes'
 import CollectionDetailHeader from '@/components/CollectionDetailHeader'
 import CollectionContent from '@/components/CollectionContent'
 import WordDetailModal from '@/components/WordDetailModal'
 import ImageSelector from '@/components/ImageSelector'
+import MoveToCollectionModal from '@/components/MoveToCollectionModal'
 
 export default function CollectionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -22,6 +27,10 @@ export default function CollectionDetailScreen() {
     selectedWord,
     modalVisible,
     isSharing,
+    moveModalVisible,
+    wordToMove,
+    collections,
+    words,
     handleRefresh,
     handleWordPress,
     handleCloseModal,
@@ -32,10 +41,21 @@ export default function CollectionDetailScreen() {
     handleCopyCode,
     handleShareCollection,
     handleStopSharing,
+    handleMoveToCollection,
+    handleCloseMoveModal,
+    handleSelectTargetCollection,
   } = useCollectionDetail(id!)
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
+
+  const handleQuickAddWord = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+    router.push({
+      pathname: ROUTES.TABS.ADD_WORD,
+      params: { collectionId: collection?.collection_id },
+    })
+  }
 
   if (!collection) {
     return (
@@ -97,7 +117,49 @@ export default function CollectionDetailScreen() {
           onWordPress={handleWordPress}
           onDeleteWord={handleDeleteWord}
           onStartReview={handleStartReview}
+          onMoveToCollection={handleMoveToCollection}
+          moveModalVisible={moveModalVisible}
+          wordBeingMoved={wordToMove}
         />
+
+        {/* Floating Action Button */}
+        <TouchableOpacity
+          style={[
+            styles.fab,
+            {
+              shadowColor:
+                colorScheme === 'dark'
+                  ? Colors.primary.darkMode
+                  : Colors.primary.DEFAULT,
+            },
+          ]}
+          onPress={handleQuickAddWord}
+          activeOpacity={0.8}
+        >
+          <BlurView
+            style={styles.fabBlur}
+            intensity={90}
+            tint={colorScheme === 'dark' ? 'dark' : 'light'}
+          >
+            <ViewThemed
+              style={[
+                styles.fabInner,
+                {
+                  backgroundColor:
+                    colorScheme === 'dark'
+                      ? Colors.primary.darkMode
+                      : Colors.primary.DEFAULT,
+                },
+              ]}
+            >
+              <Ionicons
+                name="add"
+                size={28}
+                color={Colors.background.primary}
+              />
+            </ViewThemed>
+          </BlurView>
+        </TouchableOpacity>
       </ViewThemed>
 
       <WordDetailModal
@@ -119,6 +181,15 @@ export default function CollectionDetailScreen() {
           examples={selectedWord.examples || undefined}
         />
       )}
+
+      <MoveToCollectionModal
+        visible={moveModalVisible}
+        onClose={handleCloseMoveModal}
+        onSelectCollection={handleSelectTargetCollection}
+        collections={collections}
+        words={words}
+        currentCollectionId={collection?.collection_id}
+      />
     </>
   )
 }
@@ -147,5 +218,32 @@ const styles = StyleSheet.create({
     color: Colors.primary.DEFAULT,
     fontSize: 16,
     fontWeight: '500',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  fabBlur: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 30,
+    overflow: 'hidden',
+  },
+  fabInner: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
 })
