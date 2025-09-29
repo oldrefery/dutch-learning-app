@@ -23,8 +23,10 @@ import { reviewScreenStyles } from '@/styles/ReviewScreenStyles'
 import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word } from '@/types/database'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function ReviewScreen() {
+  const insets = useSafeAreaInsets()
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
@@ -277,7 +279,12 @@ export default function ReviewScreen() {
   }
 
   return (
-    <ViewThemed style={reviewScreenStyles.container}>
+    <ViewThemed
+      style={[
+        reviewScreenStyles.container,
+        { paddingBottom: insets.bottom + 60, paddingTop: insets.top },
+      ]}
+    >
       <ViewThemed style={reviewScreenStyles.progressContainer}>
         <TextThemed style={reviewScreenStyles.progressText}>
           {currentWordNumber} / {totalWords}

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -19,6 +20,7 @@ import { styles } from '@/styles/CollectionsScreen.styles'
 import type { Collection } from '@/types/database'
 
 export default function CollectionsScreen() {
+  const insets = useSafeAreaInsets()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [renameModal, setRenameModal] = useState<{
@@ -195,7 +197,15 @@ export default function CollectionsScreen() {
 
   if (error) {
     return (
-      <ViewThemed style={styles.container}>
+      <ViewThemed
+        style={[
+          styles.container,
+          {
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom, // Add extra space for tab bar
+          },
+        ]}
+      >
         <ViewThemed style={styles.errorContainer}>
           <TextThemed style={styles.errorText}>
             Error: {error.message}
@@ -221,7 +231,15 @@ export default function CollectionsScreen() {
   }
 
   return (
-    <ViewThemed style={styles.container}>
+    <ViewThemed
+      style={[
+        styles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom + 80, // Add extra space for tab bar
+        },
+      ]}
+    >
       <StatsCard stats={stats} loading={collectionsLoading} />
 
       <ViewThemed style={styles.reviewSection}>

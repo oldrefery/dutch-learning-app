@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Keyboard } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { WordInputSection } from './components/WordInputSection'
@@ -23,6 +24,7 @@ interface AddWordScreenProps {
 }
 
 export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
+  const insets = useSafeAreaInsets()
   const [inputWord, setInputWord] = useState('')
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
@@ -170,7 +172,15 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   }
 
   return (
-    <ViewThemed style={addWordScreenStyles.container}>
+    <ViewThemed
+      style={[
+        addWordScreenStyles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom + 30, // Add extra space for tab bar
+        },
+      ]}
+    >
       <WordInputSection
         inputWord={inputWord}
         setInputWord={setInputWord}

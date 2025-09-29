@@ -13,6 +13,8 @@ import {
   useColorScheme,
   StyleSheet,
   Platform,
+  PlatformColor,
+  DynamicColorIOS,
 } from 'react-native'
 import { BlurView } from 'expo-blur'
 import * as Haptics from 'expo-haptics'
@@ -191,9 +193,14 @@ export default function TabLayout() {
               styles.reviewBadge,
               {
                 backgroundColor:
-                  colorScheme === 'dark'
-                    ? Colors.error.darkMode
-                    : Colors.error.DEFAULT,
+                  Platform.OS === 'ios'
+                    ? DynamicColorIOS({
+                        light: Colors.error.DEFAULT,
+                        dark: Colors.error.darkMode,
+                      })
+                    : colorScheme === 'dark'
+                      ? Colors.error.darkMode
+                      : Colors.error.DEFAULT,
               },
             ]}
           >
@@ -243,8 +250,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 12,
     elevation: 8,
-    shadowColor: Colors.primary.DEFAULT,
-    shadowOpacity: 0.3,
+    shadowColor:
+      Platform.OS === 'ios'
+        ? PlatformColor('systemBlue')
+        : Colors.primary.DEFAULT,
+    shadowOpacity: Platform.OS === 'ios' ? 0.35 : 0.3,
   },
   primaryIconBlur: {
     width: '100%',
@@ -259,15 +269,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor:
+      Platform.OS === 'ios'
+        ? DynamicColorIOS({
+            light: 'rgba(255, 255, 255, 0.4)',
+            dark: 'rgba(255, 255, 255, 0.2)',
+          })
+        : 'rgba(255, 255, 255, 0.3)',
+    backgroundColor:
+      Platform.OS === 'ios'
+        ? DynamicColorIOS({
+            light: 'rgba(255, 255, 255, 0.15)',
+            dark: 'rgba(255, 255, 255, 0.05)',
+          })
+        : 'rgba(255, 255, 255, 0.1)',
   },
   primaryIcon: {
     textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
-  // HIG-compliant badge styling for review count
+  // HIG-compliant badge styling for review count with platform-specific colors
   reviewBadge: {
     minWidth: 20,
     height: 20,
@@ -279,10 +301,16 @@ const styles = StyleSheet.create({
     top: -8,
     right: -8,
     borderWidth: 2,
-    borderColor: Colors.background.primary,
-    shadowColor: '#000',
+    borderColor:
+      Platform.OS === 'ios'
+        ? DynamicColorIOS({
+            light: Colors.background.primary,
+            dark: Colors.dark.background,
+          })
+        : Colors.background.primary,
+    shadowColor: Platform.OS === 'ios' ? PlatformColor('systemGray') : '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+    shadowOpacity: Platform.OS === 'ios' ? 0.3 : 0.25,
     shadowRadius: 4,
     elevation: 6,
   },
