@@ -4,6 +4,7 @@ import { calculateNextReview } from '@/utils/srs'
 import type { Word } from '@/types/database'
 import type { ReviewAssessment } from '@/types/ApplicationStoreTypes'
 import { SRS_PARAMS } from '@/constants/SRSConstants'
+import * as Sentry from '@sentry/react-native'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -82,16 +83,6 @@ export const wordService = {
     const normalizedArticle =
       article && article.trim() !== '' ? article.trim() : null
 
-    console.log('🔍 WordService.checkWordExists called with:', {
-      userId,
-      originalLemma: dutchLemma,
-      normalizedLemma,
-      partOfSpeech,
-      normalizedPartOfSpeech,
-      article,
-      normalizedArticle,
-    })
-
     let query = supabase
       .from('words')
       .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
@@ -108,20 +99,11 @@ export const wordService = {
 
     const { data, error } = await query
 
-    console.log('🔍 Database query result:', {
-      resultCount: data?.length || 0,
-      data,
-      error: error?.message,
-    })
-
     if (error) {
       throw new Error(`Failed to check word existence: ${error.message}`)
     }
 
-    const result = data.length > 0 ? data[0] : null
-    console.log('🔍 WordService.checkWordExists returning:', result)
-
-    return result
+    return data.length > 0 ? data[0] : null
   },
 
   // Get words due for review
@@ -336,29 +318,20 @@ export const userService = {
   // Delete a user account and all associated data
   async deleteAccount() {
     try {
-      console.log('🗑️ Starting account deletion process...')
-
       // Get the current session for authorization
-      console.log('📱 Getting current session...')
       const {
         data: { session },
         error: sessionError,
       } = await supabase.auth.getSession()
 
-      console.log('📱 Session result:', {
-        sessionExists: !!session,
-        sessionError: sessionError?.message,
-        userId: session?.user?.id,
-        tokenExists: !!session?.access_token,
-      })
-
       if (sessionError || !session) {
-        console.error('❌ No active session found:', sessionError?.message)
-        throw new Error('No active session found')
+        Sentry.captureException(
+          '❌ No active session found:',
+          sessionError?.message
+        )
       }
 
       // Call Edge Function with auth token
-      console.log('🚀 Calling delete-account Edge Function...')
       const { data, error } = await supabase.functions.invoke(
         'delete-account',
         {
@@ -370,33 +343,24 @@ export const userService = {
 
       // If deletion succeeded, immediately sign out to invalidate any remaining tokens
       if (!error && data?.success) {
-        console.log(
-          '🔐 Account deleted successfully, signing out to invalidate tokens...'
-        )
         await supabase.auth.signOut()
       }
 
-      console.log('🚀 Edge Function response:', {
-        data,
-        error: error?.message,
-        errorDetails: error,
-      })
-
       if (error) {
-        console.error('❌ Edge Function error:', error)
-        throw new Error(`Failed to delete account: ${error.message}`)
+        Sentry.captureException(
+          '❌ Edge Function error:',
+          error,
+          `\nFailed to delete account: ${error.message}`
+        )
       }
 
       if (!data.success) {
-        console.error('❌ Account deletion failed:', data.error)
-        throw new Error(data.error || 'Account deletion failed')
+        Sentry.captureException('❌ Account deletion failed:', data.error)
       }
 
-      console.log('✅ Account successfully deleted!')
       return { success: true }
     } catch (error) {
-      console.error('💥 Account deletion error:', error)
-      throw error
+      Sentry.captureException('💥 Account deletion error:', error)
     }
   },
 }
