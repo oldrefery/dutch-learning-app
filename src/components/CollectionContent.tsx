@@ -7,6 +7,7 @@ import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
 import type { Word } from '@/types/database'
+import { keyExtractor } from '@react-native/virtualized-lists/types_generated/Lists/VirtualizeUtils'
 
 interface CollectionStatsData {
   totalWords: number
@@ -104,13 +105,27 @@ export default function CollectionContent({
     </ViewThemed>
   )
 
+  const keyExtractor = (item: Word) => item.word_id
+
+  const renderItem = ({ item, index }: { item: Word; index: number }) => (
+    <SwipeableWordItem
+      word={item}
+      index={index}
+      onPress={() => onWordPress(item)}
+      onDelete={onDeleteWord}
+      onMoveToCollection={onMoveToCollection}
+      moveModalVisible={moveModalVisible}
+      wordBeingMoved={wordBeingMoved}
+    />
+  )
+
   return (
     <FlatList
       ref={flatListRef}
       style={styles.wordsSection}
       data={words}
       ListHeaderComponent={renderHeader}
-      keyExtractor={(item: Word) => item.word_id}
+      keyExtractor={keyExtractor}
       onScrollToIndexFailed={info => {
         // Fallback: scroll to offset if the index scroll fails
         const wait = new Promise(resolve => setTimeout(resolve, 500))
@@ -121,18 +136,7 @@ export default function CollectionContent({
           })
         })
       }}
-      renderItem={({ item, index }: { item: Word; index: number }) => (
-        <SwipeableWordItem
-          word={item}
-          index={index}
-          onPress={() => onWordPress(item)}
-          onDelete={onDeleteWord}
-          onMoveToCollection={onMoveToCollection}
-          moveModalVisible={moveModalVisible}
-          wordBeingMoved={wordBeingMoved}
-          isHighlighted={highlightWordId === item.word_id}
-        />
-      )}
+      renderItem={renderItem}
       ListEmptyComponent={renderEmptyComponent}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

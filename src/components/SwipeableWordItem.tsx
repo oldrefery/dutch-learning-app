@@ -28,7 +28,6 @@ interface SwipeableWordItemProps {
   onMoveToCollection?: (wordId: string) => void
   moveModalVisible?: boolean
   wordBeingMoved?: string | null
-  isHighlighted?: boolean
 }
 
 export default function SwipeableWordItem({
@@ -39,13 +38,11 @@ export default function SwipeableWordItem({
   onMoveToCollection,
   moveModalVisible,
   wordBeingMoved,
-  isHighlighted = false,
 }: SwipeableWordItemProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
   const opacity = useSharedValue(0)
   const translateY = useSharedValue(20)
-  const highlightOpacity = useSharedValue(0)
   const [shouldShowDeleteDialog, setShouldShowDeleteDialog] = useState(false)
   const [shouldShowMoveDialog, setShouldShowMoveDialog] = useState(false)
   const [wasModalVisibleForThisWord, setWasModalVisibleForThisWord] =
@@ -100,16 +97,6 @@ export default function SwipeableWordItem({
     opacity.value = withTiming(1, { duration: 300 }, () => {})
     translateY.value = withTiming(0, { duration: 400 }, () => {})
   }, [opacity, translateY])
-
-  // Highlight animation when a word is highlighted
-  useEffect(() => {
-    if (isHighlighted) {
-      highlightOpacity.value = withTiming(1, { duration: 300 }, () => {
-        // Fade out after 2 seconds
-        highlightOpacity.value = withTiming(0, { duration: 1000 })
-      })
-    }
-  }, [isHighlighted, highlightOpacity])
 
   useEffect(() => {
     if (shouldShowDeleteDialog) {
@@ -192,12 +179,6 @@ export default function SwipeableWordItem({
         { translateY: translateY.value },
       ],
       opacity: opacity.value,
-    }
-  })
-
-  const highlightAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: highlightOpacity.value,
     }
   })
 
@@ -298,21 +279,6 @@ export default function SwipeableWordItem({
           />
         </TouchableOpacity>
       </Animated.View>
-
-      {/* Highlight overlay */}
-      <Animated.View
-        style={[
-          styles.highlightOverlay,
-          highlightAnimatedStyle,
-          {
-            backgroundColor:
-              colorScheme === 'dark'
-                ? Colors.dark.tint
-                : Colors.primary.DEFAULT,
-          },
-        ]}
-        pointerEvents="none"
-      />
 
       {/* Main word item with gesture handler */}
       <GestureDetector gesture={combinedGesture}>
@@ -489,16 +455,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.transparent.white20,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  highlightOverlay: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    borderRadius: 8,
-    opacity: 0.2,
-    zIndex: 1,
   },
   wordItem: {
     borderRadius: 8,
