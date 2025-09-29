@@ -213,25 +213,32 @@ The application uses a modern Backend-as-a-Service (BaaS) architecture, which mi
 - Smart word analysis cache with 80-90% cost reduction ✅
 - Apple HIG cache UI with status indicators ✅
 
-## Recent Updates (Build 29)
+## Recent Updates (Build 33)
 
-### ✨ New Features
+### 🐛 Bug Fixes
 
-- **In-App Collection Import**: Complete in-app collection sharing without deeplinks required
-- **Enhanced Sharing UX**: Native context menus and improved collection management controls
-- **Smart Import Modal**: Auto-focus input, duplicate detection, and better error handling
+- **Word Highlighting Animation**: Removed distracting flashing/blinking animations for duplicate words
+  - Eliminated red highlight overlay animations that appeared when scrolling to duplicate words
+  - Preserved smooth scroll-to-word functionality for better navigation experience
+  - Improved overall user experience by removing visual distractions
 
 ### 🛠️ Architecture Improvements
 
-- **Modern Component Structure**: Refactored collection screens following 2025 best practices
-- **Custom Hooks**: Extracted business logic into reusable `useCollectionDetail` hook
-- **Component Composition**: Split large screens into focused, testable components
+- **CollectionContent Component**: Refactored for improved rendering performance
+  - Extracted keyExtractor and renderItem functions for better optimization
+  - Improved code organization and prop handling
 
-### 🎨 UX Enhancements
+- **SwipeableWordItem Component**: Streamlined highlighting system
+  - Replaced complex highlight animation with simple border indication
+  - Simplified component interface and reduced memory usage
+  - Maintained all word interaction features (swipe gestures, selection, etc.)
 
-- **Dark Theme Support**: Improved modal contrast and HIG-compliant styling
-- **Native iOS Menus**: ActionSheetIOS integration for collection actions
-- **Visual Feedback**: Better loading states and error messaging
+### ⚡ Performance Optimizations
+
+- **Animation System**: Removed unnecessary highlight animations
+  - Reduced component complexity and memory usage
+  - Simplified animated style calculations
+  - Improved overall app responsiveness
 
 ## 8. Documentation
 

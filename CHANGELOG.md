@@ -17,6 +17,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0 Build 33] - 2025-09-29
+
+### Fixed
+
+- **Word Highlighting Animation**: Removed flashing/blinking animations for duplicate words in collections
+  - Eliminated red highlight overlay animations that appeared when scrolling to duplicate words
+  - Preserved smooth scroll-to-word functionality for navigation
+  - Improved user experience by removing distracting visual effects
+  - Maintained all other word interaction features (swipe gestures, selection, etc.)
+
+### Changed
+
+- **CollectionContent Component**: Refactored for improved rendering performance
+  - Extracted keyExtractor and renderItem functions for better optimization
+  - Removed unused import and improved code organization
+  - Updated prop handling for highlighted word indication
+
+- **SwipeableWordItem Component**: Streamlined highlighting system
+  - Replaced complex highlight animation with simple border indication
+  - Removed highlightOpacity animation state and related useEffect hooks
+  - Simplified component interface by removing unused animation code
+  - Maintained word status indicators and review badges
+
+### Technical
+
+- **Animation System Optimization**: Removed unnecessary highlight animations
+  - Deleted highlight overlay styles and animation components
+  - Simplified animated style calculations
+  - Reduced component complexity and memory usage
+  - Preserved core swipe gesture functionality
+
+---
+
 ## [1.2.2 Build 32] - 2025-09-29
 
 ### Added
