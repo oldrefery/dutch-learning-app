@@ -119,7 +119,18 @@ export default function TabLayout() {
   }
 
   return (
-    <NativeTabs>
+    <NativeTabs
+      labelStyle={{
+        color: DynamicColorIOS({
+          dark: Colors.dark.text,
+          light: Colors.light.text,
+        }),
+        tintColor: DynamicColorIOS({
+          dark: Colors.dark.tint,
+          light: Colors.light.tint,
+        }),
+      }}
+    >
       {/* Navigation tabs - left side following HIG order */}
       <NativeTabs.Trigger
         name="index"
