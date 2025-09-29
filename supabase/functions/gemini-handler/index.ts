@@ -27,8 +27,6 @@ Deno.serve(async (req: Request) => {
     const requestBody = await req.json()
     const { word, forceRefresh } = requestBody
 
-    console.log(`🔍 [gemini-handler] Starting analysis for word: "${word}"`)
-
     // This function only analyzes strings - objects should use save-word endpoint
     if (typeof word !== 'string') {
       return new Response(
@@ -136,23 +134,9 @@ Deno.serve(async (req: Request) => {
     }
 
     // Cache miss or force refresh - call Gemini API
-    console.log(
-      `🤖 [gemini-handler] Cache miss, calling Gemini API for: "${word}"`
-    )
-
     const prompt = formatWordAnalysisPrompt(word)
-    console.log(`📝 [gemini-handler] Generated prompt for: "${word}"`)
-
     const geminiResponse = await callGeminiAPI(prompt)
-    console.log(`🎯 [gemini-handler] Received Gemini response for: "${word}"`)
-
     const analysis = parseGeminiResponse(geminiResponse)
-    console.log(`📊 [gemini-handler] Parsed analysis result:`, {
-      dutch_lemma: analysis.dutch_lemma,
-      part_of_speech: analysis.part_of_speech,
-      is_expression: analysis.is_expression,
-      expression_type: analysis.expression_type,
-    })
 
     // Clean and format data
     const cleanedExamples = cleanExamples(analysis.examples)
