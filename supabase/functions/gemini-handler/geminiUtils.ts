@@ -46,21 +46,48 @@ export async function callGeminiAPI(prompt: string): Promise<any> {
 // Helper function to parse Gemini response
 export function parseGeminiResponse(response: any): any {
   try {
+    console.log('🔍 [parseGeminiResponse] Raw response structure:', {
+      hasCandidates: !!response.candidates,
+      candidatesLength: response.candidates?.length,
+      firstCandidate: response.candidates?.[0] ? 'exists' : 'missing',
+    })
+
     const content = response.candidates?.[0]?.content?.parts?.[0]?.text
     if (!content) {
+      console.error(
+        '❌ [parseGeminiResponse] No content in response:',
+        response
+      )
       return { content: 'No content available' }
     }
+
+    console.log(
+      '📝 [parseGeminiResponse] Raw content from Gemini:',
+      content.substring(0, 200) + '...'
+    )
 
     // Try to parse as JSON
     const jsonMatch = content.match(/{[\s\S]*}/)
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0])
+      console.log('✅ [parseGeminiResponse] Found JSON match, parsing...')
+      const parsed = JSON.parse(jsonMatch[0])
+      console.log('📊 [parseGeminiResponse] Successfully parsed JSON:', {
+        dutch_lemma: parsed.dutch_lemma,
+        part_of_speech: parsed.part_of_speech,
+        expression_type: parsed.expression_type,
+      })
+      return parsed
     }
 
+    console.log('⚠️ [parseGeminiResponse] No JSON found, returning raw content')
     // Fallback: return raw content
     return { content }
   } catch (error) {
-    console.error('Error parsing Gemini response:', error)
+    console.error(
+      '❌ [parseGeminiResponse] Error parsing Gemini response:',
+      error
+    )
+    console.error('❌ [parseGeminiResponse] Raw response:', response)
     return { content: response }
   }
 }
@@ -76,9 +103,9 @@ export function validateWordInput(word: string): boolean {
     return false
   }
 
-  // Check for valid Dutch characters
+  // Check for valid Dutch characters, including punctuation for interjections
   const dutchPattern =
-    /^[a-zA-ZàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞß\s\-']+$/
+    /^[a-zA-ZàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞß\s\-'!?.,;:]+$/
   return dutchPattern.test(trimmedWord)
 }
 

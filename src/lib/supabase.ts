@@ -277,6 +277,12 @@ export const wordService = {
     // Use the prepared word data directly
     const cleanWordData = wordToInsert
 
+    console.log('🔄 [addWord] Inserting word:', {
+      expression_type: cleanWordData.expression_type,
+      is_expression: cleanWordData.is_expression,
+      dutch_lemma: cleanWordData.dutch_lemma,
+    })
+
     const { data, error } = await supabase
       .from('words')
       .insert(cleanWordData)
@@ -284,6 +290,13 @@ export const wordService = {
       .single()
 
     if (error) {
+      console.error('❌ [addWord] Database error:', {
+        error: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        wordData: wordToInsert,
+      })
       throw new Error(`Failed to add word: ${error.message}`)
     }
 
