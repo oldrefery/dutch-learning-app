@@ -7,7 +7,6 @@ import CollectionStats from '@/components/CollectionStats'
 import CollectionReviewButton from '@/components/CollectionReviewButton'
 import SwipeableWordItem from '@/components/SwipeableWordItem'
 import type { Word } from '@/types/database'
-import { keyExtractor } from '@react-native/virtualized-lists/types_generated/Lists/VirtualizeUtils'
 
 interface CollectionStatsData {
   totalWords: number
@@ -116,6 +115,7 @@ export default function CollectionContent({
       onMoveToCollection={onMoveToCollection}
       moveModalVisible={moveModalVisible}
       wordBeingMoved={wordBeingMoved}
+      highlighted={highlightWordId === item.word_id}
     />
   )
 
