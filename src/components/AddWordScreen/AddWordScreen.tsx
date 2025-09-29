@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Keyboard } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native'
 import { ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
@@ -28,6 +29,11 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
   const [duplicateWordInfo, setDuplicateWordInfo] = useState<any>(null)
+  const [lastDuplicateCheck, setLastDuplicateCheck] = useState<string | null>(
+    null
+  )
+  const [hasNavigatedToCollection, setHasNavigatedToCollection] =
+    useState(false)
 
   const { currentUserId } = useApplicationStore()
   const { isPlayingAudio, playPronunciation } = useAudioPlayer()
@@ -57,10 +63,12 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
       if (!analysisResult || !currentUserId) {
         setIsAlreadyInCollection(false)
         setDuplicateWordInfo(null)
+        setIsCheckingDuplicate(false)
         return
       }
 
       setIsCheckingDuplicate(true)
+
       try {
         const existingWord = await wordService.checkWordExists(
           currentUserId,
@@ -69,10 +77,14 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           analysisResult.article
         )
         const isDuplicate = !!existingWord
+
         setIsAlreadyInCollection(isDuplicate)
         setDuplicateWordInfo(existingWord)
+        if (isDuplicate) {
+          setLastDuplicateCheck(analysisResult.dutch_lemma)
+        }
       } catch (error) {
-        console.error('Error checking word existence:', error)
+        console.error('Error checking for duplicate word:', error)
         setIsAlreadyInCollection(false)
         setDuplicateWordInfo(null)
       } finally {
@@ -101,31 +113,9 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     setIsAlreadyInCollection(false)
     setDuplicateWordInfo(null)
     setIsCheckingDuplicate(true)
+    setHasNavigatedToCollection(false)
 
     clearAnalysis()
-
-    const lowercaseWord = normalizedWord.toLowerCase()
-
-    // Check for duplicates before analysis
-    if (currentUserId) {
-      try {
-        const existingWord = await wordService.checkWordExists(
-          currentUserId,
-          lowercaseWord
-        )
-        if (existingWord) {
-          setIsAlreadyInCollection(true)
-          setDuplicateWordInfo(existingWord)
-          setIsCheckingDuplicate(false)
-          return
-        }
-      } catch (error) {
-        console.error('Error checking word existence:', error)
-        // Continue with analysis if the check fails
-      }
-    }
-
-    setIsCheckingDuplicate(false)
     analyzeWord(normalizedWord)
   }
 
@@ -145,11 +135,17 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     clearAnalysis()
     setIsAlreadyInCollection(false)
     setDuplicateWordInfo(null)
+    setLastDuplicateCheck(null)
+    setHasNavigatedToCollection(false)
   }
 
   const handleDismissDuplicate = () => {
+    setInputWord('')
+    clearAnalysis()
     setIsAlreadyInCollection(false)
     setDuplicateWordInfo(null)
+    setLastDuplicateCheck(null)
+    setHasNavigatedToCollection(false)
   }
 
   const handleForceRefresh = async () => {
@@ -167,6 +163,16 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     updateImageUrl(newImageUrl)
     closeImageSelector()
   }
+
+  // Reset navigation flag when returning to the screen
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reset the navigation flag if it was set, but preserve all duplicate state
+      if (hasNavigatedToCollection) {
+        setHasNavigatedToCollection(false)
+      }
+    }, [hasNavigatedToCollection])
+  )
 
   return (
     <ViewThemed
@@ -195,11 +201,12 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           duplicateWord={duplicateWordInfo}
           collections={collections}
           onDismiss={handleDismissDuplicate}
+          onNavigateToCollection={() => setHasNavigatedToCollection(true)}
         />
       )}
 
       {/* Word information takes maximum space */}
-      {analysisResult && !isAlreadyInCollection && (
+      {analysisResult && !isAlreadyInCollection && !isCheckingDuplicate && (
         <ViewThemed style={{ flex: 1, marginTop: 8 }}>
           <UniversalWordCard
             word={analysisResult}
@@ -218,7 +225,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         </ViewThemed>
       )}
 
-      {analysisResult && !isAlreadyInCollection && (
+      {analysisResult && !isAlreadyInCollection && !isCheckingDuplicate && (
         <FloatingActionButton
           onPress={handleAddWord}
           disabled={isAdding}

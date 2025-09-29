@@ -19,12 +19,14 @@ interface DuplicateWordInfoProps {
   duplicateWord: DuplicateWordData
   collections: Collection[]
   onDismiss: () => void
+  onNavigateToCollection?: () => void
 }
 
 export function DuplicateWordInfo({
   duplicateWord,
   collections,
   onDismiss,
+  onNavigateToCollection,
 }: DuplicateWordInfoProps) {
   const colorScheme = useColorScheme() ?? 'light'
 
@@ -35,7 +37,7 @@ export function DuplicateWordInfo({
   const wordDisplay = `${articleText}${duplicateWord.dutch_lemma}`
 
   const handleNavigateToCollection = () => {
-    onDismiss()
+    onNavigateToCollection?.()
     router.push({
       pathname: ROUTES.COLLECTION_DETAIL(duplicateWord.collection_id),
       params: { highlightWordId: duplicateWord.word_id },
