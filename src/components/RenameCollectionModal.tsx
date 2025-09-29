@@ -8,6 +8,7 @@ import {
 import { TextInput } from 'react-native-gesture-handler'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { Sentry } from '@/lib/sentry.ts'
 
 interface RenameCollectionModalProps {
   visible: boolean
@@ -42,7 +43,7 @@ export default function RenameCollectionModal({
       await onRename(newName.trim())
       onClose()
     } catch (error) {
-      console.error('Error renaming collection:', error)
+      Sentry.captureException('Error renaming collection:', error)
     } finally {
       setIsRenaming(false)
     }

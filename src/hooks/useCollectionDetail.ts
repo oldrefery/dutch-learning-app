@@ -6,6 +6,7 @@ import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word, Collection } from '@/types/database'
+import { Sentry } from '@/lib/sentry.ts'
 
 export function useCollectionDetail(collectionId: string) {
   const [refreshing, setRefreshing] = useState(false)
@@ -111,7 +112,6 @@ export function useCollectionDetail(collectionId: string) {
 
   const handleCopyCode = async () => {
     if (!collection?.collection_id) {
-      console.log('❌ [handleCopyCode] No collection or collection_id')
       return
     }
 
@@ -127,7 +127,7 @@ export function useCollectionDetail(collectionId: string) {
         ToastService.show('No share code available', ToastType.ERROR)
       }
     } catch (error) {
-      console.error('❌ [handleCopyCode] Failed to copy code:', error)
+      Sentry.captureException('❌ [handleCopyCode] Failed to copy code:', error)
       ToastService.show('Failed to copy collection code', ToastType.ERROR)
     } finally {
       setIsSharing(false)
@@ -136,38 +136,33 @@ export function useCollectionDetail(collectionId: string) {
 
   const handleShareCollection = async () => {
     if (!collection?.collection_id) {
-      console.log('❌ [handleShareCollection] No collection or collection_id')
       return
     }
 
     setIsSharing(true)
     try {
       const shareToken = await shareCollection(collection.collection_id)
-      console.log('📥 [handleShareCollection] shareCollection result', {
-        shareToken,
-      })
 
       if (!shareToken) {
-        console.log('❌ [handleShareCollection] No share token returned')
         ToastService.show('Failed to share collection', ToastType.ERROR)
+
         return
       }
 
       ToastService.show('Collection shared successfully', ToastType.SUCCESS)
     } catch (error) {
-      console.error('❌ [handleShareCollection] Unexpected error:', error)
+      Sentry.captureException(
+        '❌ [handleShareCollection] Unexpected error:',
+        error
+      )
       ToastService.show('Failed to share collection', ToastType.ERROR)
     } finally {
-      console.log(
-        '🔄 [handleShareCollection] Finishing action, setting isSharing to false'
-      )
       setIsSharing(false)
     }
   }
 
   const handleStopSharing = async () => {
     if (!collection?.collection_id) {
-      console.log('❌ [handleStopSharing] No collection or collection_id')
       return
     }
 
@@ -180,7 +175,10 @@ export function useCollectionDetail(collectionId: string) {
         ToastService.show('Failed to stop sharing collection', ToastType.ERROR)
       }
     } catch (error) {
-      console.error('❌ [handleStopSharing] Failed to stop sharing:', error)
+      Sentry.captureException(
+        '❌ [handleStopSharing] Failed to stop sharing:',
+        error
+      )
       ToastService.show('Failed to stop sharing collection', ToastType.ERROR)
     } finally {
       setIsSharing(false)

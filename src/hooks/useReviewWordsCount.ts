@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { wordService } from '@/lib/supabase'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { Sentry } from '@/lib/sentry.ts'
 
 /**
  * Hook to get the count of words available for review
- * Updates automatically when user changes or when app becomes active
+ * Updates automatically when the user changes or when the app becomes active
  */
 export function useReviewWordsCount() {
   const [reviewWordsCount, setReviewWordsCount] = useState<number>(0)
@@ -23,8 +24,8 @@ export function useReviewWordsCount() {
       const reviewWords = await wordService.getWordsForReview(currentUserId)
       setReviewWordsCount(reviewWords.length)
     } catch (error) {
-      console.error('Error fetching review words count:', error)
       setReviewWordsCount(0)
+      Sentry.captureException('Error fetching review words count:', error)
     } finally {
       setIsLoading(false)
     }
@@ -34,7 +35,7 @@ export function useReviewWordsCount() {
     fetchReviewWordsCount()
   }, [fetchReviewWordsCount])
 
-  // Refresh count when app becomes active (user might have added new words)
+  // Refresh count when the app becomes active (a user might have added new words)
   useEffect(() => {
     const interval = setInterval(fetchReviewWordsCount, 30000) // Refresh every 30 seconds
     return () => clearInterval(interval)

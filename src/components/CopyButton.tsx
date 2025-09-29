@@ -7,6 +7,7 @@ import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { Colors } from '@/constants/Colors'
+import { Sentry } from '@/lib/sentry.ts'
 
 interface CopyButtonProps {
   text: string
@@ -24,10 +25,8 @@ export function CopyButton({
   showFeedback = true,
 }: CopyButtonProps) {
   const handleCopy = async () => {
-    console.log('📋 COPY BUTTON: handleCopy triggered')
     try {
       await Clipboard.setStringAsync(text)
-      console.log('📋 COPY BUTTON: Text copied successfully')
       if (showFeedback) {
         ToastService.show(
           'Word information copied to clipboard',
@@ -36,7 +35,7 @@ export function CopyButton({
       }
       onCopySuccess?.()
     } catch (error) {
-      console.error('📋 COPY BUTTON: Failed to copy text:', error)
+      Sentry.captureException('📋 COPY BUTTON: Failed to copy text:', error)
       if (showFeedback) {
         ToastService.show('Failed to copy text', ToastType.ERROR)
       }

@@ -24,6 +24,7 @@ import { useClientOnlyValue } from '@/components/useClientOnlyValue'
 import { supabase } from '@/lib/supabaseClient'
 import { ROUTES } from '@/constants/Routes'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
+import { Sentry } from '@/lib/sentry.ts'
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
@@ -44,26 +45,23 @@ export default function TabLayout() {
         } = await supabase.auth.getSession()
 
         if (error) {
-          console.error('❌ [TabLayout] Session check error:', error)
           setIsAuthenticated(false)
+          Sentry.captureException('❌ [TabLayout] Session check error:', error)
+
           return
         }
 
         const authenticated = !!session?.user
-        console.log('🔍 [TabLayout] Auth check result:', {
-          authenticated,
-          userId: session?.user?.id,
-        })
 
         setIsAuthenticated(authenticated)
 
         if (!authenticated) {
-          console.log('🚫 [TabLayout] Not authenticated, redirecting to login')
           router.replace(ROUTES.AUTH.LOGIN)
         }
       } catch (error) {
-        console.error('❌ [TabLayout] Auth check failed:', error)
         setIsAuthenticated(false)
+        Sentry.captureException('❌ [TabLayout] Auth check failed:', error)
+
         router.replace(ROUTES.AUTH.LOGIN)
       }
     }
@@ -74,17 +72,10 @@ export default function TabLayout() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔄 [TabLayout] Auth state changed:', {
-        event,
-        userId: session?.user?.id,
-      })
       const authenticated = !!session?.user
       setIsAuthenticated(authenticated)
 
       if (!authenticated) {
-        console.log(
-          '🚫 [TabLayout] Auth state changed to unauthenticated, redirecting'
-        )
         router.replace(ROUTES.AUTH.LOGIN)
       }
     })

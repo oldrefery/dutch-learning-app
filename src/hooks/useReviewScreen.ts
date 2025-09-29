@@ -4,6 +4,7 @@ import { useAudioPlayer } from '@/hooks/useAudioPlayer'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
+import { Sentry } from '@/lib/sentry.ts'
 
 export const useReviewScreen = () => {
   const {
@@ -68,14 +69,17 @@ export const useReviewScreen = () => {
 
         // No toast for 'again' - it's a normal retry, not an error
       } catch (error) {
-        console.error('Assessment error:', error)
+        Sentry.captureException('Assessment error:', error)
         ToastService.show('Failed to submit assessment', ToastType.ERROR)
       } finally {
         // Check if the component is still mounted before updating the state
         try {
           setIsLoading(false)
         } catch (stateError) {
-          console.warn('Component unmounted during assessment:', stateError)
+          Sentry.captureException(
+            'Component unmounted during assessment:',
+            stateError
+          )
         }
       }
     },
@@ -157,12 +161,10 @@ export const useReviewScreen = () => {
     if (isMountedRef.current) {
       const now = Date.now()
       if (now - lastTouchTime < 300) {
-        console.log('❌ Prevented double flip')
         return
       }
       setLastTouchTime(now)
       setIsFlipped(prev => !prev)
-      console.log('✅ Card flipped')
     }
   }, [lastTouchTime])
 

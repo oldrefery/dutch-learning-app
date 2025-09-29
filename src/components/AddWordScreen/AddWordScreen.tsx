@@ -20,6 +20,7 @@ import { wordService } from '@/lib/supabase'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
+import { Sentry } from '@/lib/sentry.ts'
 
 interface DuplicateWordData {
   word_id: string
@@ -69,21 +70,11 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   useEffect(() => {
     const checkForDuplicates = async () => {
       if (!analysisResult || !currentUserId) {
-        console.log('🔍 Duplicate check skipped - missing requirements:', {
-          hasAnalysisResult: !!analysisResult,
-          hasCurrentUserId: !!currentUserId,
-        })
         setIsAlreadyInCollection(false)
         setDuplicateWordInfo(null)
         setIsCheckingDuplicate(false)
         return
       }
-
-      console.log('🔍 Starting duplicate check for word:', {
-        word: analysisResult.dutch_lemma,
-        partOfSpeech: analysisResult.part_of_speech,
-        article: analysisResult.article,
-      })
 
       setIsCheckingDuplicate(true)
 
@@ -96,33 +87,19 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         )
         const isDuplicate = !!existingWord
 
-        console.log('🔍 Duplicate check result:', {
-          isDuplicate,
-          existingWord: existingWord
-            ? {
-                wordId: existingWord.word_id,
-                collectionId: existingWord.collection_id,
-                lemma: existingWord.dutch_lemma,
-              }
-            : null,
-        })
-
         setIsAlreadyInCollection(isDuplicate)
         setDuplicateWordInfo(existingWord)
 
         if (isDuplicate) {
-          console.log(
-            '⚠️ Duplicate word detected! Banner should be visible now'
-          )
           ToastService.show(
             `Word "${analysisResult.dutch_lemma}" already exists in collection`,
             ToastType.ERROR
           )
         }
       } catch (error) {
-        console.error('❌ Error checking for duplicate word:', error)
         setIsAlreadyInCollection(false)
         setDuplicateWordInfo(null)
+        Sentry.captureException('❌ Error checking for duplicate word:', error)
       } finally {
         setIsCheckingDuplicate(false)
       }
@@ -224,12 +201,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
       {/* Duplicate banner when the word already exists */}
       {(() => {
-        console.log('🖼️ Banner render conditions:', {
-          isAlreadyInCollection,
-          hasDuplicateWordInfo: !!duplicateWordInfo,
-          isCheckingDuplicate,
-          shouldShowBanner: isAlreadyInCollection && duplicateWordInfo,
-        })
         return null
       })()}
       {isAlreadyInCollection && duplicateWordInfo && (

@@ -14,6 +14,7 @@ import { IMAGE_CONFIG } from '@/constants/AppConfig'
 import { supabase } from '@/lib/supabaseClient'
 import { getImageSelectorStyles } from './styles'
 import type { ImageOption, ImageSelectorProps } from './types'
+import { Sentry } from '@/lib/sentry.ts'
 
 export default function ImageSelector({
   visible,
@@ -52,13 +53,13 @@ export default function ImageSelector({
       )
 
       if (error) {
-        throw new Error(error.message)
+        Sentry.captureException(error.message)
       }
 
       setImages(data.images || [])
     } catch (err) {
-      console.error('Failed to load images:', err)
       setError('Failed to load image options. Please try again.')
+      Sentry.captureException('Failed to load images:', err)
     } finally {
       setLoading(false)
     }
@@ -85,7 +86,7 @@ export default function ImageSelector({
       )
 
       if (error) {
-        throw new Error(error.message)
+        Sentry.captureException(error.message)
       }
 
       const newImages = data.images || []
@@ -97,8 +98,8 @@ export default function ImageSelector({
         setError('No more images available for this search.')
       }
     } catch (err) {
-      console.error('Failed to load more images:', err)
       setError('Failed to load more images. Please try again.')
+      Sentry.captureException('Failed to load more images:', err)
     } finally {
       setLoadingMore(false)
     }

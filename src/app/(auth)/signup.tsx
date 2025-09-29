@@ -13,6 +13,7 @@ import { AuthButton } from '@/components/auth/AuthButton'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
+import { Sentry } from '@/lib/sentry.ts'
 
 export default function SignupScreen() {
   const [email, setEmail] = useState('')
@@ -91,7 +92,7 @@ export default function SignupScreen() {
 
       router.push(ROUTES.AUTH.LOGIN)
     } catch (error) {
-      console.log('Signup failed:', error)
+      Sentry.captureException('Signup failed:', error)
     }
   }
 

@@ -8,6 +8,7 @@ import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES, RouteHelpers } from '@/constants/Routes'
 import type { Word } from '@/types/database'
 import type { SharedCollectionWords } from '@/services/collectionSharingService'
+import { Sentry } from '@/lib/sentry.ts'
 
 interface WordSelectionItem {
   word: Omit<
@@ -57,7 +58,7 @@ export function useImportSelection(token: string) {
         setTargetCollectionId(collectionsData[0].collection_id)
       }
     } catch (err) {
-      console.error('Failed to load collections:', err)
+      Sentry.captureException('Failed to load collections:', err)
     }
   }, [])
 
@@ -133,8 +134,8 @@ export function useImportSelection(token: string) {
       await checkForDuplicates(result.data.words)
       setError(null)
     } catch (err) {
-      console.error('Failed to load shared collection:', err)
       setError('Failed to load shared collection. Please try again.')
+      Sentry.captureException('Failed to load shared collection:', err)
     } finally {
       setLoading(false)
     }
@@ -162,7 +163,7 @@ export function useImportSelection(token: string) {
       await loadSharedCollection()
       await loadCollections()
     } catch (err) {
-      console.error('Auth check failed:', err)
+      Sentry.captureException('Auth check failed:', err)
       const currentUrl = ROUTES.IMPORT_COLLECTION(token)
       router.replace(RouteHelpers.createAuthRedirect(currentUrl))
     }
@@ -241,7 +242,7 @@ export function useImportSelection(token: string) {
         ToastService.show('Some words could not be imported', ToastType.ERROR)
       }
     } catch (error) {
-      console.error('Import failed:', error)
+      Sentry.captureException('Import failed:', error)
       ToastService.show(
         'Failed to import words. Please try again.',
         ToastType.ERROR

@@ -18,6 +18,7 @@ import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
+import { Sentry } from '@/lib/sentry.ts'
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets()
@@ -89,10 +90,8 @@ export default function SettingsScreen() {
                   style: 'destructive',
                   onPress: async () => {
                     try {
-                      console.log('🎯 User confirmed account deletion')
                       await userService.deleteAccount()
 
-                      console.log('✅ Showing success toast')
                       ToastService.show(
                         'Account deleted successfully',
                         ToastType.SUCCESS
@@ -100,11 +99,10 @@ export default function SettingsScreen() {
 
                       // Navigate to log in after a short delay
                       setTimeout(() => {
-                        console.log('🔄 Navigating to login screen')
                         router.replace(ROUTES.AUTH.LOGIN)
                       }, 2000)
                     } catch (error) {
-                      console.error(
+                      Sentry.captureException(
                         '💥 UI error during account deletion:',
                         error
                       )
