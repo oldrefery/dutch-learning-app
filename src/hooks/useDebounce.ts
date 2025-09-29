@@ -5,11 +5,14 @@ import { useCallback, useEffect, useRef } from 'react'
  * Delays execution until after the specified delay has passed since the last call
  * Useful for search inputs, API calls, etc.
  */
-export function useDebounce(callback: (...args: any[]) => void, delay: number) {
+export function useDebounce<T extends unknown[]>(
+  callback: (...args: T) => void,
+  delay: number
+) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
 
   const debouncedCallback = useCallback(
-    (...args: any[]) => {
+    (...args: T) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }

@@ -215,26 +215,35 @@ export default function ReviewScreen() {
   // Check if we should show the empty state first
   if (reviewWords.length === 0 && !isLoading) {
     return (
-      <ScrollView
-        style={reviewScreenStyles.container}
-        contentContainerStyle={reviewScreenStyles.emptyContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={[Colors.primary.DEFAULT]}
-            tintColor={Colors.primary.DEFAULT}
-          />
-        }
-      >
-        <TextThemed style={reviewScreenStyles.emptyText}>
-          No words to review! 🎉
-        </TextThemed>
-        <TextThemed style={reviewScreenStyles.emptySubtext}>
-          All your words are scheduled for future review. Pull to refresh or add
-          new words to practice.
-        </TextThemed>
-      </ScrollView>
+      <ViewThemed style={reviewScreenStyles.container}>
+        <ScrollView
+          contentContainerStyle={reviewScreenStyles.emptyContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[Colors.primary.DEFAULT]}
+              tintColor={Colors.primary.DEFAULT}
+            />
+          }
+        >
+          <TextThemed
+            style={reviewScreenStyles.emptyText}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            No words to review! 🎉
+          </TextThemed>
+          <TextThemed
+            style={reviewScreenStyles.emptySubtext}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            All your words are scheduled for future review. Pull to refresh or
+            add new words to practice.
+          </TextThemed>
+        </ScrollView>
+      </ViewThemed>
     )
   }
 
@@ -247,7 +256,11 @@ export default function ReviewScreen() {
             // color={REVIEW_SCREEN_CONSTANTS.COLORS.PRIMARY}
             color={Colors.primary.DEFAULT}
           />
-          <TextThemed style={reviewScreenStyles.loadingText}>
+          <TextThemed
+            style={reviewScreenStyles.loadingText}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
             Loading review session...
           </TextThemed>
         </ViewThemed>
@@ -259,10 +272,18 @@ export default function ReviewScreen() {
     return (
       <ViewThemed style={reviewScreenStyles.container}>
         <ViewThemed style={reviewScreenStyles.emptyContainer}>
-          <TextThemed style={reviewScreenStyles.emptyText}>
+          <TextThemed
+            style={reviewScreenStyles.emptyText}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
             Session Complete! 🎉
           </TextThemed>
-          <TextThemed style={reviewScreenStyles.emptySubtext}>
+          <TextThemed
+            style={reviewScreenStyles.emptySubtext}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
             You reviewed {reviewWords.length} words
           </TextThemed>
           <TouchableOpacity
@@ -286,7 +307,11 @@ export default function ReviewScreen() {
       ]}
     >
       <ViewThemed style={reviewScreenStyles.progressContainer}>
-        <TextThemed style={reviewScreenStyles.progressText}>
+        <TextThemed
+          style={reviewScreenStyles.progressText}
+          lightColor={Colors.neutral[500]}
+          darkColor={Colors.dark.textSecondary}
+        >
           {currentWordNumber} / {totalWords}
         </TextThemed>
       </ViewThemed>

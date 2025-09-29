@@ -21,7 +21,11 @@ export function CardFront({
   return (
     <ViewThemed style={styles.cardFront}>
       <ViewThemed style={styles.wordWithPronunciation}>
-        <TextThemed style={styles.dutchWord}>
+        <TextThemed
+          style={styles.dutchWord}
+          lightColor={Colors.neutral[700]}
+          darkColor={Colors.dark.text}
+        >
           {currentWord.article ? `${currentWord.article} ` : ''}
           {currentWord.dutch_lemma}
         </TextThemed>
@@ -34,10 +38,20 @@ export function CardFront({
           />
         </NonSwipeableArea>
       </ViewThemed>
-      <TextThemed style={styles.partOfSpeech}>
+      <TextThemed
+        style={styles.partOfSpeech}
+        lightColor={Colors.neutral[500]}
+        darkColor={Colors.dark.textSecondary}
+      >
         {currentWord.part_of_speech}
       </TextThemed>
-      <TextThemed style={styles.tapHint}>Tap to see translation</TextThemed>
+      <TextThemed
+        style={styles.tapHint}
+        lightColor={Colors.neutral[400]}
+        darkColor={Colors.dark.textTertiary}
+      >
+        Tap to see translation
+      </TextThemed>
     </ViewThemed>
   )
 }
@@ -57,18 +71,15 @@ const styles = StyleSheet.create({
   dutchWord: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: Colors.neutral[700],
     textAlign: 'center',
   },
   partOfSpeech: {
     fontSize: 16,
-    color: Colors.neutral[500],
     fontStyle: 'italic',
     marginBottom: 24,
   },
   tapHint: {
     fontSize: 14,
-    color: Colors.neutral[400],
     textAlign: 'center',
   },
 })
