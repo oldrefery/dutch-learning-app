@@ -3,8 +3,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   useColorScheme,
+  Platform,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { SymbolView } from 'expo-symbols'
 import { ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { Collection } from '@/types/database'
@@ -26,58 +28,79 @@ export default function CollectionDetailHeader({
 }: CollectionDetailHeaderProps) {
   const colorScheme = useColorScheme() ?? 'light'
 
-  const renderCopyButton = () => (
-    <TouchableOpacity
-      onPress={onCopyCode}
-      disabled={isSharing || !collection?.collection_id}
-      style={[
-        styles.shareButton,
-        {
-          opacity: isSharing ? 0.6 : 1,
-        },
-      ]}
-      accessibilityLabel="Copy collection code"
-      accessibilityHint="Copy the collection code to clipboard"
-    >
-      {isSharing ? (
-        <ActivityIndicator
-          size="small"
-          color={
-            colorScheme === 'dark' ? Colors.dark.tint : Colors.primary.DEFAULT
-          }
-        />
-      ) : (
-        <Ionicons
-          name="copy-outline"
-          size={24}
-          color={
-            colorScheme === 'dark' ? Colors.dark.tint : Colors.primary.DEFAULT
-          }
-        />
-      )}
-    </TouchableOpacity>
-  )
+  const renderCopyButton = () => {
+    const tintColor =
+      colorScheme === 'dark' ? Colors.dark.tint : Colors.primary.DEFAULT
 
-  const renderStopSharingButton = () => (
-    <TouchableOpacity
-      onPress={onStopSharing}
-      disabled={isSharing || !collection?.collection_id}
-      style={[
-        styles.shareButton,
-        {
-          opacity: isSharing ? 0.6 : 1,
-        },
-      ]}
-      accessibilityLabel="Stop sharing collection"
-      accessibilityHint="Stop sharing this collection"
-    >
-      <Ionicons
-        name="person-remove-outline"
-        size={24}
-        color={Colors.error.DEFAULT}
-      />
-    </TouchableOpacity>
-  )
+    return (
+      <TouchableOpacity
+        onPress={onCopyCode}
+        disabled={isSharing || !collection?.collection_id}
+        style={[
+          styles.shareButton,
+          {
+            opacity: isSharing ? 0.6 : 1,
+          },
+        ]}
+        accessibilityLabel="Copy collection code"
+        accessibilityHint="Copy the collection code to clipboard"
+      >
+        {isSharing ? (
+          <ActivityIndicator size="small" color={tintColor} />
+        ) : Platform.OS === 'ios' ? (
+          <SymbolView
+            name="doc.on.clipboard"
+            size={24}
+            type="hierarchical"
+            tintColor={tintColor}
+            fallback={
+              <Ionicons name="copy-outline" size={24} color={tintColor} />
+            }
+          />
+        ) : (
+          <Ionicons name="copy-outline" size={24} color={tintColor} />
+        )}
+      </TouchableOpacity>
+    )
+  }
+
+  const renderStopSharingButton = () => {
+    const errorColor =
+      colorScheme === 'dark' ? Colors.error.darkMode : Colors.error.DEFAULT
+
+    return (
+      <TouchableOpacity
+        onPress={onStopSharing}
+        disabled={isSharing || !collection?.collection_id}
+        style={[
+          styles.shareButton,
+          {
+            opacity: isSharing ? 0.6 : 1,
+          },
+        ]}
+        accessibilityLabel="Stop sharing collection"
+        accessibilityHint="Stop sharing this collection"
+      >
+        {Platform.OS === 'ios' ? (
+          <SymbolView
+            name="person.2.slash"
+            size={24}
+            type="hierarchical"
+            tintColor={errorColor}
+            fallback={
+              <Ionicons
+                name="person-remove-outline"
+                size={24}
+                color={errorColor}
+              />
+            }
+          />
+        ) : (
+          <Ionicons name="person-remove-outline" size={24} color={errorColor} />
+        )}
+      </TouchableOpacity>
+    )
+  }
 
   const renderShareButton = () => (
     <TouchableOpacity
@@ -128,6 +151,7 @@ const styles = {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     gap: 8,
+    backgroundColor: 'transparent' as const,
   },
   shareButton: {
     width: 36,
@@ -135,5 +159,6 @@ const styles = {
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     borderRadius: 18,
+    backgroundColor: 'transparent' as const,
   },
 }

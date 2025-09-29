@@ -20,6 +20,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import CollectionActionSheet from '@/components/CollectionActionSheet'
 import type { Collection, Word } from '@/types/database'
+import { Sentry } from '@/lib/sentry.ts'
 
 interface SwipeableCollectionCardProps {
   collection: Collection
@@ -107,7 +108,7 @@ export default function SwipeableCollectionCard({
 
       // Only log actual errors, not cancellations
       if (error instanceof Error && error.name !== 'CancelledError') {
-        console.error('Rename failed:', error)
+        Sentry.captureException('Rename failed:', error)
       }
     }
   }
@@ -286,7 +287,7 @@ export default function SwipeableCollectionCard({
               {collection.is_shared && Platform.OS === 'ios' && (
                 <SymbolView
                   name="person.2.fill"
-                  size={16}
+                  size={24}
                   type="hierarchical"
                   tintColor={
                     colorScheme === 'dark'
@@ -297,7 +298,7 @@ export default function SwipeableCollectionCard({
                   fallback={
                     <Ionicons
                       name="people"
-                      size={18}
+                      size={24}
                       color={
                         colorScheme === 'dark'
                           ? Colors.dark.textSecondary
@@ -310,7 +311,7 @@ export default function SwipeableCollectionCard({
               {collection.is_shared && Platform.OS !== 'ios' && (
                 <Ionicons
                   name="people"
-                  size={18}
+                  size={24}
                   color={
                     colorScheme === 'dark'
                       ? Colors.dark.textSecondary
@@ -385,8 +386,8 @@ const styles = StyleSheet.create({
   },
   sharedIcon: {
     marginRight: 6,
-    width: 20,
-    height: 20,
+    width: 24,
+    height: 24,
   },
   renameButton: {
     position: 'absolute',

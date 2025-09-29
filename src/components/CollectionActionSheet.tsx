@@ -43,6 +43,29 @@ function StopSharingIcon({ colorScheme }: { colorScheme: 'light' | 'dark' }) {
   return <Ionicons name="person-remove-outline" size={24} color={errorColor} />
 }
 
+function CopyIcon({
+  colorScheme,
+  tintColor,
+}: {
+  colorScheme: 'light' | 'dark'
+  tintColor: string
+}) {
+  if (Platform.OS === 'ios') {
+    return (
+      <SymbolView
+        name="doc.on.clipboard"
+        size={20}
+        type="hierarchical"
+        tintColor={tintColor}
+        style={styles.actionIcon}
+        fallback={<Ionicons name="copy-outline" size={24} color={tintColor} />}
+      />
+    )
+  }
+
+  return <Ionicons name="copy-outline" size={24} color={tintColor} />
+}
+
 export default function CollectionActionSheet({
   visible,
   onClose,
@@ -107,10 +130,9 @@ export default function CollectionActionSheet({
                     onPress={() => handleAction(onCopyCode)}
                   >
                     <ViewThemed style={styles.actionContent}>
-                      <Ionicons
-                        name="copy-outline"
-                        size={24}
-                        color={tintColor}
+                      <CopyIcon
+                        colorScheme={colorScheme}
+                        tintColor={tintColor}
                       />
                       <TextThemed
                         style={[styles.actionText, { color: textColor }]}
