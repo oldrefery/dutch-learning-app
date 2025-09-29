@@ -7,6 +7,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import Constants from 'expo-constants'
 import { ViewThemed, TextThemed } from '@/components/Themed'
@@ -19,6 +20,7 @@ import { ROUTES } from '@/constants/Routes'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 
 export default function SettingsScreen() {
+  const insets = useSafeAreaInsets()
   const colorScheme = useColorScheme() ?? 'light'
   const [user, setUser] = useState<User | null>(null)
   const { signOut, loading: authLoading } = useSimpleAuth()
@@ -123,7 +125,15 @@ export default function SettingsScreen() {
   }
 
   return (
-    <ViewThemed style={styles.container}>
+    <ViewThemed
+      style={[
+        styles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom + 80, // Add extra space for tab bar
+        },
+      ]}
+    >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
