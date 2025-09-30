@@ -92,7 +92,10 @@ export default function SignupScreen() {
 
       router.push(ROUTES.AUTH.LOGIN)
     } catch (error) {
-      Sentry.captureException('Signup failed:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'signup' },
+        extra: { message: 'Signup failed' },
+      })
     }
   }
 

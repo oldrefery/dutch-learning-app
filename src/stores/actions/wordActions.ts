@@ -34,7 +34,10 @@ export const createWordActions = (
       const words = await wordService.getUserWords(userId)
       set({ words, wordsLoading: false })
     } catch (error) {
-      Sentry.captureException('Error fetching words:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'fetchWords' },
+        extra: { message: 'Error fetching words' },
+      })
       set({
         error: {
           message:
@@ -110,7 +113,10 @@ export const createWordActions = (
       set({ words: [...currentWords, newWord] })
       return newWord
     } catch (error) {
-      Sentry.captureException('Error saving analyzed word:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'saveAnalyzedWord' },
+        extra: { message: 'Error saving analyzed word' },
+      })
 
       // Check if it's a duplicate word error
       const isDuplicateError =
@@ -147,10 +153,16 @@ export const createWordActions = (
     try {
       // Validate inputs
       if (!wordId || typeof wordId !== 'string') {
-        Sentry.captureException('Invalid wordId provided')
+        Sentry.captureException(new Error('Invalid wordId provided'), {
+          tags: { operation: 'updateWordAfterReview' },
+          extra: { wordId },
+        })
       }
       if (!assessment || typeof assessment.assessment !== 'string') {
-        Sentry.captureException('Invalid assessment provided')
+        Sentry.captureException(new Error('Invalid assessment provided'), {
+          tags: { operation: 'updateWordAfterReview' },
+          extra: { assessment },
+        })
       }
 
       const updatedWordData = await wordService.updateWordProgress(
@@ -160,7 +172,10 @@ export const createWordActions = (
 
       // Validate response from service
       if (!updatedWordData || !updatedWordData.word_id) {
-        Sentry.captureException('Invalid response from word service')
+        Sentry.captureException(
+          new Error('Invalid response from word service'),
+          { tags: { operation: 'updateWordAfterReview' }, extra: { wordId } }
+        )
       }
 
       const currentWords = get().words
@@ -172,7 +187,8 @@ export const createWordActions = (
         set({ words: updatedWords })
       } else {
         Sentry.captureException(
-          `Word ${wordId} not found in current words array`
+          new Error('Word not found in current words array'),
+          { tags: { operation: 'updateWordAfterReview' }, extra: { wordId } }
         )
       }
     } catch (error) {
@@ -271,6 +287,44 @@ export const createWordActions = (
     }
   },
 
+  resetWordProgress: async (wordId: string) => {
+    try {
+      const updatedWordData = await wordService.resetWordProgress(wordId)
+
+      if (!updatedWordData) {
+        set({
+          error: {
+            message: 'Failed to reset word progress',
+            details: 'No data returned from service',
+          },
+        })
+        return
+      }
+
+      const currentWords = get().words
+      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
+
+      if (wordIndex !== -1) {
+        const updatedWords = [...currentWords]
+        updatedWords[wordIndex] = updatedWordData
+        set({ words: updatedWords })
+      }
+
+      return updatedWordData
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { operation: 'resetWordProgress' },
+        extra: { wordId },
+      })
+      set({
+        error: {
+          message: 'Failed to reset word progress',
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+        },
+      })
+    }
+  },
+
   addWordsToCollection: async (
     collectionId: string,
     words: Partial<import('@/types/database').Word>[]
@@ -298,11 +352,13 @@ export const createWordActions = (
           const newWord = await wordService.addWord(wordToAdd, userId)
           addedWords.push(newWord)
         } catch (wordError) {
-          Sentry.captureException(
-            'Error adding individual word:',
-            wordData.dutch_lemma,
-            wordError
-          )
+          Sentry.captureException(wordError, {
+            tags: { operation: 'addWordsToCollection' },
+            extra: {
+              message: 'Error adding individual word',
+              dutchLemma: wordData.dutch_lemma,
+            },
+          })
           // Continue with other words even if one fails
         }
       }

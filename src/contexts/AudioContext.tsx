@@ -60,7 +60,10 @@ export function AudioProvider({ children }: AudioProviderProps) {
         player.seekTo(0)
         await player.play()
       } catch (error) {
-        Sentry.captureException('Failed to play audio:', error)
+        Sentry.captureException(error, {
+          tags: { operation: 'playAudio' },
+          extra: { message: 'Failed to play audio', word },
+        })
         ToastService.show('Could not play pronunciation', ToastType.ERROR)
       }
     },

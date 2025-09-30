@@ -34,7 +34,10 @@ export function SelectableText({
         }
       }
     } catch (error) {
-      Sentry.captureException('Failed to copy text:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'selectableTextCopy' },
+        extra: { message: 'Failed to copy text' },
+      })
       if (showCopyFeedback) {
         ToastService.show('Failed to copy text', ToastType.ERROR)
       }

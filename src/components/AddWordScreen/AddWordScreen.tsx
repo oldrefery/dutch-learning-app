@@ -99,7 +99,13 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
       } catch (error) {
         setIsAlreadyInCollection(false)
         setDuplicateWordInfo(null)
-        Sentry.captureException('❌ Error checking for duplicate word:', error)
+        Sentry.captureException(error, {
+          tags: { operation: 'checkForDuplicates' },
+          extra: {
+            message: 'Error checking for duplicate word',
+            dutchLemma: analysisResult?.dutch_lemma,
+          },
+        })
       } finally {
         setIsCheckingDuplicate(false)
       }

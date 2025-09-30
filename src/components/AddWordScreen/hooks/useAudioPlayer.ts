@@ -25,7 +25,10 @@ export const useAudioPlayer = () => {
       }, 3000) // 3 seconds should be enough for TTS
     } catch (error) {
       setIsPlayingAudio(false)
-      Sentry.captureException('Error playing audio:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'playPronunciation' },
+        extra: { message: 'Error playing audio', ttsUrl },
+      })
       ToastService.show('Could not play pronunciation', ToastType.ERROR)
     }
   }

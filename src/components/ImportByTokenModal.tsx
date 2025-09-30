@@ -84,7 +84,10 @@ export default function ImportByTokenModal({
       handleClose()
       router.push(ROUTES.IMPORT_COLLECTION(trimmedToken))
     } catch (error) {
-      Sentry.captureException('Failed to validate token:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'validateToken' },
+        extra: { message: 'Failed to validate token' },
+      })
       setError('Failed to validate collection code. Please try again.')
     } finally {
       setLoading(false)

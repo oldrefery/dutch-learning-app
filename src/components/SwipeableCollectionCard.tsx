@@ -108,7 +108,13 @@ export default function SwipeableCollectionCard({
 
       // Only log actual errors, not cancellations
       if (error instanceof Error && error.name !== 'CancelledError') {
-        Sentry.captureException('Rename failed:', error)
+        Sentry.captureException(error, {
+          tags: { operation: 'renameCollection' },
+          extra: {
+            message: 'Rename failed',
+            collectionId: collection.collection_id,
+          },
+        })
       }
     }
   }

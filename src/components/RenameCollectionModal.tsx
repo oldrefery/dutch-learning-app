@@ -43,7 +43,14 @@ export default function RenameCollectionModal({
       await onRename(newName.trim())
       onClose()
     } catch (error) {
-      Sentry.captureException('Error renaming collection:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'renameCollection' },
+        extra: {
+          message: 'Error renaming collection',
+          currentName,
+          newName: newName.trim(),
+        },
+      })
     } finally {
       setIsRenaming(false)
     }

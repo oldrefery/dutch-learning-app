@@ -59,7 +59,14 @@ export default function ImageSelector({
       setImages(data.images || [])
     } catch (err) {
       setError('Failed to load image options. Please try again.')
-      Sentry.captureException('Failed to load images:', err)
+      Sentry.captureException(err, {
+        tags: { operation: 'loadImages' },
+        extra: {
+          message: 'Failed to load images',
+          englishTranslation,
+          partOfSpeech,
+        },
+      })
     } finally {
       setLoading(false)
     }
@@ -99,7 +106,15 @@ export default function ImageSelector({
       }
     } catch (err) {
       setError('Failed to load more images. Please try again.')
-      Sentry.captureException('Failed to load more images:', err)
+      Sentry.captureException(err, {
+        tags: { operation: 'loadMoreImages' },
+        extra: {
+          message: 'Failed to load more images',
+          englishTranslation,
+          partOfSpeech,
+          offset,
+        },
+      })
     } finally {
       setLoadingMore(false)
     }

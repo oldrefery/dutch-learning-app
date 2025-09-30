@@ -295,7 +295,36 @@ export const wordService = {
       .single()
 
     if (error) {
+      Sentry.captureException(error, {
+        tags: { operation: 'moveWordToCollection' },
+        extra: { wordId, newCollectionId },
+      })
       throw new Error(`Failed to move word to collection: ${error.message}`)
+    }
+
+    return data
+  },
+
+  // Reset word SRS statistics to initial values
+  async resetWordProgress(wordId: string) {
+    const { data, error } = await supabase
+      .from('words')
+      .update({
+        easiness_factor: SRS_PARAMS.INITIAL.EASINESS_FACTOR,
+        interval_days: SRS_PARAMS.INITIAL.INTERVAL_DAYS,
+        repetition_count: SRS_PARAMS.INITIAL.REPETITION_COUNT,
+        next_review_date: new Date().toISOString().split('T')[0],
+      })
+      .eq('word_id', wordId)
+      .select()
+      .single()
+
+    if (error) {
+      Sentry.captureException(error, {
+        tags: { operation: 'resetWordProgress' },
+        extra: { wordId },
+      })
+      return null
     }
 
     return data
@@ -309,6 +338,10 @@ export const wordService = {
       .eq('word_id', wordId)
 
     if (error) {
+      Sentry.captureException(error, {
+        tags: { operation: 'deleteWord' },
+        extra: { wordId },
+      })
       throw new Error(`Failed to delete word: ${error.message}`)
     }
   },
@@ -326,8 +359,11 @@ export const userService = {
 
       if (sessionError || !session) {
         Sentry.captureException(
-          '❌ No active session found:',
-          sessionError?.message
+          sessionError || new Error('No active session found'),
+          {
+            tags: { operation: 'deleteAccount' },
+            extra: { message: 'No active session found' },
+          }
         )
       }
 
@@ -348,19 +384,27 @@ export const userService = {
 
       if (error) {
         Sentry.captureException(
-          '❌ Edge Function error:',
-          error,
-          `\nFailed to delete account: ${error.message}`
+          new Error(`Failed to delete account: ${error.message}`),
+          {
+            tags: { operation: 'deleteAccount' },
+            extra: { message: 'Edge Function error', error },
+          }
         )
       }
 
       if (!data.success) {
-        Sentry.captureException('❌ Account deletion failed:', data.error)
+        Sentry.captureException(new Error('Account deletion failed'), {
+          tags: { operation: 'deleteAccount' },
+          extra: { error: data.error },
+        })
       }
 
       return { success: true }
     } catch (error) {
-      Sentry.captureException('💥 Account deletion error:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'deleteAccount' },
+        extra: { message: 'Account deletion error' },
+      })
     }
   },
 }

@@ -46,7 +46,10 @@ export default function TabLayout() {
 
         if (error) {
           setIsAuthenticated(false)
-          Sentry.captureException('❌ [TabLayout] Session check error:', error)
+          Sentry.captureException(error, {
+            tags: { operation: 'tabLayoutSessionCheck' },
+            extra: { message: '[TabLayout] Session check error' },
+          })
 
           return
         }
@@ -60,7 +63,10 @@ export default function TabLayout() {
         }
       } catch (error) {
         setIsAuthenticated(false)
-        Sentry.captureException('❌ [TabLayout] Auth check failed:', error)
+        Sentry.captureException(error, {
+          tags: { operation: 'tabLayoutAuthCheck' },
+          extra: { message: '[TabLayout] Auth check failed' },
+        })
 
         router.replace(ROUTES.AUTH.LOGIN)
       }

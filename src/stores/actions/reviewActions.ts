@@ -69,16 +69,8 @@ export const createReviewActions = (
         throw new Error('Invalid assessment object')
       }
 
-      console.log(
-        `💯 ${assessment.assessment.toUpperCase()} clicked for word:`,
-        currentWord.dutch_lemma
-      )
-
       // Classic SRS: All assessments update the word in the database
       await get().updateWordAfterReview(currentWord.word_id, assessment)
-      console.log(
-        `💾 Word ${currentWord.dutch_lemma} updated in database with assessment: ${assessment.assessment}`
-      )
 
       // Get fresh state after database update to ensure consistency
       const freshState = get()

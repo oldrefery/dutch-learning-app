@@ -26,6 +26,7 @@ interface SwipeableWordItemProps {
   onPress: () => void
   onDelete: (wordId: string) => void
   onMoveToCollection?: (wordId: string) => void
+  onLongPress?: () => void
   moveModalVisible?: boolean
   wordBeingMoved?: string | null
   highlighted: boolean
@@ -36,6 +37,7 @@ export default function SwipeableWordItem({
   onPress,
   onDelete,
   onMoveToCollection,
+  onLongPress,
   moveModalVisible,
   wordBeingMoved,
   highlighted,
@@ -196,6 +198,13 @@ export default function SwipeableWordItem({
     }
   })
 
+  const handleLongPress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+    if (onLongPress) {
+      onLongPress()
+    }
+  }, [onLongPress])
+
   const tapGesture = Gesture.Tap()
     .maxDistance(10) // Tap must be within 10 px of the start point
     .maxDuration(300) // Tap must be under 300 ms
@@ -205,6 +214,14 @@ export default function SwipeableWordItem({
       if (Math.abs(translateX.value) < 5) {
         scheduleOnRN(onPress)
       }
+    })
+
+  const longPressGesture = Gesture.LongPress()
+    .minDuration(500) // 500ms for long press
+    .maxDistance(10) // Maximum movement allowed during long press
+    .onStart(() => {
+      'worklet'
+      scheduleOnRN(handleLongPress)
     })
 
   const panGesture = Gesture.Pan()
@@ -245,8 +262,12 @@ export default function SwipeableWordItem({
       }
     })
 
-  // Use Race to ensure only one gesture can win
-  const combinedGesture = Gesture.Race(panGesture, tapGesture)
+  // Compose gestures: long press should block pan, tap should be separate
+  const combinedGesture = Gesture.Exclusive(
+    longPressGesture,
+    panGesture,
+    tapGesture
+  )
 
   return (
     <ViewThemed style={styles.container}>

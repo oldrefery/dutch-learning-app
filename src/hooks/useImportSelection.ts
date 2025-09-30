@@ -58,7 +58,10 @@ export function useImportSelection(token: string) {
         setTargetCollectionId(collectionsData[0].collection_id)
       }
     } catch (err) {
-      Sentry.captureException('Failed to load collections:', err)
+      Sentry.captureException(err, {
+        tags: { operation: 'loadCollections' },
+        extra: { message: 'Failed to load collections' },
+      })
     }
   }, [])
 
@@ -135,7 +138,10 @@ export function useImportSelection(token: string) {
       setError(null)
     } catch (err) {
       setError('Failed to load shared collection. Please try again.')
-      Sentry.captureException('Failed to load shared collection:', err)
+      Sentry.captureException(err, {
+        tags: { operation: 'loadSharedCollection' },
+        extra: { message: 'Failed to load shared collection', token },
+      })
     } finally {
       setLoading(false)
     }
@@ -163,7 +169,10 @@ export function useImportSelection(token: string) {
       await loadSharedCollection()
       await loadCollections()
     } catch (err) {
-      Sentry.captureException('Auth check failed:', err)
+      Sentry.captureException(err, {
+        tags: { operation: 'checkAuthAndLoad' },
+        extra: { message: 'Auth check failed', token },
+      })
       const currentUrl = ROUTES.IMPORT_COLLECTION(token)
       router.replace(RouteHelpers.createAuthRedirect(currentUrl))
     }
@@ -242,7 +251,14 @@ export function useImportSelection(token: string) {
         ToastService.show('Some words could not be imported', ToastType.ERROR)
       }
     } catch (error) {
-      Sentry.captureException('Import failed:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'handleImport' },
+        extra: {
+          message: 'Import failed',
+          targetCollectionId,
+          selectedWordsCount: selectedWords.length,
+        },
+      })
       ToastService.show(
         'Failed to import words. Please try again.',
         ToastType.ERROR

@@ -25,7 +25,10 @@ export function useReviewWordsCount() {
       setReviewWordsCount(reviewWords.length)
     } catch (error) {
       setReviewWordsCount(0)
-      Sentry.captureException('Error fetching review words count:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'fetchReviewWordsCount' },
+        extra: { currentUserId },
+      })
     } finally {
       setIsLoading(false)
     }
