@@ -5,33 +5,69 @@ import {
 } from '@/services/collectionSharingService'
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { Sentry } from '@/lib/sentry'
+import { logInfo, logError } from '@/utils/logger'
 import type {
   StoreSetFunction,
   StoreGetFunction,
+  ApplicationState,
 } from '@/types/ApplicationStoreTypes'
+
+const USER_NOT_AUTHENTICATED_ERROR =
+  APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+const USER_NOT_AUTHENTICATED_LOG = 'User not authenticated'
 
 export const createCollectionActions = (
   set: StoreSetFunction,
   get: StoreGetFunction
-) => ({
+): Pick<
+  ApplicationState,
+  | 'fetchCollections'
+  | 'createNewCollection'
+  | 'deleteCollection'
+  | 'renameCollection'
+  | 'shareCollection'
+  | 'unshareCollection'
+  | 'getCollectionShareStatus'
+> => ({
   fetchCollections: async () => {
     try {
       set({ collectionsLoading: true })
       const userId = get().currentUserId
       if (!userId) {
-        const error = new Error(
-          APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { userId },
+          'collections',
+          false
         )
-        Sentry.captureException(error, {
-          tags: { operation: 'fetchCollections' },
-          extra: { userId },
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .COLLECTIONS_FETCH_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
+          collectionsLoading: false,
         })
-        throw error
+        return
       }
       const collections = await collectionService.getUserCollections(userId)
+      if (!collections) {
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .COLLECTIONS_FETCH_FAILED,
+            details: 'Failed to fetch collections from service',
+          },
+          collectionsLoading: false,
+        })
+        return
+      }
       set({ collections, collectionsLoading: false })
     } catch (error) {
-      console.error('Error fetching collections:', error)
+      logError('Error fetching collections', error, {}, 'collections', false)
       set({
         error: {
           message:
@@ -50,24 +86,43 @@ export const createCollectionActions = (
     try {
       const userId = get().currentUserId
       if (!userId) {
-        const error = new Error(
-          APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { name, userId },
+          'collections',
+          false
         )
-        Sentry.captureException(error, {
-          tags: { operation: 'createNewCollection' },
-          extra: { name, userId },
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .COLLECTION_CREATE_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
         })
-        throw error
+        return null
       }
       const newCollection = await collectionService.createCollection(
         name,
         userId
       )
+      if (!newCollection) {
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .COLLECTION_CREATE_FAILED,
+            details: 'Failed to create collection in service',
+          },
+        })
+        return null
+      }
       const currentCollections = get().collections
       set({ collections: [...currentCollections, newCollection] })
       return newCollection
     } catch (error) {
-      console.error('Error creating collection:', error)
+      logError('Error creating collection', error, {}, 'collections', false)
       set({
         error: {
           message:
@@ -78,7 +133,7 @@ export const createCollectionActions = (
               : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
         },
       })
-      throw error
+      return null
     }
   },
 
@@ -86,14 +141,22 @@ export const createCollectionActions = (
     try {
       const userId = get().currentUserId
       if (!userId) {
-        const error = new Error(
-          APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { collectionId, userId },
+          'collections',
+          false
         )
-        Sentry.captureException(error, {
-          tags: { operation: 'deleteCollection' },
-          extra: { collectionId, userId },
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .COLLECTION_DELETE_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
         })
-        throw error
+        return
       }
       await collectionService.deleteCollection(collectionId, userId)
       const currentCollections = get().collections
@@ -102,7 +165,7 @@ export const createCollectionActions = (
       )
       set({ collections: updatedCollections })
     } catch (error) {
-      console.error('Error deleting collection:', error)
+      logError('Error deleting collection', error, {}, 'collections', false)
       set({
         error: {
           message:
@@ -113,7 +176,6 @@ export const createCollectionActions = (
               : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
         },
       })
-      throw error
     }
   },
 
@@ -121,14 +183,22 @@ export const createCollectionActions = (
     try {
       const userId = get().currentUserId
       if (!userId) {
-        const error = new Error(
-          APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { collectionId, newName, userId },
+          'collections',
+          false
         )
-        Sentry.captureException(error, {
-          tags: { operation: 'renameCollection' },
-          extra: { collectionId, newName, userId },
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .COLLECTION_UPDATE_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
         })
-        throw error
+        return
       }
       await collectionService.updateCollection(
         collectionId,
@@ -143,7 +213,7 @@ export const createCollectionActions = (
       )
       set({ collections: updatedCollections })
     } catch (error) {
-      console.error('Error renaming collection:', error)
+      logError('Error renaming collection', error, {}, 'collections', false)
       set({
         error: {
           message:
@@ -154,46 +224,62 @@ export const createCollectionActions = (
               : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
         },
       })
-      throw error
     }
   },
 
   shareCollection: async (collectionId: string) => {
     try {
-      console.log('🔄 [shareCollection] Starting share process', {
-        collectionId,
-      })
+      logInfo('Starting share process', { collectionId }, 'shareCollection')
       const userId = get().currentUserId
 
       if (!userId) {
-        console.log('❌ [shareCollection] User not authenticated', { userId })
-        const error = new Error(
-          APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          undefined,
+          { userId },
+          'shareCollection',
+          false
         )
-        Sentry.captureException(error, {
-          tags: { operation: 'shareCollection' },
-          extra: { collectionId, userId },
+        set({
+          error: {
+            message: 'Failed to share collection',
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
         })
-        throw error
+        return null
       }
 
-      console.log('🔄 [shareCollection] Calling collectionSharingService', {
-        collectionId,
-        userId,
-      })
+      logInfo(
+        'Calling collectionSharingService',
+        {
+          collectionId,
+          userId,
+        },
+        'shareCollection'
+      )
       const result = await collectionSharingService.shareCollection(
         collectionId,
         userId
       )
-      console.log('📥 [shareCollection] Service result', {
-        success: result.success,
-        error: result.success ? null : result.error,
-      })
+      logInfo(
+        'Service result',
+        {
+          success: result.success,
+          error: result.success ? null : result.error,
+        },
+        'shareCollection'
+      )
 
       if (!result.success) {
-        console.log('❌ [shareCollection] Service failed', {
-          error: result.error,
-        })
+        logError(
+          'Service failed',
+          undefined,
+          {
+            error: result.error,
+          },
+          'shareCollection',
+          false
+        )
         const errorMessage = getCollectionSharingErrorMessage(result.error)
         set({
           error: {
@@ -215,13 +301,17 @@ export const createCollectionActions = (
           : collection
       )
       set({ collections: updatedCollections })
-      console.log('✅ [shareCollection] Successfully shared collection', {
-        shareToken: result.data,
-      })
+      logInfo(
+        'Successfully shared collection',
+        {
+          shareToken: result.data,
+        },
+        'shareCollection'
+      )
 
       return result.data
     } catch (error) {
-      console.error('❌ [shareCollection] Unexpected error:', error)
+      logError('Unexpected error', error, {}, 'shareCollection', false)
       Sentry.captureException(error, {
         tags: { operation: 'shareCollection' },
         extra: { collectionId, userId: get().currentUserId },
@@ -243,14 +333,20 @@ export const createCollectionActions = (
     try {
       const userId = get().currentUserId
       if (!userId) {
-        const error = new Error(
-          APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { collectionId, userId },
+          'collections',
+          false
         )
-        Sentry.captureException(error, {
-          tags: { operation: 'unshareCollection' },
-          extra: { collectionId, userId },
+        set({
+          error: {
+            message: 'Failed to unshare collection',
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
         })
-        throw error
+        return false
       }
 
       const result = await collectionSharingService.unshareCollection(
@@ -279,7 +375,7 @@ export const createCollectionActions = (
 
       return true
     } catch (error) {
-      console.error('Error unsharing collection:', error)
+      logError('Error unsharing collection', error, {}, 'collections', false)
       set({
         error: {
           message: 'Failed to unshare collection',
@@ -297,14 +393,20 @@ export const createCollectionActions = (
     try {
       const userId = get().currentUserId
       if (!userId) {
-        const error = new Error(
-          APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { collectionId, userId },
+          'collections',
+          false
         )
-        Sentry.captureException(error, {
-          tags: { operation: 'getCollectionShareStatus' },
-          extra: { collectionId, userId },
+        set({
+          error: {
+            message: 'Failed to get collection share status',
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
         })
-        throw error
+        return null
       }
 
       const result = await collectionSharingService.getCollectionShareStatus(
@@ -325,7 +427,13 @@ export const createCollectionActions = (
 
       return result.data
     } catch (error) {
-      console.error('Error getting collection share status:', error)
+      logError(
+        'Error getting collection share status',
+        error,
+        {},
+        'collections',
+        false
+      )
       set({
         error: {
           message: 'Failed to get collection share status',

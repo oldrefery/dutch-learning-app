@@ -24,7 +24,7 @@ import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word } from '@/types/database'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export default function ReviewScreen() {
   const insets = useSafeAreaInsets()
@@ -82,7 +82,10 @@ export default function ReviewScreen() {
     try {
       await startReviewSession()
     } catch (error) {
-      Sentry.captureException('Error refreshing review session:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'refreshReviewSession' },
+        extra: { message: 'Error refreshing review session' },
+      })
     } finally {
       setRefreshing(false)
     }
@@ -171,7 +174,10 @@ export default function ReviewScreen() {
         </GestureErrorBoundary>
       )
     } catch (error) {
-      Sentry.captureException('Error rendering card:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'renderReviewCard' },
+        extra: { message: 'Error rendering card' },
+      })
 
       return (
         <ViewThemed style={reviewScreenStyles.flashcard}>

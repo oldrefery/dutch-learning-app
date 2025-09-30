@@ -4,7 +4,7 @@ import type {
   StoreGetFunction,
   AppError,
 } from '@/types/ApplicationStoreTypes'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export const createAppInitializationActions = (
   set: StoreSetFunction,
@@ -27,7 +27,10 @@ export const createAppInitializationActions = (
         })
       }
     } catch (error) {
-      Sentry.captureException('App initialization error:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'appInitialization' },
+        extra: { message: 'App initialization error' },
+      })
       get().setError({
         message:
           APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.APP_INITIALIZATION_FAILED,

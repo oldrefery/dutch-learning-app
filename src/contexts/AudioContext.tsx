@@ -8,7 +8,7 @@ import React, {
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 interface AudioContextType {
   playWord: (word: string, ttsUrl?: string | null) => Promise<void>
@@ -60,7 +60,10 @@ export function AudioProvider({ children }: AudioProviderProps) {
         player.seekTo(0)
         await player.play()
       } catch (error) {
-        Sentry.captureException('Failed to play audio:', error)
+        Sentry.captureException(error, {
+          tags: { operation: 'playAudio' },
+          extra: { message: 'Failed to play audio', word },
+        })
         ToastService.show('Could not play pronunciation', ToastType.ERROR)
       }
     },

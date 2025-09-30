@@ -174,6 +174,42 @@
   - Proper contrast ratios and shadow adjustments for dark backgrounds
   - Background, text, and UI element colors adapt seamlessly to user theme preference
 
+## 🎉 NEW MILESTONE ACHIEVED: Word Context Menu with Reset Functionality ✅
+
+### What We Accomplished (September 30, 2025):
+
+#### ✅ **Word Context Menu Implementation**
+
+- **Long-Press Gesture**: 500ms long-press activates context menu on word cards
+  - Implementation: `SwipeableWordItem.tsx:210-222` with `Gesture.LongPress()`
+  - Proper gesture isolation using `Gesture.Race()` and `Gesture.Simultaneous()`
+  - Haptic feedback on menu activation
+- **iOS 26 Liquid Glass Styling**: Modern context menu with blur effects
+  - Implementation: `WordContextMenu.tsx` - full component
+  - BlurView integration with dark/light theme support
+  - Slide-in animation using Reanimated
+  - Platform-native action sheet design
+
+#### ✅ **Word Management Actions**
+
+- **Reset Progress**: Reset word SRS statistics to initial values
+  - Implementation: `wordService.resetWordProgress()` in `supabase.ts:308-331`
+  - Store action: `wordActions.resetWordProgress()` in `wordActions.ts:274-310`
+  - Resets easiness_factor, interval_days, repetition_count, next_review_date
+- **Move to Collection**: Transfer word to different collection via context menu
+  - Seamless integration with existing `MoveToCollectionModal`
+- **Delete Word**: Remove word from collection with confirmation
+  - Consistent delete flow from context menu
+
+#### ✅ **Technical Implementation Details**
+
+- **Service Layer Pattern**: `captureException` without throw for safe error handling
+  - `wordService.resetWordProgress()` returns `null` on error
+  - Store actions handle null gracefully with user feedback
+- **Type Safety**: Added `resetWordProgress` to `ApplicationStoreTypes`
+- **Hook Integration**: Extended `useCollectionDetail` with context menu state
+- **Gesture Composition**: Advanced gesture handling for long-press + swipe
+
 ## 🔄 IMMEDIATE NEXT STEPS (Phase 4.0 - Access Control & Smart Analysis)
 
 ### Priority Tasks:
@@ -195,13 +231,7 @@
    - Create word details modal with collection name and SRS data
    - Preserve learning focus while providing contextual information
 
-4. **Word Reset Functionality** (Phase 4.1+)
-   - Add swipe-right action on word items in collections to reset word statistics
-   - Reset SRS data to initial values (easiness_factor, interval_days, repetition_count)
-   - Set next_review_date to today to make word available for immediate review
-   - Provide "Reset to New Word" functionality for words that need re-learning
-
-5. **Collection Management Enhancement** (Phase 4.1+)
+4. **Collection Management Enhancement** (Phase 4.1+)
    - **Sorting Options**: Multiple sort criteria with ascending/descending options
      - Alphabetical (A-Z / Z-A) by dutch_lemma
      - Date Added (Newest First / Oldest First) by created_at
@@ -215,7 +245,7 @@
      - Clear search with X button
    - **UI Components**: Sort/filter header bar with dropdown and search input
 
-6. **Word Collection Transfer** (Phase 4.1+)
+5. **Word Collection Transfer** (Phase 4.1+)
    - **Move Word Action**: Add option to transfer word to different collection
    - **Collection Picker**: Present list of available collections (excluding current one)
    - **Transfer Methods**: Multiple access points for better UX
@@ -259,6 +289,9 @@
 - **LATEST:** Enhanced gesture system with proper button isolation from card flip
 - **LATEST:** Complete dark theme support for ImageSelector modal
 - **LATEST:** Fixed word analysis display issues for separable verbs
+- **NEW:** Word context menu with long-press gesture activation
+- **NEW:** Word progress reset functionality with SRS statistics reset
+- **NEW:** iOS 26 Liquid Glass styling with BlurView and animations
 
 **Ready for:** App Store deployment, user acquisition, tiered access control, smart analysis caching
 

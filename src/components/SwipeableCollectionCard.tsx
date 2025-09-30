@@ -1,10 +1,9 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useCallback } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
   Alert,
   useColorScheme,
-  ActionSheetIOS,
   Platform,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
@@ -14,13 +13,15 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
+import * as Haptics from 'expo-haptics'
 import { Ionicons } from '@expo/vector-icons'
 import { SymbolView } from 'expo-symbols'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
-import CollectionActionSheet from '@/components/CollectionActionSheet'
+import CollectionContextMenu from '@/components/CollectionContextMenu'
 import type { Collection, Word } from '@/types/database'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
+import { calculateCollectionStats } from '@/utils/collectionStats'
 
 interface SwipeableCollectionCardProps {
   collection: Collection
@@ -46,28 +47,13 @@ export default function SwipeableCollectionCard({
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
   const lastGestureX = useRef<number>(0)
-  const [showActionSheet, setShowActionSheet] = useState(false)
+  const [showContextMenu, setShowContextMenu] = useState(false)
 
   // Calculate real stats for this collection
   const collectionWords = words.filter(
     word => word.collection_id === collection.collection_id
   )
-
-  const stats = {
-    totalWords: collectionWords.length,
-    masteredWords: collectionWords.filter(w => w.repetition_count > 2).length,
-    wordsToReview: collectionWords.filter(
-      w => new Date(w.next_review_date) <= new Date()
-    ).length,
-    progressPercentage:
-      collectionWords.length > 0
-        ? Math.round(
-            (collectionWords.filter(w => w.repetition_count > 2).length /
-              collectionWords.length) *
-              100
-          )
-        : 0,
-  }
+  const stats = calculateCollectionStats(collectionWords)
 
   const handleDelete = () => {
     Alert.alert(
@@ -108,43 +94,54 @@ export default function SwipeableCollectionCard({
 
       // Only log actual errors, not cancellations
       if (error instanceof Error && error.name !== 'CancelledError') {
-        Sentry.captureException('Rename failed:', error)
+        Sentry.captureException(error, {
+          tags: { operation: 'renameCollection' },
+          extra: {
+            message: 'Rename failed',
+            collectionId: collection.collection_id,
+          },
+        })
       }
     }
   }
 
-  const handleLongPress = () => {
-    if (Platform.OS === 'ios') {
-      const isShared = collection.is_shared
-      const options = isShared
-        ? ['Copy Code', 'Stop Sharing', 'Cancel']
-        : ['Share Collection', 'Cancel']
+  const handleLongPress = useCallback(() => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+    setShowContextMenu(true)
+  }, [])
 
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options,
-          cancelButtonIndex: options.length - 1,
-          destructiveButtonIndex: isShared ? 1 : undefined,
-          title: collection.name,
-        },
-        buttonIndex => {
-          if (isShared) {
-            if (buttonIndex === 0 && onCopyCode) {
-              onCopyCode(collection.collection_id)
-            } else if (buttonIndex === 1 && onStopSharing) {
-              onStopSharing(collection.collection_id)
-            }
-          } else {
-            if (buttonIndex === 0 && onShare) {
-              onShare(collection.collection_id)
-            }
-          }
-        }
-      )
-    } else {
-      // Android: show a custom action sheet with icons
-      setShowActionSheet(true)
+  const handleCloseContextMenu = () => {
+    setShowContextMenu(false)
+  }
+
+  const handleContextMenuRename = async () => {
+    try {
+      await onRename(collection.collection_id, collection.name)
+    } catch {
+      // Error already handled by onRename
     }
+  }
+
+  const handleContextMenuShare = () => {
+    if (onShare) {
+      onShare(collection.collection_id)
+    }
+  }
+
+  const handleContextMenuCopyCode = () => {
+    if (onCopyCode) {
+      onCopyCode(collection.collection_id)
+    }
+  }
+
+  const handleContextMenuStopSharing = () => {
+    if (onStopSharing) {
+      onStopSharing(collection.collection_id)
+    }
+  }
+
+  const handleContextMenuDelete = () => {
+    handleDelete()
   }
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -182,6 +179,7 @@ export default function SwipeableCollectionCard({
 
   const longPressGesture = Gesture.LongPress()
     .minDuration(500)
+    .maxDistance(10)
     .onStart(() => {
       'worklet'
       // Only trigger long press if card is in resting position
@@ -229,8 +227,12 @@ export default function SwipeableCollectionCard({
       }
     })
 
-  // Use Race to ensure only one gesture can win
-  const combinedGesture = Gesture.Race(panGesture, longPressGesture, tapGesture)
+  // Use Exclusive to ensure only one gesture can win
+  const combinedGesture = Gesture.Exclusive(
+    longPressGesture,
+    panGesture,
+    tapGesture
+  )
 
   return (
     <ViewThemed style={styles.container}>
@@ -334,20 +336,15 @@ export default function SwipeableCollectionCard({
         </Animated.View>
       </GestureDetector>
 
-      <CollectionActionSheet
-        visible={showActionSheet}
-        onClose={() => setShowActionSheet(false)}
-        collectionName={collection.name}
-        isShared={collection.is_shared}
-        onShare={onShare ? () => onShare(collection.collection_id) : undefined}
-        onCopyCode={
-          onCopyCode ? () => onCopyCode(collection.collection_id) : undefined
-        }
-        onStopSharing={
-          onStopSharing
-            ? () => onStopSharing(collection.collection_id)
-            : undefined
-        }
+      <CollectionContextMenu
+        visible={showContextMenu}
+        collection={collection}
+        onClose={handleCloseContextMenu}
+        onRename={handleContextMenuRename}
+        onShare={handleContextMenuShare}
+        onCopyCode={handleContextMenuCopyCode}
+        onStopSharing={handleContextMenuStopSharing}
+        onDelete={handleContextMenuDelete}
       />
     </ViewThemed>
   )

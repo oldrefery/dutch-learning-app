@@ -18,7 +18,7 @@ import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets()
@@ -103,8 +103,12 @@ export default function SettingsScreen() {
                       }, 2000)
                     } catch (error) {
                       Sentry.captureException(
-                        '💥 UI error during account deletion:',
-                        error
+                        error instanceof Error
+                          ? error
+                          : new Error('UI error during account deletion'),
+                        {
+                          tags: { operation: 'deleteAccount' },
+                        }
                       )
                       const errorMessage =
                         error instanceof Error

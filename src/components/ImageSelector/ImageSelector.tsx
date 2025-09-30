@@ -14,7 +14,7 @@ import { IMAGE_CONFIG } from '@/constants/AppConfig'
 import { supabase } from '@/lib/supabaseClient'
 import { getImageSelectorStyles } from './styles'
 import type { ImageOption, ImageSelectorProps } from './types'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export default function ImageSelector({
   visible,
@@ -53,13 +53,23 @@ export default function ImageSelector({
       )
 
       if (error) {
-        Sentry.captureException(error.message)
+        Sentry.captureException(new Error(error.message), {
+          tags: { operation: 'loadImages' },
+          extra: { message: 'Edge function returned error' },
+        })
       }
 
       setImages(data.images || [])
     } catch (err) {
       setError('Failed to load image options. Please try again.')
-      Sentry.captureException('Failed to load images:', err)
+      Sentry.captureException(err, {
+        tags: { operation: 'loadImages' },
+        extra: {
+          message: 'Failed to load images',
+          englishTranslation,
+          partOfSpeech,
+        },
+      })
     } finally {
       setLoading(false)
     }
@@ -86,7 +96,10 @@ export default function ImageSelector({
       )
 
       if (error) {
-        Sentry.captureException(error.message)
+        Sentry.captureException(new Error(error.message), {
+          tags: { operation: 'loadMoreImages' },
+          extra: { message: 'Edge function returned error' },
+        })
       }
 
       const newImages = data.images || []
@@ -99,7 +112,15 @@ export default function ImageSelector({
       }
     } catch (err) {
       setError('Failed to load more images. Please try again.')
-      Sentry.captureException('Failed to load more images:', err)
+      Sentry.captureException(err, {
+        tags: { operation: 'loadMoreImages' },
+        extra: {
+          message: 'Failed to load more images',
+          englishTranslation,
+          partOfSpeech,
+          offset,
+        },
+      })
     } finally {
       setLoadingMore(false)
     }

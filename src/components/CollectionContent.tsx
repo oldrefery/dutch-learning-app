@@ -30,6 +30,7 @@ interface CollectionContentProps {
   onDeleteWord: (wordId: string) => void
   onStartReview: () => void
   onMoveToCollection?: (wordId: string) => void
+  onWordLongPress?: (word: Word) => void
   moveModalVisible?: boolean
   wordBeingMoved?: string | null
   highlightWordId?: string
@@ -44,6 +45,7 @@ export default function CollectionContent({
   onDeleteWord,
   onStartReview,
   onMoveToCollection,
+  onWordLongPress,
   moveModalVisible,
   wordBeingMoved,
   highlightWordId,
@@ -147,6 +149,7 @@ export default function CollectionContent({
           onPress={() => onWordPress(item)}
           onDelete={onDeleteWord}
           onMoveToCollection={onMoveToCollection}
+          onLongPress={() => onWordLongPress?.(item)}
           moveModalVisible={moveModalVisible}
           wordBeingMoved={wordBeingMoved}
           highlighted={highlightWordId === item.word_id}

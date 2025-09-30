@@ -52,6 +52,7 @@ export interface ApplicationState {
     wordId: string,
     newCollectionId: string
   ) => Promise<Word>
+  resetWordProgress: (wordId: string) => Promise<Word | undefined>
   addWordsToCollection: (
     collectionId: string,
     words: Partial<Word>[]

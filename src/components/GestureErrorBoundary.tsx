@@ -21,7 +21,10 @@ export class GestureErrorBoundary extends React.Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
-    Sentry.captureException('🚨 GESTURE ERROR BOUNDARY: Error caught:', error)
+    Sentry.captureException(error, {
+      tags: { operation: 'gestureErrorBoundary' },
+      extra: { message: 'Error caught in gesture error boundary' },
+    })
 
     return { hasError: true, error }
   }

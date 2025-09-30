@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, ComponentProps } from 'react'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import {
   NativeTabs,
@@ -15,6 +15,7 @@ import {
   Platform,
   PlatformColor,
   DynamicColorIOS,
+  ViewStyle,
 } from 'react-native'
 import { BlurView } from 'expo-blur'
 import * as Haptics from 'expo-haptics'
@@ -24,7 +25,26 @@ import { useClientOnlyValue } from '@/components/useClientOnlyValue'
 import { supabase } from '@/lib/supabaseClient'
 import { ROUTES } from '@/constants/Routes'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
+
+// Extended types for NativeTabs components with runtime-supported props
+type TabTriggerProps = ComponentProps<typeof NativeTabs.Trigger> & {
+  onPress?: () => void | Promise<void>
+}
+
+type BadgeWithStyleProps = ComponentProps<typeof Badge> & {
+  style?: ViewStyle | ViewStyle[]
+}
+
+type NativeTabsLabelStyle = {
+  color?: string | ReturnType<typeof DynamicColorIOS>
+  tintColor?: string | ReturnType<typeof DynamicColorIOS>
+  fontSize?: number
+  fontWeight?: string
+}
+
+const TabTrigger = NativeTabs.Trigger as React.ComponentType<TabTriggerProps>
+const StyledBadge = Badge as React.ComponentType<BadgeWithStyleProps>
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
@@ -46,7 +66,10 @@ export default function TabLayout() {
 
         if (error) {
           setIsAuthenticated(false)
-          Sentry.captureException('❌ [TabLayout] Session check error:', error)
+          Sentry.captureException(error, {
+            tags: { operation: 'tabLayoutSessionCheck' },
+            extra: { message: '[TabLayout] Session check error' },
+          })
 
           return
         }
@@ -60,7 +83,10 @@ export default function TabLayout() {
         }
       } catch (error) {
         setIsAuthenticated(false)
-        Sentry.captureException('❌ [TabLayout] Auth check failed:', error)
+        Sentry.captureException(error, {
+          tags: { operation: 'tabLayoutAuthCheck' },
+          extra: { message: '[TabLayout] Auth check failed' },
+        })
 
         router.replace(ROUTES.AUTH.LOGIN)
       }
@@ -109,21 +135,23 @@ export default function TabLayout() {
     return null
   }
 
+  const labelStyle: NativeTabsLabelStyle = {
+    color: DynamicColorIOS({
+      dark: Colors.dark.text,
+      light: Colors.light.text,
+    }),
+    tintColor: DynamicColorIOS({
+      dark: Colors.dark.tint,
+      light: Colors.light.tint,
+    }),
+  }
+
   return (
     <NativeTabs
-      labelStyle={{
-        color: DynamicColorIOS({
-          dark: Colors.dark.text,
-          light: Colors.light.text,
-        }),
-        tintColor: DynamicColorIOS({
-          dark: Colors.dark.tint,
-          light: Colors.light.tint,
-        }),
-      }}
+      labelStyle={labelStyle as ComponentProps<typeof NativeTabs>['labelStyle']}
     >
       {/* Navigation tabs - left side following HIG order */}
-      <NativeTabs.Trigger
+      <TabTrigger
         name="index"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
       >
@@ -133,9 +161,9 @@ export default function TabLayout() {
         ) : (
           <FontAwesome name="home" size={24} />
         )}
-      </NativeTabs.Trigger>
+      </TabTrigger>
 
-      <NativeTabs.Trigger
+      <TabTrigger
         name="settings"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
       >
@@ -145,10 +173,10 @@ export default function TabLayout() {
         ) : (
           <FontAwesome name="cog" size={24} />
         )}
-      </NativeTabs.Trigger>
+      </TabTrigger>
 
       {/* Primary action tabs - right side following HIG guidelines */}
-      <NativeTabs.Trigger
+      <TabTrigger
         name="add-word"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
       >
@@ -181,16 +209,16 @@ export default function TabLayout() {
             </BlurView>
           </View>
         )}
-      </NativeTabs.Trigger>
+      </TabTrigger>
 
-      <NativeTabs.Trigger
+      <TabTrigger
         name="review"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
       >
         <Label>Review</Label>
         {/* Smart badge showing review words count */}
         {reviewWordsCount > 0 && (
-          <Badge
+          <StyledBadge
             style={[
               styles.reviewBadge,
               {
@@ -207,7 +235,7 @@ export default function TabLayout() {
             ]}
           >
             {reviewWordsCount > 99 ? '99+' : reviewWordsCount.toString()}
-          </Badge>
+          </StyledBadge>
         )}
         {Platform.OS === 'ios' ? (
           <Icon sf="brain.head.profile" />
@@ -237,7 +265,7 @@ export default function TabLayout() {
             </BlurView>
           </View>
         )}
-      </NativeTabs.Trigger>
+      </TabTrigger>
     </NativeTabs>
   )
 }

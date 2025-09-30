@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { wordService } from '@/lib/supabase'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 /**
  * Hook to get the count of words available for review
@@ -22,10 +22,13 @@ export function useReviewWordsCount() {
     setIsLoading(true)
     try {
       const reviewWords = await wordService.getWordsForReview(currentUserId)
-      setReviewWordsCount(reviewWords.length)
+      setReviewWordsCount(reviewWords?.length ?? 0)
     } catch (error) {
       setReviewWordsCount(0)
-      Sentry.captureException('Error fetching review words count:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'fetchReviewWordsCount' },
+        extra: { currentUserId },
+      })
     } finally {
       setIsLoading(false)
     }

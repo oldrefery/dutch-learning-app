@@ -14,6 +14,7 @@ import CollectionContent from '@/components/CollectionContent'
 import WordDetailModal from '@/components/WordDetailModal'
 import ImageSelector from '@/components/ImageSelector'
 import MoveToCollectionModal from '@/components/MoveToCollectionModal'
+import WordContextMenu from '@/components/WordContextMenu'
 
 export default function CollectionDetailScreen() {
   const { id, highlightWordId } = useLocalSearchParams<{
@@ -32,6 +33,8 @@ export default function CollectionDetailScreen() {
     isSharing,
     moveModalVisible,
     wordToMove,
+    contextMenuVisible,
+    contextMenuWord,
     collections,
     words,
     handleRefresh,
@@ -47,6 +50,11 @@ export default function CollectionDetailScreen() {
     handleMoveToCollection,
     handleCloseMoveModal,
     handleSelectTargetCollection,
+    handleWordLongPress,
+    handleCloseContextMenu,
+    handleResetWordFromContextMenu,
+    handleMoveFromContextMenu,
+    handleDeleteFromContextMenu,
   } = useCollectionDetail(id!)
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
@@ -121,6 +129,7 @@ export default function CollectionDetailScreen() {
           onDeleteWord={handleDeleteWord}
           onStartReview={handleStartReview}
           onMoveToCollection={handleMoveToCollection}
+          onWordLongPress={handleWordLongPress}
           moveModalVisible={moveModalVisible}
           wordBeingMoved={wordToMove}
           highlightWordId={highlightWordId}
@@ -193,6 +202,15 @@ export default function CollectionDetailScreen() {
         collections={collections}
         words={words}
         currentCollectionId={collection?.collection_id}
+      />
+
+      <WordContextMenu
+        visible={contextMenuVisible}
+        word={contextMenuWord}
+        onClose={handleCloseContextMenu}
+        onReset={handleResetWordFromContextMenu}
+        onMove={handleMoveFromContextMenu}
+        onDelete={handleDeleteFromContextMenu}
       />
     </>
   )

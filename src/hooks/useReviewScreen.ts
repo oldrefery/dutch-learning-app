@@ -4,7 +4,7 @@ import { useAudioPlayer } from '@/hooks/useAudioPlayer'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export const useReviewScreen = () => {
   const {
@@ -69,17 +69,20 @@ export const useReviewScreen = () => {
 
         // No toast for 'again' - it's a normal retry, not an error
       } catch (error) {
-        Sentry.captureException('Assessment error:', error)
+        Sentry.captureException(error, {
+          tags: { operation: 'handleAssessment' },
+          extra: { message: 'Assessment error', assessment },
+        })
         ToastService.show('Failed to submit assessment', ToastType.ERROR)
       } finally {
         // Check if the component is still mounted before updating the state
         try {
           setIsLoading(false)
         } catch (stateError) {
-          Sentry.captureException(
-            'Component unmounted during assessment:',
-            stateError
-          )
+          Sentry.captureException(stateError, {
+            tags: { operation: 'handleAssessment' },
+            extra: { message: 'Component unmounted during assessment' },
+          })
         }
       }
     },

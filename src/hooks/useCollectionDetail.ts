@@ -6,7 +6,8 @@ import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word, Collection } from '@/types/database'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
+import { calculateCollectionStats } from '@/utils/collectionStats'
 
 export function useCollectionDetail(collectionId: string) {
   const [refreshing, setRefreshing] = useState(false)
@@ -15,6 +16,8 @@ export function useCollectionDetail(collectionId: string) {
   const [isSharing, setIsSharing] = useState(false)
   const [moveModalVisible, setMoveModalVisible] = useState(false)
   const [wordToMove, setWordToMove] = useState<string | null>(null)
+  const [contextMenuVisible, setContextMenuVisible] = useState(false)
+  const [contextMenuWord, setContextMenuWord] = useState<Word | null>(null)
 
   const {
     words,
@@ -24,6 +27,7 @@ export function useCollectionDetail(collectionId: string) {
     deleteWord,
     updateWordImage,
     moveWordToCollection,
+    resetWordProgress,
     shareCollection,
     getCollectionShareStatus,
     unshareCollection,
@@ -39,12 +43,10 @@ export function useCollectionDetail(collectionId: string) {
       return wordA.localeCompare(wordB)
     })
 
+  const baseStats = calculateCollectionStats(collectionWords)
   const stats = {
-    totalWords: collectionWords.length,
-    masteredWords: collectionWords.filter(w => w.repetition_count > 2).length,
-    wordsForReview: collectionWords.filter(
-      w => new Date(w.next_review_date) <= new Date()
-    ).length,
+    ...baseStats,
+    wordsForReview: baseStats.wordsToReview,
     newWords: collectionWords.filter(w => w.repetition_count === 0).length,
   }
 
@@ -127,7 +129,13 @@ export function useCollectionDetail(collectionId: string) {
         ToastService.show('No share code available', ToastType.ERROR)
       }
     } catch (error) {
-      Sentry.captureException('❌ [handleCopyCode] Failed to copy code:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'handleCopyCode' },
+        extra: {
+          message: 'Failed to copy code',
+          collectionId: collection?.collection_id,
+        },
+      })
       ToastService.show('Failed to copy collection code', ToastType.ERROR)
     } finally {
       setIsSharing(false)
@@ -151,10 +159,13 @@ export function useCollectionDetail(collectionId: string) {
 
       ToastService.show('Collection shared successfully', ToastType.SUCCESS)
     } catch (error) {
-      Sentry.captureException(
-        '❌ [handleShareCollection] Unexpected error:',
-        error
-      )
+      Sentry.captureException(error, {
+        tags: { operation: 'handleShareCollection' },
+        extra: {
+          message: 'Unexpected error',
+          collectionId: collection?.collection_id,
+        },
+      })
       ToastService.show('Failed to share collection', ToastType.ERROR)
     } finally {
       setIsSharing(false)
@@ -175,10 +186,13 @@ export function useCollectionDetail(collectionId: string) {
         ToastService.show('Failed to stop sharing collection', ToastType.ERROR)
       }
     } catch (error) {
-      Sentry.captureException(
-        '❌ [handleStopSharing] Failed to stop sharing:',
-        error
-      )
+      Sentry.captureException(error, {
+        tags: { operation: 'handleStopSharing' },
+        extra: {
+          message: 'Failed to stop sharing',
+          collectionId: collection?.collection_id,
+        },
+      })
       ToastService.show('Failed to stop sharing collection', ToastType.ERROR)
     } finally {
       setIsSharing(false)
@@ -214,6 +228,42 @@ export function useCollectionDetail(collectionId: string) {
     }
   }
 
+  const handleWordLongPress = (word: Word) => {
+    setContextMenuWord(word)
+    setContextMenuVisible(true)
+  }
+
+  const handleCloseContextMenu = () => {
+    setContextMenuVisible(false)
+    // Don't clear contextMenuWord immediately to allow actions to complete
+    setTimeout(() => {
+      setContextMenuWord(null)
+    }, 300)
+  }
+
+  const handleResetWordFromContextMenu = async () => {
+    if (!contextMenuWord) return
+
+    try {
+      await resetWordProgress(contextMenuWord.word_id)
+      ToastService.show('Word progress reset', ToastType.SUCCESS)
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Could not reset word progress'
+      ToastService.show(errorMessage, ToastType.ERROR)
+    }
+  }
+
+  const handleMoveFromContextMenu = () => {
+    if (!contextMenuWord) return
+    handleMoveToCollection(contextMenuWord.word_id)
+  }
+
+  const handleDeleteFromContextMenu = async () => {
+    if (!contextMenuWord) return
+    await handleDeleteWord(contextMenuWord.word_id)
+  }
+
   return {
     // State
     collection,
@@ -225,6 +275,8 @@ export function useCollectionDetail(collectionId: string) {
     isSharing,
     moveModalVisible,
     wordToMove,
+    contextMenuVisible,
+    contextMenuWord,
     collections,
     words,
 
@@ -242,6 +294,11 @@ export function useCollectionDetail(collectionId: string) {
     handleMoveToCollection,
     handleCloseMoveModal,
     handleSelectTargetCollection,
+    handleWordLongPress,
+    handleCloseContextMenu,
+    handleResetWordFromContextMenu,
+    handleMoveFromContextMenu,
+    handleDeleteFromContextMenu,
 
     // Setters for external use
     setSelectedWord,

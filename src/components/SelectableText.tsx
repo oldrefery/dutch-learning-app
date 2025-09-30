@@ -6,7 +6,7 @@ import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { Colors } from '@/constants/Colors'
 import type { TextProps } from '@/components/Themed'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 interface SelectableTextProps extends TextProps {
   copyText?: string // Текст для копирования, если отличается от отображаемого
@@ -34,7 +34,10 @@ export function SelectableText({
         }
       }
     } catch (error) {
-      Sentry.captureException('Failed to copy text:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'selectableTextCopy' },
+        extra: { message: 'Failed to copy text' },
+      })
       if (showCopyFeedback) {
         ToastService.show('Failed to copy text', ToastType.ERROR)
       }

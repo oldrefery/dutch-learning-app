@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createAudioPlayer } from 'expo-audio'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export const useAudioPlayer = () => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
@@ -25,7 +25,10 @@ export const useAudioPlayer = () => {
       }, 3000) // 3 seconds should be enough for TTS
     } catch (error) {
       setIsPlayingAudio(false)
-      Sentry.captureException('Error playing audio:', error)
+      Sentry.captureException(error, {
+        tags: { operation: 'playPronunciation' },
+        extra: { message: 'Error playing audio', ttsUrl },
+      })
       ToastService.show('Could not play pronunciation', ToastType.ERROR)
     }
   }

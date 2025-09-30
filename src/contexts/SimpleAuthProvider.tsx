@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { ROUTES } from '@/constants/Routes'
 import type { LoginCredentials, SignupCredentials } from '@/types/AuthTypes'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 interface SimpleAuthState {
   loading: boolean
@@ -52,10 +52,10 @@ export function SimpleAuthProvider({
         } = await supabase.auth.getSession()
 
         if (sessionError) {
-          Sentry.captureException(
-            '❌ [SimpleAuthProvider] Session check error:',
-            sessionError
-          )
+          Sentry.captureException(sessionError, {
+            tags: { operation: 'simpleAuthProviderSessionCheck' },
+            extra: { message: 'Session check error' },
+          })
           return
         }
 
@@ -66,10 +66,10 @@ export function SimpleAuthProvider({
           await initializeApp()
         }
       } catch (error) {
-        Sentry.captureException(
-          '❌ [SimpleAuthProvider] Error checking session:',
-          error
-        )
+        Sentry.captureException(error, {
+          tags: { operation: 'simpleAuthProviderCheckSession' },
+          extra: { message: 'Error checking session' },
+        })
         // Initialize with no user to clear any stale data
         await initializeApp()
       }
@@ -200,10 +200,10 @@ export function SimpleAuthProvider({
 
       if (error) {
         setError('Failed to sign out. Please try again.')
-        Sentry.captureException(
-          '❌ [SimpleAuthProvider] Sign out error:',
-          error
-        )
+        Sentry.captureException(error, {
+          tags: { operation: 'simpleAuthProviderSignOut' },
+          extra: { message: 'Sign out error' },
+        })
 
         return
       }
@@ -212,10 +212,10 @@ export function SimpleAuthProvider({
       router.replace(ROUTES.AUTH.LOGIN)
     } catch (error) {
       setError('An unexpected error occurred during sign out.')
-      Sentry.captureException(
-        '❌ [SimpleAuthProvider] Unexpected sign out error:',
-        error
-      )
+      Sentry.captureException(error, {
+        tags: { operation: 'simpleAuthProviderSignOut' },
+        extra: { message: 'Unexpected sign out error' },
+      })
     } finally {
       setLoading(false)
     }

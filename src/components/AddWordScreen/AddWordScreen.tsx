@@ -20,7 +20,7 @@ import { wordService } from '@/lib/supabase'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 interface DuplicateWordData {
   word_id: string
@@ -99,7 +99,13 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
       } catch (error) {
         setIsAlreadyInCollection(false)
         setDuplicateWordInfo(null)
-        Sentry.captureException('❌ Error checking for duplicate word:', error)
+        Sentry.captureException(error, {
+          tags: { operation: 'checkForDuplicates' },
+          extra: {
+            message: 'Error checking for duplicate word',
+            dutchLemma: analysisResult?.dutch_lemma,
+          },
+        })
       } finally {
         setIsCheckingDuplicate(false)
       }
