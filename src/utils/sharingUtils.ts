@@ -29,17 +29,11 @@ class SharingUtils {
   ): Promise<ShareResult> {
     try {
       const deepLinkUrl = collectionSharingService.generateShareUrl(shareToken)
-      const webShareUrl =
-        collectionSharingService.generateWebShareUrl(shareToken)
 
       const dialogTitle =
         options.dialogTitle || `Share collection "${collectionName}"`
 
-      const shareMessage = this.createShareMessage(
-        collectionName,
-        deepLinkUrl,
-        webShareUrl
-      )
+      const shareMessage = this.createShareMessage(collectionName, deepLinkUrl)
 
       logInfo(
         'About to call Share.share with message',
@@ -90,36 +84,13 @@ class SharingUtils {
 
   private createShareMessage(
     collectionName: string,
-    deepLinkUrl: string,
-    webShareUrl: string
+    deepLinkUrl: string
   ): string {
     const appName = 'Dutch Learning App'
 
     // TODO: Add web version back when we have it deployed
     return `Check out "${collectionName}" collection in ${appName}!\n\n${deepLinkUrl}\n\nGreat for learning Dutch vocabulary with spaced repetition!`
   }
-
-  async canShare(): Promise<boolean> {
-    // React Native Share API is always available on mobile platforms
-    return Platform.OS === 'ios' || Platform.OS === 'android'
-  }
-
-  getShareUrl(shareToken: string): string {
-    return collectionSharingService.generateShareUrl(shareToken)
-  }
-
-  getWebShareUrl(shareToken: string): string {
-    return collectionSharingService.generateWebShareUrl(shareToken)
-  }
-
-  private getPlatformSpecificShareOptions(
-    options: ShareCollectionOptions = {}
-  ): object {
-    // Remove platform-specific options until we fix the sharing issue
-    return {}
-  }
 }
 
 export const sharingUtils = new SharingUtils()
-
-export default sharingUtils

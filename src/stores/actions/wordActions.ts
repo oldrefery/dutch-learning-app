@@ -6,6 +6,7 @@ import type {
   StoreGetFunction,
   AnalyzedWord,
   ReviewAssessment,
+  ApplicationState,
 } from '@/types/ApplicationStoreTypes'
 import type { GeminiWordAnalysis } from '@/types/database'
 
@@ -15,7 +16,18 @@ const UNKNOWN_ERROR = 'Unknown error'
 export const createWordActions = (
   set: StoreSetFunction,
   get: StoreGetFunction
-) => ({
+): Pick<
+  ApplicationState,
+  | 'fetchWords'
+  | 'addNewWord'
+  | 'saveAnalyzedWord'
+  | 'updateWordAfterReview'
+  | 'deleteWord'
+  | 'updateWordImage'
+  | 'moveWordToCollection'
+  | 'resetWordProgress'
+  | 'addWordsToCollection'
+> => ({
   fetchWords: async () => {
     try {
       set({ wordsLoading: true })
@@ -163,13 +175,13 @@ export const createWordActions = (
   ) => {
     try {
       // Validate inputs
-      if (!wordId || typeof wordId !== 'string') {
+      if (!wordId) {
         Sentry.captureException(new Error('Invalid wordId provided'), {
           tags: { operation: 'updateWordAfterReview' },
           extra: { wordId },
         })
       }
-      if (!assessment || typeof assessment.assessment !== 'string') {
+      if (!assessment || !assessment.assessment) {
         Sentry.captureException(new Error('Invalid assessment provided'), {
           tags: { operation: 'updateWordAfterReview' },
           extra: { assessment },

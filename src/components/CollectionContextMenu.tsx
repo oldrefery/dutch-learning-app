@@ -14,6 +14,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { Ionicons } from '@expo/vector-icons'
+import { SymbolView } from 'expo-symbols'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { Collection } from '@/types/database'
@@ -149,11 +150,27 @@ export default function CollectionContextMenu({
                     onPress={() => handleAction(onStopSharing)}
                   >
                     <ViewThemed style={styles.iconContainer}>
-                      <Ionicons
-                        name="close-circle"
-                        size={22}
-                        color={Colors.error.DEFAULT}
-                      />
+                      {Platform.OS === 'ios' ? (
+                        <SymbolView
+                          name="person.2.slash"
+                          size={22}
+                          type="hierarchical"
+                          tintColor={Colors.error.DEFAULT}
+                          fallback={
+                            <Ionicons
+                              name="close-circle"
+                              size={22}
+                              color={Colors.error.DEFAULT}
+                            />
+                          }
+                        />
+                      ) : (
+                        <Ionicons
+                          name="close-circle"
+                          size={22}
+                          color={Colors.error.DEFAULT}
+                        />
+                      )}
                     </ViewThemed>
                     <TextThemed
                       style={[styles.menuItemText, styles.destructiveText]}

@@ -9,22 +9,34 @@ import { logInfo, logError } from '@/utils/logger'
 import type {
   StoreSetFunction,
   StoreGetFunction,
+  ApplicationState,
 } from '@/types/ApplicationStoreTypes'
+
+const USER_NOT_AUTHENTICATED_ERROR =
+  APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+const USER_NOT_AUTHENTICATED_LOG = 'User not authenticated'
 
 export const createCollectionActions = (
   set: StoreSetFunction,
   get: StoreGetFunction
-) => ({
+): Pick<
+  ApplicationState,
+  | 'fetchCollections'
+  | 'createNewCollection'
+  | 'deleteCollection'
+  | 'renameCollection'
+  | 'shareCollection'
+  | 'unshareCollection'
+  | 'getCollectionShareStatus'
+> => ({
   fetchCollections: async () => {
     try {
       set({ collectionsLoading: true })
       const userId = get().currentUserId
       if (!userId) {
         logError(
-          'User not authenticated',
-          new Error(
-            APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
-          ),
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
           { userId },
           'collections',
           false
@@ -34,8 +46,7 @@ export const createCollectionActions = (
             message:
               APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
                 .COLLECTIONS_FETCH_FAILED,
-            details:
-              APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
           },
           collectionsLoading: false,
         })
@@ -76,10 +87,8 @@ export const createCollectionActions = (
       const userId = get().currentUserId
       if (!userId) {
         logError(
-          'User not authenticated',
-          new Error(
-            APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
-          ),
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
           { name, userId },
           'collections',
           false
@@ -89,8 +98,7 @@ export const createCollectionActions = (
             message:
               APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
                 .COLLECTION_CREATE_FAILED,
-            details:
-              APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
           },
         })
         return null
@@ -134,10 +142,8 @@ export const createCollectionActions = (
       const userId = get().currentUserId
       if (!userId) {
         logError(
-          'User not authenticated',
-          new Error(
-            APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
-          ),
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
           { collectionId, userId },
           'collections',
           false
@@ -147,8 +153,7 @@ export const createCollectionActions = (
             message:
               APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
                 .COLLECTION_DELETE_FAILED,
-            details:
-              APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
           },
         })
         return
@@ -179,10 +184,8 @@ export const createCollectionActions = (
       const userId = get().currentUserId
       if (!userId) {
         logError(
-          'User not authenticated',
-          new Error(
-            APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
-          ),
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
           { collectionId, newName, userId },
           'collections',
           false
@@ -192,8 +195,7 @@ export const createCollectionActions = (
             message:
               APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
                 .COLLECTION_UPDATE_FAILED,
-            details:
-              APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
           },
         })
         return
@@ -232,7 +234,7 @@ export const createCollectionActions = (
 
       if (!userId) {
         logError(
-          'User not authenticated',
+          USER_NOT_AUTHENTICATED_LOG,
           undefined,
           { userId },
           'shareCollection',
@@ -241,8 +243,7 @@ export const createCollectionActions = (
         set({
           error: {
             message: 'Failed to share collection',
-            details:
-              APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
           },
         })
         return null
@@ -333,10 +334,8 @@ export const createCollectionActions = (
       const userId = get().currentUserId
       if (!userId) {
         logError(
-          'User not authenticated',
-          new Error(
-            APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
-          ),
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
           { collectionId, userId },
           'collections',
           false
@@ -344,8 +343,7 @@ export const createCollectionActions = (
         set({
           error: {
             message: 'Failed to unshare collection',
-            details:
-              APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
           },
         })
         return false
@@ -396,10 +394,8 @@ export const createCollectionActions = (
       const userId = get().currentUserId
       if (!userId) {
         logError(
-          'User not authenticated',
-          new Error(
-            APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
-          ),
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
           { collectionId, userId },
           'collections',
           false
@@ -407,8 +403,7 @@ export const createCollectionActions = (
         set({
           error: {
             message: 'Failed to get collection share status',
-            details:
-              APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
           },
         })
         return null

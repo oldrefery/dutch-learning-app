@@ -6,12 +6,28 @@ import type {
   StoreSetFunction,
   StoreGetFunction,
   ReviewAssessment,
+  ApplicationState,
 } from '@/types/ApplicationStoreTypes'
+
+const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
+const INVALID_ASSESSMENT_ERROR = 'Invalid assessment object'
 
 export const createReviewActions = (
   set: StoreSetFunction,
   get: StoreGetFunction
-) => ({
+): Pick<
+  ApplicationState,
+  | 'startReviewSession'
+  | 'submitReviewAssessment'
+  | 'endReviewSession'
+  | 'markCorrect'
+  | 'markIncorrect'
+  | 'flipCard'
+  | 'goToNextWord'
+  | 'goToPreviousWord'
+  | 'deleteWordFromReview'
+  | 'updateCurrentWordImage'
+> => ({
   startReviewSession: async () => {
     try {
       set({ reviewLoading: true })
@@ -19,8 +35,8 @@ export const createReviewActions = (
       const userId = get().currentUserId
       if (!userId) {
         logError(
-          'User not authenticated',
-          new Error('User not authenticated'),
+          USER_NOT_AUTHENTICATED_ERROR,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
           {},
           'review',
           false
@@ -30,7 +46,7 @@ export const createReviewActions = (
             message:
               APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
                 .REVIEW_SESSION_START_FAILED,
-            details: 'User not authenticated',
+            details: USER_NOT_AUTHENTICATED_ERROR,
           },
           reviewLoading: false,
         })
@@ -95,10 +111,10 @@ export const createReviewActions = (
       }
 
       // Validate assessment object
-      if (!assessment || typeof assessment.assessment !== 'string') {
+      if (!assessment || !assessment.assessment) {
         logError(
-          'Invalid assessment object',
-          new Error('Invalid assessment object'),
+          INVALID_ASSESSMENT_ERROR,
+          new Error(INVALID_ASSESSMENT_ERROR),
           { assessment },
           'review',
           false
@@ -108,7 +124,7 @@ export const createReviewActions = (
             message:
               APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
                 .REVIEW_ASSESSMENT_SUBMIT_FAILED,
-            details: 'Invalid assessment object',
+            details: INVALID_ASSESSMENT_ERROR,
           },
         })
         return
@@ -131,7 +147,7 @@ export const createReviewActions = (
       const nextWord = freshReviewSession.words[nextIndex] || null
 
       if (nextWord && nextIndex < freshReviewSession.words.length) {
-        // Validate next word before setting
+        // Validate the next word before setting
         if (!nextWord.word_id || !nextWord.dutch_lemma) {
           logError(
             'Invalid next word data',
@@ -189,10 +205,10 @@ export const createReviewActions = (
     })
   },
 
-  markCorrect: () => {
+  markCorrect: async () => {
     const state = get()
     if (state.currentWord) {
-      get().submitReviewAssessment({
+      await get().submitReviewAssessment({
         wordId: state.currentWord.word_id,
         assessment: SRS_ASSESSMENT.GOOD,
         timestamp: new Date(),
@@ -200,10 +216,10 @@ export const createReviewActions = (
     }
   },
 
-  markIncorrect: () => {
+  markIncorrect: async () => {
     const state = get()
     if (state.currentWord) {
-      get().submitReviewAssessment({
+      await get().submitReviewAssessment({
         wordId: state.currentWord.word_id,
         assessment: SRS_ASSESSMENT.AGAIN,
         timestamp: new Date(),
@@ -216,7 +232,6 @@ export const createReviewActions = (
     // The store doesn't need to track card flip state
   },
 
-  // Navigation functions for swipe gestures
   goToNextWord: () => {
     const { reviewSession, currentWord } = get()
     if (!reviewSession || !currentWord) return
@@ -255,7 +270,6 @@ export const createReviewActions = (
     }
   },
 
-  // Delete word from the current review session
   deleteWordFromReview: (wordId: string) => {
     const { reviewSession, currentWord } = get()
     if (!reviewSession || !currentWord) return

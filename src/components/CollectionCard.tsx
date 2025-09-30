@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { Collection, Word } from '@/types/database'
+import { calculateCollectionStats } from '@/utils/collectionStats'
 
 interface CollectionCardProps {
   collection: Collection
@@ -19,22 +20,7 @@ export default function CollectionCard({
   const collectionWords = words.filter(
     word => word.collection_id === collection.collection_id
   )
-
-  const stats = {
-    totalWords: collectionWords.length,
-    masteredWords: collectionWords.filter(w => w.repetition_count > 2).length,
-    wordsToReview: collectionWords.filter(
-      w => new Date(w.next_review_date) <= new Date()
-    ).length,
-    progressPercentage:
-      collectionWords.length > 0
-        ? Math.round(
-            (collectionWords.filter(w => w.repetition_count > 2).length /
-              collectionWords.length) *
-              100
-          )
-        : 0,
-  }
+  const stats = calculateCollectionStats(collectionWords)
 
   return (
     <TouchableOpacity style={styles.collectionCard} onPress={onPress}>

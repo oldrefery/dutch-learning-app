@@ -7,6 +7,7 @@ import { ROUTES } from '@/constants/Routes'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word, Collection } from '@/types/database'
 import { Sentry } from '@/lib/sentry.ts'
+import { calculateCollectionStats } from '@/utils/collectionStats'
 
 export function useCollectionDetail(collectionId: string) {
   const [refreshing, setRefreshing] = useState(false)
@@ -42,12 +43,10 @@ export function useCollectionDetail(collectionId: string) {
       return wordA.localeCompare(wordB)
     })
 
+  const baseStats = calculateCollectionStats(collectionWords)
   const stats = {
-    totalWords: collectionWords.length,
-    masteredWords: collectionWords.filter(w => w.repetition_count > 2).length,
-    wordsForReview: collectionWords.filter(
-      w => new Date(w.next_review_date) <= new Date()
-    ).length,
+    ...baseStats,
+    wordsForReview: baseStats.wordsToReview,
     newWords: collectionWords.filter(w => w.repetition_count === 0).length,
   }
 
