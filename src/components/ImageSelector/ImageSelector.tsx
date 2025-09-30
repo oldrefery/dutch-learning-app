@@ -53,7 +53,10 @@ export default function ImageSelector({
       )
 
       if (error) {
-        Sentry.captureException(error.message)
+        Sentry.captureException(new Error(error.message), {
+          tags: { operation: 'loadImages' },
+          extra: { message: 'Edge function returned error' },
+        })
       }
 
       setImages(data.images || [])
@@ -93,7 +96,10 @@ export default function ImageSelector({
       )
 
       if (error) {
-        Sentry.captureException(error.message)
+        Sentry.captureException(new Error(error.message), {
+          tags: { operation: 'loadMoreImages' },
+          extra: { message: 'Edge function returned error' },
+        })
       }
 
       const newImages = data.images || []
