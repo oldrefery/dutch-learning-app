@@ -4,8 +4,10 @@ import {
   TouchableOpacity,
   useColorScheme,
   StyleSheet,
+  Platform,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { SymbolView } from 'expo-symbols'
 import { TextThemed, ViewThemed, useThemeColor } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
@@ -17,6 +19,51 @@ interface CollectionActionSheetProps {
   onShare?: () => void
   onCopyCode?: () => void
   onStopSharing?: () => void
+}
+
+function StopSharingIcon({ colorScheme }: { colorScheme: 'light' | 'dark' }) {
+  const errorColor =
+    colorScheme === 'dark' ? Colors.error.darkMode : Colors.error.DEFAULT
+
+  if (Platform.OS === 'ios') {
+    return (
+      <SymbolView
+        name="person.2.slash"
+        size={20}
+        type="hierarchical"
+        tintColor={errorColor}
+        style={styles.actionIcon}
+        fallback={
+          <Ionicons name="person-remove-outline" size={24} color={errorColor} />
+        }
+      />
+    )
+  }
+
+  return <Ionicons name="person-remove-outline" size={24} color={errorColor} />
+}
+
+function CopyIcon({
+  colorScheme,
+  tintColor,
+}: {
+  colorScheme: 'light' | 'dark'
+  tintColor: string
+}) {
+  if (Platform.OS === 'ios') {
+    return (
+      <SymbolView
+        name="doc.on.clipboard"
+        size={20}
+        type="hierarchical"
+        tintColor={tintColor}
+        style={styles.actionIcon}
+        fallback={<Ionicons name="copy-outline" size={24} color={tintColor} />}
+      />
+    )
+  }
+
+  return <Ionicons name="copy-outline" size={24} color={tintColor} />
 }
 
 export default function CollectionActionSheet({
@@ -38,6 +85,9 @@ export default function CollectionActionSheet({
     action()
     onClose()
   }
+
+  const errorColor =
+    colorScheme === 'dark' ? Colors.error.darkMode : Colors.error.DEFAULT
 
   return (
     <Modal
@@ -80,10 +130,9 @@ export default function CollectionActionSheet({
                     onPress={() => handleAction(onCopyCode)}
                   >
                     <ViewThemed style={styles.actionContent}>
-                      <Ionicons
-                        name="copy-outline"
-                        size={24}
-                        color={tintColor}
+                      <CopyIcon
+                        colorScheme={colorScheme}
+                        tintColor={tintColor}
                       />
                       <TextThemed
                         style={[styles.actionText, { color: textColor }]}
@@ -99,16 +148,9 @@ export default function CollectionActionSheet({
                     onPress={() => handleAction(onStopSharing)}
                   >
                     <ViewThemed style={styles.actionContent}>
-                      <Ionicons
-                        name="person-remove-outline"
-                        size={24}
-                        color={Colors.error.DEFAULT}
-                      />
+                      <StopSharingIcon colorScheme={colorScheme} />
                       <TextThemed
-                        style={[
-                          styles.actionText,
-                          { color: Colors.error.DEFAULT },
-                        ]}
+                        style={[styles.actionText, { color: errorColor }]}
                       >
                         Stop Sharing
                       </TextThemed>
@@ -205,6 +247,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     marginLeft: 12,
+  },
+  actionIcon: {
+    width: 24,
+    height: 24,
   },
   cancelButton: {
     marginTop: 8,

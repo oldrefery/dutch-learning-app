@@ -21,15 +21,12 @@ export class GestureErrorBoundary extends React.Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
-    console.error('🚨 GESTURE ERROR BOUNDARY: Error caught:', error)
+    Sentry.captureException('🚨 GESTURE ERROR BOUNDARY: Error caught:', error)
+
     return { hasError: true, error }
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('🚨 GESTURE ERROR BOUNDARY: componentDidCatch triggered')
-    console.error('🚨 ERROR:', error)
-    console.error('🚨 ERROR INFO:', errorInfo)
-
     // Report to Sentry
     Sentry.captureException(error, {
       contexts: {
@@ -43,8 +40,6 @@ export class GestureErrorBoundary extends React.Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      console.log('🚨 GESTURE ERROR BOUNDARY: Rendering fallback UI')
-
       return (
         this.props.fallback || (
           <View style={{ padding: 20, backgroundColor: Colors.error.light }}>

@@ -19,7 +19,6 @@ interface DeleteButtonProps {
 
 function DeleteButton({ word, onDelete, colorScheme }: DeleteButtonProps) {
   const handleDeletePress = () => {
-    console.log('🗑️ DELETE BUTTON: onPress triggered')
     Alert.alert(
       'Delete Word',
       `Are you sure you want to delete "${word.dutch_lemma}"?`,

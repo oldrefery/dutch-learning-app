@@ -152,8 +152,10 @@ const themes = {
     warning: colorPalette.warning.DEFAULT,
     error: colorPalette.error.DEFAULT,
 
-    // Border color for light theme
+    // Border color for the light theme
     border: colorPalette.neutral[200],
+    // Separator color for light theme (iOS standard opaque separator)
+    separator: 'rgba(60, 60, 67, 0.29)', // iOS system separator color
   },
   dark: {
     // Text colors - optimized contrast for dark theme
@@ -177,8 +179,10 @@ const themes = {
     warning: colorPalette.warning.dark, // #FBBF24
     error: colorPalette.error.darkMode, // #FF453A (Apple HIG)
 
-    // Border color for dark theme
+    // Border color for the dark theme
     border: colorPalette.neutral[700],
+    // Separator color for the dark theme (iOS standard opaque separator)
+    separator: 'rgba(84, 84, 88, 0.65)', // iOS system separator color for dark mode
   },
 }
 

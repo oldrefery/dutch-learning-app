@@ -17,7 +17,6 @@ export const reviewScreenStyles = StyleSheet.create({
   loadingText: {
     marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
-    color: Colors.neutral[500],
   },
 
   emptyContainer: {
@@ -29,14 +28,12 @@ export const reviewScreenStyles = StyleSheet.create({
 
   emptyText: {
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.LARGE,
-    color: Colors.neutral[500],
     textAlign: 'center',
     marginBottom: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
   },
 
   emptySubtext: {
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
-    color: Colors.neutral[500],
     textAlign: 'center',
   },
 
@@ -47,7 +44,6 @@ export const reviewScreenStyles = StyleSheet.create({
 
   flashcard: {
     flex: 1,
-    backgroundColor: Colors.background.primary,
     borderRadius: 16,
     shadowColor: Colors.legacy.black,
     shadowOffset: {
@@ -109,7 +105,6 @@ export const reviewScreenStyles = StyleSheet.create({
 
   progressText: {
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
-    color: Colors.neutral[500],
     textAlign: 'center',
   },
 })

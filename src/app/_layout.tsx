@@ -66,20 +66,12 @@ function RootLayoutNav() {
   // Handle deep links
   useEffect(() => {
     const handleDeepLink = (url: string) => {
-      console.log('🔗 [RootLayoutNav] Deep link received:', url)
-
       const { hostname, path } = Linking.parse(url)
 
-      // Handle dutchlearning://share/TOKEN - redirect directly to import screen
+      // Handle dutchlearning://share/TOKEN - redirect directly to the import screen
       if (hostname === 'share' && path) {
         const token = path.replace('/', '') // Remove the leading slash
         if (token) {
-          console.log(
-            '🔗 [RootLayoutNav] Navigating directly to import screen',
-            {
-              token,
-            }
-          )
           router.push(ROUTES.IMPORT_COLLECTION(token))
         }
       }
@@ -88,7 +80,6 @@ function RootLayoutNav() {
     // Handle initial URL if app was opened by a deep link
     Linking.getInitialURL().then(url => {
       if (url) {
-        console.log('🔗 [RootLayoutNav] Initial URL:', url)
         handleDeepLink(url)
       }
     })

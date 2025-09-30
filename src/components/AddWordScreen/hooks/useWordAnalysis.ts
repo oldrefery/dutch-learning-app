@@ -67,20 +67,11 @@ export const useWordAnalysis = () => {
 
         // Show cache-specific toast messages
         if (response.meta.cache_hit) {
-          console.log('🔄 Word analysis cache hit:', {
-            word: normalizedWord,
-            usageCount: response.meta.usage_count,
-            cacheTimestamp: response.meta.cached_at,
-          })
           ToastService.show(
             `Word loaded from cache (used ${response.meta.usage_count} times)`,
             ToastType.INFO
           )
         } else {
-          console.log('🆕 Fresh word analysis:', {
-            word: normalizedWord,
-            source: 'gemini',
-          })
           ToastService.show('Word analyzed with fresh AI', ToastType.SUCCESS)
         }
       } else {

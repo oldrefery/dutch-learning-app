@@ -24,6 +24,7 @@ import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word } from '@/types/database'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Sentry } from '@/lib/sentry.ts'
 
 export default function ReviewScreen() {
   const insets = useSafeAreaInsets()
@@ -56,19 +57,8 @@ export default function ReviewScreen() {
     goToPreviousWord,
   } = useReviewScreen()
 
-  console.log('🔍 REVIEW SCREEN: Hooks initialized, isFlipped:', isFlipped)
-
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
-
-  console.log(
-    '🔍 REVIEW SCREEN: Session state - currentWord:',
-    currentWord?.dutch_lemma,
-    'isLoading:',
-    isLoading,
-    'sessionComplete:',
-    sessionComplete
-  )
 
   // Get startReviewSession from the store
   const startReviewSession = useApplicationStore(
@@ -92,7 +82,7 @@ export default function ReviewScreen() {
     try {
       await startReviewSession()
     } catch (error) {
-      console.error('Error refreshing review session:', error)
+      Sentry.captureException('Error refreshing review session:', error)
     } finally {
       setRefreshing(false)
     }
@@ -105,7 +95,6 @@ export default function ReviewScreen() {
       .maxDistance(5)
       .onBegin(() => {
         'worklet'
-        console.log('🟢 TAP GESTURE: onBegin triggered')
       })
       .onEnd(() => {
         'worklet'
@@ -136,32 +125,21 @@ export default function ReviewScreen() {
       .maxDistance(10)
       .onEnd(() => {
         'worklet'
-        console.log('🔍 DOUBLE TAP: Triggered')
         scheduleOnRN(handleWordPress)
       })
   }, [handleWordPress])
 
   const renderCard = useCallback(() => {
-    console.log(
-      '🔍 RENDER CARD: Function called, currentWord:',
-      currentWord?.dutch_lemma
-    )
-
     if (!currentWord) {
-      console.log('🔍 RENDER CARD: No currentWord, returning null')
       return null
     }
 
     try {
-      console.log('🔍 RENDER CARD: Using stable gestures...')
-
       // Combine all stable gestures
       const combinedGesture = Gesture.Exclusive(
         panGestureInstance,
         Gesture.Simultaneous(tapGestureInstance, doubleTapGestureInstance)
       )
-
-      console.log('🔍 RENDER CARD: About to render GestureDetector')
 
       return (
         <GestureErrorBoundary>
@@ -193,7 +171,8 @@ export default function ReviewScreen() {
         </GestureErrorBoundary>
       )
     } catch (error) {
-      console.error('Error rendering card:', error)
+      Sentry.captureException('Error rendering card:', error)
+
       return (
         <ViewThemed style={reviewScreenStyles.flashcard}>
           <TextThemed>Error rendering card</TextThemed>
@@ -215,26 +194,35 @@ export default function ReviewScreen() {
   // Check if we should show the empty state first
   if (reviewWords.length === 0 && !isLoading) {
     return (
-      <ScrollView
-        style={reviewScreenStyles.container}
-        contentContainerStyle={reviewScreenStyles.emptyContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={[Colors.primary.DEFAULT]}
-            tintColor={Colors.primary.DEFAULT}
-          />
-        }
-      >
-        <TextThemed style={reviewScreenStyles.emptyText}>
-          No words to review! 🎉
-        </TextThemed>
-        <TextThemed style={reviewScreenStyles.emptySubtext}>
-          All your words are scheduled for future review. Pull to refresh or add
-          new words to practice.
-        </TextThemed>
-      </ScrollView>
+      <ViewThemed style={reviewScreenStyles.container}>
+        <ScrollView
+          contentContainerStyle={reviewScreenStyles.emptyContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[Colors.primary.DEFAULT]}
+              tintColor={Colors.primary.DEFAULT}
+            />
+          }
+        >
+          <TextThemed
+            style={reviewScreenStyles.emptyText}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            No words to review! 🎉
+          </TextThemed>
+          <TextThemed
+            style={reviewScreenStyles.emptySubtext}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            All your words are scheduled for future review. Pull to refresh or
+            add new words to practice.
+          </TextThemed>
+        </ScrollView>
+      </ViewThemed>
     )
   }
 
@@ -247,7 +235,11 @@ export default function ReviewScreen() {
             // color={REVIEW_SCREEN_CONSTANTS.COLORS.PRIMARY}
             color={Colors.primary.DEFAULT}
           />
-          <TextThemed style={reviewScreenStyles.loadingText}>
+          <TextThemed
+            style={reviewScreenStyles.loadingText}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
             Loading review session...
           </TextThemed>
         </ViewThemed>
@@ -259,10 +251,18 @@ export default function ReviewScreen() {
     return (
       <ViewThemed style={reviewScreenStyles.container}>
         <ViewThemed style={reviewScreenStyles.emptyContainer}>
-          <TextThemed style={reviewScreenStyles.emptyText}>
+          <TextThemed
+            style={reviewScreenStyles.emptyText}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
             Session Complete! 🎉
           </TextThemed>
-          <TextThemed style={reviewScreenStyles.emptySubtext}>
+          <TextThemed
+            style={reviewScreenStyles.emptySubtext}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
             You reviewed {reviewWords.length} words
           </TextThemed>
           <TouchableOpacity
@@ -286,7 +286,11 @@ export default function ReviewScreen() {
       ]}
     >
       <ViewThemed style={reviewScreenStyles.progressContainer}>
-        <TextThemed style={reviewScreenStyles.progressText}>
+        <TextThemed
+          style={reviewScreenStyles.progressText}
+          lightColor={Colors.neutral[500]}
+          darkColor={Colors.dark.textSecondary}
+        >
           {currentWordNumber} / {totalWords}
         </TextThemed>
       </ViewThemed>

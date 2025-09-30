@@ -8,6 +8,7 @@ import React, {
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
+import { Sentry } from '@/lib/sentry.ts'
 
 interface AudioContextType {
   playWord: (word: string, ttsUrl?: string | null) => Promise<void>
@@ -47,8 +48,6 @@ export function AudioProvider({ children }: AudioProviderProps) {
           ttsUrl ||
           `https://translate.google.com/translate_tts?ie=UTF-8&tl=nl&client=tw-ob&q=${encodeURIComponent(word)}`
 
-        console.log('🔊 [AudioProvider] Playing word:', { word, audioUrl })
-
         // Only update currentWord if it actually changed to prevent unnecessary rerenders
         if (currentWord !== word) {
           setCurrentWord(word)
@@ -61,7 +60,7 @@ export function AudioProvider({ children }: AudioProviderProps) {
         player.seekTo(0)
         await player.play()
       } catch (error) {
-        console.error('Failed to play audio:', error)
+        Sentry.captureException('Failed to play audio:', error)
         ToastService.show('Could not play pronunciation', ToastType.ERROR)
       }
     },

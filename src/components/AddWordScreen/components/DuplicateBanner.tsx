@@ -28,17 +28,9 @@ export function DuplicateBanner({
 }: DuplicateBannerProps) {
   const colorScheme = useColorScheme() ?? 'light'
 
-  console.log('🖼️ DuplicateBanner rendering with:', {
-    duplicateWord,
-    collectionsCount: collections.length,
-    colorScheme,
-  })
-
   const collection = collections.find(
     c => c.collection_id === duplicateWord.collection_id
   )
-
-  console.log('🖼️ Collection found:', collection)
 
   const handleNavigateToCollection = () => {
     onNavigateToCollection?.()

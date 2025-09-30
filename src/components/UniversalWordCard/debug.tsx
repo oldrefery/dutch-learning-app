@@ -30,8 +30,6 @@ const testAnalysisResult: AnalysisResult = {
 }
 
 export function DebugWordCard() {
-  console.log('Rendering DebugWordCard with:', testAnalysisResult)
-
   return (
     <View style={{ padding: 20 }}>
       <Text style={{ fontSize: 18, marginBottom: 10 }}>

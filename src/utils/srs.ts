@@ -20,11 +20,6 @@ export function calculateNextReview({
   easiness_factor,
   assessment,
 }: SRSInput): SRSResult {
-  console.log('⚡ SRS ALGORITHM START for', assessment, ', input:', {
-    interval_days,
-    repetition_count,
-    easiness_factor,
-  })
   let newEasinessFactor = easiness_factor
   let newRepetitionCount = repetition_count
   let newInterval = interval_days
@@ -39,7 +34,6 @@ export function calculateNextReview({
       )
       newRepetitionCount = 0
       newInterval = SRS_PARAMS.INITIAL.INTERVAL_DAYS // Available today
-      console.log('❌ AGAIN case: newInterval set to', newInterval)
       break
 
     case SRS_ASSESSMENT.HARD:
@@ -55,7 +49,6 @@ export function calculateNextReview({
         interval_days === 0
           ? 1
           : Math.max(1, Math.round(interval_days * SRS_PARAMS.MULTIPLIERS.HARD))
-      console.log('🟡 HARD case: newInterval set to', newInterval)
       break
 
     case SRS_ASSESSMENT.GOOD:
@@ -70,12 +63,7 @@ export function calculateNextReview({
       } else {
         newInterval = Math.round(interval_days * easiness_factor)
       }
-      console.log(
-        '🟢 GOOD case: repetition',
-        newRepetitionCount,
-        ', newInterval set to',
-        newInterval
-      )
+
       break
 
     case SRS_ASSESSMENT.EASY:
@@ -95,12 +83,7 @@ export function calculateNextReview({
           interval_days * easiness_factor * SRS_PARAMS.MULTIPLIERS.EASY
         )
       }
-      console.log(
-        '🔵 EASY case: repetition',
-        newRepetitionCount,
-        ', newInterval set to',
-        newInterval
-      )
+
       break
   }
 
@@ -108,14 +91,10 @@ export function calculateNextReview({
   const nextReviewDate = new Date()
   nextReviewDate.setDate(nextReviewDate.getDate() + newInterval)
 
-  const result = {
+  return {
     interval_days: newInterval,
     repetition_count: newRepetitionCount,
     easiness_factor: Number(newEasinessFactor.toFixed(2)),
     next_review_date: nextReviewDate.toISOString().split('T')[0],
   }
-
-  console.log('⚡ SRS ALGORITHM END, result:', result)
-
-  return result
 }
