@@ -24,7 +24,7 @@ import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word } from '@/types/database'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export default function ReviewScreen() {
   const insets = useSafeAreaInsets()

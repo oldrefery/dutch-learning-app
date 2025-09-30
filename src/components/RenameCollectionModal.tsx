@@ -8,7 +8,7 @@ import {
 import { TextInput } from 'react-native-gesture-handler'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 interface RenameCollectionModalProps {
   visible: boolean

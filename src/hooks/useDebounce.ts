@@ -25,7 +25,7 @@ export function useDebounce<T extends unknown[]>(
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
+      if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current)
       }
     }

@@ -422,6 +422,7 @@ export const userService = {
             extra: { message: 'No active session found' },
           }
         )
+        throw new Error('No active session found')
       }
 
       // Call Edge Function with auth token

@@ -20,7 +20,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import CollectionContextMenu from '@/components/CollectionContextMenu'
 import type { Collection, Word } from '@/types/database'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 import { calculateCollectionStats } from '@/utils/collectionStats'
 
 interface SwipeableCollectionCardProps {

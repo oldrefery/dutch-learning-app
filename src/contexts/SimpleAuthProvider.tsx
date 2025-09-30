@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { ROUTES } from '@/constants/Routes'
 import type { LoginCredentials, SignupCredentials } from '@/types/AuthTypes'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 interface SimpleAuthState {
   loading: boolean

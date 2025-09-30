@@ -8,7 +8,7 @@ import React, {
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 interface AudioContextType {
   playWord: (word: string, ttsUrl?: string | null) => Promise<void>

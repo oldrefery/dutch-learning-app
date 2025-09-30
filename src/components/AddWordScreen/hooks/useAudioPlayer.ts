@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createAudioPlayer } from 'expo-audio'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export const useAudioPlayer = () => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)

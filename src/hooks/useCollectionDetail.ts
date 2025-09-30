@@ -6,7 +6,7 @@ import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word, Collection } from '@/types/database'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 import { calculateCollectionStats } from '@/utils/collectionStats'
 
 export function useCollectionDetail(collectionId: string) {

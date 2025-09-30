@@ -8,7 +8,7 @@ import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES, RouteHelpers } from '@/constants/Routes'
 import type { Word } from '@/types/database'
 import type { SharedCollectionWords } from '@/services/collectionSharingService'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 interface WordSelectionItem {
   word: Omit<

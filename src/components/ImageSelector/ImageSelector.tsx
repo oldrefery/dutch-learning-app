@@ -14,7 +14,7 @@ import { IMAGE_CONFIG } from '@/constants/AppConfig'
 import { supabase } from '@/lib/supabaseClient'
 import { getImageSelectorStyles } from './styles'
 import type { ImageOption, ImageSelectorProps } from './types'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export default function ImageSelector({
   visible,

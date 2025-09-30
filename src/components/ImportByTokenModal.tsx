@@ -16,7 +16,7 @@ import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
 import { collectionSharingService } from '@/services/collectionSharingService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 interface ImportByTokenModalProps {
   visible: boolean

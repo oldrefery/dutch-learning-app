@@ -24,7 +24,7 @@ import { useClientOnlyValue } from '@/components/useClientOnlyValue'
 import { supabase } from '@/lib/supabaseClient'
 import { ROUTES } from '@/constants/Routes'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()

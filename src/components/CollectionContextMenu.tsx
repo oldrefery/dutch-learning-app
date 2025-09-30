@@ -5,6 +5,7 @@ import {
   useColorScheme,
   StyleSheet,
   Pressable,
+  Platform,
 } from 'react-native'
 import { BlurView } from 'expo-blur'
 import Animated, {

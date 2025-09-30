@@ -4,7 +4,7 @@ import { useAudioPlayer } from '@/hooks/useAudioPlayer'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export const useReviewScreen = () => {
   const {

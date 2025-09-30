@@ -4,7 +4,7 @@ import type {
   StoreGetFunction,
   AppError,
 } from '@/types/ApplicationStoreTypes'
-import { Sentry } from '@/lib/sentry.ts'
+import { Sentry } from '@/lib/sentry'
 
 export const createAppInitializationActions = (
   set: StoreSetFunction,
