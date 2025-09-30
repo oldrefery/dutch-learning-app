@@ -1,6 +1,7 @@
 import { Platform, Share } from 'react-native'
 import { Sentry } from '@/lib/sentry'
 import { collectionSharingService } from '@/services/collectionSharingService'
+import { logInfo } from '@/utils/logger'
 
 export interface ShareCollectionOptions {
   fallbackUrl?: string
@@ -40,11 +41,14 @@ class SharingUtils {
         webShareUrl
       )
 
-      console.log(
-        '🔄 [sharingUtils] About to call Share.share with message:',
-        shareMessage
+      logInfo(
+        'About to call Share.share with message',
+        {
+          message: shareMessage,
+          messageLength: shareMessage.length,
+        },
+        'sharingUtils'
       )
-      console.log('🔄 [sharingUtils] Message length:', shareMessage.length)
 
       // Use React Native's built-in Share API for text content
       await Share.share({

@@ -1,6 +1,7 @@
 import { wordService } from '@/lib/supabase'
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
+import { logInfo, logWarning, logError } from '@/utils/logger'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -17,10 +18,39 @@ export const createReviewActions = (
 
       const userId = get().currentUserId
       if (!userId) {
-        throw new Error('User not authenticated')
+        logError(
+          'User not authenticated',
+          new Error('User not authenticated'),
+          {},
+          'review',
+          false
+        )
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .REVIEW_SESSION_START_FAILED,
+            details: 'User not authenticated',
+          },
+          reviewLoading: false,
+        })
+        return
       }
 
       const reviewWords = await wordService.getWordsForReview(userId)
+
+      if (!reviewWords) {
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .REVIEW_SESSION_START_FAILED,
+            details: 'Failed to fetch review words from service',
+          },
+          reviewLoading: false,
+        })
+        return
+      }
 
       if (reviewWords.length === 0) {
         set({
@@ -43,7 +73,7 @@ export const createReviewActions = (
         reviewLoading: false,
       })
     } catch (error) {
-      console.error('Error starting review session:', error)
+      logError('Error starting review session', error, {}, 'review', false)
       set({
         error: {
           message:
@@ -60,13 +90,28 @@ export const createReviewActions = (
     try {
       const { reviewSession, currentWord } = get()
       if (!reviewSession || !currentWord) {
-        console.warn('submitReviewAssessment: Missing session or word data')
+        logWarning('Missing session or word data', {}, 'review')
         return
       }
 
       // Validate assessment object
       if (!assessment || typeof assessment.assessment !== 'string') {
-        throw new Error('Invalid assessment object')
+        logError(
+          'Invalid assessment object',
+          new Error('Invalid assessment object'),
+          { assessment },
+          'review',
+          false
+        )
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .REVIEW_ASSESSMENT_SUBMIT_FAILED,
+            details: 'Invalid assessment object',
+          },
+        })
+        return
       }
 
       // Classic SRS: All assessments update the word in the database
@@ -77,7 +122,7 @@ export const createReviewActions = (
       const freshReviewSession = freshState.reviewSession
 
       if (!freshReviewSession) {
-        console.warn('Review session was cleared during update')
+        logWarning('Review session was cleared during update', {}, 'review')
         return
       }
 
@@ -88,12 +133,26 @@ export const createReviewActions = (
       if (nextWord && nextIndex < freshReviewSession.words.length) {
         // Validate next word before setting
         if (!nextWord.word_id || !nextWord.dutch_lemma) {
-          console.error('Invalid next word data:', nextWord)
-          throw new Error('Invalid word data in review session')
+          logError(
+            'Invalid next word data',
+            undefined,
+            { nextWord },
+            'review',
+            false
+          )
+          set({
+            error: {
+              message:
+                APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                  .REVIEW_ASSESSMENT_SUBMIT_FAILED,
+              details: 'Invalid word data in review session',
+            },
+          })
+          return
         }
 
         // Continue with the next word
-        console.log('➡️ Moving to next word:', nextWord.dutch_lemma)
+        logInfo('Moving to next word', { word: nextWord.dutch_lemma }, 'review')
         set({
           reviewSession: {
             ...freshReviewSession,
@@ -103,14 +162,14 @@ export const createReviewActions = (
         })
       } else {
         // Session complete
-        console.log('🏁 Session complete')
+        logInfo('Session complete', {}, 'review')
         set({
           reviewSession: null,
           currentWord: null,
         })
       }
     } catch (error) {
-      console.error('Error submitting review assessment:', error)
+      logError('Error submitting review assessment', error, {}, 'review', false)
       set({
         error: {
           message:

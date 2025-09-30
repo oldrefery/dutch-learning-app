@@ -49,7 +49,11 @@ export const wordService = {
     )
 
     if (error) {
-      throw new Error(`Word analysis failed: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'analyzeWord' },
+        extra: { word, message: 'Word analysis failed' },
+      })
+      return null
     }
 
     return data
@@ -64,7 +68,11 @@ export const wordService = {
       .order('created_at', { ascending: false })
 
     if (error) {
-      throw new Error(`Failed to fetch words: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'getUserWords' },
+        extra: { userId, message: 'Failed to fetch words' },
+      })
+      return null
     }
 
     return data
@@ -100,7 +108,17 @@ export const wordService = {
     const { data, error } = await query
 
     if (error) {
-      throw new Error(`Failed to check word existence: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'checkWordExists' },
+        extra: {
+          userId,
+          dutchLemma,
+          partOfSpeech,
+          article,
+          message: 'Failed to check word existence',
+        },
+      })
+      return null
     }
 
     return data.length > 0 ? data[0] : null
@@ -118,7 +136,11 @@ export const wordService = {
       .order('next_review_date', { ascending: true })
 
     if (error) {
-      throw new Error(`Failed to fetch review words: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'getWordsForReview' },
+        extra: { userId, message: 'Failed to fetch review words' },
+      })
+      return null
     }
 
     return data
@@ -153,7 +175,17 @@ export const wordService = {
 
     if (error && error.code !== 'PGRST116') {
       // PGRST116 is "not found" which is expected when no duplicate exists
-      throw new Error(`Failed to check for duplicate: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'checkSemanticDuplicate' },
+        extra: {
+          userId,
+          dutchLemma,
+          partOfSpeech,
+          article,
+          message: 'Failed to check for duplicate',
+        },
+      })
+      return null
     }
 
     return data || null
@@ -174,9 +206,16 @@ export const wordService = {
     )
 
     if (existingWord) {
-      throw new Error(
-        `Word "${dutchLemma}" with the same properties already exists in your vocabulary`
-      )
+      Sentry.captureException(new Error('Duplicate word detected'), {
+        tags: { operation: 'addWord' },
+        extra: {
+          dutchLemma,
+          partOfSpeech,
+          article,
+          message: `Word "${dutchLemma}" with the same properties already exists in your vocabulary`,
+        },
+      })
+      return null
     }
 
     // Create a clean word object with only valid database fields
@@ -217,7 +256,11 @@ export const wordService = {
       .single()
 
     if (error) {
-      throw new Error(`Failed to add word: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'addWord' },
+        extra: { userId, dutchLemma, message: 'Failed to add word' },
+      })
+      return null
     }
 
     return data
@@ -233,9 +276,11 @@ export const wordService = {
       .single()
 
     if (fetchError) {
-      throw new Error(
-        `Failed to fetch current word data: ${fetchError.message}`
-      )
+      Sentry.captureException(fetchError, {
+        tags: { operation: 'updateWordProgress' },
+        extra: { wordId, message: 'Failed to fetch current word data' },
+      })
+      return null
     }
 
     // Extract the assessment string from the assessment object
@@ -263,7 +308,11 @@ export const wordService = {
       .single()
 
     if (error) {
-      throw new Error(`Failed to update word progress: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'updateWordProgress' },
+        extra: { wordId, message: 'Failed to update word progress' },
+      })
+      return null
     }
 
     return data
@@ -279,7 +328,11 @@ export const wordService = {
       .single()
 
     if (error) {
-      throw new Error(`Failed to update word image: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'updateWordImage' },
+        extra: { wordId, imageUrl, message: 'Failed to update word image' },
+      })
+      return null
     }
 
     return data
@@ -297,9 +350,13 @@ export const wordService = {
     if (error) {
       Sentry.captureException(error, {
         tags: { operation: 'moveWordToCollection' },
-        extra: { wordId, newCollectionId },
+        extra: {
+          wordId,
+          newCollectionId,
+          message: 'Failed to move word to collection',
+        },
       })
-      throw new Error(`Failed to move word to collection: ${error.message}`)
+      return null
     }
 
     return data
@@ -340,9 +397,9 @@ export const wordService = {
     if (error) {
       Sentry.captureException(error, {
         tags: { operation: 'deleteWord' },
-        extra: { wordId },
+        extra: { wordId, message: 'Failed to delete word' },
       })
-      throw new Error(`Failed to delete word: ${error.message}`)
+      return
     }
   },
 }
@@ -419,7 +476,11 @@ export const collectionService = {
       .order('created_at', { ascending: false })
 
     if (error) {
-      throw new Error(`Failed to fetch collections: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'getUserCollections' },
+        extra: { userId, message: 'Failed to fetch collections' },
+      })
+      return null
     }
 
     return data
@@ -434,7 +495,11 @@ export const collectionService = {
       .single()
 
     if (error) {
-      throw new Error(`Failed to create collection: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'createCollection' },
+        extra: { name, userId, message: 'Failed to create collection' },
+      })
+      return null
     }
 
     return data
@@ -455,7 +520,16 @@ export const collectionService = {
       .single()
 
     if (error) {
-      throw new Error(`Failed to update collection: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'updateCollection' },
+        extra: {
+          collectionId,
+          updates,
+          userId,
+          message: 'Failed to update collection',
+        },
+      })
+      return null
     }
 
     return data
@@ -470,9 +544,15 @@ export const collectionService = {
       .eq('collection_id', collectionId)
 
     if (wordsError) {
-      throw new Error(
-        `Failed to delete words in collection: ${wordsError.message}`
-      )
+      Sentry.captureException(wordsError, {
+        tags: { operation: 'deleteCollection' },
+        extra: {
+          collectionId,
+          userId,
+          message: 'Failed to delete words in collection',
+        },
+      })
+      return
     }
 
     // Then delete the collection itself
@@ -483,7 +563,11 @@ export const collectionService = {
       .eq('user_id', userId)
 
     if (error) {
-      throw new Error(`Failed to delete collection: ${error.message}`)
+      Sentry.captureException(error, {
+        tags: { operation: 'deleteCollection' },
+        extra: { collectionId, userId, message: 'Failed to delete collection' },
+      })
+      return
     }
   },
 }

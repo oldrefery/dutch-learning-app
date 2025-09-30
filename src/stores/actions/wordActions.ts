@@ -32,6 +32,17 @@ export const createWordActions = (
         return
       }
       const words = await wordService.getUserWords(userId)
+      if (!words) {
+        set({
+          error: {
+            message:
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.WORDS_FETCH_FAILED,
+            details: 'Failed to fetch words from service',
+          },
+          wordsLoading: false,
+        })
+        return
+      }
       set({ words, wordsLoading: false })
     } catch (error) {
       Sentry.captureException(error, {
@@ -202,8 +213,6 @@ export const createWordActions = (
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
-      // Re-throw to allow caller to handle appropriately
-      throw error
     }
   },
 
@@ -283,7 +292,7 @@ export const createWordActions = (
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
-      throw error
+      return null
     }
   },
 
