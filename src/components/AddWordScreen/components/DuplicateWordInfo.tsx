@@ -38,8 +38,9 @@ export function DuplicateWordInfo({
 
   const handleNavigateToCollection = () => {
     onNavigateToCollection?.()
+    const collectionPath = ROUTES.COLLECTION_DETAIL(duplicateWord.collection_id)
     router.push({
-      pathname: ROUTES.COLLECTION_DETAIL(duplicateWord.collection_id),
+      pathname: collectionPath as any,
       params: { highlightWordId: duplicateWord.word_id },
     })
   }
@@ -61,21 +62,21 @@ export function DuplicateWordInfo({
   }
 
   const headerStyle = {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     marginBottom: 12,
   }
 
   const titleStyle = {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     color: colorScheme === 'dark' ? Colors.dark.text : Colors.neutral[800],
     flex: 1,
   }
 
   const infoRowStyle = {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     marginBottom: 8,
   }
 
@@ -88,13 +89,13 @@ export function DuplicateWordInfo({
 
   const valueStyle = {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '500' as const,
     color: colorScheme === 'dark' ? Colors.dark.text : Colors.neutral[800],
     flex: 1,
   }
 
   const actionRowStyle = {
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
     marginTop: 12,
     gap: 12,
   }
@@ -104,9 +105,9 @@ export function DuplicateWordInfo({
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    flexDirection: 'row' as const,
+    justifyContent: 'center' as const,
   }
 
   const primaryButtonStyle = {
@@ -126,7 +127,7 @@ export function DuplicateWordInfo({
   const primaryButtonTextStyle = {
     color: 'white',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     marginLeft: 4,
   }
 
@@ -134,7 +135,7 @@ export function DuplicateWordInfo({
     color:
       colorScheme === 'dark' ? Colors.dark.textSecondary : Colors.neutral[600],
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '500' as const,
     marginLeft: 4,
   }
 
