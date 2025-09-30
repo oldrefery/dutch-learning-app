@@ -235,7 +235,10 @@ export function useCollectionDetail(collectionId: string) {
 
   const handleCloseContextMenu = () => {
     setContextMenuVisible(false)
-    setContextMenuWord(null)
+    // Don't clear contextMenuWord immediately to allow actions to complete
+    setTimeout(() => {
+      setContextMenuWord(null)
+    }, 300)
   }
 
   const handleResetWordFromContextMenu = async () => {

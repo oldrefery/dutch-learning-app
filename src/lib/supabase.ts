@@ -10,6 +10,9 @@ import * as Sentry from '@sentry/react-native'
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
 const devUserPassword = process.env.EXPO_PUBLIC_DEV_USER_PASSWORD!
 
+// Error messages
+const NO_ACTIVE_SESSION_ERROR = 'No active session found'
+
 if (!devUserEmail || !devUserPassword) {
   throw new Error(
     'Missing development user credentials. Please check your .env file.'
@@ -416,13 +419,13 @@ export const userService = {
 
       if (sessionError || !session) {
         Sentry.captureException(
-          sessionError || new Error('No active session found'),
+          sessionError || new Error(NO_ACTIVE_SESSION_ERROR),
           {
             tags: { operation: 'deleteAccount' },
-            extra: { message: 'No active session found' },
+            extra: { message: NO_ACTIVE_SESSION_ERROR },
           }
         )
-        throw new Error('No active session found')
+        throw new Error(NO_ACTIVE_SESSION_ERROR)
       }
 
       // Call Edge Function with auth token

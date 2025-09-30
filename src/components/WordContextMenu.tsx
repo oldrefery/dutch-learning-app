@@ -70,8 +70,10 @@ export default function WordContextMenu({
       color: Colors.primary.DEFAULT,
       onPress: () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-        onMove()
         onClose()
+        setTimeout(() => {
+          onMove()
+        }, 50)
       },
     },
     {
