@@ -152,6 +152,16 @@ export class ValidationError extends Error implements AppError {
  * Helper function to categorize Supabase errors
  */
 export function categorizeSupabaseError(error: unknown): AppError {
+  // Already categorized as AppError - return as is
+  if (
+    error instanceof NetworkError ||
+    error instanceof ServerError ||
+    error instanceof ClientError ||
+    error instanceof ValidationError
+  ) {
+    return error
+  }
+
   // FunctionsFetchError - Network issue, function couldn't be reached
   if (error instanceof FunctionsFetchError) {
     return new NetworkError(

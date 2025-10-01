@@ -7,6 +7,7 @@ import { SRS_PARAMS } from '@/constants/SRSConstants'
 import * as Sentry from '@sentry/react-native'
 import { retrySupabaseFunction } from '@/utils/retryUtils'
 import { categorizeSupabaseError } from '@/types/ErrorTypes'
+import { checkNetworkConnection } from '@/utils/networkUtils'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -57,6 +58,10 @@ export const wordService = {
     })
 
     try {
+      // Check network connectivity before making request
+      // This prevents hanging requests when offline
+      await checkNetworkConnection()
+
       // Wrap Edge Function call with retry logic
       const result = await retrySupabaseFunction(
         async () => {

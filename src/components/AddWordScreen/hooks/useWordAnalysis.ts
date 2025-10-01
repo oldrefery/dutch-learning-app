@@ -23,6 +23,12 @@ export const useWordAnalysis = () => {
     }
 
     const normalizedWord = inputWord.trim().toLowerCase()
+
+    // Clear previous results before starting new analysis
+    // This prevents useEffect from triggering duplicate check prematurely
+    setAnalysisResult(null)
+    setAnalysisMetadata(null)
+
     setIsAnalyzing(true)
 
     try {

@@ -11,6 +11,7 @@
 
 import { NetworkError } from '@/types/ErrorTypes'
 import * as Sentry from '@sentry/react-native'
+import { API_CONFIG } from '@/constants/AppConfig'
 
 export interface RetryConfig {
   maxRetries: number
@@ -92,6 +93,26 @@ export function calculateBackoffDelay(
  */
 export function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/**
+ * Wrap a promise with timeout using Promise.race
+ * This works even when the underlying API doesn't support AbortSignal
+ */
+export function withTimeout<T>(
+  promiseFactory: () => Promise<T>,
+  timeoutMs: number,
+  errorMessage: string = 'Operation timed out'
+): Promise<T> {
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => {
+      reject(
+        new NetworkError(errorMessage, 'Request timeout. Please try again.')
+      )
+    }, timeoutMs)
+  })
+
+  return Promise.race([promiseFactory(), timeoutPromise])
 }
 
 /**
@@ -199,7 +220,15 @@ export async function retrySupabaseFunction<T>(
     return retryable
   }
 
-  return retryWithBackoff(fn, {
+  // Wrap function with timeout using Promise.race
+  const fnWithTimeout = () =>
+    withTimeout(
+      fn,
+      API_CONFIG.EDGE_FUNCTION_TIMEOUT_MS,
+      `Edge Function ${context?.functionName || 'call'} timed out after ${API_CONFIG.EDGE_FUNCTION_TIMEOUT_MS}ms`
+    )
+
+  return retryWithBackoff(fnWithTimeout, {
     maxRetries: 3,
     initialDelayMs: 1000,
     maxDelayMs: 30000,

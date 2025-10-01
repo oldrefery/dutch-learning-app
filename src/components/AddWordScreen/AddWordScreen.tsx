@@ -129,9 +129,10 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
     Keyboard.dismiss()
 
+    // Clear previous state before new analysis
     setIsAlreadyInCollection(false)
     setDuplicateWordInfo(null)
-    setIsCheckingDuplicate(true)
+    setIsCheckingDuplicate(false) // Don't set to true - useEffect will handle it after analysis
     setHasNavigatedToCollection(false)
 
     clearAnalysis()
