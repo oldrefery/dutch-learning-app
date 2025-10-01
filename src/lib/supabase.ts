@@ -5,6 +5,8 @@ import type { Word } from '@/types/database'
 import type { ReviewAssessment } from '@/types/ApplicationStoreTypes'
 import { SRS_PARAMS } from '@/constants/SRSConstants'
 import * as Sentry from '@sentry/react-native'
+import { retrySupabaseFunction } from '@/utils/retryUtils'
+import { categorizeSupabaseError } from '@/types/ErrorTypes'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -37,29 +39,112 @@ export const getDevUserId = (): string => {
 
 // API service functions
 
+// Constants for word analysis
+const WORD_ANALYSIS_CATEGORY = 'word.analysis'
+
 export const wordService = {
-  // Analyze word using Gemini AI
+  // Analyze word using Gemini AI with retry logic
   async analyzeWord(word: string, options?: { forceRefresh?: boolean }) {
-    const { data, error } = await supabaseFunctions.functions.invoke(
-      'gemini-handler',
-      {
-        body: {
-          word,
-          userId: getDevUserId(),
-          forceRefresh: options?.forceRefresh || false,
+    // Add breadcrumb for tracking
+    Sentry.addBreadcrumb({
+      category: WORD_ANALYSIS_CATEGORY,
+      message: `Starting word analysis for: ${word}`,
+      level: 'info',
+      data: {
+        word,
+        forceRefresh: options?.forceRefresh || false,
+      },
+    })
+
+    try {
+      // Wrap Edge Function call with retry logic
+      const result = await retrySupabaseFunction(
+        async () => {
+          const { data, error } = await supabaseFunctions.functions.invoke(
+            'gemini-handler',
+            {
+              body: {
+                word,
+                userId: getDevUserId(),
+                forceRefresh: options?.forceRefresh || false,
+              },
+            }
+          )
+
+          // If there's an error, throw it so retry logic can handle it
+          if (error) {
+            throw error
+          }
+
+          // Validate response data
+          if (!data || !data.success) {
+            throw new Error(
+              data?.error || 'Invalid response from word analysis'
+            )
+          }
+
+          return data
         },
-      }
-    )
+        {
+          functionName: 'gemini-handler',
+          operation: 'analyzeWord',
+        }
+      )
 
-    if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'analyzeWord' },
-        extra: { word, message: 'Word analysis failed' },
+      // Add success breadcrumb
+      Sentry.addBreadcrumb({
+        category: WORD_ANALYSIS_CATEGORY,
+        message: `Word analysis completed successfully`,
+        level: 'info',
+        data: {
+          word,
+          source: result.meta?.source || 'unknown',
+          cacheHit: result.meta?.cache_hit || false,
+        },
       })
-      return null
-    }
 
-    return data
+      return result
+    } catch (error) {
+      // Categorize the error
+      const categorizedError = categorizeSupabaseError(error)
+
+      // Add error breadcrumb
+      Sentry.addBreadcrumb({
+        category: WORD_ANALYSIS_CATEGORY,
+        message: `Word analysis failed: ${categorizedError.category}`,
+        level: 'error',
+        data: {
+          word,
+          errorCategory: categorizedError.category,
+          errorMessage: categorizedError.message,
+          isRetryable: categorizedError.isRetryable,
+        },
+      })
+
+      // Capture in Sentry with proper categorization
+      Sentry.captureException(categorizedError, {
+        tags: {
+          operation: 'analyzeWord',
+          errorCategory: categorizedError.category,
+          severity: categorizedError.severity,
+        },
+        extra: {
+          word,
+          forceRefresh: options?.forceRefresh || false,
+          isRetryable: categorizedError.isRetryable,
+          userMessage: categorizedError.userMessage,
+        },
+        level:
+          categorizedError.severity === 'CRITICAL'
+            ? 'fatal'
+            : categorizedError.severity === 'ERROR'
+              ? 'error'
+              : 'warning',
+      })
+
+      // Throw the categorized error instead of returning null
+      throw categorizedError
+    }
   },
 
   // Get all words for the user
