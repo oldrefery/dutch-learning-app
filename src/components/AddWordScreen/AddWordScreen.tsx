@@ -129,7 +129,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
     Keyboard.dismiss()
 
-    // Clear previous state before new analysis
     setIsAlreadyInCollection(false)
     setDuplicateWordInfo(null)
     setIsCheckingDuplicate(false) // Don't set to true - useEffect will handle it after analysis
@@ -144,9 +143,8 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
     const success = await addWord(analysisResult)
     if (success) {
-      // Clear form and analysis
       setInputWord('')
-      clearAnalysis()
+      setIsAlreadyInCollection(true)
     }
   }
 
