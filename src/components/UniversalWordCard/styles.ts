@@ -32,6 +32,12 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 8,
   },
+  headerActionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 8,
+    marginBottom: 4,
+  },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -40,7 +46,7 @@ export const styles = StyleSheet.create({
   wordTitle: {
     fontSize: 24,
     fontWeight: '700',
-    flex: 1,
+    marginBottom: 4,
   },
   compactWordTitle: {
     fontSize: 20,
