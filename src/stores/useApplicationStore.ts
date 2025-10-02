@@ -9,6 +9,7 @@ export const useApplicationStore = create<ApplicationState>((set, get) => {
   return {
     // Initial state
     currentUserId: null,
+    userAccessLevel: null,
     words: [],
     wordsLoading: false,
     collections: [],

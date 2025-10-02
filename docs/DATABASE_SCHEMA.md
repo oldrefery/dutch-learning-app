@@ -48,3 +48,39 @@ The core table, storing each individual word or phrase the user is learning. Thi
 | last_reviewed_at | timestamptz |                                         | Timestamp of the last review.                                                                      |
 | analysis_notes   | text        |                                         | User notes from word analysis for learning context and personal observations.                      |
 | created_at       | timestamptz | NOT NULL, DEFAULT now()                 | Timestamp of when the word was first added.                                                        |
+
+### **Table: pre_approved_emails**
+
+Admin-managed whitelist for granting specific access levels to users by email. Users whose emails are in this table receive the specified access level upon registration.
+
+| Column       | Type        | Constraints                            | Description                                           |
+| :----------- | :---------- | :------------------------------------- | :---------------------------------------------------- |
+| id           | uuid        | PRIMARY KEY, DEFAULT gen_random_uuid() | Unique identifier for the record.                     |
+| email        | text        | UNIQUE, NOT NULL                       | Email address to pre-approve.                         |
+| access_level | text        | NOT NULL, DEFAULT 'full_access'        | Access level to grant ('read_only' or 'full_access'). |
+| created_at   | timestamptz | NOT NULL, DEFAULT now()                | Timestamp of when the email was added.                |
+| updated_at   | timestamptz | DEFAULT now()                          | Timestamp of when the record was last updated.        |
+
+### **Table: user_access_levels**
+
+Stores the access level for each user. This table is automatically populated via a database trigger when a new user registers.
+
+| Column       | Type        | Constraints                                 | Description                                          |
+| :----------- | :---------- | :------------------------------------------ | :--------------------------------------------------- |
+| id           | uuid        | PRIMARY KEY, DEFAULT gen_random_uuid()      | Unique identifier for the record.                    |
+| user_id      | uuid        | UNIQUE, NOT NULL, REFERENCES auth.users(id) | The user's unique identifier from Supabase Auth.     |
+| access_level | text        | NOT NULL                                    | User's access level ('read_only' or 'full_access').  |
+| created_at   | timestamptz | NOT NULL, DEFAULT now()                     | Timestamp of when the access level was assigned.     |
+| updated_at   | timestamptz | DEFAULT now()                               | Timestamp of when the access level was last updated. |
+
+**Access Levels:**
+
+- **read_only**: Default level for new users. Can view and learn from imported shared collections, but cannot create new words or collections.
+- **full_access**: Can create words, collections, use AI analysis, and change images. Consumes API quota.
+
+**Access Assignment Logic:**
+
+1. When a user registers, the system checks if their email exists in `pre_approved_emails`.
+2. If found, the user receives the specified `access_level`.
+3. If not found, the user receives `read_only` by default.
+4. All existing users are granted `full_access` to maintain backward compatibility.
