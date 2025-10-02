@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Technical
+
+---
+
+## [1.4.0 Build 38] - 2025-10-02
+
+### Added
+
 - **Collection Search**: Real-time search functionality for words in collections
   - Debounced search input (300ms delay) with instant visual feedback
   - Search by Dutch lemma with substring matching support
@@ -17,7 +29,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Full dark/light theme support with HIG-compliant design
   - Empty state handling for search results vs no words scenarios
 
+- **Network Reliability Improvements**: Comprehensive error handling and retry system
+  - Automatic retry mechanism for failed Edge Function calls (3 attempts: 1s, 2s, 4s delays)
+  - 10-second timeout per request attempt (~37 seconds total with retries)
+  - Network connectivity checks using expo-network before requests
+  - Prevents indefinite request hanging on poor/offline connections
+  - Error categorization system: `NetworkError`, `ServerError`, `ClientError`, `ValidationError`
+  - User-friendly error messages with specific guidance for each error type
+  - Enhanced Sentry error tracking with breadcrumbs and context
+
+- **Dedicated History Tab**: Activity tracking following Apple HIG guidelines
+  - New History tab positioned between Collections and Settings
+  - iOS icon: `clock.fill`, Android icon: `history`
+  - Proper separation of concerns (history vs settings configuration)
+  - **Notification History**: Tracks last 20 toast notifications (ephemeral, cleared on restart)
+  - **Word Analysis History**: Tracks last 3 analyzed words (persistent via AsyncStorage)
+  - Visual indicators for notification types (✅ success, ❌ error, ℹ️ info)
+  - Shows "Not added" or collection name for each analyzed word
+  - Custom relative time formatter compatible with React Native Hermes (no external deps)
+
 ### Changed
+
+- **Word Analysis Persistence**: Analysis results remain visible after adding word to collection
+  - Add button hidden for duplicate words, but information still displayed
+  - Better user context when reviewing analyzed words
+  - Word history entries update when added to collection (no duplicates)
+  - Preserves original timestamp when word status changes
 
 ### Fixed
 
@@ -27,16 +64,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved loading states during duplicate checking process
   - Added toast notifications when duplicates are detected
 
+- **Production Network Error Resolution**
+  - Resolved FunctionsFetchError: "Failed to send a request to the Edge Function"
+  - Fixed requests hanging indefinitely on network issues (75+ seconds)
+  - Proper error handling for offline/poor network conditions
+  - Fixed stuck loading indicators (`isAnalyzing`, `isCheckingDuplicate`) when requests fail
+  - Fixed `Colors.info` reference error (now uses `Colors.primary` for INFO toast type)
+
 ### Technical
 
 - **New Components**: Added reusable search infrastructure
   - `CollectionSearchBar`: Feature-complete search input component
   - `useDebounce`: Reusable hook for performance optimization
   - `UIConstants`: Centralized timing and interaction constants
+
+- **Network & Error Handling System**
+  - New files:
+    - `src/types/ErrorTypes.ts` - Error categorization system
+    - `src/utils/retryUtils.ts` - Retry logic with exponential backoff
+    - `src/utils/networkUtils.ts` - Network connectivity utilities
+    - `src/utils/dateUtils.ts` - Custom date formatting for React Native
+  - Modified: `src/lib/supabase.ts`, `src/components/AddWordScreen/hooks/useWordAnalysis.ts`
+  - Configuration: 10s timeout per attempt, 3 retries with exponential backoff
+
+- **History Tracking System**
+  - New files:
+    - `src/types/HistoryTypes.ts` - History state type definitions
+    - `src/stores/useHistoryStore.ts` - Zustand store with persistence middleware
+    - `src/components/HistorySections/NotificationHistorySection.tsx`
+    - `src/components/HistorySections/WordAnalysisHistorySection.tsx`
+    - `src/app/(tabs)/history.tsx` - Dedicated History screen
+  - Storage: AsyncStorage for word history (persistent), in-memory for notifications (ephemeral)
+  - Limits: 20 notifications, 3 analyzed words
+
 - **Performance Optimizations**: Optimized search and filtering
   - Memoized word filtering with `useMemo` for efficient re-renders
   - Local state management for responsive text input
   - Debounced search calls to reduce unnecessary filtering operations
+
+- **Dependencies Added**
+  - `expo-network` - Network connectivity detection (v6.0.0)
 
 ---
 
