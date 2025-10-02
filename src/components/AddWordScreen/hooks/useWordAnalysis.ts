@@ -5,6 +5,7 @@ import { wordService } from '@/lib/supabase'
 import type { AnalysisResult, AnalysisMetadata } from '../types/AddWordTypes'
 import type { AppError } from '@/types/ErrorTypes'
 import { ErrorCategory } from '@/types/ErrorTypes'
+import { useHistoryStore } from '@/stores/useHistoryStore'
 
 export const useWordAnalysis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -72,6 +73,13 @@ export const useWordAnalysis = () => {
       }
 
       setAnalysisResult(result)
+
+      // Add to word analysis history (not added yet)
+      useHistoryStore.getState().addAnalyzedWord(
+        normalizedWord,
+        result.dutch_lemma
+        // No collection name - word was only analyzed, not added
+      )
 
       // Extract metadata from response
       if (response.meta) {

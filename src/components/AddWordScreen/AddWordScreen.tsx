@@ -21,6 +21,7 @@ import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 import { Sentry } from '@/lib/sentry'
+import { useHistoryStore } from '@/stores/useHistoryStore'
 
 interface DuplicateWordData {
   word_id: string
@@ -145,6 +146,15 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     if (success) {
       setInputWord('')
       setIsAlreadyInCollection(true)
+
+      // Add to word history with a collection name
+      useHistoryStore
+        .getState()
+        .addAnalyzedWord(
+          inputWord,
+          analysisResult.dutch_lemma,
+          selectedCollection?.name
+        )
     }
   }
 

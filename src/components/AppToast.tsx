@@ -11,6 +11,7 @@ import { useColorScheme } from 'react-native'
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message'
 import { ToastType, TOAST_CONFIG } from '@/constants/ToastConstants'
 import { Colors } from '@/constants/Colors'
+import { useHistoryStore } from '@/stores/useHistoryStore'
 
 interface AppToastProps {
   // Optional custom configuration
@@ -137,6 +138,9 @@ export class ToastService {
    */
   static show = (message: string, type: ToastType = ToastType.INFO) => {
     const config = TOAST_CONFIG[type]
+
+    // Add to history
+    useHistoryStore.getState().addNotification(message, type)
 
     Toast.show({
       type: config.type,

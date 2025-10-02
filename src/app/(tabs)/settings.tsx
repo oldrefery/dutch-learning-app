@@ -19,6 +19,8 @@ import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Sentry } from '@/lib/sentry'
+import { NotificationHistorySection } from '@/components/HistorySections/NotificationHistorySection'
+import { WordAnalysisHistorySection } from '@/components/HistorySections/WordAnalysisHistorySection'
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets()
@@ -160,6 +162,10 @@ export default function SettingsScreen() {
             </TextThemed>
           </ViewThemed>
         </ViewThemed>
+
+        <WordAnalysisHistorySection />
+
+        <NotificationHistorySection />
 
         <ViewThemed
           style={styles.section}
