@@ -22,6 +22,7 @@ import CollectionContextMenu from '@/components/CollectionContextMenu'
 import type { Collection, Word } from '@/types/database'
 import { Sentry } from '@/lib/sentry'
 import { calculateCollectionStats } from '@/utils/collectionStats'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 
 interface SwipeableCollectionCardProps {
   collection: Collection
@@ -48,6 +49,7 @@ export default function SwipeableCollectionCard({
   const translateX = useSharedValue(0)
   const lastGestureX = useRef<number>(0)
   const [showContextMenu, setShowContextMenu] = useState(false)
+  const { userAccessLevel } = useApplicationStore()
 
   // Calculate real stats for this collection
   const collectionWords = words.filter(
@@ -345,6 +347,7 @@ export default function SwipeableCollectionCard({
         onCopyCode={handleContextMenuCopyCode}
         onStopSharing={handleContextMenuStopSharing}
         onDelete={handleContextMenuDelete}
+        isReadOnly={userAccessLevel === 'read_only'}
       />
     </ViewThemed>
   )

@@ -26,6 +26,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { ROUTES } from '@/constants/Routes'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 import { Sentry } from '@/lib/sentry'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 
 // Extended types for NativeTabs components with runtime-supported props
 type TabTriggerProps = ComponentProps<typeof NativeTabs.Trigger> & {
@@ -52,6 +53,9 @@ export default function TabLayout() {
 
   // Get review words count for badge
   const { reviewWordsCount } = useReviewWordsCount()
+
+  // Get user access level
+  const { userAccessLevel } = useApplicationStore()
 
   // Call this unconditionally to follow the rules of hooks (not used in Native Tabs)
   useClientOnlyValue(false, true)
@@ -188,40 +192,44 @@ export default function TabLayout() {
       </TabTrigger>
 
       {/* Primary action tabs - right side following HIG guidelines */}
-      <TabTrigger
-        name="add-word"
-        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
-      >
-        <Label>Add Word</Label>
-        {Platform.OS === 'ios' ? (
-          <Icon sf="plus.circle.fill" />
-        ) : (
-          <View
-            style={[
-              styles.primaryIconContainer,
-              {
-                shadowColor: Colors.primary.DEFAULT,
-                shadowOpacity: 0.3,
-              },
-            ]}
-          >
-            <BlurView
-              style={styles.primaryIconBlur}
-              intensity={80}
-              tint={colorScheme === 'dark' ? 'dark' : 'light'}
+      {userAccessLevel === 'full_access' && (
+        <TabTrigger
+          name="add-word"
+          onPress={() =>
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+          }
+        >
+          <Label>Add Word</Label>
+          {Platform.OS === 'ios' ? (
+            <Icon sf="plus.circle.fill" />
+          ) : (
+            <View
+              style={[
+                styles.primaryIconContainer,
+                {
+                  shadowColor: Colors.primary.DEFAULT,
+                  shadowOpacity: 0.3,
+                },
+              ]}
             >
-              <View style={[styles.primaryIconInner]}>
-                <FontAwesome
-                  name="plus"
-                  size={22}
-                  color={Colors.primary.DEFAULT}
-                  style={styles.primaryIcon}
-                />
-              </View>
-            </BlurView>
-          </View>
-        )}
-      </TabTrigger>
+              <BlurView
+                style={styles.primaryIconBlur}
+                intensity={80}
+                tint={colorScheme === 'dark' ? 'dark' : 'light'}
+              >
+                <View style={[styles.primaryIconInner]}>
+                  <FontAwesome
+                    name="plus"
+                    size={22}
+                    color={Colors.primary.DEFAULT}
+                    style={styles.primaryIcon}
+                  />
+                </View>
+              </BlurView>
+            </View>
+          )}
+        </TabTrigger>
+      )}
 
       <TabTrigger
         name="review"

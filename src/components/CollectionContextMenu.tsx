@@ -29,6 +29,7 @@ interface CollectionContextMenuProps {
   onCopyCode: () => void
   onStopSharing: () => void
   onDelete: () => void
+  isReadOnly?: boolean
 }
 
 export default function CollectionContextMenu({
@@ -40,6 +41,7 @@ export default function CollectionContextMenu({
   onCopyCode,
   onStopSharing,
   onDelete,
+  isReadOnly = false,
 }: CollectionContextMenuProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const isDarkMode = colorScheme === 'dark'
@@ -110,24 +112,9 @@ export default function CollectionContextMenu({
 
             {/* Menu Items */}
             <ViewThemed style={styles.menuItems}>
-              {/* Rename */}
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={() => handleAction(onRename)}
-              >
-                <ViewThemed style={styles.iconContainer}>
-                  <Ionicons
-                    name="pencil"
-                    size={22}
-                    color={isDarkMode ? Colors.dark.text : Colors.light.text}
-                  />
-                </ViewThemed>
-                <TextThemed style={styles.menuItemText}>Rename</TextThemed>
-              </TouchableOpacity>
-
-              {/* Share or Copy Code + Stop Sharing */}
-              {isShared ? (
-                <>
+              {isReadOnly ? (
+                /* Read-only users: show only copy code if shared */
+                isShared ? (
                   <TouchableOpacity
                     style={styles.menuItem}
                     onPress={() => handleAction(onCopyCode)}
@@ -145,89 +132,144 @@ export default function CollectionContextMenu({
                       Copy Code
                     </TextThemed>
                   </TouchableOpacity>
-
+                ) : (
+                  <ViewThemed style={styles.readOnlyMessage}>
+                    <TextThemed
+                      style={styles.readOnlyText}
+                      lightColor={Colors.neutral[500]}
+                      darkColor={Colors.dark.textSecondary}
+                    >
+                      Read-only access: no actions available
+                    </TextThemed>
+                  </ViewThemed>
+                )
+              ) : (
+                /* Full access users: show all actions */
+                <>
+                  {/* Rename */}
                   <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => handleAction(onStopSharing)}
+                    onPress={() => handleAction(onRename)}
                   >
                     <ViewThemed style={styles.iconContainer}>
-                      {Platform.OS === 'ios' ? (
-                        <SymbolView
-                          name="person.2.slash"
-                          size={22}
-                          type="hierarchical"
-                          tintColor={Colors.error.DEFAULT}
-                          fallback={
+                      <Ionicons
+                        name="pencil"
+                        size={22}
+                        color={
+                          isDarkMode ? Colors.dark.text : Colors.light.text
+                        }
+                      />
+                    </ViewThemed>
+                    <TextThemed style={styles.menuItemText}>Rename</TextThemed>
+                  </TouchableOpacity>
+
+                  {/* Share or Copy Code + Stop Sharing */}
+                  {isShared ? (
+                    <>
+                      <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => handleAction(onCopyCode)}
+                      >
+                        <ViewThemed style={styles.iconContainer}>
+                          <Ionicons
+                            name="copy"
+                            size={22}
+                            color={
+                              isDarkMode ? Colors.dark.text : Colors.light.text
+                            }
+                          />
+                        </ViewThemed>
+                        <TextThemed style={styles.menuItemText}>
+                          Copy Code
+                        </TextThemed>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => handleAction(onStopSharing)}
+                      >
+                        <ViewThemed style={styles.iconContainer}>
+                          {Platform.OS === 'ios' ? (
+                            <SymbolView
+                              name="person.2.slash"
+                              size={22}
+                              type="hierarchical"
+                              tintColor={Colors.error.DEFAULT}
+                              fallback={
+                                <Ionicons
+                                  name="close-circle"
+                                  size={22}
+                                  color={Colors.error.DEFAULT}
+                                />
+                              }
+                            />
+                          ) : (
                             <Ionicons
                               name="close-circle"
                               size={22}
                               color={Colors.error.DEFAULT}
                             />
+                          )}
+                        </ViewThemed>
+                        <TextThemed
+                          style={[styles.menuItemText, styles.destructiveText]}
+                        >
+                          Stop Sharing
+                        </TextThemed>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.menuItem}
+                      onPress={() => handleAction(onShare)}
+                    >
+                      <ViewThemed style={styles.iconContainer}>
+                        <Ionicons
+                          name="share"
+                          size={22}
+                          color={
+                            isDarkMode ? Colors.dark.text : Colors.light.text
                           }
                         />
-                      ) : (
-                        <Ionicons
-                          name="close-circle"
-                          size={22}
-                          color={Colors.error.DEFAULT}
-                        />
-                      )}
+                      </ViewThemed>
+                      <TextThemed style={styles.menuItemText}>
+                        Share Collection
+                      </TextThemed>
+                    </TouchableOpacity>
+                  )}
+
+                  {/* Separator */}
+                  <ViewThemed
+                    style={[
+                      styles.separator,
+                      {
+                        backgroundColor: isDarkMode
+                          ? Colors.dark.border
+                          : Colors.light.border,
+                      },
+                    ]}
+                  />
+
+                  {/* Delete */}
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => handleAction(onDelete)}
+                  >
+                    <ViewThemed style={styles.iconContainer}>
+                      <Ionicons
+                        name="trash"
+                        size={22}
+                        color={Colors.error.DEFAULT}
+                      />
                     </ViewThemed>
                     <TextThemed
                       style={[styles.menuItemText, styles.destructiveText]}
                     >
-                      Stop Sharing
+                      Delete
                     </TextThemed>
                   </TouchableOpacity>
                 </>
-              ) : (
-                <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={() => handleAction(onShare)}
-                >
-                  <ViewThemed style={styles.iconContainer}>
-                    <Ionicons
-                      name="share"
-                      size={22}
-                      color={isDarkMode ? Colors.dark.text : Colors.light.text}
-                    />
-                  </ViewThemed>
-                  <TextThemed style={styles.menuItemText}>
-                    Share Collection
-                  </TextThemed>
-                </TouchableOpacity>
               )}
-
-              {/* Separator */}
-              <ViewThemed
-                style={[
-                  styles.separator,
-                  {
-                    backgroundColor: isDarkMode
-                      ? Colors.dark.border
-                      : Colors.light.border,
-                  },
-                ]}
-              />
-
-              {/* Delete */}
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={() => handleAction(onDelete)}
-              >
-                <ViewThemed style={styles.iconContainer}>
-                  <Ionicons
-                    name="trash"
-                    size={22}
-                    color={Colors.error.DEFAULT}
-                  />
-                </ViewThemed>
-                <TextThemed
-                  style={[styles.menuItemText, styles.destructiveText]}
-                >
-                  Delete
-                </TextThemed>
-              </TouchableOpacity>
             </ViewThemed>
 
             {/* Cancel Button */}
@@ -314,5 +356,15 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '600',
     color: Colors.primary.DEFAULT,
+  },
+  readOnlyMessage: {
+    paddingVertical: 20,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  readOnlyText: {
+    fontSize: 15,
+    fontStyle: 'italic',
+    textAlign: 'center',
   },
 })

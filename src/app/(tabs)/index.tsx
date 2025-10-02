@@ -49,6 +49,7 @@ export default function CollectionsScreen() {
     shareCollection,
     getCollectionShareStatus,
     unshareCollection,
+    userAccessLevel,
   } = useApplicationStore()
 
   const handleCollectionPress = (collection: Collection) => {
@@ -253,7 +254,7 @@ export default function CollectionsScreen() {
       <ViewThemed style={styles.collectionsSection}>
         <SectionHeader
           title="Collections"
-          showAddButton={true}
+          showAddButton={userAccessLevel === 'full_access'}
           addButtonText="Create Collection"
           onAddPress={() => setShowCreateModal(true)}
           showImportButton={true}

@@ -19,12 +19,14 @@ import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Sentry } from '@/lib/sentry'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets()
   const colorScheme = useColorScheme() ?? 'light'
   const [user, setUser] = useState<User | null>(null)
   const { signOut, loading: authLoading } = useSimpleAuth()
+  const { userAccessLevel } = useApplicationStore()
 
   useEffect(() => {
     const getUser = async () => {
@@ -177,6 +179,37 @@ export default function SettingsScreen() {
                 Email:
               </TextThemed>
               <TextThemed style={styles.userInfoValue}>{user.email}</TextThemed>
+            </ViewThemed>
+          )}
+          {userAccessLevel && (
+            <ViewThemed style={styles.userInfoContainer}>
+              <TextThemed
+                style={styles.userInfoLabel}
+                lightColor={Colors.neutral[600]}
+                darkColor={Colors.dark.textSecondary}
+              >
+                Access Level:
+              </TextThemed>
+              <TextThemed
+                style={[
+                  styles.userInfoValue,
+                  userAccessLevel === 'full_access' && styles.accessLevelFull,
+                  userAccessLevel === 'read_only' && styles.accessLevelReadOnly,
+                ]}
+              >
+                {userAccessLevel === 'full_access'
+                  ? 'Full Access'
+                  : 'Read Only'}
+              </TextThemed>
+              {userAccessLevel === 'read_only' && (
+                <TextThemed
+                  style={styles.accessLevelDescription}
+                  lightColor={Colors.neutral[500]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  You can view and learn from imported collections
+                </TextThemed>
+              )}
             </ViewThemed>
           )}
         </ViewThemed>
@@ -339,5 +372,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  accessLevelFull: {
+    color: Colors.success.DEFAULT,
+  },
+  accessLevelReadOnly: {
+    color: Colors.warning.DEFAULT,
+  },
+  accessLevelDescription: {
+    fontSize: 12,
+    marginTop: 4,
+    fontStyle: 'italic',
   },
 })
