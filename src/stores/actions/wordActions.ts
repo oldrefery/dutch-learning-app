@@ -362,27 +362,12 @@ export const createWordActions = (
         return false
       }
 
-      // Add word one by one (we don't have a batch insert method)
-      const addedWords = []
-      for (const wordData of words) {
-        try {
-          const wordToAdd = {
-            ...wordData,
-            collection_id: collectionId,
-          }
-          const newWord = await wordService.addWord(wordToAdd, userId)
-          addedWords.push(newWord)
-        } catch (wordError) {
-          Sentry.captureException(wordError, {
-            tags: { operation: 'addWordsToCollection' },
-            extra: {
-              message: 'Error adding individual word',
-              dutchLemma: wordData.dutch_lemma,
-            },
-          })
-          // Continue with other words even if one fails
-        }
-      }
+      // Use the SECURITY DEFINER function to import words
+      // This allows read-only users to import words from shared collections
+      const addedWords = await wordService.importWordsToCollection(
+        collectionId,
+        words
+      )
 
       // Update the store with new words
       const currentWords = get().words

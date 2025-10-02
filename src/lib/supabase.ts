@@ -495,6 +495,46 @@ export const wordService = {
       return
     }
   },
+
+  // Import words to collection using SECURITY DEFINER function
+  // This allows read-only users to import words from shared collections
+  async importWordsToCollection(
+    collectionId: string,
+    words: Partial<Word>[]
+  ): Promise<Word[]> {
+    try {
+      // Call the database RPC function which uses SECURITY DEFINER to bypass RLS
+      // Supabase RPC automatically serializes to JSON, no need for JSON.stringify
+      const { data, error } = await supabase.rpc('import_words_to_collection', {
+        p_collection_id: collectionId,
+        p_words: words,
+      })
+
+      if (error) {
+        Sentry.captureException(error, {
+          tags: { operation: 'importWordsToCollection' },
+          extra: {
+            collectionId,
+            wordCount: words.length,
+            message: 'Failed to import words',
+            errorCode: error.code,
+            errorMessage: error.message,
+            errorDetails: error.details,
+            errorHint: error.hint,
+          },
+        })
+        throw error
+      }
+
+      return data || []
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { operation: 'importWordsToCollection' },
+        extra: { collectionId, wordCount: words.length },
+      })
+      throw error
+    }
+  },
 }
 
 export const userService = {
