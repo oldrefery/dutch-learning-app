@@ -8,6 +8,7 @@ import * as Sentry from '@sentry/react-native'
 import { retrySupabaseFunction } from '@/utils/retryUtils'
 import { categorizeSupabaseError } from '@/types/ErrorTypes'
 import { checkNetworkConnection } from '@/utils/networkUtils'
+import { logSupabaseError } from '@/utils/logger'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -161,9 +162,9 @@ export const wordService = {
       .order('created_at', { ascending: false })
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'getUserWords' },
-        extra: { userId, message: 'Failed to fetch words' },
+      logSupabaseError('Failed to fetch words', error, {
+        operation: 'getUserWords',
+        userId,
       })
       return null
     }
@@ -201,15 +202,12 @@ export const wordService = {
     const { data, error } = await query
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'checkWordExists' },
-        extra: {
-          userId,
-          dutchLemma,
-          partOfSpeech,
-          article,
-          message: 'Failed to check word existence',
-        },
+      logSupabaseError('Failed to check word existence', error, {
+        operation: 'checkWordExists',
+        userId,
+        dutchLemma,
+        partOfSpeech,
+        article,
       })
       return null
     }
@@ -229,9 +227,9 @@ export const wordService = {
       .order('next_review_date', { ascending: true })
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'getWordsForReview' },
-        extra: { userId, message: 'Failed to fetch review words' },
+      logSupabaseError('Failed to fetch review words', error, {
+        operation: 'getWordsForReview',
+        userId,
       })
       return null
     }
@@ -349,9 +347,10 @@ export const wordService = {
       .single()
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'addWord' },
-        extra: { userId, dutchLemma, message: 'Failed to add word' },
+      logSupabaseError('Failed to add word', error, {
+        operation: 'addWord',
+        userId,
+        dutchLemma,
       })
       return null
     }
@@ -401,9 +400,9 @@ export const wordService = {
       .single()
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'updateWordProgress' },
-        extra: { wordId, message: 'Failed to update word progress' },
+      logSupabaseError('Failed to update word progress', error, {
+        operation: 'updateWordProgress',
+        wordId,
       })
       return null
     }
@@ -421,9 +420,10 @@ export const wordService = {
       .single()
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'updateWordImage' },
-        extra: { wordId, imageUrl, message: 'Failed to update word image' },
+      logSupabaseError('Failed to update word image', error, {
+        operation: 'updateWordImage',
+        wordId,
+        imageUrl,
       })
       return null
     }
@@ -441,13 +441,10 @@ export const wordService = {
       .single()
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'moveWordToCollection' },
-        extra: {
-          wordId,
-          newCollectionId,
-          message: 'Failed to move word to collection',
-        },
+      logSupabaseError('Failed to move word to collection', error, {
+        operation: 'moveWordToCollection',
+        wordId,
+        newCollectionId,
       })
       return null
     }
@@ -470,9 +467,9 @@ export const wordService = {
       .single()
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'resetWordProgress' },
-        extra: { wordId },
+      logSupabaseError('Failed to reset word progress', error, {
+        operation: 'resetWordProgress',
+        wordId,
       })
       return null
     }
@@ -488,9 +485,9 @@ export const wordService = {
       .eq('word_id', wordId)
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'deleteWord' },
-        extra: { wordId, message: 'Failed to delete word' },
+      logSupabaseError('Failed to delete word', error, {
+        operation: 'deleteWord',
+        wordId,
       })
       return
     }
@@ -511,17 +508,10 @@ export const wordService = {
       })
 
       if (error) {
-        Sentry.captureException(error, {
-          tags: { operation: 'importWordsToCollection' },
-          extra: {
-            collectionId,
-            wordCount: words.length,
-            message: 'Failed to import words',
-            errorCode: error.code,
-            errorMessage: error.message,
-            errorDetails: error.details,
-            errorHint: error.hint,
-          },
+        logSupabaseError('Failed to import words', error, {
+          operation: 'importWordsToCollection',
+          collectionId,
+          wordCount: words.length,
         })
         throw error
       }
@@ -610,9 +600,9 @@ export const collectionService = {
       .order('created_at', { ascending: false })
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'getUserCollections' },
-        extra: { userId, message: 'Failed to fetch collections' },
+      logSupabaseError('Failed to fetch collections', error, {
+        operation: 'getUserCollections',
+        userId,
       })
       return null
     }
@@ -629,9 +619,10 @@ export const collectionService = {
       .single()
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'createCollection' },
-        extra: { name, userId, message: 'Failed to create collection' },
+      logSupabaseError('Failed to create collection', error, {
+        operation: 'createCollection',
+        name,
+        userId,
       })
       return null
     }
@@ -654,14 +645,11 @@ export const collectionService = {
       .single()
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'updateCollection' },
-        extra: {
-          collectionId,
-          updates,
-          userId,
-          message: 'Failed to update collection',
-        },
+      logSupabaseError('Failed to update collection', error, {
+        operation: 'updateCollection',
+        collectionId,
+        updates,
+        userId,
       })
       return null
     }
@@ -697,9 +685,10 @@ export const collectionService = {
       .eq('user_id', userId)
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'deleteCollection' },
-        extra: { collectionId, userId, message: 'Failed to delete collection' },
+      logSupabaseError('Failed to delete collection', error, {
+        operation: 'deleteCollection',
+        collectionId,
+        userId,
       })
       return
     }

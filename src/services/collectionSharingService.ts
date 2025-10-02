@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
 import type { Collection, Word } from '@/types/database'
+import { logSupabaseError } from '@/utils/logger'
 
 export interface SharedCollectionData
   extends Pick<
@@ -60,20 +61,11 @@ class CollectionSharingService {
         .single()
 
       if (error) {
-        Sentry.captureException(
-          new Error(`Failed to share collection: ${error.message}`),
-          {
-            tags: {
-              operation: 'shareCollection',
-              errorCode: error.code,
-            },
-            extra: {
-              collectionId,
-              userId,
-              supabaseError: error,
-            },
-          }
-        )
+        logSupabaseError('Failed to share collection', error, {
+          operation: 'shareCollection',
+          collectionId,
+          userId,
+        })
 
         return {
           success: false,
@@ -130,20 +122,11 @@ class CollectionSharingService {
         .eq('user_id', userId)
 
       if (error) {
-        Sentry.captureException(
-          new Error(`Failed to unshare collection: ${error.message}`),
-          {
-            tags: {
-              operation: 'unshareCollection',
-              errorCode: error.code,
-            },
-            extra: {
-              collectionId,
-              userId,
-              supabaseError: error,
-            },
-          }
-        )
+        logSupabaseError('Failed to unshare collection', error, {
+          operation: 'unshareCollection',
+          collectionId,
+          userId,
+        })
 
         return {
           success: false,
@@ -196,19 +179,10 @@ class CollectionSharingService {
           return { success: false, error: CollectionSharingError.NOT_FOUND }
         }
 
-        Sentry.captureException(
-          new Error(`Failed to fetch shared collection: ${error.message}`),
-          {
-            tags: {
-              operation: 'getSharedCollection',
-              errorCode: error.code,
-            },
-            extra: {
-              shareToken,
-              supabaseError: error,
-            },
-          }
-        )
+        logSupabaseError('Failed to fetch shared collection', error, {
+          operation: 'getSharedCollection',
+          shareToken,
+        })
 
         return { success: false, error: CollectionSharingError.DATABASE_ERROR }
       }
@@ -219,16 +193,13 @@ class CollectionSharingService {
         .eq('collection_id', data.collection_id)
 
       if (countError) {
-        Sentry.captureMessage(
+        logSupabaseError(
           'Failed to fetch word count for shared collection',
+          countError,
           {
-            level: 'warning',
-            tags: { operation: 'getSharedCollection' },
-            extra: {
-              shareToken,
-              collectionId: data.collection_id,
-              error: countError,
-            },
+            operation: 'getSharedCollection',
+            shareToken,
+            collectionId: data.collection_id,
           }
         )
       }
@@ -297,20 +268,11 @@ class CollectionSharingService {
         .order('created_at', { ascending: true })
 
       if (wordsError) {
-        Sentry.captureException(
-          new Error(`Failed to fetch collection words: ${wordsError.message}`),
-          {
-            tags: {
-              operation: 'getSharedCollectionWords',
-              errorCode: wordsError.code,
-            },
-            extra: {
-              shareToken,
-              collectionId: collectionResult.data.collection_id,
-              supabaseError: wordsError,
-            },
-          }
-        )
+        logSupabaseError('Failed to fetch collection words', wordsError, {
+          operation: 'getSharedCollectionWords',
+          shareToken,
+          collectionId: collectionResult.data.collection_id,
+        })
 
         return { success: false, error: CollectionSharingError.DATABASE_ERROR }
       }
@@ -348,22 +310,11 @@ class CollectionSharingService {
           return { success: false, error: CollectionSharingError.NOT_FOUND }
         }
 
-        Sentry.captureException(
-          new Error(
-            `Failed to fetch collection share status: ${error.message}`
-          ),
-          {
-            tags: {
-              operation: 'getCollectionShareStatus',
-              errorCode: error.code,
-            },
-            extra: {
-              collectionId,
-              userId,
-              supabaseError: error,
-            },
-          }
-        )
+        logSupabaseError('Failed to fetch collection share status', error, {
+          operation: 'getCollectionShareStatus',
+          collectionId,
+          userId,
+        })
 
         return { success: false, error: CollectionSharingError.DATABASE_ERROR }
       }

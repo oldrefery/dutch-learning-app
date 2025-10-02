@@ -1,4 +1,5 @@
 import { Sentry } from '@/lib/sentry'
+import type { PostgrestError } from '@supabase/supabase-js'
 
 /**
  * Centralized logging utility following Sentry best practices
@@ -8,6 +9,12 @@ import { Sentry } from '@/lib/sentry'
 type LogLevel = 'debug' | 'info' | 'warning' | 'error'
 
 interface LogContext {
+  [key: string]: unknown
+}
+
+interface SupabaseErrorContext extends LogContext {
+  operation: string
+  userId?: string
   [key: string]: unknown
 }
 
@@ -111,6 +118,93 @@ export function logError(
 }
 
 /**
+ * Format Supabase error into a readable error message
+ * Supabase errors have structure: { message, details, hint, code }
+ */
+function formatSupabaseError(error: PostgrestError): string {
+  const parts: string[] = []
+
+  // Primary error message
+  if (error.message) {
+    parts.push(error.message)
+  }
+
+  // Add error code for quick identification
+  if (error.code) {
+    parts.push(`[${error.code}]`)
+  }
+
+  // Details on a new line for better readability
+  if (error.details) {
+    parts.push(`\nDetails: ${error.details}`)
+  }
+
+  // Hint provides actionable guidance
+  if (error.hint) {
+    parts.push(`\n💡 Hint: ${error.hint}`)
+  }
+
+  return parts.length > 0 ? parts.join(' ') : 'Unknown Supabase error'
+}
+
+/**
+ * Log and capture Supabase error to Sentry with proper formatting
+ * This ensures Supabase errors are properly displayed in Sentry with all details
+ */
+export function logSupabaseError(
+  message: string,
+  error: PostgrestError,
+  context: SupabaseErrorContext
+) {
+  const formattedError = formatSupabaseError(error)
+  const fullMessage = `${message}: ${formattedError}`
+
+  // Add breadcrumb for context
+  Sentry.addBreadcrumb({
+    category: 'supabase',
+    message: fullMessage,
+    level: 'error',
+    data: {
+      ...context,
+      supabaseError: {
+        code: error.code || 'unknown',
+        message: error.message || 'No message',
+        details: error.details || 'No details',
+        hint: error.hint || 'No hint',
+      },
+    },
+  })
+
+  // Capture as exception with all context
+  Sentry.captureException(new Error(fullMessage), {
+    tags: {
+      operation: context.operation,
+      errorCode: error.code || 'unknown',
+    },
+    extra: {
+      ...context,
+      supabaseError: {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      },
+    },
+    // Fingerprinting: group errors by operation and error code
+    // This ensures same errors are grouped together in Sentry
+    fingerprint: ['supabase-error', context.operation, error.code || 'unknown'],
+  })
+
+  // In development, also log to console
+  if (__DEV__) {
+    console.error(`❌ [supabase] ${fullMessage}`, {
+      context,
+      supabaseError: error,
+    })
+  }
+}
+
+/**
  * Legacy console replacement helpers
  * Use these to gradually migrate from console.* to proper logging
  */
@@ -120,4 +214,5 @@ export const logger = {
   log: logInfo, // alias for console.log
   warn: logWarning,
   error: logError,
+  supabaseError: logSupabaseError,
 }
