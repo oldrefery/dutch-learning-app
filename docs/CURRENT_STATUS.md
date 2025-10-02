@@ -1,14 +1,48 @@
 # Dutch Learning App - Current Status
 
-## 📅 Last Updated: September 28, 2025
+## 📅 Last Updated: October 02, 2025
 
-## 🎯 Current Phase: Build 31 - UI/UX Bug Fixes - COMPLETED ✅
+## 🎯 Current Phase: Build 39 - UX Enhancements & Bug Fixes - COMPLETED ✅
 
 ---
 
 ## ✅ COMPLETED TASKS
 
-### Latest: Build 31 - UI/UX Bug Fixes ✅ COMPLETED
+### Latest: Build 39 - UX Enhancements & Bug Fixes ✅ COMPLETED
+
+- **Word Detail Modal in History Tab**: Added tap-to-view functionality for analyzed words
+  - Implemented WordDetailModal integration in History tab
+  - Modal renders at top level for proper z-index behavior
+  - Consistent UX with collection word detail view
+
+- **Custom Search Query for Images**: Enhanced image selector with custom search
+  - Added text input for modifying search queries
+  - Useful for words with multiple meanings (e.g., uitdagen → provoke vs challenge)
+  - Smart state management using useRef to preserve user edits
+  - Search button with keyboard submit support
+
+- **Plural Past Simple for Verbs**: Extended conjugation support
+  - Added `simple_past_plural` field to verb conjugations
+  - Database migration with proper constraint validation
+  - Updated UI to display both singular and plural past forms
+  - Enhanced Gemini prompt for extracting plural conjugations
+
+- **Adaptive Header Layout**: Improved long word display
+  - Auto-scaling font size for lengthy words (minimum 60% scale)
+  - Two-row layout: word on first line, actions on second
+  - Consistent behavior across all word cards
+
+- **Real Streak Calculation**: Implemented actual study streak tracking
+  - Calculates consecutive review days from `last_reviewed_at`
+  - Replaces hardcoded `streakDays: 0` placeholder
+  - Automatic reset on missed days
+
+- **Collection Auto-Selection Fix** (HIGH PRIORITY BUG):
+  - Fixed collection selection when current collection becomes invalid
+  - Automatic re-selection when selected collection is deleted
+  - Ensures seamless word addition without manual intervention
+
+### Build 31 - UI/UX Bug Fixes ✅ COMPLETED
 
 - **Keyboard Interaction Improvements**: Fixed keyboard covering input field during collection import on Android
   - Implemented platform-specific KeyboardAvoidingView behavior (iOS: padding, Android: pan mode)
