@@ -37,7 +37,9 @@ export function NotificationHistorySection() {
       case ToastType.ERROR:
         return colorScheme === 'dark' ? Colors.dark.error : Colors.error.DEFAULT
       case ToastType.INFO:
-        return colorScheme === 'dark' ? Colors.info.dark : Colors.info.DEFAULT
+        return colorScheme === 'dark'
+          ? Colors.primary.darkMode
+          : Colors.primary.DEFAULT
       default:
         return colorScheme === 'dark'
           ? Colors.dark.textSecondary

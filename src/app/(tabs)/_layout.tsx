@@ -164,6 +164,18 @@ export default function TabLayout() {
       </TabTrigger>
 
       <TabTrigger
+        name="history"
+        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+      >
+        <Label>History</Label>
+        {Platform.OS === 'ios' ? (
+          <Icon sf="clock.fill" />
+        ) : (
+          <FontAwesome name="history" size={24} />
+        )}
+      </TabTrigger>
+
+      <TabTrigger
         name="settings"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
       >
