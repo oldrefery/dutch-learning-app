@@ -9,11 +9,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Word Detail Modal in History Tab**: Tap on analyzed words in History to view full details
+  - Opens same WordDetailModal as in collections for consistent UX
+  - Modal renders at top level (above all content) for proper z-index behavior
+  - Provides quick access to word information directly from History tab
+
+- **Custom Search Query for Images**: Image selector now supports custom search queries
+  - Text input field to modify search query (e.g., search for specific word meaning)
+  - Useful for words with multiple meanings (uitdagen → provoke vs challenge)
+  - Smart query initialization using useRef to preserve user edits
+  - Search button with instant feedback and keyboard submit support
+
+- **Plural Past Simple for Verb Conjugations**: Enhanced verb conjugation display
+  - Added `simple_past_plural` field to conjugation data structure
+  - Database migration with proper constraint validation
+  - UI displays both singular (ik) and plural past simple forms
+  - Improved Gemini prompt to extract plural conjugation forms
+
+- **Adaptive Header Layout**: Word titles now handle long words gracefully
+  - Auto-scaling font size for lengthy words (minimum 60% of original size)
+  - Word title on first line (full width)
+  - Action buttons (cache, copy, sound) on second line (right-aligned)
+  - Works consistently across all word cards (collections, modals, review)
+
+- **Real Streak Calculation**: Implemented actual study streak tracking
+  - Calculates consecutive days with word reviews based on `last_reviewed_at`
+  - Counts backwards from today or yesterday (if no review today)
+  - Automatically resets on missed days
+  - Replaces hardcoded `streakDays: 0` placeholder
+
 ### Changed
 
 ### Fixed
 
+- **Collection Auto-Selection Bug** (HIGH PRIORITY): Fixed collection selection logic
+  - Automatically selects first available collection when current selection becomes invalid
+  - Handles scenario when selected collection is deleted
+  - Re-validates selection when collections list changes
+  - Ensures users can always add words efficiently without manual collection selection
+
 ### Technical
+
+- **New Utilities**:
+  - `src/utils/streakUtils.ts` - Streak calculation with date normalization
+- **Database Changes**:
+  - Migration `20251002102613_add_simple_past_plural_to_conjugation.sql`
+  - Updated conjugation constraints to support `simple_past_plural`
+- **Type Updates**:
+  - Extended `WordConjugation` interface in `database.ts`, `GeminiTypes.ts`, `AddWordTypes.ts`
+- **Component Enhancements**:
+  - Refactored `HeaderSection.tsx` for two-row layout
+  - Enhanced `ImageSelector.tsx` with controlled search state
+  - Updated `useAddWord.ts` with collection validation logic
 
 ---
 

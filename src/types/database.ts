@@ -28,6 +28,7 @@ export interface WordExample {
 export interface WordConjugation {
   present: string
   simple_past: string
+  simple_past_plural?: string
   past_participle: string
 }
 

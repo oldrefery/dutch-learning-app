@@ -68,14 +68,19 @@ export function HeaderSection({
 
   return (
     <ViewThemed style={styles.headerSection}>
-      <ViewThemed style={styles.headerRow}>
-        <TextThemed
-          style={[styles.wordTitle, config.compact && styles.compactWordTitle]}
-          selectable
-        >
-          {word.dutch_lemma || 'Unknown'}
-        </TextThemed>
+      {/* Word Title - Full Width on First Line */}
+      <TextThemed
+        style={[styles.wordTitle, config.compact && styles.compactWordTitle]}
+        selectable
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.6}
+      >
+        {word.dutch_lemma || 'Unknown'}
+      </TextThemed>
 
+      {/* Actions Row - Second Line, Right Aligned */}
+      <ViewThemed style={styles.headerActionsRow}>
         <NonSwipeableArea style={styles.headerActions}>
           {/* Cache Status Badge */}
           {metadata && (

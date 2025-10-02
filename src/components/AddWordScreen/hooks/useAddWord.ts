@@ -15,8 +15,26 @@ export const useAddWord = (preselectedCollectionId?: string) => {
   const { collections } = useCollections()
 
   // Auto-select a preselected collection or first collection if available and none selected
+  // Also re-select if current selection is no longer valid (e.g., collection was deleted)
   useEffect(() => {
-    if (collections.length > 0 && !selectedCollection) {
+    if (collections.length === 0) {
+      // No collections available - clear selection
+      if (selectedCollection) {
+        setSelectedCollection(null)
+      }
+      return
+    }
+
+    // Check if currently selected collection is still valid
+    const isCurrentCollectionValid =
+      selectedCollection &&
+      collections.some(
+        c => c.collection_id === selectedCollection.collection_id
+      )
+
+    // If no collection selected OR current selection is invalid
+    if (!selectedCollection || !isCurrentCollectionValid) {
+      // Try to select preselected collection first
       if (preselectedCollectionId) {
         const preselectedCollection = collections.find(
           c => c.collection_id === preselectedCollectionId
@@ -26,6 +44,7 @@ export const useAddWord = (preselectedCollectionId?: string) => {
           return
         }
       }
+      // Otherwise select first available collection
       setSelectedCollection(collections[0])
     }
   }, [collections, selectedCollection, preselectedCollectionId])

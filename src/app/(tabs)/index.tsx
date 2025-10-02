@@ -18,6 +18,7 @@ import ReviewButton from '@/components/ReviewButton'
 import { ROUTES } from '@/constants/Routes'
 import { styles } from '@/styles/CollectionsScreen.styles'
 import type { Collection } from '@/types/database'
+import { calculateStreak } from '@/utils/streakUtils'
 
 export default function CollectionsScreen() {
   const insets = useSafeAreaInsets()
@@ -227,7 +228,7 @@ export default function CollectionsScreen() {
     wordsForReview: words.filter(
       w => new Date(w.next_review_date) <= new Date()
     ).length,
-    streakDays: 0, // TODO: implement actual streak calculation
+    streakDays: calculateStreak(words),
   }
 
   return (

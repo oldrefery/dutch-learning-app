@@ -30,6 +30,7 @@ export interface AnalysisResult {
   conjugation?: {
     present: string
     simple_past: string
+    simple_past_plural?: string
     past_participle: string
   } | null
   preposition?: string // Fixed preposition (e.g., "van" for "genieten van")

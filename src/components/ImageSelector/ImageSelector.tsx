@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import {
   TouchableOpacity,
   Modal,
@@ -6,6 +6,7 @@ import {
   Image,
   ActivityIndicator,
   useColorScheme,
+  TextInput,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
@@ -30,10 +31,17 @@ export default function ImageSelector({
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [offset, setOffset] = useState(0)
+  const [searchQuery, setSearchQuery] = useState(englishTranslation)
+  const prevEnglishTranslation = useRef(englishTranslation)
   const colorScheme = useColorScheme() ?? 'light'
   const styles = getImageSelectorStyles(colorScheme)
 
   const loadImages = useCallback(async () => {
+    if (!searchQuery.trim()) {
+      setError('Please enter a search query')
+      return
+    }
+
     setLoading(true)
     setError(null)
     setImages([]) // Clear previous images
@@ -44,7 +52,7 @@ export default function ImageSelector({
         'get-multiple-images',
         {
           body: {
-            englishTranslation,
+            englishTranslation: searchQuery,
             partOfSpeech,
             examples,
             count: IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT,
@@ -66,14 +74,14 @@ export default function ImageSelector({
         tags: { operation: 'loadImages' },
         extra: {
           message: 'Failed to load images',
-          englishTranslation,
+          searchQuery,
           partOfSpeech,
         },
       })
     } finally {
       setLoading(false)
     }
-  }, [englishTranslation, partOfSpeech, examples])
+  }, [searchQuery, partOfSpeech, examples])
 
   const loadMoreImages = useCallback(async () => {
     setLoadingMore(true)
@@ -86,7 +94,7 @@ export default function ImageSelector({
         'get-multiple-images',
         {
           body: {
-            englishTranslation,
+            englishTranslation: searchQuery,
             partOfSpeech,
             examples,
             count: IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT,
@@ -116,7 +124,7 @@ export default function ImageSelector({
         tags: { operation: 'loadMoreImages' },
         extra: {
           message: 'Failed to load more images',
-          englishTranslation,
+          searchQuery,
           partOfSpeech,
           offset,
         },
@@ -124,19 +132,28 @@ export default function ImageSelector({
     } finally {
       setLoadingMore(false)
     }
-  }, [englishTranslation, partOfSpeech, examples, offset])
+  }, [searchQuery, partOfSpeech, examples, offset])
 
-  // Load images when modal opens or word changes
+  // Handle modal open/close and word changes
   useEffect(() => {
-    if (visible && englishTranslation) {
-      loadImages()
-    } else if (!visible) {
+    if (visible) {
+      // Update the search query only if the word changed
+      if (englishTranslation !== prevEnglishTranslation.current) {
+        setSearchQuery(englishTranslation)
+        prevEnglishTranslation.current = englishTranslation
+        loadImages()
+      } else if (images.length === 0) {
+        // First time opening - load images
+        loadImages()
+      }
+    } else {
       // Clear images when modal closes to save memory
       setImages([])
       setError(null)
       setOffset(0)
     }
-  }, [visible, englishTranslation, partOfSpeech, loadImages])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, englishTranslation])
 
   const handleImageSelect = (imageUrl: string) => {
     onSelect(imageUrl)
@@ -249,6 +266,47 @@ export default function ImageSelector({
         <TextThemed style={styles.subtitle}>
           Select a better image for &quot;{englishTranslation}&quot;
         </TextThemed>
+
+        <ViewThemed style={styles.searchContainer}>
+          <TextInput
+            style={[
+              styles.searchInput,
+              {
+                color:
+                  colorScheme === 'dark' ? Colors.dark.text : Colors.light.text,
+                backgroundColor:
+                  colorScheme === 'dark'
+                    ? Colors.dark.backgroundSecondary
+                    : Colors.light.backgroundSecondary,
+                borderColor:
+                  colorScheme === 'dark'
+                    ? Colors.dark.border
+                    : Colors.light.border,
+              },
+            ]}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Change search query..."
+            placeholderTextColor={
+              colorScheme === 'dark'
+                ? Colors.dark.textSecondary
+                : Colors.light.textSecondary
+            }
+            returnKeyType="search"
+            onSubmitEditing={loadImages}
+          />
+          <TouchableOpacity
+            style={styles.searchButton}
+            onPress={loadImages}
+            disabled={loading}
+          >
+            <Ionicons
+              name="search"
+              size={20}
+              color={Colors.background.primary}
+            />
+          </TouchableOpacity>
+        </ViewThemed>
 
         {renderContent()}
       </ViewThemed>
