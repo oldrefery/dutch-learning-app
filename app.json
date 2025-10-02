@@ -22,11 +22,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.oldrefery.dutch-learning-app",
       "buildNumber": "38",
-      "icon": {
-        "light": "./src/assets/icons/ios-light.png",
-        "dark": "./src/assets/icons/ios-dark.png",
-        "tinted": "./src/assets/icons/ios-tinted.png"
-      },
+      "icon": "./src/assets/icons/ios-light.png",
       "infoPlist": {
         "UIBackgroundModes": ["audio", "audio"],
         "ITSAppUsesNonExemptEncryption": false
