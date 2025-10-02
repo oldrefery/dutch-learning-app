@@ -101,24 +101,29 @@ This document outlines the development of the Dutch Learning App in distinct pha
   - **Comprehensive Gesture System:** ✅ Swipe-to-delete, pull-to-refresh throughout app
   - **Enhanced Navigation:** ✅ Gesture-based navigation system implemented
 
-### **Phase 4.0: Access Control & Smart Analysis (CURRENT PHASE)**
+### **✅ Phase 4.0: Access Control & Smart Analysis (COMPLETED October 2, 2025)**
 
 **Goal:** Implement tiered access control and smart word analysis caching to control API costs while enabling broader user access.
 
-- **Tiered Access Control System:**
-  - **Email Pre-Approval:** Pre-register email addresses with access levels
-  - **Full Access Users:** Can create words, collections, use AI analysis, change images
-  - **Read-Only Users:** Can import shared collections and learn, but cannot create content
-  - **Automatic Access Assignment:** Users get appropriate access level upon registration
-  - **API Cost Protection:** Only full access users consume Gemini API quota
+- **Tiered Access Control System:** ✅ COMPLETED
+  - **Email Pre-Approval:** ✅ Pre-register email addresses with access levels (`pre_approved_emails` table)
+  - **Full Access Users:** ✅ Can create words, collections, use AI analysis, change images
+  - **Read-Only Users:** ✅ Can import shared collections and learn, but cannot create content
+  - **Automatic Access Assignment:** ✅ Users get appropriate access level upon registration via trigger
+  - **API Cost Protection:** ✅ Only full access users consume Gemini API quota
+  - **Default Collection:** ✅ All users receive "My Words" collection on signup
+  - **Import Permission:** ✅ Read-only users can import words via SECURITY DEFINER function
+  - **Collection Protection:** ✅ Read-only users cannot delete their last collection
+  - **UI Restrictions:** ✅ Add Word tab and Create Collection button hidden for read-only users
+  - **History Cleanup:** ✅ User history (notifications, analyzed words) cleared on logout
 
-- **Smart Word Analysis Cache:**
+- **Smart Word Analysis Cache:** 🔄 PENDING
   - **Cross-User Word Search:** Check existing words from all users before AI analysis
   - **Cache Hit Notifications:** Show when using existing analysis to save API calls
   - **Force Re-Analysis Option:** Allow manual AI re-analysis for improved prompts
   - **Seamless Integration:** Use existing words table as analysis cache
 
-- **Review Screen Enhancements:**
+- **Review Screen Enhancements:** 🔄 PENDING
   - **Info Button:** Minimal info button in header for word details
   - **Word Context Modal:** Show collection name, SRS data, next review date
   - **Non-Intrusive Design:** Preserve focus on learning process
