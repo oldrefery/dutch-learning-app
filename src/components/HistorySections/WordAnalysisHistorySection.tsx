@@ -3,7 +3,7 @@
  * Shows recently analyzed words with collection info
  */
 
-import React, { useState } from 'react'
+import React from 'react'
 import {
   StyleSheet,
   FlatList,
@@ -14,29 +14,16 @@ import { ViewThemed, TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 import { formatRelativeTime } from '@/utils/dateUtils'
-import { useApplicationStore } from '@/stores/useApplicationStore'
-import WordDetailModal from '@/components/WordDetailModal'
-import type { Word } from '@/types/database'
 
-export function WordAnalysisHistorySection() {
+interface WordAnalysisHistorySectionProps {
+  onWordPress: (dutchLemma: string) => void
+}
+
+export function WordAnalysisHistorySection({
+  onWordPress,
+}: WordAnalysisHistorySectionProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const analyzedWords = useHistoryStore(state => state.analyzedWords)
-  const words = useApplicationStore(state => state.words)
-  const [selectedWord, setSelectedWord] = useState<Word | null>(null)
-  const [modalVisible, setModalVisible] = useState(false)
-
-  const handleWordPress = (dutchLemma: string) => {
-    const word = words.find(w => w.dutch_lemma === dutchLemma)
-    if (word) {
-      setSelectedWord(word)
-      setModalVisible(true)
-    }
-  }
-
-  const handleCloseModal = () => {
-    setModalVisible(false)
-    setSelectedWord(null)
-  }
 
   if (analyzedWords.length === 0) {
     return (
@@ -70,7 +57,7 @@ export function WordAnalysisHistorySection() {
         scrollEnabled={false}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => handleWordPress(item.dutchLemma)}
+            onPress={() => onWordPress(item.dutchLemma)}
             activeOpacity={0.7}
           >
             <ViewThemed style={styles.wordItem}>
@@ -125,12 +112,6 @@ export function WordAnalysisHistorySection() {
             darkColor={Colors.dark.border}
           />
         )}
-      />
-
-      <WordDetailModal
-        visible={modalVisible}
-        onClose={handleCloseModal}
-        word={selectedWord}
       />
     </ViewThemed>
   )
