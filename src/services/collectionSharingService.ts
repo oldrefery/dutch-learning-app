@@ -172,19 +172,19 @@ class CollectionSharingService {
         )
         .eq('share_token', shareToken)
         .eq('is_shared', true)
-        .single()
+        .maybeSingle()
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          return { success: false, error: CollectionSharingError.NOT_FOUND }
-        }
-
         logSupabaseError('Failed to fetch shared collection', error, {
           operation: 'getSharedCollection',
           shareToken,
         })
 
         return { success: false, error: CollectionSharingError.DATABASE_ERROR }
+      }
+
+      if (!data) {
+        return { success: false, error: CollectionSharingError.NOT_FOUND }
       }
 
       const { count, error: countError } = await supabase
@@ -303,13 +303,9 @@ class CollectionSharingService {
         .select('is_shared, share_token, shared_at')
         .eq('collection_id', collectionId)
         .eq('user_id', userId)
-        .single()
+        .maybeSingle()
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          return { success: false, error: CollectionSharingError.NOT_FOUND }
-        }
-
         logSupabaseError('Failed to fetch collection share status', error, {
           operation: 'getCollectionShareStatus',
           collectionId,
@@ -317,6 +313,10 @@ class CollectionSharingService {
         })
 
         return { success: false, error: CollectionSharingError.DATABASE_ERROR }
+      }
+
+      if (!data) {
+        return { success: false, error: CollectionSharingError.NOT_FOUND }
       }
 
       const result: CollectionShareStatus = {
