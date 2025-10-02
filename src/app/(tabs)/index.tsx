@@ -63,7 +63,7 @@ export default function CollectionsScreen() {
 
       await deleteCollection(collectionId)
 
-      // Check if there was a validation error (like trying to delete last collection)
+      // Check if there was a validation error (like trying to delete a last collection)
       const currentError = useApplicationStore.getState().error
       if (currentError) {
         ToastService.show(currentError.message, ToastType.ERROR)

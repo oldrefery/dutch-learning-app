@@ -133,28 +133,32 @@ This document outlines the development of the Dutch Learning App in distinct pha
   - **Apple HIG Compliance:** Empty state placeholder following design guidelines
   - **Universal Display:** Notes visible in analysis, modal, and review modes
 
-### **Phase 4.1: Collection Sharing & Word Management**
+### **✅ Phase 4.1: Collection Sharing & Word Management (COMPLETED)**
 
 **Goal:** Enable users to share collections and better manage their words across collections.
 
-- **Collection Sharing System:**
-  - **Share Collection:** Add header button to generate shareable links
-  - **Share Code Generation:** Create unique codes for collection sharing
-  - **Import Preview:** Screen to preview shared collections before importing
-  - **Selective Import:** Choose which words to import and target collection
-  - **Deep Links:** Handle `dutchapp://share/[code]` and web URLs
+- **Collection Sharing System:** ✅ COMPLETED
+  - **Share Collection:** ✅ Context menu action to share collections
+  - **Share Code Generation:** ✅ Unique token-based sharing system (`collectionSharingService`)
+  - **Import Preview:** ✅ Full import screen with word preview (`useImportSelection` hook)
+  - **Selective Import:** ✅ Choose which words to import, hide duplicates, select all/none
+  - **Deep Links:** ✅ Handle `dutchlearning://share/[token]` deep links (`_layout.tsx:66-92`)
+  - **Duplicate Detection:** ✅ Shows existing words with collection name
+  - **Target Collection:** ✅ Choose destination collection for imported words
 
-- **Enhanced Word Management:**
-  - **Context Menu System:** Long press on words for management actions
-  - **Move Words:** Transfer words between existing collections
-  - **Copy Words:** Duplicate words to multiple collections (separate SRS progress)
-  - **Unified Actions:** Remove swipe-to-delete, use consistent context menus
-  - **Collection Actions:** Move Share/Delete to header actions (platform-compliant)
+- **Enhanced Word Management:** ⚠️ PARTIALLY COMPLETED
+  - **Context Menu System:** ✅ Long press on words for management actions (`WordContextMenu`)
+  - **Move Words:** ✅ Transfer words between collections (`moveWordToCollection`)
+  - **Copy Words:** ❌ NOT IMPLEMENTED (only move, no duplicate feature)
+  - **Reset Progress:** ✅ Reset SRS data for individual words
+  - **Delete Words:** ✅ Delete words from context menu
+  - **Collection Actions:** ✅ Share/Delete/Rename in collection context menu
 
-- **UX Improvements:**
-  - **Platform-Native Patterns:** Follow iOS HIG and Material Design guidelines
-  - **Accessibility:** Screen reader friendly action labels
-  - **Consistent Interactions:** Unified gesture patterns across the app
+- **UX Improvements:** ✅ COMPLETED
+  - **Platform-Native Patterns:** ✅ iOS HIG and Material Design compliant
+  - **Accessibility:** ✅ Screen reader friendly action labels
+  - **Consistent Interactions:** ✅ Unified gesture patterns across the app
+  - **Swipe to Delete:** ✅ Consistent swipe actions for collections and words
 
 ### **Phase 5: Gamification & Motivation**
 
