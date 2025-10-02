@@ -262,10 +262,9 @@ export const wordService = {
       query = query.eq('article', normalizedArticle)
     }
 
-    const { data, error } = await query.single()
+    const { data, error } = await query.maybeSingle()
 
-    if (error && error.code !== 'PGRST116') {
-      // PGRST116 is "not found" which is expected when no duplicate exists
+    if (error) {
       Sentry.captureException(error, {
         tags: { operation: 'checkSemanticDuplicate' },
         extra: {
@@ -279,7 +278,7 @@ export const wordService = {
       return null
     }
 
-    return data || null
+    return data
   },
 
   // Add new word

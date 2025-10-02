@@ -26,27 +26,27 @@ class AccessControlService {
         .from('user_access_levels')
         .select('access_level')
         .eq('user_id', userId)
-        .single()
+        .maybeSingle()
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // User not found - return read_only as default
-          Sentry.addBreadcrumb({
-            category: 'access_control',
-            message: 'User access level not found, defaulting to read_only',
-            data: { userId },
-            level: 'warning',
-          })
-
-          return { success: true, data: 'read_only' }
-        }
-
         logSupabaseError('Failed to fetch user access level', error, {
           operation: 'getUserAccessLevel',
           userId,
         })
 
         return { success: false, error: AccessControlError.DATABASE_ERROR }
+      }
+
+      // User not found - return read_only as default
+      if (!data) {
+        Sentry.addBreadcrumb({
+          category: 'access_control',
+          message: 'User access level not found, defaulting to read_only',
+          data: { userId },
+          level: 'warning',
+        })
+
+        return { success: true, data: 'read_only' }
       }
 
       return { success: true, data: data.access_level }
@@ -93,19 +93,19 @@ class AccessControlService {
         .from('user_access_levels')
         .select('*')
         .eq('user_id', userId)
-        .single()
+        .maybeSingle()
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          return { success: false, error: AccessControlError.NOT_FOUND }
-        }
-
         logSupabaseError('Failed to fetch user access details', error, {
           operation: 'getUserAccessDetails',
           userId,
         })
 
         return { success: false, error: AccessControlError.DATABASE_ERROR }
+      }
+
+      if (!data) {
+        return { success: false, error: AccessControlError.NOT_FOUND }
       }
 
       return { success: true, data }
