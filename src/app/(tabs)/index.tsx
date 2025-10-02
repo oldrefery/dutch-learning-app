@@ -58,7 +58,19 @@ export default function CollectionsScreen() {
 
   const handleDeleteCollection = async (collectionId: string) => {
     try {
+      // Clear any previous errors
+      clearError()
+
       await deleteCollection(collectionId)
+
+      // Check if there was a validation error (like trying to delete last collection)
+      const currentError = useApplicationStore.getState().error
+      if (currentError) {
+        ToastService.show(currentError.message, ToastType.ERROR)
+        clearError()
+        return
+      }
+
       ToastService.show('Collection deleted', ToastType.SUCCESS)
     } catch {
       ToastService.show(

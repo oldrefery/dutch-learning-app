@@ -192,44 +192,41 @@ export default function TabLayout() {
       </TabTrigger>
 
       {/* Primary action tabs - right side following HIG guidelines */}
-      {userAccessLevel === 'full_access' && (
-        <TabTrigger
-          name="add-word"
-          onPress={() =>
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-          }
-        >
-          <Label>Add Word</Label>
-          {Platform.OS === 'ios' ? (
-            <Icon sf="plus.circle.fill" />
-          ) : (
-            <View
-              style={[
-                styles.primaryIconContainer,
-                {
-                  shadowColor: Colors.primary.DEFAULT,
-                  shadowOpacity: 0.3,
-                },
-              ]}
+      <TabTrigger
+        name="add-word"
+        hidden={userAccessLevel !== 'full_access'}
+        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
+      >
+        <Label>Add Word</Label>
+        {Platform.OS === 'ios' ? (
+          <Icon sf="plus.circle.fill" />
+        ) : (
+          <View
+            style={[
+              styles.primaryIconContainer,
+              {
+                shadowColor: Colors.primary.DEFAULT,
+                shadowOpacity: 0.3,
+              },
+            ]}
+          >
+            <BlurView
+              style={styles.primaryIconBlur}
+              intensity={80}
+              tint={colorScheme === 'dark' ? 'dark' : 'light'}
             >
-              <BlurView
-                style={styles.primaryIconBlur}
-                intensity={80}
-                tint={colorScheme === 'dark' ? 'dark' : 'light'}
-              >
-                <View style={[styles.primaryIconInner]}>
-                  <FontAwesome
-                    name="plus"
-                    size={22}
-                    color={Colors.primary.DEFAULT}
-                    style={styles.primaryIcon}
-                  />
-                </View>
-              </BlurView>
-            </View>
-          )}
-        </TabTrigger>
-      )}
+              <View style={[styles.primaryIconInner]}>
+                <FontAwesome
+                  name="plus"
+                  size={22}
+                  color={Colors.primary.DEFAULT}
+                  style={styles.primaryIcon}
+                />
+              </View>
+            </BlurView>
+          </View>
+        )}
+      </TabTrigger>
 
       <TabTrigger
         name="review"

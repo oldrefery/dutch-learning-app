@@ -3,14 +3,19 @@ import type {
   StoreSetFunction,
   StoreGetFunction,
   AppError,
+  ApplicationState,
 } from '@/types/ApplicationStoreTypes'
 import { Sentry } from '@/lib/sentry'
 import { accessControlService } from '@/services/accessControlService'
+import { useHistoryStore } from '@/stores/useHistoryStore'
 
 export const createAppInitializationActions = (
   set: StoreSetFunction,
   get: StoreGetFunction
-) => ({
+): Pick<
+  ApplicationState,
+  'initializeApp' | 'fetchUserAccessLevel' | 'setError' | 'clearError'
+> => ({
   initializeApp: async (userId?: string) => {
     try {
       if (userId) {
@@ -31,6 +36,11 @@ export const createAppInitializationActions = (
           words: [],
           collections: [],
         })
+
+        // Clear history from previous user
+        const historyStore = useHistoryStore.getState()
+        historyStore.clearWordHistory()
+        historyStore.clearNotificationHistory()
       }
     } catch (error) {
       Sentry.captureException(error, {

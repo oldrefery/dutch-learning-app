@@ -140,6 +140,9 @@ export const createCollectionActions = (
   deleteCollection: async (collectionId: string) => {
     try {
       const userId = get().currentUserId
+      const userAccessLevel = get().userAccessLevel
+      const currentCollections = get().collections
+
       if (!userId) {
         logError(
           USER_NOT_AUTHENTICATED_LOG,
@@ -158,8 +161,29 @@ export const createCollectionActions = (
         })
         return
       }
+
+      // Prevent read-only users from deleting their last collection
+      if (userAccessLevel === 'read_only' && currentCollections.length <= 1) {
+        logInfo(
+          'Prevented deletion of last collection for read-only user',
+          {
+            collectionId,
+            userId,
+            userAccessLevel,
+            collectionsCount: currentCollections.length,
+          },
+          'collections'
+        )
+        set({
+          error: {
+            message: 'Cannot delete collection',
+            details: 'Read-only users must have at least one collection',
+          },
+        })
+        return
+      }
+
       await collectionService.deleteCollection(collectionId, userId)
-      const currentCollections = get().collections
       const updatedCollections = currentCollections.filter(
         collection => collection.collection_id !== collectionId
       )
