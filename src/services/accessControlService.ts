@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
 import type { AccessLevel, UserAccessLevel } from '@/types/database'
+import { logSupabaseError } from '@/utils/logger'
 
 type Result<T, E = string> =
   | { success: true; data: T }
@@ -40,19 +41,10 @@ class AccessControlService {
           return { success: true, data: 'read_only' }
         }
 
-        Sentry.captureException(
-          new Error(`Failed to fetch user access level: ${error.message}`),
-          {
-            tags: {
-              operation: 'getUserAccessLevel',
-              errorCode: error.code,
-            },
-            extra: {
-              userId,
-              supabaseError: error,
-            },
-          }
-        )
+        logSupabaseError('Failed to fetch user access level', error, {
+          operation: 'getUserAccessLevel',
+          userId,
+        })
 
         return { success: false, error: AccessControlError.DATABASE_ERROR }
       }
@@ -108,19 +100,10 @@ class AccessControlService {
           return { success: false, error: AccessControlError.NOT_FOUND }
         }
 
-        Sentry.captureException(
-          new Error(`Failed to fetch user access details: ${error.message}`),
-          {
-            tags: {
-              operation: 'getUserAccessDetails',
-              errorCode: error.code,
-            },
-            extra: {
-              userId,
-              supabaseError: error,
-            },
-          }
-        )
+        logSupabaseError('Failed to fetch user access details', error, {
+          operation: 'getUserAccessDetails',
+          userId,
+        })
 
         return { success: false, error: AccessControlError.DATABASE_ERROR }
       }
