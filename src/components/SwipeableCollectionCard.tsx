@@ -22,6 +22,9 @@ import CollectionContextMenu from '@/components/CollectionContextMenu'
 import type { Collection, Word } from '@/types/database'
 import { Sentry } from '@/lib/sentry'
 import { calculateCollectionStats } from '@/utils/collectionStats'
+import { useApplicationStore } from '@/stores/useApplicationStore'
+import { ToastService } from '@/components/AppToast'
+import { ToastType } from '@/constants/ToastConstants'
 
 interface SwipeableCollectionCardProps {
   collection: Collection
@@ -48,6 +51,7 @@ export default function SwipeableCollectionCard({
   const translateX = useSharedValue(0)
   const lastGestureX = useRef<number>(0)
   const [showContextMenu, setShowContextMenu] = useState(false)
+  const { userAccessLevel, collections } = useApplicationStore()
 
   // Calculate real stats for this collection
   const collectionWords = words.filter(
@@ -56,6 +60,13 @@ export default function SwipeableCollectionCard({
   const stats = calculateCollectionStats(collectionWords)
 
   const handleDelete = () => {
+    // Prevent read-only users from deleting their last collection
+    if (userAccessLevel === 'read_only' && collections.length <= 1) {
+      ToastService.show('Cannot delete your last collection', ToastType.ERROR)
+      translateX.value = withSpring(0)
+      return
+    }
+
     Alert.alert(
       'Delete Collection',
       `Are you sure you want to delete "${collection.name}"? This will also delete all ${stats.totalWords} words in this collection.`,
@@ -345,6 +356,8 @@ export default function SwipeableCollectionCard({
         onCopyCode={handleContextMenuCopyCode}
         onStopSharing={handleContextMenuStopSharing}
         onDelete={handleContextMenuDelete}
+        isReadOnly={userAccessLevel === 'read_only'}
+        totalCollections={collections.length}
       />
     </ViewThemed>
   )

@@ -26,6 +26,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { ROUTES } from '@/constants/Routes'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 import { Sentry } from '@/lib/sentry'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 
 // Extended types for NativeTabs components with runtime-supported props
 type TabTriggerProps = ComponentProps<typeof NativeTabs.Trigger> & {
@@ -52,6 +53,9 @@ export default function TabLayout() {
 
   // Get review words count for badge
   const { reviewWordsCount } = useReviewWordsCount()
+
+  // Get user access level
+  const { userAccessLevel } = useApplicationStore()
 
   // Call this unconditionally to follow the rules of hooks (not used in Native Tabs)
   useClientOnlyValue(false, true)
@@ -190,6 +194,7 @@ export default function TabLayout() {
       {/* Primary action tabs - right side following HIG guidelines */}
       <TabTrigger
         name="add-word"
+        hidden={userAccessLevel !== 'full_access'}
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
       >
         <Label>Add Word</Label>

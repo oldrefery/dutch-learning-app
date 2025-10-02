@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Tiered Access Control System**: Complete implementation of user access levels
+  - **Database Schema**: New `pre_approved_emails` and `user_access_levels` tables
+  - **Access Levels**: `full_access` (can create content) and `read_only` (can import and learn)
+  - **Email Whitelist**: Pre-approved emails get full access, others default to read-only
+  - **Automatic Assignment**: Database trigger assigns access level on user registration
+  - **Access Control Service**: New service for checking and managing user permissions
+  - **UI Access Level Display**: Settings screen shows current access level with color coding
+
+- **UI Restrictions for Read-Only Users**: Conditional UI based on access level
+  - **Hidden Add Word Tab**: Add Word tab not shown for read-only users
+  - **Hidden Create Collection Button**: Collection creation button hidden for read-only users
+  - **Collection Context Menu**: Different menu options based on access level and collection count
+  - **Delete Protection**: Read-only users cannot delete their last collection (UI + store validation)
+  - **Toast Notifications**: User-friendly messages when attempting restricted actions
+
+- **Default Collection Creation**: All users get a starter collection
+  - **"My Words" Collection**: Automatically created on user registration
+  - **SECURITY DEFINER Function**: Bypasses RLS to create collection for read-only users
+  - **Backfill Support**: Existing users without collections receive default collection
+
+- **Word Import for Read-Only Users**: Secure import system using SECURITY DEFINER
+  - **Private Schema Pattern**: Created `private` schema for security-sensitive functions
+  - **Import RPC Function**: `import_words_to_collection()` with ownership verification
+  - **Public Wrapper**: SECURITY INVOKER wrapper for authenticated users
+  - **Examples Handling**: Proper JSONB array conversion for examples field
+  - **Conjugation Validation**: Only verbs can have conjugation data (check constraint fix)
+  - **Schema Permissions**: Granted USAGE on private schema to authenticated users
+
+- **Tab Layout Improvements**: Fixed Expo Router native tabs warnings
+  - **Hidden Prop**: Using official `hidden` prop instead of conditional rendering
+  - **No Layout Warnings**: Eliminated "Layout children must be of type Screen" warnings
+  - **Proper Navigation**: Tab still registered but hidden from view
+
+- **History Cleanup on Logout**: Clear user-specific data when switching accounts
+  - **Word Analysis History**: Cleared on logout to prevent cross-user data leakage
+  - **Notification History**: Cleared on logout for clean user sessions
+  - **App Initialization**: Cleanup integrated into `initializeApp()` flow
+
 - **Word Detail Modal in History Tab**: Tap on analyzed words in History to view full details
   - Opens same WordDetailModal as in collections for consistent UX
   - Modal renders at top level (above all content) for proper z-index behavior
@@ -40,13 +78,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Collection Deletion Validation**: Enhanced validation for read-only users
+  - **Store-Level Check**: `deleteCollection` action prevents deletion of last collection
+  - **UI-Level Check**: `SwipeableCollectionCard` shows toast and returns card to position
+  - **Context Menu**: Conditionally shows delete option based on collection count
+  - **Error Messages**: Clear user-facing messages about restrictions
+
+- **CollectionContextMenu Component**: Refactored to reduce complexity
+  - **Separate Components**: Split into `ReadOnlyMenuItems` and `FullAccessMenuItems`
+  - **Reduced Complexity**: Cognitive complexity reduced from 28 to below 15
+  - **Better Maintainability**: Clearer separation of concerns by user type
+
+- **Logging Improvements**: Better distinction between errors and expected validations
+  - **Validation Logging**: Changed last collection deletion from `logError` to `logInfo`
+  - **User-Friendly Messages**: Toast messages instead of silent failures
+
 ### Fixed
+
+- **Import Function Bugs**: Multiple fixes for word import functionality
+  - **JSONB Array Casting**: Fixed "cannot cast type jsonb to jsonb[]" error for examples
+  - **Conjugation Check Constraint**: Fixed violation for non-verb words with conjugation data
+  - **Schema Permissions**: Fixed "permission denied for schema private" error
+  - **Type Validation**: Added `jsonb_typeof()` check to ensure array parameter
 
 - **Collection Auto-Selection Bug** (HIGH PRIORITY): Fixed collection selection logic
   - Automatically selects first available collection when current selection becomes invalid
   - Handles scenario when selected collection is deleted
   - Re-validates selection when collections list changes
   - Ensures users can always add words efficiently without manual collection selection
+
+### Database Migrations
+
+- `20251002111946_add_user_access_control.sql`: Core access control schema and RLS updates
+- `20251002122144_add_default_collection_for_users.sql`: Default collection creation logic
+- `20251002122646_allow_word_import_for_readonly_users.sql`: Initial SECURITY DEFINER import function
+- `20251002133549_grant_private_schema_usage.sql`: Schema permission grants
+- `20251002134053_fix_import_words_function.sql`: JSONB array type validation fix
+- `20251002140601_fix_import_examples_cast.sql`: Examples field array conversion fix
+- `20251002142334_fix_import_conjugation_check.sql`: Conjugation check constraint fix
 
 ### Technical
 

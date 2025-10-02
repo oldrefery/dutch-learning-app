@@ -109,3 +109,23 @@ export interface AppError {
   code?: string
   details?: string | Record<string, unknown>
 }
+
+// Access Control types
+
+export type AccessLevel = 'read_only' | 'full_access'
+
+export interface PreApprovedEmail {
+  id: string
+  email: string
+  access_level: AccessLevel
+  created_at: string
+  updated_at: string | null
+}
+
+export interface UserAccessLevel {
+  id: string
+  user_id: string
+  access_level: AccessLevel
+  created_at: string
+  updated_at: string | null
+}

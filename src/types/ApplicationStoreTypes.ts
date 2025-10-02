@@ -7,6 +7,7 @@ import type {
   SRSAssessment,
   WordTranslations,
   WordExample,
+  AccessLevel,
 } from './database'
 import { ExpressionType } from './ExpressionTypes'
 
@@ -15,6 +16,7 @@ export type { AppError }
 export interface ApplicationState {
   // User data
   currentUserId: string | null
+  userAccessLevel: AccessLevel | null
 
   // Words
   words: Word[]
@@ -34,6 +36,7 @@ export interface ApplicationState {
 
   // Actions
   initializeApp: (userId?: string) => Promise<void>
+  fetchUserAccessLevel: () => Promise<void>
 
   // Word actions
   fetchWords: () => Promise<void>
