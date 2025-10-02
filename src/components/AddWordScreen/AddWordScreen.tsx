@@ -21,6 +21,7 @@ import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 import { Sentry } from '@/lib/sentry'
+import { useHistoryStore } from '@/stores/useHistoryStore'
 
 interface DuplicateWordData {
   word_id: string
@@ -131,7 +132,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
     setIsAlreadyInCollection(false)
     setDuplicateWordInfo(null)
-    setIsCheckingDuplicate(true)
+    setIsCheckingDuplicate(false) // Don't set to true - useEffect will handle it after analysis
     setHasNavigatedToCollection(false)
 
     clearAnalysis()
@@ -143,9 +144,17 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
     const success = await addWord(analysisResult)
     if (success) {
-      // Clear form and analysis
       setInputWord('')
-      clearAnalysis()
+      setIsAlreadyInCollection(true)
+
+      // Add to word history with a collection name
+      useHistoryStore
+        .getState()
+        .addAnalyzedWord(
+          inputWord,
+          analysisResult.dutch_lemma,
+          selectedCollection?.name
+        )
     }
   }
 

@@ -53,6 +53,11 @@ export const API_CONFIG = {
   // Retry settings
   MAX_RETRIES: 3,
   RETRY_DELAY: 1000,
+
+  // Timeout for Edge Function calls (10 seconds per attempt)
+  // Allows time for complex Gemini API prompts and cache lookups
+  // Total max time with 3 retries: ~37 seconds (10s x 3 + 1s + 2s + 4s backoff)
+  EDGE_FUNCTION_TIMEOUT_MS: 10000,
 } as const
 
 // ===========================

@@ -1,5 +1,129 @@
 # Technical Improvements & Future Features
 
+## ✅ Completed: Network Error Handling & Retry System
+
+### Implementation Summary
+
+**Status:** ✅ Completed (feature/fix-edge-function-network-errors)
+**Date:** October 2025
+**Problem Solved:** FunctionsFetchError in production - requests hanging indefinitely on poor/offline network
+
+### Key Features Implemented
+
+1. **Retry Logic with Exponential Backoff**
+   - 3 automatic retry attempts (1s, 2s, 4s delays)
+   - 10-second timeout per request (~37 seconds total)
+   - Smart retry strategy only for retryable errors
+
+2. **Error Categorization System**
+   - `NetworkError` - Connectivity issues (retryable)
+   - `ServerError` - Backend errors (retryable)
+   - `ClientError` - User input issues (not retryable)
+   - `ValidationError` - Data validation failures (not retryable)
+
+3. **Network Connectivity Detection**
+   - Pre-request connectivity checks using `expo-network`
+   - Immediate user feedback for offline state
+   - Prevents unnecessary API calls when offline
+
+4. **Enhanced Error Reporting**
+   - User-friendly error messages with actionable guidance
+   - Sentry integration with breadcrumbs and context
+   - Proper error categorization for better debugging
+
+### Technical Implementation
+
+**New Files:**
+
+- `src/types/ErrorTypes.ts` - Error class hierarchy
+- `src/utils/retryUtils.ts` - Retry logic with exponential backoff
+- `src/utils/networkUtils.ts` - Network connectivity utilities
+
+**Modified Files:**
+
+- `src/lib/supabase.ts` - Integrated retry logic in `analyzeWord()`
+- `src/components/AddWordScreen/hooks/useWordAnalysis.ts` - Error handling UI
+- `supabase/functions/_shared/constants.ts` - Timeout configuration
+
+**Configuration:**
+
+```typescript
+const API_CONFIG = {
+  EDGE_FUNCTION_TIMEOUT_MS: 10000, // 10 seconds per attempt
+  MAX_RETRIES: 3,
+  INITIAL_DELAY_MS: 1000,
+  MAX_DELAY_MS: 30000,
+}
+```
+
+### Results
+
+- ✅ Fixed production FunctionsFetchError issues
+- ✅ Reduced user frustration from hanging requests
+- ✅ Better error visibility and debugging capabilities
+- ✅ Graceful degradation on poor network conditions
+
+---
+
+## ✅ Completed: History Tab & Activity Tracking
+
+### Implementation Summary
+
+**Status:** ✅ Completed (feature/fix-edge-function-network-errors)
+**Date:** October 2025
+**Problem Solved:** Users need visibility into recent app activity and analyzed words
+
+### Key Features Implemented
+
+1. **Dedicated History Tab**
+   - Positioned between Collections and Settings (HIG-compliant)
+   - iOS icon: `clock.fill`, Android icon: `history`
+   - Proper separation from Settings (configuration vs activity)
+
+2. **Notification History**
+   - Tracks last 20 toast notifications
+   - Ephemeral storage (cleared on app restart)
+   - Visual type indicators (✅ success, ❌ error, ℹ️ info)
+   - Relative time display ("5 minutes ago")
+
+3. **Word Analysis History**
+   - Tracks last 3 analyzed words
+   - Persistent storage via AsyncStorage
+   - Shows collection name or "Not added" status
+   - Updates existing entry when word added (no duplicates)
+   - Preserves original timestamp
+
+4. **Custom Date Formatting**
+   - React Native Hermes-compatible implementation
+   - No external dependencies (replaced date-fns)
+   - Supports: seconds, minutes, hours, days, weeks
+
+### Technical Implementation
+
+**New Files:**
+
+- `src/types/HistoryTypes.ts` - Type definitions
+- `src/stores/useHistoryStore.ts` - Zustand store with persistence
+- `src/components/HistorySections/NotificationHistorySection.tsx`
+- `src/components/HistorySections/WordAnalysisHistorySection.tsx`
+- `src/app/(tabs)/history.tsx` - History screen
+- `src/utils/dateUtils.ts` - Custom date formatter
+
+**Storage Strategy:**
+
+- Notifications: In-memory (ephemeral)
+- Analyzed words: AsyncStorage (persistent)
+- Uses Zustand persist middleware with `partialize`
+
+### Results
+
+- ✅ Users can review recent activity
+- ✅ Quick access to recently analyzed words
+- ✅ Apple HIG-compliant UI/UX design
+- ✅ Efficient storage strategy (minimize AsyncStorage usage)
+
+---
+
 ## ⚡ Current Issue: Word Uniqueness Based on Semantic Context
 
 ### 1. The Problem We Are Solving
