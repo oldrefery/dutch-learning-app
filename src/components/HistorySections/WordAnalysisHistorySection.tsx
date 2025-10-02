@@ -3,16 +3,40 @@
  * Shows recently analyzed words with collection info
  */
 
-import React from 'react'
-import { StyleSheet, FlatList, useColorScheme } from 'react-native'
+import React, { useState } from 'react'
+import {
+  StyleSheet,
+  FlatList,
+  useColorScheme,
+  TouchableOpacity,
+} from 'react-native'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 import { formatRelativeTime } from '@/utils/dateUtils'
+import { useApplicationStore } from '@/stores/useApplicationStore'
+import WordDetailModal from '@/components/WordDetailModal'
+import type { Word } from '@/types/database'
 
 export function WordAnalysisHistorySection() {
   const colorScheme = useColorScheme() ?? 'light'
   const analyzedWords = useHistoryStore(state => state.analyzedWords)
+  const words = useApplicationStore(state => state.words)
+  const [selectedWord, setSelectedWord] = useState<Word | null>(null)
+  const [modalVisible, setModalVisible] = useState(false)
+
+  const handleWordPress = (dutchLemma: string) => {
+    const word = words.find(w => w.dutch_lemma === dutchLemma)
+    if (word) {
+      setSelectedWord(word)
+      setModalVisible(true)
+    }
+  }
+
+  const handleCloseModal = () => {
+    setModalVisible(false)
+    setSelectedWord(null)
+  }
 
   if (analyzedWords.length === 0) {
     return (
@@ -45,49 +69,54 @@ export function WordAnalysisHistorySection() {
         keyExtractor={item => item.id}
         scrollEnabled={false}
         renderItem={({ item }) => (
-          <ViewThemed style={styles.wordItem}>
-            <ViewThemed style={styles.wordHeader}>
-              <TextThemed style={styles.wordLemma}>
-                {item.dutchLemma}
-              </TextThemed>
-              <TextThemed
-                style={styles.wordTime}
-                lightColor={Colors.neutral[500]}
-                darkColor={Colors.dark.textSecondary}
-              >
-                {formatRelativeTime(new Date(item.timestamp))}
-              </TextThemed>
+          <TouchableOpacity
+            onPress={() => handleWordPress(item.dutchLemma)}
+            activeOpacity={0.7}
+          >
+            <ViewThemed style={styles.wordItem}>
+              <ViewThemed style={styles.wordHeader}>
+                <TextThemed style={styles.wordLemma}>
+                  {item.dutchLemma}
+                </TextThemed>
+                <TextThemed
+                  style={styles.wordTime}
+                  lightColor={Colors.neutral[500]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  {formatRelativeTime(new Date(item.timestamp))}
+                </TextThemed>
+              </ViewThemed>
+              <ViewThemed style={styles.wordDetails}>
+                <TextThemed
+                  style={styles.wordOriginal}
+                  lightColor={Colors.neutral[600]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  {item.word !== item.dutchLemma && `"${item.word}"`}
+                </TextThemed>
+                <TextThemed
+                  style={[
+                    styles.collectionBadge,
+                    item.wasAdded
+                      ? {
+                          color:
+                            colorScheme === 'dark'
+                              ? Colors.success.dark
+                              : Colors.success.DEFAULT,
+                        }
+                      : {
+                          color:
+                            colorScheme === 'dark'
+                              ? Colors.neutral[500]
+                              : Colors.neutral[600],
+                        },
+                  ]}
+                >
+                  {item.wasAdded ? `✓ ${item.addedToCollection}` : 'Not added'}
+                </TextThemed>
+              </ViewThemed>
             </ViewThemed>
-            <ViewThemed style={styles.wordDetails}>
-              <TextThemed
-                style={styles.wordOriginal}
-                lightColor={Colors.neutral[600]}
-                darkColor={Colors.dark.textSecondary}
-              >
-                {item.word !== item.dutchLemma && `"${item.word}"`}
-              </TextThemed>
-              <TextThemed
-                style={[
-                  styles.collectionBadge,
-                  item.wasAdded
-                    ? {
-                        color:
-                          colorScheme === 'dark'
-                            ? Colors.success.dark
-                            : Colors.success.DEFAULT,
-                      }
-                    : {
-                        color:
-                          colorScheme === 'dark'
-                            ? Colors.neutral[500]
-                            : Colors.neutral[600],
-                      },
-                ]}
-              >
-                {item.wasAdded ? `✓ ${item.addedToCollection}` : 'Not added'}
-              </TextThemed>
-            </ViewThemed>
-          </ViewThemed>
+          </TouchableOpacity>
         )}
         ItemSeparatorComponent={() => (
           <ViewThemed
@@ -96,6 +125,12 @@ export function WordAnalysisHistorySection() {
             darkColor={Colors.dark.border}
           />
         )}
+      />
+
+      <WordDetailModal
+        visible={modalVisible}
+        onClose={handleCloseModal}
+        word={selectedWord}
       />
     </ViewThemed>
   )
