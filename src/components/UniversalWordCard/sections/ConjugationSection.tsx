@@ -47,6 +47,17 @@ export function ConjugationSection({ word, config }: WordSectionProps) {
           </ViewThemed>
         )}
 
+        {conjugation.simple_past_plural && (
+          <ViewThemed style={styles.conjugationRow}>
+            <TextThemed style={styles.conjugationLabel}>
+              Past (plural):
+            </TextThemed>
+            <TextThemed style={styles.conjugationValue}>
+              {conjugation.simple_past_plural}
+            </TextThemed>
+          </ViewThemed>
+        )}
+
         {conjugation.past_participle && (
           <ViewThemed style={styles.conjugationRow}>
             <TextThemed style={styles.conjugationLabel}>

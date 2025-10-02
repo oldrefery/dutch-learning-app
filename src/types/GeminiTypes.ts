@@ -37,6 +37,7 @@ export interface WordAnalysisResponse {
   conjugation?: {
     present: string
     simple_past: string
+    simple_past_plural?: string
     past_participle: string
   } | null
   preposition?: string | null
@@ -77,6 +78,7 @@ export interface GeminiAnalysisResult {
   conjugation?: {
     present: string
     simple_past: string
+    simple_past_plural?: string
     past_participle: string
   } | null
   preposition?: string | null
