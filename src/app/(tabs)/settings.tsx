@@ -6,10 +6,13 @@ import {
   useColorScheme,
   Platform,
   ScrollView,
+  Image,
+  Linking,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import Constants from 'expo-constants'
+import { BlurView } from 'expo-blur'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { supabase, type User } from '@/lib/supabaseClient'
 import { userService } from '@/lib/supabase'
@@ -27,6 +30,12 @@ export default function SettingsScreen() {
   const [user, setUser] = useState<User | null>(null)
   const { signOut, loading: authLoading } = useSimpleAuth()
   const { userAccessLevel } = useApplicationStore()
+
+  const isDarkMode = colorScheme === 'dark'
+  const blurBackgroundDark = 'rgba(44, 44, 46, 0.95)'
+  const blurBackgroundLight = 'rgba(255, 255, 255, 0.95)'
+  const separatorDark = 'rgba(255, 255, 255, 0.1)'
+  const separatorLight = 'rgba(0, 0, 0, 0.05)'
 
   useEffect(() => {
     const getUser = async () => {
@@ -143,145 +152,337 @@ export default function SettingsScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <ViewThemed
-          style={styles.section}
-          lightColor={Colors.background.secondary}
-          darkColor={Colors.dark.backgroundSecondary}
-        >
-          <TextThemed style={styles.sectionTitle}>About</TextThemed>
-          <ViewThemed style={styles.appInfoContainer}>
-            <TextThemed
-              style={styles.appInfoLabel}
-              lightColor={Colors.neutral[600]}
-              darkColor={Colors.dark.textSecondary}
+        <ViewThemed style={styles.aboutSectionContainer}>
+          <BlurView
+            style={styles.aboutBlur}
+            intensity={100}
+            tint={colorScheme === 'dark' ? 'dark' : 'light'}
+          >
+            <ViewThemed
+              style={[
+                styles.aboutSection,
+                {
+                  backgroundColor: isDarkMode
+                    ? blurBackgroundDark
+                    : blurBackgroundLight,
+                  borderColor: isDarkMode ? separatorDark : separatorLight,
+                },
+              ]}
             >
-              De Woordenaar
-            </TextThemed>
-            <TextThemed style={styles.appInfoVersion}>
-              Version {getAppVersion()}
-            </TextThemed>
-          </ViewThemed>
-        </ViewThemed>
-
-        <ViewThemed
-          style={styles.section}
-          lightColor={Colors.background.secondary}
-          darkColor={Colors.dark.backgroundSecondary}
-        >
-          <TextThemed style={styles.sectionTitle}>User Information</TextThemed>
-          {user?.email && (
-            <ViewThemed style={styles.userInfoContainer}>
-              <TextThemed
-                style={styles.userInfoLabel}
-                lightColor={Colors.neutral[600]}
-                darkColor={Colors.dark.textSecondary}
+              <ViewThemed
+                style={styles.appInfoContainer}
+                lightColor="transparent"
+                darkColor="transparent"
               >
-                Email:
-              </TextThemed>
-              <TextThemed style={styles.userInfoValue}>{user.email}</TextThemed>
-            </ViewThemed>
-          )}
-          {userAccessLevel && (
-            <ViewThemed style={styles.userInfoContainer}>
-              <TextThemed
-                style={styles.userInfoLabel}
-                lightColor={Colors.neutral[600]}
-                darkColor={Colors.dark.textSecondary}
-              >
-                Access Level:
-              </TextThemed>
-              <TextThemed
-                style={[
-                  styles.userInfoValue,
-                  userAccessLevel === 'full_access' && styles.accessLevelFull,
-                  userAccessLevel === 'read_only' && styles.accessLevelReadOnly,
-                ]}
-              >
-                {userAccessLevel === 'full_access'
-                  ? 'Full Access'
-                  : 'Read Only'}
-              </TextThemed>
-              {userAccessLevel === 'read_only' && (
+                <Image
+                  source={
+                    colorScheme === 'dark'
+                      ? require('@/assets/icons/ios-dark.png')
+                      : require('@/assets/icons/ios-light.png')
+                  }
+                  style={styles.appIcon}
+                />
+                <TextThemed style={styles.appName}>De Woordenaar</TextThemed>
                 <TextThemed
-                  style={styles.accessLevelDescription}
+                  style={styles.appDescription}
+                  lightColor={Colors.neutral[600]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  Learn Dutch with AI-powered flashcards
+                </TextThemed>
+                <TextThemed
+                  style={styles.appVersion}
                   lightColor={Colors.neutral[500]}
                   darkColor={Colors.dark.textSecondary}
                 >
-                  You can view and learn from imported collections
+                  Version {getAppVersion()}
                 </TextThemed>
+              </ViewThemed>
+
+              <ViewThemed
+                style={[
+                  styles.separator,
+                  {
+                    backgroundColor: isDarkMode
+                      ? separatorDark
+                      : separatorLight,
+                  },
+                ]}
+              />
+
+              <ViewThemed
+                style={styles.linksContainer}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <TouchableOpacity
+                  style={styles.linkItem}
+                  onPress={() => {
+                    Linking.openURL(
+                      'https://www.termsfeed.com/live/3e576e8c-54c9-4543-b808-890d7c98f662'
+                    )
+                  }}
+                >
+                  <TextThemed
+                    style={styles.linkText}
+                    lightColor={Colors.primary.DEFAULT}
+                    darkColor={Colors.primary.darkMode}
+                  >
+                    Privacy Policy
+                  </TextThemed>
+                </TouchableOpacity>
+
+                <ViewThemed
+                  style={[
+                    styles.linkSeparator,
+                    {
+                      backgroundColor: isDarkMode
+                        ? separatorDark
+                        : separatorLight,
+                    },
+                  ]}
+                />
+
+                <TouchableOpacity
+                  style={styles.linkItem}
+                  onPress={() => {
+                    Linking.openURL(
+                      'https://www.termsfeed.com/live/855aec0d-a235-42e8-af6f-28166c93901a'
+                    )
+                  }}
+                >
+                  <TextThemed
+                    style={styles.linkText}
+                    lightColor={Colors.primary.DEFAULT}
+                    darkColor={Colors.primary.darkMode}
+                  >
+                    Terms and Conditions
+                  </TextThemed>
+                </TouchableOpacity>
+
+                <ViewThemed
+                  style={[
+                    styles.linkSeparator,
+                    {
+                      backgroundColor: isDarkMode
+                        ? separatorDark
+                        : separatorLight,
+                    },
+                  ]}
+                />
+
+                <TouchableOpacity
+                  style={styles.linkItem}
+                  onPress={() => {
+                    Linking.openURL(
+                      'http://www.apple.com/legal/itunes/appstore/dev/stdeula'
+                    )
+                  }}
+                >
+                  <TextThemed
+                    style={styles.linkText}
+                    lightColor={Colors.primary.DEFAULT}
+                    darkColor={Colors.primary.darkMode}
+                  >
+                    License Agreement
+                  </TextThemed>
+                </TouchableOpacity>
+
+                <ViewThemed
+                  style={[
+                    styles.linkSeparator,
+                    {
+                      backgroundColor: isDarkMode
+                        ? separatorDark
+                        : separatorLight,
+                    },
+                  ]}
+                />
+
+                <TouchableOpacity
+                  style={styles.linkItem}
+                  onPress={() => {
+                    Alert.alert(
+                      'Credits',
+                      'Built with:\n\n• React Native & Expo\n• Supabase\n• Google Gemini AI\n• Unsplash API\n\nDeveloped with passion for language learning',
+                      [{ text: 'OK' }]
+                    )
+                  }}
+                >
+                  <TextThemed
+                    style={styles.linkText}
+                    lightColor={Colors.primary.DEFAULT}
+                    darkColor={Colors.primary.darkMode}
+                  >
+                    Credits & Acknowledgements
+                  </TextThemed>
+                </TouchableOpacity>
+              </ViewThemed>
+            </ViewThemed>
+          </BlurView>
+        </ViewThemed>
+
+        <ViewThemed style={styles.userInfoSectionContainer}>
+          <BlurView
+            style={styles.userInfoBlur}
+            intensity={100}
+            tint={colorScheme === 'dark' ? 'dark' : 'light'}
+          >
+            <ViewThemed
+              style={[
+                styles.userInfoSection,
+                {
+                  backgroundColor: isDarkMode
+                    ? blurBackgroundDark
+                    : blurBackgroundLight,
+                  borderColor: isDarkMode ? separatorDark : separatorLight,
+                },
+              ]}
+            >
+              <TextThemed style={styles.sectionTitle}>
+                User Information
+              </TextThemed>
+              {user?.email && (
+                <ViewThemed
+                  style={styles.userInfoContainer}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed
+                    style={styles.userInfoLabel}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Email:
+                  </TextThemed>
+                  <TextThemed style={styles.userInfoValue}>
+                    {user.email}
+                  </TextThemed>
+                </ViewThemed>
+              )}
+              {userAccessLevel && (
+                <ViewThemed
+                  style={styles.userInfoContainer}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed
+                    style={styles.userInfoLabel}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Access Level:
+                  </TextThemed>
+                  <TextThemed
+                    style={[
+                      styles.userInfoValue,
+                      userAccessLevel === 'full_access' &&
+                        styles.accessLevelFull,
+                      userAccessLevel === 'read_only' &&
+                        styles.accessLevelReadOnly,
+                    ]}
+                  >
+                    {userAccessLevel === 'full_access'
+                      ? 'Full Access'
+                      : 'Read Only'}
+                  </TextThemed>
+                  {userAccessLevel === 'read_only' && (
+                    <TextThemed
+                      style={styles.accessLevelDescription}
+                      lightColor={Colors.neutral[500]}
+                      darkColor={Colors.dark.textSecondary}
+                    >
+                      You can view and learn from imported collections
+                    </TextThemed>
+                  )}
+                </ViewThemed>
               )}
             </ViewThemed>
-          )}
+          </BlurView>
         </ViewThemed>
-        <ViewThemed
-          style={styles.section}
-          lightColor={Colors.background.secondary}
-          darkColor={Colors.dark.backgroundSecondary}
-        >
-          <TextThemed style={styles.sectionTitle}>Account</TextThemed>
-
-          <TouchableOpacity
-            style={[
-              styles.logoutButton,
-              {
-                backgroundColor:
-                  colorScheme === 'dark'
-                    ? Colors.dark.error
-                    : Colors.error.DEFAULT,
-                opacity: authLoading ? 0.7 : 1,
-              },
-            ]}
-            onPress={handleLogout}
-            disabled={authLoading}
+        <ViewThemed style={styles.accountSectionContainer}>
+          <BlurView
+            style={styles.accountBlur}
+            intensity={100}
+            tint={colorScheme === 'dark' ? 'dark' : 'light'}
           >
-            <TextThemed style={styles.logoutButtonText}>
-              {authLoading ? 'Logging out...' : 'Logout'}
-            </TextThemed>
-          </TouchableOpacity>
+            <ViewThemed
+              style={[
+                styles.accountSection,
+                {
+                  backgroundColor: isDarkMode
+                    ? blurBackgroundDark
+                    : blurBackgroundLight,
+                  borderColor: isDarkMode ? separatorDark : separatorLight,
+                },
+              ]}
+            >
+              <TextThemed style={styles.sectionTitle}>Account</TextThemed>
 
-          <TextThemed
-            style={styles.logoutDescription}
-            lightColor={Colors.neutral[600]}
-            darkColor={Colors.dark.textSecondary}
-          >
-            This will clear your session and return you to the login screen.
-          </TextThemed>
+              <TouchableOpacity
+                style={[
+                  styles.logoutButton,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark'
+                        ? Colors.dark.error
+                        : Colors.error.DEFAULT,
+                    opacity: authLoading ? 0.7 : 1,
+                  },
+                ]}
+                onPress={handleLogout}
+                disabled={authLoading}
+              >
+                <TextThemed style={styles.logoutButtonText}>
+                  {authLoading ? 'Logging out...' : 'Logout'}
+                </TextThemed>
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.deleteAccountButton,
-              {
-                backgroundColor:
-                  colorScheme === 'dark'
-                    ? Colors.dark.error
-                    : Colors.error.DEFAULT,
-                borderColor:
-                  colorScheme === 'dark'
-                    ? Colors.dark.error
-                    : Colors.error.DEFAULT,
-              },
-            ]}
-            onPress={handleDeleteAccount}
-          >
-            <TextThemed style={styles.deleteAccountButtonText}>
-              Delete Account
-            </TextThemed>
-          </TouchableOpacity>
+              <TextThemed
+                style={styles.logoutDescription}
+                lightColor={Colors.neutral[600]}
+                darkColor={Colors.dark.textSecondary}
+              >
+                This will clear your session and return you to the login screen.
+              </TextThemed>
 
-          <TextThemed
-            style={[
-              styles.deleteAccountDescription,
-              {
-                color:
-                  colorScheme === 'dark'
-                    ? Colors.dark.error
-                    : Colors.error.DEFAULT,
-              },
-            ]}
-          >
-            Permanently delete your account and all data. This action cannot be
-            undone.
-          </TextThemed>
+              <TouchableOpacity
+                style={[
+                  styles.deleteAccountButton,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark'
+                        ? Colors.dark.error
+                        : Colors.error.DEFAULT,
+                    borderColor:
+                      colorScheme === 'dark'
+                        ? Colors.dark.error
+                        : Colors.error.DEFAULT,
+                  },
+                ]}
+                onPress={handleDeleteAccount}
+              >
+                <TextThemed style={styles.deleteAccountButtonText}>
+                  Delete Account
+                </TextThemed>
+              </TouchableOpacity>
+
+              <TextThemed
+                style={[
+                  styles.deleteAccountDescription,
+                  {
+                    color:
+                      colorScheme === 'dark'
+                        ? Colors.dark.error
+                        : Colors.error.DEFAULT,
+                  },
+                ]}
+              >
+                Permanently delete your account and all data. This action cannot
+                be undone.
+              </TextThemed>
+            </ViewThemed>
+          </BlurView>
         </ViewThemed>
       </ScrollView>
     </ViewThemed>
@@ -296,18 +497,75 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 24,
-    paddingTop: 16,
+    padding: 16,
+    paddingTop: 12,
   },
   section: {
-    marginBottom: 24,
-    padding: 20,
+    marginBottom: 16,
+    padding: 16,
     borderRadius: 12,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+  aboutSectionContainer: {
     marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  aboutBlur: {
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  aboutSection: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  userInfoSectionContainer: {
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  userInfoBlur: {
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  userInfoSection: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  accountSectionContainer: {
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  accountBlur: {
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  accountSection: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
   },
   logoutButton: {
     paddingVertical: 12,
@@ -362,16 +620,49 @@ const styles = StyleSheet.create({
   },
   appInfoContainer: {
     alignItems: 'center',
+    marginBottom: 12,
   },
-  appInfoLabel: {
-    fontSize: 16,
+  appIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 14,
+    marginBottom: 10,
+  },
+  appName: {
+    fontSize: 20,
+    fontWeight: '700',
     marginBottom: 4,
     textAlign: 'center',
   },
-  appInfoVersion: {
-    fontSize: 14,
-    fontWeight: '600',
+  appDescription: {
+    fontSize: 13,
+    marginBottom: 4,
     textAlign: 'center',
+    lineHeight: 18,
+  },
+  appVersion: {
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  separator: {
+    height: 1,
+    marginBottom: 10,
+  },
+  linksContainer: {
+    gap: 0,
+  },
+  linkItem: {
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  linkText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  linkSeparator: {
+    height: 1,
+    marginHorizontal: 16,
   },
   accessLevelFull: {
     color: Colors.success.DEFAULT,

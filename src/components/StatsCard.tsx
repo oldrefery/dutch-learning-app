@@ -29,8 +29,16 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
       >
         Across all collections
       </TextThemed>
-      <ViewThemed style={styles.statsRow}>
-        <ViewThemed style={styles.statItem}>
+      <ViewThemed
+        style={styles.statsRow}
+        lightColor="transparent"
+        darkColor="transparent"
+      >
+        <ViewThemed
+          style={styles.statItem}
+          lightColor="transparent"
+          darkColor="transparent"
+        >
           {loading ? (
             <SkeletonNumber width={48} height={32} style={styles.statNumber} />
           ) : (
@@ -46,7 +54,11 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
             Total Words
           </TextThemed>
         </ViewThemed>
-        <ViewThemed style={styles.statItem}>
+        <ViewThemed
+          style={styles.statItem}
+          lightColor="transparent"
+          darkColor="transparent"
+        >
           {loading ? (
             <SkeletonNumber
               width={42}
@@ -68,8 +80,16 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
           </TextThemed>
         </ViewThemed>
       </ViewThemed>
-      <ViewThemed style={styles.statsRow}>
-        <ViewThemed style={styles.statItem}>
+      <ViewThemed
+        style={styles.statsRow}
+        lightColor="transparent"
+        darkColor="transparent"
+      >
+        <ViewThemed
+          style={styles.statItem}
+          lightColor="transparent"
+          darkColor="transparent"
+        >
           {loading ? (
             <SkeletonNumber
               width={36}
@@ -90,7 +110,11 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
             For Review
           </TextThemed>
         </ViewThemed>
-        <ViewThemed style={styles.statItem}>
+        <ViewThemed
+          style={styles.statItem}
+          lightColor="transparent"
+          darkColor="transparent"
+        >
           {loading ? (
             <SkeletonNumber
               width={28}

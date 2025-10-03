@@ -5,7 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - Next Build
+## [1.5.1] - 2025-10-03 (Build 42)
+
+### Added
+
+- **HIG-Compliant Settings Screen**: Complete redesign following Apple Human Interface Guidelines for iOS 26
+  - **Liquid Glass Effect**: Applied BlurView (intensity: 100) to About, User Information, and Account sections
+  - **Icon-First Design**: Removed 'About' title for cleaner, modern approach
+  - **Adaptive App Icon**: Theme-aware icon variants (ios-light.png for light mode, ios-dark.png for dark mode)
+  - **Legal Documentation**: Professional app information structure
+    - Privacy Policy: TermsFeed hosted (https://www.termsfeed.com/live/3e576e8c-54c9-4543-b808-890d7c98f662)
+    - Terms and Conditions: TermsFeed hosted (https://www.termsfeed.com/live/855aec0d-a235-42e8-af6f-28166c93901a)
+    - License Agreement: Apple Standard EULA (http://www.apple.com/legal/itunes/appstore/dev/stdeula)
+    - Credits & Acknowledgements: Technology stack modal (React Native, Expo, Supabase, Gemini AI, Unsplash)
+  - **Optimized Layout**: Single-screen design with compact spacing
+    - Reduced padding and margins (24px → 16px)
+    - Optimized icon size (80x80 → 64x64)
+    - App description: "Learn Dutch with AI-powered flashcards"
+
+### Fixed
+
+- **Dark Mode Background Consistency**: Fixed darker inner containers conflicting with parent backgrounds
+  - **History Tab**: Transparent containers in WordAnalysisHistorySection and NotificationHistorySection
+    - Fixed word items, headers, and details containers
+    - Fixed notification items and content containers
+  - **Collections Tab**: Transparent containers in StatsCard and SwipeableCollectionCard
+    - Fixed statsRow and statItem containers in Today's Progress
+    - Fixed cardContent, textContainer, and accessoryContainer in collection cards
+  - **Collection Detail**: Transparent containers in CollectionStats
+    - Fixed statsGrid and statItem containers in Collection Statistics section
+  - **Unified Theme Experience**: All screens now have consistent background rendering in dark mode
+
+### Technical
+
+- **DRY Principle**: Color constants for repeated blur background values (blurBackgroundDark, blurBackgroundLight)
+- **Type Safety**: All changes maintain strict TypeScript compliance with no `any` types
+- **Code Quality**: ESLint compliant with minimal warnings (cognitive complexity within limits)
+- **Platform Consistency**: Adaptive components work seamlessly across light/dark modes
+- **Consistent Styling**: Liquid Glass implementation matches WordContextMenu patterns
+
+---
+
+## [1.5.0] - 2025-10-02 (Build 39-41)
 
 ### Added
 

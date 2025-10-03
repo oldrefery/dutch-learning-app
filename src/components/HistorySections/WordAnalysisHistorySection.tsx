@@ -60,8 +60,16 @@ export function WordAnalysisHistorySection({
             onPress={() => onWordPress(item.dutchLemma)}
             activeOpacity={0.7}
           >
-            <ViewThemed style={styles.wordItem}>
-              <ViewThemed style={styles.wordHeader}>
+            <ViewThemed
+              style={styles.wordItem}
+              lightColor="transparent"
+              darkColor="transparent"
+            >
+              <ViewThemed
+                style={styles.wordHeader}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
                 <TextThemed style={styles.wordLemma}>
                   {item.dutchLemma}
                 </TextThemed>
@@ -73,7 +81,11 @@ export function WordAnalysisHistorySection({
                   {formatRelativeTime(new Date(item.timestamp))}
                 </TextThemed>
               </ViewThemed>
-              <ViewThemed style={styles.wordDetails}>
+              <ViewThemed
+                style={styles.wordDetails}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
                 <TextThemed
                   style={styles.wordOriginal}
                   lightColor={Colors.neutral[600]}
