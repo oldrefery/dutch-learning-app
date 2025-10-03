@@ -80,11 +80,19 @@ export function NotificationHistorySection() {
         keyExtractor={item => item.id}
         scrollEnabled={false}
         renderItem={({ item }) => (
-          <ViewThemed style={styles.notificationItem}>
+          <ViewThemed
+            style={styles.notificationItem}
+            lightColor="transparent"
+            darkColor="transparent"
+          >
             <TextThemed style={styles.notificationIcon}>
               {getNotificationIcon(item.type)}
             </TextThemed>
-            <ViewThemed style={styles.notificationContent}>
+            <ViewThemed
+              style={styles.notificationContent}
+              lightColor="transparent"
+              darkColor="transparent"
+            >
               <TextThemed
                 style={[
                   styles.notificationMessage,
