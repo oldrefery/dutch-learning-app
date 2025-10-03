@@ -283,8 +283,16 @@ export default function SwipeableCollectionCard({
             },
           ]}
         >
-          <ViewThemed style={styles.cardContent}>
-            <ViewThemed style={styles.textContainer}>
+          <ViewThemed
+            style={styles.cardContent}
+            lightColor="transparent"
+            darkColor="transparent"
+          >
+            <ViewThemed
+              style={styles.textContainer}
+              lightColor="transparent"
+              darkColor="transparent"
+            >
               <TextThemed style={styles.collectionName}>
                 {collection.name}
               </TextThemed>
@@ -296,7 +304,11 @@ export default function SwipeableCollectionCard({
                 {stats.totalWords} words • {stats.progressPercentage}% mastered
               </TextThemed>
             </ViewThemed>
-            <ViewThemed style={styles.accessoryContainer}>
+            <ViewThemed
+              style={styles.accessoryContainer}
+              lightColor="transparent"
+              darkColor="transparent"
+            >
               {collection.is_shared && Platform.OS === 'ios' && (
                 <SymbolView
                   name="person.2.fill"
