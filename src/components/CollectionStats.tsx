@@ -28,24 +28,44 @@ export default function CollectionStats({ stats }: CollectionStatsProps) {
       ]}
     >
       <TextThemed style={styles.statsTitle}>Collection Statistics</TextThemed>
-      <ViewThemed style={styles.statsGrid}>
-        <ViewThemed style={styles.statItem}>
+      <ViewThemed
+        style={styles.statsGrid}
+        lightColor="transparent"
+        darkColor="transparent"
+      >
+        <ViewThemed
+          style={styles.statItem}
+          lightColor="transparent"
+          darkColor="transparent"
+        >
           <TextThemed style={styles.statNumber}>{stats.totalWords}</TextThemed>
           <TextThemed style={styles.statLabel}>Total Words</TextThemed>
         </ViewThemed>
-        <ViewThemed style={styles.statItem}>
+        <ViewThemed
+          style={styles.statItem}
+          lightColor="transparent"
+          darkColor="transparent"
+        >
           <TextThemed style={styles.statNumber}>
             {stats.masteredWords}
           </TextThemed>
           <TextThemed style={styles.statLabel}>Mastered</TextThemed>
         </ViewThemed>
-        <ViewThemed style={styles.statItem}>
+        <ViewThemed
+          style={styles.statItem}
+          lightColor="transparent"
+          darkColor="transparent"
+        >
           <TextThemed style={styles.statNumber}>
             {stats.wordsForReview}
           </TextThemed>
           <TextThemed style={styles.statLabel}>For Review</TextThemed>
         </ViewThemed>
-        <ViewThemed style={styles.statItem}>
+        <ViewThemed
+          style={styles.statItem}
+          lightColor="transparent"
+          darkColor="transparent"
+        >
           <TextThemed style={styles.statNumber}>{stats.newWords}</TextThemed>
           <TextThemed style={styles.statLabel}>New</TextThemed>
         </ViewThemed>
