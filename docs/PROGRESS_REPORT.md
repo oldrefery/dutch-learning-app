@@ -43,8 +43,9 @@
 | **Phase 3**: Enhanced Learning Experience     | ✅ COMPLETED | September 16, 2025     |
 | **Phase 3.1**: UI Enhancements                | ✅ COMPLETED | **September 16, 2025** |
 | **Phase 3.2**: Image Change & Gesture Fixes   | ✅ COMPLETED | **September 24, 2025** |
-| **Phase 4.0**: Access Control & Smart Cache   | 🔄 NEXT      | Pending                |
-| **Phase 4.1**: Collection Sharing & Word Mgmt | ⏳ FUTURE    | Pending                |
+| **Phase 4.0**: Access Control & Smart Cache   | ✅ COMPLETED | **October 2, 2025**    |
+| **Phase 4.1**: HIG Compliance & Dark Mode     | ✅ COMPLETED | **October 3, 2025**    |
+| **Phase 4.2**: Collection Sharing & Word Mgmt | 🔄 NEXT      | Pending                |
 | **Phase 5**: Gamification & Motivation        | ⏳ FUTURE    | Pending                |
 | **Phase 6**: Scaling & User Management        | ⏳ FUTURE    | Pending                |
 
@@ -210,6 +211,47 @@
 - **Hook Integration**: Extended `useCollectionDetail` with context menu state
 - **Gesture Composition**: Advanced gesture handling for long-press + swipe
 
+## 🎉 NEW MILESTONE ACHIEVED: Version 1.5.1 - HIG-Compliant UI & Dark Mode Polish ✅
+
+### What We Accomplished (October 3, 2025 - Build 42):
+
+#### ✅ **Settings Screen HIG Compliance & Liquid Glass Implementation**
+
+- **Complete Redesign Following Apple HIG**: Settings screen now fully compliant with iOS 26 guidelines
+  - Implementation: `settings.tsx` - complete Liquid Glass integration
+  - Applied Liquid Glass effect (BlurView intensity: 100) to all three sections
+  - Removed 'About' title for cleaner icon-first design approach
+  - Adaptive app icon with theme-aware variants (ios-light.png/ios-dark.png)
+- **Comprehensive Legal Documentation**: Professional app information structure
+  - Privacy Policy: TermsFeed hosted (https://www.termsfeed.com/live/3e576e8c-54c9-4543-b808-890d7c98f662)
+  - Terms and Conditions: TermsFeed hosted (https://www.termsfeed.com/live/855aec0d-a235-42e8-af6f-28166c93901a)
+  - License Agreement: Apple Standard EULA
+  - Credits & Acknowledgements: Technology stack modal (React Native, Expo, Supabase, Gemini AI, Unsplash)
+- **Visual Hierarchy Improvements**: Optimized for single-screen layout
+  - Compact padding and margins (24px → 16px)
+  - Icon size optimized (80x80 → 64x64)
+  - App description: "Learn Dutch with AI-powered flashcards"
+  - Consistent Liquid Glass styling across About, User Information, and Account sections
+
+#### ✅ **Dark Mode Background Consistency**
+
+- **History Screen**: Fixed darker inner containers in dark mode
+  - `WordAnalysisHistorySection.tsx`: Transparent containers for word items, headers, and details
+  - `NotificationHistorySection.tsx`: Transparent containers for notification items and content
+- **Collections Screen**: Fixed background conflicts in statistics and cards
+  - `StatsCard.tsx`: Transparent statsRow and statItem containers in Today's Progress
+  - `SwipeableCollectionCard.tsx`: Transparent cardContent, textContainer, and accessoryContainer
+- **Collection Detail Screen**: Fixed statistics display
+  - `CollectionStats.tsx`: Transparent statsGrid and statItem containers
+- **Unified Theme Experience**: All screens now have consistent background rendering in dark mode
+
+#### ✅ **Technical Excellence**
+
+- **DRY Principle**: Color constants for repeated blur background values
+- **Type Safety**: All changes maintain strict TypeScript compliance
+- **Code Quality**: ESLint compliant with minimal warnings
+- **Platform Consistency**: Adaptive components work seamlessly across light/dark modes
+
 ## 🔄 IMMEDIATE NEXT STEPS (Phase 4.0 - Access Control & Smart Analysis)
 
 ### Priority Tasks:
@@ -281,20 +323,25 @@
 - Automated build and deployment pipeline
 - Enhanced error tracking with Sentry sourcemaps
 - Streamlined App Store submission process
-- **NEW:** Complete UI enhancement suite with gesture-based navigation
-- **NEW:** Advanced swipe and tap interactions throughout the app
-- **NEW:** Contextual image search with smart relevance matching
-- **NEW:** Optimized screen layouts for maximum information density
-- **LATEST:** Full image change functionality across review and collection modes
-- **LATEST:** Enhanced gesture system with proper button isolation from card flip
-- **LATEST:** Complete dark theme support for ImageSelector modal
-- **LATEST:** Fixed word analysis display issues for separable verbs
-- **NEW:** Word context menu with long-press gesture activation
-- **NEW:** Word progress reset functionality with SRS statistics reset
-- **NEW:** iOS 26 Liquid Glass styling with BlurView and animations
+- Complete UI enhancement suite with gesture-based navigation
+- Advanced swipe and tap interactions throughout the app
+- Contextual image search with smart relevance matching
+- Optimized screen layouts for maximum information density
+- Full image change functionality across review and collection modes
+- Enhanced gesture system with proper button isolation from card flip
+- Complete dark theme support for ImageSelector modal
+- Fixed word analysis display issues for separable verbs
+- Word context menu with long-press gesture activation
+- Word progress reset functionality with SRS statistics reset
+- iOS 26 Liquid Glass styling with BlurView and animations
+- **NEW (v1.5.1):** HIG-compliant Settings screen with professional legal documentation
+- **NEW (v1.5.1):** Consistent dark mode across all screens and components
+- **NEW (v1.5.1):** Adaptive app icon with theme-aware variants
+- **NEW (v1.5.1):** Tiered access control system (full_access/read_only)
+- **NEW (v1.5.1):** Smart word analysis cache with 80-90% API cost reduction
 
-**Ready for:** App Store deployment, user acquisition, tiered access control, smart analysis caching
+**Ready for:** App Store deployment, user acquisition, production scaling
 
 ---
 
-_Next session: Phase 4.0 access control system and smart analysis cache implementation_ 🚀
+_Next session: Phase 4.2 - Collection sharing and advanced word management features_ 🚀

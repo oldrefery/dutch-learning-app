@@ -2,15 +2,37 @@
 
 ## 📅 Last Updated: October 03, 2025
 
-## 🎯 Current Phase: Phase 4.0 - Access Control & Smart Analysis - COMPLETED ✅
+## 🎯 Current Phase: HIG Compliance & UI Polish - COMPLETED ✅
 
-**Latest Build:** Build 39 (October 2025)
+**Latest Build:** Build 42 (Version 1.5.1 - October 2025)
 
 ---
 
 ## ✅ COMPLETED TASKS
 
-### Latest: Phase 4.0 - Access Control & Smart Analysis ✅ COMPLETED (Build 39)
+### Latest: Build 42 - HIG Compliance & Dark Mode Polish ✅ COMPLETED (Version 1.5.1)
+
+- **Settings Screen HIG Compliance**: Complete redesign following Apple Human Interface Guidelines for iOS 26
+  - Liquid Glass effect with BlurView on all sections (About, User Information, Account)
+  - Icon-first design approach (removed 'About' title)
+  - Adaptive app icon with theme-aware variants (ios-light.png/ios-dark.png)
+  - Legal documentation links: Privacy Policy, Terms and Conditions, License Agreement, Credits
+  - Optimized single-screen layout with compact spacing
+  - Professional app description: "Learn Dutch with AI-powered flashcards"
+
+- **Dark Mode Background Consistency**: Fixed darker inner containers across all screens
+  - History tab: Transparent containers in WordAnalysisHistorySection and NotificationHistorySection
+  - Collections tab: Transparent containers in StatsCard and SwipeableCollectionCard
+  - Collection Detail: Transparent containers in CollectionStats
+  - Unified theme experience with consistent background rendering
+
+- **Technical Improvements**:
+  - DRY principle with color constants for blur backgrounds
+  - Type-safe implementations across all changes
+  - ESLint compliant with minimal warnings
+  - Platform-consistent adaptive components
+
+### Build 39 - Phase 4.0: Access Control & Smart Analysis ✅ COMPLETED
 
 - **Tiered Access Control System**: Full implementation with `full_access` and `read_only` user tiers
   - Database schema with `user_access_levels` and `pre_approved_emails` tables
