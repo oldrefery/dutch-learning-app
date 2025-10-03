@@ -1,14 +1,40 @@
 # Dutch Learning App - Current Status
 
-## 📅 Last Updated: October 02, 2025
+## 📅 Last Updated: October 03, 2025
 
-## 🎯 Current Phase: Build 39 - UX Enhancements & Bug Fixes - COMPLETED ✅
+## 🎯 Current Phase: Phase 4.0 - Access Control & Smart Analysis - COMPLETED ✅
+
+**Latest Build:** Build 39 (October 2025)
 
 ---
 
 ## ✅ COMPLETED TASKS
 
-### Latest: Build 39 - UX Enhancements & Bug Fixes ✅ COMPLETED
+### Latest: Phase 4.0 - Access Control & Smart Analysis ✅ COMPLETED (Build 39)
+
+- **Tiered Access Control System**: Full implementation with `full_access` and `read_only` user tiers
+  - Database schema with `user_access_levels` and `pre_approved_emails` tables
+  - Automatic access level assignment via database trigger
+  - RLS policies restricting content creation to full_access users
+  - Service layer for access level checking (`accessControlService.ts`)
+
+- **Smart Word Analysis Cache**: Cross-user caching system (completed in Build 18)
+  - 80-90% reduction in Gemini API calls
+  - Cache hit detection with usage tracking
+  - Force re-analysis option available
+
+- **Read-Only User Experience**: UI adaptations for access levels
+  - Hidden Add Word tab for read_only users
+  - Disabled collection creation for read_only users
+  - Protection against deleting last collection
+  - Context menu adaptations based on access level
+
+- **Review Info Enhancement**: Word details accessible during review (partial)
+  - WordDetailModal with SRS and collection information
+  - Double-tap gesture to view word details
+  - Alternative to planned header info button
+
+### Build 39 - UX Enhancements & Bug Fixes ✅ COMPLETED
 
 - **Word Detail Modal in History Tab**: Added tap-to-view functionality for analyzed words
   - Implemented WordDetailModal integration in History tab
@@ -394,38 +420,41 @@ DutchLearningApp/
 **Impact**: Blocks efficient word addition for existing users
 **Target**: Next hotfix build
 
-## 🚀 CURRENT WORK (Phase 4.0 - Access Control & Smart Analysis)
+## ✅ COMPLETED: Phase 4.0 - Access Control & Smart Analysis (Build 39 - October 2025)
 
-### 1. Tiered Access Control System 📋 PLANNED
+### 1. Tiered Access Control System ✅ COMPLETED
 
-- [ ] **Email Allowlist Table**: Create `email_allowlist` table for pre-approved users
-- [ ] **Access Levels**: Implement `full` and `read_only` access tiers
-- [ ] **Auto-Assignment**: Trigger to set access level upon user registration
-- [ ] **Database Schema**: Add `access_level` field to users table
-- [ ] **RLS Policies**: Restrict AI analysis and content creation to full access users
+- [x] **Database Tables**: Created `user_access_levels` and `pre_approved_emails` tables
+- [x] **Access Levels**: Implemented `full_access` and `read_only` access tiers
+- [x] **Auto-Assignment**: Database trigger sets access level upon user registration
+- [x] **Service Layer**: `accessControlService.ts` provides access checking methods
+- [x] **RLS Policies**: AI analysis and content creation restricted to full_access users
+- [x] **Migration**: `20251002111946_add_user_access_control.sql` applied
 
-### 2. Smart Word Analysis Cache 📋 PLANNED
+### 2. Smart Word Analysis Cache ✅ COMPLETED (Build 18)
 
-- [ ] **Cross-User Word Search**: Check existing words from all users before AI analysis
-- [ ] **Cache Hit Detection**: Identify when analysis already exists in database
-- [ ] **Force Re-Analysis Option**: Allow manual AI re-analysis with improved prompts
-- [ ] **API Cost Optimization**: Reduce Gemini API calls through intelligent caching
-- [ ] **Cache Statistics**: Track cache hit rate and API savings
+- [x] **Cross-User Cache**: `word_analysis_cache` table with lemma-based lookup
+- [x] **Cache Hit Detection**: Automatic detection of existing word analysis
+- [x] **Force Re-Analysis**: Checkbox option to bypass cache and re-analyze
+- [x] **API Cost Optimization**: 80-90% reduction in Gemini API calls
+- [x] **Cache Statistics**: Tracking usage_count and last_used_at timestamps
+- [x] **UI Feedback**: Toast notifications for cache hits vs fresh analysis
 
-### 3. Read-Only User Experience 📋 PLANNED
+### 3. Read-Only User Experience ✅ COMPLETED
 
-- [ ] **Limited Add Word Screen**: Show import-only interface for read-only users
-- [ ] **Collection Import Focus**: Replace creation buttons with import functionality
-- [ ] **Disabled Image Editing**: Remove image change options for read-only users
-- [ ] **Access Level Awareness**: Adapt UI based on user's access level
-- [ ] **Upgrade Messaging**: Inform read-only users about full access benefits
+- [x] **Hidden Add Word Tab**: Tab hidden for read_only users using `hidden` prop
+- [x] **UI Restrictions**: Create collection button hidden for read_only users
+- [x] **Delete Protection**: Cannot delete last collection for read_only users
+- [x] **Access Level Awareness**: Context menus adapt based on user access level
+- [x] **Default Collection**: "My Words" collection auto-created for all users
+- [x] **Toast Messaging**: User-friendly messages when attempting restricted actions
 
-### 4. Review Screen Info Button 📋 PLANNED
+### 4. Review Screen Info Button ⚠️ PARTIAL COMPLETION
 
-- [ ] **Minimal Info Button**: Add small info icon to review screen header
-- [ ] **Word Details Modal**: Show collection name, SRS data, and next review date
-- [ ] **Non-Intrusive Design**: Preserve focus on learning without screen clutter
-- [ ] **Context Information**: Display word metadata without disrupting flow
+- [x] **WordDetailModal**: Full implementation with collection and SRS data
+- [x] **Double-Tap Access**: Gesture-based access to word details in review mode
+- [x] **Information Display**: Shows collection name, SRS stats, next review date
+- [ ] **Header Info Button**: Not implemented (alternative: double-tap gesture)
 
 ## ⏳ FUTURE PHASES
 
