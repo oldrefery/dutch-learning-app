@@ -36,7 +36,7 @@ export function DuplicateBanner({
     onNavigateToCollection?.()
     const collectionPath = ROUTES.COLLECTION_DETAIL(duplicateWord.collection_id)
     router.push({
-      pathname: collectionPath as any,
+      pathname: collectionPath,
       params: { highlightWordId: duplicateWord.word_id },
     })
   }

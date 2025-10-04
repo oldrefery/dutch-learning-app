@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { router } from 'expo-router'
+import * as Linking from 'expo-linking'
 import { supabase } from '@/lib/supabaseClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { ROUTES } from '@/constants/Routes'
@@ -11,13 +12,21 @@ interface SimpleAuthState {
   error: string | null
 }
 
+type RedirectParams = Record<string, string | number | boolean | undefined>
+
 interface SimpleAuthActions {
   testSignUp: (credentials: SignupCredentials) => Promise<void>
   testSignIn: (
     credentials: LoginCredentials,
-    redirectUrl?: string | { pathname: string; params?: any }
+    redirectUrl?: string | { pathname: string; params?: RedirectParams }
   ) => Promise<void>
   signOut: () => Promise<void>
+  requestPasswordReset: (email: string) => Promise<void>
+  resetPassword: (
+    newPassword: string,
+    accessToken?: string,
+    refreshToken?: string
+  ) => Promise<void>
   clearError: () => void
 }
 
@@ -80,11 +89,12 @@ export function SimpleAuthProvider({
     // Listen for auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      // Fire initializeApp without blocking - this prevents setSession() from hanging
       if (event === 'SIGNED_OUT' || !session?.user?.id) {
-        await initializeApp() // Clear user data
+        initializeApp() // Clear user data (fire and forget)
       } else if (event === 'SIGNED_IN' && session?.user?.id) {
-        await initializeApp(session.user.id)
+        initializeApp(session.user.id) // Initialize with the user (fire and forget)
       }
     })
 
@@ -146,7 +156,7 @@ export function SimpleAuthProvider({
 
   const testSignIn = async (
     credentials: LoginCredentials,
-    redirectUrl?: string | { pathname: string; params?: any }
+    redirectUrl?: string | { pathname: string; params?: RedirectParams }
   ) => {
     try {
       setLoading(true)
@@ -176,7 +186,7 @@ export function SimpleAuthProvider({
 
         // Handle deferred deep linking
         if (redirectUrl) {
-          router.replace(redirectUrl as any)
+          router.replace(redirectUrl)
         } else {
           // Navigate to the main app
           router.replace(ROUTES.TABS.ROOT)
@@ -221,6 +231,104 @@ export function SimpleAuthProvider({
     }
   }
 
+  const requestPasswordReset = async (email: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Generate deep link URL for password reset
+      const redirectUrl = Linking.createURL('(auth)/reset-password')
+
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        email.trim().toLowerCase(),
+        {
+          redirectTo: redirectUrl,
+        }
+      )
+
+      if (error) {
+        setError(`Failed to send reset email: ${error.message}`)
+        Sentry.captureException(error, {
+          tags: { operation: 'requestPasswordReset' },
+          extra: { email, redirectUrl },
+        })
+        return
+      }
+
+      setError('Password reset email sent! Please check your inbox.')
+    } catch (error) {
+      setError('An unexpected error occurred. Please try again.')
+      Sentry.captureException(error, {
+        tags: { operation: 'requestPasswordReset' },
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const resetPassword = async (
+    newPassword: string,
+    accessToken?: string,
+    refreshToken?: string
+  ) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // If tokens are provided, set the session first
+      if (accessToken && refreshToken) {
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        })
+
+        if (sessionError) {
+          setError('Failed to authenticate. Please request a new reset link.')
+          Sentry.captureException(sessionError, {
+            tags: { operation: 'resetPasswordSetSession' },
+          })
+          return
+        }
+      }
+
+      // Update the password
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      })
+
+      if (error) {
+        setError(`Failed to reset password: ${error.message}`)
+        Sentry.captureException(error, {
+          tags: { operation: 'resetPassword' },
+        })
+        return
+      }
+
+      // Initialize app with the user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (user?.id) {
+        await initializeApp(user.id)
+      }
+
+      setError('Password successfully reset! You can now sign in.')
+
+      // Navigate to log in after a short delay
+      setTimeout(() => {
+        router.replace(ROUTES.AUTH.LOGIN)
+      }, 2000)
+    } catch (error) {
+      setError('An unexpected error occurred. Please try again.')
+      Sentry.captureException(error, {
+        tags: { operation: 'resetPassword' },
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const clearError = () => {
     setError(null)
   }
@@ -231,6 +339,8 @@ export function SimpleAuthProvider({
     testSignUp,
     testSignIn,
     signOut,
+    requestPasswordReset,
+    resetPassword,
     clearError,
   }
 

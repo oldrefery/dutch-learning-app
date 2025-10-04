@@ -8,7 +8,11 @@
 
 import React from 'react'
 import { useColorScheme } from 'react-native'
-import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message'
+import Toast, {
+  BaseToast,
+  ErrorToast,
+  type ToastConfigParams,
+} from 'react-native-toast-message'
 import { ToastType, TOAST_CONFIG } from '@/constants/ToastConstants'
 import { Colors } from '@/constants/Colors'
 import { useHistoryStore } from '@/stores/useHistoryStore'
@@ -35,7 +39,7 @@ export const AppToast: React.FC<AppToastProps> = ({
   const isDark = colorScheme === 'dark'
 
   const toastConfig = {
-    success: (props: any) => (
+    success: (props: ToastConfigParams<unknown>) => (
       <BaseToast
         {...props}
         style={{
@@ -62,7 +66,7 @@ export const AppToast: React.FC<AppToastProps> = ({
         }}
       />
     ),
-    error: (props: any) => (
+    error: (props: ToastConfigParams<unknown>) => (
       <ErrorToast
         {...props}
         style={{
@@ -86,7 +90,7 @@ export const AppToast: React.FC<AppToastProps> = ({
         }}
       />
     ),
-    info: (props: any) => (
+    info: (props: ToastConfigParams<unknown>) => (
       <BaseToast
         {...props}
         style={{

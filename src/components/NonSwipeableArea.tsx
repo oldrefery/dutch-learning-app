@@ -1,10 +1,10 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, ViewStyle } from 'react-native'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 
 interface NonSwipeableAreaProps {
   children: React.ReactNode
-  style?: any
+  style?: ViewStyle | ViewStyle[]
 }
 
 /**

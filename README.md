@@ -138,6 +138,24 @@ Complete collection sharing functionality that allows users to share their word 
 - **Smart Word Selection**: Automatic detection and marking of duplicate words with collection source
 - **Batch Import**: Select multiple words for efficient batch importing to target collections
 
+### 🔐 Password Reset Flow
+
+Complete password recovery system with secure token-based authentication:
+
+- **Forgot Password**: Email-based password reset request from login screen
+- **Email Deep Links**: Automatic navigation from password reset emails to the app
+- **Secure Token Exchange**: Atomic session setup with password update using Supabase tokens
+- **Form Validation**: Client-side password strength and match verification
+- **HIG-Compliant Navigation**: Multiple ways to navigate (header back button, swipe gesture, text link)
+- **Clear User Feedback**: Success/error messaging with auto-redirect to login after successful reset
+
+#### Security Features:
+
+- **Token-Based Authentication**: Secure access tokens from Supabase Auth
+- **Non-Blocking Auth State**: Optimized session management prevents UI freezing
+- **Comprehensive Error Handling**: Sentry logging for all password reset operations
+- **Deep Link Parsing**: Robust URL parsing with hash fragment to query params conversion
+
 ### 🔍 Collection Search
 
 Fast and intuitive search functionality within collections:

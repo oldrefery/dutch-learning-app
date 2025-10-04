@@ -9,6 +9,8 @@ export const ROUTES = {
   AUTH: {
     LOGIN: '/(auth)/login' as const,
     SIGNUP: '/(auth)/signup' as const,
+    FORGOT_PASSWORD: '/(auth)/forgot-password' as const,
+    RESET_PASSWORD: '/(auth)/reset-password' as const,
   },
 
   // Main app routes

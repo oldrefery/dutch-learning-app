@@ -65,8 +65,27 @@ function RootLayoutNav() {
 
   // Handle deep links
   useEffect(() => {
-    const handleDeepLink = (url: string) => {
-      const { hostname, path } = Linking.parse(url)
+    const handleDeepLink = async (url: string) => {
+      // Convert Supabase hash fragment to query params
+      const parsedUrl = url.includes('#') ? url.replace('#', '?') : url
+      const { hostname, path, queryParams } = Linking.parse(parsedUrl)
+
+      // Handle password reset tokens from Supabase
+      if (queryParams?.access_token && queryParams?.refresh_token) {
+        const accessToken = queryParams.access_token as string
+        const refreshToken = queryParams.refresh_token as string
+
+        // Navigate to the reset password screen with tokens
+        // Session will be set atomically with password update
+        router.replace({
+          pathname: ROUTES.AUTH.RESET_PASSWORD,
+          params: {
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          },
+        })
+        return
+      }
 
       // Handle dutchlearning://share/TOKEN - redirect directly to the import screen
       if (hostname === 'share' && path) {

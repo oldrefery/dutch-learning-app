@@ -40,8 +40,26 @@ This document tracks technical debt and refactoring opportunities to improve cod
 
 ### Component Architecture
 
+#### High Priority
+
+📄 **`src/lib/supabase.ts` (695 lines) - CRITICAL**
+**Status**: 📝 Pending
+**Target**: < 250 lines per file
+**Suggested approach**:
+
+- Split into separate service files:
+  - `src/services/wordService.ts`
+  - `src/services/collectionService.ts`
+  - `src/services/reviewService.ts`
+  - `src/services/authService.ts`
+- Keep only client initialization in `supabase.ts`
+  **Estimated effort**: 4-6 hours
+
 #### Medium Priority
 
+- **SwipeableWordItem.tsx** (502 lines): Extract gesture logic to custom hook
+- **collectionActions.ts** (493 lines): Split by responsibility (CRUD, sharing, etc.)
+- **SwipeableCollectionCard.tsx** (456 lines): Extract swipe handlers and UI components
 - **Large hook files**: Review hooks > 200 lines for potential splitting
 - **Complex components**: Identify components with multiple responsibilities
 - **Repeated patterns**: Extract common UI patterns into reusable components
@@ -51,6 +69,25 @@ This document tracks technical debt and refactoring opportunities to improve cod
 - **Style consolidation**: Merge similar StyleSheet objects
 - **Constant extraction**: Move hardcoded values to constants
 - **Type definitions**: Extract large type definitions to separate files
+
+## Cognitive Complexity Issues
+
+### Files Exceeding Threshold (15)
+
+1. **`src/app/(tabs)/settings.tsx`** - Complexity: **23**
+   - Refactor into smaller functions
+   - Extract logic to `useSettings.ts` hook
+   - Priority: Medium (already in refactoring plan)
+
+2. **`src/components/AddWordScreen/hooks/useWordAnalysis.ts`** - Complexity: **17**
+   - Split analysis logic into smaller functions
+   - Consider state machine pattern
+   - Priority: Medium
+
+3. **`src/types/ErrorTypes.ts`** - Complexity: **18**
+   - Simplify error categorization logic
+   - Use lookup tables instead of nested conditionals
+   - Priority: Low
 
 ## Best Practices Compliance
 

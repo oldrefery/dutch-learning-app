@@ -1,5 +1,6 @@
 import type { Word } from '@/types/database'
 import React from 'react'
+import type { View } from 'react-native'
 
 // Shared props for review card components
 export interface ReviewCardProps {
@@ -22,5 +23,5 @@ export interface CardBackProps extends ReviewCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
   onDeleteWord: () => void
-  pronunciationRef?: React.RefObject<any>
+  pronunciationRef?: React.RefObject<View>
 }
