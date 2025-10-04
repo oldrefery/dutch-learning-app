@@ -37,6 +37,9 @@ export const createAppInitializationActions = (
           collections: [],
         })
 
+        // End any active review session to prevent orphaned state
+        get().endReviewSession()
+
         // Clear history from previous user
         const historyStore = useHistoryStore.getState()
         historyStore.clearWordHistory()

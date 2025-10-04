@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prevents app crashes when accessing keychain during restricted states
   - Fixes issue where fetching review words failed on app launch or background return
 
+- **Review Session State Synchronization**: Fixed "Word not found in current words array" error
+  - Added graceful handling in `updateWordAfterReview` when word is not in local cache
+  - Word progress updates now persist to database even if local store is cleared
+  - Review session automatically ends when user signs out to prevent orphaned state
+  - Console warnings instead of Sentry errors for expected desync scenarios
+
 ### Technical
 
 - **SecureStore Configuration**: Updated Supabase auth storage adapter
@@ -23,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Try-catch blocks with error logging for all keychain operations
   - Null return on getItem errors for graceful session restoration
 - **Error Handling**: Non-throwing failures to prevent auth flow interruption
+- **State Management**: `endReviewSession()` called on user clear to maintain consistency
+  - Prevents review session from continuing after sign out
+  - Fixes race condition between auth state changes and review updates
+  - Local cache (`store.words`) treated as UI optimization, not source of truth
 
 ---
 
