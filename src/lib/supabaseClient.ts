@@ -3,15 +3,37 @@ import * as SecureStore from 'expo-secure-store'
 import { createClient } from '@supabase/supabase-js'
 
 // Secure storage adapter for expo-secure-store
+// Using AFTER_FIRST_UNLOCK accessibility to allow keychain access even when device is locked
+// (as long as it's been unlocked once since boot). This prevents "User interaction is not allowed" errors.
 const ExpoSecureStoreAdapter = {
-  getItem: (key: string) => {
-    return SecureStore.getItemAsync(key)
+  getItem: async (key: string) => {
+    try {
+      return await SecureStore.getItemAsync(key, {
+        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
+      })
+    } catch (error) {
+      // If keychain access fails, log the error but return null to allow graceful degradation
+      console.error('SecureStore getItem error:', error)
+      return null
+    }
   },
-  setItem: (key: string, value: string) => {
-    SecureStore.setItemAsync(key, value)
+  setItem: async (key: string, value: string) => {
+    try {
+      await SecureStore.setItemAsync(key, value, {
+        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
+      })
+    } catch (error) {
+      console.error('SecureStore setItem error:', error)
+      // Don't throw - let the auth flow handle the error
+    }
   },
-  removeItem: (key: string) => {
-    SecureStore.deleteItemAsync(key)
+  removeItem: async (key: string) => {
+    try {
+      await SecureStore.deleteItemAsync(key)
+    } catch (error) {
+      console.error('SecureStore removeItem error:', error)
+      // Don't throw - item may not exist or keychain may be inaccessible
+    }
   },
 }
 

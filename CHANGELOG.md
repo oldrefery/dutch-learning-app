@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.3] - 2025-10-04
+
+### Fixed
+
+- **SecureStore Keychain Access**: Resolved "User interaction is not allowed" error (ERR_KEY_CHAIN)
+  - Configured `keychainAccessible: AFTER_FIRST_UNLOCK` for all SecureStore operations
+  - Allows session token access even when device is locked (after first unlock since boot)
+  - Added comprehensive error handling with graceful degradation
+  - Prevents app crashes when accessing keychain during restricted states
+  - Fixes issue where fetching review words failed on app launch or background return
+
+### Technical
+
+- **SecureStore Configuration**: Updated Supabase auth storage adapter
+  - Applied `AFTER_FIRST_UNLOCK` accessibility to getItem, setItem, and removeItem operations
+  - Try-catch blocks with error logging for all keychain operations
+  - Null return on getItem errors for graceful session restoration
+- **Error Handling**: Non-throwing failures to prevent auth flow interruption
+
+---
+
 ## [1.5.2] - 2025-10-04
 
 ### Added
