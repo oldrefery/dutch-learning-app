@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.3] - 2025-10-04
+
+### Fixed
+
+- **SecureStore Keychain Access**: Resolved "User interaction is not allowed" error (ERR_KEY_CHAIN)
+  - Configured `keychainAccessible: AFTER_FIRST_UNLOCK` for all SecureStore operations
+  - Allows session token access even when device is locked (after first unlock since boot)
+  - Added comprehensive error handling with graceful degradation
+  - Prevents app crashes when accessing keychain during restricted states
+  - Fixes issue where fetching review words failed on app launch or background return
+
+- **Review Session State Synchronization**: Fixed "Word not found in current words array" error
+  - Added graceful handling in `updateWordAfterReview` when word is not in local cache
+  - Word progress updates now persist to database even if local store is cleared
+  - Review session automatically ends when user signs out to prevent orphaned state
+  - Console warnings instead of Sentry errors for expected desync scenarios
+
+### Technical
+
+- **SecureStore Configuration**: Updated Supabase auth storage adapter
+  - Applied `AFTER_FIRST_UNLOCK` accessibility to getItem, setItem, and removeItem operations
+  - Try-catch blocks with error logging for all keychain operations
+  - Null return on getItem errors for graceful session restoration
+- **Error Handling**: Non-throwing failures to prevent auth flow interruption
+- **State Management**: `endReviewSession()` called on user clear to maintain consistency
+  - Prevents review session from continuing after sign out
+  - Fixes race condition between auth state changes and review updates
+  - Local cache (`store.words`) treated as UI optimization, not source of truth
+
+---
+
 ## [1.5.2] - 2025-10-04
 
 ### Added

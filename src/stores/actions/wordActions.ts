@@ -209,9 +209,13 @@ export const createWordActions = (
         updatedWords[wordIndex] = updatedWordData
         set({ words: updatedWords })
       } else {
-        Sentry.captureException(
-          new Error('Word not found in current words array'),
-          { tags: { operation: 'updateWordAfterReview' }, extra: { wordId } }
+        // Word not in local cache - this is OK!
+        // The word was already updated in the database via wordService.updateWordProgress()
+        // Local store.words may be cleared (sign out) or out of sync
+        // The next fetchWords() will sync the data
+        console.warn(
+          'Word not found in local cache, skipping UI update (DB already updated)',
+          { wordId }
         )
       }
     } catch (error) {
