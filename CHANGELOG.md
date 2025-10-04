@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2025-10-04
+
+### Added
+
+- **Password Reset Flow**: Complete forgot/reset password functionality
+  - **Forgot Password Screen**: Email-based password reset request
+  - **Reset Password Screen**: Secure password update with token validation
+  - **Deep Link Support**: Automatic navigation from email reset links
+  - **HIG-Compliant Navigation**: Header with back button and text link to login
+  - **Form Validation**: Client-side password strength and match verification
+  - **Success Messaging**: Clear user feedback with auto-redirect to login
+
+### Fixed
+
+- **Auth State Blocking**: Resolved `setSession()` hanging issue
+  - Made `onAuthStateChange` listener non-blocking (fire-and-forget)
+  - Prevents race condition between session setup and app initialization
+  - Improved password reset flow performance
+
+### Technical
+
+- **Token Exchange**: Atomic session setup with password update
+- **Deep Link Parsing**: Hash fragment to query params conversion for Supabase tokens
+- **Route Constants**: Added `ROUTES.AUTH.FORGOT_PASSWORD` and `ROUTES.AUTH.RESET_PASSWORD`
+- **Error Handling**: Comprehensive Sentry logging for password reset operations
+- **Type Safety**: Full TypeScript compliance with proper error types
+
+---
+
 ## [1.5.1] - 2025-10-03 (Build 42)
 
 ### Added
