@@ -339,12 +339,49 @@ export default function SettingsScreen() {
                 },
               ]}
             >
-              <TextThemed style={styles.sectionTitle}>
-                User Information
-              </TextThemed>
+              <ViewThemed
+                style={styles.sectionHeader}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <TextThemed style={styles.sectionTitle}>
+                  User Information
+                </TextThemed>
+                {userAccessLevel && (
+                  <ViewThemed
+                    style={[
+                      styles.accessBadge,
+                      {
+                        backgroundColor:
+                          userAccessLevel === 'full_access'
+                            ? isDarkMode
+                              ? Colors.success.darkModeChip
+                              : Colors.success.DEFAULT
+                            : isDarkMode
+                              ? Colors.warning.darkModeBadge
+                              : Colors.warning.DEFAULT,
+                      },
+                    ]}
+                  >
+                    <TextThemed
+                      style={styles.accessBadgeText}
+                      lightColor={Colors.background.primary}
+                      darkColor={
+                        userAccessLevel === 'full_access'
+                          ? Colors.success.darkModeChipText
+                          : Colors.warning.darkModeBadgeText
+                      }
+                    >
+                      {userAccessLevel === 'full_access'
+                        ? 'Full Access'
+                        : 'Read Only'}
+                    </TextThemed>
+                  </ViewThemed>
+                )}
+              </ViewThemed>
               {user?.email && (
                 <ViewThemed
-                  style={styles.userInfoContainer}
+                  style={styles.userInfoRow}
                   lightColor="transparent"
                   darkColor="transparent"
                 >
@@ -355,46 +392,13 @@ export default function SettingsScreen() {
                   >
                     Email:
                   </TextThemed>
-                  <TextThemed style={styles.userInfoValue}>
+                  <TextThemed
+                    style={styles.userInfoValue}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
                     {user.email}
                   </TextThemed>
-                </ViewThemed>
-              )}
-              {userAccessLevel && (
-                <ViewThemed
-                  style={styles.userInfoContainer}
-                  lightColor="transparent"
-                  darkColor="transparent"
-                >
-                  <TextThemed
-                    style={styles.userInfoLabel}
-                    lightColor={Colors.neutral[600]}
-                    darkColor={Colors.dark.textSecondary}
-                  >
-                    Access Level:
-                  </TextThemed>
-                  <TextThemed
-                    style={[
-                      styles.userInfoValue,
-                      userAccessLevel === 'full_access' &&
-                        styles.accessLevelFull,
-                      userAccessLevel === 'read_only' &&
-                        styles.accessLevelReadOnly,
-                    ]}
-                  >
-                    {userAccessLevel === 'full_access'
-                      ? 'Full Access'
-                      : 'Read Only'}
-                  </TextThemed>
-                  {userAccessLevel === 'read_only' && (
-                    <TextThemed
-                      style={styles.accessLevelDescription}
-                      lightColor={Colors.neutral[500]}
-                      darkColor={Colors.dark.textSecondary}
-                    >
-                      You can view and learn from imported collections
-                    </TextThemed>
-                  )}
                 </ViewThemed>
               )}
             </ViewThemed>
@@ -562,10 +566,27 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    gap: 8,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 12,
+    flex: 1,
+  },
+  accessBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  accessBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'capitalize',
   },
   logoutButton: {
     paddingVertical: 12,
@@ -606,17 +627,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: 'italic',
   },
-  userInfoContainer: {
-    marginBottom: 8,
+  userInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
   },
   userInfoLabel: {
     fontSize: 14,
-    marginBottom: 4,
     fontWeight: '500',
   },
   userInfoValue: {
     fontSize: 16,
     fontWeight: '600',
+    flex: 1,
   },
   appInfoContainer: {
     alignItems: 'center',
@@ -663,16 +687,5 @@ const styles = StyleSheet.create({
   linkSeparator: {
     height: 1,
     marginHorizontal: 16,
-  },
-  accessLevelFull: {
-    color: Colors.success.DEFAULT,
-  },
-  accessLevelReadOnly: {
-    color: Colors.warning.DEFAULT,
-  },
-  accessLevelDescription: {
-    fontSize: 12,
-    marginTop: 4,
-    fontStyle: 'italic',
   },
 })
