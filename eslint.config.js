@@ -10,6 +10,7 @@ module.exports = defineConfig([
       'ios/*',
       'android/*',
       'supabase/functions/*',
+      '.tools/*',
     ],
   },
   {

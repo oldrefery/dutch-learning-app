@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
@@ -9,7 +9,7 @@ import type { ReviewCardProps } from './types'
 interface WordHeaderProps extends ReviewCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
-  pronunciationRef?: React.RefObject<any>
+  pronunciationRef?: React.RefObject<View>
 }
 
 export function WordHeader({

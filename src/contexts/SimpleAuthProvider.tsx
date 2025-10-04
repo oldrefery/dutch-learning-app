@@ -11,11 +11,13 @@ interface SimpleAuthState {
   error: string | null
 }
 
+type RedirectParams = Record<string, string | number | boolean | undefined>
+
 interface SimpleAuthActions {
   testSignUp: (credentials: SignupCredentials) => Promise<void>
   testSignIn: (
     credentials: LoginCredentials,
-    redirectUrl?: string | { pathname: string; params?: any }
+    redirectUrl?: string | { pathname: string; params?: RedirectParams }
   ) => Promise<void>
   signOut: () => Promise<void>
   clearError: () => void
@@ -146,7 +148,7 @@ export function SimpleAuthProvider({
 
   const testSignIn = async (
     credentials: LoginCredentials,
-    redirectUrl?: string | { pathname: string; params?: any }
+    redirectUrl?: string | { pathname: string; params?: RedirectParams }
   ) => {
     try {
       setLoading(true)
@@ -176,7 +178,7 @@ export function SimpleAuthProvider({
 
         // Handle deferred deep linking
         if (redirectUrl) {
-          router.replace(redirectUrl as any)
+          router.replace(redirectUrl)
         } else {
           // Navigate to the main app
           router.replace(ROUTES.TABS.ROOT)

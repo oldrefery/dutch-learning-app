@@ -138,7 +138,8 @@ export function formatWordForCopying(word: WordCardData): string {
   }
 
   // Fallback for unexpected types (should never happen with proper types)
-  return `Word: ${(word as any).dutch_lemma || 'Unknown'}`
+  const fallbackWord = word as { dutch_lemma?: string }
+  return `Word: ${fallbackWord.dutch_lemma || 'Unknown'}`
 }
 
 export function formatAnalysisResultForCopying(result: AnalysisResult): string {
