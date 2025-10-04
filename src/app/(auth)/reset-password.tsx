@@ -13,22 +13,18 @@ import { AuthButton } from '@/components/auth/AuthButton'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
-import { Sentry } from '@/lib/sentry'
 
-export default function LoginScreen() {
-  const { redirect } = useLocalSearchParams<{ redirect?: string }>()
-  const [email, setEmail] = useState('')
+export default function ResetPasswordScreen() {
+  const { access_token, refresh_token } = useLocalSearchParams<{
+    access_token?: string
+    refresh_token?: string
+  }>()
   const [password, setPassword] = useState('')
-  const [emailError, setEmailError] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
-  const { testSignIn, loading, error, clearError } = useSimpleAuth()
-
-  const handleEmailChange = (text: string) => {
-    setEmail(text)
-    if (emailError) setEmailError('')
-    if (error) clearError()
-  }
+  const { resetPassword, loading, error, clearError } = useSimpleAuth()
 
   const handlePasswordChange = (text: string) => {
     setPassword(text)
@@ -36,23 +32,20 @@ export default function LoginScreen() {
     if (error) clearError()
   }
 
-  const handleSignIn = async () => {
+  const handleConfirmPasswordChange = (text: string) => {
+    setConfirmPassword(text)
+    if (confirmPasswordError) setConfirmPasswordError('')
+    if (error) clearError()
+  }
+
+  const handleResetPassword = async () => {
     // Clear previous errors
-    setEmailError('')
     setPasswordError('')
+    setConfirmPasswordError('')
     clearError()
 
     // Validation
     let hasError = false
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-    if (!email.trim()) {
-      setEmailError('Email is required')
-      hasError = true
-    } else if (!emailRegex.test(email.trim())) {
-      setEmailError('Please enter a valid email address')
-      hasError = true
-    }
 
     if (!password) {
       setPasswordError('Password is required')
@@ -62,16 +55,19 @@ export default function LoginScreen() {
       hasError = true
     }
 
+    if (!confirmPassword) {
+      setConfirmPasswordError('Please confirm your password')
+      hasError = true
+    } else if (password !== confirmPassword) {
+      setConfirmPasswordError('Passwords do not match')
+      hasError = true
+    }
+
     if (hasError) {
       return
     }
 
-    try {
-      await testSignIn({ email: email.trim(), password }, redirect)
-    } catch (error) {
-      // Error handled by SimpleAuthProvider
-      Sentry.captureException(error)
-    }
+    await resetPassword(password, access_token, refresh_token)
   }
 
   return (
@@ -93,55 +89,68 @@ export default function LoginScreen() {
                   lightColor={Colors.neutral[900]}
                   darkColor={Colors.dark.text}
                 >
-                  Welcome Back
+                  Create New Password
                 </TextThemed>
                 <TextThemed
                   style={styles.subtitle}
                   lightColor={Colors.neutral[600]}
                   darkColor={Colors.dark.textSecondary}
                 >
-                  {redirect
-                    ? 'Sign in to access the shared collection'
-                    : 'Sign in to continue learning Dutch'}
+                  Please enter your new password
                 </TextThemed>
               </ViewThemed>
 
               <ViewThemed style={styles.form}>
                 <AuthInput
-                  label="Email"
-                  value={email}
-                  onChangeText={handleEmailChange}
-                  error={emailError}
-                  placeholder="Enter your email"
-                  keyboardType="email-address"
-                />
-
-                <AuthInput
-                  label="Password"
+                  label="New Password"
                   value={password}
                   onChangeText={handlePasswordChange}
                   error={passwordError}
-                  placeholder="Enter your password"
+                  placeholder="Enter new password"
                   isPassword
                 />
 
-                <ViewThemed style={styles.forgotPasswordContainer}>
-                  <Link href={ROUTES.AUTH.FORGOT_PASSWORD} asChild>
-                    <TextThemed style={styles.forgotPasswordLink}>
-                      Forgot Password?
-                    </TextThemed>
-                  </Link>
-                </ViewThemed>
+                <AuthInput
+                  label="Confirm Password"
+                  value={confirmPassword}
+                  onChangeText={handleConfirmPasswordChange}
+                  error={confirmPasswordError}
+                  placeholder="Confirm new password"
+                  isPassword
+                />
 
                 {error && (
-                  <ViewThemed style={styles.errorContainer}>
-                    <TextThemed style={styles.errorText}>{error}</TextThemed>
+                  <ViewThemed
+                    style={[
+                      styles.messageContainer,
+                      {
+                        backgroundColor: error.includes('successfully')
+                          ? Colors.success.light
+                          : Colors.error.light,
+                        borderColor: error.includes('successfully')
+                          ? Colors.success.border
+                          : Colors.error.border,
+                      },
+                    ]}
+                  >
+                    <TextThemed
+                      style={[
+                        styles.messageText,
+                        {
+                          color: error.includes('successfully')
+                            ? Colors.success.DEFAULT
+                            : Colors.error.DEFAULT,
+                        },
+                      ]}
+                    >
+                      {error}
+                    </TextThemed>
                   </ViewThemed>
                 )}
 
                 <AuthButton
-                  title="Sign In"
-                  onPress={handleSignIn}
+                  title="Reset Password"
+                  onPress={handleResetPassword}
                   loading={loading}
                 />
               </ViewThemed>
@@ -152,9 +161,9 @@ export default function LoginScreen() {
                   lightColor={Colors.neutral[600]}
                   darkColor={Colors.dark.textSecondary}
                 >
-                  Don&apos;t have an account?{' '}
-                  <Link href="/signup" asChild>
-                    <TextThemed style={styles.linkText}>Sign up</TextThemed>
+                  Remember your password?{' '}
+                  <Link href={ROUTES.AUTH.LOGIN} asChild>
+                    <TextThemed style={styles.linkText}>Sign in</TextThemed>
                   </Link>
                 </TextThemed>
               </ViewThemed>
@@ -204,31 +213,19 @@ const styles = StyleSheet.create({
   form: {
     marginBottom: 32,
   },
-  forgotPasswordContainer: {
-    alignItems: 'flex-end',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  forgotPasswordLink: {
-    color: Colors.primary.DEFAULT,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  errorContainer: {
-    backgroundColor: Colors.error.light,
-    borderColor: Colors.error.border,
+  messageContainer: {
     borderWidth: 1,
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
   },
-  errorText: {
-    color: Colors.error.DEFAULT,
+  messageText: {
     fontSize: 14,
     textAlign: 'center',
   },
   footer: {
     alignItems: 'center',
+    marginTop: 16,
   },
   footerText: {
     fontSize: 14,

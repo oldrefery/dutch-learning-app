@@ -75,6 +75,19 @@ This feature significantly improves user experience and learning accuracy, makin
 
 ## Other Future Features
 
+### Account Management
+
+**Change Password in Settings**
+
+- Priority: Medium
+- Allow users to change their password while logged in
+- Requires current password + new password confirmation
+- Implementation:
+  - Add "Change Password" section in Settings screen
+  - Create password change form modal
+  - Use `supabase.auth.updateUser({ password })` with re-authentication
+  - Follow security best practices (require current password)
+
 ### Multi-language Support
 
 - Add support for other source languages (German, French, Spanish)

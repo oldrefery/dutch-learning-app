@@ -5,24 +5,19 @@ import {
   ScrollView,
   Platform,
 } from 'react-native'
-import { Link, useLocalSearchParams } from 'expo-router'
+import { Link } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { AuthInput } from '@/components/auth/AuthInput'
 import { AuthButton } from '@/components/auth/AuthButton'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Colors } from '@/constants/Colors'
-import { ROUTES } from '@/constants/Routes'
-import { Sentry } from '@/lib/sentry'
 
-export default function LoginScreen() {
-  const { redirect } = useLocalSearchParams<{ redirect?: string }>()
+export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [emailError, setEmailError] = useState('')
-  const [passwordError, setPasswordError] = useState('')
 
-  const { testSignIn, loading, error, clearError } = useSimpleAuth()
+  const { requestPasswordReset, loading, error, clearError } = useSimpleAuth()
 
   const handleEmailChange = (text: string) => {
     setEmail(text)
@@ -30,48 +25,25 @@ export default function LoginScreen() {
     if (error) clearError()
   }
 
-  const handlePasswordChange = (text: string) => {
-    setPassword(text)
-    if (passwordError) setPasswordError('')
-    if (error) clearError()
-  }
-
-  const handleSignIn = async () => {
+  const handleResetRequest = async () => {
     // Clear previous errors
     setEmailError('')
-    setPasswordError('')
     clearError()
 
     // Validation
-    let hasError = false
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     if (!email.trim()) {
       setEmailError('Email is required')
-      hasError = true
-    } else if (!emailRegex.test(email.trim())) {
-      setEmailError('Please enter a valid email address')
-      hasError = true
-    }
-
-    if (!password) {
-      setPasswordError('Password is required')
-      hasError = true
-    } else if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters')
-      hasError = true
-    }
-
-    if (hasError) {
       return
     }
 
-    try {
-      await testSignIn({ email: email.trim(), password }, redirect)
-    } catch (error) {
-      // Error handled by SimpleAuthProvider
-      Sentry.captureException(error)
+    if (!emailRegex.test(email.trim())) {
+      setEmailError('Please enter a valid email address')
+      return
     }
+
+    await requestPasswordReset(email)
   }
 
   return (
@@ -93,16 +65,15 @@ export default function LoginScreen() {
                   lightColor={Colors.neutral[900]}
                   darkColor={Colors.dark.text}
                 >
-                  Welcome Back
+                  Reset Password
                 </TextThemed>
                 <TextThemed
                   style={styles.subtitle}
                   lightColor={Colors.neutral[600]}
                   darkColor={Colors.dark.textSecondary}
                 >
-                  {redirect
-                    ? 'Sign in to access the shared collection'
-                    : 'Sign in to continue learning Dutch'}
+                  Enter your email address and we&apos;ll send you a link to
+                  reset your password
                 </TextThemed>
               </ViewThemed>
 
@@ -116,32 +87,38 @@ export default function LoginScreen() {
                   keyboardType="email-address"
                 />
 
-                <AuthInput
-                  label="Password"
-                  value={password}
-                  onChangeText={handlePasswordChange}
-                  error={passwordError}
-                  placeholder="Enter your password"
-                  isPassword
-                />
-
-                <ViewThemed style={styles.forgotPasswordContainer}>
-                  <Link href={ROUTES.AUTH.FORGOT_PASSWORD} asChild>
-                    <TextThemed style={styles.forgotPasswordLink}>
-                      Forgot Password?
-                    </TextThemed>
-                  </Link>
-                </ViewThemed>
-
                 {error && (
-                  <ViewThemed style={styles.errorContainer}>
-                    <TextThemed style={styles.errorText}>{error}</TextThemed>
+                  <ViewThemed
+                    style={[
+                      styles.messageContainer,
+                      {
+                        backgroundColor: error.includes('sent')
+                          ? Colors.success.light
+                          : Colors.error.light,
+                        borderColor: error.includes('sent')
+                          ? Colors.success.border
+                          : Colors.error.border,
+                      },
+                    ]}
+                  >
+                    <TextThemed
+                      style={[
+                        styles.messageText,
+                        {
+                          color: error.includes('sent')
+                            ? Colors.success.DEFAULT
+                            : Colors.error.DEFAULT,
+                        },
+                      ]}
+                    >
+                      {error}
+                    </TextThemed>
                   </ViewThemed>
                 )}
 
                 <AuthButton
-                  title="Sign In"
-                  onPress={handleSignIn}
+                  title="Send Reset Link"
+                  onPress={handleResetRequest}
                   loading={loading}
                 />
               </ViewThemed>
@@ -152,9 +129,9 @@ export default function LoginScreen() {
                   lightColor={Colors.neutral[600]}
                   darkColor={Colors.dark.textSecondary}
                 >
-                  Don&apos;t have an account?{' '}
-                  <Link href="/signup" asChild>
-                    <TextThemed style={styles.linkText}>Sign up</TextThemed>
+                  Remember your password?{' '}
+                  <Link href="/login" asChild>
+                    <TextThemed style={styles.linkText}>Sign in</TextThemed>
                   </Link>
                 </TextThemed>
               </ViewThemed>
@@ -200,30 +177,18 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
+    lineHeight: 22,
   },
   form: {
     marginBottom: 32,
   },
-  forgotPasswordContainer: {
-    alignItems: 'flex-end',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  forgotPasswordLink: {
-    color: Colors.primary.DEFAULT,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  errorContainer: {
-    backgroundColor: Colors.error.light,
-    borderColor: Colors.error.border,
+  messageContainer: {
     borderWidth: 1,
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
   },
-  errorText: {
-    color: Colors.error.DEFAULT,
+  messageText: {
     fontSize: 14,
     textAlign: 'center',
   },
