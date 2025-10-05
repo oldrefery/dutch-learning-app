@@ -6,6 +6,7 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import { ROUTES } from '@/constants/Routes'
 import type { LoginCredentials, SignupCredentials } from '@/types/AuthTypes'
 import { Sentry } from '@/lib/sentry'
+import { initiateGoogleOAuth, handleOAuthCallback } from '@/lib/googleAuth'
 
 interface SimpleAuthState {
   loading: boolean
@@ -18,6 +19,9 @@ interface SimpleAuthActions {
   testSignUp: (credentials: SignupCredentials) => Promise<void>
   testSignIn: (
     credentials: LoginCredentials,
+    redirectUrl?: string | { pathname: string; params?: RedirectParams }
+  ) => Promise<void>
+  signInWithGoogle: (
     redirectUrl?: string | { pathname: string; params?: RedirectParams }
   ) => Promise<void>
   signOut: () => Promise<void>
@@ -33,6 +37,10 @@ interface SimpleAuthActions {
 type SimpleAuthContextType = SimpleAuthState & SimpleAuthActions
 
 const SimpleAuthContext = createContext<SimpleAuthContextType | null>(null)
+
+const ERROR_MESSAGES = {
+  UNEXPECTED: 'An unexpected error occurred. Please try again.',
+} as const
 
 export function useSimpleAuth() {
   const context = useContext(SimpleAuthContext)
@@ -51,7 +59,7 @@ export function SimpleAuthProvider({
   const [error, setError] = useState<string | null>(null)
   const initializeApp = useApplicationStore(state => state.initializeApp)
 
-  // Check for the existing session on app start
+  // Check for the existing session on app start and handle OAuth deep links
   useEffect(() => {
     const checkExistingSession = async () => {
       try {
@@ -98,8 +106,28 @@ export function SimpleAuthProvider({
       }
     })
 
+    // Handle OAuth deep links
+    const handleDeepLink = async (event: { url: string }) => {
+      const handled = await handleOAuthCallback(event.url)
+      if (handled) {
+        // OAuth callback was handled, session will be set
+        // The onAuthStateChange listener will handle the navigation
+      }
+    }
+
+    // Listen for deep links
+    const deepLinkSubscription = Linking.addEventListener('url', handleDeepLink)
+
+    // Check if app was opened with a deep link
+    Linking.getInitialURL().then(url => {
+      if (url) {
+        handleDeepLink({ url })
+      }
+    })
+
     return () => {
       subscription.unsubscribe()
+      deepLinkSubscription.remove()
     }
   }, [initializeApp])
 
@@ -148,7 +176,7 @@ export function SimpleAuthProvider({
         setError('Registration successful! You can now sign in.')
       }
     } catch {
-      setError('An unexpected error occurred. Please try again.')
+      setError(ERROR_MESSAGES.UNEXPECTED)
     } finally {
       setLoading(false)
     }
@@ -195,7 +223,47 @@ export function SimpleAuthProvider({
         setError('Login successful! (Session created but not stored)')
       }
     } catch {
-      setError('An unexpected error occurred. Please try again.')
+      setError(ERROR_MESSAGES.UNEXPECTED)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const signInWithGoogle = async (
+    redirectUrl?: string | { pathname: string; params?: RedirectParams }
+  ) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const result = await initiateGoogleOAuth()
+
+      if (result.type === 'success') {
+        // Session is set in the deep link handler
+        // Wait for session to be established
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
+
+        if (session?.user?.id) {
+          await initializeApp(session.user.id)
+
+          // Handle deferred deep linking
+          if (redirectUrl) {
+            router.replace(redirectUrl)
+          } else {
+            router.replace(ROUTES.TABS.ROOT)
+          }
+        }
+      } else if (result.type === 'cancel' || result.type === 'dismiss') {
+        setError('Google sign-in was cancelled.')
+      }
+    } catch (error) {
+      setError('Failed to sign in with Google. Please try again.')
+      Sentry.captureException(error, {
+        tags: { operation: 'signInWithGoogle' },
+        extra: { message: 'Google OAuth failed' },
+      })
     } finally {
       setLoading(false)
     }
@@ -221,7 +289,7 @@ export function SimpleAuthProvider({
       // The onAuthStateChange listener will handle clearing the app data
       router.replace(ROUTES.AUTH.LOGIN)
     } catch (error) {
-      setError('An unexpected error occurred during sign out.')
+      setError(ERROR_MESSAGES.UNEXPECTED)
       Sentry.captureException(error, {
         tags: { operation: 'simpleAuthProviderSignOut' },
         extra: { message: 'Unexpected sign out error' },
@@ -320,7 +388,7 @@ export function SimpleAuthProvider({
         router.replace(ROUTES.AUTH.LOGIN)
       }, 2000)
     } catch (error) {
-      setError('An unexpected error occurred. Please try again.')
+      setError(ERROR_MESSAGES.UNEXPECTED)
       Sentry.captureException(error, {
         tags: { operation: 'resetPassword' },
       })
@@ -338,6 +406,7 @@ export function SimpleAuthProvider({
     error,
     testSignUp,
     testSignIn,
+    signInWithGoogle,
     signOut,
     requestPasswordReset,
     resetPassword,

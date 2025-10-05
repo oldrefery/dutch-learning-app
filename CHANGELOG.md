@@ -5,6 +5,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.4] - 2025-10-05
+
+### Added
+
+- **Google OAuth Authentication**: Complete Google Sign-In integration
+  - **Browser-Based OAuth Flow**: Implemented using Supabase `signInWithOAuth()` + expo-web-browser
+  - **Deep Linking Support**: Configured URL scheme (`dutchlearning://`) for OAuth callback handling
+  - **Google Sign In Button**: HIG-compliant button following Google branding guidelines
+    - Official Google "G" logo using @expo/vector-icons (AntDesign)
+    - Proper color themes (light: white background, dark: #131314 background)
+    - Correct dimensions (48px height, 4px border radius, 14px font size)
+    - Text: "Continue with Google" as recommended by Google guidelines
+  - **Seamless Integration**: Added to both login and signup screens with "OR" divider
+  - **Auto-Navigation**: Automatic redirect to main app after successful authentication
+  - **Error Handling**: Comprehensive error messages and loading states
+
+### Fixed
+
+- **OAuth Access Level Assignment**: Fixed user access level not being assigned correctly for OAuth users
+  - **Case-Insensitive Email Matching**: Updated trigger to handle email case variations (curysef vs Curysef)
+  - **Timing Issue Resolution**: Fixed issue where users registering before being added to whitelist got read_only access
+  - **Email Normalization**: All emails in `pre_approved_emails` table now stored in lowercase
+  - **Manual Sync Function**: Added `sync_user_access_levels()` for re-syncing existing users
+  - **Trigger Enhancement**: Improved `assign_user_access_level()` with LOWER() comparison
+
+- **OAuth Redirect Error**: Resolved "screen doesn't exist" error during OAuth callback
+  - Changed redirect URL from `dutchlearning://auth/callback` to `dutchlearning://`
+  - Simplified deep link detection to check only for `access_token` parameter
+  - Improved OAuth callback handling in SimpleAuthProvider
+
+### Technical
+
+- **New Components**:
+  - `src/components/auth/GoogleSignInButton.tsx` - Google branding compliant button component
+  - `src/lib/googleAuth.ts` - OAuth helper functions (initiateGoogleOAuth, handleOAuthCallback, createSessionFromOAuthUrl)
+
+- **Updated Components**:
+  - `src/contexts/SimpleAuthProvider.tsx` - Added `signInWithGoogle()` method and deep link listener
+  - `src/app/(auth)/login.tsx` - Integrated Google Sign In button with error handling
+  - `src/app/(auth)/signup.tsx` - Integrated Google Sign In button with error handling
+
+- **Database Migration**:
+  - `supabase/migrations/20251005_fix_oauth_user_access_level.sql` - OAuth access level fixes
+
+- **Configuration**:
+  - `app.json` - Added `CFBundleURLTypes` for iOS deep linking support
+  - URL Scheme: `dutchlearning://` for OAuth redirects
+
+- **Dependencies**:
+  - Uses existing `expo-web-browser` for OAuth flow
+  - Uses existing `expo-linking` for deep link handling
+  - No additional native dependencies required
+
+### Notes
+
+- **Recommended Approach**: Implementation follows official Supabase documentation for React Native OAuth
+- **No Native SDK**: Uses browser-based OAuth instead of `@react-native-google-signin/google-signin` for simpler setup
+- **Universal Provider**: Same OAuth flow works for all social providers (Google, GitHub, etc.)
+- **Production Ready**: Fully tested with development builds on iOS and Android
+
+---
+
 ## [1.5.3] - 2025-10-04
 
 ### Fixed
