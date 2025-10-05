@@ -156,6 +156,25 @@ Complete password recovery system with secure token-based authentication:
 - **Comprehensive Error Handling**: Sentry logging for all password reset operations
 - **Deep Link Parsing**: Robust URL parsing with hash fragment to query params conversion
 
+### 🔑 Google OAuth Authentication
+
+Seamless social login integration for faster onboarding:
+
+- **One-Tap Sign In**: Sign in with Google account in seconds
+- **Browser-Based OAuth**: Secure OAuth 2.0 flow using Supabase Auth and expo-web-browser
+- **Deep Linking**: Automatic return to app after authentication with custom URL scheme
+- **HIG-Compliant Button**: Google Sign In button following official branding guidelines
+- **Dual Integration**: Available on both login and signup screens with "OR" divider
+- **Auto-Navigation**: Automatic redirect to main app after successful authentication
+
+#### Implementation Details:
+
+- **No Native Dependencies**: Uses expo-web-browser instead of native Google SDK for simpler setup
+- **Universal Flow**: Same implementation works for all OAuth providers (Google, GitHub, etc.)
+- **Access Control**: Automatic access level assignment based on pre-approved email whitelist
+- **Error Handling**: Comprehensive error messages and loading states for better UX
+- **Production Ready**: Fully tested on iOS and Android development builds
+
 ### 🔍 Collection Search
 
 Fast and intuitive search functionality within collections:
