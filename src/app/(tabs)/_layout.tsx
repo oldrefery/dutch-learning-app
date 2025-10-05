@@ -140,14 +140,24 @@ export default function TabLayout() {
   }
 
   const labelStyle: NativeTabsLabelStyle = {
-    color: DynamicColorIOS({
-      dark: Colors.dark.text,
-      light: Colors.light.text,
-    }),
-    tintColor: DynamicColorIOS({
-      dark: Colors.dark.tint,
-      light: Colors.light.tint,
-    }),
+    color:
+      Platform.OS === 'ios'
+        ? DynamicColorIOS({
+            dark: Colors.dark.text,
+            light: Colors.light.text,
+          })
+        : colorScheme === 'dark'
+          ? Colors.dark.text
+          : Colors.light.text,
+    tintColor:
+      Platform.OS === 'ios'
+        ? DynamicColorIOS({
+            dark: Colors.dark.tint,
+            light: Colors.light.tint,
+          })
+        : colorScheme === 'dark'
+          ? Colors.dark.tint
+          : Colors.light.tint,
   }
 
   return (
