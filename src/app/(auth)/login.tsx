@@ -134,8 +134,26 @@ export default function LoginScreen() {
                 </ViewThemed>
 
                 {error && (
-                  <ViewThemed style={styles.errorContainer}>
-                    <TextThemed style={styles.errorText}>{error}</TextThemed>
+                  <ViewThemed
+                    style={[
+                      styles.messageContainer,
+                      error.includes('check your email') ||
+                      error.includes('confirmation link')
+                        ? styles.warningContainer
+                        : styles.errorContainer,
+                    ]}
+                  >
+                    <TextThemed
+                      style={[
+                        styles.messageText,
+                        error.includes('check your email') ||
+                        error.includes('confirmation link')
+                          ? styles.warningText
+                          : styles.errorText,
+                      ]}
+                    >
+                      {error}
+                    </TextThemed>
                   </ViewThemed>
                 )}
 
@@ -214,18 +232,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  errorContainer: {
-    backgroundColor: Colors.error.light,
-    borderColor: Colors.error.border,
-    borderWidth: 1,
+  messageContainer: {
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
+    borderWidth: 1,
+  },
+  errorContainer: {
+    backgroundColor: Colors.error.light,
+    borderColor: Colors.error.border,
+  },
+  warningContainer: {
+    backgroundColor: Colors.warning.light,
+    borderColor: Colors.warning.DEFAULT,
+  },
+  messageText: {
+    fontSize: 14,
+    textAlign: 'center',
   },
   errorText: {
     color: Colors.error.DEFAULT,
-    fontSize: 14,
-    textAlign: 'center',
+  },
+  warningText: {
+    color: Colors.warning.darkTheme,
   },
   footer: {
     alignItems: 'center',

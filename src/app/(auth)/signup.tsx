@@ -185,17 +185,23 @@ export default function SignupScreen() {
                   <ViewThemed
                     style={[
                       styles.messageContainer,
-                      error.includes('check your email')
+                      error.includes('Registration successful')
                         ? styles.successContainer
-                        : styles.errorContainer,
+                        : error.includes('check your email') ||
+                            error.includes('confirmation link')
+                          ? styles.warningContainer
+                          : styles.errorContainer,
                     ]}
                   >
                     <TextThemed
                       style={[
                         styles.messageText,
-                        error.includes('check your email')
+                        error.includes('Registration successful')
                           ? styles.successText
-                          : styles.errorText,
+                          : error.includes('check your email') ||
+                              error.includes('confirmation link')
+                            ? styles.warningText
+                            : styles.errorText,
                       ]}
                     >
                       {error}
@@ -295,6 +301,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.success.light,
     borderColor: Colors.success.DEFAULT,
   },
+  warningContainer: {
+    backgroundColor: Colors.warning.light,
+    borderColor: Colors.warning.DEFAULT,
+  },
   messageText: {
     fontSize: 14,
     textAlign: 'center',
@@ -304,6 +314,9 @@ const styles = StyleSheet.create({
   },
   successText: {
     color: Colors.success.DEFAULT,
+  },
+  warningText: {
+    color: Colors.warning.darkTheme,
   },
   footer: {
     alignItems: 'center',
