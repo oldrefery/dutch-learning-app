@@ -1,39 +1,72 @@
 // Supabase client configuration for React Native/Expo
 import * as SecureStore from 'expo-secure-store'
+import * as Crypto from 'expo-crypto'
+import { MMKV } from 'react-native-mmkv'
 import { createClient } from '@supabase/supabase-js'
 
-// Secure storage adapter for expo-secure-store
-// Using AFTER_FIRST_UNLOCK accessibility to allow keychain access even when device is locked
-// (as long as it's been unlocked once since boot). This prevents "User interaction is not allowed" errors.
-const ExpoSecureStoreAdapter = {
-  getItem: async (key: string) => {
-    try {
-      return await SecureStore.getItemAsync(key, {
-        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
-      })
-    } catch (error) {
-      // If keychain access fails, log the error but return null to allow graceful degradation
-      console.error('SecureStore getItem error:', error)
-      return null
+const ENCRYPTION_KEY_NAME = 'supabase-session-encryption-key'
+
+// Generate or retrieve encryption key from SecureStore (async)
+const getEncryptionKey = async (): Promise<string> => {
+  try {
+    const existingKey = await SecureStore.getItemAsync(ENCRYPTION_KEY_NAME, {
+      keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
+    })
+
+    if (existingKey) {
+      return existingKey
     }
+
+    // Generate new encryption key using Crypto
+    const newKey = Crypto.randomUUID()
+    await SecureStore.setItemAsync(ENCRYPTION_KEY_NAME, newKey, {
+      keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
+    })
+
+    return newKey
+  } catch (error) {
+    console.error('Error accessing encryption key:', error)
+    // Fallback to a static key (not recommended for production)
+    return 'fallback-encryption-key-change-me'
+  }
+}
+
+// Initialize MMKV with encryption key
+let mmkvStorage: MMKV | null = null
+let storageInitPromise: Promise<MMKV> | null = null
+
+const getMMKVStorage = async (): Promise<MMKV> => {
+  if (mmkvStorage) {
+    return mmkvStorage
+  }
+
+  if (!storageInitPromise) {
+    storageInitPromise = getEncryptionKey().then(encryptionKey => {
+      mmkvStorage = new MMKV({
+        id: 'supabase-session-storage',
+        encryptionKey,
+      })
+      return mmkvStorage
+    })
+  }
+
+  return storageInitPromise
+}
+
+// MMKV storage adapter for Supabase (solves 2048 byte SecureStore limit)
+const MMKVStorageAdapter = {
+  getItem: async (key: string) => {
+    const storage = await getMMKVStorage()
+    const value = storage.getString(key)
+    return value ?? null
   },
   setItem: async (key: string, value: string) => {
-    try {
-      await SecureStore.setItemAsync(key, value, {
-        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
-      })
-    } catch (error) {
-      console.error('SecureStore setItem error:', error)
-      // Don't throw - let the auth flow handle the error
-    }
+    const storage = await getMMKVStorage()
+    storage.set(key, value)
   },
   removeItem: async (key: string) => {
-    try {
-      await SecureStore.deleteItemAsync(key)
-    } catch (error) {
-      console.error('SecureStore removeItem error:', error)
-      // Don't throw - item may not exist or keychain may be inaccessible
-    }
+    const storage = await getMMKVStorage()
+    storage.delete(key)
   },
 }
 
@@ -45,10 +78,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables')
 }
 
-// Create Supabase client with secure storage
+// Create Supabase client with encrypted MMKV storage
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: ExpoSecureStoreAdapter,
+    storage: MMKVStorageAdapter,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
