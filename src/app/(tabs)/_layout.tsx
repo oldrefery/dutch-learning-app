@@ -165,7 +165,7 @@ export default function TabLayout() {
       labelStyle={labelStyle as ComponentProps<typeof NativeTabs>['labelStyle']}
       labelVisibilityMode="labeled"
     >
-      {/* Navigation tabs - left side following HIG order */}
+      {/* Primary navigation - left side (most frequent use) */}
       <TabTrigger
         name="index"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
@@ -180,6 +180,7 @@ export default function TabLayout() {
         )}
       </TabTrigger>
 
+      {/* Secondary navigation */}
       <TabTrigger
         name="history"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
@@ -208,24 +209,7 @@ export default function TabLayout() {
         )}
       </TabTrigger>
 
-      {/* Primary action tabs - right side following HIG guidelines */}
-      <TabTrigger
-        name="add-word"
-        hidden={userAccessLevel !== 'full_access'}
-        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
-      >
-        <Label>Add Word</Label>
-        {Platform.OS === 'ios' ? (
-          <Icon sf="plus.circle.fill" />
-        ) : (
-          <Icon
-            src={
-              <VectorIcon family={FontAwesome} name="plus-circle" size={32} />
-            }
-          />
-        )}
-      </TabTrigger>
-
+      {/* Primary actions - right side for thumb accessibility */}
       <TabTrigger
         name="review"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
@@ -262,6 +246,23 @@ export default function TabLayout() {
                 name="graduation-cap"
                 size={32}
               />
+            }
+          />
+        )}
+      </TabTrigger>
+
+      <TabTrigger
+        name="add-word"
+        hidden={userAccessLevel !== 'full_access'}
+        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
+      >
+        <Label>Add Word</Label>
+        {Platform.OS === 'ios' ? (
+          <Icon sf="plus.circle.fill" />
+        ) : (
+          <Icon
+            src={
+              <VectorIcon family={FontAwesome} name="plus-circle" size={32} />
             }
           />
         )}
