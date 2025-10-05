@@ -1,4 +1,5 @@
 import * as WebBrowser from 'expo-web-browser'
+import * as Linking from 'expo-linking'
 import { supabase } from './supabaseClient'
 import { Sentry } from './sentry'
 
@@ -27,41 +28,88 @@ export async function initiateGoogleOAuth(): Promise<{
   type: 'success' | 'cancel' | 'dismiss' | 'locked'
   url?: string
 }> {
-  try {
-    // Create redirect URI using the app scheme from app.json
-    // Using root path to avoid "screen doesn't exist" error
-    const redirectTo = 'dutchlearning://'
+  return new Promise(async (resolve, reject) => {
+    let subscription: Linking.Subscription | null = null
 
-    // Start OAuth flow with Supabase
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo,
-        skipBrowserRedirect: true,
-      },
-    })
+    try {
+      const redirectTo = 'dutchlearning://'
 
-    if (error) {
+      // Set up deep link listener BEFORE opening browser (iOS workaround)
+      subscription = Linking.addEventListener('url', async event => {
+        // Check if this is an OAuth callback
+        if (event.url.includes('access_token')) {
+          // Dismiss the browser (iOS requirement)
+          await WebBrowser.dismissBrowser()
+
+          // Create session from URL
+          try {
+            await createSessionFromOAuthUrl(event.url)
+            resolve({ type: 'success', url: event.url })
+          } catch (error) {
+            Sentry.captureException(error, {
+              tags: { operation: 'googleOAuthDeepLink' },
+              extra: { message: 'Failed to create session from deep link' },
+            })
+            reject(error)
+          }
+        }
+      })
+
+      // Start OAuth flow with Supabase
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo,
+          skipBrowserRedirect: true,
+        },
+      })
+
+      if (error) {
+        Sentry.captureException(error, {
+          tags: { operation: 'googleOAuthInit' },
+          extra: { message: 'Failed to initialize Google OAuth' },
+        })
+        subscription?.remove()
+        throw error
+      }
+
+      if (!data?.url) {
+        subscription?.remove()
+        throw new Error('No OAuth URL returned from Supabase')
+      }
+
+      // Open OAuth URL in browser
+      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo)
+
+      // If browser was dismissed/cancelled without deep link
+      if (result.type === 'cancel' || result.type === 'dismiss') {
+        subscription?.remove()
+        resolve(result)
+      } else if (result.type === 'success' && result.url) {
+        // Fallback: if deep link listener didn't fire, handle URL directly
+        try {
+          await createSessionFromOAuthUrl(result.url)
+          subscription?.remove()
+          resolve(result)
+        } catch (error) {
+          subscription?.remove()
+          reject(error)
+        }
+      }
+    } catch (error) {
+      subscription?.remove()
       Sentry.captureException(error, {
         tags: { operation: 'googleOAuthInit' },
-        extra: { message: 'Failed to initialize Google OAuth' },
+        extra: { message: 'Google OAuth initialization failed' },
       })
-      throw error
+      reject(error)
+    } finally {
+      // Clean up listener after a delay to ensure it's processed
+      setTimeout(() => {
+        subscription?.remove()
+      }, 1000)
     }
-
-    if (!data?.url) {
-      throw new Error('No OAuth URL returned from Supabase')
-    }
-
-    // Open OAuth URL in browser
-    return await WebBrowser.openAuthSessionAsync(data.url, redirectTo)
-  } catch (error) {
-    Sentry.captureException(error, {
-      tags: { operation: 'googleOAuthInit' },
-      extra: { message: 'Google OAuth initialization failed' },
-    })
-    throw error
-  }
+  })
 }
 
 /**

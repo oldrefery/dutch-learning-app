@@ -239,8 +239,10 @@ export function SimpleAuthProvider({
       const result = await initiateGoogleOAuth()
 
       if (result.type === 'success') {
-        // Session is set in the deep link handler
-        // Wait for session to be established
+        // Wait a moment for auth state change to propagate
+        await new Promise(resolve => setTimeout(resolve, 300))
+
+        // Get the current session (should be set by googleAuth)
         const {
           data: { session },
         } = await supabase.auth.getSession()
@@ -254,6 +256,8 @@ export function SimpleAuthProvider({
           } else {
             router.replace(ROUTES.TABS.ROOT)
           }
+        } else {
+          setError('Failed to create session. Please try again.')
         }
       } else if (result.type === 'cancel' || result.type === 'dismiss') {
         setError('Google sign-in was cancelled.')
