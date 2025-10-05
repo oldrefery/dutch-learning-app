@@ -5,6 +5,7 @@ import {
   Icon,
   Label,
   Badge,
+  VectorIcon,
 } from 'expo-router/unstable-native-tabs'
 import { router } from 'expo-router'
 import {
@@ -17,7 +18,6 @@ import {
   DynamicColorIOS,
   ViewStyle,
 } from 'react-native'
-import { BlurView } from 'expo-blur'
 import * as Haptics from 'expo-haptics'
 
 import { Colors } from '@/constants/Colors'
@@ -163,6 +163,7 @@ export default function TabLayout() {
   return (
     <NativeTabs
       labelStyle={labelStyle as ComponentProps<typeof NativeTabs>['labelStyle']}
+      labelVisibilityMode="labeled"
     >
       {/* Navigation tabs - left side following HIG order */}
       <TabTrigger
@@ -173,7 +174,9 @@ export default function TabLayout() {
         {Platform.OS === 'ios' ? (
           <Icon sf="house.fill" />
         ) : (
-          <FontAwesome name="home" size={24} />
+          <Icon
+            src={<VectorIcon family={FontAwesome} name="home" size={32} />}
+          />
         )}
       </TabTrigger>
 
@@ -185,7 +188,9 @@ export default function TabLayout() {
         {Platform.OS === 'ios' ? (
           <Icon sf="clock.fill" />
         ) : (
-          <FontAwesome name="history" size={24} />
+          <Icon
+            src={<VectorIcon family={FontAwesome} name="history" size={32} />}
+          />
         )}
       </TabTrigger>
 
@@ -197,7 +202,9 @@ export default function TabLayout() {
         {Platform.OS === 'ios' ? (
           <Icon sf="gear" />
         ) : (
-          <FontAwesome name="cog" size={24} />
+          <Icon
+            src={<VectorIcon family={FontAwesome} name="cog" size={32} />}
+          />
         )}
       </TabTrigger>
 
@@ -211,30 +218,11 @@ export default function TabLayout() {
         {Platform.OS === 'ios' ? (
           <Icon sf="plus.circle.fill" />
         ) : (
-          <View
-            style={[
-              styles.primaryIconContainer,
-              {
-                shadowColor: Colors.primary.DEFAULT,
-                shadowOpacity: 0.3,
-              },
-            ]}
-          >
-            <BlurView
-              style={styles.primaryIconBlur}
-              intensity={80}
-              tint={colorScheme === 'dark' ? 'dark' : 'light'}
-            >
-              <View style={[styles.primaryIconInner]}>
-                <FontAwesome
-                  name="plus"
-                  size={22}
-                  color={Colors.primary.DEFAULT}
-                  style={styles.primaryIcon}
-                />
-              </View>
-            </BlurView>
-          </View>
+          <Icon
+            src={
+              <VectorIcon family={FontAwesome} name="plus-circle" size={32} />
+            }
+          />
         )}
       </TabTrigger>
 
@@ -267,30 +255,15 @@ export default function TabLayout() {
         {Platform.OS === 'ios' ? (
           <Icon sf="brain.head.profile" />
         ) : (
-          <View
-            style={[
-              styles.primaryIconContainer,
-              {
-                shadowColor: Colors.primary.DEFAULT,
-                shadowOpacity: 0.3,
-              },
-            ]}
-          >
-            <BlurView
-              style={styles.primaryIconBlur}
-              intensity={80}
-              tint={colorScheme === 'dark' ? 'dark' : 'light'}
-            >
-              <View style={[styles.primaryIconInner]}>
-                <FontAwesome
-                  name="graduation-cap"
-                  size={20}
-                  color={Colors.primary.DEFAULT}
-                  style={styles.primaryIcon}
-                />
-              </View>
-            </BlurView>
-          </View>
+          <Icon
+            src={
+              <VectorIcon
+                family={FontAwesome}
+                name="graduation-cap"
+                size={32}
+              />
+            }
+          />
         )}
       </TabTrigger>
     </NativeTabs>
@@ -298,54 +271,6 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  // HIG compliant 46x46 primary icon container for liquid glass effect
-  primaryIconContainer: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    marginBottom: 4,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
-    elevation: 8,
-    shadowColor:
-      Platform.OS === 'ios'
-        ? PlatformColor('systemBlue')
-        : Colors.primary.DEFAULT,
-    shadowOpacity: Platform.OS === 'ios' ? 0.35 : 0.3,
-  },
-  primaryIconBlur: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 23,
-    overflow: 'hidden',
-  },
-  primaryIconInner: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 23,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor:
-      Platform.OS === 'ios'
-        ? DynamicColorIOS({
-            light: 'rgba(255, 255, 255, 0.4)',
-            dark: 'rgba(255, 255, 255, 0.2)',
-          })
-        : 'rgba(255, 255, 255, 0.3)',
-    backgroundColor:
-      Platform.OS === 'ios'
-        ? DynamicColorIOS({
-            light: 'rgba(255, 255, 255, 0.15)',
-            dark: 'rgba(255, 255, 255, 0.05)',
-          })
-        : 'rgba(255, 255, 255, 0.1)',
-  },
-  primaryIcon: {
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
   // HIG-compliant badge styling for review count with platform-specific colors
   reviewBadge: {
     minWidth: 20,
