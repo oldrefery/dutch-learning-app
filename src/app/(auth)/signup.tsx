@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { AuthInput } from '@/components/auth/AuthInput'
 import { AuthButton } from '@/components/auth/AuthButton'
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
@@ -23,7 +24,8 @@ export default function SignupScreen() {
   const [passwordError, setPasswordError] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
-  const { testSignUp, loading, error, clearError } = useSimpleAuth()
+  const { testSignUp, signInWithGoogle, loading, error, clearError } =
+    useSimpleAuth()
 
   const handleEmailChange = (text: string) => {
     setEmail(text)
@@ -99,6 +101,15 @@ export default function SignupScreen() {
     }
   }
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle()
+    } catch (error) {
+      // Error handled by SimpleAuthProvider
+      Sentry.captureException(error)
+    }
+  }
+
   return (
     <ViewThemed style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -130,6 +141,31 @@ export default function SignupScreen() {
               </ViewThemed>
 
               <ViewThemed style={styles.form}>
+                <GoogleSignInButton
+                  onPress={handleGoogleSignIn}
+                  loading={loading}
+                />
+
+                <ViewThemed style={styles.dividerContainer}>
+                  <ViewThemed
+                    style={styles.divider}
+                    lightColor={Colors.neutral[300]}
+                    darkColor={Colors.neutral[700]}
+                  />
+                  <TextThemed
+                    style={styles.dividerText}
+                    lightColor={Colors.neutral[500]}
+                    darkColor={Colors.neutral[500]}
+                  >
+                    OR
+                  </TextThemed>
+                  <ViewThemed
+                    style={styles.divider}
+                    lightColor={Colors.neutral[300]}
+                    darkColor={Colors.neutral[700]}
+                  />
+                </ViewThemed>
+
                 <AuthInput
                   label="Email"
                   value={email}
@@ -273,6 +309,20 @@ const styles = StyleSheet.create({
   },
   form: {
     marginBottom: 32,
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 24,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    fontSize: 14,
+    fontWeight: '500',
   },
   passwordRequirements: {
     marginBottom: 20,

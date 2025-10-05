@@ -25,7 +25,12 @@
       "icon": "./src/assets/icons/ios-light.png",
       "infoPlist": {
         "UIBackgroundModes": ["audio", "audio"],
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": ["dutchlearning"]
+          }
+        ]
       },
       "appleTeamId": "7FQ395U52U"
     },
