@@ -6,6 +6,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native'
+import { AntDesign } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 
@@ -43,13 +44,16 @@ export function GoogleSignInButton({
         />
       ) : (
         <View style={styles.content}>
-          <View style={styles.iconContainer}>
-            <TextThemed style={styles.googleIcon}>G</TextThemed>
-          </View>
+          <AntDesign
+            name="google"
+            size={18}
+            color={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+            style={styles.icon}
+          />
           <TextThemed
             style={styles.buttonText}
-            lightColor={Colors.neutral[900]}
-            darkColor={Colors.dark.text}
+            lightColor="#1f1f1f"
+            darkColor="#e3e3e3"
           >
             Continue with Google
           </TextThemed>
@@ -61,27 +65,27 @@ export function GoogleSignInButton({
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 14,
+    paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 50,
+    minHeight: 48,
     borderWidth: 1,
     flexDirection: 'row',
   },
   buttonLight: {
-    backgroundColor: Colors.background.primary,
-    borderColor: Colors.neutral[300],
+    backgroundColor: '#FFFFFF',
+    borderColor: '#dadce0',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    shadowOpacity: 0.04,
+    shadowRadius: 1,
     elevation: 1,
   },
   buttonDark: {
-    backgroundColor: Colors.dark.cardBackground,
-    borderColor: Colors.neutral[700],
+    backgroundColor: '#131314',
+    borderColor: '#8e918f',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
@@ -96,19 +100,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconContainer: {
-    width: 20,
-    height: 20,
+  icon: {
     marginRight: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  googleIcon: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '500',
+    letterSpacing: 0.25,
   },
 })

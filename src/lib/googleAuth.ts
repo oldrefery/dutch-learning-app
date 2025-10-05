@@ -29,7 +29,8 @@ export async function initiateGoogleOAuth(): Promise<{
 }> {
   try {
     // Create redirect URI using the app scheme from app.json
-    const redirectTo = 'dutchlearning://auth/callback'
+    // Using root path to avoid "screen doesn't exist" error
+    const redirectTo = 'dutchlearning://'
 
     // Start OAuth flow with Supabase
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -101,8 +102,8 @@ export async function createSessionFromOAuthUrl(url: string): Promise<void> {
  */
 export async function handleOAuthCallback(url: string): Promise<boolean> {
   try {
-    // Check if this is an OAuth callback URL
-    if (!url.includes('auth/callback') && !url.includes('access_token')) {
+    // Check if this is an OAuth callback URL by checking for access_token
+    if (!url.includes('access_token')) {
       return false
     }
 
