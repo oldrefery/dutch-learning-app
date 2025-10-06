@@ -28,6 +28,9 @@ src/                   # Source code root
 ├── components/        # Reusable UI components
 │   ├── ReviewCard/    # Card components
 │   ├── ImageSelector.tsx # Image selection modal
+│   ├── auth/          # Authentication components
+│   │   ├── GoogleSignInButton.tsx # Google OAuth button
+│   │   └── AppleSignInButton.tsx  # Apple Sign-In button
 │   └── ...
 │
 ├── stores/            # State management (Zustand)
@@ -36,6 +39,8 @@ src/                   # Source code root
 ├── lib/               # Utility libraries
 │   ├── supabaseClient.ts # Supabase client configuration
 │   ├── supabase.ts    # Supabase services and helpers
+│   ├── googleAuth.ts  # Google OAuth authentication helpers
+│   ├── appleAuth.ts   # Apple Sign-In authentication helpers
 │   └── ...
 │
 ├── assets/            # Static assets

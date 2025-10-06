@@ -89,6 +89,38 @@ curl -X POST \
   -d '{"word": "kopen"}'
 ```
 
+### 7. Configure Apple Sign-In (iOS only)
+
+Apple Sign-In is automatically configured through Expo. Required setup:
+
+1. **Add Apple Sign-In Capability in Xcode** (for development builds):
+   - Open your project in Xcode
+   - Select your target → Signing & Capabilities
+   - Click "+ Capability" → Sign in with Apple
+
+2. **Configure in Apple Developer Portal** (for production):
+   - Go to [Apple Developer Portal](https://developer.apple.com/account/resources/identifiers/list)
+   - Select your app identifier
+   - Enable "Sign In with Apple" capability
+   - Save changes
+
+3. **Supabase Apple Provider Configuration**:
+   - Go to [Supabase Auth Providers](https://supabase.com/dashboard/project/josxavjbcjbcjgulwcyy/auth/providers)
+   - Enable Apple provider
+   - Add your iOS Bundle ID: `com.oldrefery.dutch-learning-app`
+   - Add Services ID (if using web)
+
+**Note**: Apple Sign-In is enabled in `app.json` with:
+
+```json
+{
+  "ios": {
+    "usesAppleSignIn": true
+  },
+  "plugins": ["expo-apple-authentication"]
+}
+```
+
 ## 🎯 Next Steps
 
 After completing the manual setup:

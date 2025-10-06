@@ -29,7 +29,7 @@ export async function initiateGoogleOAuth(): Promise<{
   url?: string
 }> {
   return new Promise(async (resolve, reject) => {
-    let subscription: Linking.Subscription | null = null
+    let subscription: ReturnType<typeof Linking.addEventListener> | null = null
 
     try {
       const redirectTo = 'dutchlearning://'
