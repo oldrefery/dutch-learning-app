@@ -7,6 +7,7 @@ import { ROUTES } from '@/constants/Routes'
 import type { LoginCredentials, SignupCredentials } from '@/types/AuthTypes'
 import { Sentry } from '@/lib/sentry'
 import { initiateGoogleOAuth, handleOAuthCallback } from '@/lib/googleAuth'
+import { initiateAppleSignIn } from '@/lib/appleAuth'
 
 interface SimpleAuthState {
   loading: boolean
@@ -22,6 +23,9 @@ interface SimpleAuthActions {
     redirectUrl?: string | { pathname: string; params?: RedirectParams }
   ) => Promise<void>
   signInWithGoogle: (
+    redirectUrl?: string | { pathname: string; params?: RedirectParams }
+  ) => Promise<void>
+  signInWithApple: (
     redirectUrl?: string | { pathname: string; params?: RedirectParams }
   ) => Promise<void>
   signOut: () => Promise<void>
@@ -273,6 +277,55 @@ export function SimpleAuthProvider({
     }
   }
 
+  const signInWithApple = async (
+    redirectUrl?: string | { pathname: string; params?: RedirectParams }
+  ) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const result = await initiateAppleSignIn()
+
+      if (result.type === 'success') {
+        // Wait a moment for auth state change to propagate
+        await new Promise(resolve => setTimeout(resolve, 300))
+
+        // Get the current session (should be set by appleAuth)
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
+
+        if (session?.user?.id) {
+          await initializeApp(session.user.id)
+
+          // Handle deferred deep linking
+          if (redirectUrl) {
+            router.replace(redirectUrl)
+          } else {
+            router.replace(ROUTES.TABS.ROOT)
+          }
+        } else {
+          setError('Failed to create session. Please try again.')
+        }
+      } else if (result.type === 'cancel') {
+        setError('Apple sign-in was cancelled.')
+      } else if (result.type === 'error') {
+        setError(
+          result.error?.message ||
+            'Failed to sign in with Apple. Please try again.'
+        )
+      }
+    } catch (error) {
+      setError('Failed to sign in with Apple. Please try again.')
+      Sentry.captureException(error, {
+        tags: { operation: 'signInWithApple' },
+        extra: { message: 'Apple Sign-In failed' },
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const signOut = async () => {
     try {
       setLoading(true)
@@ -411,6 +464,7 @@ export function SimpleAuthProvider({
     testSignUp,
     testSignIn,
     signInWithGoogle,
+    signInWithApple,
     signOut,
     requestPasswordReset,
     resetPassword,

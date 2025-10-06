@@ -11,6 +11,7 @@ import { ViewThemed, TextThemed } from '@/components/Themed'
 import { AuthInput } from '@/components/auth/AuthInput'
 import { AuthButton } from '@/components/auth/AuthButton'
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton'
+import { AppleSignInButton } from '@/components/auth/AppleSignInButton'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
@@ -23,8 +24,14 @@ export default function LoginScreen() {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
 
-  const { testSignIn, signInWithGoogle, loading, error, clearError } =
-    useSimpleAuth()
+  const {
+    testSignIn,
+    signInWithGoogle,
+    signInWithApple,
+    loading,
+    error,
+    clearError,
+  } = useSimpleAuth()
 
   const handleEmailChange = (text: string) => {
     setEmail(text)
@@ -85,6 +92,15 @@ export default function LoginScreen() {
     }
   }
 
+  const handleAppleSignIn = async () => {
+    try {
+      await signInWithApple(redirect)
+    } catch (error) {
+      // Error handled by SimpleAuthProvider
+      Sentry.captureException(error)
+    }
+  }
+
   return (
     <ViewThemed style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -118,6 +134,11 @@ export default function LoginScreen() {
               </ViewThemed>
 
               <ViewThemed style={styles.form}>
+                <AppleSignInButton
+                  onPress={handleAppleSignIn}
+                  loading={loading}
+                />
+
                 <GoogleSignInButton
                   onPress={handleGoogleSignIn}
                   loading={loading}

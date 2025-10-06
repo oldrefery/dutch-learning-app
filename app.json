@@ -19,6 +19,7 @@
       }
     },
     "ios": {
+      "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "com.oldrefery.dutch-learning-app",
       "buildNumber": "44",
@@ -57,6 +58,7 @@
     "plugins": [
       "expo-router",
       "expo-audio",
+      "expo-apple-authentication",
       [
         "@sentry/react-native/expo",
         {
