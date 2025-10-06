@@ -5,6 +5,77 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2025-10-06 (Build 45)
+
+### Added
+
+- **Apple Sign-In Authentication**: Native Apple Sign-In integration for iOS devices
+  - **Native iOS Support**: Built using expo-apple-authentication for seamless iOS integration
+  - **Secure Nonce Generation**: Cryptographically secure random nonce with SHA-256 hashing
+  - **Privacy-First Design**: Supports Apple's privacy features including email relay and name sharing
+  - **Identity Token Validation**: Secure authentication through Supabase Auth integration
+  - **Availability Checking**: Runtime verification of Apple Sign-In availability on device
+  - **Platform-Specific Rendering**: Automatically hidden on non-iOS platforms
+  - **HIG-Compliant Button**: Native Apple Sign In button following Apple design guidelines
+    - Adaptive dark/light theme support with proper contrast
+    - Loading states with activity indicator
+    - Disabled state handling with proper opacity
+    - Apple icon using @expo/vector-icons (AntDesign)
+  - **Seamless Integration**: Added to both login and signup screens alongside Google OAuth
+  - **Auto-Navigation**: Automatic redirect to main app after successful authentication
+
+### Security
+
+- **Replay Attack Prevention**: Nonce-based security system
+  - Generates 32-byte cryptographically secure random nonce using expo-crypto
+  - Hashes nonce with SHA-256 before sending to Apple
+  - Validates identity token with original nonce through Supabase
+- **Comprehensive Error Handling**:
+  - Graceful handling of user-cancelled authentication attempts
+  - Sentry logging for all authentication errors with detailed context
+  - User-friendly error messages for common failure scenarios
+  - Proper error categorization (availability, cancellation, authentication)
+
+### Technical
+
+- **New Components**:
+  - `src/components/auth/AppleSignInButton.tsx` - Apple authentication button component
+    - Platform-specific rendering (iOS only)
+    - Theme-aware styling with adaptive colors
+    - Loading and disabled state management
+  - `src/lib/appleAuth.ts` - Apple Sign-In authentication helpers
+    - `generateNonce()` - Secure random nonce generation
+    - `hashNonce()` - SHA-256 nonce hashing
+    - `isAppleAuthAvailable()` - Platform and availability checking
+    - `initiateAppleSignIn()` - Complete authentication flow orchestration
+
+- **Updated Components**:
+  - `src/contexts/SimpleAuthProvider.tsx` - Added `signInWithApple()` method
+  - `src/app/(auth)/login.tsx` - Integrated Apple Sign In button with error handling
+  - `src/app/(auth)/signup.tsx` - Integrated Apple Sign In button with error handling
+
+- **Configuration**:
+  - `app.json` - Enabled Apple Sign-In capabilities
+    - Set `usesAppleSignIn: true` for iOS
+    - Added `expo-apple-authentication` plugin to plugins array
+    - Configured Apple Team ID for proper app signing
+  - Version bumped to 1.7.0 with build number 45
+
+- **Dependencies**:
+  - Added `expo-apple-authentication` (~8.0.7) for native Apple Sign-In
+  - Uses existing `expo-crypto` for secure nonce generation
+  - Uses existing `@expo/vector-icons` for Apple icon
+
+### Notes
+
+- **iOS Only**: Apple Sign-In is only available on iOS devices (13.0+)
+- **App Store Requirement**: Required for apps that use other third-party sign-in options
+- **Supabase Integration**: Uses Supabase Auth's `signInWithIdToken()` for seamless integration
+- **Production Ready**: Fully tested with development builds on iOS
+- **Developer Portal Setup**: Requires Apple Developer Portal configuration for production
+
+---
+
 ## [1.5.4] - 2025-10-05
 
 ### Added

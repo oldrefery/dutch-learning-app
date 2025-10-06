@@ -175,6 +175,25 @@ Seamless social login integration for faster onboarding:
 - **Error Handling**: Comprehensive error messages and loading states for better UX
 - **Production Ready**: Fully tested on iOS and Android development builds
 
+### 🍎 Apple Sign-In Authentication
+
+Native Apple authentication for seamless iOS user experience:
+
+- **Native iOS Integration**: Built-in Apple Sign In for iOS devices using expo-apple-authentication
+- **Secure Authentication**: Nonce-based security with SHA-256 hashing to prevent replay attacks
+- **Privacy-First**: Supports Apple's privacy features including email relay and name sharing
+- **HIG-Compliant Design**: Native Apple Sign In button following Apple's design guidelines
+- **Platform-Specific**: Automatically hidden on non-iOS platforms
+- **Seamless Integration**: Works alongside Google OAuth with unified authentication flow
+
+#### Security Features:
+
+- **Nonce Generation**: Cryptographically secure random nonce generation using expo-crypto
+- **Token Validation**: Identity token verification through Supabase Auth integration
+- **Error Handling**: Comprehensive error logging with Sentry integration
+- **User Cancellation**: Graceful handling of user-cancelled authentication attempts
+- **Availability Check**: Runtime verification of Apple Sign-In availability on device
+
 ### 🔍 Collection Search
 
 Fast and intuitive search functionality within collections:
@@ -269,32 +288,36 @@ The application uses a modern Backend-as-a-Service (BaaS) architecture, which mi
 - Smart word analysis cache with 80-90% cost reduction ✅
 - Apple HIG cache UI with status indicators ✅
 
-## Recent Updates (Build 33)
+## Recent Updates (Build 45 - Version 1.7.0)
 
-### 🐛 Bug Fixes
+### 🍎 Apple Sign-In Authentication
 
-- **Word Highlighting Animation**: Removed distracting flashing/blinking animations for duplicate words
-  - Eliminated red highlight overlay animations that appeared when scrolling to duplicate words
-  - Preserved smooth scroll-to-word functionality for better navigation experience
-  - Improved overall user experience by removing visual distractions
+- **Native iOS Authentication**: Complete Apple Sign-In integration for iOS devices
+  - Nonce-based security with SHA-256 hashing to prevent replay attacks
+  - Native Apple Sign In button following Apple HIG design guidelines
+  - Seamless integration with Supabase Auth using identity token validation
+  - Automatic platform detection (iOS only, hidden on other platforms)
+  - Comprehensive error handling with Sentry logging
+  - Graceful handling of user-cancelled authentication attempts
 
-### 🛠️ Architecture Improvements
+### 📦 New Components
 
-- **CollectionContent Component**: Refactored for improved rendering performance
-  - Extracted keyExtractor and renderItem functions for better optimization
-  - Improved code organization and prop handling
+- **AppleSignInButton**: Native Apple authentication button component
+  - Platform-specific rendering (iOS only)
+  - Dark/light theme support with adaptive colors
+  - Loading states and disabled state handling
+  - Apple icon with proper branding compliance
 
-- **SwipeableWordItem Component**: Streamlined highlighting system
-  - Replaced complex highlight animation with simple border indication
-  - Simplified component interface and reduced memory usage
-  - Maintained all word interaction features (swipe gestures, selection, etc.)
+### 🔧 Technical Improvements
 
-### ⚡ Performance Optimizations
-
-- **Animation System**: Removed unnecessary highlight animations
-  - Reduced component complexity and memory usage
-  - Simplified animated style calculations
-  - Improved overall app responsiveness
+- **Authentication Library**: Added `src/lib/appleAuth.ts` for Apple Sign-In logic
+  - Secure nonce generation using expo-crypto
+  - Identity token validation and session management
+  - Availability checking for Apple authentication services
+- **Configuration**: Updated app.json with Apple Sign-In capabilities
+  - Enabled `usesAppleSignIn` flag for iOS
+  - Added `expo-apple-authentication` plugin
+- **Dependencies**: Added `expo-apple-authentication` (~8.0.7) for native Apple Sign-In support
 
 ## 8. Documentation
 
