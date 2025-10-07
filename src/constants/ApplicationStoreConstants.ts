@@ -45,4 +45,9 @@ export const APPLICATION_STORE_CONSTANTS = {
     MAX_WORDS_PER_SESSION: 50,
     MIN_WORDS_FOR_SESSION: 1,
   },
+
+  // Data sync intervals (in milliseconds)
+  SYNC_INTERVALS: {
+    REVIEW_WORDS_COUNT: 60000, // 60 seconds - periodic sync to ensure accuracy
+  },
 } as const

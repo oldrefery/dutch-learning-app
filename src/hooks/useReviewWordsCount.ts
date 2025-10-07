@@ -1,52 +1,41 @@
-import { useState, useEffect, useCallback } from 'react'
-import { wordService } from '@/lib/supabase'
+import { useEffect } from 'react'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import { Sentry } from '@/lib/sentry'
+import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 
 /**
  * Hook to get the count of words available for review
- * Updates automatically when the user changes or when the app becomes active
+ * Uses the centralized store for instant updates after review assessments
+ * Periodically syncs with the database for reliability
  */
 export function useReviewWordsCount() {
-  const [reviewWordsCount, setReviewWordsCount] = useState<number>(0)
-  const [isLoading, setIsLoading] = useState(false)
-
+  const reviewWordsCount = useApplicationStore(state => state.reviewWordsCount)
+  const fetchReviewWordsCount = useApplicationStore(
+    state => state.fetchReviewWordsCount
+  )
   const currentUserId = useApplicationStore(state => state.currentUserId)
 
-  const fetchReviewWordsCount = useCallback(async () => {
-    if (!currentUserId) {
-      setReviewWordsCount(0)
-      return
-    }
-
-    setIsLoading(true)
-    try {
-      const reviewWords = await wordService.getWordsForReview(currentUserId)
-      setReviewWordsCount(reviewWords?.length ?? 0)
-    } catch (error) {
-      setReviewWordsCount(0)
-      Sentry.captureException(error, {
-        tags: { operation: 'fetchReviewWordsCount' },
-        extra: { currentUserId },
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }, [currentUserId])
-
+  // Initial fetch on mount or when a user changes
   useEffect(() => {
-    fetchReviewWordsCount()
-  }, [fetchReviewWordsCount])
+    if (currentUserId) {
+      void fetchReviewWordsCount()
+    }
+  }, [currentUserId, fetchReviewWordsCount])
 
-  // Refresh count when the app becomes active (a user might have added new words)
+  // Periodic sync to ensure accuracy
+  // This handles edge cases like words added on other devices or background changes
   useEffect(() => {
-    const interval = setInterval(fetchReviewWordsCount, 30000) // Refresh every 30 seconds
+    if (!currentUserId) return
+
+    const interval = setInterval(() => {
+      void fetchReviewWordsCount()
+    }, APPLICATION_STORE_CONSTANTS.SYNC_INTERVALS.REVIEW_WORDS_COUNT)
+
     return () => clearInterval(interval)
-  }, [fetchReviewWordsCount])
+  }, [currentUserId, fetchReviewWordsCount])
 
   return {
     reviewWordsCount,
-    isLoading,
+    isLoading: false, // Store handles loading state internally now
     refreshCount: fetchReviewWordsCount,
   }
 }

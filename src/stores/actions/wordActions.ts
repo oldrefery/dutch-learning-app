@@ -134,6 +134,10 @@ export const createWordActions = (
       const newWord = await wordService.addWord(analyzedWord, userId)
       const currentWords = get().words
       set({ words: [...currentWords, newWord] })
+
+      // Refresh review count as new word is immediately available for review (fire-and-forget)
+      void get().fetchReviewWordsCount()
+
       return newWord
     } catch (error) {
       Sentry.captureException(error, {
@@ -209,7 +213,7 @@ export const createWordActions = (
         updatedWords[wordIndex] = updatedWordData
         set({ words: updatedWords })
       } else {
-        // Word not in local cache - this is OK!
+        // Word not in the local cache - this is OK!
         // The word was already updated in the database via wordService.updateWordProgress()
         // Local store.words may be cleared (sign out) or out of sync
         // The next fetchWords() will sync the data
@@ -238,6 +242,9 @@ export const createWordActions = (
       const currentWords = get().words
       const updatedWords = currentWords.filter(w => w.word_id !== wordId)
       set({ words: updatedWords })
+
+      // Refresh review count as the deleted word might have been due for review (fire-and-forget)
+      void get().fetchReviewWordsCount()
     } catch (error) {
       Sentry.captureException(error, {
         tags: { operation: 'deleteWord' },
@@ -335,6 +342,9 @@ export const createWordActions = (
         set({ words: updatedWords })
       }
 
+      // Refresh review count as reset word becomes available for review today (fire-and-forget)
+      void get().fetchReviewWordsCount()
+
       return updatedWordData
     } catch (error) {
       Sentry.captureException(error, {
@@ -376,6 +386,9 @@ export const createWordActions = (
       // Update the store with new words
       const currentWords = get().words
       set({ words: [...currentWords, ...addedWords] })
+
+      // Refresh review count as imported words are immediately available for review (fire-and-forget)
+      void get().fetchReviewWordsCount()
 
       return addedWords.length === words.length
     } catch (error) {

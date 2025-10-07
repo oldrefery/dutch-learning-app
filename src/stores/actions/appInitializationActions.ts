@@ -27,6 +27,7 @@ export const createAppInitializationActions = (
           get().fetchWords(),
           get().fetchCollections(),
           get().fetchUserAccessLevel(),
+          get().fetchReviewWordsCount(),
         ])
       } else {
         // No user, clear data
@@ -35,6 +36,7 @@ export const createAppInitializationActions = (
           userAccessLevel: null,
           words: [],
           collections: [],
+          reviewWordsCount: 0, // Clear review count
         })
 
         // End any active review session to prevent orphaned state

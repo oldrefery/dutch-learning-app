@@ -17,6 +17,7 @@ export const useApplicationStore = create<ApplicationState>((set, get) => {
     reviewSession: null,
     reviewLoading: false,
     currentWord: null,
+    reviewWordsCount: 0,
     error: null,
 
     // Actions

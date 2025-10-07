@@ -27,6 +27,8 @@ export const createReviewActions = (
   | 'goToPreviousWord'
   | 'deleteWordFromReview'
   | 'updateCurrentWordImage'
+  | 'fetchReviewWordsCount'
+  | 'decrementReviewWordsCount'
 > => ({
   startReviewSession: async () => {
     try {
@@ -72,6 +74,7 @@ export const createReviewActions = (
         set({
           reviewSession: null,
           currentWord: null,
+          reviewWordsCount: 0,
           reviewLoading: false,
         })
         return
@@ -86,6 +89,7 @@ export const createReviewActions = (
       set({
         reviewSession,
         currentWord: reviewWords[0],
+        reviewWordsCount: reviewWords.length,
         reviewLoading: false,
       })
     } catch (error) {
@@ -182,8 +186,13 @@ export const createReviewActions = (
         set({
           reviewSession: null,
           currentWord: null,
+          reviewWordsCount: 0,
         })
       }
+
+      // Decrement the review words count optimistically
+      // The word was assessed, so it's no longer in the "for review" queue
+      get().decrementReviewWordsCount()
     } catch (error) {
       logError('Error submitting review assessment', error, {}, 'review', false)
       set({
@@ -202,6 +211,7 @@ export const createReviewActions = (
     set({
       reviewSession: null,
       currentWord: null,
+      reviewWordsCount: 0,
     })
   },
 
@@ -285,6 +295,7 @@ export const createReviewActions = (
       set({
         reviewSession: null,
         currentWord: null,
+        reviewWordsCount: 0,
       })
       return
     }
@@ -308,7 +319,11 @@ export const createReviewActions = (
         currentIndex: newIndex,
       },
       currentWord: nextWord,
+      reviewWordsCount: updatedWords.length,
     })
+
+    // Also decrement the review words count when deleting
+    get().decrementReviewWordsCount()
   },
 
   updateCurrentWordImage: (imageUrl: string) => {
@@ -333,5 +348,28 @@ export const createReviewActions = (
         words: updatedWords,
       },
     })
+  },
+
+  fetchReviewWordsCount: async () => {
+    try {
+      const userId = get().currentUserId
+      if (!userId) {
+        set({ reviewWordsCount: 0 })
+        return
+      }
+
+      const reviewWords = await wordService.getWordsForReview(userId)
+      set({ reviewWordsCount: reviewWords?.length ?? 0 })
+    } catch (error) {
+      logError('Error fetching review words count', error, {}, 'review', false)
+      set({ reviewWordsCount: 0 })
+    }
+  },
+
+  decrementReviewWordsCount: () => {
+    const currentCount = get().reviewWordsCount
+    // Never go below 0
+    const newCount = Math.max(0, currentCount - 1)
+    set({ reviewWordsCount: newCount })
   },
 })

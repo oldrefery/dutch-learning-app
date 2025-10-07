@@ -30,6 +30,7 @@ export interface ApplicationState {
   reviewSession: ReviewSession | null
   reviewLoading: boolean
   currentWord: Word | null
+  reviewWordsCount: number
 
   // Errors
   error: AppError | null
@@ -87,6 +88,8 @@ export interface ApplicationState {
   goToPreviousWord: () => void
   deleteWordFromReview: (wordId: string) => void
   updateCurrentWordImage: (imageUrl: string) => void
+  fetchReviewWordsCount: () => Promise<void>
+  decrementReviewWordsCount: () => void
 
   // Error handling
   setError: (error: AppError) => void
