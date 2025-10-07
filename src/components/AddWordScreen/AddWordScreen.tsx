@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Keyboard, TextInput, InteractionManager } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useFocusEffect, useNavigation } from '@react-navigation/native'
+import { useFocusEffect } from '@react-navigation/native'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
@@ -23,11 +23,6 @@ import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 import { Sentry } from '@/lib/sentry'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 
-// Extend global type for AddWordScreen focus function (LEGACY)
-declare global {
-  var addWordScreenFocusInput: (() => void) | undefined
-}
-
 interface DuplicateWordData {
   word_id: string
   dutch_lemma: string
@@ -42,7 +37,6 @@ interface AddWordScreenProps {
 
 export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const insets = useSafeAreaInsets()
-  const navigation = useNavigation()
   const inputRef = useRef<TextInput>(null)
   const [inputWord, setInputWord] = useState('')
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
@@ -200,61 +194,19 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   )
 
   // Auto-focus input field when screen becomes active
-  // Exposed method for tab re-press to trigger focus
   const focusInput = useCallback(() => {
-    console.log('[AddWordScreen] focusInput called')
-    console.log('[AddWordScreen] inputRef.current:', inputRef.current)
     // Use InteractionManager to wait for animations to complete
     InteractionManager.runAfterInteractions(() => {
-      console.log(
-        '[AddWordScreen] InteractionManager callback - calling focus()'
-      )
       inputRef.current?.focus()
-      console.log('[AddWordScreen] Focus called')
     })
   }, [])
 
+  // Focus input when screen becomes active
   useFocusEffect(
     useCallback(() => {
-      // Focus input when screen becomes active
       focusInput()
     }, [focusInput])
   )
-
-  // Listen for tab press events to handle re-pressing the already active tab
-  useEffect(() => {
-    console.log('[AddWordScreen] Adding tabPress listener')
-    // @ts-ignore - tabPress is a valid event in React Navigation bottom tabs
-    const unsubscribe = navigation.addListener('tabPress', e => {
-      console.log('[AddWordScreen] tabPress event received')
-      // Focus input when tab is pressed (even if already on this screen)
-      focusInput()
-    })
-
-    console.log('[AddWordScreen] tabPress listener added')
-    return () => {
-      console.log('[AddWordScreen] Removing tabPress listener')
-      unsubscribe()
-    }
-  }, [navigation, focusInput])
-
-  // Expose focusInput method to parent (for tab re-press) - LEGACY, can be removed
-  useEffect(() => {
-    console.log('[AddWordScreen] Setting global.addWordScreenFocusInput')
-    // Store reference globally for tab layout to access
-    // @ts-ignore - Global reference for tab interaction
-    global.addWordScreenFocusInput = focusInput
-    console.log(
-      '[AddWordScreen] Global function set:',
-      typeof global.addWordScreenFocusInput
-    )
-
-    return () => {
-      console.log('[AddWordScreen] Cleaning up global.addWordScreenFocusInput')
-      // @ts-ignore
-      global.addWordScreenFocusInput = undefined
-    }
-  }, [focusInput])
 
   return (
     <ViewThemed
