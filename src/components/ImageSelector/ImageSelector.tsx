@@ -8,9 +8,11 @@ import {
   useColorScheme,
   TextInput,
 } from 'react-native'
+import { BlurView } from 'expo-blur'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { LIQUID_GLASS } from '@/constants/UIConstants'
 import { IMAGE_CONFIG } from '@/constants/AppConfig'
 import { supabase } from '@/lib/supabaseClient'
 import { getImageSelectorStyles } from './styles'
@@ -241,6 +243,8 @@ export default function ImageSelector({
     return renderImageGrid()
   }
 
+  const isDarkMode = colorScheme === 'dark'
+
   return (
     <Modal
       visible={visible}
@@ -248,20 +252,35 @@ export default function ImageSelector({
       presentationStyle="pageSheet"
     >
       <ViewThemed style={styles.container}>
-        <ViewThemed style={styles.header}>
-          <TextThemed style={styles.title}>Choose Image</TextThemed>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons
-              name="close"
-              size={24}
-              color={
-                colorScheme === 'dark'
-                  ? Colors.dark.textSecondary
-                  : Colors.light.textSecondary
-              }
-            />
-          </TouchableOpacity>
-        </ViewThemed>
+        <BlurView
+          intensity={LIQUID_GLASS.BLUR_INTENSITY.MODAL}
+          tint={isDarkMode ? 'dark' : 'light'}
+          style={styles.headerBlur}
+        >
+          <ViewThemed
+            style={[
+              styles.header,
+              {
+                backgroundColor: isDarkMode
+                  ? LIQUID_GLASS.BACKGROUND_DARK.ELEVATED
+                  : LIQUID_GLASS.BACKGROUND_LIGHT.ELEVATED,
+              },
+            ]}
+          >
+            <TextThemed style={styles.title}>Choose Image</TextThemed>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Ionicons
+                name="close"
+                size={24}
+                color={
+                  colorScheme === 'dark'
+                    ? Colors.dark.textSecondary
+                    : Colors.light.textSecondary
+                }
+              />
+            </TouchableOpacity>
+          </ViewThemed>
+        </BlurView>
 
         <TextThemed style={styles.subtitle}>
           Select a better image for &quot;{englishTranslation}&quot;

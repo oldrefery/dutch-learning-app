@@ -12,15 +12,14 @@ export const getImageSelectorStyles = (colorScheme: 'light' | 'dark') =>
           ? Colors.dark.background
           : Colors.light.background,
     },
+    headerBlur: {
+      overflow: 'hidden',
+    },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: 16,
-      backgroundColor:
-        colorScheme === 'dark'
-          ? Colors.dark.backgroundSecondary
-          : Colors.light.backgroundSecondary,
       borderBottomWidth: 1,
       borderBottomColor:
         colorScheme === 'dark' ? Colors.neutral[700] : Colors.neutral[200],

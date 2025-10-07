@@ -6,9 +6,11 @@ import {
   ActivityIndicator,
   useColorScheme,
 } from 'react-native'
+import { BlurView } from 'expo-blur'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { LIQUID_GLASS } from '@/constants/UIConstants'
 import { useCollections } from '@/hooks/useCollections'
 import type { Collection } from '@/types/database'
 
@@ -241,26 +243,38 @@ export default function CollectionSelector({
           lightColor={Colors.background.primary}
           darkColor={Colors.dark.background}
         >
-          <ViewThemed
-            style={[
-              styles.modalHeader,
-              { borderBottomColor: colors.modalBorder },
-            ]}
+          <BlurView
+            intensity={LIQUID_GLASS.BLUR_INTENSITY.MODAL}
+            tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            style={styles.headerBlur}
           >
-            <TextThemed
-              style={styles.modalTitle}
-              lightColor={Colors.neutral[900]}
-              darkColor={Colors.dark.text}
+            <ViewThemed
+              style={[
+                styles.modalHeader,
+                {
+                  backgroundColor:
+                    colorScheme === 'dark'
+                      ? LIQUID_GLASS.BACKGROUND_DARK.ELEVATED
+                      : LIQUID_GLASS.BACKGROUND_LIGHT.ELEVATED,
+                  borderBottomColor: colors.modalBorder,
+                },
+              ]}
             >
-              Select Collection
-            </TextThemed>
-            <TouchableOpacity
-              onPress={() => setIsVisible(false)}
-              style={styles.closeButton}
-            >
-              <Ionicons name="close" size={24} color={colors.closeIcon} />
-            </TouchableOpacity>
-          </ViewThemed>
+              <TextThemed
+                style={styles.modalTitle}
+                lightColor={Colors.neutral[900]}
+                darkColor={Colors.dark.text}
+              >
+                Select Collection
+              </TextThemed>
+              <TouchableOpacity
+                onPress={() => setIsVisible(false)}
+                style={styles.closeButton}
+              >
+                <Ionicons name="close" size={24} color={colors.closeIcon} />
+              </TouchableOpacity>
+            </ViewThemed>
+          </BlurView>
 
           <ViewThemed style={styles.modalContent}>{renderContent()}</ViewThemed>
 
@@ -323,6 +337,9 @@ const styles = {
   },
   modalContainer: {
     flex: 1,
+  },
+  headerBlur: {
+    overflow: 'hidden' as const,
   },
   modalHeader: {
     flexDirection: 'row' as const,
