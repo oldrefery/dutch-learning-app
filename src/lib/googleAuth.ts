@@ -84,7 +84,7 @@ export async function initiateGoogleOAuth(): Promise<{
       // If browser was dismissed/cancelled without deep link
       if (result.type === 'cancel' || result.type === 'dismiss') {
         subscription?.remove()
-        resolve(result)
+        resolve(result as any)
       } else if (result.type === 'success' && result.url) {
         // Fallback: if deep link listener didn't fire, handle URL directly
         try {

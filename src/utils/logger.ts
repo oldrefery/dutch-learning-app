@@ -1,5 +1,6 @@
 import { Sentry } from '@/lib/sentry'
 import type { PostgrestError } from '@supabase/supabase-js'
+import { isJWTExpiredError } from '@/types/ErrorTypes'
 
 /**
  * Centralized logging utility following Sentry best practices
@@ -150,13 +151,40 @@ function formatSupabaseError(error: PostgrestError): string {
 /**
  * Log and capture Supabase error to Sentry with proper formatting
  * This ensures Supabase errors are properly displayed in Sentry with all details
+ * Also handles JWT expired errors by triggering auth flow
  */
 export function logSupabaseError(
   message: string,
-  error: PostgrestError,
+  error: PostgrestError | unknown,
   context: SupabaseErrorContext
 ) {
-  const formattedError = formatSupabaseError(error)
+  // Check if this is a JWT expired error
+  if (isJWTExpiredError(error)) {
+    Sentry.captureException(error, {
+      tags: {
+        operation: context.operation,
+        errorType: 'JWT_EXPIRED',
+      },
+      extra: {
+        message: 'JWT token expired during operation',
+        ...context,
+      },
+    })
+
+    // Note: Actual sign out is handled by handleAuthError in supabase.ts
+    // We only log here to avoid circular dependencies
+    if (__DEV__) {
+      console.error('❌ [auth] JWT token expired', {
+        operation: context.operation,
+        context,
+      })
+    }
+    return
+  }
+
+  // Handle PostgrestError normally
+  const postgrestError = error as PostgrestError
+  const formattedError = formatSupabaseError(postgrestError)
   const fullMessage = `${message}: ${formattedError}`
 
   // Add breadcrumb for context
@@ -167,10 +195,10 @@ export function logSupabaseError(
     data: {
       ...context,
       supabaseError: {
-        code: error.code || 'unknown',
-        message: error.message || 'No message',
-        details: error.details || 'No details',
-        hint: error.hint || 'No hint',
+        code: postgrestError.code || 'unknown',
+        message: postgrestError.message || 'No message',
+        details: postgrestError.details || 'No details',
+        hint: postgrestError.hint || 'No hint',
       },
     },
   })
@@ -179,27 +207,31 @@ export function logSupabaseError(
   Sentry.captureException(new Error(fullMessage), {
     tags: {
       operation: context.operation,
-      errorCode: error.code || 'unknown',
+      errorCode: postgrestError.code || 'unknown',
     },
     extra: {
       ...context,
       supabaseError: {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
+        code: postgrestError.code,
+        message: postgrestError.message,
+        details: postgrestError.details,
+        hint: postgrestError.hint,
       },
     },
     // Fingerprinting: group errors by operation and error code
     // This ensures same errors are grouped together in Sentry
-    fingerprint: ['supabase-error', context.operation, error.code || 'unknown'],
+    fingerprint: [
+      'supabase-error',
+      context.operation,
+      postgrestError.code || 'unknown',
+    ],
   })
 
   // In development, also log to console
   if (__DEV__) {
     console.error(`❌ [supabase] ${fullMessage}`, {
       context,
-      supabaseError: error,
+      supabaseError: postgrestError,
     })
   }
 }

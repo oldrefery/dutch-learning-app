@@ -149,6 +149,34 @@ export class ValidationError extends Error implements AppError {
 }
 
 /**
+ * Check if error is JWT expired error
+ */
+export function isJWTExpiredError(error: unknown): boolean {
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase()
+    return (
+      message.includes('jwt expired') ||
+      message.includes('token expired') ||
+      message.includes('refresh_token_not_found') ||
+      message.includes('invalid refresh token')
+    )
+  }
+
+  // Check for Supabase JWT error responses
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
+    const message = error.message.toLowerCase()
+    return message.includes('jwt expired') || message.includes('token expired')
+  }
+
+  return false
+}
+
+/**
  * Helper function to categorize Supabase errors
  */
 export function categorizeSupabaseError(error: unknown): AppError {

@@ -23,5 +23,5 @@ export interface CardBackProps extends ReviewCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
   onDeleteWord: () => void
-  pronunciationRef?: React.RefObject<View>
+  pronunciationRef?: React.RefObject<View | null>
 }

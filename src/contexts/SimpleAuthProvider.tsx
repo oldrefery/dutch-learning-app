@@ -218,7 +218,11 @@ export function SimpleAuthProvider({
 
         // Handle deferred deep linking
         if (redirectUrl) {
-          router.replace(redirectUrl)
+          if (typeof redirectUrl === 'string') {
+            router.replace(redirectUrl as any)
+          } else {
+            router.replace(redirectUrl as any)
+          }
         } else {
           // Navigate to the main app
           router.replace(ROUTES.TABS.ROOT)
@@ -256,7 +260,11 @@ export function SimpleAuthProvider({
 
           // Handle deferred deep linking
           if (redirectUrl) {
-            router.replace(redirectUrl)
+            if (typeof redirectUrl === 'string') {
+              router.replace(redirectUrl as any)
+            } else {
+              router.replace(redirectUrl as any)
+            }
           } else {
             router.replace(ROUTES.TABS.ROOT)
           }
@@ -300,7 +308,11 @@ export function SimpleAuthProvider({
 
           // Handle deferred deep linking
           if (redirectUrl) {
-            router.replace(redirectUrl)
+            if (typeof redirectUrl === 'string') {
+              router.replace(redirectUrl as any)
+            } else {
+              router.replace(redirectUrl as any)
+            }
           } else {
             router.replace(ROUTES.TABS.ROOT)
           }

@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
-import { ROUTES } from '@/constants/Routes'
 import type { Collection } from '@/types/database'
 
 interface DuplicateWordData {
@@ -38,10 +37,12 @@ export function DuplicateWordInfo({
 
   const handleNavigateToCollection = () => {
     onNavigateToCollection?.()
-    const collectionPath = ROUTES.COLLECTION_DETAIL(duplicateWord.collection_id)
     router.push({
-      pathname: collectionPath,
-      params: { highlightWordId: duplicateWord.word_id },
+      pathname: `/collection/[id]`,
+      params: {
+        id: duplicateWord.collection_id,
+        highlightWordId: duplicateWord.word_id,
+      },
     })
   }
 

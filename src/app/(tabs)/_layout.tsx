@@ -174,9 +174,7 @@ export default function TabLayout() {
         {Platform.OS === 'ios' ? (
           <Icon sf="house.fill" />
         ) : (
-          <Icon
-            src={<VectorIcon family={FontAwesome} name="home" size={32} />}
-          />
+          <Icon src={<VectorIcon family={FontAwesome} name="home" />} />
         )}
       </TabTrigger>
 
@@ -189,9 +187,7 @@ export default function TabLayout() {
         {Platform.OS === 'ios' ? (
           <Icon sf="clock.fill" />
         ) : (
-          <Icon
-            src={<VectorIcon family={FontAwesome} name="history" size={32} />}
-          />
+          <Icon src={<VectorIcon family={FontAwesome} name="history" />} />
         )}
       </TabTrigger>
 
@@ -203,9 +199,7 @@ export default function TabLayout() {
         {Platform.OS === 'ios' ? (
           <Icon sf="gear" />
         ) : (
-          <Icon
-            src={<VectorIcon family={FontAwesome} name="cog" size={32} />}
-          />
+          <Icon src={<VectorIcon family={FontAwesome} name="cog" />} />
         )}
       </TabTrigger>
 
@@ -240,13 +234,7 @@ export default function TabLayout() {
           <Icon sf="brain.head.profile" />
         ) : (
           <Icon
-            src={
-              <VectorIcon
-                family={FontAwesome}
-                name="graduation-cap"
-                size={32}
-              />
-            }
+            src={<VectorIcon family={FontAwesome} name="graduation-cap" />}
           />
         )}
       </TabTrigger>
@@ -260,11 +248,7 @@ export default function TabLayout() {
         {Platform.OS === 'ios' ? (
           <Icon sf="plus.circle.fill" />
         ) : (
-          <Icon
-            src={
-              <VectorIcon family={FontAwesome} name="plus-circle" size={32} />
-            }
-          />
+          <Icon src={<VectorIcon family={FontAwesome} name="plus-circle" />} />
         )}
       </TabTrigger>
     </NativeTabs>

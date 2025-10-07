@@ -5,8 +5,8 @@ import type { Word } from '@/types/database'
 import type { ReviewAssessment } from '@/types/ApplicationStoreTypes'
 import { SRS_PARAMS } from '@/constants/SRSConstants'
 import * as Sentry from '@sentry/react-native'
-import { retrySupabaseFunction } from '@/utils/retryUtils'
-import { categorizeSupabaseError } from '@/types/ErrorTypes'
+import { retrySupabaseFunction, retryWithBackoff } from '@/utils/retryUtils'
+import { categorizeSupabaseError, isJWTExpiredError } from '@/types/ErrorTypes'
 import { checkNetworkConnection } from '@/utils/networkUtils'
 import { logSupabaseError } from '@/utils/logger'
 
@@ -37,6 +37,28 @@ export const getDevUserId = (): string => {
     process.env.EXPO_PUBLIC_DEV_USER_ID ||
     '00000000-0000-0000-0000-000000000000'
   )
+}
+
+// Handle JWT expired errors by signing out the user
+export async function handleAuthError(error: unknown): Promise<void> {
+  if (isJWTExpiredError(error)) {
+    Sentry.captureException(error, {
+      tags: { operation: 'handleAuthError', errorType: 'JWT_EXPIRED' },
+      extra: {
+        message: 'JWT token expired, signing out user',
+      },
+    })
+
+    // Sign out user to clear invalid session
+    try {
+      await supabase.auth.signOut()
+    } catch (signOutError) {
+      Sentry.captureException(signOutError, {
+        tags: { operation: 'handleAuthError', errorType: 'SIGN_OUT_FAILED' },
+        extra: { message: 'Failed to sign out after JWT expiration' },
+      })
+    }
+  }
 }
 
 // API service functions
@@ -217,24 +239,44 @@ export const wordService = {
 
   // Get words due for review
   async getWordsForReview(userId: string) {
-    const today = new Date().toISOString().split('T')[0]
+    try {
+      // Check network connectivity before making request
+      await checkNetworkConnection()
 
-    const { data, error } = await supabase
-      .from('words')
-      .select('*')
-      .eq('user_id', userId)
-      .lte('next_review_date', today)
-      .order('next_review_date', { ascending: true })
+      const today = new Date().toISOString().split('T')[0]
 
-    if (error) {
+      // Wrap database query with retry logic for network resilience
+      return await retryWithBackoff(
+        async () => {
+          const { data, error } = await supabase
+            .from('words')
+            .select('*')
+            .eq('user_id', userId)
+            .lte('next_review_date', today)
+            .order('next_review_date', { ascending: true })
+
+          if (error) {
+            throw error
+          }
+
+          return data
+        },
+        {
+          maxRetries: 3,
+          initialDelayMs: 1000,
+          maxDelayMs: 30000,
+        }
+      )
+    } catch (error) {
+      const categorizedError = categorizeSupabaseError(error)
       logSupabaseError('Failed to fetch review words', error, {
         operation: 'getWordsForReview',
         userId,
+        errorCategory: categorizedError.category,
+        isRetryable: categorizedError.isRetryable,
       })
       return null
     }
-
-    return data
   },
 
   // Check if word with same semantic properties already exists

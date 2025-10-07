@@ -11,7 +11,7 @@ import { ExamplesSection } from './ExamplesSection'
 import { Colors } from '@/constants/Colors'
 import type { CardBackProps } from './types'
 
-interface CardBackPropsWithRef extends CardBackProps {
+interface CardBackPropsWithRef extends Omit<CardBackProps, 'pronunciationRef'> {
   pronunciationRef?: React.RefObject<View | null>
 }
 

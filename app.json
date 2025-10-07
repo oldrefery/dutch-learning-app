@@ -25,7 +25,7 @@
       "buildNumber": "46",
       "icon": "./src/assets/icons/ios-light.png",
       "infoPlist": {
-        "UIBackgroundModes": ["audio", "audio"],
+        "UIBackgroundModes": ["audio"],
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleURLTypes": [
           {

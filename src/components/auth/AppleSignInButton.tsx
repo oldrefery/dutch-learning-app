@@ -9,7 +9,6 @@ import {
 } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
-import { Colors } from '@/constants/Colors'
 
 interface AppleSignInButtonProps {
   onPress: () => void
