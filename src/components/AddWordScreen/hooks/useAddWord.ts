@@ -3,6 +3,10 @@ import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useCollections } from '@/hooks/useCollections'
+import {
+  getLastSelectedCollection,
+  setLastSelectedCollection,
+} from '@/utils/storage'
 import type { Collection, GeminiWordAnalysis } from '@/types/database'
 
 export const useAddWord = (preselectedCollectionId?: string) => {
@@ -14,7 +18,10 @@ export const useAddWord = (preselectedCollectionId?: string) => {
   const { saveAnalyzedWord, clearError } = useApplicationStore()
   const { collections } = useCollections()
 
-  // Auto-select a preselected collection or first collection if available and none selected
+  // Auto-select a collection based on:
+  // 1. Preselected collection (from deep link/navigation)
+  // 2. Last selected collection (from storage)
+  // 3. First available collection
   // Also re-select if current selection is no longer valid (e.g., collection was deleted)
   useEffect(() => {
     if (collections.length === 0) {
@@ -34,7 +41,7 @@ export const useAddWord = (preselectedCollectionId?: string) => {
 
     // If no collection selected OR current selection is invalid
     if (!selectedCollection || !isCurrentCollectionValid) {
-      // Try to select preselected collection first
+      // Try to select preselected collection first (e.g., from navigation)
       if (preselectedCollectionId) {
         const preselectedCollection = collections.find(
           c => c.collection_id === preselectedCollectionId
@@ -44,6 +51,19 @@ export const useAddWord = (preselectedCollectionId?: string) => {
           return
         }
       }
+
+      // Try to restore last selected collection from storage
+      const lastSelectedId = getLastSelectedCollection()
+      if (lastSelectedId) {
+        const lastCollection = collections.find(
+          c => c.collection_id === lastSelectedId
+        )
+        if (lastCollection) {
+          setSelectedCollection(lastCollection)
+          return
+        }
+      }
+
       // Otherwise select first available collection
       setSelectedCollection(collections[0])
     }
@@ -104,6 +124,13 @@ export const useAddWord = (preselectedCollectionId?: string) => {
   const closeImageSelector = () => {
     setShowImageSelector(false)
   }
+
+  // Save selected collection to storage whenever it changes
+  useEffect(() => {
+    if (selectedCollection) {
+      setLastSelectedCollection(selectedCollection.collection_id)
+    }
+  }, [selectedCollection])
 
   return {
     isAdding,

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import {
   TextInput,
   TouchableOpacity,
@@ -139,114 +139,124 @@ const AnalyzeButton = ({
   </TouchableOpacity>
 )
 
-export function CompactWordInput({
-  inputWord,
-  setInputWord,
-  onAnalyze,
-  isAnalyzing,
-  isCheckingDuplicate,
-  selectedCollection,
-  collections,
-  onCollectionSelect,
-  onCancel,
-}: CompactWordInputProps) {
-  const colorScheme = useColorScheme() ?? 'light'
-  const styles = getStyles(colorScheme)
+export const CompactWordInput = forwardRef<TextInput, CompactWordInputProps>(
+  (
+    {
+      inputWord,
+      setInputWord,
+      onAnalyze,
+      isAnalyzing,
+      isCheckingDuplicate,
+      selectedCollection,
+      collections,
+      onCollectionSelect,
+      onCancel,
+    },
+    ref
+  ) => {
+    const colorScheme = useColorScheme() ?? 'light'
+    const styles = getStyles(colorScheme)
 
-  const handleCollectionPress = () => {
-    if (Platform.OS === 'ios') {
-      const options = collections.map(c => c.name)
-      options.push('Cancel')
+    const handleCollectionPress = () => {
+      if (Platform.OS === 'ios') {
+        const options = collections.map(c => c.name)
+        options.push('Cancel')
 
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options,
-          cancelButtonIndex: options.length - 1,
-          title: 'Select Collection',
-        },
-        buttonIndex => {
-          if (buttonIndex < collections.length) {
-            onCollectionSelect(collections[buttonIndex])
+        ActionSheetIOS.showActionSheetWithOptions(
+          {
+            options,
+            cancelButtonIndex: options.length - 1,
+            title: 'Select Collection',
+          },
+          buttonIndex => {
+            if (buttonIndex < collections.length) {
+              onCollectionSelect(collections[buttonIndex])
+            }
           }
-        }
-      )
+        )
+      }
     }
-  }
 
-  return (
-    <ViewThemed style={styles.container}>
-      <CollectionSelector
-        selectedCollection={selectedCollection}
-        onPress={handleCollectionPress}
-        colorScheme={colorScheme}
-      />
-
-      <ViewThemed style={styles.inputContainer}>
-        <Ionicons
-          name="search"
-          size={20}
-          color={
-            colorScheme === 'dark'
-              ? Colors.dark.textSecondary
-              : Colors.neutral[400]
-          }
-          style={{ marginLeft: 12 }}
-        />
-
-        <TextInput
-          style={{
-            flex: 1,
-            paddingVertical: 12,
-            paddingHorizontal: 8,
-            fontSize: 16,
-            color:
-              colorScheme === 'dark' ? Colors.dark.text : Colors.neutral[900],
-          }}
-          value={inputWord}
-          onChangeText={setInputWord}
-          placeholder="Enter Dutch word..."
-          placeholderTextColor={
-            colorScheme === 'dark'
-              ? Colors.dark.textTertiary
-              : Colors.neutral[400]
-          }
-          autoCapitalize="none"
-          autoCorrect={false}
-          autoComplete="off"
-          textContentType="none"
-          spellCheck={false}
-          keyboardType="ascii-capable"
-          returnKeyType="search"
-          onSubmitEditing={onAnalyze}
-        />
-
-        <AnalyzeButton
-          isAnalyzing={isAnalyzing}
-          isCheckingDuplicate={isCheckingDuplicate}
-          onAnalyze={onAnalyze}
+    return (
+      <ViewThemed style={styles.container}>
+        <CollectionSelector
+          selectedCollection={selectedCollection}
+          onPress={handleCollectionPress}
           colorScheme={colorScheme}
         />
-      </ViewThemed>
 
-      {(isAnalyzing || isCheckingDuplicate) && (
-        <ViewThemed style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
-          <TextThemed
+        <ViewThemed style={styles.inputContainer}>
+          <Ionicons
+            name="search"
+            size={20}
+            color={
+              colorScheme === 'dark'
+                ? Colors.dark.textSecondary
+                : Colors.neutral[400]
+            }
+            style={{ marginLeft: 12 }}
+          />
+
+          <TextInput
+            ref={ref}
             style={{
-              marginLeft: 8,
-              fontSize: 14,
+              flex: 1,
+              paddingVertical: 12,
+              paddingHorizontal: 8,
+              fontSize: 16,
               color:
-                colorScheme === 'dark'
-                  ? Colors.dark.textSecondary
-                  : Colors.neutral[600],
+                colorScheme === 'dark' ? Colors.dark.text : Colors.neutral[900],
             }}
-          >
-            {isCheckingDuplicate
-              ? 'Checking for duplicates...'
-              : 'Analyzing word with AI...'}
-          </TextThemed>
+            value={inputWord}
+            onChangeText={setInputWord}
+            placeholder="Enter Dutch word..."
+            placeholderTextColor={
+              colorScheme === 'dark'
+                ? Colors.dark.textTertiary
+                : Colors.neutral[400]
+            }
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="off"
+            textContentType="none"
+            spellCheck={false}
+            keyboardType="ascii-capable"
+            returnKeyType="search"
+            onSubmitEditing={onAnalyze}
+            showSoftInputOnFocus={true}
+          />
+
+          <AnalyzeButton
+            isAnalyzing={isAnalyzing}
+            isCheckingDuplicate={isCheckingDuplicate}
+            onAnalyze={onAnalyze}
+            colorScheme={colorScheme}
+          />
         </ViewThemed>
-      )}
-    </ViewThemed>
-  )
-}
+
+        {(isAnalyzing || isCheckingDuplicate) && (
+          <ViewThemed style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
+            <TextThemed
+              style={{
+                marginLeft: 8,
+                fontSize: 14,
+                color:
+                  colorScheme === 'dark'
+                    ? Colors.dark.textSecondary
+                    : Colors.neutral[600],
+              }}
+            >
+              {isCheckingDuplicate
+                ? 'Checking for duplicates...'
+                : 'Analyzing word with AI...'}
+            </TextThemed>
+          </ViewThemed>
+        )}
+      </ViewThemed>
+    )
+  }
+)
+
+// Add display name for better debugging
+CompactWordInput.displayName = 'CompactWordInput'
