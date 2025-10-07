@@ -9,10 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import { BlurView } from 'expo-blur'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { TextThemed, ViewThemed, useThemeColor } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { LIQUID_GLASS } from '@/constants/UIConstants'
 import { ROUTES } from '@/constants/Routes'
 import { collectionSharingService } from '@/services/collectionSharingService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
@@ -125,6 +127,8 @@ export default function ImportByTokenModal({
     }
   }
 
+  const isDarkMode = colorScheme === 'dark'
+
   return (
     <Modal
       visible={visible}
@@ -137,164 +141,176 @@ export default function ImportByTokenModal({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <TouchableOpacity
-          style={styles.overlay}
+          style={[
+            styles.overlay,
+            {
+              backgroundColor: isDarkMode
+                ? LIQUID_GLASS.BACKGROUND_DARK.OVERLAY
+                : LIQUID_GLASS.BACKGROUND_LIGHT.OVERLAY,
+            },
+          ]}
           onPress={handleClose}
           activeOpacity={1}
         >
-          <ViewThemed
-            style={[
-              styles.container,
-              {
-                backgroundColor:
-                  colorScheme === 'dark'
-                    ? Colors.dark.backgroundElevated
-                    : Colors.background.primary,
-                borderColor:
-                  colorScheme === 'dark' ? Colors.neutral[600] : 'transparent',
-                borderWidth: colorScheme === 'dark' ? 1 : 0,
-              },
-            ]}
+          <BlurView
+            intensity={LIQUID_GLASS.BLUR_INTENSITY.MODAL}
+            tint={isDarkMode ? 'dark' : 'light'}
+            style={styles.blurContainer}
           >
             <ViewThemed
-              style={[styles.header, { borderBottomColor: borderColor }]}
+              style={[
+                styles.container,
+                {
+                  backgroundColor: isDarkMode
+                    ? LIQUID_GLASS.BACKGROUND_DARK.ELEVATED
+                    : LIQUID_GLASS.BACKGROUND_LIGHT.ELEVATED,
+                  borderColor: isDarkMode
+                    ? LIQUID_GLASS.BORDER_DARK
+                    : LIQUID_GLASS.BORDER_LIGHT,
+                },
+              ]}
             >
-              <TextThemed style={styles.title}>Import Collection</TextThemed>
-              <TouchableOpacity
-                onPress={handleClose}
-                style={styles.closeButton}
-                disabled={loading}
+              <ViewThemed
+                style={[styles.header, { borderBottomColor: borderColor }]}
               >
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color={
-                    colorScheme === 'dark'
-                      ? Colors.dark.text
-                      : Colors.neutral[700]
-                  }
-                />
-              </TouchableOpacity>
-            </ViewThemed>
-
-            <ViewThemed style={styles.content}>
-              <TextThemed style={[styles.label, { color: textSecondaryColor }]}>
-                Collection Code
-              </TextThemed>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    borderColor: error ? Colors.error.DEFAULT : borderColor,
-                    backgroundColor: backgroundSecondaryColor,
-                    color: textColor,
-                  },
-                ]}
-                value={token}
-                onChangeText={handleTokenChange}
-                placeholder="Enter collection code..."
-                placeholderTextColor={
-                  colorScheme === 'dark'
-                    ? Colors.dark.textTertiary
-                    : Colors.neutral[400]
-                }
-                autoCapitalize="none"
-                autoCorrect={false}
-                returnKeyType="done"
-                onSubmitEditing={handleImport}
-                editable={!loading}
-                autoFocus={true}
-              />
-              {error && (
-                <TextThemed
-                  style={[styles.errorText, { color: Colors.error.DEFAULT }]}
+                <TextThemed style={styles.title}>Import Collection</TextThemed>
+                <TouchableOpacity
+                  onPress={handleClose}
+                  style={styles.closeButton}
+                  disabled={loading}
                 >
-                  {error}
-                </TextThemed>
-              )}
-
-              <ViewThemed style={styles.infoSection}>
-                <TextThemed style={[styles.infoTitle, { color: textColor }]}>
-                  How to get a code:
-                </TextThemed>
-                <TextThemed
-                  style={[styles.infoText, { color: textSecondaryColor }]}
-                >
-                  • Ask someone to share their collection with you
-                </TextThemed>
-                <TextThemed
-                  style={[styles.infoText, { color: textSecondaryColor }]}
-                >
-                  • They can find the share code in their collection settings
-                </TextThemed>
-                <TextThemed
-                  style={[styles.infoText, { color: textSecondaryColor }]}
-                >
-                  • The code looks like a random string of letters and numbers
-                </TextThemed>
+                  <Ionicons
+                    name="close"
+                    size={24}
+                    color={isDarkMode ? Colors.dark.text : Colors.neutral[700]}
+                  />
+                </TouchableOpacity>
               </ViewThemed>
-            </ViewThemed>
 
-            <ViewThemed style={styles.actions}>
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  styles.cancelButton,
-                  {
-                    backgroundColor:
-                      colorScheme === 'dark'
-                        ? Colors.dark.backgroundTertiary
-                        : Colors.neutral[100],
-                    borderColor:
-                      colorScheme === 'dark' ? Colors.dark.border : borderColor,
-                    borderWidth: 1,
-                  },
-                ]}
-                onPress={handleClose}
-                disabled={loading}
-              >
+              <ViewThemed style={styles.content}>
                 <TextThemed
+                  style={[styles.label, { color: textSecondaryColor }]}
+                >
+                  Collection Code
+                </TextThemed>
+                <TextInput
                   style={[
-                    styles.cancelButtonText,
+                    styles.input,
                     {
-                      color:
-                        colorScheme === 'dark'
-                          ? Colors.dark.text
-                          : textSecondaryColor,
+                      borderColor: error ? Colors.error.DEFAULT : borderColor,
+                      backgroundColor: backgroundSecondaryColor,
+                      color: textColor,
                     },
                   ]}
-                >
-                  Cancel
-                </TextThemed>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  styles.importButton,
-                  { backgroundColor: tintColor },
-                  (!token.trim() || loading) && styles.disabledButton,
-                ]}
-                onPress={handleImport}
-                disabled={!token.trim() || loading}
-              >
-                {loading ? (
-                  <ActivityIndicator
-                    size="small"
-                    color={Colors.background.primary}
-                  />
-                ) : (
+                  value={token}
+                  onChangeText={handleTokenChange}
+                  placeholder="Enter collection code..."
+                  placeholderTextColor={
+                    colorScheme === 'dark'
+                      ? Colors.dark.textTertiary
+                      : Colors.neutral[400]
+                  }
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  returnKeyType="done"
+                  onSubmitEditing={handleImport}
+                  editable={!loading}
+                  autoFocus={true}
+                />
+                {error && (
                   <TextThemed
-                    style={[
-                      styles.importButtonText,
-                      { color: Colors.background.primary },
-                    ]}
+                    style={[styles.errorText, { color: Colors.error.DEFAULT }]}
                   >
-                    Import
+                    {error}
                   </TextThemed>
                 )}
-              </TouchableOpacity>
+
+                <ViewThemed style={styles.infoSection}>
+                  <TextThemed style={[styles.infoTitle, { color: textColor }]}>
+                    How to get a code:
+                  </TextThemed>
+                  <TextThemed
+                    style={[styles.infoText, { color: textSecondaryColor }]}
+                  >
+                    • Ask someone to share their collection with you
+                  </TextThemed>
+                  <TextThemed
+                    style={[styles.infoText, { color: textSecondaryColor }]}
+                  >
+                    • They can find the share code in their collection settings
+                  </TextThemed>
+                  <TextThemed
+                    style={[styles.infoText, { color: textSecondaryColor }]}
+                  >
+                    • The code looks like a random string of letters and numbers
+                  </TextThemed>
+                </ViewThemed>
+              </ViewThemed>
+
+              <ViewThemed style={styles.actions}>
+                <TouchableOpacity
+                  style={[
+                    styles.button,
+                    styles.cancelButton,
+                    {
+                      backgroundColor:
+                        colorScheme === 'dark'
+                          ? Colors.dark.backgroundTertiary
+                          : Colors.neutral[100],
+                      borderColor:
+                        colorScheme === 'dark'
+                          ? Colors.dark.border
+                          : borderColor,
+                      borderWidth: 1,
+                    },
+                  ]}
+                  onPress={handleClose}
+                  disabled={loading}
+                >
+                  <TextThemed
+                    style={[
+                      styles.cancelButtonText,
+                      {
+                        color:
+                          colorScheme === 'dark'
+                            ? Colors.dark.text
+                            : textSecondaryColor,
+                      },
+                    ]}
+                  >
+                    Cancel
+                  </TextThemed>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.button,
+                    styles.importButton,
+                    { backgroundColor: tintColor },
+                    (!token.trim() || loading) && styles.disabledButton,
+                  ]}
+                  onPress={handleImport}
+                  disabled={!token.trim() || loading}
+                >
+                  {loading ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={Colors.background.primary}
+                    />
+                  ) : (
+                    <TextThemed
+                      style={[
+                        styles.importButtonText,
+                        { color: Colors.background.primary },
+                      ]}
+                    >
+                      Import
+                    </TextThemed>
+                  )}
+                </TouchableOpacity>
+              </ViewThemed>
             </ViewThemed>
-          </ViewThemed>
+          </BlurView>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </Modal>
@@ -308,21 +324,21 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  container: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+  blurContainer: {
+    borderTopLeftRadius: LIQUID_GLASS.BORDER_RADIUS.LARGE,
+    borderTopRightRadius: LIQUID_GLASS.BORDER_RADIUS.LARGE,
+    overflow: 'hidden',
     maxHeight: '60%',
     minHeight: 360,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -4,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 20,
-    elevation: 25,
+  },
+  container: {
+    borderTopLeftRadius: LIQUID_GLASS.BORDER_RADIUS.LARGE,
+    borderTopRightRadius: LIQUID_GLASS.BORDER_RADIUS.LARGE,
+    maxHeight: '60%',
+    minHeight: 360,
+    borderWidth: 1,
+    ...LIQUID_GLASS.SHADOW.FLOATING,
   },
   header: {
     flexDirection: 'row',
@@ -351,7 +367,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,

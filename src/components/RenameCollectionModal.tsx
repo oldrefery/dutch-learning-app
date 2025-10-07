@@ -4,10 +4,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  useColorScheme,
 } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
+import { BlurView } from 'expo-blur'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { LIQUID_GLASS } from '@/constants/UIConstants'
 import { Sentry } from '@/lib/sentry'
 
 interface RenameCollectionModalProps {
@@ -61,6 +64,9 @@ export default function RenameCollectionModal({
     onClose()
   }
 
+  const colorScheme = useColorScheme() ?? 'light'
+  const isDarkMode = colorScheme === 'dark'
+
   return (
     <Modal
       visible={visible}
@@ -69,50 +75,90 @@ export default function RenameCollectionModal({
       onRequestClose={handleClose}
     >
       <ViewThemed style={styles.container}>
-        <ViewThemed style={styles.header}>
-          <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
-            <TextThemed style={styles.cancelButtonText}>Cancel</TextThemed>
-          </TouchableOpacity>
-          <TextThemed style={styles.title}>Rename Collection</TextThemed>
-          <TouchableOpacity
+        <BlurView
+          intensity={LIQUID_GLASS.BLUR_INTENSITY.MODAL}
+          tint={isDarkMode ? 'dark' : 'light'}
+          style={styles.headerBlur}
+        >
+          <ViewThemed
             style={[
-              styles.saveButton,
-              (!newName.trim() || newName.trim() === currentName) &&
-                styles.saveButtonDisabled,
+              styles.header,
+              {
+                backgroundColor: isDarkMode
+                  ? LIQUID_GLASS.BACKGROUND_DARK.ELEVATED
+                  : LIQUID_GLASS.BACKGROUND_LIGHT.ELEVATED,
+                borderBottomColor: isDarkMode
+                  ? LIQUID_GLASS.BORDER_DARK
+                  : LIQUID_GLASS.BORDER_LIGHT,
+              },
             ]}
-            onPress={handleRename}
-            disabled={
-              !newName.trim() || newName.trim() === currentName || isRenaming
-            }
           >
-            {isRenaming ? (
-              <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
-            ) : (
-              <TextThemed
-                style={[
-                  styles.saveButtonText,
-                  (!newName.trim() || newName.trim() === currentName) &&
-                    styles.saveButtonTextDisabled,
-                ]}
-              >
-                Save
-              </TextThemed>
-            )}
-          </TouchableOpacity>
-        </ViewThemed>
+            <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
+              <TextThemed style={styles.cancelButtonText}>Cancel</TextThemed>
+            </TouchableOpacity>
+            <TextThemed style={styles.title}>Rename Collection</TextThemed>
+            <TouchableOpacity
+              style={[
+                styles.saveButton,
+                (!newName.trim() || newName.trim() === currentName) &&
+                  styles.saveButtonDisabled,
+              ]}
+              onPress={handleRename}
+              disabled={
+                !newName.trim() || newName.trim() === currentName || isRenaming
+              }
+            >
+              {isRenaming ? (
+                <ActivityIndicator
+                  size="small"
+                  color={Colors.primary.DEFAULT}
+                />
+              ) : (
+                <TextThemed
+                  style={[
+                    styles.saveButtonText,
+                    (!newName.trim() || newName.trim() === currentName) &&
+                      styles.saveButtonTextDisabled,
+                  ]}
+                >
+                  Save
+                </TextThemed>
+              )}
+            </TouchableOpacity>
+          </ViewThemed>
+        </BlurView>
 
         <ViewThemed style={styles.content}>
           <TextThemed style={styles.label}>Collection Name</TextThemed>
-          <TextInput
-            style={[styles.input, styles.inputThemedColors]}
-            value={newName}
-            onChangeText={setNewName}
-            placeholder="Enter collection name"
-            placeholderTextColor={Colors.neutral[500]}
-            autoFocus
-            selectTextOnFocus
-            maxLength={50}
-          />
+          <BlurView
+            intensity={LIQUID_GLASS.BLUR_INTENSITY.CARD}
+            tint={isDarkMode ? 'dark' : 'light'}
+            style={styles.inputBlur}
+          >
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  backgroundColor: isDarkMode
+                    ? LIQUID_GLASS.BACKGROUND_DARK.SECONDARY
+                    : LIQUID_GLASS.BACKGROUND_LIGHT.SECONDARY,
+                  borderColor: isDarkMode
+                    ? LIQUID_GLASS.BORDER_DARK
+                    : LIQUID_GLASS.BORDER_LIGHT,
+                  color: isDarkMode ? Colors.dark.text : Colors.neutral[900],
+                },
+              ]}
+              value={newName}
+              onChangeText={setNewName}
+              placeholder="Enter collection name"
+              placeholderTextColor={
+                isDarkMode ? Colors.dark.textTertiary : Colors.neutral[500]
+              }
+              autoFocus
+              selectTextOnFocus
+              maxLength={50}
+            />
+          </BlurView>
           <TextThemed
             style={styles.hint}
             lightColor={Colors.neutral[500]}
@@ -130,6 +176,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerBlur: {
+    overflow: 'hidden',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -137,7 +186,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.neutral[200],
   },
   cancelButton: {
     paddingVertical: 8,
@@ -175,18 +223,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginBottom: 8,
   },
+  inputBlur: {
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
+    overflow: 'hidden',
+  },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 16,
     marginBottom: 8,
-  },
-  inputThemedColors: {
-    backgroundColor: Colors.background.secondary,
-    borderColor: Colors.neutral[300],
-    color: Colors.text.primary,
   },
   hint: {
     fontSize: 14,

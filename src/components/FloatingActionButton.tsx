@@ -5,10 +5,12 @@ import {
   useColorScheme,
   ViewStyle,
   TextStyle,
+  Animated,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { LIQUID_GLASS, INTERACTION } from '@/constants/UIConstants'
 
 interface FloatingActionButtonProps {
   onPress: () => void
@@ -28,14 +30,34 @@ export function FloatingActionButton({
   style,
 }: FloatingActionButtonProps) {
   const colorScheme = useColorScheme() ?? 'light'
+  const isDarkMode = colorScheme === 'dark'
+  const scaleAnim = React.useRef(new Animated.Value(1)).current
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: INTERACTION.SCALE_DOWN,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 4,
+    }).start()
+  }
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 4,
+    }).start()
+  }
 
   const fabStyle: ViewStyle = {
     position: 'absolute',
-    bottom: 100, // Above tab bar (80) + extra space
+    bottom: 100,
     right: 16,
     backgroundColor: disabled
       ? Colors.neutral[300]
-      : colorScheme === 'dark'
+      : isDarkMode
         ? Colors.dark.tint
         : Colors.success.DEFAULT,
     borderRadius: label ? 28 : 28, // Circular for icon-only, rounded for with label
@@ -46,14 +68,7 @@ export function FloatingActionButton({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    ...LIQUID_GLASS.SHADOW.FLOATING,
     opacity: disabled ? 0.6 : 1,
     ...style,
   }
@@ -66,20 +81,24 @@ export function FloatingActionButton({
   }
 
   return (
-    <TouchableOpacity
-      style={fabStyle}
-      onPress={onPress}
-      disabled={disabled || loading}
-      activeOpacity={0.8}
-    >
-      {loading ? (
-        <ActivityIndicator size="small" color="white" />
-      ) : (
-        <>
-          <Ionicons name={icon} size={24} color="white" />
-          {label && <TextThemed style={textStyle}>{label}</TextThemed>}
-        </>
-      )}
-    </TouchableOpacity>
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <TouchableOpacity
+        style={fabStyle}
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled || loading}
+        activeOpacity={INTERACTION.ACTIVE_OPACITY}
+      >
+        {loading ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <>
+            <Ionicons name={icon} size={24} color="white" />
+            {label && <TextThemed style={textStyle}>{label}</TextThemed>}
+          </>
+        )}
+      </TouchableOpacity>
+    </Animated.View>
   )
 }

@@ -14,9 +14,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
+import { BlurView } from 'expo-blur'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { LIQUID_GLASS } from '@/constants/UIConstants'
 import { WordStatusType } from '@/components/WordDetailModal/types'
 import type { Word } from '@/types/database'
 
@@ -172,6 +174,7 @@ export default function SwipeableWordItem({
 
   const statusStyle = getStatusStyle()
   const isDueForReview = new Date(word.next_review_date) <= new Date()
+  const isDarkMode = colorScheme === 'dark'
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -217,7 +220,7 @@ export default function SwipeableWordItem({
     })
 
   const longPressGesture = Gesture.LongPress()
-    .minDuration(500) // 500ms for long press
+    .minDuration(500) // 500 ms for long press
     .maxDistance(10) // Maximum movement allowed during long press
     .onStart(() => {
       'worklet'
@@ -301,29 +304,52 @@ export default function SwipeableWordItem({
 
       {/* Main word item with gesture handler */}
       <GestureDetector gesture={combinedGesture}>
-        <Animated.View
-          style={[
-            styles.wordItem,
-            animatedStyle,
-            {
-              backgroundColor:
-                colorScheme === 'dark'
-                  ? Colors.dark.backgroundSecondary
-                  : Colors.background.primary,
-            },
-            { borderWidth: highlighted ? 2 : 0 },
-          ]}
-        >
-          <ViewThemed style={styles.wordContent}>
-            <ViewThemed style={styles.wordInfo}>
-              <ViewThemed style={styles.wordHeader}>
-                <TextThemed style={styles.wordText}>
-                  {word.dutch_original || word.dutch_lemma}
-                </TextThemed>
-                {word.article && (
+        <Animated.View style={[styles.cardWrapper, animatedStyle]}>
+          <BlurView
+            intensity={LIQUID_GLASS.BLUR_INTENSITY.CARD}
+            tint={isDarkMode ? 'dark' : 'light'}
+            style={styles.blurContainer}
+          >
+            <ViewThemed
+              style={[
+                styles.wordItem,
+                {
+                  backgroundColor: isDarkMode
+                    ? LIQUID_GLASS.BACKGROUND_DARK.PRIMARY
+                    : LIQUID_GLASS.BACKGROUND_LIGHT.PRIMARY,
+                  borderColor: isDarkMode
+                    ? LIQUID_GLASS.BORDER_DARK
+                    : LIQUID_GLASS.BORDER_LIGHT,
+                  borderWidth: highlighted ? 2 : 1,
+                },
+              ]}
+            >
+              <ViewThemed style={styles.wordContent}>
+                <ViewThemed style={styles.wordInfo}>
+                  <ViewThemed style={styles.wordHeader}>
+                    <TextThemed style={styles.wordText}>
+                      {word.dutch_original || word.dutch_lemma}
+                    </TextThemed>
+                    {word.article && (
+                      <TextThemed
+                        style={[
+                          styles.articleText,
+                          {
+                            color:
+                              colorScheme === 'dark'
+                                ? Colors.dark.textSecondary
+                                : Colors.neutral[500],
+                          },
+                        ]}
+                      >
+                        ({word.article})
+                      </TextThemed>
+                    )}
+                  </ViewThemed>
+
                   <TextThemed
                     style={[
-                      styles.articleText,
+                      styles.translationText,
                       {
                         color:
                           colorScheme === 'dark'
@@ -332,72 +358,61 @@ export default function SwipeableWordItem({
                       },
                     ]}
                   >
-                    ({word.article})
-                  </TextThemed>
-                )}
-              </ViewThemed>
-
-              <TextThemed
-                style={[
-                  styles.translationText,
-                  {
-                    color:
-                      colorScheme === 'dark'
-                        ? Colors.dark.textSecondary
-                        : Colors.neutral[500],
-                  },
-                ]}
-              >
-                {word.translations.en?.[0] || 'No translation'}
-              </TextThemed>
-            </ViewThemed>
-
-            <ViewThemed style={styles.accessoryContent}>
-              <ViewThemed
-                style={[
-                  styles.statusBadge,
-                  { backgroundColor: statusStyle.backgroundColor },
-                ]}
-              >
-                <TextThemed
-                  style={[styles.statusText, { color: statusStyle.textColor }]}
-                >
-                  {getStatusText()}
-                </TextThemed>
-              </ViewThemed>
-              {isDueForReview && (
-                <ViewThemed
-                  style={[
-                    styles.reviewBadge,
-                    colorScheme === 'dark' && {
-                      backgroundColor: Colors.warning.darkModeBadge,
-                    },
-                  ]}
-                >
-                  <TextThemed
-                    style={[
-                      styles.reviewText,
-                      colorScheme === 'dark' && {
-                        color: Colors.warning.darkModeBadgeText,
-                      },
-                    ]}
-                  >
-                    Review
+                    {word.translations.en?.[0] || 'No translation'}
                   </TextThemed>
                 </ViewThemed>
-              )}
-            </ViewThemed>
 
-            <Ionicons
-              name="chevron-forward"
-              size={20}
-              color={
-                colorScheme === 'dark'
-                  ? Colors.dark.textTertiary
-                  : Colors.neutral[400]
-              }
-            />
-          </ViewThemed>
+                <ViewThemed style={styles.accessoryContent}>
+                  <ViewThemed
+                    style={[
+                      styles.statusBadge,
+                      { backgroundColor: statusStyle.backgroundColor },
+                    ]}
+                  >
+                    <TextThemed
+                      style={[
+                        styles.statusText,
+                        { color: statusStyle.textColor },
+                      ]}
+                    >
+                      {getStatusText()}
+                    </TextThemed>
+                  </ViewThemed>
+                  {isDueForReview && (
+                    <ViewThemed
+                      style={[
+                        styles.reviewBadge,
+                        colorScheme === 'dark' && {
+                          backgroundColor: Colors.warning.darkModeBadge,
+                        },
+                      ]}
+                    >
+                      <TextThemed
+                        style={[
+                          styles.reviewText,
+                          colorScheme === 'dark' && {
+                            color: Colors.warning.darkModeBadgeText,
+                          },
+                        ]}
+                      >
+                        Review
+                      </TextThemed>
+                    </ViewThemed>
+                  )}
+                </ViewThemed>
+
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={
+                    colorScheme === 'dark'
+                      ? Colors.dark.textTertiary
+                      : Colors.neutral[400]
+                  }
+                />
+              </ViewThemed>
+            </ViewThemed>
+          </BlurView>
         </Animated.View>
       </GestureDetector>
     </ViewThemed>
@@ -417,6 +432,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
+    borderTopLeftRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
+    borderBottomLeftRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
   },
   moveButton: {
     width: 40,
@@ -435,6 +452,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.error.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
+    borderTopRightRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
+    borderBottomRightRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
   },
   deleteButton: {
     width: 40,
@@ -444,8 +463,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  wordItem: {
+  cardWrapper: {
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
+    overflow: 'hidden',
+    ...LIQUID_GLASS.SHADOW.SUBTLE,
     zIndex: 2,
+  },
+  blurContainer: {
+    overflow: 'hidden',
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
+  },
+  wordItem: {
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
   },
   wordContent: {
     flexDirection: 'row',

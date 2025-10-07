@@ -16,8 +16,10 @@ import { scheduleOnRN } from 'react-native-worklets'
 import * as Haptics from 'expo-haptics'
 import { Ionicons } from '@expo/vector-icons'
 import { SymbolView } from 'expo-symbols'
+import { BlurView } from 'expo-blur'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { LIQUID_GLASS } from '@/constants/UIConstants'
 import CollectionContextMenu from '@/components/CollectionContextMenu'
 import type { Collection, Word } from '@/types/database'
 import { Sentry } from '@/lib/sentry'
@@ -245,6 +247,8 @@ export default function SwipeableCollectionCard({
     tapGesture
   )
 
+  const isDarkMode = colorScheme === 'dark'
+
   return (
     <ViewThemed style={styles.container}>
       {/* Rename button background (left side) */}
@@ -271,56 +275,77 @@ export default function SwipeableCollectionCard({
 
       {/* Swipeable card */}
       <GestureDetector gesture={combinedGesture}>
-        <Animated.View
-          style={[
-            styles.card,
-            animatedStyle,
-            {
-              backgroundColor:
-                colorScheme === 'dark'
-                  ? Colors.dark.backgroundSecondary
-                  : Colors.background.primary,
-            },
-          ]}
-        >
-          <ViewThemed
-            style={styles.cardContent}
-            lightColor="transparent"
-            darkColor="transparent"
+        <Animated.View style={[styles.cardWrapper, animatedStyle]}>
+          <BlurView
+            intensity={LIQUID_GLASS.BLUR_INTENSITY.CARD}
+            tint={isDarkMode ? 'dark' : 'light'}
+            style={styles.blurContainer}
           >
             <ViewThemed
-              style={styles.textContainer}
-              lightColor="transparent"
-              darkColor="transparent"
+              style={[
+                styles.card,
+                {
+                  backgroundColor: isDarkMode
+                    ? LIQUID_GLASS.BACKGROUND_DARK.PRIMARY
+                    : LIQUID_GLASS.BACKGROUND_LIGHT.PRIMARY,
+                  borderColor: isDarkMode
+                    ? LIQUID_GLASS.BORDER_DARK
+                    : LIQUID_GLASS.BORDER_LIGHT,
+                },
+              ]}
             >
-              <TextThemed style={styles.collectionName}>
-                {collection.name}
-              </TextThemed>
-              <TextThemed
-                style={styles.collectionStats}
-                lightColor={Colors.neutral[500]}
-                darkColor={Colors.dark.textSecondary}
+              <ViewThemed
+                style={styles.cardContent}
+                lightColor="transparent"
+                darkColor="transparent"
               >
-                {stats.totalWords} words • {stats.progressPercentage}% mastered
-              </TextThemed>
-            </ViewThemed>
-            <ViewThemed
-              style={styles.accessoryContainer}
-              lightColor="transparent"
-              darkColor="transparent"
-            >
-              {collection.is_shared && Platform.OS === 'ios' && (
-                <SymbolView
-                  name="person.2.fill"
-                  size={24}
-                  type="hierarchical"
-                  tintColor={
-                    colorScheme === 'dark'
-                      ? Colors.dark.textSecondary
-                      : Colors.neutral[400]
-                  }
-                  style={styles.sharedIcon}
-                  fallback={
+                <ViewThemed
+                  style={styles.textContainer}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed style={styles.collectionName}>
+                    {collection.name}
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.collectionStats}
+                    lightColor={Colors.neutral[500]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    {stats.totalWords} words • {stats.progressPercentage}%
+                    mastered
+                  </TextThemed>
+                </ViewThemed>
+                <ViewThemed
+                  style={styles.accessoryContainer}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  {collection.is_shared && Platform.OS === 'ios' && (
+                    <SymbolView
+                      name="person.2.fill"
+                      size={24}
+                      type="hierarchical"
+                      tintColor={
+                        colorScheme === 'dark'
+                          ? Colors.dark.textSecondary
+                          : Colors.neutral[400]
+                      }
+                      style={styles.sharedIcon}
+                      fallback={
+                        <Ionicons
+                          name="people"
+                          size={24}
+                          color={
+                            colorScheme === 'dark'
+                              ? Colors.dark.textSecondary
+                              : Colors.neutral[400]
+                          }
+                        />
+                      }
+                    />
+                  )}
+                  {collection.is_shared && Platform.OS !== 'ios' && (
                     <Ionicons
                       name="people"
                       size={24}
@@ -329,33 +354,22 @@ export default function SwipeableCollectionCard({
                           ? Colors.dark.textSecondary
                           : Colors.neutral[400]
                       }
+                      style={styles.sharedIcon}
                     />
-                  }
-                />
-              )}
-              {collection.is_shared && Platform.OS !== 'ios' && (
-                <Ionicons
-                  name="people"
-                  size={24}
-                  color={
-                    colorScheme === 'dark'
-                      ? Colors.dark.textSecondary
-                      : Colors.neutral[400]
-                  }
-                  style={styles.sharedIcon}
-                />
-              )}
-              <Ionicons
-                name="chevron-forward"
-                size={20}
-                color={
-                  colorScheme === 'dark'
-                    ? Colors.dark.textTertiary
-                    : Colors.neutral[400]
-                }
-              />
+                  )}
+                  <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={
+                      colorScheme === 'dark'
+                        ? Colors.dark.textTertiary
+                        : Colors.neutral[400]
+                    }
+                  />
+                </ViewThemed>
+              </ViewThemed>
             </ViewThemed>
-          </ViewThemed>
+          </BlurView>
         </Animated.View>
       </GestureDetector>
 
@@ -379,11 +393,22 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
   },
+  cardWrapper: {
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
+    overflow: 'hidden',
+    ...LIQUID_GLASS.SHADOW.SUBTLE,
+    zIndex: 2,
+  },
+  blurContainer: {
+    overflow: 'hidden',
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
+  },
   card: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     minHeight: 60,
-    zIndex: 2,
+    borderWidth: 1,
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
   },
   cardContent: {
     flexDirection: 'row',
@@ -420,6 +445,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
+    borderBottomLeftRadius: 12,
+    borderTopLeftRadius: 12,
   },
   renameButtonContent: {
     justifyContent: 'center',
@@ -441,6 +468,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.error.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12,
   },
   deleteButtonContent: {
     justifyContent: 'center',

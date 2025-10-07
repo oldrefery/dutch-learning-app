@@ -4,10 +4,13 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  useColorScheme,
 } from 'react-native'
+import { BlurView } from 'expo-blur'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { LIQUID_GLASS } from '@/constants/UIConstants'
 import { useCollections } from '@/hooks/useCollections'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -61,6 +64,9 @@ export default function CreateCollectionModal({
     onClose()
   }
 
+  const colorScheme = useColorScheme() ?? 'light'
+  const isDarkMode = colorScheme === 'dark'
+
   return (
     <Modal
       visible={visible}
@@ -69,29 +75,70 @@ export default function CreateCollectionModal({
       onRequestClose={handleClose}
     >
       <ViewThemed style={styles.container}>
-        <ViewThemed style={styles.header}>
-          <TextThemed style={styles.title}>Create New Collection</TextThemed>
-          <TouchableOpacity
-            onPress={handleClose}
-            style={styles.closeButton}
-            disabled={isCreating}
+        <BlurView
+          intensity={LIQUID_GLASS.BLUR_INTENSITY.MODAL}
+          tint={isDarkMode ? 'dark' : 'light'}
+          style={styles.headerBlur}
+        >
+          <ViewThemed
+            style={[
+              styles.header,
+              {
+                backgroundColor: isDarkMode
+                  ? LIQUID_GLASS.BACKGROUND_DARK.ELEVATED
+                  : LIQUID_GLASS.BACKGROUND_LIGHT.ELEVATED,
+                borderBottomColor: isDarkMode
+                  ? LIQUID_GLASS.BORDER_DARK
+                  : LIQUID_GLASS.BORDER_LIGHT,
+              },
+            ]}
           >
-            <Ionicons name="close" size={24} color={Colors.neutral[700]} />
-          </TouchableOpacity>
-        </ViewThemed>
+            <TextThemed style={styles.title}>Create New Collection</TextThemed>
+            <TouchableOpacity
+              onPress={handleClose}
+              style={styles.closeButton}
+              disabled={isCreating}
+            >
+              <Ionicons
+                name="close"
+                size={24}
+                color={isDarkMode ? Colors.dark.text : Colors.neutral[700]}
+              />
+            </TouchableOpacity>
+          </ViewThemed>
+        </BlurView>
 
         <ViewThemed style={styles.content}>
           <TextThemed style={styles.label}>Collection Name</TextThemed>
-          <TextInput
-            style={styles.input}
-            value={collectionName}
-            onChangeText={setCollectionName}
-            placeholder="Enter collection name..."
-            placeholderTextColor={Colors.neutral[400]}
-            autoFocus
-            maxLength={50}
-            editable={!isCreating}
-          />
+          <BlurView
+            intensity={LIQUID_GLASS.BLUR_INTENSITY.CARD}
+            tint={isDarkMode ? 'dark' : 'light'}
+            style={styles.inputBlur}
+          >
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  backgroundColor: isDarkMode
+                    ? LIQUID_GLASS.BACKGROUND_DARK.SECONDARY
+                    : LIQUID_GLASS.BACKGROUND_LIGHT.SECONDARY,
+                  borderColor: isDarkMode
+                    ? LIQUID_GLASS.BORDER_DARK
+                    : LIQUID_GLASS.BORDER_LIGHT,
+                  color: isDarkMode ? Colors.dark.text : Colors.neutral[900],
+                },
+              ]}
+              value={collectionName}
+              onChangeText={setCollectionName}
+              placeholder="Enter collection name..."
+              placeholderTextColor={
+                isDarkMode ? Colors.dark.textTertiary : Colors.neutral[400]
+              }
+              autoFocus
+              maxLength={50}
+              editable={!isCreating}
+            />
+          </BlurView>
           <TextThemed style={styles.helperText}>
             {collectionName.length}/50 characters
           </TextThemed>
@@ -137,6 +184,9 @@ const styles = {
     flex: 1,
     backgroundColor: Colors.background.primary,
   },
+  headerBlur: {
+    overflow: 'hidden' as const,
+  },
   header: {
     flexDirection: 'row' as const,
     justifyContent: 'space-between' as const,
@@ -145,12 +195,10 @@ const styles = {
     paddingTop: 60,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.neutral[200],
   },
   title: {
     fontSize: 20,
     fontWeight: '600' as const,
-    color: Colors.neutral[900],
   },
   closeButton: {
     padding: 8,
@@ -162,18 +210,18 @@ const styles = {
   label: {
     fontSize: 16,
     fontWeight: '500' as const,
-    color: Colors.neutral[700],
     marginBottom: 8,
+  },
+  inputBlur: {
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
+    overflow: 'hidden' as const,
   },
   input: {
     borderWidth: 1,
-    borderColor: Colors.neutral[300],
-    borderRadius: 8,
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    color: Colors.neutral[900],
-    backgroundColor: Colors.background.primary,
   },
   helperText: {
     fontSize: 12,
@@ -188,7 +236,7 @@ const styles = {
   button: {
     flex: 1,
     paddingVertical: 12,
-    borderRadius: 8,
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },

@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { LIQUID_GLASS } from '@/constants/UIConstants'
 import type { Collection, Word } from '@/types/database'
 
 interface MoveToCollectionModalProps {
@@ -113,6 +114,8 @@ export default function MoveToCollectionModal({
     </TouchableOpacity>
   )
 
+  const isDarkMode = colorScheme === 'dark'
+
   return (
     <Modal
       visible={visible}
@@ -122,8 +125,8 @@ export default function MoveToCollectionModal({
     >
       <BlurView
         style={styles.container}
-        intensity={100}
-        tint={colorScheme === 'dark' ? 'dark' : 'light'}
+        intensity={LIQUID_GLASS.BLUR_INTENSITY.MODAL}
+        tint={isDarkMode ? 'dark' : 'light'}
       >
         <ViewThemed style={styles.header}>
           <ViewThemed style={styles.headerLeft}>
@@ -258,14 +261,10 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   collectionItem: {
-    borderRadius: 12,
+    borderRadius: LIQUID_GLASS.BORDER_RADIUS.SMALL,
     marginBottom: 12,
     borderWidth: 1,
-    shadowColor: Colors.legacy.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    ...LIQUID_GLASS.SHADOW.SUBTLE,
   },
   collectionItemContent: {
     flexDirection: 'row',
