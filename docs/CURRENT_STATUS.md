@@ -1,8 +1,8 @@
 # Dutch Learning App - Current Status
 
-## 📅 Last Updated: October 05, 2025
+## 📅 Last Updated: October 07, 2025
 
-## 🎯 Current Phase: Authentication Enhancement - COMPLETED ✅
+## 🎯 Current Phase: UX Improvements & Code Quality - COMPLETED ✅
 
 **Latest Build:** Build 44 (Version 1.6.0 - October 2025)
 
@@ -10,7 +10,41 @@
 
 ## ✅ COMPLETED TASKS
 
-### Latest: Build 44 - Google OAuth Authentication ✅ COMPLETED (Version 1.6.0)
+### Latest: Build 45 - UX Improvements & Code Quality ✅ COMPLETED (October 2025)
+
+- **TypeScript & ESLint Clean-up**: Resolved all compiler and linter errors
+  - Fixed 13 TypeScript errors (dynamic routes, RefObject types, WebBrowserResult compatibility)
+  - Resolved 5 ESLint warnings (unused imports, cognitive complexity)
+  - Fixed app.json duplicate UIBackgroundModes entry
+  - All type checks and linting passing successfully
+
+- **Add Word Screen UX Enhancements**: Improved user experience following Apple HIG
+  - Auto-focus on input field when screen becomes active
+  - Smooth keyboard animation using InteractionManager
+  - Removed text label from FAB button (checkmark icon only)
+  - Minimalist design aligned with iOS best practices
+  - Accepted native-tabs limitation (re-pressing active tab performs no action)
+
+- **Last Selected Collection Memory**: Persistent collection selection across app restarts
+  - MMKV storage integration for fast, reliable persistence
+  - Automatic selection of last used collection on screen open
+  - Seamless user experience without manual collection selection
+  - Implemented via dedicated app-settings-storage instance
+
+- **Sentry Error Resolution**: Fixed critical production errors
+  - Network request failed: Added retry logic with exponential backoff (3 retries, max 30s timeout)
+  - JWT expired: Automatic sign-out on token expiration with proper error handling
+  - Network connectivity checks before Supabase operations
+  - Enhanced error categorization and logging
+
+- **Technical Implementation**:
+  - New utility: `src/utils/storage.ts` for MMKV app settings
+  - Updated `useAddWord.ts` hook with persistent collection memory
+  - Enhanced `supabase.ts` with retry mechanisms and auth error handling
+  - Clean code without experimental workarounds or hacks
+  - Full TypeScript type safety maintained
+
+### Build 44 - Google OAuth Authentication ✅ COMPLETED (Version 1.6.0)
 
 - **Google OAuth Integration**: Complete Google Sign-In implementation
   - Browser-based OAuth flow using Supabase `signInWithOAuth()` + expo-web-browser
@@ -115,9 +149,10 @@
   - Replaces hardcoded `streakDays: 0` placeholder
   - Automatic reset on missed days
 
-- **Collection Auto-Selection Fix** (HIGH PRIORITY BUG):
+- **Collection Auto-Selection Fix**: Resolved collection selection issues
   - Fixed collection selection when current collection becomes invalid
   - Automatic re-selection when selected collection is deleted
+  - Enhanced in Build 45 with MMKV persistent memory
   - Ensures seamless word addition without manual intervention
 
 ### Build 31 - UI/UX Bug Fixes ✅ COMPLETED
@@ -418,10 +453,6 @@ DutchLearningApp/
 
 **Previous Build 4 contained:** Account deletion functionality
 
-**Known Issues for Next Build:**
-
-- Collection auto-selection logic needs improvement when no collection is selected but collections exist
-
 ## ✅ COMPLETED: Additional Features Already Implemented
 
 ### 1. Collection Management ✅ COMPLETED
@@ -457,20 +488,6 @@ DutchLearningApp/
 - [x] **Dark Theme Support**: Complete dark/light theme system ✅
   - Implementation: Comprehensive color system in `Colors.ts`
   - Coverage: All components support both themes seamlessly
-
-## 🚨 URGENT FIXES NEEDED
-
-### Collection Auto-Selection Bug 🐛 HIGH PRIORITY
-
-**Issue**: When no collection is selected but collections exist, the user cannot add words efficiently
-**Required Fix**: Auto-select available collection in these scenarios:
-
-1. When user has collections but none is selected during word addition
-2. When currently selected collection is deleted and other collections exist
-3. Ensure seamless word addition flow without manual collection selection
-
-**Impact**: Blocks efficient word addition for existing users
-**Target**: Next hotfix build
 
 ## ✅ COMPLETED: Phase 4.0 - Access Control & Smart Analysis (Build 39 - October 2025)
 
