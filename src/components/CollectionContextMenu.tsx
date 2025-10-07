@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { SymbolView } from 'expo-symbols'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { ANIMATION_DURATION } from '@/constants/UIConstants'
 import type { Collection } from '@/types/database'
 
 interface CollectionContextMenuProps {
@@ -259,10 +260,10 @@ export default function CollectionContextMenu({
         damping: 20,
         stiffness: 300,
       })
-      opacityAnim.value = withTiming(1, { duration: 200 })
+      opacityAnim.value = withTiming(1, { duration: ANIMATION_DURATION.FAST })
     } else {
-      slideAnim.value = withTiming(300, { duration: 200 })
-      opacityAnim.value = withTiming(0, { duration: 200 })
+      slideAnim.value = withTiming(300, { duration: ANIMATION_DURATION.FAST })
+      opacityAnim.value = withTiming(0, { duration: ANIMATION_DURATION.FAST })
     }
   }, [visible, slideAnim, opacityAnim])
 

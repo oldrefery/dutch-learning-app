@@ -18,6 +18,7 @@ import Animated, {
 import { scheduleOnRN } from 'react-native-worklets'
 import { ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { ANIMATION_DURATION } from '@/constants/UIConstants'
 import { useAudio } from '@/contexts/AudioContext'
 import type { Word } from '@/types/database'
 import {
@@ -66,19 +67,31 @@ export default function WordDetailModal({
   useEffect(() => {
     if (visible) {
       translateY.value = withSpring(0, { damping: 20, stiffness: 300 })
-      backdropOpacity.value = withTiming(1, { duration: 300 })
+      backdropOpacity.value = withTiming(1, {
+        duration: ANIMATION_DURATION.SPRING,
+      })
     } else {
-      translateY.value = withTiming(screenHeight, { duration: 300 })
-      backdropOpacity.value = withTiming(0, { duration: 300 })
+      translateY.value = withTiming(screenHeight, {
+        duration: ANIMATION_DURATION.SPRING,
+      })
+      backdropOpacity.value = withTiming(0, {
+        duration: ANIMATION_DURATION.SPRING,
+      })
     }
   }, [backdropOpacity, translateY, visible])
 
   // Handle closing modal
   const closeModal = () => {
-    translateY.value = withTiming(screenHeight, { duration: 300 })
-    backdropOpacity.value = withTiming(0, { duration: 300 }, () => {
-      scheduleOnRN(onClose)
+    translateY.value = withTiming(screenHeight, {
+      duration: ANIMATION_DURATION.SPRING,
     })
+    backdropOpacity.value = withTiming(
+      0,
+      { duration: ANIMATION_DURATION.SPRING },
+      () => {
+        scheduleOnRN(onClose)
+      }
+    )
   }
 
   // Gesture for closing modal with swipe down

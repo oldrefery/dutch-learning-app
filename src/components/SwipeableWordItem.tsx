@@ -18,7 +18,7 @@ import { BlurView } from 'expo-blur'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
-import { LIQUID_GLASS } from '@/constants/UIConstants'
+import { LIQUID_GLASS, ANIMATION_DURATION } from '@/constants/UIConstants'
 import { WordStatusType } from '@/components/WordDetailModal/types'
 import type { Word } from '@/types/database'
 
@@ -98,7 +98,11 @@ export default function SwipeableWordItem({
   }, [word.word_id, onMoveToCollection])
 
   useEffect(() => {
-    translateY.value = withTiming(0, { duration: 400 }, () => {})
+    translateY.value = withTiming(
+      0,
+      { duration: ANIMATION_DURATION.SLOW },
+      () => {}
+    )
   }, [translateY])
 
   useEffect(() => {
