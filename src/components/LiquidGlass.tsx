@@ -80,6 +80,7 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({
       <BlurView
         intensity={resolvedIntensity}
         tint={resolvedTint}
+        experimentalBlurMethod={'dimezisBlurView'}
         style={[
           styles.blur,
           { borderRadius: resolvedRadius },
