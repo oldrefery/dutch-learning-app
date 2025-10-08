@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { ViewThemed } from '@/components/Themed'
 import { styles } from './styles'
 import type {
@@ -33,6 +33,7 @@ const FULL_CONFIG: WordCardConfig = {
   enableImageChange: true,
   scrollable: true,
   compact: false,
+  extraHeightAddWordMode: 0,
 }
 
 const DEFAULT_ACTIONS: WordCardActionConfig = {
@@ -63,6 +64,9 @@ export function UniversalWordCard({
   const finalConfig = { ...FULL_CONFIG, ...config }
   const finalActions = { ...DEFAULT_ACTIONS, ...actions }
 
+  console.log('/n/n/n/nconfig.extraHeightAddWord', config.extraHeightAddWord)
+  console.log('finalConfig.extraHeightAddWord', finalConfig.extraHeightAddWord)
+
   const sectionProps = {
     word,
     config: finalConfig,
@@ -80,7 +84,8 @@ export function UniversalWordCard({
         contentStyle,
       ]}
     >
-      <HeaderSection {...sectionProps} />
+      <View style={{ height: finalConfig.extraHeightAddWord }} />
+      {finalConfig.showHeader && <HeaderSection {...sectionProps} />}
       <TranslationsSection {...sectionProps} />
       <ExamplesSection {...sectionProps} />
       <ImageSection {...sectionProps} />
@@ -120,6 +125,7 @@ export const WordCardPresets = {
   modal: {
     config: {
       scrollable: false, // Modal handles scrolling
+      showHeader: false,
       enableImageChange: true,
     },
     actions: {
@@ -131,7 +137,9 @@ export const WordCardPresets = {
 
   // For word analysis (add word screen)
   analysis: {
-    config: {},
+    config: {
+      showHeader: false,
+    },
     actions: {
       showDuplicateCheck: true,
       showSaveButton: true,
@@ -141,6 +149,7 @@ export const WordCardPresets = {
   // For review card back
   review: {
     config: {
+      showHeader: false,
       showSynonyms: true,
       showAntonyms: true,
       showGrammarInfo: true,

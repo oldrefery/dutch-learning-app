@@ -34,6 +34,7 @@ interface CollectionContentProps {
   moveModalVisible?: boolean
   wordBeingMoved?: string | null
   highlightWordId?: string
+  onScrollYChange?: (y: number) => void
 }
 
 export default function CollectionContent({
@@ -49,6 +50,7 @@ export default function CollectionContent({
   moveModalVisible,
   wordBeingMoved,
   highlightWordId,
+  onScrollYChange,
 }: CollectionContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const flatListRef = useRef<FlatList>(null)
@@ -85,7 +87,7 @@ export default function CollectionContent({
     }
   }, [highlightWordId, filteredWords])
 
-  const renderHeader = () => (
+  const ListHeaderComponent = () => (
     <ViewThemed style={styles.headerContent}>
       <CollectionStats stats={stats} />
       <CollectionReviewButton
@@ -169,9 +171,15 @@ export default function CollectionContent({
     <FlatList
       ref={flatListRef}
       style={styles.wordsSection}
+      contentInsetAdjustmentBehavior="automatic"
       data={filteredWords}
-      ListHeaderComponent={renderHeader}
+      ListHeaderComponent={ListHeaderComponent}
       keyExtractor={keyExtractor}
+      onScroll={event => {
+        const y = event.nativeEvent.contentOffset.y
+        onScrollYChange?.(y)
+      }}
+      scrollEventThrottle={16}
       onScrollToIndexFailed={info => {
         // Fallback: scroll to offset if the index scroll fails
         const wait = new Promise(resolve => setTimeout(resolve, 500))

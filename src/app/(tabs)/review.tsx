@@ -12,6 +12,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import WordDetailModal from '@/components/WordDetailModal'
 import { CardFront } from '@/components/ReviewCard/CardFront'
+import { BlurView } from 'expo-blur'
 import {
   UniversalWordCard,
   WordCardPresets,
@@ -156,18 +157,73 @@ export default function ReviewScreen() {
                   pronunciationRef={pronunciationRef}
                 />
               ) : (
-                <UniversalWordCard
-                  word={currentWord}
-                  config={WordCardPresets.review.config}
-                  actions={{
-                    ...WordCardPresets.review.actions,
-                    onDelete: handleDeleteWord,
-                  }}
-                  isPlayingAudio={isPlayingAudio}
-                  onPlayPronunciation={playAudio}
-                  onChangeImage={openImageSelector}
-                  style={reviewScreenStyles.universalWordCard}
-                />
+                <>
+                  {/* Glass header for review back side */}
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 56,
+                      zIndex: 2,
+                      overflow: 'hidden',
+                      borderTopLeftRadius: 16,
+                      borderTopRightRadius: 16,
+                    }}
+                  >
+                    <BlurView
+                      tint="default"
+                      intensity={25}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                      }}
+                      experimentalBlurMethod={'dimezisBlurView'}
+                    />
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: 1,
+                        backgroundColor: 'rgba(60,60,67,0.29)',
+                      }}
+                    />
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingHorizontal: 16,
+                      }}
+                    >
+                      <TextThemed
+                        style={{ fontSize: 18, fontWeight: '600' }}
+                        numberOfLines={1}
+                      >
+                        {currentWord.dutch_lemma}
+                      </TextThemed>
+                    </View>
+                  </View>
+                  <UniversalWordCard
+                    word={currentWord}
+                    config={WordCardPresets.review.config}
+                    actions={{
+                      ...WordCardPresets.review.actions,
+                      onDelete: handleDeleteWord,
+                    }}
+                    isPlayingAudio={isPlayingAudio}
+                    onPlayPronunciation={playAudio}
+                    onChangeImage={openImageSelector}
+                    style={reviewScreenStyles.universalWordCard}
+                    contentStyle={{ paddingTop: 64 }}
+                  />
+                </>
               )}
             </ViewThemed>
           </GestureDetector>

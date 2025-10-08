@@ -20,6 +20,7 @@ export const styles = StyleSheet.create({
     right: 0,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    overflow: 'hidden',
     height: screenHeight * 0.8, // 80% of screen from bottom
   },
   dragIndicator: {
@@ -30,15 +31,19 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 8,
     marginBottom: 4,
+    zIndex: 3,
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.neutral[200],
   },
   headerContent: {
     flex: 1,
@@ -63,6 +68,7 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
+    paddingTop: 96,
   },
   imageContainer: {
     alignItems: 'center',

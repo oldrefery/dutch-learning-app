@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, TouchableOpacity, useColorScheme } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { BlurView } from 'expo-blur'
+import { GlassHeaderBackground } from '@/components/glass/GlassHeaderBackground'
 import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
 import { TextThemed, ViewThemed } from '@/components/Themed'
@@ -94,12 +95,8 @@ export default function CollectionDetailScreen() {
         options={{
           title: collection?.name || 'Collection',
           headerBackTitle: 'Back',
-          headerStyle: {
-            backgroundColor:
-              colorScheme === 'dark'
-                ? Colors.dark.backgroundSecondary
-                : Colors.background.secondary,
-          },
+          headerTransparent: true,
+          headerBackground: () => <GlassHeaderBackground />,
           headerTitleStyle: {
             fontWeight: '600',
             fontSize: 18,

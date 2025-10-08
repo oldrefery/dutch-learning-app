@@ -1,9 +1,15 @@
 import React from 'react'
-import { View, TouchableOpacity } from 'react-native'
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  useColorScheme,
+} from 'react-native'
 import { TextThemed } from '@/components/Themed'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
+import { BlurView } from 'expo-blur'
 
 interface WordHeaderProps {
   dutchLemma: string | null
@@ -16,8 +22,31 @@ export default function WordHeader({
   article,
   onClose,
 }: WordHeaderProps) {
+  const colorScheme = useColorScheme() ?? 'light'
+  const isDarkMode = colorScheme === 'dark'
+  const intensity = isDarkMode ? 25 : 30
   return (
-    <View style={styles.header}>
+    <View
+      style={[
+        styles.header,
+        {
+          overflow: 'hidden',
+          paddingTop: 12,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: isDarkMode
+            ? 'rgba(255,255,255,0.28)'
+            : 'rgba(60,60,67,0.29)',
+        },
+      ]}
+    >
+      <BlurView
+        tint="default"
+        intensity={intensity}
+        style={StyleSheet.absoluteFill}
+        experimentalBlurMethod={'dimezisBlurView'}
+      />
       <View style={styles.headerContent}>
         <TextThemed style={styles.wordTitle}>{dutchLemma}</TextThemed>
         {article && (

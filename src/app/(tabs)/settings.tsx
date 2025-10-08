@@ -157,6 +157,7 @@ export default function SettingsScreen() {
             style={styles.aboutBlur}
             intensity={100}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            experimentalBlurMethod={'dimezisBlurView'}
           >
             <ViewThemed
               style={[

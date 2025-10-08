@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Keyboard } from 'react-native'
+import { Keyboard, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
 import { ViewThemed, TextThemed } from '@/components/Themed'
+import { BlurView } from 'expo-blur'
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
 import { CompactWordInput } from './components/CompactWordInput'
@@ -202,33 +203,64 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         },
       ]}
     >
-      <CompactWordInput
-        inputWord={inputWord}
-        setInputWord={setInputWord}
-        onAnalyze={handleAnalyze}
-        isAnalyzing={isAnalyzing}
-        isCheckingDuplicate={isCheckingDuplicate}
-        selectedCollection={selectedCollection}
-        collections={collections}
-        onCollectionSelect={setSelectedCollection}
-        onCancel={handleCancel}
-      />
-
-      {/* Duplicate banner when the word already exists */}
-      {(() => {
-        return null
-      })()}
-      {isAlreadyInCollection && duplicateWordInfo && (
-        <DuplicateBanner
-          duplicateWord={duplicateWordInfo}
-          collections={collections}
-          onNavigateToCollection={() => setHasNavigatedToCollection(true)}
+      <View
+        style={{
+          overflow: 'hidden',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+        }}
+      >
+        <BlurView
+          tint="default"
+          intensity={25}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+          experimentalBlurMethod={'dimezisBlurView'}
         />
-      )}
+        <View
+          style={{
+            paddingTop: insets.top + 12,
+            paddingBottom: 12,
+            paddingHorizontal: 16,
+            backgroundColor: 'transparent',
+          }}
+        >
+          <CompactWordInput
+            inputWord={inputWord}
+            setInputWord={setInputWord}
+            onAnalyze={handleAnalyze}
+            isAnalyzing={isAnalyzing}
+            isCheckingDuplicate={isCheckingDuplicate}
+            selectedCollection={selectedCollection}
+            collections={collections}
+            onCollectionSelect={setSelectedCollection}
+            onCancel={handleCancel}
+            variant="glass"
+          />
+          {isAlreadyInCollection && duplicateWordInfo && (
+            <DuplicateBanner
+              duplicateWord={duplicateWordInfo}
+              collections={collections}
+              onNavigateToCollection={() => setHasNavigatedToCollection(true)}
+            />
+          )}
+        </View>
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 1,
+            backgroundColor: 'rgba(60,60,67,0.29)',
+          }}
+        />
+      </View>
 
-      {/* Word information takes maximum space */}
       {analysisResult && (
-        <ViewThemed style={{ flex: 1, marginTop: 8 }}>
+        <ViewThemed style={{ flex: 1 }}>
           <UniversalWordCard
             word={analysisResult}
             metadata={analysisMetadata}
@@ -242,6 +274,10 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
             onChangeImage={openImageSelector}
             onForceRefresh={handleForceRefresh}
             style={{ flex: 1 }}
+            config={{
+              extraHeightAddWord:
+                120 + (isAlreadyInCollection && duplicateWordInfo ? 80 : 0),
+            }}
           />
 
           {/* Loading indicator while checking duplicates */}
