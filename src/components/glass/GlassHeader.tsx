@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, StyleSheet, useColorScheme } from 'react-native'
 import { BlurView } from 'expo-blur'
+import { Colors } from '@/constants/Colors'
 import { TextThemed } from '@/components/Themed'
 import { GlassHeaderDefaults } from '@/constants/GlassConstants'
 import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
@@ -11,8 +12,8 @@ export type GlassHeaderProps = {
   rightSlot?: React.ReactNode
   roundedTop?: boolean
   withHairline?: boolean
-  paddingTopInset?: boolean
   height?: number
+  renderBackground?: boolean
 }
 
 export const GlassHeader: React.FC<GlassHeaderProps> = ({
@@ -22,6 +23,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
   roundedTop = true,
   withHairline = true,
   height = GlassHeaderDefaults.height,
+  renderBackground = true,
 }) => {
   const colorScheme = useColorScheme()
   const isDarkMode = colorScheme === 'dark'
@@ -41,23 +43,24 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
         },
       ]}
     >
-      {reduceTransparency ? (
-        <View
-          style={{
-            ...StyleSheet.absoluteFillObject,
-            backgroundColor: isDarkMode
-              ? 'rgba(255,255,255,0.06)'
-              : 'rgba(255,255,255,0.5)',
-          }}
-        />
-      ) : (
-        <BlurView
-          tint={GlassHeaderDefaults.tint}
-          intensity={intensity}
-          style={StyleSheet.absoluteFill}
-          experimentalBlurMethod={'dimezisBlurView'}
-        />
-      )}
+      {renderBackground &&
+        (reduceTransparency ? (
+          <View
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              backgroundColor: isDarkMode
+                ? Colors.transparent.white05
+                : Colors.transparent.white50,
+            }}
+          />
+        ) : (
+          <BlurView
+            tint={GlassHeaderDefaults.tint}
+            intensity={intensity}
+            style={StyleSheet.absoluteFill}
+            experimentalBlurMethod={'dimezisBlurView'}
+          />
+        ))}
       {withHairline && (
         <View
           style={{
@@ -67,8 +70,8 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
             right: 0,
             height: 1,
             backgroundColor: isDarkMode
-              ? 'rgba(255,255,255,0.28)'
-              : 'rgba(60,60,67,0.29)',
+              ? Colors.transparent.hairlineDark
+              : Colors.transparent.hairlineLight,
           }}
         />
       )}

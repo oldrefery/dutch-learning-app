@@ -6,8 +6,10 @@ import {
   StyleSheet,
   Pressable,
   Platform,
+  View,
 } from 'react-native'
 import { BlurView } from 'expo-blur'
+import { GlassHeader } from '@/components/glass/GlassHeader'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -303,17 +305,19 @@ export default function CollectionContextMenu({
               styles.menu,
               {
                 backgroundColor: isDarkMode
-                  ? 'rgba(28, 28, 30, 0.92)'
-                  : 'rgba(255, 255, 255, 0.92)',
+                  ? Colors.transparent.iosDarkSurface92
+                  : Colors.transparent.white92,
               },
             ]}
           >
             {/* Header */}
-            <ViewThemed style={styles.header}>
-              <TextThemed style={styles.title} numberOfLines={1}>
-                {collection.name}
-              </TextThemed>
-            </ViewThemed>
+            <View style={{ height: 56 }}>
+              <GlassHeader
+                title={collection.name}
+                roundedTop={true}
+                renderBackground={false}
+              />
+            </View>
 
             {/* Menu Items */}
             <ViewThemed style={styles.menuItems}>
@@ -358,7 +362,7 @@ const styles = StyleSheet.create({
   },
   backdropOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: Colors.transparent.black40,
   },
   menuContainer: {
     position: 'absolute',

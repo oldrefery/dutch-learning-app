@@ -17,6 +17,7 @@ import {
   LiquidGlassRadius,
   LiquidGlassTint,
 } from '@/constants/GlassConstants'
+import { Colors } from '@/constants/Colors'
 
 export type LiquidGlassProps = {
   children?: React.ReactNode
@@ -88,8 +89,8 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({
             resolvedPadding ? { padding: resolvedPadding } : null,
             {
               backgroundColor: isDarkMode
-                ? 'rgba(255,255,255,0.06)'
-                : 'rgba(255,255,255,0.5)',
+                ? Colors.transparent.white05
+                : Colors.transparent.white50,
             },
           ]}
         >

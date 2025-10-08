@@ -64,7 +64,7 @@ export default function CollectionDetailScreen() {
     useImageSelector()
 
   const handleQuickAddWord = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     router.push({
       pathname: ROUTES.TABS.ADD_WORD,
       params: { collectionId: collection?.collection_id },
@@ -267,6 +267,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: Colors.transparent.white20,
   },
 })

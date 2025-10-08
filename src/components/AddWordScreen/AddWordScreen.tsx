@@ -24,6 +24,7 @@ import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 import { Sentry } from '@/lib/sentry'
 import { useHistoryStore } from '@/stores/useHistoryStore'
+import { Colors } from '@/constants/Colors.ts'
 
 interface DuplicateWordData {
   word_id: string
@@ -115,7 +116,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
       }
     }
 
-    checkForDuplicates()
+    void checkForDuplicates()
   }, [analysisResult, currentUserId])
 
   const handleAnalyze = async () => {
@@ -139,7 +140,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     setHasNavigatedToCollection(false)
 
     clearAnalysis()
-    analyzeWord(normalizedWord)
+    void analyzeWord(normalizedWord)
   }
 
   const handleAddWord = async () => {
@@ -223,7 +224,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: 'rgba(255,255,255,0.5)',
+              backgroundColor: Colors.transparent.white50,
             }}
           />
         ) : (
@@ -275,7 +276,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
             right: 0,
             bottom: 0,
             height: 1,
-            backgroundColor: 'rgba(60,60,67,0.29)',
+            backgroundColor: Colors.transparent.hairlineLight,
           }}
         />
       </View>
@@ -310,7 +311,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                backgroundColor: Colors.transparent.black10,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 12,

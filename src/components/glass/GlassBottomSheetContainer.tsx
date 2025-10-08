@@ -7,6 +7,7 @@ import {
   LiquidGlassElevation,
   LiquidGlassRadius,
 } from '@/constants/GlassConstants'
+import { Colors } from '@/constants/Colors.ts'
 
 export type GlassBottomSheetContainerProps = {
   children?: React.ReactNode
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 5,
     borderRadius: 100,
-    backgroundColor: 'rgba(127,127,127,0.35)',
+    backgroundColor: Colors.transparent.gray35,
   },
   sheet: {
     width: '100%',

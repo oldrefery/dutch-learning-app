@@ -32,10 +32,10 @@ export default function SettingsScreen() {
   const { userAccessLevel } = useApplicationStore()
 
   const isDarkMode = colorScheme === 'dark'
-  const blurBackgroundDark = 'rgba(44, 44, 46, 0.95)'
-  const blurBackgroundLight = 'rgba(255, 255, 255, 0.95)'
-  const separatorDark = 'rgba(255, 255, 255, 0.1)'
-  const separatorLight = 'rgba(0, 0, 0, 0.05)'
+  const blurBackgroundDark = Colors.transparent.iosDarkSurface95
+  const blurBackgroundLight = Colors.transparent.white95
+  const separatorDark = Colors.transparent.white10
+  const separatorLight = Colors.transparent.black05
 
   useEffect(() => {
     const getUser = async () => {

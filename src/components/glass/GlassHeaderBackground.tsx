@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, useColorScheme } from 'react-native'
 import { BlurView } from 'expo-blur'
+import { Colors } from '@/constants/Colors'
 import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
 
 export type GlassHeaderBackgroundProps = {
@@ -24,8 +25,8 @@ export const GlassHeaderBackground: React.FC<GlassHeaderBackgroundProps> = ({
           style={{
             ...StyleSheet.absoluteFillObject,
             backgroundColor: isDarkMode
-              ? 'rgba(255,255,255,0.06)'
-              : 'rgba(255,255,255,0.5)',
+              ? Colors.transparent.white05
+              : Colors.transparent.white50,
           }}
         />
       ) : (
@@ -44,8 +45,8 @@ export const GlassHeaderBackground: React.FC<GlassHeaderBackgroundProps> = ({
           right: 0,
           height: 1,
           backgroundColor: isDarkMode
-            ? 'rgba(255,255,255,0.28)'
-            : 'rgba(60,60,67,0.29)',
+            ? Colors.transparent.hairlineDark
+            : Colors.transparent.hairlineLight,
         }}
       />
     </View>

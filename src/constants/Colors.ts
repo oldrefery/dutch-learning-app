@@ -113,8 +113,34 @@ const colorPalette = {
     backgroundDark: 'rgba(255, 255, 255, 0.05)',
 
     // White overlays with different opacity levels
+    white05: 'rgba(255, 255, 255, 0.05)',
     white10: 'rgba(255, 255, 255, 0.1)',
     white20: 'rgba(255, 255, 255, 0.2)',
+    white50: 'rgba(255, 255, 255, 0.5)',
+    white92: 'rgba(255, 255, 255, 0.92)',
+    white95: 'rgba(255, 255, 255, 0.95)',
+
+    // Black overlays
+    black05: 'rgba(0, 0, 0, 0.05)',
+    black03: 'rgba(0, 0, 0, 0.03)',
+    black04: 'rgba(0, 0, 0, 0.04)',
+    black08: 'rgba(0, 0, 0, 0.08)',
+    black10: 'rgba(0, 0, 0, 0.1)',
+    black40: 'rgba(0, 0, 0, 0.4)',
+
+    // iOS dark surface overlays (for glass backgrounds)
+    iosDarkSurface92: 'rgba(28, 28, 30, 0.92)',
+    iosDarkSurface95: 'rgba(44, 44, 46, 0.95)',
+
+    // Hairline separators
+    hairlineLight: 'rgba(60, 60, 67, 0.29)',
+    hairlineDark: 'rgba(255, 255, 255, 0.28)',
+
+    // Brand overlays
+    primary20: 'rgba(64, 156, 255, 0.2)',
+
+    // Misc
+    gray35: 'rgba(127,127,127,0.35)',
   },
 
   // Legacy colors for compatibility (will be gradually replaced)

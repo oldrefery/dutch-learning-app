@@ -50,7 +50,7 @@ const COLOR_MAPPINGS = {
     chevronNormal: Colors.dark.textSecondary,
     chevronDisabled: Colors.dark.textTertiary,
     itemBorder: Colors.dark.backgroundSecondary,
-    selectedItemBackground: 'rgba(64, 156, 255, 0.2)',
+    selectedItemBackground: Colors.transparent.primary20,
     selectedItemText: Colors.dark.tint,
     checkmarkColor: Colors.dark.tint,
     modalBorder: Colors.dark.backgroundSecondary,

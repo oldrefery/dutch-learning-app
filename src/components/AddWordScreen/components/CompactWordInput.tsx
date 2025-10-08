@@ -58,8 +58,8 @@ const getStyles = (
     borderColor:
       variant === 'glass'
         ? colorScheme === 'dark'
-          ? 'rgba(255,255,255,0.28)'
-          : 'rgba(60,60,67,0.29)'
+          ? Colors.transparent.hairlineDark
+          : Colors.transparent.hairlineLight
         : colorScheme === 'dark'
           ? Colors.dark.backgroundTertiary
           : Colors.neutral[200],
