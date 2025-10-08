@@ -3,6 +3,7 @@ import { View, StyleSheet, useColorScheme } from 'react-native'
 import { BlurView } from 'expo-blur'
 import { TextThemed } from '@/components/Themed'
 import { GlassHeaderDefaults } from '@/constants/GlassConstants'
+import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
 
 export type GlassHeaderProps = {
   title?: string
@@ -24,6 +25,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
 }) => {
   const colorScheme = useColorScheme()
   const isDarkMode = colorScheme === 'dark'
+  const reduceTransparency = usePreferReducedTransparency()
 
   const intensity = isDarkMode
     ? GlassHeaderDefaults.intensityDark
@@ -39,12 +41,23 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
         },
       ]}
     >
-      <BlurView
-        tint={GlassHeaderDefaults.tint}
-        intensity={intensity}
-        style={StyleSheet.absoluteFill}
-        experimentalBlurMethod={'dimezisBlurView'}
-      />
+      {reduceTransparency ? (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: isDarkMode
+              ? 'rgba(255,255,255,0.06)'
+              : 'rgba(255,255,255,0.5)',
+          }}
+        />
+      ) : (
+        <BlurView
+          tint={GlassHeaderDefaults.tint}
+          intensity={intensity}
+          style={StyleSheet.absoluteFill}
+          experimentalBlurMethod={'dimezisBlurView'}
+        />
+      )}
       {withHairline && (
         <View
           style={{

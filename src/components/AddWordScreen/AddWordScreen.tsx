@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { BlurView } from 'expo-blur'
+import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
 import { CompactWordInput } from './components/CompactWordInput'
@@ -38,6 +39,7 @@ interface AddWordScreenProps {
 
 export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const insets = useSafeAreaInsets()
+  const reduceTransparency = usePreferReducedTransparency()
   const [inputWord, setInputWord] = useState('')
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
@@ -213,12 +215,31 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           zIndex: 10,
         }}
       >
-        <BlurView
-          tint="default"
-          intensity={25}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-          experimentalBlurMethod={'dimezisBlurView'}
-        />
+        {reduceTransparency ? (
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(255,255,255,0.5)',
+            }}
+          />
+        ) : (
+          <BlurView
+            tint="default"
+            intensity={25}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+            experimentalBlurMethod={'dimezisBlurView'}
+          />
+        )}
         <View
           style={{
             paddingTop: insets.top + 12,

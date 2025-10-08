@@ -8,6 +8,7 @@ import {
   useColorScheme,
 } from 'react-native'
 import { BlurView } from 'expo-blur'
+import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
 import {
   GlassDefaults,
   GlassOutline,
@@ -44,6 +45,7 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({
 }) => {
   const colorScheme = useColorScheme()
   const isDarkMode = colorScheme === 'dark'
+  const reduceTransparency = usePreferReducedTransparency()
 
   const resolvedTint: 'light' | 'dark' =
     tint === LiquidGlassTint.Auto
@@ -77,19 +79,37 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({
 
   return (
     <View style={[styles.container, containerElevation, style]} testID={testID}>
-      <BlurView
-        intensity={resolvedIntensity}
-        tint={resolvedTint}
-        experimentalBlurMethod={'dimezisBlurView'}
-        style={[
-          styles.blur,
-          { borderRadius: resolvedRadius },
-          borderStyle,
-          resolvedPadding ? { padding: resolvedPadding } : null,
-        ]}
-      >
-        {children}
-      </BlurView>
+      {reduceTransparency ? (
+        <View
+          style={[
+            styles.blur,
+            { borderRadius: resolvedRadius },
+            borderStyle,
+            resolvedPadding ? { padding: resolvedPadding } : null,
+            {
+              backgroundColor: isDarkMode
+                ? 'rgba(255,255,255,0.06)'
+                : 'rgba(255,255,255,0.5)',
+            },
+          ]}
+        >
+          {children}
+        </View>
+      ) : (
+        <BlurView
+          intensity={resolvedIntensity}
+          tint={resolvedTint}
+          experimentalBlurMethod={'dimezisBlurView'}
+          style={[
+            styles.blur,
+            { borderRadius: resolvedRadius },
+            borderStyle,
+            resolvedPadding ? { padding: resolvedPadding } : null,
+          ]}
+        >
+          {children}
+        </BlurView>
+      )}
     </View>
   )
 }

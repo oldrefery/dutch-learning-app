@@ -56,3 +56,4 @@ See `src/constants/GlassConstants.ts` for enums and defaults:
 - Blur intensity adapts for light/dark automatically. On Android we use `experimentalBlurMethod="dimezisBlurView"` for better performance.
 - Hairline outline subtly separates glass from background.
 - Avoid nested blurs for performance.
+- Reduce Transparency: when enabled (proxying Reduce Motion), components fallback to semi‑transparent backgrounds without blur.

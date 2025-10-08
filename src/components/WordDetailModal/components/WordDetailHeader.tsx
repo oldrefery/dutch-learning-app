@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 import { BlurView } from 'expo-blur'
+import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
 
 interface WordHeaderProps {
   dutchLemma: string | null
@@ -25,6 +26,7 @@ export default function WordHeader({
   const colorScheme = useColorScheme() ?? 'light'
   const isDarkMode = colorScheme === 'dark'
   const intensity = isDarkMode ? 25 : 30
+  const reduceTransparency = usePreferReducedTransparency()
   return (
     <View
       style={[
@@ -41,12 +43,25 @@ export default function WordHeader({
         },
       ]}
     >
-      <BlurView
-        tint="default"
-        intensity={intensity}
-        style={StyleSheet.absoluteFill}
-        experimentalBlurMethod={'dimezisBlurView'}
-      />
+      {reduceTransparency ? (
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              backgroundColor: isDarkMode
+                ? 'rgba(255,255,255,0.06)'
+                : 'rgba(255,255,255,0.5)',
+            },
+          ]}
+        />
+      ) : (
+        <BlurView
+          tint="default"
+          intensity={intensity}
+          style={StyleSheet.absoluteFill}
+          experimentalBlurMethod={'dimezisBlurView'}
+        />
+      )}
       <View style={styles.headerContent}>
         <TextThemed style={styles.wordTitle}>{dutchLemma}</TextThemed>
         {article && (
