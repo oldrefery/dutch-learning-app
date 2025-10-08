@@ -153,6 +153,7 @@ export default function CollectionDetailScreen() {
             style={styles.fabBlur}
             intensity={90}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            experimentalBlurMethod={'dimezisBlurView'}
           >
             <ViewThemed
               style={[

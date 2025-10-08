@@ -113,6 +113,7 @@ export default function WordContextMenu({
                 style={styles.menuBlur}
                 intensity={100}
                 tint={colorScheme === 'dark' ? 'dark' : 'light'}
+                experimentalBlurMethod={'dimezisBlurView'}
               >
                 <ViewThemed
                   style={[

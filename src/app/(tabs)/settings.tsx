@@ -328,6 +328,7 @@ export default function SettingsScreen() {
             style={styles.userInfoBlur}
             intensity={100}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            experimentalBlurMethod={'dimezisBlurView'}
           >
             <ViewThemed
               style={[
@@ -410,6 +411,7 @@ export default function SettingsScreen() {
             style={styles.accountBlur}
             intensity={100}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            experimentalBlurMethod={'dimezisBlurView'}
           >
             <ViewThemed
               style={[
