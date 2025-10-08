@@ -4,6 +4,7 @@ import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { BlurView } from 'expo-blur'
 import { GlassHeaderBackground } from '@/components/glass/GlassHeaderBackground'
 import { Ionicons } from '@expo/vector-icons'
+import { useHeaderHeight } from '@react-navigation/elements'
 import * as Haptics from 'expo-haptics'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { useImageSelector } from '@/hooks/useImageSelector'
@@ -23,6 +24,7 @@ export default function CollectionDetailScreen() {
     highlightWordId?: string
   }>()
   const colorScheme = useColorScheme() ?? 'light'
+  const headerHeight = useHeaderHeight()
 
   const {
     collection,
@@ -130,6 +132,7 @@ export default function CollectionDetailScreen() {
           moveModalVisible={moveModalVisible}
           wordBeingMoved={wordToMove}
           highlightWordId={highlightWordId}
+          topInset={headerHeight}
         />
 
         {/* Floating Action Button */}

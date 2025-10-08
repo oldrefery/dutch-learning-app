@@ -4,6 +4,7 @@ import {
   RefreshControl,
   useColorScheme,
   StyleSheet,
+  Platform,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
@@ -35,6 +36,7 @@ interface CollectionContentProps {
   wordBeingMoved?: string | null
   highlightWordId?: string
   onScrollYChange?: (y: number) => void
+  topInset?: number
 }
 
 export default function CollectionContent({
@@ -51,6 +53,7 @@ export default function CollectionContent({
   wordBeingMoved,
   highlightWordId,
   onScrollYChange,
+  topInset,
 }: CollectionContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const flatListRef = useRef<FlatList>(null)
@@ -172,6 +175,9 @@ export default function CollectionContent({
       ref={flatListRef}
       style={styles.wordsSection}
       contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{
+        paddingTop: Platform.OS === 'android' ? (topInset ?? 0) : 0,
+      }}
       data={filteredWords}
       ListHeaderComponent={ListHeaderComponent}
       keyExtractor={keyExtractor}
