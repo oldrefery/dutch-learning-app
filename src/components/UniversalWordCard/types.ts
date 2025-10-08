@@ -18,6 +18,7 @@ export interface WordCardConfig {
   showGrammarInfo?: boolean
   showConjugation?: boolean
   showNotes?: boolean
+  extraHeightAddWord?: number
 
   // Interactive features
   enablePronunciation?: boolean

@@ -123,6 +123,7 @@ export default function MoveToCollectionModal({
       <BlurView
         style={styles.container}
         intensity={100}
+        experimentalBlurMethod={'dimezisBlurView'}
         tint={colorScheme === 'dark' ? 'dark' : 'light'}
       >
         <ViewThemed style={styles.header}>

@@ -50,8 +50,8 @@ export default function WordContextMenu({
   if (!word) return null
 
   const isDarkMode = colorScheme === 'dark'
-  const overlayOpacity = 'rgba(255, 255, 255, 0.1)'
-  const overlayOpacityLight = 'rgba(0, 0, 0, 0.05)'
+  const overlayOpacity = Colors.transparent.white10
+  const overlayOpacityLight = Colors.transparent.black05
 
   const menuItems: MenuItem[] = [
     {
@@ -113,14 +113,15 @@ export default function WordContextMenu({
                 style={styles.menuBlur}
                 intensity={100}
                 tint={colorScheme === 'dark' ? 'dark' : 'light'}
+                experimentalBlurMethod={'dimezisBlurView'}
               >
                 <ViewThemed
                   style={[
                     styles.menuContent,
                     {
                       backgroundColor: isDarkMode
-                        ? 'rgba(44, 44, 46, 0.95)'
-                        : 'rgba(255, 255, 255, 0.95)',
+                        ? Colors.transparent.iosDarkSurface95
+                        : Colors.transparent.white95,
                       borderColor: isDarkMode
                         ? overlayOpacity
                         : overlayOpacityLight,
@@ -171,8 +172,8 @@ export default function WordContextMenu({
                             {
                               backgroundColor: pressed
                                 ? colorScheme === 'dark'
-                                  ? 'rgba(255, 255, 255, 0.1)'
-                                  : 'rgba(0, 0, 0, 0.05)'
+                                  ? Colors.transparent.white10
+                                  : Colors.transparent.black05
                                 : 'transparent',
                             },
                           ]}
@@ -209,7 +210,7 @@ export default function WordContextMenu({
                               styles.itemSeparator,
                               {
                                 backgroundColor: isDarkMode
-                                  ? 'rgba(255, 255, 255, 0.05)'
+                                  ? Colors.transparent.white05
                                   : overlayOpacityLight,
                               },
                             ]}
@@ -226,8 +227,8 @@ export default function WordContextMenu({
                       {
                         backgroundColor:
                           colorScheme === 'dark'
-                            ? 'rgba(255, 255, 255, 0.05)'
-                            : 'rgba(0, 0, 0, 0.03)',
+                            ? Colors.transparent.white05
+                            : Colors.transparent.black03,
                       },
                     ]}
                     onPress={() => {
@@ -262,7 +263,7 @@ export default function WordContextMenu({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: Colors.transparent.black40,
     justifyContent: 'flex-end',
   },
   menuContainer: {

@@ -53,10 +53,6 @@ export function HeaderSection({
   isPlayingAudio,
   onPlayPronunciation,
 }: WordSectionProps) {
-  if (!config.showHeader) {
-    return null
-  }
-
   const getTTSUrl = (): string | null => {
     if ('tts_url' in word && word.tts_url) return word.tts_url
     return null
@@ -68,18 +64,6 @@ export function HeaderSection({
 
   return (
     <ViewThemed style={styles.headerSection}>
-      {/* Word Title - Full Width on First Line */}
-      <TextThemed
-        style={[styles.wordTitle, config.compact && styles.compactWordTitle]}
-        selectable
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.6}
-      >
-        {word.dutch_lemma || 'Unknown'}
-      </TextThemed>
-
-      {/* Actions Row - Second Line, Right Aligned */}
       <ViewThemed style={styles.headerActionsRow}>
         <NonSwipeableArea style={styles.headerActions}>
           {/* Cache Status Badge */}

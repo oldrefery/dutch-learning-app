@@ -2,7 +2,9 @@ import React from 'react'
 import { StyleSheet, TouchableOpacity, useColorScheme } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
 import { BlurView } from 'expo-blur'
+import { GlassHeaderBackground } from '@/components/glass/GlassHeaderBackground'
 import { Ionicons } from '@expo/vector-icons'
+import { useHeaderHeight } from '@react-navigation/elements'
 import * as Haptics from 'expo-haptics'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { useImageSelector } from '@/hooks/useImageSelector'
@@ -22,6 +24,7 @@ export default function CollectionDetailScreen() {
     highlightWordId?: string
   }>()
   const colorScheme = useColorScheme() ?? 'light'
+  const headerHeight = useHeaderHeight()
 
   const {
     collection,
@@ -61,7 +64,7 @@ export default function CollectionDetailScreen() {
     useImageSelector()
 
   const handleQuickAddWord = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     router.push({
       pathname: ROUTES.TABS.ADD_WORD,
       params: { collectionId: collection?.collection_id },
@@ -94,12 +97,8 @@ export default function CollectionDetailScreen() {
         options={{
           title: collection?.name || 'Collection',
           headerBackTitle: 'Back',
-          headerStyle: {
-            backgroundColor:
-              colorScheme === 'dark'
-                ? Colors.dark.backgroundSecondary
-                : Colors.background.secondary,
-          },
+          headerTransparent: true,
+          headerBackground: () => <GlassHeaderBackground />,
           headerTitleStyle: {
             fontWeight: '600',
             fontSize: 18,
@@ -133,6 +132,7 @@ export default function CollectionDetailScreen() {
           moveModalVisible={moveModalVisible}
           wordBeingMoved={wordToMove}
           highlightWordId={highlightWordId}
+          topInset={headerHeight}
         />
 
         {/* Floating Action Button */}
@@ -153,6 +153,7 @@ export default function CollectionDetailScreen() {
             style={styles.fabBlur}
             intensity={90}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            experimentalBlurMethod={'dimezisBlurView'}
           >
             <ViewThemed
               style={[
@@ -266,6 +267,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: Colors.transparent.white20,
   },
 })

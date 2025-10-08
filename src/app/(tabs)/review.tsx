@@ -16,6 +16,7 @@ import {
   UniversalWordCard,
   WordCardPresets,
 } from '@/components/UniversalWordCard'
+import { GlassHeader } from '@/components/glass/GlassHeader'
 import { GestureErrorBoundary } from '@/components/GestureErrorBoundary'
 import { useReviewScreen } from '@/hooks/useReviewScreen'
 import { useImageSelector } from '@/hooks/useImageSelector'
@@ -156,18 +157,22 @@ export default function ReviewScreen() {
                   pronunciationRef={pronunciationRef}
                 />
               ) : (
-                <UniversalWordCard
-                  word={currentWord}
-                  config={WordCardPresets.review.config}
-                  actions={{
-                    ...WordCardPresets.review.actions,
-                    onDelete: handleDeleteWord,
-                  }}
-                  isPlayingAudio={isPlayingAudio}
-                  onPlayPronunciation={playAudio}
-                  onChangeImage={openImageSelector}
-                  style={reviewScreenStyles.universalWordCard}
-                />
+                <>
+                  <GlassHeader title={currentWord.dutch_lemma} />
+                  <UniversalWordCard
+                    word={currentWord}
+                    config={WordCardPresets.review.config}
+                    actions={{
+                      ...WordCardPresets.review.actions,
+                      onDelete: handleDeleteWord,
+                    }}
+                    isPlayingAudio={isPlayingAudio}
+                    onPlayPronunciation={playAudio}
+                    onChangeImage={openImageSelector}
+                    style={reviewScreenStyles.universalWordCard}
+                    contentStyle={{ paddingTop: 64 }}
+                  />
+                </>
               )}
             </ViewThemed>
           </GestureDetector>

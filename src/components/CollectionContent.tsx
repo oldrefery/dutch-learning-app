@@ -4,6 +4,7 @@ import {
   RefreshControl,
   useColorScheme,
   StyleSheet,
+  Platform,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
@@ -34,6 +35,8 @@ interface CollectionContentProps {
   moveModalVisible?: boolean
   wordBeingMoved?: string | null
   highlightWordId?: string
+  onScrollYChange?: (y: number) => void
+  topInset?: number
 }
 
 export default function CollectionContent({
@@ -49,6 +52,8 @@ export default function CollectionContent({
   moveModalVisible,
   wordBeingMoved,
   highlightWordId,
+  onScrollYChange,
+  topInset,
 }: CollectionContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const flatListRef = useRef<FlatList>(null)
@@ -85,7 +90,7 @@ export default function CollectionContent({
     }
   }, [highlightWordId, filteredWords])
 
-  const renderHeader = () => (
+  const ListHeaderComponent = () => (
     <ViewThemed style={styles.headerContent}>
       <CollectionStats stats={stats} />
       <CollectionReviewButton
@@ -169,9 +174,18 @@ export default function CollectionContent({
     <FlatList
       ref={flatListRef}
       style={styles.wordsSection}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{
+        paddingTop: Platform.OS === 'android' ? (topInset ?? 0) : 0,
+      }}
       data={filteredWords}
-      ListHeaderComponent={renderHeader}
+      ListHeaderComponent={ListHeaderComponent}
       keyExtractor={keyExtractor}
+      onScroll={event => {
+        const y = event.nativeEvent.contentOffset.y
+        onScrollYChange?.(y)
+      }}
+      scrollEventThrottle={16}
       onScrollToIndexFailed={info => {
         // Fallback: scroll to offset if the index scroll fails
         const wait = new Promise(resolve => setTimeout(resolve, 500))

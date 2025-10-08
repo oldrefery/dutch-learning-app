@@ -22,41 +22,51 @@ interface CompactWordInputProps {
   collections: Collection[]
   onCollectionSelect: (collection: Collection | null) => void
   onCancel?: () => void
+  variant?: 'default' | 'glass'
 }
 
 // Styles helper to reduce complexity
-const getStyles = (colorScheme: 'light' | 'dark') => ({
+const getStyles = (
+  colorScheme: 'light' | 'dark',
+  variant: 'default' | 'glass'
+) => ({
   container: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor:
-      colorScheme === 'dark'
-        ? Colors.dark.background
-        : Colors.background.primary,
+    backgroundColor: 'transparent',
   },
   collectionRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 8,
     marginBottom: 8,
+    backgroundColor: 'transparent',
   },
   inputContainer: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor:
-      colorScheme === 'dark'
-        ? Colors.dark.backgroundSecondary
-        : Colors.neutral[50],
+      variant === 'glass'
+        ? colorScheme === 'dark'
+          ? Colors.transparent.white10
+          : Colors.transparent.white20
+        : colorScheme === 'dark'
+          ? Colors.dark.backgroundSecondary
+          : Colors.neutral[50],
     borderRadius: 8,
     borderWidth: 1,
     borderColor:
-      colorScheme === 'dark'
-        ? Colors.dark.backgroundTertiary
-        : Colors.neutral[200],
+      variant === 'glass'
+        ? colorScheme === 'dark'
+          ? Colors.transparent.hairlineDark
+          : Colors.transparent.hairlineLight
+        : colorScheme === 'dark'
+          ? Colors.dark.backgroundTertiary
+          : Colors.neutral[200],
   },
   loadingContainer: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 8,
     paddingVertical: 4,
   },
@@ -148,10 +158,10 @@ export function CompactWordInput({
   selectedCollection,
   collections,
   onCollectionSelect,
-  onCancel,
+  variant = 'default',
 }: CompactWordInputProps) {
   const colorScheme = useColorScheme() ?? 'light'
-  const styles = getStyles(colorScheme)
+  const styles = getStyles(colorScheme, variant)
 
   const handleCollectionPress = () => {
     if (Platform.OS === 'ios') {
