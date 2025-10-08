@@ -53,10 +53,6 @@ export function HeaderSection({
   isPlayingAudio,
   onPlayPronunciation,
 }: WordSectionProps) {
-  if (!config.showHeader) {
-    return null
-  }
-
   const getTTSUrl = (): string | null => {
     if ('tts_url' in word && word.tts_url) return word.tts_url
     return null

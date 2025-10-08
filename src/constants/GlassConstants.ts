@@ -1,6 +1,6 @@
 /**
  * Glass (Liquid Glass) design tokens and enums
- * Centralizes values to keep components simple and HIG-consistent
+ * Centralize values to keep components simple and HIG-consistent
  */
 
 export enum LiquidGlassTint {
@@ -44,4 +44,11 @@ export const GlassOutline = {
   // Subtle hairline borders to enhance glass separation
   light: 'rgba(0, 0, 0, 0.08)',
   dark: 'rgba(255, 255, 255, 0.10)',
+}
+
+export const GlassHeaderDefaults = {
+  tint: 'default' as const,
+  intensityLight: 30,
+  intensityDark: 25,
+  height: 56,
 }

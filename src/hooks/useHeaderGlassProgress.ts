@@ -30,7 +30,7 @@ function ease(progress: number, mode: HeaderGlassProgressOptions['easing']) {
 
 /**
  * Returns header blur progress [0..1] and resolved blur intensity based on scroll offset.
- * Use with scrollY from list onScroll events.
+ * Use with scrollY from the list onScroll events.
  */
 export function useHeaderGlassProgress(
   scrollY: number,

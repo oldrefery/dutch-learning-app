@@ -9,6 +9,7 @@ New components implementing iOS 26-inspired Liquid Glass with theme awareness.
 - `GlassModalContainer`: modal overlay with glass content.
 - `GlassBottomSheetContainer`: sheet with handle and safe-area padding.
 - `GlassHeaderBackground`: navigation header background with blur.
+- `GlassHeader`: reusable header with safe-area, tint=default, hairline.
 
 ### Usage
 
@@ -19,6 +20,7 @@ import { GlassModalContainer } from '@/components/glass/GlassModalContainer'
 import { GlassBottomSheetContainer } from '@/components/glass/GlassBottomSheetContainer'
 import { GlassHeaderBackground } from '@/components/glass/GlassHeaderBackground'
 import { useHeaderGlassProgress } from '@/hooks/useHeaderGlassProgress'
+import { GlassHeader } from '@/components/glass/GlassHeader'
 
 // Card
 <GlassCard>
@@ -38,6 +40,9 @@ import { useHeaderGlassProgress } from '@/hooks/useHeaderGlassProgress'
 // Header background with scroll-based intensity
 const { progress, intensity } = useHeaderGlassProgress(scrollY, { endOffset: 64 })
 // In screen options: headerTransparent: true, headerBackground: () => <GlassHeaderBackground intensity={intensity} />
+
+// Reusable glass header
+<GlassHeader title="Title" rightSlot={<MyButton />} />
 ```
 
 ### Tokens

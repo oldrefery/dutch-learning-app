@@ -46,13 +46,10 @@ export function DuplicateBanner({
       style={[
         styles.container,
         {
-          backgroundColor:
-            colorScheme === 'dark'
-              ? Colors.dark.backgroundSecondary
-              : Colors.background.secondary,
           borderColor:
             colorScheme === 'dark' ? Colors.dark.tint : Colors.primary.DEFAULT,
           borderWidth: 2,
+          backgroundColor: 'transparent',
         },
       ]}
     >
@@ -108,6 +105,7 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   text: {
     fontSize: 16,

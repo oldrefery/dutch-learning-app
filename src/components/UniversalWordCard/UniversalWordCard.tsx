@@ -64,9 +64,6 @@ export function UniversalWordCard({
   const finalConfig = { ...FULL_CONFIG, ...config }
   const finalActions = { ...DEFAULT_ACTIONS, ...actions }
 
-  console.log('/n/n/n/nconfig.extraHeightAddWord', config.extraHeightAddWord)
-  console.log('finalConfig.extraHeightAddWord', finalConfig.extraHeightAddWord)
-
   const sectionProps = {
     word,
     config: finalConfig,
@@ -85,7 +82,7 @@ export function UniversalWordCard({
       ]}
     >
       <View style={{ height: finalConfig.extraHeightAddWord }} />
-      {finalConfig.showHeader && <HeaderSection {...sectionProps} />}
+      <HeaderSection {...sectionProps} />
       <TranslationsSection {...sectionProps} />
       <ExamplesSection {...sectionProps} />
       <ImageSection {...sectionProps} />
