@@ -14,7 +14,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import CreateCollectionModal from '@/components/CreateCollectionModal'
-import RenameCollectionModal from '@/components/RenameCollectionModal'
+import RenameCollectionSheet from '@/components/glass/modals/RenameCollectionSheet'
 import ImportByTokenModal from '@/components/ImportByTokenModal'
 import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
 import StatsCard from '@/components/StatsCard'
@@ -358,7 +358,7 @@ export default function CollectionsScreen() {
         }}
       />
 
-      <RenameCollectionModal
+      <RenameCollectionSheet
         visible={renameModal.visible}
         currentName={renameModal.currentName}
         onClose={handleCloseRenameModal}
