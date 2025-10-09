@@ -26,6 +26,7 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word } from '@/types/database'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Sentry } from '@/lib/sentry'
+import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 
 export default function ReviewScreen() {
   const insets = useSafeAreaInsets()
@@ -66,6 +67,9 @@ export default function ReviewScreen() {
     state => state.startReviewSession
   )
 
+  // Enable pull-to-refresh to also refresh review count (badge)
+  const { refreshCount } = useReviewWordsCount()
+
   const handleWordPress = useCallback(() => {
     if (currentWord) {
       setSelectedWord(currentWord)
@@ -81,7 +85,7 @@ export default function ReviewScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     try {
-      await startReviewSession()
+      await Promise.all([refreshCount(), startReviewSession()])
     } catch (error) {
       Sentry.captureException(error, {
         tags: { operation: 'refreshReviewSession' },
@@ -90,7 +94,7 @@ export default function ReviewScreen() {
     } finally {
       setRefreshing(false)
     }
-  }, [startReviewSession])
+  }, [refreshCount, startReviewSession])
 
   // Create completely stable gestures to prevent recreation
   const tapGestureInstance = useMemo(() => {

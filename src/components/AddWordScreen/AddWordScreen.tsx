@@ -331,7 +331,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           disabled={isAdding}
           loading={isAdding}
           icon="checkmark"
-          label={`Add to ${selectedCollection?.name || 'Collection'}`}
         />
       )}
 

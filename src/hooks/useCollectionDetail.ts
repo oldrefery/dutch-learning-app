@@ -8,6 +8,7 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { Word, Collection } from '@/types/database'
 import { Sentry } from '@/lib/sentry'
 import { calculateCollectionStats } from '@/utils/collectionStats'
+import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 
 export function useCollectionDetail(collectionId: string) {
   const [refreshing, setRefreshing] = useState(false)
@@ -22,7 +23,6 @@ export function useCollectionDetail(collectionId: string) {
   const {
     words,
     collections,
-    fetchWords,
     fetchCollections,
     deleteWord,
     updateWordImage,
@@ -32,6 +32,8 @@ export function useCollectionDetail(collectionId: string) {
     getCollectionShareStatus,
     unshareCollection,
   } = useApplicationStore()
+
+  const { refreshCount } = useReviewWordsCount()
 
   const collection = collections.find(c => c.collection_id === collectionId)
 
@@ -53,7 +55,7 @@ export function useCollectionDetail(collectionId: string) {
   const handleRefresh = async () => {
     setRefreshing(true)
     try {
-      await Promise.all([fetchWords(), fetchCollections()])
+      await Promise.all([refreshCount(), fetchCollections()])
     } catch {
       ToastService.show('Failed to refresh data', ToastType.ERROR)
     } finally {

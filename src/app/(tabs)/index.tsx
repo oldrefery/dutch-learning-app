@@ -1,5 +1,10 @@
-import React, { useState, useRef } from 'react'
-import { FlatList, ActivityIndicator, TouchableOpacity } from 'react-native'
+import React, { useState, useRef, useCallback } from 'react'
+import {
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
@@ -9,7 +14,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import CreateCollectionModal from '@/components/CreateCollectionModal'
-import RenameCollectionModal from '@/components/RenameCollectionModal'
+import RenameCollectionSheet from '@/components/glass/modals/RenameCollectionSheet'
 import ImportByTokenModal from '@/components/ImportByTokenModal'
 import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
 import StatsCard from '@/components/StatsCard'
@@ -19,9 +24,11 @@ import { ROUTES } from '@/constants/Routes'
 import { styles } from '@/styles/CollectionsScreen.styles'
 import type { Collection } from '@/types/database'
 import { calculateStreak } from '@/utils/streakUtils'
+import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 
 export default function CollectionsScreen() {
   const insets = useSafeAreaInsets()
+  const [refreshing, setRefreshing] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [renameModal, setRenameModal] = useState<{
@@ -50,7 +57,11 @@ export default function CollectionsScreen() {
     getCollectionShareStatus,
     unshareCollection,
     userAccessLevel,
+    fetchWords,
+    fetchCollections,
   } = useApplicationStore()
+
+  const { refreshCount } = useReviewWordsCount()
 
   const handleCollectionPress = (collection: Collection) => {
     router.push(ROUTES.COLLECTION_DETAIL(collection.collection_id))
@@ -157,6 +168,15 @@ export default function CollectionsScreen() {
   const handleDismissError = () => {
     clearError()
   }
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    try {
+      await Promise.all([refreshCount(), fetchWords(), fetchCollections()])
+    } finally {
+      setRefreshing(false)
+    }
+  }, [refreshCount, fetchWords, fetchCollections])
 
   const handleShareCollection = async (collectionId: string) => {
     try {
@@ -308,6 +328,14 @@ export default function CollectionsScreen() {
               )
             }}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[Colors.primary.DEFAULT]}
+                tintColor={Colors.primary.DEFAULT}
+              />
+            }
             ListEmptyComponent={
               <ViewThemed style={styles.emptyContainer}>
                 <TextThemed style={styles.emptyText}>
@@ -330,7 +358,7 @@ export default function CollectionsScreen() {
         }}
       />
 
-      <RenameCollectionModal
+      <RenameCollectionSheet
         visible={renameModal.visible}
         currentName={renameModal.currentName}
         onClose={handleCloseRenameModal}
