@@ -144,6 +144,11 @@ const colorPalette = {
 
     // Brand overlays
     primary20: 'rgba(64, 156, 255, 0.2)',
+    primary30: 'rgba(64, 156, 255, 0.3)',
+    primary40: 'rgba(64, 156, 255, 0.4)',
+
+    // Clear/transparent
+    clear: 'rgba(0, 0, 0, 0)',
 
     // Misc
     gray35: 'rgba(127,127,127,0.35)',

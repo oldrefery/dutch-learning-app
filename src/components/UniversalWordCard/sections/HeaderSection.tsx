@@ -1,17 +1,14 @@
 import React from 'react'
-import { TouchableOpacity, View } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import { scheduleOnRN } from 'react-native-worklets'
-import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
-import { Colors } from '@/constants/Colors'
 import { CopyButton } from '@/components/CopyButton'
+import { GlassIconButton } from '@/components/glass/buttons/GlassIconButton'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { formatWordForCopying } from '@/utils/wordTextFormatter'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
+import { Colors } from '@/constants/Colors.ts'
 
-// Audio button component with gesture blocking
+// Audio button component following HIG guidelines
 interface AudioButtonProps {
   ttsUrl: string
   isPlayingAudio: boolean
@@ -19,29 +16,22 @@ interface AudioButtonProps {
 }
 
 function AudioButton({ ttsUrl, isPlayingAudio, onPress }: AudioButtonProps) {
-  const handleAudioPress = () => {
+  const handleAudioPress = React.useCallback(() => {
     if (!isPlayingAudio) {
       onPress(ttsUrl)
     }
-  }
-
-  const tapGesture = Gesture.Tap()
-    .onEnd(() => {
-      'worklet'
-      scheduleOnRN(handleAudioPress)
-    })
-    .blocksExternalGesture()
+  }, [isPlayingAudio, onPress, ttsUrl])
 
   return (
-    <GestureDetector gesture={tapGesture}>
-      <View style={styles.pronunciationButton}>
-        <Ionicons
-          name={isPlayingAudio ? 'volume-high' : 'volume-medium'}
-          size={20}
-          color={Colors.primary.DEFAULT}
-        />
-      </View>
-    </GestureDetector>
+    <GlassIconButton
+      icon={isPlayingAudio ? 'volume-high' : 'volume-medium'}
+      onPress={handleAudioPress}
+      variant="tinted"
+      size="medium"
+      disabled={isPlayingAudio}
+      accessibilityLabel="Play pronunciation"
+      accessibilityHint="Plays audio pronunciation of the word"
+    />
   )
 }
 
@@ -84,16 +74,14 @@ export function HeaderSection({
 
               {/* Force Refresh Button - only show for cached results */}
               {metadata.source === 'cache' && onForceRefresh && (
-                <TouchableOpacity
-                  style={styles.forceRefreshButton}
+                <GlassIconButton
+                  icon="refresh"
                   onPress={onForceRefresh}
-                >
-                  <Ionicons
-                    name="refresh"
-                    size={16}
-                    color={Colors.primary.DEFAULT}
-                  />
-                </TouchableOpacity>
+                  variant="tinted"
+                  size="small"
+                  accessibilityLabel="Force refresh"
+                  accessibilityHint="Fetches fresh analysis from AI instead of using cache"
+                />
               )}
             </ViewThemed>
           )}
