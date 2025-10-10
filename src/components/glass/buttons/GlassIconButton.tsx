@@ -2,9 +2,13 @@ import React from 'react'
 import { StyleSheet, useColorScheme } from 'react-native'
 import { Pressable } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
-import { Colors } from '@/constants/Colors'
+import {
+  getGlassButtonVariantStyles,
+  getGlassButtonColor,
+  type GlassButtonVariant,
+} from './glassButtonStyles'
 
-export type GlassIconButtonVariant = 'tinted' | 'plain' | 'subtle'
+export type GlassIconButtonVariant = GlassButtonVariant
 export type GlassIconButtonSize = 'small' | 'medium' | 'large'
 
 export interface GlassIconButtonProps {
@@ -39,7 +43,7 @@ export interface GlassIconButtonProps {
  *
  * @see https://developer.apple.com/design/human-interface-guidelines/buttons
  */
-export function GlassIconButton({
+export const GlassIconButton = ({
   icon,
   onPress,
   variant = 'tinted',
@@ -49,7 +53,7 @@ export function GlassIconButton({
   accessibilityHint,
   iconColor,
   iconSize: customIconSize,
-}: GlassIconButtonProps) {
+}: GlassIconButtonProps) => {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
 
@@ -75,65 +79,13 @@ export function GlassIconButton({
   const config = sizeConfig[size]
   const finalIconSize = customIconSize || config.iconSize
 
-  // Variant-based styling following HIG
-  const getVariantStyles = () => {
-    if (disabled) {
-      return {
-        backgroundColor: isDark
-          ? Colors.transparent.white10
-          : Colors.transparent.black10,
-        borderColor: 'transparent',
-      }
-    }
-
-    switch (variant) {
-      case 'tinted':
-        // Tinted buttons: colored background with matching icon
-        return {
-          backgroundColor: isDark
-            ? Colors.transparent.primary20
-            : Colors.primary.light,
-          borderColor: isDark
-            ? Colors.transparent.primary30
-            : Colors.transparent.primary40,
-        }
-      case 'plain':
-        // Plain buttons: subtle background, more prominent on press
-        return {
-          backgroundColor: isDark
-            ? Colors.transparent.white15
-            : Colors.transparent.white40,
-          borderColor: isDark
-            ? Colors.transparent.white20
-            : Colors.transparent.white50,
-        }
-      case 'subtle':
-        // Subtle buttons: minimal visual weight
-        return {
-          backgroundColor: Colors.transparent.clear,
-          borderColor: isDark
-            ? Colors.transparent.white20
-            : Colors.transparent.black10,
-        }
-    }
-  }
-
-  const getIconColor = () => {
-    if (iconColor) return iconColor
-    if (disabled) return Colors.neutral[400]
-
-    switch (variant) {
-      case 'tinted':
-        return Colors.primary.DEFAULT
-      case 'plain':
-        return isDark ? Colors.dark.text : Colors.light.text
-      case 'subtle':
-        return isDark ? Colors.dark.textSecondary : Colors.neutral[600]
-    }
-  }
-
-  const variantStyles = getVariantStyles()
-  const finalIconColor = getIconColor()
+  const variantStyles = getGlassButtonVariantStyles(variant, isDark, disabled)
+  const finalIconColor = getGlassButtonColor(
+    variant,
+    isDark,
+    disabled,
+    iconColor
+  )
 
   return (
     <Pressable
@@ -173,5 +125,3 @@ const styles = StyleSheet.create({
     minHeight: 44,
   },
 })
-
-export default GlassIconButton
