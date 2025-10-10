@@ -5,76 +5,81 @@ import { TextThemed } from '@/components/Themed'
 import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
 import { Colors } from '@/constants/Colors'
 
-export type RenameCollectionSheetProps = {
+export type CreateCollectionSheetProps = {
   visible: boolean
-  currentName: string
   onClose: () => void
-  onRename: (newName: string) => Promise<void>
+  onCreate: (name: string) => Promise<void>
 }
 
-export const RenameCollectionSheet: React.FC<RenameCollectionSheetProps> = ({
+export const CreateCollectionSheet: React.FC<CreateCollectionSheetProps> = ({
   visible,
-  currentName,
   onClose,
-  onRename,
+  onCreate,
 }) => {
-  const [newName, setNewName] = useState<string>('')
+  const [name, setName] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  // Update name when modal opens
+  // Reset name when modal opens
   useEffect(() => {
     if (visible) {
-      setNewName(currentName)
+      setName('')
     }
-  }, [visible, currentName])
+  }, [visible])
 
-  const canSave = useMemo(() => {
-    const trimmed = newName.trim()
-    return trimmed.length > 0 && trimmed !== currentName && !isSubmitting
-  }, [newName, currentName, isSubmitting])
+  const canCreate = useMemo(() => {
+    const trimmed = name.trim()
+    return trimmed.length > 0 && !isSubmitting
+  }, [name, isSubmitting])
 
-  const handleSave = useCallback(async () => {
-    if (!canSave) return
+  const handleCreate = useCallback(async () => {
+    if (!canCreate) return
     setIsSubmitting(true)
     try {
-      await onRename(newName.trim())
+      await onCreate(name.trim())
       onClose()
     } finally {
       setIsSubmitting(false)
     }
-  }, [canSave, newName, onRename, onClose])
+  }, [canCreate, name, onCreate, onClose])
 
   return (
     <GlassModalCenter
       visible={visible}
-      title="Rename Collection"
+      title="New Collection"
       onClose={onClose}
       leftAction={{
         label: 'Cancel',
         onPress: onClose,
-        accessibilityLabel: 'Cancel rename',
+        accessibilityLabel: 'Cancel creation',
       }}
       rightAction={{
-        label: 'Save',
-        onPress: handleSave,
-        disabled: !canSave,
-        accessibilityLabel: 'Save collection name',
+        label: 'Create',
+        onPress: handleCreate,
+        disabled: !canCreate,
+        accessibilityLabel: 'Create new collection',
       }}
     >
       <View>
         <TextThemed style={styles.label}>Collection Name</TextThemed>
         <TextInput
           style={[styles.input, styles.inputThemedColors]}
-          value={newName}
-          onChangeText={setNewName}
+          value={name}
+          onChangeText={setName}
           placeholder="Enter collection name"
           placeholderTextColor={Colors.neutral[500]}
           autoFocus
           selectTextOnFocus
           maxLength={50}
           returnKeyType="done"
-          onSubmitEditing={handleSave}
+          onSubmitEditing={handleCreate}
         />
+        <TextThemed
+          style={styles.hint}
+          lightColor={Colors.neutral[500]}
+          darkColor={Colors.dark.textSecondary}
+        >
+          Choose a name that helps you identify this collection
+        </TextThemed>
       </View>
     </GlassModalCenter>
   )
@@ -99,6 +104,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.neutral[300],
     color: Colors.text.primary,
   },
+  hint: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
 })
 
-export default RenameCollectionSheet
+export default CreateCollectionSheet
