@@ -82,21 +82,24 @@ export const RenameCollectionSheet: React.FC<RenameCollectionSheetProps> = ({
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
     marginBottom: 8,
+    letterSpacing: -0.3,
   },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 17,
     marginBottom: 8,
+    letterSpacing: -0.41,
+    minHeight: 50,
   },
   inputThemedColors: {
-    backgroundColor: Colors.background.secondary,
-    borderColor: Colors.neutral[300],
+    backgroundColor: Colors.transparent.white10,
+    borderColor: Colors.transparent.white30,
     color: Colors.text.primary,
   },
 })

@@ -9,7 +9,7 @@ import {
 import { BlurView } from 'expo-blur'
 import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
-import { TextThemed, ViewThemed } from '@/components/Themed'
+import { TextThemed } from '@/components/Themed'
 import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
 import { Colors } from '@/constants/Colors'
 import type { Collection, Word } from '@/types/database'
@@ -129,25 +129,25 @@ export const MoveWordToCollectionSheet: React.FC<
   const renderContent = () => {
     if (availableCollections.length === 0) {
       return (
-        <ViewThemed style={styles.emptyContainer}>
-          <ViewThemed
+        <View style={styles.emptyContainer}>
+          <View
             style={[
               styles.emptyIconContainer,
               {
                 backgroundColor: isDarkMode
-                  ? Colors.dark.backgroundTertiary
-                  : Colors.neutral[100],
+                  ? Colors.transparent.white10
+                  : Colors.transparent.white40,
               },
             ]}
           >
             <Ionicons
               name="folder-outline"
-              size={32}
+              size={40}
               color={
                 isDarkMode ? Colors.dark.textTertiary : Colors.neutral[400]
               }
             />
-          </ViewThemed>
+          </View>
           <TextThemed style={styles.emptyText}>No other collections</TextThemed>
           <TextThemed
             style={[
@@ -161,7 +161,7 @@ export const MoveWordToCollectionSheet: React.FC<
           >
             Create another collection to move words
           </TextThemed>
-        </ViewThemed>
+        </View>
       )
     }
 
@@ -313,27 +313,30 @@ const styles = StyleSheet.create({
   emptyContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 40,
-    paddingHorizontal: 20,
+    paddingVertical: 60,
+    paddingHorizontal: 24,
   },
   emptyIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 96,
+    height: 96,
+    borderRadius: 48,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   emptyText: {
-    fontSize: 18,
-    fontWeight: '500',
-    marginBottom: 8,
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 10,
     textAlign: 'center',
+    letterSpacing: -0.45,
   },
   emptySubtext: {
-    fontSize: 14,
+    fontSize: 15,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 22,
+    letterSpacing: -0.24,
+    maxWidth: 280,
   },
 })
 
