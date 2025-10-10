@@ -4,20 +4,25 @@ import { TextInput } from 'react-native-gesture-handler'
 import { TextThemed } from '@/components/Themed'
 import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
 import { Colors } from '@/constants/Colors'
+import { useCollections } from '@/hooks/useCollections'
+import { ToastService } from '@/components/AppToast'
+import { ToastType } from '@/constants/ToastConstants'
+import type { Collection } from '@/types/database'
 
 export type CreateCollectionSheetProps = {
   visible: boolean
   onClose: () => void
-  onCreate: (name: string) => Promise<void>
+  onCollectionCreated?: (collection: Collection) => void
 }
 
 export const CreateCollectionSheet: React.FC<CreateCollectionSheetProps> = ({
   visible,
   onClose,
-  onCreate,
+  onCollectionCreated,
 }) => {
   const [name, setName] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const { createNewCollection } = useCollections()
 
   // Reset name when modal opens
   useEffect(() => {
@@ -33,14 +38,29 @@ export const CreateCollectionSheet: React.FC<CreateCollectionSheetProps> = ({
 
   const handleCreate = useCallback(async () => {
     if (!canCreate) return
+
+    const trimmedName = name.trim()
     setIsSubmitting(true)
+
     try {
-      await onCreate(name.trim())
+      const newCollection = await createNewCollection(trimmedName)
+
+      ToastService.show(
+        `Collection "${trimmedName}" created successfully`,
+        ToastType.SUCCESS
+      )
+
+      onCollectionCreated?.(newCollection)
       onClose()
+    } catch {
+      ToastService.show(
+        'Failed to create collection. Please try again.',
+        ToastType.ERROR
+      )
     } finally {
       setIsSubmitting(false)
     }
-  }, [canCreate, name, onCreate, onClose])
+  }, [canCreate, name, createNewCollection, onCollectionCreated, onClose])
 
   return (
     <GlassModalCenter

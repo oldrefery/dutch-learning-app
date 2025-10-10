@@ -13,7 +13,7 @@ import { router } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import CreateCollectionModal from '@/components/CreateCollectionModal'
+import CreateCollectionSheet from '@/components/glass/modals/CreateCollectionSheet'
 import RenameCollectionSheet from '@/components/glass/modals/RenameCollectionSheet'
 import ImportByTokenModal from '@/components/ImportByTokenModal'
 import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
@@ -350,7 +350,7 @@ export default function CollectionsScreen() {
         )}
       </ViewThemed>
 
-      <CreateCollectionModal
+      <CreateCollectionSheet
         visible={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCollectionCreated={() => {

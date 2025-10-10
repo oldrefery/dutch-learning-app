@@ -42,7 +42,6 @@ type GlassModalCenterProps = {
 
 ```tsx
 import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
-
 ;<GlassModalCenter
   visible={visible}
   title="Rename Collection"
@@ -65,7 +64,7 @@ import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
 </GlassModalCenter>
 ```
 
-#### 2. Создание новой коллекции (CreateCollectionSheet)
+#### 2. Создание новой коллекции
 
 ```tsx
 <GlassModalCenter
@@ -82,11 +81,14 @@ import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
     disabled: !canCreate,
   }}
 >
-  <TextInput
-    value={name}
-    onChangeText={setName}
-    placeholder="Enter collection name"
-  />
+  <View>
+    <TextThemed>Collection Name</TextThemed>
+    <TextInput
+      value={name}
+      onChangeText={setName}
+      placeholder="Enter collection name"
+    />
+  </View>
 </GlassModalCenter>
 ```
 
@@ -137,7 +139,6 @@ import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
 
 ```tsx
 import RenameCollectionSheet from '@/components/glass/modals/RenameCollectionSheet'
-
 ;<RenameCollectionSheet
   visible={visible}
   currentName={collection.name}
@@ -158,8 +159,9 @@ import CreateCollectionSheet from '@/components/glass/modals/CreateCollectionShe
 ;<CreateCollectionSheet
   visible={visible}
   onClose={handleClose}
-  onCreate={async name => {
-    await createCollection(name)
+  onCollectionCreated={collection => {
+    // Collection is automatically added to the store
+    console.log('Created:', collection)
   }}
 />
 ```
