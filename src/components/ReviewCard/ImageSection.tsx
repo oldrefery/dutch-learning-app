@@ -1,10 +1,7 @@
 import React from 'react'
-import { StyleSheet, Image, View } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import { scheduleOnRN } from 'react-native-worklets'
+import { StyleSheet, Image } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
-import { Ionicons } from '@expo/vector-icons'
-import { Colors } from '@/constants/Colors'
+import { GlassCapsuleButton } from '@/components/glass/buttons'
 import type { ImageSectionProps } from './types'
 
 export function ImageSection({
@@ -13,23 +10,19 @@ export function ImageSection({
 }: ImageSectionProps) {
   if (!currentWord.image_url) return null
 
-  const changeImageGesture = Gesture.Tap()
-    .onEnd(() => {
-      'worklet'
-      scheduleOnRN(onChangeImage)
-    })
-    .blocksExternalGesture()
-
   return (
     <ViewThemed style={styles.imageSection}>
       <ViewThemed style={styles.imageSectionHeader}>
         <TextThemed style={styles.sectionTitle}>🖼️ Visual</TextThemed>
-        <GestureDetector gesture={changeImageGesture}>
-          <View style={styles.changeImageButton}>
-            <Ionicons name="refresh" size={16} color={Colors.neutral[500]} />
-            <TextThemed style={styles.changeImageText}>Change</TextThemed>
-          </View>
-        </GestureDetector>
+        <GlassCapsuleButton
+          icon="refresh"
+          text="Change"
+          onPress={onChangeImage}
+          variant="tinted"
+          size="medium"
+          accessibilityLabel="Change image"
+          accessibilityHint="Opens image selector to choose a new image"
+        />
       </ViewThemed>
       <Image
         source={{ uri: currentWord.image_url }}

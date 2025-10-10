@@ -1,40 +1,27 @@
 import React from 'react'
-import { Image, View } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import { scheduleOnRN } from 'react-native-worklets'
-import { Ionicons } from '@expo/vector-icons'
+import { Image } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
-import { Colors } from '@/constants/Colors'
+import { GlassCapsuleButton } from '@/components/glass/buttons'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
 
-// Change the image button component with gesture blocking
+// Change the image button component following HIG guidelines
 interface ChangeImageButtonProps {
   imageUrl: string | null | undefined
   onPress: () => void
 }
 
 function ChangeImageButton({ imageUrl, onPress }: ChangeImageButtonProps) {
-  const handleChangeImagePress = () => {
-    onPress()
-  }
-
-  const tapGesture = Gesture.Tap()
-    .onEnd(() => {
-      'worklet'
-      scheduleOnRN(handleChangeImagePress)
-    })
-    .blocksExternalGesture()
-
   return (
-    <GestureDetector gesture={tapGesture}>
-      <View style={styles.changeImageButton}>
-        <Ionicons name="images" size={16} color={Colors.primary.DEFAULT} />
-        <TextThemed style={styles.changeImageText}>
-          {imageUrl ? 'Change Image' : 'Add Image'}
-        </TextThemed>
-      </View>
-    </GestureDetector>
+    <GlassCapsuleButton
+      icon="images"
+      text={imageUrl ? 'Change Image' : 'Add Image'}
+      onPress={onPress}
+      variant="tinted"
+      size="medium"
+      accessibilityLabel={imageUrl ? 'Change image' : 'Add image'}
+      accessibilityHint="Opens image selector to choose a new image"
+    />
   )
 }
 

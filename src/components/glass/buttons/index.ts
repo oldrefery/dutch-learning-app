@@ -10,3 +10,10 @@ export type {
   GlassIconButtonVariant,
   GlassIconButtonSize,
 } from './GlassIconButton'
+
+export { GlassCapsuleButton } from './GlassCapsuleButton'
+export type {
+  GlassCapsuleButtonProps,
+  GlassCapsuleButtonVariant,
+  GlassCapsuleButtonSize,
+} from './GlassCapsuleButton'

@@ -6,7 +6,6 @@ import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { formatWordForCopying } from '@/utils/wordTextFormatter'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
-import { Colors } from '@/constants/Colors.ts'
 
 // Audio button component following HIG guidelines
 interface AudioButtonProps {
@@ -78,7 +77,7 @@ export function HeaderSection({
                   icon="refresh"
                   onPress={onForceRefresh}
                   variant="tinted"
-                  size="small"
+                  size="medium"
                   accessibilityLabel="Force refresh"
                   accessibilityHint="Fetches fresh analysis from AI instead of using cache"
                 />
@@ -86,11 +85,7 @@ export function HeaderSection({
             </ViewThemed>
           )}
 
-          <CopyButton
-            text={formatWordForCopying(word)}
-            size={22}
-            color={Colors.primary.DEFAULT}
-          />
+          <CopyButton text={formatWordForCopying(word)} />
           {canPlayAudio && (
             <AudioButton
               ttsUrl={ttsUrl}
