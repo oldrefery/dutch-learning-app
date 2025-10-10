@@ -114,9 +114,15 @@ const colorPalette = {
 
     // White overlays with different opacity levels
     white05: 'rgba(255, 255, 255, 0.05)',
+    white08: 'rgba(255, 255, 255, 0.08)',
     white10: 'rgba(255, 255, 255, 0.1)',
+    white15: 'rgba(255, 255, 255, 0.15)',
     white20: 'rgba(255, 255, 255, 0.2)',
+    white25: 'rgba(255, 255, 255, 0.25)',
+    white30: 'rgba(255, 255, 255, 0.3)',
+    white40: 'rgba(255, 255, 255, 0.4)',
     white50: 'rgba(255, 255, 255, 0.5)',
+    white60: 'rgba(255, 255, 255, 0.6)',
     white92: 'rgba(255, 255, 255, 0.92)',
     white95: 'rgba(255, 255, 255, 0.95)',
 
@@ -138,6 +144,11 @@ const colorPalette = {
 
     // Brand overlays
     primary20: 'rgba(64, 156, 255, 0.2)',
+    primary30: 'rgba(64, 156, 255, 0.3)',
+    primary40: 'rgba(64, 156, 255, 0.4)',
+
+    // Clear/transparent
+    clear: 'rgba(0, 0, 0, 0)',
 
     // Misc
     gray35: 'rgba(127,127,127,0.35)',

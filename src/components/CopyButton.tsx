@@ -1,30 +1,40 @@
-import React from 'react'
-import { View } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import { scheduleOnRN } from 'react-native-worklets'
-import { Ionicons } from '@expo/vector-icons'
+import React, { useCallback } from 'react'
 import * as Clipboard from 'expo-clipboard'
+import { GlassIconButton } from '@/components/glass/buttons/GlassIconButton'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
-import { Colors } from '@/constants/Colors'
 import { Sentry } from '@/lib/sentry'
 
 interface CopyButtonProps {
   text: string
+  /** @deprecated Use variant instead */
   size?: number
+  /** @deprecated Use variant instead */
   color?: string
   onCopySuccess?: () => void
   showFeedback?: boolean
+  /** Button variant following HIG */
+  variant?: 'tinted' | 'plain' | 'subtle'
+  /** Button size with proper tap target */
+  buttonSize?: 'small' | 'medium' | 'large'
 }
 
+/**
+ * Copy Button Component
+ *
+ * Now uses GlassIconButton for HIG compliance:
+ * - 44x44pt minimum tap target
+ * - Clear visual states
+ * - Accessibility support
+ */
 export function CopyButton({
   text,
-  size = 18,
-  color = Colors.neutral[500],
   onCopySuccess,
   showFeedback = true,
+  variant = 'tinted',
+  buttonSize = 'medium',
 }: CopyButtonProps) {
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     try {
       await Clipboard.setStringAsync(text)
       if (showFeedback) {
@@ -43,20 +53,16 @@ export function CopyButton({
         ToastService.show('Failed to copy text', ToastType.ERROR)
       }
     }
-  }
-
-  const tapGesture = Gesture.Tap()
-    .onEnd(() => {
-      'worklet'
-      scheduleOnRN(handleCopy)
-    })
-    .blocksExternalGesture()
+  }, [text, showFeedback, onCopySuccess])
 
   return (
-    <GestureDetector gesture={tapGesture}>
-      <View style={{ padding: 4 }}>
-        <Ionicons name="copy-outline" size={size} color={color} />
-      </View>
-    </GestureDetector>
+    <GlassIconButton
+      icon="copy-outline"
+      onPress={handleCopy}
+      variant={variant}
+      size={buttonSize}
+      accessibilityLabel="Copy word information"
+      accessibilityHint="Copies word details to clipboard"
+    />
   )
 }

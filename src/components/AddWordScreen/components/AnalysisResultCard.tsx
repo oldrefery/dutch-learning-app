@@ -5,6 +5,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { SelectableText } from '@/components/SelectableText'
 import { Colors } from '@/constants/Colors'
 import { CopyButton } from '@/components/CopyButton'
+import { GlassCapsuleButton } from '@/components/glass/buttons'
 import { formatAnalysisResultForCopying } from '@/utils/wordTextFormatter'
 import type { AnalysisResultCardProps } from '../types/AddWordTypes'
 import { analysisResultStyles } from '../styles/AnalysisResultCard.styles'
@@ -25,11 +26,7 @@ export function AnalysisResultCard({
             Analysis Result
           </TextThemed>
           <ViewThemed style={analysisResultStyles.titleActions}>
-            <CopyButton
-              text={formatAnalysisResultForCopying(analysisResult)}
-              size={20}
-              color={Colors.primary.DEFAULT}
-            />
+            <CopyButton text={formatAnalysisResultForCopying(analysisResult)} />
             {isCheckingDuplicate && (
               <ViewThemed style={analysisResultStyles.checkingBadge}>
                 <Ionicons
@@ -156,19 +153,15 @@ export function AnalysisResultCard({
                 style={analysisResultStyles.associationImage}
                 resizeMode="cover"
               />
-              <TouchableOpacity
-                style={analysisResultStyles.changeImageButton}
+              <GlassCapsuleButton
+                icon="images"
+                text="Change Image"
                 onPress={onShowImageSelector}
-              >
-                <Ionicons
-                  name="images"
-                  size={16}
-                  color={Colors.primary.DEFAULT}
-                />
-                <TextThemed style={analysisResultStyles.changeImageText}>
-                  Change Image
-                </TextThemed>
-              </TouchableOpacity>
+                variant="tinted"
+                size="medium"
+                accessibilityLabel="Change image"
+                accessibilityHint="Opens image selector to choose a new image"
+              />
             </ViewThemed>
           </ViewThemed>
         )}
