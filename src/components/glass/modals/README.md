@@ -185,6 +185,24 @@ import MoveWordToCollectionSheet from '@/components/glass/modals/MoveWordToColle
 />
 ```
 
+### CollectionSelectorSheet
+
+Модальное окно для выбора коллекции из списка.
+
+```tsx
+import CollectionSelectorSheet from '@/components/glass/modals/CollectionSelectorSheet'
+;<CollectionSelectorSheet
+  visible={visible}
+  onClose={handleClose}
+  onSelect={collection => {
+    onCollectionSelect(collection)
+  }}
+  collections={allCollections}
+  selectedCollectionId={currentCollectionId}
+  loading={isLoading}
+/>
+```
+
 ## Рекомендации
 
 1. **Для простых форм с одним полем** - используйте готовые компоненты (RenameCollectionSheet, CreateCollectionSheet)
@@ -195,11 +213,21 @@ import MoveWordToCollectionSheet from '@/components/glass/modals/MoveWordToColle
 ## Архитектура
 
 ```
-GlassModalCenter (универсальный)
+GlassModalCenter (универсальный базовый компонент)
   ├── RenameCollectionSheet (переименование коллекции)
   ├── CreateCollectionSheet (создание коллекции)
-  ├── MoveWordToCollectionSheet (перенос слова)
+  ├── MoveWordToCollectionSheet (перенос слова между коллекциями)
+  ├── CollectionSelectorSheet (выбор коллекции из списка)
   └── ... (будущие компоненты)
 ```
 
 Все специфичные модалы должны использовать `GlassModalCenter` в качестве базы для консистентности UX.
+
+## Преимущества архитектуры
+
+1. **Единый стиль** - все модалы выглядят одинаково
+2. **Liquid Glass дизайн** - соответствие Apple HIG
+3. **Переиспользуемость** - легко создавать новые модалы
+4. **Поддерживаемость** - изменения в одном месте
+5. **Accessibility** - встроенная поддержка
+6. **Анимации** - плавные переходы из коробки
