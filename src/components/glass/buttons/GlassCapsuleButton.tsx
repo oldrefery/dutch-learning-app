@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, useColorScheme, Pressable } from 'react-native'
+import { StyleSheet, useColorScheme } from 'react-native'
+import { Pressable } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -160,6 +161,7 @@ export function GlassCapsuleButton({
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      cancelable={false}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
@@ -205,7 +207,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    // Ensures minimum tap target per HIG
     minHeight: 44,
   },
   icon: {

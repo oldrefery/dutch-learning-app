@@ -1,5 +1,6 @@
 import React from 'react'
-import { StyleSheet, useColorScheme, Pressable } from 'react-native'
+import { StyleSheet, useColorScheme } from 'react-native'
+import { Pressable } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors'
 
@@ -138,6 +139,7 @@ export function GlassIconButton({
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      cancelable={false}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
