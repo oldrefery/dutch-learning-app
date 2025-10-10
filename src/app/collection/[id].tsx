@@ -15,7 +15,7 @@ import CollectionDetailHeader from '@/components/CollectionDetailHeader'
 import CollectionContent from '@/components/CollectionContent'
 import WordDetailModal from '@/components/WordDetailModal'
 import ImageSelector from '@/components/ImageSelector'
-import MoveToCollectionModal from '@/components/MoveToCollectionModal'
+import MoveWordToCollectionSheet from '@/components/glass/modals/MoveWordToCollectionSheet'
 import WordContextMenu from '@/components/WordContextMenu'
 
 export default function CollectionDetailScreen() {
@@ -196,13 +196,16 @@ export default function CollectionDetailScreen() {
         />
       )}
 
-      <MoveToCollectionModal
+      <MoveWordToCollectionSheet
         visible={moveModalVisible}
         onClose={handleCloseMoveModal}
         onSelectCollection={handleSelectTargetCollection}
         collections={collections}
         words={words}
         currentCollectionId={collection?.collection_id}
+        wordToMove={
+          wordToMove ? words.find(w => w.word_id === wordToMove) : undefined
+        }
       />
 
       <WordContextMenu

@@ -155,7 +155,6 @@ import RenameCollectionSheet from '@/components/glass/modals/RenameCollectionShe
 
 ```tsx
 import CreateCollectionSheet from '@/components/glass/modals/CreateCollectionSheet'
-
 ;<CreateCollectionSheet
   visible={visible}
   onClose={handleClose}
@@ -163,6 +162,26 @@ import CreateCollectionSheet from '@/components/glass/modals/CreateCollectionShe
     // Collection is automatically added to the store
     console.log('Created:', collection)
   }}
+/>
+```
+
+### MoveWordToCollectionSheet
+
+Модальное окно для переноса слова в другую коллекцию.
+
+```tsx
+import MoveWordToCollectionSheet from '@/components/glass/modals/MoveWordToCollectionSheet'
+;<MoveWordToCollectionSheet
+  visible={visible}
+  onClose={handleClose}
+  onSelectCollection={targetCollection => {
+    // Move word to selected collection
+    await moveWordToCollection(wordId, targetCollection.collection_id)
+  }}
+  collections={allCollections}
+  words={allWords}
+  currentCollectionId={currentCollection.collection_id}
+  wordToMove={selectedWord}
 />
 ```
 
@@ -177,8 +196,9 @@ import CreateCollectionSheet from '@/components/glass/modals/CreateCollectionShe
 
 ```
 GlassModalCenter (универсальный)
-  ├── RenameCollectionSheet (переименование)
-  ├── CreateCollectionSheet (создание)
+  ├── RenameCollectionSheet (переименование коллекции)
+  ├── CreateCollectionSheet (создание коллекции)
+  ├── MoveWordToCollectionSheet (перенос слова)
   └── ... (будущие компоненты)
 ```
 
