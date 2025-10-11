@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   TextInput,
-  TouchableOpacity,
   ActivityIndicator,
   useColorScheme,
   ActionSheetIOS,
@@ -10,6 +9,8 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { AnalyzeButton } from './AnalyzeButton'
+import { CollectionSelector } from './CollectionSelector'
 import type { Collection } from '@/types/database'
 
 interface CompactWordInputProps {
@@ -45,6 +46,8 @@ const getStyles = (
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
+    marginRight: 8,
     backgroundColor:
       variant === 'glass'
         ? colorScheme === 'dark'
@@ -53,7 +56,7 @@ const getStyles = (
         : colorScheme === 'dark'
           ? Colors.dark.backgroundSecondary
           : Colors.neutral[50],
-    borderRadius: 8,
+    borderRadius: 9999,
     borderWidth: 1,
     borderColor:
       variant === 'glass'
@@ -64,90 +67,20 @@ const getStyles = (
           ? Colors.dark.backgroundTertiary
           : Colors.neutral[200],
   },
+  analyzeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: 'transparent',
+  },
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 8,
     paddingVertical: 4,
+    backgroundColor: 'transparent',
   },
 })
-
-const CollectionSelector = ({
-  selectedCollection,
-  onPress,
-  colorScheme,
-}: {
-  selectedCollection: Collection | null
-  onPress: () => void
-  colorScheme: 'light' | 'dark'
-}) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={getStyles(colorScheme).collectionRow}
-  >
-    <TextThemed
-      style={{
-        fontSize: 16,
-        fontWeight: '500',
-        color:
-          colorScheme === 'dark'
-            ? Colors.dark.textSecondary
-            : Colors.neutral[600],
-      }}
-    >
-      Adding to:{' '}
-    </TextThemed>
-    <TextThemed
-      style={{
-        fontSize: 16,
-        fontWeight: '600',
-        color:
-          colorScheme === 'dark' ? Colors.dark.tint : Colors.primary.DEFAULT,
-        flex: 1,
-      }}
-    >
-      {selectedCollection?.name || 'Select Collection'}
-    </TextThemed>
-    <Ionicons
-      name="chevron-down"
-      size={16}
-      color={
-        colorScheme === 'dark' ? Colors.dark.textSecondary : Colors.neutral[600]
-      }
-    />
-  </TouchableOpacity>
-)
-
-const AnalyzeButton = ({
-  isAnalyzing,
-  isCheckingDuplicate,
-  onAnalyze,
-  colorScheme,
-}: {
-  isAnalyzing: boolean
-  isCheckingDuplicate: boolean
-  onAnalyze: () => void
-  colorScheme: 'light' | 'dark'
-}) => (
-  <TouchableOpacity
-    style={{
-      backgroundColor:
-        colorScheme === 'dark' ? Colors.dark.tint : Colors.primary.DEFAULT,
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      marginRight: 4,
-      borderRadius: 6,
-    }}
-    onPress={onAnalyze}
-    disabled={isAnalyzing || isCheckingDuplicate}
-  >
-    {isAnalyzing || isCheckingDuplicate ? (
-      <ActivityIndicator size="small" color="white" />
-    ) : (
-      <Ionicons name="search" size={16} color="white" />
-    )}
-  </TouchableOpacity>
-)
 
 export function CompactWordInput({
   inputWord,
@@ -191,50 +124,51 @@ export function CompactWordInput({
         colorScheme={colorScheme}
       />
 
-      <ViewThemed style={styles.inputContainer}>
-        <Ionicons
-          name="search"
-          size={20}
-          color={
-            colorScheme === 'dark'
-              ? Colors.dark.textSecondary
-              : Colors.neutral[400]
-          }
-          style={{ marginLeft: 12 }}
-        />
+      <ViewThemed style={styles.analyzeContainer}>
+        <ViewThemed style={styles.inputContainer}>
+          <Ionicons
+            name="search"
+            size={20}
+            color={
+              colorScheme === 'dark'
+                ? Colors.dark.textSecondary
+                : Colors.neutral[400]
+            }
+            style={{ marginLeft: 12 }}
+          />
 
-        <TextInput
-          style={{
-            flex: 1,
-            paddingVertical: 12,
-            paddingHorizontal: 8,
-            fontSize: 16,
-            color:
-              colorScheme === 'dark' ? Colors.dark.text : Colors.neutral[900],
-          }}
-          value={inputWord}
-          onChangeText={setInputWord}
-          placeholder="Enter Dutch word..."
-          placeholderTextColor={
-            colorScheme === 'dark'
-              ? Colors.dark.textTertiary
-              : Colors.neutral[400]
-          }
-          autoCapitalize="none"
-          autoCorrect={false}
-          autoComplete="off"
-          textContentType="none"
-          spellCheck={false}
-          keyboardType="ascii-capable"
-          returnKeyType="search"
-          onSubmitEditing={onAnalyze}
-        />
-
+          <TextInput
+            style={{
+              flex: 1,
+              paddingVertical: 12,
+              paddingHorizontal: 8,
+              fontSize: 16,
+              color:
+                colorScheme === 'dark' ? Colors.dark.text : Colors.neutral[900],
+            }}
+            value={inputWord}
+            onChangeText={setInputWord}
+            placeholder="Enter Dutch word..."
+            placeholderTextColor={
+              colorScheme === 'dark'
+                ? Colors.dark.textTertiary
+                : Colors.neutral[400]
+            }
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="off"
+            textContentType="none"
+            spellCheck={false}
+            keyboardType="ascii-capable"
+            returnKeyType="search"
+            onSubmitEditing={onAnalyze}
+          />
+        </ViewThemed>
         <AnalyzeButton
           isAnalyzing={isAnalyzing}
           isCheckingDuplicate={isCheckingDuplicate}
-          onAnalyze={onAnalyze}
-          colorScheme={colorScheme}
+          onPress={onAnalyze}
+          size="medium"
         />
       </ViewThemed>
 

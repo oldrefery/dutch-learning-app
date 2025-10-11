@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TouchableOpacity } from 'react-native'
+import { Pressable } from 'react-native-gesture-handler'
 import { TextThemed } from '@/components/Themed'
 import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
@@ -48,11 +48,12 @@ export function SelectableText({
   const handlePressOut = () => setIsPressed(false)
 
   return (
-    <TouchableOpacity
+    <Pressable
       onLongPress={handleLongPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       activeOpacity={0.7}
+      disallowInterruption={true}
       style={{
         backgroundColor: isPressed
           ? Colors.primary.light
@@ -65,6 +66,6 @@ export function SelectableText({
       <TextThemed style={style} selectable {...textProps}>
         {children}
       </TextThemed>
-    </TouchableOpacity>
+    </Pressable>
   )
 }

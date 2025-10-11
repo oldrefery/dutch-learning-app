@@ -2,6 +2,7 @@ import React from 'react'
 import { Image } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { GlassCapsuleButton } from '@/components/glass/buttons'
+import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
 
@@ -62,7 +63,9 @@ export function ImageSection({
         )}
 
         {config.enableImageChange && onChangeImage && (
-          <ChangeImageButton imageUrl={imageUrl} onPress={onChangeImage} />
+          <NonSwipeableArea>
+            <ChangeImageButton imageUrl={imageUrl} onPress={onChangeImage} />
+          </NonSwipeableArea>
         )}
       </ViewThemed>
     </ViewThemed>

@@ -1,10 +1,15 @@
 import React from 'react'
-import { StyleSheet, useColorScheme, Pressable } from 'react-native'
+import { StyleSheet, useColorScheme } from 'react-native'
+import { Pressable } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
-import { Colors } from '@/constants/Colors'
+import {
+  getGlassButtonVariantStyles,
+  getGlassButtonColor,
+  type GlassButtonVariant,
+} from './glassButtonStyles'
 
-export type GlassCapsuleButtonVariant = 'tinted' | 'plain' | 'subtle'
+export type GlassCapsuleButtonVariant = GlassButtonVariant
 export type GlassCapsuleButtonSize = 'small' | 'medium' | 'large'
 
 export interface GlassCapsuleButtonProps {
@@ -38,7 +43,7 @@ export interface GlassCapsuleButtonProps {
  *
  * @see https://developer.apple.com/design/human-interface-guidelines/buttons
  */
-export function GlassCapsuleButton({
+export const GlassCapsuleButton = ({
   icon,
   text,
   onPress,
@@ -49,7 +54,7 @@ export function GlassCapsuleButton({
   accessibilityHint,
   iconColor,
   textColor,
-}: GlassCapsuleButtonProps) {
+}: GlassCapsuleButtonProps) => {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
 
@@ -80,86 +85,25 @@ export function GlassCapsuleButton({
 
   const config = sizeConfig[size]
 
-  // Variant-based styling following HIG
-  const getVariantStyles = () => {
-    if (disabled) {
-      return {
-        backgroundColor: isDark
-          ? Colors.transparent.white10
-          : Colors.transparent.black10,
-        borderColor: 'transparent',
-      }
-    }
-
-    switch (variant) {
-      case 'tinted':
-        // Tinted buttons: colored background with matching text
-        return {
-          backgroundColor: isDark
-            ? Colors.transparent.primary20
-            : Colors.primary.light,
-          borderColor: isDark
-            ? Colors.transparent.primary30
-            : Colors.transparent.primary40,
-        }
-      case 'plain':
-        // Plain buttons: subtle background, more prominent on press
-        return {
-          backgroundColor: isDark
-            ? Colors.transparent.white15
-            : Colors.transparent.white40,
-          borderColor: isDark
-            ? Colors.transparent.white20
-            : Colors.transparent.white50,
-        }
-      case 'subtle':
-        // Subtle buttons: minimal visual weight
-        return {
-          backgroundColor: Colors.transparent.clear,
-          borderColor: isDark
-            ? Colors.transparent.white20
-            : Colors.transparent.black10,
-        }
-    }
-  }
-
-  const getColors = () => {
-    if (iconColor && textColor) {
-      return { iconColor, textColor }
-    }
-    if (disabled) {
-      return {
-        iconColor: Colors.neutral[400],
-        textColor: Colors.neutral[400],
-      }
-    }
-
-    switch (variant) {
-      case 'tinted':
-        return {
-          iconColor: Colors.primary.DEFAULT,
-          textColor: Colors.primary.DEFAULT,
-        }
-      case 'plain':
-        return {
-          iconColor: isDark ? Colors.dark.text : Colors.light.text,
-          textColor: isDark ? Colors.dark.text : Colors.light.text,
-        }
-      case 'subtle':
-        return {
-          iconColor: isDark ? Colors.dark.textSecondary : Colors.neutral[600],
-          textColor: isDark ? Colors.dark.textSecondary : Colors.neutral[600],
-        }
-    }
-  }
-
-  const variantStyles = getVariantStyles()
-  const colors = getColors()
+  const variantStyles = getGlassButtonVariantStyles(variant, isDark, disabled)
+  const finalIconColor = getGlassButtonColor(
+    variant,
+    isDark,
+    disabled,
+    iconColor
+  )
+  const finalTextColor = getGlassButtonColor(
+    variant,
+    isDark,
+    disabled,
+    textColor
+  )
 
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      cancelable={false}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
@@ -182,7 +126,7 @@ export function GlassCapsuleButton({
       <Ionicons
         name={icon}
         size={config.iconSize}
-        color={colors.iconColor}
+        color={finalIconColor}
         style={styles.icon}
       />
       <TextThemed
@@ -190,7 +134,7 @@ export function GlassCapsuleButton({
           styles.text,
           {
             fontSize: config.fontSize,
-            color: colors.textColor,
+            color: finalTextColor,
           },
         ]}
       >
@@ -205,7 +149,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    // Ensures minimum tap target per HIG
     minHeight: 44,
   },
   icon: {
@@ -215,5 +158,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 })
-
-export default GlassCapsuleButton

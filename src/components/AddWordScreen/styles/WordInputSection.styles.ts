@@ -14,28 +14,29 @@ export const wordInputStyles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 24,
   },
-  inputContainer: {
+  inputWithButtonWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 12,
+    gap: 12,
+  },
+  inputContainer: {
+    flex: 1,
+    borderRadius: 22,
     borderWidth: 1,
-    paddingLeft: 16,
-    paddingRight: 4,
+    paddingHorizontal: 16,
     paddingVertical: 4,
   },
   textInput: {
-    flex: 1,
     fontSize: 16,
     paddingVertical: 12,
+    minHeight: 44, // HIG minimum tap target
+    backgroundColor: 'transparent',
   },
-  analyzeButton: {
-    backgroundColor: Colors.primary.DEFAULT,
-    borderRadius: 8,
-    padding: 12,
-    marginLeft: 8,
-  },
-  analyzeButtonDisabled: {
-    backgroundColor: Colors.neutral[400],
+  analyzeButtonContainer: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   loadingContainer: {
     flexDirection: 'row',

@@ -1,8 +1,10 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, useColorScheme } from 'react-native'
+import { BlurView } from 'expo-blur'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { SkeletonNumber } from '@/components/SkeletonLoader'
+import ReviewButton from '@/components/ReviewButton'
 
 interface StatsCardProps {
   stats: {
@@ -12,148 +14,212 @@ interface StatsCardProps {
     streakDays: number
   }
   loading?: boolean
+  onStartReview?: () => void
 }
 
-export default function StatsCard({ stats, loading = false }: StatsCardProps) {
+export const StatsCard = ({
+  stats,
+  loading = false,
+  onStartReview,
+}: StatsCardProps) => {
+  const colorScheme = useColorScheme() ?? 'light'
+  const isDarkMode = colorScheme === 'dark'
+
+  const blurBackgroundDark = Colors.transparent.iosDarkSurface95
+  const blurBackgroundLight = Colors.transparent.white95
+  const separatorDark = Colors.transparent.white10
+  const separatorLight = Colors.transparent.black05
+
   return (
-    <ViewThemed
-      style={styles.statsCard}
-      lightColor={Colors.background.secondary}
-      darkColor={Colors.dark.backgroundSecondary}
-    >
-      <TextThemed style={styles.statsTitle}>Today&apos;s Progress</TextThemed>
-      <TextThemed
-        style={styles.statsSubtitle}
-        lightColor={Colors.neutral[500]}
-        darkColor={Colors.dark.textSecondary}
-      >
-        Across all collections
-      </TextThemed>
-      <ViewThemed
-        style={styles.statsRow}
-        lightColor="transparent"
-        darkColor="transparent"
+    <ViewThemed style={styles.statsCardContainer}>
+      <BlurView
+        style={styles.statsBlur}
+        intensity={100}
+        tint={colorScheme === 'dark' ? 'dark' : 'light'}
+        experimentalBlurMethod={'dimezisBlurView'}
       >
         <ViewThemed
-          style={styles.statItem}
-          lightColor="transparent"
-          darkColor="transparent"
+          style={[
+            styles.statsCard,
+            {
+              backgroundColor: isDarkMode
+                ? blurBackgroundDark
+                : blurBackgroundLight,
+              borderColor: isDarkMode ? separatorDark : separatorLight,
+            },
+          ]}
         >
-          {loading ? (
-            <SkeletonNumber width={48} height={32} style={styles.statNumber} />
-          ) : (
-            <TextThemed style={styles.statNumber}>
-              {stats.totalWords}
-            </TextThemed>
-          )}
+          <TextThemed style={styles.statsTitle}>
+            Today&apos;s Progress
+          </TextThemed>
           <TextThemed
-            style={styles.statLabel}
+            style={styles.statsSubtitle}
             lightColor={Colors.neutral[500]}
             darkColor={Colors.dark.textSecondary}
           >
-            Total Words
+            Across all collections
           </TextThemed>
-        </ViewThemed>
-        <ViewThemed
-          style={styles.statItem}
-          lightColor="transparent"
-          darkColor="transparent"
-        >
-          {loading ? (
-            <SkeletonNumber
-              width={42}
-              height={32}
-              delay={150}
-              style={styles.statNumber}
-            />
-          ) : (
-            <TextThemed style={styles.statNumber}>
-              {stats.masteredWords}
-            </TextThemed>
-          )}
-          <TextThemed
-            style={styles.statLabel}
-            lightColor={Colors.neutral[500]}
-            darkColor={Colors.dark.textSecondary}
+          <ViewThemed
+            style={styles.statsRow}
+            lightColor={Colors.transparent.clear}
+            darkColor={Colors.transparent.clear}
           >
-            Mastered
-          </TextThemed>
-        </ViewThemed>
-      </ViewThemed>
-      <ViewThemed
-        style={styles.statsRow}
-        lightColor="transparent"
-        darkColor="transparent"
-      >
-        <ViewThemed
-          style={styles.statItem}
-          lightColor="transparent"
-          darkColor="transparent"
-        >
-          {loading ? (
-            <SkeletonNumber
-              width={36}
-              height={32}
-              delay={300}
-              style={styles.statNumber}
-            />
-          ) : (
-            <TextThemed style={styles.statNumber}>
-              {stats.wordsForReview}
-            </TextThemed>
-          )}
-          <TextThemed
-            style={styles.statLabel}
-            lightColor={Colors.neutral[500]}
-            darkColor={Colors.dark.textSecondary}
+            <ViewThemed
+              style={styles.statItem}
+              lightColor={Colors.transparent.clear}
+              darkColor={Colors.transparent.clear}
+            >
+              {loading ? (
+                <SkeletonNumber
+                  width={48}
+                  height={32}
+                  style={styles.statNumber}
+                />
+              ) : (
+                <TextThemed style={styles.statNumber}>
+                  {stats.totalWords}
+                </TextThemed>
+              )}
+              <TextThemed
+                style={styles.statLabel}
+                lightColor={Colors.neutral[500]}
+                darkColor={Colors.dark.textSecondary}
+              >
+                Total Words
+              </TextThemed>
+            </ViewThemed>
+            <ViewThemed
+              style={styles.statItem}
+              lightColor={Colors.transparent.clear}
+              darkColor={Colors.transparent.clear}
+            >
+              {loading ? (
+                <SkeletonNumber
+                  width={42}
+                  height={32}
+                  delay={150}
+                  style={styles.statNumber}
+                />
+              ) : (
+                <TextThemed style={styles.statNumber}>
+                  {stats.masteredWords}
+                </TextThemed>
+              )}
+              <TextThemed
+                style={styles.statLabel}
+                lightColor={Colors.neutral[500]}
+                darkColor={Colors.dark.textSecondary}
+              >
+                Mastered
+              </TextThemed>
+            </ViewThemed>
+          </ViewThemed>
+          <ViewThemed
+            style={styles.statsRow}
+            lightColor={Colors.transparent.clear}
+            darkColor={Colors.transparent.clear}
           >
-            For Review
-          </TextThemed>
-        </ViewThemed>
-        <ViewThemed
-          style={styles.statItem}
-          lightColor="transparent"
-          darkColor="transparent"
-        >
-          {loading ? (
-            <SkeletonNumber
-              width={28}
-              height={32}
-              delay={450}
-              style={styles.statNumber}
-            />
-          ) : (
-            <TextThemed style={styles.statNumber}>
-              {stats.streakDays}
-            </TextThemed>
+            <ViewThemed
+              style={styles.statItem}
+              lightColor={Colors.transparent.clear}
+              darkColor={Colors.transparent.clear}
+            >
+              {loading ? (
+                <SkeletonNumber
+                  width={36}
+                  height={32}
+                  delay={300}
+                  style={styles.statNumber}
+                />
+              ) : (
+                <TextThemed style={styles.statNumber}>
+                  {stats.wordsForReview}
+                </TextThemed>
+              )}
+              <TextThemed
+                style={styles.statLabel}
+                lightColor={Colors.neutral[500]}
+                darkColor={Colors.dark.textSecondary}
+              >
+                For Review
+              </TextThemed>
+            </ViewThemed>
+            <ViewThemed
+              style={styles.statItem}
+              lightColor={Colors.transparent.clear}
+              darkColor={Colors.transparent.clear}
+            >
+              {loading ? (
+                <SkeletonNumber
+                  width={28}
+                  height={32}
+                  delay={450}
+                  style={styles.statNumber}
+                />
+              ) : (
+                <TextThemed style={styles.statNumber}>
+                  {stats.streakDays}
+                </TextThemed>
+              )}
+              <TextThemed
+                style={styles.statLabel}
+                lightColor={Colors.neutral[500]}
+                darkColor={Colors.dark.textSecondary}
+              >
+                Day Streak
+              </TextThemed>
+            </ViewThemed>
+          </ViewThemed>
+
+          {onStartReview && (
+            <ViewThemed
+              style={styles.reviewButtonContainer}
+              lightColor={Colors.transparent.clear}
+              darkColor={Colors.transparent.clear}
+            >
+              <ReviewButton
+                wordsForReview={stats.wordsForReview}
+                onPress={onStartReview}
+              />
+            </ViewThemed>
           )}
-          <TextThemed
-            style={styles.statLabel}
-            lightColor={Colors.neutral[500]}
-            darkColor={Colors.dark.textSecondary}
-          >
-            Day Streak
-          </TextThemed>
         </ViewThemed>
-      </ViewThemed>
+      </BlurView>
     </ViewThemed>
   )
 }
 
 const styles = StyleSheet.create({
-  statsCard: {
-    borderRadius: 12,
-    padding: 16,
+  statsCardContainer: {
     marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: Colors.neutral.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    backgroundColor: Colors.transparent.clear,
+  },
+  statsBlur: {
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  statsCard: {
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
   },
   statsTitle: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 4,
+    textAlign: 'center',
   },
   statsSubtitle: {
     fontSize: 14,
     marginBottom: 12,
+    textAlign: 'center',
   },
   statsRow: {
     flexDirection: 'row',
@@ -171,5 +237,8 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 14,
+  },
+  reviewButtonContainer: {
+    marginTop: 8,
   },
 })

@@ -20,11 +20,29 @@ export const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  reviewSection: {
-    marginBottom: 20,
-  },
   collectionsSection: {
     flex: 1,
+  },
+  collectionsListContainer: {
+    flex: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: Colors.neutral.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    backgroundColor: Colors.transparent.clear,
+  },
+  collectionsListBlur: {
+    flex: 1,
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  collectionsListContent: {
+    flex: 1,
+    borderRadius: 16,
+    borderWidth: 1,
   },
   sectionTitle: {
     fontSize: 20,

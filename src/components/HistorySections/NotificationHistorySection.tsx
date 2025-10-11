@@ -5,6 +5,7 @@
 
 import React from 'react'
 import { StyleSheet, FlatList, useColorScheme } from 'react-native'
+import { BlurView } from 'expo-blur'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useHistoryStore } from '@/stores/useHistoryStore'
@@ -14,6 +15,12 @@ import { formatRelativeTime } from '@/utils/dateUtils'
 export function NotificationHistorySection() {
   const colorScheme = useColorScheme() ?? 'light'
   const notifications = useHistoryStore(state => state.notifications)
+
+  const isDarkMode = colorScheme === 'dark'
+  const blurBackgroundDark = Colors.transparent.iosDarkSurface95
+  const blurBackgroundLight = Colors.transparent.white95
+  const separatorDark = Colors.transparent.white10
+  const separatorLight = Colors.transparent.black05
 
   const getNotificationIcon = (type: ToastType) => {
     switch (type) {
@@ -49,86 +56,133 @@ export function NotificationHistorySection() {
 
   if (notifications.length === 0) {
     return (
-      <ViewThemed
-        style={styles.section}
-        lightColor={Colors.background.secondary}
-        darkColor={Colors.dark.backgroundSecondary}
-      >
-        <TextThemed style={styles.sectionTitle}>
-          Recent Notifications
-        </TextThemed>
-        <TextThemed
-          style={styles.emptyText}
-          lightColor={Colors.neutral[600]}
-          darkColor={Colors.dark.textSecondary}
+      <ViewThemed style={styles.sectionContainer}>
+        <BlurView
+          style={styles.sectionBlur}
+          intensity={100}
+          tint={colorScheme === 'dark' ? 'dark' : 'light'}
+          experimentalBlurMethod={'dimezisBlurView'}
         >
-          No recent notifications
-        </TextThemed>
+          <ViewThemed
+            style={[
+              styles.section,
+              {
+                backgroundColor: isDarkMode
+                  ? blurBackgroundDark
+                  : blurBackgroundLight,
+                borderColor: isDarkMode ? separatorDark : separatorLight,
+              },
+            ]}
+          >
+            <TextThemed style={styles.sectionTitle}>
+              Recent Notifications
+            </TextThemed>
+            <TextThemed
+              style={styles.emptyText}
+              lightColor={Colors.neutral[600]}
+              darkColor={Colors.dark.textSecondary}
+            >
+              No recent notifications
+            </TextThemed>
+          </ViewThemed>
+        </BlurView>
       </ViewThemed>
     )
   }
 
   return (
-    <ViewThemed
-      style={styles.section}
-      lightColor={Colors.background.secondary}
-      darkColor={Colors.dark.backgroundSecondary}
-    >
-      <TextThemed style={styles.sectionTitle}>Recent Notifications</TextThemed>
-      <FlatList
-        data={notifications}
-        keyExtractor={item => item.id}
-        scrollEnabled={false}
-        renderItem={({ item }) => (
-          <ViewThemed
-            style={styles.notificationItem}
-            lightColor="transparent"
-            darkColor="transparent"
-          >
-            <TextThemed style={styles.notificationIcon}>
-              {getNotificationIcon(item.type)}
-            </TextThemed>
-            <ViewThemed
-              style={styles.notificationContent}
-              lightColor="transparent"
-              darkColor="transparent"
-            >
-              <TextThemed
-                style={[
-                  styles.notificationMessage,
-                  { color: getNotificationColor(item.type) },
-                ]}
-                numberOfLines={2}
+    <ViewThemed style={styles.sectionContainer}>
+      <BlurView
+        style={styles.sectionBlur}
+        intensity={100}
+        tint={colorScheme === 'dark' ? 'dark' : 'light'}
+        experimentalBlurMethod={'dimezisBlurView'}
+      >
+        <ViewThemed
+          style={[
+            styles.section,
+            {
+              backgroundColor: isDarkMode
+                ? blurBackgroundDark
+                : blurBackgroundLight,
+              borderColor: isDarkMode ? separatorDark : separatorLight,
+            },
+          ]}
+        >
+          <TextThemed style={styles.sectionTitle}>
+            Recent Notifications
+          </TextThemed>
+          <FlatList
+            data={notifications}
+            keyExtractor={item => item.id}
+            scrollEnabled={false}
+            renderItem={({ item }) => (
+              <ViewThemed
+                style={styles.notificationItem}
+                lightColor="transparent"
+                darkColor="transparent"
               >
-                {item.message}
-              </TextThemed>
-              <TextThemed
-                style={styles.notificationTime}
-                lightColor={Colors.neutral[500]}
-                darkColor={Colors.dark.textSecondary}
-              >
-                {formatRelativeTime(new Date(item.timestamp))}
-              </TextThemed>
-            </ViewThemed>
-          </ViewThemed>
-        )}
-        ItemSeparatorComponent={() => (
-          <ViewThemed
-            style={styles.separator}
-            lightColor={Colors.neutral[200]}
-            darkColor={Colors.dark.border}
+                <TextThemed style={styles.notificationIcon}>
+                  {getNotificationIcon(item.type)}
+                </TextThemed>
+                <ViewThemed
+                  style={styles.notificationContent}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed
+                    style={[
+                      styles.notificationMessage,
+                      { color: getNotificationColor(item.type) },
+                    ]}
+                    numberOfLines={2}
+                  >
+                    {item.message}
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.notificationTime}
+                    lightColor={Colors.neutral[500]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    {formatRelativeTime(new Date(item.timestamp))}
+                  </TextThemed>
+                </ViewThemed>
+              </ViewThemed>
+            )}
+            ItemSeparatorComponent={() => (
+              <ViewThemed
+                style={styles.separator}
+                lightColor={Colors.neutral[200]}
+                darkColor={Colors.dark.border}
+              />
+            )}
           />
-        )}
-      />
+        </ViewThemed>
+      </BlurView>
     </ViewThemed>
   )
 }
 
 const styles = StyleSheet.create({
-  section: {
+  sectionContainer: {
     marginBottom: 24,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: Colors.neutral.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    backgroundColor: Colors.transparent.clear,
+  },
+  sectionBlur: {
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  section: {
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 16,
+    borderWidth: 1,
   },
   sectionTitle: {
     fontSize: 20,

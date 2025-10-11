@@ -65,17 +65,17 @@ const colorPalette = {
 
   // Surface colors - used for backgrounds and containers
   background: {
-    primary: '#FFFFFF',
-    secondary: '#F8FAFC',
+    primary: '#F2F2F7', // iOS systemGroupedBackground
+    secondary: '#FFFFFF', // Cards stand out on a grouped background
   },
 
   // Surface system for elevation and hierarchy
   surface: {
     // Light theme surfaces
     light: {
-      primary: '#FFFFFF', // Main background
-      secondary: '#F8FAFC', // Secondary background
-      tertiary: '#F1F5F9', // Cards, containers
+      primary: '#F2F2F7', // Main background (iOS systemGroupedBackground)
+      secondary: '#FFFFFF', // Cards, elevated surfaces
+      tertiary: '#F8FAFC', // Alternative containers
       elevated: '#FFFFFF', // Modal, popover backgrounds
       overlay: 'rgba(0, 0, 0, 0.05)', // Overlays
     },
