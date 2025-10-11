@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.12,
     shadowRadius: 12,
     elevation: 6,
-    backgroundColor: 'transparent',
+    backgroundColor: Colors.transparent.clear,
   },
   statsBlur: {
     overflow: 'hidden',

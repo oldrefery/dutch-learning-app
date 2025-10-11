@@ -313,7 +313,7 @@ export default function CollectionsScreen() {
                     backgroundColor:
                       colorScheme === 'dark'
                         ? Colors.transparent.iosDarkSurface95
-                        : Colors.transparent.white95,
+                        : Colors.transparent.clear,
                     borderColor:
                       colorScheme === 'dark'
                         ? Colors.transparent.white10
@@ -324,10 +324,17 @@ export default function CollectionsScreen() {
                 <FlatList
                   data={collections}
                   keyExtractor={item => item.collection_id}
+                  style={{ backgroundColor: Colors.transparent.clear }}
+                  contentContainerStyle={{
+                    backgroundColor: Colors.transparent.clear,
+                  }}
                   renderItem={({ item, index }) => {
                     const isLast = index === collections.length - 1
                     return (
-                      <ViewThemed>
+                      <ViewThemed
+                        lightColor={Colors.transparent.clear}
+                        darkColor={Colors.transparent.clear}
+                      >
                         <SwipeableCollectionCard
                           collection={item}
                           words={words}
@@ -355,10 +362,19 @@ export default function CollectionsScreen() {
                       onRefresh={onRefresh}
                       colors={[Colors.primary.DEFAULT]}
                       tintColor={Colors.primary.DEFAULT}
+                      progressBackgroundColor={
+                        colorScheme === 'dark'
+                          ? Colors.dark.backgroundSecondary
+                          : Colors.background.primary
+                      }
                     />
                   }
                   ListEmptyComponent={
-                    <ViewThemed style={styles.emptyContainer}>
+                    <ViewThemed
+                      style={styles.emptyContainer}
+                      lightColor={Colors.transparent.clear}
+                      darkColor={Colors.transparent.clear}
+                    >
                       <TextThemed style={styles.emptyText}>
                         No collections yet
                       </TextThemed>
