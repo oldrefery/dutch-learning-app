@@ -13,7 +13,6 @@ import { router } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import ImportByTokenModal from '@/components/ImportByTokenModal'
 import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
 import { StatsCard } from '@/components/StatsCard'
 import SectionHeader from '@/components/SectionHeader'
@@ -24,6 +23,7 @@ import { calculateStreak } from '@/utils/streakUtils'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 import { CreateCollectionSheet } from '@/components/glass/modals/CreateCollectionSheet'
 import { RenameCollectionSheet } from '@/components/glass/modals/RenameCollectionSheet'
+import { ImportCollectionSheet } from '@/components/glass/modals/ImportCollectionSheet'
 
 export default function CollectionsScreen() {
   const insets = useSafeAreaInsets()
@@ -361,7 +361,7 @@ export default function CollectionsScreen() {
         onRename={handleModalRename}
       />
 
-      <ImportByTokenModal
+      <ImportCollectionSheet
         visible={showImportModal}
         onClose={() => setShowImportModal(false)}
       />
