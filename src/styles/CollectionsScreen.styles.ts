@@ -23,6 +23,27 @@ export const styles = StyleSheet.create({
   collectionsSection: {
     flex: 1,
   },
+  collectionsListContainer: {
+    flex: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: Colors.neutral.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    backgroundColor: 'transparent',
+  },
+  collectionsListBlur: {
+    flex: 1,
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  collectionsListContent: {
+    flex: 1,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',

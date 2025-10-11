@@ -4,8 +4,10 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
+  useColorScheme,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { BlurView } from 'expo-blur'
 import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -27,6 +29,7 @@ import { ImportCollectionSheet } from '@/components/glass/modals/ImportCollectio
 
 export default function CollectionsScreen() {
   const insets = useSafeAreaInsets()
+  const colorScheme = useColorScheme() ?? 'light'
   const [refreshing, setRefreshing] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
@@ -296,53 +299,78 @@ export default function CollectionsScreen() {
             </TextThemed>
           </ViewThemed>
         ) : (
-          <FlatList
-            data={collections}
-            keyExtractor={item => item.collection_id}
-            renderItem={({ item, index }) => {
-              const isLast = index === collections.length - 1
-              return (
-                <ViewThemed>
-                  <SwipeableCollectionCard
-                    collection={item}
-                    words={words}
-                    onPress={() => handleCollectionPress(item)}
-                    onDelete={handleDeleteCollection}
-                    onRename={handleRenameCollection}
-                    onShare={handleShareCollection}
-                    onCopyCode={handleCopyCollectionCode}
-                    onStopSharing={handleStopSharingCollection}
-                  />
-                  {!isLast && (
-                    <ViewThemed
-                      style={styles.separator}
-                      lightColor={Colors.light.separator}
-                      darkColor={Colors.dark.separator}
+          <ViewThemed style={styles.collectionsListContainer}>
+            <BlurView
+              style={styles.collectionsListBlur}
+              intensity={100}
+              tint={colorScheme === 'dark' ? 'dark' : 'light'}
+              experimentalBlurMethod={'dimezisBlurView'}
+            >
+              <ViewThemed
+                style={[
+                  styles.collectionsListContent,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark'
+                        ? Colors.transparent.iosDarkSurface95
+                        : Colors.transparent.white95,
+                    borderColor:
+                      colorScheme === 'dark'
+                        ? Colors.transparent.white10
+                        : Colors.transparent.black05,
+                  },
+                ]}
+              >
+                <FlatList
+                  data={collections}
+                  keyExtractor={item => item.collection_id}
+                  renderItem={({ item, index }) => {
+                    const isLast = index === collections.length - 1
+                    return (
+                      <ViewThemed>
+                        <SwipeableCollectionCard
+                          collection={item}
+                          words={words}
+                          onPress={() => handleCollectionPress(item)}
+                          onDelete={handleDeleteCollection}
+                          onRename={handleRenameCollection}
+                          onShare={handleShareCollection}
+                          onCopyCode={handleCopyCollectionCode}
+                          onStopSharing={handleStopSharingCollection}
+                        />
+                        {!isLast && (
+                          <ViewThemed
+                            style={styles.separator}
+                            lightColor={Colors.light.separator}
+                            darkColor={Colors.dark.separator}
+                          />
+                        )}
+                      </ViewThemed>
+                    )
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                      colors={[Colors.primary.DEFAULT]}
+                      tintColor={Colors.primary.DEFAULT}
                     />
-                  )}
-                </ViewThemed>
-              )
-            }}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                colors={[Colors.primary.DEFAULT]}
-                tintColor={Colors.primary.DEFAULT}
-              />
-            }
-            ListEmptyComponent={
-              <ViewThemed style={styles.emptyContainer}>
-                <TextThemed style={styles.emptyText}>
-                  No collections yet
-                </TextThemed>
-                <TextThemed style={styles.emptySubtext}>
-                  Start by adding some words!
-                </TextThemed>
+                  }
+                  ListEmptyComponent={
+                    <ViewThemed style={styles.emptyContainer}>
+                      <TextThemed style={styles.emptyText}>
+                        No collections yet
+                      </TextThemed>
+                      <TextThemed style={styles.emptySubtext}>
+                        Start by adding some words!
+                      </TextThemed>
+                    </ViewThemed>
+                  }
+                />
               </ViewThemed>
-            }
-          />
+            </BlurView>
+          </ViewThemed>
         )}
       </ViewThemed>
 
