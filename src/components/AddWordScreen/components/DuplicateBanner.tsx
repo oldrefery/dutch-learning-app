@@ -97,7 +97,7 @@ export function DuplicateBanner({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 12,
+    borderRadius: 100,
     padding: 16,
     marginHorizontal: 16,
     marginBottom: 8,

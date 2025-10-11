@@ -15,7 +15,7 @@ interface CopyButtonProps {
   showFeedback?: boolean
   /** Button variant following HIG */
   variant?: 'tinted' | 'plain' | 'subtle'
-  /** Button size with proper tap target */
+  /** Button size with a proper tap target */
   buttonSize?: 'small' | 'medium' | 'large'
 }
 

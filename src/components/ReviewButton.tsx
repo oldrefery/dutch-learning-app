@@ -1,6 +1,7 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
+import { GlassCapsuleButton } from '@/components/glass/buttons'
 import { Colors } from '@/constants/Colors'
 
 interface ReviewButtonProps {
@@ -8,59 +9,69 @@ interface ReviewButtonProps {
   onPress: () => void
 }
 
+/**
+ * Review Button Component
+ *
+ * Uses GlassCapsuleButton following Apple HIG guidelines:
+ * - Tinted style for secondary actions (primary is in tab bar)
+ * - Minimum 44pt tap target height
+ * - Clear pressed state
+ * - Disabled state when no words available
+ * - Integrated with Liquid Glass design system
+ *
+ * @see https://developer.apple.com/design/human-interface-guidelines/buttons
+ */
 export default function ReviewButton({
   wordsForReview,
   onPress,
 }: ReviewButtonProps) {
-  if (wordsForReview === 0) {
+  const isDisabled = wordsForReview === 0
+
+  if (isDisabled) {
     return (
-      <ViewThemed style={styles.disabledButton}>
-        <TextThemed style={styles.disabledButtonText}>
-          No words for review
-        </TextThemed>
+      <ViewThemed style={styles.container}>
+        <ViewThemed style={styles.disabledContainer}>
+          <TextThemed
+            style={styles.disabledText}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            No words for review
+          </TextThemed>
+        </ViewThemed>
       </ViewThemed>
     )
   }
 
+  const buttonText = `Review All Collections (${wordsForReview})`
+
   return (
-    <TouchableOpacity style={styles.reviewButton} onPress={onPress}>
-      <TextThemed style={styles.reviewButtonText}>
-        Review All Collections
-      </TextThemed>
-      <TextThemed style={styles.reviewButtonSubtext}>
-        {wordsForReview} words ready for review
-      </TextThemed>
-    </TouchableOpacity>
+    <ViewThemed style={styles.container}>
+      <GlassCapsuleButton
+        icon="play-circle"
+        text={buttonText}
+        onPress={onPress}
+        variant="tinted"
+        size="large"
+        accessibilityLabel="Start review session"
+        accessibilityHint={`Review ${wordsForReview} ${wordsForReview === 1 ? 'word' : 'words'} from all collections`}
+      />
+    </ViewThemed>
   )
 }
 
 const styles = StyleSheet.create({
-  reviewButton: {
-    backgroundColor: Colors.primary.DEFAULT,
-    borderRadius: 12,
-    padding: 16,
+  container: {
     alignItems: 'center',
-    marginBottom: 24,
+    backgroundColor: Colors.transparent.clear,
   },
-  reviewButtonText: {
-    color: Colors.background.primary,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  reviewButtonSubtext: {
-    color: Colors.neutral[100],
-    fontSize: 12,
-  },
-  disabledButton: {
-    backgroundColor: Colors.neutral[100],
-    borderRadius: 12,
+  disabledContainer: {
     padding: 16,
+    borderRadius: 16,
     alignItems: 'center',
-    marginBottom: 24,
+    backgroundColor: Colors.transparent.black05,
   },
-  disabledButtonText: {
-    color: Colors.neutral[500],
+  disabledText: {
     fontSize: 16,
     fontWeight: '500',
   },

@@ -1,8 +1,7 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { StyleSheet } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
-import { Colors } from '@/constants/Colors'
+import { GlassCapsuleButton } from '@/components/glass/buttons'
 
 interface SectionHeaderProps {
   title: string
@@ -26,22 +25,26 @@ export default function SectionHeader({
       <TextThemed style={styles.sectionTitle}>{title}</TextThemed>
       <ViewThemed style={styles.buttonsContainer}>
         {showImportButton && onImportPress && (
-          <TouchableOpacity style={styles.importButton} onPress={onImportPress}>
-            <Ionicons
-              name="cloud-download-outline"
-              size={20}
-              color={Colors.primary.DEFAULT}
-            />
-            <TextThemed style={styles.importButtonText}>Import</TextThemed>
-          </TouchableOpacity>
+          <GlassCapsuleButton
+            icon="cloud-download-outline"
+            text="Import"
+            onPress={onImportPress}
+            variant="tinted"
+            size="medium"
+            accessibilityLabel="Import collection"
+            accessibilityHint="Opens dialog to import a collection using a share code"
+          />
         )}
         {showAddButton && onAddPress && (
-          <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
-            <Ionicons name="add" size={20} color={Colors.primary.DEFAULT} />
-            <TextThemed style={styles.addButtonText}>
-              {addButtonText}
-            </TextThemed>
-          </TouchableOpacity>
+          <GlassCapsuleButton
+            icon="add"
+            text={addButtonText}
+            onPress={onAddPress}
+            variant="tinted"
+            size="medium"
+            accessibilityLabel={`Create ${addButtonText.toLowerCase()}`}
+            accessibilityHint="Opens dialog to create a new collection"
+          />
         )}
       </ViewThemed>
     </ViewThemed>
@@ -58,38 +61,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: Colors.neutral[900],
   },
   buttonsContainer: {
     flexDirection: 'row',
     gap: 8,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: Colors.neutral[100],
-  },
-  addButtonText: {
-    marginLeft: 4,
-    fontSize: 14,
-    fontWeight: '500',
-    color: Colors.primary.DEFAULT,
-  },
-  importButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: Colors.neutral[100],
-  },
-  importButtonText: {
-    marginLeft: 4,
-    fontSize: 14,
-    fontWeight: '500',
-    color: Colors.primary.DEFAULT,
   },
 })

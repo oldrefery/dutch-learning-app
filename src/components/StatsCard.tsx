@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { SkeletonNumber } from '@/components/SkeletonLoader'
+import ReviewButton from '@/components/ReviewButton'
 
 interface StatsCardProps {
   stats: {
@@ -12,9 +13,14 @@ interface StatsCardProps {
     streakDays: number
   }
   loading?: boolean
+  onStartReview?: () => void
 }
 
-export default function StatsCard({ stats, loading = false }: StatsCardProps) {
+export const StatsCard = ({
+  stats,
+  loading = false,
+  onStartReview,
+}: StatsCardProps) => {
   return (
     <ViewThemed
       style={styles.statsCard}
@@ -136,6 +142,19 @@ export default function StatsCard({ stats, loading = false }: StatsCardProps) {
           </TextThemed>
         </ViewThemed>
       </ViewThemed>
+
+      {onStartReview && (
+        <ViewThemed
+          style={styles.reviewButtonContainer}
+          lightColor="transparent"
+          darkColor="transparent"
+        >
+          <ReviewButton
+            wordsForReview={stats.wordsForReview}
+            onPress={onStartReview}
+          />
+        </ViewThemed>
+      )}
     </ViewThemed>
   )
 }
@@ -150,10 +169,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 4,
+    textAlign: 'center',
   },
   statsSubtitle: {
     fontSize: 14,
     marginBottom: 12,
+    textAlign: 'center',
   },
   statsRow: {
     flexDirection: 'row',
@@ -171,5 +192,8 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 14,
+  },
+  reviewButtonContainer: {
+    marginTop: 8,
   },
 })

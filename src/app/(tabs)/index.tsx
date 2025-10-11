@@ -13,18 +13,17 @@ import { router } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import CreateCollectionSheet from '@/components/glass/modals/CreateCollectionSheet'
-import RenameCollectionSheet from '@/components/glass/modals/RenameCollectionSheet'
 import ImportByTokenModal from '@/components/ImportByTokenModal'
 import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
-import StatsCard from '@/components/StatsCard'
+import { StatsCard } from '@/components/StatsCard'
 import SectionHeader from '@/components/SectionHeader'
-import ReviewButton from '@/components/ReviewButton'
 import { ROUTES } from '@/constants/Routes'
 import { styles } from '@/styles/CollectionsScreen.styles'
 import type { Collection } from '@/types/database'
 import { calculateStreak } from '@/utils/streakUtils'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
+import { CreateCollectionSheet } from '@/components/glass/modals/CreateCollectionSheet'
+import { RenameCollectionSheet } from '@/components/glass/modals/RenameCollectionSheet'
 
 export default function CollectionsScreen() {
   const insets = useSafeAreaInsets()
@@ -274,14 +273,11 @@ export default function CollectionsScreen() {
         },
       ]}
     >
-      <StatsCard stats={stats} loading={collectionsLoading} />
-
-      <ViewThemed style={styles.reviewSection}>
-        <ReviewButton
-          wordsForReview={stats.wordsForReview}
-          onPress={handleStartReview}
-        />
-      </ViewThemed>
+      <StatsCard
+        stats={stats}
+        loading={collectionsLoading}
+        onStartReview={handleStartReview}
+      />
 
       <ViewThemed style={styles.collectionsSection}>
         <SectionHeader

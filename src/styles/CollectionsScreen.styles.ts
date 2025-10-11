@@ -20,9 +20,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  reviewSection: {
-    marginBottom: 20,
-  },
   collectionsSection: {
     flex: 1,
   },
