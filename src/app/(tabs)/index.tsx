@@ -259,9 +259,11 @@ export default function CollectionsScreen() {
 
   const stats = {
     totalWords: words.length,
-    masteredWords: words.filter(w => w.repetition_count > 2).length,
+    masteredWords: words.filter(
+      w => w && w.repetition_count && w.repetition_count > 2
+    ).length,
     wordsForReview: words.filter(
-      w => new Date(w.next_review_date) <= new Date()
+      w => w && w.next_review_date && new Date(w.next_review_date) <= new Date()
     ).length,
     streakDays: calculateStreak(words),
   }
@@ -321,69 +323,83 @@ export default function CollectionsScreen() {
                   },
                 ]}
               >
-                <FlatList
-                  data={collections}
-                  keyExtractor={item => item.collection_id}
-                  style={{ backgroundColor: Colors.transparent.clear }}
-                  contentContainerStyle={{
-                    backgroundColor: Colors.transparent.clear,
-                  }}
-                  renderItem={({ item, index }) => {
-                    const isLast = index === collections.length - 1
-                    return (
-                      <ViewThemed
-                        lightColor={Colors.transparent.clear}
-                        darkColor={Colors.transparent.clear}
-                      >
-                        <SwipeableCollectionCard
-                          collection={item}
-                          words={words}
-                          onPress={() => handleCollectionPress(item)}
-                          onDelete={handleDeleteCollection}
-                          onRename={handleRenameCollection}
-                          onShare={handleShareCollection}
-                          onCopyCode={handleCopyCollectionCode}
-                          onStopSharing={handleStopSharingCollection}
-                        />
-                        {!isLast && (
+                {(() => {
+                  const filteredCollections = collections.filter(
+                    c => c && c.collection_id
+                  )
+                  const safedWords = words.filter(
+                    w => w && typeof w === 'object'
+                  )
+                  return (
+                    <FlatList
+                      data={filteredCollections}
+                      keyExtractor={item => item.collection_id}
+                      style={{ backgroundColor: Colors.transparent.clear }}
+                      contentContainerStyle={{
+                        backgroundColor: Colors.transparent.clear,
+                      }}
+                      renderItem={({ item, index }) => {
+                        // Skip rendering if collection data is invalid
+                        if (!item || !item.collection_id) {
+                          return null
+                        }
+                        const isLast = index === filteredCollections.length - 1
+                        return (
                           <ViewThemed
-                            style={styles.separator}
-                            lightColor={Colors.light.separator}
-                            darkColor={Colors.dark.separator}
-                          />
-                        )}
-                      </ViewThemed>
-                    )
-                  }}
-                  showsVerticalScrollIndicator={false}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={refreshing}
-                      onRefresh={onRefresh}
-                      colors={[Colors.primary.DEFAULT]}
-                      tintColor={Colors.primary.DEFAULT}
-                      progressBackgroundColor={
-                        colorScheme === 'dark'
-                          ? Colors.dark.backgroundSecondary
-                          : Colors.background.primary
+                            lightColor={Colors.transparent.clear}
+                            darkColor={Colors.transparent.clear}
+                          >
+                            <SwipeableCollectionCard
+                              collection={item}
+                              words={safedWords}
+                              onPress={() => handleCollectionPress(item)}
+                              onDelete={handleDeleteCollection}
+                              onRename={handleRenameCollection}
+                              onShare={handleShareCollection}
+                              onCopyCode={handleCopyCollectionCode}
+                              onStopSharing={handleStopSharingCollection}
+                            />
+                            {!isLast && (
+                              <ViewThemed
+                                style={styles.separator}
+                                lightColor={Colors.light.separator}
+                                darkColor={Colors.dark.separator}
+                              />
+                            )}
+                          </ViewThemed>
+                        )
+                      }}
+                      showsVerticalScrollIndicator={false}
+                      refreshControl={
+                        <RefreshControl
+                          refreshing={refreshing}
+                          onRefresh={onRefresh}
+                          colors={[Colors.primary.DEFAULT]}
+                          tintColor={Colors.primary.DEFAULT}
+                          progressBackgroundColor={
+                            colorScheme === 'dark'
+                              ? Colors.dark.backgroundSecondary
+                              : Colors.background.primary
+                          }
+                        />
+                      }
+                      ListEmptyComponent={
+                        <ViewThemed
+                          style={styles.emptyContainer}
+                          lightColor={Colors.transparent.clear}
+                          darkColor={Colors.transparent.clear}
+                        >
+                          <TextThemed style={styles.emptyText}>
+                            No collections yet
+                          </TextThemed>
+                          <TextThemed style={styles.emptySubtext}>
+                            Start by adding some words!
+                          </TextThemed>
+                        </ViewThemed>
                       }
                     />
-                  }
-                  ListEmptyComponent={
-                    <ViewThemed
-                      style={styles.emptyContainer}
-                      lightColor={Colors.transparent.clear}
-                      darkColor={Colors.transparent.clear}
-                    >
-                      <TextThemed style={styles.emptyText}>
-                        No collections yet
-                      </TextThemed>
-                      <TextThemed style={styles.emptySubtext}>
-                        Start by adding some words!
-                      </TextThemed>
-                    </ViewThemed>
-                  }
-                />
+                  )
+                })()}
               </ViewThemed>
             </BlurView>
           </ViewThemed>

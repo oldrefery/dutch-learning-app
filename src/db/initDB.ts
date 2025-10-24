@@ -4,7 +4,7 @@ import { SQL_SCHEMA } from './schema'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 1
+const SCHEMA_VERSION = 2
 
 let database: SQLite.SQLiteDatabase | null = null
 
@@ -69,6 +69,7 @@ export async function resetDatabase(): Promise<void> {
     const statements = [
       'DROP TABLE IF EXISTS user_progress',
       'DROP TABLE IF EXISTS words',
+      'DROP TABLE IF EXISTS collections',
       'DROP TABLE IF EXISTS sync_metadata',
     ]
     for (const statement of statements) {

@@ -2,6 +2,19 @@
 // All tables mirror Supabase structure with sync metadata
 
 export const SQL_SCHEMA = `
+  -- Collections table (local copy of Supabase collections)
+  CREATE TABLE IF NOT EXISTS collections (
+    collection_id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    is_shared BOOLEAN DEFAULT 0,
+    shared_with TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    sync_status TEXT DEFAULT 'synced'
+  );
+
   -- Words table (local copy of Supabase words)
   CREATE TABLE IF NOT EXISTS words (
     word_id TEXT PRIMARY KEY,
@@ -60,6 +73,8 @@ export const SQL_SCHEMA = `
   );
 
   -- Indexes for performance
+  CREATE INDEX IF NOT EXISTS idx_collections_user_id ON collections(user_id);
+  CREATE INDEX IF NOT EXISTS idx_collections_sync_status ON collections(sync_status);
   CREATE INDEX IF NOT EXISTS idx_words_user_id ON words(user_id);
   CREATE INDEX IF NOT EXISTS idx_words_collection_id ON words(collection_id);
   CREATE INDEX IF NOT EXISTS idx_words_updated_at ON words(updated_at);

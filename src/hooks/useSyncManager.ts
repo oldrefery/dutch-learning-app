@@ -49,6 +49,14 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
       setSyncResult(result)
     } catch (error) {
       console.error('[Sync] Error in performSync:', error)
+      // Set error result so UI knows sync failed
+      setSyncResult({
+        success: false,
+        wordsSynced: 0,
+        progressSynced: 0,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      })
     } finally {
       setIsSyncing(false)
     }

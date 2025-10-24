@@ -27,6 +27,7 @@ import { ROUTES } from '@/constants/Routes'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 import { Sentry } from '@/lib/sentry'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { useSyncManager } from '@/hooks/useSyncManager'
 
 // Extended types for NativeTabs components with runtime-supported props
 type TabTriggerProps = ComponentProps<typeof NativeTabs.Trigger> & {
@@ -47,6 +48,7 @@ type NativeTabsLabelStyle = {
 const TabTrigger = NativeTabs.Trigger as React.ComponentType<TabTriggerProps>
 const StyledBadge = Badge as React.ComponentType<BadgeWithStyleProps>
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function TabLayout() {
   const colorScheme = useColorScheme()
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
@@ -56,6 +58,13 @@ export default function TabLayout() {
 
   // Get user access level
   const { userAccessLevel } = useApplicationStore()
+
+  // Initialize offline-first sync (only when authenticated)
+  useSyncManager({
+    autoSyncOnMount: isAuthenticated === true,
+    autoSyncOnFocus: isAuthenticated === true,
+    autoSyncOnNetworkChange: isAuthenticated === true,
+  })
 
   // Call this unconditionally to follow the rules of hooks (not used in Native Tabs)
   useClientOnlyValue(false, true)

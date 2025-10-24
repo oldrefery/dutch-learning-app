@@ -37,7 +37,7 @@ interface SwipeableCollectionCardProps {
   onStopSharing?: (collectionId: string) => void
 }
 
-export default function SwipeableCollectionCard({
+function SwipeableCollectionCardContent({
   collection,
   words,
   onPress,
@@ -55,7 +55,7 @@ export default function SwipeableCollectionCard({
 
   // Calculate real stats for this collection
   const collectionWords = words.filter(
-    word => word.collection_id === collection.collection_id
+    word => word && word.collection_id === collection.collection_id
   )
   const stats = calculateCollectionStats(collectionWords)
 
@@ -309,7 +309,7 @@ export default function SwipeableCollectionCard({
               lightColor="transparent"
               darkColor="transparent"
             >
-              {collection.is_shared && Platform.OS === 'ios' && (
+              {Boolean(collection.is_shared) && Platform.OS === 'ios' && (
                 <SymbolView
                   name="person.2.fill"
                   size={24}
@@ -333,7 +333,7 @@ export default function SwipeableCollectionCard({
                   }
                 />
               )}
-              {collection.is_shared && Platform.OS !== 'ios' && (
+              {Boolean(collection.is_shared) && Platform.OS !== 'ios' && (
                 <Ionicons
                   name="people"
                   size={24}
@@ -373,6 +373,21 @@ export default function SwipeableCollectionCard({
       />
     </ViewThemed>
   )
+}
+
+export default function SwipeableCollectionCard(
+  props: SwipeableCollectionCardProps
+) {
+  // Guard against null/undefined collection
+  if (!props.collection || !props.collection.collection_id) {
+    console.warn(
+      '[SwipeableCollectionCard] Invalid collection:',
+      props.collection
+    )
+    return null
+  }
+
+  return <SwipeableCollectionCardContent {...props} />
 }
 
 const styles = StyleSheet.create({

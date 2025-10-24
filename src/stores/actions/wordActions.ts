@@ -1,6 +1,9 @@
 import { wordService } from '@/lib/supabase'
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { Sentry } from '@/lib/sentry'
+import { wordRepository } from '@/db/wordRepository'
+import { isNetworkAvailable } from '@/utils/network'
+import { calculateNextReview } from '@/utils/srs'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -43,8 +46,23 @@ export const createWordActions = (
         })
         return
       }
-      const words = await wordService.getUserWords(userId)
-      if (!words) {
+
+      // Check if network is available
+      const hasNetwork = await isNetworkAvailable()
+
+      let words = null
+
+      if (hasNetwork) {
+        // Online: fetch from Supabase
+        console.log('[Words] Network available, fetching from Supabase')
+        words = await wordService.getUserWords(userId)
+      } else {
+        // Offline: fetch from local SQLite
+        console.log('[Words] Network unavailable, fetching from local SQLite')
+        words = await wordRepository.getWordsByUserId(userId)
+      }
+
+      if (!words || words.length === 0) {
         set({
           error: {
             message:
@@ -55,6 +73,7 @@ export const createWordActions = (
         })
         return
       }
+
       set({ words, wordsLoading: false })
     } catch (error) {
       Sentry.captureException(error, {
@@ -188,35 +207,64 @@ export const createWordActions = (
         })
       }
 
-      const updatedWordData = await wordService.updateWordProgress(
-        wordId,
-        assessment
-      )
+      // Check network availability
+      const hasNetwork = await isNetworkAvailable()
+      const userId = get().currentUserId
 
-      // Validate response from service
-      if (!updatedWordData || !updatedWordData.word_id) {
-        Sentry.captureException(
-          new Error('Invalid response from word service'),
-          { tags: { operation: 'updateWordAfterReview' }, extra: { wordId } }
-        )
+      if (!userId) {
+        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
       }
 
+      // Get the current word to calculate new SRS values
       const currentWords = get().words
-      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
+      const currentWord = currentWords.find(w => w.word_id === wordId)
 
+      if (!currentWord) {
+        throw new Error(`Word with ID ${wordId} not found in local cache`)
+      }
+
+      // Calculate new SRS values
+      const srsUpdate = calculateNextReview({
+        interval_days: currentWord.interval_days,
+        repetition_count: currentWord.repetition_count,
+        easiness_factor: currentWord.easiness_factor,
+        assessment: assessment.assessment,
+      })
+
+      let updatedWordData = {
+        ...currentWord,
+        ...srsUpdate,
+        last_reviewed_at: new Date().toISOString(),
+      }
+
+      if (hasNetwork) {
+        // Online: also update in Supabase for sync
+        const supabaseResponse = await wordService.updateWordProgress(
+          wordId,
+          assessment
+        )
+
+        // Validate response from service
+        if (supabaseResponse && supabaseResponse.word_id) {
+          updatedWordData = supabaseResponse
+        }
+      } else {
+        // Offline: update local SQLite only
+        await wordRepository.updateWordProgress(wordId, userId, {
+          interval_days: srsUpdate.interval_days,
+          repetition_count: srsUpdate.repetition_count,
+          easiness_factor: srsUpdate.easiness_factor,
+          next_review_date: srsUpdate.next_review_date,
+          last_reviewed_at: new Date().toISOString(),
+        })
+      }
+
+      // Update local store
+      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
       if (wordIndex !== -1) {
         const updatedWords = [...currentWords]
         updatedWords[wordIndex] = updatedWordData
         set({ words: updatedWords })
-      } else {
-        // Word not in local cache - this is OK!
-        // The word was already updated in the database via wordService.updateWordProgress()
-        // Local store.words may be cleared (sign out) or out of sync
-        // The next fetchWords() will sync the data
-        console.warn(
-          'Word not found in local cache, skipping UI update (DB already updated)',
-          { wordId }
-        )
       }
     } catch (error) {
       Sentry.captureException(error, {

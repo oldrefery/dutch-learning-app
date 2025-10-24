@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { wordRepository } from '@/db/wordRepository'
 import { progressRepository } from '@/db/progressRepository'
+import { collectionRepository } from '@/db/collectionRepository'
 import {
   checkNetworkConnection,
   getLastSyncTimestamp,
@@ -69,6 +70,9 @@ class SyncManager {
 
       const timestamp = new Date().toISOString()
 
+      // Step 0: Pull collections from Supabase
+      await this.pullCollectionsFromSupabase(userId)
+
       // Step 1: Pull new words from Supabase
       const lastSync = await getLastSyncTimestamp()
       const pulledWords = await this.pullWordsFromSupabase(userId, lastSync)
@@ -78,6 +82,9 @@ class SyncManager {
 
       // Step 3: Push pending word updates to Supabase
       const pushedWordsCount = await this.pushWordsToSupabase(userId)
+
+      // Step 4: Push pending collection updates to Supabase
+      await this.pushCollectionsToSupabase(userId)
 
       // Update last sync timestamp
       await setLastSyncTimestamp(timestamp)
@@ -96,12 +103,23 @@ class SyncManager {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error'
-      console.error('[Sync] Error during sync:', error)
 
-      Sentry.captureException(error, {
-        tags: { module: 'syncManager' },
-        extra: { userId },
-      })
+      // Don't report network errors - they're expected when offline
+      if (
+        errorMessage.includes('Network request failed') ||
+        errorMessage.includes('Network')
+      ) {
+        console.log(
+          '[Sync] Network error during sync (expected when offline):',
+          errorMessage
+        )
+      } else {
+        console.error('[Sync] Error during sync:', error)
+        Sentry.captureException(error, {
+          tags: { module: 'syncManager' },
+          extra: { userId },
+        })
+      }
 
       const result: SyncResult = {
         success: false,
@@ -111,7 +129,13 @@ class SyncManager {
         timestamp: new Date().toISOString(),
       }
 
-      this.notifySyncStatus(result)
+      // Only notify if it's not a network error
+      if (
+        !errorMessage.includes('Network request failed') &&
+        !errorMessage.includes('Network')
+      ) {
+        this.notifySyncStatus(result)
+      }
 
       return result
     } finally {
@@ -127,7 +151,7 @@ class SyncManager {
       let query = supabase.from('words').select('*').eq('user_id', userId)
 
       if (lastSync) {
-        query = query.gt('updated_at', lastSync)
+        query = query.gt('created_at', lastSync)
       }
 
       const { data, error } = await query
@@ -141,9 +165,12 @@ class SyncManager {
         return []
       }
 
-      // Parse JSON fields from Supabase
+      // Parse JSON fields from Supabase and ensure required fields
       const parsedWords = data.map(word => ({
         ...word,
+        // Ensure updated_at is always set (fallback to created_at or current time)
+        updated_at:
+          word.updated_at || word.created_at || new Date().toISOString(),
         translations:
           typeof word.translations === 'string'
             ? JSON.parse(word.translations)
@@ -277,6 +304,96 @@ class SyncManager {
       return pendingWords.length
     } catch (error) {
       console.error('[Sync] Error pushing words to Supabase:', error)
+      throw error
+    }
+  }
+
+  private async pullCollectionsFromSupabase(userId: string): Promise<any[]> {
+    try {
+      const { data, error } = await supabase
+        .from('collections')
+        .select('*')
+        .eq('user_id', userId)
+
+      if (error) {
+        throw new Error(`Failed to pull collections: ${error.message}`)
+      }
+
+      if (!data || data.length === 0) {
+        console.log('[Sync] No collections to pull from Supabase')
+        return []
+      }
+
+      // Ensure all collections have required fields and filter out invalid ones
+      const parsedCollections = data
+        .filter(
+          collection =>
+            collection && collection.collection_id && collection.user_id
+        )
+        .map(collection => ({
+          ...collection,
+          updated_at:
+            collection.updated_at ||
+            collection.created_at ||
+            new Date().toISOString(),
+        }))
+
+      if (parsedCollections.length > 0) {
+        await collectionRepository.saveCollections(parsedCollections)
+        console.log(
+          `[Sync] Pulled ${parsedCollections.length} collections from Supabase`
+        )
+      } else {
+        console.log('[Sync] No valid collections to save')
+      }
+
+      return parsedCollections
+    } catch (error) {
+      console.error('[Sync] Error pulling collections from Supabase:', error)
+      throw error
+    }
+  }
+
+  private async pushCollectionsToSupabase(userId: string): Promise<number> {
+    try {
+      const pendingCollections =
+        await collectionRepository.getPendingSyncCollections(userId)
+
+      if (pendingCollections.length === 0) {
+        console.log('[Sync] No pending collections to sync')
+        return 0
+      }
+
+      // Convert local collections to Supabase format
+      const collectionsToSync = pendingCollections.map(c => ({
+        collection_id: c.collection_id,
+        user_id: c.user_id,
+        name: c.name,
+        description: c.description,
+        is_shared: c.is_shared,
+        shared_with: c.shared_with,
+        created_at: c.created_at,
+        updated_at: c.updated_at,
+      }))
+
+      const { error } = await supabase
+        .from('collections')
+        .upsert(collectionsToSync)
+
+      if (error) {
+        throw new Error(`Failed to push collections: ${error.message}`)
+      }
+
+      const collectionIds = pendingCollections.map(c => c.collection_id)
+      await collectionRepository.markCollectionsSynced(collectionIds)
+
+      console.log(
+        `[Sync] Pushed ${pendingCollections.length} collections to Supabase`
+      )
+
+      return pendingCollections.length
+    } catch (error) {
+      console.error('[Sync] Error pushing collections to Supabase:', error)
       throw error
     }
   }

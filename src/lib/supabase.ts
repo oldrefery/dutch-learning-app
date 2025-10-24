@@ -606,6 +606,11 @@ export const collectionService = {
       return null
     }
 
+    // Filter out null/invalid entries from the response
+    if (Array.isArray(data)) {
+      return data.filter(collection => collection && collection.collection_id)
+    }
+
     return data
   },
 

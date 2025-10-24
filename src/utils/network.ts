@@ -14,6 +14,16 @@ export async function checkNetworkConnection(): Promise<boolean> {
   }
 }
 
+export async function isNetworkAvailable(): Promise<boolean> {
+  try {
+    const state = await NetInfo.fetch()
+    return state.isConnected === true && state.isInternetReachable !== false
+  } catch (error) {
+    console.error('[Network] Error checking network availability:', error)
+    return false
+  }
+}
+
 export function subscribeToNetworkChanges(
   callback: (isConnected: boolean) => void
 ): () => void {

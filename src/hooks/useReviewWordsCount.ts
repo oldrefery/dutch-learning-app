@@ -14,7 +14,9 @@ export function useReviewWordsCount() {
 
   const reviewWordsCount = useMemo(() => {
     const now = new Date()
-    return words.filter(w => new Date(w.next_review_date) <= now).length
+    return words.filter(
+      w => w && w.next_review_date && new Date(w.next_review_date) <= now
+    ).length
   }, [words])
 
   const refreshCount = useCallback(async () => {

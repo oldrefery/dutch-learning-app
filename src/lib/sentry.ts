@@ -16,15 +16,16 @@ export function initializeSentry() {
   // Get Supabase URL for filtering
   const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
 
-  // Always initialize Sentry (removed development check for debugging)
+  // Always initialize Sentry (even in development for debugging)
   SentryLib.init({
     dsn: 'https://b9380e4ad548d88fe5c8bfecabcdf2e3@o4506263035904000.ingest.us.sentry.io/4509999490727936',
-    debug: isDevelopment, // Enable debug in development (fixed)
+    debug: false, // Disable debug logging to reduce noise
+    enabled: true, // Enable Sentry in development for debugging
     sendDefaultPii: true,
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0,
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
+    tracesSampleRate: isDevelopment ? 0.1 : 1.0, // Sample 10% in development
+    profilesSampleRate: isDevelopment ? 0 : 1.0, // Disable profiling in development
+    replaysSessionSampleRate: isDevelopment ? 0.1 : 0.1,
+    replaysOnErrorSampleRate: isDevelopment ? 1.0 : 1.0,
     integrations: [
       SentryLib.reactNativeTracingIntegration({
         // Prevent duplicate spans for Supabase requests
