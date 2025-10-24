@@ -6,6 +6,7 @@ import {
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { Sentry } from '@/lib/sentry'
 import { logInfo, logError } from '@/utils/logger'
+import { collectionRepository } from '@/db/collectionRepository'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -52,19 +53,25 @@ export const createCollectionActions = (
         })
         return
       }
-      const collections = await collectionService.getUserCollections(userId)
-      if (!collections) {
+
+      // Fetch collections from local SQLite database
+      console.log('[Collections] Fetching from local SQLite')
+      const collections =
+        await collectionRepository.getCollectionsByUserId(userId)
+
+      if (!collections || collections.length === 0) {
         set({
           error: {
             message:
               APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
                 .COLLECTIONS_FETCH_FAILED,
-            details: 'Failed to fetch collections from service',
+            details: 'No collections found',
           },
           collectionsLoading: false,
         })
         return
       }
+
       set({ collections, collectionsLoading: false })
     } catch (error) {
       logError('Error fetching collections', error, {}, 'collections', false)

@@ -14,9 +14,9 @@ export function calculateStreak(words: Word[]): number {
 
   // Get all unique review dates (date only, no time)
   const reviewDates = words
-    .filter(word => word.last_reviewed_at)
+    .filter(word => word && word.last_reviewed_at)
     .map(word => {
-      const date = new Date(word.last_reviewed_at!)
+      const date = new Date(word!.last_reviewed_at!)
       // Normalize to midnight UTC to compare dates only
       return new Date(
         Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())

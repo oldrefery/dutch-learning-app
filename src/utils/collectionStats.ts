@@ -15,10 +15,10 @@ export function calculateCollectionStats(
 ): CollectionStats {
   const totalWords = collectionWords.length
   const masteredWords = collectionWords.filter(
-    w => w.repetition_count > 2
+    w => w && w.repetition_count && w.repetition_count > 2
   ).length
   const wordsToReview = collectionWords.filter(
-    w => new Date(w.next_review_date) <= new Date()
+    w => w && w.next_review_date && new Date(w.next_review_date) <= new Date()
   ).length
   const progressPercentage =
     totalWords > 0 ? Math.round((masteredWords / totalWords) * 100) : 0
