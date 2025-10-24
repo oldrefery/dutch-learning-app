@@ -1,16 +1,48 @@
 # Dutch Learning App - Current Status
 
-## 📅 Last Updated: October 05, 2025
+## 📅 Last Updated: October 24, 2025
 
-## 🎯 Current Phase: Authentication Enhancement - COMPLETED ✅
+## 🎯 Current Phase: Offline-First Sync Implementation - COMPLETED ✅
 
-**Latest Build:** Build 44 (Version 1.6.0 - October 2025)
+**Latest Build:** Build 45 (Version 1.7.0 - October 2025)
+**Latest Commit:** 8c54eb9 - feat: implement offline-first word review with local SRS calculation
 
 ---
 
 ## ✅ COMPLETED TASKS
 
-### Latest: Build 44 - Google OAuth Authentication ✅ COMPLETED (Version 1.6.0)
+### Latest: Build 45 - Offline-First Sync Implementation ✅ COMPLETED (Version 1.7.0)
+
+**Offline-First Word Review with Local SRS Calculation**
+
+- **Complete Offline Functionality**: Collections and words fully synced with SQLite
+  - `collectionRepository.ts` - Local CRUD operations for collections
+  - `wordRepository.ts` - Enhanced with offline progress updates
+  - Sync status tracking ('synced', 'pending', 'error') for each record
+
+- **Offline Word Review Fixed**: Words marked as "AGAIN" now correctly reappear on refresh
+  - `updateWordAfterReview()` checks network availability
+  - Offline: calculates SRS locally and updates SQLite with `wordRepository.updateWordProgress()`
+  - Online: syncs with both Supabase and local SQLite
+  - `next_review_date` correctly set to today for "AGAIN" rating
+
+- **Network-Aware Review Session**:
+  - `startReviewSession()` filters words locally when offline
+  - Fetches from Supabase when online
+  - Uses `next_review_date <= today` for review queue filtering
+
+- **Bug Fixes**:
+  - Fixed React Hooks rules violation in `SwipeableCollectionCard.tsx`
+  - Moved guard check to wrapper component to prevent conditional hook calls
+  - Removed unused variables in `syncManager.ts` and `collectionActions.ts`
+  - Fixed boolean type coercion from SQLite (0/1 → true/false)
+
+- **Testing**: Verified offline review functionality with "AGAIN" rating
+  - Words persist correctly in SQLite
+  - Pull-to-refresh shows updated review queue
+  - Proper sync on network reconnection
+
+### Build 44 - Google OAuth Authentication ✅ COMPLETED (Version 1.6.0)
 
 - **Google OAuth Integration**: Complete Google Sign-In implementation
   - Browser-based OAuth flow using Supabase `signInWithOAuth()` + expo-web-browser
