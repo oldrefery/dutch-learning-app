@@ -78,3 +78,8 @@ This document breaks down the project plan into small, actionable tasks, each es
 3. **Collection Management (2-4 hours)**
    - Implement a modal or screen for creating a new collection.
    - Add "edit" and "delete" functionality to words and collections (with confirmation dialogs).
+4. **Swipe-Based Review Card Rating**
+   - Replace swipe navigation with Tinder-like swipe gesture rating system.
+   - Implement haptic feedback at gesture thresholds.
+   - Add info modal explaining swipe zones and controls.
+   - See detailed plan: [SWIPE_REVIEW_CARDS_PLAN.md](SWIPE_REVIEW_CARDS_PLAN.md)

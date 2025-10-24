@@ -45,7 +45,8 @@ export const reviewScreenStyles = StyleSheet.create({
   flashcard: {
     flex: 1,
     borderRadius: 16,
-    shadowColor: Colors.legacy.black,
+    overflow: 'hidden',
+    shadowColor: Colors.neutral.black,
     shadowOffset: {
       width: 0,
       height: 2,

@@ -6,6 +6,8 @@ export const styles = StyleSheet.create({
   container: {
     minHeight: 100,
     width: '100%',
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   scrollContainer: {
     flex: 1,

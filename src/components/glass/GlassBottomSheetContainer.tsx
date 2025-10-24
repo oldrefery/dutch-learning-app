@@ -18,8 +18,12 @@ export const GlassBottomSheetContainer: React.FC<
 > = ({ children }) => {
   const insets = useSafeAreaInsets()
 
+  // Calculate content padding with safe area
+  const contentPaddingBottom =
+    (insets.bottom || GlassDefaults.paddingTight) + GlassDefaults.paddingTight
+
   return (
-    <View style={[styles.wrapper, { paddingBottom: insets.bottom || 12 }]}>
+    <View style={styles.wrapper}>
       <View style={styles.handleContainer}>
         <View style={styles.handle} />
       </View>
@@ -27,7 +31,7 @@ export const GlassBottomSheetContainer: React.FC<
         padding={GlassDefaults.paddingTight}
         elevation={LiquidGlassElevation.M}
         radius={LiquidGlassRadius.L}
-        style={styles.sheet}
+        style={[styles.sheet, { paddingBottom: contentPaddingBottom }]}
       >
         {children}
       </LiquidGlass>

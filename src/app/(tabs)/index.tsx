@@ -286,7 +286,7 @@ export default function CollectionsScreen() {
         <SectionHeader
           title="Collections"
           showAddButton={userAccessLevel === 'full_access'}
-          addButtonText="Create Collection"
+          addButtonText="Create"
           onAddPress={() => setShowCreateModal(true)}
           showImportButton={true}
           onImportPress={() => setShowImportModal(true)}
