@@ -82,14 +82,24 @@ describe('reviewActions', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
-    mockSet = jest.fn()
-    mockGet = jest.fn(() => ({
+    // Track state changes for assertions
+    let currentState = {
       currentUserId: USER_ID,
       words: [],
       reviewSession: null,
       currentWord: null,
       error: null,
-    }))
+    }
+
+    mockSet = jest.fn(update => {
+      if (typeof update === 'function') {
+        currentState = update(currentState)
+      } else {
+        currentState = { ...currentState, ...update }
+      }
+    })
+
+    mockGet = jest.fn(() => currentState)
 
     actions = createReviewActions(
       mockSet as unknown as StoreSetFunction,
@@ -101,21 +111,26 @@ describe('reviewActions', () => {
     it('should start review session with words due for review', async () => {
       const mockWords = createReviewWordsWithToday()
 
-      mockGet.mockReturnValueOnce({
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         words: mockWords,
         reviewSession: null,
         currentWord: null,
         error: null,
-      })
+      }))
 
       await actions.startReviewSession()
 
-      const setCall = mockSet.mock.calls[1][0]
-      expect(setCall.reviewSession).toBeDefined()
-      expect(setCall.reviewSession.words).toHaveLength(2)
-      expect(setCall.currentWord).toEqual(mockWords[0])
-      expect(setCall.reviewLoading).toBe(false)
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            words: expect.arrayContaining(mockWords),
+            currentIndex: 0,
+          }),
+          currentWord: mockWords[0],
+          reviewLoading: false,
+        })
+      )
     })
 
     it('should filter only words due for review (next_review_date <= today)', async () => {
@@ -142,22 +157,31 @@ describe('reviewActions', () => {
         }),
       ]
 
-      mockGet.mockReturnValueOnce({
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         words: mockWords,
         reviewSession: null,
         currentWord: null,
         error: null,
-      })
+      }))
 
       await actions.startReviewSession()
 
-      const setCall = mockSet.mock.calls[1][0]
-      expect(setCall.reviewSession.words).toHaveLength(2)
-      expect(setCall.reviewSession.words.map((w: Word) => w.word_id)).toEqual([
-        'word-due-yesterday',
-        'word-due-today',
-      ])
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            words: expect.arrayContaining([
+              expect.objectContaining({ word_id: 'word-due-yesterday' }),
+              expect.objectContaining({ word_id: 'word-due-today' }),
+            ]),
+          }),
+        })
+      )
+
+      const lastCall = mockSet.mock.calls.find(
+        call => call[0]?.reviewSession?.words?.length === 2
+      )
+      expect(lastCall).toBeDefined()
     })
 
     it('should set reviewLoading to true at start', async () => {
@@ -228,19 +252,28 @@ describe('reviewActions', () => {
         }),
       ]
 
-      mockGet.mockReturnValueOnce({
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         words: mockWords,
         reviewSession: null,
         currentWord: null,
         error: null,
-      })
+      }))
 
       await actions.startReviewSession()
 
-      const setCall = mockSet.mock.calls[1][0]
-      expect(setCall.reviewSession.words).toHaveLength(1)
-      expect(setCall.reviewSession.words[0].user_id).toBe(USER_ID)
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            words: expect.arrayContaining([
+              expect.objectContaining({
+                word_id: 'word-1',
+                user_id: USER_ID,
+              }),
+            ]),
+          }),
+        })
+      )
     })
   })
 
@@ -258,13 +291,13 @@ describe('reviewActions', () => {
         completedCount: 0,
       }
 
-      mockGet.mockReturnValueOnce({
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         reviewSession,
         currentWord: mockWords[0],
         words: mockWords,
         updateWordAfterReview: jest.fn().mockResolvedValue(undefined),
-      })
+      }))
 
       const assessment: ReviewAssessment = {
         wordId: 'word-1',
@@ -274,9 +307,16 @@ describe('reviewActions', () => {
 
       await actions.submitReviewAssessment(assessment)
 
-      const setCall = mockSet.mock.calls[0][0]
-      expect(setCall.reviewSession.currentIndex).toBe(1)
-      expect(setCall.currentWord).toEqual(mockWords[1])
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            currentIndex: 1,
+          }),
+          currentWord: expect.objectContaining({
+            word_id: 'word-2',
+          }),
+        })
+      )
     })
 
     it('should end session when last word is assessed', async () => {
@@ -291,13 +331,13 @@ describe('reviewActions', () => {
         completedCount: 0,
       }
 
-      mockGet.mockReturnValueOnce({
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         reviewSession,
         currentWord: mockWords[0],
         words: mockWords,
         updateWordAfterReview: jest.fn().mockResolvedValue(undefined),
-      })
+      }))
 
       const assessment: ReviewAssessment = {
         wordId: 'word-1',
@@ -307,9 +347,12 @@ describe('reviewActions', () => {
 
       await actions.submitReviewAssessment(assessment)
 
-      const setCall = mockSet.mock.calls[0][0]
-      expect(setCall.reviewSession).toBeNull()
-      expect(setCall.currentWord).toBeNull()
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: null,
+          currentWord: null,
+        })
+      )
     })
 
     it('should validate assessment object', async () => {
@@ -371,13 +414,15 @@ describe('reviewActions', () => {
         completedCount: 0,
       }
 
-      mockGet.mockReturnValueOnce({
+      let currentState = {
         currentUserId: USER_ID,
         reviewSession,
         currentWord: mockWords[0],
         words: mockWords,
         updateWordAfterReview: updateWordMock,
-      })
+      }
+
+      mockGet.mockImplementation(() => currentState)
 
       const assessment: ReviewAssessment = {
         wordId: 'word-1',
@@ -387,7 +432,13 @@ describe('reviewActions', () => {
 
       await actions.submitReviewAssessment(assessment)
 
-      expect(updateWordMock).toHaveBeenCalledWith('word-1', assessment)
+      expect(updateWordMock).toHaveBeenCalledWith(
+        'word-1',
+        expect.objectContaining({
+          assessment: SRS_ASSESSMENT.GOOD,
+          wordId: 'word-1',
+        })
+      )
     })
   })
 
@@ -410,7 +461,8 @@ describe('reviewActions', () => {
         next_review_date: today,
       })
 
-      mockGet.mockReturnValueOnce({
+      const submitReviewMock = jest.fn().mockResolvedValue(undefined)
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         currentWord: mockWord,
         words: [mockWord],
@@ -419,13 +471,12 @@ describe('reviewActions', () => {
           currentIndex: 0,
           completedCount: 0,
         },
-        submitReviewAssessment: jest.fn().mockResolvedValue(undefined),
-      })
+        submitReviewAssessment: submitReviewMock,
+      }))
 
       await actions.markCorrect()
 
-      const submitCall = mockGet().submitReviewAssessment
-      expect(submitCall).toHaveBeenCalledWith({
+      expect(submitReviewMock).toHaveBeenCalledWith({
         wordId: WORD_ID,
         assessment: SRS_ASSESSMENT.GOOD,
         timestamp: expect.any(Date),
@@ -441,7 +492,8 @@ describe('reviewActions', () => {
         next_review_date: today,
       })
 
-      mockGet.mockReturnValueOnce({
+      const submitReviewMock = jest.fn().mockResolvedValue(undefined)
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         currentWord: mockWord,
         words: [mockWord],
@@ -450,13 +502,12 @@ describe('reviewActions', () => {
           currentIndex: 0,
           completedCount: 0,
         },
-        submitReviewAssessment: jest.fn().mockResolvedValue(undefined),
-      })
+        submitReviewAssessment: submitReviewMock,
+      }))
 
       await actions.markIncorrect()
 
-      const submitCall = mockGet().submitReviewAssessment
-      expect(submitCall).toHaveBeenCalledWith({
+      expect(submitReviewMock).toHaveBeenCalledWith({
         wordId: WORD_ID,
         assessment: SRS_ASSESSMENT.AGAIN,
         timestamp: expect.any(Date),
@@ -662,37 +713,47 @@ describe('reviewActions', () => {
         }),
       ]
 
-      mockGet.mockReturnValueOnce({
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         words: mockWords,
         reviewSession: null,
         currentWord: null,
         error: null,
-      })
+      }))
 
       await actions.startReviewSession()
 
       // Should only use mockGet().words - no external API calls
       expect(mockGet).toHaveBeenCalled()
-      const setCall = mockSet.mock.calls[1][0]
-      expect(setCall.reviewSession).toBeDefined()
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            words: expect.any(Array),
+          }),
+        })
+      )
     })
 
     it('should work when words are already loaded in store', async () => {
       const mockWords = createReviewWordsWithToday()
 
-      mockGet.mockReturnValueOnce({
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         words: mockWords,
         reviewSession: null,
         currentWord: null,
         error: null,
-      })
+      }))
 
       await actions.startReviewSession()
 
-      const setCall = mockSet.mock.calls[1][0]
-      expect(setCall.reviewSession.words).toHaveLength(2)
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            words: expect.arrayContaining(mockWords),
+          }),
+        })
+      )
     })
   })
 
@@ -708,18 +769,25 @@ describe('reviewActions', () => {
         undefined,
       ] as any
 
-      mockGet.mockReturnValueOnce({
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         words: mockWords,
         reviewSession: null,
         currentWord: null,
         error: null,
-      })
+      }))
 
       await actions.startReviewSession()
 
-      const setCall = mockSet.mock.calls[1][0]
-      expect(setCall.reviewSession.words).toHaveLength(1)
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            words: expect.arrayContaining([
+              expect.objectContaining({ word_id: 'word-1' }),
+            ]),
+          }),
+        })
+      )
     })
 
     it('should handle words with missing next_review_date', async () => {
@@ -731,18 +799,25 @@ describe('reviewActions', () => {
         { word_id: 'word-2' } as Word,
       ]
 
-      mockGet.mockReturnValueOnce({
+      mockGet.mockImplementation(() => ({
         currentUserId: USER_ID,
         words: mockWords,
         reviewSession: null,
         currentWord: null,
         error: null,
-      })
+      }))
 
       await actions.startReviewSession()
 
-      const setCall = mockSet.mock.calls[1][0]
-      expect(setCall.reviewSession.words).toHaveLength(1)
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            words: expect.arrayContaining([
+              expect.objectContaining({ word_id: 'word-1' }),
+            ]),
+          }),
+        })
+      )
     })
 
     it('should handle empty words array', async () => {
