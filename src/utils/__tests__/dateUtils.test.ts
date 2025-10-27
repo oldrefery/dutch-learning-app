@@ -7,6 +7,8 @@ import { formatRelativeTime } from '../dateUtils'
 
 describe('dateUtils', () => {
   describe('formatRelativeTime', () => {
+    const ONE_HOUR_AGO = '1 hour ago'
+
     // Helper to create a date relative to now
     const dateMinutesAgo = (minutes: number): Date => {
       return new Date(Date.now() - minutes * 60 * 1000)
@@ -93,7 +95,7 @@ describe('dateUtils', () => {
     describe('hours ago', () => {
       it('should return "1 hour ago" for 1 hour', () => {
         const date = dateHoursAgo(1)
-        expect(formatRelativeTime(date)).toBe('1 hour ago')
+        expect(formatRelativeTime(date)).toBe(ONE_HOUR_AGO)
       })
 
       it('should return "2 hours ago" for 2 hours', () => {
