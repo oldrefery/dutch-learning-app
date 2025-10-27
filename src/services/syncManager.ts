@@ -18,7 +18,7 @@ export interface SyncResult {
   timestamp: string
 }
 
-class SyncManager {
+export class SyncManager {
   private isSyncing = false
   private syncListeners: ((result: SyncResult) => void)[] = []
 

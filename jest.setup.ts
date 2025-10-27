@@ -4,6 +4,14 @@
  * Used for global mocks, configuration, and setup
  */
 
+// ============ ENVIRONMENT VARIABLES ============
+
+process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
+process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
+process.env.EXPO_PUBLIC_DEV_USER_EMAIL = 'test@example.com'
+process.env.EXPO_PUBLIC_DEV_USER_PASSWORD = 'test-password'
+process.env.EXPO_PUBLIC_DEV_USER_ID = 'test-user-id'
+
 // ============ MOCK EXPO MODULES ============
 
 // Mock expo-constants
@@ -140,6 +148,14 @@ jest.mock('@sentry/react-native', () => ({
   setUser: jest.fn(),
   setTag: jest.fn(),
   setContext: jest.fn(),
+  addBreadcrumb: jest.fn(),
+  reactNativeTracingIntegration: jest.fn(() => ({})),
+  mobileReplayIntegration: jest.fn(() => ({})),
+}))
+
+// Mock Supabase Sentry integration
+jest.mock('@supabase/sentry-js-integration', () => ({
+  supabaseIntegration: jest.fn(() => ({})),
 }))
 
 // Mock react-native-toast-message
