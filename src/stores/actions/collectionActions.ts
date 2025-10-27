@@ -1,4 +1,3 @@
-import { collectionService } from '@/lib/supabase'
 import {
   collectionSharingService,
   CollectionSharingError,
@@ -7,7 +6,6 @@ import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstan
 import { Sentry } from '@/lib/sentry'
 import { logInfo, logError } from '@/utils/logger'
 import { collectionRepository } from '@/db/collectionRepository'
-import { isNetworkAvailable } from '@/utils/network'
 import { v4 as uuidv4 } from 'uuid'
 import type {
   StoreSetFunction,
