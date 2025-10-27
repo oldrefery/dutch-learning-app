@@ -46,19 +46,30 @@ describe('collectionActions', () => {
 
   let mockSet: jest.Mock
   let mockGet: jest.Mock
+  let currentState: any
   let actions: ReturnType<typeof createCollectionActions>
 
   beforeEach(() => {
     jest.clearAllMocks()
 
-    mockSet = jest.fn()
-    mockGet = jest.fn(() => ({
+    // Stateful mock for mockGet to handle multiple calls
+    currentState = {
       currentUserId: USER_ID,
-      userAccessLevel: 'owner',
-      collections: [],
+      userAccessLevel: 'owner' as const,
+      collections: [] as Collection[],
       collectionsLoading: false,
       error: null,
-    }))
+    }
+
+    mockSet = jest.fn((update: any) => {
+      if (typeof update === 'function') {
+        currentState = update(currentState)
+      } else {
+        currentState = { ...currentState, ...update }
+      }
+    })
+
+    mockGet = jest.fn(() => currentState)
 
     actions = createCollectionActions(
       mockSet as unknown as StoreSetFunction,
@@ -96,13 +107,7 @@ describe('collectionActions', () => {
     })
 
     it('should skip fetch if no user ID', async () => {
-      mockGet.mockReturnValueOnce({
-        currentUserId: null,
-        userAccessLevel: 'owner',
-        collections: [],
-        collectionsLoading: false,
-        error: null,
-      })
+      currentState.currentUserId = null
 
       await actions.fetchCollections()
 
@@ -153,11 +158,7 @@ describe('collectionActions', () => {
     })
 
     it('should skip if no user ID', async () => {
-      mockGet.mockReturnValueOnce({
-        currentUserId: null,
-        userAccessLevel: 'owner',
-        collections: [],
-      })
+      currentState.currentUserId = null
 
       const result = await actions.createNewCollection('New Collection')
 
@@ -183,11 +184,9 @@ describe('collectionActions', () => {
         undefined
       )
 
-      mockGet.mockReturnValueOnce({
-        currentUserId: USER_ID,
-        userAccessLevel: 'owner',
-        collections: [createMockCollection({ collection_id: COLLECTION_ID })],
-      })
+      currentState.collections = [
+        createMockCollection({ collection_id: COLLECTION_ID }),
+      ]
 
       await actions.deleteCollection(COLLECTION_ID)
 
@@ -197,11 +196,10 @@ describe('collectionActions', () => {
     })
 
     it('should prevent read-only users from deleting last collection', async () => {
-      mockGet.mockReturnValue({
-        currentUserId: USER_ID,
-        userAccessLevel: 'read_only',
-        collections: [createMockCollection({ collection_id: COLLECTION_ID })],
-      })
+      currentState.userAccessLevel = 'read_only'
+      currentState.collections = [
+        createMockCollection({ collection_id: COLLECTION_ID }),
+      ]
 
       await actions.deleteCollection(COLLECTION_ID)
 
@@ -209,11 +207,7 @@ describe('collectionActions', () => {
     })
 
     it('should skip if no user ID', async () => {
-      mockGet.mockReturnValueOnce({
-        currentUserId: null,
-        userAccessLevel: 'owner',
-        collections: [],
-      })
+      currentState.currentUserId = null
 
       await actions.deleteCollection(COLLECTION_ID)
 
@@ -226,11 +220,9 @@ describe('collectionActions', () => {
         error
       )
 
-      mockGet.mockReturnValueOnce({
-        currentUserId: USER_ID,
-        userAccessLevel: 'owner',
-        collections: [createMockCollection({ collection_id: COLLECTION_ID })],
-      })
+      currentState.collections = [
+        createMockCollection({ collection_id: COLLECTION_ID }),
+      ]
 
       await actions.deleteCollection(COLLECTION_ID)
 
@@ -255,11 +247,7 @@ describe('collectionActions', () => {
     })
 
     it('should skip if no user ID', async () => {
-      mockGet.mockReturnValueOnce({
-        currentUserId: null,
-        userAccessLevel: 'owner',
-        collections: [],
-      })
+      currentState.currentUserId = null
 
       await actions.renameCollection(COLLECTION_ID, 'New Name')
 
@@ -310,11 +298,7 @@ describe('collectionActions', () => {
     })
 
     it('should skip if no user ID', async () => {
-      mockGet.mockReturnValueOnce({
-        currentUserId: null,
-        userAccessLevel: 'owner',
-        collections: [],
-      })
+      currentState.currentUserId = null
 
       const result = await actions.shareCollection(COLLECTION_ID)
 
@@ -365,11 +349,7 @@ describe('collectionActions', () => {
     })
 
     it('should skip if no user ID', async () => {
-      mockGet.mockReturnValueOnce({
-        currentUserId: null,
-        userAccessLevel: 'owner',
-        collections: [],
-      })
+      currentState.currentUserId = null
 
       const result = await actions.unshareCollection(COLLECTION_ID)
 
@@ -421,11 +401,7 @@ describe('collectionActions', () => {
     })
 
     it('should skip if no user ID', async () => {
-      mockGet.mockReturnValueOnce({
-        currentUserId: null,
-        userAccessLevel: 'owner',
-        collections: [],
-      })
+      currentState.currentUserId = null
 
       const result = await actions.getCollectionShareStatus(COLLECTION_ID)
 
@@ -486,11 +462,9 @@ describe('collectionActions', () => {
         undefined
       )
 
-      mockGet.mockReturnValueOnce({
-        currentUserId: USER_ID,
-        userAccessLevel: 'owner',
-        collections: [createMockCollection({ collection_id: COLLECTION_ID })],
-      })
+      currentState.collections = [
+        createMockCollection({ collection_id: COLLECTION_ID }),
+      ]
 
       await actions.deleteCollection(COLLECTION_ID)
 
