@@ -29,8 +29,12 @@ jest.mock('@/db/collectionRepository', () => ({
 }))
 
 describe('SyncManager', () => {
+  // Helper functions to generate random test data
+  const generateId = (prefix: string) =>
+    `${prefix}_${Math.random().toString(36).substring(2, 9)}`
+
   let syncManager: SyncManager
-  const userId = 'user-123'
+  const userId = generateId('user')
 
   beforeEach(() => {
     jest.clearAllMocks()

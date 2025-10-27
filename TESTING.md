@@ -400,10 +400,17 @@ it('should handle errors gracefully', async () => {
 | retryUtils.test.ts        | 42         | ✓ PASS | Retry logic with exponential backoff |
 | wordTextFormatter.test.ts | 35         | ✓ PASS | Word formatting for sharing          |
 | collectionStats.test.ts   | 26         | ✓ PASS | Collection statistics calculation    |
+| sharingUtils.test.ts      | 82         | ✓ PASS | Collection sharing functionality     |
 | wordRepository.test.ts    | 16         | ✓ PASS | Database word operations             |
 | syncManager.test.ts       | 15         | ✓ PASS | Offline-first sync orchestration     |
+| useDebounce.test.ts       | 28         | ✓ PASS | Debounce hook functionality          |
+| useLocalWords.test.ts     | 26         | ✓ PASS | Local word fetching and updates      |
+| useLocalProgress.test.ts  | 25         | ✓ PASS | Progress tracking hook               |
+| useCollections.test.ts    | 32         | ✓ PASS | Collection management hook           |
+| wordActions.test.ts       | 24         | ✓ PASS | Word store actions                   |
+| collectionActions.test.ts | 28         | ✓ PASS | Collection store actions             |
 | LiquidGlass.test.tsx      | 2          | ✓ PASS | Glass effect component               |
-| **TOTAL**                 | **232**    | ✓ PASS | Complete test suite                  |
+| **TOTAL**                 | **477**    | ✓ PASS | Complete test suite                  |
 
 ### Coverage Targets
 
@@ -427,6 +434,7 @@ it('should handle errors gracefully', async () => {
    - Streak calculation logic
    - Collection statistics
    - Text formatting for different word types
+   - Sharing utilities with mocking
 
 3. **Network & Sync**
    - Retry logic with exponential backoff
@@ -434,22 +442,35 @@ it('should handle errors gracefully', async () => {
    - Concurrent sync prevention
    - Offline-first behavior
 
+4. **Hooks (NEW)**
+   - useDebounce: Delay execution, cancellation, edge cases
+   - useLocalWords: Fetching, caching, updates
+   - useLocalProgress: Progress tracking and updates
+   - useCollections: Store integration, collection management
+
+5. **Store Actions (NEW)**
+   - Word actions: Fetch, add, update, delete, reset operations
+   - Collection actions: CRUD operations, sharing, status management
+   - Error handling and offline-first patterns
+
 ### Areas for Future Coverage
 
 1. **Component Tests**
    - Review screens and components
    - Input forms and validations
    - Navigation and routing
+   - Card components (ReviewCard, UniversalWordCard)
 
-2. **Hook Tests**
+2. **Additional Hook Tests**
    - useReviewSession
-   - useCollections
-   - Custom store hooks
+   - useReviewWordsCount
+   - useImageSelector
+   - Other remaining hooks
 
-3. **Store Tests**
-   - Zustand store actions
-   - State management
-   - Persistence layer
+3. **Review Actions Tests**
+   - Review session management
+   - Assessment handling
+   - Statistics updates
 
 4. **E2E Tests (Phase 4)**
    - Complete user workflows

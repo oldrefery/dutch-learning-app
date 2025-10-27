@@ -7,11 +7,15 @@ import { calculateCollectionStats } from '../collectionStats'
 import type { Word } from '@/types/database'
 
 describe('collectionStats', () => {
+  // Helper functions to generate random test data
+  const generateId = (prefix: string) =>
+    `${prefix}_${Math.random().toString(36).substring(2, 9)}`
+
   // Helper to create mock Word
   const createMockWord = (overrides: Partial<Word> = {}): Word => ({
-    word_id: 'word-1',
-    user_id: 'user-1',
-    collection_id: 'collection-1',
+    word_id: generateId('word'),
+    user_id: generateId('user'),
+    collection_id: generateId('collection'),
     dutch_lemma: 'test',
     dutch_original: 'test',
     part_of_speech: 'noun',

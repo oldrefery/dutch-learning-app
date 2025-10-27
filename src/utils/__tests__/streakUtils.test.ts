@@ -7,14 +7,18 @@ import { calculateStreak } from '../streakUtils'
 import type { Word } from '@/types/database'
 
 describe('streakUtils', () => {
+  // Helper functions to generate random test data
+  const generateId = (prefix: string) =>
+    `${prefix}_${Math.random().toString(36).substring(2, 9)}`
+
   // Helper to create a mock word with a specific review date
   const createWord = (
     lastReviewedAt: string | null,
-    id: string = 'word-1'
+    id: string = generateId('word')
   ): Word => ({
     word_id: id,
-    user_id: 'user-1',
-    collection_id: 'collection-1',
+    user_id: generateId('user'),
+    collection_id: generateId('collection'),
     dutch_lemma: 'test',
     dutch_original: 'test',
     part_of_speech: 'noun',
@@ -227,7 +231,6 @@ describe('streakUtils', () => {
     })
 
     it('should correctly identify today vs yesterday across midnight', () => {
-      const today = new Date()
       const almostMidnightToday = new Date(Date.now() - 1 * 60 * 1000) // 1 minute ago
       const justAfterMidnightYesterday = new Date(
         Date.now() - 24 * 60 * 60 * 1000 + 1 * 60 * 1000

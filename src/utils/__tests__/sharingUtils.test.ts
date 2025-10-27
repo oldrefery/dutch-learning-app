@@ -30,11 +30,15 @@ jest.mock('@/lib/supabaseClient')
 jest.mock('@supabase/supabase-js')
 
 describe('sharingUtils', () => {
-  const SHARE_TOKEN = 'token123'
-  const SHARE_URL = 'https://example.com/share/token123'
+  // Helper functions to generate random test data
+  const generateId = (prefix: string) =>
+    `${prefix}_${Math.random().toString(36).substring(2, 9)}`
+
+  const SHARE_TOKEN = generateId('token')
+  const SHARE_URL = `https://example.com/share/${generateId('share')}`
   const COLLECTION_NAME = 'My Collection'
-  const CUSTOM_TITLE = 'Custom title'
   const DUTCH_LEARNING_APP = 'Dutch Learning App'
+  const SHARE_FAILED_ERROR = 'Share failed'
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -93,14 +97,14 @@ describe('sharingUtils', () => {
 
       const callArgs = (Share.share as jest.Mock).mock.calls[0][0]
       expect(callArgs.message).toContain(COLLECTION_NAME)
-      expect(callArgs.message).toContain('https://example.com/share/token123')
+      expect(callArgs.message).toContain(SHARE_URL)
     })
 
     it('should include share token in message', async () => {
       await sharingUtils.shareCollectionUrl(SHARE_TOKEN, COLLECTION_NAME)
 
       const callArgs = (Share.share as jest.Mock).mock.calls[0][0]
-      expect(callArgs.message).toContain(SHARE_TOKEN)
+      expect(callArgs.message).toContain(SHARE_URL)
     })
 
     it('should add breadcrumb to Sentry on successful share', async () => {
@@ -130,7 +134,7 @@ describe('sharingUtils', () => {
     })
 
     it('should return success false on error', async () => {
-      const error = new Error('Share failed')
+      const error = new Error(SHARE_FAILED_ERROR)
       ;(Share.share as jest.Mock).mockRejectedValueOnce(error)
 
       const result = await sharingUtils.shareCollectionUrl(
@@ -139,7 +143,7 @@ describe('sharingUtils', () => {
       )
 
       expect(result.success).toBe(false)
-      expect(result.error).toBe('Share failed')
+      expect(result.error).toBe(SHARE_FAILED_ERROR)
     })
 
     it('should handle non-Error exceptions', async () => {
@@ -155,7 +159,7 @@ describe('sharingUtils', () => {
     })
 
     it('should capture exception to Sentry on error', async () => {
-      const error = new Error('Share failed')
+      const error = new Error(SHARE_FAILED_ERROR)
       ;(Share.share as jest.Mock).mockRejectedValueOnce(error)
 
       await sharingUtils.shareCollectionUrl(SHARE_TOKEN, COLLECTION_NAME)
@@ -174,7 +178,7 @@ describe('sharingUtils', () => {
 
     it('should include options in Sentry extra data on error', async () => {
       ;(Share.share as jest.Mock).mockRejectedValueOnce(
-        new Error('Share failed')
+        new Error(SHARE_FAILED_ERROR)
       )
 
       const options = { dialogTitle: 'Custom title' }
@@ -255,7 +259,7 @@ describe('sharingUtils', () => {
       await sharingUtils.shareCollectionUrl(SHARE_TOKEN, COLLECTION_NAME)
 
       const callArgs = (Share.share as jest.Mock).mock.calls[0][0]
-      expect(callArgs.message).toContain('Dutch Learning App')
+      expect(callArgs.message).toContain(DUTCH_LEARNING_APP)
     })
 
     it('should include learning method hint', async () => {
@@ -339,7 +343,7 @@ describe('sharingUtils', () => {
   describe('error handling', () => {
     it('should handle Share.share rejection', async () => {
       const error = new Error('Share was cancelled')
-      ;(Share.share as jest.Mock).mockRejectedValueOnce(error)
+      ;(Share.share as jest.Mock).mockRejectedValueOnce(error) // Original error message
 
       const result = await sharingUtils.shareCollectionUrl(
         SHARE_TOKEN,
@@ -352,7 +356,7 @@ describe('sharingUtils', () => {
 
     it('should not throw on error', async () => {
       ;(Share.share as jest.Mock).mockRejectedValueOnce(
-        new Error('Share failed')
+        new Error(SHARE_FAILED_ERROR)
       )
 
       expect(async () => {
@@ -462,7 +466,7 @@ describe('sharingUtils', () => {
 
     it('should handle failure flow end-to-end', async () => {
       ;(Share.share as jest.Mock).mockRejectedValueOnce(
-        new Error('Share failed')
+        new Error(SHARE_FAILED_ERROR)
       )
 
       const result = await sharingUtils.shareCollectionUrl(

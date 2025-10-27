@@ -10,6 +10,17 @@ import type { Word } from '@/types/database'
 jest.mock('../initDB')
 
 describe('WordRepository', () => {
+  // Helper functions to generate random test data
+  const generateId = (prefix: string) =>
+    `${prefix}_${Math.random().toString(36).substring(2, 9)}`
+
+  const USER_ID = generateId('user')
+  const WORD_ID_1 = generateId('word')
+  const DB_ERROR_MSG = 'Database connection failed'
+  const PREPARE_ERROR_MSG = 'Prepare failed'
+  const NEXT_REVIEW_DATE = '2025-11-02'
+  const CREATED_AT = '2025-10-27T00:00:00Z'
+
   const mockDatabase = {
     prepareAsync: jest.fn(),
     getAllAsync: jest.fn(),
@@ -25,9 +36,9 @@ describe('WordRepository', () => {
   })
 
   const mockWord: Word = {
-    word_id: 'word-1',
-    user_id: 'user-1',
-    collection_id: 'collection-1',
+    word_id: generateId('word'),
+    user_id: generateId('user'),
+    collection_id: generateId('collection'),
     dutch_lemma: 'huis',
     dutch_original: 'huis',
     part_of_speech: 'noun',
@@ -36,9 +47,9 @@ describe('WordRepository', () => {
     interval_days: 1,
     repetition_count: 0,
     easiness_factor: 2.5,
-    next_review_date: '2025-11-02',
-    created_at: '2025-10-27T00:00:00Z',
-    updated_at: '2025-10-27T00:00:00Z',
+    next_review_date: NEXT_REVIEW_DATE,
+    created_at: CREATED_AT,
+    updated_at: CREATED_AT,
     is_irregular: false,
     is_reflexive: false,
     is_expression: false,
@@ -84,7 +95,7 @@ describe('WordRepository', () => {
 
       try {
         await wordRepository.saveWords([mockWord])
-      } catch (error) {
+      } catch {
         // Expected to throw
       }
 
@@ -95,8 +106,8 @@ describe('WordRepository', () => {
   describe('getWordsByUserId', () => {
     it('should retrieve words by user ID', async () => {
       const mockRow = {
-        word_id: 'word-1',
-        user_id: 'user-1',
+        word_id: WORD_ID_1,
+        user_id: USER_ID,
         dutch_lemma: 'huis',
         translations: '{"en":["house"]}',
         interval_days: 1,
@@ -108,11 +119,11 @@ describe('WordRepository', () => {
 
       mockDatabase.getAllAsync.mockResolvedValue([mockRow])
 
-      const result = await wordRepository.getWordsByUserId('user-1')
+      const result = await wordRepository.getWordsByUserId(USER_ID)
 
       expect(mockDatabase.getAllAsync).toHaveBeenCalledWith(
         expect.stringContaining('SELECT * FROM words'),
-        ['user-1']
+        [USER_ID]
       )
       expect(result.length).toBeGreaterThan(0)
     })
@@ -127,20 +138,20 @@ describe('WordRepository', () => {
 
     it('should parse translations from JSON string', async () => {
       const mockRow = {
-        word_id: 'word-1',
-        user_id: 'user-1',
+        word_id: WORD_ID_1,
+        user_id: USER_ID,
         dutch_lemma: 'huis',
         translations: '{"en":["house"],"ru":["дом"]}',
         interval_days: 1,
         repetition_count: 0,
         easiness_factor: 2.5,
-        next_review_date: '2025-11-02',
-        created_at: '2025-10-27T00:00:00Z',
+        next_review_date: NEXT_REVIEW_DATE,
+        created_at: CREATED_AT,
       }
 
       mockDatabase.getAllAsync.mockResolvedValue([mockRow])
 
-      const result = await wordRepository.getWordsByUserId('user-1')
+      const result = await wordRepository.getWordsByUserId(USER_ID)
 
       if (result.length > 0) {
         expect(result[0].translations).toEqual({
@@ -155,7 +166,7 @@ describe('WordRepository', () => {
     it('should initialize database on first call', async () => {
       mockDatabase.getAllAsync.mockResolvedValue([])
 
-      await wordRepository.getWordsByUserId('user-1')
+      await wordRepository.getWordsByUserId(USER_ID)
 
       expect(initDB.getDatabase).toHaveBeenCalled()
     })
@@ -163,8 +174,8 @@ describe('WordRepository', () => {
     it('should reuse database connection', async () => {
       mockDatabase.getAllAsync.mockResolvedValue([])
 
-      await wordRepository.getWordsByUserId('user-1')
-      await wordRepository.getWordsByUserId('user-1')
+      await wordRepository.getWordsByUserId(USER_ID)
+      await wordRepository.getWordsByUserId(USER_ID)
 
       expect(initDB.getDatabase).toHaveBeenCalledTimes(2)
     })
@@ -172,20 +183,20 @@ describe('WordRepository', () => {
 
   describe('error handling', () => {
     it('should propagate database errors', async () => {
-      const dbError = new Error('Database connection failed')
+      const dbError = new Error(DB_ERROR_MSG)
       ;(initDB.getDatabase as jest.Mock).mockRejectedValue(dbError)
 
-      await expect(wordRepository.getWordsByUserId('user-1')).rejects.toThrow(
-        'Database connection failed'
+      await expect(wordRepository.getWordsByUserId(USER_ID)).rejects.toThrow(
+        DB_ERROR_MSG
       )
     })
 
     it('should handle prepare statement errors', async () => {
-      const prepareError = new Error('Prepare failed')
+      const prepareError = new Error(PREPARE_ERROR_MSG)
       mockDatabase.prepareAsync.mockRejectedValue(prepareError)
 
       await expect(wordRepository.saveWords([mockWord])).rejects.toThrow(
-        'Prepare failed'
+        PREPARE_ERROR_MSG
       )
     })
   })
