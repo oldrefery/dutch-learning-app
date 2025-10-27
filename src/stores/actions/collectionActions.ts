@@ -1,4 +1,3 @@
-import { collectionService } from '@/lib/supabase'
 import {
   collectionSharingService,
   CollectionSharingError,
@@ -7,15 +6,18 @@ import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstan
 import { Sentry } from '@/lib/sentry'
 import { logInfo, logError } from '@/utils/logger'
 import { collectionRepository } from '@/db/collectionRepository'
+import { v4 as uuidv4 } from 'uuid'
 import type {
   StoreSetFunction,
   StoreGetFunction,
   ApplicationState,
 } from '@/types/ApplicationStoreTypes'
+import type { Collection } from '@/types/database'
 
 const USER_NOT_AUTHENTICATED_ERROR =
   APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
 const USER_NOT_AUTHENTICATED_LOG = 'User not authenticated'
+const UNKNOWN_ERROR = 'Unknown error'
 
 export const createCollectionActions = (
   set: StoreSetFunction,
@@ -54,7 +56,7 @@ export const createCollectionActions = (
         return
       }
 
-      // Fetch collections from local SQLite database
+      // Offline-first: always fetch from local SQLite database
       console.log('[Collections] Fetching from local SQLite')
       const collections =
         await collectionRepository.getCollectionsByUserId(userId)
@@ -110,23 +112,28 @@ export const createCollectionActions = (
         })
         return null
       }
-      const newCollection = await collectionService.createCollection(
+
+      // Create new collection object (offline-first)
+      const now = new Date().toISOString()
+      const newCollection: Collection = {
+        collection_id: uuidv4(),
+        user_id: userId,
         name,
-        userId
-      )
-      if (!newCollection) {
-        set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                .COLLECTION_CREATE_FAILED,
-            details: 'Failed to create collection in service',
-          },
-        })
-        return null
+        description: null,
+        is_shared: false,
+        shared_with: null,
+        created_at: now,
+        updated_at: now,
       }
+
+      // Save to local SQLite
+      await collectionRepository.saveCollections([newCollection])
+
+      // Add to store
       const currentCollections = get().collections
-      set({ collections: [...currentCollections, newCollection] })
+      set({
+        collections: [...currentCollections, newCollection],
+      })
       return newCollection
     } catch (error) {
       logError('Error creating collection', error, {}, 'collections', false)
@@ -134,10 +141,7 @@ export const createCollectionActions = (
         error: {
           message:
             APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_CREATE_FAILED,
-          details:
-            error instanceof Error
-              ? error.message
-              : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
       return null
@@ -190,7 +194,9 @@ export const createCollectionActions = (
         return
       }
 
-      await collectionService.deleteCollection(collectionId, userId)
+      // Delete from local SQLite (offline-first)
+      await collectionRepository.deleteCollection(collectionId)
+
       const updatedCollections = currentCollections.filter(
         collection => collection.collection_id !== collectionId
       )
@@ -201,10 +207,7 @@ export const createCollectionActions = (
         error: {
           message:
             APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_DELETE_FAILED,
-          details:
-            error instanceof Error
-              ? error.message
-              : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
     }
@@ -231,15 +234,20 @@ export const createCollectionActions = (
         })
         return
       }
-      await collectionService.updateCollection(
-        collectionId,
-        { name: newName },
-        userId
-      )
+
+      // Update in local SQLite (offline-first)
+      await collectionRepository.updateCollection(collectionId, {
+        name: newName,
+      })
+
       const currentCollections = get().collections
       const updatedCollections = currentCollections.map(collection =>
         collection.collection_id === collectionId
-          ? { ...collection, name: newName }
+          ? {
+              ...collection,
+              name: newName,
+              updated_at: new Date().toISOString(),
+            }
           : collection
       )
       set({ collections: updatedCollections })
@@ -249,10 +257,7 @@ export const createCollectionActions = (
         error: {
           message:
             APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_UPDATE_FAILED,
-          details:
-            error instanceof Error
-              ? error.message
-              : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
     }

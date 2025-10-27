@@ -1,8 +1,6 @@
-import { wordService } from '@/lib/supabase'
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 import { logInfo, logWarning, logError } from '@/utils/logger'
-import { isNetworkAvailable } from '@/utils/network'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -54,31 +52,19 @@ export const createReviewActions = (
         return
       }
 
-      // Check network availability and get review words accordingly
-      const hasNetwork = await isNetworkAvailable()
-      let reviewWords = null
+      // Offline-first: Get review words from local cache (SQLite)
+      logInfo('Fetching review words from local cache', { userId }, 'review')
+      const allWords = get().words
+      const today = new Date().toISOString().split('T')[0]
 
-      if (hasNetwork) {
-        // Online: fetch from Supabase
-        logInfo(
-          'Network available, fetching review words from Supabase',
-          {},
-          'review'
-        )
-        reviewWords = await wordService.getWordsForReview(userId)
-      } else {
-        // Offline: filter from local words
-        logInfo(
-          'Network unavailable, filtering review words from local cache',
-          {},
-          'review'
-        )
-        const allWords = get().words
-        const today = new Date().toISOString().split('T')[0]
-        reviewWords = allWords.filter(
-          w => w && w.next_review_date && w.next_review_date <= today
-        )
-      }
+      // Filter words that are due for review: next_review_date <= today
+      const reviewWords = allWords.filter(
+        w =>
+          w &&
+          w.next_review_date &&
+          w.next_review_date <= today &&
+          w.user_id === userId
+      )
 
       if (!reviewWords) {
         set({
