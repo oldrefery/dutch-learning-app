@@ -3,16 +3,30 @@
  * Tests offline-first sync orchestration with mocks
  */
 
-import { SyncManager, type SyncResult } from '../syncManager'
+import { SyncManager } from '../syncManager'
 import * as networkUtils from '@/utils/network'
-import * as supabaseLib from '@/lib/supabase'
 
 jest.mock('@/lib/supabaseClient')
 jest.mock('@/lib/supabase')
 jest.mock('@/utils/network')
-jest.mock('@/db/wordRepository')
-jest.mock('@/db/progressRepository')
-jest.mock('@/db/collectionRepository')
+jest.mock('@/db/wordRepository', () => ({
+  wordRepository: {
+    getWordsByUserId: jest.fn().mockResolvedValue([]),
+    saveWords: jest.fn().mockResolvedValue(undefined),
+  },
+}))
+jest.mock('@/db/progressRepository', () => ({
+  progressRepository: {
+    getPendingProgress: jest.fn().mockResolvedValue([]),
+    markProgressSynced: jest.fn().mockResolvedValue(undefined),
+  },
+}))
+jest.mock('@/db/collectionRepository', () => ({
+  collectionRepository: {
+    getPendingCollections: jest.fn().mockResolvedValue([]),
+    markCollectionsSynced: jest.fn().mockResolvedValue(undefined),
+  },
+}))
 
 describe('SyncManager', () => {
   let syncManager: SyncManager
@@ -24,30 +38,6 @@ describe('SyncManager', () => {
     ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(true)
     ;(networkUtils.getLastSyncTimestamp as jest.Mock).mockResolvedValue(null)
     ;(networkUtils.setLastSyncTimestamp as jest.Mock).mockResolvedValue(void 0)
-
-    // Mock repository methods
-    const mockWordRepository = require('@/db/wordRepository')
-    const mockProgressRepository = require('@/db/progressRepository')
-    const mockCollectionRepository = require('@/db/collectionRepository')
-
-    mockWordRepository.wordRepository.getWordsByUserId = jest
-      .fn()
-      .mockResolvedValue([])
-    mockWordRepository.wordRepository.saveWords = jest
-      .fn()
-      .mockResolvedValue(void 0)
-    mockProgressRepository.progressRepository.getPendingProgress = jest
-      .fn()
-      .mockResolvedValue([])
-    mockProgressRepository.progressRepository.markProgressSynced = jest
-      .fn()
-      .mockResolvedValue(void 0)
-    mockCollectionRepository.collectionRepository.getPendingCollections = jest
-      .fn()
-      .mockResolvedValue([])
-    mockCollectionRepository.collectionRepository.markCollectionsSynced = jest
-      .fn()
-      .mockResolvedValue(void 0)
   })
 
   describe('sync status subscriptions', () => {
@@ -98,13 +88,15 @@ describe('SyncManager', () => {
         true
       )
 
-      const result = await syncManager.performSync(userId)
+      await syncManager.performSync(userId)
 
       expect(networkUtils.checkNetworkConnection).toHaveBeenCalled()
     })
   })
 
   describe('sync state management', () => {
+    const SYNC_IN_PROGRESS_ERROR = 'Sync already in progress'
+
     it('should prevent concurrent syncs', async () => {
       ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
         true
@@ -121,8 +113,8 @@ describe('SyncManager', () => {
       // One of the two results should have the 'Sync already in progress' error
       // This tests that concurrent syncs are prevented
       const hasConcurrentError =
-        result1.error === 'Sync already in progress' ||
-        result2.error === 'Sync already in progress'
+        result1.error === SYNC_IN_PROGRESS_ERROR ||
+        result2.error === SYNC_IN_PROGRESS_ERROR
 
       expect(hasConcurrentError).toBe(true)
       // Both results should have the required properties
@@ -139,7 +131,7 @@ describe('SyncManager', () => {
 
       // Second sync should be allowed
       const result = await syncManager.performSync(userId)
-      expect(result.error).not.toBe('Sync already in progress')
+      expect(result.error).not.toBe(SYNC_IN_PROGRESS_ERROR)
     })
   })
 
