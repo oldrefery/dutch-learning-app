@@ -257,6 +257,7 @@ export class SyncManager {
       }
 
       // Convert local words to Supabase format
+      // Note: updated_at is managed by Supabase, don't include it in upsert
       const wordsToSync = pendingWords.map(word => ({
         word_id: word.word_id,
         user_id: word.user_id,
@@ -287,7 +288,6 @@ export class SyncManager {
         next_review_date: word.next_review_date,
         last_reviewed_at: word.last_reviewed_at,
         analysis_notes: word.analysis_notes,
-        updated_at: word.updated_at,
       }))
 
       const { error } = await supabase.from('words').upsert(wordsToSync)
@@ -365,6 +365,7 @@ export class SyncManager {
       }
 
       // Convert local collections to Supabase format
+      // Note: updated_at is managed by Supabase, don't include it in upsert
       const collectionsToSync = pendingCollections.map(c => ({
         collection_id: c.collection_id,
         user_id: c.user_id,
@@ -373,7 +374,6 @@ export class SyncManager {
         is_shared: c.is_shared,
         shared_with: c.shared_with,
         created_at: c.created_at,
-        updated_at: c.updated_at,
       }))
 
       const { error } = await supabase
