@@ -211,6 +211,143 @@ export class WordRepository {
     }
   }
 
+  async addWord(word: Word): Promise<void> {
+    const db = await getDatabase()
+
+    const insertStatement = await db.prepareAsync(`
+      INSERT OR REPLACE INTO words (
+        word_id, user_id, collection_id, dutch_lemma, dutch_original,
+        part_of_speech, is_irregular, is_reflexive, is_expression,
+        expression_type, is_separable, prefix_part, root_verb, article,
+        plural, translations, examples, synonyms, antonyms, conjugation,
+        preposition, image_url, tts_url, interval_days, repetition_count,
+        easiness_factor, next_review_date, last_reviewed_at, analysis_notes,
+        created_at, updated_at, sync_status
+      ) VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      )
+    `)
+
+    try {
+      await insertStatement.executeAsync(
+        word.word_id,
+        word.user_id,
+        word.collection_id || null,
+        word.dutch_lemma,
+        word.dutch_original || null,
+        word.part_of_speech || null,
+        word.is_irregular ? 1 : 0,
+        word.is_reflexive ? 1 : 0,
+        word.is_expression ? 1 : 0,
+        word.expression_type || null,
+        word.is_separable ? 1 : 0,
+        word.prefix_part || null,
+        word.root_verb || null,
+        word.article || null,
+        word.plural || null,
+        JSON.stringify(word.translations),
+        word.examples ? JSON.stringify(word.examples) : null,
+        JSON.stringify(word.synonyms || []),
+        JSON.stringify(word.antonyms || []),
+        word.conjugation ? JSON.stringify(word.conjugation) : null,
+        word.preposition || null,
+        word.image_url || null,
+        word.tts_url || null,
+        word.interval_days,
+        word.repetition_count,
+        word.easiness_factor,
+        word.next_review_date,
+        word.last_reviewed_at || null,
+        word.analysis_notes || null,
+        word.created_at,
+        word.updated_at,
+        'pending'
+      )
+    } finally {
+      await insertStatement.finalizeAsync()
+    }
+  }
+
+  async updateWordImage(
+    wordId: string,
+    userId: string,
+    imageUrl: string
+  ): Promise<void> {
+    const db = await getDatabase()
+
+    const updateStatement = await db.prepareAsync(
+      'UPDATE words SET image_url = ?, updated_at = ?, sync_status = ? WHERE word_id = ? AND user_id = ?'
+    )
+
+    try {
+      await updateStatement.executeAsync(
+        imageUrl,
+        new Date().toISOString(),
+        'pending',
+        wordId,
+        userId
+      )
+    } finally {
+      await updateStatement.finalizeAsync()
+    }
+  }
+
+  async moveWordToCollection(
+    wordId: string,
+    userId: string,
+    newCollectionId: string
+  ): Promise<void> {
+    const db = await getDatabase()
+
+    const updateStatement = await db.prepareAsync(
+      'UPDATE words SET collection_id = ?, updated_at = ?, sync_status = ? WHERE word_id = ? AND user_id = ?'
+    )
+
+    try {
+      await updateStatement.executeAsync(
+        newCollectionId,
+        new Date().toISOString(),
+        'pending',
+        wordId,
+        userId
+      )
+    } finally {
+      await updateStatement.finalizeAsync()
+    }
+  }
+
+  async resetWordProgress(wordId: string, userId: string): Promise<void> {
+    const db = await getDatabase()
+
+    const updateStatement = await db.prepareAsync(`
+      UPDATE words SET
+        interval_days = ?,
+        repetition_count = ?,
+        easiness_factor = ?,
+        next_review_date = ?,
+        last_reviewed_at = NULL,
+        updated_at = ?,
+        sync_status = ?
+      WHERE word_id = ? AND user_id = ?
+    `)
+
+    try {
+      await updateStatement.executeAsync(
+        1,
+        0,
+        2.5,
+        new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        new Date().toISOString(),
+        'pending',
+        wordId,
+        userId
+      )
+    } finally {
+      await updateStatement.finalizeAsync()
+    }
+  }
+
   private parseWordRow(row: Record<string, unknown>): LocalWord {
     return {
       word_id: row.word_id as string,
