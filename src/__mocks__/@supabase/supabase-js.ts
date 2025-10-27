@@ -3,24 +3,44 @@
  * Used in tests instead of real client
  */
 
+function generateMockUserId(): string {
+  return `user_${Math.random().toString(36).substr(2, 9)}`
+}
+
+function generateMockEmail(): string {
+  const randomId = Math.random().toString(36).substr(2, 9)
+  return `test_${randomId}@example.com`
+}
+
 export const mockSupabaseClient = {
   auth: {
-    signUp: jest.fn().mockResolvedValue({
-      data: { user: { id: 'mock-user-id-123' } },
-      error: null,
+    signUp: jest.fn().mockImplementation(() => {
+      const userId = generateMockUserId()
+      return Promise.resolve({
+        data: { user: { id: userId } },
+        error: null,
+      })
     }),
-    signInWithPassword: jest.fn().mockResolvedValue({
-      data: { user: { id: 'mock-user-id-123', email: 'test@test.com' } },
-      error: null,
+    signInWithPassword: jest.fn().mockImplementation(() => {
+      const userId = generateMockUserId()
+      const email = generateMockEmail()
+      return Promise.resolve({
+        data: { user: { id: userId, email } },
+        error: null,
+      })
     }),
     signOut: jest.fn().mockResolvedValue({ error: null }),
-    getSession: jest.fn().mockResolvedValue({
-      data: {
-        session: {
-          user: { id: 'mock-user-id-123', email: 'test@test.com' },
+    getSession: jest.fn().mockImplementation(() => {
+      const userId = generateMockUserId()
+      const email = generateMockEmail()
+      return Promise.resolve({
+        data: {
+          session: {
+            user: { id: userId, email },
+          },
         },
-      },
-      error: null,
+        error: null,
+      })
     }),
     onAuthStateChange: jest.fn(() => ({
       data: { subscription: { unsubscribe: jest.fn() } },

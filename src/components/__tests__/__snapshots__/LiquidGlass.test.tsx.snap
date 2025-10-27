@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LiquidGlass renders with custom radius and no outline 1`] = `null`;
+
+exports[`LiquidGlass renders with defaults 1`] = `null`;
