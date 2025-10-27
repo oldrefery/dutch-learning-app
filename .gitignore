@@ -57,6 +57,7 @@ test-*.ts
 
 # Reports and analysis
 reports/
+coverage/
 
 # Build artifacts
 builds/
