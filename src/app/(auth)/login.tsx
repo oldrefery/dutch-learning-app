@@ -171,6 +171,7 @@ export default function LoginScreen() {
                   error={emailError}
                   placeholder="Enter your email"
                   keyboardType="email-address"
+                  testID="email-input"
                 />
 
                 <AuthInput
@@ -180,6 +181,7 @@ export default function LoginScreen() {
                   error={passwordError}
                   placeholder="Enter your password"
                   isPassword
+                  testID="password-input"
                 />
 
                 <ViewThemed style={styles.forgotPasswordContainer}>
@@ -218,6 +220,7 @@ export default function LoginScreen() {
                   title="Sign In"
                   onPress={handleSignIn}
                   loading={loading}
+                  testID="sign-in-button"
                 />
               </ViewThemed>
 

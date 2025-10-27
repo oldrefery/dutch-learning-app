@@ -1,0 +1,24 @@
+appId: com.oldrefery.dutch-learning-app
+---
+# Test: App tab navigation
+# This test assumes the user is already logged in
+- launchApp
+# Try to navigate to different tabs
+- tapOn:
+    text: "Review"
+- assertVisible:
+    text: "Review"
+- tapOn:
+    text: "Add Word"
+- assertVisible:
+    text: "Add Word"
+- tapOn:
+    text: "History"
+- assertVisible:
+    text: "History"
+- tapOn:
+    text: "Settings"
+- assertVisible:
+    text: "Settings"
+- tapOn:
+    text: "Home"
