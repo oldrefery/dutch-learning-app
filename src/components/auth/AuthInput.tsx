@@ -73,6 +73,7 @@ export function AuthInput({
           secureTextEntry={isPassword && !isPasswordVisible}
           autoCapitalize="none"
           autoCorrect={false}
+          testID={props.testID}
           {...props}
         />
         {isPassword && (

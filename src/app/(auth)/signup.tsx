@@ -194,6 +194,7 @@ export default function SignupScreen() {
                   error={emailError}
                   placeholder="Enter your email"
                   keyboardType="email-address"
+                  testID="signup-email-input"
                 />
 
                 <AuthInput
@@ -203,6 +204,7 @@ export default function SignupScreen() {
                   error={passwordError}
                   placeholder="Create a password"
                   isPassword
+                  testID="signup-password-input"
                 />
 
                 <AuthInput
@@ -212,6 +214,7 @@ export default function SignupScreen() {
                   error={confirmPasswordError}
                   placeholder="Confirm your password"
                   isPassword
+                  testID="signup-confirm-password-input"
                 />
 
                 <ViewThemed style={styles.passwordRequirements}>
@@ -270,6 +273,7 @@ export default function SignupScreen() {
                   title="Create Account"
                   onPress={handleSignUp}
                   loading={loading}
+                  testID="signup-button"
                 />
               </ViewThemed>
 

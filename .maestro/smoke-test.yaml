@@ -1,0 +1,13 @@
+appId: com.oldrefery.dutchlearningapp
+---
+- launchApp
+- assertVisible:
+    text: "Welcome Back"
+- tapOn:
+    id: "email-input"
+- inputText: "test@example.com"
+- tapOn:
+    id: "password-input"
+- inputText: "password123"
+- tapOn:
+    id: "sign-in-button"

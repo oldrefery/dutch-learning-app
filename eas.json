@@ -37,6 +37,17 @@
         "simulator": true
       },
       "environment": "development"
+    },
+    "e2e-test": {
+      "withoutCredentials": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Release"
+      },
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {

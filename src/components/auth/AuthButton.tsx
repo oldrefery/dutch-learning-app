@@ -14,6 +14,7 @@ interface AuthButtonProps {
   loading?: boolean
   disabled?: boolean
   variant?: 'primary' | 'secondary'
+  testID?: string
 }
 
 export function AuthButton({
@@ -22,6 +23,7 @@ export function AuthButton({
   loading = false,
   disabled = false,
   variant = 'primary',
+  testID,
 }: AuthButtonProps) {
   const isDisabled = loading || disabled
   const colorScheme = useColorScheme() ?? 'light'
@@ -36,6 +38,7 @@ export function AuthButton({
 
   return (
     <TouchableOpacity
+      testID={testID}
       style={[
         styles.button,
         variant === 'primary' ? styles.primaryButton : styles.secondaryButton,

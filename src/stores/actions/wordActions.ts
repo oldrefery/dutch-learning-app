@@ -1,5 +1,6 @@
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { Sentry } from '@/lib/sentry'
+import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
 import { calculateNextReview } from '@/utils/srs'
 import type {
@@ -11,8 +12,19 @@ import type {
 } from '@/types/ApplicationStoreTypes'
 import type { GeminiWordAnalysis } from '@/types/database'
 
-const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
+const USER_NOT_AUTHENTICATED_ERROR =
+  APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
+const USER_NOT_AUTHENTICATED_LOG = 'User not authenticated'
 const UNKNOWN_ERROR = 'Unknown error'
+
+// Error messages for word operations
+const WORD_SAVE_FAILED = 'Failed to save analyzed word'
+const WORD_UPDATE_FAILED = 'Failed to update word progress'
+const WORD_DELETE_FAILED = 'Failed to delete word'
+const WORD_IMAGE_UPDATE_FAILED = 'Failed to update word image'
+const WORD_MOVE_FAILED = 'Failed to move word to collection'
+const WORD_RESET_FAILED = 'Failed to reset word progress'
+const WORDS_IMPORT_FAILED = 'Failed to import words'
 
 export const createWordActions = (
   set: StoreSetFunction,
@@ -49,19 +61,8 @@ export const createWordActions = (
       console.log('[Words] Fetching from local SQLite')
       const words = await wordRepository.getWordsByUserId(userId)
 
-      if (!words || words.length === 0) {
-        set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.WORDS_FETCH_FAILED,
-            details: 'Failed to fetch words from service',
-          },
-          wordsLoading: false,
-        })
-        return
-      }
-
-      set({ words, wordsLoading: false })
+      // Empty word list is a valid state for new users
+      set({ words: words || [], wordsLoading: false })
     } catch (error) {
       Sentry.captureException(error, {
         tags: { operation: 'fetchWords' },
@@ -78,9 +79,18 @@ export const createWordActions = (
     }
   },
 
-  addNewWord: async (word: string, collectionId?: string) => {
-    // NOTE: This method is kept for backward compatibility, but word analysis
-    // should be done in the UI layer and passed via saveAnalyzedWord
+  addNewWord: async () => {
+    // NOTE: This method is deprecated - word analysis should be done in the UI layer
+    // and passed via saveAnalyzedWord instead
+    logError(
+      'addNewWord called',
+      new Error(
+        'addNewWord is deprecated. Use saveAnalyzedWord with pre-analyzed word from UI'
+      ),
+      {},
+      'words',
+      false
+    )
     throw new Error(
       'addNewWord is deprecated. Use saveAnalyzedWord with pre-analyzed word from UI'
     )
@@ -95,7 +105,7 @@ export const createWordActions = (
       if (!userId) {
         set({
           error: {
-            message: 'Failed to save analyzed word',
+            message: WORD_SAVE_FAILED,
             details: USER_NOT_AUTHENTICATED_ERROR,
           },
         })
@@ -134,11 +144,10 @@ export const createWordActions = (
 
       set({
         error: {
-          message: 'Failed to save analyzed word',
+          message: WORD_SAVE_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
-      // Don't throw - let caller handle via store state
     }
   },
 
@@ -149,22 +158,55 @@ export const createWordActions = (
     try {
       // Validate inputs
       if (!wordId) {
-        Sentry.captureException(new Error('Invalid wordId provided'), {
-          tags: { operation: 'updateWordAfterReview' },
-          extra: { wordId },
+        logError(
+          'Invalid wordId provided to updateWordAfterReview',
+          new Error('wordId is required'),
+          { wordId },
+          'words',
+          false
+        )
+        set({
+          error: {
+            message: WORD_UPDATE_FAILED,
+            details: 'Invalid word ID',
+          },
         })
+        return
       }
       if (!assessment || !assessment.assessment) {
-        Sentry.captureException(new Error('Invalid assessment provided'), {
-          tags: { operation: 'updateWordAfterReview' },
-          extra: { assessment },
+        logError(
+          'Invalid assessment provided to updateWordAfterReview',
+          new Error('assessment is required'),
+          { assessment },
+          'words',
+          false
+        )
+        set({
+          error: {
+            message: WORD_UPDATE_FAILED,
+            details: 'Invalid assessment',
+          },
         })
+        return
       }
 
       const userId = get().currentUserId
 
       if (!userId) {
-        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { wordId, assessment },
+          'words',
+          false
+        )
+        set({
+          error: {
+            message: WORD_UPDATE_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
+        })
+        return
       }
 
       // Get the current word to calculate new SRS values
@@ -172,7 +214,18 @@ export const createWordActions = (
       const currentWord = currentWords.find(w => w.word_id === wordId)
 
       if (!currentWord) {
-        throw new Error(`Word with ID ${wordId} not found in local cache`)
+        logInfo(
+          `Word with ID ${wordId} not found in local cache`,
+          { wordId, wordsCount: currentWords.length },
+          'words'
+        )
+        set({
+          error: {
+            message: WORD_UPDATE_FAILED,
+            details: 'Word not found',
+          },
+        })
+        return
       }
 
       // Calculate new SRS values
@@ -208,13 +261,16 @@ export const createWordActions = (
         set({ words: updatedWords })
       }
     } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'updateWordAfterReview' },
-        extra: { wordId, assessment },
-      })
+      logError(
+        'Error updating word after review',
+        error,
+        { wordId, assessment },
+        'words',
+        false
+      )
       set({
         error: {
-          message: 'Failed to update word progress',
+          message: WORD_UPDATE_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
@@ -225,7 +281,20 @@ export const createWordActions = (
     try {
       const userId = get().currentUserId
       if (!userId) {
-        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { wordId },
+          'words',
+          false
+        )
+        set({
+          error: {
+            message: WORD_DELETE_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
+        })
+        return
       }
 
       // Offline-first: delete it from local SQLite
@@ -234,17 +303,13 @@ export const createWordActions = (
       const updatedWords = currentWords.filter(w => w.word_id !== wordId)
       set({ words: updatedWords })
     } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'deleteWord' },
-        extra: { wordId },
-      })
+      logError('Error deleting word', error, { wordId }, 'words', false)
       set({
         error: {
-          message: 'Failed to delete word',
+          message: WORD_DELETE_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
-      // Don't throw - let caller handle via store state
     }
   },
 
@@ -252,7 +317,20 @@ export const createWordActions = (
     try {
       const userId = get().currentUserId
       if (!userId) {
-        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { wordId, imageUrl },
+          'words',
+          false
+        )
+        set({
+          error: {
+            message: WORD_IMAGE_UPDATE_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
+        })
+        return
       }
 
       // Offline-first: update image in local SQLite
@@ -272,17 +350,19 @@ export const createWordActions = (
         set({ words: updatedWords })
       }
     } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'updateWordImage' },
-        extra: { wordId, imageUrl },
-      })
+      logError(
+        'Error updating word image',
+        error,
+        { wordId, imageUrl },
+        'words',
+        false
+      )
       set({
         error: {
-          message: 'Failed to update word image',
+          message: WORD_IMAGE_UPDATE_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
-      // Don't throw - let caller handle via store state
     }
   },
 
@@ -290,7 +370,20 @@ export const createWordActions = (
     try {
       const userId = get().currentUserId
       if (!userId) {
-        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { wordId, newCollectionId },
+          'words',
+          false
+        )
+        set({
+          error: {
+            message: WORD_MOVE_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
+        })
+        return null
       }
 
       // Offline-first: move word in local SQLite
@@ -312,13 +405,16 @@ export const createWordActions = (
       }
       return null
     } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'moveWordToCollection' },
-        extra: { wordId, newCollectionId },
-      })
+      logError(
+        'Error moving word to collection',
+        error,
+        { wordId, newCollectionId },
+        'words',
+        false
+      )
       set({
         error: {
-          message: 'Failed to move word to collection',
+          message: WORD_MOVE_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
@@ -330,7 +426,20 @@ export const createWordActions = (
     try {
       const userId = get().currentUserId
       if (!userId) {
-        throw new Error(USER_NOT_AUTHENTICATED_ERROR)
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { wordId },
+          'words',
+          false
+        )
+        set({
+          error: {
+            message: WORD_RESET_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
+        })
+        return
       }
 
       // Offline-first: reset progress in local SQLite
@@ -358,13 +467,16 @@ export const createWordActions = (
         return updatedWords[wordIndex]
       }
     } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'resetWordProgress' },
-        extra: { wordId },
-      })
+      logError(
+        'Error resetting word progress',
+        error,
+        { wordId },
+        'words',
+        false
+      )
       set({
         error: {
-          message: 'Failed to reset word progress',
+          message: WORD_RESET_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
@@ -380,7 +492,7 @@ export const createWordActions = (
       if (!userId) {
         set({
           error: {
-            message: 'Failed to import words',
+            message: WORDS_IMPORT_FAILED,
             details: USER_NOT_AUTHENTICATED_ERROR,
           },
         })
@@ -409,7 +521,7 @@ export const createWordActions = (
 
       // Update the store with new words (in offline-first, we just track the count)
       const currentWords = get().words
-      const wordsToAdd = words.map((word, idx) => ({
+      const wordsToAdd = words.map(word => ({
         ...word,
         user_id: userId,
         collection_id: collectionId,
@@ -427,21 +539,19 @@ export const createWordActions = (
 
       return true
     } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'addWordsToCollection' },
-        extra: {
-          collectionId,
-          wordCount: words.length,
-          userId: get().currentUserId,
-        },
-      })
+      logError(
+        'Error adding words to collection',
+        error,
+        { collectionId, wordCount: words.length },
+        'words',
+        false
+      )
       set({
         error: {
-          message: 'Failed to import words',
+          message: WORDS_IMPORT_FAILED,
           details: error instanceof Error ? error.message : UNKNOWN_ERROR,
         },
       })
-      // Don't throw - let caller handle via store state
       return false
     }
   },
