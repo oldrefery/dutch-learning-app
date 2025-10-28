@@ -1,0 +1,18 @@
+appId: com.oldrefery.dutch-learning-app
+---
+# Test: Validation error - invalid email format
+- launchApp
+- assertVisible:
+    text: "Welcome Back"
+- tapOn:
+    id: "email-input"
+- inputText: "notanemail"
+- tapOn:
+    id: "password-input"
+- inputText: "ValidPass123"
+- tapOn:
+    id: "sign-in-button"
+- waitForAnimationToEnd
+# Should show validation error for email format
+- assertVisible:
+    text: "Please enter a valid email address"
