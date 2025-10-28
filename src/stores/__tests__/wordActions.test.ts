@@ -7,6 +7,7 @@ import { createWordActions } from '../actions/wordActions'
 import { wordRepository } from '@/db/wordRepository'
 import { Sentry } from '@/lib/sentry'
 import { calculateNextReview } from '@/utils/srs'
+import { logError } from '@/utils/logger'
 import type { ApplicationState } from '@/types/ApplicationStoreTypes'
 
 jest.mock('@/db/wordRepository', () => ({
@@ -28,6 +29,10 @@ jest.mock('@/lib/sentry', () => ({
 }))
 jest.mock('@/utils/srs', () => ({
   calculateNextReview: jest.fn(),
+}))
+jest.mock('@/utils/logger', () => ({
+  logError: jest.fn(),
+  logInfo: jest.fn(),
 }))
 jest.mock('@/lib/supabaseClient')
 
@@ -152,19 +157,20 @@ describe('wordActions', () => {
       )
     })
 
-    it('should handle empty word list', async () => {
+    it('should handle empty word list as valid state', async () => {
       ;(wordRepository.getWordsByUserId as jest.Mock).mockResolvedValue([])
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        error: null,
+      })
 
       await actions.fetchWords()
 
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: expect.any(String),
-          }),
-          wordsLoading: false,
-        })
-      )
+      // Empty word list is a valid state for new users - no error should be set
+      expect(mockSet).toHaveBeenCalledWith({
+        words: [],
+        wordsLoading: false,
+      })
     })
   })
 
@@ -370,10 +376,18 @@ describe('wordActions', () => {
 
       await actions.updateWordAfterReview(WORD_ID, assessment as any)
 
-      expect(Sentry.captureException).toHaveBeenCalledWith(
+      expect(logError).toHaveBeenCalledWith(
+        'Error updating word after review',
         error,
+        expect.objectContaining({ wordId: WORD_ID, assessment }),
+        'words',
+        false
+      )
+      expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
-          tags: { operation: 'updateWordAfterReview' },
+          error: expect.objectContaining({
+            message: 'Failed to update word progress',
+          }),
         })
       )
     })
@@ -411,10 +425,18 @@ describe('wordActions', () => {
 
       await actions.deleteWord(WORD_ID)
 
-      expect(Sentry.captureException).toHaveBeenCalledWith(
+      expect(logError).toHaveBeenCalledWith(
+        'Error deleting word',
         error,
+        expect.objectContaining({ wordId: WORD_ID }),
+        'words',
+        false
+      )
+      expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
-          tags: { operation: 'deleteWord' },
+          error: expect.objectContaining({
+            message: 'Failed to delete word',
+          }),
         })
       )
     })
@@ -463,10 +485,18 @@ describe('wordActions', () => {
 
       await actions.updateWordImage(WORD_ID, imageUrl)
 
-      expect(Sentry.captureException).toHaveBeenCalledWith(
+      expect(logError).toHaveBeenCalledWith(
+        'Error updating word image',
         error,
+        expect.objectContaining({ wordId: WORD_ID, imageUrl }),
+        'words',
+        false
+      )
+      expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
-          tags: { operation: 'updateWordImage' },
+          error: expect.objectContaining({
+            message: 'Failed to update word image',
+          }),
         })
       )
     })
@@ -514,10 +544,18 @@ describe('wordActions', () => {
 
       await actions.resetWordProgress(WORD_ID)
 
-      expect(Sentry.captureException).toHaveBeenCalledWith(
+      expect(logError).toHaveBeenCalledWith(
+        'Error resetting word progress',
         error,
+        expect.objectContaining({ wordId: WORD_ID }),
+        'words',
+        false
+      )
+      expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
-          tags: { operation: 'resetWordProgress' },
+          error: expect.objectContaining({
+            message: 'Failed to reset word progress',
+          }),
         })
       )
     })
@@ -567,10 +605,18 @@ describe('wordActions', () => {
 
       await actions.moveWordToCollection(WORD_ID, newCollectionId)
 
-      expect(Sentry.captureException).toHaveBeenCalledWith(
+      expect(logError).toHaveBeenCalledWith(
+        'Error moving word to collection',
         error,
+        expect.objectContaining({ wordId: WORD_ID, newCollectionId }),
+        'words',
+        false
+      )
+      expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
-          tags: { operation: 'moveWordToCollection' },
+          error: expect.objectContaining({
+            message: 'Failed to move word to collection',
+          }),
         })
       )
     })
@@ -649,10 +695,21 @@ describe('wordActions', () => {
 
       const result = await actions.addWordsToCollection(COLLECTION_ID, newWords)
 
-      expect(Sentry.captureException).toHaveBeenCalledWith(
+      expect(logError).toHaveBeenCalledWith(
+        'Error adding words to collection',
         error,
         expect.objectContaining({
-          tags: { operation: 'addWordsToCollection' },
+          collectionId: COLLECTION_ID,
+          wordCount: newWords.length,
+        }),
+        'words',
+        false
+      )
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            message: 'Failed to import words',
+          }),
         })
       )
       expect(result).toBe(false)

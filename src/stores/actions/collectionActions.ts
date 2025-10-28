@@ -56,25 +56,13 @@ export const createCollectionActions = (
         return
       }
 
-      // Offline-first: always fetch from local SQLite database
+      // Offline-first: always fetch from a local SQLite database
       console.log('[Collections] Fetching from local SQLite')
       const collections =
         await collectionRepository.getCollectionsByUserId(userId)
 
-      if (!collections || collections.length === 0) {
-        set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                .COLLECTIONS_FETCH_FAILED,
-            details: 'No collections found',
-          },
-          collectionsLoading: false,
-        })
-        return
-      }
-
-      set({ collections, collectionsLoading: false })
+      // Empty collection list is valid for new users - default collection created on the first word added
+      set({ collections: collections || [], collectionsLoading: false })
     } catch (error) {
       logError('Error fetching collections', error, {}, 'collections', false)
       set({
@@ -113,7 +101,7 @@ export const createCollectionActions = (
         return null
       }
 
-      // Create new collection object (offline-first)
+      // Create the new collection object (offline-first)
       const now = new Date().toISOString()
       const newCollection: Collection = {
         collection_id: uuidv4(),
@@ -194,7 +182,7 @@ export const createCollectionActions = (
         return
       }
 
-      // Delete from local SQLite (offline-first)
+      // Delete it from local SQLite (offline-first)
       await collectionRepository.deleteCollection(collectionId)
 
       const updatedCollections = currentCollections.filter(
