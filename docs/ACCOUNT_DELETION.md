@@ -28,7 +28,7 @@ The easiest and fastest way to delete your account is directly from within the a
 
 If you no longer have access to the app, you can request account deletion by email.
 
-- Send an email to `test.dutch.app@example.com`.
+- Send an email to `test.dutch.app@gmail.com`.
 - Use the subject line: `Account Deletion Request`.
 - In the body of the email, please specify the email address of the account you wish to delete.
 
