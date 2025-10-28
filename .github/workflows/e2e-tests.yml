@@ -35,24 +35,18 @@ jobs:
         run: npm ci
 
       - name: Setup EAS
-        run: npm install -g eas-cli
-
-      - name: Authenticate with EAS
-        run: eas secret:create --scope project --name EXPO_TOKEN --value ${{ secrets.EXPO_TOKEN }} 2>/dev/null || true
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build for E2E tests (Android)
         run: eas build --platform android --profile e2e-test --wait
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Download Android build
         run: |
           echo "Downloading Android APK..."
           # The APK will be downloaded after EAS build completes
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Setup Android emulator
         uses: reactivecircus/android-emulator-runner@v2
