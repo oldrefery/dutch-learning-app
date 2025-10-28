@@ -16,3 +16,4 @@ appId: com.oldrefery.dutch-learning-app
 # Should show validation error for email format
 - assertVisible:
     text: "Please enter a valid email address"
+

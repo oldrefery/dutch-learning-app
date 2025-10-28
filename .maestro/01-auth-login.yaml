@@ -1,19 +1,17 @@
 appId: com.oldrefery.dutch-learning-app
 ---
 # Test: User login flow
-# Credentials are loaded from environment variables:
-# - MAESTRO_TEST_EMAIL (from EXPO_PUBLIC_DEV_USER_EMAIL in .env)
-# - MAESTRO_TEST_PASSWORD (from EXPO_PUBLIC_DEV_USER_PASSWORD in .env)
+# Credentials passed via --env flags from .env file
 #
 - launchApp
 - assertVisible:
     text: "Welcome Back"
 - tapOn:
     id: "email-input"
-- inputText: ${MAESTRO_TEST_EMAIL}
+- inputText: ${email}
 - tapOn:
     id: "password-input"
-- inputText: ${MAESTRO_TEST_PASSWORD}
+- inputText: ${password}
 - tapOn:
     id: "sign-in-button"
 - waitForAnimationToEnd
