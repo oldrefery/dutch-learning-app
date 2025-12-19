@@ -33,7 +33,7 @@ npx eas whoami
 
 **Value:** Email of the test user in your Supabase database.
 
-**Example:** `test.dutch.app@gmail.com`
+**Example:** `test-access@email.com`
 
 **How to add:**
 
