@@ -70,10 +70,19 @@ jobs:
 
       - name: Download APK
         run: |
-          echo "=== Downloading APK ==="
-          eas build:download --id=${{ steps.build.outputs.build_id }} --output=./app.apk
+          echo "=== Getting build artifact URL ==="
+          BUILD_INFO=$(eas build:view ${{ steps.build.outputs.build_id }} --json)
+          echo "$BUILD_INFO" | jq '.'
+
+          ARTIFACT_URL=$(echo "$BUILD_INFO" | jq -r '.artifacts.buildUrl')
+          echo "Artifact URL: $ARTIFACT_URL"
+
+          echo "=== Downloading APK from $ARTIFACT_URL ==="
+          curl -L -o ./app.apk "$ARTIFACT_URL"
+
           echo "=== Download Complete ==="
           ls -lh ./app.apk
+          file ./app.apk
 
       - name: Setup Android emulator and run tests
         uses: reactivecircus/android-emulator-runner@v2
