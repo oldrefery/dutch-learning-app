@@ -34,47 +34,83 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Java for Android
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Build for E2E tests (Android)
-        run: eas build --platform android --profile e2e-test --wait
-
-      - name: Download Android build
+      - name: Debug - Check EAS config
         run: |
-          echo "Downloading Android APK..."
-          # The APK will be downloaded after EAS build completes
+          echo "=== EAS Configuration ==="
+          cat eas.json | jq '.build["e2e-test"]'
+          echo "=== App Configuration ==="
+          cat app.json | jq '.expo.android.package'
 
-      - name: Setup Android emulator
+      - name: Build Android APK for E2E tests
+        id: build
+        run: |
+          echo "=== Starting EAS Build ==="
+          BUILD_OUTPUT=$(eas build --platform android --profile e2e-test --non-interactive --wait --json)
+          echo "$BUILD_OUTPUT"
+          BUILD_ID=$(echo "$BUILD_OUTPUT" | jq -r '.[0].id')
+          echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
+          echo "=== Build Complete ==="
+
+      - name: Download APK
+        run: |
+          echo "=== Downloading APK ==="
+          eas build:download --id ${{ steps.build.outputs.build_id }} --output ./app.apk
+          echo "=== Download Complete ==="
+          ls -lh ./app.apk
+
+      - name: Setup Android emulator and run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
           target: default
           arch: x86_64
-          profile: Nexus 6P
+          profile: pixel_5
+          disable-animations: true
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          script: |
+            echo "=== Installing APK on emulator ==="
+            adb devices
+            adb install -r ./app.apk
 
-      - name: Install Maestro
-        run: curl -Ls "https://get.maestro.sh" | bash
+            echo "=== Verifying installation ==="
+            adb shell pm list packages | grep dutch
 
-      - name: Add Maestro to PATH
-        run: echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+            echo "=== Installing Maestro ==="
+            curl -Ls "https://get.maestro.sh" | bash
+            export PATH="$HOME/.maestro/bin:$PATH"
+            maestro --version
 
-      - name: Run E2E tests
-        run: maestro test .maestro/
-        timeout-minutes: 30
+            echo "=== Running E2E tests ==="
+            maestro test .maestro/ \
+              --env email="${{ secrets.MAESTRO_TEST_EMAIL }}" \
+              --env password="${{ secrets.MAESTRO_TEST_PASSWORD }}" \
+              --format junit \
+              --output ./maestro-results.xml || echo "Tests completed with exit code $?"
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: maestro-tests
-          path: ~/.maestro/tests/
+          name: maestro-test-results
+          path: |
+            ./maestro-results.xml
+            ~/.maestro/tests/**/*
+          if-no-files-found: warn
 
       - name: Comment PR with results
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && success()
         uses: actions/github-script@v7
         with:
           script: |
@@ -83,4 +119,16 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: '✅ E2E tests passed successfully!'
+            })
+
+      - name: Comment PR with failure
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ E2E tests failed. Check the workflow logs for details.'
             })

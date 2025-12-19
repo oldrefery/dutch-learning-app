@@ -201,22 +201,40 @@ To make elements testable, add `testID` prop to React Native components:
 
 ## CI/CD Integration
 
-Tests can be run in CI/CD pipelines using EAS Workflows:
+E2E tests automatically run in GitHub Actions on push/PR to `main` or `develop` branches.
 
-```yaml
-# .eas/workflows/e2e-test.yml
-name: e2e-tests
-on: push
+### GitHub Actions Workflow
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: expo/expo-github-action@v8
-      - run: npm ci
-      - run: eas build --platform android --profile e2e-test
-      - run: maestro test .maestro/
+The workflow (`.github/workflows/e2e-tests.yml`) performs:
+
+1. Builds Android APK using EAS
+2. Starts Android emulator
+3. Installs APK on emulator
+4. Runs all Maestro tests
+5. Uploads test results as artifacts
+6. Comments on PR with results
+
+### Required GitHub Secrets
+
+Before tests can run in CI, configure these secrets in repository settings:
+
+1. **EXPO_TOKEN** - Expo access token for EAS builds
+2. **MAESTRO_TEST_EMAIL** - Test user email
+3. **MAESTRO_TEST_PASSWORD** - Test user password
+
+See [docs/GITHUB_SECRETS.md](../docs/GITHUB_SECRETS.md) for detailed setup instructions.
+
+### Local Configuration
+
+For local testing, copy example files and configure with your credentials:
+
+```bash
+# Copy example files
+cp .maestro/.maestro.env.example .maestro/.maestro.env
+cp .maestro/config.yaml.example .maestro/config.yaml
+
+# Edit with your test credentials
+# These files are .gitignored and won't be committed
 ```
 
 ## Troubleshooting

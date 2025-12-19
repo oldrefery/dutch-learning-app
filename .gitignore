@@ -44,6 +44,10 @@ yarn-error.*
 .env*.local
 .env
 
+# Maestro test credentials
+.maestro/.maestro.env
+.maestro/config.yaml
+
 # typescript
 *.tsbuildinfo
 
