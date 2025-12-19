@@ -71,7 +71,7 @@ jobs:
       - name: Download APK
         run: |
           echo "=== Downloading APK ==="
-          eas build:download --id ${{ steps.build.outputs.build_id }} --output ./app.apk
+          eas build:download --id=${{ steps.build.outputs.build_id }} --output=./app.apk
           echo "=== Download Complete ==="
           ls -lh ./app.apk
 
