@@ -84,10 +84,6 @@
         }
       ]
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "nativeTabs": true
-    },
     "extra": {
       "router": {},
       "eas": {
