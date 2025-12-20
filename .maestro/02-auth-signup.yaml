@@ -1,0 +1,22 @@
+appId: com.oldrefery.dutchlearningapp
+---
+# Test: User signup flow
+- launchApp
+- assertVisible:
+    text: "Welcome Back"
+- tapOn:
+    text: "Sign up"
+- assertVisible:
+    text: "Create Account"
+- tapOn:
+    id: "signup-email-input"
+- inputText: "newuser@example.com"
+- tapOn:
+    id: "signup-password-input"
+- inputText: "password123"
+- tapOn:
+    id: "signup-confirm-password-input"
+- inputText: "password123"
+- tapOn:
+    id: "signup-button"
+- waitForAnimationToEnd

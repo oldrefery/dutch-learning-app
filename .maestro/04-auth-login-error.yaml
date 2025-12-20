@@ -1,0 +1,18 @@
+appId: com.oldrefery.dutchlearningapp
+---
+# Test: Login with incorrect password - should show error
+- launchApp
+- assertVisible:
+    text: "Welcome Back"
+- tapOn:
+    id: "email-input"
+- inputText: ${MAESTRO_TEST_EMAIL}
+- tapOn:
+    id: "password-input"
+- inputText: "WrongPassword123!"
+- tapOn:
+    id: "sign-in-button"
+- waitForAnimationToEnd
+# Should show error message
+- assertVisible:
+    text: "Invalid login credentials"

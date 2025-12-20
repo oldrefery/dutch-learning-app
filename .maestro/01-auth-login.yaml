@@ -1,0 +1,17 @@
+appId: com.oldrefery.dutchlearningapp
+---
+# Test: User login flow
+# Credentials passed via --env flags from .env file
+#
+- launchApp
+- assertVisible:
+    text: "Welcome Back"
+- tapOn:
+    id: "email-input"
+- inputText: ${email}
+- tapOn:
+    id: "password-input"
+- inputText: ${password}
+- tapOn:
+    id: "sign-in-button"
+- waitForAnimationToEnd
