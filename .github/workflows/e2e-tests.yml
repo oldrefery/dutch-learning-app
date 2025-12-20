@@ -102,12 +102,14 @@ jobs:
             adb shell pm list packages | grep dutch
 
             echo "=== Installing Maestro ==="
-            curl -Ls "https://get.maestro.sh" | bash
-            export PATH="$HOME/.maestro/bin:$PATH"
-            maestro --version
+            curl -Ls "https://get.maestro.mobile.dev" | bash
+            echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+            echo "=== Verifying Maestro installation ==="
+            $HOME/.maestro/bin/maestro --version
 
             echo "=== Running E2E tests ==="
-            maestro test .maestro/ \
+            $HOME/.maestro/bin/maestro test .maestro/ \
               --env email="${{ secrets.MAESTRO_TEST_EMAIL }}" \
               --env password="${{ secrets.MAESTRO_TEST_PASSWORD }}" \
               --format junit \
