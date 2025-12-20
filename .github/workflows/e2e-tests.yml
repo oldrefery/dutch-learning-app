@@ -112,7 +112,7 @@ jobs:
             $HOME/.maestro/bin/maestro --version
 
             echo "=== Running E2E tests ==="
-            $HOME/.maestro/bin/maestro test .maestro/ \
+            $HOME/.maestro/bin/maestro test .maestro \
               --env email="${{ secrets.MAESTRO_TEST_EMAIL }}" \
               --env password="${{ secrets.MAESTRO_TEST_PASSWORD }}" \
               --format junit \
