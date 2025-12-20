@@ -1,4 +1,4 @@
-appId: com.oldrefery.dutchlearningapp
+appId: ${APP_ID}
 ---
 # Test: User login flow
 # Credentials passed via --env flags from .env file

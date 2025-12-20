@@ -1,4 +1,4 @@
-appId: com.oldrefery.dutchlearningapp
+appId: ${APP_ID}
 ---
 # Test: App tab navigation
 # This test assumes the user is already logged in

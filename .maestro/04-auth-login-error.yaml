@@ -1,4 +1,4 @@
-appId: com.oldrefery.dutchlearningapp
+appId: ${APP_ID}
 ---
 # Test: Login with incorrect password - should show error
 - launchApp

@@ -1,4 +1,4 @@
-appId: com.oldrefery.dutchlearningapp
+appId: ${APP_ID}
 ---
 # Test: Validation error - invalid email format
 - launchApp
