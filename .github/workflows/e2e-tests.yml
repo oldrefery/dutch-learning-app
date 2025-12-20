@@ -78,7 +78,10 @@ jobs:
           echo "Artifact URL: $ARTIFACT_URL"
 
           echo "=== Downloading APK from $ARTIFACT_URL ==="
-          curl -L -o ./app.apk "$ARTIFACT_URL"
+          curl -L -o ./app.apk "$ARTIFACT_URL" \
+            -H "expo-platform: android" \
+            -H "expo-protocol-version: 1" \
+            -H "Authorization: Bearer ${{ secrets.EXPO_TOKEN }}"
 
           echo "=== Download Complete ==="
           ls -lh ./app.apk
