@@ -1,5 +1,4 @@
 appId: com.oldrefery.dutch-learning-app
-platform: ios
 env:
   EXPO_PUBLIC_DEV_USER_EMAIL: your-test-email@example.com
   EXPO_PUBLIC_DEV_USER_PASSWORD: YourTestPassword

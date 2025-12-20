@@ -116,10 +116,7 @@ jobs:
 
             echo "=== Tests finished with exit code: ${TEST_EXIT_CODE:-0} ==="
 
-            if [ "${TEST_EXIT_CODE:-0}" -ne 0 ]; then
-              echo "Tests failed, but continuing to upload artifacts"
-              exit 1
-            fi
+            if [ "${TEST_EXIT_CODE:-0}" -ne 0 ]; then echo "Tests failed, but continuing to upload artifacts"; exit 1; fi
 
       - name: Upload test results
         if: always()
