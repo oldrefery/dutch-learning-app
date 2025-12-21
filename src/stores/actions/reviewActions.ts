@@ -52,10 +52,10 @@ export const createReviewActions = (
         return
       }
 
-      // Offline-first: Get review words from local cache (SQLite)
+      // Offline-first: Get review words from the local cache (SQLite)
       logInfo('Fetching review words from local cache', { userId }, 'review')
       const allWords = get().words
-      const today = new Date().toISOString().split('T')[0]
+      const today = new Date().toISOString().split('T')[0] // "2025-12-21"
 
       // Filter words that are due for review: next_review_date <= today
       const reviewWords = allWords.filter(

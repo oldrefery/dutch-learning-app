@@ -4,6 +4,7 @@ import { wordService } from '@/lib/supabase'
 import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
 import { calculateNextReview } from '@/utils/srs'
+import * as Crypto from 'expo-crypto'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -59,7 +60,6 @@ export const createWordActions = (
       }
 
       // Offline-first: fetch from local SQLite
-      console.log('[Words] Fetching from local SQLite')
       const words = await wordRepository.getWordsByUserId(userId)
 
       // Empty word list is a valid state for new users
@@ -118,15 +118,15 @@ export const createWordActions = (
       }
 
       // Offline-first: save to local SQLite
+      // Generate word_id on a client for offline-first architecture
       const wordToAdd = {
         ...analyzedWord,
+        word_id: Crypto.randomUUID(),
         user_id: userId,
         interval_days: 1,
         repetition_count: 0,
         easiness_factor: 2.5,
-        next_review_date: new Date(
-          Date.now() + 24 * 60 * 60 * 1000
-        ).toISOString(),
+        next_review_date: new Date().toISOString().split('T')[0], // Store-only date: "2025-12-21"
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       } as any
@@ -452,15 +452,15 @@ export const createWordActions = (
 
       if (wordIndex !== -1) {
         const updatedWords = [...currentWords]
-        const resetDate = new Date(
-          Date.now() + 24 * 60 * 60 * 1000
-        ).toISOString()
+        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split('T')[0] // Store-only date: "2025-12-22"
         updatedWords[wordIndex] = {
           ...updatedWords[wordIndex],
           interval_days: 1,
           repetition_count: 0,
           easiness_factor: 2.5,
-          next_review_date: resetDate,
+          next_review_date: tomorrow,
           last_reviewed_at: null,
           updated_at: new Date().toISOString(),
         }
@@ -516,19 +516,21 @@ export const createWordActions = (
           }
 
           const now = new Date().toISOString()
+          // Ensure all imported words have word_id (should come from the server but fallback to generate)
+          const wordsWithIds = importedWords.map((word: any) => ({
+            ...word,
+            word_id: word.word_id || Crypto.randomUUID(),
+            created_at: word.created_at ?? now,
+            updated_at: word.updated_at ?? now,
+          }))
+
           await Promise.all(
-            importedWords.map((word: any) =>
-              wordRepository.addWord({
-                ...word,
-                created_at: word.created_at ?? now,
-                updated_at: word.updated_at ?? now,
-              })
-            )
+            wordsWithIds.map((word: any) => wordRepository.addWord(word))
           )
 
           // Update store with imported words
           const currentWords = get().words
-          set({ words: [...currentWords, ...importedWords] })
+          set({ words: [...currentWords, ...wordsWithIds] })
 
           logInfo(
             `Successfully imported ${importedWords.length} words from shared collection`,
@@ -555,40 +557,29 @@ export const createWordActions = (
       }
 
       // Offline-first: save all words to local SQLite for regular word creation
+      // Generate word_id on a client for offline-first architecture
       const now = new Date().toISOString()
-      await Promise.all(
-        words.map(word =>
-          wordRepository.addWord({
-            ...word,
-            user_id: userId,
-            collection_id: collectionId,
-            interval_days: word.interval_days ?? 1,
-            repetition_count: word.repetition_count ?? 0,
-            easiness_factor: word.easiness_factor ?? 2.5,
-            next_review_date:
-              word.next_review_date ??
-              new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-            created_at: word.created_at ?? now,
-            updated_at: word.updated_at ?? now,
-          } as any)
-        )
-      )
-
-      // Update the store with new words (in offline-first, we just track the count)
-      const currentWords = get().words
-      const wordsToAdd = words.map(word => ({
+      const today = now.split('T')[0] // Extract date only: "2025-12-21"
+      const wordsWithIds = words.map(word => ({
         ...word,
+        word_id: word.word_id || Crypto.randomUUID(),
         user_id: userId,
         collection_id: collectionId,
         interval_days: word.interval_days ?? 1,
         repetition_count: word.repetition_count ?? 0,
         easiness_factor: word.easiness_factor ?? 2.5,
-        next_review_date:
-          word.next_review_date ??
-          new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        next_review_date: word.next_review_date ?? today, // Store-only date
         created_at: word.created_at ?? now,
         updated_at: word.updated_at ?? now,
-      })) as any
+      }))
+
+      await Promise.all(
+        wordsWithIds.map(word => wordRepository.addWord(word as any))
+      )
+
+      // Update the store with new words (in offline-first, we just track the count)
+      const currentWords = get().words
+      const wordsToAdd = wordsWithIds as any
 
       set({ words: [...currentWords, ...wordsToAdd] })
 

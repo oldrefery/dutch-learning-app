@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
+  runOnJS,
 } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
@@ -217,7 +218,7 @@ export default function SwipeableWordItem({
     })
 
   const longPressGesture = Gesture.LongPress()
-    .minDuration(500) // 500ms for long press
+    .minDuration(500) // 500 ms for long press
     .maxDistance(10) // Maximum movement allowed during long press
     .onStart(() => {
       'worklet'
@@ -248,6 +249,9 @@ export default function SwipeableWordItem({
         translateX.value = withSpring(100)
       } else if (translationX < -150) {
         // Long swipe left - show deletion dialog
+        // Strongest haptic feedback to warn about destructive action
+        // Note: runOnJS to call the external library (expo-haptics) from worklet
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Heavy)
         translateX.value = withSpring(-300, {}, () => {
           'worklet'
           // Show deletion dialog after animation

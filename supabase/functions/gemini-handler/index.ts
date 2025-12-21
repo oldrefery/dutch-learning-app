@@ -60,6 +60,13 @@ Deno.serve(async (req: Request) => {
     const parsedInput = parseWordInput(word)
     const normalizedLemma = normalizeWord(parsedInput.dutch_lemma)
 
+    console.log('📋 Cache lookup:', {
+      originalWord: word,
+      normalizedLemma,
+      article: parsedInput.article,
+      partOfSpeech: parsedInput.part_of_speech,
+    })
+
     // Smart cache lookup strategy
     let cachedAnalysis = null
     let cacheStrategy = 'miss'
@@ -73,9 +80,11 @@ Deno.serve(async (req: Request) => {
           parsedInput.article
         )
         cacheStrategy = cachedAnalysis ? 'exact_hit' : 'exact_miss'
+        console.log('🔍 Exact cache lookup:', cacheStrategy)
       } else {
         // User provided only lemma (e.g., "haar") - check for variants
         const variants = await getCachedVariants(normalizedLemma)
+        console.log('🔍 Variants found:', variants.length)
 
         if (variants.length > 0) {
           // For now, return the most used variant
@@ -88,7 +97,7 @@ Deno.serve(async (req: Request) => {
       }
 
       if (cachedAnalysis) {
-        // Build result from cache
+        // Build result from the cache
         const result = {
           dutch_original: word,
           dutch_lemma: cachedAnalysis.dutch_lemma,
@@ -182,9 +191,9 @@ Deno.serve(async (req: Request) => {
     }
 
     // Save to cache for future use (async, don't wait for completion)
-    saveToCache({
+    const cacheData = {
       dutch_original: word,
-      dutch_lemma: normalizedLemma, // Use parsed and normalized lemma as cache key
+      dutch_lemma: normalizedLemma, // Use parsed and normalized lemma as a cache key
       part_of_speech:
         analysis.part_of_speech || (analysis.is_separable ? 'verb' : null),
       is_irregular: analysis.is_irregular || false,
@@ -205,8 +214,16 @@ Deno.serve(async (req: Request) => {
       conjugation: analysis.conjugation,
       preposition: analysis.preposition,
       analysis_notes: analysis.analysis_notes || '',
-    }).catch(() => {
-      // Don't fail the request if cache save fails
+    }
+
+    console.log('💾 Saving to cache:', {
+      dutch_lemma: cacheData.dutch_lemma,
+      part_of_speech: cacheData.part_of_speech,
+      article: cacheData.article,
+    })
+
+    saveToCache(cacheData).catch(err => {
+      console.error('❌ Cache save failed:', err)
     })
 
     console.log(`✅ Analysis completed for: "${word}"`)
@@ -235,7 +252,7 @@ Deno.serve(async (req: Request) => {
       error instanceof Error ? error.stack : 'No stack trace'
     )
 
-    // Send to Sentry
+    // Send it to Sentry
     try {
       const sentryDsn = Deno.env.get('SENTRY_DSN')
       if (sentryDsn) {
