@@ -21,6 +21,15 @@ jest.mock('@/lib/sentry')
 jest.mock('@/utils/logger')
 jest.mock('@/utils/network')
 
+// Mock expo-crypto with proper UUID format
+let mockUuidCounter = 0
+jest.mock('expo-crypto', () => ({
+  randomUUID: jest.fn(() => {
+    mockUuidCounter++
+    return `00000000-0000-4000-8000-${String(mockUuidCounter).padStart(12, '0')}`
+  }),
+}))
+
 describe('collectionActions', () => {
   // Helper to generate random IDs
   const generateId = (prefix: string) =>
