@@ -7,9 +7,15 @@ export interface LocalWord extends Word {
 }
 
 export class WordRepository {
+  // Helper to convert undefined to null for SQLite
+  private toSqlValue(value: any): any {
+    return value === undefined ? null : value
+  }
+
   async saveWords(words: Word[]): Promise<void> {
     const db = await getDatabase()
 
+    // CORRECT PATTERN: Prepare ONCE before loop, execute MANY times, finalize ONCE after
     const insertStatement = await db.prepareAsync(`
       INSERT OR REPLACE INTO words (
         word_id, user_id, collection_id, dutch_lemma, dutch_original,
@@ -28,37 +34,37 @@ export class WordRepository {
     try {
       for (const word of words) {
         await insertStatement.executeAsync(
-          word.word_id,
-          word.user_id,
-          word.collection_id || null,
-          word.dutch_lemma,
-          word.dutch_original || null,
-          word.part_of_speech || null,
+          this.toSqlValue(word.word_id),
+          this.toSqlValue(word.user_id),
+          this.toSqlValue(word.collection_id) || null,
+          this.toSqlValue(word.dutch_lemma),
+          this.toSqlValue(word.dutch_original) || null,
+          this.toSqlValue(word.part_of_speech) || null,
           word.is_irregular ? 1 : 0,
           word.is_reflexive ? 1 : 0,
           word.is_expression ? 1 : 0,
-          word.expression_type || null,
+          this.toSqlValue(word.expression_type) || null,
           word.is_separable ? 1 : 0,
-          word.prefix_part || null,
-          word.root_verb || null,
-          word.article || null,
-          word.plural || null,
-          JSON.stringify(word.translations),
+          this.toSqlValue(word.prefix_part) || null,
+          this.toSqlValue(word.root_verb) || null,
+          this.toSqlValue(word.article) || null,
+          this.toSqlValue(word.plural) || null,
+          JSON.stringify(this.toSqlValue(word.translations) || []),
           word.examples ? JSON.stringify(word.examples) : null,
-          JSON.stringify(word.synonyms || []),
-          JSON.stringify(word.antonyms || []),
+          JSON.stringify(this.toSqlValue(word.synonyms) || []),
+          JSON.stringify(this.toSqlValue(word.antonyms) || []),
           word.conjugation ? JSON.stringify(word.conjugation) : null,
-          word.preposition || null,
-          word.image_url || null,
-          word.tts_url || null,
-          word.interval_days,
-          word.repetition_count,
-          word.easiness_factor,
-          word.next_review_date,
-          word.last_reviewed_at || null,
-          word.analysis_notes || null,
-          word.created_at,
-          word.updated_at,
+          this.toSqlValue(word.preposition) || null,
+          this.toSqlValue(word.image_url) || null,
+          this.toSqlValue(word.tts_url) || null,
+          Number(word.interval_days ?? 1),
+          Number(word.repetition_count ?? 0),
+          Number(word.easiness_factor ?? 2.5),
+          this.toSqlValue(word.next_review_date),
+          this.toSqlValue(word.last_reviewed_at) || null,
+          this.toSqlValue(word.analysis_notes) || null,
+          this.toSqlValue(word.created_at),
+          this.toSqlValue(word.updated_at),
           'synced'
         )
       }

@@ -2,16 +2,9 @@ appId: ${APP_ID}
 ---
 # Test: User login flow
 # Credentials passed via --env flags from .env file
-#
-- launchApp
-- assertVisible:
-    text: "Welcome Back"
-- tapOn:
-    id: "email-input"
-- inputText: ${email}
-- tapOn:
-    id: "password-input"
-- inputText: ${password}
-- tapOn:
-    id: "sign-in-button"
-- waitForAnimationToEnd
+
+# Ensure clean state (logout if already logged in)
+- runFlow: flows/setup-clean-state.yaml
+
+# Login with test user and verify success
+- runFlow: flows/login-helper.yaml

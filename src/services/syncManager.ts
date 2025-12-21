@@ -166,32 +166,41 @@ export class SyncManager {
       }
 
       // Parse JSON fields from Supabase and ensure required fields
-      const parsedWords = data.map(word => ({
-        ...word,
-        // Ensure updated_at is always set (fallback to created_at or current time)
-        updated_at:
-          word.updated_at || word.created_at || new Date().toISOString(),
-        translations:
-          typeof word.translations === 'string'
-            ? JSON.parse(word.translations)
-            : word.translations,
-        examples:
-          typeof word.examples === 'string'
-            ? JSON.parse(word.examples)
-            : word.examples,
-        synonyms:
-          typeof word.synonyms === 'string'
-            ? JSON.parse(word.synonyms)
-            : word.synonyms || [],
-        antonyms:
-          typeof word.antonyms === 'string'
-            ? JSON.parse(word.antonyms)
-            : word.antonyms || [],
-        conjugation:
-          typeof word.conjugation === 'string'
-            ? JSON.parse(word.conjugation)
-            : word.conjugation,
-      }))
+      const now = new Date().toISOString()
+      const parsedWords = data.map(word => {
+        return {
+          ...word,
+          // Ensure created_at and updated_at are always set (fallback to current time)
+          created_at: word.created_at || now,
+          updated_at: word.updated_at || word.created_at || now,
+          // Ensure next_review_date is always set (required by SQLite schema)
+          next_review_date: word.next_review_date || word.created_at || now,
+          // Ensure SRS fields have defaults
+          interval_days: word.interval_days ?? 1,
+          repetition_count: word.repetition_count ?? 0,
+          easiness_factor: word.easiness_factor ?? 2.5,
+          translations:
+            typeof word.translations === 'string'
+              ? JSON.parse(word.translations)
+              : word.translations || [],
+          examples:
+            typeof word.examples === 'string'
+              ? JSON.parse(word.examples)
+              : word.examples,
+          synonyms:
+            typeof word.synonyms === 'string'
+              ? JSON.parse(word.synonyms)
+              : word.synonyms || [],
+          antonyms:
+            typeof word.antonyms === 'string'
+              ? JSON.parse(word.antonyms)
+              : word.antonyms || [],
+          conjugation:
+            typeof word.conjugation === 'string'
+              ? JSON.parse(word.conjugation)
+              : word.conjugation,
+        }
+      })
 
       await wordRepository.saveWords(parsedWords)
 

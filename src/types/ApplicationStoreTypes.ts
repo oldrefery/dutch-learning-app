@@ -58,7 +58,8 @@ export interface ApplicationState {
   resetWordProgress: (wordId: string) => Promise<Word | undefined>
   addWordsToCollection: (
     collectionId: string,
-    words: Partial<Word>[]
+    words: Partial<Word>[],
+    isImportFromShared?: boolean
   ) => Promise<boolean>
 
   // Collection actions
