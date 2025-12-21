@@ -71,17 +71,20 @@ export const CreateCollectionSheet: React.FC<CreateCollectionSheetProps> = ({
         label: 'Cancel',
         onPress: onClose,
         accessibilityLabel: 'Cancel creation',
+        testID: 'cancel-button',
       }}
       rightAction={{
         label: 'Create',
         onPress: handleCreate,
         disabled: !canCreate,
         accessibilityLabel: 'Create new collection',
+        testID: 'create-button',
       }}
     >
       <View>
         <TextThemed style={styles.label}>Collection Name</TextThemed>
         <TextInput
+          testID="collection-name-input"
           style={[styles.input, styles.inputThemedColors]}
           value={name}
           onChangeText={setName}

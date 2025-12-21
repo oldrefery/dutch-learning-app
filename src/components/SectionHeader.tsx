@@ -26,6 +26,7 @@ export default function SectionHeader({
       <ViewThemed style={styles.buttonsContainer}>
         {showImportButton && onImportPress && (
           <GlassCapsuleButton
+            testID="import-collection-button"
             icon="cloud-download-outline"
             text="Import"
             onPress={onImportPress}
@@ -37,6 +38,7 @@ export default function SectionHeader({
         )}
         {showAddButton && onAddPress && (
           <GlassCapsuleButton
+            testID="create-collection-button"
             icon="add"
             text={addButtonText}
             onPress={onAddPress}

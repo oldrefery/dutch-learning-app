@@ -327,6 +327,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
       {analysisResult && !isAlreadyInCollection && !isCheckingDuplicate && (
         <FloatingActionButton
+          testID="save-word-button"
           onPress={handleAddWord}
           disabled={isAdding}
           loading={isAdding}

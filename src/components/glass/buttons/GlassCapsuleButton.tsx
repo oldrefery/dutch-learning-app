@@ -33,6 +33,8 @@ export interface GlassCapsuleButtonProps {
   iconColor?: string
   /** Custom text color override */
   textColor?: string
+  /** Test ID for E2E testing */
+  testID?: string
 }
 
 /**
@@ -54,6 +56,7 @@ export const GlassCapsuleButton = ({
   accessibilityHint,
   iconColor,
   textColor,
+  testID,
 }: GlassCapsuleButtonProps) => {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
@@ -101,6 +104,7 @@ export const GlassCapsuleButton = ({
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={disabled}
       cancelable={false}

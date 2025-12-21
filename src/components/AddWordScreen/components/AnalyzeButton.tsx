@@ -41,6 +41,7 @@ export function AnalyzeButton({
   return (
     <View style={styles.container}>
       <GlassIconButton
+        testID="analyze-button"
         icon={icon}
         onPress={handlePress}
         variant="tinted"

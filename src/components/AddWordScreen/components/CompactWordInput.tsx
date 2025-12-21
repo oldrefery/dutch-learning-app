@@ -138,6 +138,7 @@ export function CompactWordInput({
           />
 
           <TextInput
+            testID="word-input"
             style={{
               flex: 1,
               paddingVertical: 12,

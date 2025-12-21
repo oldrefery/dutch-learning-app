@@ -45,7 +45,7 @@ export const RenameCollectionSheet: React.FC<RenameCollectionSheetProps> = ({
       await onRename(newName.trim())
       onClose()
     } catch (error) {
-      // Show error toast with user-friendly message
+      // Show error toast with a user-friendly message
       ToastService.show(
         'Failed to rename collection. Please try again.',
         ToastType.ERROR
@@ -65,17 +65,20 @@ export const RenameCollectionSheet: React.FC<RenameCollectionSheetProps> = ({
         label: 'Cancel',
         onPress: onClose,
         accessibilityLabel: 'Cancel rename',
+        testID: 'cancel-button',
       }}
       rightAction={{
         label: 'Save',
         onPress: handleSave,
         disabled: !canSave,
         accessibilityLabel: 'Save collection name',
+        testID: 'save-button',
       }}
     >
       <View>
         <TextThemed style={styles.label}>Collection Name</TextThemed>
         <TextInput
+          testID="collection-name-input"
           style={[
             styles.input,
             styles.inputThemedColors,

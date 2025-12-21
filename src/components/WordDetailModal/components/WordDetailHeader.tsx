@@ -44,7 +44,11 @@ export default function WordHeader({
       <GlassHeader
         title={dutchLemma ?? ''}
         rightSlot={
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <TouchableOpacity
+            testID="modal-close-button"
+            style={styles.closeButton}
+            onPress={onClose}
+          >
             <Ionicons name="close" size={24} color={Colors.neutral[600]} />
           </TouchableOpacity>
         }

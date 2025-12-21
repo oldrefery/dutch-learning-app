@@ -250,6 +250,7 @@ function SwipeableCollectionCardContent({
       {/* Rename button background (left side) */}
       <Animated.View style={[styles.renameButton, renameButtonAnimatedStyle]}>
         <TouchableOpacity
+          testID="collection-rename-button"
           style={styles.renameButtonContent}
           onPress={handleRename}
         >
@@ -261,6 +262,7 @@ function SwipeableCollectionCardContent({
       {/* Delete the button background (right side) */}
       <Animated.View style={[styles.deleteButton, deleteButtonAnimatedStyle]}>
         <TouchableOpacity
+          testID="collection-delete-button"
           style={styles.deleteButtonContent}
           onPress={handleDelete}
         >

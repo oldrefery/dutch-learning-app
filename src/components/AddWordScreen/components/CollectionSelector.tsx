@@ -23,7 +23,11 @@ export function CollectionSelector({
   colorScheme,
 }: CollectionSelectorProps) {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.collectionRow}>
+    <TouchableOpacity
+      testID="collection-selector"
+      onPress={onPress}
+      style={styles.collectionRow}
+    >
       <TextThemed
         style={[
           styles.label,

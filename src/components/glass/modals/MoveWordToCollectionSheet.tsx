@@ -219,6 +219,7 @@ export const MoveWordToCollectionSheet: React.FC<
         label: 'Cancel',
         onPress: onClose,
         accessibilityLabel: 'Cancel move',
+        testID: 'cancel-button',
       }}
       minHeight={450}
       width="92%"
