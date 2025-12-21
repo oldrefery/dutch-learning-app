@@ -30,6 +30,8 @@ export interface GlassIconButtonProps {
   iconColor?: string
   /** Custom icon size override */
   iconSize?: number
+  /** Test ID for E2E testing */
+  testID?: string
 }
 
 /**
@@ -53,6 +55,7 @@ export const GlassIconButton = ({
   accessibilityHint,
   iconColor,
   iconSize: customIconSize,
+  testID,
 }: GlassIconButtonProps) => {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
@@ -89,6 +92,7 @@ export const GlassIconButton = ({
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       disabled={disabled}
       cancelable={false}

@@ -279,6 +279,7 @@ export default function SwipeableWordItem({
       {onMoveToCollection && (
         <Animated.View style={[styles.moveBackground, moveButtonAnimatedStyle]}>
           <TouchableOpacity
+            testID="word-move-button"
             style={styles.moveButton}
             onPress={handleMoveToCollection}
           >
@@ -294,7 +295,11 @@ export default function SwipeableWordItem({
       <Animated.View
         style={[styles.deleteBackground, deleteButtonAnimatedStyle]}
       >
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+        <TouchableOpacity
+          testID="word-delete-button"
+          style={styles.deleteButton}
+          onPress={handleDelete}
+        >
           <Ionicons
             name="trash-outline"
             size={24}

@@ -17,6 +17,7 @@ interface FloatingActionButtonProps {
   icon?: keyof typeof Ionicons.glyphMap
   label?: string
   style?: ViewStyle
+  testID?: string
 }
 
 export function FloatingActionButton({
@@ -26,6 +27,7 @@ export function FloatingActionButton({
   icon = 'checkmark',
   label,
   style,
+  testID,
 }: FloatingActionButtonProps) {
   const colorScheme = useColorScheme() ?? 'light'
 
@@ -67,6 +69,7 @@ export function FloatingActionButton({
 
   return (
     <TouchableOpacity
+      testID={testID}
       style={fabStyle}
       onPress={onPress}
       disabled={disabled || loading}

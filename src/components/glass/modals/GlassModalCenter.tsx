@@ -31,6 +31,8 @@ export type GlassModalCenterAction = {
   onPress: () => void
   disabled?: boolean
   accessibilityLabel?: string
+  /** Test ID for E2E testing */
+  testID?: string
 }
 
 export type GlassModalCenterProps = {
@@ -152,6 +154,7 @@ export const GlassModalCenter: React.FC<GlassModalCenterProps> = ({
                   leftSlot={
                     leftAction ? (
                       <TouchableOpacity
+                        testID={leftAction.testID}
                         onPress={leftAction.onPress}
                         disabled={leftAction.disabled}
                         accessibilityRole="button"
@@ -173,6 +176,7 @@ export const GlassModalCenter: React.FC<GlassModalCenterProps> = ({
                   rightSlot={
                     rightAction ? (
                       <TouchableOpacity
+                        testID={rightAction.testID}
                         onPress={rightAction.onPress}
                         disabled={rightAction.disabled}
                         accessibilityRole="button"

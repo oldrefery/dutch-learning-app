@@ -17,6 +17,7 @@ appId: ${APP_ID}
 # Enter password
 - tapOn:
     id: "password-input"
+- runScript: ../scripts/wait.js
 - inputText: ${password}
 
 # Hide keyboard and submit

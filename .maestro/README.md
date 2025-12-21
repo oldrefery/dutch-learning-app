@@ -141,10 +141,8 @@ appId: com.oldrefery.dutchlearningapp
 # Action: Input text to focused input
 - inputText: 'Some text'
 
-# Action: Scroll
-- scroll:
-    direction: down
-    amount: 3
+# Action: Simple scroll (no parameters supported)
+- scroll
 
 # Action: Take screenshot
 - takeScreenshot: screenshot.png

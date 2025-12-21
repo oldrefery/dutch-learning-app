@@ -292,6 +292,7 @@ export default function ReviewScreen() {
             You reviewed {reviewWords.length} words
           </TextThemed>
           <TouchableOpacity
+            testID="review-again-button"
             style={reviewScreenStyles.srsButton}
             onPress={restartSession}
           >
@@ -327,6 +328,7 @@ export default function ReviewScreen() {
 
       <ViewThemed style={reviewScreenStyles.buttonsContainer}>
         <TouchableOpacity
+          testID="srs-again-button"
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.againButton]}
           onPress={handleAgain}
           disabled={isLoading}
@@ -335,6 +337,7 @@ export default function ReviewScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          testID="srs-hard-button"
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.hardButton]}
           onPress={handleHard}
           disabled={isLoading}
@@ -343,6 +346,7 @@ export default function ReviewScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          testID="srs-good-button"
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.goodButton]}
           onPress={handleGood}
           disabled={isLoading}
@@ -351,6 +355,7 @@ export default function ReviewScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          testID="srs-easy-button"
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.easyButton]}
           onPress={handleEasy}
           disabled={isLoading}

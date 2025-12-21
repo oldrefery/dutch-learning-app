@@ -1,0 +1,36 @@
+appId: ${APP_ID}
+---
+# Helper flow: Ensure we're on a specific screen
+# This flow intelligently handles navigation:
+# - If on login screen -> login first
+# - If already on target screen -> do nothing
+# - Otherwise -> navigate to target screen
+#
+# Usage:
+#   - runFlow:
+#       file: flows/ensure-on-screen.yaml
+#       env:
+#         screen_name: "Collections"
+#
+# Parameters:
+#   screen_name: Name of the target screen (e.g., "Collections", "Review", "Settings")
+
+# Step 1: If on login screen, login first
+- runFlow:
+    when:
+      visible: "Welcome Back"
+    commands:
+      - runFlow: login-helper.yaml
+
+# Step 2: Navigate to target screen if not already there
+- runFlow:
+    when:
+      notVisible: ${screen_name}
+    commands:
+      - tapOn:
+          text: ${screen_name}
+      - waitForAnimationToEnd
+
+# Step 3: Assert we're on the correct screen
+- assertVisible:
+    text: ${screen_name}
