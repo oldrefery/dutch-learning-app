@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+---
+# Helper flow: Login user
+# This flow logs in a user with provided email and password
+# Usage: Can be run as a subflow from other tests
+# Parameters: ${email}, ${password}
+
+# Assumes we're on the login screen
+- assertVisible:
+    text: "Welcome Back"
+
+# Enter email
+- tapOn:
+    id: "email-input"
+- inputText: ${email}
+
+# Enter password
+- tapOn:
+    id: "password-input"
+- inputText: ${password}
+
+# Hide keyboard and submit
+- hideKeyboard
+- tapOn:
+    id: "sign-in-button"
+- waitForAnimationToEnd
+
+# Wait for app to load
+- runScript: ../scripts/wait.js
+
+# Should be on Collections screen after successful login
+- assertVisible:
+    text: "Collections"

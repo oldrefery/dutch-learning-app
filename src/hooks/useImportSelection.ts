@@ -238,7 +238,8 @@ export function useImportSelection(token: string) {
       const { addWordsToCollection } = useApplicationStore.getState()
       const success = await addWordsToCollection(
         targetCollectionId,
-        selectedWords
+        selectedWords,
+        true // isImportFromShared - use RPC to bypass RLS
       )
 
       if (success) {

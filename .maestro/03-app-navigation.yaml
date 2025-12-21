@@ -1,25 +1,52 @@
-appId: com.oldrefery.dutchlearningapp
+appId: ${APP_ID}
 ---
 # Test: App tab navigation
-# This test assumes the user is already logged in
-- launchApp
-# Try to navigate to different tabs
-- tapOn:
-    text: "Review"
-- assertVisible:
-    text: "Review"
-- tapOn:
-    text: "Add Word"
-- assertVisible:
-    text: "Add Word"
+# Tests navigation between all available tabs
+# - Collections, History, Settings, Review (all users)
+# - Add Word (only for users with full_access)
+
+# Ensure clean state (logout if already logged in)
+- runFlow: flows/setup-clean-state.yaml
+
+# Login with test user
+- runFlow: flows/login-helper.yaml
+
+# Navigate to History tab
 - tapOn:
     text: "History"
+- waitForAnimationToEnd
 - assertVisible:
     text: "History"
+
+# Navigate to Settings tab
 - tapOn:
     text: "Settings"
+- waitForAnimationToEnd
 - assertVisible:
     text: "Settings"
+
+# Navigate to Review tab
 - tapOn:
-    text: "Home"
+    text: "Review"
+- waitForAnimationToEnd
+- assertVisible:
+    text: "Review"
+
+# Check if user has full_access and test Add Word tab
+- runFlow:
+    when:
+      visible: "Add Word"
+    commands:
+      - tapOn:
+          text: "Add Word"
+      - waitForAnimationToEnd
+      - assertVisible:
+          text: "Add Word"
+
+# Navigate back to Collections tab
+- tapOn:
+    text: "Collections"
+- waitForAnimationToEnd
+- assertVisible:
+    text: "Collections"
 

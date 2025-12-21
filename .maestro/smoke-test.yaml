@@ -1,13 +1,16 @@
-appId: com.oldrefery.dutchlearningapp
+appId: ${APP_ID}
 ---
-- launchApp
-- assertVisible:
-    text: "Welcome Back"
+# Smoke test: Basic app startup
+
+# Ensure clean state (logout if already logged in)
+- runFlow: flows/setup-clean-state.yaml
+
 - tapOn:
     id: "email-input"
 - inputText: "test@example.com"
 - tapOn:
     id: "password-input"
 - inputText: "password123"
+- hideKeyboard
 - tapOn:
     id: "sign-in-button"

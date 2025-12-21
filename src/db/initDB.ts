@@ -14,7 +14,9 @@ export async function initializeDatabase(): Promise<SQLite.SQLiteDatabase> {
   }
 
   try {
-    database = await SQLite.openDatabaseAsync(DB_NAME)
+    database = await SQLite.openDatabaseAsync(DB_NAME, {
+      useNewConnection: true,
+    })
 
     // Check schema version
     const existingVersion = await AsyncStorage.getItem(SCHEMA_VERSION_KEY)

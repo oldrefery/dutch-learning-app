@@ -1,0 +1,17 @@
+appId: ${APP_ID}
+---
+# Setup flow: Ensure clean state before tests
+# This flow ensures the app is in a logged-out state
+# Run this before authentication tests to handle existing sessions
+
+- launchApp
+
+# If already logged in, logout first
+- runFlow:
+    when:
+      visible: "Collections"
+    file: logout-helper.yaml
+
+# Verify we're on login screen
+- assertVisible:
+    text: "Welcome Back"

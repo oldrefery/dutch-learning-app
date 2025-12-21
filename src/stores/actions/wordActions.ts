@@ -1,5 +1,6 @@
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { Sentry } from '@/lib/sentry'
+import { wordService } from '@/lib/supabase'
 import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
 import { calculateNextReview } from '@/utils/srs'
@@ -485,7 +486,8 @@ export const createWordActions = (
 
   addWordsToCollection: async (
     collectionId: string,
-    words: Partial<import('@/types/database').Word>[]
+    words: Partial<import('@/types/database').Word>[],
+    isImportFromShared: boolean = false
   ) => {
     try {
       const userId = get().currentUserId
@@ -499,7 +501,60 @@ export const createWordActions = (
         return false
       }
 
-      // Offline-first: save all words to local SQLite
+      // For imports from shared collections, use RPC to bypass RLS
+      if (isImportFromShared) {
+        try {
+          // Use wordService to call RPC function with SECURITY DEFINER to bypass RLS
+          const importedWords = await wordService.importWordsToCollection(
+            collectionId,
+            words
+          )
+
+          if (!importedWords || importedWords.length === 0) {
+            logInfo('No words were imported', { collectionId })
+            return true
+          }
+
+          const now = new Date().toISOString()
+          await Promise.all(
+            importedWords.map((word: any) =>
+              wordRepository.addWord({
+                ...word,
+                created_at: word.created_at ?? now,
+                updated_at: word.updated_at ?? now,
+              })
+            )
+          )
+
+          // Update store with imported words
+          const currentWords = get().words
+          set({ words: [...currentWords, ...importedWords] })
+
+          logInfo(
+            `Successfully imported ${importedWords.length} words from shared collection`,
+            { collectionId }
+          )
+
+          return true
+        } catch (error) {
+          logError(
+            'Error importing words from shared collection',
+            error,
+            { collectionId, wordCount: words.length },
+            'words',
+            false
+          )
+          set({
+            error: {
+              message: WORDS_IMPORT_FAILED,
+              details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+            },
+          })
+          return false
+        }
+      }
+
+      // Offline-first: save all words to local SQLite for regular word creation
       const now = new Date().toISOString()
       await Promise.all(
         words.map(word =>

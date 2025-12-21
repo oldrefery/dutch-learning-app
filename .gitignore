@@ -71,3 +71,6 @@ builds/
 /android-apps-473016-7616fdc8cf35.json
 !/.sentryclirc
 /.sentryclirc
+
+# Maestro debug screenshots
+debug-*.png

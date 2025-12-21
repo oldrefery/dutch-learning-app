@@ -1,0 +1,21 @@
+appId: ${APP_ID}
+---
+# Test: User logout flow
+# Tests that a logged-in user can successfully logout
+
+# Ensure clean state
+- runFlow: flows/setup-clean-state.yaml
+
+# Login with test user
+- runFlow: flows/login-helper.yaml
+
+# Use logout helper to logout (same flow as setup-clean-state)
+- runFlow: flows/logout-helper.yaml
+
+# Verify we're back on login screen
+- assertVisible:
+    text: "Welcome Back"
+- assertVisible:
+    id: "email-input"
+- assertVisible:
+    id: "password-input"

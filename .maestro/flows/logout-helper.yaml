@@ -1,0 +1,37 @@
+appId: ${APP_ID}
+---
+# Helper flow: Logout user
+# This flow logs out the current user if they are logged in
+# Usage: Can be run as a subflow from other tests
+
+# Check if we're on the main app screen (logged in)
+- runFlow:
+    when:
+      visible: "Collections"
+    commands:
+      # Navigate to Settings tab
+      - tapOn:
+          text: "Settings"
+      - waitForAnimationToEnd
+
+      # Tap logout button
+      - tapOn:
+          text: "Logout"
+      - waitForAnimationToEnd
+
+      # Wait for alert dialog to appear and confirm
+      - assertVisible:
+          text: "Are you sure you want to logout?"
+
+      # Tap Logout button in alert to confirm (second button in alert, index 1)
+      - tapOn:
+          text: "Logout"
+          index: 1
+      - waitForAnimationToEnd
+
+      # Give app time to logout and navigate to login screen
+      - runScript: ../scripts/wait.js
+
+      # Should now be on login screen
+      - assertVisible:
+          text: "Welcome Back"

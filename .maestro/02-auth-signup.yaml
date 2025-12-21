@@ -1,9 +1,10 @@
-appId: com.oldrefery.dutchlearningapp
+appId: ${APP_ID}
 ---
 # Test: User signup flow
-- launchApp
-- assertVisible:
-    text: "Welcome Back"
+
+# Ensure clean state (logout if already logged in)
+- runFlow: flows/setup-clean-state.yaml
+
 - tapOn:
     text: "Sign up"
 - assertVisible:
@@ -17,6 +18,7 @@ appId: com.oldrefery.dutchlearningapp
 - tapOn:
     id: "signup-confirm-password-input"
 - inputText: "password123"
+- hideKeyboard
 - tapOn:
     id: "signup-button"
 - waitForAnimationToEnd
