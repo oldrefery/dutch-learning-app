@@ -151,13 +151,8 @@ export const useReviewScreen = () => {
   )
 
   const restartSession = useCallback(() => {
-    // TODO: Implement restartSession in store
-    // For now, just show a message
-    ToastService.show(
-      'Session restart functionality coming soon',
-      ToastType.INFO
-    )
-  }, [])
+    startReviewSession()
+  }, [startReviewSession])
 
   // Simple flip function for external use
   const handleFlipCard = useCallback(() => {
