@@ -1,0 +1,39 @@
+appId: ${APP_ID}
+---
+# Test: Navigation from Login to Sign Up screen
+# Verifies that user can navigate to signup from login screen
+
+# Ensure clean state (logout if already logged in)
+- runFlow: flows/setup-clean-state.yaml
+
+# Verify we're on login screen
+- assertVisible:
+    text: "Welcome Back"
+
+# Tap on "Sign up" link
+- tapOn:
+    text: "Sign up"
+- waitForAnimationToEnd
+
+# Verify we're on Sign Up screen
+- assertVisible:
+    text: "Create Account"
+- assertVisible:
+    text: "Join us to start your Dutch learning journey"
+- assertVisible:
+    id: "signup-email-input"
+- assertVisible:
+    id: "signup-password-input"
+- assertVisible:
+    id: "signup-confirm-password-input"
+- assertVisible:
+    id: "signup-button"
+
+# Navigate back to login using footer link
+- tapOn:
+    text: "Sign in"
+- waitForAnimationToEnd
+
+# Verify we're back on login screen
+- assertVisible:
+    text: "Welcome Back"

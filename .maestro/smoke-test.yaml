@@ -1,16 +1,10 @@
 appId: ${APP_ID}
 ---
-# Smoke test: Basic app startup
+# Smoke test: Basic app startup and login
+# Uses credentials from environment variables for consistency
 
 # Ensure clean state (logout if already logged in)
 - runFlow: flows/setup-clean-state.yaml
 
-- tapOn:
-    id: "email-input"
-- inputText: "test@example.com"
-- tapOn:
-    id: "password-input"
-- inputText: "password123"
-- hideKeyboard
-- tapOn:
-    id: "sign-in-button"
+# Login with test user
+- runFlow: flows/login-helper.yaml

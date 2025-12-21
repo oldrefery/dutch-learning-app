@@ -31,7 +31,8 @@ export default function ForgotPasswordScreen() {
     clearError()
 
     // Validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
     if (!email.trim()) {
       setEmailError('Email is required')
@@ -85,6 +86,7 @@ export default function ForgotPasswordScreen() {
                   error={emailError}
                   placeholder="Enter your email"
                   keyboardType="email-address"
+                  testID="forgot-email-input"
                 />
 
                 {error && (
@@ -120,6 +122,7 @@ export default function ForgotPasswordScreen() {
                   title="Send Reset Link"
                   onPress={handleResetRequest}
                   loading={loading}
+                  testID="send-reset-link-button"
                 />
               </ViewThemed>
 
