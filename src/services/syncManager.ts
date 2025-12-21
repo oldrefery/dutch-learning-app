@@ -9,6 +9,9 @@ import {
 } from '@/utils/network'
 import type { Word } from '@/types/database'
 import { Sentry } from '@/lib/sentry'
+import { useHistoryStore } from '@/stores/useHistoryStore'
+import { ToastService } from '@/components/AppToast'
+import { ToastType } from '@/constants/ToastConstants'
 
 export interface SyncResult {
   success: boolean
@@ -174,7 +177,9 @@ export class SyncManager {
           created_at: word.created_at || now,
           updated_at: word.updated_at || word.created_at || now,
           // Ensure next_review_date is always set (required by SQLite schema)
-          next_review_date: word.next_review_date || word.created_at || now,
+          // Extract date only from fallback values
+          next_review_date:
+            word.next_review_date || (word.created_at || now).split('T')[0],
           // Ensure SRS fields have defaults
           interval_days: word.interval_days ?? 1,
           repetition_count: word.repetition_count ?? 0,
@@ -245,10 +250,6 @@ export class SyncManager {
       const progressIds = pendingProgress.map(p => p.progress_id)
       await progressRepository.markProgressSynced(progressIds)
 
-      console.log(
-        `[Sync] Pushed ${pendingProgress.length} progress records to Supabase`
-      )
-
       return pendingProgress.length
     } catch (error) {
       console.error('[Sync] Error pushing progress to Supabase:', error)
@@ -258,6 +259,28 @@ export class SyncManager {
 
   private async pushWordsToSupabase(userId: string): Promise<number> {
     try {
+      // Clean up invalid words before syncing
+      const { count: deletedCount, words: deletedWords } =
+        await wordRepository.deleteInvalidWords(userId)
+
+      if (deletedCount > 0) {
+        // Log each deleted word to history
+        const historyStore = useHistoryStore.getState()
+        deletedWords.forEach(word => {
+          historyStore.addNotification(
+            `Word "${word.dutch_lemma}" was not synced due to missing ID`,
+            ToastType.WARNING
+          )
+        })
+
+        // Show toast notification to inform user
+        const wordList = deletedWords.map(w => w.dutch_lemma).join(', ')
+        ToastService.show(
+          `${deletedCount} invalid word${deletedCount > 1 ? 's' : ''} removed: ${wordList}. Please add again if needed.`,
+          ToastType.WARNING
+        )
+      }
+
       const pendingWords = await wordRepository.getPendingSyncWords(userId)
 
       if (pendingWords.length === 0) {
@@ -265,9 +288,32 @@ export class SyncManager {
         return 0
       }
 
+      // Filter out invalid words with null word_id (safety check)
+      const validWords = pendingWords.filter(word => {
+        if (!word.word_id) {
+          console.error('[Sync] Skipping word with null word_id:', {
+            dutch_lemma: word.dutch_lemma,
+            user_id: word.user_id,
+          })
+          return false
+        }
+        return true
+      })
+
+      if (validWords.length === 0) {
+        console.log('[Sync] No valid words to sync after filtering')
+        return 0
+      }
+
+      if (validWords.length < pendingWords.length) {
+        console.warn(
+          `[Sync] Filtered out ${pendingWords.length - validWords.length} invalid words`
+        )
+      }
+
       // Convert local words to Supabase format
       // Note: updated_at is managed by Supabase, don't include it in upsert
-      const wordsToSync = pendingWords.map(word => ({
+      const wordsToSync = validWords.map(word => ({
         word_id: word.word_id,
         user_id: word.user_id,
         collection_id: word.collection_id,
@@ -305,12 +351,12 @@ export class SyncManager {
         throw new Error(`Failed to push words: ${error.message}`)
       }
 
-      const wordIds = pendingWords.map(w => w.word_id)
+      const wordIds = validWords.map(w => w.word_id).filter(Boolean)
       await wordRepository.markWordsSynced(wordIds)
 
-      console.log(`[Sync] Pushed ${pendingWords.length} words to Supabase`)
+      console.log(`[Sync] Pushed ${validWords.length} words to Supabase`)
 
-      return pendingWords.length
+      return validWords.length
     } catch (error) {
       console.error('[Sync] Error pushing words to Supabase:', error)
       throw error
@@ -349,9 +395,6 @@ export class SyncManager {
 
       if (parsedCollections.length > 0) {
         await collectionRepository.saveCollections(parsedCollections)
-        console.log(
-          `[Sync] Pulled ${parsedCollections.length} collections from Supabase`
-        )
       } else {
         console.log('[Sync] No valid collections to save')
       }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import * as Haptics from 'expo-haptics'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useAudioPlayer } from '@/hooks/useAudioPlayer'
 import { ToastService } from '@/components/AppToast'
@@ -114,6 +115,14 @@ export const useReviewScreen = () => {
     if (!currentWord) return
 
     try {
+      // Strongest haptic feedback for destructive action
+      // Note: Don't await - haptics can crash if called on the wrong thread
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(
+        () => {
+          // Ignore haptic errors - they're not critical
+        }
+      )
+
       // Delete word from the database and global state
       await deleteWord(currentWord.word_id)
 
@@ -151,13 +160,8 @@ export const useReviewScreen = () => {
   )
 
   const restartSession = useCallback(() => {
-    // TODO: Implement restartSession in store
-    // For now, just show a message
-    ToastService.show(
-      'Session restart functionality coming soon',
-      ToastType.INFO
-    )
-  }, [])
+    startReviewSession()
+  }, [startReviewSession])
 
   // Simple flip function for external use
   const handleFlipCard = useCallback(() => {

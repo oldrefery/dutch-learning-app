@@ -8,6 +8,7 @@ import {
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { scheduleOnRN } from 'react-native-worklets'
+import { useFocusEffect } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import WordDetailModal from '@/components/WordDetailModal'
@@ -69,6 +70,16 @@ export default function ReviewScreen() {
 
   // Enable pull-to-refresh to also refresh review count (badge)
   const { refreshCount } = useReviewWordsCount()
+
+  // Auto-fetch review words when the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      // Only auto-fetch if there are no words or the session is complete
+      if (reviewWords.length === 0 || sessionComplete) {
+        startReviewSession()
+      }
+    }, [reviewWords.length, sessionComplete, startReviewSession])
+  )
 
   const handleWordPress = useCallback(() => {
     if (currentWord) {

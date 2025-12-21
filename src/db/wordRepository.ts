@@ -217,8 +217,57 @@ export class WordRepository {
     }
   }
 
+  async deleteInvalidWords(
+    userId: string
+  ): Promise<{ count: number; words: { dutch_lemma: string }[] }> {
+    const db = await getDatabase()
+
+    // First, get the invalid words to log them
+    const selectStatement = await db.prepareAsync(
+      'SELECT dutch_lemma, dutch_original FROM words WHERE word_id IS NULL AND user_id = ?'
+    )
+
+    let invalidWords: { dutch_lemma: string }[] = []
+
+    try {
+      const result = await selectStatement.executeAsync<{
+        dutch_lemma: string
+        dutch_original: string | null
+      }>(userId)
+      invalidWords = await result.getAllAsync()
+    } finally {
+      await selectStatement.finalizeAsync()
+    }
+
+    // Then delete them
+    const deleteStatement = await db.prepareAsync(
+      'DELETE FROM words WHERE word_id IS NULL AND user_id = ?'
+    )
+
+    try {
+      const result = await deleteStatement.executeAsync(userId)
+      const deletedCount = result.changes
+      return { count: deletedCount, words: invalidWords }
+    } finally {
+      await deleteStatement.finalizeAsync()
+    }
+  }
+
   async addWord(word: Word): Promise<void> {
     const db = await getDatabase()
+
+    // Validate word_id before adding
+    if (!word.word_id) {
+      console.error(
+        '[WordRepository] ERROR: Attempting to add word with null/undefined word_id:',
+        {
+          dutch_lemma: word.dutch_lemma,
+          user_id: word.user_id,
+          word_object: word,
+        }
+      )
+      throw new Error(`Cannot add word with null word_id: ${word.dutch_lemma}`)
+    }
 
     const insertStatement = await db.prepareAsync(`
       INSERT OR REPLACE INTO words (
@@ -339,11 +388,15 @@ export class WordRepository {
     `)
 
     try {
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0] // Store-only date: "2025-12-22"
+
       await updateStatement.executeAsync(
         1,
         0,
         2.5,
-        new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        tomorrow,
         new Date().toISOString(),
         'pending',
         wordId,

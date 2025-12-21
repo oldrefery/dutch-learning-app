@@ -6,7 +6,7 @@ import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstan
 import { Sentry } from '@/lib/sentry'
 import { logInfo, logError } from '@/utils/logger'
 import { collectionRepository } from '@/db/collectionRepository'
-import { v4 as uuidv4 } from 'uuid'
+import * as Crypto from 'expo-crypto'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -104,7 +104,7 @@ export const createCollectionActions = (
       // Create the new collection object (offline-first)
       const now = new Date().toISOString()
       const newCollection: Collection = {
-        collection_id: uuidv4(),
+        collection_id: Crypto.randomUUID(),
         user_id: userId,
         name,
         description: null,
