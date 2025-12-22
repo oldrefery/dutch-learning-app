@@ -8,7 +8,7 @@ import {
   Platform,
   View,
 } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { GlassHeader } from '@/components/glass/GlassHeader'
 import Animated, {
   useSharedValue,
@@ -323,7 +323,7 @@ export default function CollectionContextMenu({
       </Pressable>
 
       <Animated.View style={[styles.menuContainer, animatedMenuStyle]}>
-        <BlurView
+        <PlatformBlurView
           intensity={isDarkMode ? 80 : 60}
           tint={isDarkMode ? 'dark' : 'light'}
           style={styles.blurContainer}
@@ -377,7 +377,7 @@ export default function CollectionContextMenu({
               <TextThemed style={styles.cancelButtonText}>Cancel</TextThemed>
             </TouchableOpacity>
           </ViewThemed>
-        </BlurView>
+        </PlatformBlurView>
       </Animated.View>
     </Modal>
   )

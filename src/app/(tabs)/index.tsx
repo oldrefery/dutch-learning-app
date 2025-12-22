@@ -7,7 +7,7 @@ import {
   useColorScheme,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -309,7 +309,7 @@ export default function CollectionsScreen() {
           </ViewThemed>
         ) : (
           <ViewThemed style={styles.collectionsListContainer}>
-            <BlurView
+            <PlatformBlurView
               style={styles.collectionsListBlur}
               intensity={100}
               tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -408,7 +408,7 @@ export default function CollectionsScreen() {
                   )
                 })()}
               </ViewThemed>
-            </BlurView>
+            </PlatformBlurView>
           </ViewThemed>
         )}
       </ViewThemed>

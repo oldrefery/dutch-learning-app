@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import Constants from 'expo-constants'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { supabase, type User } from '@/lib/supabaseClient'
 import { userService } from '@/lib/supabase'
@@ -350,7 +350,7 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <ViewThemed style={styles.aboutSectionContainer}>
-          <BlurView
+          <PlatformBlurView
             style={styles.aboutBlur}
             intensity={100}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -517,11 +517,11 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
               </ViewThemed>
             </ViewThemed>
-          </BlurView>
+          </PlatformBlurView>
         </ViewThemed>
 
         <ViewThemed style={styles.userInfoSectionContainer}>
-          <BlurView
+          <PlatformBlurView
             style={styles.userInfoBlur}
             intensity={100}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -601,10 +601,10 @@ export default function SettingsScreen() {
                 </ViewThemed>
               )}
             </ViewThemed>
-          </BlurView>
+          </PlatformBlurView>
         </ViewThemed>
         <ViewThemed style={styles.accountSectionContainer}>
-          <BlurView
+          <PlatformBlurView
             style={styles.accountBlur}
             intensity={100}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -761,7 +761,7 @@ export default function SettingsScreen() {
                 be undone.
               </TextThemed>
             </ViewThemed>
-          </BlurView>
+          </PlatformBlurView>
         </ViewThemed>
       </ScrollView>
     </ViewThemed>

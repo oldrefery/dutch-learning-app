@@ -6,7 +6,7 @@ import {
   View,
   useColorScheme,
 } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
 import { TextThemed } from '@/components/Themed'
@@ -70,7 +70,7 @@ export const MoveWordToCollectionSheet: React.FC<
       activeOpacity={0.6}
       testID={getCollectionTestId(item)}
     >
-      <BlurView
+      <PlatformBlurView
         intensity={isDarkMode ? 20 : 30}
         tint={isDarkMode ? 'dark' : 'light'}
         style={[
@@ -133,7 +133,7 @@ export const MoveWordToCollectionSheet: React.FC<
             color={isDarkMode ? Colors.dark.textTertiary : Colors.neutral[400]}
           />
         </View>
-      </BlurView>
+      </PlatformBlurView>
     </TouchableOpacity>
   )
 
@@ -179,7 +179,7 @@ export const MoveWordToCollectionSheet: React.FC<
     return (
       <View style={styles.listContainer}>
         {wordToMove && (
-          <BlurView
+          <PlatformBlurView
             intensity={isDarkMode ? 15 : 25}
             tint={isDarkMode ? 'dark' : 'light'}
             style={[
@@ -207,7 +207,7 @@ export const MoveWordToCollectionSheet: React.FC<
                 {wordToMove.dutch_lemma}
               </TextThemed>
             </View>
-          </BlurView>
+          </PlatformBlurView>
         )}
         <FlatList
           data={availableCollections}

@@ -7,7 +7,7 @@ import {
   useColorScheme,
   Pressable,
 } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
 import Animated, {
@@ -109,7 +109,7 @@ export default function WordContextMenu({
               entering={SlideInDown.springify().damping(20).stiffness(300)}
               exiting={SlideOutDown.duration(150)}
             >
-              <BlurView
+              <PlatformBlurView
                 style={styles.menuBlur}
                 intensity={100}
                 tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -264,7 +264,7 @@ export default function WordContextMenu({
                     </TextThemed>
                   </TouchableOpacity>
                 </ViewThemed>
-              </BlurView>
+              </PlatformBlurView>
             </Animated.View>
           </TouchableWithoutFeedback>
         </Animated.View>

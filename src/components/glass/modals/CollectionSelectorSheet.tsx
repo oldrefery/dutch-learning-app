@@ -7,7 +7,7 @@ import {
   useColorScheme,
   ActivityIndicator,
 } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
 import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
@@ -50,7 +50,7 @@ export const CollectionSelectorSheet: React.FC<
         onPress={() => handleSelect(item)}
         activeOpacity={0.6}
       >
-        <BlurView
+        <PlatformBlurView
           intensity={isDarkMode ? 20 : 30}
           tint={isDarkMode ? 'dark' : 'light'}
           style={[
@@ -131,7 +131,7 @@ export const CollectionSelectorSheet: React.FC<
               />
             )}
           </View>
-        </BlurView>
+        </PlatformBlurView>
       </TouchableOpacity>
     )
   }

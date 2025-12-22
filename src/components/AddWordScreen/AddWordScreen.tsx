@@ -3,7 +3,7 @@ import { Keyboard, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
 import { ViewThemed, TextThemed } from '@/components/Themed'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
@@ -296,7 +296,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
             }}
           />
         ) : (
-          <BlurView
+          <PlatformBlurView
             tint="default"
             intensity={25}
             style={{
