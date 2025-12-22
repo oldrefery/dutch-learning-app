@@ -1,0 +1,143 @@
+appId: ${APP_ID}
+---
+# Test: Review flashcard flow (SRS)
+# Tests the core spaced repetition system learning experience
+#
+# What it tests:
+# - Navigate to Review tab
+# - View flashcard front (Dutch word)
+# - Flip card to back (translations/examples)
+# - Rate word with SRS buttons
+# - Complete review session
+# - Verify session completion screen
+
+# Ensure we're on Add Word screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-add-word"
+      tab_text: "Add Word"
+
+# First, add a word to ensure we have something to review
+- tapOn:
+    text: "Add Word"
+- waitForAnimationToEnd
+- tapOn:
+    id: "word-input"
+- inputText: "slapen"
+- hideKeyboard
+- tapOn:
+    id: "analyze-button"
+- extendedWaitUntil:
+    visible: "to sleep"
+    timeout: 15000
+- scroll
+- tapOn:
+    id: "collection-selector"
+- tapOn:
+    text: "My Words"
+- tapOn:
+    id: "save-word-button"
+- waitForAnimationToEnd
+
+# Navigate to Review tab
+- tapOn:
+    text: "Review"
+- waitForAnimationToEnd
+
+# Verify review screen loaded
+- assertVisible:
+    id: "screen-review"
+
+# Cycle through cards until "slapen" appears (handle existing reviews)
+- repeat:
+    times: 8
+    commands:
+      - runFlow:
+          when:
+            visible: "Great job"
+          commands:
+            - tapOn:
+                text: "Review Again"
+            - waitForAnimationToEnd
+      - runFlow:
+          when:
+            notVisible: "slapen"
+          commands:
+            - tapOn:
+                id: "srs-good-button"
+            - waitForAnimationToEnd
+
+# Verify flashcard front shows (Dutch word)
+- extendedWaitUntil:
+    visible: "slapen"
+    timeout: 8000
+
+# Tap to flip card
+- tapOn: "slapen"
+- waitForAnimationToEnd
+
+# Verify card back shows (translation and examples)
+- assertVisible: "to sleep"
+
+# Verify SRS buttons are visible
+- assertVisible: "Again"
+- assertVisible: "Hard"
+- assertVisible: "Good"
+- assertVisible: "Easy"
+
+# Rate the word as "Good"
+- tapOn:
+    id: "srs-good-button"
+- waitForAnimationToEnd
+
+# Wait a moment for animation
+- runScript: scripts/wait.js
+
+# Check if there are more cards or session complete
+# If session complete, we should see completion message
+# If more cards, we should see next card
+
+# Try to verify either:
+# - Session completion screen appears, OR
+# - Next card appears (if there are more words to review)
+- runFlow:
+    when:
+      visible: "Great job"
+    commands:
+      # Session completed - verify completion screen
+      - assertVisible: "Review Again"
+
+- runFlow:
+    when:
+      notVisible: "Great job"
+    commands:
+      # More cards available - verify next card loaded
+      # Just check that Review tab is still active
+      - assertVisible:
+          id: "screen-review"
+
+# Cleanup: delete added word and return to Collections
+- tapOn:
+    text: "Collections"
+- waitForAnimationToEnd
+- tapOn:
+    text: "My Words"
+- waitForAnimationToEnd
+- runFlow:
+    file: flows/delete-word-by-swipe.yaml
+    env:
+      word_text: "slapen"
+- runFlow:
+    when:
+      visible:
+        id: "modal-close-button"
+    commands:
+      - tapOn:
+          id: "modal-close-button"
+      - waitForAnimationToEnd
+- tapOn:
+    text: "Back"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "screen-collections"

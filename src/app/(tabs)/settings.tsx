@@ -23,13 +23,16 @@ import { ROUTES } from '@/constants/Routes'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Sentry } from '@/lib/sentry'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { syncManager } from '@/services/syncManager'
+import { wordRepository } from '@/db/wordRepository'
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets()
   const colorScheme = useColorScheme() ?? 'light'
   const [user, setUser] = useState<User | null>(null)
+  const [isSyncing, setIsSyncing] = useState(false)
   const { signOut, loading: authLoading } = useSimpleAuth()
-  const { userAccessLevel } = useApplicationStore()
+  const { userAccessLevel, currentUserId } = useApplicationStore()
 
   const isDarkMode = colorScheme === 'dark'
   const blurBackgroundDark = Colors.transparent.iosDarkSurface95
@@ -137,8 +140,202 @@ export default function SettingsScreen() {
     )
   }
 
+  const handleForceSync = async () => {
+    if (!currentUserId || isSyncing) {
+      ToastService.show('Sync unavailable. Please try again.', ToastType.ERROR)
+      return
+    }
+
+    setIsSyncing(true)
+    try {
+      const result = await syncManager.performSync(currentUserId)
+      if (result.success) {
+        ToastService.show('Sync completed.', ToastType.SUCCESS)
+      } else {
+        ToastService.show(result.error ?? 'Sync failed.', ToastType.ERROR)
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Sync failed. Please try again.'
+      ToastService.show(message, ToastType.ERROR)
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
+  const handleDeleteOrphanWords = async () => {
+    if (!currentUserId) {
+      ToastService.show('No user available for cleanup.', ToastType.ERROR)
+      return
+    }
+
+    Alert.alert(
+      'Delete Orphan Words',
+      'This will remove words not linked to any collection (local + remote).',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const localResult =
+                await wordRepository.deleteOrphanWords(currentUserId)
+              const remoteResult = await deleteRemoteOrphanWords(currentUserId)
+              const totalRemoved = localResult.count + remoteResult.count
+
+              if (totalRemoved > 0) {
+                ToastService.show(
+                  `Removed ${localResult.count} local and ${remoteResult.count} remote orphan word${
+                    totalRemoved > 1 ? 's' : ''
+                  }.`,
+                  ToastType.SUCCESS
+                )
+              } else {
+                ToastService.show('No orphan words found.', ToastType.INFO)
+              }
+            } catch (error) {
+              const message =
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to delete orphan words.'
+              ToastService.show(message, ToastType.ERROR)
+            }
+          },
+        },
+      ]
+    )
+  }
+
+  const handleDeleteWordByLemma = async () => {
+    if (!currentUserId) {
+      ToastService.show('No user available for cleanup.', ToastType.ERROR)
+      return
+    }
+
+    Alert.prompt(
+      'Delete Word By Lemma',
+      'Enter the lemma to remove (local + remote).',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async input => {
+            const normalizedLemma = (input ?? '').trim().toLowerCase()
+            if (!normalizedLemma) {
+              ToastService.show('Lemma is required.', ToastType.ERROR)
+              return
+            }
+
+            try {
+              const { data: words, error } = await supabase
+                .from('words')
+                .select('word_id')
+                .eq('user_id', currentUserId)
+                .eq('dutch_lemma', normalizedLemma)
+
+              if (error) {
+                throw new Error(`Lookup failed: ${error.message}`)
+              }
+
+              if (!words || words.length === 0) {
+                ToastService.show('Word not found.', ToastType.INFO)
+                return
+              }
+
+              const wordIds = words.map(word => word.word_id)
+              const chunkSize = 100
+              for (let i = 0; i < wordIds.length; i += chunkSize) {
+                const chunk = wordIds.slice(i, i + chunkSize)
+                const { error: deleteError } = await supabase
+                  .from('words')
+                  .delete()
+                  .in('word_id', chunk)
+
+                if (deleteError) {
+                  throw new Error(`Delete failed: ${deleteError.message}`)
+                }
+              }
+
+              for (const wordId of wordIds) {
+                await wordRepository.deleteWord(wordId, currentUserId)
+              }
+
+              ToastService.show(
+                `Removed ${wordIds.length} word${wordIds.length > 1 ? 's' : ''}.`,
+                ToastType.SUCCESS
+              )
+            } catch (error) {
+              const message =
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to delete word.'
+              ToastService.show(message, ToastType.ERROR)
+            }
+          },
+        },
+      ],
+      'plain-text'
+    )
+  }
+
+  const deleteRemoteOrphanWords = async (
+    userId: string
+  ): Promise<{ count: number }> => {
+    const { data: collections, error: collectionsError } = await supabase
+      .from('collections')
+      .select('collection_id')
+      .eq('user_id', userId)
+
+    if (collectionsError) {
+      throw new Error(`Failed to load collections: ${collectionsError.message}`)
+    }
+
+    const collectionIds = new Set(
+      (collections ?? []).map(collection => collection.collection_id)
+    )
+
+    const { data: words, error: wordsError } = await supabase
+      .from('words')
+      .select('word_id, collection_id')
+      .eq('user_id', userId)
+
+    if (wordsError) {
+      throw new Error(`Failed to load words: ${wordsError.message}`)
+    }
+
+    const orphanWordIds = (words ?? [])
+      .filter(
+        word => !word.collection_id || !collectionIds.has(word.collection_id)
+      )
+      .map(word => word.word_id)
+
+    if (orphanWordIds.length === 0) {
+      return { count: 0 }
+    }
+
+    const chunkSize = 100
+    for (let i = 0; i < orphanWordIds.length; i += chunkSize) {
+      const chunk = orphanWordIds.slice(i, i + chunkSize)
+      const { error: deleteError } = await supabase
+        .from('words')
+        .delete()
+        .in('word_id', chunk)
+
+      if (deleteError) {
+        throw new Error(`Failed to delete words: ${deleteError.message}`)
+      }
+    }
+
+    return { count: orphanWordIds.length }
+  }
+
   return (
     <ViewThemed
+      testID="screen-settings"
       style={[
         styles.container,
         {
@@ -445,6 +642,81 @@ export default function SettingsScreen() {
                 </TextThemed>
               </TouchableOpacity>
 
+              {__DEV__ && (
+                <>
+                  <TouchableOpacity
+                    testID="force-sync-button"
+                    style={[
+                      styles.forceSyncButton,
+                      {
+                        backgroundColor: Colors.primary.DEFAULT,
+                        opacity: isSyncing ? 0.7 : 1,
+                      },
+                    ]}
+                    onPress={handleForceSync}
+                    disabled={isSyncing}
+                  >
+                    <TextThemed style={styles.forceSyncButtonText}>
+                      {isSyncing ? 'Syncing...' : 'Force Sync (Debug)'}
+                    </TextThemed>
+                  </TouchableOpacity>
+
+                  <TextThemed
+                    style={styles.logoutDescription}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Runs a manual sync and logs stage output for debugging.
+                  </TextThemed>
+
+                  <TouchableOpacity
+                    testID="delete-orphan-words-button"
+                    style={[
+                      styles.forceSyncButton,
+                      {
+                        backgroundColor: Colors.warning.DEFAULT,
+                      },
+                    ]}
+                    onPress={handleDeleteOrphanWords}
+                  >
+                    <TextThemed style={styles.forceSyncButtonText}>
+                      Delete Orphan Words (Debug)
+                    </TextThemed>
+                  </TouchableOpacity>
+
+                  <TextThemed
+                    style={styles.logoutDescription}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Removes orphan words from local DB and Supabase.
+                  </TextThemed>
+
+                  <TouchableOpacity
+                    testID="delete-word-by-lemma-button"
+                    style={[
+                      styles.forceSyncButton,
+                      {
+                        backgroundColor: Colors.error.DEFAULT,
+                      },
+                    ]}
+                    onPress={handleDeleteWordByLemma}
+                  >
+                    <TextThemed style={styles.forceSyncButtonText}>
+                      Delete Word By Lemma (Debug)
+                    </TextThemed>
+                  </TouchableOpacity>
+
+                  <TextThemed
+                    style={styles.logoutDescription}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Removes a word by lemma from local DB and Supabase.
+                  </TextThemed>
+                </>
+              )}
+
               <TextThemed
                 style={styles.logoutDescription}
                 lightColor={Colors.neutral[600]}
@@ -607,6 +879,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 20,
+  },
+  forceSyncButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  forceSyncButtonText: {
+    color: Colors.background.primary,
+    fontSize: 16,
+    fontWeight: '600',
   },
   deleteAccountButton: {
     paddingVertical: 12,

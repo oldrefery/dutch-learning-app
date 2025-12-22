@@ -9,7 +9,8 @@ appId: ${APP_ID}
 # If already logged in, logout first
 - runFlow:
     when:
-      visible: "Collections"
+      visible:
+        id: "screen-collections"
     file: logout-helper.yaml
 
 # Verify we're on login screen

@@ -14,9 +14,29 @@ appId: ${APP_ID}
 - inputText: "newuser@example.com"
 - tapOn:
     id: "signup-password-input"
+- runFlow:
+    when:
+      visible:
+        id: "signup-password-input-toggle"
+    commands:
+      - tapOn:
+          id: "signup-password-input-toggle"
+      - runScript: scripts/wait.js
+      - tapOn:
+          id: "signup-password-input"
 - inputText: "password123"
 - tapOn:
     id: "signup-confirm-password-input"
+- runFlow:
+    when:
+      visible:
+        id: "signup-confirm-password-input-toggle"
+    commands:
+      - tapOn:
+          id: "signup-confirm-password-input-toggle"
+      - runScript: scripts/wait.js
+      - tapOn:
+          id: "signup-confirm-password-input"
 - inputText: "password123"
 - hideKeyboard
 - tapOn:

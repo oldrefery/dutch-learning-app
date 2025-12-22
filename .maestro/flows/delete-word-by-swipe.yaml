@@ -1,0 +1,59 @@
+appId: ${APP_ID}
+---
+# Helper flow: Delete a word via long-press context menu (more reliable than swipe)
+# Parameters:
+#   word_text: visible word text to target (lowercase, used to build testID)
+
+# Close detail modal if it's open
+- runFlow:
+    when:
+      visible:
+        id: "modal-close-button"
+    commands:
+      - tapOn:
+          id: "modal-close-button"
+      - waitForAnimationToEnd
+
+# Stabilize before swipe
+- waitForAnimationToEnd
+- assertVisible:
+    id: word-row-${word_text}
+
+# Long-press to open context menu.
+- longPressOn:
+    id: word-row-${word_text}
+- waitForAnimationToEnd
+
+# Tap delete from context menu (prefer testID, fallback to text)
+- runFlow:
+    when:
+      visible:
+        id: "word-context-delete-word"
+    commands:
+      - tapOn:
+          id: "word-context-delete-word"
+- runFlow:
+    when:
+      visible: "Reset Progress"
+    commands:
+      - runFlow:
+          when:
+            visible:
+              id: "word-context-delete-word-label"
+          commands:
+            - tapOn:
+                id: "word-context-delete-word-label"
+      - runFlow:
+          when:
+            notVisible:
+              id: "word-context-delete-word-label"
+          commands:
+            - tapOn:
+                text: "Delete Word"
+- runFlow:
+    when:
+      visible: "Delete Word"
+    commands:
+      - tapOn:
+          text: "Delete"
+      - waitForAnimationToEnd

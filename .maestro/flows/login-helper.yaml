@@ -3,7 +3,7 @@ appId: ${APP_ID}
 # Helper flow: Login user
 # This flow logs in a user with provided email and password
 # Usage: Can be run as a subflow from other tests
-# Parameters: ${email}, ${password}
+# Parameters: ${MAESTRO_TEST_EMAIL}, ${MAESTRO_TEST_PASSWORD}
 
 # Assumes we're on the login screen
 - assertVisible:
@@ -12,13 +12,23 @@ appId: ${APP_ID}
 # Enter email
 - tapOn:
     id: "email-input"
-- inputText: ${email}
+- inputText: ${MAESTRO_TEST_EMAIL}
 
 # Enter password
 - tapOn:
     id: "password-input"
 - runScript: ../scripts/wait.js
-- inputText: ${password}
+- runFlow:
+    when:
+      visible:
+        id: "password-input-toggle"
+    commands:
+      - tapOn:
+          id: "password-input-toggle"
+      - runScript: ../scripts/wait.js
+      - tapOn:
+          id: "password-input"
+- inputText: ${MAESTRO_TEST_PASSWORD}
 
 # Hide keyboard and submit
 - hideKeyboard
@@ -31,4 +41,4 @@ appId: ${APP_ID}
 
 # Should be on Collections screen after successful login
 - assertVisible:
-    text: "Collections"
+    id: "screen-collections"

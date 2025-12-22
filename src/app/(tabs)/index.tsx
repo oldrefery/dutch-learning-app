@@ -257,19 +257,26 @@ export default function CollectionsScreen() {
     )
   }
 
+  const collectionIdSet = new Set(
+    collections.map(collection => collection.collection_id)
+  )
+  const validWords = words.filter(
+    w => w && w.collection_id && collectionIdSet.has(w.collection_id)
+  )
   const stats = {
-    totalWords: words.length,
-    masteredWords: words.filter(
-      w => w && w.repetition_count && w.repetition_count > 2
+    totalWords: validWords.length,
+    masteredWords: validWords.filter(
+      w => w.repetition_count && w.repetition_count > 2
     ).length,
-    wordsForReview: words.filter(
-      w => w && w.next_review_date && new Date(w.next_review_date) <= new Date()
+    wordsForReview: validWords.filter(
+      w => w.next_review_date && new Date(w.next_review_date) <= new Date()
     ).length,
-    streakDays: calculateStreak(words),
+    streakDays: calculateStreak(validWords),
   }
 
   return (
     <ViewThemed
+      testID="screen-collections"
       style={[
         styles.container,
         {

@@ -144,7 +144,7 @@ appId: com.oldrefery.dutchlearningapp
 ---
 # Test description
 - launchApp
-- waitForAnimationToFinish
+- waitForAnimationToEnd
 - assertVisible:
     text: 'Expected Text'
 ```
@@ -162,7 +162,7 @@ Launches the app on the connected device/emulator.
 #### Wait for Animations
 
 ```yaml
-- waitForAnimationToFinish
+- waitForAnimationToEnd
 ```
 
 Waits for all animations to complete. Use this before assertions after navigation.
@@ -248,12 +248,12 @@ appId: com.oldrefery.dutchlearningapp
 ---
 # Test: Adding a new word to a collection
 - launchApp
-- waitForAnimationToFinish
+- waitForAnimationToEnd
 - assertVisible:
     text: 'Collections'
 - tapOn:
     text: 'Add Word'
-- waitForAnimationToFinish
+- waitForAnimationToEnd
 - assertVisible:
     text: 'Add New Word'
 - tapOn:
@@ -264,7 +264,7 @@ appId: com.oldrefery.dutchlearningapp
 - inputText: 'good morning'
 - tapOn:
     id: 'submit-word-button'
-- waitForAnimationToFinish
+- waitForAnimationToEnd
 - assertVisible:
     text: 'Word added successfully'
 ```
@@ -313,12 +313,15 @@ Maestro test files use environment variables to keep sensitive credentials out o
 
 ### How It Works
 
-1. **Environment variables are defined in `.env`** (not tracked in git):
+1. **Environment variables are defined in `.maestro/.maestro.env` or `.env`** (not tracked in git):
 
    ```
-   EXPO_PUBLIC_DEV_USER_EMAIL=test@example.com
-   EXPO_PUBLIC_DEV_USER_PASSWORD=testpassword123
+   MAESTRO_TEST_EMAIL=test@example.com
+   MAESTRO_TEST_PASSWORD=testpassword123
    ```
+
+   If `MAESTRO_TEST_*` are missing, the npm scripts fall back to
+   `EXPO_PUBLIC_DEV_USER_EMAIL` and `EXPO_PUBLIC_DEV_USER_PASSWORD` from `.env`.
 
 2. **npm scripts pass them to Maestro tests**:
 
@@ -468,7 +471,7 @@ Error: Could not find element with id: "email-input"
    - assertVisible:
        text: 'Button' # Waits automatically
    ```
-2. Use `waitForAnimationToFinish` strategically, not excessively
+2. Use `waitForAnimationToEnd` strategically, not excessively
 3. Optimize test order to avoid app restarts
 4. Run on faster hardware or cloud devices
 
@@ -480,7 +483,7 @@ Error: Could not find element with id: "email-input"
 
 **Solution:**
 
-1. Add `waitForAnimationToFinish` after navigation
+1. Add `waitForAnimationToEnd` after navigation
 2. Use assertions to wait for UI state:
    ```yaml
    - assertVisible:

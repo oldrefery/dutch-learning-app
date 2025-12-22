@@ -1,0 +1,94 @@
+appId: ${APP_ID}
+---
+# Test: Delete word with swipe gesture
+# Tests deleting a word using swipe-left action
+#
+# What it tests:
+# - Add word to collection
+# - Navigate to collection detail
+# - Swipe left on word to reveal delete
+# - Confirm deletion
+# - Verify word removed
+
+# Ensure we're on Collections screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-collections"
+      tab_text: "Collections"
+
+# Create collection
+- tapOn:
+    id: "create-collection-button"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-name-input"
+- inputText: "Delete Test"
+- runScript: scripts/wait.js
+- tapOn:
+    id: "create-button"
+- waitForAnimationToEnd
+
+# Add word
+- tapOn:
+    text: "Add Word"
+- waitForAnimationToEnd
+- tapOn:
+    id: "word-input"
+- inputText: "werken"
+- hideKeyboard
+- tapOn:
+    id: "analyze-button"
+- extendedWaitUntil:
+    visible: "to work"
+    timeout: 15000
+- scroll
+- tapOn:
+    id: "collection-selector"
+- tapOn:
+    text: "Delete Test"
+- tapOn:
+    id: "save-word-button"
+- waitForAnimationToEnd
+
+# Navigate to collection
+- tapOn:
+    text: "Collections"
+- waitForAnimationToEnd
+- tapOn:
+    text: "Delete Test"
+- waitForAnimationToEnd
+
+# Verify word exists
+- assertVisible: "werken"
+
+# Swipe left on word item to reveal delete button and confirm deletion
+- runFlow:
+    file: flows/delete-word-by-swipe.yaml
+    env:
+      word_text: "werken"
+
+# Verify word removed from list
+- assertNotVisible: "werken"
+
+# Verify stats updated (should show 0 words)
+- assertVisible: "Total Words"
+- assertVisible: "0"
+
+# Cleanup: delete collection and return to Collections
+- tapOn:
+    text: "Back"
+- waitForAnimationToEnd
+- longPressOn:
+    id: "collection-row-delete-test"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-context-delete"
+- extendedWaitUntil:
+    visible: "Delete Collection"
+    timeout: 3000
+- tapOn:
+    text: "Delete"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "screen-collections"

@@ -173,6 +173,19 @@ export default function SwipeableWordItem({
 
   const statusStyle = getStatusStyle()
   const isDueForReview = new Date(word.next_review_date) <= new Date()
+  const wordRowTestId = (() => {
+    const rawLabel = (
+      word.dutch_original ||
+      word.dutch_lemma ||
+      ''
+    ).toLowerCase()
+    const normalizedLabel = rawLabel
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+    return normalizedLabel
+      ? `word-row-${normalizedLabel}`
+      : `word-row-${word.word_id}`
+  })()
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -322,6 +335,7 @@ export default function SwipeableWordItem({
             },
             { borderWidth: highlighted ? 2 : 0 },
           ]}
+          testID={wordRowTestId}
         >
           <ViewThemed style={styles.wordContent}>
             <ViewThemed style={styles.wordInfo}>

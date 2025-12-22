@@ -26,6 +26,8 @@ export function AuthInput({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const inputRef = useRef<TextInput>(null)
   const colorScheme = useColorScheme() ?? 'light'
+  const toggleTestId =
+    isPassword && props.testID ? `${props.testID}-toggle` : undefined
 
   const inputBackgroundColor =
     colorScheme === 'dark'
@@ -81,6 +83,7 @@ export function AuthInput({
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             style={styles.eyeIcon}
             activeOpacity={0.7}
+            testID={toggleTestId}
           >
             <Ionicons
               name={isPasswordVisible ? 'eye-off' : 'eye'}

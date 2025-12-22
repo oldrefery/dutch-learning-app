@@ -1,0 +1,54 @@
+appId: ${APP_ID}
+---
+# Test: Delete collection
+# Tests deleting a collection (destructive action)
+#
+# What it tests:
+# - Create collection
+# - Delete collection via swipe action
+# - Confirm deletion
+# - Verify collection removed
+
+# Ensure we're on Collections screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-collections"
+      tab_text: "Collections"
+
+# Create a test collection
+- tapOn:
+    id: "create-collection-button"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-name-input"
+- inputText: "To Delete"
+- runScript: scripts/wait.js
+- tapOn:
+    id: "create-button"
+- waitForAnimationToEnd
+
+# Verify collection created
+- assertVisible: "To Delete"
+
+# Long press on collection card to open context menu
+- longPressOn:
+    id: "collection-row-to-delete"
+- waitForAnimationToEnd
+
+# Tap Delete using context menu
+- tapOn:
+    id: "collection-context-delete"
+
+# Verify confirmation alert appears
+- extendedWaitUntil:
+    visible: "Delete Collection"
+    timeout: 3000
+
+# Confirm deletion
+- tapOn:
+    text: "Delete"
+- waitForAnimationToEnd
+
+# Verify collection removed from list
+- assertNotVisible: "To Delete"

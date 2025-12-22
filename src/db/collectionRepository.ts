@@ -6,7 +6,10 @@ export interface LocalCollection extends Collection {
 }
 
 export class CollectionRepository {
-  async saveCollections(collections: Collection[]): Promise<void> {
+  async saveCollections(
+    collections: Collection[],
+    syncStatus: LocalCollection['sync_status'] = 'synced'
+  ): Promise<void> {
     const db = await getDatabase()
 
     try {
@@ -23,7 +26,7 @@ export class CollectionRepository {
             : null,
           collection.created_at,
           collection.updated_at || now,
-          'synced',
+          syncStatus,
         ]
 
         await db.runAsync(
@@ -46,13 +49,34 @@ export class CollectionRepository {
 
     try {
       const result = await db.getAllAsync<LocalCollection>(
-        `SELECT * FROM collections WHERE user_id = ? ORDER BY created_at DESC`,
+        `SELECT * FROM collections WHERE user_id = ? AND COALESCE(sync_status, 'synced') != 'deleted' ORDER BY created_at DESC`,
         [userId]
       )
       console.log(`[DB] Retrieved ${result.length} collections for user`)
       return result || []
     } catch (error) {
       console.error('[DB] Error retrieving collections:', error)
+      throw error
+    }
+  }
+
+  async getCollectionsByIds(
+    collectionIds: string[],
+    userId: string
+  ): Promise<LocalCollection[]> {
+    const db = await getDatabase()
+
+    if (collectionIds.length === 0) return []
+
+    try {
+      const placeholders = collectionIds.map(() => '?').join(',')
+      const result = await db.getAllAsync<LocalCollection>(
+        `SELECT * FROM collections WHERE user_id = ? AND collection_id IN (${placeholders}) AND COALESCE(sync_status, 'synced') != 'deleted'`,
+        [userId, ...collectionIds]
+      )
+      return result || []
+    } catch (error) {
+      console.error('[DB] Error retrieving collections by IDs:', error)
       throw error
     }
   }
@@ -85,6 +109,21 @@ export class CollectionRepository {
       console.log(`[DB] Deleted collection ${collectionId}`)
     } catch (error) {
       console.error('[DB] Error deleting collection:', error)
+      throw error
+    }
+  }
+
+  async markCollectionDeleted(collectionId: string): Promise<void> {
+    const db = await getDatabase()
+
+    try {
+      await db.runAsync(
+        `UPDATE collections SET sync_status = 'deleted', updated_at = ? WHERE collection_id = ?`,
+        [new Date().toISOString(), collectionId]
+      )
+      console.log('[DB] Marked collection deleted', collectionId)
+    } catch (error) {
+      console.error('[DB] Error marking collection deleted:', error)
       throw error
     }
   }
@@ -171,6 +210,22 @@ export class CollectionRepository {
       console.log(`[DB] Marked ${collectionIds.length} collections as synced`)
     } catch (error) {
       console.error('[DB] Error marking collections synced:', error)
+      throw error
+    }
+  }
+
+  async getDeletedCollections(userId: string): Promise<LocalCollection[]> {
+    const db = await getDatabase()
+
+    try {
+      const result = await db.getAllAsync<LocalCollection>(
+        `SELECT * FROM collections WHERE user_id = ? AND sync_status = 'deleted'`,
+        [userId]
+      )
+      console.log(`[DB] Retrieved ${result.length} deleted collections`)
+      return result || []
+    } catch (error) {
+      console.error('[DB] Error retrieving deleted collections:', error)
       throw error
     }
   }

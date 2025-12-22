@@ -1,0 +1,80 @@
+appId: ${APP_ID}
+---
+# Test: Rename collection
+# Tests renaming an existing collection
+#
+# What it tests:
+# - Create collection
+# - Open rename modal via swipe action
+# - Update collection name
+# - Verify name changed
+
+# Ensure we're on the Collections screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-collections"
+      tab_text: "Collections"
+
+# Create a collection first
+- tapOn:
+    id: "create-collection-button"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-name-input"
+- inputText: "Old Name"
+- runScript: scripts/wait.js
+- tapOn:
+    id: "create-button"
+- waitForAnimationToEnd
+
+# Verify collection created
+- assertVisible: "Old Name"
+
+# Long press on the collection card to open a context menu
+- longPressOn:
+    id: "collection-row-old-name"
+- waitForAnimationToEnd
+
+# Tap Rename using context menu
+- tapOn:
+    id: "collection-context-rename"
+- waitForAnimationToEnd
+
+# Verify rename modal opened with the current name
+- assertVisible: "Rename Collection"
+
+# Clear and input new name
+- tapOn:
+    text: "Old Name"
+- eraseText
+- inputText: "Dutch Verbs"
+#- hideKeyboard
+
+# Confirm rename if a sheet still visible
+- runFlow:
+    when:
+      visible: "Rename Collection"
+    commands:
+      - tapOn:
+          id: "save-button"
+      - waitForAnimationToEnd
+
+# Verify name updated
+- assertVisible: "Dutch Verbs"
+- assertNotVisible: "Old Name"
+
+# Cleanup: delete a created collection and return to Collections
+- longPressOn:
+    id: "collection-row-dutch-verbs"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-context-delete"
+- extendedWaitUntil:
+    visible: "Delete Collection"
+    timeout: 3000
+- tapOn:
+    text: "Delete"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "screen-collections"

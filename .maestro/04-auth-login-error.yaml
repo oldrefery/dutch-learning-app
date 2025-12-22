@@ -7,9 +7,19 @@ appId: ${APP_ID}
 
 - tapOn:
     id: "email-input"
-- inputText: ${email}
+- inputText: ${MAESTRO_TEST_EMAIL}
 - tapOn:
     id: "password-input"
+- runFlow:
+    when:
+      visible:
+        id: "password-input-toggle"
+    commands:
+      - tapOn:
+          id: "password-input-toggle"
+      - runScript: scripts/wait.js
+      - tapOn:
+          id: "password-input"
 - inputText: "WrongPassword123"
 - hideKeyboard
 - tapOn:

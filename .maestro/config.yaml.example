@@ -1,4 +1,4 @@
-appId: com.oldrefery.dutch-learning-app
+appId: ${APP_ID}
 env:
-  EXPO_PUBLIC_DEV_USER_EMAIL: your-test-email@example.com
-  EXPO_PUBLIC_DEV_USER_PASSWORD: YourTestPassword
+  MAESTRO_TEST_EMAIL: ${MAESTRO_TEST_EMAIL}
+  MAESTRO_TEST_PASSWORD: ${MAESTRO_TEST_PASSWORD}

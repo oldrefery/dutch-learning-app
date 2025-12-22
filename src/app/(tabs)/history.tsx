@@ -30,6 +30,7 @@ export default function HistoryScreen() {
   return (
     <>
       <ViewThemed
+        testID="screen-history"
         style={[
           styles.container,
           {

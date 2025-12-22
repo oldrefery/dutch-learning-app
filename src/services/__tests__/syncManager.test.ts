@@ -5,6 +5,8 @@
 
 import { SyncManager } from '../syncManager'
 import * as networkUtils from '@/utils/network'
+import { supabase } from '@/lib/supabase'
+import { collectionRepository } from '@/db/collectionRepository'
 
 jest.mock('@/lib/supabaseClient')
 jest.mock('@/lib/supabase')
@@ -13,18 +15,26 @@ jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
     getWordsByUserId: jest.fn().mockResolvedValue([]),
     saveWords: jest.fn().mockResolvedValue(undefined),
+    getPendingSyncWords: jest.fn().mockResolvedValue([]),
+    markWordsSynced: jest.fn().mockResolvedValue(undefined),
+    markWordsError: jest.fn().mockResolvedValue(undefined),
+    deleteOrphanWords: jest.fn().mockResolvedValue({ count: 0 }),
   },
 }))
 jest.mock('@/db/progressRepository', () => ({
   progressRepository: {
-    getPendingProgress: jest.fn().mockResolvedValue([]),
+    getPendingSyncProgress: jest.fn().mockResolvedValue([]),
     markProgressSynced: jest.fn().mockResolvedValue(undefined),
   },
 }))
 jest.mock('@/db/collectionRepository', () => ({
   collectionRepository: {
-    getPendingCollections: jest.fn().mockResolvedValue([]),
+    getPendingSyncCollections: jest.fn().mockResolvedValue([]),
     markCollectionsSynced: jest.fn().mockResolvedValue(undefined),
+    getDeletedCollections: jest.fn().mockResolvedValue([]),
+    saveCollections: jest.fn().mockResolvedValue(undefined),
+    deleteCollection: jest.fn().mockResolvedValue(undefined),
+    getCollectionsByIds: jest.fn().mockResolvedValue([]),
   },
 }))
 
@@ -253,6 +263,97 @@ describe('SyncManager', () => {
 
       // Different instances should have independent sync state
       expect(result2.error).not.toBe('Sync already in progress')
+    })
+
+    it('should skip pending collections during pull', async () => {
+      const pendingCollection = {
+        collection_id: 'col-pending',
+        user_id: userId,
+        name: 'Local Rename',
+        description: null,
+        is_shared: false,
+        shared_with: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        sync_status: 'pending' as const,
+      }
+
+      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
+        true
+      )
+      ;(
+        collectionRepository.getPendingSyncCollections as jest.Mock
+      ).mockResolvedValue([pendingCollection])
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [
+                  {
+                    collection_id: 'col-pending',
+                    user_id: userId,
+                    name: 'Remote Old Name',
+                    description: null,
+                    is_shared: false,
+                    shared_with: null,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                  },
+                  {
+                    collection_id: 'col-remote',
+                    user_id: userId,
+                    name: 'Remote New',
+                    description: null,
+                    is_shared: false,
+                    shared_with: null,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                  },
+                ],
+                error: null,
+              }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            delete: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+          }
+        }
+
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockReturnValue({
+                order: jest.fn().mockResolvedValue({ data: [], error: null }),
+              }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            delete: jest.fn().mockReturnValue({
+              in: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+          }
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+        }
+      })
+
+      await syncManager.performSync(userId)
+
+      expect(collectionRepository.saveCollections).toHaveBeenCalledWith([
+        expect.objectContaining({
+          collection_id: 'col-remote',
+          name: 'Remote New',
+        }),
+      ])
     })
   })
 })

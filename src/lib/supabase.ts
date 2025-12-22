@@ -59,7 +59,7 @@ export const wordService = {
     })
 
     try {
-      // Check network connectivity before making request
+      // Check network connectivity before making a request
       // This prevents hanging requests when offline
       await checkNetworkConnection()
 
@@ -185,6 +185,15 @@ export const wordService = {
     const normalizedArticle =
       article && article.trim() !== '' ? article.trim() : null
 
+    if (__DEV__) {
+      console.log('[wordService.checkWordExists] Query', {
+        userId,
+        dutchLemma: normalizedLemma,
+        partOfSpeech: normalizedPartOfSpeech,
+        article: normalizedArticle,
+      })
+    }
+
     let query = supabase
       .from('words')
       .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
@@ -210,6 +219,14 @@ export const wordService = {
         article,
       })
       return null
+    }
+
+    if (__DEV__) {
+      console.log('[wordService.checkWordExists] Result', {
+        count: data.length,
+        wordId: data[0]?.word_id ?? null,
+        collectionId: data[0]?.collection_id ?? null,
+      })
     }
 
     return data.length > 0 ? data[0] : null
@@ -492,7 +509,7 @@ export const wordService = {
     }
   },
 
-  // Import words to collection using SECURITY DEFINER function
+  // Import words to a collection using SECURITY DEFINER function
   // This allows read-only users to import words from shared collections
   async importWordsToCollection(
     collectionId: string,

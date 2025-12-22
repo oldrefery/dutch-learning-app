@@ -220,7 +220,7 @@ export default function ReviewScreen() {
   // Check if we should show the empty state first
   if (reviewWords.length === 0 && !isLoading) {
     return (
-      <ViewThemed style={reviewScreenStyles.container}>
+      <ViewThemed style={reviewScreenStyles.container} testID="screen-review">
         <ScrollView
           contentContainerStyle={reviewScreenStyles.emptyContainer}
           refreshControl={
@@ -254,7 +254,7 @@ export default function ReviewScreen() {
 
   if (isLoading) {
     return (
-      <ViewThemed style={reviewScreenStyles.container}>
+      <ViewThemed style={reviewScreenStyles.container} testID="screen-review">
         <ViewThemed style={reviewScreenStyles.loadingContainer}>
           <ActivityIndicator
             size="large"
@@ -275,7 +275,7 @@ export default function ReviewScreen() {
 
   if (sessionComplete) {
     return (
-      <ViewThemed style={reviewScreenStyles.container}>
+      <ViewThemed style={reviewScreenStyles.container} testID="screen-review">
         <ViewThemed style={reviewScreenStyles.emptyContainer}>
           <TextThemed
             style={reviewScreenStyles.emptyText}
@@ -307,6 +307,7 @@ export default function ReviewScreen() {
 
   return (
     <ViewThemed
+      testID="screen-review"
       style={[
         reviewScreenStyles.container,
         { paddingBottom: insets.bottom + 60, paddingTop: insets.top },

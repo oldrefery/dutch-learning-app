@@ -16,21 +16,21 @@ appId: ${APP_ID}
     text: "History"
 - waitForAnimationToEnd
 - assertVisible:
-    text: "History"
+    id: "screen-history"
 
 # Navigate to Settings tab
 - tapOn:
     text: "Settings"
 - waitForAnimationToEnd
 - assertVisible:
-    text: "Settings"
+    id: "screen-settings"
 
 # Navigate to Review tab
 - tapOn:
     text: "Review"
 - waitForAnimationToEnd
 - assertVisible:
-    text: "Review"
+    id: "screen-review"
 
 # Check if user has full_access and test Add Word tab
 - runFlow:
@@ -41,12 +41,11 @@ appId: ${APP_ID}
           text: "Add Word"
       - waitForAnimationToEnd
       - assertVisible:
-          text: "Add Word"
+          id: "screen-add-word"
 
 # Navigate back to Collections tab
 - tapOn:
     text: "Collections"
 - waitForAnimationToEnd
 - assertVisible:
-    text: "Collections"
-
+    id: "screen-collections"

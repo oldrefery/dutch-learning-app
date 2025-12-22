@@ -1,0 +1,27 @@
+appId: ${APP_ID}
+---
+# Test: Review empty state
+# Tests behavior when no words are due for review
+#
+# What it tests:
+# - Navigate to Review tab with no due words
+# - Verify empty state message displays
+# - Verify helpful text appears
+
+# Ensure we're on Review screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-review"
+      tab_text: "Review"
+
+# Verify empty state message
+# Note: Update these text assertions based on actual empty state messages
+- assertVisible: "No words to review.*"
+
+# Alternative: Check for suggestion text
+- runFlow:
+    when:
+      visible: "add more words"
+    commands:
+      - assertVisible: "add more words"

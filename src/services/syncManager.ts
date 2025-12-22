@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { collectionService, supabase } from '@/lib/supabase'
 import { wordRepository } from '@/db/wordRepository'
 import { progressRepository } from '@/db/progressRepository'
 import { collectionRepository } from '@/db/collectionRepository'
@@ -59,6 +59,7 @@ export class SyncManager {
     this.isSyncing = true
 
     try {
+      console.log('[Sync] Stage 0: checking network')
       const isConnected = await checkNetworkConnection()
       if (!isConnected) {
         console.log('[Sync] No network connection, skipping sync')
@@ -74,20 +75,28 @@ export class SyncManager {
       const timestamp = new Date().toISOString()
 
       // Step 0: Pull collections from Supabase
+      console.log('[Sync] Stage 1: pull collections')
       await this.pullCollectionsFromSupabase(userId)
 
       // Step 1: Pull new words from Supabase
+      console.log('[Sync] Stage 2: pull words')
       const lastSync = await getLastSyncTimestamp()
       const pulledWords = await this.pullWordsFromSupabase(userId, lastSync)
 
-      // Step 2: Push pending progress to Supabase
-      const pushedProgressCount = await this.pushProgressToSupabase(userId)
+      // Clean up local orphan words after pull
+      await this.cleanupOrphanWords(userId)
+
+      // Step 2: Push pending collection updates to Supabase (needed for FK on words)
+      console.log('[Sync] Stage 3: push collections')
+      await this.pushCollectionsToSupabase(userId)
 
       // Step 3: Push pending word updates to Supabase
+      console.log('[Sync] Stage 4: push words')
       const pushedWordsCount = await this.pushWordsToSupabase(userId)
 
-      // Step 4: Push pending collection updates to Supabase
-      await this.pushCollectionsToSupabase(userId)
+      // Step 4: Push pending progress to Supabase
+      console.log('[Sync] Stage 5: push progress')
+      const pushedProgressCount = await this.pushProgressToSupabase(userId)
 
       // Update last sync timestamp
       await setLastSyncTimestamp(timestamp)
@@ -311,9 +320,22 @@ export class SyncManager {
         )
       }
 
+      const wordsWithCollections = await this.filterWordsWithCollections(
+        userId,
+        validWords
+      )
+
+      if (wordsWithCollections.length === 0) {
+        console.log('[Sync] No valid words to sync after collection checks')
+        return 0
+      }
+
+      // Ensure collections exist in Supabase for pending words
+      await this.pushCollectionsForWords(userId, wordsWithCollections)
+
       // Convert local words to Supabase format
       // Note: updated_at is managed by Supabase, don't include it in upsert
-      const wordsToSync = validWords.map(word => ({
+      const wordsToSync = wordsWithCollections.map(word => ({
         word_id: word.word_id,
         user_id: word.user_id,
         collection_id: word.collection_id,
@@ -351,20 +373,144 @@ export class SyncManager {
         throw new Error(`Failed to push words: ${error.message}`)
       }
 
-      const wordIds = validWords.map(w => w.word_id).filter(Boolean)
+      const wordIds = wordsWithCollections.map(w => w.word_id).filter(Boolean)
       await wordRepository.markWordsSynced(wordIds)
 
-      console.log(`[Sync] Pushed ${validWords.length} words to Supabase`)
+      console.log(
+        `[Sync] Pushed ${wordsWithCollections.length} words to Supabase`
+      )
 
-      return validWords.length
+      return wordsWithCollections.length
     } catch (error) {
       console.error('[Sync] Error pushing words to Supabase:', error)
       throw error
     }
   }
 
+  private async filterWordsWithCollections(
+    userId: string,
+    words: Word[]
+  ): Promise<Word[]> {
+    const collectionIds = Array.from(
+      new Set(
+        words
+          .map(word => word.collection_id)
+          .filter((id): id is string => Boolean(id))
+      )
+    )
+
+    if (collectionIds.length === 0) {
+      const wordIds = words.map(word => word.word_id).filter(Boolean)
+      if (wordIds.length > 0) {
+        await wordRepository.markWordsError(wordIds)
+        ToastService.show(
+          'Words skipped due to missing collection.',
+          ToastType.WARNING
+        )
+      }
+      return []
+    }
+
+    const collections = await collectionRepository.getCollectionsByIds(
+      collectionIds,
+      userId
+    )
+    const collectionIdSet = new Set(
+      collections.map(collection => collection.collection_id)
+    )
+
+    const missingCollectionWords = words.filter(
+      word => !word.collection_id || !collectionIdSet.has(word.collection_id)
+    )
+
+    if (missingCollectionWords.length > 0) {
+      const missingWordIds = missingCollectionWords
+        .map(word => word.word_id)
+        .filter(Boolean)
+      const missingWordLabels = missingCollectionWords
+        .map(word => word.dutch_lemma)
+        .join(', ')
+
+      await wordRepository.markWordsError(missingWordIds)
+
+      const historyStore = useHistoryStore.getState()
+      missingCollectionWords.forEach(word => {
+        historyStore.addNotification(
+          `Word "${word.dutch_lemma}" was not synced due to missing collection`,
+          ToastType.WARNING
+        )
+      })
+
+      ToastService.show(
+        `Words skipped due to missing collection: ${missingWordLabels}`,
+        ToastType.WARNING
+      )
+    }
+
+    return words.filter(
+      word => word.collection_id && collectionIdSet.has(word.collection_id)
+    )
+  }
+
+  private async pushCollectionsForWords(
+    userId: string,
+    words: Word[]
+  ): Promise<void> {
+    const collectionIds = Array.from(
+      new Set(
+        words
+          .map(word => word.collection_id)
+          .filter((id): id is string => Boolean(id))
+      )
+    )
+
+    if (collectionIds.length === 0) return
+
+    try {
+      const collections = await collectionRepository.getCollectionsByIds(
+        collectionIds,
+        userId
+      )
+
+      if (collections.length === 0) return
+
+      const collectionsToSync = collections.map(c => ({
+        collection_id: c.collection_id,
+        user_id: c.user_id,
+        name: c.name,
+        is_shared: c.is_shared,
+        created_at: c.created_at,
+      }))
+
+      const { error } = await supabase
+        .from('collections')
+        .upsert(collectionsToSync)
+
+      if (error) {
+        throw new Error(`Failed to push collections: ${error.message}`)
+      }
+
+      const syncedIds = collections.map(c => c.collection_id)
+      await collectionRepository.markCollectionsSynced(syncedIds)
+    } catch (error) {
+      console.error('[Sync] Error pushing collections for words:', error)
+      throw error
+    }
+  }
+
   private async pullCollectionsFromSupabase(userId: string): Promise<any[]> {
     try {
+      const deletedCollections =
+        await collectionRepository.getDeletedCollections(userId)
+      const deletedIds = new Set(
+        deletedCollections.map(collection => collection.collection_id)
+      )
+      const pendingCollections =
+        await collectionRepository.getPendingSyncCollections(userId)
+      const pendingIds = new Set(
+        pendingCollections.map(collection => collection.collection_id)
+      )
+
       const { data, error } = await supabase
         .from('collections')
         .select('*')
@@ -385,6 +531,8 @@ export class SyncManager {
           collection =>
             collection && collection.collection_id && collection.user_id
         )
+        .filter(collection => !deletedIds.has(collection.collection_id))
+        .filter(collection => !pendingIds.has(collection.collection_id))
         .map(collection => ({
           ...collection,
           updated_at:
@@ -392,6 +540,17 @@ export class SyncManager {
             collection.created_at ||
             new Date().toISOString(),
         }))
+
+      if (deletedIds.size > 0) {
+        console.log(
+          `[Sync] Skipped ${deletedIds.size} deleted collections during pull`
+        )
+      }
+      if (pendingIds.size > 0) {
+        console.log(
+          `[Sync] Skipped ${pendingIds.size} pending collections during pull`
+        )
+      }
 
       if (parsedCollections.length > 0) {
         await collectionRepository.saveCollections(parsedCollections)
@@ -406,8 +565,43 @@ export class SyncManager {
     }
   }
 
+  private async cleanupOrphanWords(userId: string): Promise<void> {
+    try {
+      const { count } = await wordRepository.deleteOrphanWords(userId)
+      if (count > 0) {
+        console.log(`[Sync] Removed ${count} orphan words`)
+        ToastService.show(
+          `${count} orphan word${count > 1 ? 's' : ''} removed from local cache.`,
+          ToastType.WARNING
+        )
+      }
+    } catch (error) {
+      console.error('[Sync] Error cleaning orphan words:', error)
+    }
+  }
+
   private async pushCollectionsToSupabase(userId: string): Promise<number> {
     try {
+      const deletedCollections =
+        await collectionRepository.getDeletedCollections(userId)
+
+      if (deletedCollections.length > 0) {
+        console.log(
+          `[Sync] Deleting ${deletedCollections.length} collections in Supabase`
+        )
+      }
+
+      for (const collection of deletedCollections) {
+        console.log(
+          `[Sync] Deleting collection ${collection.collection_id} in Supabase`
+        )
+        await collectionService.deleteCollection(
+          collection.collection_id,
+          userId
+        )
+        await collectionRepository.deleteCollection(collection.collection_id)
+      }
+
       const pendingCollections =
         await collectionRepository.getPendingSyncCollections(userId)
 
@@ -422,9 +616,7 @@ export class SyncManager {
         collection_id: c.collection_id,
         user_id: c.user_id,
         name: c.name,
-        description: c.description,
         is_shared: c.is_shared,
-        shared_with: c.shared_with,
         created_at: c.created_at,
       }))
 

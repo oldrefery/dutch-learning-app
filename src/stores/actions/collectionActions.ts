@@ -6,6 +6,7 @@ import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstan
 import { Sentry } from '@/lib/sentry'
 import { logInfo, logError } from '@/utils/logger'
 import { collectionRepository } from '@/db/collectionRepository'
+import { wordRepository } from '@/db/wordRepository'
 import * as Crypto from 'expo-crypto'
 import type {
   StoreSetFunction,
@@ -115,7 +116,7 @@ export const createCollectionActions = (
       }
 
       // Save to local SQLite
-      await collectionRepository.saveCollections([newCollection])
+      await collectionRepository.saveCollections([newCollection], 'pending')
 
       // Add to store
       const currentCollections = get().collections
@@ -138,9 +139,13 @@ export const createCollectionActions = (
 
   deleteCollection: async (collectionId: string) => {
     try {
+      console.log('[Collections] Deleting collection (local tombstone)', {
+        collectionId,
+      })
       const userId = get().currentUserId
       const userAccessLevel = get().userAccessLevel
       const currentCollections = get().collections
+      const currentWords = get().words
 
       if (!userId) {
         logError(
@@ -182,13 +187,22 @@ export const createCollectionActions = (
         return
       }
 
-      // Delete it from local SQLite (offline-first)
-      await collectionRepository.deleteCollection(collectionId)
+      // Mark it deleted locally so sync can remove it remotely
+      await collectionRepository.markCollectionDeleted(collectionId)
+      console.log('[Collections] Marked collection deleted locally', {
+        collectionId,
+      })
+
+      // Remove words tied to this collection locally
+      await wordRepository.deleteWordsByCollection(collectionId, userId)
 
       const updatedCollections = currentCollections.filter(
         collection => collection.collection_id !== collectionId
       )
-      set({ collections: updatedCollections })
+      const updatedWords = currentWords.filter(
+        word => word.collection_id !== collectionId
+      )
+      set({ collections: updatedCollections, words: updatedWords })
     } catch (error) {
       logError('Error deleting collection', error, {}, 'collections', false)
       set({

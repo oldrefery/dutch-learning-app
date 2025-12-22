@@ -10,27 +10,42 @@ appId: ${APP_ID}
 #   - runFlow:
 #       file: flows/ensure-on-screen.yaml
 #       env:
-#         screen_name: "Collections"
+#         screen_id: "screen-collections"
+#         tab_text: "Collections"
 #
 # Parameters:
-#   screen_name: Name of the target screen (e.g., "Collections", "Review", "Settings")
+#   screen_id: testID for the target screen root
+#   tab_text: Visible label of the tab button that opens the screen
 
-# Step 1: If on login screen, login first
+# Ensure app is running
+- launchApp
+
+# Step 1: If on signup screen, go back to login
+- runFlow:
+    when:
+      visible: "Create Account"
+    commands:
+      - tapOn:
+          text: "Sign in"
+      - waitForAnimationToEnd
+
+# Step 2: If on login screen, login first
 - runFlow:
     when:
       visible: "Welcome Back"
     commands:
       - runFlow: login-helper.yaml
 
-# Step 2: Navigate to target screen if not already there
+# Step 3: Navigate to target screen if not already there
 - runFlow:
     when:
-      notVisible: ${screen_name}
+      notVisible:
+        id: ${screen_id}
     commands:
       - tapOn:
-          text: ${screen_name}
+          text: ${tab_text}
       - waitForAnimationToEnd
 
-# Step 3: Assert we're on the correct screen
+# Step 4: Assert we're on the correct screen
 - assertVisible:
-    text: ${screen_name}
+    id: ${screen_id}

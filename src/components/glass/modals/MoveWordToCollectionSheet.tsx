@@ -53,11 +53,22 @@ export const MoveWordToCollectionSheet: React.FC<
     onSelectCollection(collection)
   }
 
+  const getCollectionTestId = (collection: Collection) => {
+    const rawLabel = (collection.name || '').toLowerCase()
+    const normalizedLabel = rawLabel
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+    return normalizedLabel
+      ? `move-collection-row-${normalizedLabel}`
+      : `move-collection-row-${collection.collection_id}`
+  }
+
   const renderCollectionItem = ({ item }: { item: Collection }) => (
     <TouchableOpacity
       style={styles.collectionItemWrapper}
       onPress={() => handleSelectCollection(item)}
       activeOpacity={0.6}
+      testID={getCollectionTestId(item)}
     >
       <BlurView
         intensity={isDarkMode ? 20 : 30}

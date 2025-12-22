@@ -10,6 +10,16 @@ appId: ${APP_ID}
 - inputText: "notanemail"
 - tapOn:
     id: "password-input"
+- runFlow:
+    when:
+      visible:
+        id: "password-input-toggle"
+    commands:
+      - tapOn:
+          id: "password-input-toggle"
+      - runScript: scripts/wait.js
+      - tapOn:
+          id: "password-input"
 - inputText: "ValidPass123"
 - hideKeyboard
 - tapOn:
@@ -18,4 +28,3 @@ appId: ${APP_ID}
 # Should show validation error for email format
 - assertVisible:
     text: "Please enter a valid email address"
-

@@ -98,6 +98,32 @@ export class WordRepository {
     return result ? this.parseWordRow(result) : null
   }
 
+  async getWordBySemanticKey(
+    userId: string,
+    dutchLemma: string,
+    partOfSpeech?: string,
+    article?: string
+  ): Promise<LocalWord | null> {
+    const db = await getDatabase()
+    const normalizedLemma = dutchLemma.trim().toLowerCase()
+    const normalizedPartOfSpeech = partOfSpeech || 'unknown'
+    const normalizedArticle =
+      article && article.trim() !== '' ? article.trim() : ''
+
+    const result = await db.getFirstAsync<Record<string, unknown>>(
+      `SELECT * FROM words
+       WHERE user_id = ?
+         AND lower(dutch_lemma) = ?
+         AND COALESCE(part_of_speech, 'unknown') = ?
+         AND COALESCE(article, '') = ?
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [userId, normalizedLemma, normalizedPartOfSpeech, normalizedArticle]
+    )
+
+    return result ? this.parseWordRow(result) : null
+  }
+
   async getWordsByCollectionId(collectionId: string): Promise<LocalWord[]> {
     const db = await getDatabase()
 
@@ -204,6 +230,23 @@ export class WordRepository {
     }
   }
 
+  async markWordsError(wordIds: string[]): Promise<void> {
+    const db = await getDatabase()
+
+    if (wordIds.length === 0) return
+
+    const placeholders = wordIds.map(() => '?').join(',')
+    const statement = await db.prepareAsync(
+      `UPDATE words SET sync_status = 'error', updated_at = ? WHERE word_id IN (${placeholders})`
+    )
+
+    try {
+      await statement.executeAsync(new Date().toISOString(), ...wordIds)
+    } finally {
+      await statement.finalizeAsync()
+    }
+  }
+
   async deleteWord(wordId: string, userId: string): Promise<void> {
     const db = await getDatabase()
     const statement = await db.prepareAsync(
@@ -212,6 +255,22 @@ export class WordRepository {
 
     try {
       await statement.executeAsync(wordId, userId)
+    } finally {
+      await statement.finalizeAsync()
+    }
+  }
+
+  async deleteWordsByCollection(
+    collectionId: string,
+    userId: string
+  ): Promise<void> {
+    const db = await getDatabase()
+    const statement = await db.prepareAsync(
+      'DELETE FROM words WHERE collection_id = ? AND user_id = ?'
+    )
+
+    try {
+      await statement.executeAsync(collectionId, userId)
     } finally {
       await statement.finalizeAsync()
     }
@@ -250,6 +309,28 @@ export class WordRepository {
       return { count: deletedCount, words: invalidWords }
     } finally {
       await deleteStatement.finalizeAsync()
+    }
+  }
+
+  async deleteOrphanWords(userId: string): Promise<{ count: number }> {
+    const db = await getDatabase()
+
+    const statement = await db.prepareAsync(
+      `DELETE FROM words
+       WHERE user_id = ?
+         AND (
+           collection_id IS NULL
+           OR collection_id NOT IN (
+             SELECT collection_id FROM collections WHERE user_id = ?
+           )
+         )`
+    )
+
+    try {
+      const result = await statement.executeAsync(userId, userId)
+      return { count: result.changes }
+    } finally {
+      await statement.finalizeAsync()
     }
   }
 

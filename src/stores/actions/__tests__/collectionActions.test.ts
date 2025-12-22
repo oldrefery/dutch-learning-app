@@ -188,10 +188,10 @@ describe('collectionActions', () => {
   })
 
   describe('deleteCollection', () => {
-    it('should delete collection from repository', async () => {
-      ;(collectionRepository.deleteCollection as jest.Mock).mockResolvedValue(
-        undefined
-      )
+    it('should mark collection deleted in repository', async () => {
+      ;(
+        collectionRepository.markCollectionDeleted as jest.Mock
+      ).mockResolvedValue(undefined)
 
       currentState.collections = [
         createMockCollection({ collection_id: COLLECTION_ID }),
@@ -199,7 +199,7 @@ describe('collectionActions', () => {
 
       await actions.deleteCollection(COLLECTION_ID)
 
-      expect(collectionRepository.deleteCollection).toHaveBeenCalledWith(
+      expect(collectionRepository.markCollectionDeleted).toHaveBeenCalledWith(
         COLLECTION_ID
       )
     })
@@ -212,7 +212,7 @@ describe('collectionActions', () => {
 
       await actions.deleteCollection(COLLECTION_ID)
 
-      expect(collectionRepository.deleteCollection).not.toHaveBeenCalled()
+      expect(collectionRepository.markCollectionDeleted).not.toHaveBeenCalled()
     })
 
     it('should skip if no user ID', async () => {
@@ -220,14 +220,14 @@ describe('collectionActions', () => {
 
       await actions.deleteCollection(COLLECTION_ID)
 
-      expect(collectionRepository.deleteCollection).not.toHaveBeenCalled()
+      expect(collectionRepository.markCollectionDeleted).not.toHaveBeenCalled()
     })
 
     it('should handle delete errors', async () => {
       const error = new Error('Delete failed')
-      ;(collectionRepository.deleteCollection as jest.Mock).mockRejectedValue(
-        error
-      )
+      ;(
+        collectionRepository.markCollectionDeleted as jest.Mock
+      ).mockRejectedValue(error)
 
       currentState.collections = [
         createMockCollection({ collection_id: COLLECTION_ID }),
@@ -235,7 +235,7 @@ describe('collectionActions', () => {
 
       await actions.deleteCollection(COLLECTION_ID)
 
-      expect(collectionRepository.deleteCollection).toHaveBeenCalled()
+      expect(collectionRepository.markCollectionDeleted).toHaveBeenCalled()
     })
   })
 
@@ -467,9 +467,9 @@ describe('collectionActions', () => {
     })
 
     it('should delete from repository immediately', async () => {
-      ;(collectionRepository.deleteCollection as jest.Mock).mockResolvedValue(
-        undefined
-      )
+      ;(
+        collectionRepository.markCollectionDeleted as jest.Mock
+      ).mockResolvedValue(undefined)
 
       currentState.collections = [
         createMockCollection({ collection_id: COLLECTION_ID }),
@@ -477,7 +477,7 @@ describe('collectionActions', () => {
 
       await actions.deleteCollection(COLLECTION_ID)
 
-      expect(collectionRepository.deleteCollection).toHaveBeenCalledWith(
+      expect(collectionRepository.markCollectionDeleted).toHaveBeenCalledWith(
         COLLECTION_ID
       )
     })
