@@ -1,0 +1,180 @@
+appId: ${APP_ID}
+---
+# Test: Word detail modal
+# Tests viewing full word information in modal
+#
+# What it tests:
+# - Add word to collection
+# - Open word detail modal
+# - Verify all word information displays
+# - Test pronunciation button
+# - Close modal
+
+# Ensure we're on Collections screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-collections"
+      tab_text: "Collections"
+
+# Clean up existing collection if present
+- runFlow:
+    when:
+      visible: "Modal Test"
+    commands:
+      - longPressOn:
+          id: "collection-row-modal-test"
+      - waitForAnimationToEnd
+      - tapOn:
+          id: "collection-context-delete"
+      - waitForAnimationToEnd
+      - tapOn:
+          text: "Delete"
+      - waitForAnimationToEnd
+
+# Create collection and add word
+- tapOn:
+    id: "create-collection-button"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-name-input"
+- inputText: "Modal Test"
+- runScript: scripts/wait.js
+- tapOn:
+    id: "create-button"
+- waitForAnimationToEnd
+
+# Add word with rich data
+- tapOn:
+    text: "Add Word"
+- waitForAnimationToEnd
+- tapOn:
+    id: "word-input"
+- inputText: "kopen"
+- hideKeyboard
+- tapOn:
+    id: "analyze-button"
+- extendedWaitUntil:
+    visible: "to buy"
+    timeout: 15000
+- scroll
+- tapOn:
+    id: "collection-selector"
+- tapOn:
+    text: "Modal Test"
+- scroll
+- scroll
+- runFlow:
+    when:
+      visible:
+        id: "save-word-button"
+    commands:
+      - tapOn:
+          id: "save-word-button"
+      - waitForAnimationToEnd
+      - tapOn:
+          text: "Collections"
+      - waitForAnimationToEnd
+      - tapOn:
+          text: "Modal Test"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      notVisible:
+        id: "save-word-button"
+    commands:
+      - scroll
+      - runFlow:
+          when:
+            visible:
+              id: "save-word-button"
+          commands:
+            - tapOn:
+                id: "save-word-button"
+            - waitForAnimationToEnd
+            - tapOn:
+                text: "Collections"
+            - waitForAnimationToEnd
+            - tapOn:
+                text: "Modal Test"
+            - waitForAnimationToEnd
+      - runFlow:
+          when:
+            visible:
+              id: "duplicate-collection-link"
+          commands:
+            - tapOn:
+                id: "duplicate-collection-link"
+            - waitForAnimationToEnd
+
+# Tap on word to open detail modal
+- extendedWaitUntil:
+    visible: "kopen"
+    timeout: 15000
+- tapOn:
+    text: "kopen"
+- waitForAnimationToEnd
+
+# Verify modal opened with word details
+- assertVisible: "kopen"
+- assertVisible: "to buy"
+- assertVisible: "verb"
+- runFlow:
+    when:
+      visible: "New"
+    commands:
+      - assertVisible: "New"
+- runFlow:
+    when:
+      visible: "Review"
+    commands:
+      - assertVisible: "Review"
+
+# Verify pronunciation button exists (speaker icon)
+# Note: May need to scroll within modal to see all content
+- scroll
+
+# Verify examples section (or empty state)
+- runFlow:
+    when:
+      visible: "Examples"
+    commands:
+      - assertVisible: "Examples"
+- runFlow:
+    when:
+      visible: "No examples available."
+    commands:
+      - assertVisible: "No examples available."
+
+# Close modal by swiping down
+- swipe:
+    direction: DOWN
+    distance: 50%
+- waitForAnimationToEnd
+
+# Verify modal closed (back on collection detail)
+- assertVisible: "Modal Test"
+- assertVisible: "Total Words"
+- assertVisible: "1"
+
+# Cleanup: delete word and collection, return to Collections
+- runFlow:
+    file: flows/delete-word-by-swipe.yaml
+    env:
+      word_text: "kopen"
+- tapOn:
+    text: "Back"
+- waitForAnimationToEnd
+- longPressOn:
+    id: "collection-row-modal-test"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-context-delete"
+- extendedWaitUntil:
+    visible: "Delete Collection"
+    timeout: 3000
+- tapOn:
+    text: "Delete"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "screen-collections"

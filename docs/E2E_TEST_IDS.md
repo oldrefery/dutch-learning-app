@@ -42,8 +42,12 @@ All test IDs follow kebab-case naming convention as per React Native best practi
 
 | Test ID              | Component        | Description                          |
 | -------------------- | ---------------- | ------------------------------------ |
+| `word-row-<lemma>`   | Animated.View    | Swipe target for word row by lemma   |
 | `word-delete-button` | TouchableOpacity | Delete button revealed on swipe left |
 | `word-move-button`   | TouchableOpacity | Move button revealed on swipe right  |
+
+**Note:** `word-row-<lemma>` uses lowercase and replaces non-alphanumeric
+characters with `-`.
 
 **Usage Example:**
 
@@ -52,10 +56,33 @@ All test IDs follow kebab-case naming convention as per React Native best practi
 - swipe:
     direction: LEFT
     on:
-      text: 'wordname'
+      id: 'word-row-lopen'
     distance: 40%
 - tapOn:
     id: 'word-delete-button'
+```
+
+---
+
+## Word Context Menu (Long-Press)
+
+### WordContextMenu
+
+| Test ID                           | Component | Description               |
+| --------------------------------- | --------- | ------------------------- |
+| `word-context-reset-progress`     | Pressable | Reset progress action     |
+| `word-context-move-to-collection` | Pressable | Move to collection action |
+| `word-context-delete-word`        | Pressable | Delete word action        |
+
+**Usage Example:**
+
+```yaml
+- longPressOn:
+    id: 'word-row-lopen'
+- tapOn:
+    id: 'word-context-delete-word'
+- tapOn:
+    text: 'Delete'
 ```
 
 ---
@@ -66,8 +93,12 @@ All test IDs follow kebab-case naming convention as per React Native best practi
 
 | Test ID                    | Component        | Description                                    |
 | -------------------------- | ---------------- | ---------------------------------------------- |
+| `collection-row-<name>`    | Animated.View    | Swipe/long-press target for collection row     |
 | `collection-rename-button` | TouchableOpacity | Rename button revealed on swipe left           |
 | `collection-delete-button` | TouchableOpacity | Delete button revealed on swipe left (further) |
+
+**Note:** `collection-row-<name>` uses lowercase and replaces non-alphanumeric
+characters with `-`.
 
 **Usage Example:**
 
@@ -76,10 +107,35 @@ All test IDs follow kebab-case naming convention as per React Native best practi
 - swipe:
     direction: LEFT
     on:
-      text: 'Collection Name'
+      id: 'collection-row-my-words'
     distance: 40%
 - tapOn:
     id: 'collection-rename-button'
+```
+
+---
+
+## Collection Context Menu (Long-Press)
+
+### CollectionContextMenu
+
+| Test ID                           | Component        | Description              |
+| --------------------------------- | ---------------- | ------------------------ |
+| `collection-context-rename`       | TouchableOpacity | Rename collection action |
+| `collection-context-share`        | TouchableOpacity | Share collection action  |
+| `collection-context-copy-code`    | TouchableOpacity | Copy share code action   |
+| `collection-context-stop-sharing` | TouchableOpacity | Stop sharing action      |
+| `collection-context-delete`       | TouchableOpacity | Delete collection action |
+
+**Usage Example:**
+
+```yaml
+- longPressOn:
+    id: 'collection-row-test-verbs'
+- tapOn:
+    id: 'collection-context-delete'
+- tapOn:
+    text: 'Delete'
 ```
 
 ---
@@ -136,10 +192,14 @@ All test IDs follow kebab-case naming convention as per React Native best practi
 
 ### Move Word Modal
 
-| Test ID                    | Component        | Description                                         |
-| -------------------------- | ---------------- | --------------------------------------------------- |
-| `move-to-collection-modal` | Modal            | Move word modal container                           |
-| `collection-list-item`     | TouchableOpacity | Individual collection in list (with dynamic suffix) |
+| Test ID                      | Component        | Description                                                 |
+| ---------------------------- | ---------------- | ----------------------------------------------------------- |
+| `move-to-collection-modal`   | Modal            | Move word modal container                                   |
+| `move-collection-row-<name>` | TouchableOpacity | Target collection row in move sheet                         |
+| `collection-list-item`       | TouchableOpacity | Individual collection in list (with dynamic suffix, legacy) |
+
+**Note:** `move-collection-row-<name>` uses lowercase and replaces
+non-alphanumeric characters with `-`.
 
 ---
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, useColorScheme } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { Colors } from '@/constants/Colors'
 import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
 
@@ -17,6 +17,9 @@ export const GlassHeaderBackground: React.FC<GlassHeaderBackgroundProps> = ({
   const tint: 'default' = 'default'
   const resolvedIntensity =
     typeof intensity === 'number' ? intensity : isDarkMode ? 25 : 30
+  const fallbackColor = isDarkMode
+    ? Colors.transparent.white05
+    : Colors.transparent.white50
 
   return (
     <View style={StyleSheet.absoluteFill}>
@@ -30,9 +33,10 @@ export const GlassHeaderBackground: React.FC<GlassHeaderBackgroundProps> = ({
           }}
         />
       ) : (
-        <BlurView
+        <PlatformBlurView
           tint={tint}
           intensity={resolvedIntensity}
+          fallbackColor={fallbackColor}
           style={StyleSheet.absoluteFill}
           experimentalBlurMethod={'dimezisBlurView'}
         />

@@ -1,0 +1,89 @@
+appId: ${APP_ID}
+---
+# Test: Add new word flow
+# Tests the primary user action - adding a Dutch word to vocabulary
+#
+# What it tests:
+# - Navigate to Add Word tab
+# - Input Dutch word
+# - Wait for Gemini AI analysis
+# - Verify word analysis appears
+# - Save word to collection
+# - Verify word appears in collection
+
+# Ensure we're on Add Word screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-add-word"
+      tab_text: "Add Word"
+
+# Tap on input field and enter Dutch word
+- tapOn:
+    id: "word-input"
+- inputText: "lopen"
+- hideKeyboard
+
+# Tap Analyze button
+- tapOn:
+    id: "analyze-button"
+- waitForAnimationToEnd
+
+# Wait for Gemini analysis to complete (max 15 seconds)
+- extendedWaitUntil:
+    visible: "to walk"
+    timeout: 15000
+
+# Verify word analysis loaded successfully
+- assertVisible: "verb"
+- assertVisible: "to walk"
+
+# Scroll down to see collection selector and save button
+- scroll
+
+# Select collection (tap on collection selector)
+- tapOn:
+    id: "collection-selector"
+
+# Select default collection from ActionSheet (iOS)
+- tapOn:
+    text: "My Words"
+
+# Tap Save Word button (floating action button)
+- tapOn:
+    id: "save-word-button"
+- waitForAnimationToEnd
+
+# Verify success (either navigate away or see confirmation)
+# Navigate to Collections tab to verify word was added
+- tapOn:
+    text: "Collections"
+- waitForAnimationToEnd
+
+# Tap on default collection to view words
+- tapOn:
+    text: "My Words"
+- waitForAnimationToEnd
+
+# Verify the word "lopen" appears in the list
+- assertVisible: "lopen"
+- assertVisible: "to walk"
+
+# Cleanup: delete word and return to Collections
+- runFlow:
+    file: flows/delete-word-by-swipe.yaml
+    env:
+      word_text: "lopen"
+- runFlow:
+    when:
+      visible:
+        id: "modal-close-button"
+    commands:
+      - tapOn:
+          id: "modal-close-button"
+      - waitForAnimationToEnd
+- tapOn:
+    text: "Back"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "screen-collections"

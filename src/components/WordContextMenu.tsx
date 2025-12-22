@@ -7,7 +7,7 @@ import {
   useColorScheme,
   Pressable,
 } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { Ionicons } from '@expo/vector-icons'
 import * as Haptics from 'expo-haptics'
 import Animated, {
@@ -97,19 +97,19 @@ export default function WordContextMenu({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback onPress={onClose} accessible={false}>
         <Animated.View
           style={styles.overlay}
           entering={FadeIn.duration(200)}
           exiting={FadeOut.duration(150)}
         >
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback accessible={false}>
             <Animated.View
               style={styles.menuContainer}
               entering={SlideInDown.springify().damping(20).stiffness(300)}
               exiting={SlideOutDown.duration(150)}
             >
-              <BlurView
+              <PlatformBlurView
                 style={styles.menuBlur}
                 intensity={100}
                 tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -165,45 +165,58 @@ export default function WordContextMenu({
                   <ViewThemed style={styles.menuItems}>
                     {menuItems.map((item, index) => (
                       <React.Fragment key={item.label}>
-                        <Pressable
-                          onPress={item.onPress}
-                          style={({ pressed }) => [
-                            styles.menuItem,
-                            {
-                              backgroundColor: pressed
-                                ? colorScheme === 'dark'
-                                  ? Colors.transparent.white10
-                                  : Colors.transparent.black05
-                                : 'transparent',
-                            },
-                          ]}
-                        >
-                          <Ionicons
-                            name={item.icon}
-                            size={22}
-                            color={
-                              item.destructive
-                                ? Colors.error.DEFAULT
-                                : colorScheme === 'dark'
-                                  ? Colors.primary.darkMode
-                                  : item.color
-                            }
-                          />
-                          <TextThemed
-                            style={[
-                              styles.menuItemText,
-                              {
-                                color: item.destructive
-                                  ? Colors.error.DEFAULT
-                                  : colorScheme === 'dark'
-                                    ? Colors.dark.text
-                                    : Colors.neutral[900],
-                              },
-                            ]}
-                          >
-                            {item.label}
-                          </TextThemed>
-                        </Pressable>
+                        {(() => {
+                          const itemTestId = `word-context-${item.label
+                            .toLowerCase()
+                            .replace(/\s+/g, '-')}`
+                          return (
+                            <Pressable
+                              testID={itemTestId}
+                              accessibilityLabel={item.label}
+                              accessibilityRole="button"
+                              accessible
+                              onPress={item.onPress}
+                              style={({ pressed }) => [
+                                styles.menuItem,
+                                {
+                                  backgroundColor: pressed
+                                    ? colorScheme === 'dark'
+                                      ? Colors.transparent.white10
+                                      : Colors.transparent.black05
+                                    : 'transparent',
+                                },
+                              ]}
+                            >
+                              <Ionicons
+                                name={item.icon}
+                                size={22}
+                                color={
+                                  item.destructive
+                                    ? Colors.error.DEFAULT
+                                    : colorScheme === 'dark'
+                                      ? Colors.primary.darkMode
+                                      : item.color
+                                }
+                              />
+                              <TextThemed
+                                testID={`${itemTestId}-label`}
+                                accessibilityLabel={item.label}
+                                style={[
+                                  styles.menuItemText,
+                                  {
+                                    color: item.destructive
+                                      ? Colors.error.DEFAULT
+                                      : colorScheme === 'dark'
+                                        ? Colors.dark.text
+                                        : Colors.neutral[900],
+                                  },
+                                ]}
+                              >
+                                {item.label}
+                              </TextThemed>
+                            </Pressable>
+                          )
+                        })()}
                         {index < menuItems.length - 1 && (
                           <ViewThemed
                             style={[
@@ -251,7 +264,7 @@ export default function WordContextMenu({
                     </TextThemed>
                   </TouchableOpacity>
                 </ViewThemed>
-              </BlurView>
+              </PlatformBlurView>
             </Animated.View>
           </TouchableWithoutFeedback>
         </Animated.View>

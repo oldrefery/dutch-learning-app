@@ -4,11 +4,13 @@ This document outlines the comprehensive end-to-end testing strategy for the Dut
 
 ## Test Coverage Status
 
-### ✅ Currently Implemented (11 tests)
+### ✅ Currently Implemented (22 test files)
 
 1. **Authentication Flows**
+   - `smoke-test.yaml` - Smoke login flow (quick health check)
    - `01-auth-login.yaml` - User login with credentials
    - `02-auth-signup.yaml` - New user registration
+   - `04-auth-login-error.yaml` - Login error messaging
    - `08-auth-logout.yaml` - User logout
    - `10-auth-forgot-password.yaml` - Password reset flow
 
@@ -22,6 +24,20 @@ This document outlines the comprehensive end-to-end testing strategy for the Dut
    - `03-app-navigation.yaml` - Tab navigation
    - `09-navigation-forgot-password.yaml` - Navigate to forgot password
    - `11-navigation-signup.yaml` - Navigate to signup
+
+4. **Core Learning Flows**
+   - `12-word-add-new.yaml` - Add a new word with AI analysis
+   - `13-review-flashcard-flow.yaml` - Flashcard review session
+   - `14-review-empty-state.yaml` - Review empty state
+
+5. **Collections & Words**
+   - `15-collection-create.yaml` - Create collection
+   - `16-collection-rename.yaml` - Rename collection
+   - `17-collection-delete.yaml` - Delete collection
+   - `18-collection-view-words.yaml` - View words in collection
+   - `19-word-delete-swipe.yaml` - Delete word via swipe
+   - `20-word-move-collection.yaml` - Move word to another collection
+   - `21-word-detail-modal.yaml` - Word detail modal
 
 ---
 
@@ -40,7 +56,7 @@ This document outlines the comprehensive end-to-end testing strategy for the Dut
 3. Wait for Gemini AI analysis to complete
 4. Verify translations appear
 5. Verify examples are displayed
-6. Select collection from dropdown
+6. Select collection from dropdown (defaults to "My Dutch Words")
 7. Tap "Save Word" button
 8. Verify success toast notification
 9. Navigate to collection

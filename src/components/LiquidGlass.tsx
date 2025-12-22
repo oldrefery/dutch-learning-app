@@ -7,7 +7,7 @@ import {
   type ViewStyle,
   useColorScheme,
 } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
 import {
   GlassDefaults,
@@ -69,6 +69,10 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({
     ? { borderColor, borderWidth: StyleSheet.hairlineWidth }
     : null
 
+  const fallbackColor = isDarkMode
+    ? Colors.transparent.white05
+    : Colors.transparent.white50
+
   const resolvedRadius = typeof radius === 'number' ? radius : Number(radius)
 
   const containerElevation =
@@ -97,9 +101,10 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({
           {children}
         </View>
       ) : (
-        <BlurView
+        <PlatformBlurView
           intensity={resolvedIntensity}
           tint={resolvedTint}
+          fallbackColor={fallbackColor}
           style={[
             styles.blur,
             { borderRadius: resolvedRadius },
@@ -108,7 +113,7 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({
           ]}
         >
           {children}
-        </BlurView>
+        </PlatformBlurView>
       )}
     </View>
   )

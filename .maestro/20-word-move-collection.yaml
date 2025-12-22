@@ -1,0 +1,157 @@
+appId: ${APP_ID}
+---
+# Test: Move word between collections
+# Tests moving a word to a different collection
+#
+# What it tests:
+# - Create two collections
+# - Add word to first collection
+# - Swipe right on word to reveal move action
+# - Select target collection
+# - Verify word moved
+
+# Ensure we're on Collections screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-collections"
+      tab_text: "Collections"
+
+# Create first collection
+- tapOn:
+    id: "create-collection-button"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-name-input"
+- inputText: "Source Collection"
+- runScript: scripts/wait.js
+- tapOn:
+    id: "create-button"
+- waitForAnimationToEnd
+
+# Create second collection
+- tapOn:
+    id: "create-collection-button"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-name-input"
+- inputText: "Target Collection"
+- runScript: scripts/wait.js
+- tapOn:
+    id: "create-button"
+- waitForAnimationToEnd
+
+# Add word to first collection
+- tapOn:
+    text: "Add Word"
+- waitForAnimationToEnd
+- tapOn:
+    id: "word-input"
+- inputText: "spelen"
+- hideKeyboard
+- tapOn:
+    id: "analyze-button"
+- extendedWaitUntil:
+    visible: "to play"
+    timeout: 15000
+- scroll
+- tapOn:
+    id: "collection-selector"
+- tapOn:
+    text: "Source Collection"
+- tapOn:
+    id: "save-word-button"
+- waitForAnimationToEnd
+
+# Navigate to source collection
+- tapOn:
+    text: "Collections"
+- waitForAnimationToEnd
+- tapOn:
+    text: "Source Collection"
+- waitForAnimationToEnd
+
+# Verify word exists
+- assertVisible: "spelen"
+
+# Long press on word to open context menu
+- longPressOn:
+    id: "word-row-spelen"
+- waitForAnimationToEnd
+
+# Tap move action using context menu
+- tapOn:
+    id: "word-context-move-to-collection"
+- waitForAnimationToEnd
+
+# Verify move modal opened
+- assertVisible: "Move to Collection"
+
+# Select target collection
+- tapOn:
+    id: "move-collection-row-target-collection"
+- waitForAnimationToEnd
+
+# Verify word removed from source
+- assertNotVisible: "spelen"
+- extendedWaitUntil:
+    visible: "Back"
+    timeout: 15000
+# Navigate back
+- tapOn:
+    text: "Back"
+- waitForAnimationToEnd
+# Ensure we are back on Collections screen before selecting target collection
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-collections"
+      tab_text: "Collections"
+
+# Navigate to target collection
+- extendedWaitUntil:
+    visible:
+      id: "collection-row-target-collection"
+    timeout: 15000
+- tapOn:
+    id: "collection-row-target-collection"
+- waitForAnimationToEnd
+
+# Verify word appears in target
+- assertVisible: "spelen"
+- assertVisible: "to play"
+
+# Cleanup: delete word from target collection
+- runFlow:
+    file: flows/delete-word-by-swipe.yaml
+    env:
+      word_text: "spelen"
+
+# Return to Collections and delete both collections
+- tapOn:
+    text: "Back"
+- waitForAnimationToEnd
+- longPressOn:
+    id: "collection-row-source-collection"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-context-delete"
+- extendedWaitUntil:
+    visible: "Delete Collection"
+    timeout: 3000
+- tapOn:
+    text: "Delete"
+- waitForAnimationToEnd
+- longPressOn:
+    id: "collection-row-target-collection"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-context-delete"
+- extendedWaitUntil:
+    visible: "Delete Collection"
+    timeout: 3000
+- tapOn:
+    text: "Delete"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "screen-collections"

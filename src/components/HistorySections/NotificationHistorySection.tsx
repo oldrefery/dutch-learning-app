@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { StyleSheet, FlatList, useColorScheme } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useHistoryStore } from '@/stores/useHistoryStore'
@@ -57,7 +57,7 @@ export function NotificationHistorySection() {
   if (notifications.length === 0) {
     return (
       <ViewThemed style={styles.sectionContainer}>
-        <BlurView
+        <PlatformBlurView
           style={styles.sectionBlur}
           intensity={100}
           tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -85,14 +85,14 @@ export function NotificationHistorySection() {
               No recent notifications
             </TextThemed>
           </ViewThemed>
-        </BlurView>
+        </PlatformBlurView>
       </ViewThemed>
     )
   }
 
   return (
     <ViewThemed style={styles.sectionContainer}>
-      <BlurView
+      <PlatformBlurView
         style={styles.sectionBlur}
         intensity={100}
         tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -158,7 +158,7 @@ export function NotificationHistorySection() {
             )}
           />
         </ViewThemed>
-      </BlurView>
+      </PlatformBlurView>
     </ViewThemed>
   )
 }

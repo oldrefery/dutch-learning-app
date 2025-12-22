@@ -1,0 +1,109 @@
+appId: ${APP_ID}
+---
+# Test: View words in collection
+# Tests viewing collection detail with word list
+#
+# What it tests:
+# - Navigate to collection detail
+# - Verify collection header and stats
+# - Verify word list displays
+# - Navigate back to collections
+
+# Ensure we're on Collections screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-collections"
+      tab_text: "Collections"
+
+# Create collection and add a word
+- tapOn:
+    id: "create-collection-button"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-name-input"
+- inputText: "View Test"
+- runScript: scripts/wait.js
+- tapOn:
+    id: "create-button"
+- waitForAnimationToEnd
+
+# Add word to collection
+- tapOn:
+    text: "Add Word"
+- waitForAnimationToEnd
+- tapOn:
+    id: "word-input"
+- inputText: "eten"
+- hideKeyboard
+- tapOn:
+    id: "analyze-button"
+- extendedWaitUntil:
+    visible: "to eat"
+    timeout: 15000
+- scroll
+- tapOn:
+    id: "collection-selector"
+- tapOn:
+    text: "View Test"
+- tapOn:
+    id: "save-word-button"
+- waitForAnimationToEnd
+
+# Navigate back to Collections tab
+- tapOn:
+    text: "Collections"
+- waitForAnimationToEnd
+
+# Tap on collection card to view details
+- tapOn:
+    text: "View Test"
+- waitForAnimationToEnd
+
+# Verify collection detail screen opened
+- assertVisible: "View Test"
+
+# Verify collection stats visible
+- assertVisible: "Total Words"
+- assertVisible: "1"
+
+# Verify word list displays
+- assertVisible: "eten"
+- assertVisible: "to eat"
+
+# Verify status badge (should be "New")
+- assertVisible: "New"
+
+# Navigate back
+- tapOn:
+    text: "Back"
+- waitForAnimationToEnd
+
+# Verify back on Collections screen
+- assertVisible:
+    id: "screen-collections"
+
+# Cleanup: delete word and collection
+- tapOn:
+    text: "View Test"
+- waitForAnimationToEnd
+- runFlow:
+    file: flows/delete-word-by-swipe.yaml
+    env:
+      word_text: "eten"
+- tapOn:
+    text: "Back"
+- waitForAnimationToEnd
+- longPressOn:
+    id: "collection-row-view-test"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-context-delete"
+- extendedWaitUntil:
+    visible: "Delete Collection"
+    timeout: 3000
+- tapOn:
+    text: "Delete"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "screen-collections"

@@ -58,6 +58,15 @@ function SwipeableCollectionCardContent({
     word => word && word.collection_id === collection.collection_id
   )
   const stats = calculateCollectionStats(collectionWords)
+  const collectionRowTestId = (() => {
+    const rawLabel = (collection.name || '').toLowerCase()
+    const normalizedLabel = rawLabel
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+    return normalizedLabel
+      ? `collection-row-${normalizedLabel}`
+      : `collection-row-${collection.collection_id}`
+  })()
 
   const handleDelete = () => {
     // Prevent read-only users from deleting their last collection
@@ -284,6 +293,7 @@ function SwipeableCollectionCardContent({
                   : Colors.background.primary,
             },
           ]}
+          testID={collectionRowTestId}
         >
           <ViewThemed
             style={styles.cardContent}

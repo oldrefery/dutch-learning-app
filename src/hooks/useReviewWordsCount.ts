@@ -7,6 +7,7 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
  */
 export function useReviewWordsCount() {
   const words = useApplicationStore(state => state.words)
+  const collections = useApplicationStore(state => state.collections)
   const fetchWords = useApplicationStore(state => state.fetchWords)
   const wordsLoading = useApplicationStore(state => state.wordsLoading)
 
@@ -14,10 +15,18 @@ export function useReviewWordsCount() {
 
   const reviewWordsCount = useMemo(() => {
     const now = new Date()
+    const collectionIdSet = new Set(
+      collections.map(collection => collection.collection_id)
+    )
     return words.filter(
-      w => w && w.next_review_date && new Date(w.next_review_date) <= now
+      w =>
+        w &&
+        w.collection_id &&
+        collectionIdSet.has(w.collection_id) &&
+        w.next_review_date &&
+        new Date(w.next_review_date) <= now
     ).length
-  }, [words])
+  }, [collections, words])
 
   const refreshCount = useCallback(async () => {
     setRefreshing(true)

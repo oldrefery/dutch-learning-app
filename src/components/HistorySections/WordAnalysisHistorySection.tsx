@@ -10,7 +10,7 @@ import {
   useColorScheme,
   TouchableOpacity,
 } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useHistoryStore } from '@/stores/useHistoryStore'
@@ -35,7 +35,7 @@ export function WordAnalysisHistorySection({
   if (analyzedWords.length === 0) {
     return (
       <ViewThemed style={styles.sectionContainer}>
-        <BlurView
+        <PlatformBlurView
           style={styles.sectionBlur}
           intensity={100}
           tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -63,14 +63,14 @@ export function WordAnalysisHistorySection({
               No recently analyzed words
             </TextThemed>
           </ViewThemed>
-        </BlurView>
+        </PlatformBlurView>
       </ViewThemed>
     )
   }
 
   return (
     <ViewThemed style={styles.sectionContainer}>
-      <BlurView
+      <PlatformBlurView
         style={styles.sectionBlur}
         intensity={100}
         tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -165,7 +165,7 @@ export function WordAnalysisHistorySection({
             )}
           />
         </ViewThemed>
-      </BlurView>
+      </PlatformBlurView>
     </ViewThemed>
   )
 }

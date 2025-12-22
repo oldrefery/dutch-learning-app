@@ -31,11 +31,12 @@ Before running tests, ensure:
    npm run android  # for Android
    ```
 
-2. Environment variables are configured in `.env`:
-   - `EXPO_PUBLIC_DEV_USER_EMAIL` - Test user email
-   - `EXPO_PUBLIC_DEV_USER_PASSWORD` - Test user password
+2. Environment variables are configured in `.maestro/.maestro.env` or `.env`:
+   - `MAESTRO_TEST_EMAIL` - Test user email
+   - `MAESTRO_TEST_PASSWORD` - Test user password
 
-   These are automatically loaded from `.env` when running `npm run e2e:test` commands.
+   If `MAESTRO_TEST_*` are not set, the scripts fall back to
+   `EXPO_PUBLIC_DEV_USER_EMAIL` and `EXPO_PUBLIC_DEV_USER_PASSWORD` from `.env`.
 
 ### Run a single test
 
@@ -84,7 +85,8 @@ Tests the login flow with dev user credentials loaded from environment variables
 
 **Credentials:**
 
-- Loaded from `EXPO_PUBLIC_DEV_USER_EMAIL` and `EXPO_PUBLIC_DEV_USER_PASSWORD` in `.env`
+- Loaded from `MAESTRO_TEST_EMAIL` and `MAESTRO_TEST_PASSWORD` (or fallback to
+  `EXPO_PUBLIC_DEV_USER_EMAIL` and `EXPO_PUBLIC_DEV_USER_PASSWORD` in `.env`)
 - Passed to test as `${MAESTRO_TEST_EMAIL}` and `${MAESTRO_TEST_PASSWORD}`
 - Never hardcoded in test files for security
 
@@ -124,7 +126,7 @@ appId: com.oldrefery.dutchlearningapp
 - launchApp
 
 # Action: Wait for animations to finish
-- waitForAnimationToFinish
+- waitForAnimationToEnd
 
 # Action: Assert text is visible
 - assertVisible:
@@ -151,7 +153,7 @@ appId: com.oldrefery.dutchlearningapp
 ### Best Practices
 
 1. **Use testID for critical elements** - Makes tests more reliable
-2. **Add wait commands** - Use `waitForAnimationToFinish` after navigation
+2. **Add wait commands** - Use `waitForAnimationToEnd` after navigation
 3. **One test per flow** - Keep tests focused on a single user journey
 4. **Use clear naming** - Prefix with numbers (01-, 02-) for execution order
 5. **Add comments** - Explain what each test section does
@@ -162,22 +164,22 @@ Tests load credentials from environment variables to keep sensitive data out of 
 
 ```bash
 # Environment variables used by tests:
-# MAESTRO_TEST_EMAIL - passed from EXPO_PUBLIC_DEV_USER_EMAIL (.env)
-# MAESTRO_TEST_PASSWORD - passed from EXPO_PUBLIC_DEV_USER_PASSWORD (.env)
+# MAESTRO_TEST_EMAIL - passed from MAESTRO_TEST_EMAIL (or EXPO_PUBLIC_DEV_USER_EMAIL fallback)
+# MAESTRO_TEST_PASSWORD - passed from MAESTRO_TEST_PASSWORD (or EXPO_PUBLIC_DEV_USER_PASSWORD fallback)
 ```
 
 **Important:** Never hardcode credentials in test files. The npm scripts automatically:
 
-1. Read `EXPO_PUBLIC_DEV_USER_EMAIL` and `EXPO_PUBLIC_DEV_USER_PASSWORD` from `.env`
-2. Pass them as `MAESTRO_TEST_EMAIL` and `MAESTRO_TEST_PASSWORD` environment variables
+1. Read `MAESTRO_TEST_EMAIL` and `MAESTRO_TEST_PASSWORD` from `.maestro/.maestro.env` or `.env`
+2. If missing, fallback to `EXPO_PUBLIC_DEV_USER_EMAIL` and `EXPO_PUBLIC_DEV_USER_PASSWORD`
 3. Maestro test files reference them as `${MAESTRO_TEST_EMAIL}` and `${MAESTRO_TEST_PASSWORD}`
 
 **To use custom credentials:**
 
 ```bash
 # Option 1: Update .env file (tracked locally, not in git)
-EXPO_PUBLIC_DEV_USER_EMAIL=test@example.com
-EXPO_PUBLIC_DEV_USER_PASSWORD=password123
+MAESTRO_TEST_EMAIL=test@example.com
+MAESTRO_TEST_PASSWORD=password123
 
 # Option 2: Pass via command line (for CI/CD)
 MAESTRO_TEST_EMAIL=test@example.com MAESTRO_TEST_PASSWORD=password123 npm run e2e:test:all
@@ -246,11 +248,11 @@ cp .maestro/config.yaml.example .maestro/config.yaml
 
 - Ensure the element has a `testID` prop
 - Use Maestro Studio to inspect the app and find the correct selector
-- Check that `waitForAnimationToFinish` is called before asserting visibility
+- Check that `waitForAnimationToEnd` is called before asserting visibility
 
 ### Flaky tests
 
-- Add more `waitForAnimationToFinish` calls
+- Add more `waitForAnimationToEnd` calls
 - Use `assertVisible` instead of `tapOn` to wait for elements
 - Increase wait times if needed
 

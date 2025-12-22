@@ -174,9 +174,10 @@ export default function TabLayout() {
       labelStyle={labelStyle as ComponentProps<typeof NativeTabs>['labelStyle']}
       labelVisibilityMode="labeled"
     >
-      {/* Primary navigation - left side (most frequent use) */}
+      {/* Primary navigation - left side (the most frequent use) */}
       <TabTrigger
         name="index"
+        testID="tab-collections"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
       >
         <Label>Collections</Label>
@@ -192,6 +193,7 @@ export default function TabLayout() {
       {/* Secondary navigation */}
       <TabTrigger
         name="history"
+        testID="tab-history"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
       >
         <Label>History</Label>
@@ -206,6 +208,7 @@ export default function TabLayout() {
 
       <TabTrigger
         name="settings"
+        testID="tab-settings"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
       >
         <Label>Settings</Label>
@@ -221,6 +224,7 @@ export default function TabLayout() {
       {/* Primary actions - right side for thumb accessibility */}
       <TabTrigger
         name="review"
+        testID="tab-review"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
       >
         <Label>Review</Label>
@@ -262,6 +266,7 @@ export default function TabLayout() {
 
       <TabTrigger
         name="add-word"
+        testID="tab-add-word"
         hidden={userAccessLevel !== 'full_access'}
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
       >

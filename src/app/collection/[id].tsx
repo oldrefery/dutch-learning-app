@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity, useColorScheme } from 'react-native'
 import { useLocalSearchParams, router, Stack } from 'expo-router'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { GlassHeaderBackground } from '@/components/glass/GlassHeaderBackground'
 import { Ionicons } from '@expo/vector-icons'
 import { useHeaderHeight } from '@react-navigation/elements'
@@ -149,7 +149,7 @@ export default function CollectionDetailScreen() {
           onPress={handleQuickAddWord}
           activeOpacity={0.8}
         >
-          <BlurView
+          <PlatformBlurView
             style={styles.fabBlur}
             intensity={90}
             tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -172,7 +172,7 @@ export default function CollectionDetailScreen() {
                 color={Colors.background.primary}
               />
             </ViewThemed>
-          </BlurView>
+          </PlatformBlurView>
         </TouchableOpacity>
       </ViewThemed>
 

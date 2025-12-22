@@ -3,7 +3,7 @@ import { Keyboard, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
 import { ViewThemed, TextThemed } from '@/components/Themed'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
@@ -25,6 +25,8 @@ import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 import { Sentry } from '@/lib/sentry'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 import { Colors } from '@/constants/Colors.ts'
+import { wordRepository } from '@/db/wordRepository'
+import { isNetworkAvailable } from '@/utils/networkUtils'
 
 interface DuplicateWordData {
   word_id: string
@@ -84,22 +86,87 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
       setIsCheckingDuplicate(true)
 
       try {
+        const localMatch = await wordRepository.getWordBySemanticKey(
+          currentUserId,
+          analysisResult.dutch_lemma,
+          analysisResult.part_of_speech,
+          analysisResult.article
+        )
+        const localCollectionName =
+          localMatch?.collection_id &&
+          collections.find(
+            collection => collection.collection_id === localMatch.collection_id
+          )?.name
+
+        if (__DEV__) {
+          console.log('[AddWord][DuplicateCheck] Local result', {
+            isDuplicate: Boolean(localMatch && localCollectionName),
+            wordId: localMatch?.word_id ?? null,
+            collectionId: localMatch?.collection_id ?? null,
+            collectionName: localCollectionName ?? null,
+          })
+        }
+
+        if (localMatch && localCollectionName) {
+          setIsAlreadyInCollection(true)
+          setDuplicateWordInfo(localMatch)
+          ToastService.show(
+            `Word "${analysisResult.dutch_lemma}" already exists in collection`,
+            ToastType.ERROR
+          )
+          return
+        }
+
+        const hasNetwork = await isNetworkAvailable()
+        if (!hasNetwork) {
+          setIsAlreadyInCollection(false)
+          setDuplicateWordInfo(null)
+          return
+        }
+
+        if (__DEV__) {
+          console.log('[AddWord][DuplicateCheck] Querying remote word', {
+            userId: currentUserId,
+            dutchLemma: analysisResult.dutch_lemma,
+            partOfSpeech: analysisResult.part_of_speech,
+            article: analysisResult.article ?? null,
+          })
+        }
+
         const existingWord = await wordService.checkWordExists(
           currentUserId,
           analysisResult.dutch_lemma,
           analysisResult.part_of_speech,
           analysisResult.article
         )
-        const isDuplicate = !!existingWord
+        const isDuplicate = Boolean(existingWord)
+        const existingCollectionName =
+          existingWord?.collection_id &&
+          collections.find(
+            collection =>
+              collection.collection_id === existingWord.collection_id
+          )?.name
+
+        if (__DEV__) {
+          console.log('[AddWord][DuplicateCheck] Remote result', {
+            isDuplicate,
+            wordId: existingWord?.word_id ?? null,
+            collectionId: existingWord?.collection_id ?? null,
+            collectionName: existingCollectionName ?? null,
+            dutchLemma: existingWord?.dutch_lemma ?? null,
+            partOfSpeech: existingWord?.part_of_speech ?? null,
+            article: existingWord?.article ?? null,
+          })
+        }
 
         setIsAlreadyInCollection(isDuplicate)
-        setDuplicateWordInfo(existingWord)
+        setDuplicateWordInfo(existingCollectionName ? existingWord : null)
 
         if (isDuplicate) {
-          ToastService.show(
-            `Word "${analysisResult.dutch_lemma}" already exists in collection`,
-            ToastType.ERROR
-          )
+          const message = existingCollectionName
+            ? `Word "${analysisResult.dutch_lemma}" already exists in collection`
+            : `Word "${analysisResult.dutch_lemma}" exists in your cloud data but not on this device`
+          ToastService.show(message, ToastType.ERROR)
         }
       } catch (error) {
         setIsAlreadyInCollection(false)
@@ -117,7 +184,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     }
 
     void checkForDuplicates()
-  }, [analysisResult, currentUserId])
+  }, [analysisResult, currentUserId, collections])
 
   const handleAnalyze = async () => {
     // Normalize input: trim, remove periods, replace multiple spaces with a single space
@@ -198,6 +265,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
   return (
     <ViewThemed
+      testID="screen-add-word"
       style={[
         addWordScreenStyles.container,
         {
@@ -228,7 +296,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
             }}
           />
         ) : (
-          <BlurView
+          <PlatformBlurView
             tint="default"
             intensity={25}
             style={{

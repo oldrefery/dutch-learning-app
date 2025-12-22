@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, useColorScheme } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { SkeletonNumber } from '@/components/SkeletonLoader'
@@ -32,7 +32,7 @@ export const StatsCard = ({
 
   return (
     <ViewThemed style={styles.statsCardContainer}>
-      <BlurView
+      <PlatformBlurView
         style={styles.statsBlur}
         intensity={100}
         tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -184,7 +184,7 @@ export const StatsCard = ({
             </ViewThemed>
           )}
         </ViewThemed>
-      </BlurView>
+      </PlatformBlurView>
     </ViewThemed>
   )
 }

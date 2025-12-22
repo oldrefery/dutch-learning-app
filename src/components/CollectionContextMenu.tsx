@@ -8,7 +8,7 @@ import {
   Platform,
   View,
 } from 'react-native'
-import { BlurView } from 'expo-blur'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { GlassHeader } from '@/components/glass/GlassHeader'
 import Animated, {
   useSharedValue,
@@ -60,6 +60,10 @@ function ReadOnlyMenuItems({
     <>
       {isShared && (
         <TouchableOpacity
+          testID="collection-context-copy-code"
+          accessibilityLabel="Copy Code"
+          accessibilityRole="button"
+          accessible
           style={styles.menuItem}
           onPress={() => handleAction(onCopyCode)}
         >
@@ -89,6 +93,10 @@ function ReadOnlyMenuItems({
             />
           )}
           <TouchableOpacity
+            testID="collection-context-delete"
+            accessibilityLabel="Delete"
+            accessibilityRole="button"
+            accessible
             style={styles.menuItem}
             onPress={() => handleAction(onDelete)}
           >
@@ -132,6 +140,10 @@ function FullAccessMenuItems({
     <>
       {/* Rename */}
       <TouchableOpacity
+        testID="collection-context-rename"
+        accessibilityLabel="Rename"
+        accessibilityRole="button"
+        accessible
         style={styles.menuItem}
         onPress={() => handleAction(onRename)}
       >
@@ -149,6 +161,10 @@ function FullAccessMenuItems({
       {isShared ? (
         <>
           <TouchableOpacity
+            testID="collection-context-copy-code"
+            accessibilityLabel="Copy Code"
+            accessibilityRole="button"
+            accessible
             style={styles.menuItem}
             onPress={() => handleAction(onCopyCode)}
           >
@@ -163,6 +179,10 @@ function FullAccessMenuItems({
           </TouchableOpacity>
 
           <TouchableOpacity
+            testID="collection-context-stop-sharing"
+            accessibilityLabel="Stop Sharing"
+            accessibilityRole="button"
+            accessible
             style={styles.menuItem}
             onPress={() => handleAction(onStopSharing)}
           >
@@ -196,6 +216,10 @@ function FullAccessMenuItems({
         </>
       ) : (
         <TouchableOpacity
+          testID="collection-context-share"
+          accessibilityLabel="Share Collection"
+          accessibilityRole="button"
+          accessible
           style={styles.menuItem}
           onPress={() => handleAction(onShare)}
         >
@@ -224,6 +248,10 @@ function FullAccessMenuItems({
 
       {/* Delete */}
       <TouchableOpacity
+        testID="collection-context-delete"
+        accessibilityLabel="Delete"
+        accessibilityRole="button"
+        accessible
         style={styles.menuItem}
         onPress={() => handleAction(onDelete)}
       >
@@ -288,14 +316,14 @@ export default function CollectionContextMenu({
 
   return (
     <Modal visible={visible} transparent animationType="none">
-      <Pressable style={styles.backdrop} onPress={onClose}>
+      <Pressable style={styles.backdrop} onPress={onClose} accessible={false}>
         <Animated.View
           style={[styles.backdropOverlay, animatedBackdropStyle]}
         />
       </Pressable>
 
       <Animated.View style={[styles.menuContainer, animatedMenuStyle]}>
-        <BlurView
+        <PlatformBlurView
           intensity={isDarkMode ? 80 : 60}
           tint={isDarkMode ? 'dark' : 'light'}
           style={styles.blurContainer}
@@ -349,7 +377,7 @@ export default function CollectionContextMenu({
               <TextThemed style={styles.cancelButtonText}>Cancel</TextThemed>
             </TouchableOpacity>
           </ViewThemed>
-        </BlurView>
+        </PlatformBlurView>
       </Animated.View>
     </Modal>
   )

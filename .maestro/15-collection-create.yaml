@@ -1,0 +1,58 @@
+appId: ${APP_ID}
+---
+# Test: Create new collection
+# Tests creating a new word collection
+#
+# What it tests:
+# - Navigate to Collections tab
+# - Open create collection modal
+# - Input collection name
+# - Create collection
+# - Verify collection appears in list
+
+# Ensure we're on Collections screen (login if needed)
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: "screen-collections"
+      tab_text: "Collections"
+
+# Tap Create Collection button in SectionHeader
+- tapOn:
+    id: "create-collection-button"
+- waitForAnimationToEnd
+
+# Verify modal/sheet opened
+- assertVisible: "New Collection"
+
+# Input collection name
+- tapOn:
+    id: "collection-name-input"
+- inputText: "Test Verbs"
+- runScript: scripts/wait.js
+
+# Tap Create button
+- tapOn:
+    id: "create-button"
+- waitForAnimationToEnd
+
+# Verify modal closed and collection appears
+- assertVisible: "Test Verbs"
+
+# Verify collection card shows in list
+- assertVisible: "Test Verbs"
+
+# Cleanup: delete created collection and return to Collections
+- longPressOn:
+    id: "collection-row-test-verbs"
+- waitForAnimationToEnd
+- tapOn:
+    id: "collection-context-delete"
+- extendedWaitUntil:
+    visible: "Delete Collection"
+    timeout: 3000
+- tapOn:
+    text: "Delete"
+- waitForAnimationToEnd
+- assertVisible:
+    id: "screen-collections"

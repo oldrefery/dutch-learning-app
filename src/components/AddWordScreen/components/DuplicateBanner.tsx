@@ -73,6 +73,7 @@ export function DuplicateBanner({
           Already in{' '}
         </TextThemed>
         <TouchableOpacity
+          testID="duplicate-collection-link"
           onPress={handleNavigateToCollection}
           activeOpacity={0.7}
         >

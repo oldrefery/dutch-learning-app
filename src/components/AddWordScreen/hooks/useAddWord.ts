@@ -15,7 +15,7 @@ export const useAddWord = (preselectedCollectionId?: string) => {
   const { collections } = useCollections()
 
   // Auto-select a preselected collection or first collection if available and none selected
-  // Also re-select if current selection is no longer valid (e.g., collection was deleted)
+  // Also re-select if the current selection is no longer valid (e.g., a collection was deleted)
   useEffect(() => {
     if (collections.length === 0) {
       // No collections available - clear selection
@@ -25,7 +25,7 @@ export const useAddWord = (preselectedCollectionId?: string) => {
       return
     }
 
-    // Check if currently selected collection is still valid
+    // Check if a currently selected collection is still valid
     const isCurrentCollectionValid =
       selectedCollection &&
       collections.some(
@@ -34,7 +34,7 @@ export const useAddWord = (preselectedCollectionId?: string) => {
 
     // If no collection selected OR current selection is invalid
     if (!selectedCollection || !isCurrentCollectionValid) {
-      // Try to select preselected collection first
+      // Try to select a preselected collection first
       if (preselectedCollectionId) {
         const preselectedCollection = collections.find(
           c => c.collection_id === preselectedCollectionId
@@ -60,7 +60,7 @@ export const useAddWord = (preselectedCollectionId?: string) => {
         try {
           targetCollection = await useApplicationStore
             .getState()
-            .createNewCollection('My Dutch Words')
+            .createNewCollection('My Words')
           setSelectedCollection(targetCollection)
         } catch {
           ToastService.show(

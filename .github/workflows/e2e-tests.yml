@@ -56,7 +56,7 @@ jobs:
           echo "=== EAS Configuration ==="
           cat eas.json | jq '.build["e2e-test"]'
           echo "=== App Configuration ==="
-          cat app.json | jq '.expo.android.package'
+          npx expo config --json | jq '.expo.android.package'
 
       - name: Build Android APK for E2E tests
         id: build
@@ -112,7 +112,7 @@ jobs:
             $HOME/.maestro/bin/maestro --version
 
             echo "=== Running E2E tests ==="
-            $HOME/.maestro/bin/maestro test .maestro -e APP_ID=com.oldrefery.dutchlearningapp --env email="${{ secrets.MAESTRO_TEST_EMAIL }}" --env password="${{ secrets.MAESTRO_TEST_PASSWORD }}" --format junit --output ./maestro-results.xml || TEST_EXIT_CODE=$?
+            $HOME/.maestro/bin/maestro test .maestro -e APP_ID=com.oldrefery.dutchlearningapp --env MAESTRO_TEST_EMAIL="${{ secrets.MAESTRO_TEST_EMAIL }}" --env MAESTRO_TEST_PASSWORD="${{ secrets.MAESTRO_TEST_PASSWORD }}" --format junit --output ./maestro-results.xml || TEST_EXIT_CODE=$?
 
             echo "=== Tests finished with exit code: ${TEST_EXIT_CODE:-0} ==="
 
