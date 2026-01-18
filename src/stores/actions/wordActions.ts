@@ -117,6 +117,36 @@ export const createWordActions = (
         analyzedWord.collection_id = collectionId
       }
 
+      // Check for duplicate before saving (defense in depth)
+      const existingWord = await wordRepository.getWordBySemanticKey(
+        userId,
+        analyzedWord.dutch_lemma,
+        analyzedWord.part_of_speech,
+        analyzedWord.article
+      )
+
+      if (existingWord) {
+        const errorMsg = `Word "${analyzedWord.dutch_lemma}" already exists in your collection`
+        logInfo(
+          'Duplicate word prevented at store level',
+          {
+            dutch_lemma: analyzedWord.dutch_lemma,
+            part_of_speech: analyzedWord.part_of_speech,
+            article: analyzedWord.article,
+            existing_word_id: existingWord.word_id,
+          },
+          'words'
+        )
+        set({
+          error: {
+            message: WORD_SAVE_FAILED,
+            details: errorMsg,
+          },
+        })
+        // Throw error for duplicate to prevent further processing
+        throw new Error(errorMsg)
+      }
+
       // Offline-first: save to local SQLite
       // Generate word_id on a client for offline-first architecture
       const wordToAdd = {
@@ -138,6 +168,10 @@ export const createWordActions = (
       set({ words: [...currentWords, wordToAdd] })
       return wordToAdd
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : UNKNOWN_ERROR
+      const isDuplicateError = errorMessage.includes('already exists')
+
       Sentry.captureException(error, {
         tags: { operation: 'saveAnalyzedWord' },
         extra: { analyzedWord, collectionId, userId: get().currentUserId },
@@ -146,9 +180,15 @@ export const createWordActions = (
       set({
         error: {
           message: WORD_SAVE_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+          details: errorMessage,
         },
       })
+
+      // Re-throw duplicate errors to prevent further processing
+      // Don't re-throw repository errors to maintain backward compatibility
+      if (isDuplicateError) {
+        throw error
+      }
     }
   },
 
