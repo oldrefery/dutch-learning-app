@@ -13,6 +13,7 @@ import type { ApplicationState } from '@/types/ApplicationStoreTypes'
 jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
     getWordsByUserId: jest.fn(),
+    getWordBySemanticKey: jest.fn(),
     addWord: jest.fn(),
     deleteWord: jest.fn(),
     updateWordProgress: jest.fn(),
@@ -98,6 +99,9 @@ describe('wordActions', () => {
     })
 
     mockGet = jest.fn(() => currentState)
+
+    // Mock getWordBySemanticKey to return null by default (no duplicate)
+    ;(wordRepository.getWordBySemanticKey as jest.Mock).mockResolvedValue(null)
 
     actions = createWordActions(mockSet, mockGet)
   })
@@ -296,6 +300,44 @@ describe('wordActions', () => {
           userId: USER_ID,
         }),
       })
+    })
+
+    it('should prevent duplicate word insertion', async () => {
+      const analyzedWord = {
+        dutch_lemma: 'lopen',
+        part_of_speech: 'verb',
+        article: null,
+        translations: { en: ['walk'] },
+      }
+      const existingWord = createMockWord({
+        dutch_lemma: 'lopen',
+        part_of_speech: 'verb',
+      })
+
+      // Mock getWordBySemanticKey to return existing word
+      ;(wordRepository.getWordBySemanticKey as jest.Mock).mockResolvedValue(
+        existingWord
+      )
+
+      await expect(actions.saveAnalyzedWord(analyzedWord)).rejects.toThrow(
+        'already exists'
+      )
+
+      expect(wordRepository.getWordBySemanticKey).toHaveBeenCalledWith(
+        USER_ID,
+        'lopen',
+        'verb',
+        null
+      )
+      expect(wordRepository.addWord).not.toHaveBeenCalled()
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            message: 'Failed to save analyzed word',
+            details: expect.stringContaining('already exists'),
+          }),
+        })
+      )
     })
   })
 

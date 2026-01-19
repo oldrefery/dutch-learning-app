@@ -213,6 +213,15 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const handleAddWord = async () => {
     if (!analysisResult) return
 
+    // Prevent adding duplicates (race condition protection)
+    if (isAlreadyInCollection) {
+      ToastService.show(
+        `Word "${analysisResult.dutch_lemma}" already exists in your collection`,
+        ToastType.ERROR
+      )
+      return
+    }
+
     const success = await addWord(analysisResult)
     if (success) {
       setInputWord('')
