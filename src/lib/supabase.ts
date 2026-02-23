@@ -8,7 +8,7 @@ import * as Sentry from '@sentry/react-native'
 import { retrySupabaseFunction } from '@/utils/retryUtils'
 import { categorizeSupabaseError } from '@/types/ErrorTypes'
 import { checkNetworkConnection } from '@/utils/networkUtils'
-import { logSupabaseError } from '@/utils/logger'
+import { logSupabaseError, logWarning } from '@/utils/logger'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -43,6 +43,30 @@ export const getDevUserId = (): string => {
 
 // Constants for word analysis
 const WORD_ANALYSIS_CATEGORY = 'word.analysis'
+const POSTGRES_UNIQUE_VIOLATION_CODE = '23505'
+const SEMANTIC_UNIQUE_INDEX = 'idx_words_semantic_unique'
+
+interface SupabaseLikeError {
+  code?: string
+  message?: string
+  details?: string
+}
+
+const normalizePartOfSpeech = (value?: string | null): string =>
+  value && value.trim() !== '' ? value.trim() : 'unknown'
+
+const normalizeArticle = (value?: string | null): string =>
+  value && value.trim() !== '' ? value.trim() : ''
+
+const isSemanticDuplicateError = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') return false
+  const supabaseError = error as SupabaseLikeError
+  const details = `${supabaseError.message || ''} ${supabaseError.details || ''}`
+  return (
+    supabaseError.code === POSTGRES_UNIQUE_VIOLATION_CODE &&
+    details.includes(SEMANTIC_UNIQUE_INDEX)
+  )
+}
 
 export const wordService = {
   // Analyze word using Gemini AI with retry logic
@@ -180,10 +204,8 @@ export const wordService = {
     article?: string
   ) {
     const normalizedLemma = dutchLemma.trim().toLowerCase()
-    const normalizedPartOfSpeech = partOfSpeech || 'unknown'
-    // Normalize article: empty string or undefined should be treated as null for proper DB comparison
-    const normalizedArticle =
-      article && article.trim() !== '' ? article.trim() : null
+    const normalizedPartOfSpeech = normalizePartOfSpeech(partOfSpeech)
+    const normalizedArticle = normalizeArticle(article)
 
     if (__DEV__) {
       console.log('[wordService.checkWordExists] Query', {
@@ -199,14 +221,6 @@ export const wordService = {
       .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
       .eq('user_id', userId)
       .eq('dutch_lemma', normalizedLemma)
-      .eq('part_of_speech', normalizedPartOfSpeech)
-
-    // Handle null vs non-null article properly
-    if (normalizedArticle === null) {
-      query = query.is('article', null)
-    } else {
-      query = query.eq('article', normalizedArticle)
-    }
 
     const { data, error } = await query
 
@@ -221,15 +235,25 @@ export const wordService = {
       return null
     }
 
+    const existingWord = (data || []).find(word => {
+      const candidatePartOfSpeech = normalizePartOfSpeech(word.part_of_speech)
+      const candidateArticle = normalizeArticle(word.article)
+
+      return (
+        candidatePartOfSpeech === normalizedPartOfSpeech &&
+        candidateArticle === normalizedArticle
+      )
+    })
+
     if (__DEV__) {
       console.log('[wordService.checkWordExists] Result', {
         count: data.length,
-        wordId: data[0]?.word_id ?? null,
-        collectionId: data[0]?.collection_id ?? null,
+        wordId: existingWord?.word_id ?? null,
+        collectionId: existingWord?.collection_id ?? null,
       })
     }
 
-    return data.length > 0 ? data[0] : null
+    return existingWord || null
   },
 
   // Get words due for review
@@ -254,32 +278,22 @@ export const wordService = {
     return data
   },
 
-  // Check if word with same semantic properties already exists
+  // Check if a word with the same semantic properties already exists
   async checkSemanticDuplicate(
     userId: string,
     dutchLemma: string,
     partOfSpeech: string = 'unknown',
     article: string = ''
   ): Promise<Word | null> {
-    // Normalize article: empty string should be treated as null for the query
-    const normalizedArticle = article || null
-    const normalizedPartOfSpeech = partOfSpeech || 'unknown'
+    const normalizedLemma = dutchLemma.trim().toLowerCase()
+    const normalizedPartOfSpeech = normalizePartOfSpeech(partOfSpeech)
+    const normalizedArticle = normalizeArticle(article)
 
-    let query = supabase
+    const { data, error } = await supabase
       .from('words')
       .select('*')
       .eq('user_id', userId)
-      .eq('dutch_lemma', dutchLemma)
-      .eq('part_of_speech', normalizedPartOfSpeech)
-
-    // Handle null vs empty string for article
-    if (normalizedArticle === null) {
-      query = query.is('article', null)
-    } else {
-      query = query.eq('article', normalizedArticle)
-    }
-
-    const { data, error } = await query.maybeSingle()
+      .eq('dutch_lemma', normalizedLemma)
 
     if (error) {
       Sentry.captureException(error, {
@@ -295,7 +309,17 @@ export const wordService = {
       return null
     }
 
-    return data
+    const existingWord = (data || []).find(word => {
+      const candidatePartOfSpeech = normalizePartOfSpeech(word.part_of_speech)
+      const candidateArticle = normalizeArticle(word.article)
+
+      return (
+        candidatePartOfSpeech === normalizedPartOfSpeech &&
+        candidateArticle === normalizedArticle
+      )
+    })
+
+    return (existingWord as Word | undefined) || null
   },
 
   // Add new word
@@ -515,94 +539,101 @@ export const wordService = {
     collectionId: string,
     words: Partial<Word>[]
   ): Promise<Word[]> {
-    try {
-      // Call the database RPC function which uses SECURITY DEFINER to bypass RLS
-      // Supabase RPC automatically serializes to JSON, no need for JSON.stringify
-      const { data, error } = await supabase.rpc('import_words_to_collection', {
-        p_collection_id: collectionId,
-        p_words: words,
-      })
+    // Call the database RPC function which uses SECURITY DEFINER to bypass RLS
+    // Supabase RPC automatically serializes to JSON, no need for JSON.stringify
+    const { data, error } = await supabase.rpc('import_words_to_collection', {
+      p_collection_id: collectionId,
+      p_words: words,
+    })
 
-      if (error) {
-        logSupabaseError('Failed to import words', error, {
-          operation: 'importWordsToCollection',
+    if (!error) {
+      return data || []
+    }
+
+    if (isSemanticDuplicateError(error)) {
+      logWarning('Semantic duplicate skipped during word import', {
+        operation: 'importWordsToCollection',
+        collectionId,
+        wordCount: words.length,
+        code: error.code,
+        details: error.details,
+      })
+      Sentry.captureMessage('Semantic duplicate skipped during import RPC', {
+        level: 'warning',
+        tags: { operation: 'importWordsToCollection' },
+        extra: {
           collectionId,
           wordCount: words.length,
-        })
-        throw error
-      }
-
-      return data || []
-    } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'importWordsToCollection' },
-        extra: { collectionId, wordCount: words.length },
+          code: error.code,
+          details: error.details,
+        },
       })
       throw error
     }
+
+    logSupabaseError('Failed to import words', error, {
+      operation: 'importWordsToCollection',
+      collectionId,
+      wordCount: words.length,
+    })
+    Sentry.captureException(error, {
+      tags: { operation: 'importWordsToCollection' },
+      extra: { collectionId, wordCount: words.length },
+    })
+    throw error
   },
 }
 
 export const userService = {
   // Delete a user account and all associated data
   async deleteAccount() {
-    try {
-      // Get the current session for authorization
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession()
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession()
 
-      if (sessionError || !session) {
-        Sentry.captureException(
-          sessionError || new Error(NO_ACTIVE_SESSION_ERROR),
-          {
-            tags: { operation: 'deleteAccount' },
-            extra: { message: NO_ACTIVE_SESSION_ERROR },
-          }
-        )
-        throw new Error(NO_ACTIVE_SESSION_ERROR)
-      }
-
-      // Call Edge Function with auth token
-      const { data, error } = await supabase.functions.invoke(
-        'delete-account',
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
-      )
-
-      // If deletion succeeded, immediately sign out to invalidate any remaining tokens
-      if (!error && data?.success) {
-        await supabase.auth.signOut()
-      }
-
-      if (error) {
-        Sentry.captureException(
-          new Error(`Failed to delete account: ${error.message}`),
-          {
-            tags: { operation: 'deleteAccount' },
-            extra: { message: 'Edge Function error', error },
-          }
-        )
-      }
-
-      if (!data.success) {
-        Sentry.captureException(new Error('Account deletion failed'), {
-          tags: { operation: 'deleteAccount' },
-          extra: { error: data.error },
-        })
-      }
-
-      return { success: true }
-    } catch (error) {
-      Sentry.captureException(error, {
+    if (sessionError || !session) {
+      const authError = sessionError || new Error(NO_ACTIVE_SESSION_ERROR)
+      Sentry.captureException(authError, {
         tags: { operation: 'deleteAccount' },
-        extra: { message: 'Account deletion error' },
+        extra: { message: NO_ACTIVE_SESSION_ERROR },
       })
+      throw authError
     }
+
+    // Call Edge Function with auth token
+    const { data, error } = await supabase.functions.invoke('delete-account', {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    })
+
+    if (error) {
+      const deleteError = new Error(
+        `Failed to delete account: ${error.message}`
+      )
+      Sentry.captureException(deleteError, {
+        tags: { operation: 'deleteAccount' },
+        extra: { message: 'Edge Function error', error },
+      })
+      throw deleteError
+    }
+
+    if (!data?.success) {
+      const deletionFailedError = new Error(
+        data?.error || 'Account deletion failed'
+      )
+      Sentry.captureException(deletionFailedError, {
+        tags: { operation: 'deleteAccount' },
+        extra: { error: data?.error },
+      })
+      throw deletionFailedError
+    }
+
+    // If deletion succeeded, immediately sign out to invalidate any remaining tokens
+    await supabase.auth.signOut()
+
+    return { success: true }
   },
 }
 

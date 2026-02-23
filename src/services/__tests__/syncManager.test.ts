@@ -5,8 +5,9 @@
 
 import { SyncManager } from '../syncManager'
 import * as networkUtils from '@/utils/network'
-import { supabase } from '@/lib/supabase'
+import { supabase, wordService } from '@/lib/supabase'
 import { collectionRepository } from '@/db/collectionRepository'
+import { wordRepository } from '@/db/wordRepository'
 
 jest.mock('@/lib/supabaseClient')
 jest.mock('@/lib/supabase')
@@ -19,6 +20,7 @@ jest.mock('@/db/wordRepository', () => ({
     markWordsSynced: jest.fn().mockResolvedValue(undefined),
     markWordsError: jest.fn().mockResolvedValue(undefined),
     deleteOrphanWords: jest.fn().mockResolvedValue({ count: 0 }),
+    deleteInvalidWords: jest.fn().mockResolvedValue({ count: 0, words: [] }),
   },
 }))
 jest.mock('@/db/progressRepository', () => ({
@@ -40,8 +42,54 @@ jest.mock('@/db/collectionRepository', () => ({
 
 describe('SyncManager', () => {
   // Helper functions to generate random test data
+  const SYNC_AUTH_PRECHECK_ERROR =
+    'Authentication expired. Please sign in again to sync.'
   const generateId = (prefix: string) =>
     `${prefix}_${Math.random().toString(36).substring(2, 9)}`
+  const MAIN_COLLECTION_ID = 'collection-main'
+  const DEFAULT_TIMESTAMP = '2026-02-23T00:00:00.000Z'
+  const DEFAULT_REVIEW_DATE = '2026-02-23'
+  const createSession = (expiresInSeconds: number) => ({
+    access_token: 'access-token',
+    refresh_token: 'refresh-token',
+    expires_at: Math.floor(Date.now() / 1000) + expiresInSeconds,
+  })
+
+  const createPendingWord = (overrides: Record<string, unknown> = {}) => ({
+    word_id: generateId('word'),
+    user_id: userId,
+    collection_id: MAIN_COLLECTION_ID,
+    dutch_lemma: 'huis',
+    dutch_original: 'huis',
+    part_of_speech: 'noun',
+    is_irregular: false,
+    is_reflexive: false,
+    is_expression: false,
+    expression_type: null,
+    is_separable: false,
+    prefix_part: null,
+    root_verb: null,
+    article: 'het',
+    plural: null,
+    translations: { en: ['house'] },
+    examples: [],
+    synonyms: [],
+    antonyms: [],
+    conjugation: null,
+    preposition: null,
+    image_url: null,
+    tts_url: null,
+    interval_days: 1,
+    repetition_count: 0,
+    easiness_factor: 2.5,
+    next_review_date: DEFAULT_REVIEW_DATE,
+    last_reviewed_at: null,
+    analysis_notes: null,
+    created_at: DEFAULT_TIMESTAMP,
+    updated_at: DEFAULT_TIMESTAMP,
+    sync_status: 'pending',
+    ...overrides,
+  })
 
   let syncManager: SyncManager
   const userId = generateId('user')
@@ -49,9 +97,45 @@ describe('SyncManager', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     syncManager = new SyncManager()
+    ;(supabase as any).auth = {
+      getSession: jest.fn().mockResolvedValue({
+        data: { session: createSession(60 * 60) },
+        error: null,
+      }),
+      refreshSession: jest.fn().mockResolvedValue({
+        data: { session: createSession(60 * 60) },
+        error: null,
+      }),
+    }
+    ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+      const resolved = { data: [], error: null }
+
+      if (tableName === 'words') {
+        const wordsQuery = Promise.resolve(resolved) as any
+        wordsQuery.gt = jest.fn().mockResolvedValue(resolved)
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockReturnValue(wordsQuery),
+          }),
+          upsert: jest.fn().mockResolvedValue(resolved),
+        }
+      }
+
+      return {
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockResolvedValue(resolved),
+        }),
+        upsert: jest.fn().mockResolvedValue(resolved),
+        delete: jest.fn().mockReturnValue({
+          eq: jest.fn().mockResolvedValue(resolved),
+        }),
+      }
+    })
     ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(true)
     ;(networkUtils.getLastSyncTimestamp as jest.Mock).mockResolvedValue(null)
     ;(networkUtils.setLastSyncTimestamp as jest.Mock).mockResolvedValue(void 0)
+    ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
   })
 
   describe('sync status subscriptions', () => {
@@ -105,6 +189,42 @@ describe('SyncManager', () => {
       await syncManager.performSync(userId)
 
       expect(networkUtils.checkNetworkConnection).toHaveBeenCalled()
+    })
+  })
+
+  describe('auth preflight', () => {
+    it('should refresh expired session before sync stages', async () => {
+      ;(supabase.auth.getSession as jest.Mock).mockResolvedValue({
+        data: { session: createSession(-60) },
+        error: null,
+      })
+      ;(supabase.auth.refreshSession as jest.Mock).mockResolvedValue({
+        data: { session: createSession(60 * 60) },
+        error: null,
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return controlled error and skip sync stages when refresh fails', async () => {
+      ;(supabase.auth.getSession as jest.Mock).mockResolvedValue({
+        data: { session: null },
+        error: null,
+      })
+      ;(supabase.auth.refreshSession as jest.Mock).mockResolvedValue({
+        data: { session: null },
+        error: { message: 'Refresh token invalid' },
+      })
+      ;(supabase.from as jest.Mock).mockClear()
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe(SYNC_AUTH_PRECHECK_ERROR)
+      expect(supabase.from).not.toHaveBeenCalled()
     })
   })
 
@@ -235,7 +355,7 @@ describe('SyncManager', () => {
       // Key test: sync result should have timestamp and success properties
       expect(result).toHaveProperty('timestamp')
       expect(result).toHaveProperty('success')
-      expect(result).toHaveProperty('error')
+      expect(result.error).toBeUndefined()
     })
   })
 
@@ -353,6 +473,153 @@ describe('SyncManager', () => {
           collection_id: 'col-remote',
           name: 'Remote New',
         }),
+      ])
+    })
+  })
+
+  describe('semantic duplicate handling', () => {
+    it('should skip server semantic duplicates and sync only unique words', async () => {
+      const duplicateWord = createPendingWord({
+        word_id: 'word-duplicate',
+        dutch_lemma: 'huis',
+      })
+      const uniqueWord = createPendingWord({
+        word_id: 'word-unique',
+        dutch_lemma: 'fiets',
+      })
+
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
+        duplicateWord,
+        uniqueWord,
+      ])
+      ;(
+        collectionRepository.getCollectionsByIds as jest.Mock
+      ).mockResolvedValue([
+        {
+          collection_id: MAIN_COLLECTION_ID,
+          user_id: userId,
+          name: 'Main',
+          is_shared: false,
+          created_at: DEFAULT_TIMESTAMP,
+        },
+      ])
+      ;(wordService.checkWordExists as jest.Mock)
+        .mockResolvedValueOnce({ word_id: 'server-duplicate' })
+        .mockResolvedValueOnce(null)
+
+      const wordsUpsert = jest.fn().mockResolvedValue({ data: [], error: null })
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: wordsUpsert,
+          }
+        }
+
+        return {
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(result.wordsSynced).toBe(2)
+      expect(wordsUpsert).toHaveBeenCalledTimes(1)
+      expect(wordRepository.markWordsSynced).toHaveBeenCalledWith([
+        'word-duplicate',
+      ])
+      expect(wordRepository.markWordsSynced).toHaveBeenCalledWith([
+        'word-unique',
+      ])
+    })
+
+    it('should reconcile 23505 semantic conflicts via per-word fallback', async () => {
+      const firstWord = createPendingWord({
+        word_id: 'word-1',
+        dutch_lemma: 'huis',
+      })
+      const secondWord = createPendingWord({
+        word_id: 'word-2',
+        dutch_lemma: 'fiets',
+      })
+      const duplicateError = {
+        code: '23505',
+        message:
+          'duplicate key value violates unique constraint "idx_words_semantic_unique"',
+        details:
+          "Key (user_id, dutch_lemma, coalesce(part_of_speech, 'unknown'::text), coalesce(article, ''::text)) already exists.",
+      }
+
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
+        firstWord,
+        secondWord,
+      ])
+      ;(
+        collectionRepository.getCollectionsByIds as jest.Mock
+      ).mockResolvedValue([
+        {
+          collection_id: MAIN_COLLECTION_ID,
+          user_id: userId,
+          name: 'Main',
+          is_shared: false,
+          created_at: DEFAULT_TIMESTAMP,
+        },
+      ])
+      ;(wordService.checkWordExists as jest.Mock)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ word_id: 'server-duplicate' })
+        .mockResolvedValueOnce(null)
+
+      const wordsUpsert = jest
+        .fn()
+        .mockResolvedValueOnce({ data: [], error: duplicateError })
+        .mockResolvedValueOnce({ data: [], error: null })
+
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: wordsUpsert,
+          }
+        }
+
+        return {
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(result.wordsSynced).toBe(2)
+      expect(wordsUpsert).toHaveBeenCalledTimes(2)
+      expect(wordRepository.markWordsSynced).toHaveBeenCalledWith([
+        'word-1',
+        'word-2',
       ])
     })
   })
