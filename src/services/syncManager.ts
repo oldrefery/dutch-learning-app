@@ -23,11 +23,17 @@ export interface SyncResult {
 
 const POSTGRES_UNIQUE_VIOLATION_CODE = '23505'
 const SEMANTIC_UNIQUE_INDEX = 'idx_words_semantic_unique'
+const SYNC_AUTH_PRECHECK_ERROR =
+  'Authentication expired. Please sign in again to sync.'
 
 interface SupabaseLikeError {
   code?: string
   message?: string
   details?: string
+}
+
+interface SupabaseSessionLike {
+  expires_at?: number | null
 }
 
 interface SupabaseWordPayload {
@@ -113,6 +119,21 @@ export class SyncManager {
         }
       }
 
+      console.log('[Sync] Stage 0.5: auth preflight')
+      const authPrecheckError = await this.ensureSessionForSync()
+      if (authPrecheckError) {
+        const result: SyncResult = {
+          success: false,
+          wordsSynced: 0,
+          progressSynced: 0,
+          error: authPrecheckError,
+          timestamp: new Date().toISOString(),
+        }
+
+        this.notifySyncStatus(result)
+        return result
+      }
+
       const timestamp = new Date().toISOString()
 
       // Step 0: Pull collections from Supabase
@@ -194,6 +215,59 @@ export class SyncManager {
     } finally {
       this.isSyncing = false
     }
+  }
+
+  private async ensureSessionForSync(): Promise<string | null> {
+    try {
+      const { data, error } = await supabase.auth.getSession()
+
+      if (error) {
+        console.warn('[Sync] Failed to read auth session before sync:', {
+          message: error.message,
+        })
+      }
+
+      const session = data?.session as SupabaseSessionLike | null | undefined
+      if (session && !this.isSessionExpired(session)) {
+        return null
+      }
+
+      console.log('[Sync] Session missing/expired; attempting refresh')
+      const { data: refreshedData, error: refreshError } =
+        await supabase.auth.refreshSession()
+      const refreshedSession = refreshedData?.session as
+        | SupabaseSessionLike
+        | null
+        | undefined
+
+      if (
+        refreshError ||
+        !refreshedSession ||
+        this.isSessionExpired(refreshedSession)
+      ) {
+        console.warn('[Sync] Session refresh failed before sync:', {
+          message: refreshError?.message || 'No active session after refresh',
+        })
+        return SYNC_AUTH_PRECHECK_ERROR
+      }
+
+      return null
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      console.warn('[Sync] Unexpected auth preflight error:', { message })
+      return SYNC_AUTH_PRECHECK_ERROR
+    }
+  }
+
+  private isSessionExpired(session: SupabaseSessionLike): boolean {
+    if (typeof session.expires_at !== 'number') {
+      return false
+    }
+
+    const nowSeconds = Math.floor(Date.now() / 1000)
+    const expiryBufferSeconds = 30
+
+    return session.expires_at <= nowSeconds + expiryBufferSeconds
   }
 
   private async pullWordsFromSupabase(

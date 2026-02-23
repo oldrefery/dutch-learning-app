@@ -42,11 +42,18 @@ jest.mock('@/db/collectionRepository', () => ({
 
 describe('SyncManager', () => {
   // Helper functions to generate random test data
+  const SYNC_AUTH_PRECHECK_ERROR =
+    'Authentication expired. Please sign in again to sync.'
   const generateId = (prefix: string) =>
     `${prefix}_${Math.random().toString(36).substring(2, 9)}`
   const MAIN_COLLECTION_ID = 'collection-main'
   const DEFAULT_TIMESTAMP = '2026-02-23T00:00:00.000Z'
   const DEFAULT_REVIEW_DATE = '2026-02-23'
+  const createSession = (expiresInSeconds: number) => ({
+    access_token: 'access-token',
+    refresh_token: 'refresh-token',
+    expires_at: Math.floor(Date.now() / 1000) + expiresInSeconds,
+  })
 
   const createPendingWord = (overrides: Record<string, unknown> = {}) => ({
     word_id: generateId('word'),
@@ -90,6 +97,41 @@ describe('SyncManager', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     syncManager = new SyncManager()
+    ;(supabase as any).auth = {
+      getSession: jest.fn().mockResolvedValue({
+        data: { session: createSession(60 * 60) },
+        error: null,
+      }),
+      refreshSession: jest.fn().mockResolvedValue({
+        data: { session: createSession(60 * 60) },
+        error: null,
+      }),
+    }
+    ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+      const resolved = { data: [], error: null }
+
+      if (tableName === 'words') {
+        const wordsQuery = Promise.resolve(resolved) as any
+        wordsQuery.gt = jest.fn().mockResolvedValue(resolved)
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockReturnValue(wordsQuery),
+          }),
+          upsert: jest.fn().mockResolvedValue(resolved),
+        }
+      }
+
+      return {
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockResolvedValue(resolved),
+        }),
+        upsert: jest.fn().mockResolvedValue(resolved),
+        delete: jest.fn().mockReturnValue({
+          eq: jest.fn().mockResolvedValue(resolved),
+        }),
+      }
+    })
     ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(true)
     ;(networkUtils.getLastSyncTimestamp as jest.Mock).mockResolvedValue(null)
     ;(networkUtils.setLastSyncTimestamp as jest.Mock).mockResolvedValue(void 0)
@@ -147,6 +189,42 @@ describe('SyncManager', () => {
       await syncManager.performSync(userId)
 
       expect(networkUtils.checkNetworkConnection).toHaveBeenCalled()
+    })
+  })
+
+  describe('auth preflight', () => {
+    it('should refresh expired session before sync stages', async () => {
+      ;(supabase.auth.getSession as jest.Mock).mockResolvedValue({
+        data: { session: createSession(-60) },
+        error: null,
+      })
+      ;(supabase.auth.refreshSession as jest.Mock).mockResolvedValue({
+        data: { session: createSession(60 * 60) },
+        error: null,
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return controlled error and skip sync stages when refresh fails', async () => {
+      ;(supabase.auth.getSession as jest.Mock).mockResolvedValue({
+        data: { session: null },
+        error: null,
+      })
+      ;(supabase.auth.refreshSession as jest.Mock).mockResolvedValue({
+        data: { session: null },
+        error: { message: 'Refresh token invalid' },
+      })
+      ;(supabase.from as jest.Mock).mockClear()
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe(SYNC_AUTH_PRECHECK_ERROR)
+      expect(supabase.from).not.toHaveBeenCalled()
     })
   })
 
@@ -277,7 +355,7 @@ describe('SyncManager', () => {
       // Key test: sync result should have timestamp and success properties
       expect(result).toHaveProperty('timestamp')
       expect(result).toHaveProperty('success')
-      expect(result).toHaveProperty('error')
+      expect(result.error).toBeUndefined()
     })
   })
 
