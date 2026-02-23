@@ -15,6 +15,18 @@ SENTRY_PROJECT="dutch-learning-app"
 echo "🔍 Sourcemap upload script for Sentry"
 echo ""
 
+# Resolve Expo config file (app.json or app.base.json)
+if [ -f "./app.json" ]; then
+    APP_CONFIG_FILE="./app.json"
+elif [ -f "./app.base.json" ]; then
+    APP_CONFIG_FILE="./app.base.json"
+else
+    echo -e "${RED}Error: app.json or app.base.json not found in project root${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ Using Expo config: ${APP_CONFIG_FILE}${NC}"
+
 # Check if .sentryclirc exists
 if [ ! -f ".sentryclirc" ]; then
     echo -e "${RED}Error: .sentryclirc file not found in project root${NC}"
@@ -23,11 +35,11 @@ if [ ! -f ".sentryclirc" ]; then
 fi
 
 # Get values from app.json
-VERSION=$(node -p "require('./app.json').expo.version")
-IOS_BUILD_NUMBER=$(node -p "require('./app.json').expo.ios.buildNumber")
-ANDROID_BUILD_NUMBER=$(node -p "require('./app.json').expo.android.versionCode")
-IOS_BUNDLE_ID=$(node -p "require('./app.json').expo.ios.bundleIdentifier")
-ANDROID_BUNDLE_ID=$(node -p "require('./app.json').expo.android.package")
+VERSION=$(node -p "require('${APP_CONFIG_FILE}').expo.version")
+IOS_BUILD_NUMBER=$(node -p "require('${APP_CONFIG_FILE}').expo.ios.buildNumber")
+ANDROID_BUILD_NUMBER=$(node -p "require('${APP_CONFIG_FILE}').expo.android.versionCode")
+IOS_BUNDLE_ID=$(node -p "require('${APP_CONFIG_FILE}').expo.ios.bundleIdentifier")
+ANDROID_BUNDLE_ID=$(node -p "require('${APP_CONFIG_FILE}').expo.android.package")
 
 echo -e "${BLUE}Current app configuration:${NC}"
 echo -e "Version: ${VERSION}"
