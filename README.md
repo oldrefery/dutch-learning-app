@@ -62,6 +62,9 @@ EXPO_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
 
 ```
 SENTRY_AUTH_TOKEN=your_sentry_auth_token_here
+SENTRY_ORG=oldrefery
+SENTRY_PROJECT=dutch-learning-app
+SENTRY_BASE_URL=https://sentry.io
 ```
 
 ### 4. Setup Sentry Configuration (Required for Local Production Builds):
@@ -74,6 +77,49 @@ token=your_sentry_auth_token_here
 ```
 
 This file is required for the local build script to properly upload source maps to Sentry for crash reporting. Note: EAS builds in the cloud handle Sentry configuration automatically through environment variables.
+
+### 4.1 Codex App Access to Sentry Issues (Read-only)
+
+To let Codex query Sentry issues via API, create an auth token that includes `event:read` (required for Issues API), plus `project:read` and `org:read`.
+
+Important: personal tokens in Sentry cannot be edited after creation. If `event:read` is missing, create a new token and replace `SENTRY_AUTH_TOKEN` in `.env.local`.
+
+You can verify access with:
+
+```bash
+set -a
+source ./.env
+source ./.env.local
+set +a
+
+python3 "$HOME/.codex/skills/sentry/scripts/sentry_api.py" \
+  --org "${SENTRY_ORG:-oldrefery}" \
+  --project "${SENTRY_PROJECT:-dutch-learning-app}" \
+  --base-url "${SENTRY_BASE_URL:-https://us.sentry.io}" \
+  list-issues \
+  --environment prod \
+  --time-range 24h \
+  --limit 10 \
+  --query "is:unresolved"
+```
+
+If you see `HTTP 403`:
+
+```bash
+# 1) Verify org access and detect region URL for your org
+curl -sS "${SENTRY_BASE_URL:-https://us.sentry.io}/api/0/organizations/${SENTRY_ORG}/" \
+  -H "Authorization: Bearer $SENTRY_AUTH_TOKEN"
+
+# 2) Verify org issues endpoint with project filter
+curl -sS "${SENTRY_BASE_URL:-https://us.sentry.io}/api/0/organizations/${SENTRY_ORG}/issues/?limit=1&query=project:${SENTRY_PROJECT}" \
+  -H "Authorization: Bearer $SENTRY_AUTH_TOKEN"
+
+# 3) Verify project issues endpoint used by the script
+curl -sS "${SENTRY_BASE_URL:-https://us.sentry.io}/api/0/projects/${SENTRY_ORG}/${SENTRY_PROJECT}/issues/?limit=1" \
+  -H "Authorization: Bearer $SENTRY_AUTH_TOKEN"
+```
+
+If these calls still return 403, check your Sentry organization role. Billing-only users cannot access Issues; use at least Member/Contributor access to the project.
 
 ### 5. Run the application:
 

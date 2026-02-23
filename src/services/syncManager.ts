@@ -1,4 +1,4 @@
-import { collectionService, supabase } from '@/lib/supabase'
+import { collectionService, supabase, wordService } from '@/lib/supabase'
 import { wordRepository } from '@/db/wordRepository'
 import { progressRepository } from '@/db/progressRepository'
 import { collectionRepository } from '@/db/collectionRepository'
@@ -19,6 +19,47 @@ export interface SyncResult {
   progressSynced: number
   error?: string
   timestamp: string
+}
+
+const POSTGRES_UNIQUE_VIOLATION_CODE = '23505'
+const SEMANTIC_UNIQUE_INDEX = 'idx_words_semantic_unique'
+
+interface SupabaseLikeError {
+  code?: string
+  message?: string
+  details?: string
+}
+
+interface SupabaseWordPayload {
+  word_id: string
+  user_id: string
+  collection_id: string | null
+  dutch_lemma: string
+  dutch_original: string | null
+  part_of_speech: string | null
+  is_irregular: boolean
+  is_reflexive: boolean
+  is_expression: boolean
+  expression_type: Word['expression_type']
+  is_separable: boolean
+  prefix_part: string | null
+  root_verb: string | null
+  article: Word['article']
+  plural: string | null
+  translations: Word['translations']
+  examples: Word['examples']
+  synonyms: string[]
+  antonyms: string[]
+  conjugation: Word['conjugation']
+  preposition: string | null
+  image_url: string | null
+  tts_url: string | null
+  interval_days: number
+  repetition_count: number
+  easiness_factor: number
+  next_review_date: string
+  last_reviewed_at: string | null
+  analysis_notes: string | null
 }
 
 export class SyncManager {
@@ -159,232 +200,476 @@ export class SyncManager {
     userId: string,
     lastSync: string | null
   ): Promise<Word[]> {
-    try {
-      let query = supabase.from('words').select('*').eq('user_id', userId)
+    let query = supabase.from('words').select('*').eq('user_id', userId)
 
-      if (lastSync) {
-        query = query.gt('created_at', lastSync)
-      }
-
-      const { data, error } = await query
-
-      if (error) {
-        throw new Error(`Failed to pull words: ${error.message}`)
-      }
-
-      if (!data || data.length === 0) {
-        console.log('[Sync] No new words to pull from Supabase')
-        return []
-      }
-
-      // Parse JSON fields from Supabase and ensure required fields
-      const now = new Date().toISOString()
-      const parsedWords = data.map(word => {
-        return {
-          ...word,
-          // Ensure created_at and updated_at are always set (fallback to current time)
-          created_at: word.created_at || now,
-          updated_at: word.updated_at || word.created_at || now,
-          // Ensure next_review_date is always set (required by SQLite schema)
-          // Extract date only from fallback values
-          next_review_date:
-            word.next_review_date || (word.created_at || now).split('T')[0],
-          // Ensure SRS fields have defaults
-          interval_days: word.interval_days ?? 1,
-          repetition_count: word.repetition_count ?? 0,
-          easiness_factor: word.easiness_factor ?? 2.5,
-          translations:
-            typeof word.translations === 'string'
-              ? JSON.parse(word.translations)
-              : word.translations || [],
-          examples:
-            typeof word.examples === 'string'
-              ? JSON.parse(word.examples)
-              : word.examples,
-          synonyms:
-            typeof word.synonyms === 'string'
-              ? JSON.parse(word.synonyms)
-              : word.synonyms || [],
-          antonyms:
-            typeof word.antonyms === 'string'
-              ? JSON.parse(word.antonyms)
-              : word.antonyms || [],
-          conjugation:
-            typeof word.conjugation === 'string'
-              ? JSON.parse(word.conjugation)
-              : word.conjugation,
-        }
-      })
-
-      await wordRepository.saveWords(parsedWords)
-
-      console.log(`[Sync] Pulled ${parsedWords.length} words from Supabase`)
-
-      return parsedWords
-    } catch (error) {
-      console.error('[Sync] Error pulling words from Supabase:', error)
-      throw error
+    if (lastSync) {
+      query = query.gt('created_at', lastSync)
     }
+
+    const { data, error } = await query
+
+    if (error) {
+      throw new Error(`Failed to pull words: ${error.message}`)
+    }
+
+    if (!data || data.length === 0) {
+      console.log('[Sync] No new words to pull from Supabase')
+      return []
+    }
+
+    // Parse JSON fields from Supabase and ensure required fields
+    const now = new Date().toISOString()
+    const parsedWords = data.map(word => {
+      return {
+        ...word,
+        // Ensure created_at and updated_at are always set (fallback to current time)
+        created_at: word.created_at || now,
+        updated_at: word.updated_at || word.created_at || now,
+        // Ensure next_review_date is always set (required by SQLite schema)
+        // Extract date only from fallback values
+        next_review_date:
+          word.next_review_date || (word.created_at || now).split('T')[0],
+        // Ensure SRS fields have defaults
+        interval_days: word.interval_days ?? 1,
+        repetition_count: word.repetition_count ?? 0,
+        easiness_factor: word.easiness_factor ?? 2.5,
+        translations:
+          typeof word.translations === 'string'
+            ? JSON.parse(word.translations)
+            : word.translations || [],
+        examples:
+          typeof word.examples === 'string'
+            ? JSON.parse(word.examples)
+            : word.examples,
+        synonyms:
+          typeof word.synonyms === 'string'
+            ? JSON.parse(word.synonyms)
+            : word.synonyms || [],
+        antonyms:
+          typeof word.antonyms === 'string'
+            ? JSON.parse(word.antonyms)
+            : word.antonyms || [],
+        conjugation:
+          typeof word.conjugation === 'string'
+            ? JSON.parse(word.conjugation)
+            : word.conjugation,
+      }
+    })
+
+    await wordRepository.saveWords(parsedWords)
+
+    console.log(`[Sync] Pulled ${parsedWords.length} words from Supabase`)
+
+    return parsedWords
   }
 
   private async pushProgressToSupabase(userId: string): Promise<number> {
-    try {
-      const pendingProgress =
-        await progressRepository.getPendingSyncProgress(userId)
+    const pendingProgress =
+      await progressRepository.getPendingSyncProgress(userId)
 
-      if (pendingProgress.length === 0) {
-        console.log('[Sync] No pending progress to sync')
-        return 0
-      }
-
-      // Convert local progress to Supabase format
-      const progressToSync = pendingProgress.map(p => ({
-        progress_id: p.progress_id,
-        user_id: p.user_id,
-        word_id: p.word_id,
-        status: p.status,
-        reviewed_count: p.reviewed_count,
-        last_reviewed_at: p.last_reviewed_at,
-        updated_at: p.updated_at,
-      }))
-
-      const { error } = await supabase
-        .from('user_progress')
-        .upsert(progressToSync)
-
-      if (error) {
-        throw new Error(`Failed to push progress: ${error.message}`)
-      }
-
-      const progressIds = pendingProgress.map(p => p.progress_id)
-      await progressRepository.markProgressSynced(progressIds)
-
-      return pendingProgress.length
-    } catch (error) {
-      console.error('[Sync] Error pushing progress to Supabase:', error)
-      throw error
+    if (pendingProgress.length === 0) {
+      console.log('[Sync] No pending progress to sync')
+      return 0
     }
+
+    // Convert local progress to Supabase format
+    const progressToSync = pendingProgress.map(p => ({
+      progress_id: p.progress_id,
+      user_id: p.user_id,
+      word_id: p.word_id,
+      status: p.status,
+      reviewed_count: p.reviewed_count,
+      last_reviewed_at: p.last_reviewed_at,
+      updated_at: p.updated_at,
+    }))
+
+    const { error } = await supabase
+      .from('user_progress')
+      .upsert(progressToSync)
+
+    if (error) {
+      throw new Error(`Failed to push progress: ${error.message}`)
+    }
+
+    const progressIds = pendingProgress.map(p => p.progress_id)
+    await progressRepository.markProgressSynced(progressIds)
+
+    return pendingProgress.length
   }
 
   private async pushWordsToSupabase(userId: string): Promise<number> {
-    try {
-      // Clean up invalid words before syncing
-      const { count: deletedCount, words: deletedWords } =
-        await wordRepository.deleteInvalidWords(userId)
+    await this.removeInvalidWordsBeforeSync(userId)
 
-      if (deletedCount > 0) {
-        // Log each deleted word to history
-        const historyStore = useHistoryStore.getState()
-        deletedWords.forEach(word => {
-          historyStore.addNotification(
-            `Word "${word.dutch_lemma}" was not synced due to missing ID`,
-            ToastType.WARNING
-          )
-        })
+    const wordsWithCollections =
+      await this.getSyncableWordsWithCollections(userId)
+    if (wordsWithCollections.length === 0) {
+      return 0
+    }
 
-        // Show toast notification to inform user
-        const wordList = deletedWords.map(w => w.dutch_lemma).join(', ')
-        ToastService.show(
-          `${deletedCount} invalid word${deletedCount > 1 ? 's' : ''} removed: ${wordList}. Please add again if needed.`,
-          ToastType.WARNING
-        )
-      }
+    const { uniqueWords: uniqueBySemanticKey, localSemanticDuplicates } =
+      await this.splitLocalSemanticDuplicates(userId, wordsWithCollections)
+    const { uniqueWords, duplicateWords } =
+      await this.splitRemoteSemanticDuplicates(userId, uniqueBySemanticKey)
 
-      const pendingWords = await wordRepository.getPendingSyncWords(userId)
+    await this.handleRemoteDuplicates(userId, duplicateWords)
 
-      if (pendingWords.length === 0) {
-        console.log('[Sync] No pending words to sync')
-        return 0
-      }
+    const syncedUniqueCount = await this.syncUniqueWordsWithFallback(
+      userId,
+      uniqueWords
+    )
+    const totalSynced =
+      syncedUniqueCount + duplicateWords.length + localSemanticDuplicates.length
 
-      // Filter out invalid words with null word_id (safety check)
-      const validWords = pendingWords.filter(word => {
-        if (!word.word_id) {
-          console.error('[Sync] Skipping word with null word_id:', {
-            dutch_lemma: word.dutch_lemma,
-            user_id: word.user_id,
-          })
-          return false
-        }
-        return true
+    this.logWordSyncSummary(
+      totalSynced,
+      syncedUniqueCount,
+      duplicateWords.length,
+      localSemanticDuplicates.length
+    )
+
+    return totalSynced
+  }
+
+  private async removeInvalidWordsBeforeSync(userId: string): Promise<void> {
+    const { count: deletedCount, words: deletedWords } =
+      await wordRepository.deleteInvalidWords(userId)
+
+    if (deletedCount === 0) return
+
+    const historyStore = useHistoryStore.getState()
+    deletedWords.forEach(word => {
+      historyStore.addNotification(
+        `Word "${word.dutch_lemma}" was not synced due to missing ID`,
+        ToastType.INFO
+      )
+    })
+
+    const wordList = deletedWords.map(w => w.dutch_lemma).join(', ')
+    ToastService.show(
+      `${deletedCount} invalid word${deletedCount > 1 ? 's' : ''} removed: ${wordList}. Please add again if needed.`,
+      ToastType.INFO
+    )
+  }
+
+  private async getSyncableWordsWithCollections(
+    userId: string
+  ): Promise<Word[]> {
+    const pendingWords = await wordRepository.getPendingSyncWords(userId)
+
+    if (pendingWords.length === 0) {
+      console.log('[Sync] No pending words to sync')
+      return []
+    }
+
+    const validWords = this.filterValidPendingWords(pendingWords)
+    if (validWords.length === 0) {
+      console.log('[Sync] No valid words to sync after filtering')
+      return []
+    }
+
+    const wordsWithCollections = await this.filterWordsWithCollections(
+      userId,
+      validWords
+    )
+    if (wordsWithCollections.length === 0) {
+      console.log('[Sync] No valid words to sync after collection checks')
+      return []
+    }
+
+    await this.pushCollectionsForWords(userId, wordsWithCollections)
+    return wordsWithCollections
+  }
+
+  private filterValidPendingWords(pendingWords: Word[]): Word[] {
+    const validWords = pendingWords.filter(word => {
+      if (word.word_id) return true
+
+      console.error('[Sync] Skipping word with null word_id:', {
+        dutch_lemma: word.dutch_lemma,
+        user_id: word.user_id,
       })
+      return false
+    })
 
-      if (validWords.length === 0) {
-        console.log('[Sync] No valid words to sync after filtering')
-        return 0
+    if (validWords.length < pendingWords.length) {
+      console.warn(
+        `[Sync] Filtered out ${pendingWords.length - validWords.length} invalid words`
+      )
+    }
+
+    return validWords
+  }
+
+  private async splitLocalSemanticDuplicates(
+    userId: string,
+    words: Word[]
+  ): Promise<{ uniqueWords: Word[]; localSemanticDuplicates: Word[] }> {
+    const uniqueWords: Word[] = []
+    const localSemanticDuplicates: Word[] = []
+    const semanticKeys = new Set<string>()
+
+    for (const word of words) {
+      const semanticKey = this.buildSemanticKey(userId, word)
+      if (semanticKeys.has(semanticKey)) {
+        localSemanticDuplicates.push(word)
+        continue
       }
+      semanticKeys.add(semanticKey)
+      uniqueWords.push(word)
+    }
 
-      if (validWords.length < pendingWords.length) {
-        console.warn(
-          `[Sync] Filtered out ${pendingWords.length - validWords.length} invalid words`
-        )
-      }
+    if (localSemanticDuplicates.length > 0) {
+      console.warn(
+        `[Sync] Skipped ${localSemanticDuplicates.length} local semantic duplicates before remote upsert`
+      )
+      Sentry.captureMessage(
+        'Local semantic duplicates skipped before sync upsert',
+        {
+          level: 'warning',
+          tags: { operation: 'pushWordsToSupabase' },
+          extra: {
+            userId,
+            duplicateCount: localSemanticDuplicates.length,
+            words: localSemanticDuplicates.map(word => ({
+              word_id: word.word_id,
+              dutch_lemma: word.dutch_lemma,
+              part_of_speech: word.part_of_speech,
+              article: word.article,
+            })),
+          },
+        }
+      )
+      await this.markDuplicateWordsSynced(localSemanticDuplicates)
+    }
 
-      const wordsWithCollections = await this.filterWordsWithCollections(
+    return { uniqueWords, localSemanticDuplicates }
+  }
+
+  private async splitRemoteSemanticDuplicates(
+    userId: string,
+    words: Word[]
+  ): Promise<{ uniqueWords: Word[]; duplicateWords: Word[] }> {
+    const uniqueWords: Word[] = []
+    const duplicateWords: Word[] = []
+
+    for (const word of words) {
+      const existingWord = await wordService.checkWordExists(
         userId,
-        validWords
+        word.dutch_lemma,
+        word.part_of_speech ?? undefined,
+        word.article ?? undefined
       )
 
-      if (wordsWithCollections.length === 0) {
-        console.log('[Sync] No valid words to sync after collection checks')
-        return 0
+      if (existingWord) {
+        duplicateWords.push(word)
+      } else {
+        uniqueWords.push(word)
+      }
+    }
+
+    return { uniqueWords, duplicateWords }
+  }
+
+  private async handleRemoteDuplicates(
+    userId: string,
+    duplicateWords: Word[]
+  ): Promise<void> {
+    if (duplicateWords.length === 0) return
+
+    console.warn(
+      `[Sync] Skipped ${duplicateWords.length} duplicate words (already exist on server with same semantic key)`
+    )
+    const duplicateWordLabels = duplicateWords
+      .map(w => w.dutch_lemma)
+      .join(', ')
+
+    Sentry.captureMessage(
+      `Duplicate words prevented during sync: ${duplicateWordLabels}`,
+      {
+        level: 'warning',
+        tags: { operation: 'pushWordsToSupabase' },
+        extra: {
+          userId,
+          duplicateCount: duplicateWords.length,
+          words: duplicateWords.map(w => ({
+            dutch_lemma: w.dutch_lemma,
+            part_of_speech: w.part_of_speech,
+            article: w.article,
+          })),
+        },
+      }
+    )
+
+    await this.markDuplicateWordsSynced(duplicateWords)
+  }
+
+  private async syncUniqueWordsWithFallback(
+    userId: string,
+    uniqueWords: Word[]
+  ): Promise<number> {
+    if (uniqueWords.length === 0) return 0
+
+    const wordsToSync = uniqueWords.map(word =>
+      this.mapWordToSupabasePayload(word)
+    )
+    const { error } = await supabase.from('words').upsert(wordsToSync, {
+      onConflict: 'word_id',
+    })
+
+    if (!error) {
+      const wordIds = uniqueWords.map(w => w.word_id).filter(Boolean)
+      await wordRepository.markWordsSynced(wordIds)
+      console.log(
+        `[Sync] Pushed ${uniqueWords.length} unique words to Supabase`
+      )
+      return uniqueWords.length
+    }
+
+    if (!this.isSemanticUniqueConflict(error)) {
+      throw new Error(`Failed to push words: ${error.message}`)
+    }
+
+    console.warn(
+      `[Sync] Semantic conflict detected during batch word upsert. Falling back to per-word reconciliation.`
+    )
+    Sentry.captureMessage(
+      'Semantic duplicate conflict detected during sync batch upsert; applying safe fallback',
+      {
+        level: 'warning',
+        tags: { operation: 'pushWordsToSupabase' },
+        extra: {
+          userId,
+          conflictCode: (error as SupabaseLikeError).code,
+          conflictMessage: (error as SupabaseLikeError).message,
+          uniqueWordsCount: uniqueWords.length,
+        },
+      }
+    )
+
+    return this.reconcileSemanticConflicts(userId, uniqueWords)
+  }
+
+  private logWordSyncSummary(
+    totalSynced: number,
+    syncedUniqueCount: number,
+    remoteDuplicatesCount: number,
+    localDuplicatesCount: number
+  ): void {
+    if (remoteDuplicatesCount === 0 && localDuplicatesCount === 0) return
+
+    console.log(
+      `[Sync] Total: ${totalSynced} words processed (${syncedUniqueCount} pushed, ${remoteDuplicatesCount} remote duplicates skipped, ${localDuplicatesCount} local duplicates skipped)`
+    )
+  }
+
+  private mapWordToSupabasePayload(word: Word): SupabaseWordPayload {
+    return {
+      word_id: word.word_id,
+      user_id: word.user_id,
+      collection_id: word.collection_id,
+      dutch_lemma: word.dutch_lemma,
+      dutch_original: word.dutch_original,
+      part_of_speech: word.part_of_speech,
+      is_irregular: word.is_irregular,
+      is_reflexive: word.is_reflexive,
+      is_expression: word.is_expression,
+      expression_type: word.expression_type,
+      is_separable: word.is_separable,
+      prefix_part: word.prefix_part,
+      root_verb: word.root_verb,
+      article: word.article,
+      plural: word.plural,
+      translations: word.translations,
+      examples: word.examples,
+      synonyms: word.synonyms,
+      antonyms: word.antonyms,
+      conjugation: word.conjugation,
+      preposition: word.preposition,
+      image_url: word.image_url,
+      tts_url: word.tts_url,
+      interval_days: word.interval_days,
+      repetition_count: word.repetition_count,
+      easiness_factor: word.easiness_factor,
+      next_review_date: word.next_review_date,
+      last_reviewed_at: word.last_reviewed_at,
+      analysis_notes: word.analysis_notes,
+    }
+  }
+
+  private normalizePartOfSpeech(value?: string | null): string {
+    return value && value.trim() !== '' ? value.trim() : 'unknown'
+  }
+
+  private normalizeArticle(value?: string | null): string {
+    return value && value.trim() !== '' ? value.trim() : ''
+  }
+
+  private buildSemanticKey(userId: string, word: Word): string {
+    return [
+      userId,
+      word.dutch_lemma.trim().toLowerCase(),
+      this.normalizePartOfSpeech(word.part_of_speech),
+      this.normalizeArticle(word.article),
+    ].join('|')
+  }
+
+  private isSemanticUniqueConflict(error: unknown): boolean {
+    if (!error || typeof error !== 'object') return false
+    const supabaseError = error as SupabaseLikeError
+    const details = `${supabaseError.message || ''} ${supabaseError.details || ''}`
+
+    return (
+      supabaseError.code === POSTGRES_UNIQUE_VIOLATION_CODE &&
+      details.includes(SEMANTIC_UNIQUE_INDEX)
+    )
+  }
+
+  private async markDuplicateWordsSynced(words: Word[]): Promise<void> {
+    const duplicateIds = words.map(w => w.word_id).filter(Boolean)
+    if (duplicateIds.length === 0) return
+
+    await wordRepository.markWordsSynced(duplicateIds)
+  }
+
+  private async reconcileSemanticConflicts(
+    userId: string,
+    words: Word[]
+  ): Promise<number> {
+    const syncedWordIds: string[] = []
+
+    for (const word of words) {
+      const existingWord = await wordService.checkWordExists(
+        userId,
+        word.dutch_lemma,
+        word.part_of_speech ?? undefined,
+        word.article ?? undefined
+      )
+
+      if (existingWord) {
+        syncedWordIds.push(word.word_id)
+        continue
       }
 
-      // Ensure collections exist in Supabase for pending words
-      await this.pushCollectionsForWords(userId, wordsWithCollections)
-
-      // Convert local words to Supabase format
-      // Note: updated_at is managed by Supabase, don't include it in upsert
-      const wordsToSync = wordsWithCollections.map(word => ({
-        word_id: word.word_id,
-        user_id: word.user_id,
-        collection_id: word.collection_id,
-        dutch_lemma: word.dutch_lemma,
-        dutch_original: word.dutch_original,
-        part_of_speech: word.part_of_speech,
-        is_irregular: word.is_irregular,
-        is_reflexive: word.is_reflexive,
-        is_expression: word.is_expression,
-        expression_type: word.expression_type,
-        is_separable: word.is_separable,
-        prefix_part: word.prefix_part,
-        root_verb: word.root_verb,
-        article: word.article,
-        plural: word.plural,
-        translations: word.translations,
-        examples: word.examples,
-        synonyms: word.synonyms,
-        antonyms: word.antonyms,
-        conjugation: word.conjugation,
-        preposition: word.preposition,
-        image_url: word.image_url,
-        tts_url: word.tts_url,
-        interval_days: word.interval_days,
-        repetition_count: word.repetition_count,
-        easiness_factor: word.easiness_factor,
-        next_review_date: word.next_review_date,
-        last_reviewed_at: word.last_reviewed_at,
-        analysis_notes: word.analysis_notes,
-      }))
-
-      const { error } = await supabase.from('words').upsert(wordsToSync)
+      const { error } = await supabase
+        .from('words')
+        .upsert([this.mapWordToSupabasePayload(word)], {
+          onConflict: 'word_id',
+        })
 
       if (error) {
+        if (this.isSemanticUniqueConflict(error)) {
+          syncedWordIds.push(word.word_id)
+          continue
+        }
+
         throw new Error(`Failed to push words: ${error.message}`)
       }
 
-      const wordIds = wordsWithCollections.map(w => w.word_id).filter(Boolean)
-      await wordRepository.markWordsSynced(wordIds)
-
-      console.log(
-        `[Sync] Pushed ${wordsWithCollections.length} words to Supabase`
-      )
-
-      return wordsWithCollections.length
-    } catch (error) {
-      console.error('[Sync] Error pushing words to Supabase:', error)
-      throw error
+      syncedWordIds.push(word.word_id)
     }
+
+    await wordRepository.markWordsSynced(syncedWordIds)
+    return syncedWordIds.length
   }
 
   private async filterWordsWithCollections(
@@ -405,7 +690,7 @@ export class SyncManager {
         await wordRepository.markWordsError(wordIds)
         ToastService.show(
           'Words skipped due to missing collection.',
-          ToastType.WARNING
+          ToastType.INFO
         )
       }
       return []
@@ -437,13 +722,13 @@ export class SyncManager {
       missingCollectionWords.forEach(word => {
         historyStore.addNotification(
           `Word "${word.dutch_lemma}" was not synced due to missing collection`,
-          ToastType.WARNING
+          ToastType.INFO
         )
       })
 
       ToastService.show(
         `Words skipped due to missing collection: ${missingWordLabels}`,
-        ToastType.WARNING
+        ToastType.INFO
       )
     }
 
@@ -466,103 +751,93 @@ export class SyncManager {
 
     if (collectionIds.length === 0) return
 
-    try {
-      const collections = await collectionRepository.getCollectionsByIds(
-        collectionIds,
-        userId
-      )
+    const collections = await collectionRepository.getCollectionsByIds(
+      collectionIds,
+      userId
+    )
 
-      if (collections.length === 0) return
+    if (collections.length === 0) return
 
-      const collectionsToSync = collections.map(c => ({
-        collection_id: c.collection_id,
-        user_id: c.user_id,
-        name: c.name,
-        is_shared: c.is_shared,
-        created_at: c.created_at,
-      }))
+    const collectionsToSync = collections.map(c => ({
+      collection_id: c.collection_id,
+      user_id: c.user_id,
+      name: c.name,
+      is_shared: c.is_shared,
+      created_at: c.created_at,
+    }))
 
-      const { error } = await supabase
-        .from('collections')
-        .upsert(collectionsToSync)
+    const { error } = await supabase
+      .from('collections')
+      .upsert(collectionsToSync)
 
-      if (error) {
-        throw new Error(`Failed to push collections: ${error.message}`)
-      }
-
-      const syncedIds = collections.map(c => c.collection_id)
-      await collectionRepository.markCollectionsSynced(syncedIds)
-    } catch (error) {
-      console.error('[Sync] Error pushing collections for words:', error)
-      throw error
+    if (error) {
+      throw new Error(`Failed to push collections: ${error.message}`)
     }
+
+    const syncedIds = collections.map(c => c.collection_id)
+    await collectionRepository.markCollectionsSynced(syncedIds)
   }
 
   private async pullCollectionsFromSupabase(userId: string): Promise<any[]> {
-    try {
-      const deletedCollections =
-        await collectionRepository.getDeletedCollections(userId)
-      const deletedIds = new Set(
-        deletedCollections.map(collection => collection.collection_id)
-      )
-      const pendingCollections =
-        await collectionRepository.getPendingSyncCollections(userId)
-      const pendingIds = new Set(
-        pendingCollections.map(collection => collection.collection_id)
-      )
+    const deletedCollections =
+      await collectionRepository.getDeletedCollections(userId)
+    const deletedIds = new Set(
+      deletedCollections.map(collection => collection.collection_id)
+    )
+    const pendingCollections =
+      await collectionRepository.getPendingSyncCollections(userId)
+    const pendingIds = new Set(
+      pendingCollections.map(collection => collection.collection_id)
+    )
 
-      const { data, error } = await supabase
-        .from('collections')
-        .select('*')
-        .eq('user_id', userId)
+    const { data, error } = await supabase
+      .from('collections')
+      .select('*')
+      .eq('user_id', userId)
 
-      if (error) {
-        throw new Error(`Failed to pull collections: ${error.message}`)
-      }
-
-      if (!data || data.length === 0) {
-        console.log('[Sync] No collections to pull from Supabase')
-        return []
-      }
-
-      // Ensure all collections have required fields and filter out invalid ones
-      const parsedCollections = data
-        .filter(
-          collection =>
-            collection && collection.collection_id && collection.user_id
-        )
-        .filter(collection => !deletedIds.has(collection.collection_id))
-        .filter(collection => !pendingIds.has(collection.collection_id))
-        .map(collection => ({
-          ...collection,
-          updated_at:
-            collection.updated_at ||
-            collection.created_at ||
-            new Date().toISOString(),
-        }))
-
-      if (deletedIds.size > 0) {
-        console.log(
-          `[Sync] Skipped ${deletedIds.size} deleted collections during pull`
-        )
-      }
-      if (pendingIds.size > 0) {
-        console.log(
-          `[Sync] Skipped ${pendingIds.size} pending collections during pull`
-        )
-      }
-
-      if (parsedCollections.length > 0) {
-        await collectionRepository.saveCollections(parsedCollections)
-      } else {
-        console.log('[Sync] No valid collections to save')
-      }
-
-      return parsedCollections
-    } catch (error) {
-      console.error('[Sync] Error pulling collections from Supabase:', error)
-      throw error
+    if (error) {
+      throw new Error(`Failed to pull collections: ${error.message}`)
     }
+
+    if (!data || data.length === 0) {
+      console.log('[Sync] No collections to pull from Supabase')
+      return []
+    }
+
+    // Ensure all collections have required fields and filter out invalid ones
+    const parsedCollections = data
+      .filter(
+        collection =>
+          collection && collection.collection_id && collection.user_id
+      )
+      .filter(collection => !deletedIds.has(collection.collection_id))
+      .filter(collection => !pendingIds.has(collection.collection_id))
+      .map(collection => ({
+        ...collection,
+        updated_at:
+          collection.updated_at ||
+          collection.created_at ||
+          new Date().toISOString(),
+      }))
+
+    if (deletedIds.size > 0) {
+      console.log(
+        `[Sync] Skipped ${deletedIds.size} deleted collections during pull`
+      )
+    }
+    if (pendingIds.size > 0) {
+      console.log(
+        `[Sync] Skipped ${pendingIds.size} pending collections during pull`
+      )
+    }
+
+    if (parsedCollections.length > 0) {
+      await collectionRepository.saveCollections(parsedCollections)
+    } else {
+      console.log('[Sync] No valid collections to save')
+    }
+
+    return parsedCollections
   }
 
   private async cleanupOrphanWords(userId: string): Promise<void> {
@@ -572,7 +847,7 @@ export class SyncManager {
         console.log(`[Sync] Removed ${count} orphan words`)
         ToastService.show(
           `${count} orphan word${count > 1 ? 's' : ''} removed from local cache.`,
-          ToastType.WARNING
+          ToastType.INFO
         )
       }
     } catch (error) {
@@ -581,65 +856,57 @@ export class SyncManager {
   }
 
   private async pushCollectionsToSupabase(userId: string): Promise<number> {
-    try {
-      const deletedCollections =
-        await collectionRepository.getDeletedCollections(userId)
+    const deletedCollections =
+      await collectionRepository.getDeletedCollections(userId)
 
-      if (deletedCollections.length > 0) {
-        console.log(
-          `[Sync] Deleting ${deletedCollections.length} collections in Supabase`
-        )
-      }
-
-      for (const collection of deletedCollections) {
-        console.log(
-          `[Sync] Deleting collection ${collection.collection_id} in Supabase`
-        )
-        await collectionService.deleteCollection(
-          collection.collection_id,
-          userId
-        )
-        await collectionRepository.deleteCollection(collection.collection_id)
-      }
-
-      const pendingCollections =
-        await collectionRepository.getPendingSyncCollections(userId)
-
-      if (pendingCollections.length === 0) {
-        console.log('[Sync] No pending collections to sync')
-        return 0
-      }
-
-      // Convert local collections to Supabase format
-      // Note: updated_at is managed by Supabase, don't include it in upsert
-      const collectionsToSync = pendingCollections.map(c => ({
-        collection_id: c.collection_id,
-        user_id: c.user_id,
-        name: c.name,
-        is_shared: c.is_shared,
-        created_at: c.created_at,
-      }))
-
-      const { error } = await supabase
-        .from('collections')
-        .upsert(collectionsToSync)
-
-      if (error) {
-        throw new Error(`Failed to push collections: ${error.message}`)
-      }
-
-      const collectionIds = pendingCollections.map(c => c.collection_id)
-      await collectionRepository.markCollectionsSynced(collectionIds)
-
+    if (deletedCollections.length > 0) {
       console.log(
-        `[Sync] Pushed ${pendingCollections.length} collections to Supabase`
+        `[Sync] Deleting ${deletedCollections.length} collections in Supabase`
       )
-
-      return pendingCollections.length
-    } catch (error) {
-      console.error('[Sync] Error pushing collections to Supabase:', error)
-      throw error
     }
+
+    for (const collection of deletedCollections) {
+      console.log(
+        `[Sync] Deleting collection ${collection.collection_id} in Supabase`
+      )
+      await collectionService.deleteCollection(collection.collection_id, userId)
+      await collectionRepository.deleteCollection(collection.collection_id)
+    }
+
+    const pendingCollections =
+      await collectionRepository.getPendingSyncCollections(userId)
+
+    if (pendingCollections.length === 0) {
+      console.log('[Sync] No pending collections to sync')
+      return 0
+    }
+
+    // Convert local collections to Supabase format
+    // Note: updated_at is managed by Supabase, don't include it in upsert
+    const collectionsToSync = pendingCollections.map(c => ({
+      collection_id: c.collection_id,
+      user_id: c.user_id,
+      name: c.name,
+      is_shared: c.is_shared,
+      created_at: c.created_at,
+    }))
+
+    const { error } = await supabase
+      .from('collections')
+      .upsert(collectionsToSync)
+
+    if (error) {
+      throw new Error(`Failed to push collections: ${error.message}`)
+    }
+
+    const collectionIds = pendingCollections.map(c => c.collection_id)
+    await collectionRepository.markCollectionsSynced(collectionIds)
+
+    console.log(
+      `[Sync] Pushed ${pendingCollections.length} collections to Supabase`
+    )
+
+    return pendingCollections.length
   }
 }
 
