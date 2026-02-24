@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: Colors.neutral.black,
+    shadowColor: Colors.legacy.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 12,

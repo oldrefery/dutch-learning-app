@@ -24,7 +24,7 @@ import { ToastType } from '@/constants/ToastConstants'
 import { addWordScreenStyles } from './styles/AddWordScreen.styles'
 import { Sentry } from '@/lib/sentry'
 import { useHistoryStore } from '@/stores/useHistoryStore'
-import { Colors } from '@/constants/Colors.ts'
+import { Colors } from '@/constants/Colors'
 import { wordRepository } from '@/db/wordRepository'
 import { isNetworkAvailable } from '@/utils/networkUtils'
 
@@ -32,7 +32,7 @@ interface DuplicateWordData {
   word_id: string
   dutch_lemma: string
   collection_id: string
-  part_of_speech: string
+  part_of_speech: string | null
   article?: string
 }
 
@@ -73,6 +73,31 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   } = useAddWord(preselectedCollectionId)
   const { collections } = useCollections()
 
+  const toDuplicateWordData = (
+    word:
+      | {
+          word_id: string
+          dutch_lemma: string
+          collection_id: string | null
+          part_of_speech: string | null
+          article?: string | null
+        }
+      | null
+      | undefined
+  ): DuplicateWordData | null => {
+    if (!word?.collection_id) {
+      return null
+    }
+
+    return {
+      word_id: word.word_id,
+      dutch_lemma: word.dutch_lemma,
+      collection_id: word.collection_id,
+      part_of_speech: word.part_of_speech,
+      article: word.article ?? undefined,
+    }
+  }
+
   // Check for duplicates after analysis is complete
   useEffect(() => {
     const checkForDuplicates = async () => {
@@ -92,11 +117,13 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           analysisResult.part_of_speech,
           analysisResult.article
         )
-        const localCollectionName =
-          localMatch?.collection_id &&
-          collections.find(
-            collection => collection.collection_id === localMatch.collection_id
-          )?.name
+        const localDuplicateInfo = toDuplicateWordData(localMatch)
+        const localCollectionName = localDuplicateInfo
+          ? collections.find(
+              collection =>
+                collection.collection_id === localDuplicateInfo.collection_id
+            )?.name
+          : null
 
         if (__DEV__) {
           console.log('[AddWord][DuplicateCheck] Local result', {
@@ -107,9 +134,9 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           })
         }
 
-        if (localMatch && localCollectionName) {
+        if (localDuplicateInfo && localCollectionName) {
           setIsAlreadyInCollection(true)
-          setDuplicateWordInfo(localMatch)
+          setDuplicateWordInfo(localDuplicateInfo)
           ToastService.show(
             `Word "${analysisResult.dutch_lemma}" already exists in collection`,
             ToastType.ERROR
@@ -140,12 +167,13 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           analysisResult.article
         )
         const isDuplicate = Boolean(existingWord)
-        const existingCollectionName =
-          existingWord?.collection_id &&
-          collections.find(
-            collection =>
-              collection.collection_id === existingWord.collection_id
-          )?.name
+        const remoteDuplicateInfo = toDuplicateWordData(existingWord)
+        const existingCollectionName = remoteDuplicateInfo
+          ? collections.find(
+              collection =>
+                collection.collection_id === remoteDuplicateInfo.collection_id
+            )?.name
+          : null
 
         if (__DEV__) {
           console.log('[AddWord][DuplicateCheck] Remote result', {
@@ -160,7 +188,9 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         }
 
         setIsAlreadyInCollection(isDuplicate)
-        setDuplicateWordInfo(existingCollectionName ? existingWord : null)
+        setDuplicateWordInfo(
+          existingCollectionName ? remoteDuplicateInfo : null
+        )
 
         if (isDuplicate) {
           const message = existingCollectionName

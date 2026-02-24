@@ -25,6 +25,38 @@ const POSTGRES_UNIQUE_VIOLATION_CODE = '23505'
 const SEMANTIC_UNIQUE_INDEX = 'idx_words_semantic_unique'
 const SYNC_AUTH_PRECHECK_ERROR =
   'Authentication expired. Please sign in again to sync.'
+const SYNC_DUPLICATE_FINGERPRINT = 'sync-duplicate-conflict'
+const MAX_DUPLICATE_SENTRY_SAMPLES = 20
+const AUTH_ERROR_PATTERNS = [
+  'jwt expired',
+  'invalid jwt',
+  'authentication expired',
+  'refresh token',
+  'not authenticated',
+  'no active session',
+]
+const RLS_ERROR_PATTERNS = [
+  'row-level security',
+  'violates row-level security policy',
+  'permission denied for table',
+]
+
+type SyncErrorType = 'auth_expired' | 'rls' | 'other'
+type SyncStage =
+  | 'pull_collections'
+  | 'pull_words'
+  | 'push_collections'
+  | 'push_words'
+  | 'push_progress'
+
+class ControlledSyncError extends Error {
+  public sentryHandled = true
+
+  constructor(message: string) {
+    super(message)
+    this.name = 'ControlledSyncError'
+  }
+}
 
 interface SupabaseLikeError {
   code?: string
@@ -138,27 +170,47 @@ export class SyncManager {
 
       // Step 0: Pull collections from Supabase
       console.log('[Sync] Stage 1: pull collections')
-      await this.pullCollectionsFromSupabase(userId)
+      await this.runSyncStageWithSessionRetry(
+        'pull_collections',
+        userId,
+        async () => this.pullCollectionsFromSupabase(userId)
+      )
 
       // Step 1: Pull new words from Supabase
       console.log('[Sync] Stage 2: pull words')
       const lastSync = await getLastSyncTimestamp()
-      const pulledWords = await this.pullWordsFromSupabase(userId, lastSync)
+      const pulledWords = await this.runSyncStageWithSessionRetry(
+        'pull_words',
+        userId,
+        async () => this.pullWordsFromSupabase(userId, lastSync)
+      )
 
       // Clean up local orphan words after pull
       await this.cleanupOrphanWords(userId)
 
       // Step 2: Push pending collection updates to Supabase (needed for FK on words)
       console.log('[Sync] Stage 3: push collections')
-      await this.pushCollectionsToSupabase(userId)
+      await this.runSyncStageWithSessionRetry(
+        'push_collections',
+        userId,
+        async () => this.pushCollectionsToSupabase(userId)
+      )
 
       // Step 3: Push pending word updates to Supabase
       console.log('[Sync] Stage 4: push words')
-      const pushedWordsCount = await this.pushWordsToSupabase(userId)
+      const pushedWordsCount = await this.runSyncStageWithSessionRetry(
+        'push_words',
+        userId,
+        async () => this.pushWordsToSupabase(userId)
+      )
 
       // Step 4: Push pending progress to Supabase
       console.log('[Sync] Stage 5: push progress')
-      const pushedProgressCount = await this.pushProgressToSupabase(userId)
+      const pushedProgressCount = await this.runSyncStageWithSessionRetry(
+        'push_progress',
+        userId,
+        async () => this.pushProgressToSupabase(userId)
+      )
 
       // Update last sync timestamp
       await setLastSyncTimestamp(timestamp)
@@ -175,23 +227,31 @@ export class SyncManager {
 
       return result
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error'
+      const errorMessage = this.getErrorMessage(error)
+      const isNetworkError = this.isNetworkErrorMessage(errorMessage)
 
       // Don't report network errors - they're expected when offline
-      if (
-        errorMessage.includes('Network request failed') ||
-        errorMessage.includes('Network')
-      ) {
+      if (isNetworkError) {
         console.log(
           '[Sync] Network error during sync (expected when offline):',
           errorMessage
         )
-      } else {
+      } else if (error instanceof ControlledSyncError) {
+        console.warn('[Sync] Controlled sync failure:', errorMessage)
+      } else if (!this.isSentryHandledError(error)) {
+        const syncErrorType = this.categorizeSyncError(error)
         console.error('[Sync] Error during sync:', error)
-        Sentry.captureException(error, {
-          tags: { module: 'syncManager' },
-          extra: { userId },
+        Sentry.captureException(this.toError(error), {
+          tags: {
+            module: 'syncManager',
+            operation: 'performSync',
+            sync_error_type: syncErrorType,
+          },
+          extra: {
+            userId,
+            errorMessage,
+          },
+          fingerprint: ['sync-manager', syncErrorType],
         })
       }
 
@@ -204,10 +264,7 @@ export class SyncManager {
       }
 
       // Only notify if it's not a network error
-      if (
-        !errorMessage.includes('Network request failed') &&
-        !errorMessage.includes('Network')
-      ) {
+      if (!isNetworkError) {
         this.notifySyncStatus(result)
       }
 
@@ -253,10 +310,199 @@ export class SyncManager {
 
       return null
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
+      const message = this.getErrorMessage(error)
       console.warn('[Sync] Unexpected auth preflight error:', { message })
       return SYNC_AUTH_PRECHECK_ERROR
     }
+  }
+
+  private async refreshSessionForSyncRetry(): Promise<boolean> {
+    try {
+      const { data, error } = await supabase.auth.refreshSession()
+      const refreshedSession = data?.session as
+        | SupabaseSessionLike
+        | null
+        | undefined
+
+      if (
+        error ||
+        !refreshedSession ||
+        this.isSessionExpired(refreshedSession)
+      ) {
+        console.warn('[Sync] Session refresh failed during retry:', {
+          message: error?.message || 'No active session after refresh',
+        })
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.warn('[Sync] Unexpected session refresh retry error:', {
+        message: this.getErrorMessage(error),
+      })
+      return false
+    }
+  }
+
+  private async runSyncStageWithSessionRetry<T>(
+    stage: SyncStage,
+    userId: string,
+    operation: () => Promise<T>
+  ): Promise<T> {
+    try {
+      return await operation()
+    } catch (error) {
+      const syncErrorType = this.categorizeSyncError(error)
+      if (syncErrorType === 'other') {
+        throw error
+      }
+
+      const initialErrorMessage = this.getErrorMessage(error)
+      Sentry.captureMessage(
+        'Recoverable sync stage failure detected; refreshing session and retrying once',
+        {
+          level: 'warning',
+          tags: {
+            module: 'syncManager',
+            operation: stage,
+            sync_error_type: syncErrorType,
+          },
+          extra: {
+            userId,
+            stage,
+            errorMessage: initialErrorMessage,
+          },
+          fingerprint: ['sync-stage-retry', stage, syncErrorType],
+        }
+      )
+
+      const sessionRefreshed = await this.refreshSessionForSyncRetry()
+      if (!sessionRefreshed) {
+        Sentry.captureMessage(
+          'Sync retry aborted because session refresh failed',
+          {
+            level: 'warning',
+            tags: {
+              module: 'syncManager',
+              operation: stage,
+              sync_error_type: syncErrorType,
+              sync_retry: 'refresh_failed',
+            },
+            extra: {
+              userId,
+              stage,
+              errorMessage: initialErrorMessage,
+              authPrecheckError: SYNC_AUTH_PRECHECK_ERROR,
+            },
+            fingerprint: ['sync-refresh-failed', stage, syncErrorType],
+          }
+        )
+        throw new ControlledSyncError(SYNC_AUTH_PRECHECK_ERROR)
+      }
+
+      try {
+        return await operation()
+      } catch (retryError) {
+        const retryErrorType = this.categorizeSyncError(retryError)
+        if (retryErrorType !== 'other') {
+          Sentry.captureException(this.toError(retryError), {
+            tags: {
+              module: 'syncManager',
+              operation: stage,
+              sync_error_type: retryErrorType,
+              sync_retry: 'after_refresh',
+            },
+            extra: {
+              userId,
+              stage,
+              initialErrorMessage,
+              retryErrorMessage: this.getErrorMessage(retryError),
+            },
+            fingerprint: ['sync-retry-failed', stage, retryErrorType],
+          })
+          this.markErrorAsSentryHandled(retryError)
+        }
+
+        throw retryError
+      }
+    }
+  }
+
+  private categorizeSyncError(error: unknown): SyncErrorType {
+    const details = this.getErrorSearchableText(error)
+
+    if (AUTH_ERROR_PATTERNS.some(pattern => details.includes(pattern))) {
+      return 'auth_expired'
+    }
+
+    if (RLS_ERROR_PATTERNS.some(pattern => details.includes(pattern))) {
+      return 'rls'
+    }
+
+    const code = this.getSupabaseErrorCode(error)
+    if (code === '42501') {
+      return 'rls'
+    }
+
+    return 'other'
+  }
+
+  private getErrorSearchableText(error: unknown): string {
+    if (!error || typeof error !== 'object') {
+      return this.getErrorMessage(error).toLowerCase()
+    }
+
+    const supabaseError = error as SupabaseLikeError
+    return [
+      supabaseError.code || '',
+      supabaseError.message || '',
+      supabaseError.details || '',
+      this.getErrorMessage(error),
+    ]
+      .join(' ')
+      .toLowerCase()
+  }
+
+  private getSupabaseErrorCode(error: unknown): string | null {
+    if (!error || typeof error !== 'object') return null
+    const code = (error as { code?: unknown }).code
+    return typeof code === 'string' && code.trim() !== '' ? code : null
+  }
+
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof Error) return error.message
+    if (!error || typeof error !== 'object') return 'Unknown error'
+
+    const maybeMessage = (error as { message?: unknown }).message
+    if (typeof maybeMessage === 'string' && maybeMessage.trim() !== '') {
+      return maybeMessage
+    }
+
+    return 'Unknown error'
+  }
+
+  private isNetworkErrorMessage(message: string): boolean {
+    return (
+      message.includes('Network request failed') || message.includes('Network')
+    )
+  }
+
+  private toError(error: unknown): Error {
+    if (error instanceof Error) {
+      return error
+    }
+
+    return new Error(this.getErrorMessage(error))
+  }
+
+  private markErrorAsSentryHandled(error: unknown): void {
+    if (!error || typeof error !== 'object') return
+    ;(error as { sentryHandled?: boolean }).sentryHandled = true
+  }
+
+  private isSentryHandledError(error: unknown): boolean {
+    if (!error || typeof error !== 'object') return false
+    return Boolean((error as { sentryHandled?: boolean }).sentryHandled)
   }
 
   private isSessionExpired(session: SupabaseSessionLike): boolean {
@@ -296,6 +542,7 @@ export class SyncManager {
     const parsedWords = data.map(word => {
       return {
         ...word,
+        user_id: userId,
         // Ensure created_at and updated_at are always set (fallback to current time)
         created_at: word.created_at || now,
         updated_at: word.updated_at || word.created_at || now,
@@ -349,7 +596,7 @@ export class SyncManager {
     // Convert local progress to Supabase format
     const progressToSync = pendingProgress.map(p => ({
       progress_id: p.progress_id,
-      user_id: p.user_id,
+      user_id: userId,
       word_id: p.word_id,
       status: p.status,
       reviewed_count: p.reviewed_count,
@@ -500,17 +747,15 @@ export class SyncManager {
         'Local semantic duplicates skipped before sync upsert',
         {
           level: 'warning',
-          tags: { operation: 'pushWordsToSupabase' },
-          extra: {
-            userId,
-            duplicateCount: localSemanticDuplicates.length,
-            words: localSemanticDuplicates.map(word => ({
-              word_id: word.word_id,
-              dutch_lemma: word.dutch_lemma,
-              part_of_speech: word.part_of_speech,
-              article: word.article,
-            })),
+          tags: {
+            operation: 'pushWordsToSupabase',
+            sync_error_type: 'duplicate_conflict_local',
           },
+          ...this.buildDuplicateWordsSentryExtra(
+            userId,
+            localSemanticDuplicates
+          ),
+          fingerprint: [SYNC_DUPLICATE_FINGERPRINT, 'local'],
         }
       )
       await this.markDuplicateWordsSynced(localSemanticDuplicates)
@@ -561,16 +806,12 @@ export class SyncManager {
       `Duplicate words prevented during sync: ${duplicateWordLabels}`,
       {
         level: 'warning',
-        tags: { operation: 'pushWordsToSupabase' },
-        extra: {
-          userId,
-          duplicateCount: duplicateWords.length,
-          words: duplicateWords.map(w => ({
-            dutch_lemma: w.dutch_lemma,
-            part_of_speech: w.part_of_speech,
-            article: w.article,
-          })),
+        tags: {
+          operation: 'pushWordsToSupabase',
+          sync_error_type: 'duplicate_conflict_remote',
         },
+        ...this.buildDuplicateWordsSentryExtra(userId, duplicateWords),
+        fingerprint: [SYNC_DUPLICATE_FINGERPRINT, 'remote'],
       }
     )
 
@@ -584,7 +825,7 @@ export class SyncManager {
     if (uniqueWords.length === 0) return 0
 
     const wordsToSync = uniqueWords.map(word =>
-      this.mapWordToSupabasePayload(word)
+      this.mapWordToSupabasePayload(word, userId)
     )
     const { error } = await supabase.from('words').upsert(wordsToSync, {
       onConflict: 'word_id',
@@ -610,13 +851,17 @@ export class SyncManager {
       'Semantic duplicate conflict detected during sync batch upsert; applying safe fallback',
       {
         level: 'warning',
-        tags: { operation: 'pushWordsToSupabase' },
+        tags: {
+          operation: 'pushWordsToSupabase',
+          sync_error_type: 'duplicate_conflict_batch',
+        },
         extra: {
           userId,
           conflictCode: (error as SupabaseLikeError).code,
           conflictMessage: (error as SupabaseLikeError).message,
           uniqueWordsCount: uniqueWords.length,
         },
+        fingerprint: [SYNC_DUPLICATE_FINGERPRINT, 'batch'],
       }
     )
 
@@ -636,10 +881,13 @@ export class SyncManager {
     )
   }
 
-  private mapWordToSupabasePayload(word: Word): SupabaseWordPayload {
+  private mapWordToSupabasePayload(
+    word: Word,
+    userId: string
+  ): SupabaseWordPayload {
     return {
       word_id: word.word_id,
-      user_id: word.user_id,
+      user_id: userId,
       collection_id: word.collection_id,
       dutch_lemma: word.dutch_lemma,
       dutch_original: word.dutch_original,
@@ -726,7 +974,7 @@ export class SyncManager {
 
       const { error } = await supabase
         .from('words')
-        .upsert([this.mapWordToSupabasePayload(word)], {
+        .upsert([this.mapWordToSupabasePayload(word, userId)], {
           onConflict: 'word_id',
         })
 
@@ -744,6 +992,43 @@ export class SyncManager {
 
     await wordRepository.markWordsSynced(syncedWordIds)
     return syncedWordIds.length
+  }
+
+  private buildDuplicateWordsSentryExtra(
+    userId: string,
+    words: Word[]
+  ): {
+    extra: {
+      userId: string
+      duplicateCount: number
+      duplicateSampleSize: number
+      duplicateTruncatedCount: number
+      words: {
+        word_id: string
+        dutch_lemma: string
+        part_of_speech: string | null
+        article: Word['article']
+      }[]
+    }
+  } {
+    const sampleWords = words
+      .slice(0, MAX_DUPLICATE_SENTRY_SAMPLES)
+      .map(word => ({
+        word_id: word.word_id,
+        dutch_lemma: word.dutch_lemma,
+        part_of_speech: word.part_of_speech,
+        article: word.article,
+      }))
+
+    return {
+      extra: {
+        userId,
+        duplicateCount: words.length,
+        duplicateSampleSize: sampleWords.length,
+        duplicateTruncatedCount: Math.max(0, words.length - sampleWords.length),
+        words: sampleWords,
+      },
+    }
   }
 
   private async filterWordsWithCollections(
@@ -834,7 +1119,7 @@ export class SyncManager {
 
     const collectionsToSync = collections.map(c => ({
       collection_id: c.collection_id,
-      user_id: c.user_id,
+      user_id: userId,
       name: c.name,
       is_shared: c.is_shared,
       created_at: c.created_at,
@@ -959,7 +1244,7 @@ export class SyncManager {
     // Note: updated_at is managed by Supabase, don't include it in upsert
     const collectionsToSync = pendingCollections.map(c => ({
       collection_id: c.collection_id,
-      user_id: c.user_id,
+      user_id: userId,
       name: c.name,
       is_shared: c.is_shared,
       created_at: c.created_at,

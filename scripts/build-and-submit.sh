@@ -25,6 +25,18 @@ fi
 
 echo -e "${GREEN}✓ Found .sentryclirc configuration${NC}"
 
+# Resolve Expo config file (app.json or app.base.json)
+if [ -f "./app.json" ]; then
+    APP_CONFIG_FILE="./app.json"
+elif [ -f "./app.base.json" ]; then
+    APP_CONFIG_FILE="./app.base.json"
+else
+    echo -e "${RED}Error: app.json or app.base.json not found in project root${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ Using Expo config: ${APP_CONFIG_FILE}${NC}"
+
 # Default values
 PLATFORM="both"
 SUBMIT="true"
@@ -71,17 +83,17 @@ fi
 
 # Function to get current version from app.json
 get_current_version() {
-    node -p "require('./app.json').expo.version"
+    node -p "require('${APP_CONFIG_FILE}').expo.version"
 }
 
 # Function to get current iOS build number
 get_ios_build_number() {
-    node -p "require('./app.json').expo.ios?.buildNumber || '0'"
+    node -p "require('${APP_CONFIG_FILE}').expo.ios?.buildNumber || '0'"
 }
 
 # Function to get current Android version code
 get_android_version_code() {
-    node -p "require('./app.json').expo.android?.versionCode || 0"
+    node -p "require('${APP_CONFIG_FILE}').expo.android?.versionCode || 0"
 }
 
 # Function to increment build numbers
@@ -98,13 +110,14 @@ increment_build_numbers() {
     # Update both iOS buildNumber and Android versionCode to the same value
     node -e "
         const fs = require('fs');
-        const config = JSON.parse(fs.readFileSync('./app.json', 'utf8'));
+        const file = process.argv[1];
+        const config = JSON.parse(fs.readFileSync(file, 'utf8'));
         if (!config.expo.ios) config.expo.ios = {};
         if (!config.expo.android) config.expo.android = {};
         config.expo.ios.buildNumber = '$new_build';
         config.expo.android.versionCode = $new_build;
-        fs.writeFileSync('./app.json', JSON.stringify(config, null, 2) + '\n');
-    "
+        fs.writeFileSync(file, JSON.stringify(config, null, 2) + '\n');
+    " "$APP_CONFIG_FILE"
 
     echo $new_build
 }
@@ -114,10 +127,11 @@ update_version() {
     local new_version=$1
     node -e "
         const fs = require('fs');
-        const config = JSON.parse(fs.readFileSync('./app.json', 'utf8'));
+        const file = process.argv[1];
+        const config = JSON.parse(fs.readFileSync(file, 'utf8'));
         config.expo.version = '$new_version';
-        fs.writeFileSync('./app.json', JSON.stringify(config, null, 2) + '\n');
-    "
+        fs.writeFileSync(file, JSON.stringify(config, null, 2) + '\n');
+    " "$APP_CONFIG_FILE"
 }
 
 # Get current version and build numbers
@@ -152,7 +166,7 @@ echo -e "${GREEN}Will increment build numbers to: ${NEW_BUILD}${NC}"
 # Commit version changes if any
 if [ "$NEW_VERSION" != "$CURRENT_VERSION" ] || [ "$NEW_BUILD" != "$CURRENT_IOS_BUILD" ] || [ "$NEW_BUILD" != "$CURRENT_ANDROID_BUILD" ]; then
     echo -e "${BLUE}Committing version changes...${NC}"
-    git add app.json
+    git add "$APP_CONFIG_FILE"
 
     if [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; then
         git commit -m "chore: bump version to ${NEW_VERSION} and build number to ${NEW_BUILD}"
@@ -172,7 +186,7 @@ if [[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]]; then
     echo -e "${GREEN}Building iOS app locally...${NC}"
     echo -e "${YELLOW}Running: eas build --platform ios --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa${NC}"
 
-    if EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive --json > builds/ios-build-metadata.json; then
+    if EAS_SKIP_AUTO_FINGERPRINT=1 NODE_ENV=production eas build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive --json > builds/ios-build-metadata.json; then
         echo -e "${GREEN}✅ iOS build completed!${NC}"
     else
         echo -e "${RED}❌ iOS build failed!${NC}"
@@ -185,7 +199,7 @@ if [[ "$PLATFORM" == "android" || "$PLATFORM" == "both" ]]; then
     echo -e "${GREEN}Building Android app locally...${NC}"
     echo -e "${YELLOW}Running: eas build --platform android --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.aab${NC}"
 
-    if EAS_SKIP_AUTO_FINGERPRINT=1 eas build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive --json > builds/android-build-metadata.json; then
+    if EAS_SKIP_AUTO_FINGERPRINT=1 NODE_ENV=production eas build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive --json > builds/android-build-metadata.json; then
         echo -e "${GREEN}✅ Android build completed!${NC}"
     else
         echo -e "${RED}❌ Android build failed!${NC}"

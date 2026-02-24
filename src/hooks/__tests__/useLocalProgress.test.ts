@@ -14,6 +14,8 @@ jest.mock('@/stores/useApplicationStore')
 jest.mock('@/lib/supabaseClient')
 
 describe('useLocalProgress', () => {
+  const UPDATE_FAILED = 'Update failed'
+
   // Helper functions to generate random test data
   const generateId = (prefix: string) =>
     `${prefix}_${Math.random().toString(36).substring(2, 9)}`
@@ -259,7 +261,7 @@ describe('useLocalProgress', () => {
     })
 
     it('should throw error on update failure', async () => {
-      const updateError = new Error('Update failed')
+      const updateError = new Error(UPDATE_FAILED)
       ;(progressRepository.updateProgress as jest.Mock).mockRejectedValue(
         updateError
       )
@@ -272,7 +274,7 @@ describe('useLocalProgress', () => {
         act(async () => {
           await result.current.updateProgress(PROGRESS_ID, updates)
         })
-      ).rejects.toThrow('Update failed')
+      ).rejects.toThrow(UPDATE_FAILED)
     })
 
     it('should handle partial updates', async () => {
@@ -432,7 +434,7 @@ describe('useLocalProgress', () => {
         mockProgress
       )
       ;(progressRepository.updateProgress as jest.Mock).mockRejectedValueOnce(
-        new Error('Update failed')
+        new Error(UPDATE_FAILED)
       )
 
       const { result } = renderHook(() => useLocalProgress())

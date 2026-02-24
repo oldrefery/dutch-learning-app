@@ -8,8 +8,11 @@ export interface Collection {
   collection_id: string
   user_id: string
   name: string
+  description: string | null
+  updated_at: string
   created_at: string
   is_shared: boolean
+  shared_with: string[] | null
   share_token: string | null
   shared_at: string | null
 }
@@ -42,7 +45,7 @@ export interface Word {
   is_irregular: boolean
   is_reflexive: boolean
   is_expression: boolean
-  expression_type?: ExpressionType
+  expression_type?: ExpressionType | null
   is_separable: boolean // True for separable verbs (opgeven, aankomen)
   prefix_part: string | null // The prefix part (op, aan, uit, etc.)
   root_verb: string | null // The root verb part (geven, komen, gaan)
@@ -64,6 +67,7 @@ export interface Word {
   last_reviewed_at: string | null
   analysis_notes: string | null
   created_at: string
+  updated_at: string
 }
 
 // API Response types

@@ -31,6 +31,50 @@ export type LiquidGlassProps = {
   style?: StyleProp<ViewStyle>
 }
 
+const resolveTint = (
+  tint: LiquidGlassTint,
+  isDarkMode: boolean
+): 'light' | 'dark' => {
+  if (tint === LiquidGlassTint.Auto) {
+    return isDarkMode ? 'dark' : 'light'
+  }
+
+  return tint as 'light' | 'dark'
+}
+
+const resolveIntensity = (
+  intensity: LiquidGlassIntensityMode | number,
+  isDarkMode: boolean
+) => {
+  if (typeof intensity === 'number') {
+    return intensity
+  }
+
+  if (intensity === LiquidGlassIntensityMode.Adaptive) {
+    return isDarkMode
+      ? GlassDefaults.intensityDark
+      : GlassDefaults.intensityLight
+  }
+
+  return GlassDefaults.intensityLight
+}
+
+const getContainerElevation = (elevation: LiquidGlassElevation) => {
+  if (Platform.OS === 'android' && elevation > 0) {
+    return {
+      elevation,
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
+    }
+  }
+
+  return undefined
+}
+
+const getFallbackColor = (isDarkMode: boolean) =>
+  isDarkMode ? Colors.transparent.white05 : Colors.transparent.white50
+
 export const LiquidGlass: React.FC<LiquidGlassProps> = ({
   children,
   tint = GlassDefaults.tint,
@@ -48,53 +92,36 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({
   const isDarkMode = colorScheme === 'dark'
   const reduceTransparency = usePreferReducedTransparency()
 
-  const resolvedTint: 'light' | 'dark' =
-    tint === LiquidGlassTint.Auto
-      ? isDarkMode
-        ? 'dark'
-        : 'light'
-      : (tint as 'light' | 'dark')
-
-  const resolvedIntensity: number =
-    typeof intensity === 'number'
-      ? intensity
-      : intensity === LiquidGlassIntensityMode.Adaptive
-        ? isDarkMode
-          ? GlassDefaults.intensityDark
-          : GlassDefaults.intensityLight
-        : GlassDefaults.intensityLight
+  const resolvedTint = resolveTint(tint, isDarkMode)
+  const resolvedIntensity = resolveIntensity(intensity, isDarkMode)
 
   const borderColor = isDarkMode ? GlassOutline.dark : GlassOutline.light
   const borderStyle = withOutline
     ? { borderColor, borderWidth: StyleSheet.hairlineWidth }
     : null
 
-  const fallbackColor = isDarkMode
-    ? Colors.transparent.white05
-    : Colors.transparent.white50
+  const fallbackColor = getFallbackColor(isDarkMode)
 
   const resolvedRadius = typeof radius === 'number' ? radius : Number(radius)
 
-  const containerElevation =
-    Platform.OS === 'android' && elevation && elevation > 0
-      ? { elevation, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 6 }
-      : undefined
+  const containerElevation = getContainerElevation(elevation)
 
   const resolvedPadding = padding ?? 0
+  const blurStyle = [
+    styles.blur,
+    { borderRadius: resolvedRadius },
+    borderStyle,
+    resolvedPadding ? { padding: resolvedPadding } : null,
+  ]
 
   return (
     <View style={[styles.container, containerElevation, style]} testID={testID}>
       {reduceTransparency ? (
         <View
           style={[
-            styles.blur,
-            { borderRadius: resolvedRadius },
-            borderStyle,
-            resolvedPadding ? { padding: resolvedPadding } : null,
+            blurStyle,
             {
-              backgroundColor: isDarkMode
-                ? Colors.transparent.white05
-                : Colors.transparent.white50,
+              backgroundColor: fallbackColor,
             },
           ]}
         >
@@ -105,12 +132,7 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({
           intensity={resolvedIntensity}
           tint={resolvedTint}
           fallbackColor={fallbackColor}
-          style={[
-            styles.blur,
-            { borderRadius: resolvedRadius },
-            borderStyle,
-            resolvedPadding ? { padding: resolvedPadding } : null,
-          ]}
+          style={blurStyle}
         >
           {children}
         </PlatformBlurView>

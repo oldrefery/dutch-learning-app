@@ -22,6 +22,9 @@ jest.mock('@/services/collectionSharingService', () => ({
     generateShareUrl: jest
       .fn()
       .mockReturnValue('https://example.com/share/token123'),
+    generateWebShareUrl: jest
+      .fn()
+      .mockReturnValue('https://dutch-learning-app.vercel.app/share/token123'),
   },
 }))
 jest.mock('@/lib/sentry')
@@ -36,6 +39,8 @@ describe('sharingUtils', () => {
 
   const SHARE_TOKEN = generateId('token')
   const SHARE_URL = `https://example.com/share/${generateId('share')}`
+  const WEB_SHARE_URL = `https://dutch-learning-app.vercel.app/share/${generateId('share')}`
+  const FALLBACK_URL = 'https://fallback.com'
   const COLLECTION_NAME = 'My Collection'
   const DUTCH_LEARNING_APP = 'Dutch Learning App'
   const SHARE_FAILED_ERROR = 'Share failed'
@@ -46,6 +51,9 @@ describe('sharingUtils', () => {
     ;(collectionSharingService.generateShareUrl as jest.Mock).mockReturnValue(
       SHARE_URL
     )
+    ;(
+      collectionSharingService.generateWebShareUrl as jest.Mock
+    ).mockReturnValue(WEB_SHARE_URL)
   })
 
   describe('shareCollectionUrl', () => {
@@ -63,6 +71,14 @@ describe('sharingUtils', () => {
       await sharingUtils.shareCollectionUrl(SHARE_TOKEN, COLLECTION_NAME)
 
       expect(collectionSharingService.generateShareUrl).toHaveBeenCalledWith(
+        SHARE_TOKEN
+      )
+    })
+
+    it('should call generateWebShareUrl with correct token', async () => {
+      await sharingUtils.shareCollectionUrl(SHARE_TOKEN, COLLECTION_NAME)
+
+      expect(collectionSharingService.generateWebShareUrl).toHaveBeenCalledWith(
         SHARE_TOKEN
       )
     })
@@ -98,6 +114,7 @@ describe('sharingUtils', () => {
       const callArgs = (Share.share as jest.Mock).mock.calls[0][0]
       expect(callArgs.message).toContain(COLLECTION_NAME)
       expect(callArgs.message).toContain(SHARE_URL)
+      expect(callArgs.message).toContain(WEB_SHARE_URL)
     })
 
     it('should include share token in message', async () => {
@@ -105,6 +122,7 @@ describe('sharingUtils', () => {
 
       const callArgs = (Share.share as jest.Mock).mock.calls[0][0]
       expect(callArgs.message).toContain(SHARE_URL)
+      expect(callArgs.message).toContain(WEB_SHARE_URL)
     })
 
     it('should add breadcrumb to Sentry on successful share', async () => {
@@ -255,6 +273,19 @@ describe('sharingUtils', () => {
       expect(callArgs.message).toContain(expectedUrl)
     })
 
+    it('should include web fallback URL in message', async () => {
+      const expectedWebUrl =
+        'https://dutch-learning-app.vercel.app/share/token123'
+      ;(
+        collectionSharingService.generateWebShareUrl as jest.Mock
+      ).mockReturnValue(expectedWebUrl)
+
+      await sharingUtils.shareCollectionUrl(SHARE_TOKEN, COLLECTION_NAME)
+
+      const callArgs = (Share.share as jest.Mock).mock.calls[0][0]
+      expect(callArgs.message).toContain(expectedWebUrl)
+    })
+
     it('should include app name in message', async () => {
       await sharingUtils.shareCollectionUrl(SHARE_TOKEN, COLLECTION_NAME)
 
@@ -280,13 +311,18 @@ describe('sharingUtils', () => {
 
   describe('options handling', () => {
     it('should accept and use custom fallbackUrl option', async () => {
-      const options = { fallbackUrl: 'https://fallback.com' }
+      const options = { fallbackUrl: FALLBACK_URL }
       await sharingUtils.shareCollectionUrl(
         SHARE_TOKEN,
         COLLECTION_NAME,
         options
       )
 
+      const callArgs = (Share.share as jest.Mock).mock.calls[0][0]
+      expect(callArgs.message).toContain(FALLBACK_URL)
+      expect(
+        collectionSharingService.generateWebShareUrl
+      ).not.toHaveBeenCalled()
       expect(Sentry.captureException).not.toHaveBeenCalled()
     })
 
@@ -326,7 +362,7 @@ describe('sharingUtils', () => {
     it('should handle multiple options together', async () => {
       const options = {
         dialogTitle: 'Share Collection',
-        fallbackUrl: 'https://fallback.com',
+        fallbackUrl: FALLBACK_URL,
         mimeType: 'text/plain',
       }
 

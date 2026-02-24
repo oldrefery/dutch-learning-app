@@ -15,7 +15,7 @@ import CollectionDetailHeader from '@/components/CollectionDetailHeader'
 import CollectionContent from '@/components/CollectionContent'
 import WordDetailModal from '@/components/WordDetailModal'
 import ImageSelector from '@/components/ImageSelector'
-import MoveWordToCollectionSheet from '@/components/glass/modals/MoveWordToCollectionSheet'
+import { MoveWordToCollectionSheet } from '@/components/glass/modals/MoveWordToCollectionSheet'
 import WordContextMenu from '@/components/WordContextMenu'
 
 export default function CollectionDetailScreen() {

@@ -1,3 +1,10 @@
+branch="$(git symbolic-ref --short HEAD 2>/dev/null)"
+
+if [ "$branch" = "main" ]; then
+  echo "Committing directly to 'main' is blocked. Please switch to a feature branch."
+  exit 1
+fi
+
 # Run linting and formatting
 npx lint-staged
 
@@ -11,4 +18,4 @@ npx lint-staged
 .husky/check-file-length
 
 # Run tests to ensure no regressions
-npm test -- --no-watch --no-coverage --bail
+CI=true npm test -- --no-watch --no-coverage --bail --watchman=false

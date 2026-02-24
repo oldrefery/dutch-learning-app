@@ -6,6 +6,7 @@
 import { createWordActions } from '../actions/wordActions'
 import { wordRepository } from '@/db/wordRepository'
 import { Sentry } from '@/lib/sentry'
+import { wordService } from '@/lib/supabase'
 import { calculateNextReview } from '@/utils/srs'
 import { logError } from '@/utils/logger'
 import type { ApplicationState } from '@/types/ApplicationStoreTypes'
@@ -34,6 +35,11 @@ jest.mock('@/utils/srs', () => ({
 jest.mock('@/utils/logger', () => ({
   logError: jest.fn(),
   logInfo: jest.fn(),
+}))
+jest.mock('@/lib/supabase', () => ({
+  wordService: {
+    importWordsToCollection: jest.fn(),
+  },
 }))
 jest.mock('@/lib/supabaseClient')
 
@@ -723,6 +729,78 @@ describe('wordActions', () => {
 
       expect(wordRepository.addWord).not.toHaveBeenCalled()
       expect(result).toBe(true)
+    })
+
+    it('should normalize imported shared words with current user and target collection', async () => {
+      const importedWord = createMockWord({
+        word_id: 'shared-word-id',
+        user_id: 'different-user',
+        collection_id: 'different-collection',
+        dutch_lemma: 'delen',
+      })
+
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [],
+        error: null,
+      })
+      ;(wordService.importWordsToCollection as jest.Mock).mockResolvedValue([
+        importedWord,
+      ])
+      ;(wordRepository.addWord as jest.Mock).mockResolvedValue(undefined)
+
+      const result = await actions.addWordsToCollection(
+        COLLECTION_ID,
+        [{ dutch_lemma: 'delen', translations: { en: ['share'] } }],
+        true
+      )
+
+      expect(result).toBe(true)
+      expect(wordService.importWordsToCollection).toHaveBeenCalledWith(
+        COLLECTION_ID,
+        [{ dutch_lemma: 'delen', translations: { en: ['share'] } }]
+      )
+      expect(wordRepository.addWord).toHaveBeenCalledWith(
+        expect.objectContaining({
+          word_id: 'shared-word-id',
+          user_id: USER_ID,
+          collection_id: COLLECTION_ID,
+        })
+      )
+    })
+
+    it('should prefer user-safe import message when shared import fails', async () => {
+      const importError = Object.assign(new Error('Collection not found'), {
+        userMessage:
+          'Unable to import words into the selected collection. Please verify access and try again.',
+        sentryHandled: true,
+      })
+
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [],
+        error: null,
+      })
+      ;(wordService.importWordsToCollection as jest.Mock).mockRejectedValue(
+        importError
+      )
+
+      const result = await actions.addWordsToCollection(
+        COLLECTION_ID,
+        [{ dutch_lemma: 'delen', translations: { en: ['share'] } }],
+        true
+      )
+
+      expect(result).toBe(false)
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            message: 'Failed to import words',
+            details:
+              'Unable to import words into the selected collection. Please verify access and try again.',
+          }),
+        })
+      )
     })
 
     it('should handle add words errors', async () => {

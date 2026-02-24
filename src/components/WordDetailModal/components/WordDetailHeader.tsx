@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  useColorScheme,
-} from 'react-native'
-import { TextThemed } from '@/components/Themed'
+import { View, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
@@ -18,14 +12,7 @@ interface WordHeaderProps {
   onClose: () => void
 }
 
-export default function WordHeader({
-  dutchLemma,
-  article,
-  onClose,
-}: WordHeaderProps) {
-  const colorScheme = useColorScheme() ?? 'light'
-  const isDarkMode = colorScheme === 'dark'
-  const intensity = isDarkMode ? 25 : 30
+export default function WordHeader({ dutchLemma, onClose }: WordHeaderProps) {
   return (
     <View
       style={[

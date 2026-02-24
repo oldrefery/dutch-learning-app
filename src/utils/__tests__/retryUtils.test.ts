@@ -8,8 +8,6 @@ import {
   calculateBackoffDelay,
   delay,
   retryWithBackoff,
-  DEFAULT_RETRY_CONFIG,
-  type RetryConfig,
 } from '../retryUtils'
 import { NetworkError } from '@/types/ErrorTypes'
 
@@ -21,6 +19,9 @@ jest.mock('@/constants/AppConfig', () => ({
 }))
 
 describe('retryUtils', () => {
+  const NETWORK_REQUEST_FAILED = 'Network request failed'
+  const SHOULD_HAVE_THROWN_MESSAGE = 'Should have thrown'
+
   beforeEach(() => {
     jest.clearAllMocks()
     jest.useFakeTimers()
@@ -34,7 +35,7 @@ describe('retryUtils', () => {
   describe('isRetryableError', () => {
     describe('network errors', () => {
       it('should identify "network request failed" as retryable', () => {
-        const error = new TypeError('Network request failed')
+        const error = new TypeError(NETWORK_REQUEST_FAILED)
         expect(isRetryableError(error)).toBe(true)
       })
 
@@ -150,7 +151,7 @@ describe('retryUtils', () => {
     })
 
     it('should double delay with each attempt', () => {
-      const delay0 = calculateBackoffDelay(0, 1000, 30000)
+      calculateBackoffDelay(0, 1000, 30000)
       const delay1 = calculateBackoffDelay(1, 1000, 30000)
       const delay2 = calculateBackoffDelay(2, 1000, 30000)
 
@@ -227,7 +228,7 @@ describe('retryUtils', () => {
       jest.useRealTimers()
       const fn = jest
         .fn()
-        .mockRejectedValueOnce(new TypeError('Network request failed'))
+        .mockRejectedValueOnce(new TypeError(NETWORK_REQUEST_FAILED))
         .mockResolvedValueOnce('success')
 
       const result = await retryWithBackoff(fn, {
@@ -246,7 +247,7 @@ describe('retryUtils', () => {
       jest.useRealTimers()
       const fn = jest
         .fn()
-        .mockRejectedValue(new TypeError('Network request failed'))
+        .mockRejectedValue(new TypeError(NETWORK_REQUEST_FAILED))
 
       try {
         await retryWithBackoff(fn, {
@@ -254,7 +255,7 @@ describe('retryUtils', () => {
           initialDelayMs: 10,
           maxDelayMs: 100,
         })
-      } catch (error) {
+      } catch {
         // Expected to throw
       }
 
@@ -274,7 +275,7 @@ describe('retryUtils', () => {
           initialDelayMs: 10,
           maxDelayMs: 100,
         })
-      } catch (error) {
+      } catch {
         // Expected to throw
       }
 
@@ -308,7 +309,7 @@ describe('retryUtils', () => {
       jest.useRealTimers()
       const fn = jest
         .fn()
-        .mockRejectedValue(new TypeError('Network request failed'))
+        .mockRejectedValue(new TypeError(NETWORK_REQUEST_FAILED))
 
       try {
         await retryWithBackoff(fn, {
@@ -317,7 +318,7 @@ describe('retryUtils', () => {
           maxDelayMs: 100,
           shouldRetry: () => false, // Never retry
         })
-      } catch (error) {
+      } catch {
         // Expected to throw
       }
 
@@ -328,7 +329,7 @@ describe('retryUtils', () => {
 
     it('should throw last error after all retries fail', async () => {
       jest.useRealTimers()
-      const testError = new TypeError('Network request failed')
+      const testError = new TypeError(NETWORK_REQUEST_FAILED)
       const fn = jest.fn().mockRejectedValue(testError)
 
       try {
@@ -337,7 +338,7 @@ describe('retryUtils', () => {
           initialDelayMs: 10,
           maxDelayMs: 100,
         })
-        fail('Should have thrown')
+        fail(SHOULD_HAVE_THROWN_MESSAGE)
       } catch (error) {
         expect(error).toBe(testError)
       }
@@ -349,8 +350,8 @@ describe('retryUtils', () => {
       jest.useRealTimers()
       const fn = jest
         .fn()
-        .mockRejectedValueOnce(new TypeError('Network request failed'))
-        .mockRejectedValueOnce(new TypeError('Network request failed'))
+        .mockRejectedValueOnce(new TypeError(NETWORK_REQUEST_FAILED))
+        .mockRejectedValueOnce(new TypeError(NETWORK_REQUEST_FAILED))
         .mockResolvedValueOnce('success')
 
       const result = await retryWithBackoff(fn, {
@@ -381,7 +382,7 @@ describe('retryUtils', () => {
       jest.useRealTimers()
       const fn = jest
         .fn()
-        .mockRejectedValueOnce(new TypeError('Network request failed'))
+        .mockRejectedValueOnce(new TypeError(NETWORK_REQUEST_FAILED))
         .mockResolvedValueOnce('success')
 
       // Only override maxRetries, should keep other defaults
@@ -401,7 +402,7 @@ describe('retryUtils', () => {
       const fn = jest.fn(async () => {
         attempt++
         if (attempt < 3) {
-          throw new TypeError('Network request failed')
+          throw new TypeError(NETWORK_REQUEST_FAILED)
         }
         return 'success'
       })
@@ -422,7 +423,7 @@ describe('retryUtils', () => {
       jest.useRealTimers()
       const fn = jest
         .fn()
-        .mockRejectedValue(new TypeError('Network request failed'))
+        .mockRejectedValue(new TypeError(NETWORK_REQUEST_FAILED))
 
       try {
         await retryWithBackoff(fn, {
@@ -430,7 +431,7 @@ describe('retryUtils', () => {
           initialDelayMs: 10,
           maxDelayMs: 100,
         })
-        fail('Should have thrown')
+        fail(SHOULD_HAVE_THROWN_MESSAGE)
       } catch (error) {
         expect(error).toBeInstanceOf(TypeError)
       }
@@ -450,7 +451,7 @@ describe('retryUtils', () => {
 
       try {
         await retryWithBackoff(fn, { maxRetries: 3 })
-        fail('Should have thrown')
+        fail(SHOULD_HAVE_THROWN_MESSAGE)
       } catch (error) {
         expect(error).toBeInstanceOf(Error)
       }

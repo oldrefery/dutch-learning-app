@@ -68,7 +68,11 @@ describe('wordService duplicate handling', () => {
       wordService.importWordsToCollection(COLLECTION_ID, [
         { dutch_lemma: DUTCH_LEMMA },
       ])
-    ).rejects.toEqual(duplicateError)
+    ).rejects.toMatchObject({
+      message: SEMANTIC_DUPLICATE_MESSAGE,
+      code: '23505',
+      sentryHandled: true,
+    })
 
     expect(logWarning).toHaveBeenCalledWith(
       'Semantic duplicate skipped during word import',
@@ -80,12 +84,54 @@ describe('wordService duplicate handling', () => {
     expect(logSupabaseError).not.toHaveBeenCalled()
     expect(Sentry.captureMessage).toHaveBeenCalledWith(
       'Semantic duplicate skipped during import RPC',
-      expect.objectContaining({ level: 'warning' })
+      expect.objectContaining({
+        level: 'warning',
+        tags: expect.objectContaining({
+          import_error_type: 'semantic_duplicate',
+        }),
+      })
     )
     expect(Sentry.captureException).not.toHaveBeenCalled()
   })
 
-  it('should keep exception capture for non-duplicate import errors', async () => {
+  it('should capture import access denial as one warning and return safe message', async () => {
+    const accessDeniedError = {
+      code: 'P0001',
+      message: 'Collection not found or access denied [P0001]',
+      details: 'Import blocked by policy',
+    }
+
+    ;(supabase.rpc as jest.Mock).mockResolvedValue({
+      data: null,
+      error: accessDeniedError,
+    })
+
+    await expect(
+      wordService.importWordsToCollection(COLLECTION_ID, [
+        { dutch_lemma: DUTCH_LEMMA },
+      ])
+    ).rejects.toMatchObject({
+      message:
+        'Unable to import words into the selected collection. Please verify access and try again.',
+      code: 'P0001',
+      sentryHandled: true,
+      isImportAccessError: true,
+    })
+
+    expect(logSupabaseError).not.toHaveBeenCalled()
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      'Import blocked by access policy',
+      expect.objectContaining({
+        level: 'warning',
+        tags: expect.objectContaining({
+          import_error_type: 'access_denied',
+        }),
+      })
+    )
+    expect(Sentry.captureException).not.toHaveBeenCalled()
+  })
+
+  it('should rely on logSupabaseError capture for non-duplicate import errors', async () => {
     const genericError = {
       code: 'PGRST204',
       message: 'Database error',
@@ -101,12 +147,13 @@ describe('wordService duplicate handling', () => {
       wordService.importWordsToCollection(COLLECTION_ID, [
         { dutch_lemma: DUTCH_LEMMA },
       ])
-    ).rejects.toEqual(genericError)
+    ).rejects.toMatchObject({
+      message: 'Database error',
+      code: 'PGRST204',
+      sentryHandled: true,
+    })
 
     expect(logSupabaseError).toHaveBeenCalledTimes(1)
-    expect(Sentry.captureException).toHaveBeenCalledWith(genericError, {
-      tags: { operation: 'importWordsToCollection' },
-      extra: { collectionId: COLLECTION_ID, wordCount: 1 },
-    })
+    expect(Sentry.captureException).not.toHaveBeenCalled()
   })
 })

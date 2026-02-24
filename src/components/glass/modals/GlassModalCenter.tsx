@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
   useColorScheme,
+  type DimensionValue,
 } from 'react-native'
 import Animated, {
   useAnimatedStyle,
@@ -43,7 +44,7 @@ export type GlassModalCenterProps = {
   rightAction?: GlassModalCenterAction
   children: React.ReactNode
   minHeight?: number
-  width?: string
+  width?: DimensionValue
   maxWidth?: number
 }
 
@@ -123,7 +124,7 @@ export const GlassModalCenter: React.FC<GlassModalCenterProps> = ({
           style={[styles.sheetContainer, sheetStyle, { width, maxWidth }]}
         >
           <LiquidGlass
-            intensity={isDarkMode ? 10 : 12}
+            intensity={reduceTransparency ? 0 : isDarkMode ? 10 : 12}
             tint={LiquidGlassTint.Light}
             style={[
               styles.sheet,

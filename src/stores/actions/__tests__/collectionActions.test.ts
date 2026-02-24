@@ -31,6 +31,11 @@ jest.mock('expo-crypto', () => ({
 }))
 
 describe('collectionActions', () => {
+  const NEW_COLLECTION_NAME = 'New Collection'
+  const SHOULD_SKIP_IF_NO_USER_ID = 'should skip if no user ID'
+  const SHOULD_HANDLE_SERVICE_EXCEPTIONS = 'should handle service exceptions'
+  const SERVICE_ERROR = 'Service error'
+
   // Helper to generate random IDs
   const generateId = (prefix: string) =>
     `${prefix}_${Math.random().toString(36).substring(2, 9)}`
@@ -142,11 +147,11 @@ describe('collectionActions', () => {
         undefined
       )
 
-      const result = await actions.createNewCollection('New Collection')
+      const result = await actions.createNewCollection(NEW_COLLECTION_NAME)
 
       expect(collectionRepository.saveCollections).toHaveBeenCalled()
       expect(result).not.toBeNull()
-      expect(result?.name).toBe('New Collection')
+      expect(result?.name).toBe(NEW_COLLECTION_NAME)
       expect(result?.user_id).toBe(USER_ID)
       expect(result?.is_shared).toBe(false)
       expect(result?.collection_id).toBeTruthy()
@@ -166,10 +171,10 @@ describe('collectionActions', () => {
       expect(col2?.collection_id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-/)
     })
 
-    it('should skip if no user ID', async () => {
+    it(SHOULD_SKIP_IF_NO_USER_ID, async () => {
       currentState.currentUserId = null
 
-      const result = await actions.createNewCollection('New Collection')
+      const result = await actions.createNewCollection(NEW_COLLECTION_NAME)
 
       expect(result).toBeNull()
       expect(collectionRepository.saveCollections).not.toHaveBeenCalled()
@@ -181,7 +186,7 @@ describe('collectionActions', () => {
         error
       )
 
-      const result = await actions.createNewCollection('New Collection')
+      const result = await actions.createNewCollection(NEW_COLLECTION_NAME)
 
       expect(result).toBeNull()
     })
@@ -215,7 +220,7 @@ describe('collectionActions', () => {
       expect(collectionRepository.markCollectionDeleted).not.toHaveBeenCalled()
     })
 
-    it('should skip if no user ID', async () => {
+    it(SHOULD_SKIP_IF_NO_USER_ID, async () => {
       currentState.currentUserId = null
 
       await actions.deleteCollection(COLLECTION_ID)
@@ -255,7 +260,7 @@ describe('collectionActions', () => {
       )
     })
 
-    it('should skip if no user ID', async () => {
+    it(SHOULD_SKIP_IF_NO_USER_ID, async () => {
       currentState.currentUserId = null
 
       await actions.renameCollection(COLLECTION_ID, 'New Name')
@@ -306,7 +311,7 @@ describe('collectionActions', () => {
       expect(result).toBeNull()
     })
 
-    it('should skip if no user ID', async () => {
+    it(SHOULD_SKIP_IF_NO_USER_ID, async () => {
       currentState.currentUserId = null
 
       const result = await actions.shareCollection(COLLECTION_ID)
@@ -315,8 +320,8 @@ describe('collectionActions', () => {
       expect(collectionSharingService.shareCollection).not.toHaveBeenCalled()
     })
 
-    it('should handle service exceptions', async () => {
-      const error = new Error('Service error')
+    it(SHOULD_HANDLE_SERVICE_EXCEPTIONS, async () => {
+      const error = new Error(SERVICE_ERROR)
       ;(
         collectionSharingService.shareCollection as jest.Mock
       ).mockRejectedValue(error)
@@ -357,7 +362,7 @@ describe('collectionActions', () => {
       expect(result).toBe(false)
     })
 
-    it('should skip if no user ID', async () => {
+    it(SHOULD_SKIP_IF_NO_USER_ID, async () => {
       currentState.currentUserId = null
 
       const result = await actions.unshareCollection(COLLECTION_ID)
@@ -366,8 +371,8 @@ describe('collectionActions', () => {
       expect(collectionSharingService.unshareCollection).not.toHaveBeenCalled()
     })
 
-    it('should handle service exceptions', async () => {
-      const error = new Error('Service error')
+    it(SHOULD_HANDLE_SERVICE_EXCEPTIONS, async () => {
+      const error = new Error(SERVICE_ERROR)
       ;(
         collectionSharingService.unshareCollection as jest.Mock
       ).mockRejectedValue(error)
@@ -409,7 +414,7 @@ describe('collectionActions', () => {
       expect(result).toBeNull()
     })
 
-    it('should skip if no user ID', async () => {
+    it(SHOULD_SKIP_IF_NO_USER_ID, async () => {
       currentState.currentUserId = null
 
       const result = await actions.getCollectionShareStatus(COLLECTION_ID)
@@ -420,8 +425,8 @@ describe('collectionActions', () => {
       ).not.toHaveBeenCalled()
     })
 
-    it('should handle service exceptions', async () => {
-      const error = new Error('Service error')
+    it(SHOULD_HANDLE_SERVICE_EXCEPTIONS, async () => {
+      const error = new Error(SERVICE_ERROR)
       ;(
         collectionSharingService.getCollectionShareStatus as jest.Mock
       ).mockRejectedValue(error)

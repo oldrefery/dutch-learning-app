@@ -45,11 +45,25 @@ export const getDevUserId = (): string => {
 const WORD_ANALYSIS_CATEGORY = 'word.analysis'
 const POSTGRES_UNIQUE_VIOLATION_CODE = '23505'
 const SEMANTIC_UNIQUE_INDEX = 'idx_words_semantic_unique'
+const IMPORT_ACCESS_DENIED_MESSAGE =
+  'Unable to import words into the selected collection. Please verify access and try again.'
+const IMPORT_ACCESS_ERROR_PATTERNS = [
+  'collection not found or access denied',
+  'permission denied',
+  'row-level security',
+]
 
 interface SupabaseLikeError {
   code?: string
   message?: string
   details?: string
+}
+
+interface ImportWordsServiceError extends Error {
+  code?: string
+  sentryHandled?: boolean
+  userMessage?: string
+  isImportAccessError?: boolean
 }
 
 const normalizePartOfSpeech = (value?: string | null): string =>
@@ -66,6 +80,36 @@ const isSemanticDuplicateError = (error: unknown): boolean => {
     supabaseError.code === POSTGRES_UNIQUE_VIOLATION_CODE &&
     details.includes(SEMANTIC_UNIQUE_INDEX)
   )
+}
+
+const isImportAccessDeniedError = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') return false
+  const supabaseError = error as SupabaseLikeError
+  const details =
+    `${supabaseError.message || ''} ${supabaseError.details || ''}`.toLowerCase()
+
+  return (
+    supabaseError.code === 'P0001' ||
+    IMPORT_ACCESS_ERROR_PATTERNS.some(pattern => details.includes(pattern))
+  )
+}
+
+const createImportWordsServiceError = (
+  message: string,
+  options: {
+    code?: string
+    sentryHandled?: boolean
+    userMessage?: string
+    isImportAccessError?: boolean
+  } = {}
+): ImportWordsServiceError => {
+  const error = new Error(message) as ImportWordsServiceError
+  error.name = 'ImportWordsServiceError'
+  error.code = options.code
+  error.sentryHandled = options.sentryHandled
+  error.userMessage = options.userMessage
+  error.isImportAccessError = options.isImportAccessError
+  return error
 }
 
 export const wordService = {
@@ -560,15 +604,50 @@ export const wordService = {
       })
       Sentry.captureMessage('Semantic duplicate skipped during import RPC', {
         level: 'warning',
-        tags: { operation: 'importWordsToCollection' },
+        tags: {
+          operation: 'importWordsToCollection',
+          import_error_type: 'semantic_duplicate',
+        },
         extra: {
           collectionId,
           wordCount: words.length,
           code: error.code,
           details: error.details,
         },
+        fingerprint: ['importWordsToCollection', 'semantic_duplicate'],
       })
-      throw error
+      throw createImportWordsServiceError(
+        error.message || 'Semantic duplicate detected during import',
+        {
+          code: error.code,
+          sentryHandled: true,
+        }
+      )
+    }
+
+    if (isImportAccessDeniedError(error)) {
+      Sentry.captureMessage('Import blocked by access policy', {
+        level: 'warning',
+        tags: {
+          operation: 'importWordsToCollection',
+          import_error_type: 'access_denied',
+        },
+        extra: {
+          collectionId,
+          wordCount: words.length,
+          code: error.code,
+          details: error.details,
+          message: error.message,
+        },
+        fingerprint: ['importWordsToCollection', 'access_denied'],
+      })
+
+      throw createImportWordsServiceError(IMPORT_ACCESS_DENIED_MESSAGE, {
+        code: error.code,
+        sentryHandled: true,
+        userMessage: IMPORT_ACCESS_DENIED_MESSAGE,
+        isImportAccessError: true,
+      })
     }
 
     logSupabaseError('Failed to import words', error, {
@@ -576,11 +655,13 @@ export const wordService = {
       collectionId,
       wordCount: words.length,
     })
-    Sentry.captureException(error, {
-      tags: { operation: 'importWordsToCollection' },
-      extra: { collectionId, wordCount: words.length },
-    })
-    throw error
+    throw createImportWordsServiceError(
+      error.message || 'Failed to import words',
+      {
+        code: error.code,
+        sentryHandled: true,
+      }
+    )
   },
 }
 

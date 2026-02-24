@@ -7,6 +7,7 @@ module.exports = defineConfig([
     ignores: [
       'dist/*',
       '.expo/*',
+      '.maestro/*',
       'ios/*',
       'android/*',
       'supabase/functions/*',

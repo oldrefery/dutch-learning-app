@@ -5,7 +5,7 @@ import { TextThemed } from '@/components/Themed'
 import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
 import { Colors } from '@/constants/Colors'
 import { LiquidGlassRadius } from '@/constants/GlassConstants'
-import ToastService from '@/components/AppToast'
+import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 
 export type RenameCollectionSheetProps = {

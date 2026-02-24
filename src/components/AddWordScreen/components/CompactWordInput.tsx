@@ -5,6 +5,7 @@ import {
   useColorScheme,
   ActionSheetIOS,
   Platform,
+  type ViewStyle,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
@@ -30,7 +31,13 @@ interface CompactWordInputProps {
 const getStyles = (
   colorScheme: 'light' | 'dark',
   variant: 'default' | 'glass'
-) => ({
+): {
+  container: ViewStyle
+  collectionRow: ViewStyle
+  inputContainer: ViewStyle
+  analyzeContainer: ViewStyle
+  loadingContainer: ViewStyle
+} => ({
   container: {
     paddingHorizontal: 16,
     paddingVertical: 12,

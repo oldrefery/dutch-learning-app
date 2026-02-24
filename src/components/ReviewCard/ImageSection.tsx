@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Image } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { GlassCapsuleButton } from '@/components/glass/buttons'
+import { Colors } from '@/constants/Colors'
 import type { ImageSectionProps } from './types'
 
 export function ImageSection({

@@ -1,4 +1,5 @@
 import { getDatabase } from './initDB'
+import type { SQLiteBindValue } from 'expo-sqlite'
 import { Word } from '@/types/database'
 import type { SyncStatus } from './schema'
 
@@ -143,27 +144,27 @@ export class WordRepository {
     const db = await getDatabase()
 
     const fields: string[] = []
-    const values: unknown[] = []
+    const values: SQLiteBindValue[] = []
 
     if ('interval_days' in progress) {
       fields.push('interval_days = ?')
-      values.push(progress.interval_days)
+      values.push(progress.interval_days ?? null)
     }
     if ('repetition_count' in progress) {
       fields.push('repetition_count = ?')
-      values.push(progress.repetition_count)
+      values.push(progress.repetition_count ?? null)
     }
     if ('easiness_factor' in progress) {
       fields.push('easiness_factor = ?')
-      values.push(progress.easiness_factor)
+      values.push(progress.easiness_factor ?? null)
     }
     if ('next_review_date' in progress) {
       fields.push('next_review_date = ?')
-      values.push(progress.next_review_date)
+      values.push(progress.next_review_date ?? null)
     }
     if ('last_reviewed_at' in progress) {
       fields.push('last_reviewed_at = ?')
-      values.push(progress.last_reviewed_at)
+      values.push(progress.last_reviewed_at ?? null)
     }
 
     if (fields.length === 0) {
@@ -499,7 +500,7 @@ export class WordRepository {
       is_irregular: Boolean(row.is_irregular),
       is_reflexive: Boolean(row.is_reflexive),
       is_expression: Boolean(row.is_expression),
-      expression_type: (row.expression_type as unknown) || undefined,
+      expression_type: (row.expression_type as Word['expression_type']) ?? null,
       is_separable: Boolean(row.is_separable),
       prefix_part: (row.prefix_part as string) || null,
       root_verb: (row.root_verb as string) || null,
@@ -522,6 +523,7 @@ export class WordRepository {
       last_reviewed_at: (row.last_reviewed_at as string) || null,
       analysis_notes: (row.analysis_notes as string) || null,
       created_at: row.created_at as string,
+      updated_at: row.updated_at as string,
       sync_status: (row.sync_status as SyncStatus) || 'synced',
     }
   }
