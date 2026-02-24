@@ -12,6 +12,7 @@ NC='\033[0m' # No Color
 SENTRY_ORG="${SENTRY_ORG:-oldrefery}"
 SENTRY_PROJECT="${SENTRY_PROJECT:-dutch-learning-app}"
 SENTRY_CLI="npx -y sentry-cli"
+SENTRY_ENABLE_RELEASE_FLOW="${SENTRY_ENABLE_RELEASE_FLOW:-false}"
 
 echo "🔍 Sourcemap upload script for Sentry"
 echo ""
@@ -36,8 +37,19 @@ if [ ! -f ".sentryclirc" ]; then
 fi
 
 print_sentry_auth_help() {
-  echo -e "${YELLOW}Required token scopes:${NC} project:releases, org:read"
+  if is_release_flow_enabled; then
+    echo -e "${YELLOW}Required token scopes for release flow:${NC} project:releases, org:read"
+  else
+    echo -e "${YELLOW}Required token scopes for artifact bundle upload:${NC} org:ci (or broader project upload scopes)"
+  fi
   echo -e "${YELLOW}Also verify token belongs to org '${SENTRY_ORG}' and has access to project '${SENTRY_PROJECT}'.${NC}"
+}
+
+is_release_flow_enabled() {
+  case "$SENTRY_ENABLE_RELEASE_FLOW" in
+    1|true|TRUE|yes|YES|on|ON) return 0 ;;
+    *) return 1 ;;
+  esac
 }
 
 run_sentry_or_fail() {
@@ -88,27 +100,29 @@ create_and_upload() {
   local bundle_file="$output_dir/index.$platform_lower.bundle"
   local sourcemap_file="$output_dir/index.$platform_lower.bundle.map"
 
-  echo -e "${YELLOW}Creating release: ${release_name}${NC}"
+  if is_release_flow_enabled; then
+    echo -e "${YELLOW}Creating release: ${release_name}${NC}"
 
-  # Create release in Sentry (tolerate "already exists", fail on real errors).
-  local create_output=""
-  if ! create_output=$($SENTRY_CLI releases new "$release_name" \
-    --org "$SENTRY_ORG" \
-    --project "$SENTRY_PROJECT" 2>&1); then
-    if echo "$create_output" | grep -Eiq "already exists"; then
-      echo -e "${YELLOW}Release already exists, continuing...${NC}"
-    else
-      echo "$create_output"
-      if echo "$create_output" | grep -Eiq "http status: 403|do not have permission"; then
-        echo -e "${RED}❌ Sentry permission error (403) while creating release${NC}"
-        print_sentry_auth_help
+    # Create release in Sentry (tolerate "already exists", fail on real errors).
+    local create_output=""
+    if ! create_output=$($SENTRY_CLI releases new "$release_name" \
+      --org "$SENTRY_ORG" \
+      --project "$SENTRY_PROJECT" 2>&1); then
+      if echo "$create_output" | grep -Eiq "already exists"; then
+        echo -e "${YELLOW}Release already exists, continuing...${NC}"
       else
-        echo -e "${RED}❌ Failed to create release ${release_name}${NC}"
+        echo "$create_output"
+        if echo "$create_output" | grep -Eiq "http status: 403|do not have permission"; then
+          echo -e "${RED}❌ Sentry permission error (403) while creating release${NC}"
+          print_sentry_auth_help
+        else
+          echo -e "${RED}❌ Failed to create release ${release_name}${NC}"
+        fi
+        return 1
       fi
-      return 1
+    else
+      [ -n "$create_output" ] && echo "$create_output"
     fi
-  else
-    [ -n "$create_output" ] && echo "$create_output"
   fi
 
   # Create output directory
@@ -132,35 +146,41 @@ create_and_upload() {
 
   echo -e "${GREEN}✅ Generated sourcemap: $sourcemap_file${NC}"
 
-  # Inject debug ids and upload sourcemaps using the current sentry-cli workflow.
-  echo -e "${BLUE}Injecting debug IDs into $platform bundle...${NC}"
-  run_sentry_or_fail "injecting debug IDs" sourcemaps inject "$output_dir" \
-    --org "$SENTRY_ORG" \
-    --project "$SENTRY_PROJECT" \
-    --release "$release_name"
-
   echo -e "${BLUE}Uploading $platform sourcemaps to Sentry...${NC}"
-  run_sentry_or_fail "uploading sourcemaps" sourcemaps upload "$output_dir" \
-    --org "$SENTRY_ORG" \
-    --project "$SENTRY_PROJECT" \
-    --release "$release_name" \
-    --dist "$build_number" \
-    --strip-common-prefix \
-    --validate \
-    --wait
+  if is_release_flow_enabled; then
+    run_sentry_or_fail "uploading sourcemaps" sourcemaps upload "$output_dir" \
+      --org "$SENTRY_ORG" \
+      --project "$SENTRY_PROJECT" \
+      --release "$release_name" \
+      --dist "$build_number" \
+      --strip-common-prefix \
+      --validate \
+      --wait
 
-  # Set release version
-  $SENTRY_CLI releases set-commits "$release_name" --auto \
-    --org "$SENTRY_ORG" \
-    --project "$SENTRY_PROJECT" || echo -e "${YELLOW}Warning: Could not set commits for release${NC}"
+    # Set release version
+    $SENTRY_CLI releases set-commits "$release_name" --auto \
+      --org "$SENTRY_ORG" \
+      --project "$SENTRY_PROJECT" || echo -e "${YELLOW}Warning: Could not set commits for release${NC}"
 
-  # Finalize the release
-  run_sentry_or_fail "finalizing release" releases finalize "$release_name" \
-    --org "$SENTRY_ORG" \
-    --project "$SENTRY_PROJECT"
+    # Finalize the release
+    run_sentry_or_fail "finalizing release" releases finalize "$release_name" \
+      --org "$SENTRY_ORG" \
+      --project "$SENTRY_PROJECT"
+  else
+    run_sentry_or_fail "uploading sourcemaps" sourcemaps upload "$output_dir" \
+      --org "$SENTRY_ORG" \
+      --project "$SENTRY_PROJECT" \
+      --strip-common-prefix \
+      --validate \
+      --wait
+  fi
 
   echo -e "${GREEN}✅ $platform sourcemaps uploaded successfully!${NC}"
-  echo -e "${BLUE}Release: ${release_name}${NC}"
+  if is_release_flow_enabled; then
+    echo -e "${BLUE}Release: ${release_name}${NC}"
+  else
+    echo -e "${BLUE}Upload mode: artifact bundle (Debug IDs)${NC}"
+  fi
 
   # Cleanup
   echo -e "${YELLOW}Cleaning up temporary files...${NC}"
@@ -182,10 +202,14 @@ while [[ $# -gt 0 ]]; do
             echo "  --platform [ios|android|both]  Generate sourcemaps for specific platform (default: both)"
             echo "  --help                         Show this help message"
             echo ""
+            echo "Environment variables:"
+            echo "  SENTRY_ENABLE_RELEASE_FLOW=true  Enable legacy release flow (releases new/finalize)"
+            echo ""
             echo "Examples:"
             echo "  $0                             Generate and upload sourcemaps for both platforms"
             echo "  $0 --platform ios             Generate and upload only for iOS"
             echo "  $0 --platform android         Generate and upload only for Android"
+            echo "  SENTRY_ENABLE_RELEASE_FLOW=true $0 --platform ios"
             exit 0
             ;;
         *)
@@ -203,12 +227,15 @@ if [[ "$PLATFORM" != "ios" && "$PLATFORM" != "android" && "$PLATFORM" != "both" 
 fi
 
 echo -e "${BLUE}Generating sourcemaps for platform(s): ${PLATFORM}${NC}"
+if is_release_flow_enabled; then
+  echo -e "${BLUE}Upload mode: release + artifact bundle${NC}"
+else
+  echo -e "${BLUE}Upload mode: artifact bundle (Debug IDs only)${NC}"
+fi
 echo ""
 
-echo -e "${BLUE}Validating Sentry access for org/project...${NC}"
-run_sentry_or_fail "verifying token access" releases list \
-  --org "$SENTRY_ORG" \
-  --project "$SENTRY_PROJECT" >/dev/null
+echo -e "${BLUE}Validating Sentry token...${NC}"
+run_sentry_or_fail "verifying token access" info >/dev/null
 echo -e "${GREEN}✓ Sentry access check passed${NC}"
 echo ""
 
