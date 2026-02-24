@@ -52,8 +52,6 @@ export function SelectableText({
       onLongPress={handleLongPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      activeOpacity={0.7}
-      disallowInterruption={true}
       style={{
         backgroundColor: isPressed
           ? Colors.primary.light

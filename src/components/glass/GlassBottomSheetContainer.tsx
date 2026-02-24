@@ -1,13 +1,13 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import * as LiquidGlass from '@/components/LiquidGlass'
+import { LiquidGlass } from '@/components/LiquidGlass'
 import {
   GlassDefaults,
   LiquidGlassElevation,
   LiquidGlassRadius,
 } from '@/constants/GlassConstants'
-import { Colors } from '@/constants/Colors.ts'
+import { Colors } from '@/constants/Colors'
 
 export type GlassBottomSheetContainerProps = {
   children?: React.ReactNode

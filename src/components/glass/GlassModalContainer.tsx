@@ -1,8 +1,13 @@
 import React from 'react'
-import { Modal, Pressable, StyleSheet, View } from 'react-native'
-import * as LiquidGlass from '@/components/LiquidGlass'
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  View,
+  useColorScheme,
+} from 'react-native'
+import { LiquidGlass } from '@/components/LiquidGlass'
 import { Colors } from '@/constants/Colors'
-import { useColorScheme } from '@/components/Themed'
 
 export type GlassModalContainerProps = {
   visible: boolean

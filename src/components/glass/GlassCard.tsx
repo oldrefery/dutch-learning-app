@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
-import LiquidGlass, { type LiquidGlassProps } from '@/components/LiquidGlass'
+import { LiquidGlass, type LiquidGlassProps } from '@/components/LiquidGlass'
 import {
   GlassDefaults,
   LiquidGlassElevation,

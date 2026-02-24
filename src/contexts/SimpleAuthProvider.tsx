@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { router } from 'expo-router'
+import { router, type Href } from 'expo-router'
 import * as Linking from 'expo-linking'
 import { supabase } from '@/lib/supabaseClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
@@ -14,20 +14,14 @@ interface SimpleAuthState {
   error: string | null
 }
 
-type RedirectParams = Record<string, string | number | boolean | undefined>
-
 interface SimpleAuthActions {
   testSignUp: (credentials: SignupCredentials) => Promise<void>
   testSignIn: (
     credentials: LoginCredentials,
-    redirectUrl?: string | { pathname: string; params?: RedirectParams }
+    redirectUrl?: Href
   ) => Promise<void>
-  signInWithGoogle: (
-    redirectUrl?: string | { pathname: string; params?: RedirectParams }
-  ) => Promise<void>
-  signInWithApple: (
-    redirectUrl?: string | { pathname: string; params?: RedirectParams }
-  ) => Promise<void>
+  signInWithGoogle: (redirectUrl?: Href) => Promise<void>
+  signInWithApple: (redirectUrl?: Href) => Promise<void>
   signOut: () => Promise<void>
   requestPasswordReset: (email: string) => Promise<void>
   resetPassword: (
@@ -188,7 +182,7 @@ export function SimpleAuthProvider({
 
   const testSignIn = async (
     credentials: LoginCredentials,
-    redirectUrl?: string | { pathname: string; params?: RedirectParams }
+    redirectUrl?: Href
   ) => {
     try {
       setLoading(true)
@@ -233,9 +227,7 @@ export function SimpleAuthProvider({
     }
   }
 
-  const signInWithGoogle = async (
-    redirectUrl?: string | { pathname: string; params?: RedirectParams }
-  ) => {
+  const signInWithGoogle = async (redirectUrl?: Href) => {
     try {
       setLoading(true)
       setError(null)
@@ -277,9 +269,7 @@ export function SimpleAuthProvider({
     }
   }
 
-  const signInWithApple = async (
-    redirectUrl?: string | { pathname: string; params?: RedirectParams }
-  ) => {
+  const signInWithApple = async (redirectUrl?: Href) => {
     try {
       setLoading(true)
       setError(null)

@@ -111,6 +111,8 @@ export const createCollectionActions = (
         description: null,
         is_shared: false,
         shared_with: null,
+        share_token: null,
+        shared_at: null,
         created_at: now,
         updated_at: now,
       }

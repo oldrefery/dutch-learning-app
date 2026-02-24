@@ -9,7 +9,7 @@ import type { ReviewCardProps } from './types'
 interface WordHeaderProps extends ReviewCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
-  pronunciationRef?: React.RefObject<View>
+  pronunciationRef?: React.RefObject<View | null>
 }
 
 export function WordHeader({

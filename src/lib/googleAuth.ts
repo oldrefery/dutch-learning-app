@@ -24,10 +24,7 @@ function extractTokensFromUrl(url: string): {
  * Initialize Google OAuth flow
  * Returns the OAuth session result and session creation function
  */
-export async function initiateGoogleOAuth(): Promise<{
-  type: 'success' | 'cancel' | 'dismiss' | 'locked'
-  url?: string
-}> {
+export async function initiateGoogleOAuth(): Promise<WebBrowser.WebBrowserAuthSessionResult> {
   return new Promise(async (resolve, reject) => {
     let subscription: ReturnType<typeof Linking.addEventListener> | null = null
 

@@ -44,6 +44,13 @@ export const CreateCollectionSheet: React.FC<CreateCollectionSheetProps> = ({
 
     try {
       const newCollection = await createNewCollection(trimmedName)
+      if (!newCollection) {
+        ToastService.show(
+          'Failed to create collection. Please try again.',
+          ToastType.ERROR
+        )
+        return
+      }
 
       ToastService.show(
         `Collection "${trimmedName}" created successfully`,

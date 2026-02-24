@@ -1,4 +1,5 @@
 import { getDatabase } from './initDB'
+import type { SQLiteBindValue } from 'expo-sqlite'
 import type { Collection } from '@/types/database'
 
 export interface LocalCollection extends Collection {
@@ -137,11 +138,11 @@ export class CollectionRepository {
     try {
       const now = new Date().toISOString()
       const updateFields: string[] = []
-      const updateValues: unknown[] = []
+      const updateValues: SQLiteBindValue[] = []
 
       if ('name' in updates) {
         updateFields.push('name = ?')
-        updateValues.push(updates.name)
+        updateValues.push(updates.name ?? null)
       }
 
       if ('description' in updates) {

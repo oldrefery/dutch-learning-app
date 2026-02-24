@@ -5,7 +5,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native'
-import { Link, useLocalSearchParams } from 'expo-router'
+import { Link, type Href, useLocalSearchParams } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { AuthInput } from '@/components/auth/AuthInput'
@@ -18,7 +18,12 @@ import { ROUTES } from '@/constants/Routes'
 import { Sentry } from '@/lib/sentry'
 
 export default function LoginScreen() {
-  const { redirect } = useLocalSearchParams<{ redirect?: string }>()
+  const { redirect } = useLocalSearchParams<{
+    redirect?: string | string[]
+  }>()
+  const redirectTarget = (Array.isArray(redirect) ? redirect[0] : redirect) as
+    | Href
+    | undefined
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [emailError, setEmailError] = useState('')
@@ -77,7 +82,7 @@ export default function LoginScreen() {
     }
 
     try {
-      await testSignIn({ email: email.trim(), password }, redirect)
+      await testSignIn({ email: email.trim(), password }, redirectTarget)
     } catch (error) {
       // Error handled by SimpleAuthProvider
       Sentry.captureException(error)
@@ -86,7 +91,7 @@ export default function LoginScreen() {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle(redirect)
+      await signInWithGoogle(redirectTarget)
     } catch (error) {
       // Error handled by SimpleAuthProvider
       Sentry.captureException(error)
@@ -95,7 +100,7 @@ export default function LoginScreen() {
 
   const handleAppleSignIn = async () => {
     try {
-      await signInWithApple(redirect)
+      await signInWithApple(redirectTarget)
     } catch (error) {
       // Error handled by SimpleAuthProvider
       Sentry.captureException(error)

@@ -223,7 +223,7 @@ export default function SettingsScreen() {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: async input => {
+          onPress: async (input?: string) => {
             const normalizedLemma = (input ?? '').trim().toLowerCase()
             if (!normalizedLemma) {
               ToastService.show('Lemma is required.', ToastType.ERROR)

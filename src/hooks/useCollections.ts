@@ -5,7 +5,7 @@ export interface UseCollectionsReturn {
   collections: Collection[]
   collectionsLoading: boolean
   fetchCollections: () => Promise<void>
-  createNewCollection: (name: string) => Promise<Collection>
+  createNewCollection: (name: string) => Promise<Collection | null>
 }
 
 export function useCollections(): UseCollectionsReturn {

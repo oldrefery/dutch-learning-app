@@ -1,4 +1,5 @@
 import { getDatabase } from './initDB'
+import type { SQLiteBindValue } from 'expo-sqlite'
 import type { SyncStatus } from './schema'
 
 export interface UserProgress {
@@ -55,19 +56,19 @@ export class ProgressRepository {
     const db = await getDatabase()
 
     const fields: string[] = []
-    const values: unknown[] = []
+    const values: SQLiteBindValue[] = []
 
     if ('status' in updates) {
       fields.push('status = ?')
-      values.push(updates.status)
+      values.push(updates.status ?? null)
     }
     if ('reviewed_count' in updates) {
       fields.push('reviewed_count = ?')
-      values.push(updates.reviewed_count)
+      values.push(updates.reviewed_count ?? null)
     }
     if ('last_reviewed_at' in updates) {
       fields.push('last_reviewed_at = ?')
-      values.push(updates.last_reviewed_at)
+      values.push(updates.last_reviewed_at ?? null)
     }
 
     if (fields.length === 0) {

@@ -33,7 +33,7 @@ const FULL_CONFIG: WordCardConfig = {
   enableImageChange: true,
   scrollable: true,
   compact: false,
-  extraHeightAddWordMode: 0,
+  extraHeightAddWord: 0,
 }
 
 const DEFAULT_ACTIONS: WordCardActionConfig = {

@@ -54,7 +54,7 @@ export interface ApplicationState {
   moveWordToCollection: (
     wordId: string,
     newCollectionId: string
-  ) => Promise<Word>
+  ) => Promise<Word | null>
   resetWordProgress: (wordId: string) => Promise<Word | undefined>
   addWordsToCollection: (
     collectionId: string,
@@ -64,7 +64,7 @@ export interface ApplicationState {
 
   // Collection actions
   fetchCollections: () => Promise<void>
-  createNewCollection: (name: string) => Promise<Collection>
+  createNewCollection: (name: string) => Promise<Collection | null>
   deleteCollection: (collectionId: string) => Promise<void>
   renameCollection: (collectionId: string, newName: string) => Promise<void>
 

@@ -3,11 +3,10 @@ import { Sentry } from '@/lib/sentry'
 import type { Collection, Word } from '@/types/database'
 import { logSupabaseError } from '@/utils/logger'
 
-export interface SharedCollectionData
-  extends Pick<
-    Collection,
-    'collection_id' | 'name' | 'is_shared' | 'share_token' | 'shared_at'
-  > {
+export interface SharedCollectionData extends Pick<
+  Collection,
+  'collection_id' | 'name' | 'is_shared' | 'share_token' | 'shared_at'
+> {
   word_count: number
 }
 
@@ -261,7 +260,8 @@ class CollectionSharingService {
           image_url,
           tts_url,
           analysis_notes,
-          created_at
+          created_at,
+          updated_at
         `
         )
         .eq('collection_id', collectionResult.data.collection_id)
