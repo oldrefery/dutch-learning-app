@@ -6,6 +6,7 @@
 import { SyncManager } from '../syncManager'
 import * as networkUtils from '@/utils/network'
 import { supabase, wordService } from '@/lib/supabase'
+import { Sentry } from '@/lib/sentry'
 import { collectionRepository } from '@/db/collectionRepository'
 import { wordRepository } from '@/db/wordRepository'
 
@@ -225,6 +226,242 @@ describe('SyncManager', () => {
       expect(result.success).toBe(false)
       expect(result.error).toBe(SYNC_AUTH_PRECHECK_ERROR)
       expect(supabase.from).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('auth/rls retry hardening', () => {
+    it('should retry pull words once after JWT expiry by refreshing session', async () => {
+      const wordsEq = jest
+        .fn()
+        .mockResolvedValueOnce({
+          data: null,
+          error: { message: 'JWT expired' },
+        })
+        .mockResolvedValueOnce({
+          data: [],
+          error: null,
+        })
+
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: wordsEq,
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(wordsEq).toHaveBeenCalledTimes(2)
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        'Recoverable sync stage failure detected; refreshing session and retrying once',
+        expect.objectContaining({
+          tags: expect.objectContaining({
+            operation: 'pull_words',
+            sync_error_type: 'auth_expired',
+          }),
+        })
+      )
+    })
+
+    it('should return controlled sync error when retry refresh fails', async () => {
+      const wordsEq = jest.fn().mockResolvedValueOnce({
+        data: null,
+        error: { message: 'JWT expired' },
+      })
+
+      ;(supabase.auth.refreshSession as jest.Mock).mockResolvedValue({
+        data: { session: null },
+        error: { message: 'Refresh token invalid' },
+      })
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: wordsEq,
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe(SYNC_AUTH_PRECHECK_ERROR)
+      expect(Sentry.captureException).not.toHaveBeenCalled()
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        'Sync retry aborted because session refresh failed',
+        expect.objectContaining({
+          tags: expect.objectContaining({
+            operation: 'pull_words',
+            sync_retry: 'refresh_failed',
+          }),
+        })
+      )
+    })
+
+    it('should retry push words once after RLS failure', async () => {
+      const pendingWord = createPendingWord({
+        word_id: 'word-rls',
+      })
+      const rlsError = {
+        code: '42501',
+        message: 'new row violates row-level security policy for table "words"',
+        details: 'RLS check failed',
+      }
+
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
+        pendingWord,
+      ])
+      ;(
+        collectionRepository.getCollectionsByIds as jest.Mock
+      ).mockResolvedValue([
+        {
+          collection_id: MAIN_COLLECTION_ID,
+          user_id: userId,
+          name: 'Main',
+          is_shared: false,
+          created_at: DEFAULT_TIMESTAMP,
+        },
+      ])
+      ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
+
+      const wordsUpsert = jest
+        .fn()
+        .mockResolvedValueOnce({ data: [], error: rlsError })
+        .mockResolvedValueOnce({ data: [], error: null })
+
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            delete: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+          }
+        }
+
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: wordsUpsert,
+          }
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(wordsUpsert).toHaveBeenCalledTimes(2)
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        'Recoverable sync stage failure detected; refreshing session and retrying once',
+        expect.objectContaining({
+          tags: expect.objectContaining({
+            operation: 'push_words',
+            sync_error_type: 'rls',
+          }),
+        })
+      )
+    })
+
+    it('should always push words with authenticated user_id', async () => {
+      const pendingWord = createPendingWord({
+        word_id: 'word-user-normalized',
+        user_id: 'stale-user-id',
+      })
+
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
+        pendingWord,
+      ])
+      ;(
+        collectionRepository.getCollectionsByIds as jest.Mock
+      ).mockResolvedValue([
+        {
+          collection_id: MAIN_COLLECTION_ID,
+          user_id: userId,
+          name: 'Main',
+          is_shared: false,
+          created_at: DEFAULT_TIMESTAMP,
+        },
+      ])
+      ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
+
+      const wordsUpsert = jest.fn().mockResolvedValue({ data: [], error: null })
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            delete: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+          }
+        }
+
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: wordsUpsert,
+          }
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+      const syncedWordsPayload = wordsUpsert.mock.calls[0][0]
+
+      expect(result.success).toBe(true)
+      expect(Array.isArray(syncedWordsPayload)).toBe(true)
+      expect(syncedWordsPayload[0].user_id).toBe(userId)
     })
   })
 

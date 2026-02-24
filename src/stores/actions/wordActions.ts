@@ -28,6 +28,28 @@ const WORD_MOVE_FAILED = 'Failed to move word to collection'
 const WORD_RESET_FAILED = 'Failed to reset word progress'
 const WORDS_IMPORT_FAILED = 'Failed to import words'
 
+interface ImportWordsActionError extends Error {
+  userMessage?: string
+}
+
+const getImportErrorMessage = (error: unknown): string => {
+  if (error && typeof error === 'object') {
+    const importError = error as ImportWordsActionError
+    if (
+      typeof importError.userMessage === 'string' &&
+      importError.userMessage.trim() !== ''
+    ) {
+      return importError.userMessage
+    }
+
+    if (importError.message !== '') {
+      return importError.message
+    }
+  }
+
+  return error instanceof Error ? error.message : UNKNOWN_ERROR
+}
+
 export const createWordActions = (
   set: StoreSetFunction,
   get: StoreGetFunction
@@ -143,8 +165,8 @@ export const createWordActions = (
             details: errorMsg,
           },
         })
-        // Throw error for duplicate to prevent further processing
-        throw new Error(errorMsg)
+        // Keep duplicate behavior as rejected promise without throwing inside try/catch.
+        return Promise.reject(new Error(errorMsg))
       }
 
       // Offline-first: save to local SQLite
@@ -170,8 +192,6 @@ export const createWordActions = (
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : UNKNOWN_ERROR
-      const isDuplicateError = errorMessage.includes('already exists')
-
       Sentry.captureException(error, {
         tags: { operation: 'saveAnalyzedWord' },
         extra: { analyzedWord, collectionId, userId: get().currentUserId },
@@ -183,12 +203,6 @@ export const createWordActions = (
           details: errorMessage,
         },
       })
-
-      // Re-throw duplicate errors to prevent further processing
-      // Don't re-throw repository errors to maintain backward compatibility
-      if (isDuplicateError) {
-        throw error
-      }
     }
   },
 
@@ -556,16 +570,25 @@ export const createWordActions = (
           }
 
           const now = new Date().toISOString()
+          const defaultReviewDate = now.split('T')[0]
           // Ensure all imported words have word_id (should come from the server but fallback to generate)
-          const wordsWithIds = importedWords.map((word: any) => ({
+          const wordsWithIds = importedWords.map(word => ({
             ...word,
-            word_id: word.word_id || Crypto.randomUUID(),
+            word_id: word.word_id ?? Crypto.randomUUID(),
+            user_id: userId,
+            collection_id: collectionId,
+            interval_days: word.interval_days ?? 1,
+            repetition_count: word.repetition_count ?? 0,
+            easiness_factor: word.easiness_factor ?? 2.5,
+            next_review_date: word.next_review_date ?? defaultReviewDate,
             created_at: word.created_at ?? now,
             updated_at: word.updated_at ?? now,
+            synonyms: word.synonyms ?? [],
+            antonyms: word.antonyms ?? [],
           }))
 
           await Promise.all(
-            wordsWithIds.map((word: any) => wordRepository.addWord(word))
+            wordsWithIds.map(word => wordRepository.addWord(word as any))
           )
 
           // Update store with imported words
@@ -589,7 +612,7 @@ export const createWordActions = (
           set({
             error: {
               message: WORDS_IMPORT_FAILED,
-              details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+              details: getImportErrorMessage(error),
             },
           })
           return false

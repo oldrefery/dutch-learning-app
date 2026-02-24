@@ -10,6 +10,40 @@ import type { Word } from '@/types/database'
 import type { SharedCollectionWords } from '@/services/collectionSharingService'
 import { Sentry } from '@/lib/sentry'
 
+interface ImportHandledError {
+  message?: string
+  userMessage?: string
+  sentryHandled?: boolean
+}
+
+const isSentryHandledError = (error: unknown): boolean =>
+  Boolean(
+    error &&
+    typeof error === 'object' &&
+    (error as ImportHandledError).sentryHandled
+  )
+
+const getImportErrorMessage = (
+  fallbackMessage: string,
+  error?: unknown
+): string => {
+  if (error && typeof error === 'object') {
+    const importError = error as ImportHandledError
+    if (
+      typeof importError.userMessage === 'string' &&
+      importError.userMessage.trim() !== ''
+    ) {
+      return importError.userMessage
+    }
+
+    if (typeof importError.message === 'string' && importError.message !== '') {
+      return importError.message
+    }
+  }
+
+  return fallbackMessage
+}
+
 interface WordSelectionItem {
   word: Omit<
     Word,
@@ -249,19 +283,34 @@ export function useImportSelection(token: string) {
         )
         router.replace(ROUTES.TABS.ROOT)
       } else {
-        ToastService.show('Some words could not be imported', ToastType.ERROR)
+        const storeError = useApplicationStore.getState().error
+        const importErrorMessage =
+          typeof storeError?.details === 'string'
+            ? storeError.details
+            : 'Some words could not be imported'
+
+        ToastService.show(importErrorMessage, ToastType.ERROR)
       }
     } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'handleImport' },
-        extra: {
-          message: 'Import failed',
-          targetCollectionId,
-          selectedWordsCount: selectedWords.length,
-        },
-      })
+      if (!isSentryHandledError(error)) {
+        Sentry.captureException(
+          error instanceof Error ? error : new Error('Import failed'),
+          {
+            tags: { operation: 'handleImport' },
+            extra: {
+              message: 'Import failed',
+              targetCollectionId,
+              selectedWordsCount: selectedWords.length,
+            },
+          }
+        )
+      }
+
       ToastService.show(
-        'Failed to import words. Please try again.',
+        getImportErrorMessage(
+          'Failed to import words. Please try again.',
+          error
+        ),
         ToastType.ERROR
       )
     } finally {
