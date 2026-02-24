@@ -23,6 +23,16 @@ export interface SharedCollectionWords {
   >[]
 }
 
+type SharedWordForImport = Omit<
+  Word,
+  | 'user_id'
+  | 'interval_days'
+  | 'repetition_count'
+  | 'easiness_factor'
+  | 'next_review_date'
+  | 'last_reviewed_at'
+> & { updated_at?: string | null }
+
 export interface CollectionShareStatus {
   is_shared: boolean
   share_token: string | null
@@ -43,6 +53,17 @@ export enum CollectionSharingError {
 }
 
 class CollectionSharingService {
+  private normalizeSharedWords(
+    words: SharedWordForImport[]
+  ): SharedCollectionWords['words'] {
+    const now = new Date().toISOString()
+
+    return words.map(word => ({
+      ...word,
+      updated_at: word.updated_at || word.created_at || now,
+    }))
+  }
+
   async shareCollection(
     collectionId: string,
     userId: string
@@ -260,8 +281,7 @@ class CollectionSharingService {
           image_url,
           tts_url,
           analysis_notes,
-          created_at,
-          updated_at
+          created_at
         `
         )
         .eq('collection_id', collectionResult.data.collection_id)
@@ -279,7 +299,9 @@ class CollectionSharingService {
 
       const result: SharedCollectionWords = {
         collection: collectionResult.data,
-        words: words || [],
+        words: this.normalizeSharedWords(
+          (words || []) as SharedWordForImport[]
+        ),
       }
 
       return { success: true, data: result }

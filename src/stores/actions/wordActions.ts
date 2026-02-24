@@ -12,7 +12,7 @@ import type {
   ReviewAssessment,
   ApplicationState,
 } from '@/types/ApplicationStoreTypes'
-import type { GeminiWordAnalysis } from '@/types/database'
+import type { GeminiWordAnalysis, Word } from '@/types/database'
 
 const USER_NOT_AUTHENTICATED_ERROR =
   APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
@@ -48,6 +48,35 @@ const getImportErrorMessage = (error: unknown): string => {
   }
 
   return error instanceof Error ? error.message : UNKNOWN_ERROR
+}
+
+const mergeWordsById = (
+  currentWords: Word[],
+  incomingWords: Word[]
+): Word[] => {
+  const mergedWords = [...currentWords]
+  const indexByWordId = new Map<string, number>()
+
+  mergedWords.forEach((word, index) => {
+    indexByWordId.set(word.word_id, index)
+  })
+
+  incomingWords.forEach(word => {
+    const existingIndex = indexByWordId.get(word.word_id)
+
+    if (existingIndex === undefined) {
+      indexByWordId.set(word.word_id, mergedWords.length)
+      mergedWords.push(word)
+      return
+    }
+
+    mergedWords[existingIndex] = {
+      ...mergedWords[existingIndex],
+      ...word,
+    }
+  })
+
+  return mergedWords
 }
 
 export const createWordActions = (
@@ -571,8 +600,7 @@ export const createWordActions = (
 
           const now = new Date().toISOString()
           const defaultReviewDate = now.split('T')[0]
-          // Ensure all imported words have word_id (should come from the server but fallback to generate)
-          const wordsWithIds = importedWords.map(word => ({
+          const normalizedImportedWords: Word[] = importedWords.map(word => ({
             ...word,
             word_id: word.word_id ?? Crypto.randomUUID(),
             user_id: userId,
@@ -587,17 +615,28 @@ export const createWordActions = (
             antonyms: word.antonyms ?? [],
           }))
 
-          await Promise.all(
-            wordsWithIds.map(word => wordRepository.addWord(word as any))
-          )
+          await wordRepository.saveWords(normalizedImportedWords)
 
-          // Update store with imported words
+          // Merge imported words by word_id to avoid duplicates in in-memory store.
           const currentWords = get().words
-          set({ words: [...currentWords, ...wordsWithIds] })
+          const mergedWords = mergeWordsById(
+            currentWords as Word[],
+            normalizedImportedWords
+          )
+          const importedNewCount = Math.max(
+            mergedWords.length - currentWords.length,
+            0
+          )
+          set({ words: mergedWords })
 
           logInfo(
-            `Successfully imported ${importedWords.length} words from shared collection`,
-            { collectionId }
+            `Shared import completed: ${importedNewCount} new word${importedNewCount !== 1 ? 's' : ''}`,
+            {
+              collectionId,
+              requestedWordCount: words.length,
+              returnedWordCount: importedWords.length,
+              importedNewCount,
+            }
           )
 
           return true

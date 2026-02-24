@@ -15,6 +15,7 @@ jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
     getWordsByUserId: jest.fn(),
     getWordBySemanticKey: jest.fn(),
+    saveWords: jest.fn(),
     addWord: jest.fn(),
     deleteWord: jest.fn(),
     updateWordProgress: jest.fn(),
@@ -747,7 +748,7 @@ describe('wordActions', () => {
       ;(wordService.importWordsToCollection as jest.Mock).mockResolvedValue([
         importedWord,
       ])
-      ;(wordRepository.addWord as jest.Mock).mockResolvedValue(undefined)
+      ;(wordRepository.saveWords as jest.Mock).mockResolvedValue(undefined)
 
       const result = await actions.addWordsToCollection(
         COLLECTION_ID,
@@ -760,12 +761,14 @@ describe('wordActions', () => {
         COLLECTION_ID,
         [{ dutch_lemma: 'delen', translations: { en: ['share'] } }]
       )
-      expect(wordRepository.addWord).toHaveBeenCalledWith(
-        expect.objectContaining({
-          word_id: 'shared-word-id',
-          user_id: USER_ID,
-          collection_id: COLLECTION_ID,
-        })
+      expect(wordRepository.saveWords).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            word_id: 'shared-word-id',
+            user_id: USER_ID,
+            collection_id: COLLECTION_ID,
+          }),
+        ])
       )
     })
 

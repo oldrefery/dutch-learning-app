@@ -176,4 +176,54 @@ describe('useImportSelection', () => {
       ToastType.ERROR
     )
   })
+
+  it('should show zero-import success message when shared import adds no new words', async () => {
+    const storeState = createStoreState({
+      addWordsToCollection: jest.fn().mockResolvedValue(true),
+    })
+    ;(useApplicationStore.getState as jest.Mock).mockImplementation(
+      () => storeState
+    )
+
+    const { result } = renderHook(() => useImportSelection(SHARED_TOKEN))
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.handleImport()
+    })
+
+    expect(ToastService.show).toHaveBeenCalledWith(
+      'No new words were imported. Selected words already exist in your collection.',
+      ToastType.SUCCESS
+    )
+  })
+
+  it('should detect duplicates using normalized semantic key', async () => {
+    const storeState = createStoreState({
+      words: [
+        {
+          word_id: 'existing-word-id',
+          collection_id: TARGET_COLLECTION_ID,
+          dutch_lemma: ' huis ',
+          part_of_speech: 'noun ',
+          article: 'het ',
+        },
+      ],
+    })
+    ;(useApplicationStore.getState as jest.Mock).mockImplementation(
+      () => storeState
+    )
+
+    const { result } = renderHook(() => useImportSelection(SHARED_TOKEN))
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    expect(result.current.duplicateCount).toBe(1)
+    expect(result.current.wordSelections).toHaveLength(0)
+  })
 })
