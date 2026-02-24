@@ -715,6 +715,140 @@ describe('SyncManager', () => {
   })
 
   describe('semantic duplicate handling', () => {
+    it('should truncate local duplicate payload in Sentry warning', async () => {
+      const pendingWords = Array.from({ length: 25 }, (_, index) =>
+        createPendingWord({
+          word_id: `local-dup-${index}`,
+          dutch_lemma: 'huis',
+        })
+      )
+
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue(
+        pendingWords
+      )
+      ;(
+        collectionRepository.getCollectionsByIds as jest.Mock
+      ).mockResolvedValue([
+        {
+          collection_id: MAIN_COLLECTION_ID,
+          user_id: userId,
+          name: 'Main',
+          is_shared: false,
+          created_at: DEFAULT_TIMESTAMP,
+        },
+      ])
+      ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
+
+      const wordsUpsert = jest.fn().mockResolvedValue({ data: [], error: null })
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: wordsUpsert,
+          }
+        }
+
+        return {
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        'Local semantic duplicates skipped before sync upsert',
+        expect.objectContaining({
+          extra: expect.objectContaining({
+            duplicateCount: 24,
+            duplicateSampleSize: 20,
+            duplicateTruncatedCount: 4,
+            words: expect.arrayContaining([
+              expect.objectContaining({ word_id: 'local-dup-1' }),
+            ]),
+          }),
+        })
+      )
+    })
+
+    it('should truncate remote duplicate payload in Sentry warning', async () => {
+      const duplicateWords = Array.from({ length: 25 }, (_, index) =>
+        createPendingWord({
+          word_id: `remote-dup-${index}`,
+          dutch_lemma: `woord-${index}`,
+        })
+      )
+
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue(
+        duplicateWords
+      )
+      ;(
+        collectionRepository.getCollectionsByIds as jest.Mock
+      ).mockResolvedValue([
+        {
+          collection_id: MAIN_COLLECTION_ID,
+          user_id: userId,
+          name: 'Main',
+          is_shared: false,
+          created_at: DEFAULT_TIMESTAMP,
+        },
+      ])
+      ;(wordService.checkWordExists as jest.Mock).mockResolvedValue({
+        word_id: 'server-dup',
+      })
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        return {
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        expect.stringContaining('Duplicate words prevented during sync'),
+        expect.objectContaining({
+          extra: expect.objectContaining({
+            duplicateCount: 25,
+            duplicateSampleSize: 20,
+            duplicateTruncatedCount: 5,
+            words: expect.arrayContaining([
+              expect.objectContaining({ word_id: 'remote-dup-0' }),
+            ]),
+          }),
+        })
+      )
+    })
+
     it('should skip server semantic duplicates and sync only unique words', async () => {
       const duplicateWord = createPendingWord({
         word_id: 'word-duplicate',

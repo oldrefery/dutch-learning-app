@@ -40,6 +40,32 @@ const ERROR_MESSAGES = {
   UNEXPECTED: 'An unexpected error occurred. Please try again.',
 } as const
 
+const PASSWORD_RESET_COOLDOWN_MS = 60_000
+const PASSWORD_RESET_THROTTLE_PATTERNS = [
+  'rate limit',
+  'too many requests',
+  'security purposes',
+  'try again later',
+]
+
+const isPasswordResetThrottled = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') return false
+
+  const status = (error as { status?: unknown }).status
+  if (status === 429) return true
+
+  const message = (error as { message?: unknown }).message
+  if (typeof message !== 'string') return false
+
+  const normalizedMessage = message.toLowerCase()
+  return PASSWORD_RESET_THROTTLE_PATTERNS.some(pattern =>
+    normalizedMessage.includes(pattern)
+  )
+}
+
+const getRemainingCooldownSeconds = (cooldownUntil: number): number =>
+  Math.max(1, Math.ceil((cooldownUntil - Date.now()) / 1000))
+
 export function useSimpleAuth() {
   const context = useContext(SimpleAuthContext)
   if (!context) {
@@ -55,6 +81,9 @@ export function SimpleAuthProvider({
 }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [passwordResetCooldownUntil, setPasswordResetCooldownUntil] = useState<
+    number | null
+  >(null)
   const initializeApp = useApplicationStore(state => state.initializeApp)
 
   // Check for the existing session on app start and handle OAuth deep links
@@ -351,6 +380,19 @@ export function SimpleAuthProvider({
       setLoading(true)
       setError(null)
 
+      if (
+        passwordResetCooldownUntil &&
+        Date.now() < passwordResetCooldownUntil
+      ) {
+        const remainingSeconds = getRemainingCooldownSeconds(
+          passwordResetCooldownUntil
+        )
+        setError(
+          `Please wait ${remainingSeconds} seconds before requesting another reset email.`
+        )
+        return
+      }
+
       // Generate deep link URL for password reset
       const redirectUrl = Linking.createURL('(auth)/reset-password')
 
@@ -362,6 +404,31 @@ export function SimpleAuthProvider({
       )
 
       if (error) {
+        if (isPasswordResetThrottled(error)) {
+          const cooldownUntil = Date.now() + PASSWORD_RESET_COOLDOWN_MS
+          const remainingSeconds = getRemainingCooldownSeconds(cooldownUntil)
+          setPasswordResetCooldownUntil(cooldownUntil)
+          setError(
+            `Too many reset attempts. Please wait ${remainingSeconds} seconds and try again.`
+          )
+
+          Sentry.captureMessage('Password reset request throttled', {
+            level: 'warning',
+            tags: {
+              operation: 'requestPasswordReset',
+              expected_error: 'rate_limit',
+            },
+            extra: {
+              email,
+              redirectUrl,
+              message: (error as { message?: string }).message,
+              cooldownSeconds: remainingSeconds,
+            },
+            fingerprint: ['requestPasswordReset', 'rate_limit'],
+          })
+          return
+        }
+
         setError(`Failed to send reset email: ${error.message}`)
         Sentry.captureException(error, {
           tags: { operation: 'requestPasswordReset' },
@@ -370,6 +437,7 @@ export function SimpleAuthProvider({
         return
       }
 
+      setPasswordResetCooldownUntil(Date.now() + PASSWORD_RESET_COOLDOWN_MS)
       setError('Password reset email sent! Please check your inbox.')
     } catch (error) {
       setError('An unexpected error occurred. Please try again.')

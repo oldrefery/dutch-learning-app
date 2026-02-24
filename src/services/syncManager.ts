@@ -26,6 +26,7 @@ const SEMANTIC_UNIQUE_INDEX = 'idx_words_semantic_unique'
 const SYNC_AUTH_PRECHECK_ERROR =
   'Authentication expired. Please sign in again to sync.'
 const SYNC_DUPLICATE_FINGERPRINT = 'sync-duplicate-conflict'
+const MAX_DUPLICATE_SENTRY_SAMPLES = 20
 const AUTH_ERROR_PATTERNS = [
   'jwt expired',
   'invalid jwt',
@@ -750,16 +751,10 @@ export class SyncManager {
             operation: 'pushWordsToSupabase',
             sync_error_type: 'duplicate_conflict_local',
           },
-          extra: {
+          ...this.buildDuplicateWordsSentryExtra(
             userId,
-            duplicateCount: localSemanticDuplicates.length,
-            words: localSemanticDuplicates.map(word => ({
-              word_id: word.word_id,
-              dutch_lemma: word.dutch_lemma,
-              part_of_speech: word.part_of_speech,
-              article: word.article,
-            })),
-          },
+            localSemanticDuplicates
+          ),
           fingerprint: [SYNC_DUPLICATE_FINGERPRINT, 'local'],
         }
       )
@@ -815,15 +810,7 @@ export class SyncManager {
           operation: 'pushWordsToSupabase',
           sync_error_type: 'duplicate_conflict_remote',
         },
-        extra: {
-          userId,
-          duplicateCount: duplicateWords.length,
-          words: duplicateWords.map(w => ({
-            dutch_lemma: w.dutch_lemma,
-            part_of_speech: w.part_of_speech,
-            article: w.article,
-          })),
-        },
+        ...this.buildDuplicateWordsSentryExtra(userId, duplicateWords),
         fingerprint: [SYNC_DUPLICATE_FINGERPRINT, 'remote'],
       }
     )
@@ -1005,6 +992,43 @@ export class SyncManager {
 
     await wordRepository.markWordsSynced(syncedWordIds)
     return syncedWordIds.length
+  }
+
+  private buildDuplicateWordsSentryExtra(
+    userId: string,
+    words: Word[]
+  ): {
+    extra: {
+      userId: string
+      duplicateCount: number
+      duplicateSampleSize: number
+      duplicateTruncatedCount: number
+      words: {
+        word_id: string
+        dutch_lemma: string
+        part_of_speech: string | null
+        article: Word['article']
+      }[]
+    }
+  } {
+    const sampleWords = words
+      .slice(0, MAX_DUPLICATE_SENTRY_SAMPLES)
+      .map(word => ({
+        word_id: word.word_id,
+        dutch_lemma: word.dutch_lemma,
+        part_of_speech: word.part_of_speech,
+        article: word.article,
+      }))
+
+    return {
+      extra: {
+        userId,
+        duplicateCount: words.length,
+        duplicateSampleSize: sampleWords.length,
+        duplicateTruncatedCount: Math.max(0, words.length - sampleWords.length),
+        words: sampleWords,
+      },
+    }
   }
 
   private async filterWordsWithCollections(
