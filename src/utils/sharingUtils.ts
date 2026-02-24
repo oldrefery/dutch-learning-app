@@ -29,11 +29,18 @@ class SharingUtils {
   ): Promise<ShareResult> {
     try {
       const deepLinkUrl = collectionSharingService.generateShareUrl(shareToken)
+      const webShareUrl =
+        options.fallbackUrl ||
+        collectionSharingService.generateWebShareUrl(shareToken)
 
       const dialogTitle =
         options.dialogTitle || `Share collection "${collectionName}"`
 
-      const shareMessage = this.createShareMessage(collectionName, deepLinkUrl)
+      const shareMessage = this.createShareMessage(
+        collectionName,
+        deepLinkUrl,
+        webShareUrl
+      )
 
       logInfo(
         'About to call Share.share with message',
@@ -84,12 +91,12 @@ class SharingUtils {
 
   private createShareMessage(
     collectionName: string,
-    deepLinkUrl: string
+    deepLinkUrl: string,
+    webShareUrl: string
   ): string {
     const appName = 'Dutch Learning App'
 
-    // TODO: Add web version back when we have it deployed
-    return `Check out "${collectionName}" collection in ${appName}!\n\n${deepLinkUrl}\n\nGreat for learning Dutch vocabulary with spaced repetition!`
+    return `Check out "${collectionName}" collection in ${appName}!\n\nOpen in app:\n${deepLinkUrl}\n\nOr open in browser:\n${webShareUrl}\n\nGreat for learning Dutch vocabulary with spaced repetition!`
   }
 }
 
