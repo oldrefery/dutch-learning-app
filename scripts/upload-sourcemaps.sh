@@ -8,9 +8,10 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# --- CONFIGURATIOM ---
-SENTRY_ORG="oldrefery"
-SENTRY_PROJECT="dutch-learning-app"
+# --- CONFIGURATION ---
+SENTRY_ORG="${SENTRY_ORG:-oldrefery}"
+SENTRY_PROJECT="${SENTRY_PROJECT:-dutch-learning-app}"
+SENTRY_CLI="npx -y sentry-cli"
 
 echo "🔍 Sourcemap upload script for Sentry"
 echo ""
@@ -33,6 +34,32 @@ if [ ! -f ".sentryclirc" ]; then
     echo -e "${YELLOW}Please create a .sentryclirc file with your Sentry auth token${NC}"
     exit 1
 fi
+
+print_sentry_auth_help() {
+  echo -e "${YELLOW}Required token scopes:${NC} project:releases, org:read"
+  echo -e "${YELLOW}Also verify token belongs to org '${SENTRY_ORG}' and has access to project '${SENTRY_PROJECT}'.${NC}"
+}
+
+run_sentry_or_fail() {
+  local action="$1"
+  shift
+
+  local output
+  if ! output=$($SENTRY_CLI "$@" 2>&1); then
+    echo "$output"
+
+    if echo "$output" | grep -Eiq "http status: 403|do not have permission"; then
+      echo -e "${RED}❌ Sentry permission error (403) while ${action}${NC}"
+      print_sentry_auth_help
+    else
+      echo -e "${RED}❌ Sentry command failed while ${action}${NC}"
+    fi
+
+    return 1
+  fi
+
+  [ -n "$output" ] && echo "$output"
+}
 
 # Get values from app.json
 VERSION=$(node -p "require('${APP_CONFIG_FILE}').expo.version")
@@ -63,10 +90,26 @@ create_and_upload() {
 
   echo -e "${YELLOW}Creating release: ${release_name}${NC}"
 
-  # Create release in Sentry
-  npx sentry-cli releases new "$release_name" \
+  # Create release in Sentry (tolerate "already exists", fail on real errors).
+  local create_output=""
+  if ! create_output=$($SENTRY_CLI releases new "$release_name" \
     --org "$SENTRY_ORG" \
-    --project "$SENTRY_PROJECT" || echo -e "${YELLOW}Release may already exist${NC}"
+    --project "$SENTRY_PROJECT" 2>&1); then
+    if echo "$create_output" | grep -Eiq "already exists"; then
+      echo -e "${YELLOW}Release already exists, continuing...${NC}"
+    else
+      echo "$create_output"
+      if echo "$create_output" | grep -Eiq "http status: 403|do not have permission"; then
+        echo -e "${RED}❌ Sentry permission error (403) while creating release${NC}"
+        print_sentry_auth_help
+      else
+        echo -e "${RED}❌ Failed to create release ${release_name}${NC}"
+      fi
+      return 1
+    fi
+  else
+    [ -n "$create_output" ] && echo "$create_output"
+  fi
 
   # Create output directory
   rm -rf "$output_dir"
@@ -89,23 +132,30 @@ create_and_upload() {
 
   echo -e "${GREEN}✅ Generated sourcemap: $sourcemap_file${NC}"
 
-  # Upload sourcemaps to Sentry
-  echo -e "${BLUE}Uploading $platform sourcemaps to Sentry...${NC}"
-
-  npx sentry-cli releases files "$release_name" upload-sourcemaps \
+  # Inject debug ids and upload sourcemaps using the current sentry-cli workflow.
+  echo -e "${BLUE}Injecting debug IDs into $platform bundle...${NC}"
+  run_sentry_or_fail "injecting debug IDs" sourcemaps inject "$output_dir" \
     --org "$SENTRY_ORG" \
     --project "$SENTRY_PROJECT" \
+    --release "$release_name"
+
+  echo -e "${BLUE}Uploading $platform sourcemaps to Sentry...${NC}"
+  run_sentry_or_fail "uploading sourcemaps" sourcemaps upload "$output_dir" \
+    --org "$SENTRY_ORG" \
+    --project "$SENTRY_PROJECT" \
+    --release "$release_name" \
     --dist "$build_number" \
-    --strip-prefix "builds/sourcemaps-$platform_lower/" \
-    "$output_dir"
+    --strip-common-prefix \
+    --validate \
+    --wait
 
   # Set release version
-  npx sentry-cli releases set-commits "$release_name" --auto \
+  $SENTRY_CLI releases set-commits "$release_name" --auto \
     --org "$SENTRY_ORG" \
     --project "$SENTRY_PROJECT" || echo -e "${YELLOW}Warning: Could not set commits for release${NC}"
 
   # Finalize the release
-  npx sentry-cli releases finalize "$release_name" \
+  run_sentry_or_fail "finalizing release" releases finalize "$release_name" \
     --org "$SENTRY_ORG" \
     --project "$SENTRY_PROJECT"
 
@@ -153,6 +203,13 @@ if [[ "$PLATFORM" != "ios" && "$PLATFORM" != "android" && "$PLATFORM" != "both" 
 fi
 
 echo -e "${BLUE}Generating sourcemaps for platform(s): ${PLATFORM}${NC}"
+echo ""
+
+echo -e "${BLUE}Validating Sentry access for org/project...${NC}"
+run_sentry_or_fail "verifying token access" releases list \
+  --org "$SENTRY_ORG" \
+  --project "$SENTRY_PROJECT" >/dev/null
+echo -e "${GREEN}✓ Sentry access check passed${NC}"
 echo ""
 
 # --- EXECUTION ---
