@@ -15,6 +15,8 @@ jest.mock('@/lib/supabaseClient')
 jest.mock('@/db/progressRepository')
 
 describe('useLocalWords', () => {
+  const UPDATE_FAILED = 'Update failed'
+
   // Helper functions to generate random test data
   const generateId = (prefix: string) =>
     `${prefix}_${Math.random().toString(36).substring(2, 9)}`
@@ -316,7 +318,7 @@ describe('useLocalWords', () => {
     })
 
     it('should throw error on update failure', async () => {
-      const updateError = new Error('Update failed')
+      const updateError = new Error(UPDATE_FAILED)
       ;(wordRepository.updateWordProgress as jest.Mock).mockRejectedValue(
         updateError
       )
@@ -329,7 +331,7 @@ describe('useLocalWords', () => {
         act(async () => {
           await result.current.updateWordProgress(WORD_ID, progressUpdate)
         })
-      ).rejects.toThrow('Update failed')
+      ).rejects.toThrow(UPDATE_FAILED)
     })
 
     it('should handle multiple progress updates', async () => {
@@ -443,7 +445,7 @@ describe('useLocalWords', () => {
         mockWords
       )
       ;(wordRepository.updateWordProgress as jest.Mock).mockRejectedValueOnce(
-        new Error('Update failed')
+        new Error(UPDATE_FAILED)
       )
 
       const { result } = renderHook(() => useLocalWords())

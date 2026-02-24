@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useCollections } from '@/hooks/useCollections'
-import CollectionSelectorSheet from '@/components/glass/modals/CollectionSelectorSheet'
+import { CollectionSelectorSheet } from '@/components/glass/modals/CollectionSelectorSheet'
 import type { Collection } from '@/types/database'
 
 interface CollectionSelectorProps {
@@ -18,6 +18,43 @@ interface CollectionSelectorProps {
   placeholder?: string
   disabled?: boolean
 }
+
+const getSelectorContainerColors = (isDarkMode: boolean, disabled: boolean) => {
+  if (isDarkMode) {
+    return {
+      backgroundColor: disabled
+        ? Colors.dark.backgroundTertiary
+        : Colors.dark.backgroundSecondary,
+      borderColor: disabled
+        ? Colors.dark.backgroundSecondary
+        : Colors.dark.backgroundTertiary,
+    }
+  }
+
+  return {
+    backgroundColor: disabled ? Colors.neutral[50] : Colors.background.primary,
+    borderColor: disabled ? Colors.neutral[200] : Colors.neutral[300],
+  }
+}
+
+const getFolderIconColor = (isDarkMode: boolean, hasSelection: boolean) => {
+  if (hasSelection) {
+    return isDarkMode ? Colors.dark.text : Colors.neutral[700]
+  }
+
+  return isDarkMode ? Colors.dark.textTertiary : Colors.neutral[400]
+}
+
+const getChevronColor = (isDarkMode: boolean, disabled: boolean) => {
+  if (disabled) {
+    return isDarkMode ? Colors.dark.textTertiary : Colors.neutral[300]
+  }
+
+  return isDarkMode ? Colors.dark.textSecondary : Colors.neutral[500]
+}
+
+const getPlaceholderTextColor = (isDarkMode: boolean) =>
+  isDarkMode ? Colors.dark.textTertiary : Colors.neutral[400]
 
 export default function CollectionSelector({
   selectedCollectionId,
@@ -29,6 +66,7 @@ export default function CollectionSelector({
   const { collections, collectionsLoading, fetchCollections } = useCollections()
   const colorScheme = useColorScheme() ?? 'light'
   const isDarkMode = colorScheme === 'dark'
+  const selectorColors = getSelectorContainerColors(isDarkMode, disabled)
 
   const selectedCollection = collections.find(
     c => c.collection_id === selectedCollectionId
@@ -59,20 +97,8 @@ export default function CollectionSelector({
         style={[
           styles.selector,
           {
-            backgroundColor: isDarkMode
-              ? disabled
-                ? Colors.dark.backgroundTertiary
-                : Colors.dark.backgroundSecondary
-              : disabled
-                ? Colors.neutral[50]
-                : Colors.background.primary,
-            borderColor: isDarkMode
-              ? disabled
-                ? Colors.dark.backgroundSecondary
-                : Colors.dark.backgroundTertiary
-              : disabled
-                ? Colors.neutral[200]
-                : Colors.neutral[300],
+            backgroundColor: selectorColors.backgroundColor,
+            borderColor: selectorColors.borderColor,
           },
         ]}
         onPress={handleOpen}
@@ -82,23 +108,13 @@ export default function CollectionSelector({
           <Ionicons
             name="folder-outline"
             size={20}
-            color={
-              selectedCollection
-                ? isDarkMode
-                  ? Colors.dark.text
-                  : Colors.neutral[700]
-                : isDarkMode
-                  ? Colors.dark.textTertiary
-                  : Colors.neutral[400]
-            }
+            color={getFolderIconColor(isDarkMode, Boolean(selectedCollection))}
           />
           <TextThemed
             style={[
               styles.selectorText,
               !selectedCollection && {
-                color: isDarkMode
-                  ? Colors.dark.textTertiary
-                  : Colors.neutral[400],
+                color: getPlaceholderTextColor(isDarkMode),
               },
             ]}
           >
@@ -108,15 +124,7 @@ export default function CollectionSelector({
         <Ionicons
           name="chevron-down"
           size={20}
-          color={
-            disabled
-              ? isDarkMode
-                ? Colors.dark.textTertiary
-                : Colors.neutral[300]
-              : isDarkMode
-                ? Colors.dark.textSecondary
-                : Colors.neutral[500]
-          }
+          color={getChevronColor(isDarkMode, disabled)}
         />
       </TouchableOpacity>
 

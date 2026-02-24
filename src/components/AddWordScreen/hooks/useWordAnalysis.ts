@@ -7,6 +7,72 @@ import type { AppError } from '@/types/ErrorTypes'
 import { ErrorCategory } from '@/types/ErrorTypes'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 
+const isAppError = (error: unknown): error is AppError =>
+  typeof error === 'object' &&
+  error !== null &&
+  'category' in error &&
+  'userMessage' in error
+
+const showAppErrorToast = (appError: AppError) => {
+  switch (appError.category) {
+    case ErrorCategory.NETWORK:
+      ToastService.show('🌐 ' + appError.userMessage, ToastType.ERROR)
+      return
+    case ErrorCategory.SERVER:
+      ToastService.show('⚠️ ' + appError.userMessage, ToastType.ERROR)
+      return
+    case ErrorCategory.CLIENT:
+    case ErrorCategory.VALIDATION:
+      ToastService.show('ℹ️ ' + appError.userMessage, ToastType.INFO)
+      return
+    default:
+      ToastService.show(appError.userMessage, ToastType.ERROR)
+  }
+}
+
+const handleWordAnalysisError = (error: unknown) => {
+  if (isAppError(error)) {
+    showAppErrorToast(error)
+    return
+  }
+
+  if (error instanceof Error) {
+    ToastService.show(
+      error.message || 'Could not analyze word. Please try again.',
+      ToastType.ERROR
+    )
+    return
+  }
+
+  ToastService.show(
+    'An unexpected error occurred. Please try again.',
+    ToastType.ERROR
+  )
+}
+
+const applyAnalysisMetadata = (
+  metadata: AnalysisMetadata | undefined,
+  setAnalysisMetadata: (value: AnalysisMetadata | null) => void
+) => {
+  if (!metadata) {
+    setAnalysisMetadata({ source: 'gemini' })
+    ToastService.show('Word analyzed successfully', ToastType.SUCCESS)
+    return
+  }
+
+  setAnalysisMetadata(metadata)
+
+  if (metadata.cache_hit) {
+    ToastService.show(
+      `Word loaded from cache (used ${metadata.usage_count} times)`,
+      ToastType.INFO
+    )
+    return
+  }
+
+  ToastService.show('Word analyzed with fresh AI', ToastType.SUCCESS)
+}
+
 export const useWordAnalysis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
@@ -81,67 +147,9 @@ export const useWordAnalysis = () => {
         // No collection name - word was only analyzed, not added
       )
 
-      // Extract metadata from response
-      if (response.meta) {
-        setAnalysisMetadata(response.meta)
-
-        // Show cache-specific toast messages
-        if (response.meta.cache_hit) {
-          ToastService.show(
-            `Word loaded from cache (used ${response.meta.usage_count} times)`,
-            ToastType.INFO
-          )
-        } else {
-          ToastService.show('Word analyzed with fresh AI', ToastType.SUCCESS)
-        }
-      } else {
-        // Fallback for responses without metadata
-        setAnalysisMetadata({ source: 'gemini' })
-        ToastService.show('Word analyzed successfully', ToastType.SUCCESS)
-      }
+      applyAnalysisMetadata(response.meta, setAnalysisMetadata)
     } catch (error: unknown) {
-      // Handle categorized errors with user-friendly messages
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'category' in error &&
-        'userMessage' in error
-      ) {
-        const appError = error as AppError
-
-        // Show user-friendly message based on error category
-        let toastType: ToastType
-        switch (appError.category) {
-          case ErrorCategory.NETWORK:
-            toastType = ToastType.ERROR
-            ToastService.show('🌐 ' + appError.userMessage, toastType)
-            break
-          case ErrorCategory.SERVER:
-            toastType = ToastType.ERROR
-            ToastService.show('⚠️ ' + appError.userMessage, toastType)
-            break
-          case ErrorCategory.CLIENT:
-          case ErrorCategory.VALIDATION:
-            toastType = ToastType.INFO
-            ToastService.show('ℹ️ ' + appError.userMessage, toastType)
-            break
-          default:
-            toastType = ToastType.ERROR
-            ToastService.show(appError.userMessage, toastType)
-        }
-      } else if (error instanceof Error) {
-        // Fallback for non-categorized errors
-        ToastService.show(
-          error.message || 'Could not analyze word. Please try again.',
-          ToastType.ERROR
-        )
-      } else {
-        // Unknown error type
-        ToastService.show(
-          'An unexpected error occurred. Please try again.',
-          ToastType.ERROR
-        )
-      }
+      handleWordAnalysisError(error)
     } finally {
       setIsAnalyzing(false)
     }

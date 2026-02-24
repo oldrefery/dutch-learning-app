@@ -26,6 +26,318 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import { syncManager } from '@/services/syncManager'
 import { wordRepository } from '@/db/wordRepository'
 
+const getErrorMessage = (error: unknown, fallback: string) =>
+  error instanceof Error ? error.message : fallback
+
+const executeDeleteAccount = async () => {
+  try {
+    await userService.deleteAccount()
+
+    ToastService.show('Account deleted successfully', ToastType.SUCCESS)
+
+    setTimeout(() => {
+      router.replace(ROUTES.AUTH.LOGIN)
+    }, 2000)
+  } catch (error) {
+    Sentry.captureException(
+      error instanceof Error
+        ? error
+        : new Error('UI error during account deletion'),
+      {
+        tags: { operation: 'deleteAccount' },
+      }
+    )
+    ToastService.show(
+      getErrorMessage(error, 'Unknown error occurred'),
+      ToastType.ERROR
+    )
+  }
+}
+
+const showDeleteAccountConfirmation = (onConfirmDelete: () => void) => {
+  Alert.alert(
+    'Delete Account',
+    'This will permanently delete your account and all your data, including:\n\n• All your saved words and collections\n• Your learning progress\n• Account information\n\nThis action cannot be undone.',
+    [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Continue',
+        style: 'destructive',
+        onPress: () => {
+          Alert.alert(
+            'Are you absolutely sure?',
+            'Your account and all data will be permanently deleted. This cannot be undone.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Delete My Account',
+                style: 'destructive',
+                onPress: onConfirmDelete,
+              },
+            ]
+          )
+        },
+      },
+    ]
+  )
+}
+
+const handleForceSyncAction = async (
+  currentUserId: string | null,
+  isSyncing: boolean,
+  setIsSyncing: (value: boolean) => void
+) => {
+  if (!currentUserId || isSyncing) {
+    ToastService.show('Sync unavailable. Please try again.', ToastType.ERROR)
+    return
+  }
+
+  setIsSyncing(true)
+  try {
+    const result = await syncManager.performSync(currentUserId)
+    if (result.success) {
+      ToastService.show('Sync completed.', ToastType.SUCCESS)
+    } else {
+      ToastService.show(result.error ?? 'Sync failed.', ToastType.ERROR)
+    }
+  } catch (error) {
+    ToastService.show(
+      getErrorMessage(error, 'Sync failed. Please try again.'),
+      ToastType.ERROR
+    )
+  } finally {
+    setIsSyncing(false)
+  }
+}
+
+const deleteRemoteOrphanWords = async (
+  userId: string
+): Promise<{ count: number }> => {
+  const { data: collections, error: collectionsError } = await supabase
+    .from('collections')
+    .select('collection_id')
+    .eq('user_id', userId)
+
+  if (collectionsError) {
+    throw new Error(`Failed to load collections: ${collectionsError.message}`)
+  }
+
+  const collectionIds = new Set(
+    (collections ?? []).map(collection => collection.collection_id)
+  )
+
+  const { data: words, error: wordsError } = await supabase
+    .from('words')
+    .select('word_id, collection_id')
+    .eq('user_id', userId)
+
+  if (wordsError) {
+    throw new Error(`Failed to load words: ${wordsError.message}`)
+  }
+
+  const orphanWordIds = (words ?? [])
+    .filter(
+      word => !word.collection_id || !collectionIds.has(word.collection_id)
+    )
+    .map(word => word.word_id)
+
+  if (orphanWordIds.length === 0) {
+    return { count: 0 }
+  }
+
+  const chunkSize = 100
+  for (let i = 0; i < orphanWordIds.length; i += chunkSize) {
+    const chunk = orphanWordIds.slice(i, i + chunkSize)
+    const { error: deleteError } = await supabase
+      .from('words')
+      .delete()
+      .in('word_id', chunk)
+
+    if (deleteError) {
+      throw new Error(`Failed to delete words: ${deleteError.message}`)
+    }
+  }
+
+  return { count: orphanWordIds.length }
+}
+
+const executeDeleteOrphanWords = async (currentUserId: string) => {
+  try {
+    const localResult = await wordRepository.deleteOrphanWords(currentUserId)
+    const remoteResult = await deleteRemoteOrphanWords(currentUserId)
+    const totalRemoved = localResult.count + remoteResult.count
+
+    if (totalRemoved > 0) {
+      ToastService.show(
+        `Removed ${localResult.count} local and ${remoteResult.count} remote orphan word${
+          totalRemoved > 1 ? 's' : ''
+        }.`,
+        ToastType.SUCCESS
+      )
+    } else {
+      ToastService.show('No orphan words found.', ToastType.INFO)
+    }
+  } catch (error) {
+    ToastService.show(
+      getErrorMessage(error, 'Failed to delete orphan words.'),
+      ToastType.ERROR
+    )
+  }
+}
+
+const promptDeleteOrphanWords = (currentUserId: string | null) => {
+  if (!currentUserId) {
+    ToastService.show('No user available for cleanup.', ToastType.ERROR)
+    return
+  }
+
+  Alert.alert(
+    'Delete Orphan Words',
+    'This will remove words not linked to any collection (local + remote).',
+    [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          void executeDeleteOrphanWords(currentUserId)
+        },
+      },
+    ]
+  )
+}
+
+const executeDeleteWordByLemma = async (
+  currentUserId: string,
+  input?: string
+) => {
+  const normalizedLemma = (input ?? '').trim().toLowerCase()
+  if (!normalizedLemma) {
+    ToastService.show('Lemma is required.', ToastType.ERROR)
+    return
+  }
+
+  try {
+    const { data: words, error } = await supabase
+      .from('words')
+      .select('word_id')
+      .eq('user_id', currentUserId)
+      .eq('dutch_lemma', normalizedLemma)
+
+    if (error) {
+      throw new Error(`Lookup failed: ${error.message}`)
+    }
+
+    if (!words || words.length === 0) {
+      ToastService.show('Word not found.', ToastType.INFO)
+      return
+    }
+
+    const wordIds = words.map(word => word.word_id)
+    const chunkSize = 100
+    for (let i = 0; i < wordIds.length; i += chunkSize) {
+      const chunk = wordIds.slice(i, i + chunkSize)
+      const { error: deleteError } = await supabase
+        .from('words')
+        .delete()
+        .in('word_id', chunk)
+
+      if (deleteError) {
+        throw new Error(`Delete failed: ${deleteError.message}`)
+      }
+    }
+
+    for (const wordId of wordIds) {
+      await wordRepository.deleteWord(wordId, currentUserId)
+    }
+
+    ToastService.show(
+      `Removed ${wordIds.length} word${wordIds.length > 1 ? 's' : ''}.`,
+      ToastType.SUCCESS
+    )
+  } catch (error) {
+    ToastService.show(
+      getErrorMessage(error, 'Failed to delete word.'),
+      ToastType.ERROR
+    )
+  }
+}
+
+const promptDeleteWordByLemma = (currentUserId: string | null) => {
+  if (!currentUserId) {
+    ToastService.show('No user available for cleanup.', ToastType.ERROR)
+    return
+  }
+
+  Alert.prompt(
+    'Delete Word By Lemma',
+    'Enter the lemma to remove (local + remote).',
+    [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: (input?: string) => {
+          void executeDeleteWordByLemma(currentUserId, input)
+        },
+      },
+    ],
+    'plain-text'
+  )
+}
+
+const getAppVersion = () => {
+  const version = Constants.expoConfig?.version || '1.0.0'
+  const buildNumber =
+    Platform.OS === 'ios'
+      ? Constants.expoConfig?.ios?.buildNumber
+      : Constants.expoConfig?.android?.versionCode
+
+  return buildNumber ? `${version} (${buildNumber})` : version
+}
+
+const getBlurTint = (isDarkMode: boolean): 'light' | 'dark' =>
+  isDarkMode ? 'dark' : 'light'
+
+const getSectionSurfaceStyle = (isDarkMode: boolean) => ({
+  backgroundColor: isDarkMode
+    ? Colors.transparent.iosDarkSurface95
+    : Colors.transparent.white95,
+  borderColor: isDarkMode
+    ? Colors.transparent.white10
+    : Colors.transparent.black05,
+})
+
+const getSeparatorColor = (isDarkMode: boolean) =>
+  isDarkMode ? Colors.transparent.white10 : Colors.transparent.black05
+
+const getAppIconSource = (isDarkMode: boolean) =>
+  isDarkMode
+    ? require('@/assets/icons/ios-dark.png')
+    : require('@/assets/icons/ios-light.png')
+
+const getDestructiveColor = (isDarkMode: boolean) =>
+  isDarkMode ? Colors.dark.error : Colors.error.DEFAULT
+
+const getAccessBadgeBackgroundColor = (
+  userAccessLevel: string,
+  isDarkMode: boolean
+) => {
+  if (userAccessLevel === 'full_access') {
+    return isDarkMode ? Colors.success.darkModeChip : Colors.success.DEFAULT
+  }
+
+  return isDarkMode ? Colors.warning.darkModeBadge : Colors.warning.DEFAULT
+}
+
+const getAccessBadgeTextColor = (userAccessLevel: string) =>
+  userAccessLevel === 'full_access'
+    ? Colors.success.darkModeChipText
+    : Colors.warning.darkModeBadgeText
+
+const getAccessBadgeLabel = (userAccessLevel: string) =>
+  userAccessLevel === 'full_access' ? 'Full Access' : 'Read Only'
+
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets()
   const colorScheme = useColorScheme() ?? 'light'
@@ -35,10 +347,13 @@ export default function SettingsScreen() {
   const { userAccessLevel, currentUserId } = useApplicationStore()
 
   const isDarkMode = colorScheme === 'dark'
-  const blurBackgroundDark = Colors.transparent.iosDarkSurface95
-  const blurBackgroundLight = Colors.transparent.white95
-  const separatorDark = Colors.transparent.white10
-  const separatorLight = Colors.transparent.black05
+  const blurTint = getBlurTint(isDarkMode)
+  const sectionSurfaceStyle = getSectionSurfaceStyle(isDarkMode)
+  const separatorColor = getSeparatorColor(isDarkMode)
+  const appIconSource = getAppIconSource(isDarkMode)
+  const destructiveColor = getDestructiveColor(isDarkMode)
+  const logoutLabel = authLoading ? 'Logging out...' : 'Logout'
+  const forceSyncLabel = isSyncing ? 'Syncing...' : 'Force Sync (Debug)'
 
   useEffect(() => {
     const getUser = async () => {
@@ -59,16 +374,6 @@ export default function SettingsScreen() {
     return () => subscription.unsubscribe()
   }, [])
 
-  const getAppVersion = () => {
-    const version = Constants.expoConfig?.version || '1.0.0'
-    const buildNumber =
-      Platform.OS === 'ios'
-        ? Constants.expoConfig?.ios?.buildNumber
-        : Constants.expoConfig?.android?.versionCode
-
-    return buildNumber ? `${version} (${buildNumber})` : version
-  }
-
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
@@ -82,255 +387,22 @@ export default function SettingsScreen() {
     ])
   }
 
-  const handleDeleteAccount = async () => {
-    // First confirmation - explain what will happen
-    Alert.alert(
-      'Delete Account',
-      'This will permanently delete your account and all your data, including:\n\n• All your saved words and collections\n• Your learning progress\n• Account information\n\nThis action cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Continue',
-          style: 'destructive',
-          onPress: () => {
-            // Second confirmation - final warning
-            Alert.alert(
-              'Are you absolutely sure?',
-              'Your account and all data will be permanently deleted. This cannot be undone.',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                  text: 'Delete My Account',
-                  style: 'destructive',
-                  onPress: async () => {
-                    try {
-                      await userService.deleteAccount()
-
-                      ToastService.show(
-                        'Account deleted successfully',
-                        ToastType.SUCCESS
-                      )
-
-                      // Navigate to log in after a short delay
-                      setTimeout(() => {
-                        router.replace(ROUTES.AUTH.LOGIN)
-                      }, 2000)
-                    } catch (error) {
-                      Sentry.captureException(
-                        error instanceof Error
-                          ? error
-                          : new Error('UI error during account deletion'),
-                        {
-                          tags: { operation: 'deleteAccount' },
-                        }
-                      )
-                      const errorMessage =
-                        error instanceof Error
-                          ? error.message
-                          : 'Unknown error occurred'
-                      ToastService.show(errorMessage, ToastType.ERROR)
-                    }
-                  },
-                },
-              ]
-            )
-          },
-        },
-      ]
-    )
+  const handleDeleteAccount = () => {
+    showDeleteAccountConfirmation(() => {
+      void executeDeleteAccount()
+    })
   }
 
   const handleForceSync = async () => {
-    if (!currentUserId || isSyncing) {
-      ToastService.show('Sync unavailable. Please try again.', ToastType.ERROR)
-      return
-    }
-
-    setIsSyncing(true)
-    try {
-      const result = await syncManager.performSync(currentUserId)
-      if (result.success) {
-        ToastService.show('Sync completed.', ToastType.SUCCESS)
-      } else {
-        ToastService.show(result.error ?? 'Sync failed.', ToastType.ERROR)
-      }
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Sync failed. Please try again.'
-      ToastService.show(message, ToastType.ERROR)
-    } finally {
-      setIsSyncing(false)
-    }
+    await handleForceSyncAction(currentUserId, isSyncing, setIsSyncing)
   }
 
-  const handleDeleteOrphanWords = async () => {
-    if (!currentUserId) {
-      ToastService.show('No user available for cleanup.', ToastType.ERROR)
-      return
-    }
-
-    Alert.alert(
-      'Delete Orphan Words',
-      'This will remove words not linked to any collection (local + remote).',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const localResult =
-                await wordRepository.deleteOrphanWords(currentUserId)
-              const remoteResult = await deleteRemoteOrphanWords(currentUserId)
-              const totalRemoved = localResult.count + remoteResult.count
-
-              if (totalRemoved > 0) {
-                ToastService.show(
-                  `Removed ${localResult.count} local and ${remoteResult.count} remote orphan word${
-                    totalRemoved > 1 ? 's' : ''
-                  }.`,
-                  ToastType.SUCCESS
-                )
-              } else {
-                ToastService.show('No orphan words found.', ToastType.INFO)
-              }
-            } catch (error) {
-              const message =
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to delete orphan words.'
-              ToastService.show(message, ToastType.ERROR)
-            }
-          },
-        },
-      ]
-    )
+  const handleDeleteOrphanWords = () => {
+    promptDeleteOrphanWords(currentUserId)
   }
 
-  const handleDeleteWordByLemma = async () => {
-    if (!currentUserId) {
-      ToastService.show('No user available for cleanup.', ToastType.ERROR)
-      return
-    }
-
-    Alert.prompt(
-      'Delete Word By Lemma',
-      'Enter the lemma to remove (local + remote).',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async (input?: string) => {
-            const normalizedLemma = (input ?? '').trim().toLowerCase()
-            if (!normalizedLemma) {
-              ToastService.show('Lemma is required.', ToastType.ERROR)
-              return
-            }
-
-            try {
-              const { data: words, error } = await supabase
-                .from('words')
-                .select('word_id')
-                .eq('user_id', currentUserId)
-                .eq('dutch_lemma', normalizedLemma)
-
-              if (error) {
-                throw new Error(`Lookup failed: ${error.message}`)
-              }
-
-              if (!words || words.length === 0) {
-                ToastService.show('Word not found.', ToastType.INFO)
-                return
-              }
-
-              const wordIds = words.map(word => word.word_id)
-              const chunkSize = 100
-              for (let i = 0; i < wordIds.length; i += chunkSize) {
-                const chunk = wordIds.slice(i, i + chunkSize)
-                const { error: deleteError } = await supabase
-                  .from('words')
-                  .delete()
-                  .in('word_id', chunk)
-
-                if (deleteError) {
-                  throw new Error(`Delete failed: ${deleteError.message}`)
-                }
-              }
-
-              for (const wordId of wordIds) {
-                await wordRepository.deleteWord(wordId, currentUserId)
-              }
-
-              ToastService.show(
-                `Removed ${wordIds.length} word${wordIds.length > 1 ? 's' : ''}.`,
-                ToastType.SUCCESS
-              )
-            } catch (error) {
-              const message =
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to delete word.'
-              ToastService.show(message, ToastType.ERROR)
-            }
-          },
-        },
-      ],
-      'plain-text'
-    )
-  }
-
-  const deleteRemoteOrphanWords = async (
-    userId: string
-  ): Promise<{ count: number }> => {
-    const { data: collections, error: collectionsError } = await supabase
-      .from('collections')
-      .select('collection_id')
-      .eq('user_id', userId)
-
-    if (collectionsError) {
-      throw new Error(`Failed to load collections: ${collectionsError.message}`)
-    }
-
-    const collectionIds = new Set(
-      (collections ?? []).map(collection => collection.collection_id)
-    )
-
-    const { data: words, error: wordsError } = await supabase
-      .from('words')
-      .select('word_id, collection_id')
-      .eq('user_id', userId)
-
-    if (wordsError) {
-      throw new Error(`Failed to load words: ${wordsError.message}`)
-    }
-
-    const orphanWordIds = (words ?? [])
-      .filter(
-        word => !word.collection_id || !collectionIds.has(word.collection_id)
-      )
-      .map(word => word.word_id)
-
-    if (orphanWordIds.length === 0) {
-      return { count: 0 }
-    }
-
-    const chunkSize = 100
-    for (let i = 0; i < orphanWordIds.length; i += chunkSize) {
-      const chunk = orphanWordIds.slice(i, i + chunkSize)
-      const { error: deleteError } = await supabase
-        .from('words')
-        .delete()
-        .in('word_id', chunk)
-
-      if (deleteError) {
-        throw new Error(`Failed to delete words: ${deleteError.message}`)
-      }
-    }
-
-    return { count: orphanWordIds.length }
+  const handleDeleteWordByLemma = () => {
+    promptDeleteWordByLemma(currentUserId)
   }
 
   return (
@@ -353,33 +425,16 @@ export default function SettingsScreen() {
           <PlatformBlurView
             style={styles.aboutBlur}
             intensity={100}
-            tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            tint={blurTint}
             experimentalBlurMethod={'dimezisBlurView'}
           >
-            <ViewThemed
-              style={[
-                styles.aboutSection,
-                {
-                  backgroundColor: isDarkMode
-                    ? blurBackgroundDark
-                    : blurBackgroundLight,
-                  borderColor: isDarkMode ? separatorDark : separatorLight,
-                },
-              ]}
-            >
+            <ViewThemed style={[styles.aboutSection, sectionSurfaceStyle]}>
               <ViewThemed
                 style={styles.appInfoContainer}
                 lightColor="transparent"
                 darkColor="transparent"
               >
-                <Image
-                  source={
-                    colorScheme === 'dark'
-                      ? require('@/assets/icons/ios-dark.png')
-                      : require('@/assets/icons/ios-light.png')
-                  }
-                  style={styles.appIcon}
-                />
+                <Image source={appIconSource} style={styles.appIcon} />
                 <TextThemed style={styles.appName}>De Woordenaar</TextThemed>
                 <TextThemed
                   style={styles.appDescription}
@@ -401,9 +456,7 @@ export default function SettingsScreen() {
                 style={[
                   styles.separator,
                   {
-                    backgroundColor: isDarkMode
-                      ? separatorDark
-                      : separatorLight,
+                    backgroundColor: separatorColor,
                   },
                 ]}
               />
@@ -434,9 +487,7 @@ export default function SettingsScreen() {
                   style={[
                     styles.linkSeparator,
                     {
-                      backgroundColor: isDarkMode
-                        ? separatorDark
-                        : separatorLight,
+                      backgroundColor: separatorColor,
                     },
                   ]}
                 />
@@ -462,9 +513,7 @@ export default function SettingsScreen() {
                   style={[
                     styles.linkSeparator,
                     {
-                      backgroundColor: isDarkMode
-                        ? separatorDark
-                        : separatorLight,
+                      backgroundColor: separatorColor,
                     },
                   ]}
                 />
@@ -490,9 +539,7 @@ export default function SettingsScreen() {
                   style={[
                     styles.linkSeparator,
                     {
-                      backgroundColor: isDarkMode
-                        ? separatorDark
-                        : separatorLight,
+                      backgroundColor: separatorColor,
                     },
                   ]}
                 />
@@ -524,20 +571,10 @@ export default function SettingsScreen() {
           <PlatformBlurView
             style={styles.userInfoBlur}
             intensity={100}
-            tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            tint={blurTint}
             experimentalBlurMethod={'dimezisBlurView'}
           >
-            <ViewThemed
-              style={[
-                styles.userInfoSection,
-                {
-                  backgroundColor: isDarkMode
-                    ? blurBackgroundDark
-                    : blurBackgroundLight,
-                  borderColor: isDarkMode ? separatorDark : separatorLight,
-                },
-              ]}
-            >
+            <ViewThemed style={[styles.userInfoSection, sectionSurfaceStyle]}>
               <ViewThemed
                 style={styles.sectionHeader}
                 lightColor="transparent"
@@ -551,29 +588,19 @@ export default function SettingsScreen() {
                     style={[
                       styles.accessBadge,
                       {
-                        backgroundColor:
-                          userAccessLevel === 'full_access'
-                            ? isDarkMode
-                              ? Colors.success.darkModeChip
-                              : Colors.success.DEFAULT
-                            : isDarkMode
-                              ? Colors.warning.darkModeBadge
-                              : Colors.warning.DEFAULT,
+                        backgroundColor: getAccessBadgeBackgroundColor(
+                          userAccessLevel,
+                          isDarkMode
+                        ),
                       },
                     ]}
                   >
                     <TextThemed
                       style={styles.accessBadgeText}
                       lightColor={Colors.background.primary}
-                      darkColor={
-                        userAccessLevel === 'full_access'
-                          ? Colors.success.darkModeChipText
-                          : Colors.warning.darkModeBadgeText
-                      }
+                      darkColor={getAccessBadgeTextColor(userAccessLevel)}
                     >
-                      {userAccessLevel === 'full_access'
-                        ? 'Full Access'
-                        : 'Read Only'}
+                      {getAccessBadgeLabel(userAccessLevel)}
                     </TextThemed>
                   </ViewThemed>
                 )}
@@ -607,30 +634,17 @@ export default function SettingsScreen() {
           <PlatformBlurView
             style={styles.accountBlur}
             intensity={100}
-            tint={colorScheme === 'dark' ? 'dark' : 'light'}
+            tint={blurTint}
             experimentalBlurMethod={'dimezisBlurView'}
           >
-            <ViewThemed
-              style={[
-                styles.accountSection,
-                {
-                  backgroundColor: isDarkMode
-                    ? blurBackgroundDark
-                    : blurBackgroundLight,
-                  borderColor: isDarkMode ? separatorDark : separatorLight,
-                },
-              ]}
-            >
+            <ViewThemed style={[styles.accountSection, sectionSurfaceStyle]}>
               <TextThemed style={styles.sectionTitle}>Account</TextThemed>
 
               <TouchableOpacity
                 style={[
                   styles.logoutButton,
                   {
-                    backgroundColor:
-                      colorScheme === 'dark'
-                        ? Colors.dark.error
-                        : Colors.error.DEFAULT,
+                    backgroundColor: destructiveColor,
                     opacity: authLoading ? 0.7 : 1,
                   },
                 ]}
@@ -638,7 +652,7 @@ export default function SettingsScreen() {
                 disabled={authLoading}
               >
                 <TextThemed style={styles.logoutButtonText}>
-                  {authLoading ? 'Logging out...' : 'Logout'}
+                  {logoutLabel}
                 </TextThemed>
               </TouchableOpacity>
 
@@ -657,7 +671,7 @@ export default function SettingsScreen() {
                     disabled={isSyncing}
                   >
                     <TextThemed style={styles.forceSyncButtonText}>
-                      {isSyncing ? 'Syncing...' : 'Force Sync (Debug)'}
+                      {forceSyncLabel}
                     </TextThemed>
                   </TouchableOpacity>
 
@@ -729,14 +743,8 @@ export default function SettingsScreen() {
                 style={[
                   styles.deleteAccountButton,
                   {
-                    backgroundColor:
-                      colorScheme === 'dark'
-                        ? Colors.dark.error
-                        : Colors.error.DEFAULT,
-                    borderColor:
-                      colorScheme === 'dark'
-                        ? Colors.dark.error
-                        : Colors.error.DEFAULT,
+                    backgroundColor: destructiveColor,
+                    borderColor: destructiveColor,
                   },
                 ]}
                 onPress={handleDeleteAccount}
@@ -750,10 +758,7 @@ export default function SettingsScreen() {
                 style={[
                   styles.deleteAccountDescription,
                   {
-                    color:
-                      colorScheme === 'dark'
-                        ? Colors.dark.error
-                        : Colors.error.DEFAULT,
+                    color: destructiveColor,
                   },
                 ]}
               >

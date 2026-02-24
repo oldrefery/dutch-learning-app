@@ -8,6 +8,11 @@
  * - Implementation: Platform.select() for dark theme backgrounds
  */
 
+const RGBA_BLACK_05 = 'rgba(0, 0, 0, 0.05)'
+const RGBA_WHITE_05 = 'rgba(255, 255, 255, 0.05)'
+const RGBA_WHITE_40 = 'rgba(255, 255, 255, 0.4)'
+const RGBA_WHITE_60 = 'rgba(255, 255, 255, 0.6)'
+
 // Color palette
 const colorPalette = {
   // Primary colors - used for main actions, buttons, links
@@ -77,7 +82,7 @@ const colorPalette = {
       secondary: '#FFFFFF', // Cards, elevated surfaces
       tertiary: '#F8FAFC', // Alternative containers
       elevated: '#FFFFFF', // Modal, popover backgrounds
-      overlay: 'rgba(0, 0, 0, 0.05)', // Overlays
+      overlay: RGBA_BLACK_05, // Overlays
     },
     // Dark theme surfaces
     dark: {
@@ -85,7 +90,7 @@ const colorPalette = {
       secondary: '#2C2C2E', // Secondary background
       tertiary: '#3A3A3C', // Cards, containers
       elevated: '#48484A', // Modal, popover backgrounds
-      overlay: 'rgba(255, 255, 255, 0.05)', // Overlays
+      overlay: RGBA_WHITE_05, // Overlays
     },
   },
 
@@ -109,25 +114,25 @@ const colorPalette = {
     textDark: 'rgba(255, 255, 255, 0.8)',
 
     // Background overlays for different themes
-    backgroundLight: 'rgba(0, 0, 0, 0.05)',
-    backgroundDark: 'rgba(255, 255, 255, 0.05)',
+    backgroundLight: RGBA_BLACK_05,
+    backgroundDark: RGBA_WHITE_05,
 
     // White overlays with different opacity levels
-    white05: 'rgba(255, 255, 255, 0.05)',
+    white05: RGBA_WHITE_05,
     white08: 'rgba(255, 255, 255, 0.08)',
     white10: 'rgba(255, 255, 255, 0.1)',
     white15: 'rgba(255, 255, 255, 0.15)',
     white20: 'rgba(255, 255, 255, 0.2)',
     white25: 'rgba(255, 255, 255, 0.25)',
     white30: 'rgba(255, 255, 255, 0.3)',
-    white40: 'rgba(255, 255, 255, 0.4)',
+    white40: RGBA_WHITE_40,
     white50: 'rgba(255, 255, 255, 0.5)',
-    white60: 'rgba(255, 255, 255, 0.6)',
+    white60: RGBA_WHITE_60,
     white92: 'rgba(255, 255, 255, 0.92)',
     white95: 'rgba(255, 255, 255, 0.95)',
 
     // Black overlays
-    black05: 'rgba(0, 0, 0, 0.05)',
+    black05: RGBA_BLACK_05,
     black03: 'rgba(0, 0, 0, 0.03)',
     black04: 'rgba(0, 0, 0, 0.04)',
     black08: 'rgba(0, 0, 0, 0.08)',
@@ -197,8 +202,8 @@ const themes = {
   dark: {
     // Text colors - optimized contrast for dark theme
     text: '#E5E5E7', // Primary text (softer than pure white)
-    textSecondary: 'rgba(255, 255, 255, 0.6)', // Secondary text
-    textTertiary: 'rgba(255, 255, 255, 0.4)', // Tertiary text
+    textSecondary: RGBA_WHITE_60, // Secondary text
+    textTertiary: RGBA_WHITE_40, // Tertiary text
 
     // Background colors - modern dark theme hierarchy
     background: colorPalette.surface.dark.primary, // #1C1C1E
@@ -234,8 +239,8 @@ const textColors = {
 
     // Dark theme text colors
     primaryDark: '#E5E5E7', // Main text in a dark theme
-    secondaryDark: 'rgba(255, 255, 255, 0.6)', // Secondary text in the dark theme
-    tertiaryDark: 'rgba(255, 255, 255, 0.4)', // Tertiary text in the dark theme
+    secondaryDark: RGBA_WHITE_60, // Secondary text in the dark theme
+    tertiaryDark: RGBA_WHITE_40, // Tertiary text in the dark theme
     disabledDark: 'rgba(255, 255, 255, 0.3)', // Disabled text in the dark theme
   },
 }

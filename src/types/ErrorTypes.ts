@@ -151,18 +151,93 @@ export class ValidationError extends Error implements AppError {
 /**
  * Helper function to categorize Supabase errors
  */
+type SupabaseStatusError = {
+  status: number
+  message?: string
+}
+
+const NETWORK_ERROR_PATTERNS = [
+  'network request failed',
+  'network error',
+  'timeout',
+  'fetch failed',
+  'connection refused',
+  'econnrefused',
+]
+
+const isKnownAppError = (error: unknown): error is AppError =>
+  error instanceof NetworkError ||
+  error instanceof ServerError ||
+  error instanceof ClientError ||
+  error instanceof ValidationError
+
+const getSupabaseStatusError = (error: unknown): SupabaseStatusError | null => {
+  if (typeof error !== 'object' || error === null || !('status' in error)) {
+    return null
+  }
+
+  const rawStatus = (error as { status?: unknown }).status
+  if (typeof rawStatus !== 'number') {
+    return null
+  }
+
+  const rawMessage = (error as { message?: unknown }).message
+  return {
+    status: rawStatus,
+    message: typeof rawMessage === 'string' ? rawMessage : undefined,
+  }
+}
+
+const categorizeByStatusCode = (
+  statusError: SupabaseStatusError,
+  originalError?: Error
+): AppError | null => {
+  if (statusError.status >= 400 && statusError.status < 500) {
+    return new ClientError(
+      statusError.message || 'Client error',
+      statusError.status,
+      'Invalid request. Please check your input.',
+      originalError
+    )
+  }
+
+  if (statusError.status >= 500) {
+    return new ServerError(
+      statusError.message || 'Server error',
+      statusError.status,
+      'Server error. Please try again later.',
+      statusError.status === 503 || statusError.status === 504,
+      originalError
+    )
+  }
+
+  return null
+}
+
+const categorizeGenericError = (error: Error): AppError => {
+  const errorMessage = error.message.toLowerCase()
+  if (NETWORK_ERROR_PATTERNS.some(pattern => errorMessage.includes(pattern))) {
+    return new NetworkError(
+      error.message,
+      'Connection error. Please check your internet and try again.',
+      error
+    )
+  }
+
+  return new ServerError(
+    error.message,
+    undefined,
+    'An unexpected error occurred. Please try again.',
+    false,
+    error
+  )
+}
+
 export function categorizeSupabaseError(error: unknown): AppError {
-  // Already categorized as AppError - return as is
-  if (
-    error instanceof NetworkError ||
-    error instanceof ServerError ||
-    error instanceof ClientError ||
-    error instanceof ValidationError
-  ) {
+  if (isKnownAppError(error)) {
     return error
   }
 
-  // FunctionsFetchError - Network issue, function couldn't be reached
   if (error instanceof FunctionsFetchError) {
     return new NetworkError(
       'Failed to reach Edge Function',
@@ -172,63 +247,21 @@ export function categorizeSupabaseError(error: unknown): AppError {
     )
   }
 
-  // Check if it's a Supabase error with status code
-  if (typeof error === 'object' && error !== null && 'status' in error) {
-    const statusError = error as { status: number; message: string }
-
-    // 4xx - Client errors
-    if (statusError.status >= 400 && statusError.status < 500) {
-      return new ClientError(
-        statusError.message || 'Client error',
-        statusError.status,
-        'Invalid request. Please check your input.',
-        error instanceof Error ? error : undefined
-      )
-    }
-
-    // 5xx - Server errors
-    if (statusError.status >= 500) {
-      return new ServerError(
-        statusError.message || 'Server error',
-        statusError.status,
-        'Server error. Please try again later.',
-        statusError.status === 503 || statusError.status === 504, // Retry on 503/504
-        error instanceof Error ? error : undefined
-      )
-    }
-  }
-
-  // Generic Error
-  if (error instanceof Error) {
-    // Check for common network error messages
-    const networkPatterns = [
-      'network request failed',
-      'network error',
-      'timeout',
-      'fetch failed',
-      'connection refused',
-      'econnrefused',
-    ]
-
-    const errorMessage = error.message.toLowerCase()
-    if (networkPatterns.some(pattern => errorMessage.includes(pattern))) {
-      return new NetworkError(
-        error.message,
-        'Connection error. Please check your internet and try again.',
-        error
-      )
-    }
-
-    return new ServerError(
-      error.message,
-      undefined,
-      'An unexpected error occurred. Please try again.',
-      false,
-      error
+  const statusError = getSupabaseStatusError(error)
+  if (statusError) {
+    const categorizedError = categorizeByStatusCode(
+      statusError,
+      error instanceof Error ? error : undefined
     )
+    if (categorizedError) {
+      return categorizedError
+    }
   }
 
-  // Unknown error type
+  if (error instanceof Error) {
+    return categorizeGenericError(error)
+  }
+
   return new ServerError(
     'Unknown error occurred',
     undefined,

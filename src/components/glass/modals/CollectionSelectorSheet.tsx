@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -23,6 +23,61 @@ export type CollectionSelectorSheetProps = {
   loading?: boolean
 }
 
+const getPrimaryAccentColor = (isDarkMode: boolean) =>
+  isDarkMode ? Colors.primary.darkMode : Colors.primary.DEFAULT
+
+const getSecondaryTextColor = (isDarkMode: boolean) =>
+  isDarkMode ? Colors.dark.textSecondary : Colors.neutral[500]
+
+const getCollectionItemBorderColor = (
+  isDarkMode: boolean,
+  isSelected: boolean
+) => {
+  if (isSelected) {
+    return getPrimaryAccentColor(isDarkMode)
+  }
+
+  return isDarkMode ? Colors.transparent.white15 : Colors.transparent.white50
+}
+
+const getCollectionItemOverlayColor = (
+  isDarkMode: boolean,
+  isSelected: boolean
+) => {
+  if (isSelected) {
+    return isDarkMode ? Colors.primary.darkMode + '20' : Colors.primary.light
+  }
+
+  return isDarkMode ? Colors.transparent.white08 : Colors.transparent.white25
+}
+
+const getCollectionItemIconColor = (
+  isDarkMode: boolean,
+  isSelected: boolean
+) => {
+  if (isSelected) {
+    return getPrimaryAccentColor(isDarkMode)
+  }
+
+  return isDarkMode ? Colors.dark.text : Colors.neutral[700]
+}
+
+const getEmptyIconBackgroundColor = (isDarkMode: boolean) =>
+  isDarkMode ? Colors.transparent.white10 : Colors.transparent.white40
+
+const getEmptyIconColor = (isDarkMode: boolean) =>
+  isDarkMode ? Colors.dark.textTertiary : Colors.neutral[400]
+
+const getClearButtonColors = (isDarkMode: boolean) => ({
+  backgroundColor: isDarkMode
+    ? Colors.transparent.white10
+    : Colors.transparent.white50,
+  borderColor: isDarkMode
+    ? Colors.transparent.white20
+    : Colors.transparent.white50,
+  textColor: isDarkMode ? Colors.dark.textSecondary : Colors.neutral[600],
+})
+
 export const CollectionSelectorSheet: React.FC<
   CollectionSelectorSheetProps
 > = ({
@@ -35,6 +90,7 @@ export const CollectionSelectorSheet: React.FC<
 }) => {
   const colorScheme = useColorScheme()
   const isDarkMode = colorScheme === 'dark'
+  const clearButtonColors = getClearButtonColors(isDarkMode)
 
   const handleSelect = (collection: Collection | null) => {
     onSelect(collection)
@@ -56,13 +112,7 @@ export const CollectionSelectorSheet: React.FC<
           style={[
             styles.collectionItem,
             {
-              borderColor: isSelected
-                ? isDarkMode
-                  ? Colors.primary.darkMode
-                  : Colors.primary.DEFAULT
-                : isDarkMode
-                  ? Colors.transparent.white15
-                  : Colors.transparent.white50,
+              borderColor: getCollectionItemBorderColor(isDarkMode, isSelected),
               borderWidth: isSelected ? 2 : 1,
             },
           ]}
@@ -71,13 +121,10 @@ export const CollectionSelectorSheet: React.FC<
             style={[
               styles.glassOverlay,
               {
-                backgroundColor: isSelected
-                  ? isDarkMode
-                    ? Colors.primary.darkMode + '20'
-                    : Colors.primary.light
-                  : isDarkMode
-                    ? Colors.transparent.white08
-                    : Colors.transparent.white25,
+                backgroundColor: getCollectionItemOverlayColor(
+                  isDarkMode,
+                  isSelected
+                ),
               },
             ]}
           />
@@ -95,15 +142,7 @@ export const CollectionSelectorSheet: React.FC<
               <Ionicons
                 name="folder"
                 size={24}
-                color={
-                  isSelected
-                    ? isDarkMode
-                      ? Colors.primary.darkMode
-                      : Colors.primary.DEFAULT
-                    : isDarkMode
-                      ? Colors.dark.text
-                      : Colors.neutral[700]
-                }
+                color={getCollectionItemIconColor(isDarkMode, isSelected)}
               />
             </View>
             <View style={styles.collectionInfo}>
@@ -112,9 +151,7 @@ export const CollectionSelectorSheet: React.FC<
                 style={[
                   styles.collectionDate,
                   {
-                    color: isDarkMode
-                      ? Colors.dark.textSecondary
-                      : Colors.neutral[500],
+                    color: getSecondaryTextColor(isDarkMode),
                   },
                 ]}
               >
@@ -125,9 +162,7 @@ export const CollectionSelectorSheet: React.FC<
               <Ionicons
                 name="checkmark-circle"
                 size={24}
-                color={
-                  isDarkMode ? Colors.primary.darkMode : Colors.primary.DEFAULT
-                }
+                color={getPrimaryAccentColor(isDarkMode)}
               />
             )}
           </View>
@@ -142,17 +177,13 @@ export const CollectionSelectorSheet: React.FC<
         <View style={styles.loadingContainer}>
           <ActivityIndicator
             size="large"
-            color={
-              isDarkMode ? Colors.primary.darkMode : Colors.primary.DEFAULT
-            }
+            color={getPrimaryAccentColor(isDarkMode)}
           />
           <TextThemed
             style={[
               styles.loadingText,
               {
-                color: isDarkMode
-                  ? Colors.dark.textSecondary
-                  : Colors.neutral[500],
+                color: getSecondaryTextColor(isDarkMode),
               },
             ]}
           >
@@ -169,18 +200,14 @@ export const CollectionSelectorSheet: React.FC<
             style={[
               styles.emptyIconContainer,
               {
-                backgroundColor: isDarkMode
-                  ? Colors.transparent.white10
-                  : Colors.transparent.white40,
+                backgroundColor: getEmptyIconBackgroundColor(isDarkMode),
               },
             ]}
           >
             <Ionicons
               name="folder-outline"
               size={40}
-              color={
-                isDarkMode ? Colors.dark.textTertiary : Colors.neutral[400]
-              }
+              color={getEmptyIconColor(isDarkMode)}
             />
           </View>
           <TextThemed style={styles.emptyText}>No collections yet</TextThemed>
@@ -188,9 +215,7 @@ export const CollectionSelectorSheet: React.FC<
             style={[
               styles.emptySubtext,
               {
-                color: isDarkMode
-                  ? Colors.dark.textSecondary
-                  : Colors.neutral[500],
+                color: getSecondaryTextColor(isDarkMode),
               },
             ]}
           >
@@ -217,12 +242,8 @@ export const CollectionSelectorSheet: React.FC<
             style={[
               styles.clearButton,
               {
-                backgroundColor: isDarkMode
-                  ? Colors.transparent.white10
-                  : Colors.transparent.white50,
-                borderColor: isDarkMode
-                  ? Colors.transparent.white20
-                  : Colors.transparent.white50,
+                backgroundColor: clearButtonColors.backgroundColor,
+                borderColor: clearButtonColors.borderColor,
               },
             ]}
             onPress={() => handleSelect(null)}
@@ -230,17 +251,13 @@ export const CollectionSelectorSheet: React.FC<
             <Ionicons
               name="close-circle-outline"
               size={20}
-              color={
-                isDarkMode ? Colors.dark.textSecondary : Colors.neutral[600]
-              }
+              color={clearButtonColors.textColor}
             />
             <TextThemed
               style={[
                 styles.clearButtonText,
                 {
-                  color: isDarkMode
-                    ? Colors.dark.textSecondary
-                    : Colors.neutral[600],
+                  color: clearButtonColors.textColor,
                 },
               ]}
             >

@@ -4,7 +4,7 @@
  */
 
 import { calculateNextReview } from '../srs'
-import { SRS_ASSESSMENT, SRS_PARAMS } from '@/constants/SRSConstants'
+import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 
 describe('calculateNextReview', () => {
   describe('initial state (new word)', () => {

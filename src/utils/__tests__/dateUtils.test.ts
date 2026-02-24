@@ -93,7 +93,7 @@ describe('dateUtils', () => {
     })
 
     describe('hours ago', () => {
-      it('should return "1 hour ago" for 1 hour', () => {
+      it('should return singular hour text for 1 hour', () => {
         const date = dateHoursAgo(1)
         expect(formatRelativeTime(date)).toBe(ONE_HOUR_AGO)
       })
@@ -115,7 +115,7 @@ describe('dateUtils', () => {
 
       it('should handle singular "hour" correctly', () => {
         const date = dateHoursAgo(1)
-        expect(formatRelativeTime(date)).toMatch(/^1 hour ago$/)
+        expect(formatRelativeTime(date)).toBe(ONE_HOUR_AGO)
       })
     })
 
@@ -181,7 +181,7 @@ describe('dateUtils', () => {
 
       it('should handle exactly 1 hour (3600 seconds)', () => {
         const date = new Date(Date.now() - 3600000)
-        expect(formatRelativeTime(date)).toBe('1 hour ago')
+        expect(formatRelativeTime(date)).toBe(ONE_HOUR_AGO)
       })
 
       it('should handle exactly 1 day (86400 seconds)', () => {
@@ -216,7 +216,7 @@ describe('dateUtils', () => {
         // Create dates around potential DST transitions
         const date1 = dateHoursAgo(1.5)
         const result1 = formatRelativeTime(date1)
-        expect(result1).toBe('1 hour ago')
+        expect(result1).toBe(ONE_HOUR_AGO)
 
         const date2 = dateHoursAgo(2.5)
         const result2 = formatRelativeTime(date2)
