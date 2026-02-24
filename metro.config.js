@@ -9,10 +9,22 @@ const defaultConfig = getDefaultConfig(__dirname)
 const config = getSentryExpoConfig(__dirname, defaultConfig)
 
 // Keep @/ imports stable in local EAS bundle step (expo export:embed).
+// extraNodeModules alone is not enough for scoped-like specifiers ('@/...'),
+// so we explicitly rewrite the prefix via Metro resolver hook.
 config.resolver = config.resolver || {}
-config.resolver.extraNodeModules = {
-  ...(config.resolver.extraNodeModules || {}),
-  '@': path.resolve(__dirname, 'src'),
+const srcRoot = path.resolve(__dirname, 'src')
+const previousResolveRequest = config.resolver.resolveRequest
+
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  const rewrittenModuleName = moduleName.startsWith('@/')
+    ? path.join(srcRoot, moduleName.slice(2))
+    : moduleName
+
+  if (typeof previousResolveRequest === 'function') {
+    return previousResolveRequest(context, rewrittenModuleName, platform)
+  }
+
+  return context.resolveRequest(context, rewrittenModuleName, platform)
 }
 
 module.exports = config
