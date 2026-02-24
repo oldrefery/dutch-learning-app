@@ -44,6 +44,44 @@ const getImportErrorMessage = (
   return fallbackMessage
 }
 
+const normalizeLemma = (value?: string | null): string =>
+  value && value.trim() !== '' ? value.trim().toLowerCase() : ''
+
+const normalizePartOfSpeech = (value?: string | null): string =>
+  value && value.trim() !== '' ? value.trim() : 'unknown'
+
+const normalizeArticle = (value?: string | null): string =>
+  value && value.trim() !== '' ? value.trim() : ''
+
+const getSemanticWordKey = (
+  dutchLemma?: string | null,
+  partOfSpeech?: string | null,
+  article?: string | null
+): string =>
+  `${normalizeLemma(dutchLemma)}|${normalizePartOfSpeech(partOfSpeech)}|${normalizeArticle(article)}`
+
+const getWordLabel = (count: number): string => `word${count !== 1 ? 's' : ''}`
+
+const getDuplicateLabel = (count: number): string =>
+  `duplicate${count !== 1 ? 's' : ''}`
+
+const getImportSuccessMessage = (
+  selectedCount: number,
+  importedCount: number
+): string => {
+  const skippedCount = Math.max(selectedCount - importedCount, 0)
+
+  if (importedCount === 0) {
+    return 'No new words were imported. Selected words already exist in your collection.'
+  }
+
+  if (skippedCount > 0) {
+    return `Successfully imported ${importedCount} ${getWordLabel(importedCount)}. Skipped ${skippedCount} ${getDuplicateLabel(skippedCount)}.`
+  }
+
+  return `Successfully imported ${importedCount} ${getWordLabel(importedCount)}`
+}
+
 interface WordSelectionItem {
   word: Omit<
     Word,
@@ -116,29 +154,49 @@ export function useImportSelection(token: string) {
         const { words: existingWords, collections: storeCollections } =
           useApplicationStore.getState()
 
-        const selections: WordSelectionItem[] = words.map(word => {
-          const existingWord = existingWords.find(
-            existing =>
-              existing.dutch_lemma.toLowerCase() ===
-                word.dutch_lemma.toLowerCase() &&
-              (existing.part_of_speech || 'unknown') ===
-                (word.part_of_speech || 'unknown') &&
-              (existing.article || '') === (word.article || '')
-          )
+        const collectionNameById = new Map(
+          storeCollections.map(collection => [
+            collection.collection_id,
+            collection.name,
+          ])
+        )
+        const existingWordKeys = new Set<string>()
+        const existingWordCollectionByKey = new Map<
+          string,
+          string | undefined
+        >()
 
-          // Find collection name by ID
-          let existingInCollectionName: string | undefined
-          if (existingWord?.collection_id) {
-            const collection = storeCollections.find(
-              c => c.collection_id === existingWord.collection_id
+        existingWords.forEach(existingWord => {
+          const key = getSemanticWordKey(
+            existingWord.dutch_lemma,
+            existingWord.part_of_speech,
+            existingWord.article
+          )
+          existingWordKeys.add(key)
+          if (!existingWordCollectionByKey.has(key)) {
+            existingWordCollectionByKey.set(
+              key,
+              existingWord.collection_id
+                ? collectionNameById.get(existingWord.collection_id)
+                : undefined
             )
-            existingInCollectionName = collection?.name
           }
+        })
+
+        const selections: WordSelectionItem[] = words.map(word => {
+          const semanticKey = getSemanticWordKey(
+            word.dutch_lemma,
+            word.part_of_speech,
+            word.article
+          )
+          const existingInCollectionName =
+            existingWordCollectionByKey.get(semanticKey)
+          const isDuplicate = existingWordKeys.has(semanticKey)
 
           return {
             word,
-            selected: !existingWord,
-            isDuplicate: !!existingWord,
+            selected: !isDuplicate,
+            isDuplicate,
             existingInCollection: existingInCollectionName,
           }
         })
@@ -270,6 +328,7 @@ export function useImportSelection(token: string) {
 
     try {
       const { addWordsToCollection } = useApplicationStore.getState()
+      const wordsBeforeImport = useApplicationStore.getState().words.length
       const success = await addWordsToCollection(
         targetCollectionId,
         selectedWords,
@@ -277,11 +336,15 @@ export function useImportSelection(token: string) {
       )
 
       if (success) {
+        const wordsAfterImport = useApplicationStore.getState().words.length
+        const importedCount = Math.max(wordsAfterImport - wordsBeforeImport, 0)
         ToastService.show(
-          `Successfully imported ${selectedWords.length} word${selectedWords.length !== 1 ? 's' : ''}`,
+          getImportSuccessMessage(selectedWords.length, importedCount),
           ToastType.SUCCESS
         )
-        router.replace(ROUTES.TABS.ROOT)
+        if (importedCount > 0) {
+          router.replace(ROUTES.TABS.ROOT)
+        }
       } else {
         const storeError = useApplicationStore.getState().error
         const importErrorMessage =

@@ -17,5 +17,6 @@ npx lint-staged
 # Check for file length limits
 .husky/check-file-length
 
-# Run tests to ensure no regressions
-CI=true npm test -- --no-watch --no-coverage --bail --watchman=false
+# Run tests to ensure no regressions.
+# --silent keeps pre-commit output focused on real test failures.
+CI=true npm test -- --no-watch --no-coverage --bail --watchman=false --silent

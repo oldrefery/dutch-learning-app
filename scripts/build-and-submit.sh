@@ -184,9 +184,9 @@ echo -e "${BLUE}Building for platform(s): ${PLATFORM}${NC}"
 # Build iOS
 if [[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]]; then
     echo -e "${GREEN}Building iOS app locally...${NC}"
-    echo -e "${YELLOW}Running: eas build --platform ios --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa${NC}"
+    echo -e "${YELLOW}Running: npx -y eas-cli@latest build --platform ios --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa${NC}"
 
-    if EAS_SKIP_AUTO_FINGERPRINT=1 NODE_ENV=production eas build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive --json > builds/ios-build-metadata.json; then
+    if EAS_SKIP_AUTO_FINGERPRINT=1 NODE_ENV=production npx -y eas-cli@latest build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive --json > builds/ios-build-metadata.json; then
         echo -e "${GREEN}✅ iOS build completed!${NC}"
     else
         echo -e "${RED}❌ iOS build failed!${NC}"
@@ -197,9 +197,9 @@ fi
 # Build Android
 if [[ "$PLATFORM" == "android" || "$PLATFORM" == "both" ]]; then
     echo -e "${GREEN}Building Android app locally...${NC}"
-    echo -e "${YELLOW}Running: eas build --platform android --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.aab${NC}"
+    echo -e "${YELLOW}Running: npx -y eas-cli@latest build --platform android --profile production --local --output builds/app-${NEW_VERSION}-${NEW_BUILD}.aab${NC}"
 
-    if EAS_SKIP_AUTO_FINGERPRINT=1 NODE_ENV=production eas build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive --json > builds/android-build-metadata.json; then
+    if EAS_SKIP_AUTO_FINGERPRINT=1 NODE_ENV=production npx -y eas-cli@latest build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive --json > builds/android-build-metadata.json; then
         echo -e "${GREEN}✅ Android build completed!${NC}"
     else
         echo -e "${RED}❌ Android build failed!${NC}"
@@ -216,8 +216,8 @@ if [[ "$SUBMIT" == "true" ]]; then
     if [[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]]; then
         echo -e "${GREEN}Submitting iOS to App Store Connect...${NC}"
         IOS_FILE="builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa"
-        echo -e "${YELLOW}Running: eas submit -p ios --path ${IOS_FILE}${NC}"
-        eas submit -p ios --path "$IOS_FILE"
+        echo -e "${YELLOW}Running: npx -y eas-cli@latest submit -p ios --path ${IOS_FILE}${NC}"
+        npx -y eas-cli@latest submit -p ios --path "$IOS_FILE"
         echo -e "${GREEN}✅ iOS submission completed!${NC}"
     fi
 
@@ -225,8 +225,8 @@ if [[ "$SUBMIT" == "true" ]]; then
     if [[ "$PLATFORM" == "android" || "$PLATFORM" == "both" ]]; then
         echo -e "${GREEN}Submitting Android to Google Play...${NC}"
         ANDROID_FILE="builds/app-${NEW_VERSION}-${NEW_BUILD}.aab"
-        echo -e "${YELLOW}Running: eas submit -p android --path ${ANDROID_FILE}${NC}"
-        eas submit -p android --path "$ANDROID_FILE"
+        echo -e "${YELLOW}Running: npx -y eas-cli@latest submit -p android --path ${ANDROID_FILE}${NC}"
+        npx -y eas-cli@latest submit -p android --path "$ANDROID_FILE"
         echo -e "${GREEN}✅ Android submission completed!${NC}"
     fi
 else
