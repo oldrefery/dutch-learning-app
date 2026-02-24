@@ -18,4 +18,4 @@ npx lint-staged
 .husky/check-file-length
 
 # Run tests to ensure no regressions
-npm test -- --no-watch --no-coverage --bail
+CI=true npm test -- --no-watch --no-coverage --bail --watchman=false

@@ -25,13 +25,8 @@
       "buildNumber": "55",
       "icon": "./src/assets/icons/ios-light.png",
       "infoPlist": {
-        "UIBackgroundModes": ["audio", "audio"],
-        "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleURLTypes": [
-          {
-            "CFBundleURLSchemes": ["dutchlearning"]
-          }
-        ]
+        "UIBackgroundModes": ["audio"],
+        "ITSAppUsesNonExemptEncryption": false
       },
       "appleTeamId": "7FQ395U52U"
     },
