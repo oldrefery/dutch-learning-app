@@ -13,6 +13,7 @@ SENTRY_ORG="${SENTRY_ORG:-oldrefery}"
 SENTRY_PROJECT="${SENTRY_PROJECT:-dutch-learning-app}"
 SENTRY_CLI="npx -y sentry-cli"
 SENTRY_ENABLE_RELEASE_FLOW="${SENTRY_ENABLE_RELEASE_FLOW:-false}"
+SENTRY_AUTH_TOKEN_CLI=""
 
 echo "🔍 Sourcemap upload script for Sentry"
 echo ""
@@ -33,6 +34,12 @@ echo -e "${GREEN}✓ Using Expo config: ${APP_CONFIG_FILE}${NC}"
 if [ ! -f ".sentryclirc" ]; then
     echo -e "${RED}Error: .sentryclirc file not found in project root${NC}"
     echo -e "${YELLOW}Please create a .sentryclirc file with your Sentry auth token${NC}"
+    exit 1
+fi
+
+SENTRY_AUTH_TOKEN_CLI=$(awk -F= '/^token=/{print $2}' .sentryclirc)
+if [ -z "$SENTRY_AUTH_TOKEN_CLI" ]; then
+    echo -e "${RED}Error: token not found in .sentryclirc${NC}"
     exit 1
 fi
 
@@ -57,7 +64,7 @@ run_sentry_or_fail() {
   shift
 
   local output
-  if ! output=$($SENTRY_CLI "$@" 2>&1); then
+  if ! output=$($SENTRY_CLI --auth-token "$SENTRY_AUTH_TOKEN_CLI" "$@" 2>&1); then
     echo "$output"
 
     if echo "$output" | grep -Eiq "http status: 403|do not have permission"; then
@@ -106,6 +113,7 @@ create_and_upload() {
     # Create release in Sentry (tolerate "already exists", fail on real errors).
     local create_output=""
     if ! create_output=$($SENTRY_CLI releases new "$release_name" \
+      --auth-token "$SENTRY_AUTH_TOKEN_CLI" \
       --org "$SENTRY_ORG" \
       --project "$SENTRY_PROJECT" 2>&1); then
       if echo "$create_output" | grep -Eiq "already exists"; then
@@ -159,6 +167,7 @@ create_and_upload() {
 
     # Set release version
     $SENTRY_CLI releases set-commits "$release_name" --auto \
+      --auth-token "$SENTRY_AUTH_TOKEN_CLI" \
       --org "$SENTRY_ORG" \
       --project "$SENTRY_PROJECT" || echo -e "${YELLOW}Warning: Could not set commits for release${NC}"
 
