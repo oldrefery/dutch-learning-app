@@ -8,6 +8,7 @@ import {
   ScrollView,
   Image,
   Linking,
+  Switch,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
@@ -344,7 +345,12 @@ export default function SettingsScreen() {
   const [user, setUser] = useState<User | null>(null)
   const [isSyncing, setIsSyncing] = useState(false)
   const { signOut, loading: authLoading } = useSimpleAuth()
-  const { userAccessLevel, currentUserId } = useApplicationStore()
+  const {
+    userAccessLevel,
+    currentUserId,
+    autoPlayPronunciation,
+    setAutoPlayPronunciation,
+  } = useApplicationStore()
 
   const isDarkMode = colorScheme === 'dark'
   const blurTint = getBlurTint(isDarkMode)
@@ -630,6 +636,62 @@ export default function SettingsScreen() {
             </ViewThemed>
           </PlatformBlurView>
         </ViewThemed>
+        <ViewThemed style={styles.preferencesSectionContainer}>
+          <PlatformBlurView
+            style={styles.preferencesBlur}
+            intensity={100}
+            tint={blurTint}
+            experimentalBlurMethod={'dimezisBlurView'}
+          >
+            <ViewThemed
+              style={[styles.preferencesSection, sectionSurfaceStyle]}
+            >
+              <TextThemed style={styles.sectionTitle}>Preferences</TextThemed>
+
+              <ViewThemed
+                style={styles.preferenceRow}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <ViewThemed
+                  style={styles.preferenceTextContainer}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed style={styles.preferenceLabel}>
+                    Auto-play Pronunciation
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.preferenceDescription}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Automatically play word pronunciation when a card is shown
+                  </TextThemed>
+                </ViewThemed>
+                <Switch
+                  testID="auto-play-pronunciation-switch"
+                  value={autoPlayPronunciation}
+                  onValueChange={setAutoPlayPronunciation}
+                  trackColor={{
+                    false: isDarkMode
+                      ? Colors.neutral[700]
+                      : Colors.neutral[300],
+                    true: Colors.primary.DEFAULT,
+                  }}
+                  thumbColor={
+                    autoPlayPronunciation
+                      ? Colors.background.primary
+                      : isDarkMode
+                        ? Colors.neutral[400]
+                        : Colors.background.primary
+                  }
+                />
+              </ViewThemed>
+            </ViewThemed>
+          </PlatformBlurView>
+        </ViewThemed>
+
         <ViewThemed style={styles.accountSectionContainer}>
           <PlatformBlurView
             style={styles.accountBlur}
@@ -826,6 +888,44 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
+  },
+  preferencesSectionContainer: {
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  preferencesBlur: {
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  preferencesSection: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  preferenceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+  },
+  preferenceTextContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
+  preferenceLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  preferenceDescription: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   accountSectionContainer: {
     marginBottom: 16,

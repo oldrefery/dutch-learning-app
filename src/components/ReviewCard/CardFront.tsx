@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { Colors } from '@/constants/Colors'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import type { ReviewCardProps } from './types'
 
 interface CardFrontProps extends ReviewCardProps {
@@ -18,6 +19,34 @@ export function CardFront({
   onPlayPronunciation,
   pronunciationRef,
 }: CardFrontProps) {
+  const autoPlayPronunciation = useApplicationStore(
+    state => state.autoPlayPronunciation
+  )
+  const hasAutoPlayedRef = useRef(false)
+
+  // Auto-play pronunciation when card is shown (if enabled and tts_url exists)
+  useEffect(() => {
+    if (
+      autoPlayPronunciation &&
+      currentWord.tts_url &&
+      !hasAutoPlayedRef.current &&
+      !isPlayingAudio
+    ) {
+      hasAutoPlayedRef.current = true
+      onPlayPronunciation(currentWord.tts_url)
+    }
+  }, [
+    autoPlayPronunciation,
+    currentWord.tts_url,
+    onPlayPronunciation,
+    isPlayingAudio,
+  ])
+
+  // Reset the auto-played flag when the word changes
+  useEffect(() => {
+    hasAutoPlayedRef.current = false
+  }, [currentWord.word_id])
+
   return (
     <ViewThemed style={styles.cardFront}>
       <ViewThemed style={styles.wordWithPronunciation}>
