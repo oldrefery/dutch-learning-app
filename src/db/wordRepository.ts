@@ -49,6 +49,7 @@ export class WordRepository {
         prefix_part = ?,
         root_verb = ?,
         plural = ?,
+        register = ?,
         translations = ?,
         examples = ?,
         synonyms = ?,
@@ -78,12 +79,12 @@ export class WordRepository {
         word_id, user_id, collection_id, dutch_lemma, dutch_original,
         part_of_speech, is_irregular, is_reflexive, is_expression,
         expression_type, is_separable, prefix_part, root_verb, article,
-        plural, translations, examples, synonyms, antonyms, conjugation,
+        plural, register, translations, examples, synonyms, antonyms, conjugation,
         preposition, image_url, tts_url, interval_days, repetition_count,
         easiness_factor, next_review_date, last_reviewed_at, analysis_notes,
         created_at, updated_at, sync_status
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `)
@@ -133,6 +134,7 @@ export class WordRepository {
             this.toSqlValue(word.prefix_part) || null,
             this.toSqlValue(word.root_verb) || null,
             this.toSqlValue(word.plural) || null,
+            this.toSqlValue(word.register) || null,
             JSON.stringify(this.toSqlValue(word.translations) || []),
             word.examples ? JSON.stringify(word.examples) : null,
             JSON.stringify(this.toSqlValue(word.synonyms) || []),
@@ -174,6 +176,7 @@ export class WordRepository {
             this.toSqlValue(word.root_verb) || null,
             this.toSqlValue(word.article) || null,
             this.toSqlValue(word.plural) || null,
+            this.toSqlValue(word.register) || null,
             JSON.stringify(this.toSqlValue(word.translations) || []),
             word.examples ? JSON.stringify(word.examples) : null,
             JSON.stringify(this.toSqlValue(word.synonyms) || []),
@@ -499,12 +502,12 @@ export class WordRepository {
         word_id, user_id, collection_id, dutch_lemma, dutch_original,
         part_of_speech, is_irregular, is_reflexive, is_expression,
         expression_type, is_separable, prefix_part, root_verb, article,
-        plural, translations, examples, synonyms, antonyms, conjugation,
+        plural, register, translations, examples, synonyms, antonyms, conjugation,
         preposition, image_url, tts_url, interval_days, repetition_count,
         easiness_factor, next_review_date, last_reviewed_at, analysis_notes,
         created_at, updated_at, sync_status
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `)
@@ -526,6 +529,7 @@ export class WordRepository {
         word.root_verb || null,
         word.article || null,
         word.plural || null,
+        word.register || null,
         JSON.stringify(word.translations),
         word.examples ? JSON.stringify(word.examples) : null,
         JSON.stringify(word.synonyms || []),
@@ -649,6 +653,7 @@ export class WordRepository {
       root_verb: (row.root_verb as string) || null,
       article: (row.article as 'de' | 'het') || null,
       plural: (row.plural as string) || null,
+      register: (row.register as Word['register']) || null,
       translations: JSON.parse(row.translations as string),
       examples: row.examples ? JSON.parse(row.examples as string) : null,
       synonyms: JSON.parse((row.synonyms as string) || '[]'),

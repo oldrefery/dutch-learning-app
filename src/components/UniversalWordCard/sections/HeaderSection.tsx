@@ -152,6 +152,27 @@ export function HeaderSection({
             </ViewThemed>
           )}
 
+          {'register' in word && word.register && (
+            <ViewThemed
+              style={[
+                styles.grammarTag,
+                word.register === 'formal' && styles.registerFormalTag,
+                word.register === 'informal' && styles.registerInformalTag,
+              ]}
+            >
+              <TextThemed
+                style={[
+                  styles.grammarTagText,
+                  word.register === 'formal' && styles.registerFormalText,
+                  word.register === 'informal' && styles.registerInformalText,
+                ]}
+                selectable
+              >
+                {word.register}
+              </TextThemed>
+            </ViewThemed>
+          )}
+
           {'preposition' in word && word.preposition && (
             <ViewThemed style={styles.grammarTag}>
               <TextThemed style={styles.grammarTagText} selectable>

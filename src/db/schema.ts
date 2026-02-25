@@ -32,6 +32,7 @@ export const SQL_SCHEMA = `
     root_verb TEXT,
     article TEXT,
     plural TEXT,
+    register TEXT,
     translations TEXT NOT NULL,
     examples TEXT,
     synonyms TEXT,
@@ -95,6 +96,11 @@ export const MIGRATION_V3_UNIQUE_INDEX = `
     COALESCE(part_of_speech, 'unknown'),
     COALESCE(article, '')
   );
+`
+
+// Migration v4: Add register column for formality marking
+export const MIGRATION_V4_ADD_REGISTER = `
+  ALTER TABLE words ADD COLUMN register TEXT;
 `
 
 export type SyncStatus = 'synced' | 'pending' | 'error' | 'conflict'

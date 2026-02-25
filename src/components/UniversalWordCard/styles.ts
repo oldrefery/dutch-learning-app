@@ -92,6 +92,21 @@ export const styles = StyleSheet.create({
     color: Colors.neutral[600],
     fontWeight: '500',
   },
+  // Register badge styles
+  registerFormalTag: {
+    borderColor: Colors.primary.DEFAULT,
+    backgroundColor: Colors.primary.light,
+  },
+  registerFormalText: {
+    color: Colors.primary.DEFAULT,
+  },
+  registerInformalTag: {
+    borderColor: Colors.warning.DEFAULT,
+    backgroundColor: Colors.warning.light,
+  },
+  registerInformalText: {
+    color: Colors.warning.DEFAULT,
+  },
   separableInfo: {
     flexDirection: 'row',
     alignItems: 'center',

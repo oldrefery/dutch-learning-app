@@ -1,11 +1,15 @@
 import * as SQLite from 'expo-sqlite'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { SQL_SCHEMA, MIGRATION_V3_UNIQUE_INDEX } from './schema'
+import {
+  SQL_SCHEMA,
+  MIGRATION_V3_UNIQUE_INDEX,
+  MIGRATION_V4_ADD_REGISTER,
+} from './schema'
 import { Sentry } from '@/lib/sentry'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 3
+const SCHEMA_VERSION = 4
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -161,6 +165,23 @@ export async function initializeDatabase(): Promise<SQLite.SQLiteDatabase> {
       // Migration v2 -> v3: Add unique semantic index
       if (currentVersion < 3) {
         await migrateToV3(database)
+      }
+
+      // Migration v3 -> v4: Add register column
+      if (currentVersion < 4) {
+        console.log('[DB] Starting migration to v4: adding register column...')
+        try {
+          await database.execAsync(MIGRATION_V4_ADD_REGISTER)
+          console.log('[DB] Migration to v4 completed successfully')
+        } catch (error) {
+          // Column might already exist if schema was created fresh
+          const errorMessage =
+            error instanceof Error ? error.message : String(error)
+          if (!errorMessage.includes('duplicate column name')) {
+            throw error
+          }
+          console.log('[DB] Register column already exists, skipping migration')
+        }
       }
 
       // Update schema version

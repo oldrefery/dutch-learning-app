@@ -35,6 +35,9 @@ export interface WordConjugation {
   past_participle: string
 }
 
+// Register type for formality marking
+export type WordRegister = 'formal' | 'informal' | 'neutral'
+
 export interface Word {
   word_id: string
   user_id: string
@@ -51,6 +54,7 @@ export interface Word {
   root_verb: string | null // The root verb part (geven, komen, gaan)
   article: 'de' | 'het' | null // Article for nouns
   plural: string | null // Plural form for nouns
+  register: WordRegister | null // Formality level (formal, informal, neutral)
   translations: WordTranslations
   examples: WordExample[] | null
   synonyms: string[]
@@ -83,6 +87,7 @@ export interface GeminiWordAnalysis {
   prefix_part?: string
   root_verb?: string
   article?: 'de' | 'het' // Article for nouns
+  register?: WordRegister // Formality level (formal, informal, neutral)
   translations: WordTranslations
   examples: WordExample[]
   tts_url?: string
