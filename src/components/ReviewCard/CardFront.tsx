@@ -55,7 +55,9 @@ export function CardFront({
           lightColor={Colors.neutral[700]}
           darkColor={Colors.dark.text}
         >
-          {currentWord.article ? `${currentWord.article} ` : ''}
+          {currentWord.part_of_speech === 'noun' && currentWord.article
+            ? `${currentWord.article} `
+            : ''}
           {currentWord.dutch_lemma}
         </TextThemed>
         <NonSwipeableArea>
