@@ -19,6 +19,7 @@ export function useCollectionDetail(collectionId: string) {
   const [wordToMove, setWordToMove] = useState<string | null>(null)
   const [contextMenuVisible, setContextMenuVisible] = useState(false)
   const [contextMenuWord, setContextMenuWord] = useState<Word | null>(null)
+  const [isReanalyzing, setIsReanalyzing] = useState(false)
 
   const {
     words,
@@ -31,6 +32,7 @@ export function useCollectionDetail(collectionId: string) {
     shareCollection,
     getCollectionShareStatus,
     unshareCollection,
+    reanalyzeWord,
   } = useApplicationStore()
 
   const { refreshCount } = useReviewWordsCount()
@@ -266,6 +268,27 @@ export function useCollectionDetail(collectionId: string) {
     await handleDeleteWord(contextMenuWord.word_id)
   }
 
+  const handleReanalyzeSelectedWord = async () => {
+    if (!selectedWord) return
+
+    setIsReanalyzing(true)
+    try {
+      const updatedWord = await reanalyzeWord(selectedWord.word_id)
+      if (updatedWord) {
+        setSelectedWord(updatedWord)
+        ToastService.show('Word re-analyzed successfully', ToastType.SUCCESS)
+      } else {
+        ToastService.show('Failed to re-analyze word', ToastType.ERROR)
+      }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Could not re-analyze word'
+      ToastService.show(errorMessage, ToastType.ERROR)
+    } finally {
+      setIsReanalyzing(false)
+    }
+  }
+
   return {
     // State
     collection,
@@ -281,6 +304,7 @@ export function useCollectionDetail(collectionId: string) {
     contextMenuWord,
     collections,
     words,
+    isReanalyzing,
 
     // Actions
     handleRefresh,
@@ -301,6 +325,7 @@ export function useCollectionDetail(collectionId: string) {
     handleResetWordFromContextMenu,
     handleMoveFromContextMenu,
     handleDeleteFromContextMenu,
+    handleReanalyzeSelectedWord,
 
     // Setters for external use
     setSelectedWord,

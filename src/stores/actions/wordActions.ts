@@ -27,6 +27,7 @@ const WORD_IMAGE_UPDATE_FAILED = 'Failed to update word image'
 const WORD_MOVE_FAILED = 'Failed to move word to collection'
 const WORD_RESET_FAILED = 'Failed to reset word progress'
 const WORDS_IMPORT_FAILED = 'Failed to import words'
+const WORD_REANALYZE_FAILED = 'Failed to re-analyze word'
 
 interface ImportWordsActionError extends Error {
   userMessage?: string
@@ -93,6 +94,7 @@ export const createWordActions = (
   | 'moveWordToCollection'
   | 'resetWordProgress'
   | 'addWordsToCollection'
+  | 'reanalyzeWord'
 > => ({
   fetchWords: async () => {
     try {
@@ -701,6 +703,130 @@ export const createWordActions = (
         },
       })
       return false
+    }
+  },
+
+  reanalyzeWord: async (wordId: string) => {
+    try {
+      const userId = get().currentUserId
+      if (!userId) {
+        logError(
+          USER_NOT_AUTHENTICATED_LOG,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          { wordId },
+          'words',
+          false
+        )
+        set({
+          error: {
+            message: WORD_REANALYZE_FAILED,
+            details: USER_NOT_AUTHENTICATED_ERROR,
+          },
+        })
+        return null
+      }
+
+      // Find the word in the store
+      const currentWords = get().words
+      const currentWord = currentWords.find(w => w.word_id === wordId)
+
+      if (!currentWord) {
+        logInfo(
+          `Word with ID ${wordId} not found for re-analysis`,
+          { wordId, wordsCount: currentWords.length },
+          'words'
+        )
+        set({
+          error: {
+            message: WORD_REANALYZE_FAILED,
+            details: 'Word not found',
+          },
+        })
+        return null
+      }
+
+      // Call the AI analysis service with the word's dutch_lemma
+      const response = await wordService.analyzeWord(currentWord.dutch_lemma, {
+        forceRefresh: true,
+      })
+
+      if (!response || !response.data) {
+        throw new Error('Invalid response from word analysis')
+      }
+
+      const analysis = response.data
+
+      // Prepare updated word data while preserving SRS progress and identifiers
+      const now = new Date().toISOString()
+      const updatedWordData: Word = {
+        // Preserve identifiers and SRS data
+        word_id: currentWord.word_id,
+        user_id: currentWord.user_id,
+        collection_id: currentWord.collection_id,
+        interval_days: currentWord.interval_days,
+        repetition_count: currentWord.repetition_count,
+        easiness_factor: currentWord.easiness_factor,
+        next_review_date: currentWord.next_review_date,
+        last_reviewed_at: currentWord.last_reviewed_at,
+        created_at: currentWord.created_at,
+        // Update with new analysis data
+        dutch_lemma: analysis.dutch_lemma,
+        dutch_original: currentWord.dutch_original,
+        part_of_speech: analysis.part_of_speech || currentWord.part_of_speech,
+        is_irregular: analysis.is_irregular ?? currentWord.is_irregular,
+        is_reflexive: analysis.is_reflexive ?? currentWord.is_reflexive,
+        is_expression: analysis.is_expression ?? currentWord.is_expression,
+        expression_type:
+          analysis.expression_type ?? currentWord.expression_type,
+        is_separable: analysis.is_separable ?? currentWord.is_separable,
+        prefix_part: analysis.prefix_part ?? currentWord.prefix_part,
+        root_verb: analysis.root_verb ?? currentWord.root_verb,
+        article: analysis.article ?? currentWord.article,
+        plural: analysis.plural ?? currentWord.plural,
+        register: analysis.register ?? currentWord.register,
+        translations: analysis.translations,
+        examples: analysis.examples || currentWord.examples,
+        synonyms: analysis.synonyms || currentWord.synonyms,
+        antonyms: analysis.antonyms || currentWord.antonyms,
+        conjugation: analysis.conjugation ?? currentWord.conjugation,
+        preposition: analysis.preposition ?? currentWord.preposition,
+        image_url: analysis.image_url ?? currentWord.image_url,
+        tts_url: analysis.tts_url ?? currentWord.tts_url,
+        analysis_notes: analysis.analysis_notes ?? currentWord.analysis_notes,
+        updated_at: now,
+      }
+
+      // Update the word in the local database (marks as pending sync)
+      await wordRepository.addWord(updatedWordData)
+
+      // Update the store
+      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
+      if (wordIndex !== -1) {
+        const updatedWords = [...currentWords]
+        updatedWords[wordIndex] = updatedWordData
+        set({ words: updatedWords })
+      }
+
+      logInfo(
+        `Word re-analyzed successfully: ${currentWord.dutch_lemma}`,
+        { wordId, dutch_lemma: currentWord.dutch_lemma },
+        'words'
+      )
+
+      return updatedWordData
+    } catch (error) {
+      logError('Error re-analyzing word', error, { wordId }, 'words', false)
+      Sentry.captureException(error, {
+        tags: { operation: 'reanalyzeWord' },
+        extra: { wordId, userId: get().currentUserId },
+      })
+      set({
+        error: {
+          message: WORD_REANALYZE_FAILED,
+          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
+        },
+      })
+      return null
     }
   },
 })

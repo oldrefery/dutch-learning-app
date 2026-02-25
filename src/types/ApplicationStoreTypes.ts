@@ -64,6 +64,7 @@ export interface ApplicationState {
     words: Partial<Word>[],
     isImportFromShared?: boolean
   ) => Promise<boolean>
+  reanalyzeWord: (wordId: string) => Promise<Word | null>
 
   // Collection actions
   fetchCollections: () => Promise<void>

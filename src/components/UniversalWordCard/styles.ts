@@ -314,6 +314,11 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.success.border,
   },
+  reanalyzeButton: {
+    backgroundColor: Colors.primary.light,
+    borderWidth: 1,
+    borderColor: Colors.primary.DEFAULT,
+  },
   actionButtonText: {
     fontSize: 16,
     fontWeight: '500',
@@ -322,6 +327,9 @@ export const styles = StyleSheet.create({
   deleteButtonText: {},
   saveButtonText: {
     color: Colors.success.DEFAULT,
+  },
+  reanalyzeButtonText: {
+    color: Colors.primary.DEFAULT,
   },
 
   // Status and progress info

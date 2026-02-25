@@ -1,5 +1,11 @@
 import React from 'react'
-import { TouchableOpacity, Alert, useColorScheme, View } from 'react-native'
+import {
+  TouchableOpacity,
+  Alert,
+  useColorScheme,
+  View,
+  ActivityIndicator,
+} from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
@@ -87,7 +93,8 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
     actions.showSaveButton ||
     actions.showProgressInfo ||
     actions.showStatusInfo ||
-    actions.showDuplicateCheck
+    actions.showDuplicateCheck ||
+    actions.showReanalyzeButton
 
   if (!hasAnyActions) {
     return null
@@ -187,6 +194,29 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
               style={[styles.actionButtonText, styles.saveButtonText]}
             >
               Save to Collection
+            </TextThemed>
+          </TouchableOpacity>
+        )}
+
+        {actions.showReanalyzeButton && actions.onReanalyze && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.reanalyzeButton]}
+            onPress={actions.onReanalyze}
+            disabled={actions.isReanalyzing}
+          >
+            {actions.isReanalyzing ? (
+              <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
+            ) : (
+              <Ionicons
+                name="refresh"
+                size={20}
+                color={Colors.primary.DEFAULT}
+              />
+            )}
+            <TextThemed
+              style={[styles.actionButtonText, styles.reanalyzeButtonText]}
+            >
+              {actions.isReanalyzing ? 'Analyzing...' : 'Re-analyze Word'}
             </TextThemed>
           </TouchableOpacity>
         )}

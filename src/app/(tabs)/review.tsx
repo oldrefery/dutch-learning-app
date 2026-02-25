@@ -19,6 +19,8 @@ import {
 } from '@/components/UniversalWordCard'
 import { GlassHeader } from '@/components/glass/GlassHeader'
 import { GestureErrorBoundary } from '@/components/GestureErrorBoundary'
+import { ToastService } from '@/components/AppToast'
+import { ToastType } from '@/constants/ToastConstants'
 import { useReviewScreen } from '@/hooks/useReviewScreen'
 import { useImageSelector } from '@/hooks/useImageSelector'
 import { reviewScreenStyles } from '@/styles/ReviewScreenStyles'
@@ -34,6 +36,7 @@ export default function ReviewScreen() {
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [isReanalyzing, setIsReanalyzing] = useState(false)
   const pronunciationRef = useRef<View>(null)
 
   const {
@@ -63,10 +66,11 @@ export default function ReviewScreen() {
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
 
-  // Get startReviewSession from the store
-  const startReviewSession = useApplicationStore(
-    state => state.startReviewSession
-  )
+  // Get startReviewSession and reanalyzeWord from the store
+  const { startReviewSession, reanalyzeWord } = useApplicationStore(state => ({
+    startReviewSession: state.startReviewSession,
+    reanalyzeWord: state.reanalyzeWord,
+  }))
 
   // Enable pull-to-refresh to also refresh review count (badge)
   const { refreshCount } = useReviewWordsCount()
@@ -92,6 +96,27 @@ export default function ReviewScreen() {
     setModalVisible(false)
     setSelectedWord(null)
   }, [])
+
+  const handleReanalyzeWord = useCallback(async () => {
+    if (!selectedWord) return
+
+    setIsReanalyzing(true)
+    try {
+      const updatedWord = await reanalyzeWord(selectedWord.word_id)
+      if (updatedWord) {
+        setSelectedWord(updatedWord)
+        ToastService.show('Word re-analyzed successfully', ToastType.SUCCESS)
+      } else {
+        ToastService.show('Failed to re-analyze word', ToastType.ERROR)
+      }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Could not re-analyze word'
+      ToastService.show(errorMessage, ToastType.ERROR)
+    } finally {
+      setIsReanalyzing(false)
+    }
+  }, [selectedWord, reanalyzeWord])
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
@@ -383,6 +408,8 @@ export default function ReviewScreen() {
         word={selectedWord}
         onChangeImage={openImageSelector}
         onDeleteWord={handleDeleteWord}
+        onReanalyzeWord={handleReanalyzeWord}
+        isReanalyzing={isReanalyzing}
       />
     </ViewThemed>
   )
