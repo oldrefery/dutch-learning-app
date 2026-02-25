@@ -1,6 +1,19 @@
 import { StyleSheet } from 'react-native'
 import { Colors } from '@/constants/Colors'
 
+// Styles for expandable notes section
+export const notesExpandableStyles = StyleSheet.create({
+  expandButton: {
+    marginTop: 8,
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
+  },
+  expandButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+})
+
 export const styles = StyleSheet.create({
   // Main container
   container: {
