@@ -60,38 +60,126 @@ describe('WordRepository', () => {
 
   describe('saveWords', () => {
     it('should save words to database', async () => {
-      const mockStatement = {
+      // Mock for checkExistingStatement - returns null (no existing word)
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(null),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      // Mock for updateStatement
+      const mockUpdateStatement = {
         executeAsync: jest.fn(),
         finalizeAsync: jest.fn(),
       }
-      mockDatabase.prepareAsync.mockResolvedValue(mockStatement)
+      // Mock for insertStatement
+      const mockInsertStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
 
       await wordRepository.saveWords([mockWord])
 
-      expect(mockDatabase.prepareAsync).toHaveBeenCalled()
-      expect(mockStatement.executeAsync).toHaveBeenCalled()
-      expect(mockStatement.finalizeAsync).toHaveBeenCalled()
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledTimes(3)
+      expect(mockCheckStatement.executeAsync).toHaveBeenCalled()
+      expect(mockInsertStatement.executeAsync).toHaveBeenCalled()
+      expect(mockCheckStatement.finalizeAsync).toHaveBeenCalled()
+      expect(mockUpdateStatement.finalizeAsync).toHaveBeenCalled()
+      expect(mockInsertStatement.finalizeAsync).toHaveBeenCalled()
     })
 
     it('should handle multiple words', async () => {
-      const mockStatement = {
+      // Mock for checkExistingStatement - returns null for both words
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(null),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      // Mock for updateStatement
+      const mockUpdateStatement = {
         executeAsync: jest.fn(),
         finalizeAsync: jest.fn(),
       }
-      mockDatabase.prepareAsync.mockResolvedValue(mockStatement)
+      // Mock for insertStatement
+      const mockInsertStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
 
       const words = [mockWord, { ...mockWord, word_id: 'word-2' }]
       await wordRepository.saveWords(words)
 
-      expect(mockStatement.executeAsync).toHaveBeenCalledTimes(2)
+      // Check is called twice (once per word), insert is called twice
+      expect(mockCheckStatement.executeAsync).toHaveBeenCalledTimes(2)
+      expect(mockInsertStatement.executeAsync).toHaveBeenCalledTimes(2)
     })
 
-    it('should finalize statement even on error', async () => {
-      const mockStatement = {
+    it('should update existing word when semantic key matches', async () => {
+      const existingWord = {
+        word_id: 'existing-word-id',
+        sync_status: 'synced',
+        updated_at: CREATED_AT,
+      }
+      // Mock for checkExistingStatement - returns existing word
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(existingWord),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      // Mock for updateStatement
+      const mockUpdateStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      // Mock for insertStatement
+      const mockInsertStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
+
+      await wordRepository.saveWords([mockWord])
+
+      expect(mockCheckStatement.executeAsync).toHaveBeenCalled()
+      expect(mockUpdateStatement.executeAsync).toHaveBeenCalled()
+      expect(mockInsertStatement.executeAsync).not.toHaveBeenCalled()
+    })
+
+    it('should finalize all statements even on error', async () => {
+      // Mock for checkExistingStatement - returns null
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(null),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      // Mock for updateStatement
+      const mockUpdateStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      // Mock for insertStatement - throws error
+      const mockInsertStatement = {
         executeAsync: jest.fn().mockRejectedValue(new Error('DB error')),
         finalizeAsync: jest.fn(),
       }
-      mockDatabase.prepareAsync.mockResolvedValue(mockStatement)
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
 
       try {
         await wordRepository.saveWords([mockWord])
@@ -99,7 +187,9 @@ describe('WordRepository', () => {
         // Expected to throw
       }
 
-      expect(mockStatement.finalizeAsync).toHaveBeenCalled()
+      expect(mockCheckStatement.finalizeAsync).toHaveBeenCalled()
+      expect(mockUpdateStatement.finalizeAsync).toHaveBeenCalled()
+      expect(mockInsertStatement.finalizeAsync).toHaveBeenCalled()
     })
   })
 
