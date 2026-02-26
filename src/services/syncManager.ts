@@ -27,6 +27,7 @@ const SYNC_AUTH_PRECHECK_ERROR =
   'Authentication expired. Please sign in again to sync.'
 const SYNC_DUPLICATE_FINGERPRINT = 'sync-duplicate-conflict'
 const MAX_DUPLICATE_SENTRY_SAMPLES = 20
+const REMOTE_DUPLICATE_SENTRY_ALERT_THRESHOLD = 100
 const AUTH_ERROR_PATTERNS = [
   'jwt expired',
   'invalid jwt',
@@ -50,8 +51,6 @@ type SyncStage =
   | 'push_progress'
 
 class ControlledSyncError extends Error {
-  public sentryHandled = true
-
   constructor(message: string) {
     super(message)
     this.name = 'ControlledSyncError'
@@ -101,9 +100,49 @@ interface SupabaseWordPayload {
   analysis_notes: string | null
 }
 
+type SupabaseWordPayloadWithoutRegister = Omit<SupabaseWordPayload, 'register'>
+type SupabaseWordsUpsertPayload =
+  | SupabaseWordPayload
+  | SupabaseWordPayloadWithoutRegister
+
+const WORDS_SELECT_COLUMNS_WITHOUT_REGISTER = [
+  'word_id',
+  'user_id',
+  'collection_id',
+  'dutch_lemma',
+  'dutch_original',
+  'part_of_speech',
+  'is_irregular',
+  'is_reflexive',
+  'is_expression',
+  'expression_type',
+  'is_separable',
+  'prefix_part',
+  'root_verb',
+  'article',
+  'plural',
+  'translations',
+  'examples',
+  'synonyms',
+  'antonyms',
+  'conjugation',
+  'preposition',
+  'image_url',
+  'tts_url',
+  'interval_days',
+  'repetition_count',
+  'easiness_factor',
+  'next_review_date',
+  'last_reviewed_at',
+  'analysis_notes',
+  'created_at',
+  'updated_at',
+].join(', ')
+
 export class SyncManager {
   private isSyncing = false
   private syncListeners: ((result: SyncResult) => void)[] = []
+  private wordsRegisterColumnAvailable: boolean | null = null
 
   subscribeSyncStatus(callback: (result: SyncResult) => void): () => void {
     this.syncListeners.push(callback)
@@ -521,13 +560,46 @@ export class SyncManager {
     userId: string,
     lastSync: string | null
   ): Promise<Word[]> {
-    let query = supabase.from('words').select('*').eq('user_id', userId)
-
-    if (lastSync) {
-      query = query.gt('created_at', lastSync)
+    const buildQuery = (selectColumns: string) => {
+      let query = supabase
+        .from('words')
+        .select(selectColumns)
+        .eq('user_id', userId)
+      if (lastSync) {
+        query = query.gt('created_at', lastSync)
+      }
+      return query
     }
 
-    const { data, error } = await query
+    let data: Word[] | null = null
+    let error: SupabaseLikeError | null = null
+
+    try {
+      const initialResult = this.toWordsSelectResult(await buildQuery('*'))
+      data = initialResult.data
+      error = initialResult.error
+    } catch (queryError) {
+      if (!this.isMissingWordsRegisterColumnError(queryError)) {
+        throw queryError
+      }
+      error = this.toSupabaseLikeError(queryError)
+    }
+
+    if (error && this.isMissingWordsRegisterColumnError(error)) {
+      this.wordsRegisterColumnAvailable = false
+      console.warn(
+        '[Sync] Remote words table has no register column. Falling back to compatible pull query.'
+      )
+      try {
+        const fallbackResult = this.toWordsSelectResult(
+          await buildQuery(WORDS_SELECT_COLUMNS_WITHOUT_REGISTER)
+        )
+        data = fallbackResult.data
+        error = fallbackResult.error
+      } catch (fallbackQueryError) {
+        error = this.toSupabaseLikeError(fallbackQueryError)
+      }
+    }
 
     if (error) {
       throw new Error(`Failed to pull words: ${error.message}`)
@@ -799,22 +871,32 @@ export class SyncManager {
     console.warn(
       `[Sync] Skipped ${duplicateWords.length} duplicate words (already exist on server with same semantic key)`
     )
-    const duplicateWordLabels = duplicateWords
-      .map(w => w.dutch_lemma)
-      .join(', ')
+    const duplicateSummary = this.buildDuplicateWordsSentryExtra(
+      userId,
+      duplicateWords
+    ).extra
 
-    Sentry.captureMessage(
-      `Duplicate words prevented during sync: ${duplicateWordLabels}`,
-      {
-        level: 'warning',
-        tags: {
-          operation: 'pushWordsToSupabase',
-          sync_error_type: 'duplicate_conflict_remote',
-        },
-        ...this.buildDuplicateWordsSentryExtra(userId, duplicateWords),
-        fingerprint: [SYNC_DUPLICATE_FINGERPRINT, 'remote'],
-      }
-    )
+    Sentry.addBreadcrumb({
+      category: 'sync.duplicates',
+      message: `Skipped ${duplicateWords.length} remote semantic duplicates during sync`,
+      level: 'warning',
+      data: duplicateSummary,
+    })
+
+    if (duplicateWords.length >= REMOTE_DUPLICATE_SENTRY_ALERT_THRESHOLD) {
+      Sentry.captureMessage(
+        'Large batch of remote semantic duplicates skipped during sync',
+        {
+          level: 'warning',
+          tags: {
+            operation: 'pushWordsToSupabase',
+            sync_error_type: 'duplicate_conflict_remote_large_batch',
+          },
+          extra: duplicateSummary,
+          fingerprint: [SYNC_DUPLICATE_FINGERPRINT, 'remote-large-batch'],
+        }
+      )
+    }
 
     await this.markDuplicateWordsSynced(duplicateWords)
   }
@@ -828,9 +910,10 @@ export class SyncManager {
     const wordsToSync = uniqueWords.map(word =>
       this.mapWordToSupabasePayload(word, userId)
     )
-    const { error } = await supabase.from('words').upsert(wordsToSync, {
-      onConflict: 'word_id',
-    })
+    const error = await this.upsertWordsWithRegisterFallback(
+      userId,
+      wordsToSync
+    )
 
     if (!error) {
       const wordIds = uniqueWords.map(w => w.word_id).filter(Boolean)
@@ -974,19 +1057,17 @@ export class SyncManager {
         continue
       }
 
-      const { error } = await supabase
-        .from('words')
-        .upsert([this.mapWordToSupabasePayload(word, userId)], {
-          onConflict: 'word_id',
-        })
+      const upsertError = await this.upsertWordsWithRegisterFallback(userId, [
+        this.mapWordToSupabasePayload(word, userId),
+      ])
 
-      if (error) {
-        if (this.isSemanticUniqueConflict(error)) {
+      if (upsertError) {
+        if (this.isSemanticUniqueConflict(upsertError)) {
           syncedWordIds.push(word.word_id)
           continue
         }
 
-        throw new Error(`Failed to push words: ${error.message}`)
+        throw new Error(`Failed to push words: ${upsertError.message}`)
       }
 
       syncedWordIds.push(word.word_id)
@@ -1030,6 +1111,114 @@ export class SyncManager {
         duplicateTruncatedCount: Math.max(0, words.length - sampleWords.length),
         words: sampleWords,
       },
+    }
+  }
+
+  private async upsertWordsWithRegisterFallback(
+    userId: string,
+    payloads: SupabaseWordPayload[]
+  ): Promise<SupabaseLikeError | null> {
+    const includeRegister = this.wordsRegisterColumnAvailable !== false
+    const initialPayloads = includeRegister
+      ? payloads
+      : payloads.map(payload => this.omitRegisterFromPayload(payload))
+
+    const error = await this.executeWordsUpsert(initialPayloads)
+
+    if (!error) {
+      if (includeRegister) {
+        this.wordsRegisterColumnAvailable = true
+      }
+      return null
+    }
+
+    if (!includeRegister || !this.isMissingWordsRegisterColumnError(error)) {
+      return error
+    }
+
+    this.wordsRegisterColumnAvailable = false
+    console.warn(
+      '[Sync] Remote words table has no register column. Retrying sync without register field.'
+    )
+    Sentry.captureMessage(
+      'Sync fallback enabled: register column missing on remote words table',
+      {
+        level: 'warning',
+        tags: {
+          module: 'syncManager',
+          operation: 'pushWordsToSupabase',
+          sync_error_type: 'schema_mismatch',
+        },
+        extra: {
+          userId,
+          wordsCount: payloads.length,
+          missingColumn: 'register',
+        },
+        fingerprint: ['sync-schema-mismatch', 'words-register-column'],
+      }
+    )
+
+    const fallbackPayloads = payloads.map(payload =>
+      this.omitRegisterFromPayload(payload)
+    )
+
+    return this.executeWordsUpsert(fallbackPayloads)
+  }
+
+  private omitRegisterFromPayload(
+    payload: SupabaseWordPayload
+  ): SupabaseWordPayloadWithoutRegister {
+    const { register: _register, ...payloadWithoutRegister } = payload
+    return payloadWithoutRegister
+  }
+
+  private isMissingWordsRegisterColumnError(error: unknown): boolean {
+    const details = this.getErrorSearchableText(error)
+    return (
+      details.includes("'register' column of 'words' in the schema cache") ||
+      (details.includes('register') &&
+        details.includes('words') &&
+        details.includes('schema cache'))
+    )
+  }
+
+  private toWordsSelectResult(result: { data: unknown; error: unknown }): {
+    data: Word[] | null
+    error: SupabaseLikeError | null
+  } {
+    return {
+      data: Array.isArray(result.data) ? (result.data as Word[]) : null,
+      error: result.error ? this.toSupabaseLikeError(result.error) : null,
+    }
+  }
+
+  private async executeWordsUpsert(
+    payloads: SupabaseWordsUpsertPayload[]
+  ): Promise<SupabaseLikeError | null> {
+    try {
+      const result = await supabase.from('words').upsert(payloads, {
+        onConflict: 'word_id',
+      })
+      return result.error ? this.toSupabaseLikeError(result.error) : null
+    } catch (upsertError) {
+      if (!this.isMissingWordsRegisterColumnError(upsertError)) {
+        throw upsertError
+      }
+      return this.toSupabaseLikeError(upsertError)
+    }
+  }
+
+  private toSupabaseLikeError(error: unknown): SupabaseLikeError {
+    if (error && typeof error === 'object') {
+      return {
+        code: (error as { code?: string }).code,
+        message: this.getErrorMessage(error),
+        details: (error as { details?: string }).details,
+      }
+    }
+
+    return {
+      message: this.getErrorMessage(error),
     }
   }
 

@@ -13,7 +13,11 @@ SENTRY_ORG="${SENTRY_ORG:-oldrefery}"
 SENTRY_PROJECT="${SENTRY_PROJECT:-dutch-learning-app}"
 SENTRY_CLI="npx -y sentry-cli"
 SENTRY_ENABLE_RELEASE_FLOW="${SENTRY_ENABLE_RELEASE_FLOW:-true}"
+SENTRY_ENFORCE_BUILD_CONTEXT="${SENTRY_ENFORCE_BUILD_CONTEXT:-false}"
+SENTRY_ALLOW_COMMIT_MISMATCH="${SENTRY_ALLOW_COMMIT_MISMATCH:-false}"
+SENTRY_FORCE_RESET_CACHE="${SENTRY_FORCE_RESET_CACHE:-true}"
 SENTRY_AUTH_TOKEN_CLI=""
+BUILD_CONTEXT_FILE="builds/build-context.json"
 
 echo "🔍 Sourcemap upload script for Sentry"
 echo ""
@@ -52,11 +56,15 @@ print_sentry_auth_help() {
   echo -e "${YELLOW}Also verify token belongs to org '${SENTRY_ORG}' and has access to project '${SENTRY_PROJECT}'.${NC}"
 }
 
-is_release_flow_enabled() {
-  case "$SENTRY_ENABLE_RELEASE_FLOW" in
+is_true_flag() {
+  case "$1" in
     1|true|TRUE|yes|YES|on|ON) return 0 ;;
     *) return 1 ;;
   esac
+}
+
+is_release_flow_enabled() {
+  is_true_flag "$SENTRY_ENABLE_RELEASE_FLOW"
 }
 
 run_sentry_or_fail() {
@@ -80,18 +88,77 @@ run_sentry_or_fail() {
   [ -n "$output" ] && echo "$output"
 }
 
-# Get values from app.json
-VERSION=$(node -p "require('${APP_CONFIG_FILE}').expo.version")
-IOS_BUILD_NUMBER=$(node -p "require('${APP_CONFIG_FILE}').expo.ios.buildNumber")
-ANDROID_BUILD_NUMBER=$(node -p "require('${APP_CONFIG_FILE}').expo.android.versionCode")
-IOS_BUNDLE_ID=$(node -p "require('${APP_CONFIG_FILE}').expo.ios.bundleIdentifier")
-ANDROID_BUNDLE_ID=$(node -p "require('${APP_CONFIG_FILE}').expo.android.package")
+load_build_context() {
+  local context_file=$1
+  if [ ! -f "$context_file" ]; then
+    return 1
+  fi
 
-echo -e "${BLUE}Current app configuration:${NC}"
-echo -e "Version: ${VERSION}"
-echo -e "iOS Build: ${IOS_BUILD_NUMBER}"
-echo -e "Android Build: ${ANDROID_BUILD_NUMBER}"
-echo ""
+  local context_values
+  if ! context_values=$(node -e "
+      const fs = require('fs');
+      const context = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+      const values = [
+        String(context.version ?? ''),
+        String(context.iosBuildNumber ?? context.buildNumber ?? ''),
+        String(context.androidBuildNumber ?? context.buildNumber ?? ''),
+        String(context.iosBundleId ?? ''),
+        String(context.androidBundleId ?? ''),
+        String(context.commitSha ?? ''),
+        String(context.createdAt ?? ''),
+        String(context.sentryDisableAutoUpload ?? ''),
+        String(Boolean(context.built?.ios)),
+        String(Boolean(context.built?.android))
+      ];
+      console.log(values.join('\\n'));
+    " "$context_file" 2>/dev/null); then
+    echo -e "${RED}Error: failed to parse build context at ${context_file}${NC}"
+    return 1
+  fi
+
+  context_parts=()
+  while IFS= read -r line; do
+    context_parts+=("$line")
+  done <<EOF
+$context_values
+EOF
+  CONTEXT_VERSION="${context_parts[0]}"
+  CONTEXT_IOS_BUILD_NUMBER="${context_parts[1]}"
+  CONTEXT_ANDROID_BUILD_NUMBER="${context_parts[2]}"
+  CONTEXT_IOS_BUNDLE_ID="${context_parts[3]}"
+  CONTEXT_ANDROID_BUNDLE_ID="${context_parts[4]}"
+  CONTEXT_COMMIT_SHA="${context_parts[5]}"
+  CONTEXT_CREATED_AT="${context_parts[6]}"
+  CONTEXT_SENTRY_DISABLE_AUTO_UPLOAD="${context_parts[7]}"
+  CONTEXT_BUILT_IOS="${context_parts[8]}"
+  CONTEXT_BUILT_ANDROID="${context_parts[9]}"
+  return 0
+}
+
+ensure_context_has_platform() {
+  local platform=$1
+  if [ "$platform" == "ios" ] && [ "$CONTEXT_BUILT_IOS" != "true" ]; then
+    return 1
+  fi
+  if [ "$platform" == "android" ] && [ "$CONTEXT_BUILT_ANDROID" != "true" ]; then
+    return 1
+  fi
+  return 0
+}
+
+# Get values from app.json
+APP_VERSION=$(node -p "require('${APP_CONFIG_FILE}').expo.version")
+APP_IOS_BUILD_NUMBER=$(node -p "require('${APP_CONFIG_FILE}').expo.ios.buildNumber")
+APP_ANDROID_BUILD_NUMBER=$(node -p "require('${APP_CONFIG_FILE}').expo.android.versionCode")
+APP_IOS_BUNDLE_ID=$(node -p "require('${APP_CONFIG_FILE}').expo.ios.bundleIdentifier")
+APP_ANDROID_BUNDLE_ID=$(node -p "require('${APP_CONFIG_FILE}').expo.android.package")
+
+VERSION="$APP_VERSION"
+IOS_BUILD_NUMBER="$APP_IOS_BUILD_NUMBER"
+ANDROID_BUILD_NUMBER="$APP_ANDROID_BUILD_NUMBER"
+IOS_BUNDLE_ID="$APP_IOS_BUNDLE_ID"
+ANDROID_BUNDLE_ID="$APP_ANDROID_BUNDLE_ID"
+CONFIG_SOURCE="app config"
 
 # Function to generate sourcemaps and upload to Sentry
 create_and_upload() {
@@ -146,12 +213,11 @@ create_and_upload() {
 
   # Generate bundle with sourcemaps
   echo -e "${BLUE}Generating $platform bundle and sourcemaps...${NC}"
-
-  if [ "$platform_lower" == "ios" ]; then
-    npx expo export:embed --platform ios --dev false --bundle-output "$bundle_file" --sourcemap-output "$sourcemap_file"
-  else
-    npx expo export:embed --platform android --dev false --bundle-output "$bundle_file" --sourcemap-output "$sourcemap_file"
+  local embed_args=(--platform "$platform_lower" --dev false --bundle-output "$bundle_file" --sourcemap-output "$sourcemap_file")
+  if is_true_flag "$SENTRY_FORCE_RESET_CACHE"; then
+    embed_args+=(--reset-cache)
   fi
+  SENTRY_DISABLE_AUTO_UPLOAD=true npx expo export:embed "${embed_args[@]}"
 
   # Check if sourcemap was generated
   if [ ! -f "$sourcemap_file" ]; then
@@ -221,6 +287,9 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Environment variables:"
             echo "  SENTRY_ENABLE_RELEASE_FLOW=true|false  Enable/disable release+dist upload (default: true)"
+            echo "  SENTRY_ENFORCE_BUILD_CONTEXT=true|false  Fail if builds/build-context.json is missing (default: false)"
+            echo "  SENTRY_ALLOW_COMMIT_MISMATCH=true|false  Allow uploading with different git HEAD than build context (default: false)"
+            echo "  SENTRY_FORCE_RESET_CACHE=true|false  Pass --reset-cache to expo export:embed (default: true)"
             echo ""
             echo "Examples:"
             echo "  $0                             Generate and upload sourcemaps for both platforms"
@@ -242,6 +311,59 @@ if [[ "$PLATFORM" != "ios" && "$PLATFORM" != "android" && "$PLATFORM" != "both" 
     echo -e "${RED}Error: Platform must be 'ios', 'android', or 'both'${NC}"
     exit 1
 fi
+
+if load_build_context "$BUILD_CONTEXT_FILE"; then
+  CONFIG_SOURCE="build context (${BUILD_CONTEXT_FILE})"
+  VERSION="$CONTEXT_VERSION"
+  IOS_BUILD_NUMBER="$CONTEXT_IOS_BUILD_NUMBER"
+  ANDROID_BUILD_NUMBER="$CONTEXT_ANDROID_BUILD_NUMBER"
+  IOS_BUNDLE_ID="$CONTEXT_IOS_BUNDLE_ID"
+  ANDROID_BUNDLE_ID="$CONTEXT_ANDROID_BUNDLE_ID"
+
+  echo -e "${GREEN}✓ Using build context from ${BUILD_CONTEXT_FILE}${NC}"
+  if [ -n "$CONTEXT_COMMIT_SHA" ]; then
+    CURRENT_GIT_HEAD=$(git rev-parse HEAD 2>/dev/null || true)
+    if [ -n "$CURRENT_GIT_HEAD" ] && [ "$CURRENT_GIT_HEAD" != "$CONTEXT_COMMIT_SHA" ]; then
+      if is_true_flag "$SENTRY_ALLOW_COMMIT_MISMATCH"; then
+        echo -e "${YELLOW}Warning: git HEAD (${CURRENT_GIT_HEAD}) differs from build commit (${CONTEXT_COMMIT_SHA}), but mismatch is allowed.${NC}"
+      else
+        echo -e "${RED}Error: git HEAD (${CURRENT_GIT_HEAD}) differs from build commit (${CONTEXT_COMMIT_SHA}).${NC}"
+        echo -e "${YELLOW}Checkout the build commit or rerun build before uploading sourcemaps.${NC}"
+        echo -e "${YELLOW}Override only if intentional: SENTRY_ALLOW_COMMIT_MISMATCH=true $0 --platform ${PLATFORM}${NC}"
+        exit 1
+      fi
+    fi
+  fi
+
+  if [[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]]; then
+    if ! ensure_context_has_platform "ios"; then
+      echo -e "${RED}Error: build context does not contain an iOS build.${NC}"
+      exit 1
+    fi
+  fi
+  if [[ "$PLATFORM" == "android" || "$PLATFORM" == "both" ]]; then
+    if ! ensure_context_has_platform "android"; then
+      echo -e "${RED}Error: build context does not contain an Android build.${NC}"
+      exit 1
+    fi
+  fi
+
+  if ! is_true_flag "$CONTEXT_SENTRY_DISABLE_AUTO_UPLOAD"; then
+    echo -e "${YELLOW}Warning: build was created without SENTRY_DISABLE_AUTO_UPLOAD=true. Manual upload can duplicate artifacts.${NC}"
+  fi
+else
+  if is_true_flag "$SENTRY_ENFORCE_BUILD_CONTEXT"; then
+    echo -e "${RED}Error: ${BUILD_CONTEXT_FILE} not found, and SENTRY_ENFORCE_BUILD_CONTEXT=true.${NC}"
+    exit 1
+  fi
+  echo -e "${YELLOW}Warning: ${BUILD_CONTEXT_FILE} not found, falling back to values from ${APP_CONFIG_FILE}.${NC}"
+fi
+
+echo -e "${BLUE}Sourcemap source configuration (${CONFIG_SOURCE}):${NC}"
+echo -e "Version: ${VERSION}"
+echo -e "iOS Build: ${IOS_BUILD_NUMBER}"
+echo -e "Android Build: ${ANDROID_BUILD_NUMBER}"
+echo ""
 
 echo -e "${BLUE}Generating sourcemaps for platform(s): ${PLATFORM}${NC}"
 if is_release_flow_enabled; then
