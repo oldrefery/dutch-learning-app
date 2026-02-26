@@ -116,7 +116,12 @@ load_build_context() {
     return 1
   fi
 
-  mapfile -t context_parts <<< "$context_values"
+  context_parts=()
+  while IFS= read -r line; do
+    context_parts+=("$line")
+  done <<EOF
+$context_values
+EOF
   CONTEXT_VERSION="${context_parts[0]}"
   CONTEXT_IOS_BUILD_NUMBER="${context_parts[1]}"
   CONTEXT_ANDROID_BUILD_NUMBER="${context_parts[2]}"
