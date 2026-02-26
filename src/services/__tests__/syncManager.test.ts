@@ -782,7 +782,7 @@ describe('SyncManager', () => {
       )
     })
 
-    it('should truncate remote duplicate payload in Sentry warning', async () => {
+    it('should log remote duplicates as breadcrumb without creating warning issue for normal batches', async () => {
       const duplicateWords = Array.from({ length: 25 }, (_, index) =>
         createPendingWord({
           word_id: `remote-dup-${index}`,
@@ -834,10 +834,11 @@ describe('SyncManager', () => {
       const result = await syncManager.performSync(userId)
 
       expect(result.success).toBe(true)
-      expect(Sentry.captureMessage).toHaveBeenCalledWith(
-        expect.stringContaining('Duplicate words prevented during sync'),
+      expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
         expect.objectContaining({
-          extra: expect.objectContaining({
+          category: 'sync.duplicates',
+          message: 'Skipped 25 remote semantic duplicates during sync',
+          data: expect.objectContaining({
             duplicateCount: 25,
             duplicateSampleSize: 20,
             duplicateTruncatedCount: 5,
@@ -845,6 +846,78 @@ describe('SyncManager', () => {
               expect.objectContaining({ word_id: 'remote-dup-0' }),
             ]),
           }),
+        })
+      )
+      expect(Sentry.captureMessage).not.toHaveBeenCalledWith(
+        expect.stringContaining('Duplicate words prevented during sync'),
+        expect.anything()
+      )
+    })
+
+    it('should create warning issue when remote duplicate batch is unusually large', async () => {
+      const duplicateWords = Array.from({ length: 101 }, (_, index) =>
+        createPendingWord({
+          word_id: `remote-large-dup-${index}`,
+          dutch_lemma: `woord-large-${index}`,
+        })
+      )
+
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue(
+        duplicateWords
+      )
+      ;(
+        collectionRepository.getCollectionsByIds as jest.Mock
+      ).mockResolvedValue([
+        {
+          collection_id: MAIN_COLLECTION_ID,
+          user_id: userId,
+          name: 'Main',
+          is_shared: false,
+          created_at: DEFAULT_TIMESTAMP,
+        },
+      ])
+      ;(wordService.checkWordExists as jest.Mock).mockResolvedValue({
+        word_id: 'server-dup',
+      })
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+            }),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        return {
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        'Large batch of remote semantic duplicates skipped during sync',
+        expect.objectContaining({
+          tags: expect.objectContaining({
+            sync_error_type: 'duplicate_conflict_remote_large_batch',
+          }),
+          extra: expect.objectContaining({
+            duplicateCount: 101,
+            duplicateSampleSize: 20,
+            duplicateTruncatedCount: 81,
+          }),
+          fingerprint: ['sync-duplicate-conflict', 'remote-large-batch'],
         })
       )
     })
