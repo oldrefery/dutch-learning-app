@@ -33,6 +33,8 @@ interface WordDetailModalProps {
   word: Word | null
   onChangeImage?: () => void
   onDeleteWord?: () => void
+  onReanalyzeWord?: () => void
+  isReanalyzing?: boolean
 }
 
 const { height: screenHeight } = Dimensions.get('window')
@@ -43,6 +45,8 @@ export default function WordDetailModal({
   word,
   onChangeImage,
   onDeleteWord,
+  onReanalyzeWord,
+  isReanalyzing = false,
 }: WordDetailModalProps) {
   const translateY = useSharedValue(screenHeight)
   const backdropOpacity = useSharedValue(0)
@@ -202,6 +206,9 @@ export default function WordDetailModal({
                   actions={{
                     ...WordCardPresets.modal.actions,
                     onDelete: onDeleteWord,
+                    showReanalyzeButton: true,
+                    onReanalyze: onReanalyzeWord,
+                    isReanalyzing: isReanalyzing,
                   }}
                   isPlayingAudio={isPlaying}
                   onPlayPronunciation={handlePlayAudio}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ComponentProps } from 'react'
+import React, { useEffect, useMemo, useState, ComponentProps } from 'react'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import {
   NativeTabs,
@@ -49,7 +49,6 @@ type NativeTabsLabelStyle = {
 const TabTrigger = NativeTabs.Trigger as React.ComponentType<TabTriggerProps>
 const StyledBadge = Badge as React.ComponentType<BadgeWithStyleProps>
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function TabLayout() {
   const colorScheme = useColorScheme()
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
@@ -58,14 +57,20 @@ export default function TabLayout() {
   const { reviewWordsCount } = useReviewWordsCount()
 
   // Get user access level
-  const { userAccessLevel } = useApplicationStore()
+  const userAccessLevel = useApplicationStore(state => state.userAccessLevel)
+
+  const shouldAutoSync = isAuthenticated === true
+  const syncOptions = useMemo(
+    () => ({
+      autoSyncOnMount: shouldAutoSync,
+      autoSyncOnFocus: shouldAutoSync,
+      autoSyncOnNetworkChange: shouldAutoSync,
+    }),
+    [shouldAutoSync]
+  )
 
   // Initialize offline-first sync (only when authenticated)
-  useSyncManager({
-    autoSyncOnMount: isAuthenticated === true,
-    autoSyncOnFocus: isAuthenticated === true,
-    autoSyncOnNetworkChange: isAuthenticated === true,
-  })
+  useSyncManager(syncOptions)
 
   // Call this unconditionally to follow the rules of hooks (not used in Native Tabs)
   useClientOnlyValue(false, true)
@@ -79,7 +84,13 @@ export default function TabLayout() {
         } = await supabase.auth.getSession()
 
         if (error) {
-          setIsAuthenticated(false)
+          Sentry.addBreadcrumb({
+            category: 'auth',
+            level: 'warning',
+            message: '[TabLayout] Session check failed',
+            data: { errorMessage: error.message },
+          })
+          setIsAuthenticated(prev => (prev === false ? prev : false))
           Sentry.captureException(error, {
             tags: { operation: 'tabLayoutSessionCheck' },
             extra: { message: '[TabLayout] Session check error' },
@@ -90,13 +101,30 @@ export default function TabLayout() {
 
         const authenticated = !!session?.user
 
-        setIsAuthenticated(authenticated)
+        Sentry.addBreadcrumb({
+          category: 'auth',
+          level: 'info',
+          message: '[TabLayout] Session check complete',
+          data: { authenticated },
+        })
+
+        setIsAuthenticated(prev =>
+          prev === authenticated ? prev : authenticated
+        )
 
         if (!authenticated) {
           router.replace(ROUTES.AUTH.LOGIN)
         }
       } catch (error) {
-        setIsAuthenticated(false)
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown auth check error'
+        Sentry.addBreadcrumb({
+          category: 'auth',
+          level: 'error',
+          message: '[TabLayout] Auth check threw',
+          data: { errorMessage },
+        })
+        setIsAuthenticated(prev => (prev === false ? prev : false))
         Sentry.captureException(error, {
           tags: { operation: 'tabLayoutAuthCheck' },
           extra: { message: '[TabLayout] Auth check failed' },
@@ -113,7 +141,18 @@ export default function TabLayout() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       const authenticated = !!session?.user
-      setIsAuthenticated(authenticated)
+      Sentry.addBreadcrumb({
+        category: 'auth',
+        level: 'info',
+        message: '[TabLayout] onAuthStateChange',
+        data: {
+          event,
+          authenticated,
+        },
+      })
+      setIsAuthenticated(prev =>
+        prev === authenticated ? prev : authenticated
+      )
 
       if (!authenticated) {
         router.replace(ROUTES.AUTH.LOGIN)
@@ -124,6 +163,30 @@ export default function TabLayout() {
       subscription.unsubscribe()
     }
   }, [])
+
+  const labelStyle: NativeTabsLabelStyle = useMemo(
+    () => ({
+      color:
+        Platform.OS === 'ios'
+          ? DynamicColorIOS({
+              dark: Colors.dark.text,
+              light: Colors.light.text,
+            })
+          : colorScheme === 'dark'
+            ? Colors.dark.text
+            : Colors.light.text,
+      tintColor:
+        Platform.OS === 'ios'
+          ? DynamicColorIOS({
+              dark: Colors.dark.tint,
+              light: Colors.light.tint,
+            })
+          : colorScheme === 'dark'
+            ? Colors.dark.tint
+            : Colors.light.tint,
+    }),
+    [colorScheme]
+  )
 
   // Show loading while checking authentication
   if (isAuthenticated === null) {
@@ -147,27 +210,6 @@ export default function TabLayout() {
   // Don't render tabs if not authenticated (will redirect)
   if (!isAuthenticated) {
     return null
-  }
-
-  const labelStyle: NativeTabsLabelStyle = {
-    color:
-      Platform.OS === 'ios'
-        ? DynamicColorIOS({
-            dark: Colors.dark.text,
-            light: Colors.light.text,
-          })
-        : colorScheme === 'dark'
-          ? Colors.dark.text
-          : Colors.light.text,
-    tintColor:
-      Platform.OS === 'ios'
-        ? DynamicColorIOS({
-            dark: Colors.dark.tint,
-            light: Colors.light.tint,
-          })
-        : colorScheme === 'dark'
-          ? Colors.dark.tint
-          : Colors.light.tint,
   }
 
   return (

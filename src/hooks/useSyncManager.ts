@@ -20,8 +20,15 @@ const DEFAULT_OPTIONS: UseSyncManagerOptions = {
 }
 
 export function useSyncManager(options: UseSyncManagerOptions = {}) {
-  const mergedOptions = { ...DEFAULT_OPTIONS, ...options }
-  const { currentUserId } = useApplicationStore()
+  const currentUserId = useApplicationStore(state => state.currentUserId)
+  const autoSyncOnMount =
+    options.autoSyncOnMount ?? DEFAULT_OPTIONS.autoSyncOnMount
+  const autoSyncOnFocus =
+    options.autoSyncOnFocus ?? DEFAULT_OPTIONS.autoSyncOnFocus
+  const autoSyncOnNetworkChange =
+    options.autoSyncOnNetworkChange ?? DEFAULT_OPTIONS.autoSyncOnNetworkChange
+  const syncIntervalMs =
+    options.syncIntervalMs ?? DEFAULT_OPTIONS.syncIntervalMs
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null)
   const [isSyncing, setIsSyncing] = useState(false)
   const syncIntervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -63,7 +70,7 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
   }, [currentUserId])
 
   const setupSyncOnNetworkChange = useCallback(() => {
-    if (!mergedOptions.autoSyncOnNetworkChange) return
+    if (!autoSyncOnNetworkChange) return
 
     unsubscribeNetworkRef.current = subscribeToNetworkChanges(
       async (isConnected: boolean) => {
@@ -73,19 +80,19 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
         }
       }
     )
-  }, [mergedOptions.autoSyncOnNetworkChange, performSync])
+  }, [autoSyncOnNetworkChange, performSync])
 
   const setupPeriodicSync = useCallback(() => {
-    if (!mergedOptions.syncIntervalMs || !currentUserId) return
+    if (!syncIntervalMs || !currentUserId) return
 
     syncIntervalRef.current = setInterval(() => {
       performSync()
-    }, mergedOptions.syncIntervalMs)
+    }, syncIntervalMs)
 
     console.log(
-      `[Sync] Periodic sync set up with interval: ${mergedOptions.syncIntervalMs}ms`
+      `[Sync] Periodic sync set up with interval: ${syncIntervalMs}ms`
     )
-  }, [mergedOptions.syncIntervalMs, performSync, currentUserId])
+  }, [syncIntervalMs, performSync, currentUserId])
 
   const setupSyncStatusListener = useCallback(() => {
     unsubscribeSyncRef.current = syncManager.subscribeSyncStatus(
@@ -122,18 +129,18 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
   // Sync on app focus
   useFocusEffect(
     useCallback(() => {
-      if (mergedOptions.autoSyncOnFocus) {
+      if (autoSyncOnFocus) {
         performSync()
       }
-    }, [mergedOptions.autoSyncOnFocus, performSync])
+    }, [autoSyncOnFocus, performSync])
   )
 
   // Initial sync on mount
   useEffect(() => {
-    if (mergedOptions.autoSyncOnMount && currentUserId) {
+    if (autoSyncOnMount && currentUserId) {
       performSync()
     }
-  }, [mergedOptions.autoSyncOnMount, currentUserId, performSync])
+  }, [autoSyncOnMount, currentUserId, performSync])
 
   return {
     syncResult,

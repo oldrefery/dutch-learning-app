@@ -95,7 +95,9 @@ export function WordHeader({
     <ViewThemed style={styles.wordHeader}>
       <ViewThemed style={styles.wordWithPronunciationSmall}>
         <TextThemed style={styles.dutchWordSmall}>
-          {currentWord.article ? `${currentWord.article} ` : ''}
+          {currentWord.part_of_speech === 'noun' && currentWord.article
+            ? `${currentWord.article} `
+            : ''}
           {currentWord.dutch_lemma}
         </TextThemed>
         <NonSwipeableArea>

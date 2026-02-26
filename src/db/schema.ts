@@ -32,6 +32,7 @@ export const SQL_SCHEMA = `
     root_verb TEXT,
     article TEXT,
     plural TEXT,
+    register TEXT,
     translations TEXT NOT NULL,
     examples TEXT,
     synonyms TEXT,
@@ -83,6 +84,23 @@ export const SQL_SCHEMA = `
   CREATE INDEX IF NOT EXISTS idx_user_progress_word_id ON user_progress(word_id);
   CREATE INDEX IF NOT EXISTS idx_user_progress_updated_at ON user_progress(updated_at);
   CREATE INDEX IF NOT EXISTS idx_user_progress_sync_status ON user_progress(sync_status);
+`
+
+// Migration v3: Unique semantic index to prevent duplicate words
+// Semantic key = (user_id, dutch_lemma_normalized, part_of_speech_normalized, article_normalized)
+export const MIGRATION_V3_UNIQUE_INDEX = `
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_words_semantic_key
+  ON words(
+    user_id,
+    LOWER(dutch_lemma),
+    COALESCE(part_of_speech, 'unknown'),
+    COALESCE(article, '')
+  );
+`
+
+// Migration v4: Add register column for formality marking
+export const MIGRATION_V4_ADD_REGISTER = `
+  ALTER TABLE words ADD COLUMN register TEXT;
 `
 
 export type SyncStatus = 'synced' | 'pending' | 'error' | 'conflict'

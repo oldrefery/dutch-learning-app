@@ -84,6 +84,7 @@ interface SupabaseWordPayload {
   root_verb: string | null
   article: Word['article']
   plural: string | null
+  register: Word['register']
   translations: Word['translations']
   examples: Word['examples']
   synonyms: string[]
@@ -901,6 +902,7 @@ export class SyncManager {
       root_verb: word.root_verb,
       article: word.article,
       plural: word.plural,
+      register: word.register,
       translations: word.translations,
       examples: word.examples,
       synonyms: word.synonyms,

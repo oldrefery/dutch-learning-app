@@ -84,10 +84,10 @@ export function UniversalWordCard({
       <View style={{ height: finalConfig.extraHeightAddWord }} />
       <HeaderSection {...sectionProps} />
       <TranslationsSection {...sectionProps} />
+      <ConjugationSection {...sectionProps} />
       <ExamplesSection {...sectionProps} />
       <ImageSection {...sectionProps} />
       <SynonymsAntonymsSection {...sectionProps} />
-      <ConjugationSection {...sectionProps} />
       <NotesSection {...sectionProps} />
       <ActionsSection word={word} actions={finalActions} />
     </ViewThemed>

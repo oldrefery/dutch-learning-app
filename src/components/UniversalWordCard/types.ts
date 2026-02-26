@@ -38,6 +38,11 @@ export interface WordCardActionConfig {
   showProgressInfo?: boolean
   showStatusInfo?: boolean
 
+  // Re-analyze action
+  showReanalyzeButton?: boolean
+  onReanalyze?: () => void
+  isReanalyzing?: boolean
+
   // Analysis mode actions
   showDuplicateCheck?: boolean
   isDuplicateChecking?: boolean

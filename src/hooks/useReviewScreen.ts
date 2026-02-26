@@ -27,11 +27,6 @@ export const useReviewScreen = () => {
   const [lastTouchTime, setLastTouchTime] = useState(0)
   const isMountedRef = useRef(true)
 
-  // Start review session when component mounts - only once
-  useEffect(() => {
-    startReviewSession()
-  }, [startReviewSession])
-
   // Cleanup on unmounting
   useEffect(() => {
     return () => {

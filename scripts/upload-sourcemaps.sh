@@ -12,7 +12,7 @@ NC='\033[0m' # No Color
 SENTRY_ORG="${SENTRY_ORG:-oldrefery}"
 SENTRY_PROJECT="${SENTRY_PROJECT:-dutch-learning-app}"
 SENTRY_CLI="npx -y sentry-cli"
-SENTRY_ENABLE_RELEASE_FLOW="${SENTRY_ENABLE_RELEASE_FLOW:-false}"
+SENTRY_ENABLE_RELEASE_FLOW="${SENTRY_ENABLE_RELEASE_FLOW:-true}"
 SENTRY_AUTH_TOKEN_CLI=""
 
 echo "🔍 Sourcemap upload script for Sentry"
@@ -101,11 +101,18 @@ create_and_upload() {
 
   echo -e "${GREEN}Processing $platform release...${NC}"
 
-  local release_name="${bundle_id}@${VERSION}+${build_number}"
-  local platform_lower=$(echo "$platform" | tr '[:upper:]' '[:lower:]')
+  local release_name
+  release_name="${bundle_id}@${VERSION}+${build_number}"
+
+  local platform_lower
+  platform_lower=$(echo "$platform" | tr '[:upper:]' '[:lower:]')
   local output_dir="builds/sourcemaps-$platform_lower"
-  local bundle_file="$output_dir/index.$platform_lower.bundle"
-  local sourcemap_file="$output_dir/index.$platform_lower.bundle.map"
+  local runtime_bundle_name="index.$platform_lower.bundle"
+  if [ "$platform_lower" == "ios" ]; then
+    runtime_bundle_name="main.jsbundle"
+  fi
+  local bundle_file="$output_dir/$runtime_bundle_name"
+  local sourcemap_file="$output_dir/$runtime_bundle_name.map"
 
   if is_release_flow_enabled; then
     echo -e "${YELLOW}Creating release: ${release_name}${NC}"
@@ -161,7 +168,8 @@ create_and_upload() {
       --project "$SENTRY_PROJECT" \
       --release "$release_name" \
       --dist "$build_number" \
-      --strip-common-prefix \
+      --url-prefix "app:///" \
+      --rewrite \
       --validate \
       --wait
 
@@ -212,13 +220,13 @@ while [[ $# -gt 0 ]]; do
             echo "  --help                         Show this help message"
             echo ""
             echo "Environment variables:"
-            echo "  SENTRY_ENABLE_RELEASE_FLOW=true  Enable legacy release flow (releases new/finalize)"
+            echo "  SENTRY_ENABLE_RELEASE_FLOW=true|false  Enable/disable release+dist upload (default: true)"
             echo ""
             echo "Examples:"
             echo "  $0                             Generate and upload sourcemaps for both platforms"
             echo "  $0 --platform ios             Generate and upload only for iOS"
             echo "  $0 --platform android         Generate and upload only for Android"
-            echo "  SENTRY_ENABLE_RELEASE_FLOW=true $0 --platform ios"
+            echo "  SENTRY_ENABLE_RELEASE_FLOW=false $0 --platform ios"
             exit 0
             ;;
         *)
@@ -240,6 +248,7 @@ if is_release_flow_enabled; then
   echo -e "${BLUE}Upload mode: release + artifact bundle${NC}"
 else
   echo -e "${BLUE}Upload mode: artifact bundle (Debug IDs only)${NC}"
+  echo -e "${YELLOW}Warning: use this mode only if events contain debug_meta/debug IDs.${NC}"
 fi
 echo ""
 

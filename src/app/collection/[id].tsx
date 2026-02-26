@@ -58,6 +58,8 @@ export default function CollectionDetailScreen() {
     handleResetWordFromContextMenu,
     handleMoveFromContextMenu,
     handleDeleteFromContextMenu,
+    handleReanalyzeSelectedWord,
+    isReanalyzing,
   } = useCollectionDetail(id!)
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
@@ -182,6 +184,8 @@ export default function CollectionDetailScreen() {
         word={selectedWord}
         onChangeImage={openImageSelector}
         onDeleteWord={handleDeleteSelectedWord}
+        onReanalyzeWord={handleReanalyzeSelectedWord}
+        isReanalyzing={isReanalyzing}
       />
 
       {selectedWord && (

@@ -5,10 +5,15 @@ import {
   ThemeProvider,
 } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { Stack, useRouter } from 'expo-router'
+import {
+  ErrorBoundary as ExpoRouterErrorBoundary,
+  type ErrorBoundaryProps,
+  Stack,
+  useRouter,
+} from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Linking from 'expo-linking'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
 import { Sentry } from '@/lib/sentry'
@@ -20,10 +25,34 @@ import { useColorScheme } from 'react-native'
 import { SimpleAuthProvider } from '@/contexts/SimpleAuthProvider'
 import { AudioProvider } from '@/contexts/AudioContext'
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router'
+// Capture navigation-tree errors in Sentry while keeping Expo Router fallback UI.
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  const lastCapturedSignature = useRef<string | null>(null)
+
+  useEffect(() => {
+    const signature = `${error.name}:${error.message}:${error.stack ?? ''}`
+    if (lastCapturedSignature.current === signature) {
+      return
+    }
+
+    lastCapturedSignature.current = signature
+
+    Sentry.captureException(error, {
+      tags: {
+        operation: 'expoRouterErrorBoundary',
+        errorBoundary: 'rootLayout',
+      },
+      extra: {
+        message: error.message,
+        stack: error.stack,
+        stackPreview: error.stack?.split('\n').slice(0, 5).join('\n'),
+      },
+      fingerprint: ['root-layout-error-boundary', error.name, error.message],
+    })
+  }, [error])
+
+  return <ExpoRouterErrorBoundary error={error} retry={retry} />
+}
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()

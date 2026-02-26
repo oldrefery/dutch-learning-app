@@ -125,6 +125,16 @@ export function SimpleAuthProvider({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      Sentry.addBreadcrumb({
+        category: 'auth',
+        level: 'info',
+        message: '[SimpleAuthProvider] onAuthStateChange',
+        data: {
+          event,
+          hasSession: Boolean(session?.user?.id),
+        },
+      })
+
       // Fire initializeApp without blocking - this prevents setSession() from hanging
       if (event === 'SIGNED_OUT' || !session?.user?.id) {
         initializeApp() // Clear user data (fire and forget)

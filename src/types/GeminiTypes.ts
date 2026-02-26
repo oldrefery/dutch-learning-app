@@ -1,5 +1,6 @@
 // Types for Gemini AI word analysis
 import { ExpressionType } from './ExpressionTypes'
+import { WordRegister } from './database'
 
 export interface WordAnalysisRequest {
   word: string
@@ -46,6 +47,9 @@ export interface WordAnalysisResponse {
   is_expression?: boolean
   expression_type?: ExpressionType | null
 
+  // Register (formality level)
+  register?: WordRegister | null
+
   // Image URL
   image_url?: string
 
@@ -84,6 +88,7 @@ export interface GeminiAnalysisResult {
   preposition?: string | null
   is_expression?: boolean
   expression_type?: ExpressionType | null
+  register?: WordRegister | null
   image_url?: string
   confidence_score?: number
   analysis_notes?: string

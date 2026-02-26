@@ -1,6 +1,19 @@
 import { StyleSheet } from 'react-native'
 import { Colors } from '@/constants/Colors'
 
+// Styles for expandable notes section
+export const notesExpandableStyles = StyleSheet.create({
+  expandButton: {
+    marginTop: 8,
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
+  },
+  expandButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+})
+
 export const styles = StyleSheet.create({
   // Main container
   container: {
@@ -78,6 +91,21 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.neutral[600],
     fontWeight: '500',
+  },
+  // Register badge styles
+  registerFormalTag: {
+    borderColor: Colors.primary.DEFAULT,
+    backgroundColor: Colors.primary.light,
+  },
+  registerFormalText: {
+    color: Colors.primary.DEFAULT,
+  },
+  registerInformalTag: {
+    borderColor: Colors.warning.DEFAULT,
+    backgroundColor: Colors.warning.light,
+  },
+  registerInformalText: {
+    color: Colors.warning.DEFAULT,
   },
   separableInfo: {
     flexDirection: 'row',
@@ -286,6 +314,11 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.success.border,
   },
+  reanalyzeButton: {
+    backgroundColor: Colors.primary.light,
+    borderWidth: 1,
+    borderColor: Colors.primary.DEFAULT,
+  },
   actionButtonText: {
     fontSize: 16,
     fontWeight: '500',
@@ -294,6 +327,9 @@ export const styles = StyleSheet.create({
   deleteButtonText: {},
   saveButtonText: {
     color: Colors.success.DEFAULT,
+  },
+  reanalyzeButtonText: {
+    color: Colors.primary.DEFAULT,
   },
 
   // Status and progress info
