@@ -66,11 +66,11 @@ export default function ReviewScreen() {
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
 
-  // Get startReviewSession and reanalyzeWord from the store
-  const { startReviewSession, reanalyzeWord } = useApplicationStore(state => ({
-    startReviewSession: state.startReviewSession,
-    reanalyzeWord: state.reanalyzeWord,
-  }))
+  // Use separate selectors to avoid unstable object references with Zustand
+  const startReviewSession = useApplicationStore(
+    state => state.startReviewSession
+  )
+  const reanalyzeWord = useApplicationStore(state => state.reanalyzeWord)
 
   // Enable pull-to-refresh to also refresh review count (badge)
   const { refreshCount } = useReviewWordsCount()
