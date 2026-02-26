@@ -96,6 +96,61 @@ get_android_version_code() {
     node -p "require('${APP_CONFIG_FILE}').expo.android?.versionCode || 0"
 }
 
+# Function to get iOS bundle identifier
+get_ios_bundle_id() {
+    node -p "require('${APP_CONFIG_FILE}').expo.ios?.bundleIdentifier || ''"
+}
+
+# Function to get Android package name
+get_android_package_name() {
+    node -p "require('${APP_CONFIG_FILE}').expo.android?.package || ''"
+}
+
+# Function to persist build context for sourcemap upload
+write_build_context() {
+    local build_context_file=$1
+    local build_commit_sha=$2
+    local build_created_at=$3
+    local ios_built=$4
+    local android_built=$5
+
+    node -e "
+        const fs = require('fs');
+        const file = process.argv[1];
+        const context = {
+            version: process.argv[2],
+            buildNumber: process.argv[3],
+            iosBuildNumber: process.argv[4],
+            androidBuildNumber: process.argv[5],
+            platform: process.argv[6],
+            appConfigFile: process.argv[7],
+            commitSha: process.argv[8] || null,
+            createdAt: process.argv[9],
+            sentryDisableAutoUpload: process.argv[10] || '',
+            iosBundleId: process.argv[11],
+            androidBundleId: process.argv[12],
+            built: {
+                ios: process.argv[13] === 'true',
+                android: process.argv[14] === 'true'
+            }
+        };
+        fs.writeFileSync(file, JSON.stringify(context, null, 2) + '\n');
+    " "$build_context_file" \
+      "$NEW_VERSION" \
+      "$NEW_BUILD" \
+      "$NEW_BUILD" \
+      "$NEW_BUILD" \
+      "$PLATFORM" \
+      "$APP_CONFIG_FILE" \
+      "$build_commit_sha" \
+      "$build_created_at" \
+      "${SENTRY_DISABLE_AUTO_UPLOAD:-}" \
+      "$IOS_BUNDLE_ID" \
+      "$ANDROID_BUNDLE_ID" \
+      "$ios_built" \
+      "$android_built"
+}
+
 # Function to increment build numbers
 increment_build_numbers() {
     local current_ios_build=$1
@@ -138,10 +193,17 @@ update_version() {
 CURRENT_VERSION=$(get_current_version)
 CURRENT_IOS_BUILD=$(get_ios_build_number)
 CURRENT_ANDROID_BUILD=$(get_android_version_code)
+IOS_BUNDLE_ID=$(get_ios_bundle_id)
+ANDROID_BUNDLE_ID=$(get_android_package_name)
 
 echo -e "${BLUE}Current version: ${CURRENT_VERSION}${NC}"
 echo -e "${BLUE}Current iOS build number: ${CURRENT_IOS_BUILD}${NC}"
 echo -e "${BLUE}Current Android version code: ${CURRENT_ANDROID_BUILD}${NC}"
+if [[ "${SENTRY_DISABLE_AUTO_UPLOAD:-}" == "true" ]]; then
+    echo -e "${BLUE}Sentry auto-upload during bundling: disabled (manual sourcemap upload mode)${NC}"
+else
+    echo -e "${YELLOW}Sentry auto-upload during bundling: enabled (manual upload may duplicate artifacts)${NC}"
+fi
 
 # Ask about version increment
 echo ""
@@ -177,6 +239,11 @@ fi
 
 # Create builds directory if it doesn't exist
 mkdir -p builds
+BUILD_CONTEXT_FILE="builds/build-context.json"
+BUILD_COMMIT_SHA=$(git rev-parse HEAD 2>/dev/null || echo "")
+BUILD_CREATED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+IOS_BUILT="false"
+ANDROID_BUILT="false"
 
 echo ""
 echo -e "${BLUE}Building for platform(s): ${PLATFORM}${NC}"
@@ -188,6 +255,7 @@ if [[ "$PLATFORM" == "ios" || "$PLATFORM" == "both" ]]; then
 
     if EAS_SKIP_AUTO_FINGERPRINT=1 NODE_ENV=production npx -y eas-cli@latest build --platform ios --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.ipa" --non-interactive --json > builds/ios-build-metadata.json; then
         echo -e "${GREEN}✅ iOS build completed!${NC}"
+        IOS_BUILT="true"
     else
         echo -e "${RED}❌ iOS build failed!${NC}"
         exit 1
@@ -201,11 +269,16 @@ if [[ "$PLATFORM" == "android" || "$PLATFORM" == "both" ]]; then
 
     if EAS_SKIP_AUTO_FINGERPRINT=1 NODE_ENV=production npx -y eas-cli@latest build --platform android --profile production --local --output "builds/app-${NEW_VERSION}-${NEW_BUILD}.aab" --non-interactive --json > builds/android-build-metadata.json; then
         echo -e "${GREEN}✅ Android build completed!${NC}"
+        ANDROID_BUILT="true"
     else
         echo -e "${RED}❌ Android build failed!${NC}"
         exit 1
     fi
 fi
+
+# Save build context used later for sourcemap upload validation
+write_build_context "$BUILD_CONTEXT_FILE" "$BUILD_COMMIT_SHA" "$BUILD_CREATED_AT" "$IOS_BUILT" "$ANDROID_BUILT"
+echo -e "${GREEN}✓ Saved build context to ${BUILD_CONTEXT_FILE}${NC}"
 
 # Submit to stores if requested
 if [[ "$SUBMIT" == "true" ]]; then
