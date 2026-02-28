@@ -38,7 +38,7 @@ export const GlassHeaderBackground: React.FC<GlassHeaderBackgroundProps> = ({
           intensity={resolvedIntensity}
           fallbackColor={fallbackColor}
           style={StyleSheet.absoluteFill}
-          experimentalBlurMethod={'dimezisBlurView'}
+          blurMethod={'dimezisBlurView'}
         />
       )}
       <View

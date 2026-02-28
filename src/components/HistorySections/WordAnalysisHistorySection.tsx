@@ -39,7 +39,7 @@ export function WordAnalysisHistorySection({
           style={styles.sectionBlur}
           intensity={100}
           tint={colorScheme === 'dark' ? 'dark' : 'light'}
-          experimentalBlurMethod={'dimezisBlurView'}
+          blurMethod={'dimezisBlurView'}
         >
           <ViewThemed
             style={[
@@ -74,7 +74,7 @@ export function WordAnalysisHistorySection({
         style={styles.sectionBlur}
         intensity={100}
         tint={colorScheme === 'dark' ? 'dark' : 'light'}
-        experimentalBlurMethod={'dimezisBlurView'}
+        blurMethod={'dimezisBlurView'}
       >
         <ViewThemed
           style={[

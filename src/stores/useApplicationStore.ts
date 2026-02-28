@@ -17,7 +17,6 @@ export const useApplicationStore = create<ApplicationState>((set, get) => {
     reviewSession: null,
     reviewLoading: false,
     currentWord: null,
-    autoPlayPronunciation: false,
     error: null,
 
     // Actions
@@ -25,10 +24,5 @@ export const useApplicationStore = create<ApplicationState>((set, get) => {
     ...createWordActions(set, get),
     ...createCollectionActions(set, get),
     ...createReviewActions(set, get),
-
-    // Settings actions
-    setAutoPlayPronunciation: (enabled: boolean) => {
-      set({ autoPlayPronunciation: enabled })
-    },
   }
 })

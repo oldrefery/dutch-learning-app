@@ -2,7 +2,6 @@ import React from 'react'
 import {
   TextInput,
   ActivityIndicator,
-  useColorScheme,
   ActionSheetIOS,
   Platform,
   type ViewStyle,
@@ -10,6 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { AnalyzeButton } from './AnalyzeButton'
 import { CollectionSelector } from './CollectionSelector'
 import type { Collection } from '@/types/database'
@@ -100,7 +100,7 @@ export function CompactWordInput({
   onCollectionSelect,
   variant = 'default',
 }: CompactWordInputProps) {
-  const colorScheme = useColorScheme() ?? 'light'
+  const colorScheme = useNormalizedColorScheme()
   const styles = getStyles(colorScheme, variant)
 
   const handleCollectionPress = () => {

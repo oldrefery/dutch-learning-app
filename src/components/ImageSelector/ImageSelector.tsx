@@ -5,7 +5,6 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
-  useColorScheme,
   TextInput,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
@@ -16,6 +15,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { getImageSelectorStyles } from './styles'
 import type { ImageOption, ImageSelectorProps } from './types'
 import { Sentry } from '@/lib/sentry'
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 
 export default function ImageSelector({
   visible,
@@ -33,7 +33,7 @@ export default function ImageSelector({
   const [offset, setOffset] = useState(0)
   const [searchQuery, setSearchQuery] = useState(englishTranslation)
   const prevEnglishTranslation = useRef(englishTranslation)
-  const colorScheme = useColorScheme() ?? 'light'
+  const colorScheme = useNormalizedColorScheme()
   const styles = getImageSelectorStyles(colorScheme)
 
   const loadImages = useCallback(async () => {

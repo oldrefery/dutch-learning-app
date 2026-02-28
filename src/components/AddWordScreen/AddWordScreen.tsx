@@ -345,7 +345,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
               right: 0,
               bottom: 0,
             }}
-            experimentalBlurMethod={'dimezisBlurView'}
+            blurMethod={'dimezisBlurView'}
           />
         )}
         <View

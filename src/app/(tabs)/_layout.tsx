@@ -1,17 +1,10 @@
 import React, { useEffect, useMemo, useState, ComponentProps } from 'react'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
-import {
-  NativeTabs,
-  Icon,
-  Label,
-  Badge,
-  VectorIcon,
-} from 'expo-router/unstable-native-tabs'
+import { NativeTabs } from 'expo-router/unstable-native-tabs'
 import { router } from 'expo-router'
 import {
   ActivityIndicator,
   View,
-  useColorScheme,
   StyleSheet,
   Platform,
   PlatformColor,
@@ -22,6 +15,7 @@ import * as Haptics from 'expo-haptics'
 
 import { Colors } from '@/constants/Colors'
 import { useClientOnlyValue } from '@/components/useClientOnlyValue'
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { supabase } from '@/lib/supabaseClient'
 import { ROUTES } from '@/constants/Routes'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
@@ -35,7 +29,7 @@ type TabTriggerProps = ComponentProps<typeof NativeTabs.Trigger> & {
   testID?: string
 }
 
-type BadgeWithStyleProps = ComponentProps<typeof Badge> & {
+type BadgeWithStyleProps = ComponentProps<typeof NativeTabs.Trigger.Badge> & {
   style?: ViewStyle | ViewStyle[]
 }
 
@@ -47,10 +41,11 @@ type NativeTabsLabelStyle = {
 }
 
 const TabTrigger = NativeTabs.Trigger as React.ComponentType<TabTriggerProps>
-const StyledBadge = Badge as React.ComponentType<BadgeWithStyleProps>
+const StyledBadge = NativeTabs.Trigger
+  .Badge as React.ComponentType<BadgeWithStyleProps>
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme()
+  const colorScheme = useNormalizedColorScheme()
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
   // Get review words count for badge
@@ -223,11 +218,15 @@ export default function TabLayout() {
         testID="tab-collections"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
       >
-        <Label>Collections</Label>
+        <NativeTabs.Trigger.Label>Collections</NativeTabs.Trigger.Label>
         {Platform.OS === 'ios' ? (
-          <Icon sf="house.fill" />
+          <NativeTabs.Trigger.Icon sf="house.fill" />
         ) : (
-          <Icon src={<VectorIcon family={FontAwesome} name="home" />} />
+          <NativeTabs.Trigger.Icon
+            src={
+              <NativeTabs.Trigger.VectorIcon family={FontAwesome} name="home" />
+            }
+          />
         )}
       </TabTrigger>
 
@@ -237,11 +236,18 @@ export default function TabLayout() {
         testID="tab-history"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
       >
-        <Label>History</Label>
+        <NativeTabs.Trigger.Label>History</NativeTabs.Trigger.Label>
         {Platform.OS === 'ios' ? (
-          <Icon sf="clock.fill" />
+          <NativeTabs.Trigger.Icon sf="clock.fill" />
         ) : (
-          <Icon src={<VectorIcon family={FontAwesome} name="history" />} />
+          <NativeTabs.Trigger.Icon
+            src={
+              <NativeTabs.Trigger.VectorIcon
+                family={FontAwesome}
+                name="history"
+              />
+            }
+          />
         )}
       </TabTrigger>
 
@@ -250,11 +256,15 @@ export default function TabLayout() {
         testID="tab-settings"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
       >
-        <Label>Settings</Label>
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
         {Platform.OS === 'ios' ? (
-          <Icon sf="gear" />
+          <NativeTabs.Trigger.Icon sf="gear" />
         ) : (
-          <Icon src={<VectorIcon family={FontAwesome} name="cog" />} />
+          <NativeTabs.Trigger.Icon
+            src={
+              <NativeTabs.Trigger.VectorIcon family={FontAwesome} name="cog" />
+            }
+          />
         )}
       </TabTrigger>
 
@@ -264,7 +274,7 @@ export default function TabLayout() {
         testID="tab-review"
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
       >
-        <Label>Review</Label>
+        <NativeTabs.Trigger.Label>Review</NativeTabs.Trigger.Label>
         {/* Smart badge showing review words count */}
         {reviewWordsCount > 0 && (
           <StyledBadge
@@ -287,10 +297,15 @@ export default function TabLayout() {
           </StyledBadge>
         )}
         {Platform.OS === 'ios' ? (
-          <Icon sf="brain.head.profile" />
+          <NativeTabs.Trigger.Icon sf="brain.head.profile" />
         ) : (
-          <Icon
-            src={<VectorIcon family={FontAwesome} name="graduation-cap" />}
+          <NativeTabs.Trigger.Icon
+            src={
+              <NativeTabs.Trigger.VectorIcon
+                family={FontAwesome}
+                name="graduation-cap"
+              />
+            }
           />
         )}
       </TabTrigger>
@@ -301,11 +316,18 @@ export default function TabLayout() {
         hidden={userAccessLevel !== 'full_access'}
         onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
       >
-        <Label>Add Word</Label>
+        <NativeTabs.Trigger.Label>Add Word</NativeTabs.Trigger.Label>
         {Platform.OS === 'ios' ? (
-          <Icon sf="plus.circle.fill" />
+          <NativeTabs.Trigger.Icon sf="plus.circle.fill" />
         ) : (
-          <Icon src={<VectorIcon family={FontAwesome} name="plus-circle" />} />
+          <NativeTabs.Trigger.Icon
+            src={
+              <NativeTabs.Trigger.VectorIcon
+                family={FontAwesome}
+                name="plus-circle"
+              />
+            }
+          />
         )}
       </TabTrigger>
     </NativeTabs>

@@ -4,7 +4,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { Colors } from '@/constants/Colors'
-import { useApplicationStore } from '@/stores/useApplicationStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 import type { ReviewCardProps } from './types'
 
 interface CardFrontProps extends ReviewCardProps {
@@ -19,7 +19,7 @@ export function CardFront({
   onPlayPronunciation,
   pronunciationRef,
 }: CardFrontProps) {
-  const autoPlayPronunciation = useApplicationStore(
+  const autoPlayPronunciation = useSettingsStore(
     state => state.autoPlayPronunciation
   )
   const hasAutoPlayedRef = useRef(false)

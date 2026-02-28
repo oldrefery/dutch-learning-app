@@ -2,11 +2,42 @@
  * Centralized color system with semantic naming
  * Following best practices for design system color management
  *
- * TODO: Consider platform-specific color variants in future updates
- * - iOS: Current implementation (#1C1C1E background)
- * - Android: Could use Material Design (#121212 background)
- * - Implementation: Platform.select() for dark theme backgrounds
+ * SDK 55+: Platform-native colors available via expo-router Color API
+ * - iOS: System colors (Color.ios.*)
+ * - Android: Material 3 dynamic colors (Color.android.dynamic.*)
  */
+import { Color } from 'expo-router'
+
+/**
+ * Platform-native dynamic colors (SDK 55+)
+ * These colors automatically adapt to system theme and user preferences
+ */
+export const PlatformColors = {
+  // Material 3 dynamic colors for Android
+  android: {
+    primary: Color.android.dynamic.primary,
+    onPrimary: Color.android.dynamic.onPrimary,
+    secondary: Color.android.dynamic.secondary,
+    onSecondary: Color.android.dynamic.onSecondary,
+    surface: Color.android.dynamic.surface,
+    onSurface: Color.android.dynamic.onSurface,
+    background: Color.android.dynamic.background,
+    onBackground: Color.android.dynamic.onBackground,
+    error: Color.android.dynamic.error,
+    onError: Color.android.dynamic.onError,
+  },
+  // iOS system colors
+  ios: {
+    label: Color.ios.label,
+    secondaryLabel: Color.ios.secondaryLabel,
+    tertiaryLabel: Color.ios.tertiaryLabel,
+    systemBackground: Color.ios.systemBackground,
+    secondarySystemBackground: Color.ios.secondarySystemBackground,
+    systemBlue: Color.ios.systemBlue,
+    systemRed: Color.ios.systemRed,
+    systemGreen: Color.ios.systemGreen,
+  },
+}
 
 const RGBA_BLACK_05 = 'rgba(0, 0, 0, 0.05)'
 const RGBA_WHITE_05 = 'rgba(255, 255, 255, 0.05)'

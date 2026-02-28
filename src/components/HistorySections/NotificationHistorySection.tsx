@@ -61,7 +61,7 @@ export function NotificationHistorySection() {
           style={styles.sectionBlur}
           intensity={100}
           tint={colorScheme === 'dark' ? 'dark' : 'light'}
-          experimentalBlurMethod={'dimezisBlurView'}
+          blurMethod={'dimezisBlurView'}
         >
           <ViewThemed
             style={[
@@ -96,7 +96,7 @@ export function NotificationHistorySection() {
         style={styles.sectionBlur}
         intensity={100}
         tint={colorScheme === 'dark' ? 'dark' : 'light'}
-        experimentalBlurMethod={'dimezisBlurView'}
+        blurMethod={'dimezisBlurView'}
       >
         <ViewThemed
           style={[

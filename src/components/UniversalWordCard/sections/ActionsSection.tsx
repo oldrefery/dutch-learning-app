@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  TouchableOpacity,
-  Alert,
-  useColorScheme,
-  View,
-  ActivityIndicator,
-} from 'react-native'
+import { TouchableOpacity, Alert, View, ActivityIndicator } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
@@ -15,6 +9,7 @@ import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
 import type { WordCardData, WordCardActionConfig } from '../types'
 import { isWordFromDB } from '../types'
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 
 // Delete the button component with gesture blocking
 interface DeleteButtonProps {
@@ -87,7 +82,7 @@ interface ActionsSectionProps {
 }
 
 export function ActionsSection({ word, actions }: ActionsSectionProps) {
-  const colorScheme = useColorScheme() ?? 'light'
+  const colorScheme = useNormalizedColorScheme()
   const hasAnyActions =
     actions.showDeleteButton ||
     actions.showSaveButton ||

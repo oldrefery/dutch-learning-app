@@ -62,7 +62,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
             intensity={intensity}
             fallbackColor={fallbackColor}
             style={StyleSheet.absoluteFill}
-            experimentalBlurMethod={'dimezisBlurView'}
+            blurMethod={'dimezisBlurView'}
           />
         ))}
       {withHairline && (
