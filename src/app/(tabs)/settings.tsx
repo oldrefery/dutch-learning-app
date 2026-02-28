@@ -25,6 +25,7 @@ import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Sentry } from '@/lib/sentry'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useSettingsStore } from '@/stores/useSettingsStore'
+import { UpdateStatusBadge } from '@/components/UpdateStatusBadge'
 import { syncManager } from '@/services/syncManager'
 import { wordRepository } from '@/db/wordRepository'
 
@@ -453,6 +454,7 @@ export default function SettingsScreen() {
                 >
                   Version {getAppVersion()}
                 </TextThemed>
+                <UpdateStatusBadge />
               </ViewThemed>
 
               <ViewThemed

@@ -49,6 +49,18 @@ jest.mock('expo-font', () => ({
   isLoaded: jest.fn(() => true),
 }))
 
+// Mock expo-updates
+jest.mock('expo-updates', () => ({
+  isEnabled: false,
+  isEmbeddedLaunch: true,
+  updateId: null,
+  channel: null,
+  runtimeVersion: null,
+  checkForUpdateAsync: jest.fn().mockResolvedValue({ isAvailable: false }),
+  fetchUpdateAsync: jest.fn().mockResolvedValue({ isNew: false }),
+  reloadAsync: jest.fn(),
+}))
+
 // Mock expo-crypto
 jest.mock('expo-crypto', () => ({
   digestStringAsync: jest.fn(),

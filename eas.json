@@ -7,6 +7,7 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "channel": "development",
       "ios": {
         "simulator": false,
         "buildConfiguration": "Debug"
@@ -17,12 +18,14 @@
     },
     "preview": {
       "distribution": "internal",
+      "channel": "preview",
       "ios": {
         "simulator": true
       }
     },
     "production": {
       "autoIncrement": false,
+      "channel": "production",
       "ios": {
         "simulator": false
       },

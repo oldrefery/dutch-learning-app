@@ -48,8 +48,12 @@
       "output": "static",
       "favicon": "./src/assets/images/favicon.png"
     },
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
     "plugins": [
       "expo-router",
+      "expo-updates",
       "expo-audio",
       "expo-apple-authentication",
       [
