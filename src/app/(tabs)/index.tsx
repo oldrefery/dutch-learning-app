@@ -342,6 +342,7 @@ export default function CollectionsScreen() {
                       style={{ backgroundColor: Colors.transparent.clear }}
                       contentContainerStyle={{
                         backgroundColor: Colors.transparent.clear,
+                        paddingBottom: insets.bottom,
                       }}
                       renderItem={({ item, index }) => {
                         // Skip rendering if collection data is invalid

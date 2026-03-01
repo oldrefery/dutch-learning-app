@@ -416,13 +416,15 @@ export default function SettingsScreen() {
         styles.container,
         {
           paddingTop: insets.top,
-          paddingBottom: insets.bottom, // Add extra space for tab bar
         },
       ]}
     >
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: insets.bottom },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <ViewThemed style={styles.aboutSectionContainer}>

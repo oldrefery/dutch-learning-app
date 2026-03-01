@@ -309,7 +309,6 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         addWordScreenStyles.container,
         {
           paddingTop: insets.top,
-          paddingBottom: insets.bottom,
         },
       ]}
     >
