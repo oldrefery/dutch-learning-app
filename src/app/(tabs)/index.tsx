@@ -238,7 +238,6 @@ export default function CollectionsScreen() {
           styles.container,
           {
             paddingTop: insets.top,
-            paddingBottom: insets.bottom, // Add extra space for tab bar
           },
         ]}
       >
@@ -281,7 +280,6 @@ export default function CollectionsScreen() {
         styles.container,
         {
           paddingTop: insets.top,
-          paddingBottom: insets.bottom + 80, // Add extra space for tab bar
         },
       ]}
     >

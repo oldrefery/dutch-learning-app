@@ -62,7 +62,6 @@ export default function HistoryScreen() {
           styles.container,
           {
             paddingTop: insets.top,
-            paddingBottom: insets.bottom + 80,
           },
         ]}
       >

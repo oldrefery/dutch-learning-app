@@ -333,10 +333,7 @@ export default function ReviewScreen() {
   return (
     <ViewThemed
       testID="screen-review"
-      style={[
-        reviewScreenStyles.container,
-        { paddingBottom: insets.bottom + 60, paddingTop: insets.top },
-      ]}
+      style={[reviewScreenStyles.container, { paddingTop: insets.top }]}
     >
       <ViewThemed style={reviewScreenStyles.progressContainer}>
         <TextThemed
@@ -352,7 +349,12 @@ export default function ReviewScreen() {
         {renderCard()}
       </ViewThemed>
 
-      <ViewThemed style={reviewScreenStyles.buttonsContainer}>
+      <ViewThemed
+        style={[
+          reviewScreenStyles.buttonsContainer,
+          { paddingBottom: insets.bottom + 24 },
+        ]}
+      >
         <TouchableOpacity
           testID="srs-again-button"
           style={[reviewScreenStyles.srsButton, reviewScreenStyles.againButton]}

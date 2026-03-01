@@ -416,7 +416,7 @@ export default function SettingsScreen() {
         styles.container,
         {
           paddingTop: insets.top,
-          paddingBottom: insets.bottom + 80, // Add extra space for tab bar
+          paddingBottom: insets.bottom, // Add extra space for tab bar
         },
       ]}
     >
