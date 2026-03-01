@@ -183,8 +183,8 @@ export default function TabLayout() {
     [colorScheme]
   )
 
-  // Show loading while checking authentication
-  if (isAuthenticated === null) {
+  // Show loading while checking authentication and user access level
+  if (isAuthenticated === null || userAccessLevel === null) {
     return (
       <View
         style={{
