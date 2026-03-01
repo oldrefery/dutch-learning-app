@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useState, useRef } from 'react'
+import { AppState, type AppStateStatus } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { syncManager, type SyncResult } from '@/services/syncManager'
@@ -34,6 +35,7 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
   const syncIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const unsubscribeNetworkRef = useRef<(() => void) | null>(null)
   const unsubscribeSyncRef = useRef<(() => void) | null>(null)
+  const appStateRef = useRef<AppStateStatus>(AppState.currentState)
 
   const initializeSync = useCallback(async () => {
     try {
@@ -47,6 +49,11 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
   const performSync = useCallback(async () => {
     if (!currentUserId) {
       console.log('[Sync] No user logged in, skipping sync')
+      return
+    }
+
+    if (AppState.currentState !== 'active') {
+      console.log('[Sync] App not active, skipping sync')
       return
     }
 
@@ -74,7 +81,7 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
 
     unsubscribeNetworkRef.current = subscribeToNetworkChanges(
       async (isConnected: boolean) => {
-        if (isConnected) {
+        if (isConnected && AppState.currentState === 'active') {
           console.log('[Sync] Network reconnected, triggering sync')
           await performSync()
         }
@@ -82,8 +89,17 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
     )
   }, [autoSyncOnNetworkChange, performSync])
 
+  const clearPeriodicSync = useCallback(() => {
+    if (syncIntervalRef.current) {
+      clearInterval(syncIntervalRef.current)
+      syncIntervalRef.current = null
+    }
+  }, [])
+
   const setupPeriodicSync = useCallback(() => {
     if (!syncIntervalMs || !currentUserId) return
+
+    clearPeriodicSync()
 
     syncIntervalRef.current = setInterval(() => {
       performSync()
@@ -92,7 +108,7 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
     console.log(
       `[Sync] Periodic sync set up with interval: ${syncIntervalMs}ms`
     )
-  }, [syncIntervalMs, performSync, currentUserId])
+  }, [syncIntervalMs, performSync, currentUserId, clearPeriodicSync])
 
   const setupSyncStatusListener = useCallback(() => {
     unsubscribeSyncRef.current = syncManager.subscribeSyncStatus(
@@ -120,11 +136,42 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
       if (unsubscribeSyncRef.current) {
         unsubscribeSyncRef.current()
       }
-      if (syncIntervalRef.current) {
-        clearInterval(syncIntervalRef.current)
-      }
+      clearPeriodicSync()
     }
-  }, [setupSyncStatusListener, setupSyncOnNetworkChange, setupPeriodicSync])
+  }, [
+    setupSyncStatusListener,
+    setupSyncOnNetworkChange,
+    setupPeriodicSync,
+    clearPeriodicSync,
+  ])
+
+  // Pause/resume sync based on app state (background/foreground)
+  useEffect(() => {
+    const subscription = AppState.addEventListener(
+      'change',
+      (nextState: AppStateStatus) => {
+        const prevState = appStateRef.current
+
+        if (prevState === 'active' && nextState.match(/inactive|background/)) {
+          // App going to background - pause periodic sync
+          clearPeriodicSync()
+          console.log('[Sync] Paused periodic sync (app backgrounded)')
+        } else if (
+          prevState.match(/inactive|background/) &&
+          nextState === 'active'
+        ) {
+          // App coming to foreground - resume periodic sync and trigger sync
+          setupPeriodicSync()
+          performSync()
+          console.log('[Sync] Resumed periodic sync (app foregrounded)')
+        }
+
+        appStateRef.current = nextState
+      }
+    )
+
+    return () => subscription.remove()
+  }, [clearPeriodicSync, setupPeriodicSync, performSync])
 
   // Sync on app focus
   useFocusEffect(

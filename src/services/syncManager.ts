@@ -67,6 +67,24 @@ interface SupabaseSessionLike {
   expires_at?: number | null
 }
 
+/**
+ * Parses a JSON field that may come as a string from Supabase or already parsed.
+ * Returns the fallback if parsing fails or value is null/undefined.
+ */
+function parseJsonField<T>(value: unknown, fallback: T): T {
+  if (value === null || value === undefined) {
+    return fallback
+  }
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value) as T
+    } catch {
+      return fallback
+    }
+  }
+  return value as T
+}
+
 interface SupabaseWordPayload {
   word_id: string
   user_id: string
@@ -278,6 +296,11 @@ export class SyncManager {
         )
       } else if (error instanceof ControlledSyncError) {
         console.warn('[Sync] Controlled sync failure:', errorMessage)
+      } else if (__DEV__) {
+        console.error(
+          '[Sync] Error in development (not reported to Sentry):',
+          error
+        )
       } else if (!this.isSentryHandledError(error)) {
         const syncErrorType = this.categorizeSyncError(error)
         console.error('[Sync] Error during sync:', error)
@@ -522,8 +545,15 @@ export class SyncManager {
   }
 
   private isNetworkErrorMessage(message: string): boolean {
+    const lowerMessage = message.toLowerCase()
     return (
-      message.includes('Network request failed') || message.includes('Network')
+      lowerMessage.includes('network request failed') ||
+      lowerMessage.includes('network error') ||
+      lowerMessage.includes('fetch failed') ||
+      lowerMessage.includes('timeout') ||
+      lowerMessage.includes('econnrefused') ||
+      lowerMessage.includes('enotfound') ||
+      lowerMessage.includes('enetunreach')
     )
   }
 
@@ -627,26 +657,11 @@ export class SyncManager {
         interval_days: word.interval_days ?? 1,
         repetition_count: word.repetition_count ?? 0,
         easiness_factor: word.easiness_factor ?? 2.5,
-        translations:
-          typeof word.translations === 'string'
-            ? JSON.parse(word.translations)
-            : word.translations || [],
-        examples:
-          typeof word.examples === 'string'
-            ? JSON.parse(word.examples)
-            : word.examples,
-        synonyms:
-          typeof word.synonyms === 'string'
-            ? JSON.parse(word.synonyms)
-            : word.synonyms || [],
-        antonyms:
-          typeof word.antonyms === 'string'
-            ? JSON.parse(word.antonyms)
-            : word.antonyms || [],
-        conjugation:
-          typeof word.conjugation === 'string'
-            ? JSON.parse(word.conjugation)
-            : word.conjugation,
+        translations: parseJsonField(word.translations, { en: [] }),
+        examples: parseJsonField(word.examples, null),
+        synonyms: parseJsonField(word.synonyms, []),
+        antonyms: parseJsonField(word.antonyms, []),
+        conjugation: parseJsonField(word.conjugation, null),
       }
     })
 
@@ -910,10 +925,7 @@ export class SyncManager {
     const wordsToSync = uniqueWords.map(word =>
       this.mapWordToSupabasePayload(word, userId)
     )
-    const error = await this.upsertWordsWithRegisterFallback(
-      userId,
-      wordsToSync
-    )
+    const error = await this.upsertWordsWithRegisterFallback(wordsToSync)
 
     if (!error) {
       const wordIds = uniqueWords.map(w => w.word_id).filter(Boolean)
@@ -1057,7 +1069,7 @@ export class SyncManager {
         continue
       }
 
-      const upsertError = await this.upsertWordsWithRegisterFallback(userId, [
+      const upsertError = await this.upsertWordsWithRegisterFallback([
         this.mapWordToSupabasePayload(word, userId),
       ])
 
@@ -1115,7 +1127,6 @@ export class SyncManager {
   }
 
   private async upsertWordsWithRegisterFallback(
-    userId: string,
     payloads: SupabaseWordPayload[]
   ): Promise<SupabaseLikeError | null> {
     const includeRegister = this.wordsRegisterColumnAvailable !== false
@@ -1139,23 +1150,6 @@ export class SyncManager {
     this.wordsRegisterColumnAvailable = false
     console.warn(
       '[Sync] Remote words table has no register column. Retrying sync without register field.'
-    )
-    Sentry.captureMessage(
-      'Sync fallback enabled: register column missing on remote words table',
-      {
-        level: 'warning',
-        tags: {
-          module: 'syncManager',
-          operation: 'pushWordsToSupabase',
-          sync_error_type: 'schema_mismatch',
-        },
-        extra: {
-          userId,
-          wordsCount: payloads.length,
-          missingColumn: 'register',
-        },
-        fingerprint: ['sync-schema-mismatch', 'words-register-column'],
-      }
     )
 
     const fallbackPayloads = payloads.map(payload =>

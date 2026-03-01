@@ -62,13 +62,15 @@ export default function HistoryScreen() {
           styles.container,
           {
             paddingTop: insets.top,
-            paddingBottom: insets.bottom + 80,
           },
         ]}
       >
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.content}
+          contentContainerStyle={[
+            styles.content,
+            { paddingBottom: insets.bottom },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <WordAnalysisHistorySection onWordPress={handleWordPress} />
