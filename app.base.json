@@ -3,12 +3,11 @@
     "name": "De Woordenaar",
     "slug": "dutch-learning-app",
     "description": "AI-powered Dutch vocabulary learning app with spaced repetition system",
-    "version": "1.9.5",
+    "version": "1.10.0",
     "orientation": "portrait",
     "icon": "./src/assets/icons/ios-light.png",
     "scheme": "dutchlearning",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "image": "./src/assets/icons/splash-icon-light.png",
       "resizeMode": "contain",
@@ -22,7 +21,7 @@
       "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "com.oldrefery.dutch-learning-app",
-      "buildNumber": "67",
+      "buildNumber": "68",
       "icon": "./src/assets/icons/ios-light.png",
       "infoPlist": {
         "UIBackgroundModes": ["audio"],
@@ -31,12 +30,11 @@
       "appleTeamId": "7FQ395U52U"
     },
     "android": {
-      "versionCode": 67,
+      "versionCode": 68,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
@@ -50,8 +48,12 @@
       "output": "static",
       "favicon": "./src/assets/images/favicon.png"
     },
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
     "plugins": [
       "expo-router",
+      "expo-updates",
       "expo-audio",
       "expo-apple-authentication",
       [
@@ -77,8 +79,25 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "buildReactNativeFromSource": true,
+            "useHermesV1": true
+          },
+          "android": {
+            "buildReactNativeFromSource": true,
+            "useHermesV1": true
+          }
+        }
       ]
     ],
+    "updates": {
+      "url": "https://u.expo.dev/d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
+      "enableBsdiffPatchSupport": true
+    },
     "extra": {
       "router": {},
       "eas": {

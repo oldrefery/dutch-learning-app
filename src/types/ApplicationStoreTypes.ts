@@ -31,9 +31,6 @@ export interface ApplicationState {
   reviewLoading: boolean
   currentWord: Word | null
 
-  // Settings
-  autoPlayPronunciation: boolean
-
   // Errors
   error: AppError | null
 
@@ -96,9 +93,6 @@ export interface ApplicationState {
   // Error handling
   setError: (error: AppError) => void
   clearError: () => void
-
-  // Settings actions
-  setAutoPlayPronunciation: (enabled: boolean) => void
 }
 
 export interface ReviewAssessment {

@@ -1,14 +1,17 @@
 name: E2E Tests
 
+# Disabled: uses EAS builds which consume the 15 free builds/month quota
+# To re-enable, uncomment the triggers below
 on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  #     - develop
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - develop
 
 concurrency:
   group: e2e-${{ github.ref }}

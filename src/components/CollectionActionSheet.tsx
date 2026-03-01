@@ -1,15 +1,10 @@
 import React from 'react'
-import {
-  Modal,
-  TouchableOpacity,
-  useColorScheme,
-  StyleSheet,
-  Platform,
-} from 'react-native'
+import { Modal, TouchableOpacity, StyleSheet, Platform } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { SymbolView } from 'expo-symbols'
 import { TextThemed, ViewThemed, useThemeColor } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 
 interface CollectionActionSheetProps {
   visible: boolean
@@ -74,7 +69,7 @@ export default function CollectionActionSheet({
   onCopyCode,
   onStopSharing,
 }: CollectionActionSheetProps) {
-  const colorScheme = useColorScheme() ?? 'light'
+  const colorScheme = useNormalizedColorScheme()
   const textColor = useThemeColor({}, 'text')
   const textSecondaryColor = useThemeColor({}, 'textSecondary')
   const borderColor = useThemeColor({}, 'border')

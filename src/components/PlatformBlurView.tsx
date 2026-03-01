@@ -12,7 +12,7 @@ export function PlatformBlurView({
   children,
   ...props
 }: PlatformBlurViewProps) {
-  const { intensity, tint, experimentalBlurMethod, ...viewProps } = props
+  const { intensity, tint, blurMethod, ...viewProps } = props
 
   if (Platform.OS === 'android') {
     return (
@@ -33,7 +33,7 @@ export function PlatformBlurView({
       {...viewProps}
       intensity={intensity}
       tint={tint}
-      experimentalBlurMethod={experimentalBlurMethod}
+      blurMethod={blurMethod}
       style={style}
     >
       {children}

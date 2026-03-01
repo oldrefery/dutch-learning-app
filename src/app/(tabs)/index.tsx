@@ -313,7 +313,7 @@ export default function CollectionsScreen() {
               style={styles.collectionsListBlur}
               intensity={100}
               tint={colorScheme === 'dark' ? 'dark' : 'light'}
-              experimentalBlurMethod={'dimezisBlurView'}
+              blurMethod={'dimezisBlurView'}
             >
               <ViewThemed
                 style={[

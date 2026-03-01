@@ -36,7 +36,7 @@ export const StatsCard = ({
         style={styles.statsBlur}
         intensity={100}
         tint={colorScheme === 'dark' ? 'dark' : 'light'}
-        experimentalBlurMethod={'dimezisBlurView'}
+        blurMethod={'dimezisBlurView'}
       >
         <ViewThemed
           style={[

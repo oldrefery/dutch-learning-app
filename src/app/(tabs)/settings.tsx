@@ -24,6 +24,8 @@ import { ROUTES } from '@/constants/Routes'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import { Sentry } from '@/lib/sentry'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
+import { UpdateStatusBadge } from '@/components/UpdateStatusBadge'
 import { syncManager } from '@/services/syncManager'
 import { wordRepository } from '@/db/wordRepository'
 
@@ -345,12 +347,8 @@ export default function SettingsScreen() {
   const [user, setUser] = useState<User | null>(null)
   const [isSyncing, setIsSyncing] = useState(false)
   const { signOut, loading: authLoading } = useSimpleAuth()
-  const {
-    userAccessLevel,
-    currentUserId,
-    autoPlayPronunciation,
-    setAutoPlayPronunciation,
-  } = useApplicationStore()
+  const { userAccessLevel, currentUserId } = useApplicationStore()
+  const { autoPlayPronunciation, setAutoPlayPronunciation } = useSettingsStore()
 
   const isDarkMode = colorScheme === 'dark'
   const blurTint = getBlurTint(isDarkMode)
@@ -432,7 +430,7 @@ export default function SettingsScreen() {
             style={styles.aboutBlur}
             intensity={100}
             tint={blurTint}
-            experimentalBlurMethod={'dimezisBlurView'}
+            blurMethod={'dimezisBlurView'}
           >
             <ViewThemed style={[styles.aboutSection, sectionSurfaceStyle]}>
               <ViewThemed
@@ -456,6 +454,7 @@ export default function SettingsScreen() {
                 >
                   Version {getAppVersion()}
                 </TextThemed>
+                <UpdateStatusBadge />
               </ViewThemed>
 
               <ViewThemed
@@ -578,7 +577,7 @@ export default function SettingsScreen() {
             style={styles.userInfoBlur}
             intensity={100}
             tint={blurTint}
-            experimentalBlurMethod={'dimezisBlurView'}
+            blurMethod={'dimezisBlurView'}
           >
             <ViewThemed style={[styles.userInfoSection, sectionSurfaceStyle]}>
               <ViewThemed
@@ -641,7 +640,7 @@ export default function SettingsScreen() {
             style={styles.preferencesBlur}
             intensity={100}
             tint={blurTint}
-            experimentalBlurMethod={'dimezisBlurView'}
+            blurMethod={'dimezisBlurView'}
           >
             <ViewThemed
               style={[styles.preferencesSection, sectionSurfaceStyle]}
@@ -697,7 +696,7 @@ export default function SettingsScreen() {
             style={styles.accountBlur}
             intensity={100}
             tint={blurTint}
-            experimentalBlurMethod={'dimezisBlurView'}
+            blurMethod={'dimezisBlurView'}
           >
             <ViewThemed style={[styles.accountSection, sectionSurfaceStyle]}>
               <TextThemed style={styles.sectionTitle}>Account</TextThemed>

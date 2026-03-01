@@ -89,10 +89,11 @@ export class CollectionRepository {
     const db = await getDatabase()
 
     try {
-      const result = await db.getFirstAsync<LocalCollection>(
-        `SELECT * FROM collections WHERE collection_id = ? AND user_id = ?`,
-        [collectionId, userId]
-      )
+      // Using new tagged template literals API (SDK 55+)
+      const result = await db.sql<LocalCollection>`
+        SELECT * FROM collections
+        WHERE collection_id = ${collectionId} AND user_id = ${userId}
+      `.first()
       return result || null
     } catch (error) {
       console.error('[DB] Error retrieving collection:', error)
@@ -104,9 +105,8 @@ export class CollectionRepository {
     const db = await getDatabase()
 
     try {
-      await db.runAsync(`DELETE FROM collections WHERE collection_id = ?`, [
-        collectionId,
-      ])
+      // Using new tagged template literals API (SDK 55+)
+      await db.sql`DELETE FROM collections WHERE collection_id = ${collectionId}`
       console.log(`[DB] Deleted collection ${collectionId}`)
     } catch (error) {
       console.error('[DB] Error deleting collection:', error)

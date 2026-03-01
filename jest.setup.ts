@@ -4,6 +4,13 @@
  * Used for global mocks, configuration, and setup
  */
 
+// ============ TESTING LIBRARY MATCHERS ============
+// Built-in matchers from @testing-library/react-native v13+
+// Replaces deprecated @testing-library/jest-native
+import * as matchers from '@testing-library/react-native/matchers'
+
+expect.extend(matchers)
+
 // ============ ENVIRONMENT VARIABLES ============
 
 process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
@@ -42,6 +49,34 @@ jest.mock('expo-font', () => ({
   isLoaded: jest.fn(() => true),
 }))
 
+// Mock expo-updates
+jest.mock('expo-updates', () => ({
+  isEnabled: false,
+  isEmbeddedLaunch: true,
+  updateId: null,
+  channel: null,
+  runtimeVersion: null,
+  checkForUpdateAsync: jest.fn().mockResolvedValue({ isAvailable: false }),
+  fetchUpdateAsync: jest.fn().mockResolvedValue({ isNew: false }),
+  reloadAsync: jest.fn(),
+}))
+
+// Mock expo-crypto
+jest.mock('expo-crypto', () => ({
+  digestStringAsync: jest.fn(),
+  getRandomBytesAsync: jest.fn(),
+  randomUUID: () =>
+    'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = (Math.random() * 16) | 0
+      const v = c === 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    }),
+  CryptoDigestAlgorithm: {
+    SHA256: 'SHA-256',
+    SHA512: 'SHA-512',
+  },
+}))
+
 // Note: expo-notifications is not installed, skip mocking for now
 
 // Mock expo-router
@@ -54,6 +89,33 @@ jest.mock('expo-router', () => ({
   })),
   useLocalSearchParams: jest.fn(() => ({})),
   usePathname: jest.fn(() => '/'),
+  // SDK 55+ Color API mock
+  Color: {
+    android: {
+      dynamic: {
+        primary: '#6200EE',
+        onPrimary: '#FFFFFF',
+        secondary: '#03DAC6',
+        onSecondary: '#000000',
+        surface: '#FFFFFF',
+        onSurface: '#000000',
+        background: '#FFFFFF',
+        onBackground: '#000000',
+        error: '#B00020',
+        onError: '#FFFFFF',
+      },
+    },
+    ios: {
+      label: '#000000',
+      secondaryLabel: '#3C3C43',
+      tertiaryLabel: '#3C3C4399',
+      systemBackground: '#FFFFFF',
+      secondarySystemBackground: '#F2F2F7',
+      systemBlue: '#007AFF',
+      systemRed: '#FF3B30',
+      systemGreen: '#34C759',
+    },
+  },
 }))
 
 // ============ MOCK REACT NATIVE MODULES ============
@@ -214,3 +276,21 @@ jest.setTimeout(10000)
 
 global.fetch = jest.fn()
 global.XMLHttpRequest = jest.fn() as any
+
+// Mock global crypto.randomUUID
+Object.defineProperty(global, 'crypto', {
+  value: {
+    randomUUID: () =>
+      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = (Math.random() * 16) | 0
+        const v = c === 'x' ? r : (r & 0x3) | 0x8
+        return v.toString(16)
+      }),
+    getRandomValues: (arr: Uint8Array) => {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = Math.floor(Math.random() * 256)
+      }
+      return arr
+    },
+  },
+})
