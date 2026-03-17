@@ -1,6 +1,6 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
-import { TextThemed, ViewThemed } from '@/components/Themed'
+import { StyleSheet, View } from 'react-native'
+import { TextThemed } from '@/components/Themed'
 import { GlassCapsuleButton } from '@/components/glass/buttons'
 
 interface SectionHeaderProps {
@@ -21,9 +21,9 @@ export default function SectionHeader({
   onImportPress,
 }: SectionHeaderProps) {
   return (
-    <ViewThemed style={styles.sectionHeader}>
+    <View style={styles.sectionHeader}>
       <TextThemed style={styles.sectionTitle}>{title}</TextThemed>
-      <ViewThemed style={styles.buttonsContainer}>
+      <View style={styles.buttonsContainer}>
         {showImportButton && onImportPress && (
           <GlassCapsuleButton
             testID="import-collection-button"
@@ -48,8 +48,8 @@ export default function SectionHeader({
             accessibilityHint="Opens dialog to create a new collection"
           />
         )}
-      </ViewThemed>
-    </ViewThemed>
+      </View>
+    </View>
   )
 }
 

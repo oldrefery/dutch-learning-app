@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   RefreshControl,
   useColorScheme,
+  View,
+  StyleSheet,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
@@ -19,10 +21,14 @@ import SwipeableCollectionCard from '@/components/SwipeableCollectionCard'
 import { StatsCard } from '@/components/StatsCard'
 import SectionHeader from '@/components/SectionHeader'
 import { ROUTES } from '@/constants/Routes'
-import { styles } from '@/styles/CollectionsScreen.styles'
+import {
+  styles,
+  SECTION_HEADER_HEIGHT,
+} from '@/styles/CollectionsScreen.styles'
 import type { Collection } from '@/types/database'
 import { calculateStreak } from '@/utils/streakUtils'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
+import { GlassHeaderDefaults } from '@/constants/GlassConstants'
 import { CreateCollectionSheet } from '@/components/glass/modals/CreateCollectionSheet'
 import { RenameCollectionSheet } from '@/components/glass/modals/RenameCollectionSheet'
 import { ImportCollectionSheet } from '@/components/glass/modals/ImportCollectionSheet'
@@ -290,14 +296,6 @@ export default function CollectionsScreen() {
       />
 
       <ViewThemed style={styles.collectionsSection}>
-        <SectionHeader
-          title="Collections"
-          showAddButton={userAccessLevel === 'full_access'}
-          addButtonText="Create"
-          onAddPress={() => setShowCreateModal(true)}
-          showImportButton={true}
-          onImportPress={() => setShowImportModal(true)}
-        />
         {collectionsLoading ? (
           <ViewThemed style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
@@ -342,6 +340,7 @@ export default function CollectionsScreen() {
                       style={{ backgroundColor: Colors.transparent.clear }}
                       contentContainerStyle={{
                         backgroundColor: Colors.transparent.clear,
+                        paddingTop: SECTION_HEADER_HEIGHT,
                         paddingBottom: insets.bottom,
                       }}
                       renderItem={({ item, index }) => {
@@ -408,6 +407,33 @@ export default function CollectionsScreen() {
                 })()}
               </ViewThemed>
             </PlatformBlurView>
+
+            <View style={styles.sectionHeaderOverlay}>
+              <PlatformBlurView
+                tint={GlassHeaderDefaults.tint}
+                intensity={
+                  colorScheme === 'dark'
+                    ? GlassHeaderDefaults.intensityDark
+                    : GlassHeaderDefaults.intensityLight
+                }
+                fallbackColor={
+                  colorScheme === 'dark'
+                    ? Colors.transparent.white05
+                    : Colors.transparent.white50
+                }
+                style={StyleSheet.absoluteFill}
+                blurMethod="dimezisBlurView"
+              />
+              <View style={styles.sectionHeaderHairline} />
+              <SectionHeader
+                title="Collections"
+                showAddButton={userAccessLevel === 'full_access'}
+                addButtonText="Create"
+                onAddPress={() => setShowCreateModal(true)}
+                showImportButton={true}
+                onImportPress={() => setShowImportModal(true)}
+              />
+            </View>
           </ViewThemed>
         )}
       </ViewThemed>
