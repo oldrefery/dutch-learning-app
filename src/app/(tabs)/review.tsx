@@ -209,16 +209,19 @@ export default function ReviewScreen() {
     }
 
     try {
-      // Combine all stable gestures
-      const combinedGesture = Gesture.Exclusive(
-        panGestureInstance,
-        Gesture.Simultaneous(tapGestureInstance, doubleTapGestureInstance)
-      )
+      // Front: tap to flip + pan to navigate + double-tap for detail modal
+      // Back: only pan (no parent tap so buttons work); header handles flip back
+      const gesture = isFlipped
+        ? panGestureInstance
+        : Gesture.Exclusive(
+            panGestureInstance,
+            Gesture.Simultaneous(tapGestureInstance, doubleTapGestureInstance)
+          )
 
       return (
         <GestureErrorBoundary>
           <ParentGestureContext.Provider value={tapGestureRef}>
-            <GestureDetector gesture={combinedGesture}>
+            <GestureDetector gesture={gesture}>
               <ViewThemed style={reviewScreenStyles.flashcard}>
                 {!isFlipped ? (
                   <CardFront
@@ -229,7 +232,10 @@ export default function ReviewScreen() {
                   />
                 ) : (
                   <>
-                    <GlassHeader title={currentWord.dutch_lemma} />
+                    <GlassHeader
+                      title={currentWord.dutch_lemma}
+                      onPress={handleFlipCard}
+                    />
                     <UniversalWordCard
                       word={currentWord}
                       config={WordCardPresets.review.config}
@@ -271,6 +277,7 @@ export default function ReviewScreen() {
     isPlayingAudio,
     isReanalyzing,
     playAudio,
+    handleFlipCard,
     handleDeleteWord,
     handleReanalyzeCurrentWord,
     openImageSelector,
