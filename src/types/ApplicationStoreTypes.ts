@@ -89,6 +89,7 @@ export interface ApplicationState {
   goToPreviousWord: () => void
   deleteWordFromReview: (wordId: string) => void
   updateCurrentWordImage: (imageUrl: string) => void
+  updateCurrentWordInReview: (updatedWord: Word) => void
 
   // Error handling
   setError: (error: AppError) => void

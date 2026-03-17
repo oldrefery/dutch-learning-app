@@ -71,6 +71,9 @@ export default function ReviewScreen() {
     state => state.startReviewSession
   )
   const reanalyzeWord = useApplicationStore(state => state.reanalyzeWord)
+  const updateCurrentWordInReview = useApplicationStore(
+    state => state.updateCurrentWordInReview
+  )
 
   // Enable pull-to-refresh to also refresh review count (badge)
   const { refreshCount } = useReviewWordsCount()
@@ -105,6 +108,7 @@ export default function ReviewScreen() {
       const updatedWord = await reanalyzeWord(selectedWord.word_id)
       if (updatedWord) {
         setSelectedWord(updatedWord)
+        updateCurrentWordInReview(updatedWord)
         ToastService.show('Word re-analyzed successfully', ToastType.SUCCESS)
       } else {
         ToastService.show('Failed to re-analyze word', ToastType.ERROR)
@@ -116,7 +120,28 @@ export default function ReviewScreen() {
     } finally {
       setIsReanalyzing(false)
     }
-  }, [selectedWord, reanalyzeWord])
+  }, [selectedWord, reanalyzeWord, updateCurrentWordInReview])
+
+  const handleReanalyzeCurrentWord = useCallback(async () => {
+    if (!currentWord) return
+
+    setIsReanalyzing(true)
+    try {
+      const updatedWord = await reanalyzeWord(currentWord.word_id)
+      if (updatedWord) {
+        updateCurrentWordInReview(updatedWord)
+        ToastService.show('Word re-analyzed successfully', ToastType.SUCCESS)
+      } else {
+        ToastService.show('Failed to re-analyze word', ToastType.ERROR)
+      }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Could not re-analyze word'
+      ToastService.show(errorMessage, ToastType.ERROR)
+    } finally {
+      setIsReanalyzing(false)
+    }
+  }, [currentWord, reanalyzeWord, updateCurrentWordInReview])
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
@@ -205,6 +230,9 @@ export default function ReviewScreen() {
                     actions={{
                       ...WordCardPresets.review.actions,
                       onDelete: handleDeleteWord,
+                      showReanalyzeButton: true,
+                      onReanalyze: handleReanalyzeCurrentWord,
+                      isReanalyzing,
                     }}
                     isPlayingAudio={isPlayingAudio}
                     onPlayPronunciation={playAudio}
@@ -234,8 +262,10 @@ export default function ReviewScreen() {
     currentWord,
     isFlipped,
     isPlayingAudio,
+    isReanalyzing,
     playAudio,
     handleDeleteWord,
+    handleReanalyzeCurrentWord,
     openImageSelector,
     tapGestureInstance,
     panGestureInstance,

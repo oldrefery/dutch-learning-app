@@ -27,6 +27,7 @@ export const createReviewActions = (
   | 'goToPreviousWord'
   | 'deleteWordFromReview'
   | 'updateCurrentWordImage'
+  | 'updateCurrentWordInReview'
 > => ({
   startReviewSession: async () => {
     try {
@@ -346,6 +347,25 @@ export const createReviewActions = (
 
     set({
       currentWord: updatedCurrentWord,
+      reviewSession: {
+        ...reviewSession,
+        words: updatedWords,
+      },
+    })
+  },
+
+  updateCurrentWordInReview: updatedWord => {
+    const { currentWord, reviewSession } = get()
+
+    if (!currentWord || !reviewSession) return
+    if (currentWord.word_id !== updatedWord.word_id) return
+
+    const updatedWords = reviewSession.words.map(word =>
+      word.word_id === updatedWord.word_id ? updatedWord : word
+    )
+
+    set({
+      currentWord: updatedWord,
       reviewSession: {
         ...reviewSession,
         words: updatedWords,
