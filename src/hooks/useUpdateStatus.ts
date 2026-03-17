@@ -5,6 +5,16 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import * as Updates from 'expo-updates'
+import type { ExpoUpdatesManifest } from 'expo-manifests'
+
+function getUpdateMessage(): string | null {
+  const manifest = Updates.manifest as Partial<ExpoUpdatesManifest> | null
+  if (!manifest?.metadata) return null
+  const metadata = manifest.metadata as Record<string, unknown>
+  return typeof metadata.updateMessage === 'string'
+    ? metadata.updateMessage
+    : null
+}
 
 export interface UpdateStatus {
   isEnabled: boolean
@@ -16,6 +26,8 @@ export interface UpdateStatus {
   runtimeVersion: string | null
   lastCheckTime: Date | null
   error: string | null
+  updateMessage: string | null
+  updateCreatedAt: Date | null
 }
 
 export function useUpdateStatus() {
@@ -29,6 +41,8 @@ export function useUpdateStatus() {
     runtimeVersion: Updates.runtimeVersion ?? null,
     lastCheckTime: null,
     error: null,
+    updateMessage: getUpdateMessage(),
+    updateCreatedAt: Updates.createdAt ?? null,
   })
 
   const checkForUpdate = useCallback(async () => {

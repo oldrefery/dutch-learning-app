@@ -39,34 +39,64 @@ export function UpdateStatusBadge() {
     return `Up to date${channelSuffix}`
   }
 
+  const formatUpdateDate = (date: Date | null): string | null => {
+    if (!date) return null
+    return date.toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  const updateDate = formatUpdateDate(status.updateCreatedAt)
+  const updateInfo =
+    status.updateMessage || updateDate
+      ? [status.updateMessage, updateDate].filter(Boolean).join(' · ')
+      : null
+
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={handlePress}
-      disabled={status.isChecking || status.isDownloading}
-    >
-      <ViewThemed
-        style={[styles.badge, { backgroundColor: getBadgeColor() }]}
-      />
-      <TextThemed
-        style={styles.text}
-        lightColor={Colors.neutral[500]}
-        darkColor={Colors.dark.textSecondary}
+    <ViewThemed style={styles.container}>
+      <TouchableOpacity
+        style={styles.statusRow}
+        onPress={handlePress}
+        disabled={status.isChecking || status.isDownloading}
       >
-        {getStatusText()}
-      </TextThemed>
-    </TouchableOpacity>
+        <ViewThemed
+          style={[styles.badge, { backgroundColor: getBadgeColor() }]}
+        />
+        <TextThemed
+          style={styles.text}
+          lightColor={Colors.neutral[500]}
+          darkColor={Colors.dark.textSecondary}
+        >
+          {getStatusText()}
+        </TextThemed>
+      </TouchableOpacity>
+      {updateInfo && (
+        <TextThemed
+          style={styles.updateInfo}
+          lightColor={Colors.neutral[400]}
+          darkColor={Colors.dark.textSecondary}
+        >
+          {updateInfo}
+        </TextThemed>
+      )}
+    </ViewThemed>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: 'center',
+    marginTop: 8,
+    paddingHorizontal: 8,
+  },
+  statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
     paddingVertical: 4,
-    paddingHorizontal: 8,
   },
   badge: {
     width: 8,
@@ -77,5 +107,10 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 11,
     fontWeight: '500',
+  },
+  updateInfo: {
+    fontSize: 10,
+    fontWeight: '400',
+    marginTop: 2,
   },
 })
