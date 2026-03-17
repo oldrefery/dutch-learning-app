@@ -7,6 +7,7 @@ import {
   RefreshControl,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import type { GestureType } from 'react-native-gesture-handler'
 import { scheduleOnRN } from 'react-native-worklets'
 import { useFocusEffect } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
@@ -30,6 +31,7 @@ import type { Word } from '@/types/database'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Sentry } from '@/lib/sentry'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
+import { ParentGestureContext } from '@/contexts/ParentGestureContext'
 
 export default function ReviewScreen() {
   const insets = useSafeAreaInsets()
@@ -38,6 +40,7 @@ export default function ReviewScreen() {
   const [refreshing, setRefreshing] = useState(false)
   const [isReanalyzing, setIsReanalyzing] = useState(false)
   const pronunciationRef = useRef<View>(null)
+  const tapGestureRef = useRef<GestureType | undefined>(undefined)
 
   const {
     // State
@@ -158,8 +161,10 @@ export default function ReviewScreen() {
   }, [refreshCount, startReviewSession])
 
   // Create completely stable gestures to prevent recreation
+  // withRef exposes this gesture so NonSwipeableArea can block it via context
   const tapGestureInstance = useMemo(() => {
     return Gesture.Tap()
+      .withRef(tapGestureRef)
       .maxDuration(200)
       .maxDistance(5)
       .onBegin(() => {
@@ -212,38 +217,40 @@ export default function ReviewScreen() {
 
       return (
         <GestureErrorBoundary>
-          <GestureDetector gesture={combinedGesture}>
-            <ViewThemed style={reviewScreenStyles.flashcard}>
-              {!isFlipped ? (
-                <CardFront
-                  currentWord={currentWord}
-                  isPlayingAudio={isPlayingAudio}
-                  onPlayPronunciation={playAudio}
-                  pronunciationRef={pronunciationRef}
-                />
-              ) : (
-                <>
-                  <GlassHeader title={currentWord.dutch_lemma} />
-                  <UniversalWordCard
-                    word={currentWord}
-                    config={WordCardPresets.review.config}
-                    actions={{
-                      ...WordCardPresets.review.actions,
-                      onDelete: handleDeleteWord,
-                      showReanalyzeButton: true,
-                      onReanalyze: handleReanalyzeCurrentWord,
-                      isReanalyzing,
-                    }}
+          <ParentGestureContext.Provider value={tapGestureRef}>
+            <GestureDetector gesture={combinedGesture}>
+              <ViewThemed style={reviewScreenStyles.flashcard}>
+                {!isFlipped ? (
+                  <CardFront
+                    currentWord={currentWord}
                     isPlayingAudio={isPlayingAudio}
                     onPlayPronunciation={playAudio}
-                    onChangeImage={openImageSelector}
-                    style={reviewScreenStyles.universalWordCard}
-                    contentStyle={{ paddingTop: 64 }}
+                    pronunciationRef={pronunciationRef}
                   />
-                </>
-              )}
-            </ViewThemed>
-          </GestureDetector>
+                ) : (
+                  <>
+                    <GlassHeader title={currentWord.dutch_lemma} />
+                    <UniversalWordCard
+                      word={currentWord}
+                      config={WordCardPresets.review.config}
+                      actions={{
+                        ...WordCardPresets.review.actions,
+                        onDelete: handleDeleteWord,
+                        showReanalyzeButton: true,
+                        onReanalyze: handleReanalyzeCurrentWord,
+                        isReanalyzing,
+                      }}
+                      isPlayingAudio={isPlayingAudio}
+                      onPlayPronunciation={playAudio}
+                      onChangeImage={openImageSelector}
+                      style={reviewScreenStyles.universalWordCard}
+                      contentStyle={{ paddingTop: 64 }}
+                    />
+                  </>
+                )}
+              </ViewThemed>
+            </GestureDetector>
+          </ParentGestureContext.Provider>
         </GestureErrorBoundary>
       )
     } catch (error) {
