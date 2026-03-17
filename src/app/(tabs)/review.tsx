@@ -5,6 +5,8 @@ import {
   View,
   ScrollView,
   RefreshControl,
+  StyleSheet,
+  useColorScheme,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import type { GestureType } from 'react-native-gesture-handler'
@@ -32,8 +34,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Sentry } from '@/lib/sentry'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 import { ParentGestureContext } from '@/contexts/ParentGestureContext'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
+import { GlassHeaderDefaults } from '@/constants/GlassConstants'
 
 export default function ReviewScreen() {
+  const colorScheme = useColorScheme()
   const insets = useSafeAreaInsets()
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
@@ -250,7 +255,7 @@ export default function ReviewScreen() {
                       onPlayPronunciation={playAudio}
                       onChangeImage={openImageSelector}
                       style={reviewScreenStyles.universalWordCard}
-                      contentStyle={{ paddingTop: 64 }}
+                      contentStyle={{ paddingTop: GlassHeaderDefaults.height }}
                     />
                   </>
                 )}
@@ -393,48 +398,78 @@ export default function ReviewScreen() {
         {renderCard()}
       </ViewThemed>
 
-      <ViewThemed
+      <View
         style={[
-          reviewScreenStyles.buttonsContainer,
+          reviewScreenStyles.buttonsOverlay,
           { paddingBottom: insets.bottom + 24 },
         ]}
       >
-        <TouchableOpacity
-          testID="srs-again-button"
-          style={[reviewScreenStyles.srsButton, reviewScreenStyles.againButton]}
-          onPress={handleAgain}
-          disabled={isLoading}
-        >
-          <TextThemed style={reviewScreenStyles.buttonText}>Again</TextThemed>
-        </TouchableOpacity>
+        <PlatformBlurView
+          tint={GlassHeaderDefaults.tint}
+          intensity={
+            colorScheme === 'dark'
+              ? GlassHeaderDefaults.intensityDark
+              : GlassHeaderDefaults.intensityLight
+          }
+          fallbackColor={
+            colorScheme === 'dark'
+              ? Colors.transparent.white05
+              : Colors.transparent.white50
+          }
+          style={StyleSheet.absoluteFill}
+          blurMethod="dimezisBlurView"
+        />
+        <View style={reviewScreenStyles.hairline} />
+        <View style={reviewScreenStyles.buttonsRow}>
+          <TouchableOpacity
+            testID="srs-again-button"
+            style={[
+              reviewScreenStyles.srsButton,
+              reviewScreenStyles.againButton,
+            ]}
+            onPress={handleAgain}
+            disabled={isLoading}
+          >
+            <TextThemed style={reviewScreenStyles.buttonText}>Again</TextThemed>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          testID="srs-hard-button"
-          style={[reviewScreenStyles.srsButton, reviewScreenStyles.hardButton]}
-          onPress={handleHard}
-          disabled={isLoading}
-        >
-          <TextThemed style={reviewScreenStyles.buttonText}>Hard</TextThemed>
-        </TouchableOpacity>
+          <TouchableOpacity
+            testID="srs-hard-button"
+            style={[
+              reviewScreenStyles.srsButton,
+              reviewScreenStyles.hardButton,
+            ]}
+            onPress={handleHard}
+            disabled={isLoading}
+          >
+            <TextThemed style={reviewScreenStyles.buttonText}>Hard</TextThemed>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          testID="srs-good-button"
-          style={[reviewScreenStyles.srsButton, reviewScreenStyles.goodButton]}
-          onPress={handleGood}
-          disabled={isLoading}
-        >
-          <TextThemed style={reviewScreenStyles.buttonText}>Good</TextThemed>
-        </TouchableOpacity>
+          <TouchableOpacity
+            testID="srs-good-button"
+            style={[
+              reviewScreenStyles.srsButton,
+              reviewScreenStyles.goodButton,
+            ]}
+            onPress={handleGood}
+            disabled={isLoading}
+          >
+            <TextThemed style={reviewScreenStyles.buttonText}>Good</TextThemed>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          testID="srs-easy-button"
-          style={[reviewScreenStyles.srsButton, reviewScreenStyles.easyButton]}
-          onPress={handleEasy}
-          disabled={isLoading}
-        >
-          <TextThemed style={reviewScreenStyles.buttonText}>Easy</TextThemed>
-        </TouchableOpacity>
-      </ViewThemed>
+          <TouchableOpacity
+            testID="srs-easy-button"
+            style={[
+              reviewScreenStyles.srsButton,
+              reviewScreenStyles.easyButton,
+            ]}
+            onPress={handleEasy}
+            disabled={isLoading}
+          >
+            <TextThemed style={reviewScreenStyles.buttonText}>Easy</TextThemed>
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {currentWord && (
         <ImageSelector

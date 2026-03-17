@@ -57,11 +57,29 @@ export const reviewScreenStyles = StyleSheet.create({
     minHeight: REVIEW_SCREEN_CONSTANTS.CARD_MIN_HEIGHT,
   },
 
-  buttonsContainer: {
+  buttonsOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    overflow: 'hidden',
+  },
+
+  hairline: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: Colors.transparent.hairlineLight,
+  },
+
+  buttonsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
-    paddingVertical: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
+    paddingTop: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
     gap: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
   },
 
