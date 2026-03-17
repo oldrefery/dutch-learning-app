@@ -39,6 +39,7 @@ describe('reviewActions', () => {
     root_verb: null,
     article: null,
     plural: null,
+    register: null,
     translations: { en: ['walk'] },
     examples: null,
     synonyms: [],
@@ -230,7 +231,7 @@ describe('reviewActions', () => {
       expect(mockSet).toHaveBeenCalledWith({
         error: expect.objectContaining({
           message: expect.any(String),
-          details: 'User not authenticated',
+          category: 'CLIENT',
         }),
         reviewLoading: false,
       })
@@ -376,7 +377,7 @@ describe('reviewActions', () => {
       expect(mockSet).toHaveBeenCalledWith({
         error: expect.objectContaining({
           message: expect.any(String),
-          details: 'Invalid assessment object',
+          category: 'VALIDATION',
         }),
       })
     })
@@ -563,7 +564,7 @@ describe('reviewActions', () => {
 
       actions.goToNextWord()
 
-      // Should not call set since there's no next word
+      // Should not call a set since there's no next word
       expect(mockSet).not.toHaveBeenCalled()
     })
   })

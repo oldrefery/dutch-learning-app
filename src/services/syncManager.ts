@@ -9,6 +9,7 @@ import {
 } from '@/utils/network'
 import type { Word } from '@/types/database'
 import { Sentry } from '@/lib/sentry'
+import { isNetworkError } from '@/utils/logger'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -286,10 +287,10 @@ export class SyncManager {
       return result
     } catch (error) {
       const errorMessage = this.getErrorMessage(error)
-      const isNetworkError = this.isNetworkErrorMessage(errorMessage)
+      const isNetworkErr = isNetworkError(errorMessage)
 
       // Don't report network errors - they're expected when offline
-      if (isNetworkError) {
+      if (isNetworkErr) {
         console.log(
           '[Sync] Network error during sync (expected when offline):',
           errorMessage
@@ -327,7 +328,7 @@ export class SyncManager {
       }
 
       // Only notify if it's not a network error
-      if (!isNetworkError) {
+      if (!isNetworkErr) {
         this.notifySyncStatus(result)
       }
 
@@ -542,19 +543,6 @@ export class SyncManager {
     }
 
     return 'Unknown error'
-  }
-
-  private isNetworkErrorMessage(message: string): boolean {
-    const lowerMessage = message.toLowerCase()
-    return (
-      lowerMessage.includes('network request failed') ||
-      lowerMessage.includes('network error') ||
-      lowerMessage.includes('fetch failed') ||
-      lowerMessage.includes('timeout') ||
-      lowerMessage.includes('econnrefused') ||
-      lowerMessage.includes('enotfound') ||
-      lowerMessage.includes('enetunreach')
-    )
   }
 
   private toError(error: unknown): Error {

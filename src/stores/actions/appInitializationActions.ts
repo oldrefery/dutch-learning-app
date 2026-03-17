@@ -1,4 +1,5 @@
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
+import { createStoreError } from '@/types/ErrorTypes'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -50,11 +51,12 @@ export const createAppInitializationActions = (
         tags: { operation: 'appInitialization' },
         extra: { message: 'App initialization error' },
       })
-      get().setError({
-        message:
+      get().setError(
+        createStoreError(
           APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.APP_INITIALIZATION_FAILED,
-        details: error instanceof Error ? error.message : 'Unknown error',
-      })
+          { originalError: error instanceof Error ? error : undefined }
+        )
+      )
     }
   },
 

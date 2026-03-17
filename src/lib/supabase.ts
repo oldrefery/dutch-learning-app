@@ -8,7 +8,7 @@ import * as Sentry from '@sentry/react-native'
 import { retrySupabaseFunction } from '@/utils/retryUtils'
 import { categorizeSupabaseError } from '@/types/ErrorTypes'
 import { checkNetworkConnection } from '@/utils/networkUtils'
-import { logSupabaseError, logWarning } from '@/utils/logger'
+import { isNetworkError, logSupabaseError, logWarning } from '@/utils/logger'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -340,16 +340,25 @@ export const wordService = {
       .eq('dutch_lemma', normalizedLemma)
 
     if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'checkSemanticDuplicate' },
-        extra: {
-          userId,
-          dutchLemma,
-          partOfSpeech,
-          article,
-          message: 'Failed to check for duplicate',
-        },
-      })
+      const errorMessage = error.message || ''
+      if (isNetworkError(errorMessage)) {
+        Sentry.captureMessage(`checkSemanticDuplicate: ${errorMessage}`, {
+          level: 'warning',
+          tags: { operation: 'checkSemanticDuplicate', errorCode: 'network' },
+          extra: { userId, dutchLemma, partOfSpeech, article },
+        })
+      } else {
+        Sentry.captureException(error, {
+          tags: { operation: 'checkSemanticDuplicate' },
+          extra: {
+            userId,
+            dutchLemma,
+            partOfSpeech,
+            article,
+            message: 'Failed to check for duplicate',
+          },
+        })
+      }
       return null
     }
 

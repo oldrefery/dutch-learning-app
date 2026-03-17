@@ -91,6 +91,20 @@ describe('useImportSelection', () => {
     ...overrides,
   })
 
+  const renderAndWait = async (
+    storeOverrides: Record<string, unknown> = {}
+  ) => {
+    const storeState = createStoreState(storeOverrides)
+    ;(useApplicationStore.getState as jest.Mock).mockImplementation(
+      () => storeState
+    )
+    const { result } = renderHook(() => useImportSelection(SHARED_TOKEN))
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+    return result
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
     ;(supabase.auth.getSession as jest.Mock).mockResolvedValue({
@@ -120,21 +134,15 @@ describe('useImportSelection', () => {
   })
 
   it('should show store-provided safe import error when import returns false', async () => {
-    const storeState = createStoreState({
+    const result = await renderAndWait({
       addWordsToCollection: jest.fn().mockResolvedValue(false),
       error: {
-        message: 'Failed to import words',
-        details: IMPORT_ACCESS_MESSAGE,
+        category: 'CLIENT',
+        severity: 'ERROR',
+        message: IMPORT_ACCESS_MESSAGE,
+        userMessage: IMPORT_ACCESS_MESSAGE,
+        isRetryable: false,
       },
-    })
-    ;(useApplicationStore.getState as jest.Mock).mockImplementation(
-      () => storeState
-    )
-
-    const { result } = renderHook(() => useImportSelection(SHARED_TOKEN))
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false)
     })
 
     await act(async () => {
@@ -153,17 +161,8 @@ describe('useImportSelection', () => {
       sentryHandled: true,
       userMessage: IMPORT_ACCESS_MESSAGE,
     })
-    const storeState = createStoreState({
+    const result = await renderAndWait({
       addWordsToCollection: jest.fn().mockRejectedValue(handledError),
-    })
-    ;(useApplicationStore.getState as jest.Mock).mockImplementation(
-      () => storeState
-    )
-
-    const { result } = renderHook(() => useImportSelection(SHARED_TOKEN))
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false)
     })
 
     await act(async () => {
@@ -178,17 +177,8 @@ describe('useImportSelection', () => {
   })
 
   it('should show zero-import success message when shared import adds no new words', async () => {
-    const storeState = createStoreState({
+    const result = await renderAndWait({
       addWordsToCollection: jest.fn().mockResolvedValue(true),
-    })
-    ;(useApplicationStore.getState as jest.Mock).mockImplementation(
-      () => storeState
-    )
-
-    const { result } = renderHook(() => useImportSelection(SHARED_TOKEN))
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false)
     })
 
     await act(async () => {
@@ -202,7 +192,7 @@ describe('useImportSelection', () => {
   })
 
   it('should detect duplicates using normalized semantic key', async () => {
-    const storeState = createStoreState({
+    const result = await renderAndWait({
       words: [
         {
           word_id: 'existing-word-id',
@@ -212,15 +202,6 @@ describe('useImportSelection', () => {
           article: 'het ',
         },
       ],
-    })
-    ;(useApplicationStore.getState as jest.Mock).mockImplementation(
-      () => storeState
-    )
-
-    const { result } = renderHook(() => useImportSelection(SHARED_TOKEN))
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false)
     })
 
     expect(result.current.duplicateCount).toBe(1)

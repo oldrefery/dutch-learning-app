@@ -59,6 +59,39 @@ describe('wordActions', () => {
     error: null,
   }
 
+  const expectStoreError = (additionalFields: Record<string, unknown> = {}) => {
+    expect(mockSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: expect.objectContaining({
+          message: expect.any(String),
+        }),
+        ...additionalFields,
+      })
+    )
+  }
+
+  const expectActionError = (
+    error: Error,
+    logMessage: string,
+    userMessage: string,
+    context: Record<string, unknown>
+  ) => {
+    expect(logError).toHaveBeenCalledWith(
+      logMessage,
+      error,
+      expect.objectContaining(context),
+      'words',
+      false
+    )
+    expect(mockSet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: expect.objectContaining({
+          message: userMessage,
+        }),
+      })
+    )
+  }
+
   let mockSet: jest.Mock
   let mockGet: jest.Mock
   let actions: any
@@ -95,7 +128,7 @@ describe('wordActions', () => {
       currentUserId: USER_ID,
       words: [],
       error: null,
-    } as ApplicationState
+    } as unknown as ApplicationState
 
     mockSet = jest.fn((update: any) => {
       if (typeof update === 'function') {
@@ -138,14 +171,7 @@ describe('wordActions', () => {
 
       await actions.fetchWords()
 
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: expect.any(String),
-          }),
-          wordsLoading: false,
-        })
-      )
+      expectStoreError({ wordsLoading: false })
     })
 
     it('should handle fetch errors', async () => {
@@ -158,14 +184,7 @@ describe('wordActions', () => {
         tags: { operation: 'fetchWords' },
         extra: { message: 'Error fetching words' },
       })
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: expect.any(String),
-          }),
-          wordsLoading: false,
-        })
-      )
+      expectStoreError({ wordsLoading: false })
     })
 
     it('should handle empty word list as valid state', async () => {
@@ -281,13 +300,7 @@ describe('wordActions', () => {
 
       await actions.saveAnalyzedWord(analyzedWord)
 
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: expect.any(String),
-          }),
-        })
-      )
+      expectStoreError()
     })
 
     it('should handle save errors', async () => {
@@ -321,7 +334,7 @@ describe('wordActions', () => {
         part_of_speech: 'verb',
       })
 
-      // Mock getWordBySemanticKey to return existing word
+      // Mock getWordBySemanticKey to return an existing word
       ;(wordRepository.getWordBySemanticKey as jest.Mock).mockResolvedValue(
         existingWord
       )
@@ -341,7 +354,7 @@ describe('wordActions', () => {
         expect.objectContaining({
           error: expect.objectContaining({
             message: 'Failed to save analyzed word',
-            details: expect.stringContaining('already exists'),
+            category: 'VALIDATION',
           }),
         })
       )
@@ -397,13 +410,7 @@ describe('wordActions', () => {
 
       await actions.updateWordAfterReview(WORD_ID, assessment as any)
 
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: expect.any(String),
-          }),
-        })
-      )
+      expectStoreError()
     })
 
     it('should handle update errors', async () => {
@@ -425,19 +432,11 @@ describe('wordActions', () => {
 
       await actions.updateWordAfterReview(WORD_ID, assessment as any)
 
-      expect(logError).toHaveBeenCalledWith(
-        'Error updating word after review',
+      expectActionError(
         error,
-        expect.objectContaining({ wordId: WORD_ID, assessment }),
-        'words',
-        false
-      )
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: 'Failed to update word progress',
-          }),
-        })
+        'Error updating word after review',
+        'Failed to update word progress',
+        { wordId: WORD_ID, assessment }
       )
     })
   })
@@ -474,20 +473,9 @@ describe('wordActions', () => {
 
       await actions.deleteWord(WORD_ID)
 
-      expect(logError).toHaveBeenCalledWith(
-        'Error deleting word',
-        error,
-        expect.objectContaining({ wordId: WORD_ID }),
-        'words',
-        false
-      )
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: 'Failed to delete word',
-          }),
-        })
-      )
+      expectActionError(error, 'Error deleting word', 'Failed to delete word', {
+        wordId: WORD_ID,
+      })
     })
   })
 
@@ -534,19 +522,11 @@ describe('wordActions', () => {
 
       await actions.updateWordImage(WORD_ID, imageUrl)
 
-      expect(logError).toHaveBeenCalledWith(
-        'Error updating word image',
+      expectActionError(
         error,
-        expect.objectContaining({ wordId: WORD_ID, imageUrl }),
-        'words',
-        false
-      )
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: 'Failed to update word image',
-          }),
-        })
+        'Error updating word image',
+        'Failed to update word image',
+        { wordId: WORD_ID, imageUrl }
       )
     })
   })
@@ -593,19 +573,11 @@ describe('wordActions', () => {
 
       await actions.resetWordProgress(WORD_ID)
 
-      expect(logError).toHaveBeenCalledWith(
-        'Error resetting word progress',
+      expectActionError(
         error,
-        expect.objectContaining({ wordId: WORD_ID }),
-        'words',
-        false
-      )
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: 'Failed to reset word progress',
-          }),
-        })
+        'Error resetting word progress',
+        'Failed to reset word progress',
+        { wordId: WORD_ID }
       )
     })
   })
@@ -654,19 +626,11 @@ describe('wordActions', () => {
 
       await actions.moveWordToCollection(WORD_ID, newCollectionId)
 
-      expect(logError).toHaveBeenCalledWith(
-        'Error moving word to collection',
+      expectActionError(
         error,
-        expect.objectContaining({ wordId: WORD_ID, newCollectionId }),
-        'words',
-        false
-      )
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: 'Failed to move word to collection',
-          }),
-        })
+        'Error moving word to collection',
+        'Failed to move word to collection',
+        { wordId: WORD_ID, newCollectionId }
       )
     })
   })
@@ -798,9 +762,9 @@ describe('wordActions', () => {
       expect(mockSet).toHaveBeenCalledWith(
         expect.objectContaining({
           error: expect.objectContaining({
-            message: 'Failed to import words',
-            details:
+            message:
               'Unable to import words into the selected collection. Please verify access and try again.',
+            category: 'CLIENT',
           }),
         })
       )
@@ -818,22 +782,11 @@ describe('wordActions', () => {
 
       const result = await actions.addWordsToCollection(COLLECTION_ID, newWords)
 
-      expect(logError).toHaveBeenCalledWith(
-        'Error adding words to collection',
+      expectActionError(
         error,
-        expect.objectContaining({
-          collectionId: COLLECTION_ID,
-          wordCount: newWords.length,
-        }),
-        'words',
-        false
-      )
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: 'Failed to import words',
-          }),
-        })
+        'Error adding words to collection',
+        'Failed to import words',
+        { collectionId: COLLECTION_ID, wordCount: newWords.length }
       )
       expect(result).toBe(false)
     })
@@ -845,13 +798,7 @@ describe('wordActions', () => {
         { dutch_lemma: 'eten', translations: { en: ['eat'] } },
       ])
 
-      expect(mockSet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            message: expect.any(String),
-          }),
-        })
-      )
+      expectStoreError()
       expect(result).toBe(false)
     })
   })

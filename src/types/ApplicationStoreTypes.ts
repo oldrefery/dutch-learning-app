@@ -2,13 +2,13 @@ import type {
   Word,
   Collection,
   ReviewSession,
-  AppError,
   GeminiWordAnalysis,
   SRSAssessment,
   WordTranslations,
   WordExample,
   AccessLevel,
 } from './database'
+import type { AppError } from './ErrorTypes'
 import { ExpressionType } from './ExpressionTypes'
 
 export type { AppError }
@@ -82,13 +82,14 @@ export interface ApplicationState {
   startReviewSession: () => Promise<void>
   submitReviewAssessment: (assessment: ReviewAssessment) => Promise<void>
   endReviewSession: () => void
-  markCorrect: () => void
-  markIncorrect: () => void
+  markCorrect: () => Promise<void>
+  markIncorrect: () => Promise<void>
   flipCard: () => void
   goToNextWord: () => void
   goToPreviousWord: () => void
   deleteWordFromReview: (wordId: string) => void
   updateCurrentWordImage: (imageUrl: string) => void
+  updateCurrentWordInReview: (updatedWord: Word) => void
 
   // Error handling
   setError: (error: AppError) => void

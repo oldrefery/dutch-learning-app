@@ -1,4 +1,4 @@
-import type { Collection } from '@/types/database'
+import type { Collection, WordRegister } from '@/types/database'
 import { ExpressionType } from '@/types/ExpressionTypes'
 
 export interface AnalysisResult {
@@ -34,6 +34,7 @@ export interface AnalysisResult {
     past_participle: string
   } | null
   preposition?: string // Fixed preposition (e.g., "van" for "genieten van")
+  register?: WordRegister // Formality level (formal, informal, neutral)
   analysis_notes?: string // User notes for word analysis
 }
 

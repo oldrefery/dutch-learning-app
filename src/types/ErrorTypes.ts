@@ -233,6 +233,26 @@ const categorizeGenericError = (error: Error): AppError => {
   )
 }
 
+export function createStoreError(
+  userMessage: string,
+  options?: {
+    category?: ErrorCategory
+    severity?: ErrorSeverity
+    originalError?: Error
+    context?: Record<string, unknown>
+  }
+): AppError {
+  return {
+    category: options?.category ?? ErrorCategory.UNKNOWN,
+    severity: options?.severity ?? ErrorSeverity.ERROR,
+    message: userMessage,
+    userMessage,
+    isRetryable: options?.category === ErrorCategory.NETWORK,
+    originalError: options?.originalError,
+    context: options?.context,
+  }
+}
+
 export function categorizeSupabaseError(error: unknown): AppError {
   if (isKnownAppError(error)) {
     return error

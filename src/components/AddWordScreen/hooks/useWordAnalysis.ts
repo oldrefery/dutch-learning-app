@@ -135,6 +135,7 @@ export const useWordAnalysis = () => {
         plural: analysis.plural || undefined,
         conjugation: analysis.conjugation || null,
         preposition: analysis.preposition || undefined,
+        register: analysis.register || undefined,
         analysis_notes: analysis.analysis_notes || '',
       }
 
