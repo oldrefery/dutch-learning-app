@@ -8,6 +8,23 @@ import type { PostgrestError } from '@supabase/supabase-js'
 
 type LogLevel = 'debug' | 'info' | 'warning' | 'error'
 
+/**
+ * Detect network-related errors that are expected in offline-first architecture.
+ * These should not be reported as Sentry exceptions to avoid noise.
+ */
+export function isNetworkError(message: string): boolean {
+  const lowerMessage = message.toLowerCase()
+  return (
+    lowerMessage.includes('network request failed') ||
+    lowerMessage.includes('network error') ||
+    lowerMessage.includes('fetch failed') ||
+    lowerMessage.includes('timeout') ||
+    lowerMessage.includes('econnrefused') ||
+    lowerMessage.includes('enotfound') ||
+    lowerMessage.includes('enetunreach')
+  )
+}
+
 interface LogContext {
   [key: string]: unknown
 }
@@ -175,25 +192,53 @@ export function logSupabaseError(
     },
   })
 
-  // Capture as exception with all context
-  Sentry.captureException(new Error(fullMessage), {
-    tags: {
-      operation: context.operation,
-      errorCode: error.code || 'unknown',
-    },
-    extra: {
-      ...context,
-      supabaseError: {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
+  // Network errors are expected in offline-first architecture — log as warning, not exception
+  if (
+    isNetworkError(error.message || '') ||
+    isNetworkError(error.details || '')
+  ) {
+    Sentry.captureMessage(fullMessage, {
+      level: 'warning',
+      tags: {
+        operation: context.operation,
+        errorCode: 'network',
       },
-    },
-    // Fingerprinting: group errors by operation and error code
-    // This ensures same errors are grouped together in Sentry
-    fingerprint: ['supabase-error', context.operation, error.code || 'unknown'],
-  })
+      extra: {
+        ...context,
+        supabaseError: {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        },
+      },
+      fingerprint: ['supabase-network-error', context.operation],
+    })
+  } else {
+    // Capture as exception with all context
+    Sentry.captureException(new Error(fullMessage), {
+      tags: {
+        operation: context.operation,
+        errorCode: error.code || 'unknown',
+      },
+      extra: {
+        ...context,
+        supabaseError: {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        },
+      },
+      // Fingerprinting: group errors by operation and error code
+      // This ensures same errors are grouped together in Sentry
+      fingerprint: [
+        'supabase-error',
+        context.operation,
+        error.code || 'unknown',
+      ],
+    })
+  }
 
   // In development, also log to console
   if (__DEV__) {
