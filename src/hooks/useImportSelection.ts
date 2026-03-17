@@ -348,9 +348,7 @@ export function useImportSelection(token: string) {
       } else {
         const storeError = useApplicationStore.getState().error
         const importErrorMessage =
-          typeof storeError?.details === 'string'
-            ? storeError.details
-            : 'Some words could not be imported'
+          storeError?.userMessage ?? 'Some words could not be imported'
 
         ToastService.show(importErrorMessage, ToastType.ERROR)
       }

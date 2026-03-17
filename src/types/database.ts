@@ -113,12 +113,6 @@ export interface ReviewSession {
   completedCount: number
 }
 
-export interface AppError {
-  message: string
-  code?: string
-  details?: string | Record<string, unknown>
-}
-
 // Access Control types
 
 export type AccessLevel = 'read_only' | 'full_access'

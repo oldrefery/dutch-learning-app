@@ -11,14 +11,8 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "jest.setup.ts"
   ],
-  "exclude": [
-    "supabase/functions/**/*",
-    "**/__tests__/**",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "jest.setup.ts",
-    "src/__mocks__/**"
-  ]
+  "exclude": ["supabase/functions/**/*"]
 }

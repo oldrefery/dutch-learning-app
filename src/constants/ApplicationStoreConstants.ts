@@ -27,19 +27,6 @@ export const APPLICATION_STORE_CONSTANTS = {
     UNKNOWN_ERROR: 'Unknown error occurred',
   },
 
-  // Default values
-  DEFAULT_EASINESS_FACTOR: 2.5,
-  DEFAULT_INTERVAL_DAYS: 1,
-  DEFAULT_REPETITION_COUNT: 0,
-
-  // SRS intervals (in minutes)
-  SRS_INTERVALS: {
-    AGAIN: 1,
-    HARD: 6,
-    GOOD: 10,
-    EASY: 1440, // 1 day
-  },
-
   // Review session
   REVIEW_SESSION: {
     MAX_WORDS_PER_SESSION: 50,

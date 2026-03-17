@@ -8,6 +8,7 @@ import { logInfo, logError } from '@/utils/logger'
 import { collectionRepository } from '@/db/collectionRepository'
 import { wordRepository } from '@/db/wordRepository'
 import * as Crypto from 'expo-crypto'
+import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -18,7 +19,6 @@ import type { Collection } from '@/types/database'
 const USER_NOT_AUTHENTICATED_ERROR =
   APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
 const USER_NOT_AUTHENTICATED_LOG = 'User not authenticated'
-const UNKNOWN_ERROR = 'Unknown error'
 
 export const createCollectionActions = (
   set: StoreSetFunction,
@@ -46,12 +46,13 @@ export const createCollectionActions = (
           false
         )
         set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                .COLLECTIONS_FETCH_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTIONS_FETCH_FAILED,
+            {
+              category: ErrorCategory.CLIENT,
+              context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+            }
+          ),
           collectionsLoading: false,
         })
         return
@@ -67,14 +68,10 @@ export const createCollectionActions = (
     } catch (error) {
       logError('Error fetching collections', error, {}, 'collections', false)
       set({
-        error: {
-          message:
-            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTIONS_FETCH_FAILED,
-          details:
-            error instanceof Error
-              ? error.message
-              : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
-        },
+        error: createStoreError(
+          APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTIONS_FETCH_FAILED,
+          { originalError: error instanceof Error ? error : undefined }
+        ),
         collectionsLoading: false,
       })
     }
@@ -92,12 +89,13 @@ export const createCollectionActions = (
           false
         )
         set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                .COLLECTION_CREATE_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_CREATE_FAILED,
+            {
+              category: ErrorCategory.CLIENT,
+              context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+            }
+          ),
         })
         return null
       }
@@ -129,11 +127,10 @@ export const createCollectionActions = (
     } catch (error) {
       logError('Error creating collection', error, {}, 'collections', false)
       set({
-        error: {
-          message:
-            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_CREATE_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(
+          APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_CREATE_FAILED,
+          { originalError: error instanceof Error ? error : undefined }
+        ),
       })
       return null
     }
@@ -158,12 +155,13 @@ export const createCollectionActions = (
           false
         )
         set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                .COLLECTION_DELETE_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_DELETE_FAILED,
+            {
+              category: ErrorCategory.CLIENT,
+              context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+            }
+          ),
         })
         return
       }
@@ -181,10 +179,12 @@ export const createCollectionActions = (
           'collections'
         )
         set({
-          error: {
-            message: 'Cannot delete collection',
-            details: 'Read-only users must have at least one collection',
-          },
+          error: createStoreError('Cannot delete collection', {
+            category: ErrorCategory.VALIDATION,
+            context: {
+              reason: 'Read-only users must have at least one collection',
+            },
+          }),
         })
         return
       }
@@ -208,11 +208,10 @@ export const createCollectionActions = (
     } catch (error) {
       logError('Error deleting collection', error, {}, 'collections', false)
       set({
-        error: {
-          message:
-            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_DELETE_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(
+          APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_DELETE_FAILED,
+          { originalError: error instanceof Error ? error : undefined }
+        ),
       })
     }
   },
@@ -229,12 +228,13 @@ export const createCollectionActions = (
           false
         )
         set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                .COLLECTION_UPDATE_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_UPDATE_FAILED,
+            {
+              category: ErrorCategory.CLIENT,
+              context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+            }
+          ),
         })
         return
       }
@@ -258,11 +258,10 @@ export const createCollectionActions = (
     } catch (error) {
       logError('Error renaming collection', error, {}, 'collections', false)
       set({
-        error: {
-          message:
-            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_UPDATE_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(
+          APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.COLLECTION_UPDATE_FAILED,
+          { originalError: error instanceof Error ? error : undefined }
+        ),
       })
     }
   },
@@ -281,10 +280,10 @@ export const createCollectionActions = (
           false
         )
         set({
-          error: {
-            message: 'Failed to share collection',
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError('Failed to share collection', {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return null
       }
@@ -322,10 +321,10 @@ export const createCollectionActions = (
         )
         const errorMessage = getCollectionSharingErrorMessage(result.error)
         set({
-          error: {
-            message: errorMessage,
-            details: result.error,
-          },
+          error: createStoreError(errorMessage, {
+            category: ErrorCategory.CLIENT,
+            context: { errorCode: result.error },
+          }),
         })
         return null
       }
@@ -357,13 +356,9 @@ export const createCollectionActions = (
         extra: { collectionId, userId: get().currentUserId },
       })
       set({
-        error: {
-          message: 'Failed to share collection',
-          details:
-            error instanceof Error
-              ? error.message
-              : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
-        },
+        error: createStoreError('Failed to share collection', {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
       return null
     }
@@ -381,10 +376,10 @@ export const createCollectionActions = (
           false
         )
         set({
-          error: {
-            message: 'Failed to unshare collection',
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError('Failed to unshare collection', {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return false
       }
@@ -397,10 +392,10 @@ export const createCollectionActions = (
       if (!result.success) {
         const errorMessage = getCollectionSharingErrorMessage(result.error)
         set({
-          error: {
-            message: errorMessage,
-            details: result.error,
-          },
+          error: createStoreError(errorMessage, {
+            category: ErrorCategory.CLIENT,
+            context: { errorCode: result.error },
+          }),
         })
         return false
       }
@@ -417,13 +412,9 @@ export const createCollectionActions = (
     } catch (error) {
       logError('Error unsharing collection', error, {}, 'collections', false)
       set({
-        error: {
-          message: 'Failed to unshare collection',
-          details:
-            error instanceof Error
-              ? error.message
-              : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
-        },
+        error: createStoreError('Failed to unshare collection', {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
       return false
     }
@@ -441,10 +432,10 @@ export const createCollectionActions = (
           false
         )
         set({
-          error: {
-            message: 'Failed to get collection share status',
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError('Failed to get collection share status', {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return null
       }
@@ -457,10 +448,10 @@ export const createCollectionActions = (
       if (!result.success) {
         const errorMessage = getCollectionSharingErrorMessage(result.error)
         set({
-          error: {
-            message: errorMessage,
-            details: result.error,
-          },
+          error: createStoreError(errorMessage, {
+            category: ErrorCategory.CLIENT,
+            context: { errorCode: result.error },
+          }),
         })
         return null
       }
@@ -475,13 +466,9 @@ export const createCollectionActions = (
         false
       )
       set({
-        error: {
-          message: 'Failed to get collection share status',
-          details:
-            error instanceof Error
-              ? error.message
-              : APPLICATION_STORE_CONSTANTS.GENERIC_ERRORS.UNKNOWN_ERROR,
-        },
+        error: createStoreError('Failed to get collection share status', {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
       return null
     }

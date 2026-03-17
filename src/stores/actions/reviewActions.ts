@@ -1,6 +1,7 @@
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 import { logInfo, logWarning, logError } from '@/utils/logger'
+import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -41,12 +42,14 @@ export const createReviewActions = (
           false
         )
         set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                .REVIEW_SESSION_START_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+              .REVIEW_SESSION_START_FAILED,
+            {
+              category: ErrorCategory.CLIENT,
+              context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+            }
+          ),
           reviewLoading: false,
         })
         return
@@ -68,12 +71,14 @@ export const createReviewActions = (
 
       if (!reviewWords) {
         set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                .REVIEW_SESSION_START_FAILED,
-            details: 'Failed to fetch review words from service',
-          },
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+              .REVIEW_SESSION_START_FAILED,
+            {
+              category: ErrorCategory.VALIDATION,
+              context: { reason: 'Failed to fetch review words from service' },
+            }
+          ),
           reviewLoading: false,
         })
         return
@@ -102,12 +107,11 @@ export const createReviewActions = (
     } catch (error) {
       logError('Error starting review session', error, {}, 'review', false)
       set({
-        error: {
-          message:
-            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-              .REVIEW_SESSION_START_FAILED,
-          details: error instanceof Error ? error.message : 'Unknown error',
-        },
+        error: createStoreError(
+          APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+            .REVIEW_SESSION_START_FAILED,
+          { originalError: error instanceof Error ? error : undefined }
+        ),
         reviewLoading: false,
       })
     }
@@ -131,12 +135,14 @@ export const createReviewActions = (
           false
         )
         set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                .REVIEW_ASSESSMENT_SUBMIT_FAILED,
-            details: INVALID_ASSESSMENT_ERROR,
-          },
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+              .REVIEW_ASSESSMENT_SUBMIT_FAILED,
+            {
+              category: ErrorCategory.VALIDATION,
+              context: { reason: INVALID_ASSESSMENT_ERROR },
+            }
+          ),
         })
         return
       }
@@ -144,7 +150,7 @@ export const createReviewActions = (
       // Classic SRS: All assessments update the word in the database
       await get().updateWordAfterReview(currentWord.word_id, assessment)
 
-      // Get fresh state after database update to ensure consistency
+      // Get a fresh state after a database update to ensure consistency
       const freshState = get()
       const freshReviewSession = freshState.reviewSession
 
@@ -168,12 +174,14 @@ export const createReviewActions = (
             false
           )
           set({
-            error: {
-              message:
-                APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-                  .REVIEW_ASSESSMENT_SUBMIT_FAILED,
-              details: 'Invalid word data in review session',
-            },
+            error: createStoreError(
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .REVIEW_ASSESSMENT_SUBMIT_FAILED,
+              {
+                category: ErrorCategory.VALIDATION,
+                context: { reason: 'Invalid word data in review session' },
+              }
+            ),
           })
           return
         }
@@ -188,7 +196,7 @@ export const createReviewActions = (
           currentWord: nextWord,
         })
       } else {
-        // Session complete
+        // Session completes
         logInfo('Session complete', {}, 'review')
         set({
           reviewSession: null,
@@ -198,12 +206,11 @@ export const createReviewActions = (
     } catch (error) {
       logError('Error submitting review assessment', error, {}, 'review', false)
       set({
-        error: {
-          message:
-            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
-              .REVIEW_ASSESSMENT_SUBMIT_FAILED,
-          details: error instanceof Error ? error.message : 'Unknown error',
-        },
+        error: createStoreError(
+          APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+            .REVIEW_ASSESSMENT_SUBMIT_FAILED,
+          { originalError: error instanceof Error ? error : undefined }
+        ),
       })
       // Don't throw - let caller handle via store state
     }

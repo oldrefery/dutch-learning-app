@@ -5,6 +5,7 @@ import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
 import { calculateNextReview } from '@/utils/srs'
 import * as Crypto from 'expo-crypto'
+import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -28,6 +29,7 @@ const WORD_MOVE_FAILED = 'Failed to move word to collection'
 const WORD_RESET_FAILED = 'Failed to reset word progress'
 const WORDS_IMPORT_FAILED = 'Failed to import words'
 const WORD_REANALYZE_FAILED = 'Failed to re-analyze word'
+const INVALID_ANALYSIS_RESPONSE = 'Invalid response from word analysis'
 
 interface ImportWordsActionError extends Error {
   userMessage?: string
@@ -102,11 +104,13 @@ export const createWordActions = (
       const userId = get().currentUserId
       if (!userId) {
         set({
-          error: {
-            message:
-              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.WORDS_FETCH_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.WORDS_FETCH_FAILED,
+            {
+              category: ErrorCategory.CLIENT,
+              context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+            }
+          ),
           wordsLoading: false,
         })
         return
@@ -123,11 +127,10 @@ export const createWordActions = (
         extra: { message: 'Error fetching words' },
       })
       set({
-        error: {
-          message:
-            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.WORDS_FETCH_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(
+          APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES.WORDS_FETCH_FAILED,
+          { originalError: error instanceof Error ? error : undefined }
+        ),
         wordsLoading: false,
       })
     }
@@ -158,10 +161,10 @@ export const createWordActions = (
       const userId = get().currentUserId
       if (!userId) {
         set({
-          error: {
-            message: WORD_SAVE_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(WORD_SAVE_FAILED, {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return
       }
@@ -191,16 +194,16 @@ export const createWordActions = (
           'words'
         )
         set({
-          error: {
-            message: WORD_SAVE_FAILED,
-            details: errorMsg,
-          },
+          error: createStoreError(WORD_SAVE_FAILED, {
+            category: ErrorCategory.VALIDATION,
+            context: { reason: errorMsg },
+          }),
         })
-        // Keep duplicate behavior as rejected promise without throwing inside try/catch.
+        // Keep duplicate behavior as a rejected promise without throwing inside try/catch.
         return Promise.reject(new Error(errorMsg))
       }
 
-      // Offline-first: save to local SQLite
+      // Offline-first: save it to local SQLite
       // Generate word_id on a client for offline-first architecture
       const wordToAdd = {
         ...analyzedWord,
@@ -221,18 +224,15 @@ export const createWordActions = (
       set({ words: [...currentWords, wordToAdd] })
       return wordToAdd
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : UNKNOWN_ERROR
       Sentry.captureException(error, {
         tags: { operation: 'saveAnalyzedWord' },
         extra: { analyzedWord, collectionId, userId: get().currentUserId },
       })
 
       set({
-        error: {
-          message: WORD_SAVE_FAILED,
-          details: errorMessage,
-        },
+        error: createStoreError(WORD_SAVE_FAILED, {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
     }
   },
@@ -252,10 +252,10 @@ export const createWordActions = (
           false
         )
         set({
-          error: {
-            message: WORD_UPDATE_FAILED,
-            details: 'Invalid word ID',
-          },
+          error: createStoreError(WORD_UPDATE_FAILED, {
+            category: ErrorCategory.VALIDATION,
+            context: { reason: 'Invalid word ID' },
+          }),
         })
         return
       }
@@ -268,10 +268,10 @@ export const createWordActions = (
           false
         )
         set({
-          error: {
-            message: WORD_UPDATE_FAILED,
-            details: 'Invalid assessment',
-          },
+          error: createStoreError(WORD_UPDATE_FAILED, {
+            category: ErrorCategory.VALIDATION,
+            context: { reason: 'Invalid assessment' },
+          }),
         })
         return
       }
@@ -287,10 +287,10 @@ export const createWordActions = (
           false
         )
         set({
-          error: {
-            message: WORD_UPDATE_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(WORD_UPDATE_FAILED, {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return
       }
@@ -306,10 +306,10 @@ export const createWordActions = (
           'words'
         )
         set({
-          error: {
-            message: WORD_UPDATE_FAILED,
-            details: 'Word not found',
-          },
+          error: createStoreError(WORD_UPDATE_FAILED, {
+            category: ErrorCategory.VALIDATION,
+            context: { reason: 'Word not found' },
+          }),
         })
         return
       }
@@ -355,10 +355,9 @@ export const createWordActions = (
         false
       )
       set({
-        error: {
-          message: WORD_UPDATE_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(WORD_UPDATE_FAILED, {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
     }
   },
@@ -375,10 +374,10 @@ export const createWordActions = (
           false
         )
         set({
-          error: {
-            message: WORD_DELETE_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(WORD_DELETE_FAILED, {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return
       }
@@ -391,10 +390,9 @@ export const createWordActions = (
     } catch (error) {
       logError('Error deleting word', error, { wordId }, 'words', false)
       set({
-        error: {
-          message: WORD_DELETE_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(WORD_DELETE_FAILED, {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
     }
   },
@@ -411,10 +409,10 @@ export const createWordActions = (
           false
         )
         set({
-          error: {
-            message: WORD_IMAGE_UPDATE_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(WORD_IMAGE_UPDATE_FAILED, {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return
       }
@@ -444,10 +442,9 @@ export const createWordActions = (
         false
       )
       set({
-        error: {
-          message: WORD_IMAGE_UPDATE_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(WORD_IMAGE_UPDATE_FAILED, {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
     }
   },
@@ -464,10 +461,10 @@ export const createWordActions = (
           false
         )
         set({
-          error: {
-            message: WORD_MOVE_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(WORD_MOVE_FAILED, {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return null
       }
@@ -499,10 +496,9 @@ export const createWordActions = (
         false
       )
       set({
-        error: {
-          message: WORD_MOVE_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(WORD_MOVE_FAILED, {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
       return null
     }
@@ -520,10 +516,10 @@ export const createWordActions = (
           false
         )
         set({
-          error: {
-            message: WORD_RESET_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(WORD_RESET_FAILED, {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return
       }
@@ -561,10 +557,9 @@ export const createWordActions = (
         false
       )
       set({
-        error: {
-          message: WORD_RESET_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(WORD_RESET_FAILED, {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
     }
   },
@@ -578,10 +573,10 @@ export const createWordActions = (
       const userId = get().currentUserId
       if (!userId) {
         set({
-          error: {
-            message: WORDS_IMPORT_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(WORDS_IMPORT_FAILED, {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return false
       }
@@ -619,7 +614,7 @@ export const createWordActions = (
 
           await wordRepository.saveWords(normalizedImportedWords)
 
-          // Merge imported words by word_id to avoid duplicates in in-memory store.
+          // Merge imported words by word_id to avoid duplicates in the in-memory store.
           const currentWords = get().words
           const mergedWords = mergeWordsById(
             currentWords as Word[],
@@ -651,10 +646,10 @@ export const createWordActions = (
             false
           )
           set({
-            error: {
-              message: WORDS_IMPORT_FAILED,
-              details: getImportErrorMessage(error),
-            },
+            error: createStoreError(getImportErrorMessage(error), {
+              category: ErrorCategory.CLIENT,
+              originalError: error instanceof Error ? error : undefined,
+            }),
           })
           return false
         }
@@ -697,10 +692,9 @@ export const createWordActions = (
         false
       )
       set({
-        error: {
-          message: WORDS_IMPORT_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(WORDS_IMPORT_FAILED, {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
       return false
     }
@@ -718,10 +712,10 @@ export const createWordActions = (
           false
         )
         set({
-          error: {
-            message: WORD_REANALYZE_FAILED,
-            details: USER_NOT_AUTHENTICATED_ERROR,
-          },
+          error: createStoreError(WORD_REANALYZE_FAILED, {
+            category: ErrorCategory.CLIENT,
+            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+          }),
         })
         return null
       }
@@ -737,10 +731,10 @@ export const createWordActions = (
           'words'
         )
         set({
-          error: {
-            message: WORD_REANALYZE_FAILED,
-            details: 'Word not found',
-          },
+          error: createStoreError(WORD_REANALYZE_FAILED, {
+            category: ErrorCategory.VALIDATION,
+            context: { reason: 'Word not found' },
+          }),
         })
         return null
       }
@@ -751,7 +745,20 @@ export const createWordActions = (
       })
 
       if (!response || !response.data) {
-        throw new Error('Invalid response from word analysis')
+        logError(
+          INVALID_ANALYSIS_RESPONSE,
+          new Error(INVALID_ANALYSIS_RESPONSE),
+          { wordId },
+          'words',
+          false
+        )
+        set({
+          error: createStoreError(WORD_REANALYZE_FAILED, {
+            category: ErrorCategory.SERVER,
+            context: { reason: INVALID_ANALYSIS_RESPONSE },
+          }),
+        })
+        return null
       }
 
       const analysis = response.data
@@ -821,10 +828,9 @@ export const createWordActions = (
         extra: { wordId, userId: get().currentUserId },
       })
       set({
-        error: {
-          message: WORD_REANALYZE_FAILED,
-          details: error instanceof Error ? error.message : UNKNOWN_ERROR,
-        },
+        error: createStoreError(WORD_REANALYZE_FAILED, {
+          originalError: error instanceof Error ? error : undefined,
+        }),
       })
       return null
     }
