@@ -15,6 +15,8 @@ const LAYOUT = {
   SPACE_BETWEEN: 'space-between',
 } as const
 
+export const SECTION_HEADER_HEIGHT = 68
+
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -169,5 +171,27 @@ export const styles = StyleSheet.create({
   separator: {
     height: 1,
     marginLeft: 16,
+  },
+
+  // Glass section header overlay
+  sectionHeaderOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: SECTION_HEADER_HEIGHT,
+    zIndex: 10,
+    overflow: 'hidden',
+    paddingTop: 12,
+    paddingHorizontal: 16,
+  },
+
+  sectionHeaderHairline: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: Colors.transparent.hairlineLight,
   },
 })

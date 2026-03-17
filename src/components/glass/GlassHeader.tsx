@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, StyleSheet, useColorScheme } from 'react-native'
+import { Pressable } from 'react-native-gesture-handler'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { Colors } from '@/constants/Colors'
 import { TextThemed } from '@/components/Themed'
@@ -14,6 +15,7 @@ export type GlassHeaderProps = {
   withHairline?: boolean
   height?: number
   renderBackground?: boolean
+  onPress?: () => void
 }
 
 export const GlassHeader: React.FC<GlassHeaderProps> = ({
@@ -24,6 +26,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
   withHairline = true,
   height = GlassHeaderDefaults.height,
   renderBackground = true,
+  onPress,
 }) => {
   const colorScheme = useColorScheme()
   const isDarkMode = colorScheme === 'dark'
@@ -35,17 +38,18 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
   const fallbackColor = isDarkMode
     ? Colors.transparent.white05
     : Colors.transparent.white50
-  return (
-    <View
-      style={[
-        styles.wrapper,
-        {
-          height,
-          borderTopLeftRadius: roundedTop ? 16 : 0,
-          borderTopRightRadius: roundedTop ? 16 : 0,
-        },
-      ]}
-    >
+
+  const wrapperStyle = [
+    styles.wrapper,
+    {
+      height,
+      borderTopLeftRadius: roundedTop ? 16 : 0,
+      borderTopRightRadius: roundedTop ? 16 : 0,
+    },
+  ]
+
+  const headerContent = (
+    <>
       {renderBackground &&
         (reduceTransparency ? (
           <View
@@ -92,8 +96,18 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
           {rightSlot}
         </View>
       </View>
-    </View>
+    </>
   )
+
+  if (onPress) {
+    return (
+      <Pressable onPress={onPress} cancelable={false} style={wrapperStyle}>
+        {headerContent}
+      </Pressable>
+    )
+  }
+
+  return <View style={wrapperStyle}>{headerContent}</View>
 }
 
 const styles = StyleSheet.create({

@@ -5,8 +5,11 @@ import {
   View,
   ScrollView,
   RefreshControl,
+  StyleSheet,
+  useColorScheme,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import type { GestureType } from 'react-native-gesture-handler'
 import { scheduleOnRN } from 'react-native-worklets'
 import { useFocusEffect } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
@@ -30,14 +33,19 @@ import type { Word } from '@/types/database'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Sentry } from '@/lib/sentry'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
+import { ParentGestureContext } from '@/contexts/ParentGestureContext'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
+import { GlassHeaderDefaults } from '@/constants/GlassConstants'
 
 export default function ReviewScreen() {
+  const colorScheme = useColorScheme()
   const insets = useSafeAreaInsets()
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [isReanalyzing, setIsReanalyzing] = useState(false)
   const pronunciationRef = useRef<View>(null)
+  const tapGestureRef = useRef<GestureType | undefined>(undefined)
 
   const {
     // State
@@ -158,8 +166,10 @@ export default function ReviewScreen() {
   }, [refreshCount, startReviewSession])
 
   // Create completely stable gestures to prevent recreation
+  // withRef exposes this gesture so NonSwipeableArea can block it via context
   const tapGestureInstance = useMemo(() => {
     return Gesture.Tap()
+      .withRef(tapGestureRef)
       .maxDuration(200)
       .maxDistance(5)
       .onBegin(() => {
@@ -204,46 +214,54 @@ export default function ReviewScreen() {
     }
 
     try {
-      // Combine all stable gestures
-      const combinedGesture = Gesture.Exclusive(
-        panGestureInstance,
-        Gesture.Simultaneous(tapGestureInstance, doubleTapGestureInstance)
-      )
+      // Front: tap to flip + pan to navigate + double-tap for detail modal
+      // Back: only pan (no parent tap so buttons work); header handles flip back
+      const gesture = isFlipped
+        ? panGestureInstance
+        : Gesture.Exclusive(
+            panGestureInstance,
+            Gesture.Simultaneous(tapGestureInstance, doubleTapGestureInstance)
+          )
 
       return (
         <GestureErrorBoundary>
-          <GestureDetector gesture={combinedGesture}>
-            <ViewThemed style={reviewScreenStyles.flashcard}>
-              {!isFlipped ? (
-                <CardFront
-                  currentWord={currentWord}
-                  isPlayingAudio={isPlayingAudio}
-                  onPlayPronunciation={playAudio}
-                  pronunciationRef={pronunciationRef}
-                />
-              ) : (
-                <>
-                  <GlassHeader title={currentWord.dutch_lemma} />
-                  <UniversalWordCard
-                    word={currentWord}
-                    config={WordCardPresets.review.config}
-                    actions={{
-                      ...WordCardPresets.review.actions,
-                      onDelete: handleDeleteWord,
-                      showReanalyzeButton: true,
-                      onReanalyze: handleReanalyzeCurrentWord,
-                      isReanalyzing,
-                    }}
+          <ParentGestureContext.Provider value={tapGestureRef}>
+            <GestureDetector gesture={gesture}>
+              <ViewThemed style={reviewScreenStyles.flashcard}>
+                {!isFlipped ? (
+                  <CardFront
+                    currentWord={currentWord}
                     isPlayingAudio={isPlayingAudio}
                     onPlayPronunciation={playAudio}
-                    onChangeImage={openImageSelector}
-                    style={reviewScreenStyles.universalWordCard}
-                    contentStyle={{ paddingTop: 64 }}
+                    pronunciationRef={pronunciationRef}
                   />
-                </>
-              )}
-            </ViewThemed>
-          </GestureDetector>
+                ) : (
+                  <>
+                    <GlassHeader
+                      title={currentWord.dutch_lemma}
+                      onPress={handleFlipCard}
+                    />
+                    <UniversalWordCard
+                      word={currentWord}
+                      config={WordCardPresets.review.config}
+                      actions={{
+                        ...WordCardPresets.review.actions,
+                        onDelete: handleDeleteWord,
+                        showReanalyzeButton: true,
+                        onReanalyze: handleReanalyzeCurrentWord,
+                        isReanalyzing,
+                      }}
+                      isPlayingAudio={isPlayingAudio}
+                      onPlayPronunciation={playAudio}
+                      onChangeImage={openImageSelector}
+                      style={reviewScreenStyles.universalWordCard}
+                      contentStyle={{ paddingTop: GlassHeaderDefaults.height }}
+                    />
+                  </>
+                )}
+              </ViewThemed>
+            </GestureDetector>
+          </ParentGestureContext.Provider>
         </GestureErrorBoundary>
       )
     } catch (error) {
@@ -264,6 +282,7 @@ export default function ReviewScreen() {
     isPlayingAudio,
     isReanalyzing,
     playAudio,
+    handleFlipCard,
     handleDeleteWord,
     handleReanalyzeCurrentWord,
     openImageSelector,
@@ -379,48 +398,78 @@ export default function ReviewScreen() {
         {renderCard()}
       </ViewThemed>
 
-      <ViewThemed
+      <View
         style={[
-          reviewScreenStyles.buttonsContainer,
+          reviewScreenStyles.buttonsOverlay,
           { paddingBottom: insets.bottom + 24 },
         ]}
       >
-        <TouchableOpacity
-          testID="srs-again-button"
-          style={[reviewScreenStyles.srsButton, reviewScreenStyles.againButton]}
-          onPress={handleAgain}
-          disabled={isLoading}
-        >
-          <TextThemed style={reviewScreenStyles.buttonText}>Again</TextThemed>
-        </TouchableOpacity>
+        <PlatformBlurView
+          tint={GlassHeaderDefaults.tint}
+          intensity={
+            colorScheme === 'dark'
+              ? GlassHeaderDefaults.intensityDark
+              : GlassHeaderDefaults.intensityLight
+          }
+          fallbackColor={
+            colorScheme === 'dark'
+              ? Colors.transparent.white05
+              : Colors.transparent.white50
+          }
+          style={StyleSheet.absoluteFill}
+          blurMethod="dimezisBlurView"
+        />
+        <View style={reviewScreenStyles.hairline} />
+        <View style={reviewScreenStyles.buttonsRow}>
+          <TouchableOpacity
+            testID="srs-again-button"
+            style={[
+              reviewScreenStyles.srsButton,
+              reviewScreenStyles.againButton,
+            ]}
+            onPress={handleAgain}
+            disabled={isLoading}
+          >
+            <TextThemed style={reviewScreenStyles.buttonText}>Again</TextThemed>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          testID="srs-hard-button"
-          style={[reviewScreenStyles.srsButton, reviewScreenStyles.hardButton]}
-          onPress={handleHard}
-          disabled={isLoading}
-        >
-          <TextThemed style={reviewScreenStyles.buttonText}>Hard</TextThemed>
-        </TouchableOpacity>
+          <TouchableOpacity
+            testID="srs-hard-button"
+            style={[
+              reviewScreenStyles.srsButton,
+              reviewScreenStyles.hardButton,
+            ]}
+            onPress={handleHard}
+            disabled={isLoading}
+          >
+            <TextThemed style={reviewScreenStyles.buttonText}>Hard</TextThemed>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          testID="srs-good-button"
-          style={[reviewScreenStyles.srsButton, reviewScreenStyles.goodButton]}
-          onPress={handleGood}
-          disabled={isLoading}
-        >
-          <TextThemed style={reviewScreenStyles.buttonText}>Good</TextThemed>
-        </TouchableOpacity>
+          <TouchableOpacity
+            testID="srs-good-button"
+            style={[
+              reviewScreenStyles.srsButton,
+              reviewScreenStyles.goodButton,
+            ]}
+            onPress={handleGood}
+            disabled={isLoading}
+          >
+            <TextThemed style={reviewScreenStyles.buttonText}>Good</TextThemed>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          testID="srs-easy-button"
-          style={[reviewScreenStyles.srsButton, reviewScreenStyles.easyButton]}
-          onPress={handleEasy}
-          disabled={isLoading}
-        >
-          <TextThemed style={reviewScreenStyles.buttonText}>Easy</TextThemed>
-        </TouchableOpacity>
-      </ViewThemed>
+          <TouchableOpacity
+            testID="srs-easy-button"
+            style={[
+              reviewScreenStyles.srsButton,
+              reviewScreenStyles.easyButton,
+            ]}
+            onPress={handleEasy}
+            disabled={isLoading}
+          >
+            <TextThemed style={reviewScreenStyles.buttonText}>Easy</TextThemed>
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {currentWord && (
         <ImageSelector
