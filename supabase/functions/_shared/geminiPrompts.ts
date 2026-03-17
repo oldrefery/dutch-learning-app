@@ -64,7 +64,7 @@ You are an expert Dutch language teacher and linguist. Your primary goal is to p
   "expression_type": "idiom" | "phrase" | "collocation" | "compound" | "proverb" | "saying" | "fixed_expression" | "interjection" | "abbreviation" | null,
   "register": "formal" | "informal" | "neutral" | null,
   "confidence_score": 0.0-1.0,
-  "analysis_notes": "Correction notes or other brief analysis notes"
+  "analysis_notes": "Detailed analysis notes: etymology, usage nuances, common collocations, register notes, learner tips, and any corrections applied"
 }
 
 **DETAILED INSTRUCTIONS:**

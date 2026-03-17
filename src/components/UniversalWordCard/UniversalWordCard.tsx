@@ -98,6 +98,7 @@ export function UniversalWordCard({
       <ViewThemed style={[styles.container, style]}>
         <ScrollView
           style={styles.scrollContainer}
+          contentContainerStyle={{ paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}
           bounces={true}
         >
