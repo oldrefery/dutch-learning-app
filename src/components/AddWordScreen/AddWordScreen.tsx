@@ -65,7 +65,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const {
     isAdding,
     selectedCollection,
-    setSelectedCollection,
+    selectCollection,
     showImageSelector,
     addWord,
     openImageSelector,
@@ -363,7 +363,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
             isCheckingDuplicate={isCheckingDuplicate}
             selectedCollection={selectedCollection}
             collections={collections}
-            onCollectionSelect={setSelectedCollection}
+            onCollectionSelect={selectCollection}
             onCancel={handleCancel}
             variant="glass"
           />
