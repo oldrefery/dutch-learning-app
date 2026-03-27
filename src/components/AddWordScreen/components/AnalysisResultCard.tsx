@@ -7,6 +7,7 @@ import { Colors } from '@/constants/Colors'
 import { CopyButton } from '@/components/CopyButton'
 import { GlassCapsuleButton } from '@/components/glass/buttons'
 import { formatAnalysisResultForCopying } from '@/utils/wordTextFormatter'
+import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import type { AnalysisResultCardProps } from '../types/AddWordTypes'
 import { analysisResultStyles } from '../styles/AnalysisResultCard.styles'
 
@@ -91,6 +92,9 @@ export function AnalysisResultCard({
               ? ` (${analysisResult.expression_type || 'expression'})`
               : ''}
             {analysisResult.is_separable ? ' (separable)' : ''}
+            {isDisplayableRegister(analysisResult.register)
+              ? ` (${getRegisterLabel(analysisResult.register)})`
+              : ''}
           </TextThemed>
         </ViewThemed>
 

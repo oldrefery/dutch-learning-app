@@ -4,6 +4,7 @@ import { CopyButton } from '@/components/CopyButton'
 import { GlassIconButton } from '@/components/glass/buttons/GlassIconButton'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { formatWordForCopying } from '@/utils/wordTextFormatter'
+import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
 
@@ -152,28 +153,26 @@ export function HeaderSection({
             </ViewThemed>
           )}
 
-          {'register' in word &&
-            word.register &&
-            word.register !== 'neutral' && (
-              <ViewThemed
+          {'register' in word && isDisplayableRegister(word.register) && (
+            <ViewThemed
+              style={[
+                styles.grammarTag,
+                word.register === 'formal' && styles.registerFormalTag,
+                word.register === 'informal' && styles.registerInformalTag,
+              ]}
+            >
+              <TextThemed
                 style={[
-                  styles.grammarTag,
-                  word.register === 'formal' && styles.registerFormalTag,
-                  word.register === 'informal' && styles.registerInformalTag,
+                  styles.grammarTagText,
+                  word.register === 'formal' && styles.registerFormalText,
+                  word.register === 'informal' && styles.registerInformalText,
                 ]}
+                selectable
               >
-                <TextThemed
-                  style={[
-                    styles.grammarTagText,
-                    word.register === 'formal' && styles.registerFormalText,
-                    word.register === 'informal' && styles.registerInformalText,
-                  ]}
-                  selectable
-                >
-                  {word.register}
-                </TextThemed>
-              </ViewThemed>
-            )}
+                {getRegisterLabel(word.register)}
+              </TextThemed>
+            </ViewThemed>
+          )}
 
           {'preposition' in word && word.preposition && (
             <ViewThemed style={styles.grammarTag}>

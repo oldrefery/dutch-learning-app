@@ -4,7 +4,9 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { Colors } from '@/constants/Colors'
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { useSettingsStore } from '@/stores/useSettingsStore'
+import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import type { ReviewCardProps } from './types'
 
 interface CardFrontProps extends ReviewCardProps {
@@ -19,6 +21,7 @@ export function CardFront({
   onPlayPronunciation,
   pronunciationRef,
 }: CardFrontProps) {
+  const colorScheme = useNormalizedColorScheme()
   const autoPlayPronunciation = useSettingsStore(
     state => state.autoPlayPronunciation
   )
@@ -69,13 +72,42 @@ export function CardFront({
           />
         </NonSwipeableArea>
       </ViewThemed>
-      <TextThemed
-        style={styles.partOfSpeech}
-        lightColor={Colors.neutral[500]}
-        darkColor={Colors.dark.textSecondary}
-      >
-        {currentWord.part_of_speech}
-      </TextThemed>
+      <ViewThemed style={styles.posRow}>
+        <TextThemed
+          style={styles.partOfSpeech}
+          lightColor={Colors.neutral[500]}
+          darkColor={Colors.dark.textSecondary}
+        >
+          {currentWord.part_of_speech}
+        </TextThemed>
+        {isDisplayableRegister(currentWord.register) && (
+          <ViewThemed
+            style={[
+              styles.registerBadge,
+              registerBadgeThemeStyles[currentWord.register][colorScheme],
+            ]}
+            accessibilityLabel={`${getRegisterLabel(currentWord.register)} register`}
+            accessible
+          >
+            <TextThemed
+              style={styles.registerText}
+              lightColor={
+                currentWord.register === 'formal'
+                  ? Colors.primary.DEFAULT
+                  : Colors.warning.DEFAULT
+              }
+              darkColor={
+                currentWord.register === 'formal'
+                  ? Colors.primary.darkMode
+                  : Colors.warning.darkModeBadgeText
+              }
+              importantForAccessibility="no"
+            >
+              {getRegisterLabel(currentWord.register)}
+            </TextThemed>
+          </ViewThemed>
+        )}
+      </ViewThemed>
       <TextThemed
         style={styles.tapHint}
         lightColor={Colors.neutral[400]}
@@ -107,13 +139,52 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  posRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 24,
+  },
   partOfSpeech: {
     fontSize: 16,
     fontStyle: 'italic',
-    marginBottom: 24,
+  },
+  registerBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  registerFormal: {
+    borderColor: Colors.primary.DEFAULT,
+    backgroundColor: Colors.primary.light,
+  },
+  registerFormalDark: {
+    borderColor: Colors.primary.darkMode,
+    backgroundColor: Colors.transparent.primary20,
+  },
+  registerInformal: {
+    borderColor: Colors.warning.DEFAULT,
+    backgroundColor: Colors.warning.light,
+  },
+  registerInformalDark: {
+    borderColor: Colors.warning.dark,
+    backgroundColor: Colors.warning.darkModeBadge,
+  },
+  registerText: {
+    fontSize: 12,
+    fontWeight: '500',
   },
   tapHint: {
     fontSize: 14,
     textAlign: 'center',
   },
 })
+
+const registerBadgeThemeStyles = {
+  formal: { light: styles.registerFormal, dark: styles.registerFormalDark },
+  informal: {
+    light: styles.registerInformal,
+    dark: styles.registerInformalDark,
+  },
+} as const

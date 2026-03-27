@@ -4,6 +4,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { Colors } from '@/constants/Colors'
+import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import type { ReviewCardProps } from './types'
 
 interface WordHeaderProps extends ReviewCardProps {
@@ -74,7 +75,9 @@ export function WordHeader({
   }
 
   const buildMetadataText = () => {
-    const parts = [currentWord.part_of_speech]
+    const parts: string[] = currentWord.part_of_speech
+      ? [currentWord.part_of_speech]
+      : []
 
     if (currentWord.is_irregular) parts.push('irregular')
     if (currentWord.is_reflexive) parts.push('reflexive')
@@ -86,6 +89,10 @@ export function WordHeader({
 
     if (currentWord.is_expression) {
       parts.push(currentWord.expression_type || 'expression')
+    }
+
+    if (isDisplayableRegister(currentWord.register)) {
+      parts.push(getRegisterLabel(currentWord.register))
     }
 
     return parts.join(' • ')
