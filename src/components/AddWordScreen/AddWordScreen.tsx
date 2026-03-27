@@ -9,6 +9,7 @@ import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
 import { CompactWordInput } from './components/CompactWordInput'
 import { DuplicateBanner } from './components/DuplicateBanner'
+import { AnalysisEmptyState } from './components/AnalysisEmptyState'
 import {
   UniversalWordCard,
   WordCardPresets,
@@ -386,6 +387,8 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           }}
         />
       </View>
+
+      {!analysisResult && !isAnalyzing && <AnalysisEmptyState />}
 
       {analysisResult && (
         <ViewThemed style={{ flex: 1 }}>
