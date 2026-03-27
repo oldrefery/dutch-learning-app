@@ -11,15 +11,17 @@ export function isDisplayableRegister(
   return register != null && register !== 'neutral'
 }
 
-const REGISTER_LABELS: Record<string, string> = {
+type DisplayableRegister = 'formal' | 'informal'
+
+const REGISTER_LABELS: Record<DisplayableRegister, string> = {
   formal: 'Formal',
   informal: 'Informal',
 }
 
 /**
- * Returns a capitalized display label for a register value.
- * Falls back to the raw value if no mapping exists.
+ * Returns a capitalized display label for a displayable register value.
+ * Only accepts narrowed register values ('formal' | 'informal').
  */
-export function getRegisterLabel(register: string): string {
-  return REGISTER_LABELS[register] ?? register
+export function getRegisterLabel(register: DisplayableRegister): string {
+  return REGISTER_LABELS[register]
 }

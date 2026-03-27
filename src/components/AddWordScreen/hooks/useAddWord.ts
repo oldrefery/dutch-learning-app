@@ -6,6 +6,31 @@ import { useSettingsStore } from '@/stores/useSettingsStore'
 import { useCollections } from '@/hooks/useCollections'
 import type { Collection, GeminiWordAnalysis } from '@/types/database'
 
+/**
+ * Resolves which collection to select based on priority:
+ * preselected (route param) > last used (persisted) > first available.
+ * Returns null if no valid collection found.
+ */
+function resolveCollection(
+  collections: Collection[],
+  preselectedId?: string
+): { collection: Collection; isPersistedMatch: boolean } | null {
+  if (preselectedId) {
+    const preselected = collections.find(c => c.collection_id === preselectedId)
+    if (preselected) return { collection: preselected, isPersistedMatch: false }
+  }
+
+  const lastId = useSettingsStore.getState().lastSelectedCollectionId
+  if (lastId) {
+    const lastUsed = collections.find(c => c.collection_id === lastId)
+    if (lastUsed) return { collection: lastUsed, isPersistedMatch: true }
+  }
+
+  return collections.length > 0
+    ? { collection: collections[0], isPersistedMatch: false }
+    : null
+}
+
 export const useAddWord = (preselectedCollectionId?: string) => {
   const [isAdding, setIsAdding] = useState(false)
   const [selectedCollection, setSelectedCollection] =
@@ -33,48 +58,36 @@ export const useAddWord = (preselectedCollectionId?: string) => {
       .setLastSelectedCollectionId(collection?.collection_id ?? null)
   }, [])
 
-  // Auto-select collection: preselected > last used > first available
-  // Also re-select if the current selection is no longer valid (e.g., collection was deleted)
+  // Auto-select collection when needed
   useEffect(() => {
     if (!isSettingsHydrated) return
 
     if (collections.length === 0) {
-      if (selectedCollection) {
-        selectCollection(null)
-      }
+      if (selectedCollection) selectCollection(null)
       return
     }
 
-    const isCurrentCollectionValid =
+    const isCurrentValid =
       selectedCollection &&
       collections.some(
         c => c.collection_id === selectedCollection.collection_id
       )
+    if (isCurrentValid) return
 
-    if (!selectedCollection || !isCurrentCollectionValid) {
-      // Priority 1: preselected from route params
-      if (preselectedCollectionId) {
-        const preselected = collections.find(
-          c => c.collection_id === preselectedCollectionId
-        )
-        if (preselected) {
-          selectCollection(preselected)
-          return
-        }
-      }
-      // Priority 2: last used collection (persisted via AsyncStorage)
-      const lastId = useSettingsStore.getState().lastSelectedCollectionId
-      if (lastId) {
-        const lastUsed = collections.find(c => c.collection_id === lastId)
-        if (lastUsed) {
-          setSelectedCollection(lastUsed)
-          return
-        }
-        // Stale reference — collection was deleted, clear persisted ID
-        useSettingsStore.getState().setLastSelectedCollectionId(null)
-      }
-      // Priority 3: first available
-      selectCollection(collections[0])
+    // Clean up stale persisted ID before resolution
+    const lastId = useSettingsStore.getState().lastSelectedCollectionId
+    if (lastId && !collections.some(c => c.collection_id === lastId)) {
+      useSettingsStore.getState().setLastSelectedCollectionId(null)
+    }
+
+    const resolved = resolveCollection(collections, preselectedCollectionId)
+    if (!resolved) return
+
+    // Skip persistence write if the match came from persisted store (already saved)
+    if (resolved.isPersistedMatch) {
+      setSelectedCollection(resolved.collection)
+    } else {
+      selectCollection(resolved.collection)
     }
   }, [
     collections,
