@@ -57,6 +57,8 @@ export default function CollectionContent({
 }: CollectionContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const flatListRef = useRef<FlatList>(null)
+  const scrollRetryRef = useRef(false)
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
 
   const filteredWords = useMemo(() => {
@@ -71,21 +73,36 @@ export default function CollectionContent({
 
   // Scroll to highlighted word when component mounts or words change
   useEffect(() => {
-    if (highlightWordId && filteredWords.length > 0) {
-      const wordIndex = filteredWords.findIndex(
-        word => word.word_id === highlightWordId
-      )
-      if (wordIndex !== -1) {
-        // Small delay to ensure FlatList is fully rendered
-        const timer = setTimeout(() => {
-          flatListRef.current?.scrollToIndex({
-            index: wordIndex,
-            animated: true,
-            viewPosition: 0.3, // Position highlighted item at 30% from the top
-          })
-        }, 500)
+    // Clear any pending retry timer from previous scroll attempt
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current)
+      retryTimerRef.current = null
+    }
 
-        return () => clearTimeout(timer)
+    if (!highlightWordId || filteredWords.length === 0) return
+
+    const wordIndex = filteredWords.findIndex(
+      word => word.word_id === highlightWordId
+    )
+    if (wordIndex === -1) return
+
+    // Reset retry guard for each new scroll request
+    scrollRetryRef.current = false
+
+    // Delay to ensure FlatList has rendered enough items
+    const timer = setTimeout(() => {
+      flatListRef.current?.scrollToIndex({
+        index: wordIndex,
+        animated: true,
+        viewPosition: 0.3,
+      })
+    }, 600)
+
+    return () => {
+      clearTimeout(timer)
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current)
+        retryTimerRef.current = null
       }
     }
   }, [highlightWordId, filteredWords])
@@ -187,14 +204,23 @@ export default function CollectionContent({
       }}
       scrollEventThrottle={16}
       onScrollToIndexFailed={info => {
-        // Fallback: scroll to offset if the index scroll fails
-        const wait = new Promise(resolve => setTimeout(resolve, 500))
-        wait.then(() => {
-          flatListRef.current?.scrollToOffset({
-            offset: info.averageItemLength * info.index,
-            animated: true,
-          })
+        // Guard against infinite retry loop
+        if (scrollRetryRef.current) return
+        scrollRetryRef.current = true
+
+        // Scroll to estimated offset first to force rendering items near target
+        flatListRef.current?.scrollToOffset({
+          offset: info.averageItemLength * info.index,
+          animated: false,
         })
+        // Retry after items at the target offset are rendered
+        retryTimerRef.current = setTimeout(() => {
+          flatListRef.current?.scrollToIndex({
+            index: info.index,
+            animated: true,
+            viewPosition: 0.3,
+          })
+        }, 300)
       }}
       renderItem={renderItem}
       ListEmptyComponent={renderEmptyComponent}
