@@ -9,6 +9,7 @@ import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
 import { CompactWordInput } from './components/CompactWordInput'
 import { DuplicateBanner } from './components/DuplicateBanner'
+import { AnalysisEmptyState } from './components/AnalysisEmptyState'
 import {
   UniversalWordCard,
   WordCardPresets,
@@ -65,7 +66,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const {
     isAdding,
     selectedCollection,
-    setSelectedCollection,
+    selectCollection,
     showImageSelector,
     addWord,
     openImageSelector,
@@ -363,7 +364,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
             isCheckingDuplicate={isCheckingDuplicate}
             selectedCollection={selectedCollection}
             collections={collections}
-            onCollectionSelect={setSelectedCollection}
+            onCollectionSelect={selectCollection}
             onCancel={handleCancel}
             variant="glass"
           />
@@ -386,6 +387,8 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           }}
         />
       </View>
+
+      {!analysisResult && !isAnalyzing && <AnalysisEmptyState />}
 
       {analysisResult && (
         <ViewThemed style={{ flex: 1 }}>

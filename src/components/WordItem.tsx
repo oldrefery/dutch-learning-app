@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { WordStatusType } from '@/components/WordDetailModal/types'
+import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import type { Word } from '@/types/database'
 
 interface WordItemProps {
@@ -39,9 +40,23 @@ export default function WordItem({ word, index, onPress }: WordItemProps) {
           )}
         </ViewThemed>
 
-        <TextThemed style={styles.translationText}>
-          {word.translations.en?.[0] || 'No translation'}
-        </TextThemed>
+        <ViewThemed style={styles.translationRow}>
+          <TextThemed style={styles.translationText}>
+            {word.translations.en?.[0] || 'No translation'}
+          </TextThemed>
+          {word.part_of_speech && (
+            <TextThemed
+              style={styles.posText}
+              lightColor={Colors.neutral[400]}
+              darkColor={Colors.dark.textTertiary}
+            >
+              {word.part_of_speech}
+              {isDisplayableRegister(word.register)
+                ? ` · ${getRegisterLabel(word.register)}`
+                : ''}
+            </TextThemed>
+          )}
+        </ViewThemed>
       </ViewThemed>
 
       <ViewThemed style={styles.accessoryContent}>
@@ -89,9 +104,18 @@ const styles = StyleSheet.create({
     color: Colors.neutral[500],
     marginLeft: 8,
   },
+  translationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   translationText: {
     fontSize: 15,
     color: Colors.neutral[500],
+  },
+  posText: {
+    fontSize: 12,
+    fontStyle: 'italic',
   },
   accessoryContent: {
     flexDirection: 'row',

@@ -1,53 +1,101 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 import { useCollections } from '@/hooks/useCollections'
 import type { Collection, GeminiWordAnalysis } from '@/types/database'
+
+/**
+ * Resolves which collection to select based on priority:
+ * preselected (route param) > last used (persisted) > first available.
+ * Returns null if no valid collection found.
+ */
+function resolveCollection(
+  collections: Collection[],
+  preselectedId?: string
+): { collection: Collection; isPersistedMatch: boolean } | null {
+  if (preselectedId) {
+    const preselected = collections.find(c => c.collection_id === preselectedId)
+    if (preselected) return { collection: preselected, isPersistedMatch: false }
+  }
+
+  const lastId = useSettingsStore.getState().lastSelectedCollectionId
+  if (lastId) {
+    const lastUsed = collections.find(c => c.collection_id === lastId)
+    if (lastUsed) return { collection: lastUsed, isPersistedMatch: true }
+  }
+
+  return collections.length > 0
+    ? { collection: collections[0], isPersistedMatch: false }
+    : null
+}
 
 export const useAddWord = (preselectedCollectionId?: string) => {
   const [isAdding, setIsAdding] = useState(false)
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null)
   const [showImageSelector, setShowImageSelector] = useState(false)
+  const [isSettingsHydrated, setIsSettingsHydrated] = useState(
+    useSettingsStore.persist.hasHydrated()
+  )
 
   const { saveAnalyzedWord, clearError } = useApplicationStore()
   const { collections } = useCollections()
 
-  // Auto-select a preselected collection or first collection if available and none selected
-  // Also re-select if the current selection is no longer valid (e.g., a collection was deleted)
+  // Wait for settings store hydration from AsyncStorage
   useEffect(() => {
+    if (isSettingsHydrated) return
+    return useSettingsStore.persist.onFinishHydration(() => {
+      setIsSettingsHydrated(true)
+    })
+  }, [isSettingsHydrated])
+
+  const selectCollection = useCallback((collection: Collection | null) => {
+    setSelectedCollection(collection)
+    useSettingsStore
+      .getState()
+      .setLastSelectedCollectionId(collection?.collection_id ?? null)
+  }, [])
+
+  // Auto-select collection when needed
+  useEffect(() => {
+    if (!isSettingsHydrated) return
+
     if (collections.length === 0) {
-      // No collections available - clear selection
-      if (selectedCollection) {
-        setSelectedCollection(null)
-      }
+      if (selectedCollection) selectCollection(null)
       return
     }
 
-    // Check if a currently selected collection is still valid
-    const isCurrentCollectionValid =
+    const isCurrentValid =
       selectedCollection &&
       collections.some(
         c => c.collection_id === selectedCollection.collection_id
       )
+    if (isCurrentValid) return
 
-    // If no collection selected OR current selection is invalid
-    if (!selectedCollection || !isCurrentCollectionValid) {
-      // Try to select a preselected collection first
-      if (preselectedCollectionId) {
-        const preselectedCollection = collections.find(
-          c => c.collection_id === preselectedCollectionId
-        )
-        if (preselectedCollection) {
-          setSelectedCollection(preselectedCollection)
-          return
-        }
-      }
-      // Otherwise select first available collection
-      setSelectedCollection(collections[0])
+    // Clean up stale persisted ID before resolution
+    const lastId = useSettingsStore.getState().lastSelectedCollectionId
+    if (lastId && !collections.some(c => c.collection_id === lastId)) {
+      useSettingsStore.getState().setLastSelectedCollectionId(null)
     }
-  }, [collections, selectedCollection, preselectedCollectionId])
+
+    const resolved = resolveCollection(collections, preselectedCollectionId)
+    if (!resolved) return
+
+    // Skip persistence write if the match came from persisted store (already saved)
+    if (resolved.isPersistedMatch) {
+      setSelectedCollection(resolved.collection)
+    } else {
+      selectCollection(resolved.collection)
+    }
+  }, [
+    collections,
+    selectedCollection,
+    preselectedCollectionId,
+    selectCollection,
+    isSettingsHydrated,
+  ])
 
   const addWord = async (analysisResult: GeminiWordAnalysis) => {
     setIsAdding(true)
@@ -61,7 +109,7 @@ export const useAddWord = (preselectedCollectionId?: string) => {
           targetCollection = await useApplicationStore
             .getState()
             .createNewCollection('My Words')
-          setSelectedCollection(targetCollection)
+          selectCollection(targetCollection)
         } catch {
           ToastService.show(
             'Failed to create collection. Please try again.',
@@ -108,7 +156,7 @@ export const useAddWord = (preselectedCollectionId?: string) => {
   return {
     isAdding,
     selectedCollection,
-    setSelectedCollection,
+    selectCollection,
     showImageSelector,
     addWord,
     openImageSelector,

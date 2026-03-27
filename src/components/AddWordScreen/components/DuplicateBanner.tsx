@@ -35,7 +35,10 @@ export function DuplicateBanner({
     onNavigateToCollection?.()
     router.push({
       pathname: '/collection/[id]',
-      params: { id: duplicateWord.collection_id },
+      params: {
+        id: duplicateWord.collection_id,
+        highlightWordId: duplicateWord.word_id,
+      },
     })
   }
 
