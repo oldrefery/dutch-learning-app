@@ -462,4 +462,97 @@ describe('retryUtils', () => {
       jest.useFakeTimers()
     })
   })
+
+  describe('withTimeout', () => {
+    it('should resolve when promise completes before timeout', async () => {
+      const { withTimeout } = require('../retryUtils')
+
+      jest.useRealTimers()
+      const fn = () => Promise.resolve('result')
+      const result = await withTimeout(fn, 5000)
+
+      expect(result).toBe('result')
+      jest.useFakeTimers()
+    })
+
+    it('should reject with NetworkError when promise exceeds timeout', async () => {
+      const { withTimeout } = require('../retryUtils')
+
+      jest.useRealTimers()
+      const fn = () => new Promise(resolve => setTimeout(resolve, 500))
+
+      await expect(withTimeout(fn, 50)).rejects.toThrow('Operation timed out')
+      jest.useFakeTimers()
+    })
+
+    it('should use custom error message', async () => {
+      const { withTimeout } = require('../retryUtils')
+
+      jest.useRealTimers()
+      const fn = () => new Promise(resolve => setTimeout(resolve, 500))
+
+      await expect(withTimeout(fn, 50, 'Custom timeout')).rejects.toThrow(
+        'Custom timeout'
+      )
+      jest.useFakeTimers()
+    })
+
+    it('should propagate original promise rejection', async () => {
+      const { withTimeout } = require('../retryUtils')
+
+      jest.useRealTimers()
+      const fn = () => Promise.reject(new Error('Original error'))
+
+      await expect(withTimeout(fn, 5000)).rejects.toThrow('Original error')
+      jest.useFakeTimers()
+    })
+  })
+
+  describe('retrySupabaseFunction', () => {
+    it('should succeed on first attempt', async () => {
+      const { retrySupabaseFunction } = require('../retryUtils')
+
+      jest.useRealTimers()
+      const fn = jest.fn().mockResolvedValue('data')
+
+      const result = await retrySupabaseFunction(fn, {
+        functionName: 'gemini-handler',
+        operation: 'analyze',
+      })
+
+      expect(result).toBe('data')
+      expect(fn).toHaveBeenCalledTimes(1)
+      jest.useFakeTimers()
+    })
+
+    it('should retry on retryable error', async () => {
+      const { retrySupabaseFunction } = require('../retryUtils')
+
+      jest.useRealTimers()
+      const fn = jest
+        .fn()
+        .mockRejectedValueOnce(new TypeError('Network request failed'))
+        .mockResolvedValue('data')
+
+      const result = await retrySupabaseFunction(fn, {
+        functionName: 'test-fn',
+      })
+
+      expect(result).toBe('data')
+      expect(fn).toHaveBeenCalledTimes(2)
+      jest.useFakeTimers()
+    })
+
+    it('should work without context parameter', async () => {
+      const { retrySupabaseFunction } = require('../retryUtils')
+
+      jest.useRealTimers()
+      const fn = jest.fn().mockResolvedValue('data')
+
+      const result = await retrySupabaseFunction(fn)
+
+      expect(result).toBe('data')
+      jest.useFakeTimers()
+    })
+  })
 })

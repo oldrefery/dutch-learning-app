@@ -23,22 +23,40 @@ module.exports = {
 
   coverageThreshold: {
     global: {
-      branches: 8,
-      functions: 10,
-      lines: 15,
-      statements: 15,
+      branches: 2,
+      functions: 3,
+      lines: 7,
+      statements: 7,
     },
     './src/utils': {
-      branches: 65,
-      functions: 50,
-      lines: 65,
-      statements: 65,
+      branches: 90,
+      functions: 95,
+      lines: 95,
+      statements: 95,
     },
     './src/services': {
-      branches: 40,
-      functions: 65,
-      lines: 55,
-      statements: 55,
+      branches: 60,
+      functions: 80,
+      lines: 73,
+      statements: 73,
+    },
+    './src/stores': {
+      branches: 50,
+      functions: 50,
+      lines: 80,
+      statements: 80,
+    },
+    './src/db': {
+      branches: 50,
+      functions: 55,
+      lines: 50,
+      statements: 50,
+    },
+    './src/hooks': {
+      branches: 35,
+      functions: 45,
+      lines: 40,
+      statements: 40,
     },
   },
 
