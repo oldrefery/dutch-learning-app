@@ -31,19 +31,28 @@ export const DEFAULT_RETRY_CONFIG: RetryConfig = {
  * Check if error is retryable (network errors only)
  */
 export function isRetryableError(error: unknown): boolean {
-  // Network errors from fetch
+  // Network errors from fetch (including iOS-specific messages)
   if (error instanceof TypeError) {
     const message = error.message.toLowerCase()
     return (
       message.includes('network request failed') ||
       message.includes('network error') ||
       message.includes('fetch failed') ||
-      message.includes('failed to fetch')
+      message.includes('failed to fetch') ||
+      message.includes('request timed out') ||
+      message.includes('the internet connection appears to be offline') ||
+      message.includes(
+        'a server with the specified hostname could not be found'
+      )
     )
   }
 
-  // Supabase FunctionsFetchError
-  if (error instanceof Error && error.name === 'FunctionsFetchError') {
+  // Supabase FunctionsFetchError or FunctionsRelayError
+  if (
+    error instanceof Error &&
+    (error.name === 'FunctionsFetchError' ||
+      error.name === 'FunctionsRelayError')
+  ) {
     return true
   }
 
@@ -62,22 +71,25 @@ export function isRetryableError(error: unknown): boolean {
     )
   }
 
-  // Server errors 503/504 are retryable
+  // Server errors 503/504/546 are retryable
+  // 546 is Supabase-specific WORKER_LIMIT (CPU/memory exhausted)
   if (
     typeof error === 'object' &&
     error !== null &&
     'status' in error &&
     typeof error.status === 'number'
   ) {
-    return error.status === 503 || error.status === 504
+    return error.status === 503 || error.status === 504 || error.status === 546
   }
 
   return false
 }
 
 /**
- * Calculate delay with exponential backoff
- * Formula: min(initialDelay * 2^attempt, maxDelay)
+ * Calculate delay with exponential backoff and equal jitter
+ * Formula: base = min(initialDelay * 2^attempt, maxDelay)
+ *          delay = base/2 + random(0, base/2)
+ * Equal jitter prevents retry storms while guaranteeing a minimum delay
  */
 export function calculateBackoffDelay(
   attempt: number,
@@ -85,7 +97,9 @@ export function calculateBackoffDelay(
   maxDelayMs: number
 ): number {
   const exponentialDelay = initialDelayMs * Math.pow(2, attempt)
-  return Math.min(exponentialDelay, maxDelayMs)
+  const capped = Math.min(exponentialDelay, maxDelayMs)
+  const halfCapped = capped / 2
+  return Math.floor(halfCapped + Math.random() * halfCapped)
 }
 
 /**

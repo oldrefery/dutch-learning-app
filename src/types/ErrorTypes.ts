@@ -3,7 +3,7 @@
  * Following Supabase and React Native best practices for 2025
  */
 
-import { FunctionsFetchError } from '@supabase/supabase-js'
+import { FunctionsFetchError, FunctionsRelayError } from '@supabase/supabase-js'
 
 // Error categories for user-facing messages
 export enum ErrorCategory {
@@ -163,7 +163,13 @@ const NETWORK_ERROR_PATTERNS = [
   'fetch failed',
   'connection refused',
   'econnrefused',
+  'request timed out',
+  'the internet connection appears to be offline',
+  'a server with the specified hostname could not be found',
 ]
+
+const NETWORK_USER_MESSAGE =
+  'Connection error. Please check your internet and try again.'
 
 const isKnownAppError = (error: unknown): error is AppError =>
   error instanceof NetworkError ||
@@ -206,7 +212,9 @@ const categorizeByStatusCode = (
       statusError.message || 'Server error',
       statusError.status,
       'Server error. Please try again later.',
-      statusError.status === 503 || statusError.status === 504,
+      statusError.status === 503 ||
+        statusError.status === 504 ||
+        statusError.status === 546,
       originalError
     )
   }
@@ -217,11 +225,7 @@ const categorizeByStatusCode = (
 const categorizeGenericError = (error: Error): AppError => {
   const errorMessage = error.message.toLowerCase()
   if (NETWORK_ERROR_PATTERNS.some(pattern => errorMessage.includes(pattern))) {
-    return new NetworkError(
-      error.message,
-      'Connection error. Please check your internet and try again.',
-      error
-    )
+    return new NetworkError(error.message, NETWORK_USER_MESSAGE, error)
   }
 
   return new ServerError(
@@ -261,9 +265,18 @@ export function categorizeSupabaseError(error: unknown): AppError {
   if (error instanceof FunctionsFetchError) {
     return new NetworkError(
       'Failed to reach Edge Function',
-      'Connection error. Please check your internet and try again.',
+      NETWORK_USER_MESSAGE,
       error as Error,
       { errorType: 'FunctionsFetchError' }
+    )
+  }
+
+  if (error instanceof FunctionsRelayError) {
+    return new NetworkError(
+      'Edge Function relay error',
+      NETWORK_USER_MESSAGE,
+      error as Error,
+      { errorType: 'FunctionsRelayError' }
     )
   }
 

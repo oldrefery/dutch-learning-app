@@ -183,6 +183,7 @@ describe('logger', () => {
 
     it('should add Sentry breadcrumb with supabase category', () => {
       const error = {
+        name: 'PostgrestError',
         message: 'Table not found',
         code: '42P01',
         details: 'Some details',
@@ -201,6 +202,7 @@ describe('logger', () => {
 
     it('should format error with message, code, details, and hint', () => {
       const error = {
+        name: 'PostgrestError',
         message: 'Permission denied',
         code: '42501',
         details: 'Row level security',
@@ -219,6 +221,7 @@ describe('logger', () => {
 
     it('should capture as warning (captureMessage) for network errors', () => {
       const error = {
+        name: 'PostgrestError',
         message: 'network request failed',
         code: '',
         details: '',
@@ -239,6 +242,7 @@ describe('logger', () => {
 
     it('should capture as exception for non-network errors', () => {
       const error = {
+        name: 'PostgrestError',
         message: 'Constraint violation',
         code: '23505',
         details: 'Duplicate key',
@@ -262,6 +266,7 @@ describe('logger', () => {
 
     it('should handle missing fields gracefully', () => {
       const error = {
+        name: 'PostgrestError',
         message: '',
         code: '',
         details: '',

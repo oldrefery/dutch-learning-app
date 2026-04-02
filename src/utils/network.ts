@@ -1,6 +1,7 @@
 import NetInfo, { NetInfoState } from '@react-native-community/netinfo'
 import { useEffect, useState, useCallback } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { NetworkError } from '@/types/ErrorTypes'
 
 const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp'
 
@@ -21,6 +22,54 @@ export async function isNetworkAvailable(): Promise<boolean> {
   } catch (error) {
     console.error('[Network] Error checking network availability:', error)
     return false
+  }
+}
+
+/**
+ * Assert that network is available, throws NetworkError if not.
+ * Use this before making network requests that require connectivity.
+ */
+export async function assertNetworkConnection(): Promise<void> {
+  try {
+    const state = await NetInfo.fetch()
+
+    if (!state.isConnected) {
+      throw new NetworkError(
+        'No network connection',
+        'No internet connection. Please check your network settings.',
+        undefined,
+        {
+          networkState: {
+            isConnected: state.isConnected,
+            isInternetReachable: state.isInternetReachable,
+          },
+        }
+      )
+    }
+
+    if (state.isInternetReachable === false) {
+      throw new NetworkError(
+        'Internet not reachable',
+        'Cannot reach the internet. Please check your connection.',
+        undefined,
+        {
+          networkState: {
+            isConnected: state.isConnected,
+            isInternetReachable: state.isInternetReachable,
+          },
+        }
+      )
+    }
+  } catch (error) {
+    if (error instanceof NetworkError) {
+      throw error
+    }
+
+    throw new NetworkError(
+      'Network check failed',
+      'Unable to verify network connection. Please try again.',
+      error instanceof Error ? error : undefined
+    )
   }
 }
 

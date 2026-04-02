@@ -27,7 +27,7 @@ import { Sentry } from '@/lib/sentry'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 import { Colors } from '@/constants/Colors'
 import { wordRepository } from '@/db/wordRepository'
-import { isNetworkAvailable } from '@/utils/networkUtils'
+import { isNetworkAvailable } from '@/utils/network'
 
 interface DuplicateWordData {
   word_id: string

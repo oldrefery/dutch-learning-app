@@ -53,6 +53,8 @@ describe('collectionActions', () => {
     description: null,
     is_shared: false,
     shared_with: null,
+    share_token: null,
+    shared_at: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     ...overrides,

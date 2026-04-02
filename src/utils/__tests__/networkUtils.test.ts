@@ -1,87 +1,123 @@
 /**
- * Tests for networkUtils
+ * Tests for network utilities
  *
- * Network connectivity checking utilities using expo-network.
+ * Network connectivity checking utilities using @react-native-community/netinfo.
  * Tests cover connected/disconnected states, internet reachability,
  * and error handling for both throwing and non-throwing variants.
  */
 
-import * as Network from 'expo-network'
+import NetInfo from '@react-native-community/netinfo'
 import { NetworkError } from '@/types/ErrorTypes'
-import { checkNetworkConnection, isNetworkAvailable } from '../networkUtils'
+import {
+  assertNetworkConnection,
+  isNetworkAvailable,
+  checkNetworkConnection,
+} from '../network'
 
-jest.mock('expo-network')
+jest.mock('@react-native-community/netinfo', () => ({
+  fetch: jest.fn(),
+  addEventListener: jest.fn(() => jest.fn()),
+  configure: jest.fn(),
+}))
 
-const mockGetNetworkStateAsync = Network.getNetworkStateAsync as jest.Mock
+const mockNetInfoFetch = NetInfo.fetch as jest.Mock
 
-describe('networkUtils', () => {
+const API_FAILURE_ERROR = 'API failure'
+
+describe('network utilities', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  describe('checkNetworkConnection', () => {
+  describe('assertNetworkConnection', () => {
     it('should resolve when connected and reachable', async () => {
-      mockGetNetworkStateAsync.mockResolvedValue({
+      mockNetInfoFetch.mockResolvedValue({
         isConnected: true,
         isInternetReachable: true,
       })
 
-      await expect(checkNetworkConnection()).resolves.toBeUndefined()
+      await expect(assertNetworkConnection()).resolves.toBeUndefined()
     })
 
     it('should resolve when isInternetReachable is null (simulator)', async () => {
-      mockGetNetworkStateAsync.mockResolvedValue({
+      mockNetInfoFetch.mockResolvedValue({
         isConnected: true,
         isInternetReachable: null,
       })
 
-      await expect(checkNetworkConnection()).resolves.toBeUndefined()
+      await expect(assertNetworkConnection()).resolves.toBeUndefined()
     })
 
     it('should throw NetworkError when not connected', async () => {
-      mockGetNetworkStateAsync.mockResolvedValue({
+      mockNetInfoFetch.mockResolvedValue({
         isConnected: false,
         isInternetReachable: false,
       })
 
-      await expect(checkNetworkConnection()).rejects.toThrow(NetworkError)
-      await expect(checkNetworkConnection()).rejects.toThrow(
+      await expect(assertNetworkConnection()).rejects.toThrow(NetworkError)
+      await expect(assertNetworkConnection()).rejects.toThrow(
         'No network connection'
       )
     })
 
     it('should throw NetworkError when internet not reachable', async () => {
-      mockGetNetworkStateAsync.mockResolvedValue({
+      mockNetInfoFetch.mockResolvedValue({
         isConnected: true,
         isInternetReachable: false,
       })
 
-      await expect(checkNetworkConnection()).rejects.toThrow(NetworkError)
-      await expect(checkNetworkConnection()).rejects.toThrow(
+      await expect(assertNetworkConnection()).rejects.toThrow(NetworkError)
+      await expect(assertNetworkConnection()).rejects.toThrow(
         'Internet not reachable'
       )
     })
 
     it('should rethrow if error is already a NetworkError', async () => {
       const networkError = new NetworkError('Custom error', 'Custom message')
-      mockGetNetworkStateAsync.mockRejectedValue(networkError)
+      mockNetInfoFetch.mockRejectedValue(networkError)
 
-      await expect(checkNetworkConnection()).rejects.toThrow(networkError)
+      await expect(assertNetworkConnection()).rejects.toThrow(networkError)
     })
 
     it('should throw generic NetworkError for unexpected API errors', async () => {
-      mockGetNetworkStateAsync.mockRejectedValue(new Error('API failure'))
+      mockNetInfoFetch.mockRejectedValue(new Error(API_FAILURE_ERROR))
 
-      await expect(checkNetworkConnection()).rejects.toThrow(NetworkError)
-      await expect(checkNetworkConnection()).rejects.toThrow(
+      await expect(assertNetworkConnection()).rejects.toThrow(NetworkError)
+      await expect(assertNetworkConnection()).rejects.toThrow(
         'Network check failed'
       )
     })
   })
 
+  describe('checkNetworkConnection', () => {
+    it('should return true when connected', async () => {
+      mockNetInfoFetch.mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: true,
+      })
+
+      expect(await checkNetworkConnection()).toBe(true)
+    })
+
+    it('should return false when not connected', async () => {
+      mockNetInfoFetch.mockResolvedValue({
+        isConnected: false,
+        isInternetReachable: false,
+      })
+
+      expect(await checkNetworkConnection()).toBe(false)
+    })
+
+    it('should return false on error', async () => {
+      mockNetInfoFetch.mockRejectedValue(new Error(API_FAILURE_ERROR))
+
+      expect(await checkNetworkConnection()).toBe(false)
+    })
+  })
+
   describe('isNetworkAvailable', () => {
     it('should return true when connected and reachable', async () => {
-      mockGetNetworkStateAsync.mockResolvedValue({
+      mockNetInfoFetch.mockResolvedValue({
         isConnected: true,
         isInternetReachable: true,
       })
@@ -90,7 +126,7 @@ describe('networkUtils', () => {
     })
 
     it('should return true when connected and isInternetReachable is null', async () => {
-      mockGetNetworkStateAsync.mockResolvedValue({
+      mockNetInfoFetch.mockResolvedValue({
         isConnected: true,
         isInternetReachable: null,
       })
@@ -99,7 +135,7 @@ describe('networkUtils', () => {
     })
 
     it('should return false when not connected', async () => {
-      mockGetNetworkStateAsync.mockResolvedValue({
+      mockNetInfoFetch.mockResolvedValue({
         isConnected: false,
         isInternetReachable: true,
       })
@@ -108,7 +144,7 @@ describe('networkUtils', () => {
     })
 
     it('should return false when internet not reachable', async () => {
-      mockGetNetworkStateAsync.mockResolvedValue({
+      mockNetInfoFetch.mockResolvedValue({
         isConnected: true,
         isInternetReachable: false,
       })
@@ -116,10 +152,10 @@ describe('networkUtils', () => {
       expect(await isNetworkAvailable()).toBe(false)
     })
 
-    it('should return true on API error (fail-open behavior)', async () => {
-      mockGetNetworkStateAsync.mockRejectedValue(new Error('API failure'))
+    it('should return false on API error', async () => {
+      mockNetInfoFetch.mockRejectedValue(new Error(API_FAILURE_ERROR))
 
-      expect(await isNetworkAvailable()).toBe(true)
+      expect(await isNetworkAvailable()).toBe(false)
     })
   })
 })
