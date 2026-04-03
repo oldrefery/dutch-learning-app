@@ -80,7 +80,17 @@
           }
         }
       ],
-      "expo-build-properties"
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "buildReactNativeFromSource": true
+          },
+          "android": {
+            "buildReactNativeFromSource": true
+          }
+        }
+      ]
     ],
     "updates": {
       "url": "https://u.expo.dev/d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
