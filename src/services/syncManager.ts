@@ -584,7 +584,7 @@ export class SyncManager {
         .select(selectColumns)
         .eq('user_id', userId)
       if (lastSync) {
-        query = query.gt('updated_at', lastSync)
+        query = query.gt('created_at', lastSync)
       }
       return query
     }
