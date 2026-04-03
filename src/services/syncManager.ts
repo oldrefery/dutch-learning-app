@@ -584,7 +584,7 @@ export class SyncManager {
         .select(selectColumns)
         .eq('user_id', userId)
       if (lastSync) {
-        query = query.gt('created_at', lastSync)
+        query = query.gt('updated_at', lastSync)
       }
       return query
     }
@@ -855,7 +855,10 @@ export class SyncManager {
         word.article ?? undefined
       )
 
-      if (existingWord) {
+      if (existingWord && existingWord.word_id !== word.word_id) {
+        // Only skip if a DIFFERENT word with the same semantic key exists
+        // (true duplicate). The same word_id means it's an update (e.g., review
+        // progress) that should be upserted normally.
         duplicateWords.push(word)
       } else {
         uniqueWords.push(word)
