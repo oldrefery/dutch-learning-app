@@ -21,7 +21,7 @@
       "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "com.oldrefery.dutch-learning-app",
-      "buildNumber": "72",
+      "buildNumber": "73",
       "icon": "./src/assets/icons/ios-light.png",
       "infoPlist": {
         "UIBackgroundModes": ["audio"],
@@ -30,7 +30,7 @@
       "appleTeamId": "7FQ395U52U"
     },
     "android": {
-      "versionCode": 72,
+      "versionCode": 73,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -52,6 +52,7 @@
       "policy": "fingerprint"
     },
     "plugins": [
+      "./plugins/withRCTTurboModulePatch",
       "expo-router",
       "expo-updates",
       "expo-audio",
@@ -84,10 +85,8 @@
         "expo-build-properties",
         {
           "ios": {
-            "buildReactNativeFromSource": true
-          },
-          "android": {
-            "buildReactNativeFromSource": true
+            "buildReactNativeFromSource": true,
+            "useFrameworks": "dynamic"
           }
         }
       ]
