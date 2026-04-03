@@ -7,6 +7,5 @@ export default () => ({
     ...(appJson.expo.experiments ?? {}),
     nativeTabs: true,
     typedRoutes: true,
-    reactCompiler: true,
   },
 })
