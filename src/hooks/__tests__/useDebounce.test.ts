@@ -17,7 +17,7 @@ describe('useDebounce', () => {
   })
 
   it('should debounce callback execution', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, [string]>()
     const { result } = renderHook(() => useDebounce(callback, 500))
 
     act(() => {
@@ -35,7 +35,7 @@ describe('useDebounce', () => {
   })
 
   it('should delay execution by specified delay', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, [string]>()
     const delay = 1000
     const { result } = renderHook(() => useDebounce(callback, delay))
 
@@ -55,7 +55,7 @@ describe('useDebounce', () => {
   })
 
   it('should cancel previous timeout on new call', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, [string]>()
     const { result } = renderHook(() => useDebounce(callback, 500))
 
     act(() => {
@@ -76,7 +76,7 @@ describe('useDebounce', () => {
   })
 
   it('should only execute the latest call', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, [string]>()
     const { result } = renderHook(() => useDebounce(callback, 300))
 
     act(() => {
@@ -93,7 +93,7 @@ describe('useDebounce', () => {
   })
 
   it('should handle multiple arguments', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, [string, string, string]>()
     const { result } = renderHook(() => useDebounce(callback, 500))
 
     act(() => {
@@ -105,7 +105,7 @@ describe('useDebounce', () => {
   })
 
   it('should cleanup timeout on unmount', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, [string]>()
     const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
     const { result, unmount } = renderHook(() => useDebounce(callback, 500))
 
@@ -120,7 +120,7 @@ describe('useDebounce', () => {
   })
 
   it('should handle rapid successive calls', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, [string]>()
     const { result } = renderHook(() => useDebounce(callback, 100))
 
     act(() => {
@@ -141,7 +141,7 @@ describe('useDebounce', () => {
   })
 
   it('should respect zero delay', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, [string]>()
     const { result } = renderHook(() => useDebounce(callback, 0))
 
     act(() => {
@@ -153,7 +153,7 @@ describe('useDebounce', () => {
   })
 
   it('should update delay when it changes', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, [string]>()
     const { result, rerender } = renderHook(
       ({ delay }: { delay: number }) => useDebounce(callback, delay),
       { initialProps: { delay: 300 } }
@@ -178,7 +178,7 @@ describe('useDebounce', () => {
   })
 
   it('should handle empty calls', async () => {
-    const callback = jest.fn()
+    const callback = jest.fn<void, []>()
     const { result } = renderHook(() => useDebounce(callback, 100))
 
     act(() => {
@@ -216,7 +216,7 @@ describe('useDebounce', () => {
     })
 
     it('should handle errors in callback gracefully', async () => {
-      const callback = jest.fn(() => {
+      const callback = jest.fn<void, [string]>(() => {
         throw new Error('Callback error')
       })
       const { result } = renderHook(() => useDebounce(callback, 100))
@@ -233,7 +233,7 @@ describe('useDebounce', () => {
     })
 
     it('should not execute after unmount', async () => {
-      const callback = jest.fn()
+      const callback = jest.fn<void, [string]>()
       const { result, unmount } = renderHook(() => useDebounce(callback, 500))
 
       act(() => {
@@ -252,7 +252,7 @@ describe('useDebounce', () => {
 
   describe('performance', () => {
     it('should handle large delay values', async () => {
-      const callback = jest.fn()
+      const callback = jest.fn<void, [string]>()
       const { result } = renderHook(() => useDebounce(callback, 10000))
 
       act(() => {
@@ -264,7 +264,7 @@ describe('useDebounce', () => {
     })
 
     it('should handle very small delay values', async () => {
-      const callback = jest.fn()
+      const callback = jest.fn<void, [string]>()
       const { result } = renderHook(() => useDebounce(callback, 1))
 
       act(() => {

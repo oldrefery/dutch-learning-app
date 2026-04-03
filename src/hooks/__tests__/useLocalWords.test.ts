@@ -45,15 +45,26 @@ describe('useLocalWords', () => {
     is_reflexive: false,
     is_expression: false,
     is_separable: false,
+    prefix_part: null,
+    root_verb: null,
+    plural: null,
+    register: null,
+    examples: null,
+    conjugation: null,
+    preposition: null,
+    image_url: null,
+    tts_url: null,
+    analysis_notes: null,
     synonyms: [],
     antonyms: [],
     last_reviewed_at: null,
+    sync_status: 'synced',
     ...overrides,
   })
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(useApplicationStore as jest.Mock).mockReturnValue({
+    ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       currentUserId: USER_ID,
     })
   })
@@ -111,7 +122,7 @@ describe('useLocalWords', () => {
     })
 
     it('should skip fetch if no user ID', async () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         currentUserId: null,
       })
 
@@ -138,7 +149,7 @@ describe('useLocalWords', () => {
     })
 
     it('should not auto-fetch on mount when user ID is null', async () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         currentUserId: null,
       })
 
@@ -259,7 +270,7 @@ describe('useLocalWords', () => {
     })
 
     it('should return null if no user ID when getting word', async () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         currentUserId: null,
       })
 
@@ -302,7 +313,7 @@ describe('useLocalWords', () => {
     })
 
     it('should not update if no user ID', async () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         currentUserId: null,
       })
 
@@ -425,8 +436,8 @@ describe('useLocalWords', () => {
 
     it('should handle word data with missing optional fields', async () => {
       const minimalWord = createMockWord({
-        synonyms: undefined as any,
-        antonyms: undefined as any,
+        synonyms: [],
+        antonyms: [],
       })
       ;(wordRepository.getWordsByUserId as jest.Mock).mockResolvedValue([
         minimalWord,

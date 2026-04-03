@@ -8,6 +8,8 @@ import {
   calculateBackoffDelay,
   delay,
   retryWithBackoff,
+  withTimeout,
+  retrySupabaseFunction,
 } from '../retryUtils'
 import { NetworkError } from '@/types/ErrorTypes'
 
@@ -145,18 +147,23 @@ describe('retryUtils', () => {
   })
 
   describe('calculateBackoffDelay', () => {
-    it('should return initial delay for first attempt', () => {
+    it('should return delay within jitter range for first attempt', () => {
+      // base = min(1000 * 2^0, 30000) = 1000, jitter range: [500, 1000)
       const delay = calculateBackoffDelay(0, 1000, 30000)
-      expect(delay).toBe(1000) // 1000 * 2^0 = 1000
+      expect(delay).toBeGreaterThanOrEqual(500)
+      expect(delay).toBeLessThanOrEqual(1000)
     })
 
-    it('should double delay with each attempt', () => {
-      calculateBackoffDelay(0, 1000, 30000)
+    it('should increase delay range with each attempt', () => {
+      // attempt 1: base = 2000, range [1000, 2000)
       const delay1 = calculateBackoffDelay(1, 1000, 30000)
-      const delay2 = calculateBackoffDelay(2, 1000, 30000)
+      expect(delay1).toBeGreaterThanOrEqual(1000)
+      expect(delay1).toBeLessThanOrEqual(2000)
 
-      expect(delay1).toBe(2000) // 1000 * 2^1 = 2000
-      expect(delay2).toBe(4000) // 1000 * 2^2 = 4000
+      // attempt 2: base = 4000, range [2000, 4000)
+      const delay2 = calculateBackoffDelay(2, 1000, 30000)
+      expect(delay2).toBeGreaterThanOrEqual(2000)
+      expect(delay2).toBeLessThanOrEqual(4000)
     })
 
     it('should cap delay at maxDelayMs', () => {
@@ -164,20 +171,25 @@ describe('retryUtils', () => {
       expect(delay).toBeLessThanOrEqual(30000)
     })
 
-    it('should follow exponential formula: min(initialDelay * 2^attempt, maxDelay)', () => {
-      // 1000 * 2^5 = 32000, capped at 30000
+    it('should cap at maxDelayMs when exponential exceeds it', () => {
+      // 1000 * 2^5 = 32000, capped at 30,000, jitter range: [15000, 30000)
       const delay = calculateBackoffDelay(5, 1000, 30000)
-      expect(delay).toBe(30000)
+      expect(delay).toBeGreaterThanOrEqual(15000)
+      expect(delay).toBeLessThanOrEqual(30000)
     })
 
     it('should respect custom initialDelayMs', () => {
+      // 500 * 2^1 = 1000, jitter range: [500, 1000)
       const delay = calculateBackoffDelay(1, 500, 30000)
-      expect(delay).toBe(1000) // 500 * 2^1 = 1000
+      expect(delay).toBeGreaterThanOrEqual(500)
+      expect(delay).toBeLessThanOrEqual(1000)
     })
 
     it('should respect custom maxDelayMs', () => {
+      // 1000 * 2^10 = very large, capped at 5000, jitter range: [2500, 5000)
       const delay = calculateBackoffDelay(10, 1000, 5000)
-      expect(delay).toBe(5000)
+      expect(delay).toBeGreaterThanOrEqual(2500)
+      expect(delay).toBeLessThanOrEqual(5000)
     })
   })
 
@@ -465,8 +477,6 @@ describe('retryUtils', () => {
 
   describe('withTimeout', () => {
     it('should resolve when promise completes before timeout', async () => {
-      const { withTimeout } = require('../retryUtils')
-
       jest.useRealTimers()
       const fn = () => Promise.resolve('result')
       const result = await withTimeout(fn, 5000)
@@ -476,8 +486,6 @@ describe('retryUtils', () => {
     })
 
     it('should reject with NetworkError when promise exceeds timeout', async () => {
-      const { withTimeout } = require('../retryUtils')
-
       jest.useRealTimers()
       const fn = () => new Promise(resolve => setTimeout(resolve, 500))
 
@@ -486,8 +494,6 @@ describe('retryUtils', () => {
     })
 
     it('should use custom error message', async () => {
-      const { withTimeout } = require('../retryUtils')
-
       jest.useRealTimers()
       const fn = () => new Promise(resolve => setTimeout(resolve, 500))
 
@@ -498,8 +504,6 @@ describe('retryUtils', () => {
     })
 
     it('should propagate original promise rejection', async () => {
-      const { withTimeout } = require('../retryUtils')
-
       jest.useRealTimers()
       const fn = () => Promise.reject(new Error('Original error'))
 
@@ -510,8 +514,6 @@ describe('retryUtils', () => {
 
   describe('retrySupabaseFunction', () => {
     it('should succeed on first attempt', async () => {
-      const { retrySupabaseFunction } = require('../retryUtils')
-
       jest.useRealTimers()
       const fn = jest.fn().mockResolvedValue('data')
 
@@ -526,8 +528,6 @@ describe('retryUtils', () => {
     })
 
     it('should retry on retryable error', async () => {
-      const { retrySupabaseFunction } = require('../retryUtils')
-
       jest.useRealTimers()
       const fn = jest
         .fn()
@@ -544,8 +544,6 @@ describe('retryUtils', () => {
     })
 
     it('should work without context parameter', async () => {
-      const { retrySupabaseFunction } = require('../retryUtils')
-
       jest.useRealTimers()
       const fn = jest.fn().mockResolvedValue('data')
 

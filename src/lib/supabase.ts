@@ -6,8 +6,9 @@ import type { ReviewAssessment } from '@/types/ApplicationStoreTypes'
 import { SRS_PARAMS } from '@/constants/SRSConstants'
 import * as Sentry from '@sentry/react-native'
 import { retrySupabaseFunction } from '@/utils/retryUtils'
-import { categorizeSupabaseError } from '@/types/ErrorTypes'
-import { checkNetworkConnection } from '@/utils/networkUtils'
+import { categorizeSupabaseError, ServerError } from '@/types/ErrorTypes'
+import { FunctionsHttpError } from '@supabase/supabase-js'
+import { assertNetworkConnection } from '@/utils/network'
 import { isNetworkError, logSupabaseError, logWarning } from '@/utils/logger'
 
 // Load environment variables
@@ -43,6 +44,7 @@ export const getDevUserId = (): string => {
 
 // Constants for word analysis
 const WORD_ANALYSIS_CATEGORY = 'word.analysis'
+const GEMINI_HANDLER_FUNCTION = 'gemini-handler'
 const POSTGRES_UNIQUE_VIOLATION_CODE = '23505'
 const SEMANTIC_UNIQUE_INDEX = 'idx_words_semantic_unique'
 const IMPORT_ACCESS_DENIED_MESSAGE =
@@ -68,6 +70,71 @@ interface ImportWordsServiceError extends Error {
 
 const normalizePartOfSpeech = (value?: string | null): string =>
   value && value.trim() !== '' ? value.trim() : 'unknown'
+
+const SESSION_RETRY_PATTERNS = [
+  'jwt expired',
+  'invalid jwt',
+  'authentication expired',
+  'not authenticated',
+  'no active session',
+  'row-level security',
+  'violates row-level security policy',
+  'permission denied for table',
+]
+
+function isSessionRelatedError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+  const message = String(
+    (error as { message?: string }).message ?? ''
+  ).toLowerCase()
+  const code = (error as { code?: string }).code
+  if (code === '42501') return true
+  return SESSION_RETRY_PATTERNS.some(pattern => message.includes(pattern))
+}
+
+/**
+ * Wrap a Supabase operation with session-refresh retry.
+ * On auth/RLS error: refresh session, retry once, then return null.
+ */
+async function withSessionRetry<T>(
+  operation: () => Promise<T>,
+  operationName: string
+): Promise<T | null> {
+  try {
+    return await operation()
+  } catch (error) {
+    if (!isSessionRelatedError(error)) {
+      throw error
+    }
+
+    Sentry.addBreadcrumb({
+      category: 'auth.retry',
+      message: `Session-related error in ${operationName}, refreshing session`,
+      level: 'warning',
+      data: {
+        errorMessage: error instanceof Error ? error.message : 'Unknown',
+      },
+    })
+
+    const { error: refreshError } = await supabase.auth.refreshSession()
+    if (refreshError) {
+      Sentry.captureException(refreshError, {
+        tags: { operation: operationName, phase: 'session_refresh' },
+      })
+      return null
+    }
+
+    try {
+      return await operation()
+    } catch (retryError) {
+      Sentry.captureException(retryError, {
+        tags: { operation: operationName, phase: 'after_session_refresh' },
+        extra: { message: `${operationName} failed after session refresh` },
+      })
+      return null
+    }
+  }
+}
 
 const normalizeArticle = (value?: string | null): string =>
   value && value.trim() !== '' ? value.trim() : ''
@@ -129,13 +196,13 @@ export const wordService = {
     try {
       // Check network connectivity before making a request
       // This prevents hanging requests when offline
-      await checkNetworkConnection()
+      await assertNetworkConnection()
 
       // Wrap Edge Function call with retry logic
       const result = await retrySupabaseFunction(
         async () => {
           const { data, error } = await supabaseFunctions.functions.invoke(
-            'gemini-handler',
+            GEMINI_HANDLER_FUNCTION,
             {
               body: {
                 word,
@@ -145,8 +212,34 @@ export const wordService = {
             }
           )
 
-          // If there's an error, throw it so retry logic can handle it
+          // If there's an error, extract details and throw
           if (error) {
+            if (error instanceof FunctionsHttpError) {
+              let errorBody: string =
+                'Edge Function returned a non-2xx status code'
+              try {
+                const bodyData = await error.context.json()
+                errorBody =
+                  bodyData?.error ||
+                  bodyData?.message ||
+                  JSON.stringify(bodyData)
+              } catch {
+                // Could not parse response body
+              }
+              throw new ServerError(
+                errorBody,
+                error.context.status,
+                'Word analysis failed. Please try again.',
+                error.context.status === 503 ||
+                  error.context.status === 504 ||
+                  error.context.status === 546,
+                error,
+                {
+                  functionName: GEMINI_HANDLER_FUNCTION,
+                  operation: 'analyzeWord',
+                }
+              )
+            }
             throw error
           }
 
@@ -160,7 +253,7 @@ export const wordService = {
           return data
         },
         {
-          functionName: 'gemini-handler',
+          functionName: GEMINI_HANDLER_FUNCTION,
           operation: 'analyzeWord',
         }
       )
@@ -451,56 +544,47 @@ export const wordService = {
     return data
   },
 
-  // Update word after review
+  // Update word after review (with session-refresh retry on auth/RLS errors)
   async updateWordProgress(wordId: string, assessment: ReviewAssessment) {
-    // First, get current word data
-    const { data: currentWord, error: fetchError } = await supabase
-      .from('words')
-      .select('interval_days, repetition_count, easiness_factor')
-      .eq('word_id', wordId)
-      .single()
+    return withSessionRetry(async () => {
+      const { data: currentWord, error: fetchError } = await supabase
+        .from('words')
+        .select('interval_days, repetition_count, easiness_factor')
+        .eq('word_id', wordId)
+        .single()
 
-    if (fetchError) {
-      Sentry.captureException(fetchError, {
-        tags: { operation: 'updateWordProgress' },
-        extra: { wordId, message: 'Failed to fetch current word data' },
+      if (fetchError) {
+        throw fetchError
+      }
+
+      const assessmentValue = assessment.assessment
+
+      const srsUpdate = calculateNextReview({
+        interval_days: currentWord.interval_days,
+        repetition_count: currentWord.repetition_count,
+        easiness_factor: currentWord.easiness_factor,
+        assessment: assessmentValue,
       })
-      return null
-    }
 
-    // Extract the assessment string from the assessment object
-    const assessmentValue = assessment.assessment
+      const { data, error } = await supabase
+        .from('words')
+        .update({
+          interval_days: srsUpdate.interval_days,
+          repetition_count: srsUpdate.repetition_count,
+          easiness_factor: srsUpdate.easiness_factor,
+          next_review_date: srsUpdate.next_review_date,
+          last_reviewed_at: new Date().toISOString(),
+        })
+        .eq('word_id', wordId)
+        .select()
+        .single()
 
-    // Calculate new SRS values using the existing function
-    const srsUpdate = calculateNextReview({
-      interval_days: currentWord.interval_days,
-      repetition_count: currentWord.repetition_count,
-      easiness_factor: currentWord.easiness_factor,
-      assessment: assessmentValue,
-    })
+      if (error) {
+        throw error
+      }
 
-    const { data, error } = await supabase
-      .from('words')
-      .update({
-        interval_days: srsUpdate.interval_days,
-        repetition_count: srsUpdate.repetition_count,
-        easiness_factor: srsUpdate.easiness_factor,
-        next_review_date: srsUpdate.next_review_date,
-        last_reviewed_at: new Date().toISOString(),
-      })
-      .eq('word_id', wordId)
-      .select()
-      .single()
-
-    if (error) {
-      logSupabaseError('Failed to update word progress', error, {
-        operation: 'updateWordProgress',
-        wordId,
-      })
-      return null
-    }
-
-    return data
+      return data
+    }, 'updateWordProgress')
   },
 
   // Update word image

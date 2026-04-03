@@ -10,6 +10,7 @@ import {
 import type { Word } from '@/types/database'
 import type { WordAnalysisResponse } from '@/types/GeminiTypes'
 import type { AnalysisResult } from '@/components/AddWordScreen/types/AddWordTypes'
+import { ExpressionType } from '@/types/ExpressionTypes'
 
 describe('wordTextFormatter', () => {
   // Helper functions to generate random test data
@@ -39,6 +40,16 @@ describe('wordTextFormatter', () => {
     is_reflexive: false,
     is_expression: false,
     is_separable: false,
+    prefix_part: null,
+    root_verb: null,
+    plural: null,
+    register: null,
+    examples: null,
+    conjugation: null,
+    preposition: null,
+    image_url: null,
+    tts_url: null,
+    analysis_notes: null,
     synonyms: [],
     antonyms: [],
     last_reviewed_at: null,
@@ -50,9 +61,9 @@ describe('wordTextFormatter', () => {
     overrides: Partial<WordAnalysisResponse> = {}
   ): WordAnalysisResponse => ({
     dutch_lemma: 'kijken',
-    dutch_original: 'kijken',
     part_of_speech: 'verb',
     article: null,
+    plural: null,
     translations: { en: ['look', 'watch'], ru: ['смотреть', 'глядеть'] },
     is_irregular: false,
     is_reflexive: false,
@@ -78,18 +89,17 @@ describe('wordTextFormatter', () => {
     overrides: Partial<AnalysisResult> = {}
   ): AnalysisResult => ({
     dutch_lemma: 'schrijven',
-    dutch_original: 'schrijven',
     part_of_speech: 'verb',
-    article: null,
+    article: undefined,
     translations: { en: ['write'], ru: ['писать'] },
     is_irregular: true,
     is_reflexive: false,
     is_expression: false,
     is_separable: false,
     examples: [],
-    expression_type: null,
-    prefix_part: null,
-    root_verb: null,
+    expression_type: undefined,
+    prefix_part: undefined,
+    root_verb: undefined,
     ...overrides,
   })
 
@@ -151,7 +161,7 @@ describe('wordTextFormatter', () => {
       const word = createMockWord({
         is_expression: true,
         part_of_speech: 'phrase',
-        expression_type: 'idiom',
+        expression_type: ExpressionType.IDIOM,
       })
       const result = formatWordForCopying(word)
 
@@ -178,7 +188,7 @@ describe('wordTextFormatter', () => {
 
     it('should handle word without translations', () => {
       const word = createMockWord({
-        translations: {},
+        translations: { en: [] },
       })
       const result = formatWordForCopying(word)
 
@@ -198,7 +208,7 @@ describe('wordTextFormatter', () => {
 
     it('should handle word with only russian translations', () => {
       const word = createMockWord({
-        translations: { ru: ['ходить'] },
+        translations: { en: [], ru: ['ходить'] },
       })
       const result = formatWordForCopying(word)
 
@@ -211,11 +221,11 @@ describe('wordTextFormatter', () => {
         part_of_speech: 'verb',
         is_irregular: true,
         is_reflexive: true,
-        article: 'zich',
+        article: null,
       })
       const result = formatWordForCopying(word)
 
-      expect(result).toContain('Type: verb (irregular) (zich) (reflexive)')
+      expect(result).toContain('Type: verb (irregular) (reflexive)')
     })
   })
 
@@ -254,6 +264,7 @@ describe('wordTextFormatter', () => {
           {
             nl: 'Kijk naar mij',
             en: 'Look at me',
+            ru: '',
           },
         ],
       })
@@ -502,7 +513,7 @@ describe('wordTextFormatter', () => {
     it('should format expressions with type', () => {
       const word = createMockWord({
         is_expression: true,
-        expression_type: 'idiom',
+        expression_type: ExpressionType.IDIOM,
         dutch_lemma: 'het regent pijpenstelen',
       })
       const result = formatWordForCopying(word)

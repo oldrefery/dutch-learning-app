@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { AppState, type AppStateStatus } from 'react-native'
 import { router, type Href } from 'expo-router'
 import * as Linking from 'expo-linking'
 import { supabase } from '@/lib/supabaseClient'
@@ -8,6 +9,7 @@ import type { LoginCredentials, SignupCredentials } from '@/types/AuthTypes'
 import { Sentry } from '@/lib/sentry'
 import { initiateGoogleOAuth, handleOAuthCallback } from '@/lib/googleAuth'
 import { initiateAppleSignIn } from '@/lib/appleAuth'
+import { isNetworkAvailable } from '@/utils/network'
 
 interface SimpleAuthState {
   loading: boolean
@@ -162,9 +164,28 @@ export function SimpleAuthProvider({
       }
     })
 
+    // Manage auto-refresh based on app state
+    // Guard with network check to avoid clearing session when offline (GitHub #36906)
+    const handleAppStateChange = async (nextState: AppStateStatus) => {
+      if (nextState === 'active') {
+        const hasNetwork = await isNetworkAvailable()
+        if (hasNetwork) {
+          supabase.auth.startAutoRefresh()
+        }
+      } else {
+        supabase.auth.stopAutoRefresh()
+      }
+    }
+
+    const appStateSubscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    )
+
     return () => {
       subscription.unsubscribe()
       deepLinkSubscription.remove()
+      appStateSubscription.remove()
     }
   }, [initializeApp])
 

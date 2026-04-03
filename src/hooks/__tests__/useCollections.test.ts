@@ -28,13 +28,12 @@ describe('useCollections', () => {
     user_id: generateId('user'),
     name: 'Dutch Verbs',
     description: 'Common Dutch verbs',
-    color: '#FF5733',
-    icon: 'book',
-    word_count: 10,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    is_default: false,
-    sync_status: 'synced',
+    is_shared: false,
+    shared_with: null,
+    share_token: null,
+    shared_at: null,
     ...overrides,
   })
 
@@ -49,7 +48,7 @@ describe('useCollections', () => {
         createMockCollection({ collection_id: 'coll-2', name: 'Nouns' }),
       ]
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: mockCollections,
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -62,7 +61,7 @@ describe('useCollections', () => {
     })
 
     it('should return empty collections array initially', () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -77,12 +76,15 @@ describe('useCollections', () => {
 
     it('should handle collections with different properties', () => {
       const mockCollections = [
-        createMockCollection({ name: 'Verbs', word_count: 25 }),
-        createMockCollection({ name: 'Nouns', word_count: 50 }),
-        createMockCollection({ name: 'Adjectives', word_count: 30 }),
+        createMockCollection({ name: 'Verbs', description: 'Dutch verbs' }),
+        createMockCollection({ name: 'Nouns', description: 'Dutch nouns' }),
+        createMockCollection({
+          name: 'Adjectives',
+          description: 'Dutch adjectives',
+        }),
       ]
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: mockCollections,
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -93,13 +95,13 @@ describe('useCollections', () => {
 
       expect(result.current.collections.length).toBe(3)
       expect(result.current.collections[0].name).toBe('Verbs')
-      expect(result.current.collections[1].word_count).toBe(50)
+      expect(result.current.collections[1].description).toBe('Dutch nouns')
     })
   })
 
   describe('collectionsLoading state', () => {
     it('should return loading state from store', () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: true,
         fetchCollections: jest.fn(),
@@ -112,7 +114,7 @@ describe('useCollections', () => {
     })
 
     it('should return false when not loading', () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [createMockCollection()],
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -125,18 +127,16 @@ describe('useCollections', () => {
     })
 
     it('should handle loading state changes', () => {
-      const { rerender } = renderHook(() => useCollections(), {
-        initialProps: undefined,
-      })
+      const { rerender } = renderHook(() => useCollections())
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: true,
         fetchCollections: jest.fn(),
         createNewCollection: jest.fn(),
       })
 
-      rerender()
+      rerender(undefined)
 
       const { result } = renderHook(() => useCollections())
       expect(result.current.collectionsLoading).toBe(true)
@@ -147,7 +147,7 @@ describe('useCollections', () => {
     it('should call store fetchCollections function', async () => {
       const fetchCollectionsFn = jest.fn().mockResolvedValue(undefined)
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: fetchCollectionsFn,
@@ -167,7 +167,7 @@ describe('useCollections', () => {
       const mockPromise = Promise.resolve(undefined)
       const fetchCollectionsFn = jest.fn().mockReturnValue(mockPromise)
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: fetchCollectionsFn,
@@ -185,7 +185,7 @@ describe('useCollections', () => {
       const error = new Error('Fetch failed')
       const fetchCollectionsFn = jest.fn().mockRejectedValue(error)
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: fetchCollectionsFn,
@@ -210,7 +210,7 @@ describe('useCollections', () => {
       })
       const createFn = jest.fn().mockResolvedValue(newCollection)
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -219,7 +219,7 @@ describe('useCollections', () => {
 
       const { result } = renderHook(() => useCollections())
 
-      let createdCollection: Collection | undefined
+      let createdCollection: Collection | null = null
 
       await act(async () => {
         createdCollection =
@@ -236,7 +236,7 @@ describe('useCollections', () => {
       })
       const createFn = jest.fn().mockResolvedValue(newCollection)
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -245,22 +245,26 @@ describe('useCollections', () => {
 
       const { result } = renderHook(() => useCollections())
 
-      let createdCollection: Collection | undefined
+      let createdCollection: Collection | null = null
 
       await act(async () => {
         createdCollection =
           await result.current.createNewCollection(TEST_COLLECTION_NAME)
       })
 
-      expect(createdCollection?.name).toBe(TEST_COLLECTION_NAME)
-      expect(createdCollection?.collection_id).toBe(newCollection.collection_id)
+      expect((createdCollection as Collection | null)?.name).toBe(
+        TEST_COLLECTION_NAME
+      )
+      expect((createdCollection as Collection | null)?.collection_id).toBe(
+        newCollection.collection_id
+      )
     })
 
     it('should handle create errors from store', async () => {
       const error = new Error('Create failed')
       const createFn = jest.fn().mockRejectedValue(error)
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -282,7 +286,7 @@ describe('useCollections', () => {
       })
       const createFn = jest.fn().mockResolvedValue(newCollection)
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -301,7 +305,7 @@ describe('useCollections', () => {
     it('should handle creating collection with empty name', async () => {
       const createFn = jest.fn()
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -320,7 +324,7 @@ describe('useCollections', () => {
 
   describe('hook integration', () => {
     it('should provide all expected properties', () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -339,7 +343,7 @@ describe('useCollections', () => {
       const fetchFn = jest.fn()
       const createFn = jest.fn()
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: fetchFn,
@@ -357,7 +361,7 @@ describe('useCollections', () => {
       const fetchFn = jest.fn().mockResolvedValue(undefined)
       const createFn = jest.fn().mockResolvedValue(createMockCollection())
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
         fetchCollections: fetchFn,
@@ -388,7 +392,7 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       }
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue(storeData)
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue(storeData)
 
       const { result } = renderHook(() => useCollections())
 
@@ -410,7 +414,7 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       }
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue(storeData)
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue(storeData)
 
       renderHook(() => useCollections())
 
@@ -422,7 +426,7 @@ describe('useCollections', () => {
     it('should return correct types for all properties', () => {
       const mockCollections = [createMockCollection()]
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: mockCollections,
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -440,8 +444,8 @@ describe('useCollections', () => {
 
   describe('edge cases', () => {
     it('should handle undefined collections gracefully', () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
-        collections: undefined as any,
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
+        collections: undefined as unknown as Collection[],
         collectionsLoading: false,
         fetchCollections: jest.fn(),
         createNewCollection: jest.fn(),
@@ -460,7 +464,7 @@ describe('useCollections', () => {
         })
       )
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: largeCollectionsList,
         collectionsLoading: false,
         fetchCollections: jest.fn(),
@@ -476,12 +480,12 @@ describe('useCollections', () => {
       const mockCollections = [
         createMockCollection({
           description: null,
-          icon: null,
-          color: '#000000',
+          shared_with: null,
+          share_token: null,
         }),
       ]
 
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: mockCollections,
         collectionsLoading: false,
         fetchCollections: jest.fn(),
