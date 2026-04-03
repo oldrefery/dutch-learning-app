@@ -44,7 +44,7 @@ export const getDevUserId = (): string => {
 
 // Constants for word analysis
 const WORD_ANALYSIS_CATEGORY = 'word.analysis'
-const GEMINI_HANDLER_FUNCTION = GEMINI_HANDLER_FUNCTION
+const GEMINI_HANDLER_FUNCTION = 'gemini-handler'
 const POSTGRES_UNIQUE_VIOLATION_CODE = '23505'
 const SEMANTIC_UNIQUE_INDEX = 'idx_words_semantic_unique'
 const IMPORT_ACCESS_DENIED_MESSAGE =

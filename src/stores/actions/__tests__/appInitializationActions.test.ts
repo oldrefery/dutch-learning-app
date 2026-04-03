@@ -13,6 +13,7 @@ import type {
   StoreSetFunction,
   StoreGetFunction,
 } from '@/types/ApplicationStoreTypes'
+import { ErrorCategory, ErrorSeverity } from '@/types/ErrorTypes'
 
 jest.mock('@/services/accessControlService')
 jest.mock('@/stores/useHistoryStore')
@@ -238,8 +239,8 @@ describe('appInitializationActions', () => {
   describe('setError', () => {
     it('should set error in store', () => {
       const error = {
-        category: 'CLIENT' as const,
-        severity: 'ERROR' as const,
+        category: ErrorCategory.CLIENT,
+        severity: ErrorSeverity.ERROR,
         message: 'Test error',
         userMessage: 'Something went wrong',
         isRetryable: false,

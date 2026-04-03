@@ -31,11 +31,9 @@ describe('useLocalProgress', () => {
     progress_id: generateId('progress'),
     user_id: USER_ID,
     word_id: generateId('word'),
+    status: 'learning',
+    reviewed_count: 0,
     last_reviewed_at: new Date().toISOString(),
-    interval_days: 1,
-    repetition_count: 0,
-    easiness_factor: 2.5,
-    next_review_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     sync_status: 'synced',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -44,7 +42,7 @@ describe('useLocalProgress', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(useApplicationStore as jest.Mock).mockReturnValue({
+    ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       currentUserId: USER_ID,
     })
   })
@@ -106,7 +104,7 @@ describe('useLocalProgress', () => {
     })
 
     it('should skip fetch if no user ID', async () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         currentUserId: null,
       })
 
@@ -133,7 +131,7 @@ describe('useLocalProgress', () => {
     })
 
     it('should not auto-fetch on mount when user ID is null', async () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         currentUserId: null,
       })
 
@@ -219,7 +217,7 @@ describe('useLocalProgress', () => {
   describe('updateProgress', () => {
     it('should update progress and refresh state', async () => {
       const mockProgress = [
-        createMockProgress({ repetition_count: 1, interval_days: 3 }),
+        createMockProgress({ reviewed_count: 1, status: 'reviewed' }),
       ]
       ;(progressRepository.getProgressByUserId as jest.Mock).mockResolvedValue(
         mockProgress
@@ -230,7 +228,7 @@ describe('useLocalProgress', () => {
 
       const { result } = renderHook(() => useLocalProgress())
 
-      const updates = { repetition_count: 1, interval_days: 3 }
+      const updates = { reviewed_count: 1, status: 'reviewed' }
 
       await act(async () => {
         await result.current.updateProgress(PROGRESS_ID, updates)
@@ -245,13 +243,13 @@ describe('useLocalProgress', () => {
     })
 
     it('should not update if no user ID', async () => {
-      ;(useApplicationStore as jest.Mock).mockReturnValue({
+      ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         currentUserId: null,
       })
 
       const { result } = renderHook(() => useLocalProgress())
 
-      const updates = { repetition_count: 1 }
+      const updates = { reviewed_count: 1 }
 
       await act(async () => {
         await result.current.updateProgress(PROGRESS_ID, updates)
@@ -268,7 +266,7 @@ describe('useLocalProgress', () => {
 
       const { result } = renderHook(() => useLocalProgress())
 
-      const updates = { repetition_count: 1 }
+      const updates = { reviewed_count: 1 }
 
       await expect(
         act(async () => {
@@ -289,7 +287,7 @@ describe('useLocalProgress', () => {
       const { result } = renderHook(() => useLocalProgress())
 
       // Only update some fields
-      const partialUpdates = { repetition_count: 2 }
+      const partialUpdates = { reviewed_count: 2 }
 
       await act(async () => {
         await result.current.updateProgress(PROGRESS_ID, partialUpdates)
@@ -314,9 +312,9 @@ describe('useLocalProgress', () => {
       const { result } = renderHook(() => useLocalProgress())
 
       const updates = [
-        { repetition_count: 1 },
-        { repetition_count: 2 },
-        { repetition_count: 3 },
+        { reviewed_count: 1 },
+        { reviewed_count: 2 },
+        { reviewed_count: 3 },
       ]
 
       for (const update of updates) {
@@ -340,9 +338,9 @@ describe('useLocalProgress', () => {
       const { result } = renderHook(() => useLocalProgress())
 
       const multiFieldUpdate = {
-        repetition_count: 2,
-        interval_days: 3,
-        easiness_factor: 2.8,
+        reviewed_count: 2,
+        status: 'reviewed',
+        last_reviewed_at: new Date().toISOString(),
       }
 
       await act(async () => {
@@ -384,8 +382,8 @@ describe('useLocalProgress', () => {
     })
 
     it('should handle refetch after manual update', async () => {
-      const initialProgress = [createMockProgress({ repetition_count: 0 })]
-      const updatedProgress = [createMockProgress({ repetition_count: 1 })]
+      const initialProgress = [createMockProgress({ reviewed_count: 0 })]
+      const updatedProgress = [createMockProgress({ reviewed_count: 1 })]
 
       ;(
         progressRepository.getProgressByUserId as jest.Mock
@@ -405,7 +403,7 @@ describe('useLocalProgress', () => {
 
       await act(async () => {
         await result.current.updateProgress(PROGRESS_ID, {
-          repetition_count: 1,
+          reviewed_count: 1,
         })
       })
 
@@ -446,7 +444,7 @@ describe('useLocalProgress', () => {
       try {
         await act(async () => {
           await result.current.updateProgress(PROGRESS_ID, {
-            repetition_count: 1,
+            reviewed_count: 1,
           })
         })
       } catch {
@@ -460,7 +458,7 @@ describe('useLocalProgress', () => {
       const mockProgress = [
         createMockProgress({ sync_status: 'synced' }),
         createMockProgress({ sync_status: 'pending' }),
-        createMockProgress({ sync_status: 'failed' }),
+        createMockProgress({ sync_status: 'error' }),
       ]
       ;(progressRepository.getProgressByUserId as jest.Mock).mockResolvedValue(
         mockProgress
@@ -474,9 +472,7 @@ describe('useLocalProgress', () => {
     })
 
     it('should handle progress with null last_reviewed_at', async () => {
-      const mockProgress = [
-        createMockProgress({ last_reviewed_at: null as any }),
-      ]
+      const mockProgress = [createMockProgress({ last_reviewed_at: null })]
       ;(progressRepository.getProgressByUserId as jest.Mock).mockResolvedValue(
         mockProgress
       )

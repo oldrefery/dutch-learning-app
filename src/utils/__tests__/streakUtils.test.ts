@@ -34,6 +34,16 @@ describe('streakUtils', () => {
     is_reflexive: false,
     is_expression: false,
     is_separable: false,
+    prefix_part: null,
+    root_verb: null,
+    plural: null,
+    register: null,
+    examples: null,
+    conjugation: null,
+    preposition: null,
+    image_url: null,
+    tts_url: null,
+    analysis_notes: null,
     synonyms: [],
     antonyms: [],
     last_reviewed_at: lastReviewedAt,
@@ -101,7 +111,7 @@ describe('streakUtils', () => {
 
     it('should return 3 for reviews 3 consecutive days', () => {
       const today = new Date()
-      const yesterday = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
       const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
 
       const words = [
@@ -136,7 +146,7 @@ describe('streakUtils', () => {
 
     it('should count only consecutive days from most recent', () => {
       const today = new Date()
-      const yesterday = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
       const threeWeeksAgo = new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)
       const fourWeeksAgo = new Date(Date.now() - 28 * 24 * 60 * 60 * 1000)
 
@@ -231,9 +241,9 @@ describe('streakUtils', () => {
     })
 
     it('should correctly identify today vs yesterday across midnight', () => {
-      const almostMidnightToday = new Date(Date.now() - 1 * 60 * 1000) // 1 minute ago
+      const almostMidnightToday = new Date(Date.now() - 60 * 1000) // 1 minute ago
       const justAfterMidnightYesterday = new Date(
-        Date.now() - 24 * 60 * 60 * 1000 + 1 * 60 * 1000
+        Date.now() - 24 * 60 * 60 * 1000 + 60 * 1000
       ) // 23:59 yesterday
 
       const words = [
@@ -289,7 +299,7 @@ describe('streakUtils', () => {
     it('should return correct streak for typical learning pattern', () => {
       // User reviews daily for 3 days, then skips 2 days
       const today = new Date()
-      const yesterday = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
       const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
       const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
 
