@@ -170,6 +170,16 @@ export function SimpleAuthProvider({
       if (nextState === 'active') {
         const hasNetwork = await isNetworkAvailable()
         if (hasNetwork) {
+          // Force immediate session refresh if JWT expired in background
+          try {
+            await supabase.auth.getSession()
+          } catch {
+            Sentry.addBreadcrumb({
+              category: 'auth',
+              message: 'getSession failed on foreground resume',
+              level: 'warning',
+            })
+          }
           supabase.auth.startAutoRefresh()
         }
       } else {
@@ -419,7 +429,7 @@ export function SimpleAuthProvider({
           passwordResetCooldownUntil
         )
         setError(
-          `Please wait ${remainingSeconds} seconds before requesting another reset email.`
+          `For security, please wait ${remainingSeconds} seconds before requesting another reset email.`
         )
         return
       }
@@ -440,22 +450,17 @@ export function SimpleAuthProvider({
           const remainingSeconds = getRemainingCooldownSeconds(cooldownUntil)
           setPasswordResetCooldownUntil(cooldownUntil)
           setError(
-            `Too many reset attempts. Please wait ${remainingSeconds} seconds and try again.`
+            `For security, please wait ${remainingSeconds} seconds before requesting another reset email.`
           )
 
-          Sentry.captureMessage('Password reset request throttled', {
+          Sentry.addBreadcrumb({
+            category: 'auth.password_reset',
+            message: 'Password reset request throttled',
             level: 'warning',
-            tags: {
-              operation: 'requestPasswordReset',
-              expected_error: 'rate_limit',
-            },
-            extra: {
+            data: {
               email,
-              redirectUrl,
-              message: (error as { message?: string }).message,
               cooldownSeconds: remainingSeconds,
             },
-            fingerprint: ['requestPasswordReset', 'rate_limit'],
           })
           return
         }

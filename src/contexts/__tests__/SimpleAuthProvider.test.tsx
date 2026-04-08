@@ -11,6 +11,7 @@ jest.mock('@/lib/sentry', () => ({
   Sentry: {
     captureException: jest.fn(),
     captureMessage: jest.fn(),
+    addBreadcrumb: jest.fn(),
   },
 }))
 jest.mock('@/lib/googleAuth', () => ({
@@ -95,15 +96,12 @@ describe('SimpleAuthProvider requestPasswordReset', () => {
       await result.current.requestPasswordReset(TEST_EMAIL)
     })
 
-    expect(result.current.error).toContain('Too many reset attempts')
-    expect(Sentry.captureMessage).toHaveBeenCalledWith(
-      'Password reset request throttled',
+    expect(result.current.error).toContain('For security')
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
       expect.objectContaining({
+        category: 'auth.password_reset',
+        message: 'Password reset request throttled',
         level: 'warning',
-        tags: expect.objectContaining({
-          operation: 'requestPasswordReset',
-          expected_error: 'rate_limit',
-        }),
       })
     )
     expect(Sentry.captureException).not.toHaveBeenCalled()
@@ -129,7 +127,7 @@ describe('SimpleAuthProvider requestPasswordReset', () => {
     })
 
     expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledTimes(1)
-    expect(result.current.error).toContain('Please wait')
+    expect(result.current.error).toContain('For security')
     expect(Sentry.captureMessage).not.toHaveBeenCalled()
     expect(Sentry.captureException).not.toHaveBeenCalled()
   })

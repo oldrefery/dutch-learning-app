@@ -12,6 +12,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { IMAGE_CONFIG } from '@/constants/AppConfig'
 import { supabase } from '@/lib/supabaseClient'
+import { withSessionRetry } from '@/lib/supabase'
 import { getImageSelectorStyles } from './styles'
 import type { ImageOption, ImageSelectorProps } from './types'
 import { Sentry } from '@/lib/sentry'
@@ -48,26 +49,24 @@ export default function ImageSelector({
     setOffset(0) // Reset offset
 
     try {
-      const { data, error } = await supabase.functions.invoke(
-        'get-multiple-images',
-        {
-          body: {
-            englishTranslation: searchQuery,
-            partOfSpeech,
-            examples,
-            count: IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT,
-          },
-        }
-      )
+      const result = await withSessionRetry(async () => {
+        const { data, error } = await supabase.functions.invoke(
+          'get-multiple-images',
+          {
+            body: {
+              englishTranslation: searchQuery,
+              partOfSpeech,
+              examples,
+              count: IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT,
+            },
+          }
+        )
 
-      if (error) {
-        Sentry.captureException(new Error(error.message), {
-          tags: { operation: 'loadImages' },
-          extra: { message: 'Edge function returned error' },
-        })
-      }
+        if (error) throw new Error(error.message)
+        return data
+      }, 'loadImages')
 
-      setImages(data.images || [])
+      setImages(result?.images || [])
     } catch (err) {
       setError('Failed to load image options. Please try again.')
       Sentry.captureException(err, {
@@ -90,27 +89,25 @@ export default function ImageSelector({
     try {
       const nextOffset = offset + IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT
 
-      const { data, error } = await supabase.functions.invoke(
-        'get-multiple-images',
-        {
-          body: {
-            englishTranslation: searchQuery,
-            partOfSpeech,
-            examples,
-            count: IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT,
-            offset: nextOffset,
-          },
-        }
-      )
+      const result = await withSessionRetry(async () => {
+        const { data, error } = await supabase.functions.invoke(
+          'get-multiple-images',
+          {
+            body: {
+              englishTranslation: searchQuery,
+              partOfSpeech,
+              examples,
+              count: IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT,
+              offset: nextOffset,
+            },
+          }
+        )
 
-      if (error) {
-        Sentry.captureException(new Error(error.message), {
-          tags: { operation: 'loadMoreImages' },
-          extra: { message: 'Edge function returned error' },
-        })
-      }
+        if (error) throw new Error(error.message)
+        return data
+      }, 'loadMoreImages')
 
-      const newImages = data.images || []
+      const newImages = result?.images || []
 
       if (newImages.length > 0) {
         setImages(prevImages => [...prevImages, ...newImages])

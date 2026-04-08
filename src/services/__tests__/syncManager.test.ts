@@ -268,12 +268,13 @@ describe('SyncManager', () => {
       expect(result.success).toBe(true)
       expect(wordsEq).toHaveBeenCalledTimes(2)
       expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
-      expect(Sentry.captureMessage).toHaveBeenCalledWith(
-        'Recoverable sync stage failure detected; refreshing session and retrying once',
+      expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
         expect.objectContaining({
-          tags: expect.objectContaining({
-            operation: 'pull_words',
-            sync_error_type: 'auth_expired',
+          category: 'sync.retry',
+          level: 'warning',
+          data: expect.objectContaining({
+            stage: 'pull_words',
+            syncErrorType: 'auth_expired',
           }),
         })
       )
@@ -392,12 +393,13 @@ describe('SyncManager', () => {
       expect(result.success).toBe(true)
       expect(wordsUpsert).toHaveBeenCalledTimes(2)
       expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
-      expect(Sentry.captureMessage).toHaveBeenCalledWith(
-        'Recoverable sync stage failure detected; refreshing session and retrying once',
+      expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
         expect.objectContaining({
-          tags: expect.objectContaining({
-            operation: 'push_words',
-            sync_error_type: 'rls',
+          category: 'sync.retry',
+          level: 'warning',
+          data: expect.objectContaining({
+            stage: 'push_words',
+            syncErrorType: 'rls',
           }),
         })
       )
