@@ -9,7 +9,7 @@ import { retrySupabaseFunction } from '@/utils/retryUtils'
 import { categorizeSupabaseError, ServerError } from '@/types/ErrorTypes'
 import { FunctionsHttpError } from '@supabase/supabase-js'
 import { assertNetworkConnection } from '@/utils/network'
-import { isNetworkError, logSupabaseError, logWarning } from '@/utils/logger'
+import { logWarning } from '@/utils/logger'
 
 // Load environment variables
 const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
@@ -96,7 +96,7 @@ function isSessionRelatedError(error: unknown): boolean {
  * Wrap a Supabase operation with session-refresh retry.
  * On auth/RLS error: refresh session, retry once, then return null.
  */
-async function withSessionRetry<T>(
+export async function withSessionRetry<T>(
   operation: () => Promise<T>,
   operationName: string
 ): Promise<T | null> {
@@ -161,6 +161,18 @@ const isImportAccessDeniedError = (error: unknown): boolean => {
   )
 }
 
+function toSupabaseLikeError(error: unknown): SupabaseLikeError {
+  if (error && typeof error === 'object') {
+    const e = error as Record<string, unknown>
+    return {
+      message: typeof e.message === 'string' ? e.message : String(error),
+      code: typeof e.code === 'string' ? e.code : undefined,
+      details: typeof e.details === 'string' ? e.details : undefined,
+    }
+  }
+  return { message: error instanceof Error ? error.message : String(error) }
+}
+
 const createImportWordsServiceError = (
   message: string,
   options: {
@@ -177,6 +189,81 @@ const createImportWordsServiceError = (
   error.userMessage = options.userMessage
   error.isImportAccessError = options.isImportAccessError
   return error
+}
+
+function classifyAndThrowImportError(
+  error: unknown,
+  collectionId: string,
+  wordCount: number
+): never {
+  const sErr = toSupabaseLikeError(error)
+
+  if (isSemanticDuplicateError(error)) {
+    logWarning('Semantic duplicate skipped during word import', {
+      operation: 'importWordsToCollection',
+      collectionId,
+      wordCount,
+      code: sErr.code,
+      details: sErr.details,
+    })
+    Sentry.captureMessage('Semantic duplicate skipped during import RPC', {
+      level: 'warning',
+      tags: {
+        operation: 'importWordsToCollection',
+        import_error_type: 'semantic_duplicate',
+      },
+      extra: {
+        collectionId,
+        wordCount,
+        code: sErr.code,
+        details: sErr.details,
+      },
+      fingerprint: ['importWordsToCollection', 'semantic_duplicate'],
+    })
+    throw createImportWordsServiceError(
+      sErr.message || 'Semantic duplicate detected during import',
+      { code: sErr.code, sentryHandled: true }
+    )
+  }
+
+  if (isImportAccessDeniedError(error)) {
+    Sentry.captureMessage('Import blocked by access policy', {
+      level: 'warning',
+      tags: {
+        operation: 'importWordsToCollection',
+        import_error_type: 'access_denied',
+      },
+      extra: {
+        collectionId,
+        wordCount,
+        code: sErr.code,
+        details: sErr.details,
+        message: sErr.message,
+      },
+      fingerprint: ['importWordsToCollection', 'access_denied'],
+    })
+    throw createImportWordsServiceError(IMPORT_ACCESS_DENIED_MESSAGE, {
+      code: sErr.code,
+      sentryHandled: true,
+      userMessage: IMPORT_ACCESS_DENIED_MESSAGE,
+      isImportAccessError: true,
+    })
+  }
+
+  Sentry.captureException(
+    error instanceof Error ? error : new Error(sErr.message),
+    {
+      tags: { operation: 'importWordsToCollection' },
+      extra: { collectionId, wordCount, code: sErr.code },
+    }
+  )
+  throw createImportWordsServiceError(
+    sErr.message || 'Failed to import words',
+    {
+      code: sErr.code,
+      sentryHandled: true,
+    }
+  )
 }
 
 export const wordService = {
@@ -316,21 +403,16 @@ export const wordService = {
 
   // Get all words for the user
   async getUserWords(userId: string) {
-    const { data, error } = await supabase
-      .from('words')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+    return withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('words')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      logSupabaseError('Failed to fetch words', error, {
-        operation: 'getUserWords',
-        userId,
-      })
-      return null
-    }
-
-    return data
+      if (error) throw error
+      return data
+    }, 'getUserWords')
   },
 
   // Check if the word already exists (by dutch_lemma + part_of_speech + article)
@@ -353,24 +435,18 @@ export const wordService = {
       })
     }
 
-    let query = supabase
-      .from('words')
-      .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
-      .eq('user_id', userId)
-      .eq('dutch_lemma', normalizedLemma)
+    const data = await withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('words')
+        .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
+        .eq('user_id', userId)
+        .eq('dutch_lemma', normalizedLemma)
 
-    const { data, error } = await query
+      if (error) throw error
+      return data
+    }, 'checkWordExists')
 
-    if (error) {
-      logSupabaseError('Failed to check word existence', error, {
-        operation: 'checkWordExists',
-        userId,
-        dutchLemma,
-        partOfSpeech,
-        article,
-      })
-      return null
-    }
+    if (!data) return null
 
     const existingWord = (data || []).find(word => {
       const candidatePartOfSpeech = normalizePartOfSpeech(word.part_of_speech)
@@ -397,22 +473,17 @@ export const wordService = {
   async getWordsForReview(userId: string) {
     const today = new Date().toISOString().split('T')[0]
 
-    const { data, error } = await supabase
-      .from('words')
-      .select('*')
-      .eq('user_id', userId)
-      .lte('next_review_date', today)
-      .order('next_review_date', { ascending: true })
+    return withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('words')
+        .select('*')
+        .eq('user_id', userId)
+        .lte('next_review_date', today)
+        .order('next_review_date', { ascending: true })
 
-    if (error) {
-      logSupabaseError('Failed to fetch review words', error, {
-        operation: 'getWordsForReview',
-        userId,
-      })
-      return null
-    }
-
-    return data
+      if (error) throw error
+      return data
+    }, 'getWordsForReview')
   },
 
   // Check if a word with the same semantic properties already exists
@@ -426,34 +497,18 @@ export const wordService = {
     const normalizedPartOfSpeech = normalizePartOfSpeech(partOfSpeech)
     const normalizedArticle = normalizeArticle(article)
 
-    const { data, error } = await supabase
-      .from('words')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('dutch_lemma', normalizedLemma)
+    const data = await withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('words')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('dutch_lemma', normalizedLemma)
 
-    if (error) {
-      const errorMessage = error.message || ''
-      if (isNetworkError(errorMessage)) {
-        Sentry.captureMessage(`checkSemanticDuplicate: ${errorMessage}`, {
-          level: 'warning',
-          tags: { operation: 'checkSemanticDuplicate', errorCode: 'network' },
-          extra: { userId, dutchLemma, partOfSpeech, article },
-        })
-      } else {
-        Sentry.captureException(error, {
-          tags: { operation: 'checkSemanticDuplicate' },
-          extra: {
-            userId,
-            dutchLemma,
-            partOfSpeech,
-            article,
-            message: 'Failed to check for duplicate',
-          },
-        })
-      }
-      return null
-    }
+      if (error) throw error
+      return data
+    }, 'checkSemanticDuplicate')
+
+    if (!data) return null
 
     const existingWord = (data || []).find(word => {
       const candidatePartOfSpeech = normalizePartOfSpeech(word.part_of_speech)
@@ -526,22 +581,16 @@ export const wordService = {
       collection_id: wordData.collection_id || null,
     }
 
-    const { data, error } = await supabase
-      .from('words')
-      .insert(cleanWordData)
-      .select()
-      .single()
+    return withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('words')
+        .insert(cleanWordData)
+        .select()
+        .single()
 
-    if (error) {
-      logSupabaseError('Failed to add word', error, {
-        operation: 'addWord',
-        userId,
-        dutchLemma,
-      })
-      return null
-    }
-
-    return data
+      if (error) throw error
+      return data
+    }, 'addWord')
   },
 
   // Update word after review (with session-refresh retry on auth/RLS errors)
@@ -589,85 +638,65 @@ export const wordService = {
 
   // Update word image
   async updateWordImage(wordId: string, imageUrl: string) {
-    const { data, error } = await supabase
-      .from('words')
-      .update({ image_url: imageUrl })
-      .eq('word_id', wordId)
-      .select()
-      .single()
+    return withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('words')
+        .update({ image_url: imageUrl })
+        .eq('word_id', wordId)
+        .select()
+        .single()
 
-    if (error) {
-      logSupabaseError('Failed to update word image', error, {
-        operation: 'updateWordImage',
-        wordId,
-        imageUrl,
-      })
-      return null
-    }
-
-    return data
+      if (error) throw error
+      return data
+    }, 'updateWordImage')
   },
 
   // Move word to a different collection
   async moveWordToCollection(wordId: string, newCollectionId: string) {
-    const { data, error } = await supabase
-      .from('words')
-      .update({ collection_id: newCollectionId })
-      .eq('word_id', wordId)
-      .select()
-      .single()
+    return withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('words')
+        .update({ collection_id: newCollectionId })
+        .eq('word_id', wordId)
+        .select()
+        .single()
 
-    if (error) {
-      logSupabaseError('Failed to move word to collection', error, {
-        operation: 'moveWordToCollection',
-        wordId,
-        newCollectionId,
-      })
-      return null
-    }
-
-    return data
+      if (error) throw error
+      return data
+    }, 'moveWordToCollection')
   },
 
   // Reset word SRS statistics to initial values
   async resetWordProgress(wordId: string) {
-    const { data, error } = await supabase
-      .from('words')
-      .update({
-        easiness_factor: SRS_PARAMS.INITIAL.EASINESS_FACTOR,
-        interval_days: SRS_PARAMS.INITIAL.INTERVAL_DAYS,
-        repetition_count: SRS_PARAMS.INITIAL.REPETITION_COUNT,
-        next_review_date: new Date().toISOString().split('T')[0],
-      })
-      .eq('word_id', wordId)
-      .select()
-      .single()
+    return withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('words')
+        .update({
+          easiness_factor: SRS_PARAMS.INITIAL.EASINESS_FACTOR,
+          interval_days: SRS_PARAMS.INITIAL.INTERVAL_DAYS,
+          repetition_count: SRS_PARAMS.INITIAL.REPETITION_COUNT,
+          next_review_date: new Date().toISOString().split('T')[0],
+        })
+        .eq('word_id', wordId)
+        .select()
+        .single()
 
-    if (error) {
-      logSupabaseError('Failed to reset word progress', error, {
-        operation: 'resetWordProgress',
-        wordId,
-      })
-      return null
-    }
-
-    return data
+      if (error) throw error
+      return data
+    }, 'resetWordProgress')
   },
 
   // Delete word
   async deleteWord(wordId: string) {
-    const { error } = await supabase
-      .from('words')
-      .delete()
-      .eq('word_id', wordId)
+    await withSessionRetry(async () => {
+      const { error } = await supabase
+        .from('words')
+        .delete()
+        .eq('word_id', wordId)
 
-    if (error) {
-      logSupabaseError('Failed to delete word', error, {
-        operation: 'deleteWord',
-        wordId,
-      })
-      return
-    }
+      if (error) throw error
+      return true
+    }, 'deleteWord')
   },
 
   // Import words to a collection using SECURITY DEFINER function
@@ -676,85 +705,27 @@ export const wordService = {
     collectionId: string,
     words: Partial<Word>[]
   ): Promise<Word[]> {
-    // Call the database RPC function which uses SECURITY DEFINER to bypass RLS
-    // Supabase RPC automatically serializes to JSON, no need for JSON.stringify
-    const { data, error } = await supabase.rpc('import_words_to_collection', {
-      p_collection_id: collectionId,
-      p_words: words,
+    let result: Word[] | null
+    try {
+      result = await withSessionRetry(async () => {
+        const { data, error } = await supabase.rpc(
+          'import_words_to_collection',
+          { p_collection_id: collectionId, p_words: words }
+        )
+        if (error) throw error
+        return data || []
+      }, 'importWordsToCollection')
+    } catch (error) {
+      classifyAndThrowImportError(error, collectionId, words.length)
+    }
+
+    if (result !== null) {
+      return result
+    }
+
+    throw createImportWordsServiceError('Session expired during import', {
+      sentryHandled: true,
     })
-
-    if (!error) {
-      return data || []
-    }
-
-    if (isSemanticDuplicateError(error)) {
-      logWarning('Semantic duplicate skipped during word import', {
-        operation: 'importWordsToCollection',
-        collectionId,
-        wordCount: words.length,
-        code: error.code,
-        details: error.details,
-      })
-      Sentry.captureMessage('Semantic duplicate skipped during import RPC', {
-        level: 'warning',
-        tags: {
-          operation: 'importWordsToCollection',
-          import_error_type: 'semantic_duplicate',
-        },
-        extra: {
-          collectionId,
-          wordCount: words.length,
-          code: error.code,
-          details: error.details,
-        },
-        fingerprint: ['importWordsToCollection', 'semantic_duplicate'],
-      })
-      throw createImportWordsServiceError(
-        error.message || 'Semantic duplicate detected during import',
-        {
-          code: error.code,
-          sentryHandled: true,
-        }
-      )
-    }
-
-    if (isImportAccessDeniedError(error)) {
-      Sentry.captureMessage('Import blocked by access policy', {
-        level: 'warning',
-        tags: {
-          operation: 'importWordsToCollection',
-          import_error_type: 'access_denied',
-        },
-        extra: {
-          collectionId,
-          wordCount: words.length,
-          code: error.code,
-          details: error.details,
-          message: error.message,
-        },
-        fingerprint: ['importWordsToCollection', 'access_denied'],
-      })
-
-      throw createImportWordsServiceError(IMPORT_ACCESS_DENIED_MESSAGE, {
-        code: error.code,
-        sentryHandled: true,
-        userMessage: IMPORT_ACCESS_DENIED_MESSAGE,
-        isImportAccessError: true,
-      })
-    }
-
-    logSupabaseError('Failed to import words', error, {
-      operation: 'importWordsToCollection',
-      collectionId,
-      wordCount: words.length,
-    })
-    throw createImportWordsServiceError(
-      error.message || 'Failed to import words',
-      {
-        code: error.code,
-        sentryHandled: true,
-      }
-    )
   },
 }
 
@@ -814,19 +785,18 @@ export const userService = {
 export const collectionService = {
   // Get user collections
   async getUserCollections(userId: string) {
-    const { data, error } = await supabase
-      .from('collections')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+    const data = await withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('collections')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      logSupabaseError('Failed to fetch collections', error, {
-        operation: 'getUserCollections',
-        userId,
-      })
-      return null
-    }
+      if (error) throw error
+      return data
+    }, 'getUserCollections')
+
+    if (!data) return null
 
     // Filter out null/invalid entries from the response
     if (Array.isArray(data)) {
@@ -838,22 +808,16 @@ export const collectionService = {
 
   // Create a new collection
   async createCollection(name: string, userId: string) {
-    const { data, error } = await supabase
-      .from('collections')
-      .insert({ name, user_id: userId })
-      .select()
-      .single()
+    return withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('collections')
+        .insert({ name, user_id: userId })
+        .select()
+        .single()
 
-    if (error) {
-      logSupabaseError('Failed to create collection', error, {
-        operation: 'createCollection',
-        name,
-        userId,
-      })
-      return null
-    }
-
-    return data
+      if (error) throw error
+      return data
+    }, 'createCollection')
   },
 
   // Update collection
@@ -862,61 +826,40 @@ export const collectionService = {
     updates: { name: string },
     userId: string
   ) {
-    const { data, error } = await supabase
-      .from('collections')
-      .update(updates)
-      .eq('collection_id', collectionId)
-      .eq('user_id', userId)
-      .select()
-      .single()
+    return withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('collections')
+        .update(updates)
+        .eq('collection_id', collectionId)
+        .eq('user_id', userId)
+        .select()
+        .single()
 
-    if (error) {
-      logSupabaseError('Failed to update collection', error, {
-        operation: 'updateCollection',
-        collectionId,
-        updates,
-        userId,
-      })
-      return null
-    }
-
-    return data
+      if (error) throw error
+      return data
+    }, 'updateCollection')
   },
 
   // Delete collection
   async deleteCollection(collectionId: string, userId: string) {
-    // First, delete all words in this collection
-    const { error: wordsError } = await supabase
-      .from('words')
-      .delete()
-      .eq('collection_id', collectionId)
+    await withSessionRetry(async () => {
+      // First, delete all words in this collection
+      const { error: wordsError } = await supabase
+        .from('words')
+        .delete()
+        .eq('collection_id', collectionId)
 
-    if (wordsError) {
-      Sentry.captureException(wordsError, {
-        tags: { operation: 'deleteCollection' },
-        extra: {
-          collectionId,
-          userId,
-          message: 'Failed to delete words in collection',
-        },
-      })
-      return
-    }
+      if (wordsError) throw wordsError
 
-    // Then delete the collection itself
-    const { error } = await supabase
-      .from('collections')
-      .delete()
-      .eq('collection_id', collectionId)
-      .eq('user_id', userId)
+      // Then delete the collection itself
+      const { error } = await supabase
+        .from('collections')
+        .delete()
+        .eq('collection_id', collectionId)
+        .eq('user_id', userId)
 
-    if (error) {
-      logSupabaseError('Failed to delete collection', error, {
-        operation: 'deleteCollection',
-        collectionId,
-        userId,
-      })
-      return
-    }
+      if (error) throw error
+      return true
+    }, 'deleteCollection')
   },
 }

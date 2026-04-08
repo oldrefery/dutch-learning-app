@@ -153,7 +153,6 @@ describe('wordService duplicate handling', () => {
       sentryHandled: true,
     })
 
-    expect(logSupabaseError).toHaveBeenCalledTimes(1)
-    expect(Sentry.captureException).not.toHaveBeenCalled()
+    expect(Sentry.captureException).toHaveBeenCalledTimes(1)
   })
 })

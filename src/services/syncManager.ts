@@ -422,23 +422,18 @@ export class SyncManager {
       }
 
       const initialErrorMessage = this.getErrorMessage(error)
-      Sentry.captureMessage(
-        'Recoverable sync stage failure detected; refreshing session and retrying once',
-        {
-          level: 'warning',
-          tags: {
-            module: 'syncManager',
-            operation: stage,
-            sync_error_type: syncErrorType,
-          },
-          extra: {
-            userId,
-            stage,
-            errorMessage: initialErrorMessage,
-          },
-          fingerprint: ['sync-stage-retry', stage, syncErrorType],
-        }
-      )
+      Sentry.addBreadcrumb({
+        category: 'sync.retry',
+        message:
+          'Recoverable sync stage failure; refreshing session and retrying',
+        level: 'warning',
+        data: {
+          stage,
+          syncErrorType,
+          errorMessage: initialErrorMessage,
+          userId,
+        },
+      })
 
       const sessionRefreshed = await this.refreshSessionForSyncRetry()
       if (!sessionRefreshed) {

@@ -41,7 +41,19 @@
         "android.permission.VIBRATE"
       ],
       "softwareKeyboardLayoutMode": "pan",
-      "package": "com.oldrefery.dutchlearningapp"
+      "package": "com.oldrefery.dutchlearningapp",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "dutchlearning"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
