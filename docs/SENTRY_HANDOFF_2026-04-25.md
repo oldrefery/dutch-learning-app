@@ -357,12 +357,37 @@ Not run:
 
 ### 6. Focused Tests
 
-Status: pending.
+Status: completed.
 
 Goal:
 
 - Add or adjust tests for each accepted fix.
 - Keep tests scoped to the changed behavior.
+
+Outcome:
+
+- Confirmed existing focused tests cover accepted runtime fixes:
+  - `src/lib/__tests__/sentry.test.ts` verifies Supabase Sentry tracing/breadcrumbs remain enabled while automatic error capture is disabled.
+  - `src/lib/__tests__/supabase.test.ts` verifies invalid word input is classified as validation and expected offline preflight failures skip Sentry exception capture.
+  - `src/utils/__tests__/network.test.ts` and `src/utils/__tests__/networkUtils.test.ts` verify network reachability refresh and offline handling behavior.
+- Added `src/__tests__/sourcemapsScripts.test.ts` for source map observability script regressions without running real EAS or Sentry upload commands.
+- Covered:
+  - EAS Update `--update-dist` help text.
+  - missing `dist` fast-fail before Sentry token validation.
+  - native upload release/dist/url-prefix alignment.
+  - production EAS update command ordering before sourcemap upload.
+
+Focused checks run:
+
+```bash
+npx jest src/__tests__/sourcemapsScripts.test.ts --runInBand --watchman=false
+npx jest src/lib/__tests__/sentry.test.ts src/lib/__tests__/supabase.test.ts src/utils/__tests__/network.test.ts src/utils/__tests__/networkUtils.test.ts src/__tests__/sourcemapsScripts.test.ts --runInBand --watchman=false
+npx eslint src/__tests__/sourcemapsScripts.test.ts
+```
+
+Notes:
+
+- Existing network tests still print expected console errors and React `act(...)` warnings, but all focused suites pass.
 
 ### 7. Quality Gate
 
