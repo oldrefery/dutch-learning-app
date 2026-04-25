@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react-native'
 import { FunctionsHttpError } from '@supabase/supabase-js'
 import { supabase, wordService } from '../supabase'
-import { ErrorCategory, ErrorSeverity } from '@/types/ErrorTypes'
+import { ErrorCategory, ErrorSeverity, NetworkError } from '@/types/ErrorTypes'
 import { assertNetworkConnection } from '@/utils/network'
 import { logSupabaseError, logWarning } from '@/utils/logger'
 
@@ -226,6 +226,32 @@ describe('wordService analyzeWord Edge Function error handling', () => {
     })
 
     expect(getSupabaseFunctionsMock().functions.invoke).toHaveBeenCalledTimes(1)
+    expect(Sentry.captureException).not.toHaveBeenCalled()
+  })
+
+  it('should keep expected offline preflight failures out of Sentry exception capture', async () => {
+    const offlineError = new NetworkError(
+      'Internet not reachable',
+      'Cannot reach the internet. Please check your connection.',
+      undefined,
+      {
+        networkState: {
+          isConnected: true,
+          isInternetReachable: false,
+        },
+      }
+    )
+    mockedAssertNetworkConnection.mockRejectedValueOnce(offlineError)
+
+    await expect(wordService.analyzeWord('huis')).rejects.toMatchObject({
+      name: 'NetworkError',
+      category: ErrorCategory.NETWORK,
+      severity: ErrorSeverity.WARNING,
+      message: 'Internet not reachable',
+      isRetryable: true,
+    })
+
+    expect(getSupabaseFunctionsMock().functions.invoke).not.toHaveBeenCalled()
     expect(Sentry.captureException).not.toHaveBeenCalled()
   })
 

@@ -16,11 +16,13 @@ import {
 
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
+  refresh: jest.fn(),
   addEventListener: jest.fn(() => jest.fn()),
   configure: jest.fn(),
 }))
 
 const mockNetInfoFetch = NetInfo.fetch as jest.Mock
+const mockNetInfoRefresh = NetInfo.refresh as jest.Mock
 
 const API_FAILURE_ERROR = 'API failure'
 
@@ -65,11 +67,29 @@ describe('network utilities', () => {
         isConnected: true,
         isInternetReachable: false,
       })
+      mockNetInfoRefresh.mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: false,
+      })
 
       await expect(assertNetworkConnection()).rejects.toThrow(NetworkError)
       await expect(assertNetworkConnection()).rejects.toThrow(
         'Internet not reachable'
       )
+    })
+
+    it('should refresh stale reachability before throwing', async () => {
+      mockNetInfoFetch.mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: false,
+      })
+      mockNetInfoRefresh.mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: true,
+      })
+
+      await expect(assertNetworkConnection()).resolves.toBeUndefined()
+      expect(mockNetInfoRefresh).toHaveBeenCalledTimes(1)
     })
 
     it('should rethrow if error is already a NetworkError', async () => {
@@ -148,8 +168,26 @@ describe('network utilities', () => {
         isConnected: true,
         isInternetReachable: false,
       })
+      mockNetInfoRefresh.mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: false,
+      })
 
       expect(await isNetworkAvailable()).toBe(false)
+    })
+
+    it('should return true after refresh recovers reachability', async () => {
+      mockNetInfoFetch.mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: false,
+      })
+      mockNetInfoRefresh.mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: true,
+      })
+
+      expect(await isNetworkAvailable()).toBe(true)
+      expect(mockNetInfoRefresh).toHaveBeenCalledTimes(1)
     })
 
     it('should return false on API error', async () => {

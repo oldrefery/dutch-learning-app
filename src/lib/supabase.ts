@@ -10,6 +10,7 @@ import {
   categorizeSupabaseError,
   ClientError,
   ErrorSeverity,
+  NetworkError,
   ServerError,
   ValidationError,
 } from '@/types/ErrorTypes'
@@ -213,6 +214,12 @@ const getSentryLevel = (
       return 'info'
   }
 }
+
+const isExpectedNetworkConnectivityError = (error: unknown): boolean =>
+  error instanceof NetworkError &&
+  typeof error.context === 'object' &&
+  error.context !== null &&
+  'networkState' in error.context
 
 const getFunctionsHttpErrorStatus = (
   error: FunctionsHttpError
@@ -450,7 +457,10 @@ export const wordService = {
       })
 
       // Capture in Sentry with proper categorization
-      if (!(categorizedError instanceof ValidationError)) {
+      if (
+        !(categorizedError instanceof ValidationError) &&
+        !isExpectedNetworkConnectivityError(categorizedError)
+      ) {
         Sentry.captureException(categorizedError, {
           tags: {
             operation: 'analyzeWord',
