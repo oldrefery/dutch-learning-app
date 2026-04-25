@@ -391,7 +391,7 @@ Notes:
 
 ### 7. Quality Gate
 
-Status: pending.
+Status: completed.
 
 Goal:
 
@@ -406,7 +406,24 @@ npm run typecheck
 npm run test:ci
 ```
 
-Use narrower commands first during each plan item, then broaden when the change set is ready.
+Outcome:
+
+- `npm run lint` passed with 0 errors and 7 existing warnings outside the current change surface:
+  - `src/__tests__/helpers/factories.ts`
+  - `src/db/__tests__/progressRepository.test.ts`
+  - `src/db/initDB.ts`
+  - `src/db/wordRepository.ts`
+  - `src/services/__tests__/collectionSharingService.test.ts`
+  - `src/stores/__tests__/useHistoryStore.test.ts`
+- `npm run typecheck` passed.
+- `npm run test:ci` passed:
+  - Test suites: 41 passed, 41 total.
+  - Tests: 718 passed, 718 total.
+  - Snapshots: 0 total.
+
+Notes:
+
+- Full CI tests still print expected console errors and React `act(...)` warnings from existing error-path tests, but the test run exits successfully.
 
 ## Suggested One-Line Commit Messages By Plan Item
 
