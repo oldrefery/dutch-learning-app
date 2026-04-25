@@ -295,7 +295,7 @@ Likely files:
 
 ### 5. Source Maps And Observability
 
-Status: pending.
+Status: completed.
 
 Goal:
 
@@ -312,6 +312,48 @@ Likely files:
 - `scripts/build-and-submit.sh`
 - `scripts/upload-sourcemaps.sh`
 - EAS config files if present
+
+Outcome:
+
+- Verified production event metadata for build `76`:
+  - release: `com.oldrefery.dutch-learning-app@1.12.1+76`
+  - dist: `76`
+  - location: `app:///main.jsbundle`
+  - Sentry error: `Source code was not found`
+- Confirmed local iOS release/dist/url-prefix alignment:
+  - `app.base.json` iOS bundle id: `com.oldrefery.dutch-learning-app`
+  - version: `1.12.1`
+  - build number: `76`
+  - manual upload release: `com.oldrefery.dutch-learning-app@1.12.1+76`
+  - manual upload dist: `76`
+  - manual upload url prefix: `app:///`
+- Confirmed release exists in Sentry, but legacy release file listing returned no source map artifacts.
+- Updated native build path so `scripts/build-and-submit.sh` exports `SENTRY_AUTH_TOKEN` from `.sentryclirc` when the environment variable is missing.
+- Updated manual native upload path so `scripts/upload-sourcemaps.sh` uses the local Sentry CLI when available, targets `https://us.sentry.io/`, and generates bundles with `NODE_ENV=production`.
+- Added EAS Update upload support through `scripts/upload-sourcemaps.sh --update-dist dist`.
+- Added `scripts/eas-update-production.sh` and package scripts:
+  - `npm run update:production -- --message "message"`
+  - `npm run sourcemaps:build`
+  - `npm run sourcemaps:update`
+- Set `eas.json` production build environment to `production` so EAS Build and update commands use the matching EAS environment.
+
+Focused checks run:
+
+```bash
+bash -n scripts/upload-sourcemaps.sh
+bash -n scripts/build-and-submit.sh
+bash -n scripts/eas-update-production.sh
+node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8')); JSON.parse(require('fs').readFileSync('eas.json', 'utf8')); JSON.parse(require('fs').readFileSync('app.base.json', 'utf8'));"
+scripts/upload-sourcemaps.sh --help
+scripts/build-and-submit.sh --help
+scripts/upload-sourcemaps.sh --update-dist /tmp/dutchlearningapp-missing-dist # expected missing-dist guard failure
+npx prettier --check docs/SENTRY_HANDOFF_2026-04-25.md package.json eas.json
+npm run typecheck
+```
+
+Not run:
+
+- Real `eas build`, `eas update`, store submit, or real source map upload commands.
 
 ### 6. Focused Tests
 

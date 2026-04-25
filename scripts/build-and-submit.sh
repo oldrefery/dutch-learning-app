@@ -25,6 +25,21 @@ fi
 
 echo -e "${GREEN}✓ Found .sentryclirc configuration${NC}"
 
+SENTRY_AUTH_TOKEN_CLI=$(awk -F= '/^token=/{print $2}' .sentryclirc)
+if [ -z "${SENTRY_AUTH_TOKEN:-}" ]; then
+    if [ -z "$SENTRY_AUTH_TOKEN_CLI" ]; then
+        echo -e "${RED}Error: token not found in .sentryclirc${NC}"
+        exit 1
+    fi
+
+    export SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN_CLI"
+    echo -e "${GREEN}✓ Loaded SENTRY_AUTH_TOKEN from .sentryclirc for build-time sourcemap upload${NC}"
+else
+    echo -e "${GREEN}✓ Using SENTRY_AUTH_TOKEN from environment for build-time sourcemap upload${NC}"
+fi
+
+export SENTRY_URL="${SENTRY_URL:-https://us.sentry.io/}"
+
 # Resolve Expo config file (app.json or app.base.json)
 if [ -f "./app.json" ]; then
     APP_CONFIG_FILE="./app.json"
@@ -202,7 +217,7 @@ echo -e "${BLUE}Current Android version code: ${CURRENT_ANDROID_BUILD}${NC}"
 if [[ "${SENTRY_DISABLE_AUTO_UPLOAD:-}" == "true" ]]; then
     echo -e "${BLUE}Sentry auto-upload during bundling: disabled (manual sourcemap upload mode)${NC}"
 else
-    echo -e "${YELLOW}Sentry auto-upload during bundling: enabled (manual upload may duplicate artifacts)${NC}"
+    echo -e "${BLUE}Sentry auto-upload during bundling: enabled${NC}"
 fi
 
 # Ask about version increment
@@ -280,6 +295,14 @@ fi
 write_build_context "$BUILD_CONTEXT_FILE" "$BUILD_COMMIT_SHA" "$BUILD_CREATED_AT" "$IOS_BUILT" "$ANDROID_BUILT"
 echo -e "${GREEN}✓ Saved build context to ${BUILD_CONTEXT_FILE}${NC}"
 
+if [[ "${SENTRY_DISABLE_AUTO_UPLOAD:-}" == "true" ]]; then
+    echo ""
+    echo -e "${BLUE}Uploading source maps in manual mode before store submission...${NC}"
+    SENTRY_ENFORCE_BUILD_CONTEXT=true scripts/upload-sourcemaps.sh --platform "$PLATFORM"
+else
+    echo -e "${GREEN}✓ Source map upload is configured during native bundling by @sentry/react-native${NC}"
+fi
+
 # Submit to stores if requested
 if [[ "$SUBMIT" == "true" ]]; then
     echo ""
@@ -321,4 +344,8 @@ fi
 
 echo ""
 echo -e "${YELLOW}Build artifacts saved in ./builds/ directory${NC}"
-echo -e "${YELLOW}Next step: Run scripts/upload-sourcemaps.sh to upload source maps to Sentry${NC}"
+if [[ "${SENTRY_DISABLE_AUTO_UPLOAD:-}" == "true" ]]; then
+    echo -e "${YELLOW}Sentry source maps were uploaded with scripts/upload-sourcemaps.sh${NC}"
+else
+    echo -e "${YELLOW}Sentry source maps were handled during native bundling${NC}"
+fi

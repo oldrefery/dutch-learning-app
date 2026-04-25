@@ -11,7 +11,21 @@ NC='\033[0m' # No Color
 # --- CONFIGURATION ---
 SENTRY_ORG="${SENTRY_ORG:-oldrefery}"
 SENTRY_PROJECT="${SENTRY_PROJECT:-dutch-learning-app}"
-SENTRY_CLI="npx -y sentry-cli"
+SENTRY_URL="${SENTRY_URL:-https://us.sentry.io/}"
+if [ -z "${SENTRY_CLI:-}" ]; then
+  if [ -x "node_modules/.bin/sentry-cli" ]; then
+    SENTRY_CLI="node_modules/.bin/sentry-cli"
+  else
+    SENTRY_CLI="npx -y sentry-cli"
+  fi
+fi
+if [ -z "${SENTRY_EXPO_UPLOAD:-}" ]; then
+  if [ -x "node_modules/.bin/sentry-expo-upload-sourcemaps" ]; then
+    SENTRY_EXPO_UPLOAD="node_modules/.bin/sentry-expo-upload-sourcemaps"
+  else
+    SENTRY_EXPO_UPLOAD="npx sentry-expo-upload-sourcemaps"
+  fi
+fi
 SENTRY_ENABLE_RELEASE_FLOW="${SENTRY_ENABLE_RELEASE_FLOW:-true}"
 SENTRY_ENFORCE_BUILD_CONTEXT="${SENTRY_ENFORCE_BUILD_CONTEXT:-false}"
 SENTRY_ALLOW_COMMIT_MISMATCH="${SENTRY_ALLOW_COMMIT_MISMATCH:-false}"
@@ -72,7 +86,7 @@ run_sentry_or_fail() {
   shift
 
   local output
-  if ! output=$($SENTRY_CLI --auth-token "$SENTRY_AUTH_TOKEN_CLI" "$@" 2>&1); then
+  if ! output=$($SENTRY_CLI --url "$SENTRY_URL" --auth-token "$SENTRY_AUTH_TOKEN_CLI" "$@" 2>&1); then
     echo "$output"
 
     if echo "$output" | grep -Eiq "http status: 403|do not have permission"; then
@@ -86,6 +100,29 @@ run_sentry_or_fail() {
   fi
 
   [ -n "$output" ] && echo "$output"
+}
+
+upload_eas_update_sourcemaps() {
+  local update_dist_dir=$1
+
+  if [ ! -d "$update_dist_dir" ]; then
+    echo -e "${RED}Error: EAS Update dist directory not found: ${update_dist_dir}${NC}"
+    echo -e "${YELLOW}Run eas update first, then pass the generated dist directory.${NC}"
+    return 1
+  fi
+
+  echo -e "${BLUE}Uploading EAS Update sourcemaps from ${update_dist_dir}...${NC}"
+  if ! SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN_CLI" \
+    SENTRY_ORG="$SENTRY_ORG" \
+    SENTRY_PROJECT="$SENTRY_PROJECT" \
+    SENTRY_URL="$SENTRY_URL" \
+    NODE_ENV=production \
+    $SENTRY_EXPO_UPLOAD "$update_dist_dir"; then
+    echo -e "${RED}❌ Failed to upload EAS Update sourcemaps${NC}"
+    return 1
+  fi
+
+  echo -e "${GREEN}✅ EAS Update sourcemaps uploaded successfully!${NC}"
 }
 
 load_build_context() {
@@ -186,7 +223,7 @@ create_and_upload() {
 
     # Create release in Sentry (tolerate "already exists", fail on real errors).
     local create_output=""
-    if ! create_output=$($SENTRY_CLI releases new "$release_name" \
+    if ! create_output=$($SENTRY_CLI --url "$SENTRY_URL" releases new "$release_name" \
       --auth-token "$SENTRY_AUTH_TOKEN_CLI" \
       --org "$SENTRY_ORG" \
       --project "$SENTRY_PROJECT" 2>&1); then
@@ -217,7 +254,7 @@ create_and_upload() {
   if is_true_flag "$SENTRY_FORCE_RESET_CACHE"; then
     embed_args+=(--reset-cache)
   fi
-  SENTRY_DISABLE_AUTO_UPLOAD=true npx expo export:embed "${embed_args[@]}"
+  SENTRY_DISABLE_AUTO_UPLOAD=true NODE_ENV=production npx expo export:embed "${embed_args[@]}"
 
   # Check if sourcemap was generated
   if [ ! -f "$sourcemap_file" ]; then
@@ -240,7 +277,7 @@ create_and_upload() {
       --wait
 
     # Set release version
-    $SENTRY_CLI releases set-commits "$release_name" --auto \
+    $SENTRY_CLI --url "$SENTRY_URL" releases set-commits "$release_name" --auto \
       --auth-token "$SENTRY_AUTH_TOKEN_CLI" \
       --org "$SENTRY_ORG" \
       --project "$SENTRY_PROJECT" || echo -e "${YELLOW}Warning: Could not set commits for release${NC}"
@@ -272,10 +309,15 @@ create_and_upload() {
 
 # Parse command line arguments
 PLATFORM="both"
+UPDATE_DIST_DIR=""
 while [[ $# -gt 0 ]]; do
     case $1 in
         --platform)
             PLATFORM="$2"
+            shift 2
+            ;;
+        --update-dist)
+            UPDATE_DIST_DIR="$2"
             shift 2
             ;;
         --help)
@@ -283,6 +325,7 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  --platform [ios|android|both]  Generate sourcemaps for specific platform (default: both)"
+            echo "  --update-dist DIR              Upload EAS Update sourcemaps from dist directory"
             echo "  --help                         Show this help message"
             echo ""
             echo "Environment variables:"
@@ -295,6 +338,7 @@ while [[ $# -gt 0 ]]; do
             echo "  $0                             Generate and upload sourcemaps for both platforms"
             echo "  $0 --platform ios             Generate and upload only for iOS"
             echo "  $0 --platform android         Generate and upload only for Android"
+            echo "  $0 --update-dist dist         Upload EAS Update sourcemaps from dist"
             echo "  SENTRY_ENABLE_RELEASE_FLOW=false $0 --platform ios"
             exit 0
             ;;
@@ -310,6 +354,27 @@ done
 if [[ "$PLATFORM" != "ios" && "$PLATFORM" != "android" && "$PLATFORM" != "both" ]]; then
     echo -e "${RED}Error: Platform must be 'ios', 'android', or 'both'${NC}"
     exit 1
+fi
+
+if [ -n "$UPDATE_DIST_DIR" ]; then
+  if [ ! -d "$UPDATE_DIST_DIR" ]; then
+    echo -e "${RED}Error: EAS Update dist directory not found: ${UPDATE_DIST_DIR}${NC}"
+    echo -e "${YELLOW}Run eas update first, then pass the generated dist directory.${NC}"
+    exit 1
+  fi
+
+  echo -e "${BLUE}Sourcemap source configuration (EAS Update):${NC}"
+  echo -e "Dist directory: ${UPDATE_DIST_DIR}"
+  echo -e "Sentry URL: ${SENTRY_URL}"
+  echo ""
+
+  echo -e "${BLUE}Validating Sentry token...${NC}"
+  run_sentry_or_fail "verifying token access" info >/dev/null
+  echo -e "${GREEN}✓ Sentry access check passed${NC}"
+  echo ""
+
+  upload_eas_update_sourcemaps "$UPDATE_DIST_DIR"
+  exit 0
 fi
 
 if load_build_context "$BUILD_CONTEXT_FILE"; then
