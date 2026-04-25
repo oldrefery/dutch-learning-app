@@ -36,11 +36,11 @@ export function initializeSentry() {
         },
       }),
       SentryLib.mobileReplayIntegration(),
-      // Supabase integration for automatic error tracking and tracing
+      // Supabase integration for tracing and breadcrumbs; explicit captures keep auth errors contextual.
       supabaseIntegration(supabase, SentryLib, {
         tracing: true,
         breadcrumbs: true,
-        errors: true,
+        errors: false,
       }),
     ],
   })
