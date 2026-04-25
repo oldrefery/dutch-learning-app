@@ -6,7 +6,13 @@ import type { ReviewAssessment } from '@/types/ApplicationStoreTypes'
 import { SRS_PARAMS } from '@/constants/SRSConstants'
 import * as Sentry from '@sentry/react-native'
 import { retrySupabaseFunction } from '@/utils/retryUtils'
-import { categorizeSupabaseError, ServerError } from '@/types/ErrorTypes'
+import {
+  categorizeSupabaseError,
+  ClientError,
+  ErrorSeverity,
+  ServerError,
+  ValidationError,
+} from '@/types/ErrorTypes'
 import { FunctionsHttpError } from '@supabase/supabase-js'
 import { assertNetworkConnection } from '@/utils/network'
 import { logWarning } from '@/utils/logger'
@@ -45,6 +51,8 @@ export const getDevUserId = (): string => {
 // Constants for word analysis
 const WORD_ANALYSIS_CATEGORY = 'word.analysis'
 const GEMINI_HANDLER_FUNCTION = 'gemini-handler'
+const DEFAULT_FUNCTION_ERROR_MESSAGE =
+  'Edge Function returned a non-2xx status code'
 const POSTGRES_UNIQUE_VIOLATION_CODE = '23505'
 const SEMANTIC_UNIQUE_INDEX = 'idx_words_semantic_unique'
 const IMPORT_ACCESS_DENIED_MESSAGE =
@@ -191,6 +199,95 @@ const createImportWordsServiceError = (
   return error
 }
 
+const getSentryLevel = (
+  severity: ErrorSeverity
+): 'fatal' | 'error' | 'warning' | 'info' => {
+  switch (severity) {
+    case ErrorSeverity.CRITICAL:
+      return 'fatal'
+    case ErrorSeverity.ERROR:
+      return 'error'
+    case ErrorSeverity.WARNING:
+      return 'warning'
+    case ErrorSeverity.INFO:
+      return 'info'
+  }
+}
+
+const getFunctionsHttpErrorStatus = (
+  error: FunctionsHttpError
+): number | undefined => {
+  const context = error.context as { status?: unknown }
+  return typeof context.status === 'number' ? context.status : undefined
+}
+
+const getFunctionsHttpErrorBody = async (
+  error: FunctionsHttpError
+): Promise<string> => {
+  const context = error.context as {
+    json?: () => Promise<unknown>
+  }
+
+  try {
+    const bodyData = await context.json?.()
+    if (bodyData && typeof bodyData === 'object') {
+      const responseBody = bodyData as Record<string, unknown>
+      if (typeof responseBody.error === 'string') {
+        return responseBody.error
+      }
+      if (typeof responseBody.message === 'string') {
+        return responseBody.message
+      }
+      return JSON.stringify(responseBody)
+    }
+  } catch {
+    // Fall through to the default message when the response body is unavailable.
+  }
+
+  return DEFAULT_FUNCTION_ERROR_MESSAGE
+}
+
+const createWordAnalysisHttpError = async (
+  error: FunctionsHttpError
+): Promise<ValidationError | ClientError | ServerError> => {
+  const statusCode = getFunctionsHttpErrorStatus(error)
+  const errorMessage = await getFunctionsHttpErrorBody(error)
+  const context = {
+    functionName: GEMINI_HANDLER_FUNCTION,
+    operation: 'analyzeWord',
+    statusCode,
+  }
+
+  if (statusCode === 400) {
+    return new ValidationError(
+      errorMessage,
+      'word',
+      errorMessage,
+      error,
+      context
+    )
+  }
+
+  if (statusCode && statusCode >= 400 && statusCode < 500) {
+    return new ClientError(
+      errorMessage,
+      statusCode,
+      'Word analysis request was invalid. Please check the word and try again.',
+      error,
+      context
+    )
+  }
+
+  return new ServerError(
+    errorMessage,
+    statusCode,
+    'Word analysis failed. Please try again.',
+    statusCode === 503 || statusCode === 504 || statusCode === 546,
+    error,
+    context
+  )
+}
+
 function classifyAndThrowImportError(
   error: unknown,
   collectionId: string,
@@ -302,30 +399,7 @@ export const wordService = {
           // If there's an error, extract details and throw
           if (error) {
             if (error instanceof FunctionsHttpError) {
-              let errorBody: string =
-                'Edge Function returned a non-2xx status code'
-              try {
-                const bodyData = await error.context.json()
-                errorBody =
-                  bodyData?.error ||
-                  bodyData?.message ||
-                  JSON.stringify(bodyData)
-              } catch {
-                // Could not parse response body
-              }
-              throw new ServerError(
-                errorBody,
-                error.context.status,
-                'Word analysis failed. Please try again.',
-                error.context.status === 503 ||
-                  error.context.status === 504 ||
-                  error.context.status === 546,
-                error,
-                {
-                  functionName: GEMINI_HANDLER_FUNCTION,
-                  operation: 'analyzeWord',
-                }
-              )
+              throw await createWordAnalysisHttpError(error)
             }
             throw error
           }
@@ -366,7 +440,7 @@ export const wordService = {
       Sentry.addBreadcrumb({
         category: WORD_ANALYSIS_CATEGORY,
         message: `Word analysis failed: ${categorizedError.category}`,
-        level: 'error',
+        level: getSentryLevel(categorizedError.severity),
         data: {
           word,
           errorCategory: categorizedError.category,
@@ -376,25 +450,22 @@ export const wordService = {
       })
 
       // Capture in Sentry with proper categorization
-      Sentry.captureException(categorizedError, {
-        tags: {
-          operation: 'analyzeWord',
-          errorCategory: categorizedError.category,
-          severity: categorizedError.severity,
-        },
-        extra: {
-          word,
-          forceRefresh: options?.forceRefresh || false,
-          isRetryable: categorizedError.isRetryable,
-          userMessage: categorizedError.userMessage,
-        },
-        level:
-          categorizedError.severity === 'CRITICAL'
-            ? 'fatal'
-            : categorizedError.severity === 'ERROR'
-              ? 'error'
-              : 'warning',
-      })
+      if (!(categorizedError instanceof ValidationError)) {
+        Sentry.captureException(categorizedError, {
+          tags: {
+            operation: 'analyzeWord',
+            errorCategory: categorizedError.category,
+            severity: categorizedError.severity,
+          },
+          extra: {
+            word,
+            forceRefresh: options?.forceRefresh || false,
+            isRetryable: categorizedError.isRetryable,
+            userMessage: categorizedError.userMessage,
+          },
+          level: getSentryLevel(categorizedError.severity),
+        })
+      }
 
       // Throw the categorized error instead of returning null
       throw categorizedError
