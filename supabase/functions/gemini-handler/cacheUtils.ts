@@ -1,4 +1,9 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from '@supabase/supabase-js'
+import type { WordAnalysisResult } from './types.ts'
+
+type WordTranslations = WordAnalysisResult['translations']
+type WordExample = WordAnalysisResult['examples'][number]
+type WordRegister = 'formal' | 'informal' | 'neutral'
 
 // Supabase client for cache operations (using a service role)
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -13,20 +18,21 @@ export interface CacheEntry {
   part_of_speech: string
   is_irregular: boolean
   article: string | null
+  register: WordRegister | null
   is_reflexive: boolean
   is_expression: boolean
   expression_type: string | null
   is_separable: boolean
   prefix_part: string | null
   root_verb: string | null
-  translations: any
-  examples: any[]
+  translations: WordTranslations
+  examples: WordExample[]
   tts_url: string | null
   image_url: string | null
-  synonyms: any[]
-  antonyms: any[]
+  synonyms: string[]
+  antonyms: string[]
   plural: string | null
-  conjugation: any | null
+  conjugation: unknown | null
   preposition: string | null
   analysis_notes: string
   usage_count: number
@@ -40,20 +46,21 @@ export interface WordAnalysisData {
   part_of_speech: string
   is_irregular: boolean
   article?: string
+  register?: WordRegister | null
   is_reflexive: boolean
   is_expression: boolean
   expression_type?: string
   is_separable: boolean
   prefix_part?: string
   root_verb?: string
-  translations: any
-  examples: any[]
+  translations: WordTranslations
+  examples: WordExample[]
   tts_url?: string
   image_url?: string
-  synonyms: any[]
-  antonyms: any[]
+  synonyms: string[]
+  antonyms: string[]
   plural?: string
-  conjugation?: any
+  conjugation?: unknown
   preposition?: string
   analysis_notes: string
 }
@@ -103,7 +110,7 @@ export async function getCachedAnalysis(
 
 /**
  * Get all cached variants of a word (by lemma only) - for showing suggestions
- * when user inputs word without an article
+ * when the user inputs a word without an article
  */
 export async function getCachedVariants(
   normalizedWord: string
@@ -132,7 +139,7 @@ export async function getCachedVariants(
     if (data && data.length > 0) {
       console.log(
         'Variants:',
-        data.map(v => ({
+        data.map((v: CacheEntry) => ({
           part_of_speech: v.part_of_speech,
           article: v.article,
           usage_count: v.usage_count,
@@ -171,6 +178,8 @@ async function updateCacheUsage(cacheId: string): Promise<void> {
 export async function saveToCache(
   analysisData: WordAnalysisData
 ): Promise<void> {
+  let cacheWriteError: unknown = null
+
   try {
     // Try to insert a new record
     const { error: insertError } = await supabase
@@ -181,6 +190,7 @@ export async function saveToCache(
         part_of_speech: analysisData.part_of_speech,
         is_irregular: analysisData.is_irregular,
         article: analysisData.article || null,
+        register: analysisData.register || null,
         is_reflexive: analysisData.is_reflexive,
         is_expression: analysisData.is_expression,
         expression_type: analysisData.expression_type || null,
@@ -214,6 +224,7 @@ export async function saveToCache(
         .update({
           // Update ALL analysis fields with fresh data
           dutch_original: analysisData.dutch_original,
+          register: analysisData.register || null,
           is_irregular: analysisData.is_irregular,
           is_reflexive: analysisData.is_reflexive,
           is_expression: analysisData.is_expression,
@@ -240,19 +251,23 @@ export async function saveToCache(
 
       if (updateError) {
         console.error('❌ saveToCache update error:', updateError)
-        throw updateError
+        cacheWriteError = updateError
       }
     } else if (insertError) {
       // Other errors should be thrown
       console.error('❌ saveToCache insert error:', insertError)
-      throw insertError
+      cacheWriteError = insertError
     }
-
-    console.log(`✅ Saved to cache: ${analysisData.dutch_lemma}`)
   } catch (error) {
     console.error('❌ saveToCache exception:', error)
     throw error
   }
+
+  if (cacheWriteError) {
+    throw cacheWriteError
+  }
+
+  console.log(`✅ Saved to cache: ${analysisData.dutch_lemma}`)
 }
 
 /**

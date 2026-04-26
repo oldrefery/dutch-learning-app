@@ -31,6 +31,7 @@ export interface WordAnalysisResult {
   prefix_part?: string
   root_verb?: string
   article?: string
+  register?: 'formal' | 'informal' | 'neutral' | null
   expression_type?: string
   tts_url: string
 }
@@ -55,5 +56,6 @@ export interface GeminiAnalysisResult {
   prefix_part?: string
   root_verb?: string
   article?: string
+  register?: 'formal' | 'informal' | 'neutral' | null
   expression_type?: string
 }

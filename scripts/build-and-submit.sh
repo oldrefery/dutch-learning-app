@@ -38,7 +38,7 @@ else
     echo -e "${GREEN}✓ Using SENTRY_AUTH_TOKEN from environment for build-time sourcemap upload${NC}"
 fi
 
-export SENTRY_URL="${SENTRY_URL:-https://us.sentry.io/}"
+export SENTRY_URL="${SENTRY_URL:-https://sentry.io/}"
 
 # Resolve Expo config file (app.json or app.base.json)
 if [ -f "./app.json" ]; then

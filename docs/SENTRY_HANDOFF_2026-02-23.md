@@ -14,7 +14,7 @@ Prepare a clean restart point for fixing current production Sentry issues in `du
 ## Sentry Access Status
 
 - Access is working.
-- Required base URL for this org/project in local setup: `https://us.sentry.io`
+- Required base URL for this org/project in local setup: `https://sentry.io`
 - Confirmed that API calls return issues with current token/scopes.
 
 Local env keys expected:
@@ -22,7 +22,7 @@ Local env keys expected:
 - `SENTRY_AUTH_TOKEN`
 - `SENTRY_ORG=oldrefery`
 - `SENTRY_PROJECT=dutch-learning-app`
-- `SENTRY_BASE_URL=https://us.sentry.io`
+- `SENTRY_BASE_URL=https://sentry.io`
 
 ## Verified Query (Current Release)
 

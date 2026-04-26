@@ -11,7 +11,7 @@ NC='\033[0m' # No Color
 # --- CONFIGURATION ---
 SENTRY_ORG="${SENTRY_ORG:-oldrefery}"
 SENTRY_PROJECT="${SENTRY_PROJECT:-dutch-learning-app}"
-SENTRY_URL="${SENTRY_URL:-https://us.sentry.io/}"
+SENTRY_URL="${SENTRY_URL:-https://sentry.io/}"
 if [ -z "${SENTRY_CLI:-}" ]; then
   if [ -x "node_modules/.bin/sentry-cli" ]; then
     SENTRY_CLI="node_modules/.bin/sentry-cli"

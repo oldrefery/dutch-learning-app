@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -9,8 +9,10 @@ import {
   Image,
   Linking,
   Switch,
+  ActivityIndicator,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native'
 import { router } from 'expo-router'
 import Constants from 'expo-constants'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
@@ -27,10 +29,16 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useSettingsStore } from '@/stores/useSettingsStore'
 import { UpdateStatusBadge } from '@/components/UpdateStatusBadge'
 import { syncManager } from '@/services/syncManager'
+import {
+  syncStatusService,
+  type SyncStatusSnapshot,
+} from '@/services/syncStatusService'
 import { wordRepository } from '@/db/wordRepository'
 
 const getErrorMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback
+
+const JUSTIFY_SPACE_BETWEEN = 'space-between'
 
 const executeDeleteAccount = async () => {
   try {
@@ -228,7 +236,13 @@ const executeDeleteWordByLemma = async (
       .eq('dutch_lemma', normalizedLemma)
 
     if (error) {
-      throw new Error(`Lookup failed: ${error.message}`)
+      const lookupError = new Error(`Lookup failed: ${error.message}`)
+      Sentry.captureException(lookupError, {
+        tags: { operation: 'deleteWordByLemma.lookup' },
+        extra: { currentUserId, normalizedLemma },
+      })
+      ToastService.show(lookupError.message, ToastType.ERROR)
+      return
     }
 
     if (!words || words.length === 0) {
@@ -246,7 +260,15 @@ const executeDeleteWordByLemma = async (
         .in('word_id', chunk)
 
       if (deleteError) {
-        throw new Error(`Delete failed: ${deleteError.message}`)
+        const remoteDeleteError = new Error(
+          `Delete failed: ${deleteError.message}`
+        )
+        Sentry.captureException(remoteDeleteError, {
+          tags: { operation: 'deleteWordByLemma.remoteDelete' },
+          extra: { currentUserId, normalizedLemma, chunkSize: chunk.length },
+        })
+        ToastService.show(remoteDeleteError.message, ToastType.ERROR)
+        return
       }
     }
 
@@ -341,11 +363,49 @@ const getAccessBadgeTextColor = (userAccessLevel: string) =>
 const getAccessBadgeLabel = (userAccessLevel: string) =>
   userAccessLevel === 'full_access' ? 'Full Access' : 'Read Only'
 
+const getSyncSummaryLabel = (
+  snapshot: SyncStatusSnapshot | null,
+  isSyncing: boolean
+) => {
+  if (isSyncing) return 'Syncing changes...'
+  if (!snapshot) return 'Checking local database...'
+  if (snapshot.totalPending > 0) return `${snapshot.totalPending} pending`
+  if (!snapshot.lastSyncAt) return 'Not synced yet'
+  return 'Up to date'
+}
+
+const getSyncSummaryColor = (
+  snapshot: SyncStatusSnapshot | null,
+  isSyncing: boolean,
+  isDarkMode: boolean
+) => {
+  if (isSyncing) return Colors.primary.DEFAULT
+  if (!snapshot) return isDarkMode ? Colors.neutral[400] : Colors.neutral[500]
+  if (!snapshot.isOnline) return Colors.warning.DEFAULT
+  if (snapshot.totalPending > 0) return Colors.warning.DEFAULT
+  return isDarkMode ? Colors.success.darkModeChip : Colors.success.DEFAULT
+}
+
+const formatLastSyncAt = (lastSyncAt: string | null) => {
+  if (!lastSyncAt) return 'Never'
+
+  return new Date(lastSyncAt).toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets()
   const colorScheme = useColorScheme() ?? 'light'
   const [user, setUser] = useState<User | null>(null)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [isLoadingSyncStatus, setIsLoadingSyncStatus] = useState(false)
+  const [syncSnapshot, setSyncSnapshot] = useState<SyncStatusSnapshot | null>(
+    null
+  )
   const { signOut, loading: authLoading } = useSimpleAuth()
   const { userAccessLevel, currentUserId } = useApplicationStore()
   const { autoPlayPronunciation, setAutoPlayPronunciation } = useSettingsStore()
@@ -357,7 +417,34 @@ export default function SettingsScreen() {
   const appIconSource = getAppIconSource(isDarkMode)
   const destructiveColor = getDestructiveColor(isDarkMode)
   const logoutLabel = authLoading ? 'Logging out...' : 'Logout'
-  const forceSyncLabel = isSyncing ? 'Syncing...' : 'Force Sync (Debug)'
+  const forceSyncLabel = isSyncing ? 'Syncing...' : 'Sync Now'
+  const syncSummaryLabel = getSyncSummaryLabel(syncSnapshot, isSyncing)
+  const syncSummaryColor = getSyncSummaryColor(
+    syncSnapshot,
+    isSyncing,
+    isDarkMode
+  )
+
+  const loadSyncStatus = useCallback(async () => {
+    if (!currentUserId) {
+      setSyncSnapshot(null)
+      return
+    }
+
+    setIsLoadingSyncStatus(true)
+    try {
+      const snapshot = await syncStatusService.getSnapshot(currentUserId)
+      setSyncSnapshot(snapshot)
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { operation: 'loadSyncStatus' },
+        extra: { currentUserId },
+      })
+      ToastService.show('Could not load sync status.', ToastType.ERROR)
+    } finally {
+      setIsLoadingSyncStatus(false)
+    }
+  }, [currentUserId])
 
   useEffect(() => {
     const getUser = async () => {
@@ -377,6 +464,12 @@ export default function SettingsScreen() {
 
     return () => subscription.unsubscribe()
   }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadSyncStatus()
+    }, [loadSyncStatus])
+  )
 
   const handleLogout = async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
@@ -399,6 +492,7 @@ export default function SettingsScreen() {
 
   const handleForceSync = async () => {
     await handleForceSyncAction(currentUserId, isSyncing, setIsSyncing)
+    await loadSyncStatus()
   }
 
   const handleDeleteOrphanWords = () => {
@@ -693,6 +787,159 @@ export default function SettingsScreen() {
           </PlatformBlurView>
         </ViewThemed>
 
+        <ViewThemed style={styles.syncSectionContainer}>
+          <PlatformBlurView
+            style={styles.syncBlur}
+            intensity={100}
+            tint={blurTint}
+            blurMethod={'dimezisBlurView'}
+          >
+            <ViewThemed style={[styles.syncSection, sectionSurfaceStyle]}>
+              <ViewThemed
+                style={styles.sectionHeader}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <TextThemed style={styles.sectionTitle}>Sync Status</TextThemed>
+                <ViewThemed
+                  style={[
+                    styles.syncBadge,
+                    {
+                      borderColor: syncSummaryColor,
+                    },
+                  ]}
+                >
+                  <TextThemed
+                    style={[
+                      styles.syncBadgeText,
+                      {
+                        color: syncSummaryColor,
+                      },
+                    ]}
+                  >
+                    {syncSummaryLabel}
+                  </TextThemed>
+                </ViewThemed>
+              </ViewThemed>
+
+              <ViewThemed
+                style={styles.syncStatsGrid}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <ViewThemed
+                  style={styles.syncStatItem}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed style={styles.syncStatValue}>
+                    {syncSnapshot?.pendingWords ?? 0}
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.syncStatLabel}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Words
+                  </TextThemed>
+                </ViewThemed>
+                <ViewThemed
+                  style={styles.syncStatItem}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed style={styles.syncStatValue}>
+                    {syncSnapshot?.pendingCollections ?? 0}
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.syncStatLabel}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Collections
+                  </TextThemed>
+                </ViewThemed>
+                <ViewThemed
+                  style={styles.syncStatItem}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed style={styles.syncStatValue}>
+                    {syncSnapshot?.pendingProgress ?? 0}
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.syncStatLabel}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Progress
+                  </TextThemed>
+                </ViewThemed>
+              </ViewThemed>
+
+              <ViewThemed
+                style={styles.syncInfoRow}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <TextThemed
+                  style={styles.syncInfoLabel}
+                  lightColor={Colors.neutral[600]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  Last sync
+                </TextThemed>
+                <TextThemed style={styles.syncInfoValue}>
+                  {formatLastSyncAt(syncSnapshot?.lastSyncAt ?? null)}
+                </TextThemed>
+              </ViewThemed>
+
+              <ViewThemed
+                style={styles.syncInfoRow}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <TextThemed
+                  style={styles.syncInfoLabel}
+                  lightColor={Colors.neutral[600]}
+                  darkColor={Colors.dark.textSecondary}
+                >
+                  Local database
+                </TextThemed>
+                <TextThemed style={styles.syncInfoValue}>
+                  {syncSnapshot
+                    ? `${syncSnapshot.totalLocalWords} words, ${syncSnapshot.totalLocalCollections} collections, ${syncSnapshot.totalLocalProgress} progress`
+                    : 'Loading...'}
+                </TextThemed>
+              </ViewThemed>
+
+              <TouchableOpacity
+                testID="force-sync-button"
+                style={[
+                  styles.forceSyncButton,
+                  {
+                    backgroundColor: Colors.primary.DEFAULT,
+                    opacity:
+                      isSyncing || !currentUserId || isLoadingSyncStatus
+                        ? 0.7
+                        : 1,
+                  },
+                ]}
+                onPress={handleForceSync}
+                disabled={isSyncing || !currentUserId || isLoadingSyncStatus}
+              >
+                {isSyncing ? (
+                  <ActivityIndicator color={Colors.background.primary} />
+                ) : (
+                  <TextThemed style={styles.forceSyncButtonText}>
+                    {forceSyncLabel}
+                  </TextThemed>
+                )}
+              </TouchableOpacity>
+            </ViewThemed>
+          </PlatformBlurView>
+        </ViewThemed>
+
         <ViewThemed style={styles.accountSectionContainer}>
           <PlatformBlurView
             style={styles.accountBlur}
@@ -721,31 +968,6 @@ export default function SettingsScreen() {
 
               {__DEV__ && (
                 <>
-                  <TouchableOpacity
-                    testID="force-sync-button"
-                    style={[
-                      styles.forceSyncButton,
-                      {
-                        backgroundColor: Colors.primary.DEFAULT,
-                        opacity: isSyncing ? 0.7 : 1,
-                      },
-                    ]}
-                    onPress={handleForceSync}
-                    disabled={isSyncing}
-                  >
-                    <TextThemed style={styles.forceSyncButtonText}>
-                      {forceSyncLabel}
-                    </TextThemed>
-                  </TouchableOpacity>
-
-                  <TextThemed
-                    style={styles.logoutDescription}
-                    lightColor={Colors.neutral[600]}
-                    darkColor={Colors.dark.textSecondary}
-                  >
-                    Runs a manual sync and logs stage output for debugging.
-                  </TextThemed>
-
                   <TouchableOpacity
                     testID="delete-orphan-words-button"
                     style={[
@@ -909,10 +1131,78 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
   },
+  syncSectionContainer: {
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: Colors.neutral[900],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  syncBlur: {
+    overflow: 'hidden',
+    borderRadius: 16,
+  },
+  syncSection: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  syncBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  syncBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  syncStatsGrid: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  syncStatItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.neutral[200],
+  },
+  syncStatValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  syncStatLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  syncInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: JUSTIFY_SPACE_BETWEEN,
+    gap: 12,
+    marginBottom: 10,
+  },
+  syncInfoLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  syncInfoValue: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'right',
+  },
   preferenceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: JUSTIFY_SPACE_BETWEEN,
     paddingVertical: 12,
   },
   preferenceTextContainer: {
@@ -950,7 +1240,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: JUSTIFY_SPACE_BETWEEN,
     marginBottom: 12,
     gap: 8,
   },
