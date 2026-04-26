@@ -38,6 +38,8 @@ import { wordRepository } from '@/db/wordRepository'
 const getErrorMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback
 
+const JUSTIFY_SPACE_BETWEEN = 'space-between'
+
 const executeDeleteAccount = async () => {
   try {
     await userService.deleteAccount()
@@ -234,7 +236,13 @@ const executeDeleteWordByLemma = async (
       .eq('dutch_lemma', normalizedLemma)
 
     if (error) {
-      throw new Error(`Lookup failed: ${error.message}`)
+      const lookupError = new Error(`Lookup failed: ${error.message}`)
+      Sentry.captureException(lookupError, {
+        tags: { operation: 'deleteWordByLemma.lookup' },
+        extra: { currentUserId, normalizedLemma },
+      })
+      ToastService.show(lookupError.message, ToastType.ERROR)
+      return
     }
 
     if (!words || words.length === 0) {
@@ -252,7 +260,15 @@ const executeDeleteWordByLemma = async (
         .in('word_id', chunk)
 
       if (deleteError) {
-        throw new Error(`Delete failed: ${deleteError.message}`)
+        const remoteDeleteError = new Error(
+          `Delete failed: ${deleteError.message}`
+        )
+        Sentry.captureException(remoteDeleteError, {
+          tags: { operation: 'deleteWordByLemma.remoteDelete' },
+          extra: { currentUserId, normalizedLemma, chunkSize: chunk.length },
+        })
+        ToastService.show(remoteDeleteError.message, ToastType.ERROR)
+        return
       }
     }
 
@@ -1169,7 +1185,7 @@ const styles = StyleSheet.create({
   syncInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: JUSTIFY_SPACE_BETWEEN,
     gap: 12,
     marginBottom: 10,
   },
@@ -1186,7 +1202,7 @@ const styles = StyleSheet.create({
   preferenceRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: JUSTIFY_SPACE_BETWEEN,
     paddingVertical: 12,
   },
   preferenceTextContainer: {
@@ -1224,7 +1240,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: JUSTIFY_SPACE_BETWEEN,
     marginBottom: 12,
     gap: 8,
   },
