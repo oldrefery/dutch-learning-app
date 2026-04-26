@@ -118,3 +118,47 @@ export const mockSupabaseClient = {
 export const createClient = jest.fn(() => mockSupabaseClient)
 
 export const getSupabaseMock = () => mockSupabaseClient
+
+export class FunctionsError extends Error {
+  context?: unknown
+
+  constructor(
+    message: string,
+    name: string = 'FunctionsError',
+    context?: unknown
+  ) {
+    super(message)
+    this.name = name
+    this.context = context
+  }
+}
+
+export class FunctionsFetchError extends FunctionsError {
+  constructor(context?: unknown) {
+    super(
+      'Failed to send a request to the Edge Function',
+      'FunctionsFetchError',
+      context
+    )
+  }
+}
+
+export class FunctionsRelayError extends FunctionsError {
+  constructor(context?: unknown) {
+    super(
+      'Relay Error invoking the Edge Function',
+      'FunctionsRelayError',
+      context
+    )
+  }
+}
+
+export class FunctionsHttpError extends FunctionsError {
+  constructor(context?: unknown) {
+    super(
+      'Edge Function returned a non-2xx status code',
+      'FunctionsHttpError',
+      context
+    )
+  }
+}

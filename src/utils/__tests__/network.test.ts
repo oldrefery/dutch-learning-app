@@ -21,9 +21,14 @@ jest.mock('@react-native-community/netinfo', () => ({
   __esModule: true,
   default: {
     fetch: jest.fn(),
+    refresh: jest.fn(),
     addEventListener: jest.fn(),
   },
 }))
+
+const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp'
+const STORED_TIMESTAMP = '2025-10-01T00:00:00Z'
+const STORAGE_ERROR_MESSAGE = 'Storage error'
 
 describe('network', () => {
   beforeEach(() => {
@@ -86,6 +91,20 @@ describe('network', () => {
       expect(await isNetworkAvailable()).toBe(false)
     })
 
+    it('should refresh stale unreachable state before returning availability', async () => {
+      ;(NetInfo.fetch as jest.Mock).mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: false,
+      })
+      ;(NetInfo.refresh as jest.Mock).mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: true,
+      })
+
+      expect(await isNetworkAvailable()).toBe(true)
+      expect(NetInfo.refresh).toHaveBeenCalledTimes(1)
+    })
+
     it('should return false on error', async () => {
       ;(NetInfo.fetch as jest.Mock).mockRejectedValue(new Error('Error'))
 
@@ -131,19 +150,17 @@ describe('network', () => {
 
   describe('getLastSyncTimestamp', () => {
     it('should return stored timestamp', async () => {
-      ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue(
-        '2025-10-01T00:00:00Z'
-      )
+      ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue(STORED_TIMESTAMP)
 
       const result = await getLastSyncTimestamp()
 
-      expect(result).toBe('2025-10-01T00:00:00Z')
-      expect(AsyncStorage.getItem).toHaveBeenCalledWith('last_sync_timestamp')
+      expect(result).toBe(STORED_TIMESTAMP)
+      expect(AsyncStorage.getItem).toHaveBeenCalledWith(LAST_SYNC_TIMESTAMP_KEY)
     })
 
     it('should return null on error', async () => {
       ;(AsyncStorage.getItem as jest.Mock).mockRejectedValue(
-        new Error('Storage error')
+        new Error(STORAGE_ERROR_MESSAGE)
       )
 
       const result = await getLastSyncTimestamp()
@@ -154,22 +171,22 @@ describe('network', () => {
 
   describe('setLastSyncTimestamp', () => {
     it('should save timestamp to AsyncStorage', async () => {
-      await setLastSyncTimestamp('2025-10-01T00:00:00Z')
+      await setLastSyncTimestamp(STORED_TIMESTAMP)
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        'last_sync_timestamp',
-        '2025-10-01T00:00:00Z'
+        LAST_SYNC_TIMESTAMP_KEY,
+        STORED_TIMESTAMP
       )
     })
 
     it('should throw on error', async () => {
       ;(AsyncStorage.setItem as jest.Mock).mockRejectedValue(
-        new Error('Storage error')
+        new Error(STORAGE_ERROR_MESSAGE)
       )
 
-      await expect(
-        setLastSyncTimestamp('2025-10-01T00:00:00Z')
-      ).rejects.toThrow('Storage error')
+      await expect(setLastSyncTimestamp(STORED_TIMESTAMP)).rejects.toThrow(
+        STORAGE_ERROR_MESSAGE
+      )
     })
   })
 

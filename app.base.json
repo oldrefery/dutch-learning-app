@@ -3,7 +3,7 @@
     "name": "De Woordenaar",
     "slug": "dutch-learning-app",
     "description": "AI-powered Dutch vocabulary learning app with spaced repetition system",
-    "version": "1.12.1",
+    "version": "1.12.2",
     "orientation": "portrait",
     "icon": "./src/assets/icons/ios-light.png",
     "scheme": "dutchlearning",
@@ -21,7 +21,7 @@
       "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "com.oldrefery.dutch-learning-app",
-      "buildNumber": "76",
+      "buildNumber": "77",
       "icon": "./src/assets/icons/ios-light.png",
       "infoPlist": {
         "UIBackgroundModes": ["audio"],
@@ -30,7 +30,7 @@
       "appleTeamId": "7FQ395U52U"
     },
     "android": {
-      "versionCode": 76,
+      "versionCode": 77,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -67,6 +67,7 @@
       "./plugins/withRCTTurboModulePatch",
       "expo-router",
       "expo-updates",
+      "expo-sqlite",
       "expo-audio",
       "expo-apple-authentication",
       [

@@ -25,6 +25,7 @@
     },
     "production": {
       "autoIncrement": false,
+      "environment": "production",
       "channel": "production",
       "ios": {
         "simulator": false

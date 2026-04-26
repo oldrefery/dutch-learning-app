@@ -1,12 +1,39 @@
 import * as Sentry from '@sentry/react-native'
+import { FunctionsHttpError } from '@supabase/supabase-js'
 import { supabase, wordService } from '../supabase'
+import { ErrorCategory, ErrorSeverity, NetworkError } from '@/types/ErrorTypes'
+import { assertNetworkConnection } from '@/utils/network'
 import { logSupabaseError, logWarning } from '@/utils/logger'
 
 jest.mock('@/lib/supabaseClient')
+jest.mock('@/utils/network', () => ({
+  assertNetworkConnection: jest.fn(),
+}))
 jest.mock('@/utils/logger', () => ({
   logSupabaseError: jest.fn(),
   logWarning: jest.fn(),
 }))
+
+type SupabaseFunctionsMock = typeof supabase & {
+  functions: {
+    invoke: jest.Mock
+  }
+}
+
+const mockedAssertNetworkConnection =
+  assertNetworkConnection as jest.MockedFunction<typeof assertNetworkConnection>
+
+const getSupabaseFunctionsMock = (): SupabaseFunctionsMock =>
+  supabase as SupabaseFunctionsMock
+
+const createFunctionsHttpError = (
+  status: number,
+  body: Record<string, unknown>
+): FunctionsHttpError =>
+  new FunctionsHttpError({
+    status,
+    json: jest.fn().mockResolvedValue(body),
+  })
 
 describe('wordService duplicate handling', () => {
   const COLLECTION_ID = 'collection-id'
@@ -16,6 +43,7 @@ describe('wordService duplicate handling', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockedAssertNetworkConnection.mockResolvedValue(undefined)
   })
 
   it('should match semantic duplicates when article is empty string in DB', async () => {
@@ -154,5 +182,111 @@ describe('wordService duplicate handling', () => {
     })
 
     expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('wordService analyzeWord Edge Function error handling', () => {
+  const INVALID_WORD_MESSAGE =
+    'Invalid word input. Please provide a valid Dutch word.'
+  const GEMINI_API_ERROR = 'Gemini API error'
+
+  beforeEach(() => {
+    jest.useFakeTimers()
+    jest.clearAllMocks()
+    mockedAssertNetworkConnection.mockResolvedValue(undefined)
+    getSupabaseFunctionsMock().functions = {
+      invoke: jest.fn(),
+    }
+  })
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers()
+    jest.useRealTimers()
+  })
+
+  it('should classify Edge Function 400 invalid input as validation without Sentry exception capture', async () => {
+    getSupabaseFunctionsMock().functions.invoke.mockResolvedValue({
+      data: null,
+      error: createFunctionsHttpError(400, {
+        success: false,
+        error: INVALID_WORD_MESSAGE,
+      }),
+    })
+
+    await expect(
+      wordService.analyzeWord('opstaan/slapen')
+    ).rejects.toMatchObject({
+      name: 'ValidationError',
+      category: ErrorCategory.VALIDATION,
+      severity: ErrorSeverity.INFO,
+      field: 'word',
+      message: INVALID_WORD_MESSAGE,
+      userMessage: INVALID_WORD_MESSAGE,
+      isRetryable: false,
+    })
+
+    expect(getSupabaseFunctionsMock().functions.invoke).toHaveBeenCalledTimes(1)
+    expect(Sentry.captureException).not.toHaveBeenCalled()
+  })
+
+  it('should keep expected offline preflight failures out of Sentry exception capture', async () => {
+    const offlineError = new NetworkError(
+      'Internet not reachable',
+      'Cannot reach the internet. Please check your connection.',
+      undefined,
+      {
+        networkState: {
+          isConnected: true,
+          isInternetReachable: false,
+        },
+      }
+    )
+    mockedAssertNetworkConnection.mockRejectedValueOnce(offlineError)
+
+    await expect(wordService.analyzeWord('huis')).rejects.toMatchObject({
+      name: 'NetworkError',
+      category: ErrorCategory.NETWORK,
+      severity: ErrorSeverity.WARNING,
+      message: 'Internet not reachable',
+      isRetryable: true,
+    })
+
+    expect(getSupabaseFunctionsMock().functions.invoke).not.toHaveBeenCalled()
+    expect(Sentry.captureException).not.toHaveBeenCalled()
+  })
+
+  it('should keep Edge Function 500 failures as captured server errors', async () => {
+    getSupabaseFunctionsMock().functions.invoke.mockResolvedValue({
+      data: null,
+      error: createFunctionsHttpError(500, {
+        success: false,
+        error: GEMINI_API_ERROR,
+      }),
+    })
+
+    await expect(wordService.analyzeWord('huis')).rejects.toMatchObject({
+      name: 'ServerError',
+      category: ErrorCategory.SERVER,
+      severity: ErrorSeverity.ERROR,
+      message: GEMINI_API_ERROR,
+      userMessage: 'Word analysis failed. Please try again.',
+      isRetryable: false,
+      statusCode: 500,
+    })
+
+    expect(Sentry.captureException).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'ServerError',
+        message: GEMINI_API_ERROR,
+      }),
+      expect.objectContaining({
+        tags: expect.objectContaining({
+          operation: 'analyzeWord',
+          errorCategory: ErrorCategory.SERVER,
+          severity: ErrorSeverity.ERROR,
+        }),
+        level: 'error',
+      })
+    )
   })
 })

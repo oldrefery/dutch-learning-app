@@ -5,6 +5,25 @@ import { NetworkError } from '@/types/ErrorTypes'
 
 const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp'
 
+const getNetworkStateContext = (
+  state: NetInfoState,
+  refreshedState?: NetInfoState
+) => ({
+  networkState: {
+    isConnected: state.isConnected,
+    isInternetReachable: state.isInternetReachable,
+  },
+  refreshedNetworkState: refreshedState
+    ? {
+        isConnected: refreshedState.isConnected,
+        isInternetReachable: refreshedState.isInternetReachable,
+      }
+    : undefined,
+})
+
+const isNetworkReachable = (state: NetInfoState): boolean =>
+  state.isConnected === true && state.isInternetReachable !== false
+
 export async function checkNetworkConnection(): Promise<boolean> {
   try {
     const state = await NetInfo.fetch()
@@ -18,7 +37,16 @@ export async function checkNetworkConnection(): Promise<boolean> {
 export async function isNetworkAvailable(): Promise<boolean> {
   try {
     const state = await NetInfo.fetch()
-    return state.isConnected === true && state.isInternetReachable !== false
+    if (isNetworkReachable(state)) {
+      return true
+    }
+
+    if (state.isConnected === true && state.isInternetReachable === false) {
+      const refreshedState = await NetInfo.refresh()
+      return isNetworkReachable(refreshedState)
+    }
+
+    return false
   } catch (error) {
     console.error('[Network] Error checking network availability:', error)
     return false
@@ -38,26 +66,25 @@ export async function assertNetworkConnection(): Promise<void> {
         'No network connection',
         'No internet connection. Please check your network settings.',
         undefined,
-        {
-          networkState: {
-            isConnected: state.isConnected,
-            isInternetReachable: state.isInternetReachable,
-          },
-        }
+        getNetworkStateContext(state)
       )
     }
 
     if (state.isInternetReachable === false) {
+      const refreshedState = await NetInfo.refresh()
+      if (isNetworkReachable(refreshedState)) {
+        return
+      }
+
       throw new NetworkError(
-        'Internet not reachable',
-        'Cannot reach the internet. Please check your connection.',
+        refreshedState.isConnected
+          ? 'Internet not reachable'
+          : 'No network connection',
+        refreshedState.isConnected
+          ? 'Cannot reach the internet. Please check your connection.'
+          : 'No internet connection. Please check your network settings.',
         undefined,
-        {
-          networkState: {
-            isConnected: state.isConnected,
-            isInternetReachable: state.isInternetReachable,
-          },
-        }
+        getNetworkStateContext(state, refreshedState)
       )
     }
   } catch (error) {
