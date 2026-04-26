@@ -41,6 +41,61 @@ interface AddWordScreenProps {
   preselectedCollectionId?: string
 }
 
+type DuplicateSource =
+  | 'local'
+  | 'remote'
+  | 'remote_missing_local'
+  | 'button_guard'
+
+const trackDuplicateWordDetection = ({
+  source,
+  dutchLemma,
+  partOfSpeech,
+  article,
+  wordId,
+  collectionId,
+  collectionName,
+}: {
+  source: DuplicateSource
+  dutchLemma: string
+  partOfSpeech: string | null
+  article?: string | null
+  wordId?: string | null
+  collectionId?: string | null
+  collectionName?: string | null
+}) => {
+  const context = {
+    source,
+    dutchLemma,
+    partOfSpeech,
+    article: article ?? null,
+    wordId: wordId ?? null,
+    collectionId: collectionId ?? null,
+    collectionName: collectionName ?? null,
+  }
+
+  Sentry.addBreadcrumb({
+    category: 'add-word.duplicate',
+    message: 'Duplicate word detected during add flow',
+    level: source === 'remote_missing_local' ? 'warning' : 'info',
+    data: context,
+  })
+
+  if (source !== 'remote_missing_local') {
+    return
+  }
+
+  Sentry.captureMessage('Duplicate word exists remotely but not locally', {
+    level: 'warning',
+    tags: {
+      operation: 'checkForDuplicates',
+      duplicate_source: source,
+    },
+    extra: context,
+    fingerprint: ['add-word-duplicate', 'remote-missing-local'],
+  })
+}
+
 export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
   const insets = useSafeAreaInsets()
   const reduceTransparency = usePreferReducedTransparency()
@@ -136,6 +191,15 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         }
 
         if (localDuplicateInfo && localCollectionName) {
+          trackDuplicateWordDetection({
+            source: 'local',
+            dutchLemma: analysisResult.dutch_lemma,
+            partOfSpeech: analysisResult.part_of_speech,
+            article: analysisResult.article,
+            wordId: localDuplicateInfo.word_id,
+            collectionId: localDuplicateInfo.collection_id,
+            collectionName: localCollectionName,
+          })
           setIsAlreadyInCollection(true)
           setDuplicateWordInfo(localDuplicateInfo)
           ToastService.show(
@@ -194,6 +258,15 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         )
 
         if (isDuplicate) {
+          trackDuplicateWordDetection({
+            source: existingCollectionName ? 'remote' : 'remote_missing_local',
+            dutchLemma: analysisResult.dutch_lemma,
+            partOfSpeech: analysisResult.part_of_speech,
+            article: analysisResult.article,
+            wordId: existingWord?.word_id ?? null,
+            collectionId: existingWord?.collection_id ?? null,
+            collectionName: existingCollectionName,
+          })
           const message = existingCollectionName
             ? `Word "${analysisResult.dutch_lemma}" already exists in collection`
             : `Word "${analysisResult.dutch_lemma}" exists in your cloud data but not on this device`
@@ -246,6 +319,14 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
 
     // Prevent adding duplicates (race condition protection)
     if (isAlreadyInCollection) {
+      trackDuplicateWordDetection({
+        source: 'button_guard',
+        dutchLemma: analysisResult.dutch_lemma,
+        partOfSpeech: analysisResult.part_of_speech,
+        article: analysisResult.article,
+        wordId: duplicateWordInfo?.word_id ?? null,
+        collectionId: duplicateWordInfo?.collection_id ?? null,
+      })
       ToastService.show(
         `Word "${analysisResult.dutch_lemma}" already exists in your collection`,
         ToastType.ERROR

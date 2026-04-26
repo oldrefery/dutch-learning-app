@@ -95,7 +95,7 @@ set +a
 python3 "$HOME/.codex/skills/sentry/scripts/sentry_api.py" \
   --org "${SENTRY_ORG:-oldrefery}" \
   --project "${SENTRY_PROJECT:-dutch-learning-app}" \
-  --base-url "${SENTRY_BASE_URL:-https://us.sentry.io}" \
+  --base-url "${SENTRY_BASE_URL:-https://sentry.io}" \
   list-issues \
   --environment prod \
   --time-range 24h \
@@ -107,15 +107,15 @@ If you see `HTTP 403`:
 
 ```bash
 # 1) Verify org access and detect region URL for your org
-curl -sS "${SENTRY_BASE_URL:-https://us.sentry.io}/api/0/organizations/${SENTRY_ORG}/" \
+curl -sS "${SENTRY_BASE_URL:-https://sentry.io}/api/0/organizations/${SENTRY_ORG}/" \
   -H "Authorization: Bearer $SENTRY_AUTH_TOKEN"
 
 # 2) Verify org issues endpoint with project filter
-curl -sS "${SENTRY_BASE_URL:-https://us.sentry.io}/api/0/organizations/${SENTRY_ORG}/issues/?limit=1&query=project:${SENTRY_PROJECT}" \
+curl -sS "${SENTRY_BASE_URL:-https://sentry.io}/api/0/organizations/${SENTRY_ORG}/issues/?limit=1&query=project:${SENTRY_PROJECT}" \
   -H "Authorization: Bearer $SENTRY_AUTH_TOKEN"
 
 # 3) Verify project issues endpoint used by the script
-curl -sS "${SENTRY_BASE_URL:-https://us.sentry.io}/api/0/projects/${SENTRY_ORG}/${SENTRY_PROJECT}/issues/?limit=1" \
+curl -sS "${SENTRY_BASE_URL:-https://sentry.io}/api/0/projects/${SENTRY_ORG}/${SENTRY_PROJECT}/issues/?limit=1" \
   -H "Authorization: Bearer $SENTRY_AUTH_TOKEN"
 ```
 

@@ -102,7 +102,7 @@ describe('Sentry sourcemap scripts', () => {
     }
 
     expect(uploadScript).toContain(
-      'SENTRY_URL="${SENTRY_URL:-https://us.sentry.io/}"'
+      'SENTRY_URL="${SENTRY_URL:-https://sentry.io/}"'
     )
     expect(uploadScript).toContain(
       'release_name="${bundle_id}@${VERSION}+${build_number}"'

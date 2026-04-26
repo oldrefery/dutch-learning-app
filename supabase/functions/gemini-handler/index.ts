@@ -23,9 +23,12 @@ Deno.serve(async (req: Request) => {
     return new Response('ok', { headers: CORS_HEADERS })
   }
 
+  let requestBody: { word?: unknown; forceRefresh?: unknown } | null = null
+
   try {
-    const requestBody = await req.json()
-    const { word, forceRefresh } = requestBody
+    requestBody = await req.json()
+    const { word } = requestBody
+    const forceRefresh = requestBody.forceRefresh === true
 
     // This function only analyzes strings - objects should use save-word endpoint
     if (typeof word !== 'string') {
@@ -112,6 +115,7 @@ Deno.serve(async (req: Request) => {
           prefix_part: cachedAnalysis.prefix_part,
           root_verb: cachedAnalysis.root_verb,
           article: cachedAnalysis.article,
+          register: cachedAnalysis.register,
           expression_type: cachedAnalysis.expression_type,
           tts_url: cachedAnalysis.tts_url,
           synonyms: cachedAnalysis.synonyms || [],
@@ -179,6 +183,7 @@ Deno.serve(async (req: Request) => {
       prefix_part: analysis.prefix_part || null,
       root_verb: analysis.root_verb || null,
       article: analysis.article,
+      register: analysis.register || null,
       expression_type: analysis.expression_type,
       tts_url: ttsUrl,
       // New fields from enhanced Gemini prompt
@@ -198,6 +203,7 @@ Deno.serve(async (req: Request) => {
         analysis.part_of_speech || (analysis.is_separable ? 'verb' : null),
       is_irregular: analysis.is_irregular || false,
       article: analysis.article,
+      register: analysis.register || null,
       is_reflexive: analysis.is_reflexive || false,
       is_expression: analysis.is_expression || false,
       expression_type: analysis.expression_type,

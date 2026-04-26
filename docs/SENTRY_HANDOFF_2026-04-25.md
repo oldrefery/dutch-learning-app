@@ -57,21 +57,21 @@ Important constraints:
 
 - Environment must be `production`.
 - Time range must be `14d`.
-- Base URL is `https://us.sentry.io`.
+- Base URL is `https://sentry.io`.
 - Set `SSL_CERT_FILE` from `certifi` before calling the Sentry API script.
 - Release names may appear as both `dutch-learning-app` and `dutchlearningapp`; if release filtering misses data, cross-check with `dist:<build_number>`.
 
 Reference command:
 
 ```bash
-bash -lc 'set -a; source ./.env; source ./.env.local; set +a; export SSL_CERT_FILE="$(python3 -c "import certifi; print(certifi.where())")"; python3 "$HOME/.codex/skills/sentry/scripts/sentry_api.py" --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" --base-url https://us.sentry.io list-issues --environment production --time-range 14d --limit 50 --query "is:unresolved"'
+bash -lc 'set -a; source ./.env; source ./.env.local; set +a; export SSL_CERT_FILE="$(python3 -c "import certifi; print(certifi.where())")"; python3 "$HOME/.codex/skills/sentry/scripts/sentry_api.py" --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" --base-url https://sentry.io list-issues --environment production --time-range 14d --limit 50 --query "is:unresolved"'
 ```
 
 For deep dives:
 
 ```bash
-python3 "$HOME/.codex/skills/sentry/scripts/sentry_api.py" --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" --base-url https://us.sentry.io issue-detail <issue_id>
-python3 "$HOME/.codex/skills/sentry/scripts/sentry_api.py" --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" --base-url https://us.sentry.io issue-events <issue_id> --limit 3
+python3 "$HOME/.codex/skills/sentry/scripts/sentry_api.py" --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" --base-url https://sentry.io issue-detail <issue_id>
+python3 "$HOME/.codex/skills/sentry/scripts/sentry_api.py" --org "$SENTRY_ORG" --project "$SENTRY_PROJECT" --base-url https://sentry.io issue-events <issue_id> --limit 3
 ```
 
 ## Current Sentry Snapshot
@@ -329,7 +329,7 @@ Outcome:
   - manual upload url prefix: `app:///`
 - Confirmed release exists in Sentry, but legacy release file listing returned no source map artifacts.
 - Updated native build path so `scripts/build-and-submit.sh` exports `SENTRY_AUTH_TOKEN` from `.sentryclirc` when the environment variable is missing.
-- Updated manual native upload path so `scripts/upload-sourcemaps.sh` uses the local Sentry CLI when available, targets `https://us.sentry.io/`, and generates bundles with `NODE_ENV=production`.
+- Updated manual native upload path so `scripts/upload-sourcemaps.sh` uses the local Sentry CLI when available, targets `https://sentry.io/`, and generates bundles with `NODE_ENV=production`.
 - Added EAS Update upload support through `scripts/upload-sourcemaps.sh --update-dist dist`.
 - Added `scripts/eas-update-production.sh` and package scripts:
   - `npm run update:production -- --message "message"`
