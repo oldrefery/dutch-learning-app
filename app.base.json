@@ -67,6 +67,7 @@
       "./plugins/withRCTTurboModulePatch",
       "expo-router",
       "expo-updates",
+      "expo-sqlite",
       "expo-audio",
       "expo-apple-authentication",
       [

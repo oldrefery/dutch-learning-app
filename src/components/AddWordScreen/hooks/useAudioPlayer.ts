@@ -21,7 +21,7 @@ export const useAudioPlayer = () => {
       // Simple timeout to reset state (since event listeners might be complex)
       setTimeout(() => {
         setIsPlayingAudio(false)
-        player.release() // Clean up resources
+        player.remove() // Clean up resources
       }, 3000) // 3 seconds should be enough for TTS
     } catch (error) {
       setIsPlayingAudio(false)
