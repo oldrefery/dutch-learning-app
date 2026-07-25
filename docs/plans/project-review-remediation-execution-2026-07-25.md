@@ -42,7 +42,9 @@ code, then continue from the first item marked `IN PROGRESS` or `TODO`.
 
 ### P0.1 Auth Callback Classification And Recovery Isolation
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `3c8b752 fix: isolate password recovery sessions`
 
 Scope:
 
@@ -98,7 +100,7 @@ Verification results:
 
 ### P1.1 Sentry Environment, Sampling, And Payload Redaction
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 
 Scope:
 
@@ -107,6 +109,42 @@ Scope:
 - Harden `logSanitizer`.
 - Configure environment-specific sampling.
 - Add a controlled telemetry smoke-check procedure.
+
+Completed:
+
+- Added explicit environment resolution for development, preview, production,
+  and unrecognized test builds without defaulting unknown channels to
+  production.
+- Added native application metadata through `expo-application` so runtime
+  `release` and `dist` match the source map convention
+  `<application-id>@<version>+<build>` and `<build>`.
+- Reduced production tracing, profiling, and session replay sampling while
+  retaining error-triggered replay sampling.
+- Added `beforeSendTransaction` and `beforeSendSpan` sanitization and explicit
+  replay masking for text, images, and vectors.
+- Hardened log sanitization for auth headers, JWTs, credentials, session ids,
+  standalone assignments, email addresses, hostile objects, invalid dates,
+  cycles, shared references, control characters, and oversized strings.
+- Added configuration, payload-hook, and sanitizer boundary tests.
+- Added `docs/SENTRY_TELEMETRY_SMOKE_CHECK.md` with a non-production preview
+  verification and rollback procedure.
+
+Verification results:
+
+- Targeted Sentry/logger tests: 4 suites, 54 tests passed.
+- Full Jest coverage run: 48 suites, 775 tests passed.
+- Build TypeScript: passed.
+- ESLint: passed with the same 7 pre-existing warnings and no new warnings.
+- Prettier: passed.
+- `git diff --check`: passed.
+- Production Sentry query for unresolved issues over 14 days returned no
+  issues. A preview smoke check remains required after a preview native build
+  because an empty issue query does not prove ingestion health.
+- Expo Doctor passed 18 of 19 checks and still reports the SDK 55 patch
+  mismatches assigned to `P2.1 Expo Patch Alignment And Dependency Audit`.
+- Full test TypeScript still reports the pre-existing
+  `src/lib/__tests__/supabase.test.ts:197` FunctionsClient mock error assigned
+  to `P1.3 Required CI Quality Gates`.
 
 ### P1.2 Delete Account Edge Function Hardening
 
@@ -151,11 +189,11 @@ Scope:
 
 ## Current Resume Point
 
-Wait for the user to commit `P0.1 Auth Callback Classification And Recovery
-Isolation`.
+Wait for the user to commit
+`P1.1 Sentry Environment, Sampling, And Payload Redaction`.
 
 After the user confirms the commit and says to continue:
 
-1. Mark P0.1 as `COMMITTED`.
-2. Mark P1.1 as `IN PROGRESS`.
-3. Implement `P1.1 Sentry Environment, Sampling, And Payload Redaction`.
+1. Mark P1.1 as `COMMITTED`.
+2. Mark P1.2 as `IN PROGRESS`.
+3. Implement `P1.2 Delete Account Edge Function Hardening`.
