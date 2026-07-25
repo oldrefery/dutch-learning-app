@@ -64,7 +64,7 @@
     "@supabase/supabase-js": "^2.57.0",
     "@testing-library/user-event": "^14.6.1",
     "expo": "~55.0.28",
-    "expo-apple-authentication": "~55.0.15",
+    "expo-apple-authentication": "~57.0.1",
     "expo-application": "~55.0.17",
     "expo-asset": "~55.0.18",
     "expo-audio": "~55.0.16",
