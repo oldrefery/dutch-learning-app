@@ -724,7 +724,9 @@ Follow-up:
 
 ### Deployment Follow-up: User Progress UUID Default
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `3c88d0a fix: use supported UUID default for progress migration`
 
 Scope:
 
@@ -755,11 +757,14 @@ Verification results:
   built-in version 4 UUID generator and `uuid-ossp` is only needed for
   additional UUID algorithms.
 - `git diff --check`: passed.
-- No additional remote migration or data change was performed.
+- The linked deployment successfully applied migrations `20260725170000` and
+  `20260725180000`.
+- A post-deployment read-only metadata check confirmed the
+  `gen_random_uuid()` default and all expected `user_progress` indexes.
+- Local and remote migration histories match through version
+  `20260725180000`.
 
 ## Current Resume Point
 
-Wait for the user to commit the UUID migration follow-up with
-`fix: use supported UUID default for progress migration`. Then rerun the linked
-Supabase migration dry run and push. Migration `20260725150000` is already
-applied; migrations `20260725170000` and `20260725180000` remain pending.
+The remediation execution and linked Supabase deployment are complete. No
+planned work packages or linked migrations remain pending.
