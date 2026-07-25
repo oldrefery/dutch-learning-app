@@ -11,6 +11,8 @@ import { Sentry } from '@/lib/sentry'
 export interface LocalWord extends Word {
   sync_status: SyncStatus
   deleted_at: string | null
+  last_sync_attempt_at: string | null
+  synced_at: string | null
 }
 
 // Type for existing word check result
@@ -23,6 +25,7 @@ interface ExistingWordCheck {
 
 interface SaveWordsOptions {
   preserveUnsynced?: boolean
+  syncedAt?: string
 }
 
 interface SaveWordStatements {
@@ -39,6 +42,17 @@ interface MergedWord {
 
 export interface RemoteWordTombstone extends Word {
   deleted_at: string
+}
+
+export interface WordSyncAcknowledgement {
+  word_id: string
+  updated_at: string
+  deleted_at: string | null
+}
+
+export interface WordSyncVersion {
+  word_id: string
+  updated_at: string
 }
 
 const UNSYNCED_STATUSES = new Set<SyncStatus>([
@@ -100,7 +114,9 @@ const UPDATE_WORD_SQL = `
     created_at = ?,
     updated_at = ?,
     deleted_at = ?,
-    sync_status = ?
+    sync_status = ?,
+    last_sync_attempt_at = COALESCE(?, last_sync_attempt_at),
+    synced_at = ?
   WHERE word_id = ? AND user_id = ?
 `
 
@@ -112,10 +128,11 @@ const INSERT_WORD_SQL = `
     plural, register, translations, examples, synonyms, antonyms, conjugation,
     preposition, image_url, tts_url, interval_days, repetition_count,
     easiness_factor, next_review_date, last_reviewed_at, analysis_notes,
-    created_at, updated_at, deleted_at, sync_status
+    created_at, updated_at, deleted_at, sync_status,
+    last_sync_attempt_at, synced_at
   ) VALUES (
     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
   )
 `
 
@@ -157,11 +174,12 @@ export class WordRepository {
 
     const db = await getDatabase()
     const statement = await db.prepareAsync(UPSERT_WORD_TOMBSTONE_SQL)
+    const syncedAt = new Date().toISOString()
 
     try {
       for (const word of words) {
         await statement.executeAsync(
-          ...this.getInsertValues(word, word.deleted_at, 'synced')
+          ...this.getInsertValues(word, word.deleted_at, 'synced', syncedAt)
         )
       }
     } finally {
@@ -223,13 +241,16 @@ export class WordRepository {
     statements: SaveWordStatements,
     options: SaveWordsOptions
   ): Promise<MergedWord | null> {
+    const syncedAt = options.syncedAt ?? new Date().toISOString()
     const existingWord = await this.findExistingWord(
       statements.checkExisting,
       word
     )
 
     if (!existingWord) {
-      await statements.insert.executeAsync(...this.getInsertValues(word))
+      await statements.insert.executeAsync(
+        ...this.getInsertValues(word, null, 'synced', syncedAt)
+      )
       return null
     }
 
@@ -238,7 +259,7 @@ export class WordRepository {
     }
 
     await statements.update.executeAsync(
-      ...this.getUpdateValues(word, existingWord.word_id)
+      ...this.getUpdateValues(word, existingWord.word_id, syncedAt)
     )
     return {
       dutch_lemma: word.dutch_lemma,
@@ -281,22 +302,24 @@ export class WordRepository {
   private getInsertValues(
     word: Word,
     deletedAt: string | null = null,
-    syncStatus: SyncStatus = 'synced'
+    syncStatus: SyncStatus = 'synced',
+    syncedAt: string | null = null
   ): SQLiteBindValue[] {
     return [
       this.toSqlValue(word.word_id),
       this.toSqlValue(word.user_id),
-      ...this.getMutableWordValues(word, deletedAt, syncStatus),
+      ...this.getMutableWordValues(word, deletedAt, syncStatus, syncedAt),
     ]
   }
 
   private getUpdateValues(
     word: Word,
-    existingWordId: string
+    existingWordId: string,
+    syncedAt: string
   ): SQLiteBindValue[] {
     return [
       this.toSqlValue(word.word_id),
-      ...this.getMutableWordValues(word),
+      ...this.getMutableWordValues(word, null, 'synced', syncedAt),
       existingWordId,
       word.user_id,
     ]
@@ -305,7 +328,8 @@ export class WordRepository {
   private getMutableWordValues(
     word: Word,
     deletedAt: string | null = null,
-    syncStatus: SyncStatus = 'synced'
+    syncStatus: SyncStatus = 'synced',
+    syncedAt: string | null = null
   ): SQLiteBindValue[] {
     return [
       this.toNullableSqlValue(word.collection_id),
@@ -340,6 +364,8 @@ export class WordRepository {
       this.toSqlValue(word.updated_at),
       deletedAt,
       syncStatus,
+      null,
+      syncedAt,
     ]
   }
 
@@ -504,35 +530,97 @@ export class WordRepository {
     return result.map(row => this.parseWordRow(row))
   }
 
-  async markWordsSynced(wordIds: string[]): Promise<void> {
+  async markWordsSynced(wordVersions: WordSyncVersion[]): Promise<void> {
+    if (wordVersions.length === 0) return
+
     const db = await getDatabase()
-
-    if (wordIds.length === 0) return
-
-    const placeholders = wordIds.map(() => '?').join(',')
     const statement = await db.prepareAsync(
-      `UPDATE words SET sync_status = 'synced', updated_at = ? WHERE word_id IN (${placeholders})`
+      `UPDATE words
+       SET sync_status = 'synced', last_sync_attempt_at = ?, synced_at = ?
+       WHERE word_id = ? AND updated_at = ?`
     )
+    const syncedAt = new Date().toISOString()
 
     try {
-      await statement.executeAsync(new Date().toISOString(), ...wordIds)
+      for (const wordVersion of wordVersions) {
+        await statement.executeAsync(
+          syncedAt,
+          syncedAt,
+          wordVersion.word_id,
+          wordVersion.updated_at
+        )
+      }
     } finally {
       await statement.finalizeAsync()
     }
   }
 
-  async markWordsError(wordIds: string[]): Promise<void> {
+  async reconcilePushedWords(
+    acknowledgements: WordSyncAcknowledgement[],
+    expectedUpdatedAtById: ReadonlyMap<string, string>
+  ): Promise<void> {
+    if (acknowledgements.length === 0) return
+
+    const expectedTimestamps = acknowledgements.map(acknowledgement => {
+      const expectedUpdatedAt = expectedUpdatedAtById.get(
+        acknowledgement.word_id
+      )
+      if (!expectedUpdatedAt) {
+        throw new Error(
+          `Missing local word timestamp for ${acknowledgement.word_id}`
+        )
+      }
+      return expectedUpdatedAt
+    })
     const db = await getDatabase()
-
-    if (wordIds.length === 0) return
-
-    const placeholders = wordIds.map(() => '?').join(',')
     const statement = await db.prepareAsync(
-      `UPDATE words SET sync_status = 'error', updated_at = ? WHERE word_id IN (${placeholders})`
+      `UPDATE words
+       SET sync_status = 'synced',
+           updated_at = ?,
+           deleted_at = ?,
+           last_sync_attempt_at = ?,
+           synced_at = ?
+       WHERE word_id = ?
+         AND updated_at = ?
+         AND sync_status IN ('pending', 'deleted')`
     )
+    const syncedAt = new Date().toISOString()
 
     try {
-      await statement.executeAsync(new Date().toISOString(), ...wordIds)
+      for (const [index, acknowledgement] of acknowledgements.entries()) {
+        await statement.executeAsync(
+          acknowledgement.updated_at,
+          acknowledgement.deleted_at,
+          syncedAt,
+          syncedAt,
+          acknowledgement.word_id,
+          expectedTimestamps[index]
+        )
+      }
+    } finally {
+      await statement.finalizeAsync()
+    }
+  }
+
+  async markWordsError(wordVersions: WordSyncVersion[]): Promise<void> {
+    if (wordVersions.length === 0) return
+
+    const db = await getDatabase()
+    const statement = await db.prepareAsync(
+      `UPDATE words
+       SET sync_status = 'error', last_sync_attempt_at = ?
+       WHERE word_id = ? AND updated_at = ?`
+    )
+    const attemptedAt = new Date().toISOString()
+
+    try {
+      for (const wordVersion of wordVersions) {
+        await statement.executeAsync(
+          attemptedAt,
+          wordVersion.word_id,
+          wordVersion.updated_at
+        )
+      }
     } finally {
       await statement.finalizeAsync()
     }
@@ -589,12 +677,14 @@ export class WordRepository {
     const db = await getDatabase()
     const placeholders = wordIds.map(() => '?').join(',')
     const statement = await db.prepareAsync(
-      `UPDATE words SET sync_status = 'synced'
+      `UPDATE words
+       SET sync_status = 'synced', last_sync_attempt_at = ?, synced_at = ?
        WHERE word_id IN (${placeholders}) AND deleted_at IS NOT NULL`
     )
 
     try {
-      await statement.executeAsync(...wordIds)
+      const syncedAt = new Date().toISOString()
+      await statement.executeAsync(syncedAt, syncedAt, ...wordIds)
     } finally {
       await statement.finalizeAsync()
     }
@@ -860,6 +950,8 @@ export class WordRepository {
       updated_at: row.updated_at as string,
       deleted_at: (row.deleted_at as string) || null,
       sync_status: (row.sync_status as SyncStatus) || 'synced',
+      last_sync_attempt_at: (row.last_sync_attempt_at as string) || null,
+      synced_at: (row.synced_at as string) || null,
     }
   }
 }

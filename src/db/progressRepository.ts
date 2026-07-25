@@ -13,9 +13,14 @@ export interface UserProgress {
   updated_at: string
   deleted_at: string | null
   sync_status: SyncStatus
+  last_sync_attempt_at: string | null
+  synced_at: string | null
 }
 
-export type ProgressRecord = Omit<UserProgress, 'sync_status' | 'deleted_at'>
+export type ProgressRecord = Omit<
+  UserProgress,
+  'sync_status' | 'deleted_at' | 'last_sync_attempt_at' | 'synced_at'
+>
 
 interface SaveProgressOptions {
   preserveUnsynced?: boolean
@@ -23,6 +28,12 @@ interface SaveProgressOptions {
 
 export interface RemoteProgressTombstone extends ProgressRecord {
   deleted_at: string
+}
+
+export interface ProgressSyncAcknowledgement {
+  progress_id: string
+  updated_at: string
+  deleted_at: string | null
 }
 
 const UNSYNCED_PROGRESS_STATUSES: SyncStatus[] = [
@@ -35,8 +46,9 @@ const UNSYNCED_PROGRESS_STATUSES: SyncStatus[] = [
 const SAVE_PROGRESS_SQL = `
   INSERT INTO user_progress (
     progress_id, user_id, word_id, status, reviewed_count,
-    last_reviewed_at, created_at, updated_at, deleted_at, sync_status
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    last_reviewed_at, created_at, updated_at, deleted_at, sync_status,
+    last_sync_attempt_at, synced_at
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT(progress_id) DO UPDATE SET
     word_id = excluded.word_id,
     status = excluded.status,
@@ -44,19 +56,24 @@ const SAVE_PROGRESS_SQL = `
     last_reviewed_at = excluded.last_reviewed_at,
     created_at = excluded.created_at,
     updated_at = excluded.updated_at,
-    sync_status = 'synced'
+    sync_status = 'synced',
+    last_sync_attempt_at = user_progress.last_sync_attempt_at,
+    synced_at = excluded.synced_at
   WHERE user_progress.deleted_at IS NULL
 `
 
 const SAVE_REMOTE_PROGRESS_TOMBSTONE_SQL = `
   INSERT INTO user_progress (
     progress_id, user_id, word_id, status, reviewed_count,
-    last_reviewed_at, created_at, updated_at, deleted_at, sync_status
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    last_reviewed_at, created_at, updated_at, deleted_at, sync_status,
+    last_sync_attempt_at, synced_at
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT(progress_id) DO UPDATE SET
     deleted_at = excluded.deleted_at,
     updated_at = excluded.updated_at,
-    sync_status = 'synced'
+    sync_status = 'synced',
+    last_sync_attempt_at = user_progress.last_sync_attempt_at,
+    synced_at = excluded.synced_at
   WHERE user_progress.user_id = excluded.user_id
 `
 
@@ -74,6 +91,7 @@ export class ProgressRepository {
     const insertStatement = await db.prepareAsync(
       `${SAVE_PROGRESS_SQL}${preserveClause}`
     )
+    const syncedAt = new Date().toISOString()
 
     try {
       for (const record of progressRecords) {
@@ -88,6 +106,8 @@ export class ProgressRepository {
           record.updated_at,
           null,
           'synced',
+          null,
+          syncedAt,
           ...(options.preserveUnsynced ? UNSYNCED_PROGRESS_STATUSES : [])
         )
       }
@@ -103,6 +123,7 @@ export class ProgressRepository {
 
     const db = await getDatabase()
     const statement = await db.prepareAsync(SAVE_REMOTE_PROGRESS_TOMBSTONE_SQL)
+    const syncedAt = new Date().toISOString()
 
     try {
       for (const record of progressRecords) {
@@ -116,7 +137,9 @@ export class ProgressRepository {
           record.created_at,
           record.updated_at,
           record.deleted_at,
-          'synced'
+          'synced',
+          null,
+          syncedAt
         )
       }
     } finally {
@@ -242,11 +265,61 @@ export class ProgressRepository {
 
     const placeholders = progressIds.map(() => '?').join(',')
     const statement = await db.prepareAsync(
-      `UPDATE user_progress SET sync_status = 'synced', updated_at = ? WHERE progress_id IN (${placeholders})`
+      `UPDATE user_progress
+       SET sync_status = 'synced', last_sync_attempt_at = ?, synced_at = ?
+       WHERE progress_id IN (${placeholders})`
     )
 
     try {
-      await statement.executeAsync(new Date().toISOString(), ...progressIds)
+      const syncedAt = new Date().toISOString()
+      await statement.executeAsync(syncedAt, syncedAt, ...progressIds)
+    } finally {
+      await statement.finalizeAsync()
+    }
+  }
+
+  async reconcilePushedProgress(
+    acknowledgements: ProgressSyncAcknowledgement[],
+    expectedUpdatedAtById: ReadonlyMap<string, string>
+  ): Promise<void> {
+    if (acknowledgements.length === 0) return
+
+    const expectedTimestamps = acknowledgements.map(acknowledgement => {
+      const expectedUpdatedAt = expectedUpdatedAtById.get(
+        acknowledgement.progress_id
+      )
+      if (!expectedUpdatedAt) {
+        throw new Error(
+          `Missing local progress timestamp for ${acknowledgement.progress_id}`
+        )
+      }
+      return expectedUpdatedAt
+    })
+    const db = await getDatabase()
+    const statement = await db.prepareAsync(
+      `UPDATE user_progress
+       SET sync_status = 'synced',
+           updated_at = ?,
+           deleted_at = ?,
+           last_sync_attempt_at = ?,
+           synced_at = ?
+       WHERE progress_id = ?
+         AND updated_at = ?
+         AND sync_status IN ('pending', 'deleted')`
+    )
+    const syncedAt = new Date().toISOString()
+
+    try {
+      for (const [index, acknowledgement] of acknowledgements.entries()) {
+        await statement.executeAsync(
+          acknowledgement.updated_at,
+          acknowledgement.deleted_at,
+          syncedAt,
+          syncedAt,
+          acknowledgement.progress_id,
+          expectedTimestamps[index]
+        )
+      }
     } finally {
       await statement.finalizeAsync()
     }
@@ -284,12 +357,14 @@ export class ProgressRepository {
     const db = await getDatabase()
     const placeholders = progressIds.map(() => '?').join(',')
     const statement = await db.prepareAsync(
-      `UPDATE user_progress SET sync_status = 'synced'
+      `UPDATE user_progress
+       SET sync_status = 'synced', last_sync_attempt_at = ?, synced_at = ?
        WHERE progress_id IN (${placeholders}) AND deleted_at IS NOT NULL`
     )
 
     try {
-      await statement.executeAsync(...progressIds)
+      const syncedAt = new Date().toISOString()
+      await statement.executeAsync(syncedAt, syncedAt, ...progressIds)
     } finally {
       await statement.finalizeAsync()
     }
@@ -307,6 +382,8 @@ export class ProgressRepository {
       updated_at: row.updated_at as string,
       deleted_at: (row.deleted_at as string) || null,
       sync_status: (row.sync_status as SyncStatus) || 'synced',
+      last_sync_attempt_at: (row.last_sync_attempt_at as string) || null,
+      synced_at: (row.synced_at as string) || null,
     }
   }
 }

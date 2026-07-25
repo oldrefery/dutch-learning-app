@@ -5,6 +5,13 @@ import type { SyncStatus } from './schema'
 
 export interface LocalCollection extends Collection {
   sync_status: SyncStatus
+  last_sync_attempt_at: string | null
+  synced_at: string | null
+}
+
+export interface CollectionSyncAcknowledgement {
+  collection_id: string
+  updated_at: string
 }
 
 export class CollectionRepository {
@@ -17,6 +24,7 @@ export class CollectionRepository {
     try {
       for (const collection of collections) {
         const now = new Date().toISOString()
+        const syncedAt = syncStatus === 'synced' ? now : null
         const params = [
           collection.collection_id,
           collection.user_id,
@@ -29,13 +37,26 @@ export class CollectionRepository {
           collection.created_at,
           collection.updated_at || now,
           syncStatus,
+          null,
+          syncedAt,
         ]
 
         await db.runAsync(
-          `INSERT OR REPLACE INTO collections (
+          `INSERT INTO collections (
             collection_id, user_id, name, description,
-            is_shared, shared_with, created_at, updated_at, sync_status
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            is_shared, shared_with, created_at, updated_at, sync_status,
+            last_sync_attempt_at, synced_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT(collection_id) DO UPDATE SET
+            user_id = excluded.user_id,
+            name = excluded.name,
+            description = excluded.description,
+            is_shared = excluded.is_shared,
+            shared_with = excluded.shared_with,
+            created_at = excluded.created_at,
+            updated_at = excluded.updated_at,
+            sync_status = excluded.sync_status,
+            synced_at = excluded.synced_at`,
           params
         )
       }
@@ -205,14 +226,62 @@ export class CollectionRepository {
 
     try {
       const placeholders = collectionIds.map(() => '?').join(',')
+      const syncedAt = new Date().toISOString()
       await db.runAsync(
-        `UPDATE collections SET sync_status = 'synced' WHERE collection_id IN (${placeholders})`,
-        collectionIds
+        `UPDATE collections
+         SET sync_status = 'synced', last_sync_attempt_at = ?, synced_at = ?
+         WHERE collection_id IN (${placeholders})`,
+        [syncedAt, syncedAt, ...collectionIds]
       )
       console.log(`[DB] Marked ${collectionIds.length} collections as synced`)
     } catch (error) {
       console.error('[DB] Error marking collections synced:', error)
       throw error
+    }
+  }
+
+  async reconcilePushedCollections(
+    acknowledgements: CollectionSyncAcknowledgement[],
+    expectedUpdatedAtById: ReadonlyMap<string, string>
+  ): Promise<void> {
+    if (acknowledgements.length === 0) return
+
+    const expectedTimestamps = acknowledgements.map(acknowledgement => {
+      const expectedUpdatedAt = expectedUpdatedAtById.get(
+        acknowledgement.collection_id
+      )
+      if (!expectedUpdatedAt) {
+        throw new Error(
+          `Missing local collection timestamp for ${acknowledgement.collection_id}`
+        )
+      }
+      return expectedUpdatedAt
+    })
+    const db = await getDatabase()
+    const statement = await db.prepareAsync(
+      `UPDATE collections
+       SET sync_status = 'synced',
+           updated_at = ?,
+           last_sync_attempt_at = ?,
+           synced_at = ?
+       WHERE collection_id = ?
+         AND updated_at = ?
+         AND sync_status IN ('pending', 'synced')`
+    )
+    const syncedAt = new Date().toISOString()
+
+    try {
+      for (const [index, acknowledgement] of acknowledgements.entries()) {
+        await statement.executeAsync(
+          acknowledgement.updated_at,
+          syncedAt,
+          syncedAt,
+          acknowledgement.collection_id,
+          expectedTimestamps[index]
+        )
+      }
+    } finally {
+      await statement.finalizeAsync()
     }
   }
 

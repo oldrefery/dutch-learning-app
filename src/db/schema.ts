@@ -12,7 +12,9 @@ export const SQL_SCHEMA = `
     shared_with TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    sync_status TEXT DEFAULT 'synced'
+    sync_status TEXT DEFAULT 'synced',
+    last_sync_attempt_at TEXT,
+    synced_at TEXT
   );
 
   -- Words table (local copy of Supabase words)
@@ -50,7 +52,9 @@ export const SQL_SCHEMA = `
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
     deleted_at TEXT,
-    sync_status TEXT DEFAULT 'synced'
+    sync_status TEXT DEFAULT 'synced',
+    last_sync_attempt_at TEXT,
+    synced_at TEXT
   );
 
   -- User progress table (local cache of user_progress from Supabase)
@@ -65,6 +69,8 @@ export const SQL_SCHEMA = `
     updated_at TEXT NOT NULL,
     deleted_at TEXT,
     sync_status TEXT DEFAULT 'synced',
+    last_sync_attempt_at TEXT,
+    synced_at TEXT,
     FOREIGN KEY (word_id) REFERENCES words(word_id)
   );
 
@@ -134,5 +140,33 @@ export const MIGRATION_V5_TOMBSTONE_INDEXES = `
   CREATE INDEX IF NOT EXISTS idx_user_progress_deleted_at
   ON user_progress(user_id, deleted_at);
 `
+
+export const MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS = [
+  {
+    migration: 'ALTER TABLE collections ADD COLUMN last_sync_attempt_at TEXT;',
+    columnName: 'collections.last_sync_attempt_at',
+  },
+  {
+    migration: 'ALTER TABLE collections ADD COLUMN synced_at TEXT;',
+    columnName: 'collections.synced_at',
+  },
+  {
+    migration: 'ALTER TABLE words ADD COLUMN last_sync_attempt_at TEXT;',
+    columnName: 'words.last_sync_attempt_at',
+  },
+  {
+    migration: 'ALTER TABLE words ADD COLUMN synced_at TEXT;',
+    columnName: 'words.synced_at',
+  },
+  {
+    migration:
+      'ALTER TABLE user_progress ADD COLUMN last_sync_attempt_at TEXT;',
+    columnName: 'user_progress.last_sync_attempt_at',
+  },
+  {
+    migration: 'ALTER TABLE user_progress ADD COLUMN synced_at TEXT;',
+    columnName: 'user_progress.synced_at',
+  },
+] as const
 
 export type SyncStatus = 'synced' | 'pending' | 'error' | 'conflict' | 'deleted'

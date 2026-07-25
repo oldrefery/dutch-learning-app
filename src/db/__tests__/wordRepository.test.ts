@@ -494,7 +494,92 @@ describe('WordRepository', () => {
         expect.not.stringContaining('COALESCE(part_of_speech,')
       )
       const values = statement.executeAsync.mock.calls[0]
-      expect(values.slice(-2)).toEqual([CREATED_AT, 'synced'])
+      expect(values.slice(-4)).toEqual([
+        CREATED_AT,
+        'synced',
+        null,
+        expect.any(String),
+      ])
+    })
+  })
+
+  describe('sync timestamp integrity', () => {
+    it('marks status synced without inventing a domain timestamp', async () => {
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.markWordsSynced([
+        { word_id: WORD_ID_1, updated_at: CREATED_AT },
+      ])
+
+      const query = mockDatabase.prepareAsync.mock.calls[0][0]
+      expect(query).toContain('last_sync_attempt_at = ?')
+      expect(query).toContain('synced_at = ?')
+      expect(query.split('WHERE')[0]).not.toContain('updated_at =')
+      expect(statement.executeAsync).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+        WORD_ID_1,
+        CREATED_AT
+      )
+    })
+
+    it('records sync errors without changing domain updated_at', async () => {
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.markWordsError([
+        { word_id: WORD_ID_1, updated_at: CREATED_AT },
+      ])
+
+      const query = mockDatabase.prepareAsync.mock.calls[0][0]
+      expect(query).toContain("sync_status = 'error'")
+      expect(query).toContain('last_sync_attempt_at = ?')
+      expect(query.split('WHERE')[0]).not.toContain('updated_at =')
+      expect(statement.executeAsync).toHaveBeenCalledWith(
+        expect.any(String),
+        WORD_ID_1,
+        CREATED_AT
+      )
+    })
+
+    it('reconciles a successful push with the server timestamp', async () => {
+      const serverUpdatedAt = '2026-07-25T16:00:00.000Z'
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.reconcilePushedWords(
+        [
+          {
+            word_id: WORD_ID_1,
+            updated_at: serverUpdatedAt,
+            deleted_at: null,
+          },
+        ],
+        new Map([[WORD_ID_1, CREATED_AT]])
+      )
+
+      expect(statement.executeAsync).toHaveBeenCalledWith(
+        serverUpdatedAt,
+        null,
+        expect.any(String),
+        expect.any(String),
+        WORD_ID_1,
+        CREATED_AT
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('AND updated_at = ?')
+      )
+      expect(statement.finalizeAsync).toHaveBeenCalled()
     })
   })
 

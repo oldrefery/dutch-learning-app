@@ -95,6 +95,8 @@ export const createMockProgress = (
   updated_at: new Date().toISOString(),
   deleted_at: null,
   sync_status: 'synced',
+  last_sync_attempt_at: null,
+  synced_at: null,
   ...overrides,
 })
 

@@ -22,6 +22,7 @@ jest.mock('@/db/wordRepository', () => ({
     getPendingSyncWords: jest.fn().mockResolvedValue([]),
     getDeletedWords: jest.fn().mockResolvedValue([]),
     markWordsSynced: jest.fn().mockResolvedValue(undefined),
+    reconcilePushedWords: jest.fn().mockResolvedValue(undefined),
     markWordTombstonesSynced: jest.fn().mockResolvedValue(undefined),
     markWordsError: jest.fn().mockResolvedValue(undefined),
     deleteWordsByCollection: jest.fn().mockResolvedValue(undefined),
@@ -36,6 +37,7 @@ jest.mock('@/db/progressRepository', () => ({
     saveProgress: jest.fn().mockResolvedValue(undefined),
     saveRemoteProgressTombstones: jest.fn().mockResolvedValue(undefined),
     markProgressSynced: jest.fn().mockResolvedValue(undefined),
+    reconcilePushedProgress: jest.fn().mockResolvedValue(undefined),
     markProgressTombstonesSynced: jest.fn().mockResolvedValue(undefined),
   },
 }))
@@ -43,6 +45,7 @@ jest.mock('@/db/collectionRepository', () => ({
   collectionRepository: {
     getPendingSyncCollections: jest.fn().mockResolvedValue([]),
     markCollectionsSynced: jest.fn().mockResolvedValue(undefined),
+    reconcilePushedCollections: jest.fn().mockResolvedValue(undefined),
     getDeletedCollections: jest.fn().mockResolvedValue([]),
     saveCollections: jest.fn().mockResolvedValue(undefined),
     deleteCollection: jest.fn().mockResolvedValue(undefined),
@@ -59,6 +62,7 @@ describe('SyncManager', () => {
     `${prefix}_${Math.random().toString(36).substring(2, 9)}`
   const MAIN_COLLECTION_ID = 'collection-main'
   const DEFAULT_TIMESTAMP = '2026-02-23T00:00:00.000Z'
+  const SERVER_TIMESTAMP = '2026-07-25T16:00:00.000Z'
   const DEFAULT_REVIEW_DATE = '2026-02-23'
   const createSession = (expiresInSeconds: number) => ({
     access_token: 'access-token',
@@ -119,16 +123,89 @@ describe('SyncManager', () => {
 
   const createProgressPullQuery = createWordsPullQuery
 
+  const createServerAcknowledgements = (
+    payload: unknown
+  ): Record<string, unknown>[] => {
+    const rows = Array.isArray(payload) ? payload : [payload]
+
+    return rows
+      .filter(
+        (row): row is Record<string, unknown> =>
+          typeof row === 'object' && row !== null
+      )
+      .map(row => {
+        if (typeof row.progress_id === 'string') {
+          return {
+            progress_id: row.progress_id,
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: row.deleted_at ?? null,
+          }
+        }
+        if (typeof row.word_id === 'string') {
+          return {
+            word_id: row.word_id,
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: row.deleted_at ?? null,
+          }
+        }
+        return {
+          collection_id: row.collection_id,
+          updated_at: SERVER_TIMESTAMP,
+        }
+      })
+  }
+
+  const createUpsertMock = (
+    ...results: { data?: unknown[] | null; error?: unknown }[]
+  ): jest.Mock => {
+    let resultIndex = 0
+
+    return jest.fn().mockImplementation((payload: unknown) => {
+      const configuredResult = results[resultIndex++]
+      const response = {
+        data:
+          configuredResult && 'data' in configuredResult
+            ? configuredResult.data
+            : createServerAcknowledgements(payload),
+        error: configuredResult?.error ?? null,
+      }
+
+      return {
+        select: jest.fn().mockResolvedValue(response),
+      }
+    })
+  }
+
+  const createUpdateMock = (idColumn: 'word_id' | 'progress_id'): jest.Mock =>
+    jest.fn().mockImplementation((updates: Record<string, unknown>) => {
+      let ids: string[] = []
+      const query = {
+        eq: jest.fn(),
+        in: jest.fn(),
+        select: jest.fn().mockImplementation(async () => ({
+          data: ids.map(id => ({
+            [idColumn]: id,
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: updates.deleted_at ?? null,
+          })),
+          error: null,
+        })),
+      }
+      query.eq.mockReturnValue(query)
+      query.in.mockImplementation((_column: string, values: string[]) => {
+        ids = values
+        return query
+      })
+      return query
+    })
+
   const createProgressTable = (
     query = createProgressPullQuery(),
-    update = jest.fn().mockReturnValue({
-      eq: jest.fn().mockReturnValue({
-        in: jest.fn().mockResolvedValue({ data: [], error: null }),
-      }),
-    })
+    update = createUpdateMock('progress_id'),
+    upsert = createUpsertMock()
   ) => ({
     select: jest.fn().mockReturnValue(query),
-    upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+    upsert,
     update,
   })
 
@@ -154,12 +231,8 @@ describe('SyncManager', () => {
       if (tableName === 'words') {
         return {
           select: jest.fn().mockReturnValue(createWordsPullQuery()),
-          upsert: jest.fn().mockResolvedValue(resolved),
-          update: jest.fn().mockReturnValue({
-            eq: jest.fn().mockReturnValue({
-              in: jest.fn().mockResolvedValue(resolved),
-            }),
-          }),
+          upsert: createUpsertMock(),
+          update: createUpdateMock('word_id'),
         }
       }
 
@@ -171,7 +244,7 @@ describe('SyncManager', () => {
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockResolvedValue(resolved),
         }),
-        upsert: jest.fn().mockResolvedValue(resolved),
+        upsert: createUpsertMock(),
         update: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             in: jest.fn().mockResolvedValue(resolved),
@@ -303,7 +376,7 @@ describe('SyncManager', () => {
         if (tableName === 'words') {
           return {
             select: jest.fn().mockReturnValue(createWordsPullQuery(wordsRange)),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -315,7 +388,7 @@ describe('SyncManager', () => {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
           delete: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
@@ -353,7 +426,7 @@ describe('SyncManager', () => {
         if (tableName === 'words') {
           return {
             select: jest.fn().mockReturnValue(createWordsPullQuery(wordsRange)),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -365,7 +438,7 @@ describe('SyncManager', () => {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
           delete: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
@@ -414,10 +487,7 @@ describe('SyncManager', () => {
       ])
       ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
 
-      const wordsUpsert = jest
-        .fn()
-        .mockResolvedValueOnce({ data: [], error: rlsError })
-        .mockResolvedValueOnce({ data: [], error: null })
+      const wordsUpsert = createUpsertMock({ error: rlsError }, {})
 
       ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
         if (tableName === 'collections') {
@@ -425,7 +495,7 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
             delete: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
@@ -447,7 +517,7 @@ describe('SyncManager', () => {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
         }
       })
 
@@ -490,14 +560,14 @@ describe('SyncManager', () => {
       ])
       ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
 
-      const wordsUpsert = jest.fn().mockResolvedValue({ data: [], error: null })
+      const wordsUpsert = createUpsertMock()
       ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
         if (tableName === 'collections') {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
             delete: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
@@ -519,7 +589,7 @@ describe('SyncManager', () => {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
         }
       })
 
@@ -738,7 +808,7 @@ describe('SyncManager', () => {
                 error: null,
               }),
             }),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
             delete: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
@@ -748,7 +818,7 @@ describe('SyncManager', () => {
         if (tableName === 'words') {
           return {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
             delete: jest.fn().mockReturnValue({
               in: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
@@ -763,7 +833,7 @@ describe('SyncManager', () => {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
           delete: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
@@ -828,7 +898,7 @@ describe('SyncManager', () => {
         if (tableName === 'words') {
           return {
             select: jest.fn().mockReturnValue(query),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -840,7 +910,7 @@ describe('SyncManager', () => {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
           delete: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
@@ -1044,7 +1114,7 @@ describe('SyncManager', () => {
         if (tableName === 'words') {
           return {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -1060,7 +1130,7 @@ describe('SyncManager', () => {
               count: 0,
             }),
           }),
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
           delete: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
@@ -1229,6 +1299,190 @@ describe('SyncManager', () => {
     })
   })
 
+  describe('server timestamp reconciliation', () => {
+    it('reconciles active progress with the server-issued timestamp', async () => {
+      const pendingProgress = {
+        progress_id: 'progress-pending',
+        user_id: userId,
+        word_id: 'word-1',
+        status: 'learning',
+        reviewed_count: 2,
+        last_reviewed_at: null,
+        created_at: DEFAULT_TIMESTAMP,
+        updated_at: DEFAULT_TIMESTAMP,
+        deleted_at: null,
+        sync_status: 'pending',
+        last_sync_attempt_at: null,
+        synced_at: null,
+      }
+      const progressUpsert = createUpsertMock()
+
+      ;(
+        progressRepository.getPendingSyncProgress as jest.Mock
+      ).mockResolvedValue([pendingProgress])
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            upsert: createUpsertMock(),
+          }
+        }
+        if (tableName === 'user_progress') {
+          return createProgressTable(
+            createProgressPullQuery(),
+            createUpdateMock('progress_id'),
+            progressUpsert
+          )
+        }
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({
+              data: [],
+              error: null,
+              count: 0,
+            }),
+          }),
+          upsert: createUpsertMock(),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+      const pushedPayload = progressUpsert.mock.calls[0][0][0]
+
+      expect(result.success).toBe(true)
+      expect(pushedPayload).not.toHaveProperty('updated_at')
+      expect(progressRepository.reconcilePushedProgress).toHaveBeenCalledWith(
+        [
+          {
+            progress_id: pendingProgress.progress_id,
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: null,
+          },
+        ],
+        new Map([[pendingProgress.progress_id, DEFAULT_TIMESTAMP]])
+      )
+      expect(progressRepository.markProgressSynced).not.toHaveBeenCalled()
+    })
+
+    it('reconciles pending collections with the server-issued timestamp', async () => {
+      const pendingCollection = {
+        collection_id: 'collection-pending',
+        user_id: userId,
+        name: 'Pending collection',
+        description: null,
+        is_shared: false,
+        shared_with: null,
+        share_token: null,
+        shared_at: null,
+        created_at: DEFAULT_TIMESTAMP,
+        updated_at: DEFAULT_TIMESTAMP,
+        sync_status: 'pending',
+        last_sync_attempt_at: null,
+        synced_at: null,
+      }
+      const collectionUpsert = createUpsertMock()
+
+      ;(
+        collectionRepository.getPendingSyncCollections as jest.Mock
+      ).mockResolvedValue([pendingCollection])
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [],
+                error: null,
+                count: 0,
+              }),
+            }),
+            upsert: collectionUpsert,
+          }
+        }
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            upsert: createUpsertMock(),
+          }
+        }
+        if (tableName === 'user_progress') {
+          return createProgressTable()
+        }
+        return { upsert: createUpsertMock() }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(
+        collectionRepository.reconcilePushedCollections
+      ).toHaveBeenCalledWith(
+        [
+          {
+            collection_id: pendingCollection.collection_id,
+            updated_at: SERVER_TIMESTAMP,
+          },
+        ],
+        new Map([[pendingCollection.collection_id, DEFAULT_TIMESTAMP]])
+      )
+      expect(collectionRepository.markCollectionsSynced).not.toHaveBeenCalled()
+    })
+
+    it('keeps a word pending when Supabase omits its acknowledgement', async () => {
+      const pendingWord = createPendingWord({
+        word_id: 'word-missing-acknowledgement',
+      })
+      const wordsUpsert = createUpsertMock({ data: [] })
+
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
+        pendingWord,
+      ])
+      ;(
+        collectionRepository.getCollectionsByIds as jest.Mock
+      ).mockResolvedValue([
+        {
+          collection_id: MAIN_COLLECTION_ID,
+          user_id: userId,
+          name: 'Main',
+          is_shared: false,
+          created_at: DEFAULT_TIMESTAMP,
+        },
+      ])
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'collections') {
+          return {
+            select: jest.fn().mockReturnValue({
+              eq: jest.fn().mockResolvedValue({
+                data: [],
+                error: null,
+                count: 0,
+              }),
+            }),
+            upsert: createUpsertMock(),
+          }
+        }
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            upsert: wordsUpsert,
+          }
+        }
+        if (tableName === 'user_progress') {
+          return createProgressTable()
+        }
+        return { upsert: createUpsertMock() }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toContain(
+        'Supabase returned an incomplete acknowledgement'
+      )
+      expect(wordRepository.reconcilePushedWords).not.toHaveBeenCalled()
+      expect(wordRepository.markWordsSynced).not.toHaveBeenCalled()
+    })
+  })
+
   describe('delete tombstone push', () => {
     it('should push word tombstones before considering active words', async () => {
       const deletedAt = '2026-07-25T12:00:00.000Z'
@@ -1237,9 +1491,19 @@ describe('SyncManager', () => {
         deleted_at: deletedAt,
         sync_status: 'deleted',
       })
-      const wordTombstoneIn = jest
-        .fn()
-        .mockResolvedValue({ data: [], error: null })
+      const wordTombstoneSelect = jest.fn().mockResolvedValue({
+        data: [
+          {
+            word_id: deletedWord.word_id,
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: SERVER_TIMESTAMP,
+          },
+        ],
+        error: null,
+      })
+      const wordTombstoneIn = jest.fn().mockReturnValue({
+        select: wordTombstoneSelect,
+      })
       const wordTombstoneEq = jest.fn().mockReturnValue({
         in: wordTombstoneIn,
       })
@@ -1259,7 +1523,7 @@ describe('SyncManager', () => {
           return {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
             update: wordUpdate,
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -1271,7 +1535,7 @@ describe('SyncManager', () => {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
         }
       })
 
@@ -1286,15 +1550,32 @@ describe('SyncManager', () => {
       expect(wordTombstoneIn).toHaveBeenCalledWith('word_id', [
         deletedWord.word_id,
       ])
-      expect(wordRepository.markWordTombstonesSynced).toHaveBeenCalledWith([
-        deletedWord.word_id,
-      ])
+      expect(wordRepository.reconcilePushedWords).toHaveBeenCalledWith(
+        [
+          {
+            word_id: deletedWord.word_id,
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: SERVER_TIMESTAMP,
+          },
+        ],
+        new Map([[deletedWord.word_id, DEFAULT_TIMESTAMP]])
+      )
     })
 
     it('should push progress tombstones through the prepared remote contract', async () => {
-      const progressTombstoneIn = jest
-        .fn()
-        .mockResolvedValue({ data: [], error: null })
+      const progressTombstoneSelect = jest.fn().mockResolvedValue({
+        data: [
+          {
+            progress_id: 'progress-deleted-locally',
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: SERVER_TIMESTAMP,
+          },
+        ],
+        error: null,
+      })
+      const progressTombstoneIn = jest.fn().mockReturnValue({
+        select: progressTombstoneSelect,
+      })
       const progressTombstoneEq = jest.fn().mockReturnValue({
         in: progressTombstoneIn,
       })
@@ -1326,7 +1607,7 @@ describe('SyncManager', () => {
         if (tableName === 'words') {
           return {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -1338,7 +1619,7 @@ describe('SyncManager', () => {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
           }),
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
         }
       })
 
@@ -1353,9 +1634,16 @@ describe('SyncManager', () => {
       expect(progressTombstoneIn).toHaveBeenCalledWith('progress_id', [
         deletedProgress.progress_id,
       ])
-      expect(
-        progressRepository.markProgressTombstonesSynced
-      ).toHaveBeenCalledWith([deletedProgress.progress_id])
+      expect(progressRepository.reconcilePushedProgress).toHaveBeenCalledWith(
+        [
+          {
+            progress_id: deletedProgress.progress_id,
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: SERVER_TIMESTAMP,
+          },
+        ],
+        new Map([[deletedProgress.progress_id, DEFAULT_TIMESTAMP]])
+      )
     })
   })
 
@@ -1384,14 +1672,14 @@ describe('SyncManager', () => {
       ])
       ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
 
-      const wordsUpsert = jest.fn().mockResolvedValue({ data: [], error: null })
+      const wordsUpsert = createUpsertMock()
       ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
         if (tableName === 'collections') {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -1407,7 +1695,7 @@ describe('SyncManager', () => {
         }
 
         return {
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
         }
       })
 
@@ -1460,14 +1748,14 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
         if (tableName === 'words') {
           return {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -1476,7 +1764,7 @@ describe('SyncManager', () => {
         }
 
         return {
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
         }
       })
 
@@ -1534,14 +1822,14 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
         if (tableName === 'words') {
           return {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -1550,7 +1838,7 @@ describe('SyncManager', () => {
         }
 
         return {
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
         }
       })
 
@@ -1574,12 +1862,13 @@ describe('SyncManager', () => {
     })
 
     it('should skip server semantic duplicates and sync only unique words', async () => {
+      const uniqueWordId = 'word-unique'
       const duplicateWord = createPendingWord({
         word_id: 'word-duplicate',
         dutch_lemma: 'huis',
       })
       const uniqueWord = createPendingWord({
-        word_id: 'word-unique',
+        word_id: uniqueWordId,
         dutch_lemma: 'fiets',
       })
 
@@ -1602,14 +1891,14 @@ describe('SyncManager', () => {
         .mockResolvedValueOnce({ word_id: 'server-duplicate' })
         .mockResolvedValueOnce(null)
 
-      const wordsUpsert = jest.fn().mockResolvedValue({ data: [], error: null })
+      const wordsUpsert = createUpsertMock()
       ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
         if (tableName === 'collections') {
           return {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -1625,7 +1914,7 @@ describe('SyncManager', () => {
         }
 
         return {
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
         }
       })
 
@@ -1635,11 +1924,21 @@ describe('SyncManager', () => {
       expect(result.wordsSynced).toBe(2)
       expect(wordsUpsert).toHaveBeenCalledTimes(1)
       expect(wordRepository.markWordsSynced).toHaveBeenCalledWith([
-        'word-duplicate',
+        {
+          word_id: 'word-duplicate',
+          updated_at: DEFAULT_TIMESTAMP,
+        },
       ])
-      expect(wordRepository.markWordsSynced).toHaveBeenCalledWith([
-        'word-unique',
-      ])
+      expect(wordRepository.reconcilePushedWords).toHaveBeenCalledWith(
+        [
+          {
+            word_id: uniqueWordId,
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: null,
+          },
+        ],
+        new Map([[uniqueWordId, DEFAULT_TIMESTAMP]])
+      )
     })
 
     it('should reconcile 23505 semantic conflicts via per-word fallback', async () => {
@@ -1680,10 +1979,7 @@ describe('SyncManager', () => {
         .mockResolvedValueOnce({ word_id: 'server-duplicate' })
         .mockResolvedValueOnce(null)
 
-      const wordsUpsert = jest
-        .fn()
-        .mockResolvedValueOnce({ data: [], error: duplicateError })
-        .mockResolvedValueOnce({ data: [], error: null })
+      const wordsUpsert = createUpsertMock({ error: duplicateError }, {})
 
       ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
         if (tableName === 'collections') {
@@ -1691,7 +1987,7 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
-            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+            upsert: createUpsertMock(),
           }
         }
 
@@ -1707,7 +2003,7 @@ describe('SyncManager', () => {
         }
 
         return {
-          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          upsert: createUpsertMock(),
         }
       })
 
@@ -1717,9 +2013,24 @@ describe('SyncManager', () => {
       expect(result.wordsSynced).toBe(2)
       expect(wordsUpsert).toHaveBeenCalledTimes(2)
       expect(wordRepository.markWordsSynced).toHaveBeenCalledWith([
-        'word-1',
-        'word-2',
+        {
+          word_id: 'word-1',
+          updated_at: DEFAULT_TIMESTAMP,
+        },
       ])
+      expect(wordRepository.reconcilePushedWords).toHaveBeenCalledWith(
+        [
+          {
+            word_id: 'word-2',
+            updated_at: SERVER_TIMESTAMP,
+            deleted_at: null,
+          },
+        ],
+        new Map([
+          ['word-1', DEFAULT_TIMESTAMP],
+          ['word-2', DEFAULT_TIMESTAMP],
+        ])
+      )
     })
   })
 })

@@ -1,4 +1,8 @@
-import { MIGRATION_V5_TOMBSTONE_INDEXES, SQL_SCHEMA } from '../schema'
+import {
+  MIGRATION_V5_TOMBSTONE_INDEXES,
+  MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS,
+  SQL_SCHEMA,
+} from '../schema'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -28,6 +32,27 @@ describe('delete tombstone schema', () => {
       'OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL'
     )
     expect(migration).toContain('WHERE deleted_at IS NULL')
+  })
+})
+
+describe('local sync timestamp schema', () => {
+  it('keeps sync timestamps separate on every synchronized entity', () => {
+    expect(SQL_SCHEMA.match(/last_sync_attempt_at TEXT/g)).toHaveLength(3)
+    expect(SQL_SCHEMA.match(/synced_at TEXT/g)).toHaveLength(3)
+  })
+
+  it('provides an idempotent migration entry for every sync timestamp', () => {
+    expect(MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS).toHaveLength(6)
+    expect(
+      MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS.map(column => column.columnName)
+    ).toEqual([
+      'collections.last_sync_attempt_at',
+      'collections.synced_at',
+      'words.last_sync_attempt_at',
+      'words.synced_at',
+      'user_progress.last_sync_attempt_at',
+      'user_progress.synced_at',
+    ])
   })
 })
 

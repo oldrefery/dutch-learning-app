@@ -550,10 +550,26 @@ Follow-up:
 - The otherwise-passing Jest run still emits pre-existing `act(...)` warnings
   and expected error logs from `useLocalWords.test.ts`; keep this in the
   remaining test-hygiene backlog.
+- A read-only live Supabase metadata check on 2026-07-25 confirmed that remote
+  migration history does not yet contain
+  `20260725150000_add_word_delete_tombstones.sql` or
+  `20260725170000_create_user_progress.sql`. Consequently,
+  `public.user_progress` is not present remotely yet. No remote migration or
+  data change was performed.
+- The same read-only check returned 25 security advisor notices and 7
+  performance notices. The security notices cover one RLS-without-policy
+  informational finding, mutable function search paths, exposed
+  `SECURITY DEFINER` functions, disabled leaked-password protection, and an
+  available Postgres security update. The performance notices cover five unused
+  word indexes and duplicate permissive SELECT policies on words and
+  collections. These pre-existing live-project findings were not remediated in
+  P1.4.
 
 ### Quality Follow-up: Database Initialization Diagnostics
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `5104ebe fix: harden database initialization`
 
 Scope:
 
@@ -592,13 +608,54 @@ Verification results:
 
 ### P1.4 Sync Metadata Timestamp Integrity
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 
 Scope:
 
 - Stop changing domain `updated_at` when only sync status changes.
 - Record sync-specific timestamps independently.
 - Reconcile server-issued timestamps after successful pushes.
+
+Completed:
+
+- Inspected word, progress, collection, active-push, and tombstone-push paths.
+- Added idempotent SQLite schema v6 columns for `last_sync_attempt_at` and
+  `synced_at` on collections, words, and user progress.
+- Kept status-only success and error transitions from changing domain
+  `updated_at`.
+- Chained Supabase word, progress, collection, and tombstone writes with
+  returning selects and reconciled SQLite with server-issued `updated_at` and
+  `deleted_at` values.
+- Removed client `updated_at` from progress upserts so the server remains the
+  timestamp authority.
+- Replaced collection `INSERT OR REPLACE` with conflict updates that preserve
+  existing local sync-attempt metadata.
+- Required complete, typed acknowledgements before clearing pending state; an
+  incomplete response now leaves rows retryable.
+- Added optimistic `updated_at` guards so acknowledgements, duplicate handling,
+  and error handling cannot clear a newer local mutation that happens while a
+  network request is in flight.
+- Captured the chosen design and rejected alternatives in
+  `docs/brainstorms/2026-07-25-sync-metadata-timestamp-integrity-brainstorm.md`.
+
+Verification results:
+
+- Targeted schema, repository, initialization, and synchronization tests:
+  6 suites, 128 tests passed.
+- Full Jest coverage: 51 suites, 831 tests passed.
+- Build and test TypeScript: passed.
+- Full ESLint: passed with zero warnings.
+- Prettier and all 28 Maestro YAML files: passed.
+- Edge Function tests: 58 passed.
+- Expo Doctor: 19/19 checks passed.
+- Production Sentry query for unresolved issues over 14 days returned no
+  issues.
+- `git diff --check`: passed.
+- Current Supabase JavaScript documentation confirmed that mutation rows are
+  returned only when `.select()` is chained.
+- Official Expo SDK 55 SQLite documentation confirmed the prepared-statement
+  execute/finalize lifecycle used by the reconciliation updates.
+- No remote migration or data change was performed.
 
 ### P1.5 Semantic Uniqueness And Reachability
 
@@ -612,6 +669,9 @@ Scope:
 
 ## Current Resume Point
 
-Wait for the user to commit `Quality Follow-up: Database Initialization
-Diagnostics`. After the user confirms the commit and says to continue, record
-the commit hash and start `P1.4 Sync Metadata Timestamp Integrity`.
+Wait for the user to commit `P1.4 Sync Metadata Timestamp Integrity` with
+`fix: preserve sync timestamp integrity`. After the user confirms the commit
+and says to continue, record the commit hash and start
+`P1.5 Semantic Uniqueness And Reachability`. Keep the unapplied live Supabase
+migrations documented as deployment drift; do not apply them without explicit
+user authorization.

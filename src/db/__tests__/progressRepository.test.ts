@@ -105,6 +105,8 @@ describe('ProgressRepository', () => {
         expect.anything(),
         null,
         'synced',
+        null,
+        expect.any(String),
         'pending',
         'error',
         'conflict',
@@ -142,7 +144,9 @@ describe('ProgressRepository', () => {
         record.created_at,
         record.updated_at,
         record.deleted_at,
-        'synced'
+        'synced',
+        null,
+        expect.any(String)
       )
       expect(mockFinalizeAsync).toHaveBeenCalledTimes(1)
     })
@@ -332,13 +336,22 @@ describe('ProgressRepository', () => {
   })
 
   describe('markProgressSynced', () => {
-    it('should update sync_status to synced for given IDs', async () => {
+    it('should update only sync metadata for given IDs', async () => {
       await progressRepository.markProgressSynced(['prog-1', 'prog-2'])
 
       expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
         expect.stringContaining("sync_status = 'synced'")
       )
-      expect(mockExecuteAsync).toHaveBeenCalled()
+      const query = mockDatabase.prepareAsync.mock.calls[0][0]
+      expect(query).toContain('last_sync_attempt_at = ?')
+      expect(query).toContain('synced_at = ?')
+      expect(query).not.toContain('updated_at =')
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+        'prog-1',
+        'prog-2'
+      )
       expect(mockFinalizeAsync).toHaveBeenCalled()
     })
 
@@ -346,6 +359,37 @@ describe('ProgressRepository', () => {
       await progressRepository.markProgressSynced([])
 
       expect(mockDatabase.prepareAsync).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('reconcilePushedProgress', () => {
+    it('stores the server timestamp with successful sync metadata', async () => {
+      await progressRepository.reconcilePushedProgress(
+        [
+          {
+            progress_id: PROGRESS_ID,
+            updated_at: REVIEWED_AT,
+            deleted_at: null,
+          },
+        ],
+        new Map([[PROGRESS_ID, CREATED_AT]])
+      )
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('updated_at = ?')
+      )
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        REVIEWED_AT,
+        null,
+        expect.any(String),
+        expect.any(String),
+        PROGRESS_ID,
+        CREATED_AT
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('AND updated_at = ?')
+      )
+      expect(mockFinalizeAsync).toHaveBeenCalled()
     })
   })
 

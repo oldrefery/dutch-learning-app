@@ -6,6 +6,7 @@ import {
   MIGRATION_V5_ADD_PROGRESS_DELETED_AT,
   MIGRATION_V5_ADD_WORD_DELETED_AT,
   MIGRATION_V5_TOMBSTONE_INDEXES,
+  MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS,
 } from '../schema'
 import { closeDatabase, initializeDatabase } from '../initDB'
 
@@ -36,7 +37,7 @@ describe('initializeDatabase', () => {
     mockDatabase.runAsync.mockResolvedValue(undefined)
     mockDatabase.closeAsync.mockResolvedValue(undefined)
     ;(SQLite.openDatabaseAsync as jest.Mock).mockResolvedValue(mockDatabase)
-    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('5')
+    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('6')
     ;(AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined)
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
@@ -69,7 +70,7 @@ describe('initializeDatabase', () => {
 
     const firstInitialization = initializeDatabase()
     const secondInitialization = initializeDatabase()
-    resolveVersion('5')
+    resolveVersion('6')
     const [firstResult, secondResult] = await Promise.all([
       firstInitialization,
       secondInitialization,
@@ -103,7 +104,10 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V5_TOMBSTONE_INDEXES
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '5')
+    for (const column of MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS) {
+      expect(mockDatabase.execAsync).toHaveBeenCalledWith(column.migration)
+    }
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '6')
   })
 
   it('treats a malformed stored version as a fresh database', async () => {
@@ -117,7 +121,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V3_UNIQUE_INDEX
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '5')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '6')
   })
 
   it('continues when an idempotent column migration finds the column', async () => {
@@ -133,7 +137,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V5_TOMBSTONE_INDEXES
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '5')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '6')
   })
 
   it('discards a failed connection so initialization can retry', async () => {
@@ -151,6 +155,6 @@ describe('initializeDatabase', () => {
     await initializeDatabase()
 
     expect(SQLite.openDatabaseAsync).toHaveBeenCalledTimes(2)
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '5')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '6')
   })
 })

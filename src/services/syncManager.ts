@@ -1,11 +1,18 @@
 import { collectionService, supabase, wordService } from '@/lib/supabase'
-import { wordRepository } from '@/db/wordRepository'
-import { progressRepository } from '@/db/progressRepository'
-import type {
-  ProgressRecord,
-  RemoteProgressTombstone,
+import {
+  wordRepository,
+  type WordSyncAcknowledgement,
+} from '@/db/wordRepository'
+import {
+  progressRepository,
+  type ProgressRecord,
+  type ProgressSyncAcknowledgement,
+  type RemoteProgressTombstone,
 } from '@/db/progressRepository'
-import { collectionRepository } from '@/db/collectionRepository'
+import {
+  collectionRepository,
+  type CollectionSyncAcknowledgement,
+} from '@/db/collectionRepository'
 import {
   checkNetworkConnection,
   getSyncCursor,
@@ -68,6 +75,11 @@ interface SupabaseLikeError {
   code?: string
   message?: string
   details?: string
+}
+
+interface WordsUpsertResult {
+  data: WordSyncAcknowledgement[] | null
+  error: SupabaseLikeError | null
 }
 
 interface SupabaseSessionLike {
@@ -175,6 +187,9 @@ const WORDS_SELECT_COLUMNS_WITHOUT_REGISTER = [
 
 const WORD_SYNC_PAGE_SIZE = 500
 const PROGRESS_SYNC_PAGE_SIZE = 500
+const WORD_ACKNOWLEDGEMENT_COLUMNS = 'word_id, updated_at, deleted_at'
+const PROGRESS_ACKNOWLEDGEMENT_COLUMNS = 'progress_id, updated_at, deleted_at'
+const COLLECTION_ACKNOWLEDGEMENT_COLUMNS = 'collection_id, updated_at'
 
 const toWordSyncCursor = (word: Word): SyncCursor => ({
   updatedAt: word.updated_at,
@@ -897,19 +912,31 @@ export class SyncManager {
       status: p.status,
       reviewed_count: p.reviewed_count,
       last_reviewed_at: p.last_reviewed_at,
-      updated_at: p.updated_at,
     }))
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('user_progress')
       .upsert(progressToSync)
+      .select(PROGRESS_ACKNOWLEDGEMENT_COLUMNS)
 
     if (error) {
       throw new Error(`Failed to push progress: ${error.message}`)
     }
 
     const progressIds = pendingProgress.map(p => p.progress_id)
-    await progressRepository.markProgressSynced(progressIds)
+    const acknowledgements = this.requireProgressAcknowledgements(
+      data,
+      progressIds
+    )
+    await progressRepository.reconcilePushedProgress(
+      acknowledgements,
+      new Map(
+        pendingProgress.map(progress => [
+          progress.progress_id,
+          progress.updated_at,
+        ])
+      )
+    )
 
     return deletedCount + pendingProgress.length
   }
@@ -957,17 +984,22 @@ export class SyncManager {
 
     const wordIds = deletedWords.map(word => word.word_id)
     const deletedAt = new Date().toISOString()
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('words')
       .update({ deleted_at: deletedAt })
       .eq('user_id', userId)
       .in('word_id', wordIds)
+      .select(WORD_ACKNOWLEDGEMENT_COLUMNS)
 
     if (error) {
       throw new Error(`Failed to push word tombstones: ${error.message}`)
     }
 
-    await wordRepository.markWordTombstonesSynced(wordIds)
+    const acknowledgements = this.requireWordAcknowledgements(data, wordIds)
+    await wordRepository.reconcilePushedWords(
+      acknowledgements,
+      new Map(deletedWords.map(word => [word.word_id, word.updated_at]))
+    )
     console.log(`[Sync] Pushed ${wordIds.length} word tombstones to Supabase`)
     return wordIds.length
   }
@@ -982,17 +1014,30 @@ export class SyncManager {
 
     const progressIds = deletedProgress.map(progress => progress.progress_id)
     const deletedAt = new Date().toISOString()
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('user_progress')
       .update({ deleted_at: deletedAt })
       .eq('user_id', userId)
       .in('progress_id', progressIds)
+      .select(PROGRESS_ACKNOWLEDGEMENT_COLUMNS)
 
     if (error) {
       throw new Error(`Failed to push progress tombstones: ${error.message}`)
     }
 
-    await progressRepository.markProgressTombstonesSynced(progressIds)
+    const acknowledgements = this.requireProgressAcknowledgements(
+      data,
+      progressIds
+    )
+    await progressRepository.reconcilePushedProgress(
+      acknowledgements,
+      new Map(
+        deletedProgress.map(progress => [
+          progress.progress_id,
+          progress.updated_at,
+        ])
+      )
+    )
     console.log(
       `[Sync] Pushed ${progressIds.length} progress tombstones to Supabase`
     )
@@ -1188,19 +1233,26 @@ export class SyncManager {
     const wordsToSync = uniqueWords.map(word =>
       this.mapWordToSupabasePayload(word, userId)
     )
-    const error = await this.upsertWordsWithRegisterFallback(wordsToSync)
+    const result = await this.upsertWordsWithRegisterFallback(wordsToSync)
 
-    if (!error) {
+    if (!result.error) {
       const wordIds = uniqueWords.map(w => w.word_id).filter(Boolean)
-      await wordRepository.markWordsSynced(wordIds)
+      const acknowledgements = this.requireWordAcknowledgements(
+        result.data,
+        wordIds
+      )
+      await wordRepository.reconcilePushedWords(
+        acknowledgements,
+        new Map(uniqueWords.map(word => [word.word_id, word.updated_at]))
+      )
       console.log(
         `[Sync] Pushed ${uniqueWords.length} unique words to Supabase`
       )
       return uniqueWords.length
     }
 
-    if (!this.isSemanticUniqueConflict(error)) {
-      throw new Error(`Failed to push words: ${error.message}`)
+    if (!this.isSemanticUniqueConflict(result.error)) {
+      throw new Error(`Failed to push words: ${result.error.message}`)
     }
 
     console.warn(
@@ -1216,8 +1268,8 @@ export class SyncManager {
         },
         extra: {
           userId,
-          conflictCode: (error as SupabaseLikeError).code,
-          conflictMessage: (error as SupabaseLikeError).message,
+          conflictCode: result.error.code,
+          conflictMessage: result.error.message,
           uniqueWordsCount: uniqueWords.length,
         },
         fingerprint: [SYNC_DUPLICATE_FINGERPRINT, 'batch'],
@@ -1307,17 +1359,23 @@ export class SyncManager {
   }
 
   private async markDuplicateWordsSynced(words: Word[]): Promise<void> {
-    const duplicateIds = words.map(w => w.word_id).filter(Boolean)
-    if (duplicateIds.length === 0) return
+    const duplicateVersions = words
+      .filter(word => Boolean(word.word_id))
+      .map(word => ({
+        word_id: word.word_id,
+        updated_at: word.updated_at,
+      }))
+    if (duplicateVersions.length === 0) return
 
-    await wordRepository.markWordsSynced(duplicateIds)
+    await wordRepository.markWordsSynced(duplicateVersions)
   }
 
   private async reconcileSemanticConflicts(
     userId: string,
     words: Word[]
   ): Promise<number> {
-    const syncedWordIds: string[] = []
+    const statusOnlyWords: Word[] = []
+    const acknowledgements: WordSyncAcknowledgement[] = []
 
     for (const word of words) {
       const existingWord = await wordService.checkWordExists(
@@ -1328,28 +1386,34 @@ export class SyncManager {
       )
 
       if (existingWord) {
-        syncedWordIds.push(word.word_id)
+        statusOnlyWords.push(word)
         continue
       }
 
-      const upsertError = await this.upsertWordsWithRegisterFallback([
+      const result = await this.upsertWordsWithRegisterFallback([
         this.mapWordToSupabasePayload(word, userId),
       ])
 
-      if (upsertError) {
-        if (this.isSemanticUniqueConflict(upsertError)) {
-          syncedWordIds.push(word.word_id)
+      if (result.error) {
+        if (this.isSemanticUniqueConflict(result.error)) {
+          statusOnlyWords.push(word)
           continue
         }
 
-        throw new Error(`Failed to push words: ${upsertError.message}`)
+        throw new Error(`Failed to push words: ${result.error.message}`)
       }
 
-      syncedWordIds.push(word.word_id)
+      acknowledgements.push(
+        ...this.requireWordAcknowledgements(result.data, [word.word_id])
+      )
     }
 
-    await wordRepository.markWordsSynced(syncedWordIds)
-    return syncedWordIds.length
+    await wordRepository.reconcilePushedWords(
+      acknowledgements,
+      new Map(words.map(word => [word.word_id, word.updated_at]))
+    )
+    await this.markDuplicateWordsSynced(statusOnlyWords)
+    return acknowledgements.length + statusOnlyWords.length
   }
 
   private buildDuplicateWordsSentryExtra(
@@ -1391,23 +1455,26 @@ export class SyncManager {
 
   private async upsertWordsWithRegisterFallback(
     payloads: SupabaseWordPayload[]
-  ): Promise<SupabaseLikeError | null> {
+  ): Promise<WordsUpsertResult> {
     const includeRegister = this.wordsRegisterColumnAvailable !== false
     const initialPayloads = includeRegister
       ? payloads
       : payloads.map(payload => this.omitRegisterFromPayload(payload))
 
-    const error = await this.executeWordsUpsert(initialPayloads)
+    const result = await this.executeWordsUpsert(initialPayloads)
 
-    if (!error) {
+    if (!result.error) {
       if (includeRegister) {
         this.wordsRegisterColumnAvailable = true
       }
-      return null
+      return result
     }
 
-    if (!includeRegister || !this.isMissingWordsRegisterColumnError(error)) {
-      return error
+    if (
+      !includeRegister ||
+      !this.isMissingWordsRegisterColumnError(result.error)
+    ) {
+      return result
     }
 
     this.wordsRegisterColumnAvailable = false
@@ -1459,19 +1526,121 @@ export class SyncManager {
     }
   }
 
+  private requireWordAcknowledgements(
+    data: unknown,
+    expectedWordIds: string[]
+  ): WordSyncAcknowledgement[] {
+    const acknowledgements = Array.isArray(data)
+      ? data.filter(
+          (value): value is WordSyncAcknowledgement =>
+            this.isRecord(value) &&
+            typeof value.word_id === 'string' &&
+            typeof value.updated_at === 'string' &&
+            (typeof value.deleted_at === 'string' || value.deleted_at === null)
+        )
+      : []
+
+    this.assertAcknowledgementIds(
+      acknowledgements.map(value => value.word_id),
+      expectedWordIds,
+      'word'
+    )
+    return acknowledgements
+  }
+
+  private requireProgressAcknowledgements(
+    data: unknown,
+    expectedProgressIds: string[]
+  ): ProgressSyncAcknowledgement[] {
+    const acknowledgements = Array.isArray(data)
+      ? data.filter(
+          (value): value is ProgressSyncAcknowledgement =>
+            this.isRecord(value) &&
+            typeof value.progress_id === 'string' &&
+            typeof value.updated_at === 'string' &&
+            (typeof value.deleted_at === 'string' || value.deleted_at === null)
+        )
+      : []
+
+    this.assertAcknowledgementIds(
+      acknowledgements.map(value => value.progress_id),
+      expectedProgressIds,
+      'progress'
+    )
+    return acknowledgements
+  }
+
+  private requireCollectionAcknowledgements(
+    data: unknown,
+    expectedCollectionIds: string[]
+  ): CollectionSyncAcknowledgement[] {
+    const acknowledgements = Array.isArray(data)
+      ? data.filter(
+          (value): value is CollectionSyncAcknowledgement =>
+            this.isRecord(value) &&
+            typeof value.collection_id === 'string' &&
+            typeof value.updated_at === 'string'
+        )
+      : []
+
+    this.assertAcknowledgementIds(
+      acknowledgements.map(value => value.collection_id),
+      expectedCollectionIds,
+      'collection'
+    )
+    return acknowledgements
+  }
+
+  private assertAcknowledgementIds(
+    actualIds: string[],
+    expectedIds: string[],
+    entityName: string
+  ): void {
+    const actualIdSet = new Set(actualIds)
+    const expectedIdSet = new Set(expectedIds)
+    const hasEveryExpectedId = [...expectedIdSet].every(id =>
+      actualIdSet.has(id)
+    )
+
+    if (
+      actualIds.length !== expectedIdSet.size ||
+      actualIdSet.size !== expectedIdSet.size ||
+      !hasEveryExpectedId
+    ) {
+      throw new Error(
+        `Failed to reconcile pushed ${entityName} timestamps: Supabase returned an incomplete acknowledgement`
+      )
+    }
+  }
+
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null
+  }
+
   private async executeWordsUpsert(
     payloads: SupabaseWordsUpsertPayload[]
-  ): Promise<SupabaseLikeError | null> {
+  ): Promise<WordsUpsertResult> {
     try {
-      const result = await supabase.from('words').upsert(payloads, {
-        onConflict: 'word_id',
-      })
-      return result.error ? this.toSupabaseLikeError(result.error) : null
+      const result = await supabase
+        .from('words')
+        .upsert(payloads, {
+          onConflict: 'word_id',
+        })
+        .select(WORD_ACKNOWLEDGEMENT_COLUMNS)
+      return {
+        data: Array.isArray(result.data)
+          ? (result.data as WordSyncAcknowledgement[])
+          : null,
+        error: result.error ? this.toSupabaseLikeError(result.error) : null,
+      }
     } catch (upsertError) {
       if (!this.isMissingWordsRegisterColumnError(upsertError)) {
         throw upsertError
       }
-      return this.toSupabaseLikeError(upsertError)
+      return {
+        data: null,
+        error: this.toSupabaseLikeError(upsertError),
+      }
     }
   }
 
@@ -1502,9 +1671,14 @@ export class SyncManager {
     )
 
     if (collectionIds.length === 0) {
-      const wordIds = words.map(word => word.word_id).filter(Boolean)
-      if (wordIds.length > 0) {
-        await wordRepository.markWordsError(wordIds)
+      const wordVersions = words
+        .filter(word => Boolean(word.word_id))
+        .map(word => ({
+          word_id: word.word_id,
+          updated_at: word.updated_at,
+        }))
+      if (wordVersions.length > 0) {
+        await wordRepository.markWordsError(wordVersions)
         ToastService.show(
           'Words skipped due to missing collection.',
           ToastType.INFO
@@ -1526,14 +1700,18 @@ export class SyncManager {
     )
 
     if (missingCollectionWords.length > 0) {
-      const missingWordIds = missingCollectionWords
-        .map(word => word.word_id)
-        .filter(Boolean)
       const missingWordLabels = missingCollectionWords
         .map(word => word.dutch_lemma)
         .join(', ')
 
-      await wordRepository.markWordsError(missingWordIds)
+      await wordRepository.markWordsError(
+        missingCollectionWords
+          .filter(word => Boolean(word.word_id))
+          .map(word => ({
+            word_id: word.word_id,
+            updated_at: word.updated_at,
+          }))
+      )
 
       const historyStore = useHistoryStore.getState()
       missingCollectionWords.forEach(word => {
@@ -1583,16 +1761,29 @@ export class SyncManager {
       created_at: c.created_at,
     }))
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('collections')
       .upsert(collectionsToSync)
+      .select(COLLECTION_ACKNOWLEDGEMENT_COLUMNS)
 
     if (error) {
       throw new Error(`Failed to push collections: ${error.message}`)
     }
 
     const syncedIds = collections.map(c => c.collection_id)
-    await collectionRepository.markCollectionsSynced(syncedIds)
+    const acknowledgements = this.requireCollectionAcknowledgements(
+      data,
+      syncedIds
+    )
+    await collectionRepository.reconcilePushedCollections(
+      acknowledgements,
+      new Map(
+        collections.map(collection => [
+          collection.collection_id,
+          collection.updated_at,
+        ])
+      )
+    )
   }
 
   private async pullCollectionsFromSupabase(userId: string): Promise<any[]> {
@@ -1744,16 +1935,29 @@ export class SyncManager {
       created_at: c.created_at,
     }))
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('collections')
       .upsert(collectionsToSync)
+      .select(COLLECTION_ACKNOWLEDGEMENT_COLUMNS)
 
     if (error) {
       throw new Error(`Failed to push collections: ${error.message}`)
     }
 
     const collectionIds = pendingCollections.map(c => c.collection_id)
-    await collectionRepository.markCollectionsSynced(collectionIds)
+    const acknowledgements = this.requireCollectionAcknowledgements(
+      data,
+      collectionIds
+    )
+    await collectionRepository.reconcilePushedCollections(
+      acknowledgements,
+      new Map(
+        pendingCollections.map(collection => [
+          collection.collection_id,
+          collection.updated_at,
+        ])
+      )
+    )
 
     console.log(
       `[Sync] Pushed ${pendingCollections.length} collections to Supabase`

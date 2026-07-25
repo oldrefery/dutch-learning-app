@@ -7,12 +7,13 @@ import {
   MIGRATION_V5_ADD_PROGRESS_DELETED_AT,
   MIGRATION_V5_ADD_WORD_DELETED_AT,
   MIGRATION_V5_TOMBSTONE_INDEXES,
+  MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS,
 } from './schema'
 import { Sentry } from '@/lib/sentry'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 5
+const SCHEMA_VERSION = 6
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -172,6 +173,14 @@ async function migrateToV5(db: SQLite.SQLiteDatabase): Promise<void> {
   console.log('[DB] Migration to v5 completed successfully')
 }
 
+async function migrateToV6(db: SQLite.SQLiteDatabase): Promise<void> {
+  console.log('[DB] Starting migration to v6: adding sync timestamps...')
+  for (const column of MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS) {
+    await addColumnIfMissing(db, column.migration, column.columnName)
+  }
+  console.log('[DB] Migration to v6 completed successfully')
+}
+
 async function createBaseSchema(db: SQLite.SQLiteDatabase): Promise<void> {
   const statements = SQL_SCHEMA.split(';').filter(statement => statement.trim())
   for (const statement of statements) {
@@ -202,6 +211,9 @@ async function applyPendingMigrations(
   if (currentVersion < 5) {
     await migrateToV5(db)
   }
+  if (currentVersion < 6) {
+    await migrateToV6(db)
+  }
 }
 
 function parseSchemaVersion(storedVersion: string | null): number {
@@ -226,10 +238,10 @@ async function ensureCurrentSchema(db: SQLite.SQLiteDatabase): Promise<void> {
 }
 
 async function discardFailedDatabase(
-  failedDatabase: SQLite.SQLiteDatabase
+  failedDatabase: SQLite.SQLiteDatabase | null
 ): Promise<void> {
   try {
-    await failedDatabase.closeAsync()
+    await failedDatabase?.closeAsync()
   } catch (error) {
     console.error('[DB] Error closing failed database connection:', error)
   }
@@ -246,9 +258,7 @@ async function openAndInitializeDatabase(): Promise<SQLite.SQLiteDatabase> {
     return openedDatabase
   } catch (error) {
     console.error('[DB] Error initializing database:', error)
-    if (openedDatabase) {
-      await discardFailedDatabase(openedDatabase)
-    }
+    await discardFailedDatabase(openedDatabase)
     throw new Error(
       `Failed to initialize database: ${error instanceof Error ? error.message : 'Unknown error'}`
     )

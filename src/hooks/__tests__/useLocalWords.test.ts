@@ -60,6 +60,8 @@ describe('useLocalWords', () => {
     last_reviewed_at: null,
     deleted_at: null,
     sync_status: 'synced',
+    last_sync_attempt_at: null,
+    synced_at: null,
     ...overrides,
   })
 
