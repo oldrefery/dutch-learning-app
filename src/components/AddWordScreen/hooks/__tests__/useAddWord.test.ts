@@ -118,7 +118,11 @@ describe('useAddWord', () => {
   })
 
   it('shows success only after saveAnalyzedWord returns a saved word', async () => {
-    saveAnalyzedWord.mockResolvedValue(savedWord)
+    const persistedWord = {
+      ...savedWord,
+      dutch_lemma: 'persisted lopen',
+    }
+    saveAnalyzedWord.mockResolvedValue(persistedWord)
 
     const { result } = renderHook(() => useAddWord())
 
@@ -135,6 +139,10 @@ describe('useAddWord', () => {
       collection.collection_id
     )
     expect(ToastService.show).toHaveBeenCalledWith(
+      '"persisted lopen" added to "My Words"',
+      ToastType.SUCCESS
+    )
+    expect(ToastService.show).not.toHaveBeenCalledWith(
       '"lopen" added to "My Words"',
       ToastType.SUCCESS
     )
@@ -155,6 +163,39 @@ describe('useAddWord', () => {
 
     expect(ToastService.show).toHaveBeenCalledWith(
       'Save failed',
+      ToastType.ERROR
+    )
+    expect(ToastService.show).not.toHaveBeenCalledWith(
+      expect.stringContaining('added to'),
+      ToastType.SUCCESS
+    )
+  })
+
+  it('does not show success when save fails after creating a collection', async () => {
+    ;(useCollections as jest.Mock).mockReturnValue({
+      collections: [],
+    })
+    createNewCollection.mockResolvedValue(collection)
+    saveAnalyzedWord.mockRejectedValue(
+      new Error('Save failed after collection creation')
+    )
+
+    const { result } = renderHook(() => useAddWord())
+
+    await act(async () => {
+      await expect(result.current.addWord(analysis)).resolves.toBe(false)
+    })
+
+    expect(createNewCollection).toHaveBeenCalledWith('My Words')
+    expect(setLastSelectedCollectionId).toHaveBeenCalledWith(
+      collection.collection_id
+    )
+    expect(saveAnalyzedWord).toHaveBeenCalledWith(
+      analysis,
+      collection.collection_id
+    )
+    expect(ToastService.show).toHaveBeenCalledWith(
+      'Save failed after collection creation',
       ToastType.ERROR
     )
     expect(ToastService.show).not.toHaveBeenCalledWith(

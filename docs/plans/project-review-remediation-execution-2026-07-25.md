@@ -245,9 +245,10 @@ Verification results:
 
 ### P2.1 Expo Patch Alignment And Dependency Audit
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 
 Initial commit: `39bdf2c chore: align Expo dependencies and harden update checks`
+Follow-up commit: `f9fb65c ci: update GitHub Actions dependencies`
 
 Scope:
 
@@ -312,7 +313,7 @@ Follow-up:
 
 ### P2.2 Persisted Word Contract Test Strengthening
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 
 Scope:
 
@@ -320,8 +321,35 @@ Scope:
 - Cover collection creation followed by save failure.
 - Cover mapper optional and nullable fields.
 
+Completed:
+
+- Strengthened the hook success test with distinct analyzed and persisted
+  lemmas, proving that the success toast uses the `Word` returned by
+  `saveAnalyzedWord`.
+- Added the default-collection path where collection creation succeeds but the
+  subsequent repository-backed word save rejects; the hook returns failure and
+  never emits a success toast.
+- Exercised the analysis-to-`Word` mapper through the public store action with
+  omitted optional fields and explicitly nullable register/conjugation values.
+- Confirmed the persisted object, returned object, and Zustand state entry are
+  the same complete `Word`.
+- Followed React Native Testing Library 13.3.3 guidance by awaiting hook state
+  changes inside `act` and using `waitFor` for effect-driven selection.
+
+Verification results:
+
+- Targeted hook and store suites: 2 suites, 35 tests passed.
+- Full Jest coverage: 49 suites, 778 tests passed.
+- Build and test TypeScript: passed.
+- ESLint CI budget: passed with the same 7 pre-existing warnings.
+- Prettier: passed.
+- Edge Function tests: 58 passed.
+- All 28 Maestro YAML files: passed.
+- `git diff --check`: passed.
+
 ## Current Resume Point
 
-Wait for the user to commit `P2.1 Expo Patch Alignment And Dependency Audit`.
-After the user confirms the commit and says to continue, mark P2.1 as
-`COMMITTED`, record the commit hash, and start P2.2.
+Wait for the user to commit
+`P2.2 Persisted Word Contract Test Strengthening`. After the user confirms the
+commit and says to continue, mark P2.2 as `COMMITTED`, record the commit hash,
+and review the source plan for the next uncompleted work package.
