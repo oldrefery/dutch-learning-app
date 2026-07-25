@@ -76,6 +76,80 @@ describe('ProgressRepository', () => {
 
       expect(mockFinalizeAsync).toHaveBeenCalledTimes(1)
     })
+
+    it('should preserve local unsynced rows during remote apply', async () => {
+      const record = createMockProgress()
+      const {
+        sync_status: _syncStatus,
+        deleted_at: _deletedAt,
+        ...remoteRecord
+      } = record
+
+      await progressRepository.saveProgress([remoteRecord], {
+        preserveUnsynced: true,
+      })
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('user_progress.sync_status NOT IN (?, ?, ?, ?)')
+      )
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        null,
+        expect.anything(),
+        expect.anything(),
+        null,
+        'synced',
+        'pending',
+        'error',
+        'conflict',
+        'deleted'
+      )
+    })
+  })
+
+  describe('saveRemoteProgressTombstones', () => {
+    it('should upsert a durable synced tombstone', async () => {
+      const record = createMockProgress({
+        progress_id: PROGRESS_ID,
+        user_id: USER_ID,
+        deleted_at: '2026-07-25T12:00:00.000Z',
+      })
+      const { sync_status: _syncStatus, ...remoteTombstone } = record
+
+      await progressRepository.saveRemoteProgressTombstones([
+        remoteTombstone as typeof remoteTombstone & { deleted_at: string },
+      ])
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('ON CONFLICT(progress_id) DO UPDATE SET')
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('deleted_at = excluded.deleted_at')
+      )
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        PROGRESS_ID,
+        USER_ID,
+        record.word_id,
+        record.status,
+        record.reviewed_count,
+        record.last_reviewed_at,
+        record.created_at,
+        record.updated_at,
+        record.deleted_at,
+        'synced'
+      )
+      expect(mockFinalizeAsync).toHaveBeenCalledTimes(1)
+    })
+
+    it('should no-op for an empty tombstone batch', async () => {
+      await progressRepository.saveRemoteProgressTombstones([])
+
+      expect(mockDatabase.prepareAsync).not.toHaveBeenCalled()
+    })
   })
 
   describe('updateProgress', () => {

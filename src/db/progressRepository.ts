@@ -15,27 +15,65 @@ export interface UserProgress {
   sync_status: SyncStatus
 }
 
+export type ProgressRecord = Omit<UserProgress, 'sync_status' | 'deleted_at'>
+
+interface SaveProgressOptions {
+  preserveUnsynced?: boolean
+}
+
+export interface RemoteProgressTombstone extends ProgressRecord {
+  deleted_at: string
+}
+
+const UNSYNCED_PROGRESS_STATUSES: SyncStatus[] = [
+  'pending',
+  'error',
+  'conflict',
+  'deleted',
+]
+
+const SAVE_PROGRESS_SQL = `
+  INSERT INTO user_progress (
+    progress_id, user_id, word_id, status, reviewed_count,
+    last_reviewed_at, created_at, updated_at, deleted_at, sync_status
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON CONFLICT(progress_id) DO UPDATE SET
+    word_id = excluded.word_id,
+    status = excluded.status,
+    reviewed_count = excluded.reviewed_count,
+    last_reviewed_at = excluded.last_reviewed_at,
+    created_at = excluded.created_at,
+    updated_at = excluded.updated_at,
+    sync_status = 'synced'
+  WHERE user_progress.deleted_at IS NULL
+`
+
+const SAVE_REMOTE_PROGRESS_TOMBSTONE_SQL = `
+  INSERT INTO user_progress (
+    progress_id, user_id, word_id, status, reviewed_count,
+    last_reviewed_at, created_at, updated_at, deleted_at, sync_status
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON CONFLICT(progress_id) DO UPDATE SET
+    deleted_at = excluded.deleted_at,
+    updated_at = excluded.updated_at,
+    sync_status = 'synced'
+  WHERE user_progress.user_id = excluded.user_id
+`
+
 export class ProgressRepository {
   async saveProgress(
-    progressRecords: Omit<UserProgress, 'sync_status' | 'deleted_at'>[]
+    progressRecords: ProgressRecord[],
+    options: SaveProgressOptions = {}
   ): Promise<void> {
     const db = await getDatabase()
-
-    const insertStatement = await db.prepareAsync(`
-      INSERT INTO user_progress (
-        progress_id, user_id, word_id, status, reviewed_count,
-        last_reviewed_at, created_at, updated_at, deleted_at, sync_status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(progress_id) DO UPDATE SET
-        word_id = excluded.word_id,
-        status = excluded.status,
-        reviewed_count = excluded.reviewed_count,
-        last_reviewed_at = excluded.last_reviewed_at,
-        created_at = excluded.created_at,
-        updated_at = excluded.updated_at,
-        sync_status = 'synced'
-      WHERE user_progress.deleted_at IS NULL
-    `)
+    const preserveClause = options.preserveUnsynced
+      ? ` AND user_progress.sync_status NOT IN (${UNSYNCED_PROGRESS_STATUSES.map(
+          () => '?'
+        ).join(', ')})`
+      : ''
+    const insertStatement = await db.prepareAsync(
+      `${SAVE_PROGRESS_SQL}${preserveClause}`
+    )
 
     try {
       for (const record of progressRecords) {
@@ -49,11 +87,40 @@ export class ProgressRepository {
           record.created_at,
           record.updated_at,
           null,
-          'synced'
+          'synced',
+          ...(options.preserveUnsynced ? UNSYNCED_PROGRESS_STATUSES : [])
         )
       }
     } finally {
       await insertStatement.finalizeAsync()
+    }
+  }
+
+  async saveRemoteProgressTombstones(
+    progressRecords: RemoteProgressTombstone[]
+  ): Promise<void> {
+    if (progressRecords.length === 0) return
+
+    const db = await getDatabase()
+    const statement = await db.prepareAsync(SAVE_REMOTE_PROGRESS_TOMBSTONE_SQL)
+
+    try {
+      for (const record of progressRecords) {
+        await statement.executeAsync(
+          record.progress_id,
+          record.user_id,
+          record.word_id,
+          record.status,
+          record.reviewed_count,
+          record.last_reviewed_at,
+          record.created_at,
+          record.updated_at,
+          record.deleted_at,
+          'synced'
+        )
+      }
+    } finally {
+      await statement.finalizeAsync()
     }
   }
 

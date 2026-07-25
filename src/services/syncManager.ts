@@ -1,6 +1,10 @@
 import { collectionService, supabase, wordService } from '@/lib/supabase'
 import { wordRepository } from '@/db/wordRepository'
 import { progressRepository } from '@/db/progressRepository'
+import type {
+  ProgressRecord,
+  RemoteProgressTombstone,
+} from '@/db/progressRepository'
 import { collectionRepository } from '@/db/collectionRepository'
 import {
   checkNetworkConnection,
@@ -48,6 +52,7 @@ type SyncErrorType = 'auth_expired' | 'rls' | 'other'
 type SyncStage =
   | 'pull_collections'
   | 'pull_words'
+  | 'pull_progress'
   | 'push_collections'
   | 'push_words'
   | 'push_progress'
@@ -124,6 +129,10 @@ interface SyncWord extends Word {
   deleted_at: string | null
 }
 
+interface SyncProgress extends ProgressRecord {
+  deleted_at: string | null
+}
+
 type SupabaseWordPayloadWithoutRegister = Omit<SupabaseWordPayload, 'register'>
 type SupabaseWordsUpsertPayload =
   | SupabaseWordPayload
@@ -165,6 +174,7 @@ const WORDS_SELECT_COLUMNS_WITHOUT_REGISTER = [
 ].join(', ')
 
 const WORD_SYNC_PAGE_SIZE = 500
+const PROGRESS_SYNC_PAGE_SIZE = 500
 
 const toWordSyncCursor = (word: Word): SyncCursor => ({
   updatedAt: word.updated_at,
@@ -180,6 +190,16 @@ const compareSyncCursors = (left: SyncCursor, right: SyncCursor): number => {
 
 const isWordAfterCursor = (word: Word, cursor: SyncCursor): boolean =>
   compareSyncCursors(toWordSyncCursor(word), cursor) > 0
+
+const toProgressSyncCursor = (progress: SyncProgress): SyncCursor => ({
+  updatedAt: progress.updated_at,
+  id: progress.progress_id,
+})
+
+const isProgressAfterCursor = (
+  progress: SyncProgress,
+  cursor: SyncCursor
+): boolean => compareSyncCursors(toProgressSyncCursor(progress), cursor) > 0
 
 export class SyncManager {
   private isSyncing = false
@@ -270,24 +290,33 @@ export class SyncManager {
       // Clean up local orphan words after pull
       await this.cleanupOrphanWords(userId)
 
-      // Step 2: Push pending collection updates to Supabase (needed for FK on words)
-      console.log('[Sync] Stage 3: push collections')
+      // Step 2: Pull progress after words so local foreign keys can resolve
+      console.log('[Sync] Stage 3: pull progress')
+      const progressCursor = await getSyncCursor(userId, 'user_progress')
+      const pulledProgress = await this.runSyncStageWithSessionRetry(
+        'pull_progress',
+        userId,
+        async () => this.pullProgressFromSupabase(userId, progressCursor)
+      )
+
+      // Step 3: Push pending collection updates to Supabase (needed for FK on words)
+      console.log('[Sync] Stage 4: push collections')
       await this.runSyncStageWithSessionRetry(
         'push_collections',
         userId,
         async () => this.pushCollectionsToSupabase(userId)
       )
 
-      // Step 3: Push pending word updates to Supabase
-      console.log('[Sync] Stage 4: push words')
+      // Step 4: Push pending word updates to Supabase
+      console.log('[Sync] Stage 5: push words')
       const pushedWordsCount = await this.runSyncStageWithSessionRetry(
         'push_words',
         userId,
         async () => this.pushWordsToSupabase(userId)
       )
 
-      // Step 4: Push pending progress to Supabase
-      console.log('[Sync] Stage 5: push progress')
+      // Step 5: Push pending progress to Supabase
+      console.log('[Sync] Stage 6: push progress')
       const pushedProgressCount = await this.runSyncStageWithSessionRetry(
         'push_progress',
         userId,
@@ -297,7 +326,7 @@ export class SyncManager {
       const result: SyncResult = {
         success: true,
         wordsSynced: pulledWords.length + pushedWordsCount,
-        progressSynced: pushedProgressCount,
+        progressSynced: pulledProgress.length + pushedProgressCount,
         timestamp,
       }
 
@@ -733,6 +762,116 @@ export class SyncManager {
       }
 
       from += WORD_SYNC_PAGE_SIZE
+    }
+  }
+
+  private async pullProgressFromSupabase(
+    userId: string,
+    cursor: SyncCursor | null
+  ): Promise<SyncProgress[]> {
+    const { data, error } = await this.fetchProgressPages(userId, cursor)
+
+    if (error) {
+      throw new Error(`Failed to pull progress: ${error.message}`)
+    }
+
+    if (!data || data.length === 0) {
+      console.log('[Sync] No new progress to pull from Supabase')
+      return []
+    }
+
+    const now = new Date().toISOString()
+    const parsedProgress = data
+      .map(
+        (progress): SyncProgress => ({
+          ...progress,
+          user_id: userId,
+          reviewed_count: progress.reviewed_count ?? 0,
+          last_reviewed_at: progress.last_reviewed_at ?? null,
+          created_at: progress.created_at || now,
+          updated_at: progress.updated_at || progress.created_at || now,
+          deleted_at: progress.deleted_at ?? null,
+        })
+      )
+      .filter(progress => !cursor || isProgressAfterCursor(progress, cursor))
+      .sort((left, right) =>
+        compareSyncCursors(
+          toProgressSyncCursor(left),
+          toProgressSyncCursor(right)
+        )
+      )
+
+    if (parsedProgress.length === 0) {
+      console.log('[Sync] No updated progress after cursor filtering')
+      return []
+    }
+
+    const tombstones = parsedProgress.filter(
+      (progress): progress is RemoteProgressTombstone =>
+        Boolean(progress.deleted_at)
+    )
+    const activeProgress = parsedProgress
+      .filter(progress => !progress.deleted_at)
+      .map(({ deleted_at: _deletedAt, ...progress }) => progress)
+
+    await progressRepository.saveRemoteProgressTombstones(tombstones)
+    await progressRepository.saveProgress(activeProgress, {
+      preserveUnsynced: true,
+    })
+
+    const newestProgress = parsedProgress[parsedProgress.length - 1]
+    await setSyncCursor(
+      userId,
+      'user_progress',
+      toProgressSyncCursor(newestProgress)
+    )
+
+    console.log(
+      `[Sync] Pulled ${parsedProgress.length} progress records from Supabase`
+    )
+
+    return parsedProgress
+  }
+
+  private async fetchProgressPages(
+    userId: string,
+    cursor: SyncCursor | null
+  ): Promise<{
+    data: SyncProgress[] | null
+    error: SupabaseLikeError | null
+  }> {
+    const progressRecords: SyncProgress[] = []
+    let from = 0
+
+    while (true) {
+      let query = supabase
+        .from('user_progress')
+        .select('*')
+        .eq('user_id', userId)
+
+      if (cursor) {
+        query = query.gte('updated_at', cursor.updatedAt)
+      }
+
+      const result = this.toProgressSelectResult(
+        await query
+          .order('updated_at', { ascending: true })
+          .order('progress_id', { ascending: true })
+          .range(from, from + PROGRESS_SYNC_PAGE_SIZE - 1)
+      )
+
+      if (result.error) {
+        return result
+      }
+
+      const page = result.data ?? []
+      progressRecords.push(...page)
+
+      if (page.length < PROGRESS_SYNC_PAGE_SIZE) {
+        return { data: progressRecords, error: null }
+      }
+
+      from += PROGRESS_SYNC_PAGE_SIZE
     }
   }
 
@@ -1306,6 +1445,16 @@ export class SyncManager {
   } {
     return {
       data: Array.isArray(result.data) ? (result.data as SyncWord[]) : null,
+      error: result.error ? this.toSupabaseLikeError(result.error) : null,
+    }
+  }
+
+  private toProgressSelectResult(result: { data: unknown; error: unknown }): {
+    data: SyncProgress[] | null
+    error: SupabaseLikeError | null
+  } {
+    return {
+      data: Array.isArray(result.data) ? (result.data as SyncProgress[]) : null,
       error: result.error ? this.toSupabaseLikeError(result.error) : null,
     }
   }

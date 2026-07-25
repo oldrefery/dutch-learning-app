@@ -33,6 +33,8 @@ jest.mock('@/db/progressRepository', () => ({
   progressRepository: {
     getPendingSyncProgress: jest.fn().mockResolvedValue([]),
     getDeletedProgress: jest.fn().mockResolvedValue([]),
+    saveProgress: jest.fn().mockResolvedValue(undefined),
+    saveRemoteProgressTombstones: jest.fn().mockResolvedValue(undefined),
     markProgressSynced: jest.fn().mockResolvedValue(undefined),
     markProgressTombstonesSynced: jest.fn().mockResolvedValue(undefined),
   },
@@ -115,6 +117,21 @@ describe('SyncManager', () => {
     return query
   }
 
+  const createProgressPullQuery = createWordsPullQuery
+
+  const createProgressTable = (
+    query = createProgressPullQuery(),
+    update = jest.fn().mockReturnValue({
+      eq: jest.fn().mockReturnValue({
+        in: jest.fn().mockResolvedValue({ data: [], error: null }),
+      }),
+    })
+  ) => ({
+    select: jest.fn().mockReturnValue(query),
+    upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+    update,
+  })
+
   let syncManager: SyncManager
   const userId = generateId('user')
 
@@ -144,6 +161,10 @@ describe('SyncManager', () => {
             }),
           }),
         }
+      }
+
+      if (tableName === 'user_progress') {
+        return createProgressTable()
       }
 
       return {
@@ -286,6 +307,10 @@ describe('SyncManager', () => {
           }
         }
 
+        if (tableName === 'user_progress') {
+          return createProgressTable()
+        }
+
         return {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
@@ -330,6 +355,10 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue(createWordsPullQuery(wordsRange)),
             upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
           }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable()
         }
 
         return {
@@ -410,6 +439,10 @@ describe('SyncManager', () => {
           }
         }
 
+        if (tableName === 'user_progress') {
+          return createProgressTable()
+        }
+
         return {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
@@ -476,6 +509,10 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: wordsUpsert,
           }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable()
         }
 
         return {
@@ -718,6 +755,10 @@ describe('SyncManager', () => {
           }
         }
 
+        if (tableName === 'user_progress') {
+          return createProgressTable()
+        }
+
         return {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockResolvedValue({ data: [], error: null }),
@@ -789,6 +830,10 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue(query),
             upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
           }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable()
         }
 
         return {
@@ -967,6 +1012,223 @@ describe('SyncManager', () => {
     })
   })
 
+  describe('progress delta cursor', () => {
+    const cursorUpdatedAt = '2026-07-25T13:00:00.000Z'
+    const nextUpdatedAt = '2026-07-25T14:00:00.000Z'
+    const cursorProgressId = 'progress-b'
+    const progressAfterCursorId = 'progress-c'
+
+    const createRemoteProgress = (overrides: Record<string, unknown> = {}) => ({
+      progress_id: 'progress-remote',
+      user_id: userId,
+      word_id: 'word-remote',
+      status: 'learning',
+      reviewed_count: 2,
+      last_reviewed_at: nextUpdatedAt,
+      created_at: DEFAULT_TIMESTAMP,
+      updated_at: nextUpdatedAt,
+      deleted_at: null,
+      ...overrides,
+    })
+
+    const mockProgressPullPages = (
+      pages: ReturnType<typeof createRemoteProgress>[][]
+    ) => {
+      const range = jest.fn().mockResolvedValue({ data: [], error: null })
+      pages.forEach(page => {
+        range.mockResolvedValueOnce({ data: page, error: null })
+      })
+      const query = createProgressPullQuery(range)
+
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable(query)
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({
+              data: [],
+              error: null,
+              count: 0,
+            }),
+          }),
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+        }
+      })
+
+      return query
+    }
+
+    it('should pull progress updated after its per-user cursor', async () => {
+      const cursor = {
+        updatedAt: cursorUpdatedAt,
+        id: 'progress-cursor',
+      }
+      const remoteProgress = createRemoteProgress()
+      const query = mockProgressPullPages([[remoteProgress]])
+      ;(networkUtils.getSyncCursor as jest.Mock).mockImplementation(
+        (_requestedUserId: string, table: string) =>
+          table === 'user_progress' ? cursor : null
+      )
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(result.progressSynced).toBe(1)
+      expect(query.gte).toHaveBeenCalledWith('updated_at', cursor.updatedAt)
+      expect(progressRepository.saveProgress).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            progress_id: remoteProgress.progress_id,
+            reviewed_count: remoteProgress.reviewed_count,
+            updated_at: nextUpdatedAt,
+          }),
+        ],
+        { preserveUnsynced: true }
+      )
+      expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(
+        userId,
+        'user_progress',
+        {
+          updatedAt: nextUpdatedAt,
+          id: remoteProgress.progress_id,
+        }
+      )
+    })
+
+    it('should use progress id as the equal-timestamp tiebreaker', async () => {
+      const cursor = {
+        updatedAt: cursorUpdatedAt,
+        id: cursorProgressId,
+      }
+      mockProgressPullPages([
+        [
+          createRemoteProgress({
+            progress_id: progressAfterCursorId,
+            updated_at: cursorUpdatedAt,
+          }),
+          createRemoteProgress({
+            progress_id: 'progress-a',
+            updated_at: cursorUpdatedAt,
+          }),
+          createRemoteProgress({
+            progress_id: cursorProgressId,
+            updated_at: cursorUpdatedAt,
+          }),
+        ],
+      ])
+      ;(networkUtils.getSyncCursor as jest.Mock).mockImplementation(
+        (_requestedUserId: string, table: string) =>
+          table === 'user_progress' ? cursor : null
+      )
+
+      await syncManager.performSync(userId)
+
+      expect(progressRepository.saveProgress).toHaveBeenCalledWith(
+        [expect.objectContaining({ progress_id: progressAfterCursorId })],
+        { preserveUnsynced: true }
+      )
+      expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(
+        userId,
+        'user_progress',
+        {
+          updatedAt: cursorUpdatedAt,
+          id: progressAfterCursorId,
+        }
+      )
+    })
+
+    it('should pull every ordered progress page before advancing', async () => {
+      const progressRecords = Array.from({ length: 501 }, (_, index) =>
+        createRemoteProgress({
+          progress_id: `progress-${index.toString().padStart(3, '0')}`,
+        })
+      )
+      const query = mockProgressPullPages([
+        progressRecords.slice(0, 500),
+        progressRecords.slice(500),
+      ])
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(result.progressSynced).toBe(501)
+      expect(query.order).toHaveBeenCalledWith('updated_at', {
+        ascending: true,
+      })
+      expect(query.order).toHaveBeenCalledWith('progress_id', {
+        ascending: true,
+      })
+      expect(query.range).toHaveBeenNthCalledWith(1, 0, 499)
+      expect(query.range).toHaveBeenNthCalledWith(2, 500, 999)
+      expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(
+        userId,
+        'user_progress',
+        {
+          updatedAt: nextUpdatedAt,
+          id: 'progress-500',
+        }
+      )
+    })
+
+    it('should apply a remote progress tombstone before advancing', async () => {
+      const deletedAt = '2026-07-25T15:00:00.000Z'
+      const remoteTombstone = createRemoteProgress({
+        progress_id: 'progress-deleted-remotely',
+        updated_at: deletedAt,
+        deleted_at: deletedAt,
+      })
+      mockProgressPullPages([[remoteTombstone]])
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(
+        progressRepository.saveRemoteProgressTombstones
+      ).toHaveBeenCalledWith([
+        expect.objectContaining({
+          progress_id: remoteTombstone.progress_id,
+          deleted_at: deletedAt,
+        }),
+      ])
+      expect(progressRepository.saveProgress).toHaveBeenCalledWith([], {
+        preserveUnsynced: true,
+      })
+      expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(
+        userId,
+        'user_progress',
+        {
+          updatedAt: deletedAt,
+          id: remoteTombstone.progress_id,
+        }
+      )
+    })
+
+    it('should not advance the progress cursor when local apply fails', async () => {
+      mockProgressPullPages([[createRemoteProgress()]])
+      ;(progressRepository.saveProgress as jest.Mock).mockRejectedValueOnce(
+        new Error('SQLite progress apply failed')
+      )
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('SQLite progress apply failed')
+      expect(networkUtils.setSyncCursor).not.toHaveBeenCalled()
+    })
+  })
+
   describe('delete tombstone push', () => {
     it('should push word tombstones before considering active words', async () => {
       const deletedAt = '2026-07-25T12:00:00.000Z'
@@ -999,6 +1261,10 @@ describe('SyncManager', () => {
             update: wordUpdate,
             upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
           }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable()
         }
 
         return {
@@ -1065,7 +1331,7 @@ describe('SyncManager', () => {
         }
 
         if (tableName === 'user_progress') {
-          return { update: progressUpdate }
+          return createProgressTable(createProgressPullQuery(), progressUpdate)
         }
 
         return {
@@ -1136,6 +1402,10 @@ describe('SyncManager', () => {
           }
         }
 
+        if (tableName === 'user_progress') {
+          return createProgressTable()
+        }
+
         return {
           upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
         }
@@ -1199,6 +1469,10 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
           }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable()
         }
 
         return {
@@ -1271,6 +1545,10 @@ describe('SyncManager', () => {
           }
         }
 
+        if (tableName === 'user_progress') {
+          return createProgressTable()
+        }
+
         return {
           upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
         }
@@ -1340,6 +1618,10 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: wordsUpsert,
           }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable()
         }
 
         return {
@@ -1418,6 +1700,10 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: wordsUpsert,
           }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable()
         }
 
         return {

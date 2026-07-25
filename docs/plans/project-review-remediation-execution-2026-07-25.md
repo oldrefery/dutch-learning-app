@@ -434,7 +434,9 @@ Verification results:
 
 ### P0.3 Offline Delete Tombstones
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `ab90e1c fix: preserve offline delete tombstones`
 
 Scope:
 
@@ -489,12 +491,63 @@ Verification results:
 
 ### P0.4 User Progress Remote Contract
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 
 Scope:
 
 - Add the missing `user_progress` Supabase migration, indexes, and RLS.
 - Add pull/delete handling and verify a clean migration reset supports Stage 5.
+
+Completed:
+
+- Added the remote `user_progress` table with ownership foreign keys, four
+  operation-specific RLS policies, cursor/delete indexes, and server-managed
+  `updated_at`.
+- Added a progress tombstone trigger that prevents stale upserts from clearing
+  `deleted_at`.
+- Added a per-user `(updated_at, progress_id)` pull cursor with deterministic
+  500-row pagination and local boundary filtering.
+- Applied remote progress tombstones before active rows and advanced the cursor
+  only after both SQLite operations succeeded.
+- Preserved local `pending`, `error`, `conflict`, and `deleted` progress during
+  active remote apply.
+- Pulled progress after words so local foreign-key dependencies resolve, then
+  retained the existing word-before-progress push ordering.
+- Fixed the historical clean-reset chain by defining `words.article` before
+  the semantic uniqueness migration that indexes it.
+- Captured the design and rejected snapshot/hard-delete alternatives in
+  `docs/brainstorms/2026-07-25-user-progress-remote-contract-brainstorm.md`.
+
+Verification results:
+
+- Targeted schema, progress repository, and sync manager tests: 3 suites,
+  71 tests passed.
+- Full Jest coverage: 50 suites, 815 tests passed.
+- Build and test TypeScript: passed.
+- ESLint CI budget: passed with the same 6 pre-existing warnings.
+- Prettier and all 28 Maestro YAML files: passed.
+- Edge Function tests: 58 passed.
+- Expo Doctor: 19/19 checks passed.
+- Production Sentry query for unresolved issues over 14 days returned no
+  issues.
+- Official Supabase documentation confirmed operation-specific RLS policies,
+  `USING` plus `WITH CHECK` for updates, ordered range pagination, soft deletes,
+  and `updated_at` triggers.
+- `supabase start` could not run because Docker Desktop's content store contains
+  corrupted blobs and fails even on `docker image ls`; no container was left
+  running.
+- As an independent runtime check, the complete migration chain passed against
+  a clean temporary PostgreSQL 15 database with Supabase-compatible
+  `auth`, `extensions`, and role bootstrap.
+- Runtime assertions confirmed 9 progress columns, 4 RLS policies, 4 indexes,
+  2 triggers, durable tombstone preservation, and automatic `updated_at`.
+- `git diff --check`: passed.
+
+Follow-up:
+
+- The otherwise-passing Jest run still emits pre-existing `act(...)` warnings
+  and expected error logs from `useLocalWords.test.ts`; keep this in the
+  remaining test-hygiene backlog.
 
 ### P1.4 Sync Metadata Timestamp Integrity
 
@@ -518,6 +571,6 @@ Scope:
 
 ## Current Resume Point
 
-Wait for the user to commit `P0.3 Offline Delete Tombstones`. After the user
-confirms the commit and says to continue, mark P0.3 as `COMMITTED`, record the
-commit hash, and start `P0.4 User Progress Remote Contract`.
+Wait for the user to commit `P0.4 User Progress Remote Contract`. After the
+user confirms the commit and says to continue, mark P0.4 as `COMMITTED`, record
+the commit hash, and start `P1.4 Sync Metadata Timestamp Integrity`.
