@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from 'react'
 import { AppState, type AppStateStatus } from 'react-native'
 import { router, type Href } from 'expo-router'
 import * as Linking from 'expo-linking'
@@ -86,6 +92,7 @@ export function SimpleAuthProvider({
   const [passwordResetCooldownUntil, setPasswordResetCooldownUntil] = useState<
     number | null
   >(null)
+  const passwordRecoverySessionRef = useRef(false)
   const initializeApp = useApplicationStore(state => state.initializeApp)
 
   // Check for the existing session on app start and handle OAuth deep links
@@ -140,7 +147,11 @@ export function SimpleAuthProvider({
       // Fire initializeApp without blocking - this prevents setSession() from hanging
       if (event === 'SIGNED_OUT' || !session?.user?.id) {
         initializeApp() // Clear user data (fire and forget)
-      } else if (event === 'SIGNED_IN' && session?.user?.id) {
+      } else if (
+        event === 'SIGNED_IN' &&
+        session?.user?.id &&
+        !passwordRecoverySessionRef.current
+      ) {
         initializeApp(session.user.id) // Initialize with the user (fire and forget)
       }
     })
@@ -496,12 +507,14 @@ export function SimpleAuthProvider({
 
       // If tokens are provided, set the session first
       if (accessToken && refreshToken) {
+        passwordRecoverySessionRef.current = true
         const { error: sessionError } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken,
         })
 
         if (sessionError) {
+          passwordRecoverySessionRef.current = false
           setError('Failed to authenticate. Please request a new reset link.')
           Sentry.captureException(sessionError, {
             tags: { operation: 'resetPasswordSetSession' },
@@ -516,6 +529,12 @@ export function SimpleAuthProvider({
       })
 
       if (error) {
+        if (passwordRecoverySessionRef.current) {
+          await supabase.auth.signOut({ scope: 'global' })
+          passwordRecoverySessionRef.current = false
+          await initializeApp()
+        }
+
         setError(`Failed to reset password: ${error.message}`)
         Sentry.captureException(error, {
           tags: { operation: 'resetPassword' },
@@ -523,15 +542,22 @@ export function SimpleAuthProvider({
         return
       }
 
-      // Initialize app with the user
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      const { error: signOutError } = await supabase.auth.signOut({
+        scope: 'global',
+      })
+      passwordRecoverySessionRef.current = false
 
-      if (user?.id) {
-        await initializeApp(user.id)
+      if (signOutError) {
+        setError(
+          'Password reset, but signing out failed. Please close and reopen the app before signing in.'
+        )
+        Sentry.captureException(signOutError, {
+          tags: { operation: 'resetPasswordSignOut' },
+        })
+        return
       }
 
+      await initializeApp()
       setError('Password successfully reset! You can now sign in.')
 
       // Navigate to log in after a short delay

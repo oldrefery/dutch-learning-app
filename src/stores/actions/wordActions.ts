@@ -82,6 +82,50 @@ const mergeWordsById = (
   return mergedWords
 }
 
+const createWordFromAnalysis = (
+  analysis: AnalyzedWord | GeminiWordAnalysis,
+  userId: string,
+  collectionId: string | null
+): Word => {
+  const now = new Date().toISOString()
+
+  return {
+    word_id: Crypto.randomUUID(),
+    user_id: userId,
+    collection_id: collectionId,
+    dutch_lemma: analysis.dutch_lemma,
+    dutch_original:
+      'dutch_original' in analysis ? (analysis.dutch_original ?? null) : null,
+    part_of_speech: analysis.part_of_speech ?? null,
+    is_irregular: analysis.is_irregular ?? false,
+    is_reflexive: analysis.is_reflexive ?? false,
+    is_expression: analysis.is_expression ?? false,
+    expression_type: analysis.expression_type ?? null,
+    is_separable: analysis.is_separable ?? false,
+    prefix_part: analysis.prefix_part ?? null,
+    root_verb: analysis.root_verb ?? null,
+    article: analysis.article ?? null,
+    plural: analysis.plural ?? null,
+    register: analysis.register ?? null,
+    translations: analysis.translations,
+    examples: analysis.examples ?? null,
+    synonyms: analysis.synonyms ?? [],
+    antonyms: analysis.antonyms ?? [],
+    conjugation: analysis.conjugation ?? null,
+    preposition: analysis.preposition ?? null,
+    image_url: analysis.image_url ?? null,
+    tts_url: analysis.tts_url ?? null,
+    interval_days: 1,
+    repetition_count: 0,
+    easiness_factor: 2.5,
+    next_review_date: now.split('T')[0],
+    last_reviewed_at: null,
+    analysis_notes: analysis.analysis_notes ?? null,
+    created_at: now,
+    updated_at: now,
+  }
+}
+
 export const createWordActions = (
   set: StoreSetFunction,
   get: StoreGetFunction
@@ -166,12 +210,11 @@ export const createWordActions = (
             context: { reason: USER_NOT_AUTHENTICATED_ERROR },
           }),
         })
-        return
+        return Promise.reject(new Error(USER_NOT_AUTHENTICATED_ERROR))
       }
 
-      if (collectionId) {
-        analyzedWord.collection_id = collectionId
-      }
+      const targetCollectionId =
+        collectionId ?? analyzedWord.collection_id ?? null
 
       // Check for duplicate before saving (defense in depth)
       const existingWord = await wordRepository.getWordBySemanticKey(
@@ -205,17 +248,11 @@ export const createWordActions = (
 
       // Offline-first: save it to local SQLite
       // Generate word_id on a client for offline-first architecture
-      const wordToAdd = {
-        ...analyzedWord,
-        word_id: Crypto.randomUUID(),
-        user_id: userId,
-        interval_days: 1,
-        repetition_count: 0,
-        easiness_factor: 2.5,
-        next_review_date: new Date().toISOString().split('T')[0], // Store-only date: "2025-12-21"
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      } as any
+      const wordToAdd = createWordFromAnalysis(
+        analyzedWord,
+        userId,
+        targetCollectionId
+      )
 
       await wordRepository.addWord(wordToAdd)
 
@@ -224,16 +261,20 @@ export const createWordActions = (
       set({ words: [...currentWords, wordToAdd] })
       return wordToAdd
     } catch (error) {
-      Sentry.captureException(error, {
+      const saveError =
+        error instanceof Error ? error : new Error(UNKNOWN_ERROR)
+
+      Sentry.captureException(saveError, {
         tags: { operation: 'saveAnalyzedWord' },
         extra: { analyzedWord, collectionId, userId: get().currentUserId },
       })
 
       set({
         error: createStoreError(WORD_SAVE_FAILED, {
-          originalError: error instanceof Error ? error : undefined,
+          originalError: saveError,
         }),
       })
+      throw saveError
     }
   },
 

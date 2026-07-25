@@ -1,5 +1,6 @@
 import { Sentry } from '@/lib/sentry'
 import type { PostgrestError } from '@supabase/supabase-js'
+import { sanitizeLogContext, sanitizeLogMessage } from './logSanitizer'
 
 /**
  * Centralized logging utility following Sentry best practices
@@ -45,12 +46,15 @@ function log(
   context?: LogContext,
   category = 'app'
 ) {
+  const sanitizedMessage = sanitizeLogMessage(message)
+  const sanitizedContext = context ? sanitizeLogContext(context) : undefined
+
   // Add breadcrumb for Sentry
   Sentry.addBreadcrumb({
     category,
-    message,
+    message: sanitizedMessage,
     level,
-    data: context,
+    data: sanitizedContext,
   })
 
   // In development, also output to the console for immediate feedback
@@ -65,10 +69,13 @@ function log(
     const consoleMethod =
       level === 'error' ? 'error' : level === 'warning' ? 'warn' : 'log'
 
-    if (context && Object.keys(context).length > 0) {
-      console[consoleMethod](`${emoji} [${category}] ${message}`, context)
+    if (sanitizedContext && Object.keys(sanitizedContext).length > 0) {
+      console[consoleMethod](
+        `${emoji} [${category}] ${sanitizedMessage}`,
+        sanitizedContext
+      )
     } else {
-      console[consoleMethod](`${emoji} [${category}] ${message}`)
+      console[consoleMethod](`${emoji} [${category}] ${sanitizedMessage}`)
     }
   }
 }
@@ -117,11 +124,16 @@ export function logError(
   category = 'app',
   captureEvent = false
 ) {
+  const sanitizedContext = context ? sanitizeLogContext(context) : undefined
+  const sanitizedMessage = sanitizeLogMessage(message)
+  const sanitizedError =
+    error instanceof Error ? sanitizeLogMessage(error.message) : error
+
   // Add breadcrumb
   log(
     'error',
-    message,
-    { ...context, error: error instanceof Error ? error.message : error },
+    sanitizedMessage,
+    { ...sanitizedContext, error: sanitizedError },
     category
   )
 
@@ -129,7 +141,7 @@ export function logError(
   if (captureEvent && error) {
     Sentry.captureException(error, {
       tags: { category },
-      extra: { message, ...context },
+      extra: { message: sanitizedMessage, ...sanitizedContext },
     })
   }
 }
@@ -173,8 +185,15 @@ export function logSupabaseError(
   error: PostgrestError,
   context: SupabaseErrorContext
 ) {
-  const formattedError = formatSupabaseError(error)
-  const fullMessage = `${message}: ${formattedError}`
+  const formattedError = sanitizeLogMessage(formatSupabaseError(error))
+  const fullMessage = sanitizeLogMessage(`${message}: ${formattedError}`)
+  const sanitizedContext = sanitizeLogContext(context)
+  const sanitizedSupabaseError = sanitizeLogContext({
+    code: error.code || 'unknown',
+    message: error.message || 'No message',
+    details: error.details || 'No details',
+    hint: error.hint || 'No hint',
+  })
 
   // Add breadcrumb for context
   Sentry.addBreadcrumb({
@@ -182,13 +201,8 @@ export function logSupabaseError(
     message: fullMessage,
     level: 'error',
     data: {
-      ...context,
-      supabaseError: {
-        code: error.code || 'unknown',
-        message: error.message || 'No message',
-        details: error.details || 'No details',
-        hint: error.hint || 'No hint',
-      },
+      ...sanitizedContext,
+      supabaseError: sanitizedSupabaseError,
     },
   })
 
@@ -204,13 +218,8 @@ export function logSupabaseError(
         errorCode: 'network',
       },
       extra: {
-        ...context,
-        supabaseError: {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-        },
+        ...sanitizedContext,
+        supabaseError: sanitizedSupabaseError,
       },
       fingerprint: ['supabase-network-error', context.operation],
     })
@@ -222,13 +231,8 @@ export function logSupabaseError(
         errorCode: error.code || 'unknown',
       },
       extra: {
-        ...context,
-        supabaseError: {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-        },
+        ...sanitizedContext,
+        supabaseError: sanitizedSupabaseError,
       },
       // Fingerprinting: group errors by operation and error code
       // This ensures same errors are grouped together in Sentry
@@ -243,11 +247,13 @@ export function logSupabaseError(
   // In development, also log to console
   if (__DEV__) {
     console.error(`❌ [supabase] ${fullMessage}`, {
-      context,
-      supabaseError: error,
+      context: sanitizedContext,
+      supabaseError: sanitizedSupabaseError,
     })
   }
 }
+
+export { sanitizeLogContext, sanitizeLogMessage }
 
 /**
  * Legacy console replacement helpers

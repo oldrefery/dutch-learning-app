@@ -15,7 +15,10 @@ import {
   logError,
   logSupabaseError,
   logger,
+  sanitizeLogContext,
 } from '../logger'
+
+const REDACTED = '[REDACTED]'
 
 jest.mock('@/lib/sentry', () => ({
   Sentry: {
@@ -28,6 +31,41 @@ jest.mock('@/lib/sentry', () => ({
 describe('logger', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+  })
+
+  describe('sanitizeLogContext', () => {
+    it('should recursively redact sensitive keys', () => {
+      const result = sanitizeLogContext({
+        authorization: 'Bearer secret-token',
+        nested: {
+          email: 'user@example.com',
+          userId: 'user-123',
+          safeValue: 'visible',
+        },
+      })
+
+      expect(result).toEqual({
+        authorization: REDACTED,
+        nested: {
+          email: REDACTED,
+          userId: REDACTED,
+          safeValue: 'visible',
+        },
+      })
+    })
+
+    it('should redact URL token fragments and control characters', () => {
+      const result = sanitizeLogContext({
+        url: 'dutchlearning://reset#access_token=access-secret&refresh_token=refresh-secret',
+        message: 'first line\nsecond line',
+      })
+
+      expect(result.url).not.toContain('access-secret')
+      expect(result.url).not.toContain('refresh-secret')
+      expect(result.url).toContain('access_token=[REDACTED]')
+      expect(result.url).toContain('refresh_token=[REDACTED]')
+      expect(result.message).toBe('first line second line')
+    })
   })
 
   describe('isNetworkError', () => {
@@ -118,6 +156,22 @@ describe('logger', () => {
         })
       )
     })
+
+    it('should add sanitized context to Sentry breadcrumbs', () => {
+      logInfo('Token URL', {
+        url: 'dutchlearning://reset#access_token=secret',
+        email: 'user@example.com',
+      })
+
+      expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: {
+            url: `dutchlearning://reset#access_token=${REDACTED}`,
+            email: REDACTED,
+          },
+        })
+      )
+    })
   })
 
   describe('logWarning', () => {
@@ -147,12 +201,21 @@ describe('logger', () => {
 
     it('should capture Sentry exception when captureEvent is true', () => {
       const error = new Error('Critical failure')
-      logError('Error', error, undefined, 'app', true)
+      logError(
+        'Error',
+        error,
+        { authorization: 'Bearer secret-token' },
+        'app',
+        true
+      )
 
       expect(Sentry.captureException).toHaveBeenCalledWith(
         error,
         expect.objectContaining({
           tags: { category: 'app' },
+          extra: expect.objectContaining({
+            authorization: REDACTED,
+          }),
         })
       )
     })

@@ -4,6 +4,8 @@ import { SimpleAuthProvider, useSimpleAuth } from '../SimpleAuthProvider'
 import { supabase } from '@/lib/supabaseClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { Sentry } from '@/lib/sentry'
+import { router } from 'expo-router'
+import { ROUTES } from '@/constants/Routes'
 
 jest.mock('@/stores/useApplicationStore')
 jest.mock('@/lib/supabaseClient')
@@ -68,10 +70,16 @@ describe('SimpleAuthProvider requestPasswordReset', () => {
       resetPasswordForEmail: jest.fn().mockResolvedValue({
         error: null,
       }),
-      setSession: jest.fn(),
-      updateUser: jest.fn(),
+      setSession: jest.fn().mockResolvedValue({
+        error: null,
+      }),
+      updateUser: jest.fn().mockResolvedValue({
+        error: null,
+      }),
       getUser: jest.fn(),
-      signOut: jest.fn(),
+      signOut: jest.fn().mockResolvedValue({
+        error: null,
+      }),
       signUp: jest.fn(),
       signInWithPassword: jest.fn(),
     }
@@ -130,5 +138,46 @@ describe('SimpleAuthProvider requestPasswordReset', () => {
     expect(result.current.error).toContain('For security')
     expect(Sentry.captureMessage).not.toHaveBeenCalled()
     expect(Sentry.captureException).not.toHaveBeenCalled()
+  })
+
+  it('should sign out globally after successful password reset', async () => {
+    jest.useFakeTimers()
+
+    const { result } = renderHook(() => useSimpleAuth(), { wrapper })
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+    mockInitializeApp.mockClear()
+
+    await act(async () => {
+      await result.current.resetPassword(
+        'new-password',
+        'access-token',
+        'refresh-token'
+      )
+    })
+
+    expect(supabase.auth.setSession).toHaveBeenCalledWith({
+      access_token: 'access-token',
+      refresh_token: 'refresh-token',
+    })
+    expect(supabase.auth.updateUser).toHaveBeenCalledWith({
+      password: 'new-password',
+    })
+    expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: 'global' })
+    expect(mockInitializeApp).toHaveBeenCalledWith()
+    expect(mockInitializeApp).not.toHaveBeenCalledWith(expect.any(String))
+    expect(result.current.error).toBe(
+      'Password successfully reset! You can now sign in.'
+    )
+
+    act(() => {
+      jest.runOnlyPendingTimers()
+    })
+
+    expect(router.replace).toHaveBeenCalledWith(ROUTES.AUTH.LOGIN)
+
+    jest.useRealTimers()
   })
 })

@@ -1,5 +1,6 @@
 import * as SentryLib from '@sentry/react-native'
 import { supabaseIntegration } from '@supabase/sentry-js-integration'
+import { sanitizeLogContext } from '@/utils/logSanitizer'
 import { supabase } from './supabaseClient'
 
 // Flag to prevent multiple initializations
@@ -21,7 +22,9 @@ export function initializeSentry() {
     dsn: 'https://b9380e4ad548d88fe5c8bfecabcdf2e3@o4506263035904000.ingest.us.sentry.io/4509999490727936',
     debug: false, // Disable debug logging to reduce noise
     enabled: true, // Enable Sentry in development for debugging
-    sendDefaultPii: true,
+    sendDefaultPii: false,
+    beforeSend: event => sanitizeLogContext(event),
+    beforeBreadcrumb: breadcrumb => sanitizeLogContext(breadcrumb),
     tracesSampleRate: isDevelopment ? 0.1 : 1.0, // Sample 10% in development
     profilesSampleRate: isDevelopment ? 0 : 1.0, // Disable profiling in development
     replaysSessionSampleRate: isDevelopment ? 0.1 : 0.1,

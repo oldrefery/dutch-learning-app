@@ -32,21 +32,14 @@ export default function ResetPasswordScreen() {
   useEffect(() => {
     const parseUrlHash = async () => {
       const url = await Linking.getInitialURL()
-      console.log('[ResetPassword] Initial URL:', url)
 
       if (url) {
         const hashPart = url.split('#')[1]
-        console.log('[ResetPassword] Hash part:', hashPart)
 
         if (hashPart) {
           const params = new URLSearchParams(hashPart)
           const accessToken = params.get('access_token')
           const refreshToken = params.get('refresh_token')
-
-          console.log('[ResetPassword] Tokens found:', {
-            accessToken: accessToken ? 'yes' : 'no',
-            refreshToken: refreshToken ? 'yes' : 'no',
-          })
 
           if (accessToken && refreshToken) {
             setAccessToken(accessToken)
