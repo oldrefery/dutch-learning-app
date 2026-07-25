@@ -608,7 +608,9 @@ Verification results:
 
 ### P1.4 Sync Metadata Timestamp Integrity
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `9aa31f9 fix: preserve sync timestamp integrity`
 
 Scope:
 
@@ -659,7 +661,7 @@ Verification results:
 
 ### P1.5 Semantic Uniqueness And Reachability
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 
 Scope:
 
@@ -667,11 +669,62 @@ Scope:
 - Use reachability-aware network preflight for synchronization.
 - Add matching local/remote duplicate and network-state tests.
 
+Completed:
+
+- Added a forward-only Supabase migration that replaces the active-word
+  semantic index with `LOWER(dutch_lemma)` while retaining the existing
+  part-of-speech, article, and tombstone semantics.
+- Added a migration guard that reports existing mixed-case collisions for
+  manual resolution instead of deleting or merging user data automatically.
+- Updated the shared import function so its partial expression conflict target
+  and fallback lookup match the new unique index.
+- Changed both Supabase semantic duplicate lookups to exact case-insensitive
+  `ILIKE` filters with literal escaping for backslash, percent, and underscore.
+- Switched `SyncManager` preflight from transport-only connectivity to
+  `isNetworkAvailable()`, preventing sync and auth work when refreshed NetInfo
+  state confirms the internet is unreachable.
+- Added local, remote, wildcard, migration, import, tombstone, and reachability
+  regression coverage.
+- Captured the design and rejected destructive or history-rewriting
+  alternatives in
+  `docs/brainstorms/2026-07-25-semantic-uniqueness-reachability-brainstorm.md`.
+
+Verification results:
+
+- Targeted schema, repository, Supabase, sync manager, and network tests:
+  5 suites, 110 tests passed.
+- Full Jest run: 51 suites, 837 tests passed.
+- Build and test TypeScript: passed.
+- Full ESLint: passed with zero warnings.
+- Prettier and all 28 Maestro YAML files: passed.
+- Edge Function tests: 58 passed.
+- Expo Doctor: 19/19 checks passed.
+- The migration and its import function passed against an isolated PostgreSQL
+  15 schema. Runtime assertions confirmed mixed-case uniqueness, conflict-safe
+  repeated import, and reuse of a semantic key after the prior row is
+  tombstoned.
+- Current NetInfo documentation confirmed the nullable connectivity and
+  reachability state model plus `refresh()` behavior.
+- Current PostgreSQL documentation confirmed expression-based unique indexes,
+  partial uniqueness, and matching `ON CONFLICT` predicates.
+- Current Supabase documentation confirmed `ILIKE` wildcard behavior and
+  literal escaping.
+- `git diff --check`: passed.
+- No linked Supabase migration or data change was performed.
+
+Follow-up:
+
+- Before applying the remote migration, manually resolve any active mixed-case
+  collisions reported by its guard.
+- The production Sentry query could not be completed because sandbox DNS was
+  unavailable and the external credentialed retry was not authorized. No
+  Sentry or other remote state was changed.
+
 ## Current Resume Point
 
-Wait for the user to commit `P1.4 Sync Metadata Timestamp Integrity` with
-`fix: preserve sync timestamp integrity`. After the user confirms the commit
-and says to continue, record the commit hash and start
-`P1.5 Semantic Uniqueness And Reachability`. Keep the unapplied live Supabase
-migrations documented as deployment drift; do not apply them without explicit
-user authorization.
+Wait for the user to commit `P1.5 Semantic Uniqueness And Reachability` with
+`fix: align semantic uniqueness and sync reachability`. After the user confirms
+the commit and says to continue, record the commit hash and close the
+remediation execution because no `TODO` packages remain. Keep migrations
+`20260725150000`, `20260725170000`, and `20260725180000` documented as
+deployment drift; do not apply them without explicit user authorization.

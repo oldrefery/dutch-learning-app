@@ -455,6 +455,24 @@ describe('WordRepository', () => {
     })
   })
 
+  describe('getWordBySemanticKey', () => {
+    it('should normalize mixed-case lemma before local duplicate lookup', async () => {
+      mockDatabase.getFirstAsync.mockResolvedValue(null)
+
+      await wordRepository.getWordBySemanticKey(
+        USER_ID,
+        '  HUIS  ',
+        'noun',
+        'het'
+      )
+
+      expect(mockDatabase.getFirstAsync).toHaveBeenCalledWith(
+        expect.stringContaining('lower(dutch_lemma) = ?'),
+        [USER_ID, 'huis', 'noun', 'het']
+      )
+    })
+  })
+
   describe('delete tombstones', () => {
     it('should mark a word deleted instead of removing it', async () => {
       const statement = {

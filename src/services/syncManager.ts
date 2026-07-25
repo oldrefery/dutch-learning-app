@@ -14,8 +14,8 @@ import {
   type CollectionSyncAcknowledgement,
 } from '@/db/collectionRepository'
 import {
-  checkNetworkConnection,
   getSyncCursor,
+  isNetworkAvailable,
   setSyncCursor,
 } from '@/utils/network'
 import type { SyncCursor } from '@/utils/network'
@@ -256,8 +256,8 @@ export class SyncManager {
 
     try {
       console.log('[Sync] Stage 0: checking network')
-      const isConnected = await checkNetworkConnection()
-      if (!isConnected) {
+      const isOnline = await isNetworkAvailable()
+      if (!isOnline) {
         console.log('[Sync] No network connection, skipping sync')
         return {
           success: false,

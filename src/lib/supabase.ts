@@ -148,6 +148,9 @@ export async function withSessionRetry<T>(
 const normalizeArticle = (value?: string | null): string =>
   value && value.trim() !== '' ? value.trim() : ''
 
+const escapeIlikeLiteral = (value: string): string =>
+  value.replace(/([\\%_])/g, '\\$1')
+
 const isSemanticDuplicateError = (error: unknown): boolean => {
   if (!error || typeof error !== 'object') return false
   const supabaseError = error as SupabaseLikeError
@@ -522,7 +525,7 @@ export const wordService = {
         .from('words')
         .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
         .eq('user_id', userId)
-        .eq('dutch_lemma', normalizedLemma)
+        .ilike('dutch_lemma', escapeIlikeLiteral(normalizedLemma))
         .is('deleted_at', null)
 
       if (error) throw error
@@ -586,7 +589,7 @@ export const wordService = {
         .from('words')
         .select('*')
         .eq('user_id', userId)
-        .eq('dutch_lemma', normalizedLemma)
+        .ilike('dutch_lemma', escapeIlikeLiteral(normalizedLemma))
         .is('deleted_at', null)
 
       if (error) throw error

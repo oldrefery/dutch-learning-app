@@ -255,7 +255,7 @@ describe('SyncManager', () => {
         }),
       }
     })
-    ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(true)
+    ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
     ;(networkUtils.getSyncCursor as jest.Mock).mockResolvedValue(null)
     ;(networkUtils.setSyncCursor as jest.Mock).mockResolvedValue(void 0)
     ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
@@ -300,26 +300,23 @@ describe('SyncManager', () => {
   })
 
   describe('network detection', () => {
-    it('should skip sync when offline', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        false
-      )
+    it('should skip auth and sync when internet is not reachable', async () => {
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(false)
 
       const result = await syncManager.performSync(userId)
 
       expect(result.success).toBe(false)
       expect(result.error).toBe('No network connection')
       expect(result.wordsSynced).toBe(0)
+      expect(supabase.auth.getSession).not.toHaveBeenCalled()
     })
 
-    it('should proceed with sync when online', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+    it('should use reachability-aware preflight before proceeding', async () => {
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
 
       await syncManager.performSync(userId)
 
-      expect(networkUtils.checkNetworkConnection).toHaveBeenCalled()
+      expect(networkUtils.isNetworkAvailable).toHaveBeenCalled()
     })
   })
 
@@ -606,9 +603,7 @@ describe('SyncManager', () => {
     const SYNC_IN_PROGRESS_ERROR = 'Sync already in progress'
 
     it('should prevent concurrent syncs', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
 
       // Start first sync
       const sync1 = syncManager.performSync(userId)
@@ -631,9 +626,7 @@ describe('SyncManager', () => {
     })
 
     it('should reset sync state after completion', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
 
       await syncManager.performSync(userId)
 
@@ -645,9 +638,7 @@ describe('SyncManager', () => {
 
   describe('sync result', () => {
     it('should return sync result with timestamp', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
 
       const result = await syncManager.performSync(userId)
 
@@ -656,9 +647,7 @@ describe('SyncManager', () => {
     })
 
     it('should include word and progress sync counts', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
 
       const result = await syncManager.performSync(userId)
 
@@ -671,7 +660,7 @@ describe('SyncManager', () => {
 
   describe('error handling', () => {
     it('should handle network check errors gracefully', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockRejectedValue(
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockRejectedValue(
         new Error('Network check failed')
       )
 
@@ -689,9 +678,7 @@ describe('SyncManager', () => {
 
       syncManager.subscribeSyncStatus(errorCallback)
       syncManager.subscribeSyncStatus(normalCallback)
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
 
       // Should not throw even if callback errors - the key is that performSync completes
       const result = await syncManager.performSync(userId)
@@ -705,9 +692,7 @@ describe('SyncManager', () => {
   describe('sync timing', () => {
     it('should include timestamp in sync result', async () => {
       const mockTimestamp = '2025-10-20T00:00:00Z'
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
       ;(networkUtils.getLastSyncTimestamp as jest.Mock).mockResolvedValue(
         mockTimestamp
       )
@@ -720,9 +705,7 @@ describe('SyncManager', () => {
     })
 
     it('should return result with timestamp property', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
 
       const result = await syncManager.performSync(userId)
 
@@ -735,9 +718,7 @@ describe('SyncManager', () => {
 
   describe('offline-first behavior', () => {
     it('should return success false when no network', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        false
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(false)
 
       const result = await syncManager.performSync(userId)
 
@@ -745,9 +726,7 @@ describe('SyncManager', () => {
     })
 
     it('should maintain sync state independently', async () => {
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
 
       const manager1 = new SyncManager()
       const manager2 = new SyncManager()
@@ -772,9 +751,7 @@ describe('SyncManager', () => {
         sync_status: 'pending' as const,
       }
 
-      ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(
-        true
-      )
+      ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
       ;(
         collectionRepository.getPendingSyncCollections as jest.Mock
       ).mockResolvedValue([pendingCollection])

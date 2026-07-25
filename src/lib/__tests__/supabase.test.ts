@@ -47,12 +47,12 @@ describe('wordService duplicate handling', () => {
     mockedAssertNetworkConnection.mockResolvedValue(undefined)
   })
 
-  it('should match semantic duplicates when article is empty string in DB', async () => {
+  it('should match mixed-case semantic duplicates when article is empty in DB', async () => {
     const result = {
       data: [
         {
           word_id: 'server-word-id',
-          dutch_lemma: DUTCH_LEMMA,
+          dutch_lemma: 'HUIS',
           collection_id: COLLECTION_ID,
           part_of_speech: null,
           article: '',
@@ -61,9 +61,9 @@ describe('wordService duplicate handling', () => {
       error: null,
     }
     const is = jest.fn().mockResolvedValue(result)
-    const secondEq = jest.fn().mockReturnValue({ is })
+    const ilike = jest.fn().mockReturnValue({ is })
     const selectChain = {
-      eq: jest.fn().mockReturnValue({ eq: secondEq }),
+      eq: jest.fn().mockReturnValue({ ilike }),
     }
 
     ;(supabase.from as jest.Mock).mockReturnValue({
@@ -80,7 +80,30 @@ describe('wordService duplicate handling', () => {
     expect(existingWord).toEqual(
       expect.objectContaining({ word_id: 'server-word-id' })
     )
+    expect(ilike).toHaveBeenCalledWith('dutch_lemma', DUTCH_LEMMA)
     expect(is).toHaveBeenCalledWith('deleted_at', null)
+  })
+
+  it('should escape ILIKE wildcards in every semantic duplicate lookup', async () => {
+    const result = { data: [], error: null }
+    const is = jest.fn().mockResolvedValue(result)
+    const ilike = jest.fn().mockReturnValue({ is })
+    const selectChain = {
+      eq: jest.fn().mockReturnValue({ ilike }),
+    }
+
+    ;(supabase.from as jest.Mock).mockReturnValue({
+      select: jest.fn().mockReturnValue(selectChain),
+    })
+
+    await wordService.checkSemanticDuplicate(
+      USER_ID,
+      '%Huis_',
+      undefined,
+      undefined
+    )
+
+    expect(ilike).toHaveBeenCalledWith('dutch_lemma', '\\%huis\\_')
   })
 
   it('should downgrade semantic duplicate import error to warning-level Sentry message', async () => {

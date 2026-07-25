@@ -113,6 +113,18 @@ describe('network', () => {
       expect(NetInfo.refresh).toHaveBeenCalledTimes(1)
     })
 
+    it('should return false when refresh confirms internet is unreachable', async () => {
+      const unreachableState = {
+        isConnected: true,
+        isInternetReachable: false,
+      }
+      ;(NetInfo.fetch as jest.Mock).mockResolvedValue(unreachableState)
+      ;(NetInfo.refresh as jest.Mock).mockResolvedValue(unreachableState)
+
+      expect(await isNetworkAvailable()).toBe(false)
+      expect(NetInfo.refresh).toHaveBeenCalledTimes(1)
+    })
+
     it('should return false on error', async () => {
       ;(NetInfo.fetch as jest.Mock).mockRejectedValue(new Error('Error'))
 

@@ -6,6 +6,8 @@ import {
 import fs from 'node:fs'
 import path from 'node:path'
 
+const ACTIVE_WORD_PREDICATE = 'WHERE deleted_at IS NULL'
+
 describe('delete tombstone schema', () => {
   it('should include deleted_at on fresh local tables', () => {
     const deletedAtColumns = SQL_SCHEMA.match(/deleted_at TEXT/g) ?? []
@@ -14,7 +16,7 @@ describe('delete tombstone schema', () => {
   })
 
   it('should enforce semantic uniqueness only for active words', () => {
-    expect(MIGRATION_V5_TOMBSTONE_INDEXES).toContain('WHERE deleted_at IS NULL')
+    expect(MIGRATION_V5_TOMBSTONE_INDEXES).toContain(ACTIVE_WORD_PREDICATE)
     expect(MIGRATION_V5_TOMBSTONE_INDEXES).toContain(
       'DROP INDEX IF EXISTS idx_words_semantic_key'
     )
@@ -31,7 +33,7 @@ describe('delete tombstone schema', () => {
     expect(migration).toContain(
       'OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL'
     )
-    expect(migration).toContain('WHERE deleted_at IS NULL')
+    expect(migration).toContain(ACTIVE_WORD_PREDICATE)
   })
 })
 
@@ -53,6 +55,33 @@ describe('local sync timestamp schema', () => {
       'user_progress.last_sync_attempt_at',
       'user_progress.synced_at',
     ])
+  })
+})
+
+describe('remote semantic uniqueness schema', () => {
+  const migrationPath = path.resolve(
+    process.cwd(),
+    'supabase/migrations/20260725180000_align_word_semantic_case_normalization.sql'
+  )
+  const migration = fs.readFileSync(migrationPath, 'utf8')
+
+  it('should enforce case-insensitive uniqueness for active words', () => {
+    expect(migration).toContain('lower(dutch_lemma)')
+    expect(migration).toContain(ACTIVE_WORD_PREDICATE)
+    expect(migration).toContain('CREATE UNIQUE INDEX idx_words_semantic_unique')
+  })
+
+  it('should keep shared import conflict inference aligned with the index', () => {
+    expect(migration).toContain('ON CONFLICT (')
+    expect(migration).toContain('lower(w.dutch_lemma) = v_normalized_lemma')
+    expect(migration.match(/lower\(dutch_lemma\)/g)).toHaveLength(3)
+  })
+
+  it('should block destructive automatic resolution of existing collisions', () => {
+    expect(migration).toContain('HAVING count(*) > 1')
+    expect(migration).toContain(
+      'active semantic key collision(s) require manual resolution'
+    )
   })
 })
 
