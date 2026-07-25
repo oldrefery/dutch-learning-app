@@ -53,7 +53,7 @@
     ]
   },
   "dependencies": {
-    "@expo/metro-runtime": "~55.0.12",
+    "@expo/metro-runtime": "~57.0.7",
     "@expo/vector-icons": "^15.0.2",
     "@gorhom/bottom-sheet": "^5",
     "@react-native-async-storage/async-storage": "2.2.0",
