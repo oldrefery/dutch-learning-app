@@ -92,6 +92,21 @@ describe('SyncManager', () => {
     ...overrides,
   })
 
+  const createWordsPullQuery = (
+    range: jest.Mock = jest.fn().mockResolvedValue({ data: [], error: null })
+  ) => {
+    const query = {
+      eq: jest.fn(),
+      gte: jest.fn(),
+      order: jest.fn(),
+      range,
+    }
+    query.eq.mockReturnValue(query)
+    query.gte.mockReturnValue(query)
+    query.order.mockReturnValue(query)
+    return query
+  }
+
   let syncManager: SyncManager
   const userId = generateId('user')
 
@@ -112,13 +127,8 @@ describe('SyncManager', () => {
       const resolved = { data: [], error: null }
 
       if (tableName === 'words') {
-        const wordsQuery = Promise.resolve(resolved) as any
-        wordsQuery.gt = jest.fn().mockResolvedValue(resolved)
-
         return {
-          select: jest.fn().mockReturnValue({
-            eq: jest.fn().mockReturnValue(wordsQuery),
-          }),
+          select: jest.fn().mockReturnValue(createWordsPullQuery()),
           upsert: jest.fn().mockResolvedValue(resolved),
         }
       }
@@ -134,8 +144,8 @@ describe('SyncManager', () => {
       }
     })
     ;(networkUtils.checkNetworkConnection as jest.Mock).mockResolvedValue(true)
-    ;(networkUtils.getLastSyncTimestamp as jest.Mock).mockResolvedValue(null)
-    ;(networkUtils.setLastSyncTimestamp as jest.Mock).mockResolvedValue(void 0)
+    ;(networkUtils.getSyncCursor as jest.Mock).mockResolvedValue(null)
+    ;(networkUtils.setSyncCursor as jest.Mock).mockResolvedValue(void 0)
     ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
   })
 
@@ -231,7 +241,7 @@ describe('SyncManager', () => {
 
   describe('auth/rls retry hardening', () => {
     it('should retry pull words once after JWT expiry by refreshing session', async () => {
-      const wordsEq = jest
+      const wordsRange = jest
         .fn()
         .mockResolvedValueOnce({
           data: null,
@@ -245,9 +255,7 @@ describe('SyncManager', () => {
       ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: wordsEq,
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery(wordsRange)),
             upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
           }
         }
@@ -266,7 +274,7 @@ describe('SyncManager', () => {
       const result = await syncManager.performSync(userId)
 
       expect(result.success).toBe(true)
-      expect(wordsEq).toHaveBeenCalledTimes(2)
+      expect(wordsRange).toHaveBeenCalledTimes(2)
       expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
       expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -281,7 +289,7 @@ describe('SyncManager', () => {
     })
 
     it('should return controlled sync error when retry refresh fails', async () => {
-      const wordsEq = jest.fn().mockResolvedValueOnce({
+      const wordsRange = jest.fn().mockResolvedValueOnce({
         data: null,
         error: { message: 'JWT expired' },
       })
@@ -293,9 +301,7 @@ describe('SyncManager', () => {
       ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: wordsEq,
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery(wordsRange)),
             upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
           }
         }
@@ -373,9 +379,7 @@ describe('SyncManager', () => {
 
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: wordsUpsert,
           }
         }
@@ -443,9 +447,7 @@ describe('SyncManager', () => {
 
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: wordsUpsert,
           }
         }
@@ -682,11 +684,7 @@ describe('SyncManager', () => {
 
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: jest.fn().mockReturnValue({
-                order: jest.fn().mockResolvedValue({ data: [], error: null }),
-              }),
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
             delete: jest.fn().mockReturnValue({
               in: jest.fn().mockResolvedValue({ data: [], error: null }),
@@ -713,6 +711,175 @@ describe('SyncManager', () => {
           name: 'Remote New',
         }),
       ])
+    })
+  })
+
+  describe('word delta cursor', () => {
+    const cursorUpdatedAt = '2026-07-25T10:00:00.000Z'
+    const nextUpdatedAt = '2026-07-25T11:00:00.000Z'
+
+    const mockWordPullPages = (
+      pages: ReturnType<typeof createPendingWord>[][]
+    ) => {
+      const range = jest.fn().mockResolvedValue({ data: [], error: null })
+      pages.forEach(page => {
+        range.mockResolvedValueOnce({ data: page, error: null })
+      })
+      const query = createWordsPullQuery(range)
+
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue(query),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+        }
+      })
+
+      return query
+    }
+
+    const mockWordPull = (words: ReturnType<typeof createPendingWord>[]) =>
+      mockWordPullPages([words])
+
+    it('should pull a word created before the cursor but updated after it', async () => {
+      const updatedWordId = 'word-updated'
+      const cursor = {
+        updatedAt: cursorUpdatedAt,
+        id: 'word-cursor',
+      }
+      const remoteWord = createPendingWord({
+        word_id: updatedWordId,
+        created_at: '2026-07-24T10:00:00.000Z',
+        updated_at: nextUpdatedAt,
+        sync_status: 'synced',
+      })
+      const query = mockWordPull([remoteWord])
+
+      ;(networkUtils.getSyncCursor as jest.Mock).mockResolvedValue(cursor)
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(query.gte).toHaveBeenCalledWith('updated_at', cursor.updatedAt)
+      expect(wordRepository.saveWords).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            word_id: updatedWordId,
+            created_at: '2026-07-24T10:00:00.000Z',
+            updated_at: nextUpdatedAt,
+          }),
+        ],
+        { preserveUnsynced: true }
+      )
+      expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
+        updatedAt: nextUpdatedAt,
+        id: updatedWordId,
+      })
+    })
+
+    it('should use word id as the tiebreaker for equal timestamps', async () => {
+      const updatedAt = cursorUpdatedAt
+      const cursor = {
+        updatedAt,
+        id: 'word-b',
+      }
+      mockWordPull([
+        createPendingWord({
+          word_id: 'word-c',
+          updated_at: updatedAt,
+          sync_status: 'synced',
+        }),
+        createPendingWord({
+          word_id: 'word-a',
+          updated_at: updatedAt,
+          sync_status: 'synced',
+        }),
+        createPendingWord({
+          word_id: 'word-b',
+          updated_at: updatedAt,
+          sync_status: 'synced',
+        }),
+      ])
+      ;(networkUtils.getSyncCursor as jest.Mock).mockResolvedValue(cursor)
+
+      await syncManager.performSync(userId)
+
+      expect(wordRepository.saveWords).toHaveBeenCalledWith(
+        [expect.objectContaining({ word_id: 'word-c' })],
+        { preserveUnsynced: true }
+      )
+      expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
+        updatedAt,
+        id: 'word-c',
+      })
+    })
+
+    it('should not advance the cursor when local apply fails', async () => {
+      const cursor = {
+        updatedAt: cursorUpdatedAt,
+        id: 'word-cursor',
+      }
+
+      mockWordPull([
+        createPendingWord({
+          word_id: 'word-apply-failure',
+          updated_at: nextUpdatedAt,
+          sync_status: 'synced',
+        }),
+      ])
+      ;(networkUtils.getSyncCursor as jest.Mock).mockResolvedValue(cursor)
+      ;(wordRepository.saveWords as jest.Mock).mockRejectedValueOnce(
+        new Error('SQLite apply failed')
+      )
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBe('SQLite apply failed')
+      expect(networkUtils.setSyncCursor).not.toHaveBeenCalled()
+    })
+
+    it('should pull every ordered page before advancing the cursor', async () => {
+      const words = Array.from({ length: 501 }, (_, index) =>
+        createPendingWord({
+          word_id: `word-${index.toString().padStart(3, '0')}`,
+          updated_at: nextUpdatedAt,
+          sync_status: 'synced',
+        })
+      )
+      const query = mockWordPullPages([words.slice(0, 500), words.slice(500)])
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(query.order).toHaveBeenCalledWith('updated_at', {
+        ascending: true,
+      })
+      expect(query.order).toHaveBeenCalledWith('word_id', { ascending: true })
+      expect(query.range).toHaveBeenNthCalledWith(1, 0, 499)
+      expect(query.range).toHaveBeenNthCalledWith(2, 500, 999)
+      expect(wordRepository.saveWords).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ word_id: 'word-000' }),
+          expect.objectContaining({ word_id: 'word-500' }),
+        ]),
+        { preserveUnsynced: true }
+      )
+      expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
+        updatedAt: nextUpdatedAt,
+        id: 'word-500',
+      })
     })
   })
 
@@ -754,9 +921,7 @@ describe('SyncManager', () => {
 
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: wordsUpsert,
           }
         }
@@ -821,9 +986,7 @@ describe('SyncManager', () => {
 
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
           }
         }
@@ -893,9 +1056,7 @@ describe('SyncManager', () => {
 
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
           }
         }
@@ -966,9 +1127,7 @@ describe('SyncManager', () => {
 
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: wordsUpsert,
           }
         }
@@ -1046,9 +1205,7 @@ describe('SyncManager', () => {
 
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue({
-              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
-            }),
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
             upsert: wordsUpsert,
           }
         }

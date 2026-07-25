@@ -164,8 +164,63 @@ describe('WordRepository', () => {
 
       await wordRepository.saveWords([mockWord])
 
-      expect(mockCheckStatement.executeAsync).toHaveBeenCalled()
+      expect(mockCheckStatement.executeAsync).toHaveBeenCalledWith(
+        mockWord.user_id,
+        mockWord.word_id,
+        mockWord.dutch_lemma,
+        mockWord.part_of_speech,
+        mockWord.article,
+        mockWord.word_id
+      )
       expect(mockUpdateStatement.executeAsync).toHaveBeenCalled()
+      expect(mockInsertStatement.executeAsync).not.toHaveBeenCalled()
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('dutch_lemma = ?')
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('part_of_speech = ?')
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('article = ?')
+      )
+      const updateArguments = mockUpdateStatement.executeAsync.mock.calls[0]
+      expect(updateArguments.slice(-2)).toEqual([
+        existingWord.word_id,
+        mockWord.user_id,
+      ])
+    })
+
+    it('should preserve an unsynced local word during remote apply', async () => {
+      const existingWord = {
+        word_id: 'pending-word-id',
+        sync_status: 'pending',
+        updated_at: '2026-07-25T11:00:00.000Z',
+      }
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(existingWord),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      const mockUpdateStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      const mockInsertStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
+
+      await wordRepository.saveWords([mockWord], {
+        preserveUnsynced: true,
+      })
+
+      expect(mockCheckStatement.executeAsync).toHaveBeenCalled()
+      expect(mockUpdateStatement.executeAsync).not.toHaveBeenCalled()
       expect(mockInsertStatement.executeAsync).not.toHaveBeenCalled()
     })
 

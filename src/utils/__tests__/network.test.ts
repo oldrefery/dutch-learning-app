@@ -14,6 +14,8 @@ import {
   subscribeToNetworkChanges,
   getLastSyncTimestamp,
   setLastSyncTimestamp,
+  getSyncCursor,
+  setSyncCursor,
   useNetworkStatus,
 } from '../network'
 
@@ -29,10 +31,16 @@ jest.mock('@react-native-community/netinfo', () => ({
 const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp'
 const STORED_TIMESTAMP = '2025-10-01T00:00:00Z'
 const STORAGE_ERROR_MESSAGE = 'Storage error'
+const USER_ID = 'user-1'
+const WORD_CURSOR_KEY = `sync_cursor:${USER_ID}:words`
 
 describe('network', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    ;(AsyncStorage.getItem as jest.Mock).mockReset().mockResolvedValue(null)
+    ;(AsyncStorage.setItem as jest.Mock)
+      .mockReset()
+      .mockResolvedValue(undefined)
   })
 
   describe('checkNetworkConnection', () => {
@@ -190,6 +198,45 @@ describe('network', () => {
     })
   })
 
+  describe('getSyncCursor', () => {
+    it('should return a typed per-user table cursor', async () => {
+      const cursor = {
+        updatedAt: '2026-07-25T10:00:00.000Z',
+        id: 'word-10',
+      }
+      ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue(
+        JSON.stringify(cursor)
+      )
+
+      await expect(getSyncCursor(USER_ID, 'words')).resolves.toEqual(cursor)
+      expect(AsyncStorage.getItem).toHaveBeenCalledWith(WORD_CURSOR_KEY)
+    })
+
+    it('should ignore a stored value that is not a valid cursor', async () => {
+      ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue(
+        JSON.stringify({ updatedAt: '', id: 42 })
+      )
+
+      await expect(getSyncCursor(USER_ID, 'words')).resolves.toBeNull()
+    })
+  })
+
+  describe('setSyncCursor', () => {
+    it('should save a cursor under its user and table key', async () => {
+      const cursor = {
+        updatedAt: '2026-07-25T10:00:00.000Z',
+        id: 'word-10',
+      }
+
+      await setSyncCursor(USER_ID, 'words', cursor)
+
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+        WORD_CURSOR_KEY,
+        JSON.stringify(cursor)
+      )
+    })
+  })
+
   describe('useNetworkStatus', () => {
     it('should resolve to connected status', async () => {
       ;(NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true })
@@ -217,11 +264,15 @@ describe('network', () => {
       expect(result.current.isConnected).toBe(false)
     })
 
-    it('should subscribe to changes on mount', () => {
+    it('should subscribe to changes on mount', async () => {
       ;(NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true })
       ;(NetInfo.addEventListener as jest.Mock).mockReturnValue(jest.fn())
 
-      renderHook(() => useNetworkStatus())
+      const { result } = renderHook(() => useNetworkStatus())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
 
       expect(NetInfo.addEventListener).toHaveBeenCalled()
     })

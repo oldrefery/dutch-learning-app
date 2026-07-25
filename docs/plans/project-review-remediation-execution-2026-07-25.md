@@ -313,7 +313,9 @@ Follow-up:
 
 ### P2.2 Persisted Word Contract Test Strengthening
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `cdb5294 test: strengthen persisted word contracts`
 
 Scope:
 
@@ -347,9 +349,93 @@ Verification results:
 - All 28 Maestro YAML files: passed.
 - `git diff --check`: passed.
 
+### P0.2 Word Delta Cursor And Pending-Write Protection
+
+Status: `READY FOR USER COMMIT`
+
+Scope:
+
+- Replace the global word timestamp with a per-user, per-table cursor.
+- Pull remote word updates by `updated_at`, including words created earlier.
+- Use `word_id` as a deterministic tiebreaker for equal timestamps.
+- Prevent a remote pull from overwriting local unsynced word changes.
+
+Completed:
+
+- Added validated, typed sync cursor persistence keyed by user and table.
+- Replaced the word pull's `created_at` boundary with an `updated_at` boundary
+  and deterministic `(updated_at, word_id)` ordering.
+- Added ordered 500-row pagination so Supabase response limits cannot silently
+  truncate a large word delta.
+- Kept the inclusive server boundary and filtered it locally so words sharing
+  the cursor timestamp cannot be skipped or applied twice.
+- Advanced the cursor only after the remote rows were successfully applied to
+  SQLite.
+- Preserved local `pending`, `error`, and `conflict` word rows during remote
+  apply.
+- Made repository matching prefer an exact `word_id`, then fall back to the
+  semantic key, and persist remote semantic-field edits against the existing
+  local id.
+- Kept the legacy global timestamp helpers for compatibility, but removed them
+  from the active word synchronization path.
+- Added regression coverage for cursor isolation and validation, updated words,
+  equal-timestamp boundaries, failed local apply, pending local writes, and
+  semantic-field updates.
+
+Verification results:
+
+- Targeted network, repository, and synchronization tests: 3 suites, 65 tests
+  passed.
+- Full Jest coverage: 49 suites, 786 tests passed.
+- Build and test TypeScript: passed.
+- ESLint CI budget: passed with the same 7 pre-existing warnings.
+- Prettier: passed.
+- Edge Function tests: 58 passed.
+- All 28 Maestro YAML files: passed.
+- `git diff --check`: passed.
+
+### P0.3 Offline Delete Tombstones
+
+Status: `TODO`
+
+Scope:
+
+- Replace hard word/progress deletes with durable local tombstones.
+- Add compatible remote delete tracking.
+- Prevent stale offline upserts from resurrecting deleted records.
+
+### P0.4 User Progress Remote Contract
+
+Status: `TODO`
+
+Scope:
+
+- Add the missing `user_progress` Supabase migration, indexes, and RLS.
+- Add pull/delete handling and verify a clean migration reset supports Stage 5.
+
+### P1.4 Sync Metadata Timestamp Integrity
+
+Status: `TODO`
+
+Scope:
+
+- Stop changing domain `updated_at` when only sync status changes.
+- Record sync-specific timestamps independently.
+- Reconcile server-issued timestamps after successful pushes.
+
+### P1.5 Semantic Uniqueness And Reachability
+
+Status: `TODO`
+
+Scope:
+
+- Align remote semantic uniqueness with SQLite case normalization.
+- Use reachability-aware network preflight for synchronization.
+- Add matching local/remote duplicate and network-state tests.
+
 ## Current Resume Point
 
-Wait for the user to commit
-`P2.2 Persisted Word Contract Test Strengthening`. After the user confirms the
-commit and says to continue, mark P2.2 as `COMMITTED`, record the commit hash,
-and review the source plan for the next uncompleted work package.
+Wait for the user to commit `P0.2 Word Delta Cursor And Pending-Write
+Protection`. After the user confirms the commit and says to continue, mark
+`P0.2` as `COMMITTED`, record the commit hash, and start `P0.3 Offline Delete
+Tombstones`.

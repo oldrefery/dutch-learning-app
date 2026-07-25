@@ -11,9 +11,15 @@ export interface LocalWord extends Word {
 // Type for existing word check result
 interface ExistingWordCheck {
   word_id: string
-  sync_status: string
+  sync_status: SyncStatus
   updated_at: string
 }
+
+interface SaveWordsOptions {
+  preserveUnsynced?: boolean
+}
+
+const UNSYNCED_STATUSES = new Set<SyncStatus>(['pending', 'error', 'conflict'])
 
 export class WordRepository {
   // Helper to convert undefined to null for SQLite
@@ -21,7 +27,10 @@ export class WordRepository {
     return value === undefined ? null : value
   }
 
-  async saveWords(words: Word[]): Promise<void> {
+  async saveWords(
+    words: Word[],
+    options: SaveWordsOptions = {}
+  ): Promise<void> {
     const db = await getDatabase()
 
     // Prepare statement to check for existing word by semantic key
@@ -29,9 +38,15 @@ export class WordRepository {
       SELECT word_id, sync_status, updated_at
       FROM words
       WHERE user_id = ?
-        AND LOWER(dutch_lemma) = LOWER(?)
-        AND COALESCE(part_of_speech, 'unknown') = ?
-        AND COALESCE(article, '') = ?
+        AND (
+          word_id = ?
+          OR (
+            LOWER(dutch_lemma) = LOWER(?)
+            AND COALESCE(part_of_speech, 'unknown') = ?
+            AND COALESCE(article, '') = ?
+          )
+        )
+      ORDER BY CASE WHEN word_id = ? THEN 0 ELSE 1 END
       LIMIT 1
     `)
 
@@ -40,7 +55,9 @@ export class WordRepository {
       UPDATE words SET
         word_id = ?,
         collection_id = ?,
+        dutch_lemma = ?,
         dutch_original = ?,
+        part_of_speech = ?,
         is_irregular = ?,
         is_reflexive = ?,
         is_expression = ?,
@@ -48,6 +65,7 @@ export class WordRepository {
         is_separable = ?,
         prefix_part = ?,
         root_verb = ?,
+        article = ?,
         plural = ?,
         register = ?,
         translations = ?,
@@ -67,10 +85,7 @@ export class WordRepository {
         created_at = ?,
         updated_at = ?,
         sync_status = ?
-      WHERE user_id = ?
-        AND LOWER(dutch_lemma) = LOWER(?)
-        AND COALESCE(part_of_speech, 'unknown') = ?
-        AND COALESCE(article, '') = ?
+      WHERE word_id = ? AND user_id = ?
     `)
 
     // INSERT statement for new words (using semantic key values)
@@ -106,13 +121,22 @@ export class WordRepository {
         const existingResult =
           await checkExistingStatement.executeAsync<ExistingWordCheck>(
             word.user_id,
+            word.word_id,
             word.dutch_lemma,
             normalizedPartOfSpeech,
-            normalizedArticle
+            normalizedArticle,
+            word.word_id
           )
         const existingWord = await existingResult.getFirstAsync()
 
         if (existingWord) {
+          if (
+            options.preserveUnsynced &&
+            UNSYNCED_STATUSES.has(existingWord.sync_status)
+          ) {
+            continue
+          }
+
           // Word with same semantic key exists - update it with the incoming data
           // This handles the case where local word has UUID-A and server has UUID-B
           mergedCount++
@@ -125,7 +149,9 @@ export class WordRepository {
           await updateStatement.executeAsync(
             this.toSqlValue(word.word_id), // Update to server's word_id
             this.toSqlValue(word.collection_id) || null,
+            this.toSqlValue(word.dutch_lemma),
             this.toSqlValue(word.dutch_original) || null,
+            this.toSqlValue(word.part_of_speech) || null,
             word.is_irregular ? 1 : 0,
             word.is_reflexive ? 1 : 0,
             word.is_expression ? 1 : 0,
@@ -133,6 +159,7 @@ export class WordRepository {
             word.is_separable ? 1 : 0,
             this.toSqlValue(word.prefix_part) || null,
             this.toSqlValue(word.root_verb) || null,
+            this.toSqlValue(word.article) || null,
             this.toSqlValue(word.plural) || null,
             this.toSqlValue(word.register) || null,
             JSON.stringify(this.toSqlValue(word.translations) || []),
@@ -153,10 +180,8 @@ export class WordRepository {
             this.toSqlValue(word.updated_at),
             'synced',
             // WHERE clause params
-            word.user_id,
-            word.dutch_lemma,
-            normalizedPartOfSpeech,
-            normalizedArticle
+            existingWord.word_id,
+            word.user_id
           )
         } else {
           // No existing word - insert new

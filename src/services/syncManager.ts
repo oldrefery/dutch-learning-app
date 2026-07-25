@@ -4,9 +4,10 @@ import { progressRepository } from '@/db/progressRepository'
 import { collectionRepository } from '@/db/collectionRepository'
 import {
   checkNetworkConnection,
-  getLastSyncTimestamp,
-  setLastSyncTimestamp,
+  getSyncCursor,
+  setSyncCursor,
 } from '@/utils/network'
+import type { SyncCursor } from '@/utils/network'
 import type { Word } from '@/types/database'
 import { Sentry } from '@/lib/sentry'
 import { isNetworkError } from '@/utils/logger'
@@ -158,6 +159,23 @@ const WORDS_SELECT_COLUMNS_WITHOUT_REGISTER = [
   'updated_at',
 ].join(', ')
 
+const WORD_SYNC_PAGE_SIZE = 500
+
+const toWordSyncCursor = (word: Word): SyncCursor => ({
+  updatedAt: word.updated_at,
+  id: word.word_id,
+})
+
+const compareSyncCursors = (left: SyncCursor, right: SyncCursor): number => {
+  const timestampComparison = left.updatedAt.localeCompare(right.updatedAt)
+  return timestampComparison !== 0
+    ? timestampComparison
+    : left.id.localeCompare(right.id)
+}
+
+const isWordAfterCursor = (word: Word, cursor: SyncCursor): boolean =>
+  compareSyncCursors(toWordSyncCursor(word), cursor) > 0
+
 export class SyncManager {
   private isSyncing = false
   private syncListeners: ((result: SyncResult) => void)[] = []
@@ -237,11 +255,11 @@ export class SyncManager {
 
       // Step 1: Pull new words from Supabase
       console.log('[Sync] Stage 2: pull words')
-      const lastSync = await getLastSyncTimestamp()
+      const wordCursor = await getSyncCursor(userId, 'words')
       const pulledWords = await this.runSyncStageWithSessionRetry(
         'pull_words',
         userId,
-        async () => this.pullWordsFromSupabase(userId, lastSync)
+        async () => this.pullWordsFromSupabase(userId, wordCursor)
       )
 
       // Clean up local orphan words after pull
@@ -270,9 +288,6 @@ export class SyncManager {
         userId,
         async () => this.pushProgressToSupabase(userId)
       )
-
-      // Update last sync timestamp
-      await setLastSyncTimestamp(timestamp)
 
       const result: SyncResult = {
         success: true,
@@ -571,24 +586,13 @@ export class SyncManager {
 
   private async pullWordsFromSupabase(
     userId: string,
-    lastSync: string | null
+    cursor: SyncCursor | null
   ): Promise<Word[]> {
-    const buildQuery = (selectColumns: string) => {
-      let query = supabase
-        .from('words')
-        .select(selectColumns)
-        .eq('user_id', userId)
-      if (lastSync) {
-        query = query.gt('created_at', lastSync)
-      }
-      return query
-    }
-
     let data: Word[] | null = null
     let error: SupabaseLikeError | null = null
 
     try {
-      const initialResult = this.toWordsSelectResult(await buildQuery('*'))
+      const initialResult = await this.fetchWordPages(userId, cursor, '*')
       data = initialResult.data
       error = initialResult.error
     } catch (queryError) {
@@ -604,8 +608,10 @@ export class SyncManager {
         '[Sync] Remote words table has no register column. Falling back to compatible pull query.'
       )
       try {
-        const fallbackResult = this.toWordsSelectResult(
-          await buildQuery(WORDS_SELECT_COLUMNS_WITHOUT_REGISTER)
+        const fallbackResult = await this.fetchWordPages(
+          userId,
+          cursor,
+          WORDS_SELECT_COLUMNS_WITHOUT_REGISTER
         )
         data = fallbackResult.data
         error = fallbackResult.error
@@ -625,34 +631,92 @@ export class SyncManager {
 
     // Parse JSON fields from Supabase and ensure required fields
     const now = new Date().toISOString()
-    const parsedWords = data.map(word => {
-      return {
-        ...word,
-        user_id: userId,
-        // Ensure created_at and updated_at are always set (fallback to current time)
-        created_at: word.created_at || now,
-        updated_at: word.updated_at || word.created_at || now,
-        // Ensure next_review_date is always set (required by SQLite schema)
-        // Extract date only from fallback values
-        next_review_date:
-          word.next_review_date || (word.created_at || now).split('T')[0],
-        // Ensure SRS fields have defaults
-        interval_days: word.interval_days ?? 1,
-        repetition_count: word.repetition_count ?? 0,
-        easiness_factor: word.easiness_factor ?? 2.5,
-        translations: parseJsonField(word.translations, { en: [] }),
-        examples: parseJsonField(word.examples, null),
-        synonyms: parseJsonField(word.synonyms, []),
-        antonyms: parseJsonField(word.antonyms, []),
-        conjugation: parseJsonField(word.conjugation, null),
-      }
+    const parsedWords = data
+      .map(word => {
+        return {
+          ...word,
+          user_id: userId,
+          // Ensure created_at and updated_at are always set (fallback to current time)
+          created_at: word.created_at || now,
+          updated_at: word.updated_at || word.created_at || now,
+          // Ensure next_review_date is always set (required by SQLite schema)
+          // Extract date only from fallback values
+          next_review_date:
+            word.next_review_date || (word.created_at || now).split('T')[0],
+          // Ensure SRS fields have defaults
+          interval_days: word.interval_days ?? 1,
+          repetition_count: word.repetition_count ?? 0,
+          easiness_factor: word.easiness_factor ?? 2.5,
+          translations: parseJsonField(word.translations, { en: [] }),
+          examples: parseJsonField(word.examples, null),
+          synonyms: parseJsonField(word.synonyms, []),
+          antonyms: parseJsonField(word.antonyms, []),
+          conjugation: parseJsonField(word.conjugation, null),
+        }
+      })
+      .filter(word => !cursor || isWordAfterCursor(word, cursor))
+      .sort((left, right) =>
+        compareSyncCursors(toWordSyncCursor(left), toWordSyncCursor(right))
+      )
+
+    if (parsedWords.length === 0) {
+      console.log('[Sync] No updated words after cursor filtering')
+      return []
+    }
+
+    await wordRepository.saveWords(parsedWords, {
+      preserveUnsynced: true,
     })
 
-    await wordRepository.saveWords(parsedWords)
+    const newestWord = parsedWords[parsedWords.length - 1]
+    await setSyncCursor(userId, 'words', toWordSyncCursor(newestWord))
 
     console.log(`[Sync] Pulled ${parsedWords.length} words from Supabase`)
 
     return parsedWords
+  }
+
+  private async fetchWordPages(
+    userId: string,
+    cursor: SyncCursor | null,
+    selectColumns: string
+  ): Promise<{
+    data: Word[] | null
+    error: SupabaseLikeError | null
+  }> {
+    const words: Word[] = []
+    let from = 0
+
+    while (true) {
+      let query = supabase
+        .from('words')
+        .select(selectColumns)
+        .eq('user_id', userId)
+
+      if (cursor) {
+        query = query.gte('updated_at', cursor.updatedAt)
+      }
+
+      const result = this.toWordsSelectResult(
+        await query
+          .order('updated_at', { ascending: true })
+          .order('word_id', { ascending: true })
+          .range(from, from + WORD_SYNC_PAGE_SIZE - 1)
+      )
+
+      if (result.error) {
+        return result
+      }
+
+      const page = result.data ?? []
+      words.push(...page)
+
+      if (page.length < WORD_SYNC_PAGE_SIZE) {
+        return { data: words, error: null }
+      }
+
+      from += WORD_SYNC_PAGE_SIZE
+    }
   }
 
   private async pushProgressToSupabase(userId: string): Promise<number> {
