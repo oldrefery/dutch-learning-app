@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   StyleSheet,
   KeyboardAvoidingView,
   ScrollView,
   Platform,
 } from 'react-native'
-import { Link, useLocalSearchParams } from 'expo-router'
-import * as Linking from 'expo-linking'
+import { Link } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { AuthInput } from '@/components/auth/AuthInput'
@@ -16,54 +15,20 @@ import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
 
 export default function ResetPasswordScreen() {
-  const searchParams = useLocalSearchParams<{
-    access_token?: string
-    refresh_token?: string
-  }>()
-
-  const [access_token, setAccessToken] = useState<string | undefined>(
-    searchParams.access_token
-  )
-  const [refresh_token, setRefreshToken] = useState<string | undefined>(
-    searchParams.refresh_token
-  )
-
-  // Parse hash fragment from deep link (Supabase sends tokens in hash)
-  useEffect(() => {
-    const parseUrlHash = async () => {
-      const url = await Linking.getInitialURL()
-      console.log('[ResetPassword] Initial URL:', url)
-
-      if (url) {
-        const hashPart = url.split('#')[1]
-        console.log('[ResetPassword] Hash part:', hashPart)
-
-        if (hashPart) {
-          const params = new URLSearchParams(hashPart)
-          const accessToken = params.get('access_token')
-          const refreshToken = params.get('refresh_token')
-
-          console.log('[ResetPassword] Tokens found:', {
-            accessToken: accessToken ? 'yes' : 'no',
-            refreshToken: refreshToken ? 'yes' : 'no',
-          })
-
-          if (accessToken && refreshToken) {
-            setAccessToken(accessToken)
-            setRefreshToken(refreshToken)
-          }
-        }
-      }
-    }
-
-    parseUrlHash()
-  }, [])
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
-  const { resetPassword, loading, error, clearError } = useSimpleAuth()
+  const { resetPassword, cancelPasswordRecovery, loading, error, clearError } =
+    useSimpleAuth()
+
+  useEffect(
+    () => () => {
+      void cancelPasswordRecovery()
+    },
+    [cancelPasswordRecovery]
+  )
 
   const handlePasswordChange = (text: string) => {
     setPassword(text)
@@ -106,7 +71,7 @@ export default function ResetPasswordScreen() {
       return
     }
 
-    await resetPassword(password, access_token, refresh_token)
+    await resetPassword(password)
   }
 
   return (

@@ -477,38 +477,40 @@ describe('retryUtils', () => {
 
   describe('withTimeout', () => {
     it('should resolve when promise completes before timeout', async () => {
-      jest.useRealTimers()
       const fn = () => Promise.resolve('result')
       const result = await withTimeout(fn, 5000)
 
       expect(result).toBe('result')
-      jest.useFakeTimers()
+      expect(jest.getTimerCount()).toBe(0)
     })
 
     it('should reject with NetworkError when promise exceeds timeout', async () => {
-      jest.useRealTimers()
-      const fn = () => new Promise(resolve => setTimeout(resolve, 500))
+      const fn = () => new Promise<string>(() => undefined)
+      const expectation = expect(withTimeout(fn, 50)).rejects.toThrow(
+        'Operation timed out'
+      )
 
-      await expect(withTimeout(fn, 50)).rejects.toThrow('Operation timed out')
-      jest.useFakeTimers()
+      await jest.advanceTimersByTimeAsync(50)
+      await expectation
+      expect(jest.getTimerCount()).toBe(0)
     })
 
     it('should use custom error message', async () => {
-      jest.useRealTimers()
-      const fn = () => new Promise(resolve => setTimeout(resolve, 500))
+      const fn = () => new Promise<string>(() => undefined)
+      const expectation = expect(
+        withTimeout(fn, 50, 'Custom timeout')
+      ).rejects.toThrow('Custom timeout')
 
-      await expect(withTimeout(fn, 50, 'Custom timeout')).rejects.toThrow(
-        'Custom timeout'
-      )
-      jest.useFakeTimers()
+      await jest.advanceTimersByTimeAsync(50)
+      await expectation
+      expect(jest.getTimerCount()).toBe(0)
     })
 
     it('should propagate original promise rejection', async () => {
-      jest.useRealTimers()
       const fn = () => Promise.reject(new Error('Original error'))
 
       await expect(withTimeout(fn, 5000)).rejects.toThrow('Original error')
-      jest.useFakeTimers()
+      expect(jest.getTimerCount()).toBe(0)
     })
   })
 

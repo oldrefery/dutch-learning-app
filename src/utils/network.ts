@@ -4,6 +4,30 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NetworkError } from '@/types/ErrorTypes'
 
 const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp'
+const SYNC_CURSOR_KEY_PREFIX = 'sync_cursor'
+
+export type SyncCursorTable = 'words' | 'collections' | 'user_progress'
+
+export interface SyncCursor {
+  updatedAt: string
+  id: string
+}
+
+const getSyncCursorKey = (userId: string, table: SyncCursorTable): string =>
+  `${SYNC_CURSOR_KEY_PREFIX}:${userId}:${table}`
+
+const isSyncCursor = (value: unknown): value is SyncCursor => {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const candidate = value as Record<string, unknown>
+  return (
+    typeof candidate.updatedAt === 'string' &&
+    candidate.updatedAt.length > 0 &&
+    typeof candidate.id === 'string'
+  )
+}
 
 const getNetworkStateContext = (
   state: NetInfoState,
@@ -131,6 +155,42 @@ export async function setLastSyncTimestamp(timestamp: string): Promise<void> {
   }
 }
 
+export async function getSyncCursor(
+  userId: string,
+  table: SyncCursorTable
+): Promise<SyncCursor | null> {
+  try {
+    const storedCursor = await AsyncStorage.getItem(
+      getSyncCursorKey(userId, table)
+    )
+    if (!storedCursor) {
+      return null
+    }
+
+    const parsedCursor: unknown = JSON.parse(storedCursor)
+    return isSyncCursor(parsedCursor) ? parsedCursor : null
+  } catch (error) {
+    console.error('[Network] Error getting sync cursor:', error)
+    return null
+  }
+}
+
+export async function setSyncCursor(
+  userId: string,
+  table: SyncCursorTable,
+  cursor: SyncCursor
+): Promise<void> {
+  try {
+    await AsyncStorage.setItem(
+      getSyncCursorKey(userId, table),
+      JSON.stringify(cursor)
+    )
+  } catch (error) {
+    console.error('[Network] Error setting sync cursor:', error)
+    throw error
+  }
+}
+
 export function useNetworkStatus() {
   const [isConnected, setIsConnected] = useState<boolean | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -164,5 +224,7 @@ export const NetworkStatus = {
   subscribe: subscribeToNetworkChanges,
   getLastSyncTimestamp,
   setLastSyncTimestamp,
+  getSyncCursor,
+  setSyncCursor,
   useNetworkStatus,
 }

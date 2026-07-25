@@ -27,7 +27,17 @@ jest.mock('expo-constants', () => ({
     version: '1.0.0',
     releaseChannel: 'default',
   },
+  expoConfig: {
+    slug: 'dutch-learning-app',
+    version: '1.0.0',
+  },
   getAppOwnershipType: jest.fn(() => 'expo'),
+}))
+
+jest.mock('expo-application', () => ({
+  applicationId: 'com.oldrefery.dutch-learning-app',
+  nativeApplicationVersion: '1.0.0',
+  nativeBuildVersion: '1',
 }))
 
 // Mock expo-secure-store

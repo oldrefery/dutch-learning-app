@@ -121,6 +121,13 @@ export interface AnalyzedWord {
   prefix_part?: string
   root_verb?: string
   article?: 'de' | 'het'
+  plural?: string
+  register?: Word['register']
+  synonyms?: string[]
+  antonyms?: string[]
+  conjugation?: Word['conjugation']
+  preposition?: string
+  analysis_notes?: string
 }
 
 export interface StoreSetFunction {

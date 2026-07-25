@@ -3,9 +3,12 @@
     "@supabase/supabase-js": "npm:@supabase/supabase-js@2"
   },
   "compilerOptions": {
-    "allowJs": true,
     "lib": ["deno.window"],
     "strict": true
+  },
+  "lock": {
+    "path": "./deno.lock",
+    "frozen": true
   },
   "lint": {
     "rules": {

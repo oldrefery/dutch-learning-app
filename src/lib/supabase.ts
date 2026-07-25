@@ -148,6 +148,9 @@ export async function withSessionRetry<T>(
 const normalizeArticle = (value?: string | null): string =>
   value && value.trim() !== '' ? value.trim() : ''
 
+const escapeIlikeLiteral = (value: string): string =>
+  value.replace(/([\\%_])/g, '\\$1')
+
 const isSemanticDuplicateError = (error: unknown): boolean => {
   if (!error || typeof error !== 'object') return false
   const supabaseError = error as SupabaseLikeError
@@ -489,6 +492,7 @@ export const wordService = {
         .from('words')
         .select('*')
         .eq('user_id', userId)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -521,7 +525,8 @@ export const wordService = {
         .from('words')
         .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
         .eq('user_id', userId)
-        .eq('dutch_lemma', normalizedLemma)
+        .ilike('dutch_lemma', escapeIlikeLiteral(normalizedLemma))
+        .is('deleted_at', null)
 
       if (error) throw error
       return data
@@ -559,6 +564,7 @@ export const wordService = {
         .from('words')
         .select('*')
         .eq('user_id', userId)
+        .is('deleted_at', null)
         .lte('next_review_date', today)
         .order('next_review_date', { ascending: true })
 
@@ -583,7 +589,8 @@ export const wordService = {
         .from('words')
         .select('*')
         .eq('user_id', userId)
-        .eq('dutch_lemma', normalizedLemma)
+        .ilike('dutch_lemma', escapeIlikeLiteral(normalizedLemma))
+        .is('deleted_at', null)
 
       if (error) throw error
       return data
@@ -681,6 +688,7 @@ export const wordService = {
         .from('words')
         .select('interval_days, repetition_count, easiness_factor')
         .eq('word_id', wordId)
+        .is('deleted_at', null)
         .single()
 
       if (fetchError) {
@@ -706,6 +714,7 @@ export const wordService = {
           last_reviewed_at: new Date().toISOString(),
         })
         .eq('word_id', wordId)
+        .is('deleted_at', null)
         .select()
         .single()
 
@@ -724,6 +733,7 @@ export const wordService = {
         .from('words')
         .update({ image_url: imageUrl })
         .eq('word_id', wordId)
+        .is('deleted_at', null)
         .select()
         .single()
 
@@ -739,6 +749,7 @@ export const wordService = {
         .from('words')
         .update({ collection_id: newCollectionId })
         .eq('word_id', wordId)
+        .is('deleted_at', null)
         .select()
         .single()
 
@@ -759,6 +770,7 @@ export const wordService = {
           next_review_date: new Date().toISOString().split('T')[0],
         })
         .eq('word_id', wordId)
+        .is('deleted_at', null)
         .select()
         .single()
 
@@ -772,7 +784,7 @@ export const wordService = {
     await withSessionRetry(async () => {
       const { error } = await supabase
         .from('words')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('word_id', wordId)
 
       if (error) throw error
@@ -924,11 +936,12 @@ export const collectionService = {
   // Delete collection
   async deleteCollection(collectionId: string, userId: string) {
     await withSessionRetry(async () => {
-      // First, delete all words in this collection
+      // First, preserve word tombstones for other offline clients
       const { error: wordsError } = await supabase
         .from('words')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('collection_id', collectionId)
+        .eq('user_id', userId)
 
       if (wordsError) throw wordsError
 

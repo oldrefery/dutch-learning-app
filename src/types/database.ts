@@ -87,9 +87,14 @@ export interface GeminiWordAnalysis {
   prefix_part?: string
   root_verb?: string
   article?: 'de' | 'het' // Article for nouns
+  plural?: string
   register?: WordRegister // Formality level (formal, informal, neutral)
   translations: WordTranslations
   examples: WordExample[]
+  synonyms?: string[]
+  antonyms?: string[]
+  conjugation?: WordConjugation | null
+  preposition?: string
   tts_url?: string
   image_url?: string // Associated image for visual learning
   analysis_notes?: string // User notes from analysis

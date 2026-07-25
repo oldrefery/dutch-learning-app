@@ -118,15 +118,20 @@ export function withTimeout<T>(
   timeoutMs: number,
   errorMessage: string = 'Operation timed out'
 ): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
   const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
       reject(
         new NetworkError(errorMessage, 'Request timeout. Please try again.')
       )
     }, timeoutMs)
   })
 
-  return Promise.race([promiseFactory(), timeoutPromise])
+  return Promise.race([promiseFactory(), timeoutPromise]).finally(() => {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId)
+    }
+  })
 }
 
 /**

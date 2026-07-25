@@ -9,7 +9,11 @@ import { Sentry } from '@/lib/sentry'
 import { wordService } from '@/lib/supabase'
 import { calculateNextReview } from '@/utils/srs'
 import { logError } from '@/utils/logger'
-import type { ApplicationState } from '@/types/ApplicationStoreTypes'
+import type {
+  AnalyzedWord,
+  ApplicationState,
+} from '@/types/ApplicationStoreTypes'
+import type { Word } from '@/types/database'
 
 jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
@@ -114,10 +118,20 @@ describe('wordActions', () => {
     is_irregular: false,
     is_reflexive: false,
     is_expression: false,
+    expression_type: null,
     is_separable: false,
+    prefix_part: null,
+    root_verb: null,
+    plural: null,
+    register: null,
     synonyms: [],
     antonyms: [],
+    conjugation: null,
+    preposition: null,
+    image_url: null,
+    tts_url: null,
     last_reviewed_at: null,
+    analysis_notes: null,
     ...overrides,
   })
 
@@ -298,7 +312,9 @@ describe('wordActions', () => {
         translations: { en: ['walk'] },
       }
 
-      await actions.saveAnalyzedWord(analyzedWord)
+      await expect(actions.saveAnalyzedWord(analyzedWord)).rejects.toThrow(
+        'User not authenticated'
+      )
 
       expectStoreError()
     })
@@ -311,7 +327,9 @@ describe('wordActions', () => {
       }
       ;(wordRepository.addWord as jest.Mock).mockRejectedValue(error)
 
-      await actions.saveAnalyzedWord(analyzedWord)
+      await expect(actions.saveAnalyzedWord(analyzedWord)).rejects.toThrow(
+        'Save failed'
+      )
 
       expect(Sentry.captureException).toHaveBeenCalledWith(error, {
         tags: { operation: 'saveAnalyzedWord' },
@@ -319,6 +337,99 @@ describe('wordActions', () => {
           analyzedWord,
           userId: USER_ID,
         }),
+      })
+      expectStoreError()
+    })
+
+    it('should return a complete Word after successful save', async () => {
+      const analyzedWord = {
+        dutch_lemma: 'huis',
+        dutch_original: 'het huis',
+        part_of_speech: 'noun',
+        article: 'het',
+        plural: 'huizen',
+        translations: { en: ['house'] },
+        examples: [{ nl: 'Het huis is groot.', en: 'The house is big.' }],
+        synonyms: ['woning'],
+        antonyms: [],
+        is_irregular: false,
+        is_reflexive: false,
+        is_expression: false,
+        is_separable: false,
+      }
+      ;(wordRepository.addWord as jest.Mock).mockResolvedValue(undefined)
+
+      const result = await actions.saveAnalyzedWord(analyzedWord, COLLECTION_ID)
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          word_id: expect.any(String),
+          user_id: USER_ID,
+          collection_id: COLLECTION_ID,
+          dutch_lemma: 'huis',
+          dutch_original: 'het huis',
+          part_of_speech: 'noun',
+          article: 'het',
+          plural: 'huizen',
+          register: null,
+          synonyms: ['woning'],
+          antonyms: [],
+          conjugation: null,
+          preposition: null,
+          image_url: null,
+          tts_url: null,
+          interval_days: 1,
+          repetition_count: 0,
+          easiness_factor: 2.5,
+          last_reviewed_at: null,
+          analysis_notes: null,
+        })
+      )
+    })
+
+    it('should map omitted and nullable analysis fields before saving', async () => {
+      const analyzedWord: AnalyzedWord = {
+        dutch_lemma: 'zijn',
+        part_of_speech: 'verb',
+        translations: { en: ['be'] },
+        register: null,
+        conjugation: null,
+      }
+      ;(wordRepository.addWord as jest.Mock).mockResolvedValue(undefined)
+
+      const result: Word = await actions.saveAnalyzedWord(
+        analyzedWord,
+        COLLECTION_ID
+      )
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          collection_id: COLLECTION_ID,
+          dutch_original: null,
+          is_irregular: false,
+          is_reflexive: false,
+          is_expression: false,
+          expression_type: null,
+          is_separable: false,
+          prefix_part: null,
+          root_verb: null,
+          article: null,
+          plural: null,
+          register: null,
+          examples: null,
+          synonyms: [],
+          antonyms: [],
+          conjugation: null,
+          preposition: null,
+          image_url: null,
+          tts_url: null,
+          last_reviewed_at: null,
+          analysis_notes: null,
+        })
+      )
+      expect(wordRepository.addWord).toHaveBeenCalledWith(result)
+      expect(mockSet).toHaveBeenCalledWith({
+        words: [result],
       })
     })
 

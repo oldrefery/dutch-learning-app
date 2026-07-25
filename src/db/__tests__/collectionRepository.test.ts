@@ -17,9 +17,16 @@ describe('CollectionRepository', () => {
 
   const mockFirst = jest.fn()
   const mockSql = jest.fn().mockReturnValue({ first: mockFirst })
+  const mockExecuteAsync = jest.fn()
+  const mockFinalizeAsync = jest.fn()
+  const mockStatement = {
+    executeAsync: mockExecuteAsync,
+    finalizeAsync: mockFinalizeAsync,
+  }
 
   const mockDatabase = {
     runAsync: jest.fn(),
+    prepareAsync: jest.fn(),
     getAllAsync: jest.fn(),
     getFirstAsync: jest.fn(),
     sql: mockSql,
@@ -28,6 +35,9 @@ describe('CollectionRepository', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockDatabase.runAsync.mockResolvedValue(undefined)
+    mockDatabase.prepareAsync.mockResolvedValue(mockStatement)
+    mockExecuteAsync.mockResolvedValue(undefined)
+    mockFinalizeAsync.mockResolvedValue(undefined)
     mockDatabase.getAllAsync.mockResolvedValue([])
     mockDatabase.getFirstAsync.mockResolvedValue(null)
     mockFirst.mockResolvedValue(null)
@@ -46,8 +56,12 @@ describe('CollectionRepository', () => {
 
       expect(mockDatabase.runAsync).toHaveBeenCalledTimes(1)
       expect(mockDatabase.runAsync).toHaveBeenCalledWith(
-        expect.stringContaining('INSERT OR REPLACE INTO collections'),
+        expect.stringContaining('ON CONFLICT(collection_id) DO UPDATE'),
         expect.arrayContaining([COLLECTION_ID, USER_ID, 'Dutch Basics'])
+      )
+      const query = mockDatabase.runAsync.mock.calls[0][0]
+      expect(query).not.toContain(
+        'last_sync_attempt_at = excluded.last_sync_attempt_at'
       )
     })
 
@@ -68,7 +82,8 @@ describe('CollectionRepository', () => {
       await collectionRepository.saveCollections([collection])
 
       const params = mockDatabase.runAsync.mock.calls[0][1]
-      expect(params[params.length - 1]).toBe('synced')
+      expect(params[params.length - 3]).toBe('synced')
+      expect(params[params.length - 1]).toEqual(expect.any(String))
     })
 
     it('should use custom sync_status when provided', async () => {
@@ -77,7 +92,8 @@ describe('CollectionRepository', () => {
       await collectionRepository.saveCollections([collection], 'pending')
 
       const params = mockDatabase.runAsync.mock.calls[0][1]
-      expect(params[params.length - 1]).toBe('pending')
+      expect(params[params.length - 3]).toBe('pending')
+      expect(params[params.length - 1]).toBeNull()
     })
 
     it('should serialize shared_with as JSON', async () => {
@@ -272,19 +288,49 @@ describe('CollectionRepository', () => {
   })
 
   describe('markCollectionsSynced', () => {
-    it('should update sync_status to synced for given IDs', async () => {
+    it('should update only sync metadata for given IDs', async () => {
       await collectionRepository.markCollectionsSynced(['col-1', 'col-2'])
 
       expect(mockDatabase.runAsync).toHaveBeenCalledWith(
         expect.stringContaining("sync_status = 'synced'"),
-        ['col-1', 'col-2']
+        [expect.any(String), expect.any(String), 'col-1', 'col-2']
       )
+      const query = mockDatabase.runAsync.mock.calls[0][0]
+      expect(query).not.toContain('updated_at =')
     })
 
     it('should no-op for empty array', async () => {
       await collectionRepository.markCollectionsSynced([])
 
       expect(mockDatabase.runAsync).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('reconcilePushedCollections', () => {
+    it('stores the server timestamp with successful sync metadata', async () => {
+      const serverUpdatedAt = '2026-07-25T16:00:00.000Z'
+
+      await collectionRepository.reconcilePushedCollections(
+        [
+          {
+            collection_id: COLLECTION_ID,
+            updated_at: serverUpdatedAt,
+          },
+        ],
+        new Map([[COLLECTION_ID, '2026-07-25T15:00:00.000Z']])
+      )
+
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        serverUpdatedAt,
+        expect.any(String),
+        expect.any(String),
+        COLLECTION_ID,
+        '2026-07-25T15:00:00.000Z'
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('AND updated_at = ?')
+      )
+      expect(mockFinalizeAsync).toHaveBeenCalled()
     })
   })
 

@@ -12,7 +12,9 @@ export const SQL_SCHEMA = `
     shared_with TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    sync_status TEXT DEFAULT 'synced'
+    sync_status TEXT DEFAULT 'synced',
+    last_sync_attempt_at TEXT,
+    synced_at TEXT
   );
 
   -- Words table (local copy of Supabase words)
@@ -49,7 +51,10 @@ export const SQL_SCHEMA = `
     analysis_notes TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    sync_status TEXT DEFAULT 'synced'
+    deleted_at TEXT,
+    sync_status TEXT DEFAULT 'synced',
+    last_sync_attempt_at TEXT,
+    synced_at TEXT
   );
 
   -- User progress table (local cache of user_progress from Supabase)
@@ -62,7 +67,10 @@ export const SQL_SCHEMA = `
     last_reviewed_at TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
+    deleted_at TEXT,
     sync_status TEXT DEFAULT 'synced',
+    last_sync_attempt_at TEXT,
+    synced_at TEXT,
     FOREIGN KEY (word_id) REFERENCES words(word_id)
   );
 
@@ -80,10 +88,12 @@ export const SQL_SCHEMA = `
   CREATE INDEX IF NOT EXISTS idx_words_collection_id ON words(collection_id);
   CREATE INDEX IF NOT EXISTS idx_words_updated_at ON words(updated_at);
   CREATE INDEX IF NOT EXISTS idx_words_sync_status ON words(sync_status);
+  CREATE INDEX IF NOT EXISTS idx_words_deleted_at ON words(user_id, deleted_at);
   CREATE INDEX IF NOT EXISTS idx_user_progress_user_id ON user_progress(user_id);
   CREATE INDEX IF NOT EXISTS idx_user_progress_word_id ON user_progress(word_id);
   CREATE INDEX IF NOT EXISTS idx_user_progress_updated_at ON user_progress(updated_at);
   CREATE INDEX IF NOT EXISTS idx_user_progress_sync_status ON user_progress(sync_status);
+  CREATE INDEX IF NOT EXISTS idx_user_progress_deleted_at ON user_progress(user_id, deleted_at);
 `
 
 // Migration v3: Unique semantic index to prevent duplicate words
@@ -103,4 +113,60 @@ export const MIGRATION_V4_ADD_REGISTER = `
   ALTER TABLE words ADD COLUMN register TEXT;
 `
 
-export type SyncStatus = 'synced' | 'pending' | 'error' | 'conflict'
+// Migration v5: Persist offline deletes and keep semantic uniqueness for active rows.
+export const MIGRATION_V5_ADD_WORD_DELETED_AT = `
+  ALTER TABLE words ADD COLUMN deleted_at TEXT;
+`
+
+export const MIGRATION_V5_ADD_PROGRESS_DELETED_AT = `
+  ALTER TABLE user_progress ADD COLUMN deleted_at TEXT;
+`
+
+export const MIGRATION_V5_TOMBSTONE_INDEXES = `
+  DROP INDEX IF EXISTS idx_words_semantic_key;
+
+  CREATE UNIQUE INDEX idx_words_semantic_key
+  ON words(
+    user_id,
+    LOWER(dutch_lemma),
+    COALESCE(part_of_speech, 'unknown'),
+    COALESCE(article, '')
+  )
+  WHERE deleted_at IS NULL;
+
+  CREATE INDEX IF NOT EXISTS idx_words_deleted_at
+  ON words(user_id, deleted_at);
+
+  CREATE INDEX IF NOT EXISTS idx_user_progress_deleted_at
+  ON user_progress(user_id, deleted_at);
+`
+
+export const MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS = [
+  {
+    migration: 'ALTER TABLE collections ADD COLUMN last_sync_attempt_at TEXT;',
+    columnName: 'collections.last_sync_attempt_at',
+  },
+  {
+    migration: 'ALTER TABLE collections ADD COLUMN synced_at TEXT;',
+    columnName: 'collections.synced_at',
+  },
+  {
+    migration: 'ALTER TABLE words ADD COLUMN last_sync_attempt_at TEXT;',
+    columnName: 'words.last_sync_attempt_at',
+  },
+  {
+    migration: 'ALTER TABLE words ADD COLUMN synced_at TEXT;',
+    columnName: 'words.synced_at',
+  },
+  {
+    migration:
+      'ALTER TABLE user_progress ADD COLUMN last_sync_attempt_at TEXT;',
+    columnName: 'user_progress.last_sync_attempt_at',
+  },
+  {
+    migration: 'ALTER TABLE user_progress ADD COLUMN synced_at TEXT;',
+    columnName: 'user_progress.synced_at',
+  },
+] as const
+
+export type SyncStatus = 'synced' | 'pending' | 'error' | 'conflict' | 'deleted'

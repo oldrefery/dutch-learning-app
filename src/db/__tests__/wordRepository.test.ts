@@ -6,6 +6,7 @@
 import { wordRepository } from '../wordRepository'
 import * as initDB from '../initDB'
 import type { Word } from '@/types/database'
+import { ExpressionType } from '@/types/ExpressionTypes'
 
 jest.mock('../initDB')
 
@@ -126,12 +127,116 @@ describe('WordRepository', () => {
         .mockResolvedValueOnce(mockUpdateStatement)
         .mockResolvedValueOnce(mockInsertStatement)
 
-      const words = [mockWord, { ...mockWord, word_id: 'word-2' }]
+      const words = [
+        mockWord,
+        {
+          ...mockWord,
+          word_id: 'word-2',
+          part_of_speech: null,
+          article: null,
+        },
+      ]
       await wordRepository.saveWords(words)
 
       // Check is called twice (once per word), insert is called twice
       expect(mockCheckStatement.executeAsync).toHaveBeenCalledTimes(2)
       expect(mockInsertStatement.executeAsync).toHaveBeenCalledTimes(2)
+    })
+
+    it('should bind populated optional fields and enabled flags', async () => {
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(null),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      const mockUpdateStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      const mockInsertStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
+      const populatedWord: Word = {
+        ...mockWord,
+        dutch_original: 'het huis',
+        is_irregular: true,
+        is_reflexive: true,
+        is_expression: true,
+        expression_type: ExpressionType.IDIOM,
+        is_separable: true,
+        prefix_part: 'op',
+        root_verb: 'geven',
+        plural: 'huizen',
+        register: 'formal',
+        examples: [{ nl: 'Een huis.', en: 'A house.' }],
+        conjugation: {
+          present: 'geef',
+          simple_past: 'gaf',
+          past_participle: 'gegeven',
+        },
+        preposition: 'van',
+        image_url: 'https://example.com/house.png',
+        tts_url: 'https://example.com/house.mp3',
+        last_reviewed_at: CREATED_AT,
+        analysis_notes: 'Common noun',
+      }
+
+      await wordRepository.saveWords([populatedWord])
+
+      const insertArguments = mockInsertStatement.executeAsync.mock.calls[0]
+      expect(insertArguments).toEqual(
+        expect.arrayContaining([
+          1,
+          ExpressionType.IDIOM,
+          'op',
+          'geven',
+          'huizen',
+          'formal',
+          JSON.stringify(populatedWord.examples),
+          JSON.stringify(populatedWord.conjugation),
+          'https://example.com/house.png',
+          'https://example.com/house.mp3',
+          'Common noun',
+        ])
+      )
+    })
+
+    it('should apply SRS defaults to incomplete imported words', async () => {
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(null),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      const mockUpdateStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      const mockInsertStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
+      const incompleteWord = {
+        ...mockWord,
+        interval_days: undefined,
+        repetition_count: undefined,
+        easiness_factor: undefined,
+      } as unknown as Word
+
+      await wordRepository.saveWords([incompleteWord])
+
+      const insertArguments = mockInsertStatement.executeAsync.mock.calls[0]
+      expect(insertArguments.slice(24, 27)).toEqual([1, 0, 2.5])
     })
 
     it('should update existing word when semantic key matches', async () => {
@@ -164,8 +269,95 @@ describe('WordRepository', () => {
 
       await wordRepository.saveWords([mockWord])
 
-      expect(mockCheckStatement.executeAsync).toHaveBeenCalled()
+      expect(mockCheckStatement.executeAsync).toHaveBeenCalledWith(
+        mockWord.user_id,
+        mockWord.word_id,
+        mockWord.dutch_lemma,
+        mockWord.part_of_speech,
+        mockWord.article,
+        mockWord.word_id
+      )
       expect(mockUpdateStatement.executeAsync).toHaveBeenCalled()
+      expect(mockInsertStatement.executeAsync).not.toHaveBeenCalled()
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('dutch_lemma = ?')
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('part_of_speech = ?')
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('article = ?')
+      )
+      const updateArguments = mockUpdateStatement.executeAsync.mock.calls[0]
+      expect(updateArguments.slice(-2)).toEqual([
+        existingWord.word_id,
+        mockWord.user_id,
+      ])
+    })
+
+    it('should preserve an unsynced local word during remote apply', async () => {
+      const existingWord = {
+        word_id: 'pending-word-id',
+        sync_status: 'pending',
+        updated_at: '2026-07-25T11:00:00.000Z',
+      }
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(existingWord),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      const mockUpdateStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      const mockInsertStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
+
+      await wordRepository.saveWords([mockWord], {
+        preserveUnsynced: true,
+      })
+
+      expect(mockCheckStatement.executeAsync).toHaveBeenCalled()
+      expect(mockUpdateStatement.executeAsync).not.toHaveBeenCalled()
+      expect(mockInsertStatement.executeAsync).not.toHaveBeenCalled()
+    })
+
+    it('should never resurrect an existing local tombstone', async () => {
+      const existingWord = {
+        word_id: mockWord.word_id,
+        sync_status: 'deleted',
+        updated_at: CREATED_AT,
+        deleted_at: CREATED_AT,
+      }
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(existingWord),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      const mockUpdateStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      const mockInsertStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
+
+      await wordRepository.saveWords([mockWord])
+
+      expect(mockUpdateStatement.executeAsync).not.toHaveBeenCalled()
       expect(mockInsertStatement.executeAsync).not.toHaveBeenCalled()
     })
 
@@ -223,7 +415,7 @@ describe('WordRepository', () => {
       const result = await wordRepository.getWordsByUserId(USER_ID)
 
       expect(mockDatabase.getAllAsync).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT * FROM words'),
+        expect.stringContaining('deleted_at IS NULL'),
         [USER_ID]
       )
       expect(result.length).toBeGreaterThan(0)
@@ -263,6 +455,152 @@ describe('WordRepository', () => {
     })
   })
 
+  describe('getWordBySemanticKey', () => {
+    it('should normalize mixed-case lemma before local duplicate lookup', async () => {
+      mockDatabase.getFirstAsync.mockResolvedValue(null)
+
+      await wordRepository.getWordBySemanticKey(
+        USER_ID,
+        '  HUIS  ',
+        'noun',
+        'het'
+      )
+
+      expect(mockDatabase.getFirstAsync).toHaveBeenCalledWith(
+        expect.stringContaining('lower(dutch_lemma) = ?'),
+        [USER_ID, 'huis', 'noun', 'het']
+      )
+    })
+  })
+
+  describe('delete tombstones', () => {
+    it('should mark a word deleted instead of removing it', async () => {
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.deleteWord(WORD_ID_1, USER_ID)
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining("sync_status = 'deleted'")
+      )
+      expect(statement.executeAsync).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+        WORD_ID_1,
+        USER_ID
+      )
+    })
+
+    it('should apply remote tombstones with exact-id conflict handling', async () => {
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.saveRemoteWordTombstones([
+        { ...mockWord, deleted_at: CREATED_AT },
+      ])
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('ON CONFLICT(word_id) DO UPDATE')
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.not.stringContaining('COALESCE(part_of_speech,')
+      )
+      const values = statement.executeAsync.mock.calls[0]
+      expect(values.slice(-4)).toEqual([
+        CREATED_AT,
+        'synced',
+        null,
+        expect.any(String),
+      ])
+    })
+  })
+
+  describe('sync timestamp integrity', () => {
+    it('marks status synced without inventing a domain timestamp', async () => {
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.markWordsSynced([
+        { word_id: WORD_ID_1, updated_at: CREATED_AT },
+      ])
+
+      const query = mockDatabase.prepareAsync.mock.calls[0][0]
+      expect(query).toContain('last_sync_attempt_at = ?')
+      expect(query).toContain('synced_at = ?')
+      expect(query.split('WHERE')[0]).not.toContain('updated_at =')
+      expect(statement.executeAsync).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+        WORD_ID_1,
+        CREATED_AT
+      )
+    })
+
+    it('records sync errors without changing domain updated_at', async () => {
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.markWordsError([
+        { word_id: WORD_ID_1, updated_at: CREATED_AT },
+      ])
+
+      const query = mockDatabase.prepareAsync.mock.calls[0][0]
+      expect(query).toContain("sync_status = 'error'")
+      expect(query).toContain('last_sync_attempt_at = ?')
+      expect(query.split('WHERE')[0]).not.toContain('updated_at =')
+      expect(statement.executeAsync).toHaveBeenCalledWith(
+        expect.any(String),
+        WORD_ID_1,
+        CREATED_AT
+      )
+    })
+
+    it('reconciles a successful push with the server timestamp', async () => {
+      const serverUpdatedAt = '2026-07-25T16:00:00.000Z'
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.reconcilePushedWords(
+        [
+          {
+            word_id: WORD_ID_1,
+            updated_at: serverUpdatedAt,
+            deleted_at: null,
+          },
+        ],
+        new Map([[WORD_ID_1, CREATED_AT]])
+      )
+
+      expect(statement.executeAsync).toHaveBeenCalledWith(
+        serverUpdatedAt,
+        null,
+        expect.any(String),
+        expect.any(String),
+        WORD_ID_1,
+        CREATED_AT
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('AND updated_at = ?')
+      )
+      expect(statement.finalizeAsync).toHaveBeenCalled()
+    })
+  })
+
   describe('database connection', () => {
     it('should initialize database on first call', async () => {
       mockDatabase.getAllAsync.mockResolvedValue([])
@@ -299,6 +637,22 @@ describe('WordRepository', () => {
       await expect(wordRepository.saveWords([mockWord])).rejects.toThrow(
         PREPARE_ERROR_MSG
       )
+    })
+
+    it('should finalize prepared statements when later preparation fails', async () => {
+      const checkStatement = {
+        finalizeAsync: jest.fn().mockResolvedValue(undefined),
+      }
+      const prepareError = new Error(PREPARE_ERROR_MSG)
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(checkStatement)
+        .mockRejectedValueOnce(prepareError)
+
+      await expect(wordRepository.saveWords([mockWord])).rejects.toThrow(
+        PREPARE_ERROR_MSG
+      )
+
+      expect(checkStatement.finalizeAsync).toHaveBeenCalledTimes(1)
     })
   })
 })

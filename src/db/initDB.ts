@@ -4,12 +4,16 @@ import {
   SQL_SCHEMA,
   MIGRATION_V3_UNIQUE_INDEX,
   MIGRATION_V4_ADD_REGISTER,
+  MIGRATION_V5_ADD_PROGRESS_DELETED_AT,
+  MIGRATION_V5_ADD_WORD_DELETED_AT,
+  MIGRATION_V5_TOMBSTONE_INDEXES,
+  MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS,
 } from './schema'
 import { Sentry } from '@/lib/sentry'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 4
+const SCHEMA_VERSION = 6
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -29,6 +33,7 @@ interface WordToKeep {
 }
 
 let database: SQLite.SQLiteDatabase | null = null
+let initializationPromise: Promise<SQLite.SQLiteDatabase> | null = null
 
 /**
  * Migration v3: Deduplicate existing words and create unique semantic index
@@ -136,71 +141,143 @@ async function migrateToV3(db: SQLite.SQLiteDatabase): Promise<void> {
   console.log('[DB] Migration to v3 completed successfully')
 }
 
+async function addColumnIfMissing(
+  db: SQLite.SQLiteDatabase,
+  migration: string,
+  columnName: string
+): Promise<void> {
+  try {
+    await db.execAsync(migration)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    if (!errorMessage.includes('duplicate column name')) {
+      throw error
+    }
+    console.log(`[DB] ${columnName} column already exists, skipping migration`)
+  }
+}
+
+async function migrateToV5(db: SQLite.SQLiteDatabase): Promise<void> {
+  console.log('[DB] Starting migration to v5: adding delete tombstones...')
+  await addColumnIfMissing(
+    db,
+    MIGRATION_V5_ADD_WORD_DELETED_AT,
+    'words.deleted_at'
+  )
+  await addColumnIfMissing(
+    db,
+    MIGRATION_V5_ADD_PROGRESS_DELETED_AT,
+    'user_progress.deleted_at'
+  )
+  await db.execAsync(MIGRATION_V5_TOMBSTONE_INDEXES)
+  console.log('[DB] Migration to v5 completed successfully')
+}
+
+async function migrateToV6(db: SQLite.SQLiteDatabase): Promise<void> {
+  console.log('[DB] Starting migration to v6: adding sync timestamps...')
+  for (const column of MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS) {
+    await addColumnIfMissing(db, column.migration, column.columnName)
+  }
+  console.log('[DB] Migration to v6 completed successfully')
+}
+
+async function createBaseSchema(db: SQLite.SQLiteDatabase): Promise<void> {
+  const statements = SQL_SCHEMA.split(';').filter(statement => statement.trim())
+  for (const statement of statements) {
+    await db.execAsync(statement)
+  }
+  console.log('[DB] Base schema created (v2)')
+}
+
+async function migrateToV4(db: SQLite.SQLiteDatabase): Promise<void> {
+  console.log('[DB] Starting migration to v4: adding register column...')
+  await addColumnIfMissing(db, MIGRATION_V4_ADD_REGISTER, 'words.register')
+  console.log('[DB] Migration to v4 completed successfully')
+}
+
+async function applyPendingMigrations(
+  db: SQLite.SQLiteDatabase,
+  currentVersion: number
+): Promise<void> {
+  if (currentVersion < 2) {
+    await createBaseSchema(db)
+  }
+  if (currentVersion < 3) {
+    await migrateToV3(db)
+  }
+  if (currentVersion < 4) {
+    await migrateToV4(db)
+  }
+  if (currentVersion < 5) {
+    await migrateToV5(db)
+  }
+  if (currentVersion < 6) {
+    await migrateToV6(db)
+  }
+}
+
+function parseSchemaVersion(storedVersion: string | null): number {
+  const parsedVersion = Number.parseInt(storedVersion ?? '', 10)
+  return Number.isInteger(parsedVersion) && parsedVersion >= 0
+    ? parsedVersion
+    : 0
+}
+
+async function ensureCurrentSchema(db: SQLite.SQLiteDatabase): Promise<void> {
+  const existingVersion = await AsyncStorage.getItem(SCHEMA_VERSION_KEY)
+  const currentVersion = parseSchemaVersion(existingVersion)
+
+  if (currentVersion >= SCHEMA_VERSION) {
+    console.log('[DB] Database already initialized')
+    return
+  }
+
+  await applyPendingMigrations(db, currentVersion)
+  await AsyncStorage.setItem(SCHEMA_VERSION_KEY, SCHEMA_VERSION.toString())
+  console.log('[DB] Database initialized with schema version', SCHEMA_VERSION)
+}
+
+async function discardFailedDatabase(
+  failedDatabase: SQLite.SQLiteDatabase | null
+): Promise<void> {
+  try {
+    await failedDatabase?.closeAsync()
+  } catch (error) {
+    console.error('[DB] Error closing failed database connection:', error)
+  }
+}
+
+async function openAndInitializeDatabase(): Promise<SQLite.SQLiteDatabase> {
+  let openedDatabase: SQLite.SQLiteDatabase | null = null
+  try {
+    openedDatabase = await SQLite.openDatabaseAsync(DB_NAME, {
+      useNewConnection: true,
+    })
+    await ensureCurrentSchema(openedDatabase)
+    database = openedDatabase
+    return openedDatabase
+  } catch (error) {
+    console.error('[DB] Error initializing database:', error)
+    await discardFailedDatabase(openedDatabase)
+    throw new Error(
+      `Failed to initialize database: ${error instanceof Error ? error.message : 'Unknown error'}`
+    )
+  }
+}
+
 export async function initializeDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (database) {
     return database
   }
 
+  initializationPromise ??= openAndInitializeDatabase()
+  const pendingInitialization = initializationPromise
   try {
-    database = await SQLite.openDatabaseAsync(DB_NAME, {
-      useNewConnection: true,
-    })
-
-    // Check schema version
-    const existingVersion = await AsyncStorage.getItem(SCHEMA_VERSION_KEY)
-    const currentVersion = parseInt(existingVersion || '0', 10)
-
-    if (currentVersion < SCHEMA_VERSION) {
-      // Execute base schema creation for fresh install or upgrade
-      if (currentVersion < 2) {
-        const statements = SQL_SCHEMA.split(';').filter(stmt => stmt.trim())
-        for (const statement of statements) {
-          if (statement.trim()) {
-            await database.execAsync(statement)
-          }
-        }
-        console.log('[DB] Base schema created (v2)')
-      }
-
-      // Migration v2 -> v3: Add unique semantic index
-      if (currentVersion < 3) {
-        await migrateToV3(database)
-      }
-
-      // Migration v3 -> v4: Add register column
-      if (currentVersion < 4) {
-        console.log('[DB] Starting migration to v4: adding register column...')
-        try {
-          await database.execAsync(MIGRATION_V4_ADD_REGISTER)
-          console.log('[DB] Migration to v4 completed successfully')
-        } catch (error) {
-          // Column might already exist if schema was created fresh
-          const errorMessage =
-            error instanceof Error ? error.message : String(error)
-          if (!errorMessage.includes('duplicate column name')) {
-            throw error
-          }
-          console.log('[DB] Register column already exists, skipping migration')
-        }
-      }
-
-      // Update schema version
-      await AsyncStorage.setItem(SCHEMA_VERSION_KEY, SCHEMA_VERSION.toString())
-
-      console.log(
-        '[DB] Database initialized with schema version',
-        SCHEMA_VERSION
-      )
-    } else {
-      console.log('[DB] Database already initialized')
+    return await pendingInitialization
+  } finally {
+    if (initializationPromise === pendingInitialization) {
+      initializationPromise = null
     }
-
-    return database
-  } catch (error) {
-    console.error('[DB] Error initializing database:', error)
-    throw new Error(
-      `Failed to initialize database: ${error instanceof Error ? error.message : 'Unknown error'}`
-    )
   }
 }
 

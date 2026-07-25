@@ -15,6 +15,8 @@ describe('ProgressRepository', () => {
   const USER_ID = 'test-user-id'
   const PROGRESS_ID = 'prog-123'
   const WORD_ID = 'word-456'
+  const REVIEWED_AT = '2025-10-01T00:00:00Z'
+  const CREATED_AT = '2025-09-01T00:00:00Z'
 
   const mockExecuteAsync = jest.fn()
   const mockFinalizeAsync = jest.fn()
@@ -51,7 +53,7 @@ describe('ProgressRepository', () => {
       await progressRepository.saveProgress([recordWithoutSync])
 
       expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
-        expect.stringContaining('INSERT OR REPLACE INTO user_progress')
+        expect.stringContaining('INSERT INTO user_progress')
       )
       expect(mockExecuteAsync).toHaveBeenCalledTimes(1)
     })
@@ -75,6 +77,84 @@ describe('ProgressRepository', () => {
       ).rejects.toThrow('Execute failed')
 
       expect(mockFinalizeAsync).toHaveBeenCalledTimes(1)
+    })
+
+    it('should preserve local unsynced rows during remote apply', async () => {
+      const record = createMockProgress()
+      const {
+        sync_status: _syncStatus,
+        deleted_at: _deletedAt,
+        ...remoteRecord
+      } = record
+
+      await progressRepository.saveProgress([remoteRecord], {
+        preserveUnsynced: true,
+      })
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('user_progress.sync_status NOT IN (?, ?, ?, ?)')
+      )
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        null,
+        expect.anything(),
+        expect.anything(),
+        null,
+        'synced',
+        null,
+        expect.any(String),
+        'pending',
+        'error',
+        'conflict',
+        'deleted'
+      )
+    })
+  })
+
+  describe('saveRemoteProgressTombstones', () => {
+    it('should upsert a durable synced tombstone', async () => {
+      const record = createMockProgress({
+        progress_id: PROGRESS_ID,
+        user_id: USER_ID,
+        deleted_at: '2026-07-25T12:00:00.000Z',
+      })
+      const { sync_status: _syncStatus, ...remoteTombstone } = record
+
+      await progressRepository.saveRemoteProgressTombstones([
+        remoteTombstone as typeof remoteTombstone & { deleted_at: string },
+      ])
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('ON CONFLICT(progress_id) DO UPDATE SET')
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('deleted_at = excluded.deleted_at')
+      )
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        PROGRESS_ID,
+        USER_ID,
+        record.word_id,
+        record.status,
+        record.reviewed_count,
+        record.last_reviewed_at,
+        record.created_at,
+        record.updated_at,
+        record.deleted_at,
+        'synced',
+        null,
+        expect.any(String)
+      )
+      expect(mockFinalizeAsync).toHaveBeenCalledTimes(1)
+    })
+
+    it('should no-op for an empty tombstone batch', async () => {
+      await progressRepository.saveRemoteProgressTombstones([])
+
+      expect(mockDatabase.prepareAsync).not.toHaveBeenCalled()
     })
   })
 
@@ -101,9 +181,8 @@ describe('ProgressRepository', () => {
     })
 
     it('should update last_reviewed_at field', async () => {
-      const timestamp = '2025-10-01T00:00:00Z'
       await progressRepository.updateProgress(PROGRESS_ID, USER_ID, {
-        last_reviewed_at: timestamp,
+        last_reviewed_at: REVIEWED_AT,
       })
 
       expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
@@ -144,15 +223,19 @@ describe('ProgressRepository', () => {
         word_id: WORD_ID,
         status: 'learning',
         reviewed_count: 3,
-        last_reviewed_at: '2025-10-01T00:00:00Z',
-        created_at: '2025-09-01T00:00:00Z',
-        updated_at: '2025-10-01T00:00:00Z',
+        last_reviewed_at: REVIEWED_AT,
+        created_at: CREATED_AT,
+        updated_at: REVIEWED_AT,
         sync_status: 'synced',
       }
       mockDatabase.getAllAsync.mockResolvedValue([rawRow])
 
       const result = await progressRepository.getProgressByUserId(USER_ID)
 
+      expect(mockDatabase.getAllAsync).toHaveBeenCalledWith(
+        expect.stringContaining('deleted_at IS NULL'),
+        [USER_ID]
+      )
       expect(result).toHaveLength(1)
       expect(result[0].progress_id).toBe(PROGRESS_ID)
       expect(result[0].reviewed_count).toBe(3)
@@ -176,8 +259,8 @@ describe('ProgressRepository', () => {
         status: 'learning',
         reviewed_count: 1,
         last_reviewed_at: null,
-        created_at: '2025-09-01T00:00:00Z',
-        updated_at: '2025-09-01T00:00:00Z',
+        created_at: CREATED_AT,
+        updated_at: CREATED_AT,
         sync_status: 'synced',
       }
       mockDatabase.getAllAsync.mockResolvedValue([rawRow])
@@ -198,8 +281,8 @@ describe('ProgressRepository', () => {
         status: 'learning',
         reviewed_count: 2,
         last_reviewed_at: null,
-        created_at: '2025-09-01T00:00:00Z',
-        updated_at: '2025-09-01T00:00:00Z',
+        created_at: CREATED_AT,
+        updated_at: CREATED_AT,
         sync_status: 'synced',
       }
       mockDatabase.getFirstAsync.mockResolvedValue(rawRow)
@@ -253,13 +336,22 @@ describe('ProgressRepository', () => {
   })
 
   describe('markProgressSynced', () => {
-    it('should update sync_status to synced for given IDs', async () => {
+    it('should update only sync metadata for given IDs', async () => {
       await progressRepository.markProgressSynced(['prog-1', 'prog-2'])
 
       expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
         expect.stringContaining("sync_status = 'synced'")
       )
-      expect(mockExecuteAsync).toHaveBeenCalled()
+      const query = mockDatabase.prepareAsync.mock.calls[0][0]
+      expect(query).toContain('last_sync_attempt_at = ?')
+      expect(query).toContain('synced_at = ?')
+      expect(query).not.toContain('updated_at =')
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+        'prog-1',
+        'prog-2'
+      )
       expect(mockFinalizeAsync).toHaveBeenCalled()
     })
 
@@ -270,15 +362,73 @@ describe('ProgressRepository', () => {
     })
   })
 
+  describe('reconcilePushedProgress', () => {
+    it('stores the server timestamp with successful sync metadata', async () => {
+      await progressRepository.reconcilePushedProgress(
+        [
+          {
+            progress_id: PROGRESS_ID,
+            updated_at: REVIEWED_AT,
+            deleted_at: null,
+          },
+        ],
+        new Map([[PROGRESS_ID, CREATED_AT]])
+      )
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('updated_at = ?')
+      )
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        REVIEWED_AT,
+        null,
+        expect.any(String),
+        expect.any(String),
+        PROGRESS_ID,
+        CREATED_AT
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('AND updated_at = ?')
+      )
+      expect(mockFinalizeAsync).toHaveBeenCalled()
+    })
+  })
+
   describe('deleteProgress', () => {
-    it('should delete by progressId and userId', async () => {
+    it('should create a tombstone by progressId and userId', async () => {
       await progressRepository.deleteProgress(PROGRESS_ID, USER_ID)
 
       expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
-        expect.stringContaining('DELETE FROM user_progress')
+        expect.stringContaining("sync_status = 'deleted'")
       )
-      expect(mockExecuteAsync).toHaveBeenCalledWith(PROGRESS_ID, USER_ID)
+      expect(mockExecuteAsync).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+        PROGRESS_ID,
+        USER_ID
+      )
       expect(mockFinalizeAsync).toHaveBeenCalled()
+    })
+
+    it('should return only unsynced tombstones for delete push', async () => {
+      mockDatabase.getAllAsync.mockResolvedValue([])
+
+      await progressRepository.getDeletedProgress(USER_ID)
+
+      expect(mockDatabase.getAllAsync).toHaveBeenCalledWith(
+        expect.stringContaining("sync_status = 'deleted'"),
+        [USER_ID]
+      )
+    })
+
+    it('should acknowledge tombstones without changing deleted_at', async () => {
+      await progressRepository.markProgressTombstonesSynced([PROGRESS_ID])
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining("SET sync_status = 'synced'")
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.not.stringContaining('updated_at =')
+      )
     })
   })
 })

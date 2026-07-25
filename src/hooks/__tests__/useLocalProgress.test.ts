@@ -37,15 +37,36 @@ describe('useLocalProgress', () => {
     sync_status: 'synced',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    deleted_at: null,
+    last_sync_attempt_at: null,
+    synced_at: null,
     ...overrides,
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       currentUserId: USER_ID,
     })
+    ;(progressRepository.getProgressByUserId as jest.Mock).mockResolvedValue([])
   })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  const renderInitializedHook = async () => {
+    const renderedHook = renderHook(() => useLocalProgress())
+
+    await waitFor(() => {
+      expect(progressRepository.getProgressByUserId).toHaveBeenCalledWith(
+        USER_ID
+      )
+      expect(renderedHook.result.current.isLoading).toBe(false)
+    })
+
+    return renderedHook
+  }
 
   describe('fetchProgress', () => {
     it('should fetch progress by user ID', async () => {
@@ -57,7 +78,7 @@ describe('useLocalProgress', () => {
         mockProgress
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       await act(async () => {
         await result.current.fetchProgress()
@@ -89,11 +110,13 @@ describe('useLocalProgress', () => {
 
     it('should handle fetch errors gracefully', async () => {
       const error = new Error('Fetch failed')
-      ;(progressRepository.getProgressByUserId as jest.Mock).mockRejectedValue(
-        error
-      )
-
-      const { result } = renderHook(() => useLocalProgress())
+      const consoleError = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
+      const { result } = await renderInitializedHook()
+      ;(
+        progressRepository.getProgressByUserId as jest.Mock
+      ).mockRejectedValueOnce(error)
 
       await act(async () => {
         await result.current.fetchProgress()
@@ -101,6 +124,10 @@ describe('useLocalProgress', () => {
 
       expect(result.current.progress).toEqual([])
       expect(result.current.isLoading).toBe(false)
+      expect(consoleError).toHaveBeenCalledWith(
+        '[LocalProgress] Error fetching progress:',
+        error
+      )
     })
 
     it('should skip fetch if no user ID', async () => {
@@ -153,7 +180,7 @@ describe('useLocalProgress', () => {
         mockProgress
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       let fetchedProgress: UserProgress[] = []
       await act(async () => {
@@ -171,7 +198,7 @@ describe('useLocalProgress', () => {
         []
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       let fetchedProgress: UserProgress[] = []
       await act(async () => {
@@ -183,11 +210,14 @@ describe('useLocalProgress', () => {
 
     it('should handle get progress errors', async () => {
       const error = new Error('Get progress failed')
+      const consoleError = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
       ;(progressRepository.getProgressByWordId as jest.Mock).mockRejectedValue(
         error
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       let fetchedProgress: UserProgress[] = [createMockProgress()]
       await act(async () => {
@@ -195,6 +225,10 @@ describe('useLocalProgress', () => {
       })
 
       expect(fetchedProgress).toEqual([])
+      expect(consoleError).toHaveBeenCalledWith(
+        '[LocalProgress] Error fetching progress for word:',
+        error
+      )
     })
 
     it('should work without user context', async () => {
@@ -203,7 +237,7 @@ describe('useLocalProgress', () => {
         mockProgress
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       let fetchedProgress: UserProgress[] = []
       await act(async () => {
@@ -226,7 +260,7 @@ describe('useLocalProgress', () => {
         undefined
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       const updates = { reviewed_count: 1, status: 'reviewed' }
 
@@ -260,11 +294,14 @@ describe('useLocalProgress', () => {
 
     it('should throw error on update failure', async () => {
       const updateError = new Error(UPDATE_FAILED)
+      const consoleError = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
       ;(progressRepository.updateProgress as jest.Mock).mockRejectedValue(
         updateError
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       const updates = { reviewed_count: 1 }
 
@@ -273,6 +310,10 @@ describe('useLocalProgress', () => {
           await result.current.updateProgress(PROGRESS_ID, updates)
         })
       ).rejects.toThrow(UPDATE_FAILED)
+      expect(consoleError).toHaveBeenCalledWith(
+        '[LocalProgress] Error updating progress:',
+        updateError
+      )
     })
 
     it('should handle partial updates', async () => {
@@ -284,7 +325,7 @@ describe('useLocalProgress', () => {
         undefined
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       // Only update some fields
       const partialUpdates = { reviewed_count: 2 }
@@ -309,7 +350,7 @@ describe('useLocalProgress', () => {
         undefined
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       const updates = [
         { reviewed_count: 1 },
@@ -335,7 +376,7 @@ describe('useLocalProgress', () => {
         undefined
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       const multiFieldUpdate = {
         reviewed_count: 2,
@@ -361,7 +402,7 @@ describe('useLocalProgress', () => {
         []
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       expect(result.current).toHaveProperty('progress')
       expect(result.current).toHaveProperty('isLoading')
@@ -375,7 +416,7 @@ describe('useLocalProgress', () => {
         []
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
       expect(Array.isArray(result.current.progress)).toBe(true)
       expect(typeof result.current.isLoading).toBe('boolean')
@@ -419,27 +460,25 @@ describe('useLocalProgress', () => {
         []
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderInitializedHook()
 
-      await waitFor(() => {
-        expect(result.current.progress).toEqual([])
-      })
+      expect(result.current.progress).toEqual([])
     })
 
     it('should maintain progress state after failed update', async () => {
       const mockProgress = [createMockProgress()]
+      const updateError = new Error(UPDATE_FAILED)
+      const consoleError = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
       ;(progressRepository.getProgressByUserId as jest.Mock).mockResolvedValue(
         mockProgress
       )
       ;(progressRepository.updateProgress as jest.Mock).mockRejectedValueOnce(
-        new Error(UPDATE_FAILED)
+        updateError
       )
 
-      const { result } = renderHook(() => useLocalProgress())
-
-      await waitFor(() => {
-        expect(result.current.progress).toEqual(mockProgress)
-      })
+      const { result } = await renderInitializedHook()
 
       try {
         await act(async () => {
@@ -452,6 +491,10 @@ describe('useLocalProgress', () => {
       }
 
       expect(result.current.progress).toEqual(mockProgress)
+      expect(consoleError).toHaveBeenCalledWith(
+        '[LocalProgress] Error updating progress:',
+        updateError
+      )
     })
 
     it('should handle progress data with various sync statuses', async () => {

@@ -127,9 +127,12 @@ export const useAddWord = (preselectedCollectionId?: string) => {
         return false
       }
 
-      await saveAnalyzedWord(analysisResult, targetCollection.collection_id)
+      const savedWord = await saveAnalyzedWord(
+        analysisResult,
+        targetCollection.collection_id
+      )
       ToastService.show(
-        `"${analysisResult.dutch_lemma}" added to "${targetCollection.name}"`,
+        `"${savedWord.dutch_lemma}" added to "${targetCollection.name}"`,
         ToastType.SUCCESS
       )
       return true

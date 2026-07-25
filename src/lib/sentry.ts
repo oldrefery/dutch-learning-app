@@ -1,5 +1,7 @@
 import * as SentryLib from '@sentry/react-native'
 import { supabaseIntegration } from '@supabase/sentry-js-integration'
+import { sanitizeLogContext } from '@/utils/logSanitizer'
+import { getSentryRuntimeConfig } from './sentryConfig'
 import { supabase } from './supabaseClient'
 
 // Flag to prevent multiple initializations
@@ -10,22 +12,27 @@ export function initializeSentry() {
     return
   }
 
-  // Enable Sentry in development for debugging crashes
-  const isDevelopment = __DEV__
-
   // Get Supabase URL for filtering
   const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
+  const runtimeConfig = getSentryRuntimeConfig()
 
   // Always initialize Sentry (even in development for debugging)
   SentryLib.init({
     dsn: 'https://b9380e4ad548d88fe5c8bfecabcdf2e3@o4506263035904000.ingest.us.sentry.io/4509999490727936',
     debug: false, // Disable debug logging to reduce noise
     enabled: true, // Enable Sentry in development for debugging
-    sendDefaultPii: true,
-    tracesSampleRate: isDevelopment ? 0.1 : 1.0, // Sample 10% in development
-    profilesSampleRate: isDevelopment ? 0 : 1.0, // Disable profiling in development
-    replaysSessionSampleRate: isDevelopment ? 0.1 : 0.1,
-    replaysOnErrorSampleRate: isDevelopment ? 1.0 : 1.0,
+    sendDefaultPii: false,
+    environment: runtimeConfig.environment,
+    release: runtimeConfig.release,
+    dist: runtimeConfig.dist,
+    beforeSend: event => sanitizeLogContext(event),
+    beforeSendTransaction: event => sanitizeLogContext(event),
+    beforeSendSpan: span => sanitizeLogContext(span),
+    beforeBreadcrumb: breadcrumb => sanitizeLogContext(breadcrumb),
+    tracesSampleRate: runtimeConfig.tracesSampleRate,
+    profilesSampleRate: runtimeConfig.profilesSampleRate,
+    replaysSessionSampleRate: runtimeConfig.replaysSessionSampleRate,
+    replaysOnErrorSampleRate: runtimeConfig.replaysOnErrorSampleRate,
     integrations: [
       SentryLib.reactNativeTracingIntegration({
         // Prevent duplicate spans for Supabase requests
@@ -35,7 +42,11 @@ export function initializeSentry() {
           return !url.startsWith(`${supabaseUrl}/rest`)
         },
       }),
-      SentryLib.mobileReplayIntegration(),
+      SentryLib.mobileReplayIntegration({
+        maskAllText: true,
+        maskAllImages: true,
+        maskAllVectors: true,
+      }),
       // Supabase integration for tracing and breadcrumbs; explicit captures keep auth errors contextual.
       supabaseIntegration(supabase, SentryLib, {
         tracing: true,

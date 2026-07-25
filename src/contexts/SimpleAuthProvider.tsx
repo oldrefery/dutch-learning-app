@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react'
 import { AppState, type AppStateStatus } from 'react-native'
 import { router, type Href } from 'expo-router'
 import * as Linking from 'expo-linking'
@@ -7,9 +14,14 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import { ROUTES } from '@/constants/Routes'
 import type { LoginCredentials, SignupCredentials } from '@/types/AuthTypes'
 import { Sentry } from '@/lib/sentry'
-import { initiateGoogleOAuth, handleOAuthCallback } from '@/lib/googleAuth'
+import { initiateGoogleOAuth } from '@/lib/googleAuth'
 import { initiateAppleSignIn } from '@/lib/appleAuth'
 import { isNetworkAvailable } from '@/utils/network'
+import {
+  createPasswordRecoveryClient,
+  type PasswordRecoveryClient,
+} from '@/lib/passwordRecoveryClient'
+import type { AuthCallbackTokens } from '@/lib/authDeepLink'
 
 interface SimpleAuthState {
   loading: boolean
@@ -26,11 +38,9 @@ interface SimpleAuthActions {
   signInWithApple: (redirectUrl?: Href) => Promise<void>
   signOut: () => Promise<void>
   requestPasswordReset: (email: string) => Promise<void>
-  resetPassword: (
-    newPassword: string,
-    accessToken?: string,
-    refreshToken?: string
-  ) => Promise<void>
+  preparePasswordRecovery: (tokens: AuthCallbackTokens) => Promise<void>
+  cancelPasswordRecovery: () => Promise<void>
+  resetPassword: (newPassword: string) => Promise<void>
   clearError: () => void
 }
 
@@ -86,7 +96,42 @@ export function SimpleAuthProvider({
   const [passwordResetCooldownUntil, setPasswordResetCooldownUntil] = useState<
     number | null
   >(null)
+  const passwordRecoveryTokensRef = useRef<AuthCallbackTokens | null>(null)
+  const passwordRecoveryClientRef = useRef<PasswordRecoveryClient | null>(null)
   const initializeApp = useApplicationStore(state => state.initializeApp)
+
+  const discardPasswordRecovery = useCallback(async () => {
+    const recoveryClient = passwordRecoveryClientRef.current
+    passwordRecoveryClientRef.current = null
+    passwordRecoveryTokensRef.current = null
+
+    if (!recoveryClient) {
+      return
+    }
+
+    try {
+      const { error: signOutError } = await recoveryClient.auth.signOut({
+        scope: 'local',
+      })
+      if (signOutError) {
+        Sentry.captureException(signOutError, {
+          tags: { operation: 'discardPasswordRecovery' },
+        })
+      }
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { operation: 'discardPasswordRecovery' },
+      })
+    }
+  }, [])
+
+  const preparePasswordRecovery = useCallback(
+    async (tokens: AuthCallbackTokens) => {
+      await discardPasswordRecovery()
+      passwordRecoveryTokensRef.current = tokens
+    },
+    [discardPasswordRecovery]
+  )
 
   // Check for the existing session on app start and handle OAuth deep links
   useEffect(() => {
@@ -145,25 +190,6 @@ export function SimpleAuthProvider({
       }
     })
 
-    // Handle OAuth deep links
-    const handleDeepLink = async (event: { url: string }) => {
-      const handled = await handleOAuthCallback(event.url)
-      if (handled) {
-        // OAuth callback was handled, session will be set
-        // The onAuthStateChange listener will handle the navigation
-      }
-    }
-
-    // Listen for deep links
-    const deepLinkSubscription = Linking.addEventListener('url', handleDeepLink)
-
-    // Check if app was opened with a deep link
-    Linking.getInitialURL().then(url => {
-      if (url) {
-        handleDeepLink({ url })
-      }
-    })
-
     // Manage auto-refresh based on app state
     // Guard with network check to avoid clearing session when offline (GitHub #36906)
     const handleAppStateChange = async (nextState: AppStateStatus) => {
@@ -194,7 +220,6 @@ export function SimpleAuthProvider({
 
     return () => {
       subscription.unsubscribe()
-      deepLinkSubscription.remove()
       appStateSubscription.remove()
     }
   }, [initializeApp])
@@ -485,23 +510,38 @@ export function SimpleAuthProvider({
     }
   }
 
-  const resetPassword = async (
-    newPassword: string,
-    accessToken?: string,
-    refreshToken?: string
-  ) => {
+  const resetPassword = async (newPassword: string) => {
     try {
       setLoading(true)
       setError(null)
 
-      // If tokens are provided, set the session first
-      if (accessToken && refreshToken) {
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        })
+      let recoveryClient = passwordRecoveryClientRef.current
+      if (!recoveryClient) {
+        const recoveryTokens = passwordRecoveryTokensRef.current
+        if (!recoveryTokens) {
+          setError(
+            'This password reset link is invalid or expired. Please request a new one.'
+          )
+          return
+        }
+
+        recoveryClient = createPasswordRecoveryClient()
+        passwordRecoveryClientRef.current = recoveryClient
+        passwordRecoveryTokensRef.current = null
+
+        let sessionError: unknown = null
+        try {
+          const sessionResult = await recoveryClient.auth.setSession({
+            access_token: recoveryTokens.accessToken,
+            refresh_token: recoveryTokens.refreshToken,
+          })
+          sessionError = sessionResult.error
+        } catch (error) {
+          sessionError = error
+        }
 
         if (sessionError) {
+          await discardPasswordRecovery()
           setError('Failed to authenticate. Please request a new reset link.')
           Sentry.captureException(sessionError, {
             tags: { operation: 'resetPasswordSetSession' },
@@ -510,31 +550,72 @@ export function SimpleAuthProvider({
         }
       }
 
-      // Update the password
-      const { error } = await supabase.auth.updateUser({
+      const { error: updateError } = await recoveryClient.auth.updateUser({
         password: newPassword,
       })
 
-      if (error) {
-        setError(`Failed to reset password: ${error.message}`)
-        Sentry.captureException(error, {
+      if (updateError) {
+        setError(`Failed to reset password: ${updateError.message}`)
+        Sentry.captureException(updateError, {
           tags: { operation: 'resetPassword' },
         })
         return
       }
 
-      // Initialize app with the user
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      let sessionCleanupFailed = false
 
-      if (user?.id) {
-        await initializeApp(user.id)
+      try {
+        const { error: recoverySignOutError } =
+          await recoveryClient.auth.signOut({
+            scope: 'global',
+          })
+
+        if (recoverySignOutError) {
+          sessionCleanupFailed = true
+          Sentry.captureException(recoverySignOutError, {
+            tags: { operation: 'resetPasswordRecoverySignOut' },
+          })
+          await recoveryClient.auth.signOut({ scope: 'local' })
+        }
+      } catch (signOutError) {
+        sessionCleanupFailed = true
+        Sentry.captureException(signOutError, {
+          tags: { operation: 'resetPasswordRecoverySignOut' },
+        })
+      }
+
+      passwordRecoveryClientRef.current = null
+      passwordRecoveryTokensRef.current = null
+
+      try {
+        const { error: primarySignOutError } = await supabase.auth.signOut({
+          scope: 'local',
+        })
+
+        if (primarySignOutError) {
+          sessionCleanupFailed = true
+          Sentry.captureException(primarySignOutError, {
+            tags: { operation: 'resetPasswordPrimarySignOut' },
+          })
+        }
+      } catch (signOutError) {
+        sessionCleanupFailed = true
+        Sentry.captureException(signOutError, {
+          tags: { operation: 'resetPasswordPrimarySignOut' },
+        })
+      }
+
+      await initializeApp()
+
+      if (sessionCleanupFailed) {
+        setError(
+          'Password reset, but session cleanup failed. Please close and reopen the app before signing in.'
+        )
+        return
       }
 
       setError('Password successfully reset! You can now sign in.')
 
-      // Navigate to log in after a short delay
       setTimeout(() => {
         router.replace(ROUTES.AUTH.LOGIN)
       }, 2000)
@@ -561,6 +642,8 @@ export function SimpleAuthProvider({
     signInWithApple,
     signOut,
     requestPasswordReset,
+    preparePasswordRecovery,
+    cancelPasswordRecovery: discardPasswordRecovery,
     resetPassword,
     clearError,
   }

@@ -9,6 +9,8 @@
 import { useHistoryStore } from '../useHistoryStore'
 import { ToastType } from '@/constants/ToastConstants'
 
+const COLLECTION_NAME = 'My Collection'
+
 describe('useHistoryStore', () => {
   beforeEach(() => {
     useHistoryStore.setState({
@@ -88,17 +90,17 @@ describe('useHistoryStore', () => {
       useHistoryStore.getState().addAnalyzedWord('huis', 'huis')
       useHistoryStore
         .getState()
-        .addAnalyzedWord('huis', 'huis', 'My Collection')
+        .addAnalyzedWord('huis', 'huis', COLLECTION_NAME)
 
       const words = useHistoryStore.getState().analyzedWords
       expect(words).toHaveLength(1)
-      expect(words[0].addedToCollection).toBe('My Collection')
+      expect(words[0].addedToCollection).toBe(COLLECTION_NAME)
     })
 
     it('should set wasAdded to true when addedToCollection is provided', () => {
       useHistoryStore
         .getState()
-        .addAnalyzedWord('huis', 'huis', 'My Collection')
+        .addAnalyzedWord('huis', 'huis', COLLECTION_NAME)
 
       expect(useHistoryStore.getState().analyzedWords[0].wasAdded).toBe(true)
     })

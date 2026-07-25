@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
 import { logSupabaseError } from '@/utils/logger'
 
+const SHARED_AT = '2025-01-01'
+
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
@@ -79,7 +81,8 @@ describe('collectionSharingService.getSharedCollectionWords', () => {
       ],
       error: null,
     })
-    const eq = jest.fn().mockReturnValue({ order })
+    const is = jest.fn().mockReturnValue({ order })
+    const eq = jest.fn().mockReturnValue({ is })
     const select = jest.fn().mockReturnValue({ eq })
 
     ;(supabase.from as jest.Mock).mockReturnValue({ select })
@@ -286,7 +289,7 @@ describe('collectionSharingService.getSharedCollection', () => {
         name: 'Shared',
         is_shared: true,
         share_token: SHARE_TOKEN,
-        shared_at: '2025-01-01',
+        shared_at: SHARED_AT,
       },
       error: null,
     })
@@ -295,7 +298,8 @@ describe('collectionSharingService.getSharedCollection', () => {
     const mockSelect = jest.fn().mockReturnValue({ eq: mockEq1 })
 
     // Second query: word count
-    const mockCountEq = jest.fn().mockResolvedValue({ count: 5, error: null })
+    const mockCountIs = jest.fn().mockResolvedValue({ count: 5, error: null })
+    const mockCountEq = jest.fn().mockReturnValue({ is: mockCountIs })
     const mockCountSelect = jest.fn().mockReturnValue({ eq: mockCountEq })
 
     let callCount = 0
@@ -380,7 +384,7 @@ describe('collectionSharingService.getCollectionShareStatus', () => {
       data: {
         is_shared: true,
         share_token: 'token-xyz',
-        shared_at: '2025-01-01',
+        shared_at: SHARED_AT,
       },
       error: null,
     })
@@ -399,7 +403,7 @@ describe('collectionSharingService.getCollectionShareStatus', () => {
       data: {
         is_shared: true,
         share_token: 'token-xyz',
-        shared_at: '2025-01-01',
+        shared_at: SHARED_AT,
       },
     })
   })
