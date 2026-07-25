@@ -120,6 +120,10 @@ interface SupabaseWordPayload {
   analysis_notes: string | null
 }
 
+interface SyncWord extends Word {
+  deleted_at: string | null
+}
+
 type SupabaseWordPayloadWithoutRegister = Omit<SupabaseWordPayload, 'register'>
 type SupabaseWordsUpsertPayload =
   | SupabaseWordPayload
@@ -157,6 +161,7 @@ const WORDS_SELECT_COLUMNS_WITHOUT_REGISTER = [
   'analysis_notes',
   'created_at',
   'updated_at',
+  'deleted_at',
 ].join(', ')
 
 const WORD_SYNC_PAGE_SIZE = 500
@@ -588,7 +593,7 @@ export class SyncManager {
     userId: string,
     cursor: SyncCursor | null
   ): Promise<Word[]> {
-    let data: Word[] | null = null
+    let data: SyncWord[] | null = null
     let error: SupabaseLikeError | null = null
 
     try {
@@ -631,11 +636,12 @@ export class SyncManager {
 
     // Parse JSON fields from Supabase and ensure required fields
     const now = new Date().toISOString()
-    const parsedWords = data
-      .map(word => {
+    const parsedWords: SyncWord[] = data
+      .map((word): SyncWord => {
         return {
           ...word,
           user_id: userId,
+          deleted_at: word.deleted_at ?? null,
           // Ensure created_at and updated_at are always set (fallback to current time)
           created_at: word.created_at || now,
           updated_at: word.updated_at || word.created_at || now,
@@ -647,11 +653,17 @@ export class SyncManager {
           interval_days: word.interval_days ?? 1,
           repetition_count: word.repetition_count ?? 0,
           easiness_factor: word.easiness_factor ?? 2.5,
-          translations: parseJsonField(word.translations, { en: [] }),
-          examples: parseJsonField(word.examples, null),
-          synonyms: parseJsonField(word.synonyms, []),
-          antonyms: parseJsonField(word.antonyms, []),
-          conjugation: parseJsonField(word.conjugation, null),
+          translations: parseJsonField<Word['translations']>(
+            word.translations,
+            { en: [] }
+          ),
+          examples: parseJsonField<Word['examples']>(word.examples, null),
+          synonyms: parseJsonField<string[]>(word.synonyms, []),
+          antonyms: parseJsonField<string[]>(word.antonyms, []),
+          conjugation: parseJsonField<Word['conjugation']>(
+            word.conjugation,
+            null
+          ),
         }
       })
       .filter(word => !cursor || isWordAfterCursor(word, cursor))
@@ -664,9 +676,14 @@ export class SyncManager {
       return []
     }
 
-    await wordRepository.saveWords(parsedWords, {
-      preserveUnsynced: true,
-    })
+    const tombstones = parsedWords.filter(
+      (word): word is SyncWord & { deleted_at: string } =>
+        Boolean(word.deleted_at)
+    )
+    const activeWords = parsedWords.filter(word => !word.deleted_at)
+
+    await wordRepository.saveRemoteWordTombstones(tombstones)
+    await wordRepository.saveWords(activeWords, { preserveUnsynced: true })
 
     const newestWord = parsedWords[parsedWords.length - 1]
     await setSyncCursor(userId, 'words', toWordSyncCursor(newestWord))
@@ -681,10 +698,10 @@ export class SyncManager {
     cursor: SyncCursor | null,
     selectColumns: string
   ): Promise<{
-    data: Word[] | null
+    data: SyncWord[] | null
     error: SupabaseLikeError | null
   }> {
-    const words: Word[] = []
+    const words: SyncWord[] = []
     let from = 0
 
     while (true) {
@@ -720,12 +737,17 @@ export class SyncManager {
   }
 
   private async pushProgressToSupabase(userId: string): Promise<number> {
+    const deletedProgress = await progressRepository.getDeletedProgress(userId)
+    const deletedCount = await this.pushProgressTombstones(
+      userId,
+      deletedProgress
+    )
     const pendingProgress =
       await progressRepository.getPendingSyncProgress(userId)
 
     if (pendingProgress.length === 0) {
       console.log('[Sync] No pending progress to sync')
-      return 0
+      return deletedCount
     }
 
     // Convert local progress to Supabase format
@@ -750,16 +772,18 @@ export class SyncManager {
     const progressIds = pendingProgress.map(p => p.progress_id)
     await progressRepository.markProgressSynced(progressIds)
 
-    return pendingProgress.length
+    return deletedCount + pendingProgress.length
   }
 
   private async pushWordsToSupabase(userId: string): Promise<number> {
     await this.removeInvalidWordsBeforeSync(userId)
+    const deletedWords = await wordRepository.getDeletedWords(userId)
+    const deletedCount = await this.pushWordTombstones(userId, deletedWords)
 
     const wordsWithCollections =
       await this.getSyncableWordsWithCollections(userId)
     if (wordsWithCollections.length === 0) {
-      return 0
+      return deletedCount
     }
 
     const { uniqueWords: uniqueBySemanticKey, localSemanticDuplicates } =
@@ -783,7 +807,57 @@ export class SyncManager {
       localSemanticDuplicates.length
     )
 
-    return totalSynced
+    return deletedCount + totalSynced
+  }
+
+  private async pushWordTombstones(
+    userId: string,
+    deletedWords: Awaited<ReturnType<typeof wordRepository.getDeletedWords>>
+  ): Promise<number> {
+    if (deletedWords.length === 0) return 0
+
+    const wordIds = deletedWords.map(word => word.word_id)
+    const deletedAt = new Date().toISOString()
+    const { error } = await supabase
+      .from('words')
+      .update({ deleted_at: deletedAt })
+      .eq('user_id', userId)
+      .in('word_id', wordIds)
+
+    if (error) {
+      throw new Error(`Failed to push word tombstones: ${error.message}`)
+    }
+
+    await wordRepository.markWordTombstonesSynced(wordIds)
+    console.log(`[Sync] Pushed ${wordIds.length} word tombstones to Supabase`)
+    return wordIds.length
+  }
+
+  private async pushProgressTombstones(
+    userId: string,
+    deletedProgress: Awaited<
+      ReturnType<typeof progressRepository.getDeletedProgress>
+    >
+  ): Promise<number> {
+    if (deletedProgress.length === 0) return 0
+
+    const progressIds = deletedProgress.map(progress => progress.progress_id)
+    const deletedAt = new Date().toISOString()
+    const { error } = await supabase
+      .from('user_progress')
+      .update({ deleted_at: deletedAt })
+      .eq('user_id', userId)
+      .in('progress_id', progressIds)
+
+    if (error) {
+      throw new Error(`Failed to push progress tombstones: ${error.message}`)
+    }
+
+    await progressRepository.markProgressTombstonesSynced(progressIds)
+    console.log(
+      `[Sync] Pushed ${progressIds.length} progress tombstones to Supabase`
+    )
+    return progressIds.length
   }
 
   private async removeInvalidWordsBeforeSync(userId: string): Promise<void> {
@@ -1227,11 +1301,11 @@ export class SyncManager {
   }
 
   private toWordsSelectResult(result: { data: unknown; error: unknown }): {
-    data: Word[] | null
+    data: SyncWord[] | null
     error: SupabaseLikeError | null
   } {
     return {
-      data: Array.isArray(result.data) ? (result.data as Word[]) : null,
+      data: Array.isArray(result.data) ? (result.data as SyncWord[]) : null,
       error: result.error ? this.toSupabaseLikeError(result.error) : null,
     }
   }
@@ -1384,13 +1458,17 @@ export class SyncManager {
       pendingCollections.map(collection => collection.collection_id)
     )
 
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
       .from('collections')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('user_id', userId)
 
     if (error) {
       throw new Error(`Failed to pull collections: ${error.message}`)
+    }
+
+    if (typeof count === 'number' && count === (data?.length ?? 0)) {
+      await this.reconcileRemoteCollectionDeletes(userId, data ?? [])
     }
 
     if (!data || data.length === 0) {
@@ -1432,6 +1510,38 @@ export class SyncManager {
     }
 
     return parsedCollections
+  }
+
+  private async reconcileRemoteCollectionDeletes(
+    userId: string,
+    remoteCollections: { collection_id?: string | null }[]
+  ): Promise<void> {
+    const remoteIds = new Set(
+      remoteCollections
+        .map(collection => collection.collection_id)
+        .filter((id): id is string => Boolean(id))
+    )
+    const localCollections =
+      await collectionRepository.getCollectionsByUserId(userId)
+    const deletedRemotely = localCollections.filter(
+      collection =>
+        collection.sync_status === 'synced' &&
+        !remoteIds.has(collection.collection_id)
+    )
+
+    for (const collection of deletedRemotely) {
+      await wordRepository.deleteWordsByCollection(
+        collection.collection_id,
+        userId
+      )
+      await collectionRepository.deleteCollection(collection.collection_id)
+    }
+
+    if (deletedRemotely.length > 0) {
+      console.log(
+        `[Sync] Removed ${deletedRemotely.length} collections deleted remotely`
+      )
+    }
   }
 
   private async cleanupOrphanWords(userId: string): Promise<void> {

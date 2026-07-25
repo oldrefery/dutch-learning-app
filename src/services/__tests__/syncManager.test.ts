@@ -9,6 +9,7 @@ import { supabase, wordService } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
 import { collectionRepository } from '@/db/collectionRepository'
 import { wordRepository } from '@/db/wordRepository'
+import { progressRepository } from '@/db/progressRepository'
 
 jest.mock('@/lib/supabaseClient')
 jest.mock('@/lib/supabase')
@@ -17,9 +18,13 @@ jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
     getWordsByUserId: jest.fn().mockResolvedValue([]),
     saveWords: jest.fn().mockResolvedValue(undefined),
+    saveRemoteWordTombstones: jest.fn().mockResolvedValue(undefined),
     getPendingSyncWords: jest.fn().mockResolvedValue([]),
+    getDeletedWords: jest.fn().mockResolvedValue([]),
     markWordsSynced: jest.fn().mockResolvedValue(undefined),
+    markWordTombstonesSynced: jest.fn().mockResolvedValue(undefined),
     markWordsError: jest.fn().mockResolvedValue(undefined),
+    deleteWordsByCollection: jest.fn().mockResolvedValue(undefined),
     deleteOrphanWords: jest.fn().mockResolvedValue({ count: 0 }),
     deleteInvalidWords: jest.fn().mockResolvedValue({ count: 0, words: [] }),
   },
@@ -27,7 +32,9 @@ jest.mock('@/db/wordRepository', () => ({
 jest.mock('@/db/progressRepository', () => ({
   progressRepository: {
     getPendingSyncProgress: jest.fn().mockResolvedValue([]),
+    getDeletedProgress: jest.fn().mockResolvedValue([]),
     markProgressSynced: jest.fn().mockResolvedValue(undefined),
+    markProgressTombstonesSynced: jest.fn().mockResolvedValue(undefined),
   },
 }))
 jest.mock('@/db/collectionRepository', () => ({
@@ -38,6 +45,7 @@ jest.mock('@/db/collectionRepository', () => ({
     saveCollections: jest.fn().mockResolvedValue(undefined),
     deleteCollection: jest.fn().mockResolvedValue(undefined),
     getCollectionsByIds: jest.fn().mockResolvedValue([]),
+    getCollectionsByUserId: jest.fn().mockResolvedValue([]),
   },
 }))
 
@@ -124,12 +132,17 @@ describe('SyncManager', () => {
       }),
     }
     ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
-      const resolved = { data: [], error: null }
+      const resolved = { data: [], error: null, count: 0 }
 
       if (tableName === 'words') {
         return {
           select: jest.fn().mockReturnValue(createWordsPullQuery()),
           upsert: jest.fn().mockResolvedValue(resolved),
+          update: jest.fn().mockReturnValue({
+            eq: jest.fn().mockReturnValue({
+              in: jest.fn().mockResolvedValue(resolved),
+            }),
+          }),
         }
       }
 
@@ -138,6 +151,11 @@ describe('SyncManager', () => {
           eq: jest.fn().mockResolvedValue(resolved),
         }),
         upsert: jest.fn().mockResolvedValue(resolved),
+        update: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
+            in: jest.fn().mockResolvedValue(resolved),
+          }),
+        }),
         delete: jest.fn().mockReturnValue({
           eq: jest.fn().mockResolvedValue(resolved),
         }),
@@ -147,6 +165,14 @@ describe('SyncManager', () => {
     ;(networkUtils.getSyncCursor as jest.Mock).mockResolvedValue(null)
     ;(networkUtils.setSyncCursor as jest.Mock).mockResolvedValue(void 0)
     ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
+    ;(
+      collectionRepository.getCollectionsByUserId as jest.Mock
+    ).mockResolvedValue([])
+    ;(wordRepository.getDeletedWords as jest.Mock).mockResolvedValue([])
+    ;(progressRepository.getDeletedProgress as jest.Mock).mockResolvedValue([])
+    ;(progressRepository.getPendingSyncProgress as jest.Mock).mockResolvedValue(
+      []
+    )
   })
 
   describe('sync status subscriptions', () => {
@@ -712,6 +738,36 @@ describe('SyncManager', () => {
         }),
       ])
     })
+
+    it('should remove a synced collection that was deleted remotely', async () => {
+      const localCollection = {
+        collection_id: 'col-deleted-remotely',
+        user_id: userId,
+        name: 'Deleted elsewhere',
+        description: null,
+        is_shared: false,
+        shared_with: null,
+        share_token: null,
+        shared_at: null,
+        created_at: DEFAULT_TIMESTAMP,
+        updated_at: DEFAULT_TIMESTAMP,
+        sync_status: 'synced',
+      }
+      ;(
+        collectionRepository.getCollectionsByUserId as jest.Mock
+      ).mockResolvedValue([localCollection])
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(wordRepository.deleteWordsByCollection).toHaveBeenCalledWith(
+        localCollection.collection_id,
+        userId
+      )
+      expect(collectionRepository.deleteCollection).toHaveBeenCalledWith(
+        localCollection.collection_id
+      )
+    })
   })
 
   describe('word delta cursor', () => {
@@ -880,6 +936,160 @@ describe('SyncManager', () => {
         updatedAt: nextUpdatedAt,
         id: 'word-500',
       })
+    })
+
+    it('should apply a remote tombstone before advancing the cursor', async () => {
+      const deletedAt = '2026-07-25T11:30:00.000Z'
+      const remoteTombstone = createPendingWord({
+        word_id: 'word-deleted-remotely',
+        updated_at: deletedAt,
+        deleted_at: deletedAt,
+        sync_status: 'synced',
+      })
+      mockWordPull([remoteTombstone])
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(wordRepository.saveRemoteWordTombstones).toHaveBeenCalledWith([
+        expect.objectContaining({
+          word_id: remoteTombstone.word_id,
+          deleted_at: deletedAt,
+        }),
+      ])
+      expect(wordRepository.saveWords).toHaveBeenCalledWith([], {
+        preserveUnsynced: true,
+      })
+      expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
+        updatedAt: deletedAt,
+        id: remoteTombstone.word_id,
+      })
+    })
+  })
+
+  describe('delete tombstone push', () => {
+    it('should push word tombstones before considering active words', async () => {
+      const deletedAt = '2026-07-25T12:00:00.000Z'
+      const deletedWord = createPendingWord({
+        word_id: 'word-deleted-locally',
+        deleted_at: deletedAt,
+        sync_status: 'deleted',
+      })
+      const wordTombstoneIn = jest
+        .fn()
+        .mockResolvedValue({ data: [], error: null })
+      const wordTombstoneEq = jest.fn().mockReturnValue({
+        in: wordTombstoneIn,
+      })
+      const wordUpdate = jest.fn().mockReturnValue({
+        eq: wordTombstoneEq,
+      })
+
+      ;(wordRepository.getDeletedWords as jest.Mock).mockResolvedValue([
+        deletedWord,
+      ])
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([])
+      ;(progressRepository.getDeletedProgress as jest.Mock).mockResolvedValue(
+        []
+      )
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            update: wordUpdate,
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(result.wordsSynced).toBe(1)
+      expect(wordUpdate).toHaveBeenCalledWith({
+        deleted_at: expect.any(String),
+      })
+      expect(wordTombstoneEq).toHaveBeenCalledWith('user_id', userId)
+      expect(wordTombstoneIn).toHaveBeenCalledWith('word_id', [
+        deletedWord.word_id,
+      ])
+      expect(wordRepository.markWordTombstonesSynced).toHaveBeenCalledWith([
+        deletedWord.word_id,
+      ])
+    })
+
+    it('should push progress tombstones through the prepared remote contract', async () => {
+      const progressTombstoneIn = jest
+        .fn()
+        .mockResolvedValue({ data: [], error: null })
+      const progressTombstoneEq = jest.fn().mockReturnValue({
+        in: progressTombstoneIn,
+      })
+      const progressUpdate = jest.fn().mockReturnValue({
+        eq: progressTombstoneEq,
+      })
+      const deletedProgress = {
+        progress_id: 'progress-deleted-locally',
+        user_id: userId,
+        word_id: 'word-1',
+        status: 'learning',
+        reviewed_count: 1,
+        last_reviewed_at: null,
+        created_at: DEFAULT_TIMESTAMP,
+        updated_at: DEFAULT_TIMESTAMP,
+        deleted_at: DEFAULT_TIMESTAMP,
+        sync_status: 'deleted',
+      }
+
+      ;(wordRepository.getDeletedWords as jest.Mock).mockResolvedValue([])
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([])
+      ;(progressRepository.getDeletedProgress as jest.Mock).mockResolvedValue([
+        deletedProgress,
+      ])
+      ;(
+        progressRepository.getPendingSyncProgress as jest.Mock
+      ).mockResolvedValue([])
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }
+        }
+
+        if (tableName === 'user_progress') {
+          return { update: progressUpdate }
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: jest.fn().mockResolvedValue({ data: [], error: null }),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(result.progressSynced).toBe(1)
+      expect(progressUpdate).toHaveBeenCalledWith({
+        deleted_at: expect.any(String),
+      })
+      expect(progressTombstoneEq).toHaveBeenCalledWith('user_id', userId)
+      expect(progressTombstoneIn).toHaveBeenCalledWith('progress_id', [
+        deletedProgress.progress_id,
+      ])
+      expect(
+        progressRepository.markProgressTombstonesSynced
+      ).toHaveBeenCalledWith([deletedProgress.progress_id])
     })
   })
 

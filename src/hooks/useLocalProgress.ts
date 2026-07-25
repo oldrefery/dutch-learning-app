@@ -42,7 +42,10 @@ export function useLocalProgress() {
     async (
       progressId: string,
       updates: Partial<
-        Omit<UserProgress, 'progress_id' | 'user_id' | 'sync_status'>
+        Omit<
+          UserProgress,
+          'progress_id' | 'user_id' | 'sync_status' | 'deleted_at'
+        >
       >
     ) => {
       if (!currentUserId) return

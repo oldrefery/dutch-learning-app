@@ -11,20 +11,30 @@ export interface UserProgress {
   last_reviewed_at: string | null
   created_at: string
   updated_at: string
+  deleted_at: string | null
   sync_status: SyncStatus
 }
 
 export class ProgressRepository {
   async saveProgress(
-    progressRecords: Omit<UserProgress, 'sync_status'>[]
+    progressRecords: Omit<UserProgress, 'sync_status' | 'deleted_at'>[]
   ): Promise<void> {
     const db = await getDatabase()
 
     const insertStatement = await db.prepareAsync(`
-      INSERT OR REPLACE INTO user_progress (
+      INSERT INTO user_progress (
         progress_id, user_id, word_id, status, reviewed_count,
-        last_reviewed_at, created_at, updated_at, sync_status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        last_reviewed_at, created_at, updated_at, deleted_at, sync_status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(progress_id) DO UPDATE SET
+        word_id = excluded.word_id,
+        status = excluded.status,
+        reviewed_count = excluded.reviewed_count,
+        last_reviewed_at = excluded.last_reviewed_at,
+        created_at = excluded.created_at,
+        updated_at = excluded.updated_at,
+        sync_status = 'synced'
+      WHERE user_progress.deleted_at IS NULL
     `)
 
     try {
@@ -38,6 +48,7 @@ export class ProgressRepository {
           record.last_reviewed_at || null,
           record.created_at,
           record.updated_at,
+          null,
           'synced'
         )
       }
@@ -50,7 +61,10 @@ export class ProgressRepository {
     progressId: string,
     userId: string,
     updates: Partial<
-      Omit<UserProgress, 'progress_id' | 'user_id' | 'sync_status'>
+      Omit<
+        UserProgress,
+        'progress_id' | 'user_id' | 'sync_status' | 'deleted_at'
+      >
     >
   ): Promise<void> {
     const db = await getDatabase()
@@ -83,7 +97,7 @@ export class ProgressRepository {
     values.push(userId)
 
     const updateStatement = await db.prepareAsync(
-      `UPDATE user_progress SET ${fields.join(', ')} WHERE progress_id = ? AND user_id = ?`
+      `UPDATE user_progress SET ${fields.join(', ')} WHERE progress_id = ? AND user_id = ? AND deleted_at IS NULL`
     )
 
     try {
@@ -97,7 +111,7 @@ export class ProgressRepository {
     const db = await getDatabase()
 
     const result = await db.getAllAsync<Record<string, unknown>>(
-      'SELECT * FROM user_progress WHERE user_id = ? ORDER BY updated_at DESC',
+      'SELECT * FROM user_progress WHERE user_id = ? AND deleted_at IS NULL ORDER BY updated_at DESC',
       [userId]
     )
 
@@ -108,7 +122,7 @@ export class ProgressRepository {
     const db = await getDatabase()
 
     const result = await db.getAllAsync<Record<string, unknown>>(
-      'SELECT * FROM user_progress WHERE word_id = ? ORDER BY updated_at DESC',
+      'SELECT * FROM user_progress WHERE word_id = ? AND deleted_at IS NULL ORDER BY updated_at DESC',
       [wordId]
     )
 
@@ -122,7 +136,7 @@ export class ProgressRepository {
     const db = await getDatabase()
 
     const result = await db.getFirstAsync<Record<string, unknown>>(
-      'SELECT * FROM user_progress WHERE progress_id = ? AND user_id = ?',
+      'SELECT * FROM user_progress WHERE progress_id = ? AND user_id = ? AND deleted_at IS NULL',
       [progressId, userId]
     )
 
@@ -133,7 +147,7 @@ export class ProgressRepository {
     const db = await getDatabase()
 
     const result = await db.getAllAsync<Record<string, unknown>>(
-      "SELECT * FROM user_progress WHERE user_id = ? AND sync_status = 'pending' ORDER BY updated_at ASC",
+      "SELECT * FROM user_progress WHERE user_id = ? AND sync_status = 'pending' AND deleted_at IS NULL ORDER BY updated_at ASC",
       [userId]
     )
 
@@ -174,11 +188,41 @@ export class ProgressRepository {
   async deleteProgress(progressId: string, userId: string): Promise<void> {
     const db = await getDatabase()
     const statement = await db.prepareAsync(
-      'DELETE FROM user_progress WHERE progress_id = ? AND user_id = ?'
+      `UPDATE user_progress
+       SET deleted_at = ?, updated_at = ?, sync_status = 'deleted'
+       WHERE progress_id = ? AND user_id = ? AND deleted_at IS NULL`
     )
 
     try {
-      await statement.executeAsync(progressId, userId)
+      const deletedAt = new Date().toISOString()
+      await statement.executeAsync(deletedAt, deletedAt, progressId, userId)
+    } finally {
+      await statement.finalizeAsync()
+    }
+  }
+
+  async getDeletedProgress(userId: string): Promise<UserProgress[]> {
+    const db = await getDatabase()
+    const result = await db.getAllAsync<Record<string, unknown>>(
+      "SELECT * FROM user_progress WHERE user_id = ? AND sync_status = 'deleted' AND deleted_at IS NOT NULL ORDER BY updated_at ASC",
+      [userId]
+    )
+
+    return result.map(row => this.parseProgressRow(row))
+  }
+
+  async markProgressTombstonesSynced(progressIds: string[]): Promise<void> {
+    if (progressIds.length === 0) return
+
+    const db = await getDatabase()
+    const placeholders = progressIds.map(() => '?').join(',')
+    const statement = await db.prepareAsync(
+      `UPDATE user_progress SET sync_status = 'synced'
+       WHERE progress_id IN (${placeholders}) AND deleted_at IS NOT NULL`
+    )
+
+    try {
+      await statement.executeAsync(...progressIds)
     } finally {
       await statement.finalizeAsync()
     }
@@ -194,6 +238,7 @@ export class ProgressRepository {
       last_reviewed_at: (row.last_reviewed_at as string) || null,
       created_at: row.created_at as string,
       updated_at: row.updated_at as string,
+      deleted_at: (row.deleted_at as string) || null,
       sync_status: (row.sync_status as SyncStatus) || 'synced',
     }
   }

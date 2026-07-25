@@ -398,7 +398,9 @@ Verification results:
 
 ### P0.2 Follow-up: Word Repository Complexity Refactor
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `374e31b refactor: simplify word repository save logic and enhance statement management`
 
 Scope:
 
@@ -432,13 +434,58 @@ Verification results:
 
 ### P0.3 Offline Delete Tombstones
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 
 Scope:
 
 - Replace hard word/progress deletes with durable local tombstones.
 - Add compatible remote delete tracking.
 - Prevent stale offline upserts from resurrecting deleted records.
+
+Completed:
+
+- Added SQLite schema v5 with `deleted_at` for words and user progress plus
+  partial semantic uniqueness for active words.
+- Replaced local word, collection-word, orphan-word, and progress hard deletes
+  with durable tombstones.
+- Excluded tombstones from active local and Supabase reads, duplicate checks,
+  review queries, shared collection results, and maintenance lookups.
+- Split remote word pulls into active rows and exact-ID tombstones, applied
+  both before advancing the `(updated_at, word_id)` cursor, and kept
+  tombstones out of semantic matching.
+- Pushed local word and progress tombstones before active upserts and
+  acknowledged them locally only after the remote update succeeded.
+- Soft-deleted remote words for direct word deletion, collection deletion, and
+  settings cleanup; collection deletion retains word rows before the
+  collection is hard-deleted.
+- Reconciled collections deleted on another device only when an exact
+  Supabase count proves the remote snapshot is complete.
+- Added a Supabase word tombstone migration, active-only partial unique index,
+  partial-index-compatible import conflict target, and a `BEFORE UPDATE`
+  anti-resurrection trigger.
+- Kept the missing remote `user_progress` table, RLS, pull cursor, and clean
+  reset contract scoped to P0.4.
+- Captured the selected design and rejected alternatives in
+  `docs/brainstorms/2026-07-25-offline-delete-tombstones-brainstorm.md`.
+
+Verification results:
+
+- Targeted schema, repository, synchronization, Supabase service, and sharing
+  tests: 6 suites, 105 tests passed.
+- Full Jest coverage: 50 suites, 803 tests passed.
+- Build and test TypeScript: passed.
+- ESLint CI budget: passed with the same 6 pre-existing warnings.
+- Prettier: passed.
+- Edge Function tests: 58 passed.
+- All 28 Maestro YAML files: passed.
+- `git diff --check`: passed.
+- Official Supabase and PostgreSQL documentation confirmed soft-delete updates,
+  null filtering, partial unique indexes, partial-index conflict inference,
+  and row-level `BEFORE UPDATE` trigger behavior.
+- Local Supabase runtime validation was attempted twice but the stack did not
+  reach migration application because auxiliary Docker image pulls stalled;
+  no linked or production database was modified, and no local container was
+  left running.
 
 ### P0.4 User Progress Remote Contract
 
@@ -471,7 +518,6 @@ Scope:
 
 ## Current Resume Point
 
-Wait for the user to commit `P0.2 Follow-up: Word Repository Complexity
-Refactor`. After the user confirms the commit and says to continue, mark the
-follow-up as `COMMITTED`, record the commit hash, and start `P0.3 Offline Delete
-Tombstones`.
+Wait for the user to commit `P0.3 Offline Delete Tombstones`. After the user
+confirms the commit and says to continue, mark P0.3 as `COMMITTED`, record the
+commit hash, and start `P0.4 User Progress Remote Contract`.

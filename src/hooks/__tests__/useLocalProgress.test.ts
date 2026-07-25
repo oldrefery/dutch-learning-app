@@ -37,6 +37,7 @@ describe('useLocalProgress', () => {
     sync_status: 'synced',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    deleted_at: null,
     ...overrides,
   })
 

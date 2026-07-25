@@ -141,6 +141,7 @@ const deleteRemoteOrphanWords = async (
     .from('words')
     .select('word_id, collection_id')
     .eq('user_id', userId)
+    .is('deleted_at', null)
 
   if (wordsError) {
     throw new Error(`Failed to load words: ${wordsError.message}`)
@@ -161,7 +162,7 @@ const deleteRemoteOrphanWords = async (
     const chunk = orphanWordIds.slice(i, i + chunkSize)
     const { error: deleteError } = await supabase
       .from('words')
-      .delete()
+      .update({ deleted_at: new Date().toISOString() })
       .in('word_id', chunk)
 
     if (deleteError) {
@@ -234,6 +235,7 @@ const executeDeleteWordByLemma = async (
       .select('word_id')
       .eq('user_id', currentUserId)
       .eq('dutch_lemma', normalizedLemma)
+      .is('deleted_at', null)
 
     if (error) {
       const lookupError = new Error(`Lookup failed: ${error.message}`)
@@ -256,7 +258,7 @@ const executeDeleteWordByLemma = async (
       const chunk = wordIds.slice(i, i + chunkSize)
       const { error: deleteError } = await supabase
         .from('words')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .in('word_id', chunk)
 
       if (deleteError) {

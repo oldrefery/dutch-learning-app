@@ -79,7 +79,8 @@ describe('collectionSharingService.getSharedCollectionWords', () => {
       ],
       error: null,
     })
-    const eq = jest.fn().mockReturnValue({ order })
+    const is = jest.fn().mockReturnValue({ order })
+    const eq = jest.fn().mockReturnValue({ is })
     const select = jest.fn().mockReturnValue({ eq })
 
     ;(supabase.from as jest.Mock).mockReturnValue({ select })
@@ -295,7 +296,8 @@ describe('collectionSharingService.getSharedCollection', () => {
     const mockSelect = jest.fn().mockReturnValue({ eq: mockEq1 })
 
     // Second query: word count
-    const mockCountEq = jest.fn().mockResolvedValue({ count: 5, error: null })
+    const mockCountIs = jest.fn().mockResolvedValue({ count: 5, error: null })
+    const mockCountEq = jest.fn().mockReturnValue({ is: mockCountIs })
     const mockCountSelect = jest.fn().mockReturnValue({ eq: mockCountEq })
 
     let callCount = 0

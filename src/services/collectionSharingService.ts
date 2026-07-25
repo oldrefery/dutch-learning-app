@@ -211,6 +211,7 @@ class CollectionSharingService {
         .from('words')
         .select('*', { count: 'exact', head: true })
         .eq('collection_id', data.collection_id)
+        .is('deleted_at', null)
 
       if (countError) {
         logSupabaseError(
@@ -285,6 +286,7 @@ class CollectionSharingService {
         `
         )
         .eq('collection_id', collectionResult.data.collection_id)
+        .is('deleted_at', null)
         .order('created_at', { ascending: true })
 
       if (wordsError) {

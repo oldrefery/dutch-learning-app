@@ -1,9 +1,10 @@
 import { getDatabase } from './initDB'
 import type { SQLiteBindValue } from 'expo-sqlite'
 import type { Collection } from '@/types/database'
+import type { SyncStatus } from './schema'
 
 export interface LocalCollection extends Collection {
-  sync_status: 'synced' | 'pending' | 'error' | 'conflict'
+  sync_status: SyncStatus
 }
 
 export class CollectionRepository {

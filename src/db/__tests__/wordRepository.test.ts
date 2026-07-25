@@ -329,6 +329,38 @@ describe('WordRepository', () => {
       expect(mockInsertStatement.executeAsync).not.toHaveBeenCalled()
     })
 
+    it('should never resurrect an existing local tombstone', async () => {
+      const existingWord = {
+        word_id: mockWord.word_id,
+        sync_status: 'deleted',
+        updated_at: CREATED_AT,
+        deleted_at: CREATED_AT,
+      }
+      const mockCheckStatement = {
+        executeAsync: jest.fn().mockResolvedValue({
+          getFirstAsync: jest.fn().mockResolvedValue(existingWord),
+        }),
+        finalizeAsync: jest.fn(),
+      }
+      const mockUpdateStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      const mockInsertStatement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync
+        .mockResolvedValueOnce(mockCheckStatement)
+        .mockResolvedValueOnce(mockUpdateStatement)
+        .mockResolvedValueOnce(mockInsertStatement)
+
+      await wordRepository.saveWords([mockWord])
+
+      expect(mockUpdateStatement.executeAsync).not.toHaveBeenCalled()
+      expect(mockInsertStatement.executeAsync).not.toHaveBeenCalled()
+    })
+
     it('should finalize all statements even on error', async () => {
       // Mock for checkExistingStatement - returns null
       const mockCheckStatement = {
@@ -383,7 +415,7 @@ describe('WordRepository', () => {
       const result = await wordRepository.getWordsByUserId(USER_ID)
 
       expect(mockDatabase.getAllAsync).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT * FROM words'),
+        expect.stringContaining('deleted_at IS NULL'),
         [USER_ID]
       )
       expect(result.length).toBeGreaterThan(0)
@@ -420,6 +452,49 @@ describe('WordRepository', () => {
           ru: ['дом'],
         })
       }
+    })
+  })
+
+  describe('delete tombstones', () => {
+    it('should mark a word deleted instead of removing it', async () => {
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.deleteWord(WORD_ID_1, USER_ID)
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining("sync_status = 'deleted'")
+      )
+      expect(statement.executeAsync).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+        WORD_ID_1,
+        USER_ID
+      )
+    })
+
+    it('should apply remote tombstones with exact-id conflict handling', async () => {
+      const statement = {
+        executeAsync: jest.fn(),
+        finalizeAsync: jest.fn(),
+      }
+      mockDatabase.prepareAsync.mockResolvedValue(statement)
+
+      await wordRepository.saveRemoteWordTombstones([
+        { ...mockWord, deleted_at: CREATED_AT },
+      ])
+
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('ON CONFLICT(word_id) DO UPDATE')
+      )
+      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
+        expect.not.stringContaining('COALESCE(part_of_speech,')
+      )
+      const values = statement.executeAsync.mock.calls[0]
+      expect(values.slice(-2)).toEqual([CREATED_AT, 'synced'])
     })
   })
 

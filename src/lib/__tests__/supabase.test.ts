@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react-native'
 import { FunctionsHttpError } from '@supabase/supabase-js'
-import { supabase, wordService } from '../supabase'
+import { collectionService, supabase, wordService } from '../supabase'
 import { ErrorCategory, ErrorSeverity, NetworkError } from '@/types/ErrorTypes'
 import { assertNetworkConnection } from '@/utils/network'
 import { logSupabaseError, logWarning } from '@/utils/logger'
@@ -22,6 +22,8 @@ interface SupabaseFunctionsMock {
 
 const mockedAssertNetworkConnection =
   assertNetworkConnection as jest.MockedFunction<typeof assertNetworkConnection>
+const COLLECTION_ID = 'collection-id'
+const USER_ID = 'user-id'
 
 const getSupabaseFunctionsMock = (): SupabaseFunctionsMock =>
   supabase as unknown as SupabaseFunctionsMock
@@ -36,7 +38,6 @@ const createFunctionsHttpError = (
   })
 
 describe('wordService duplicate handling', () => {
-  const COLLECTION_ID = 'collection-id'
   const DUTCH_LEMMA = 'huis'
   const SEMANTIC_DUPLICATE_MESSAGE =
     'duplicate key value violates unique constraint "idx_words_semantic_unique"'
@@ -47,21 +48,22 @@ describe('wordService duplicate handling', () => {
   })
 
   it('should match semantic duplicates when article is empty string in DB', async () => {
+    const result = {
+      data: [
+        {
+          word_id: 'server-word-id',
+          dutch_lemma: DUTCH_LEMMA,
+          collection_id: COLLECTION_ID,
+          part_of_speech: null,
+          article: '',
+        },
+      ],
+      error: null,
+    }
+    const is = jest.fn().mockResolvedValue(result)
+    const secondEq = jest.fn().mockReturnValue({ is })
     const selectChain = {
-      eq: jest.fn().mockReturnValueOnce({
-        eq: jest.fn().mockResolvedValue({
-          data: [
-            {
-              word_id: 'server-word-id',
-              dutch_lemma: DUTCH_LEMMA,
-              collection_id: COLLECTION_ID,
-              part_of_speech: null,
-              article: '',
-            },
-          ],
-          error: null,
-        }),
-      }),
+      eq: jest.fn().mockReturnValue({ eq: secondEq }),
     }
 
     ;(supabase.from as jest.Mock).mockReturnValue({
@@ -69,7 +71,7 @@ describe('wordService duplicate handling', () => {
     })
 
     const existingWord = await wordService.checkWordExists(
-      'user-id',
+      USER_ID,
       DUTCH_LEMMA,
       undefined,
       undefined
@@ -78,6 +80,7 @@ describe('wordService duplicate handling', () => {
     expect(existingWord).toEqual(
       expect.objectContaining({ word_id: 'server-word-id' })
     )
+    expect(is).toHaveBeenCalledWith('deleted_at', null)
   })
 
   it('should downgrade semantic duplicate import error to warning-level Sentry message', async () => {
@@ -182,6 +185,53 @@ describe('wordService duplicate handling', () => {
     })
 
     expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('soft delete services', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockedAssertNetworkConnection.mockResolvedValue(undefined)
+  })
+
+  it('should preserve a word tombstone instead of hard deleting it', async () => {
+    const eq = jest.fn().mockResolvedValue({ error: null })
+    const update = jest.fn().mockReturnValue({ eq })
+    ;(supabase.from as jest.Mock).mockReturnValue({ update })
+
+    await wordService.deleteWord('word-id')
+
+    expect(update).toHaveBeenCalledWith({
+      deleted_at: expect.any(String),
+    })
+    expect(eq).toHaveBeenCalledWith('word_id', 'word-id')
+  })
+
+  it('should tombstone collection words before deleting the collection', async () => {
+    const wordsUserEq = jest.fn().mockResolvedValue({ error: null })
+    const wordsCollectionEq = jest.fn().mockReturnValue({ eq: wordsUserEq })
+    const wordsUpdate = jest.fn().mockReturnValue({ eq: wordsCollectionEq })
+    const collectionUserEq = jest.fn().mockResolvedValue({ error: null })
+    const collectionIdEq = jest.fn().mockReturnValue({ eq: collectionUserEq })
+    const collectionDelete = jest.fn().mockReturnValue({ eq: collectionIdEq })
+
+    ;(supabase.from as jest.Mock).mockImplementation((tableName: string) =>
+      tableName === 'words'
+        ? { update: wordsUpdate }
+        : { delete: collectionDelete }
+    )
+
+    await collectionService.deleteCollection(COLLECTION_ID, USER_ID)
+
+    expect(wordsUpdate).toHaveBeenCalledWith({
+      deleted_at: expect.any(String),
+    })
+    expect(wordsCollectionEq).toHaveBeenCalledWith(
+      'collection_id',
+      COLLECTION_ID
+    )
+    expect(wordsUserEq).toHaveBeenCalledWith('user_id', USER_ID)
+    expect(collectionDelete).toHaveBeenCalled()
   })
 })
 

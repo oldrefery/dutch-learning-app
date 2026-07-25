@@ -58,6 +58,7 @@ describe('useLocalWords', () => {
     synonyms: [],
     antonyms: [],
     last_reviewed_at: null,
+    deleted_at: null,
     sync_status: 'synced',
     ...overrides,
   })

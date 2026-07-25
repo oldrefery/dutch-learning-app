@@ -4,12 +4,15 @@ import {
   SQL_SCHEMA,
   MIGRATION_V3_UNIQUE_INDEX,
   MIGRATION_V4_ADD_REGISTER,
+  MIGRATION_V5_ADD_PROGRESS_DELETED_AT,
+  MIGRATION_V5_ADD_WORD_DELETED_AT,
+  MIGRATION_V5_TOMBSTONE_INDEXES,
 } from './schema'
 import { Sentry } from '@/lib/sentry'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 4
+const SCHEMA_VERSION = 5
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -136,6 +139,38 @@ async function migrateToV3(db: SQLite.SQLiteDatabase): Promise<void> {
   console.log('[DB] Migration to v3 completed successfully')
 }
 
+async function addColumnIfMissing(
+  db: SQLite.SQLiteDatabase,
+  migration: string,
+  columnName: string
+): Promise<void> {
+  try {
+    await db.execAsync(migration)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    if (!errorMessage.includes('duplicate column name')) {
+      throw error
+    }
+    console.log(`[DB] ${columnName} column already exists, skipping migration`)
+  }
+}
+
+async function migrateToV5(db: SQLite.SQLiteDatabase): Promise<void> {
+  console.log('[DB] Starting migration to v5: adding delete tombstones...')
+  await addColumnIfMissing(
+    db,
+    MIGRATION_V5_ADD_WORD_DELETED_AT,
+    'words.deleted_at'
+  )
+  await addColumnIfMissing(
+    db,
+    MIGRATION_V5_ADD_PROGRESS_DELETED_AT,
+    'user_progress.deleted_at'
+  )
+  await db.execAsync(MIGRATION_V5_TOMBSTONE_INDEXES)
+  console.log('[DB] Migration to v5 completed successfully')
+}
+
 export async function initializeDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (database) {
     return database
@@ -182,6 +217,10 @@ export async function initializeDatabase(): Promise<SQLite.SQLiteDatabase> {
           }
           console.log('[DB] Register column already exists, skipping migration')
         }
+      }
+
+      if (currentVersion < 5) {
+        await migrateToV5(database)
       }
 
       // Update schema version
