@@ -6,6 +6,8 @@ import { supabase } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
 import { logSupabaseError } from '@/utils/logger'
 
+const SHARED_AT = '2025-01-01'
+
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
@@ -287,7 +289,7 @@ describe('collectionSharingService.getSharedCollection', () => {
         name: 'Shared',
         is_shared: true,
         share_token: SHARE_TOKEN,
-        shared_at: '2025-01-01',
+        shared_at: SHARED_AT,
       },
       error: null,
     })
@@ -382,7 +384,7 @@ describe('collectionSharingService.getCollectionShareStatus', () => {
       data: {
         is_shared: true,
         share_token: 'token-xyz',
-        shared_at: '2025-01-01',
+        shared_at: SHARED_AT,
       },
       error: null,
     })
@@ -401,7 +403,7 @@ describe('collectionSharingService.getCollectionShareStatus', () => {
       data: {
         is_shared: true,
         share_token: 'token-xyz',
-        shared_at: '2025-01-01',
+        shared_at: SHARED_AT,
       },
     })
   })

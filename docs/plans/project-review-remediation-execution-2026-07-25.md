@@ -491,7 +491,9 @@ Verification results:
 
 ### P0.4 User Progress Remote Contract
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `80409ad fix: complete user progress synchronization`
 
 Scope:
 
@@ -549,6 +551,45 @@ Follow-up:
   and expected error logs from `useLocalWords.test.ts`; keep this in the
   remaining test-hygiene backlog.
 
+### Quality Follow-up: Database Initialization Diagnostics
+
+Status: `READY FOR USER COMMIT`
+
+Scope:
+
+- Remove the remaining SonarJS duplicate-literal warnings.
+- Reduce `initializeDatabase` cognitive complexity without changing migration
+  behavior.
+- Add direct regression coverage for database migration orchestration.
+
+Completed:
+
+- Replaced repeated fixture literals with shared test constants.
+- Split base-schema creation, version checking, and pending migrations into
+  focused helpers while preserving migration order and schema version 5.
+- Reused the idempotent column helper for migration v4, removing the locally
+  caught rethrow diagnostic.
+- Discarded and closed a failed initialization connection so a later call
+  retries migrations instead of returning a partially migrated cached database.
+- Shared one in-flight initialization promise across concurrent callers so no
+  caller can receive the database before schema migration finishes.
+- Treated malformed or negative stored schema versions as a fresh database
+  instead of silently skipping every migration.
+- Added database initialization tests for an already-current schema, a fresh
+  migration chain, malformed version metadata, concurrent callers, an existing
+  column, and retry after a real migration failure.
+
+Verification results:
+
+- Targeted database, sharing, and history tests: 4 suites, 67 tests passed.
+- Full Jest coverage: 51 suites, 821 tests passed.
+- Build and test TypeScript: passed.
+- ESLint CI budget: passed with zero warnings.
+- Prettier: passed.
+- `git diff --check`: passed.
+- Official Expo SDK 55 SQLite documentation confirmed the async open, execute,
+  and close lifecycle used by the implementation.
+
 ### P1.4 Sync Metadata Timestamp Integrity
 
 Status: `TODO`
@@ -571,6 +612,6 @@ Scope:
 
 ## Current Resume Point
 
-Wait for the user to commit `P0.4 User Progress Remote Contract`. After the
-user confirms the commit and says to continue, mark P0.4 as `COMMITTED`, record
-the commit hash, and start `P1.4 Sync Metadata Timestamp Integrity`.
+Wait for the user to commit `Quality Follow-up: Database Initialization
+Diagnostics`. After the user confirms the commit and says to continue, record
+the commit hash and start `P1.4 Sync Metadata Timestamp Integrity`.

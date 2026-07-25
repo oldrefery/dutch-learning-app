@@ -13,6 +13,8 @@ import type {
 } from '@/types/HistoryTypes'
 import { ToastType } from '@/constants/ToastConstants'
 
+const DEFAULT_USER_ID = 'test-user-id'
+
 /**
  * Generates a unique ID with the given prefix
  */
@@ -24,7 +26,7 @@ export const generateId = (prefix: string): string =>
  */
 export const createMockWord = (overrides: Partial<Word> = {}): Word => ({
   word_id: generateId('word'),
-  user_id: 'test-user-id',
+  user_id: DEFAULT_USER_ID,
   collection_id: generateId('col'),
   dutch_lemma: 'huis',
   dutch_original: 'het huis',
@@ -65,7 +67,7 @@ export const createMockCollection = (
   overrides: Partial<Collection> = {}
 ): Collection => ({
   collection_id: generateId('col'),
-  user_id: 'test-user-id',
+  user_id: DEFAULT_USER_ID,
   name: 'Test Collection',
   description: null,
   updated_at: new Date().toISOString(),
@@ -84,7 +86,7 @@ export const createMockProgress = (
   overrides: Partial<UserProgress> = {}
 ): UserProgress => ({
   progress_id: generateId('prog'),
-  user_id: 'test-user-id',
+  user_id: DEFAULT_USER_ID,
   word_id: generateId('word'),
   status: 'learning',
   reviewed_count: 0,

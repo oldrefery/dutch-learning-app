@@ -15,6 +15,8 @@ describe('ProgressRepository', () => {
   const USER_ID = 'test-user-id'
   const PROGRESS_ID = 'prog-123'
   const WORD_ID = 'word-456'
+  const REVIEWED_AT = '2025-10-01T00:00:00Z'
+  const CREATED_AT = '2025-09-01T00:00:00Z'
 
   const mockExecuteAsync = jest.fn()
   const mockFinalizeAsync = jest.fn()
@@ -175,9 +177,8 @@ describe('ProgressRepository', () => {
     })
 
     it('should update last_reviewed_at field', async () => {
-      const timestamp = '2025-10-01T00:00:00Z'
       await progressRepository.updateProgress(PROGRESS_ID, USER_ID, {
-        last_reviewed_at: timestamp,
+        last_reviewed_at: REVIEWED_AT,
       })
 
       expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
@@ -218,9 +219,9 @@ describe('ProgressRepository', () => {
         word_id: WORD_ID,
         status: 'learning',
         reviewed_count: 3,
-        last_reviewed_at: '2025-10-01T00:00:00Z',
-        created_at: '2025-09-01T00:00:00Z',
-        updated_at: '2025-10-01T00:00:00Z',
+        last_reviewed_at: REVIEWED_AT,
+        created_at: CREATED_AT,
+        updated_at: REVIEWED_AT,
         sync_status: 'synced',
       }
       mockDatabase.getAllAsync.mockResolvedValue([rawRow])
@@ -254,8 +255,8 @@ describe('ProgressRepository', () => {
         status: 'learning',
         reviewed_count: 1,
         last_reviewed_at: null,
-        created_at: '2025-09-01T00:00:00Z',
-        updated_at: '2025-09-01T00:00:00Z',
+        created_at: CREATED_AT,
+        updated_at: CREATED_AT,
         sync_status: 'synced',
       }
       mockDatabase.getAllAsync.mockResolvedValue([rawRow])
@@ -276,8 +277,8 @@ describe('ProgressRepository', () => {
         status: 'learning',
         reviewed_count: 2,
         last_reviewed_at: null,
-        created_at: '2025-09-01T00:00:00Z',
-        updated_at: '2025-09-01T00:00:00Z',
+        created_at: CREATED_AT,
+        updated_at: CREATED_AT,
         sync_status: 'synced',
       }
       mockDatabase.getFirstAsync.mockResolvedValue(rawRow)
