@@ -1,7 +1,7 @@
 -- Add the remote progress stream expected by the offline synchronization path.
 
 CREATE TABLE public.user_progress (
-  progress_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  progress_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   word_id UUID NOT NULL REFERENCES public.words(word_id) ON DELETE CASCADE,
   status TEXT NOT NULL,

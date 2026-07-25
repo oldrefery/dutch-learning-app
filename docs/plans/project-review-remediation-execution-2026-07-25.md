@@ -661,7 +661,9 @@ Verification results:
 
 ### P1.5 Semantic Uniqueness And Reachability
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `c4c6649 fix: align semantic uniqueness and sync reachability`
 
 Scope:
 
@@ -720,11 +722,44 @@ Follow-up:
   unavailable and the external credentialed retry was not authorized. No
   Sentry or other remote state was changed.
 
+### Deployment Follow-up: User Progress UUID Default
+
+Status: `READY FOR USER COMMIT`
+
+Scope:
+
+- Make the pending `user_progress` migration use a UUID default available on
+  the linked database's default function search path.
+
+Completed:
+
+- Replaced the unqualified `uuid_generate_v4()` default with PostgreSQL's
+  built-in `gen_random_uuid()`.
+- Added a schema regression assertion for the supported UUID default.
+- Confirmed through read-only linked database metadata that
+  `gen_random_uuid()` is available in `pg_catalog`, while
+  `uuid_generate_v4()` is available only in `extensions`.
+- Confirmed that migration `20260725150000_add_word_delete_tombstones.sql`
+  was applied and that the failed
+  `20260725170000_create_user_progress.sql` transaction did not create
+  `public.user_progress`.
+
+Verification results:
+
+- Targeted schema test: 1 suite, 12 tests passed.
+- Targeted ESLint: passed with zero warnings.
+- Prettier for the changed TypeScript and Markdown files: passed.
+- Linked Supabase dry run: passed and reported only migrations
+  `20260725170000` and `20260725180000` as pending.
+- Current PostgreSQL documentation confirmed that `gen_random_uuid()` is a
+  built-in version 4 UUID generator and `uuid-ossp` is only needed for
+  additional UUID algorithms.
+- `git diff --check`: passed.
+- No additional remote migration or data change was performed.
+
 ## Current Resume Point
 
-Wait for the user to commit `P1.5 Semantic Uniqueness And Reachability` with
-`fix: align semantic uniqueness and sync reachability`. After the user confirms
-the commit and says to continue, record the commit hash and close the
-remediation execution because no `TODO` packages remain. Keep migrations
-`20260725150000`, `20260725170000`, and `20260725180000` documented as
-deployment drift; do not apply them without explicit user authorization.
+Wait for the user to commit the UUID migration follow-up with
+`fix: use supported UUID default for progress migration`. Then rerun the linked
+Supabase migration dry run and push. Migration `20260725150000` is already
+applied; migrations `20260725170000` and `20260725180000` remain pending.

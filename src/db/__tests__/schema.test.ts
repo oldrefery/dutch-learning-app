@@ -94,6 +94,10 @@ describe('remote user progress schema', () => {
 
   it('should create the complete progress sync stream', () => {
     expect(migration).toContain('CREATE TABLE public.user_progress')
+    expect(migration).toContain(
+      'progress_id UUID PRIMARY KEY DEFAULT gen_random_uuid()'
+    )
+    expect(migration).not.toContain('DEFAULT uuid_generate_v4()')
     expect(migration).toContain('CREATE INDEX idx_user_progress_sync_cursor')
     expect(migration).toContain(
       'ON public.user_progress(user_id, updated_at, progress_id)'
