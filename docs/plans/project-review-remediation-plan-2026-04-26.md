@@ -6,6 +6,9 @@ Repository: `/Users/devrush/code/pet/DutchLearningApp`
 
 This plan is intended as local project memory. Future sessions should start here before repeating research or triage.
 
+Current execution tracker:
+`docs/plans/project-review-remediation-execution-2026-07-25.md`
+
 ## Review Inputs
 
 - Main review findings from 2026-04-26.

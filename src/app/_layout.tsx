@@ -22,8 +22,13 @@ import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
 
 import { useColorScheme } from 'react-native'
-import { SimpleAuthProvider } from '@/contexts/SimpleAuthProvider'
+import {
+  SimpleAuthProvider,
+  useSimpleAuth,
+} from '@/contexts/SimpleAuthProvider'
 import { AudioProvider } from '@/contexts/AudioContext'
+import { parseAuthDeepLink } from '@/lib/authDeepLink'
+import { handleOAuthCallback } from '@/lib/googleAuth'
 
 // Capture navigation-tree errors in Sentry while keeping Expo Router fallback UI.
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
@@ -91,30 +96,35 @@ export default Sentry.wrap(function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme()
   const router = useRouter()
+  const { preparePasswordRecovery } = useSimpleAuth()
 
   // Handle deep links
   useEffect(() => {
     const handleDeepLink = async (url: string) => {
-      // Convert Supabase hash fragment to query params
-      const parsedUrl = url.includes('#') ? url.replace('#', '?') : url
-      const { hostname, path, queryParams } = Linking.parse(parsedUrl)
+      const authCallback = parseAuthDeepLink(url)
 
-      // Handle password reset tokens from Supabase
-      if (queryParams?.access_token && queryParams?.refresh_token) {
-        const accessToken = queryParams.access_token as string
-        const refreshToken = queryParams.refresh_token as string
+      if (authCallback.kind === 'password-recovery') {
+        await preparePasswordRecovery(authCallback.tokens)
+        router.replace(ROUTES.AUTH.RESET_PASSWORD)
+        return
+      }
 
-        // Navigate to the reset password screen with tokens
-        // Session will be set atomically with password update
-        router.replace({
-          pathname: ROUTES.AUTH.RESET_PASSWORD,
-          params: {
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          },
+      if (authCallback.kind === 'primary-session') {
+        await handleOAuthCallback(url)
+        return
+      }
+
+      if (authCallback.kind === 'invalid-auth-callback') {
+        Sentry.addBreadcrumb({
+          category: 'auth.callback',
+          level: 'warning',
+          message: 'Invalid auth callback ignored',
+          data: { reason: authCallback.reason },
         })
         return
       }
+
+      const { hostname, path } = Linking.parse(url)
 
       // Handle dutchlearning://share/TOKEN - redirect directly to the import screen
       if (hostname === 'share' && path) {
@@ -138,7 +148,7 @@ function RootLayoutNav() {
     })
 
     return () => subscription?.remove()
-  }, [router])
+  }, [preparePasswordRecovery, router])
 
   // Create a custom dark theme with our color palette
   const CustomDarkTheme = {

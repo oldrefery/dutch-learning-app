@@ -6,13 +6,8 @@ import {
   View as MockView,
 } from 'react-native'
 import { fireEvent, render, waitFor } from '@testing-library/react-native'
-import * as Linking from 'expo-linking'
 import { useSimpleAuth } from '@/contexts/SimpleAuthProvider'
 import ResetPasswordScreen from '../reset-password'
-
-jest.mock('expo-linking', () => ({
-  getInitialURL: jest.fn(),
-}))
 
 jest.mock('expo-router', () => ({
   Color: {
@@ -109,6 +104,7 @@ jest.mock('@/contexts/SimpleAuthProvider')
 
 describe('ResetPasswordScreen', () => {
   const resetPassword = jest.fn()
+  const cancelPasswordRecovery = jest.fn()
   const clearError = jest.fn()
   const newPassword = 'new-password'
 
@@ -116,25 +112,19 @@ describe('ResetPasswordScreen', () => {
     jest.clearAllMocks()
     ;(useSimpleAuth as jest.Mock).mockReturnValue({
       resetPassword,
+      cancelPasswordRecovery,
       loading: false,
       error: null,
       clearError,
     })
-    ;(Linking.getInitialURL as jest.Mock).mockResolvedValue(
-      'dutchlearning://reset-password#access_token=access-secret&refresh_token=refresh-secret'
-    )
   })
 
-  it('parses reset tokens without logging URL or token material', async () => {
+  it('submits the new password without reading or logging token material', async () => {
     const consoleLogSpy = jest
       .spyOn(console, 'log')
       .mockImplementation(() => undefined)
 
     const { getByTestId } = render(<ResetPasswordScreen />)
-
-    await waitFor(() => {
-      expect(Linking.getInitialURL).toHaveBeenCalled()
-    })
 
     fireEvent.changeText(getByTestId('reset-password-input'), newPassword)
     fireEvent.changeText(
@@ -144,16 +134,12 @@ describe('ResetPasswordScreen', () => {
     fireEvent.press(getByTestId('reset-password-button'))
 
     await waitFor(() => {
-      expect(resetPassword).toHaveBeenCalledWith(
-        newPassword,
-        'access-secret',
-        'refresh-secret'
-      )
+      expect(resetPassword).toHaveBeenCalledWith(newPassword)
     })
 
     const loggedOutput = consoleLogSpy.mock.calls.flat().join(' ')
-    expect(loggedOutput).not.toContain('access-secret')
-    expect(loggedOutput).not.toContain('refresh-secret')
+    expect(loggedOutput).not.toContain('access_token')
+    expect(loggedOutput).not.toContain('refresh_token')
     expect(consoleLogSpy).not.toHaveBeenCalled()
 
     consoleLogSpy.mockRestore()
