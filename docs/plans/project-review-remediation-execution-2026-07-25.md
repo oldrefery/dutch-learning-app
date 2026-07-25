@@ -100,7 +100,9 @@ Verification results:
 
 ### P1.1 Sentry Environment, Sampling, And Payload Redaction
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `521cc12 fix: harden Sentry telemetry privacy`
 
 Scope:
 
@@ -148,13 +150,43 @@ Verification results:
 
 ### P1.2 Delete Account Edge Function Hardening
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 
 Scope:
 
 - Validate configuration and Bearer headers.
 - Normalize request ids.
 - Add Deno tests for public responses and safe logs.
+
+Completed:
+
+- Split the deploy entry point from the request handler so the production path
+  can be tested without starting a server.
+- Added strict required-configuration and Bearer JWT validation before creating
+  Supabase clients.
+- Normalized caller-provided request ids and replaced unsafe values before they
+  can reach response headers or structured logs.
+- Kept public error bodies stable and excluded tokens, headers, raw user ids,
+  dependency errors, and configuration values from logs.
+- Made diagnostic user-id hashing non-blocking for account deletion.
+- Added a function-local Deno lockfile and 17 regression tests covering CORS,
+  methods, authorization, configuration, auth failures, deletion failures,
+  safe logging, unexpected errors, and the success path.
+
+Verification results:
+
+- Deno check: passed for the entry point, handler, and tests.
+- Deno lint: 3 files passed.
+- Targeted delete-account Deno tests: 17 passed.
+- Full Edge test suite through Deno 2.9.4: 58 passed.
+- Full Jest coverage run: 48 suites, 775 tests passed.
+- Build TypeScript: passed.
+- ESLint: passed with the same 7 pre-existing warnings and no new warnings.
+- Prettier: passed.
+- `git diff --check`: passed.
+- `npm run test:edge` still cannot find a globally installed `deno`; the
+  equivalent full suite passed through `npx -y deno`, and installing/pinning the
+  CI runtime remains assigned to `P1.3 Required CI Quality Gates`.
 
 ### P1.3 Required CI Quality Gates
 
@@ -190,10 +222,10 @@ Scope:
 ## Current Resume Point
 
 Wait for the user to commit
-`P1.1 Sentry Environment, Sampling, And Payload Redaction`.
+`P1.2 Delete Account Edge Function Hardening`.
 
 After the user confirms the commit and says to continue:
 
-1. Mark P1.1 as `COMMITTED`.
-2. Mark P1.2 as `IN PROGRESS`.
-3. Implement `P1.2 Delete Account Edge Function Hardening`.
+1. Mark P1.2 as `COMMITTED`.
+2. Mark P1.3 as `IN PROGRESS`.
+3. Implement `P1.3 Required CI Quality Gates`.
