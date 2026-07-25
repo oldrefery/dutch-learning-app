@@ -351,7 +351,9 @@ Verification results:
 
 ### P0.2 Word Delta Cursor And Pending-Write Protection
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `9477285 fix: protect incremental word sync`
 
 Scope:
 
@@ -389,6 +391,40 @@ Verification results:
 - Full Jest coverage: 49 suites, 786 tests passed.
 - Build and test TypeScript: passed.
 - ESLint CI budget: passed with the same 7 pre-existing warnings.
+- Prettier: passed.
+- Edge Function tests: 58 passed.
+- All 28 Maestro YAML files: passed.
+- `git diff --check`: passed.
+
+### P0.2 Follow-up: Word Repository Complexity Refactor
+
+Status: `READY FOR USER COMMIT`
+
+Scope:
+
+- Remove the cognitive-complexity warning from `wordRepository.saveWords`.
+- Preserve the P0.2 SQL, bind-value, pending-write, and telemetry contracts.
+- Keep prepared-statement cleanup explicit and safe on partial preparation.
+
+Completed:
+
+- Split statement preparation, per-word persistence, value mapping, merge
+  telemetry, and cleanup into focused repository helpers.
+- Reduced `saveWords` below the configured complexity threshold without lint
+  suppression or a new abstraction layer.
+- Ensured statements prepared before a later preparation failure are
+  finalized, matching Expo SQLite's recommended explicit lifecycle.
+- Added coverage for populated and nullable mappings, runtime SRS defaults,
+  and partial preparation cleanup.
+
+Verification results:
+
+- Targeted repository tests: 1 suite, 15 tests passed.
+- Full Jest coverage: 49 suites, 789 tests passed.
+- `src/db` branch coverage: 50.78%, above the required 50%.
+- Build and test TypeScript: passed.
+- ESLint CI budget: passed with 6 pre-existing warnings; the
+  `wordRepository.saveWords` warning was removed.
 - Prettier: passed.
 - Edge Function tests: 58 passed.
 - All 28 Maestro YAML files: passed.
@@ -435,7 +471,7 @@ Scope:
 
 ## Current Resume Point
 
-Wait for the user to commit `P0.2 Word Delta Cursor And Pending-Write
-Protection`. After the user confirms the commit and says to continue, mark
-`P0.2` as `COMMITTED`, record the commit hash, and start `P0.3 Offline Delete
+Wait for the user to commit `P0.2 Follow-up: Word Repository Complexity
+Refactor`. After the user confirms the commit and says to continue, mark the
+follow-up as `COMMITTED`, record the commit hash, and start `P0.3 Offline Delete
 Tombstones`.
