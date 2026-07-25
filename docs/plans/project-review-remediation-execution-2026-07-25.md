@@ -192,7 +192,9 @@ Verification results:
 
 ### P1.3 Required CI Quality Gates
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `22c0d8f ci: enforce project quality gates`
 
 Scope:
 
@@ -243,13 +245,60 @@ Verification results:
 
 ### P2.1 Expo Patch Alignment And Dependency Audit
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 
 Scope:
 
 - Align Expo SDK 55 patch versions.
 - Re-run Expo Doctor and dependency audit.
 - Assess remaining advisories for runtime reachability.
+
+Completed:
+
+- Aligned Expo SDK 55, React Native, Expo modules, `eslint-config-expo`, and
+  `jest-expo` with Expo's current compatibility matrix.
+- Added `babel-preset-expo` as an explicit development dependency because the
+  project Babel configuration imports it directly.
+- Upgraded `eslint-plugin-sonarjs` to remove its independently remediable
+  vulnerable transitive dependency without changing the lint warning budget.
+- Applied non-breaking `npm audit fix` updates to the lockfile and deliberately
+  rejected `--force` proposals that require incompatible Expo, React Native,
+  Jest, or Babel major versions.
+- Removed the Expo Doctor dependency-version bypass from required CI.
+- Added weekly npm and monthly GitHub Actions Dependabot version checks.
+- Confirmed that the project uses Expo CNG with ignored, untracked native
+  directories, so no native project regeneration belongs in this package.
+- Reduced the audit to two underlying advisory packages:
+  - `brace-expansion` is reached through legacy `minimatch` versions in
+    Expo/React Native/Jest/ESLint Node tooling. Its denial-of-service condition
+    requires attacker-influenced brace patterns.
+  - `uuid` is reached through Expo config plugins and the `xcode` Node build
+    tool. The advisory affects the v3/v5/v6 external-buffer APIs.
+- Verified from an iOS production source map that `brace-expansion`, `uuid`,
+  and `xcode` are absent from the shipped JavaScript bundle. The remaining
+  advisories are accepted temporarily pending compatible upstream SDK/tooling
+  releases.
+
+Verification results:
+
+- Clean dependency installation: passed.
+- Expo dependency check: all dependencies are up to date.
+- Expo Doctor: 19/19 checks passed with the complete version check enabled.
+- Build and test TypeScript: passed.
+- ESLint CI budget: passed with the same 7 pre-existing warnings.
+- Prettier and all 28 Maestro YAML files: passed.
+- Jest coverage: 49 suites, 776 tests passed.
+- Edge Function tests: 58 passed.
+- iOS production export: passed; source-map reachability scan found none of the
+  two advisory packages or `xcode`.
+- GitHub Actions and Dependabot YAML parsing: 4 files passed.
+- `git diff --check`: passed.
+- Full `npm audit`: 0 critical, 42 high, 9 moderate, 0 low. These 51 entries
+  are npm meta-vulnerability propagation from the two underlying advisories,
+  not 51 independent vulnerable implementations.
+- `npm audit --omit=dev`: 0 critical, 33 high, 9 moderate, 0 low. Expo exposes
+  its CLI and config/build tools through the production dependency tree, so
+  this count does not represent mobile-bundle reachability.
 
 ### P2.2 Persisted Word Contract Test Strengthening
 
@@ -263,11 +312,6 @@ Scope:
 
 ## Current Resume Point
 
-Wait for the user to commit
-`P1.3 Required CI Quality Gates`.
-
-After the user confirms the commit and says to continue:
-
-1. Mark P1.3 as `COMMITTED`.
-2. Mark P2.1 as `IN PROGRESS`.
-3. Implement `P2.1 Expo Patch Alignment And Dependency Audit`.
+Wait for the user to commit `P2.1 Expo Patch Alignment And Dependency Audit`.
+After the user confirms the commit and says to continue, mark P2.1 as
+`COMMITTED`, record the commit hash, and start P2.2.
