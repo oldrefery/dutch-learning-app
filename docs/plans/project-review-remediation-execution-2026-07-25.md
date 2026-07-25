@@ -150,7 +150,9 @@ Verification results:
 
 ### P1.2 Delete Account Edge Function Hardening
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
+
+Commit: `988ddb3 fix: harden account deletion function`
 
 Scope:
 
@@ -190,7 +192,7 @@ Verification results:
 
 ### P1.3 Required CI Quality Gates
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 
 Scope:
 
@@ -198,6 +200,46 @@ Scope:
 - Run install, typecheck, lint, format, Jest, Edge tests, and Expo Doctor.
 - Replace the ineffective Maestro YAML validation.
 - Add test TypeScript checking.
+
+Completed:
+
+- Added a required GitHub Actions quality workflow for pull requests, pushes,
+  and manual runs with read-only repository permissions and concurrency
+  cancellation.
+- Standardized GitHub Actions on Node 22.13.0, which is supported by Expo SDK 55.
+- Added application and test TypeScript checks, formatting, a seven-warning
+  ESLint budget, Jest coverage, Edge tests, Maestro flow validation, Expo
+  Doctor, and coverage artifact upload to CI.
+- Replaced the Python compilation placeholder with a real YAML parse and
+  round-trip validation for every tracked Maestro flow.
+- Pinned Deno 2.9.4 as a dev dependency and added a frozen shared Edge Function
+  lockfile so `npm run test:edge` works after `npm ci` without a global runtime.
+- Corrected the Supabase FunctionsClient test mock so the complete test
+  TypeScript project passes.
+- Cleared `withTimeout` timers on every settlement path and added
+  open-handle regression checks.
+- Restored the undiscovered StyledText test as a typed Jest test and added
+  `lcov` plus `json-summary` coverage reports.
+- Removed `act(...)` warnings and expected error noise from the
+  `useLocalProgress` hook suite with awaited initialization and scoped console
+  spies.
+
+Verification results:
+
+- Clean `npm ci`: passed.
+- Build and test TypeScript: passed.
+- ESLint CI budget: passed with the same 7 pre-existing warnings.
+- Prettier and all 28 Maestro YAML files: passed.
+- Jest coverage: 49 suites, 776 tests passed.
+- Targeted retry tests with `--detectOpenHandles`: 49 passed.
+- Edge Function tests: 58 passed through `npm run test:edge`.
+- Expo Doctor: 18/18 checks passed with only the dependency-version check
+  deferred to `P2.1 Expo Patch Alignment And Dependency Audit`.
+- actionlint 1.7.12: all three GitHub Actions workflows passed.
+- Coverage artifact contains both `lcov` and `json-summary`.
+- `git diff --check`: passed.
+- `npm ci` still reports 28 dependency advisories (2 low, 12 moderate, 13 high,
+  1 critical); assessment and upgrades remain assigned to P2.1.
 
 ### P2.1 Expo Patch Alignment And Dependency Audit
 
@@ -222,10 +264,10 @@ Scope:
 ## Current Resume Point
 
 Wait for the user to commit
-`P1.2 Delete Account Edge Function Hardening`.
+`P1.3 Required CI Quality Gates`.
 
 After the user confirms the commit and says to continue:
 
-1. Mark P1.2 as `COMMITTED`.
-2. Mark P1.3 as `IN PROGRESS`.
-3. Implement `P1.3 Required CI Quality Gates`.
+1. Mark P1.3 as `COMMITTED`.
+2. Mark P2.1 as `IN PROGRESS`.
+3. Implement `P2.1 Expo Patch Alignment And Dependency Audit`.

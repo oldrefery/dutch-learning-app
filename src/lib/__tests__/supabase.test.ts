@@ -14,7 +14,7 @@ jest.mock('@/utils/logger', () => ({
   logWarning: jest.fn(),
 }))
 
-type SupabaseFunctionsMock = typeof supabase & {
+interface SupabaseFunctionsMock {
   functions: {
     invoke: jest.Mock
   }
@@ -24,7 +24,7 @@ const mockedAssertNetworkConnection =
   assertNetworkConnection as jest.MockedFunction<typeof assertNetworkConnection>
 
 const getSupabaseFunctionsMock = (): SupabaseFunctionsMock =>
-  supabase as SupabaseFunctionsMock
+  supabase as unknown as SupabaseFunctionsMock
 
 const createFunctionsHttpError = (
   status: number,
