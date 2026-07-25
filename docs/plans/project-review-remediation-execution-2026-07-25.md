@@ -247,6 +247,8 @@ Verification results:
 
 Status: `READY FOR USER COMMIT`
 
+Initial commit: `39bdf2c chore: align Expo dependencies and harden update checks`
+
 Scope:
 
 - Align Expo SDK 55 patch versions.
@@ -299,6 +301,14 @@ Verification results:
 - `npm audit --omit=dev`: 0 critical, 33 high, 9 moderate, 0 low. Expo exposes
   its CLI and config/build tools through the production dependency tree, so
   this count does not represent mobile-bundle reachability.
+
+Follow-up:
+
+- Updated `actions/checkout`, `actions/setup-node`, and
+  `actions/upload-artifact` to their current official releases after IDE
+  inspection identified the older major versions.
+- Confirmed the three tags against their official GitHub release pages; the
+  workflow YAML parse, Prettier check, and `git diff --check` passed.
 
 ### P2.2 Persisted Word Contract Test Strengthening
 
