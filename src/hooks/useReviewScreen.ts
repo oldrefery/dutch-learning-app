@@ -6,11 +6,13 @@ import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 import { Sentry } from '@/lib/sentry'
+import type { ReviewSession, ReviewSessionConfig } from '@/types/ReviewTypes'
 
 export const useReviewScreen = () => {
   const {
     reviewSession,
     currentWord,
+    words,
     endReviewSession,
     deleteWord,
     deleteWordFromReview,
@@ -25,7 +27,13 @@ export const useReviewScreen = () => {
   const [isFlipped, setIsFlipped] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [lastTouchTime, setLastTouchTime] = useState(0)
+  const [sessionEmpty, setSessionEmpty] = useState(false)
+  const [completedSession, setCompletedSession] =
+    useState<ReviewSession | null>(null)
   const isMountedRef = useRef(true)
+  const previousReviewSessionRef = useRef<ReviewSession | null>(reviewSession)
+  const responseStartedAtRef = useRef(Date.now())
+  const responseTimeRef = useRef<number | null>(null)
 
   // Cleanup on unmounting
   useEffect(() => {
@@ -34,10 +42,37 @@ export const useReviewScreen = () => {
     }
   }, [])
 
-  // Reset card state when the word changes
+  useEffect(() => {
+    const previousSession = previousReviewSessionRef.current
+
+    if (reviewSession) {
+      previousReviewSessionRef.current = reviewSession
+      setCompletedSession(null)
+      setSessionEmpty(false)
+      return
+    }
+
+    if (previousSession && !currentWord && !sessionEmpty) {
+      setCompletedSession(previousSession)
+    }
+  }, [currentWord, reviewSession, sessionEmpty])
+
+  // Reset transient response state when the word or mode changes
   useEffect(() => {
     setIsFlipped(false)
-  }, [currentWord?.word_id])
+    setLastTouchTime(0)
+    responseStartedAtRef.current = Date.now()
+    responseTimeRef.current = null
+  }, [currentWord?.word_id, reviewSession?.config.mode])
+
+  const recordResponseTime = useCallback(() => {
+    if (responseTimeRef.current === null) {
+      responseTimeRef.current = Math.max(
+        0,
+        Date.now() - responseStartedAtRef.current
+      )
+    }
+  }, [])
 
   const handlePlayAudio = useCallback(
     (url?: string) => {
@@ -60,6 +95,9 @@ export const useReviewScreen = () => {
         await store.submitReviewAssessment({
           wordId: currentWord.word_id,
           assessment: SRS_ASSESSMENT[assessment],
+          responseTime:
+            responseTimeRef.current ??
+            Math.max(0, Date.now() - responseStartedAtRef.current),
           timestamp: new Date(),
         })
 
@@ -154,9 +192,40 @@ export const useReviewScreen = () => {
     [currentWord, updateCurrentWordImage]
   )
 
+  const startSession = useCallback(
+    async (config: ReviewSessionConfig) => {
+      previousReviewSessionRef.current = null
+      setCompletedSession(null)
+      setSessionEmpty(false)
+      await startReviewSession(config)
+
+      const nextSession = useApplicationStore.getState().reviewSession
+      if (!nextSession && isMountedRef.current) {
+        setSessionEmpty(true)
+      }
+
+      return Boolean(nextSession)
+    },
+    [startReviewSession]
+  )
+
   const restartSession = useCallback(() => {
-    startReviewSession(reviewSession?.config)
-  }, [reviewSession?.config, startReviewSession])
+    const config =
+      reviewSession?.config ??
+      completedSession?.config ??
+      previousReviewSessionRef.current?.config
+
+    if (config) {
+      void startSession(config)
+    }
+  }, [completedSession?.config, reviewSession?.config, startSession])
+
+  const chooseAnotherMode = useCallback(() => {
+    previousReviewSessionRef.current = null
+    setCompletedSession(null)
+    setSessionEmpty(false)
+    endReviewSession()
+  }, [endReviewSession])
 
   // Simple flip function for external use
   const handleFlipCard = useCallback(() => {
@@ -165,16 +234,32 @@ export const useReviewScreen = () => {
       if (now - lastTouchTime < 300) {
         return
       }
+      if (!isFlipped) {
+        recordResponseTime()
+      }
       setLastTouchTime(now)
       setIsFlipped(prev => !prev)
     }
-  }, [lastTouchTime])
+  }, [isFlipped, lastTouchTime, recordResponseTime])
 
-  const reviewWords = reviewSession?.words || []
+  const revealAnswer = useCallback(() => {
+    recordResponseTime()
+    setIsFlipped(true)
+  }, [recordResponseTime])
+
+  const isCompletingSession =
+    !reviewSession &&
+    !currentWord &&
+    previousReviewSessionRef.current !== null &&
+    !sessionEmpty
+  const sessionComplete = completedSession !== null || isCompletingSession
+  const lastCompletedSession =
+    completedSession ??
+    (isCompletingSession ? previousReviewSessionRef.current : null)
+  const reviewWords = reviewSession?.words ?? lastCompletedSession?.words ?? []
   const currentIndex = reviewSession?.currentIndex || 0
   const totalWords = reviewWords.length
   const currentWordNumber = currentIndex + 1
-  const sessionComplete = currentIndex >= reviewWords.length && !currentWord
 
   return {
     // State from useReviewSession compatibility
@@ -183,6 +268,7 @@ export const useReviewScreen = () => {
     currentIndex,
     sessionComplete,
     reviewWords,
+    availableWords: words,
     totalWords,
     currentWordNumber,
     isLoading: isLoading || reviewLoading,
@@ -190,6 +276,7 @@ export const useReviewScreen = () => {
     // useReviewScreen specific state
     isFlipped,
     isPlayingAudio,
+    sessionEmpty,
 
     // Actions
     playAudio: handlePlayAudio,
@@ -202,8 +289,11 @@ export const useReviewScreen = () => {
     handleDeleteWord,
     handleEndSession,
     handleImageChange,
+    startSession,
     restartSession,
+    chooseAnotherMode,
     handleFlipCard,
+    revealAnswer,
     goToNextWord,
     goToPreviousWord,
   }

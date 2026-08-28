@@ -22,3 +22,25 @@ export const DEFAULT_REVIEW_SESSION_CONFIG = {
 } as const satisfies ReviewSessionConfig
 
 export const DIFFICULT_EASINESS_FACTOR_THRESHOLD = 2.1
+
+export const REVIEW_MODE_OPTIONS = [
+  {
+    mode: REVIEW_MODE.RECOGNITION,
+    title: 'Recognition',
+    description: 'Choose the correct meaning from several options.',
+  },
+  {
+    mode: REVIEW_MODE.MEANING_RECALL,
+    title: 'Meaning Recall',
+    description: 'See the Dutch word and recall its meaning.',
+  },
+  {
+    mode: REVIEW_MODE.DUTCH_PRODUCTION,
+    title: 'Dutch Production',
+    description: 'See a translation and produce the Dutch word.',
+  },
+] as const satisfies readonly {
+  mode: ReviewMode
+  title: string
+  description: string
+}[]

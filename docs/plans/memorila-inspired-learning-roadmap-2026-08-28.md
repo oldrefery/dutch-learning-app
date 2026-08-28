@@ -140,7 +140,7 @@ Rules:
 
 ### WP0.1 Review Session Configuration Foundation
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P0
 Estimated size: S
 Suggested branch: `feature/review-session-modes`
@@ -195,7 +195,7 @@ Done criteria:
 
 ### WP0.2 Progressive Review Modes MVP
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 Priority: P0
 Estimated size: L
 Depends on: WP0.1

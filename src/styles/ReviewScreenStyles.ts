@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native'
 import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
 import { Colors } from '@/constants/Colors'
+import { GlassHeaderDefaults } from '@/constants/GlassConstants'
 
 export const reviewScreenStyles = StyleSheet.create({
   container: {
@@ -85,10 +86,16 @@ export const reviewScreenStyles = StyleSheet.create({
 
   srsButton: {
     flex: 1,
+    minHeight: 48,
     paddingVertical: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
     paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
     borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  revealButton: {
+    backgroundColor: Colors.primary.DEFAULT,
   },
 
   againButton: {
@@ -117,6 +124,45 @@ export const reviewScreenStyles = StyleSheet.create({
     flex: 1,
   },
 
+  headerAction: {
+    minWidth: 48,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+
+  headerActionText: {
+    color: Colors.primary.DEFAULT,
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
+    fontWeight: '600',
+  },
+
+  feedbackBanner: {
+    position: 'absolute',
+    top: GlassHeaderDefaults.height,
+    left: 0,
+    right: 0,
+    zIndex: 9,
+    height: REVIEW_SCREEN_CONSTANTS.FEEDBACK_BANNER_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
+  },
+
+  correctFeedback: {
+    backgroundColor: Colors.success.darkModeChip,
+  },
+
+  incorrectFeedback: {
+    backgroundColor: Colors.error.darkModeChip,
+  },
+
+  feedbackText: {
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
+    fontWeight: '600',
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+
   progressContainer: {
     paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
     paddingVertical: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
@@ -125,5 +171,30 @@ export const reviewScreenStyles = StyleSheet.create({
   progressText: {
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
     textAlign: 'center',
+  },
+
+  fallbackText: {
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
+    lineHeight: 20,
+    textAlign: 'center',
+    marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.XS,
+  },
+
+  secondaryButton: {
+    minHeight: 48,
+    minWidth: 160,
+    borderWidth: 1,
+    borderColor: Colors.primary.DEFAULT,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
+    marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
+  },
+
+  secondaryButtonText: {
+    color: Colors.primary.DEFAULT,
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
+    fontWeight: '600',
   },
 })

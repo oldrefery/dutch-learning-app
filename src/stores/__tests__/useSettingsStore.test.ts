@@ -2,10 +2,11 @@
  * Tests for useSettingsStore
  *
  * Zustand store with AsyncStorage persistence for user preferences:
- * autoPlayPronunciation and lastSelectedCollectionId.
+ * autoPlayPronunciation, lastSelectedCollectionId, and review mode.
  */
 
 import { useSettingsStore } from '../useSettingsStore'
+import { REVIEW_MODE } from '@/constants/ReviewConstants'
 
 describe('useSettingsStore', () => {
   beforeEach(() => {
@@ -13,6 +14,7 @@ describe('useSettingsStore', () => {
     useSettingsStore.setState({
       autoPlayPronunciation: false,
       lastSelectedCollectionId: null,
+      lastSelectedReviewMode: REVIEW_MODE.MEANING_RECALL,
     })
   })
 
@@ -23,6 +25,24 @@ describe('useSettingsStore', () => {
 
     it('should default lastSelectedCollectionId to null', () => {
       expect(useSettingsStore.getState().lastSelectedCollectionId).toBeNull()
+    })
+
+    it('should default to Meaning Recall review mode', () => {
+      expect(useSettingsStore.getState().lastSelectedReviewMode).toBe(
+        REVIEW_MODE.MEANING_RECALL
+      )
+    })
+  })
+
+  describe('setLastSelectedReviewMode', () => {
+    it('should remember the selected review mode', () => {
+      useSettingsStore
+        .getState()
+        .setLastSelectedReviewMode(REVIEW_MODE.DUTCH_PRODUCTION)
+
+      expect(useSettingsStore.getState().lastSelectedReviewMode).toBe(
+        REVIEW_MODE.DUTCH_PRODUCTION
+      )
     })
   })
 

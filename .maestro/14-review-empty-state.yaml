@@ -12,16 +12,21 @@ appId: ${APP_ID}
 - runFlow:
     file: flows/ensure-on-screen.yaml
     env:
-      screen_id: "screen-review"
-      tab_text: "Review"
+      screen_id: 'screen-review'
+      tab_text: 'Review'
 
 # Verify empty state message
 # Note: Update these text assertions based on actual empty state messages
-- assertVisible: "No words to review.*"
+- assertVisible:
+    id: 'review-mode-selector'
+- tapOn:
+    id: 'start-review-button'
+- waitForAnimationToEnd
+- assertVisible: 'No words to review.*'
 
 # Alternative: Check for suggestion text
 - runFlow:
     when:
-      visible: "add more words"
+      visible: 'add more words'
     commands:
-      - assertVisible: "add more words"
+      - assertVisible: 'add more words'

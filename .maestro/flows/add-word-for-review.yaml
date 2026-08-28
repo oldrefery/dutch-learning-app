@@ -1,0 +1,25 @@
+appId: ${APP_ID}
+---
+# Helper flow: add one analyzed word to My Words for review mode coverage.
+# Parameters: word_text, translation_text
+
+- tapOn:
+    text: 'Add Word'
+- waitForAnimationToEnd
+- tapOn:
+    id: 'word-input'
+- inputText: ${word_text}
+- hideKeyboard
+- tapOn:
+    id: 'analyze-button'
+- extendedWaitUntil:
+    visible: ${translation_text}
+    timeout: 15000
+- scroll
+- tapOn:
+    id: 'collection-selector'
+- tapOn:
+    text: 'My Words'
+- tapOn:
+    id: 'save-word-button'
+- waitForAnimationToEnd

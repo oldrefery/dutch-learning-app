@@ -2,6 +2,7 @@ export const REVIEW_SCREEN_CONSTANTS = {
   // Layout
   CARD_MIN_HEIGHT: 200,
   CARD_WIDTH: 350,
+  FEEDBACK_BANNER_HEIGHT: 52,
 
   // Spacing
   SPACING: {
