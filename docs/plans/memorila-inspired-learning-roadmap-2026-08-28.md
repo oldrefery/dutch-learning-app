@@ -140,7 +140,7 @@ Rules:
 
 ### WP0.1 Review Session Configuration Foundation
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 Priority: P0
 Estimated size: S
 Suggested branch: `feature/review-session-modes`

@@ -10,7 +10,12 @@ import type {
   ReviewAssessment,
 } from '@/types/ApplicationStoreTypes'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
-import type { Word } from '@/types/database'
+import {
+  DEFAULT_REVIEW_SESSION_CONFIG,
+  REVIEW_MODE,
+  REVIEW_SCOPE,
+} from '@/constants/ReviewConstants'
+import type { Collection, Word } from '@/types/database'
 
 jest.mock('@/lib/sentry')
 jest.mock('@/utils/logger')
@@ -58,6 +63,22 @@ describe('reviewActions', () => {
     analysis_notes: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    ...overrides,
+  })
+
+  const createMockCollection = (
+    overrides: Partial<Collection> = {}
+  ): Collection => ({
+    collection_id: 'collection-a',
+    user_id: USER_ID,
+    name: 'Collection A',
+    description: null,
+    updated_at: '2026-08-28T00:00:00.000Z',
+    created_at: '2026-08-28T00:00:00.000Z',
+    is_shared: false,
+    shared_with: null,
+    share_token: null,
+    shared_at: null,
     ...overrides,
   })
 
@@ -127,6 +148,7 @@ describe('reviewActions', () => {
           reviewSession: expect.objectContaining({
             words: expect.arrayContaining(mockWords),
             currentIndex: 0,
+            config: DEFAULT_REVIEW_SESSION_CONFIG,
           }),
           currentWord: mockWords[0],
           reviewLoading: false,
@@ -272,6 +294,82 @@ describe('reviewActions', () => {
                 user_id: USER_ID,
               }),
             ]),
+          }),
+        })
+      )
+    })
+
+    it('should filter a collection-scoped session', async () => {
+      const today = new Date().toISOString().split('T')[0]
+      const collection = createMockCollection()
+      const mockWords = [
+        createMockWord({
+          word_id: 'collection-word',
+          collection_id: collection.collection_id,
+          next_review_date: today,
+        }),
+        createMockWord({
+          word_id: 'other-word',
+          collection_id: 'other-collection',
+          next_review_date: today,
+        }),
+      ]
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        words: mockWords,
+        collections: [collection],
+        reviewSession: null,
+        currentWord: null,
+        error: null,
+      }))
+
+      await actions.startReviewSession({
+        mode: REVIEW_MODE.MEANING_RECALL,
+        scope: REVIEW_SCOPE.COLLECTION_DUE,
+        collectionId: collection.collection_id,
+      })
+
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            words: [expect.objectContaining({ word_id: 'collection-word' })],
+            config: {
+              mode: REVIEW_MODE.MEANING_RECALL,
+              scope: REVIEW_SCOPE.COLLECTION_DUE,
+              collectionId: collection.collection_id,
+            },
+          }),
+        })
+      )
+    })
+
+    it('should set an explicit error for a deleted collection', async () => {
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        words: [],
+        collections: [],
+        reviewSession: null,
+        currentWord: null,
+        error: null,
+      }))
+
+      await actions.startReviewSession({
+        mode: REVIEW_MODE.MEANING_RECALL,
+        scope: REVIEW_SCOPE.COLLECTION_DUE,
+        collectionId: 'deleted-collection',
+      })
+
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: null,
+          currentWord: null,
+          reviewLoading: false,
+          error: expect.objectContaining({
+            category: 'VALIDATION',
+            context: expect.objectContaining({
+              reason: 'collection-not-found',
+              collectionId: 'deleted-collection',
+            }),
           }),
         })
       )

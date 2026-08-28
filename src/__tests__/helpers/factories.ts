@@ -5,7 +5,9 @@
  * used across multiple test files.
  */
 
-import type { Collection, Word, ReviewSession } from '@/types/database'
+import type { Collection, Word } from '@/types/database'
+import type { ReviewSession } from '@/types/ReviewTypes'
+import { DEFAULT_REVIEW_SESSION_CONFIG } from '@/constants/ReviewConstants'
 import type { UserProgress } from '@/db/progressRepository'
 import type {
   NotificationHistoryEntry,
@@ -137,5 +139,6 @@ export const createMockReviewSession = (
   words: [createMockWord(), createMockWord(), createMockWord()],
   currentIndex: 0,
   completedCount: 0,
+  config: DEFAULT_REVIEW_SESSION_CONFIG,
   ...overrides,
 })

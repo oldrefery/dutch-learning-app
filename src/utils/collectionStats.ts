@@ -1,4 +1,5 @@
 import type { Word } from '@/types/database'
+import { isDueOnLocalDate } from './dateUtils'
 
 export interface CollectionStats {
   totalWords: number
@@ -18,7 +19,7 @@ export function calculateCollectionStats(
     w => w && w.repetition_count && w.repetition_count > 2
   ).length
   const wordsToReview = collectionWords.filter(
-    w => w && w.next_review_date && new Date(w.next_review_date) <= new Date()
+    w => w && isDueOnLocalDate(w.next_review_date)
   ).length
   const progressPercentage =
     totalWords > 0 ? Math.round((masteredWords / totalWords) * 100) : 0

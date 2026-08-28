@@ -1,13 +1,13 @@
 import type {
   Word,
   Collection,
-  ReviewSession,
   GeminiWordAnalysis,
   SRSAssessment,
   WordTranslations,
   WordExample,
   AccessLevel,
 } from './database'
+import type { ReviewSession, ReviewSessionConfig } from './ReviewTypes'
 import type { AppError } from './ErrorTypes'
 import { ExpressionType } from './ExpressionTypes'
 
@@ -79,7 +79,7 @@ export interface ApplicationState {
   } | null>
 
   // Review session actions
-  startReviewSession: () => Promise<void>
+  startReviewSession: (config?: ReviewSessionConfig) => Promise<void>
   submitReviewAssessment: (assessment: ReviewAssessment) => Promise<void>
   endReviewSession: () => void
   markCorrect: () => Promise<void>

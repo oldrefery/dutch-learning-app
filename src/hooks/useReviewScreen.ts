@@ -155,8 +155,8 @@ export const useReviewScreen = () => {
   )
 
   const restartSession = useCallback(() => {
-    startReviewSession()
-  }, [startReviewSession])
+    startReviewSession(reviewSession?.config)
+  }, [reviewSession?.config, startReviewSession])
 
   // Simple flip function for external use
   const handleFlipCard = useCallback(() => {

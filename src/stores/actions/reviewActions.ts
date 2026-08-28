@@ -1,6 +1,8 @@
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
+import { DEFAULT_REVIEW_SESSION_CONFIG } from '@/constants/ReviewConstants'
 import { logInfo, logWarning, logError } from '@/utils/logger'
+import { selectReviewWords } from '@/utils/reviewSession'
 import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
 import type {
   StoreSetFunction,
@@ -29,7 +31,7 @@ export const createReviewActions = (
   | 'updateCurrentWordImage'
   | 'updateCurrentWordInReview'
 > => ({
-  startReviewSession: async () => {
+  startReviewSession: async (config = DEFAULT_REVIEW_SESSION_CONFIG) => {
     try {
       set({ reviewLoading: true })
 
@@ -58,32 +60,38 @@ export const createReviewActions = (
 
       // Offline-first: Get review words from the local cache (SQLite)
       logInfo('Fetching review words from local cache', { userId }, 'review')
-      const allWords = get().words
-      const today = new Date().toISOString().split('T')[0] // "2025-12-21"
+      const { words, collections } = get()
+      const selection = selectReviewWords({
+        words,
+        collections,
+        userId,
+        config,
+      })
 
-      // Filter words that are due for review: next_review_date <= today
-      const reviewWords = allWords.filter(
-        w =>
-          w &&
-          w.next_review_date &&
-          w.next_review_date <= today &&
-          w.user_id === userId
-      )
-
-      if (!reviewWords) {
+      if (!selection.success) {
         set({
+          reviewSession: null,
+          currentWord: null,
           error: createStoreError(
             APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
               .REVIEW_SESSION_START_FAILED,
             {
               category: ErrorCategory.VALIDATION,
-              context: { reason: 'Failed to fetch review words from service' },
+              context: {
+                reason: selection.reason,
+                collectionId:
+                  config.scope === 'collection-due'
+                    ? config.collectionId
+                    : undefined,
+              },
             }
           ),
           reviewLoading: false,
         })
         return
       }
+
+      const reviewWords = selection.words
 
       if (reviewWords.length === 0) {
         set({
@@ -98,6 +106,7 @@ export const createReviewActions = (
         words: reviewWords,
         currentIndex: 0,
         completedCount: 0,
+        config,
       }
 
       set({

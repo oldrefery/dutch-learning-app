@@ -110,14 +110,6 @@ export interface SRSResult {
   next_review_date: string
 }
 
-// App state types
-
-export interface ReviewSession {
-  words: Word[]
-  currentIndex: number
-  completedCount: number
-}
-
 // Access Control types
 
 export type AccessLevel = 'read_only' | 'full_access'

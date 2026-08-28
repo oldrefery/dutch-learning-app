@@ -49,6 +49,7 @@ export default function ReviewScreen() {
 
   const {
     // State
+    reviewSession,
     currentWord,
     sessionComplete,
     reviewWords,
@@ -154,7 +155,10 @@ export default function ReviewScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     try {
-      await Promise.all([refreshCount(), startReviewSession()])
+      await Promise.all([
+        refreshCount(),
+        startReviewSession(reviewSession?.config),
+      ])
     } catch (error) {
       Sentry.captureException(error, {
         tags: { operation: 'refreshReviewSession' },
@@ -163,7 +167,7 @@ export default function ReviewScreen() {
     } finally {
       setRefreshing(false)
     }
-  }, [refreshCount, startReviewSession])
+  }, [refreshCount, reviewSession?.config, startReviewSession])
 
   // Create completely stable gestures to prevent recreation
   // withRef exposes this gesture so NonSwipeableArea can block it via context
