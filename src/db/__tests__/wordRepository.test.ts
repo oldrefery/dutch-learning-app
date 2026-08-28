@@ -24,6 +24,7 @@ describe('WordRepository', () => {
 
   const mockDatabase = {
     prepareAsync: jest.fn(),
+    runAsync: jest.fn(),
     getAllAsync: jest.fn(),
     getFirstAsync: jest.fn(),
     execAsync: jest.fn(),
@@ -393,6 +394,82 @@ describe('WordRepository', () => {
       expect(mockCheckStatement.finalizeAsync).toHaveBeenCalled()
       expect(mockUpdateStatement.finalizeAsync).toHaveBeenCalled()
       expect(mockInsertStatement.finalizeAsync).toHaveBeenCalled()
+    })
+  })
+
+  describe('updateAnalyzedWord', () => {
+    it('should update the existing word instead of inserting it again', async () => {
+      const analyzedWord = {
+        ...mockWord,
+        dutch_lemma: 'woning',
+        translations: { en: ['home'], ru: ['жилище'] },
+        updated_at: '2026-08-28T12:00:00.000Z',
+      }
+      mockDatabase.runAsync.mockResolvedValue({ changes: 1 })
+
+      const result = await wordRepository.updateAnalyzedWord(analyzedWord)
+
+      expect(result).toEqual(analyzedWord)
+      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(1)
+      expect(mockDatabase.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE words SET'),
+        expect.arrayContaining([
+          analyzedWord.dutch_lemma,
+          JSON.stringify(analyzedWord.translations),
+          analyzedWord.word_id,
+          analyzedWord.user_id,
+        ])
+      )
+    })
+
+    it('should preserve the current semantic key when analysis collides', async () => {
+      const semanticConflict = new Error(
+        "UNIQUE constraint failed: index 'idx_words_semantic_key'"
+      )
+      const analyzedWord = {
+        ...mockWord,
+        dutch_lemma: 'duplicate',
+        part_of_speech: 'noun',
+        article: 'de' as const,
+      }
+      mockDatabase.runAsync
+        .mockRejectedValueOnce(semanticConflict)
+        .mockResolvedValueOnce({ changes: 1 })
+      mockDatabase.getFirstAsync.mockResolvedValue({
+        ...mockWord,
+        translations: JSON.stringify(mockWord.translations),
+        examples: null,
+        synonyms: JSON.stringify(mockWord.synonyms),
+        antonyms: JSON.stringify(mockWord.antonyms),
+        conjugation: null,
+        dutch_lemma: 'huis',
+        part_of_speech: 'noun',
+        article: 'het',
+        sync_status: 'synced',
+      })
+
+      const result = await wordRepository.updateAnalyzedWord(analyzedWord)
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          dutch_lemma: 'huis',
+          part_of_speech: 'noun',
+          article: 'het',
+        })
+      )
+      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(2)
+      expect(mockDatabase.getFirstAsync).toHaveBeenCalledWith(
+        expect.stringContaining('word_id = ?'),
+        [analyzedWord.word_id, analyzedWord.user_id]
+      )
+    })
+
+    it('should fail when the target word no longer exists', async () => {
+      mockDatabase.runAsync.mockResolvedValue({ changes: 0 })
+
+      await expect(wordRepository.updateAnalyzedWord(mockWord)).rejects.toThrow(
+        `Cannot update missing word: ${mockWord.word_id}`
+      )
     })
   })
 

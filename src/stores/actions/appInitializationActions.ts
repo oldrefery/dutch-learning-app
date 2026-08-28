@@ -78,10 +78,13 @@ export const createAppInitializationActions = (
         // Default to read_only on error
         set({ userAccessLevel: 'read_only' })
 
-        Sentry.captureMessage('Failed to fetch user access level', {
+        // The service owns error reporting. Keep the store fallback as context
+        // without creating a second Sentry event for the same failure.
+        Sentry.addBreadcrumb({
+          category: 'access_control',
+          message: 'Defaulted user access level to read_only',
           level: 'warning',
-          tags: { operation: 'fetchUserAccessLevel' },
-          extra: { error: result.error, userId: currentUserId },
+          data: { error: result.error },
         })
       }
     } catch (error) {

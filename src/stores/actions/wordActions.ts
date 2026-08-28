@@ -844,14 +844,17 @@ export const createWordActions = (
         updated_at: now,
       }
 
-      // Update the word in the local database (marks as pending sync)
-      await wordRepository.addWord(updatedWordData)
+      // Update the existing word in the local database (marks as pending sync).
+      // The repository preserves the current semantic key if the refreshed
+      // analysis would collide with another active word.
+      const persistedWord =
+        await wordRepository.updateAnalyzedWord(updatedWordData)
 
       // Update the store
       const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
       if (wordIndex !== -1) {
         const updatedWords = [...currentWords]
-        updatedWords[wordIndex] = updatedWordData
+        updatedWords[wordIndex] = persistedWord
         set({ words: updatedWords })
       }
 
@@ -861,7 +864,7 @@ export const createWordActions = (
         'words'
       )
 
-      return updatedWordData
+      return persistedWord
     } catch (error) {
       logError('Error re-analyzing word', error, { wordId }, 'words', false)
       Sentry.captureException(error, {

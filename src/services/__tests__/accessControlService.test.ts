@@ -17,6 +17,9 @@ import { logSupabaseError } from '@/utils/logger'
 jest.mock('@/lib/supabase', () => ({
   supabase: {
     from: jest.fn(),
+    auth: {
+      refreshSession: jest.fn(),
+    },
   },
 }))
 
@@ -46,6 +49,10 @@ describe('accessControlService', () => {
     mockEq = jest.fn().mockReturnValue({ maybeSingle: mockMaybeSingle })
     mockSelect = jest.fn().mockReturnValue({ eq: mockEq })
     ;(supabase.from as jest.Mock).mockReturnValue({ select: mockSelect })
+    ;(supabase.auth.refreshSession as jest.Mock).mockResolvedValue({
+      data: { session: {} },
+      error: null,
+    })
   })
 
   describe('getUserAccessLevel', () => {
@@ -144,6 +151,52 @@ describe('accessControlService', () => {
           userId: TEST_USER_ID,
         })
       )
+    })
+
+    it('should refresh the session and retry once for a future JWT', async () => {
+      const futureJwtError = {
+        message: 'JWT issued at future',
+        code: 'PGRST303',
+        details: '',
+        hint: '',
+      }
+      mockMaybeSingle
+        .mockResolvedValueOnce({ data: null, error: futureJwtError })
+        .mockResolvedValueOnce({
+          data: { access_level: 'full_access' },
+          error: null,
+        })
+
+      const result = await accessControlService.getUserAccessLevel(TEST_USER_ID)
+
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
+      expect(supabase.from).toHaveBeenCalledTimes(2)
+      expect(logSupabaseError).not.toHaveBeenCalled()
+      expect(result).toEqual({ success: true, data: 'full_access' })
+    })
+
+    it('should report the original error once when session refresh fails', async () => {
+      const futureJwtError = {
+        message: 'JWT issued at future',
+        code: 'PGRST303',
+        details: '',
+        hint: '',
+      }
+      mockMaybeSingle.mockResolvedValue({ data: null, error: futureJwtError })
+      ;(supabase.auth.refreshSession as jest.Mock).mockResolvedValue({
+        data: { session: null },
+        error: new Error('Refresh failed'),
+      })
+
+      const result = await accessControlService.getUserAccessLevel(TEST_USER_ID)
+
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
+      expect(supabase.from).toHaveBeenCalledTimes(1)
+      expect(logSupabaseError).toHaveBeenCalledTimes(1)
+      expect(result).toEqual({
+        success: false,
+        error: AccessControlError.DATABASE_ERROR,
+      })
     })
 
     it('should return UNKNOWN_ERROR on unexpected exception', async () => {

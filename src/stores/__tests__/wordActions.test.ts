@@ -21,6 +21,7 @@ jest.mock('@/db/wordRepository', () => ({
     getWordBySemanticKey: jest.fn(),
     saveWords: jest.fn(),
     addWord: jest.fn(),
+    updateAnalyzedWord: jest.fn(),
     deleteWord: jest.fn(),
     updateWordProgress: jest.fn(),
     updateWordImage: jest.fn(),
@@ -43,6 +44,7 @@ jest.mock('@/utils/logger', () => ({
 }))
 jest.mock('@/lib/supabase', () => ({
   wordService: {
+    analyzeWord: jest.fn(),
     importWordsToCollection: jest.fn(),
   },
 }))
@@ -914,6 +916,64 @@ describe('wordActions', () => {
     })
   })
 
+  describe('reanalyzeWord', () => {
+    it('should update the existing local word and preserve its progress', async () => {
+      const currentWord = createMockWord({
+        word_id: WORD_ID,
+        interval_days: 14,
+        repetition_count: 4,
+        easiness_factor: 2.8,
+      })
+      const analysis = {
+        dutch_lemma: 'wandelen',
+        part_of_speech: 'verb',
+        translations: { en: ['stroll'], ru: ['гулять'] },
+        examples: [{ nl: 'Ik wandel.', en: 'I walk.' }],
+        synonyms: ['lopen'],
+        antonyms: [],
+      }
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [currentWord],
+        error: null,
+      })
+      ;(wordService.analyzeWord as jest.Mock).mockResolvedValue({
+        data: analysis,
+      })
+      ;(wordRepository.updateAnalyzedWord as jest.Mock).mockImplementation(
+        async word => word
+      )
+
+      const result = await actions.reanalyzeWord(WORD_ID)
+
+      expect(wordService.analyzeWord).toHaveBeenCalledWith(
+        currentWord.dutch_lemma,
+        { forceRefresh: true }
+      )
+      expect(wordRepository.addWord).not.toHaveBeenCalled()
+      expect(wordRepository.updateAnalyzedWord).toHaveBeenCalledWith(
+        expect.objectContaining({
+          word_id: WORD_ID,
+          dutch_lemma: analysis.dutch_lemma,
+          translations: analysis.translations,
+          interval_days: 14,
+          repetition_count: 4,
+          easiness_factor: 2.8,
+        })
+      )
+      expect(result).toEqual(
+        expect.objectContaining({
+          word_id: WORD_ID,
+          dutch_lemma: analysis.dutch_lemma,
+          interval_days: 14,
+        })
+      )
+      expect(mockSet).toHaveBeenCalledWith({
+        words: [expect.objectContaining({ word_id: WORD_ID })],
+      })
+    })
+  })
+
   describe('integration', () => {
     it('should provide all word action methods', () => {
       expect(actions).toHaveProperty('fetchWords')
@@ -925,6 +985,7 @@ describe('wordActions', () => {
       expect(actions).toHaveProperty('moveWordToCollection')
       expect(actions).toHaveProperty('resetWordProgress')
       expect(actions).toHaveProperty('addWordsToCollection')
+      expect(actions).toHaveProperty('reanalyzeWord')
     })
   })
 })
