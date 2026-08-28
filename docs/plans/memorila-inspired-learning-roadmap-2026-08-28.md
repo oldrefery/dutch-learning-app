@@ -195,7 +195,7 @@ Done criteria:
 
 ### WP0.2 Progressive Review Modes MVP
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P0
 Estimated size: L
 Depends on: WP0.1
@@ -265,7 +265,7 @@ Done criteria:
 
 ### WP0.3 Review Insights And Difficult Words V1
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 Priority: P0
 Estimated size: M
 Depends on: WP0.1

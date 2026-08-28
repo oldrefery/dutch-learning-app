@@ -28,6 +28,7 @@ export const ROUTES = {
   IMPORT_COLLECTION: (token: string) => `/import/${token}` as const,
 
   // Other routes
+  INSIGHTS: '/insights' as const,
   MODAL: '/modal' as const,
   ROOT: '/' as const,
 } as const

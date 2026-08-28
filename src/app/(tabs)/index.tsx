@@ -13,7 +13,7 @@ import { PlatformBlurView } from '@/components/PlatformBlurView'
 import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
-import { router } from 'expo-router'
+import { router, type Href } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useApplicationStore } from '@/stores/useApplicationStore'
@@ -28,6 +28,8 @@ import {
 import type { Collection } from '@/types/database'
 import { calculateStreak } from '@/utils/streakUtils'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
+import { isDueOnLocalDate } from '@/utils/dateUtils'
+import { isMasteredWord } from '@/utils/reviewInsights'
 import { GlassHeaderDefaults } from '@/constants/GlassConstants'
 import { CreateCollectionSheet } from '@/components/glass/modals/CreateCollectionSheet'
 import { RenameCollectionSheet } from '@/components/glass/modals/RenameCollectionSheet'
@@ -57,6 +59,7 @@ export default function CollectionsScreen() {
     collections,
     collectionsLoading,
     words,
+    wordsLoading,
     error,
     clearError,
     deleteCollection,
@@ -173,6 +176,10 @@ export default function CollectionsScreen() {
     router.push(ROUTES.TABS.REVIEW)
   }
 
+  const handleOpenInsights = () => {
+    router.push(ROUTES.INSIGHTS as Href)
+  }
+
   const handleDismissError = () => {
     clearError()
   }
@@ -270,12 +277,9 @@ export default function CollectionsScreen() {
   )
   const stats = {
     totalWords: validWords.length,
-    masteredWords: validWords.filter(
-      w => w.repetition_count && w.repetition_count > 2
-    ).length,
-    wordsForReview: validWords.filter(
-      w => w.next_review_date && new Date(w.next_review_date) <= new Date()
-    ).length,
+    masteredWords: validWords.filter(isMasteredWord).length,
+    wordsForReview: validWords.filter(w => isDueOnLocalDate(w.next_review_date))
+      .length,
     streakDays: calculateStreak(validWords),
   }
 
@@ -291,8 +295,9 @@ export default function CollectionsScreen() {
     >
       <StatsCard
         stats={stats}
-        loading={collectionsLoading}
+        loading={collectionsLoading || wordsLoading}
         onStartReview={handleStartReview}
+        onOpenInsights={handleOpenInsights}
       />
 
       <ViewThemed style={styles.collectionsSection}>

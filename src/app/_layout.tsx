@@ -176,6 +176,10 @@ function RootLayoutNav() {
             options={{ headerShown: true }}
           />
           <Stack.Screen name="import/[token]" options={{ headerShown: true }} />
+          <Stack.Screen
+            name="insights"
+            options={{ headerShown: true, title: 'Review Insights' }}
+          />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>
         <AppToast />

@@ -1,10 +1,12 @@
 import React from 'react'
-import { StyleSheet, useColorScheme } from 'react-native'
+import { Pressable, StyleSheet } from 'react-native'
+import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { SkeletonNumber } from '@/components/SkeletonLoader'
 import ReviewButton from '@/components/ReviewButton'
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 
 interface StatsCardProps {
   stats: {
@@ -15,15 +17,18 @@ interface StatsCardProps {
   }
   loading?: boolean
   onStartReview?: () => void
+  onOpenInsights?: () => void
 }
 
 export const StatsCard = ({
   stats,
   loading = false,
   onStartReview,
+  onOpenInsights,
 }: StatsCardProps) => {
-  const colorScheme = useColorScheme() ?? 'light'
+  const colorScheme = useNormalizedColorScheme()
   const isDarkMode = colorScheme === 'dark'
+  const theme = Colors[colorScheme]
 
   const blurBackgroundDark = Colors.transparent.iosDarkSurface95
   const blurBackgroundLight = Colors.transparent.white95
@@ -171,6 +176,36 @@ export const StatsCard = ({
             </ViewThemed>
           </ViewThemed>
 
+          {onOpenInsights && (
+            <Pressable
+              testID="stats-card-open-insights"
+              accessibilityRole="button"
+              accessibilityLabel="Open review insights"
+              accessibilityHint="Shows your review forecast and difficult words"
+              onPress={onOpenInsights}
+              style={({ pressed }) => [
+                styles.insightsButton,
+                {
+                  borderColor: theme.border,
+                  backgroundColor: isDarkMode
+                    ? Colors.transparent.white05
+                    : Colors.transparent.black03,
+                  opacity: pressed ? 0.7 : 1,
+                },
+              ]}
+            >
+              <TextThemed style={styles.insightsButtonText}>
+                View Review Insights
+              </TextThemed>
+              <FontAwesome
+                name="chevron-right"
+                size={14}
+                color={theme.tint}
+                importantForAccessibility="no"
+              />
+            </Pressable>
+          )}
+
           {onStartReview && (
             <ViewThemed
               style={styles.reviewButtonContainer}
@@ -240,5 +275,20 @@ const styles = StyleSheet.create({
   },
   reviewButtonContainer: {
     marginTop: 8,
+  },
+  insightsButton: {
+    minHeight: 48,
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  insightsButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
   },
 })

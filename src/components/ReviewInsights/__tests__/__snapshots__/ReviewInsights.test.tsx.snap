@@ -1,0 +1,3219 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`dark ReviewInsightsSummary renders an accessible forecast and matches the theme snapshot 1`] = `
+<View
+  style={
+    {
+      "gap": 16,
+    }
+  }
+>
+  <View>
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 26,
+            "fontWeight": "700",
+            "lineHeight": 34,
+          },
+        ]
+      }
+    >
+      Your Scheduling Snapshot
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "color": "rgba(255, 255, 255, 0.6)",
+          },
+          {
+            "fontSize": 15,
+            "lineHeight": 22,
+            "marginTop": 4,
+          },
+        ]
+      }
+    >
+      Current SRS state only. No retention history is inferred.
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "flexWrap": "wrap",
+        "gap": 10,
+      }
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          {
+            "borderRadius": 14,
+            "flexBasis": "46%",
+            "flexGrow": 1,
+            "justifyContent": "center",
+            "minHeight": 92,
+            "padding": 14,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "fontSize": 28,
+              "fontWeight": "700",
+            },
+          ]
+        }
+      >
+        1
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "rgba(255, 255, 255, 0.6)",
+            },
+            {
+              "fontSize": 14,
+              "lineHeight": 20,
+              "marginTop": 2,
+            },
+          ]
+        }
+      >
+        Due Today
+      </Text>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          {
+            "borderRadius": 14,
+            "flexBasis": "46%",
+            "flexGrow": 1,
+            "justifyContent": "center",
+            "minHeight": 92,
+            "padding": 14,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "fontSize": 28,
+              "fontWeight": "700",
+            },
+          ]
+        }
+      >
+        0
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "rgba(255, 255, 255, 0.6)",
+            },
+            {
+              "fontSize": 14,
+              "lineHeight": 20,
+              "marginTop": 2,
+            },
+          ]
+        }
+      >
+        Overdue
+      </Text>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          {
+            "borderRadius": 14,
+            "flexBasis": "46%",
+            "flexGrow": 1,
+            "justifyContent": "center",
+            "minHeight": 92,
+            "padding": 14,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "fontSize": 28,
+              "fontWeight": "700",
+            },
+          ]
+        }
+      >
+        1
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "rgba(255, 255, 255, 0.6)",
+            },
+            {
+              "fontSize": 14,
+              "lineHeight": 20,
+              "marginTop": 2,
+            },
+          ]
+        }
+      >
+        Difficult
+      </Text>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          {
+            "borderRadius": 14,
+            "flexBasis": "46%",
+            "flexGrow": 1,
+            "justifyContent": "center",
+            "minHeight": 92,
+            "padding": 14,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "fontSize": 28,
+              "fontWeight": "700",
+            },
+          ]
+        }
+      >
+        1
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "rgba(255, 255, 255, 0.6)",
+            },
+            {
+              "fontSize": 14,
+              "lineHeight": 20,
+              "marginTop": 2,
+            },
+          ]
+        }
+      >
+        Mastered
+      </Text>
+    </View>
+  </View>
+  <Text
+    style={
+      [
+        {
+          "color": "rgba(255, 255, 255, 0.6)",
+        },
+        {
+          "fontSize": 13,
+          "lineHeight": 19,
+        },
+      ]
+    }
+  >
+    Difficult means easiness factor ≤ 2.10. Mastered means at least
+     
+    3
+     successful repetitions.
+  </Text>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#1C1C1E",
+        },
+        {
+          "borderRadius": 16,
+          "padding": 16,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 19,
+            "fontWeight": "700",
+            "lineHeight": 25,
+          },
+        ]
+      }
+    >
+      Next 7 Days
+    </Text>
+    <Text
+      accessibilityLabel="Review forecast. Sat, Aug 29: 1, Sun, Aug 30: 0, Mon, Aug 31: 0, Tue, Sep 1: 0, Wed, Sep 2: 0, Thu, Sep 3: 0, Fri, Sep 4: 0"
+      style={
+        [
+          {
+            "color": "rgba(255, 255, 255, 0.6)",
+          },
+          {
+            "fontSize": 13,
+            "lineHeight": 19,
+            "marginTop": 4,
+          },
+        ]
+      }
+      testID="forecast-accessible-summary"
+    >
+      Sat, Aug 29: 1, Sun, Aug 30: 0, Mon, Aug 31: 0, Tue, Sep 1: 0, Wed, Sep 2: 0, Thu, Sep 3: 0, Fri, Sep 4: 0
+    </Text>
+    <View
+      style={
+        {
+          "gap": 10,
+          "marginTop": 14,
+        }
+      }
+    >
+      <View
+        accessibilityLabel="Sat, Aug 29, 1 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Sat, Aug 29
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Sun, Aug 30, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Sun, Aug 30
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Mon, Aug 31, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Mon, Aug 31
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Tue, Sep 1, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Tue, Sep 1
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Wed, Sep 2, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Wed, Sep 2
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Thu, Sep 3, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Thu, Sep 3
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Fri, Sep 4, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Fri, Sep 4
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+    </View>
+    <View
+      style={
+        {
+          "flexDirection": "row",
+          "flexWrap": "wrap",
+          "gap": 16,
+          "marginTop": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "rgba(255, 255, 255, 0.6)",
+            },
+            {
+              "fontSize": 13,
+            },
+          ]
+        }
+      >
+        Later: 
+        0
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#1C1C1E",
+        },
+        {
+          "borderRadius": 16,
+          "padding": 16,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 19,
+            "fontWeight": "700",
+            "lineHeight": 25,
+          },
+        ]
+      }
+    >
+      Current Intervals
+    </Text>
+    <View
+      style={
+        {
+          "gap": 10,
+          "marginTop": 14,
+        }
+      }
+    >
+      <View
+        accessibilityLabel="New · 0 days, 0 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          New · 0 days
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Short · 1–6 days, 1 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Short · 1–6 days
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Developing · 7–20 days, 1 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Developing · 7–20 days
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Established · 21+ days, 0 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Established · 21+ days
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+    </View>
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#1C1C1E",
+        },
+        {
+          "borderRadius": 16,
+          "padding": 16,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 19,
+            "fontWeight": "700",
+            "lineHeight": 25,
+          },
+        ]
+      }
+    >
+      Current Easiness Factors
+    </Text>
+    <View
+      style={
+        {
+          "gap": 10,
+          "marginTop": 14,
+        }
+      }
+    >
+      <View
+        accessibilityLabel="Difficult · ≤ 2.10, 1 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Difficult · ≤ 2.10
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Learning · 2.11–2.49, 0 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Learning · 2.11–2.49
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Standard · 2.50+, 1 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Standard · 2.50+
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#3A3A3C",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#409CFF",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+    </View>
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#1C1C1E",
+        },
+        {
+          "borderRadius": 16,
+          "padding": 16,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 19,
+            "fontWeight": "700",
+            "lineHeight": 25,
+          },
+        ]
+      }
+    >
+      Difficult Words
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "color": "rgba(255, 255, 255, 0.6)",
+          },
+          {
+            "fontSize": 13,
+            "lineHeight": 19,
+            "marginTop": 4,
+          },
+        ]
+      }
+    >
+      Browse any difficult word without changing its schedule. Review only starts words that are due now.
+    </Text>
+    <View
+      accessibilityHint="Starts a review session containing only difficult words that are due"
+      accessibilityLabel="Review 1 due difficult words"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "alignItems": "center",
+            "borderRadius": 14,
+            "justifyContent": "center",
+            "marginTop": 14,
+            "minHeight": 52,
+            "paddingHorizontal": 16,
+          },
+          {
+            "backgroundColor": "#409CFF",
+            "opacity": 1,
+          },
+        ]
+      }
+      testID="review-due-difficult-words"
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "color": "#FFFFFF",
+              "fontSize": 15,
+              "fontWeight": "700",
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        Review Due Difficult Words (1)
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`light ReviewInsightsSummary renders an accessible forecast and matches the theme snapshot 1`] = `
+<View
+  style={
+    {
+      "gap": 16,
+    }
+  }
+>
+  <View>
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 26,
+            "fontWeight": "700",
+            "lineHeight": 34,
+          },
+        ]
+      }
+    >
+      Your Scheduling Snapshot
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "color": "#4B5563",
+          },
+          {
+            "fontSize": 15,
+            "lineHeight": 22,
+            "marginTop": 4,
+          },
+        ]
+      }
+    >
+      Current SRS state only. No retention history is inferred.
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "flexDirection": "row",
+        "flexWrap": "wrap",
+        "gap": 10,
+      }
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          {
+            "borderRadius": 14,
+            "flexBasis": "46%",
+            "flexGrow": 1,
+            "justifyContent": "center",
+            "minHeight": 92,
+            "padding": 14,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            {
+              "fontSize": 28,
+              "fontWeight": "700",
+            },
+          ]
+        }
+      >
+        1
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "#4B5563",
+            },
+            {
+              "fontSize": 14,
+              "lineHeight": 20,
+              "marginTop": 2,
+            },
+          ]
+        }
+      >
+        Due Today
+      </Text>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          {
+            "borderRadius": 14,
+            "flexBasis": "46%",
+            "flexGrow": 1,
+            "justifyContent": "center",
+            "minHeight": 92,
+            "padding": 14,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            {
+              "fontSize": 28,
+              "fontWeight": "700",
+            },
+          ]
+        }
+      >
+        0
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "#4B5563",
+            },
+            {
+              "fontSize": 14,
+              "lineHeight": 20,
+              "marginTop": 2,
+            },
+          ]
+        }
+      >
+        Overdue
+      </Text>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          {
+            "borderRadius": 14,
+            "flexBasis": "46%",
+            "flexGrow": 1,
+            "justifyContent": "center",
+            "minHeight": 92,
+            "padding": 14,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            {
+              "fontSize": 28,
+              "fontWeight": "700",
+            },
+          ]
+        }
+      >
+        1
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "#4B5563",
+            },
+            {
+              "fontSize": 14,
+              "lineHeight": 20,
+              "marginTop": 2,
+            },
+          ]
+        }
+      >
+        Difficult
+      </Text>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          {
+            "borderRadius": 14,
+            "flexBasis": "46%",
+            "flexGrow": 1,
+            "justifyContent": "center",
+            "minHeight": 92,
+            "padding": 14,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            {
+              "fontSize": 28,
+              "fontWeight": "700",
+            },
+          ]
+        }
+      >
+        1
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "#4B5563",
+            },
+            {
+              "fontSize": 14,
+              "lineHeight": 20,
+              "marginTop": 2,
+            },
+          ]
+        }
+      >
+        Mastered
+      </Text>
+    </View>
+  </View>
+  <Text
+    style={
+      [
+        {
+          "color": "#4B5563",
+        },
+        {
+          "fontSize": 13,
+          "lineHeight": 19,
+        },
+      ]
+    }
+  >
+    Difficult means easiness factor ≤ 2.10. Mastered means at least
+     
+    3
+     successful repetitions.
+  </Text>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#F2F2F7",
+        },
+        {
+          "borderRadius": 16,
+          "padding": 16,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 19,
+            "fontWeight": "700",
+            "lineHeight": 25,
+          },
+        ]
+      }
+    >
+      Next 7 Days
+    </Text>
+    <Text
+      accessibilityLabel="Review forecast. Sat, Aug 29: 1, Sun, Aug 30: 0, Mon, Aug 31: 0, Tue, Sep 1: 0, Wed, Sep 2: 0, Thu, Sep 3: 0, Fri, Sep 4: 0"
+      style={
+        [
+          {
+            "color": "#4B5563",
+          },
+          {
+            "fontSize": 13,
+            "lineHeight": 19,
+            "marginTop": 4,
+          },
+        ]
+      }
+      testID="forecast-accessible-summary"
+    >
+      Sat, Aug 29: 1, Sun, Aug 30: 0, Mon, Aug 31: 0, Tue, Sep 1: 0, Wed, Sep 2: 0, Thu, Sep 3: 0, Fri, Sep 4: 0
+    </Text>
+    <View
+      style={
+        {
+          "gap": 10,
+          "marginTop": 14,
+        }
+      }
+    >
+      <View
+        accessibilityLabel="Sat, Aug 29, 1 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Sat, Aug 29
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Sun, Aug 30, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Sun, Aug 30
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Mon, Aug 31, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Mon, Aug 31
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Tue, Sep 1, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Tue, Sep 1
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Wed, Sep 2, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Wed, Sep 2
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Thu, Sep 3, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Thu, Sep 3
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Fri, Sep 4, 0 words due"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 82,
+              },
+            ]
+          }
+        >
+          Fri, Sep 4
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+    </View>
+    <View
+      style={
+        {
+          "flexDirection": "row",
+          "flexWrap": "wrap",
+          "gap": 16,
+          "marginTop": 12,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#4B5563",
+            },
+            {
+              "fontSize": 13,
+            },
+          ]
+        }
+      >
+        Later: 
+        0
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#F2F2F7",
+        },
+        {
+          "borderRadius": 16,
+          "padding": 16,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 19,
+            "fontWeight": "700",
+            "lineHeight": 25,
+          },
+        ]
+      }
+    >
+      Current Intervals
+    </Text>
+    <View
+      style={
+        {
+          "gap": 10,
+          "marginTop": 14,
+        }
+      }
+    >
+      <View
+        accessibilityLabel="New · 0 days, 0 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          New · 0 days
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Short · 1–6 days, 1 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Short · 1–6 days
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Developing · 7–20 days, 1 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Developing · 7–20 days
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Established · 21+ days, 0 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Established · 21+ days
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+    </View>
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#F2F2F7",
+        },
+        {
+          "borderRadius": 16,
+          "padding": 16,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 19,
+            "fontWeight": "700",
+            "lineHeight": 25,
+          },
+        ]
+      }
+    >
+      Current Easiness Factors
+    </Text>
+    <View
+      style={
+        {
+          "gap": 10,
+          "marginTop": 14,
+        }
+      }
+    >
+      <View
+        accessibilityLabel="Difficult · ≤ 2.10, 1 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Difficult · ≤ 2.10
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Learning · 2.11–2.49, 0 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Learning · 2.11–2.49
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "0%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          0
+        </Text>
+      </View>
+      <View
+        accessibilityLabel="Standard · 2.50+, 1 words"
+        accessible={true}
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "minHeight": 32,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 12,
+                "width": 116,
+              },
+            ]
+          }
+        >
+          Standard · 2.50+
+        </Text>
+        <View
+          importantForAccessibility="no"
+          style={
+            [
+              {
+                "borderRadius": 5,
+                "flex": 1,
+                "height": 10,
+                "overflow": "hidden",
+              },
+              {
+                "backgroundColor": "#F8FAFC",
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "borderRadius": 5,
+                  "height": "100%",
+                },
+                {
+                  "backgroundColor": "#3B82F6",
+                  "width": "100%",
+                },
+              ]
+            }
+          />
+        </View>
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 13,
+                "fontWeight": "600",
+                "textAlign": "right",
+                "width": 28,
+              },
+            ]
+          }
+        >
+          1
+        </Text>
+      </View>
+    </View>
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#F2F2F7",
+        },
+        {
+          "borderRadius": 16,
+          "padding": 16,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 19,
+            "fontWeight": "700",
+            "lineHeight": 25,
+          },
+        ]
+      }
+    >
+      Difficult Words
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "color": "#4B5563",
+          },
+          {
+            "fontSize": 13,
+            "lineHeight": 19,
+            "marginTop": 4,
+          },
+        ]
+      }
+    >
+      Browse any difficult word without changing its schedule. Review only starts words that are due now.
+    </Text>
+    <View
+      accessibilityHint="Starts a review session containing only difficult words that are due"
+      accessibilityLabel="Review 1 due difficult words"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "alignItems": "center",
+            "borderRadius": 14,
+            "justifyContent": "center",
+            "marginTop": 14,
+            "minHeight": 52,
+            "paddingHorizontal": 16,
+          },
+          {
+            "backgroundColor": "#3B82F6",
+            "opacity": 1,
+          },
+        ]
+      }
+      testID="review-due-difficult-words"
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            {
+              "color": "#FFFFFF",
+              "fontSize": 15,
+              "fontWeight": "700",
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        Review Due Difficult Words (1)
+      </Text>
+    </View>
+  </View>
+</View>
+`;

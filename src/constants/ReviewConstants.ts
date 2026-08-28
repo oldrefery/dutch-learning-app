@@ -23,6 +23,12 @@ export const DEFAULT_REVIEW_SESSION_CONFIG = {
 
 export const DIFFICULT_EASINESS_FACTOR_THRESHOLD = 2.1
 
+/**
+ * A word is mastered after three successful repetitions.
+ * This matches the existing progress definition used across collection stats.
+ */
+export const MASTERED_MIN_REPETITIONS = 3
+
 export const REVIEW_MODE_OPTIONS = [
   {
     mode: REVIEW_MODE.RECOGNITION,
