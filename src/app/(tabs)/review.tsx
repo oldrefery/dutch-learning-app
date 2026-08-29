@@ -1,4 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react'
+import { useRouter } from 'expo-router'
 import {
   TouchableOpacity,
   ActivityIndicator,
@@ -43,6 +44,7 @@ import {
   getPreferredTranslation,
 } from '@/utils/reviewDistractors'
 import { getAdaptiveReviewModeExplanation } from '@/utils/reviewModePolicy'
+import { ROUTES } from '@/constants/Routes'
 
 const showReanalysisError = (error: unknown) => {
   const message =
@@ -177,6 +179,7 @@ function useReviewWordDetails(currentWord: Word | null) {
 }
 
 export default function ReviewScreen() {
+  const router = useRouter()
   const colorScheme = useColorScheme()
   const insets = useSafeAreaInsets()
   const [refreshing, setRefreshing] = useState(false)
@@ -309,6 +312,10 @@ export default function ReviewScreen() {
     [setLastSelectedReviewMode, startSession]
   )
 
+  const handleStartAudioReview = useCallback(() => {
+    router.push(ROUTES.AUDIO_REVIEW)
+  }, [router])
+
   const handleRecognitionOption = useCallback(
     (option: RecognitionOption) => {
       setSelectedRecognitionOption(option)
@@ -405,6 +412,7 @@ export default function ReviewScreen() {
           selectedMode={lastSelectedReviewMode}
           onSelectMode={handleModeSelect}
           onStart={handleStartSession}
+          onStartAudioReview={handleStartAudioReview}
           adaptiveEnabled={adaptiveReviewEnabled}
         />
       </ViewThemed>

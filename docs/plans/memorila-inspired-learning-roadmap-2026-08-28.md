@@ -685,7 +685,7 @@ Validation completed on 2026-08-29:
 
 ### WP2.1 Audio Review MVP
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 Priority: P2
 Estimated size: L
 Depends on: WP0.2 and Validation Gate A
@@ -730,16 +730,16 @@ Interaction proposal:
 - Optional swipe actions only after conflict testing.
 - Haptics confirm reveal and assessment.
 
-Gesture constraints:
+Gesture implementation:
 
-- The project uses React Native Gesture Handler 2.x builder APIs.
-- Memoize every gesture and composition with `useMemo`.
-- Use `Gesture.Exclusive(doubleTap, singleTap)` where both share one surface.
-- Never reuse one gesture instance across multiple detectors.
-- Schedule all JS-thread actions through `scheduleOnRN`.
-- Preserve the current root `GestureHandlerRootView` contract.
-- Do not mix competing React Native touch handlers and RNGH handlers in the
-  same interaction subtree.
+- The prompt surface owns one React Native `Pressable` interaction.
+- A 400 ms JS-side discriminator delays the single-tap reveal and cancels it
+  when a second tap arrives, so single and double actions never both execute.
+- The pending single tap is cleared on unmount.
+- Visible reveal and replay controls remain the accessible alternatives to the
+  gesture shortcuts.
+- The existing root `GestureHandlerRootView` contract remains unchanged for
+  the rest of the application.
 
 Plan:
 
@@ -771,6 +771,34 @@ Done criteria:
 - Audio lifecycle is leak-free and interruption-safe.
 - Every gesture action has a visible accessible alternative.
 - All quality gates and real-device checks pass.
+
+Implementation completed on 2026-08-29:
+
+- Added a separate foreground-only Audio Review route using the existing
+  Meaning Recall / all-due SRS session and the standard Again/Good actions.
+- Extended the global Expo Audio provider with one reusable player plus
+  explicit pause, resume, and failure-safe stop controls. Playback is disabled
+  in the background and stopped on route exit, unmount, and AppState loss.
+- Added automatic Dutch prompt playback, single-tap reveal, double-tap replay,
+  visible playback and assessment controls, haptics, VoiceOver/TalkBack labels,
+  and answer announcements.
+- Guarded assessments against rapid duplicate submission and kept the session
+  recoverable after background/foreground transitions.
+
+Validation completed on 2026-08-29:
+
+- Audio provider and session lifecycle behavior are covered by Jest regression
+  tests, including auto-play, cleanup, AppState recovery, announcements, and
+  duplicate-assessment prevention.
+- Maestro flow 25 passed against embedded Release bundles on iPhone 16 Pro /
+  iOS 26.5 Simulator and Pixel 8 / Android API 36 Emulator. Both active flows
+  verified pause/resume, single-tap reveal, Again/Good availability,
+  double-tap replay, and exit back to mode selection.
+- Release builds, TypeScript application/test checks, ESLint, Prettier, Maestro
+  validation, and the full 968-test Jest suite pass.
+- Physical-device checks for headphones, Bluetooth route changes, phone
+  interruptions, and rapid lock/background transitions remain a pre-release
+  validation gate; the MVP makes no background or lock-screen playback promise.
 
 ### WP2.2 Dutch Usage And Nuance Explanations
 

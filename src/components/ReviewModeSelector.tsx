@@ -15,6 +15,7 @@ interface ReviewModeSelectorProps {
   selectedMode: ReviewSessionMode
   onSelectMode: (mode: ReviewSessionMode) => void
   onStart: (mode: ReviewSessionMode) => void | Promise<void>
+  onStartAudioReview?: () => void
   adaptiveEnabled?: boolean
   isLoading?: boolean
 }
@@ -23,6 +24,7 @@ export function ReviewModeSelector({
   selectedMode,
   onSelectMode,
   onStart,
+  onStartAudioReview,
   adaptiveEnabled = true,
   isLoading = false,
 }: ReviewModeSelectorProps) {
@@ -136,6 +138,37 @@ export function ReviewModeSelector({
             {isLoading ? 'Starting…' : 'Start Review'}
           </TextThemed>
         </Pressable>
+
+        {onStartAudioReview && (
+          <Pressable
+            testID="start-audio-review-button"
+            accessibilityRole="button"
+            accessibilityLabel="Start Audio Review"
+            accessibilityHint="Starts a foreground audio-focused Meaning Recall session"
+            accessibilityState={{ disabled: isLoading }}
+            disabled={isLoading}
+            onPress={onStartAudioReview}
+            style={({ pressed }) => [
+              styles.audioButton,
+              {
+                borderColor: theme.border,
+                backgroundColor: theme.backgroundSecondary,
+                opacity: isLoading ? 0.5 : pressed ? 0.75 : 1,
+              },
+            ]}
+          >
+            <TextThemed style={styles.audioButtonTitle}>
+              Start Audio Review
+            </TextThemed>
+            <TextThemed
+              style={styles.audioButtonDescription}
+              lightColor={Colors.neutral[600]}
+              darkColor={Colors.dark.textSecondary}
+            >
+              Listen and rate due words with minimal visual attention.
+            </TextThemed>
+          </Pressable>
+        )}
       </ScrollView>
     </ViewThemed>
   )
@@ -204,5 +237,23 @@ const styles = StyleSheet.create({
     color: Colors.legacy.white,
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
     fontWeight: '700',
+  },
+  audioButton: {
+    minHeight: 68,
+    borderWidth: 1,
+    borderRadius: 14,
+    marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
+    paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
+    paddingVertical: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
+  },
+  audioButtonTitle: {
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
+    fontWeight: '700',
+    lineHeight: 22,
+  },
+  audioButtonDescription: {
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
+    lineHeight: 19,
+    marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.XS,
   },
 })

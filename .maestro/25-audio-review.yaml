@@ -1,0 +1,58 @@
+appId: ${APP_ID}
+name: 25-audio-review
+---
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      APP_ID: ${APP_ID}
+      screen_id: screen-review
+      tab_text: Review
+
+- assertVisible:
+    id: review-mode-selector
+- tapOn:
+    id: start-audio-review-button
+- assertVisible:
+    id: screen-audio-review
+
+- runFlow:
+    when:
+      visible:
+        id: audio-review-tap-surface
+    commands:
+      - assertVisible:
+          id: audio-review-replay-button
+      - assertVisible:
+          id: audio-review-pause-button
+      - assertVisible:
+          id: audio-review-reveal-button
+      - tapOn:
+          point: 50%,45%
+          repeat: 2
+          delay: 100
+      - assertNotVisible:
+          id: audio-review-answer
+      - assertVisible:
+          id: audio-review-reveal-button
+      - tapOn:
+          id: audio-review-pause-button
+      - assertVisible: Resume
+      - tapOn: Resume
+      - assertVisible: Pause
+      - tapOn:
+          point: 50%,45%
+      - assertVisible:
+          id: audio-review-answer
+      - assertVisible:
+          id: audio-review-again-button
+      - assertVisible:
+          id: audio-review-good-button
+      - assertVisible:
+          id: screen-audio-review
+
+- assertVisible:
+    id: exit-audio-review-button
+- tapOn:
+    id: exit-audio-review-button
+- assertVisible:
+    id: review-mode-selector

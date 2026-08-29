@@ -179,22 +179,35 @@ jest.mock('react-native-reanimated', () => ({
 }))
 
 // Mock expo-audio
-jest.mock('expo-audio', () => ({
-  Sound: {
-    createAsync: jest.fn().mockResolvedValue({
-      sound: {
-        playAsync: jest.fn(),
-        stopAsync: jest.fn(),
-        unloadAsync: jest.fn(),
-        getStatusAsync: jest.fn(),
-      },
-    }),
-  },
-  Audio: {
-    requestPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
-    setAudioModeAsync: jest.fn(),
-  },
-}))
+jest.mock('expo-audio', () => {
+  const player = {
+    play: jest.fn(),
+    pause: jest.fn(),
+    replace: jest.fn(),
+    seekTo: jest.fn().mockResolvedValue(undefined),
+  }
+
+  return {
+    useAudioPlayer: jest.fn(() => player),
+    useAudioPlayerStatus: jest.fn(() => ({ playing: false })),
+    createAudioPlayer: jest.fn(() => player),
+    setAudioModeAsync: jest.fn().mockResolvedValue(undefined),
+    Sound: {
+      createAsync: jest.fn().mockResolvedValue({
+        sound: {
+          playAsync: jest.fn(),
+          stopAsync: jest.fn(),
+          unloadAsync: jest.fn(),
+          getStatusAsync: jest.fn(),
+        },
+      }),
+    },
+    Audio: {
+      requestPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
+      setAudioModeAsync: jest.fn(),
+    },
+  }
+})
 
 // Mock @gorhom/bottom-sheet
 jest.mock('@gorhom/bottom-sheet', () => ({

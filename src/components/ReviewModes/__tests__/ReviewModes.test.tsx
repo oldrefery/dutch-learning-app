@@ -160,6 +160,25 @@ describe('ReviewModeSelector', () => {
     fireEvent.press(getByTestId('start-review-button'))
     expect(callbacks.onStart).toHaveBeenCalledWith(REVIEW_MODE.MEANING_RECALL)
   })
+
+  it('offers Audio Review as a separate accessible session', () => {
+    const onStartAudioReview = jest.fn()
+    const { getByTestId } = render(
+      <ReviewModeSelector
+        selectedMode={REVIEW_MODE.MEANING_RECALL}
+        onSelectMode={jest.fn()}
+        onStart={jest.fn()}
+        onStartAudioReview={onStartAudioReview}
+      />
+    )
+
+    fireEvent.press(getByTestId('start-audio-review-button'))
+
+    expect(onStartAudioReview).toHaveBeenCalledTimes(1)
+    expect(
+      getByTestId('start-audio-review-button').props.accessibilityLabel
+    ).toBe('Start Audio Review')
+  })
 })
 
 describe('ReviewAssessmentControls', () => {
