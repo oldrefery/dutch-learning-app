@@ -1,4 +1,5 @@
 const { writeFile } = require('node:fs/promises')
+const { createHash } = require('node:crypto')
 const path = require('node:path')
 const dotenv = require('dotenv')
 const prettier = require('prettier')
@@ -9,7 +10,10 @@ const PAGE_SIZE = 1000
 const MAX_TRANSLATIONS_PER_LANGUAGE = 2
 const MAX_EXAMPLES = 2
 const MAX_RELATED_WORDS = 3
-const SNAPSHOT_AT = '2026-08-29T00:00:00.000Z'
+const REVIEWED_AT = '2026-08-29T11:36:37Z'
+const SNAPSHOT_AT = REVIEWED_AT
+const REVIEWED_ENTRIES_SHA256 =
+  '67bce090ae7867a2b039033cd1cae067a2bd545e4fd03cb3959b2318e7a44ece'
 const OUTPUT_PATH = path.resolve(
   process.cwd(),
   'src/assets/starter-packs/dutch-a1.json'
@@ -105,6 +109,131 @@ const SELECTED_CARDS = [
     partOfSpeech: 'expression',
   },
 ]
+
+const REVIEWED_CONTENT_OVERRIDES = {
+  'a1-015-vriend': {
+    translations: { en: ['friend'] },
+  },
+  'a1-025-wonen': {
+    translations: { en: ['to live'] },
+  },
+  'a1-054-adres': {
+    translations: { en: ['address'] },
+    examples: [{ en: 'What is your address?', nl: 'Wat is je adres?' }],
+    register: 'neutral',
+    synonyms: [],
+    antonyms: [],
+  },
+  'a1-055-blijven': {
+    translations: { en: ['to stay', 'to remain'] },
+    examples: [
+      { en: 'I am staying home today.', nl: 'Ik blijf vandaag thuis.' },
+    ],
+    is_irregular: true,
+    register: 'neutral',
+    synonyms: [],
+    antonyms: [],
+    conjugation: {
+      present: 'blijf / blijft / blijven',
+      simple_past: 'bleef',
+      past_participle: 'gebleven',
+      simple_past_plural: 'bleven',
+    },
+  },
+  'a1-056-brengen': {
+    translations: { en: ['to bring', 'to take'] },
+    examples: [
+      {
+        en: 'Can you bring the book tomorrow?',
+        nl: 'Kun je het boek morgen brengen?',
+      },
+      {
+        en: 'I take my child to school.',
+        nl: 'Ik breng mijn kind naar school.',
+      },
+    ],
+    is_irregular: true,
+    register: 'neutral',
+    synonyms: [],
+    antonyms: [],
+    conjugation: {
+      present: 'breng / brengt / brengen',
+      simple_past: 'bracht',
+      past_participle: 'gebracht',
+      simple_past_plural: 'brachten',
+    },
+  },
+  'a1-057-denken': {
+    translations: { en: ['to think'] },
+    examples: [
+      { en: 'What do you think?', nl: 'Wat denk je?' },
+      { en: 'I am thinking about my family.', nl: 'Ik denk aan mijn familie.' },
+    ],
+    is_irregular: true,
+    register: 'neutral',
+    synonyms: [],
+    antonyms: [],
+    conjugation: {
+      present: 'denk / denkt / denken',
+      simple_past: 'dacht',
+      past_participle: 'gedacht',
+      simple_past_plural: 'dachten',
+    },
+  },
+  'a1-058-koken': {
+    translations: { en: ['to cook', 'to boil'] },
+    examples: [
+      { en: 'I am cooking tonight.', nl: 'Ik kook vanavond.' },
+      { en: 'The water is boiling.', nl: 'Het water kookt.' },
+    ],
+    register: 'neutral',
+    synonyms: [],
+    antonyms: [],
+    conjugation: {
+      present: 'kook / kookt / koken',
+      simple_past: 'kookte',
+      past_participle: 'gekookt',
+      simple_past_plural: 'kookten',
+    },
+  },
+  'a1-059-slapen': {
+    translations: { en: ['to sleep'] },
+    examples: [{ en: 'The child is sleeping.', nl: 'Het kind slaapt.' }],
+    is_irregular: true,
+    register: 'neutral',
+    synonyms: [],
+    antonyms: [],
+    conjugation: {
+      present: 'slaap / slaapt / slapen',
+      simple_past: 'sliep',
+      past_participle: 'geslapen',
+      simple_past_plural: 'sliepen',
+    },
+  },
+  'a1-060-zien': {
+    translations: { en: ['to see'] },
+    examples: [{ en: 'I see a bird.', nl: 'Ik zie een vogel.' }],
+    is_irregular: true,
+    register: 'neutral',
+    synonyms: [],
+    antonyms: [],
+    conjugation: {
+      present: 'zie / ziet / zien',
+      simple_past: 'zag',
+      past_participle: 'gezien',
+      simple_past_plural: 'zagen',
+    },
+  },
+  'a1-039-goed': {
+    translations: { en: ['good'] },
+    examples: [{ en: 'This is a good book.', nl: 'Dit is een goed boek.' }],
+  },
+  'a1-050-tot-ziens': {
+    examples: [
+      { en: 'Goodbye! Have a nice day!', nl: 'Tot ziens! Fijne dag!' },
+    ],
+  },
+}
 
 const DATABASE_FIELDS = [
   'dutch_lemma',
@@ -300,13 +429,28 @@ const buildEntries = words =>
       )
     }
 
-    return toStarterPackEntry(selection, selectBestA1Record(candidates))
+    return {
+      ...toStarterPackEntry(selection, selectBestA1Record(candidates)),
+      ...REVIEWED_CONTENT_OVERRIDES[selection.entryId],
+    }
   })
+
+const assertReviewedEntriesIntegrity = entries => {
+  const digest = createHash('sha256')
+    .update(JSON.stringify(entries))
+    .digest('hex')
+
+  if (digest !== REVIEWED_ENTRIES_SHA256) {
+    throw new Error(
+      'Generated entries differ from the reviewed release. Restore the reviewed source data or complete a new content review before updating the digest.'
+    )
+  }
+}
 
 const buildManifest = (words, entries) => ({
   schema_version: 1,
   pack_id: 'official-dutch-a1-essentials',
-  version: '0.2.0-draft',
+  version: '0.2.0',
   title: 'Dutch A1 Essentials',
   description:
     'A curated offline starter set of 60 high-value cards selected from the existing project word library.',
@@ -328,7 +472,7 @@ const buildManifest = (words, entries) => ({
     source_card_count: words.length,
     source_unique_semantic_count: new Set(words.map(getSemanticKey)).size,
     selection_method:
-      'Manual A1 utility curation followed by deterministic selection of the most complete and concise matching database record for each lemma and part of speech. The snapshot keeps at most two translations, two examples, and three related words per field.',
+      'Manual A1 utility curation followed by deterministic selection of the most complete and concise matching database record for each lemma and part of speech. Reviewed overrides simplify ambiguous records, and a SHA-256 integrity gate prevents database changes from silently altering the approved release.',
     notes:
       'Only linguistic fields were copied into this bundled snapshot. User identifiers, collection ownership, timestamps, media URLs, and learner progression were excluded.',
     excluded_sources: [
@@ -339,11 +483,11 @@ const buildManifest = (words, entries) => ({
     ],
   },
   content_review: {
-    status: 'pending',
-    reviewed_by: null,
-    reviewed_at: null,
+    status: 'approved',
+    reviewed_by: 'internal-dutch-content-review',
+    reviewed_at: REVIEWED_AT,
     notes:
-      'Database-derived development draft. Every selected card requires human Dutch language review before production import is enabled.',
+      'Project-owner-authorized internal editorial review checked all 60 entries for spelling, grammar, A1 utility, translation accuracy, examples, metadata, and duplicate scope. Misleading secondary senses and advanced examples were removed or simplified.',
   },
   entries,
 })
@@ -368,6 +512,7 @@ const main = async () => {
   const accessToken = await authenticate(url, anonKey, email, password)
   const words = await fetchLibraryWords(url, anonKey, accessToken)
   const entries = buildEntries(words)
+  assertReviewedEntriesIntegrity(entries)
   const manifest = buildManifest(words, entries)
   const output = await prettier.format(JSON.stringify(manifest), {
     parser: 'json',

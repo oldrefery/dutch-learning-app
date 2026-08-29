@@ -48,13 +48,11 @@ export function StarterPackReviewBanner({
         darkColor="transparent"
       >
         <TextThemed style={[styles.title, { color: accentColor }]}>
-          {isApproved
-            ? 'Human language review complete'
-            : 'Development preview'}
+          {isApproved ? 'Language review complete' : 'Development preview'}
         </TextThemed>
         <TextThemed style={styles.message}>
           {isApproved
-            ? `Reviewed by ${manifest.content_review.reviewed_by}.`
+            ? 'The starter pack passed the project’s internal language review.'
             : importEnabled
               ? 'The content is awaiting human Dutch review. Import is enabled only for development QA.'
               : 'The content is awaiting human Dutch review. Production import is disabled.'}

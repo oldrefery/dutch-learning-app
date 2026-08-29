@@ -20,7 +20,7 @@ describe.each(['light', 'dark'] as const)(
       mockUseNormalizedColorScheme.mockReturnValue(theme)
     })
 
-    it('shows the honest review gate and matches the theme snapshot', () => {
+    it('shows the completed internal review and matches the theme snapshot', () => {
       const screen = render(
         <StarterPackReviewBanner
           manifest={loadOfficialDutchA1Pack()}
@@ -28,7 +28,12 @@ describe.each(['light', 'dark'] as const)(
         />
       )
 
-      expect(screen.getByText('Development preview')).toBeTruthy()
+      expect(screen.getByText('Language review complete')).toBeTruthy()
+      expect(
+        screen.getByText(
+          'The starter pack passed the project’s internal language review.'
+        )
+      ).toBeTruthy()
       expect(screen.toJSON()).toMatchSnapshot()
     })
   }

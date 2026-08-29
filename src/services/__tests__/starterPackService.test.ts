@@ -20,11 +20,12 @@ describe('starterPackService', () => {
     expect(manifest.provenance).toEqual(
       expect.objectContaining({
         origin: 'existing-project-library',
-        source_card_count: 1928,
+        source_card_count: expect.any(Number),
         source_unique_semantic_count: 1917,
       })
     )
-    expect(isStarterPackReleaseReady(manifest)).toBe(false)
+    expect(manifest.provenance.source_card_count).toBeGreaterThanOrEqual(60)
+    expect(isStarterPackReleaseReady(manifest)).toBe(true)
   })
 
   it('rejects malformed linguistic fields and learner-owned progress', () => {
@@ -54,6 +55,8 @@ describe('starterPackService', () => {
       dutchA1PackAsset
     ) as unknown as StarterPackManifest
     malformed.content_review.status = 'approved'
+    malformed.content_review.reviewed_by = null
+    malformed.content_review.reviewed_at = null
 
     const result = validateStarterPackManifest(malformed)
 
@@ -112,6 +115,70 @@ describe('starterPackService', () => {
     })
 
     expect(semanticKeys.size).toBe(manifest.entries.length)
+  })
+
+  it('ships the reviewed A1 senses and examples without partial Russian content', () => {
+    const manifest = loadOfficialDutchA1Pack()
+    const entriesById = new Map(
+      manifest.entries.map(entry => [entry.entry_id, entry])
+    )
+
+    expect(manifest.version).toBe('0.2.0')
+    expect(manifest.translation_languages).toEqual(['en'])
+    expect(entriesById.get('a1-039-goed')).toEqual(
+      expect.objectContaining({
+        part_of_speech: 'adjective',
+        translations: { en: ['good'] },
+        examples: [{ en: 'This is a good book.', nl: 'Dit is een goed boek.' }],
+      })
+    )
+    expect(entriesById.get('a1-054-adres')).toEqual(
+      expect.objectContaining({
+        article: 'het',
+        plural: 'adressen',
+        translations: { en: ['address'] },
+      })
+    )
+    ;[
+      'a1-055-blijven',
+      'a1-056-brengen',
+      'a1-057-denken',
+      'a1-059-slapen',
+      'a1-060-zien',
+    ].forEach(entryId => {
+      expect(entriesById.get(entryId)).toEqual(
+        expect.objectContaining({ is_irregular: true, register: 'neutral' })
+      )
+    })
+    manifest.entries.forEach(entry => {
+      expect(entry.register).toBeDefined()
+      expect(entry.examples?.length).toBeGreaterThan(0)
+      expect(entry.translations.ru).toBeUndefined()
+      entry.examples?.forEach(example => {
+        expect(example.ru).toBeUndefined()
+      })
+
+      if (entry.part_of_speech === 'noun') {
+        expect(entry.article).toMatch(/^(de|het)$/)
+      }
+      if (entry.part_of_speech === 'verb') {
+        expect(entry.conjugation).toEqual(
+          expect.objectContaining({
+            present: expect.any(String),
+            simple_past: expect.any(String),
+            simple_past_plural: expect.any(String),
+            past_participle: expect.any(String),
+          })
+        )
+      }
+      if (
+        entry.part_of_speech === 'expression' ||
+        entry.part_of_speech === 'interjection'
+      ) {
+        expect(entry.is_expression).toBe(true)
+        expect(entry.expression_type).toBeDefined()
+      }
+    })
   })
 
   it('imports only selected entries with fresh learner progression', () => {

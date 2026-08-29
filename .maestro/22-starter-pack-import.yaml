@@ -28,7 +28,7 @@ appId: ${APP_ID}
     timeout: 5000
 
 - assertVisible: 'Dutch A1 Essentials'
-- assertVisible: 'Development preview'
+- assertVisible: 'Language review complete'
 - assertVisible: '[0-9]+ of 60 words selected.*'
 
 - scrollUntilVisible:

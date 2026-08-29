@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`dark StarterPackReviewBanner shows the honest review gate and matches the theme snapshot 1`] = `
+exports[`dark StarterPackReviewBanner shows the completed internal review and matches the theme snapshot 1`] = `
 <View
   style={
     [
@@ -19,8 +19,8 @@ exports[`dark StarterPackReviewBanner shows the honest review gate and matches t
           "padding": 14,
         },
         {
-          "backgroundColor": "rgba(245, 158, 11, 0.2)",
-          "borderColor": "#FBBF24",
+          "backgroundColor": "rgba(52, 211, 153, 0.15)",
+          "borderColor": "#34D399",
         },
       ],
     ]
@@ -33,7 +33,7 @@ exports[`dark StarterPackReviewBanner shows the honest review gate and matches t
     style={
       [
         {
-          "color": "#FBBF24",
+          "color": "#34D399",
           "fontSize": 22,
         },
         undefined,
@@ -46,7 +46,7 @@ exports[`dark StarterPackReviewBanner shows the honest review gate and matches t
       ]
     }
   >
-    
+    
   </Text>
   <View
     style={
@@ -73,13 +73,13 @@ exports[`dark StarterPackReviewBanner shows the honest review gate and matches t
               "marginBottom": 4,
             },
             {
-              "color": "#FBBF24",
+              "color": "#34D399",
             },
           ],
         ]
       }
     >
-      Development preview
+      Language review complete
     </Text>
     <Text
       style={
@@ -94,13 +94,13 @@ exports[`dark StarterPackReviewBanner shows the honest review gate and matches t
         ]
       }
     >
-      The content is awaiting human Dutch review. Import is enabled only for development QA.
+      The starter pack passed the project’s internal language review.
     </Text>
   </View>
 </View>
 `;
 
-exports[`light StarterPackReviewBanner shows the honest review gate and matches the theme snapshot 1`] = `
+exports[`light StarterPackReviewBanner shows the completed internal review and matches the theme snapshot 1`] = `
 <View
   style={
     [
@@ -119,8 +119,8 @@ exports[`light StarterPackReviewBanner shows the honest review gate and matches 
           "padding": 14,
         },
         {
-          "backgroundColor": "#FEF3C7",
-          "borderColor": "#F59E0B",
+          "backgroundColor": "#ECFDF5",
+          "borderColor": "#10B981",
         },
       ],
     ]
@@ -133,7 +133,7 @@ exports[`light StarterPackReviewBanner shows the honest review gate and matches 
     style={
       [
         {
-          "color": "#F59E0B",
+          "color": "#10B981",
           "fontSize": 22,
         },
         undefined,
@@ -146,7 +146,7 @@ exports[`light StarterPackReviewBanner shows the honest review gate and matches 
       ]
     }
   >
-    
+    
   </Text>
   <View
     style={
@@ -173,13 +173,13 @@ exports[`light StarterPackReviewBanner shows the honest review gate and matches 
               "marginBottom": 4,
             },
             {
-              "color": "#F59E0B",
+              "color": "#10B981",
             },
           ],
         ]
       }
     >
-      Development preview
+      Language review complete
     </Text>
     <Text
       style={
@@ -194,7 +194,7 @@ exports[`light StarterPackReviewBanner shows the honest review gate and matches 
         ]
       }
     >
-      The content is awaiting human Dutch review. Import is enabled only for development QA.
+      The starter pack passed the project’s internal language review.
     </Text>
   </View>
 </View>

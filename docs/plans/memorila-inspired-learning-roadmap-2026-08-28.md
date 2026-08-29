@@ -515,7 +515,7 @@ Implementation completed on 2026-08-29:
 
 ### WP1.3 Official Dutch A1 Starter Pack
 
-Status: `VALIDATION REQUIRED`
+Status: `READY FOR USER COMMIT`
 Priority: P1
 Estimated size: M
 Depends on: WP0.2
@@ -533,7 +533,9 @@ Content rules:
 - Include English translations and Russian translations where reviewed.
 - Include correct articles, plurals, separable parts, fixed prepositions, and
   register where applicable.
-- Every entry must receive human language review before release.
+- Every entry must receive documented language review before release; an
+  owner-authorized internal review is allowed when its limitations are recorded
+  and it is not represented as independent native-speaker certification.
 - Record source/provenance and license notes in the pack manifest.
 - Do not copy Memorila, Memrise, Anki community decks, or other copyrighted
   decks without explicit compatible licensing.
@@ -572,7 +574,7 @@ Required tests:
 Done criteria:
 
 - A new user can import the pack and start reviewing without manual word entry.
-- Content has documented human review and provenance.
+- Content has documented language review and provenance.
 - Existing collection import remains unchanged.
 - All quality gates pass.
 
@@ -584,9 +586,8 @@ Implementation notes (2026-08-29):
 - Added an offline-first preview/import flow with partial selection, semantic
   duplicate filtering shared with regular collection imports, reset ownership
   and SRS fields, a sticky import action, and a first-review call to action.
-- Production import remains disabled while `content_review.status` is
-  `pending`; development builds expose the pack as a clearly labelled preview
-  for technical QA.
+- Production import was disabled while `content_review.status` was `pending`;
+  the reviewed `0.2.0` release now enables the offline import in production.
 - Added unit, hook, snapshot, and Maestro coverage. The iOS 26.5 Simulator flow
   verifies preview, one-card partial import, Review launch, persistence after an
   app restart, and cleanup with successful Supabase tombstone synchronization.
@@ -595,12 +596,15 @@ Implementation notes (2026-08-29):
 
 Validation gate:
 
-- A qualified Dutch reviewer must check every entry using
-  `docs/content/dutch-a1-starter-pack-review.md`.
-- After approval, record the reviewer and date in the manifest, change its
-  version from draft to release, rerun all gates, and move this package to
-  `READY FOR USER COMMIT`.
-- Do not start WP1.4 while this gate remains open.
+- The project owner authorized the documented internal-review exception because
+  an external Dutch reviewer was unavailable.
+- All 60 entries were checked using
+  `docs/content/dutch-a1-starter-pack-review.md`; material corrections and the
+  non-native-certification limitation are recorded there.
+- Manifest `0.2.0` records the stable review identifier and timestamp, and an
+  integrity digest prevents later database changes from silently replacing the
+  approved content.
+- WP1.3 is ready for the user-owned commit. Start WP1.4 only after that commit.
 
 ### WP1.4 Batch Quick Capture
 

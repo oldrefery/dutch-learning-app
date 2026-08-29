@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "pack_id": "official-dutch-a1-essentials",
-  "version": "0.2.0-draft",
+  "version": "0.2.0",
   "title": "Dutch A1 Essentials",
   "description": "A curated offline starter set of 60 high-value cards selected from the existing project word library.",
   "source_language": "nl",
-  "translation_languages": ["en", "ru"],
-  "created_at": "2026-08-29T00:00:00.000Z",
+  "translation_languages": ["en"],
+  "created_at": "2026-08-29T11:36:37Z",
   "license": {
     "name": "Existing project library content — all rights reserved",
     "url": null,
@@ -14,10 +14,10 @@
   },
   "provenance": {
     "origin": "existing-project-library",
-    "source_snapshot_at": "2026-08-29T00:00:00.000Z",
-    "source_card_count": 1928,
+    "source_snapshot_at": "2026-08-29T11:36:37Z",
+    "source_card_count": 1929,
     "source_unique_semantic_count": 1917,
-    "selection_method": "Manual A1 utility curation followed by deterministic selection of the most complete and concise matching database record for each lemma and part of speech. The snapshot keeps at most two translations, two examples, and three related words per field.",
+    "selection_method": "Manual A1 utility curation followed by deterministic selection of the most complete and concise matching database record for each lemma and part of speech. Reviewed overrides simplify ambiguous records, and a SHA-256 integrity gate prevents database changes from silently altering the approved release.",
     "notes": "Only linguistic fields were copied into this bundled snapshot. User identifiers, collection ownership, timestamps, media URLs, and learner progression were excluded.",
     "excluded_sources": [
       "Memorila decks",
@@ -27,10 +27,10 @@
     ]
   },
   "content_review": {
-    "status": "pending",
-    "reviewed_by": null,
-    "reviewed_at": null,
-    "notes": "Database-derived development draft. Every selected card requires human Dutch language review before production import is enabled."
+    "status": "approved",
+    "reviewed_by": "internal-dutch-content-review",
+    "reviewed_at": "2026-08-29T11:36:37Z",
+    "notes": "Project-owner-authorized internal editorial review checked all 60 entries for spelling, grammar, A1 utility, translation accuracy, examples, metadata, and duplicate scope. Misleading secondary senses and advanced examples were removed or simplified."
   },
   "entries": [
     {
@@ -247,7 +247,7 @@
       "entry_id": "a1-015-vriend",
       "dutch_lemma": "vriend",
       "part_of_speech": "noun",
-      "translations": { "en": ["friend", "boyfriend"] },
+      "translations": { "en": ["friend"] },
       "examples": [
         { "en": "He is a good friend.", "nl": "Hij is een goede vriend." }
       ],
@@ -333,25 +333,12 @@
       "entry_id": "a1-054-adres",
       "dutch_lemma": "adres",
       "part_of_speech": "noun",
-      "translations": {
-        "en": ["address", "location"],
-        "ru": ["адрес", "местоположение"]
-      },
-      "examples": [
-        {
-          "en": "What is the address of the new office?",
-          "nl": "Wat is het adres van het nieuwe kantoor?",
-          "ru": "Какой адрес нового офиса?"
-        },
-        {
-          "en": "I need to change my address with the municipality.",
-          "nl": "Ik moet mijn adres wijzigen bij de gemeente.",
-          "ru": "Мне нужно изменить свой адрес в муниципалитете."
-        }
-      ],
+      "translations": { "en": ["address"] },
+      "examples": [{ "en": "What is your address?", "nl": "Wat is je adres?" }],
       "article": "het",
       "plural": "adressen",
-      "synonyms": ["woonplaats", "verblijfplaats", "locatie"],
+      "register": "neutral",
+      "synonyms": [],
       "antonyms": []
     },
     {
@@ -432,7 +419,7 @@
       "entry_id": "a1-025-wonen",
       "dutch_lemma": "wonen",
       "part_of_speech": "verb",
-      "translations": { "en": ["to live", "to reside"] },
+      "translations": { "en": ["to live"] },
       "examples": [
         { "en": "I live in the Netherlands.", "nl": "Ik woon in Nederland." }
       ],
@@ -692,116 +679,84 @@
       "entry_id": "a1-055-blijven",
       "dutch_lemma": "blijven",
       "part_of_speech": "verb",
-      "translations": {
-        "en": ["to stay", "to remain"],
-        "ru": ["оставаться", "пребывать"]
-      },
+      "translations": { "en": ["to stay", "to remain"] },
       "examples": [
-        {
-          "en": "I'd rather stay home tonight.",
-          "nl": "Ik blijf liever thuis vanavond.",
-          "ru": "Я предпочитаю остаться дома сегодня вечером."
-        },
-        {
-          "en": "He remained calm, despite the chaos.",
-          "nl": "Hij bleef kalm, ondanks de chaos.",
-          "ru": "Он оставался спокойным, несмотря на хаос."
-        }
+        { "en": "I am staying home today.", "nl": "Ik blijf vandaag thuis." }
       ],
       "is_irregular": true,
-      "synonyms": ["verblijven", "doorgaan", "resten"],
-      "antonyms": ["weggaan", "vertrekken", "ophouden"],
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
-        "present": "blijf",
+        "present": "blijf / blijft / blijven",
         "simple_past": "bleef",
         "past_participle": "gebleven",
         "simple_past_plural": "bleven"
-      }
+      },
+      "register": "neutral"
     },
     {
       "entry_id": "a1-056-brengen",
       "dutch_lemma": "brengen",
       "part_of_speech": "verb",
-      "translations": {
-        "en": ["to bring", "to take"],
-        "ru": ["приносить", "отвозить"]
-      },
+      "translations": { "en": ["to bring", "to take"] },
       "examples": [
         {
-          "en": "I will bring the books to the library tomorrow.",
-          "nl": "Ik zal de boeken morgen naar de bibliotheek brengen.",
-          "ru": "Я принесу книги в библиотеку завтра."
+          "en": "Can you bring the book tomorrow?",
+          "nl": "Kun je het boek morgen brengen?"
         },
         {
-          "en": "Can you take the children to school?",
-          "nl": "Kun je de kinderen naar school brengen?",
-          "ru": "Можешь отвезти детей в школу?"
+          "en": "I take my child to school.",
+          "nl": "Ik breng mijn kind naar school."
         }
       ],
       "is_irregular": true,
-      "synonyms": ["voeren", "meenemen", "overhandigen"],
-      "antonyms": ["halen", "wegnemen", "ontvangen"],
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
-        "present": "breng",
+        "present": "breng / brengt / brengen",
         "simple_past": "bracht",
         "past_participle": "gebracht",
         "simple_past_plural": "brachten"
-      }
+      },
+      "register": "neutral"
     },
     {
       "entry_id": "a1-057-denken",
       "dutch_lemma": "denken",
       "part_of_speech": "verb",
-      "translations": {
-        "en": ["to think", "to believe"],
-        "ru": ["думать", "мыслить"]
-      },
+      "translations": { "en": ["to think"] },
       "examples": [
+        { "en": "What do you think?", "nl": "Wat denk je?" },
         {
-          "en": "I think it will be nice weather tomorrow.",
-          "nl": "Ik denk dat het morgen mooi weer wordt.",
-          "ru": "Я думаю, что завтра будет хорошая погода."
-        },
-        {
-          "en": "I used to think flying was impossible.",
-          "nl": "Vroeger dacht ik dat vliegen onmogelijk was.",
-          "ru": "Раньше я думал, что летать невозможно."
+          "en": "I am thinking about my family.",
+          "nl": "Ik denk aan mijn familie."
         }
       ],
       "is_irregular": true,
-      "synonyms": ["overwegen", "nadenken", "menen"],
+      "synonyms": [],
       "antonyms": [],
       "conjugation": {
-        "present": "denk",
+        "present": "denk / denkt / denken",
         "simple_past": "dacht",
-        "past_participle": "gedacht"
-      }
+        "past_participle": "gedacht",
+        "simple_past_plural": "dachten"
+      },
+      "register": "neutral"
     },
     {
       "entry_id": "a1-058-koken",
       "dutch_lemma": "koken",
       "part_of_speech": "verb",
-      "translations": {
-        "en": ["to cook", "to boil"],
-        "ru": ["готовить", "варить"]
-      },
+      "translations": { "en": ["to cook", "to boil"] },
       "examples": [
-        {
-          "en": "I cook a healthy meal for my family every evening.",
-          "nl": "Ik kook elke avond een gezonde maaltijd voor mijn gezin.",
-          "ru": "Я готовлю здоровую еду для своей семьи каждый вечер."
-        },
-        {
-          "en": "The water is already boiling; you can add the pasta.",
-          "nl": "Het water kookt al, je kunt de pasta toevoegen.",
-          "ru": "Вода уже кипит, можешь добавлять пасту."
-        }
+        { "en": "I am cooking tonight.", "nl": "Ik kook vanavond." },
+        { "en": "The water is boiling.", "nl": "Het water kookt." }
       ],
       "register": "neutral",
-      "synonyms": ["bereiden", "klaarmaken", "zieden"],
+      "synonyms": [],
       "antonyms": [],
       "conjugation": {
-        "present": "kook",
+        "present": "kook / kookt / koken",
         "simple_past": "kookte",
         "past_participle": "gekookt",
         "simple_past_plural": "kookten"
@@ -811,28 +766,16 @@
       "entry_id": "a1-059-slapen",
       "dutch_lemma": "slapen",
       "part_of_speech": "verb",
-      "translations": {
-        "en": ["to sleep", "to be asleep"],
-        "ru": ["спать", "находиться в состоянии сна"]
-      },
+      "translations": { "en": ["to sleep"] },
       "examples": [
-        {
-          "en": "I usually sleep eight hours a night.",
-          "nl": "Ik slaap meestal acht uur per nacht.",
-          "ru": "Обычно я сплю по восемь часов в сутки."
-        },
-        {
-          "en": "Last night I slept very deeply because of the fatigue.",
-          "nl": "Gisteravond sliep ik heel diep door de vermoeidheid.",
-          "ru": "Прошлой ночью я спал очень крепко из-за усталости."
-        }
+        { "en": "The child is sleeping.", "nl": "Het kind slaapt." }
       ],
       "is_irregular": true,
       "register": "neutral",
-      "synonyms": ["rusten", "pitten", "maffen"],
-      "antonyms": ["waken", "wakker zijn"],
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
-        "present": "slaap",
+        "present": "slaap / slaapt / slapen",
         "simple_past": "sliep",
         "past_participle": "geslapen",
         "simple_past_plural": "sliepen"
@@ -842,38 +785,27 @@
       "entry_id": "a1-060-zien",
       "dutch_lemma": "zien",
       "part_of_speech": "verb",
-      "translations": {
-        "en": ["to see", "to perceive"],
-        "ru": ["видеть", "воспринимать"]
-      },
-      "examples": [
-        {
-          "en": "I see a bird in the tree.",
-          "nl": "Ik zie een vogel in de boom.",
-          "ru": "Я вижу птицу на дереве."
-        },
-        {
-          "en": "I saw him walking in the city yesterday.",
-          "nl": "Ik zag hem gisteren in de stad lopen.",
-          "ru": "Я видел, как он вчера гулял в городе."
-        }
-      ],
+      "translations": { "en": ["to see"] },
+      "examples": [{ "en": "I see a bird.", "nl": "Ik zie een vogel." }],
       "is_irregular": true,
-      "synonyms": ["waarnemen", "kijken", "aanschouwen"],
-      "antonyms": ["missen", "negeren", "over het hoofd zien"],
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
-        "present": "zie",
+        "present": "zie / ziet / zien",
         "simple_past": "zag",
         "past_participle": "gezien",
         "simple_past_plural": "zagen"
-      }
+      },
+      "register": "neutral"
     },
     {
       "entry_id": "a1-039-goed",
       "dutch_lemma": "goed",
       "part_of_speech": "adjective",
-      "translations": { "en": ["good", "well"] },
-      "examples": [{ "en": "It is going well.", "nl": "Het gaat goed." }],
+      "translations": { "en": ["good"] },
+      "examples": [
+        { "en": "This is a good book.", "nl": "Dit is een goed boek." }
+      ],
       "register": "neutral",
       "synonyms": [],
       "antonyms": []
@@ -1012,10 +944,7 @@
       "part_of_speech": "expression",
       "translations": { "en": ["goodbye", "see you"] },
       "examples": [
-        {
-          "en": "Goodbye and have a nice day!",
-          "nl": "Tot ziens en fijne dag!"
-        }
+        { "en": "Goodbye! Have a nice day!", "nl": "Tot ziens! Fijne dag!" }
       ],
       "is_expression": true,
       "expression_type": "fixed_expression",

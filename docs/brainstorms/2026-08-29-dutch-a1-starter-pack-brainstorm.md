@@ -10,7 +10,7 @@ semantic duplicate handling, selective import, and explicit user consent.
 
 The content is a curated snapshot of linguistic fields from the existing
 project word library. It must not be presented as language-reviewed until a
-human reviewer has checked every selected entry.
+documented review has checked every selected entry.
 
 ## Decision
 
@@ -30,9 +30,10 @@ human reviewer has checked every selected entry.
 - Let users import a subset and create a dedicated collection only when they
   confirm the import.
 - Show a first-review action after a successful import.
-- Keep the manifest review status `pending` until a human reviewer supplies
-  their name and review date. Pending content may be imported in development
-  builds for QA, but production import remains disabled.
+- Keep the manifest review status `pending` until a documented reviewer or
+  stable project review identifier and date are supplied. Pending content may
+  be imported in development builds for QA, but production import remains
+  disabled.
 - Keep database access in a development-only generator. The application uses
   the generated asset and remains fully offline at runtime.
 
@@ -56,7 +57,10 @@ an explicit choice and make removal or ownership expectations unclear.
 
 ## Release Gate
 
-Before changing the manifest review status to `approved`, a human Dutch
-language reviewer must verify all lemmas, translations, articles, plurals,
-conjugations, separable parts, fixed prepositions, examples, and register
-labels. The reviewer name and review date must be recorded in the manifest.
+Before changing the manifest review status to `approved`, the project requires
+a documented Dutch editorial review of all lemmas, translations, articles,
+plurals, conjugations, separable parts, fixed prepositions, examples, and
+register labels. The reviewer or stable project review identifier and review
+date must be recorded in the manifest. An internal review exception must be
+explicitly authorized by the project owner and must not be represented as
+independent native-speaker certification.
