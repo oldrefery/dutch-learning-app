@@ -333,7 +333,7 @@ Add one deterministic flow per platform that:
 
 ## Validation Gate B: Onboarding Acceptance
 
-Status: `VALIDATION REQUIRED`
+Status: `PROCEED`
 Depends on: WP3.1
 
 Stop after WP3.1 is committed and present the user with:
@@ -352,7 +352,7 @@ Exit decisions:
 
 ## WP3.2 Release Candidate And Upgrade Validation
 
-Status: `TODO`
+Status: `IN PROGRESS`
 Priority: P0
 Estimated size: L
 Depends on: Validation Gate B = `PROCEED`
@@ -365,31 +365,57 @@ and upgrade behavior before production submission.
 
 ### Plan
 
-1. Confirm the marketing version and query both stores/EAS for the next unused
+1. Before creating a pull request or merging to `main`, complete a convergence
+   gate:
+   - inventory every open pull request and identify overlap, dependency,
+     supersession, conflicts, and required checks;
+   - close only clearly obsolete PRs with an explicit recorded disposition;
+   - preserve or integrate required work without overwriting unrelated changes;
+   - rerun the project-local unresolved production Sentry triage and fix or
+     document every release-blocking issue.
+2. Before every remote Expo/EAS operation, verify that the active identity and
+   linked project owner are exactly `oldrefery`; stop if the identity is
+   another account, unauthenticated, or ambiguous.
+3. Confirm the marketing version and query both stores/EAS for the next unused
    native build number before editing files.
-2. Prepare `2.0.0` and the verified native build number in all local version
+4. Prepare `2.0.0` and the verified native build number in all local version
    sources without committing automatically.
-3. Update `CHANGELOG.md` with user-facing changes since the last documented
+5. Update `CHANGELOG.md` with user-facing changes since the last documented
    release, including review modes, Insights, starter pack, batch capture,
    Audio Review, Usage & Nuance, onboarding, fixes, and privacy/capability
    changes.
-4. Update `README.md` only now that the features are release candidates.
-5. Add or verify an internal device candidate profile:
+6. Update `README.md` only now that the features are release candidates.
+7. Add or verify an internal device candidate profile:
    - real-device iOS artifact, not simulator-only;
    - installable Android APK for QA;
    - non-production update channel/environment;
    - production-equivalent minification and native configuration;
    - no automatic store submit.
-6. Build both candidate artifacts and verify runtime fingerprint, embedded
+8. Build both candidate artifacts and verify runtime fingerprint, embedded
    update, release/dist, debug IDs, and source-map upload.
-7. Run the documented Sentry preview telemetry smoke check; do not inject test
+9. Run the documented Sentry preview telemetry smoke check; do not inject test
    events into production.
-8. Validate a fresh install and an upgrade from the last public build while
-   preserving authentication, SQLite data, review history, starter-pack data,
-   settings, and pending sync work.
-9. Execute the full device matrix below.
-10. Record artifacts, versions, fingerprints, checksums, test devices, dates,
+10. Validate a fresh install and an upgrade from the last public build while
+    preserving authentication, SQLite data, review history, starter-pack data,
+    settings, and pending sync work.
+11. Execute the full device matrix below.
+12. Record artifacts, versions, fingerprints, checksums, test devices, dates,
     and results in a release checklist.
+
+### Execution Progress
+
+- Pre-merge convergence completed on 2026-08-29. All eight open PRs were
+  Dependabot updates based on the old `main` dependency baseline; each was
+  closed with an explicit post-release disposition, and no commits from them
+  were merged into the candidate branch. The open PR queue is now empty.
+- The production Sentry query still contains four handled events from native
+  build 78 and no newer issue. Current-branch fixes are covered by 3 targeted
+  suites and 78 passing tests. The issues stay open until the candidate
+  validates word re-analysis and session refresh; none is a current release
+  blocker.
+- The remote Expo/EAS identity gate passed read-only validation for account and
+  project owner `oldrefery`; it must be repeated before every subsequent remote
+  Expo/EAS operation.
 
 ### Device Matrix
 
@@ -599,7 +625,7 @@ workaround.
 
 ## Immediate Next Action
 
-After this plan is committed, start WP3.0 with read-only production Sentry
-triage and release/config audits. Do not change onboarding UI, apply a database
-migration, build a release candidate, or mutate store state in the same first
-step.
+Continue WP3.2 by verifying the next unused native build number in EAS and both
+stores, while repeating the `oldrefery` identity gate before every remote
+Expo/EAS operation. Do not edit version files or start a build until the store
+and EAS checks agree.
