@@ -32,13 +32,13 @@ push branches or tags, or promote a release publicly.
 Preview the mutation first:
 
 ```bash
-node scripts/prepare-release.js --version 1.14.0 --build 79
+node scripts/prepare-release.js --version 2.0.0 --build 79
 ```
 
 Apply only after build `79` is confirmed as unused:
 
 ```bash
-node scripts/prepare-release.js --version 1.14.0 --build 79 --apply
+node scripts/prepare-release.js --version 2.0.0 --build 79 --apply
 ```
 
 The command updates `app.base.json`, `package.json`, and `package-lock.json`.

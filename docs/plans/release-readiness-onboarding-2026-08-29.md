@@ -3,7 +3,7 @@
 Date: 2026-08-29
 Status: `READY FOR EXECUTION`
 Planning branch: `feature/memorila-learning-roadmap`
-Target release: `1.14.0` with the next verified native build number
+Target release: `2.0.0` with the next verified native build number
 Repository: `/Users/devrush/code/pet/DutchLearningApp`
 Brainstorm:
 `docs/brainstorms/2026-08-29-release-readiness-onboarding-brainstorm.md`
@@ -65,7 +65,7 @@ Release a stable version that:
    Sentry `dist` and source-map validation already depend on them.
 6. Treat build, store submission, and public promotion as separate external
    actions with separate approvals.
-7. Target `1.14.0`; resolve the next available iOS and Android build numbers
+7. Target `2.0.0`; resolve the next available iOS and Android build numbers
    before changing version files. Build `79` is the expected value only if both
    stores confirm it is unused.
 8. Preserve `runtimeVersion.policy: fingerprint` and remove any build-script
@@ -196,7 +196,7 @@ release candidate.
 
 - Triaged all unresolved production issues from the 14-day Sentry window and
   recorded their non-blocking disposition in
-  `docs/RELEASE_READINESS_1_14_0.md`; the current branch contains regression
+  `docs/RELEASE_READINESS_2_0_0.md`; the current branch contains regression
   fixes and tests added after build 78.
 - Applied linked migration `20260829120000`; local/remote history matches and
   linked database lint reports no schema errors.
@@ -336,7 +336,7 @@ Status: `TODO`
 Priority: P0
 Estimated size: L
 Depends on: Validation Gate B = `PROCEED`
-Suggested commit: `chore: prepare 1.14.0 release candidate`
+Suggested commit: `chore: prepare 2.0.0 release candidate`
 
 ### Purpose
 
@@ -347,7 +347,7 @@ and upgrade behavior before production submission.
 
 1. Confirm the marketing version and query both stores/EAS for the next unused
    native build number before editing files.
-2. Prepare `1.14.0` and the verified native build number in all local version
+2. Prepare `2.0.0` and the verified native build number in all local version
    sources without committing automatically.
 3. Update `CHANGELOG.md` with user-facing changes since the last documented
    release, including review modes, Insights, starter pack, batch capture,
@@ -454,7 +454,7 @@ Status: `TODO`
 Priority: P0
 Estimated size: M
 Depends on: Validation Gate C = `RELEASE`
-Suggested commit: `chore: release version 1.14.0`
+Suggested commit: `chore: release version 2.0.0`
 
 ### External-Action Boundary
 
@@ -510,7 +510,7 @@ Status: `TODO`
 Priority: P0
 Estimated size: S
 Depends on: WP3.3 public promotion
-Suggested commit: `docs: close 1.14.0 release`
+Suggested commit: `docs: close 2.0.0 release`
 
 ### Monitoring Windows
 

@@ -124,7 +124,7 @@ describe('release scripts', () => {
     const dryRun = run(fixtureDir, 'node', [
       PREPARE_SCRIPT_PATH,
       '--version',
-      '1.14.0',
+      '2.0.0',
       '--build',
       '79',
     ])
@@ -144,7 +144,7 @@ describe('release scripts', () => {
     const result = run(fixtureDir, 'node', [
       PREPARE_SCRIPT_PATH,
       '--version',
-      '1.14.0',
+      '2.0.0',
       '--build',
       '79',
       '--apply',
@@ -160,17 +160,17 @@ describe('release scripts', () => {
     )
 
     expect(result.status).toBe(0)
-    expect(appConfig.expo.version).toBe('1.14.0')
+    expect(appConfig.expo.version).toBe('2.0.0')
     expect(appConfig.expo.ios.buildNumber).toBe('79')
     expect(appConfig.expo.android.versionCode).toBe(79)
-    expect(packageJson.version).toBe('1.14.0')
-    expect(packageLock.version).toBe('1.14.0')
-    expect(packageLock.packages[''].version).toBe('1.14.0')
+    expect(packageJson.version).toBe('2.0.0')
+    expect(packageLock.version).toBe('2.0.0')
+    expect(packageLock.packages[''].version).toBe('2.0.0')
     expect(run(fixtureDir, 'git', ['log', '--oneline']).stdout).toContain(
       'test fixture'
     )
     expect(run(fixtureDir, 'git', ['log', '--oneline']).stdout).not.toContain(
-      '1.14.0'
+      '2.0.0'
     )
   })
 
@@ -187,7 +187,7 @@ describe('release scripts', () => {
     const reusedBuild = run(fixtureDir, 'node', [
       PREPARE_SCRIPT_PATH,
       '--version',
-      '1.14.0',
+      '2.0.0',
       '--build',
       CURRENT_BUILD_NUMBER,
     ])

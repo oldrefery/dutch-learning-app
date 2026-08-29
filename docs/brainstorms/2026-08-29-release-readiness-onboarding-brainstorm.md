@@ -65,7 +65,7 @@ Add documentation to Settings without any proactive introduction.
   privacy decision authorizes product analytics.
 - **No SRS mutation:** opening or completing guidance never changes learning
   progress.
-- **Release target:** plan for app version `1.14.0`; resolve the next available
+- **Release target:** plan for app version `2.0.0`; resolve the next available
   native build number immediately before the release-candidate bump.
 - **Local version source:** retain the current explicit local version strategy
   for this release so native build numbers, Sentry `dist`, and source maps stay

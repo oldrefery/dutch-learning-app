@@ -1,4 +1,4 @@
-# Release Readiness Baseline: 1.14.0
+# Release Readiness Baseline: 2.0.0
 
 Date: 2026-08-29
 Branch: `feature/memorila-learning-roadmap`

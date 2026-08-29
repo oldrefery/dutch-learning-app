@@ -399,8 +399,8 @@ release publicly.
 
 ```bash
 # Preview or apply aligned app/package versions.
-node scripts/prepare-release.js --version 1.14.0 --build 79
-node scripts/prepare-release.js --version 1.14.0 --build 79 --apply
+node scripts/prepare-release.js --version 2.0.0 --build 79
+node scripts/prepare-release.js --version 2.0.0 --build 79 --apply
 
 # After committing the version bump and confirming that build 79 is unused.
 scripts/build-release.sh --platform both --confirmed-build-number 79 --dry-run
