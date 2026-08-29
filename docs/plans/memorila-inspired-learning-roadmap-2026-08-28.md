@@ -1028,3 +1028,6 @@ All in-scope work packages were committed by 2026-08-29. The roadmap has no
 remaining `TODO`, `IN PROGRESS`, `VALIDATION REQUIRED`, or
 `READY FOR USER COMMIT` package. Start a new planning cycle before promoting a
 `DEFERRED` idea into implementation scope.
+
+Successor plan:
+`docs/plans/release-readiness-onboarding-2026-08-29.md`.
