@@ -578,9 +578,9 @@ Done criteria:
 
 Implementation notes (2026-08-29):
 
-- Added an independently authored, versioned 53-entry Dutch A1 manifest with
-  provenance, license, runtime validation, and an explicit content-review
-  status.
+- Added a versioned 60-entry Dutch A1 snapshot curated from 1,917 unique
+  semantic cards in the existing project library, with provenance, license,
+  runtime validation, and an explicit content-review status.
 - Added an offline-first preview/import flow with partial selection, semantic
   duplicate filtering shared with regular collection imports, reset ownership
   and SRS fields, a sticky import action, and a first-review call to action.

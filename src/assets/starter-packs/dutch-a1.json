@@ -1,20 +1,24 @@
 {
   "schema_version": 1,
   "pack_id": "official-dutch-a1-essentials",
-  "version": "0.1.0-draft",
+  "version": "0.2.0-draft",
   "title": "Dutch A1 Essentials",
-  "description": "An original offline starter set of high-value Dutch words and everyday expressions for first review sessions.",
+  "description": "A curated offline starter set of 60 high-value cards selected from the existing project word library.",
   "source_language": "nl",
-  "translation_languages": ["en"],
+  "translation_languages": ["en", "ru"],
   "created_at": "2026-08-29T00:00:00.000Z",
   "license": {
-    "name": "Original project content — all rights reserved",
+    "name": "Existing project library content — all rights reserved",
     "url": null,
-    "notes": "Authored for Dutch Learning App. Distribution is limited to the application and its source repository unless the project owner grants additional permission."
+    "notes": "Linguistic card fields were selected from the project word library. Distribution is limited to the application and its source repository unless the project owner grants additional permission."
   },
   "provenance": {
-    "origin": "original-project-content",
-    "notes": "The list and card text were independently drafted for this project from general Dutch-language knowledge. No competitor deck or proprietary dictionary was copied.",
+    "origin": "existing-project-library",
+    "source_snapshot_at": "2026-08-29T00:00:00.000Z",
+    "source_card_count": 1928,
+    "source_unique_semantic_count": 1917,
+    "selection_method": "Manual A1 utility curation followed by deterministic selection of the most complete and concise matching database record for each lemma and part of speech. The snapshot keeps at most two translations, two examples, and three related words per field.",
+    "notes": "Only linguistic fields were copied into this bundled snapshot. User identifiers, collection ownership, timestamps, media URLs, and learner progression were excluded.",
     "excluded_sources": [
       "Memorila decks",
       "Memrise courses",
@@ -26,735 +30,1049 @@
     "status": "pending",
     "reviewed_by": null,
     "reviewed_at": null,
-    "notes": "Development draft. Every entry requires human Dutch language review before production import is enabled."
+    "notes": "Database-derived development draft. Every selected card requires human Dutch language review before production import is enabled."
   },
   "entries": [
     {
       "entry_id": "a1-001-huis",
       "dutch_lemma": "huis",
       "part_of_speech": "noun",
+      "translations": { "en": ["house", "home"] },
+      "examples": [{ "en": "This is my house.", "nl": "Dit is mijn huis." }],
       "article": "het",
       "plural": "huizen",
       "register": "neutral",
-      "translations": { "en": ["house", "home"] },
-      "examples": [{ "nl": "Dit is mijn huis.", "en": "This is my house." }]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-002-boek",
       "dutch_lemma": "boek",
       "part_of_speech": "noun",
+      "translations": { "en": ["book"] },
+      "examples": [{ "en": "I am reading a book.", "nl": "Ik lees een boek." }],
       "article": "het",
       "plural": "boeken",
       "register": "neutral",
-      "translations": { "en": ["book"] },
-      "examples": [{ "nl": "Ik lees een boek.", "en": "I am reading a book." }]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-003-tafel",
       "dutch_lemma": "tafel",
       "part_of_speech": "noun",
-      "article": "de",
-      "plural": "tafels",
-      "register": "neutral",
       "translations": { "en": ["table"] },
       "examples": [
         {
-          "nl": "Het boek ligt op de tafel.",
-          "en": "The book is on the table."
+          "en": "The book is on the table.",
+          "nl": "Het boek ligt op de tafel."
         }
-      ]
+      ],
+      "article": "de",
+      "plural": "tafels",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-004-stoel",
       "dutch_lemma": "stoel",
       "part_of_speech": "noun",
-      "article": "de",
-      "plural": "stoelen",
-      "register": "neutral",
       "translations": { "en": ["chair"] },
       "examples": [
         {
-          "nl": "De stoel staat bij het raam.",
-          "en": "The chair is by the window."
+          "en": "The chair is by the window.",
+          "nl": "De stoel staat bij het raam."
         }
-      ]
+      ],
+      "article": "de",
+      "plural": "stoelen",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-005-deur",
       "dutch_lemma": "deur",
       "part_of_speech": "noun",
+      "translations": { "en": ["door"] },
+      "examples": [{ "en": "Close the door.", "nl": "Doe de deur dicht." }],
       "article": "de",
       "plural": "deuren",
       "register": "neutral",
-      "translations": { "en": ["door"] },
-      "examples": [{ "nl": "Doe de deur dicht.", "en": "Close the door." }]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-006-fiets",
       "dutch_lemma": "fiets",
       "part_of_speech": "noun",
+      "translations": { "en": ["bicycle", "bike"] },
+      "examples": [
+        { "en": "My bicycle is new.", "nl": "Mijn fiets is nieuw." }
+      ],
       "article": "de",
       "plural": "fietsen",
       "register": "neutral",
-      "translations": { "en": ["bicycle", "bike"] },
-      "examples": [{ "nl": "Mijn fiets is nieuw.", "en": "My bicycle is new." }]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-007-trein",
       "dutch_lemma": "trein",
       "part_of_speech": "noun",
-      "article": "de",
-      "plural": "treinen",
-      "register": "neutral",
       "translations": { "en": ["train"] },
       "examples": [
         {
-          "nl": "De trein komt om acht uur.",
-          "en": "The train arrives at eight o'clock."
+          "en": "The train arrives at eight o'clock.",
+          "nl": "De trein komt om acht uur."
         }
-      ]
+      ],
+      "article": "de",
+      "plural": "treinen",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-008-auto",
       "dutch_lemma": "auto",
       "part_of_speech": "noun",
-      "article": "de",
-      "plural": "auto's",
-      "register": "neutral",
       "translations": { "en": ["car"] },
       "examples": [
         {
-          "nl": "De auto staat voor het huis.",
-          "en": "The car is in front of the house."
+          "en": "The car is in front of the house.",
+          "nl": "De auto staat voor het huis."
         }
-      ]
+      ],
+      "article": "de",
+      "plural": "auto's",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-009-stad",
       "dutch_lemma": "stad",
       "part_of_speech": "noun",
-      "article": "de",
-      "plural": "steden",
-      "register": "neutral",
       "translations": { "en": ["city", "town"] },
       "examples": [
         {
-          "nl": "Amsterdam is een grote stad.",
-          "en": "Amsterdam is a large city."
+          "en": "Amsterdam is a large city.",
+          "nl": "Amsterdam is een grote stad."
         }
-      ]
+      ],
+      "article": "de",
+      "plural": "steden",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-010-straat",
       "dutch_lemma": "straat",
       "part_of_speech": "noun",
+      "translations": { "en": ["street"] },
+      "examples": [
+        { "en": "We live on this street.", "nl": "Wij wonen in deze straat." }
+      ],
       "article": "de",
       "plural": "straten",
       "register": "neutral",
-      "translations": { "en": ["street"] },
-      "examples": [
-        { "nl": "Wij wonen in deze straat.", "en": "We live on this street." }
-      ]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-011-winkel",
       "dutch_lemma": "winkel",
       "part_of_speech": "noun",
+      "translations": { "en": ["shop", "store"] },
+      "examples": [
+        { "en": "The shop is open today.", "nl": "De winkel is vandaag open." }
+      ],
       "article": "de",
       "plural": "winkels",
       "register": "neutral",
-      "translations": { "en": ["shop", "store"] },
-      "examples": [
-        { "nl": "De winkel is vandaag open.", "en": "The shop is open today." }
-      ]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-012-school",
       "dutch_lemma": "school",
       "part_of_speech": "noun",
-      "article": "de",
-      "plural": "scholen",
-      "register": "neutral",
       "translations": { "en": ["school"] },
       "examples": [
         {
-          "nl": "De kinderen gaan naar school.",
-          "en": "The children go to school."
+          "en": "The children go to school.",
+          "nl": "De kinderen gaan naar school."
         }
-      ]
+      ],
+      "article": "de",
+      "plural": "scholen",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-013-werk",
       "dutch_lemma": "werk",
       "part_of_speech": "noun",
-      "article": "het",
-      "plural": null,
-      "register": "neutral",
       "translations": { "en": ["work"] },
       "examples": [
-        { "nl": "Ik ga naar mijn werk.", "en": "I am going to work." }
-      ]
+        { "en": "I am going to work.", "nl": "Ik ga naar mijn werk." }
+      ],
+      "article": "het",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-014-familie",
       "dutch_lemma": "familie",
       "part_of_speech": "noun",
-      "article": "de",
-      "plural": "families",
-      "register": "neutral",
       "translations": { "en": ["family"] },
       "examples": [
         {
-          "nl": "Mijn familie woont in Utrecht.",
-          "en": "My family lives in Utrecht."
+          "en": "My family lives in Utrecht.",
+          "nl": "Mijn familie woont in Utrecht."
         }
-      ]
+      ],
+      "article": "de",
+      "plural": "families",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-015-vriend",
       "dutch_lemma": "vriend",
       "part_of_speech": "noun",
+      "translations": { "en": ["friend", "boyfriend"] },
+      "examples": [
+        { "en": "He is a good friend.", "nl": "Hij is een goede vriend." }
+      ],
       "article": "de",
       "plural": "vrienden",
       "register": "neutral",
-      "translations": { "en": ["friend", "boyfriend"] },
-      "examples": [
-        { "nl": "Hij is een goede vriend.", "en": "He is a good friend." }
-      ]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-016-kind",
       "dutch_lemma": "kind",
       "part_of_speech": "noun",
-      "article": "het",
-      "plural": "kinderen",
-      "register": "neutral",
       "translations": { "en": ["child"] },
       "examples": [
         {
-          "nl": "Het kind speelt buiten.",
-          "en": "The child is playing outside."
+          "en": "The child is playing outside.",
+          "nl": "Het kind speelt buiten."
         }
-      ]
+      ],
+      "article": "het",
+      "plural": "kinderen",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-017-dag",
       "dutch_lemma": "dag",
       "part_of_speech": "noun",
+      "translations": { "en": ["day"] },
+      "examples": [
+        { "en": "Today is a beautiful day.", "nl": "Vandaag is een mooie dag." }
+      ],
       "article": "de",
       "plural": "dagen",
       "register": "neutral",
-      "translations": { "en": ["day"] },
-      "examples": [
-        { "nl": "Vandaag is een mooie dag.", "en": "Today is a beautiful day." }
-      ]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-018-tijd",
       "dutch_lemma": "tijd",
       "part_of_speech": "noun",
-      "article": "de",
-      "plural": "tijden",
-      "register": "neutral",
       "translations": { "en": ["time"] },
       "examples": [
         {
-          "nl": "Heb je tijd voor koffie?",
-          "en": "Do you have time for coffee?"
+          "en": "Do you have time for coffee?",
+          "nl": "Heb je tijd voor koffie?"
         }
-      ]
+      ],
+      "article": "de",
+      "plural": "tijden",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-019-water",
       "dutch_lemma": "water",
       "part_of_speech": "noun",
-      "article": "het",
-      "plural": null,
-      "register": "neutral",
       "translations": { "en": ["water"] },
       "examples": [
-        { "nl": "Ik drink een glas water.", "en": "I drink a glass of water." }
-      ]
+        { "en": "I drink a glass of water.", "nl": "Ik drink een glas water." }
+      ],
+      "article": "het",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-020-koffie",
       "dutch_lemma": "koffie",
       "part_of_speech": "noun",
-      "article": "de",
-      "plural": null,
-      "register": "neutral",
       "translations": { "en": ["coffee"] },
-      "examples": [{ "nl": "Wil je koffie?", "en": "Would you like coffee?" }]
+      "examples": [{ "en": "Would you like coffee?", "nl": "Wil je koffie?" }],
+      "article": "de",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
+    },
+    {
+      "entry_id": "a1-054-adres",
+      "dutch_lemma": "adres",
+      "part_of_speech": "noun",
+      "translations": {
+        "en": ["address", "location"],
+        "ru": ["адрес", "местоположение"]
+      },
+      "examples": [
+        {
+          "en": "What is the address of the new office?",
+          "nl": "Wat is het adres van het nieuwe kantoor?",
+          "ru": "Какой адрес нового офиса?"
+        },
+        {
+          "en": "I need to change my address with the municipality.",
+          "nl": "Ik moet mijn adres wijzigen bij de gemeente.",
+          "ru": "Мне нужно изменить свой адрес в муниципалитете."
+        }
+      ],
+      "article": "het",
+      "plural": "adressen",
+      "synonyms": ["woonplaats", "verblijfplaats", "locatie"],
+      "antonyms": []
     },
     {
       "entry_id": "a1-021-zijn",
       "dutch_lemma": "zijn",
       "part_of_speech": "verb",
+      "translations": { "en": ["to be"] },
+      "examples": [{ "en": "I am at home.", "nl": "Ik ben thuis." }],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to be"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "ben / bent / is / zijn",
         "simple_past": "was",
-        "simple_past_plural": "waren",
-        "past_participle": "geweest"
-      },
-      "examples": [{ "nl": "Ik ben thuis.", "en": "I am at home." }]
+        "past_participle": "geweest",
+        "simple_past_plural": "waren"
+      }
     },
     {
       "entry_id": "a1-022-hebben",
       "dutch_lemma": "hebben",
       "part_of_speech": "verb",
+      "translations": { "en": ["to have"] },
+      "examples": [
+        { "en": "We have two bicycles.", "nl": "Wij hebben twee fietsen." }
+      ],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to have"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "heb / hebt / heeft / hebben",
         "simple_past": "had",
-        "simple_past_plural": "hadden",
-        "past_participle": "gehad"
-      },
-      "examples": [
-        { "nl": "Wij hebben twee fietsen.", "en": "We have two bicycles." }
-      ]
+        "past_participle": "gehad",
+        "simple_past_plural": "hadden"
+      }
     },
     {
       "entry_id": "a1-023-gaan",
       "dutch_lemma": "gaan",
       "part_of_speech": "verb",
+      "translations": { "en": ["to go"] },
+      "examples": [
+        { "en": "We are going by train.", "nl": "We gaan met de trein." }
+      ],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to go"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "ga / gaat / gaan",
         "simple_past": "ging",
-        "simple_past_plural": "gingen",
-        "past_participle": "gegaan"
-      },
-      "examples": [
-        { "nl": "We gaan met de trein.", "en": "We are going by train." }
-      ]
+        "past_participle": "gegaan",
+        "simple_past_plural": "gingen"
+      }
     },
     {
       "entry_id": "a1-024-komen",
       "dutch_lemma": "komen",
       "part_of_speech": "verb",
+      "translations": { "en": ["to come"] },
+      "examples": [
+        { "en": "Are you coming tomorrow?", "nl": "Kom je morgen?" }
+      ],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to come"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "kom / komt / komen",
         "simple_past": "kwam",
-        "simple_past_plural": "kwamen",
-        "past_participle": "gekomen"
-      },
-      "examples": [{ "nl": "Kom je morgen?", "en": "Are you coming tomorrow?" }]
+        "past_participle": "gekomen",
+        "simple_past_plural": "kwamen"
+      }
     },
     {
       "entry_id": "a1-025-wonen",
       "dutch_lemma": "wonen",
       "part_of_speech": "verb",
-      "register": "neutral",
       "translations": { "en": ["to live", "to reside"] },
+      "examples": [
+        { "en": "I live in the Netherlands.", "nl": "Ik woon in Nederland." }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "woon / woont / wonen",
         "simple_past": "woonde",
-        "simple_past_plural": "woonden",
-        "past_participle": "gewoond"
-      },
-      "examples": [
-        { "nl": "Ik woon in Nederland.", "en": "I live in the Netherlands." }
-      ]
+        "past_participle": "gewoond",
+        "simple_past_plural": "woonden"
+      }
     },
     {
       "entry_id": "a1-026-werken",
       "dutch_lemma": "werken",
       "part_of_speech": "verb",
-      "register": "neutral",
       "translations": { "en": ["to work"] },
+      "examples": [
+        { "en": "She works in a shop.", "nl": "Zij werkt in een winkel." }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "werk / werkt / werken",
         "simple_past": "werkte",
-        "simple_past_plural": "werkten",
-        "past_participle": "gewerkt"
-      },
-      "examples": [
-        { "nl": "Zij werkt in een winkel.", "en": "She works in a shop." }
-      ]
+        "past_participle": "gewerkt",
+        "simple_past_plural": "werkten"
+      }
     },
     {
       "entry_id": "a1-027-leren",
       "dutch_lemma": "leren",
       "part_of_speech": "verb",
-      "register": "neutral",
       "translations": { "en": ["to learn"] },
+      "examples": [
+        { "en": "I am learning Dutch.", "nl": "Ik leer Nederlands." }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "leer / leert / leren",
         "simple_past": "leerde",
-        "simple_past_plural": "leerden",
-        "past_participle": "geleerd"
-      },
-      "examples": [
-        { "nl": "Ik leer Nederlands.", "en": "I am learning Dutch." }
-      ]
+        "past_participle": "geleerd",
+        "simple_past_plural": "leerden"
+      }
     },
     {
       "entry_id": "a1-028-spreken",
       "dutch_lemma": "spreken",
       "part_of_speech": "verb",
+      "translations": { "en": ["to speak"] },
+      "examples": [
+        { "en": "Do you speak English?", "nl": "Spreek je Engels?" }
+      ],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to speak"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "spreek / spreekt / spreken",
         "simple_past": "sprak",
-        "simple_past_plural": "spraken",
-        "past_participle": "gesproken"
-      },
-      "examples": [{ "nl": "Spreek je Engels?", "en": "Do you speak English?" }]
+        "past_participle": "gesproken",
+        "simple_past_plural": "spraken"
+      }
     },
     {
       "entry_id": "a1-029-eten",
       "dutch_lemma": "eten",
       "part_of_speech": "verb",
+      "translations": { "en": ["to eat"] },
+      "examples": [
+        { "en": "We eat at six o'clock.", "nl": "We eten om zes uur." }
+      ],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to eat"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "eet / eet / eten",
         "simple_past": "at",
-        "simple_past_plural": "aten",
-        "past_participle": "gegeten"
-      },
-      "examples": [
-        { "nl": "We eten om zes uur.", "en": "We eat at six o'clock." }
-      ]
+        "past_participle": "gegeten",
+        "simple_past_plural": "aten"
+      }
     },
     {
       "entry_id": "a1-030-drinken",
       "dutch_lemma": "drinken",
       "part_of_speech": "verb",
+      "translations": { "en": ["to drink"] },
+      "examples": [{ "en": "He drinks tea.", "nl": "Hij drinkt thee." }],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to drink"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "drink / drinkt / drinken",
         "simple_past": "dronk",
-        "simple_past_plural": "dronken",
-        "past_participle": "gedronken"
-      },
-      "examples": [{ "nl": "Hij drinkt thee.", "en": "He drinks tea." }]
+        "past_participle": "gedronken",
+        "simple_past_plural": "dronken"
+      }
     },
     {
       "entry_id": "a1-031-lezen",
       "dutch_lemma": "lezen",
       "part_of_speech": "verb",
+      "translations": { "en": ["to read"] },
+      "examples": [
+        { "en": "Do you read the newspaper?", "nl": "Lees je de krant?" }
+      ],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to read"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "lees / leest / lezen",
         "simple_past": "las",
-        "simple_past_plural": "lazen",
-        "past_participle": "gelezen"
-      },
-      "examples": [
-        { "nl": "Lees je de krant?", "en": "Do you read the newspaper?" }
-      ]
+        "past_participle": "gelezen",
+        "simple_past_plural": "lazen"
+      }
     },
     {
       "entry_id": "a1-032-schrijven",
       "dutch_lemma": "schrijven",
       "part_of_speech": "verb",
+      "translations": { "en": ["to write"] },
+      "examples": [
+        { "en": "I am writing a message.", "nl": "Ik schrijf een bericht." }
+      ],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to write"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "schrijf / schrijft / schrijven",
         "simple_past": "schreef",
-        "simple_past_plural": "schreven",
-        "past_participle": "geschreven"
-      },
-      "examples": [
-        { "nl": "Ik schrijf een bericht.", "en": "I am writing a message." }
-      ]
+        "past_participle": "geschreven",
+        "simple_past_plural": "schreven"
+      }
     },
     {
       "entry_id": "a1-033-kopen",
       "dutch_lemma": "kopen",
       "part_of_speech": "verb",
+      "translations": { "en": ["to buy"] },
+      "examples": [{ "en": "I buy bread.", "nl": "Ik koop brood." }],
       "is_irregular": true,
       "register": "neutral",
-      "translations": { "en": ["to buy"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "koop / koopt / kopen",
         "simple_past": "kocht",
-        "simple_past_plural": "kochten",
-        "past_participle": "gekocht"
-      },
-      "examples": [{ "nl": "Ik koop brood.", "en": "I buy bread." }]
+        "past_participle": "gekocht",
+        "simple_past_plural": "kochten"
+      }
     },
     {
       "entry_id": "a1-034-betalen",
       "dutch_lemma": "betalen",
       "part_of_speech": "verb",
-      "register": "neutral",
       "translations": { "en": ["to pay"] },
+      "examples": [
+        { "en": "Can I pay by card?", "nl": "Kan ik met pin betalen?" }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "betaal / betaalt / betalen",
         "simple_past": "betaalde",
-        "simple_past_plural": "betaalden",
-        "past_participle": "betaald"
-      },
-      "examples": [
-        { "nl": "Kan ik met pin betalen?", "en": "Can I pay by card?" }
-      ]
+        "past_participle": "betaald",
+        "simple_past_plural": "betaalden"
+      }
     },
     {
       "entry_id": "a1-035-opstaan",
       "dutch_lemma": "opstaan",
       "part_of_speech": "verb",
+      "translations": { "en": ["to get up", "to stand up"] },
+      "examples": [
+        { "en": "I get up at seven o'clock.", "nl": "Ik sta om zeven uur op." }
+      ],
       "is_irregular": true,
       "is_separable": true,
       "prefix_part": "op",
       "root_verb": "staan",
       "register": "neutral",
-      "translations": { "en": ["to get up", "to stand up"] },
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "sta op / staat op / staan op",
         "simple_past": "stond op",
-        "simple_past_plural": "stonden op",
-        "past_participle": "opgestaan"
-      },
-      "examples": [
-        { "nl": "Ik sta om zeven uur op.", "en": "I get up at seven o'clock." }
-      ]
+        "past_participle": "opgestaan",
+        "simple_past_plural": "stonden op"
+      }
     },
     {
-      "entry_id": "a1-036-wachten-op",
+      "entry_id": "a1-036-wachten",
       "dutch_lemma": "wachten",
       "part_of_speech": "verb",
-      "preposition": "op",
-      "register": "neutral",
       "translations": { "en": ["to wait for"] },
+      "examples": [
+        { "en": "I am waiting for the bus.", "nl": "Ik wacht op de bus." }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "wacht / wacht / wachten",
         "simple_past": "wachtte",
-        "simple_past_plural": "wachtten",
-        "past_participle": "gewacht"
+        "past_participle": "gewacht",
+        "simple_past_plural": "wachtten"
       },
-      "examples": [
-        { "nl": "Ik wacht op de bus.", "en": "I am waiting for the bus." }
-      ]
+      "preposition": "op"
     },
     {
-      "entry_id": "a1-037-houden-van",
+      "entry_id": "a1-037-houden",
       "dutch_lemma": "houden",
       "part_of_speech": "verb",
-      "is_irregular": true,
-      "preposition": "van",
-      "register": "neutral",
       "translations": { "en": ["to like", "to love"] },
+      "examples": [{ "en": "We like music.", "nl": "Wij houden van muziek." }],
+      "is_irregular": true,
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "houd / houdt / houden",
         "simple_past": "hield",
-        "simple_past_plural": "hielden",
-        "past_participle": "gehouden"
+        "past_participle": "gehouden",
+        "simple_past_plural": "hielden"
       },
-      "examples": [{ "nl": "Wij houden van muziek.", "en": "We like music." }]
+      "preposition": "van"
     },
     {
-      "entry_id": "a1-038-luisteren-naar",
+      "entry_id": "a1-038-luisteren",
       "dutch_lemma": "luisteren",
       "part_of_speech": "verb",
-      "preposition": "naar",
-      "register": "neutral",
       "translations": { "en": ["to listen to"] },
+      "examples": [
+        { "en": "I listen to the radio.", "nl": "Ik luister naar de radio." }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": [],
       "conjugation": {
         "present": "luister / luistert / luisteren",
         "simple_past": "luisterde",
-        "simple_past_plural": "luisterden",
-        "past_participle": "geluisterd"
+        "past_participle": "geluisterd",
+        "simple_past_plural": "luisterden"
+      },
+      "preposition": "naar"
+    },
+    {
+      "entry_id": "a1-055-blijven",
+      "dutch_lemma": "blijven",
+      "part_of_speech": "verb",
+      "translations": {
+        "en": ["to stay", "to remain"],
+        "ru": ["оставаться", "пребывать"]
       },
       "examples": [
-        { "nl": "Ik luister naar de radio.", "en": "I listen to the radio." }
-      ]
+        {
+          "en": "I'd rather stay home tonight.",
+          "nl": "Ik blijf liever thuis vanavond.",
+          "ru": "Я предпочитаю остаться дома сегодня вечером."
+        },
+        {
+          "en": "He remained calm, despite the chaos.",
+          "nl": "Hij bleef kalm, ondanks de chaos.",
+          "ru": "Он оставался спокойным, несмотря на хаос."
+        }
+      ],
+      "is_irregular": true,
+      "synonyms": ["verblijven", "doorgaan", "resten"],
+      "antonyms": ["weggaan", "vertrekken", "ophouden"],
+      "conjugation": {
+        "present": "blijf",
+        "simple_past": "bleef",
+        "past_participle": "gebleven",
+        "simple_past_plural": "bleven"
+      }
+    },
+    {
+      "entry_id": "a1-056-brengen",
+      "dutch_lemma": "brengen",
+      "part_of_speech": "verb",
+      "translations": {
+        "en": ["to bring", "to take"],
+        "ru": ["приносить", "отвозить"]
+      },
+      "examples": [
+        {
+          "en": "I will bring the books to the library tomorrow.",
+          "nl": "Ik zal de boeken morgen naar de bibliotheek brengen.",
+          "ru": "Я принесу книги в библиотеку завтра."
+        },
+        {
+          "en": "Can you take the children to school?",
+          "nl": "Kun je de kinderen naar school brengen?",
+          "ru": "Можешь отвезти детей в школу?"
+        }
+      ],
+      "is_irregular": true,
+      "synonyms": ["voeren", "meenemen", "overhandigen"],
+      "antonyms": ["halen", "wegnemen", "ontvangen"],
+      "conjugation": {
+        "present": "breng",
+        "simple_past": "bracht",
+        "past_participle": "gebracht",
+        "simple_past_plural": "brachten"
+      }
+    },
+    {
+      "entry_id": "a1-057-denken",
+      "dutch_lemma": "denken",
+      "part_of_speech": "verb",
+      "translations": {
+        "en": ["to think", "to believe"],
+        "ru": ["думать", "мыслить"]
+      },
+      "examples": [
+        {
+          "en": "I think it will be nice weather tomorrow.",
+          "nl": "Ik denk dat het morgen mooi weer wordt.",
+          "ru": "Я думаю, что завтра будет хорошая погода."
+        },
+        {
+          "en": "I used to think flying was impossible.",
+          "nl": "Vroeger dacht ik dat vliegen onmogelijk was.",
+          "ru": "Раньше я думал, что летать невозможно."
+        }
+      ],
+      "is_irregular": true,
+      "synonyms": ["overwegen", "nadenken", "menen"],
+      "antonyms": [],
+      "conjugation": {
+        "present": "denk",
+        "simple_past": "dacht",
+        "past_participle": "gedacht"
+      }
+    },
+    {
+      "entry_id": "a1-058-koken",
+      "dutch_lemma": "koken",
+      "part_of_speech": "verb",
+      "translations": {
+        "en": ["to cook", "to boil"],
+        "ru": ["готовить", "варить"]
+      },
+      "examples": [
+        {
+          "en": "I cook a healthy meal for my family every evening.",
+          "nl": "Ik kook elke avond een gezonde maaltijd voor mijn gezin.",
+          "ru": "Я готовлю здоровую еду для своей семьи каждый вечер."
+        },
+        {
+          "en": "The water is already boiling; you can add the pasta.",
+          "nl": "Het water kookt al, je kunt de pasta toevoegen.",
+          "ru": "Вода уже кипит, можешь добавлять пасту."
+        }
+      ],
+      "register": "neutral",
+      "synonyms": ["bereiden", "klaarmaken", "zieden"],
+      "antonyms": [],
+      "conjugation": {
+        "present": "kook",
+        "simple_past": "kookte",
+        "past_participle": "gekookt",
+        "simple_past_plural": "kookten"
+      }
+    },
+    {
+      "entry_id": "a1-059-slapen",
+      "dutch_lemma": "slapen",
+      "part_of_speech": "verb",
+      "translations": {
+        "en": ["to sleep", "to be asleep"],
+        "ru": ["спать", "находиться в состоянии сна"]
+      },
+      "examples": [
+        {
+          "en": "I usually sleep eight hours a night.",
+          "nl": "Ik slaap meestal acht uur per nacht.",
+          "ru": "Обычно я сплю по восемь часов в сутки."
+        },
+        {
+          "en": "Last night I slept very deeply because of the fatigue.",
+          "nl": "Gisteravond sliep ik heel diep door de vermoeidheid.",
+          "ru": "Прошлой ночью я спал очень крепко из-за усталости."
+        }
+      ],
+      "is_irregular": true,
+      "register": "neutral",
+      "synonyms": ["rusten", "pitten", "maffen"],
+      "antonyms": ["waken", "wakker zijn"],
+      "conjugation": {
+        "present": "slaap",
+        "simple_past": "sliep",
+        "past_participle": "geslapen",
+        "simple_past_plural": "sliepen"
+      }
+    },
+    {
+      "entry_id": "a1-060-zien",
+      "dutch_lemma": "zien",
+      "part_of_speech": "verb",
+      "translations": {
+        "en": ["to see", "to perceive"],
+        "ru": ["видеть", "воспринимать"]
+      },
+      "examples": [
+        {
+          "en": "I see a bird in the tree.",
+          "nl": "Ik zie een vogel in de boom.",
+          "ru": "Я вижу птицу на дереве."
+        },
+        {
+          "en": "I saw him walking in the city yesterday.",
+          "nl": "Ik zag hem gisteren in de stad lopen.",
+          "ru": "Я видел, как он вчера гулял в городе."
+        }
+      ],
+      "is_irregular": true,
+      "synonyms": ["waarnemen", "kijken", "aanschouwen"],
+      "antonyms": ["missen", "negeren", "over het hoofd zien"],
+      "conjugation": {
+        "present": "zie",
+        "simple_past": "zag",
+        "past_participle": "gezien",
+        "simple_past_plural": "zagen"
+      }
     },
     {
       "entry_id": "a1-039-goed",
       "dutch_lemma": "goed",
       "part_of_speech": "adjective",
-      "register": "neutral",
       "translations": { "en": ["good", "well"] },
-      "examples": [{ "nl": "Het gaat goed.", "en": "It is going well." }]
+      "examples": [{ "en": "It is going well.", "nl": "Het gaat goed." }],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-040-groot",
       "dutch_lemma": "groot",
       "part_of_speech": "adjective",
-      "register": "neutral",
       "translations": { "en": ["big", "large"] },
       "examples": [
-        { "nl": "Dit is een groot huis.", "en": "This is a large house." }
-      ]
+        { "en": "This is a large house.", "nl": "Dit is een groot huis." }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-041-klein",
       "dutch_lemma": "klein",
       "part_of_speech": "adjective",
-      "register": "neutral",
       "translations": { "en": ["small", "little"] },
       "examples": [
         {
-          "nl": "We wonen in een klein dorp.",
-          "en": "We live in a small village."
+          "en": "We live in a small village.",
+          "nl": "We wonen in een klein dorp."
         }
-      ]
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-042-nieuw",
       "dutch_lemma": "nieuw",
       "part_of_speech": "adjective",
-      "register": "neutral",
       "translations": { "en": ["new"] },
       "examples": [
-        { "nl": "Zij heeft een nieuwe baan.", "en": "She has a new job." }
-      ]
+        { "en": "She has a new job.", "nl": "Zij heeft een nieuwe baan." }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-043-oud",
       "dutch_lemma": "oud",
       "part_of_speech": "adjective",
-      "register": "neutral",
       "translations": { "en": ["old"] },
-      "examples": [{ "nl": "Hoe oud ben je?", "en": "How old are you?" }]
+      "examples": [{ "en": "How old are you?", "nl": "Hoe oud ben je?" }],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-044-mooi",
       "dutch_lemma": "mooi",
       "part_of_speech": "adjective",
-      "register": "neutral",
       "translations": { "en": ["beautiful", "nice"] },
       "examples": [
-        { "nl": "Wat een mooie dag!", "en": "What a beautiful day!" }
-      ]
+        { "en": "What a beautiful day!", "nl": "Wat een mooie dag!" }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-045-snel",
       "dutch_lemma": "snel",
       "part_of_speech": "adjective",
-      "register": "neutral",
       "translations": { "en": ["fast", "quick"] },
-      "examples": [{ "nl": "De trein is snel.", "en": "The train is fast." }]
+      "examples": [{ "en": "The train is fast.", "nl": "De trein is snel." }],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-046-graag",
       "dutch_lemma": "graag",
       "part_of_speech": "adverb",
-      "register": "neutral",
       "translations": { "en": ["gladly", "like to"] },
       "examples": [
-        { "nl": "Ik drink graag koffie.", "en": "I like drinking coffee." }
-      ]
+        { "en": "I like drinking coffee.", "nl": "Ik drink graag koffie." }
+      ],
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-047-goedemorgen",
       "dutch_lemma": "goedemorgen",
       "part_of_speech": "interjection",
-      "is_expression": true,
-      "expression_type": "interjection",
-      "register": "neutral",
       "translations": { "en": ["good morning"] },
       "examples": [
         {
-          "nl": "Goedemorgen, hoe gaat het?",
-          "en": "Good morning, how are you?"
+          "en": "Good morning, how are you?",
+          "nl": "Goedemorgen, hoe gaat het?"
         }
-      ]
+      ],
+      "is_expression": true,
+      "expression_type": "interjection",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-048-dank-je-wel",
       "dutch_lemma": "dank je wel",
       "part_of_speech": "expression",
+      "translations": { "en": ["thank you"] },
+      "examples": [
+        { "en": "Thank you for your help.", "nl": "Dank je wel voor je hulp." }
+      ],
       "is_expression": true,
       "expression_type": "fixed_expression",
       "register": "informal",
-      "translations": { "en": ["thank you"] },
-      "examples": [
-        { "nl": "Dank je wel voor je hulp.", "en": "Thank you for your help." }
-      ]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-049-alsjeblieft",
       "dutch_lemma": "alsjeblieft",
       "part_of_speech": "interjection",
+      "translations": { "en": ["please", "here you are"] },
+      "examples": [
+        { "en": "A coffee, please.", "nl": "Een koffie, alsjeblieft." }
+      ],
       "is_expression": true,
       "expression_type": "interjection",
       "register": "informal",
-      "translations": { "en": ["please", "here you are"] },
-      "examples": [
-        { "nl": "Een koffie, alsjeblieft.", "en": "A coffee, please." }
-      ]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-050-tot-ziens",
       "dutch_lemma": "tot ziens",
       "part_of_speech": "expression",
-      "is_expression": true,
-      "expression_type": "fixed_expression",
-      "register": "neutral",
       "translations": { "en": ["goodbye", "see you"] },
       "examples": [
         {
-          "nl": "Tot ziens en fijne dag!",
-          "en": "Goodbye and have a nice day!"
+          "en": "Goodbye and have a nice day!",
+          "nl": "Tot ziens en fijne dag!"
         }
-      ]
+      ],
+      "is_expression": true,
+      "expression_type": "fixed_expression",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-051-hoe-gaat-het",
       "dutch_lemma": "hoe gaat het?",
-      "dutch_original": "Hoe gaat het?",
       "part_of_speech": "expression",
+      "translations": { "en": ["how are you?", "how is it going?"] },
+      "examples": [
+        { "en": "Hello, how are you?", "nl": "Hallo, hoe gaat het?" }
+      ],
+      "dutch_original": "Hoe gaat het?",
       "is_expression": true,
       "expression_type": "fixed_expression",
       "register": "neutral",
-      "translations": { "en": ["how are you?", "how is it going?"] },
-      "examples": [
-        { "nl": "Hallo, hoe gaat het?", "en": "Hello, how are you?" }
-      ]
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-052-ik-begrijp-het-niet",
       "dutch_lemma": "ik begrijp het niet",
-      "dutch_original": "Ik begrijp het niet.",
       "part_of_speech": "expression",
-      "is_expression": true,
-      "expression_type": "fixed_expression",
-      "register": "neutral",
       "translations": { "en": ["I do not understand"] },
       "examples": [
         {
-          "nl": "Sorry, ik begrijp het niet.",
-          "en": "Sorry, I do not understand."
+          "en": "Sorry, I do not understand.",
+          "nl": "Sorry, ik begrijp het niet."
         }
-      ]
+      ],
+      "dutch_original": "Ik begrijp het niet.",
+      "is_expression": true,
+      "expression_type": "fixed_expression",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     },
     {
       "entry_id": "a1-053-hoeveel-kost-dit",
       "dutch_lemma": "hoeveel kost dit?",
-      "dutch_original": "Hoeveel kost dit?",
       "part_of_speech": "expression",
-      "is_expression": true,
-      "expression_type": "fixed_expression",
-      "register": "neutral",
       "translations": { "en": ["how much does this cost?"] },
       "examples": [
         {
-          "nl": "Pardon, hoeveel kost dit?",
-          "en": "Excuse me, how much does this cost?"
+          "en": "Excuse me, how much does this cost?",
+          "nl": "Pardon, hoeveel kost dit?"
         }
-      ]
+      ],
+      "dutch_original": "Hoeveel kost dit?",
+      "is_expression": true,
+      "expression_type": "fixed_expression",
+      "register": "neutral",
+      "synonyms": [],
+      "antonyms": []
     }
   ]
 }

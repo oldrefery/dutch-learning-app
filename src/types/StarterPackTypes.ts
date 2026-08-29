@@ -24,7 +24,11 @@ export interface StarterPackLicense {
 }
 
 export interface StarterPackProvenance {
-  origin: 'original-project-content'
+  origin: 'original-project-content' | 'existing-project-library'
+  source_snapshot_at?: string
+  source_card_count?: number
+  source_unique_semantic_count?: number
+  selection_method?: string
   notes: string
   excluded_sources: string[]
 }

@@ -29,7 +29,7 @@ appId: ${APP_ID}
 
 - assertVisible: 'Dutch A1 Essentials'
 - assertVisible: 'Development preview'
-- assertVisible: '53 of 53 words selected'
+- assertVisible: '[0-9]+ of 60 words selected.*'
 
 - scrollUntilVisible:
     element:
@@ -40,10 +40,10 @@ appId: ${APP_ID}
 - runScript: scripts/wait.js
 - scrollUntilVisible:
     element:
-      id: 'import-word-a1-001-huis'
+      id: 'import-word-a1-054-adres'
     direction: DOWN
 - tapOn:
-    id: 'import-word-a1-001-huis'
+    id: 'import-word-a1-054-adres'
 - extendedWaitUntil:
     visible:
       id: 'starter-pack-import-button'

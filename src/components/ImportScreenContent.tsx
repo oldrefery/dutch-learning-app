@@ -55,7 +55,9 @@ export function ImportScreenContent({
         <ImportCollectionHeader
           sharedData={sharedData}
           selectedCount={selectedCount}
-          totalCount={wordSelections.length}
+          totalCount={
+            wordSelections.length + (hideDuplicates ? duplicateCount : 0)
+          }
           duplicateCount={duplicateCount}
         />
 

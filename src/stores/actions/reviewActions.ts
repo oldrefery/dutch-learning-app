@@ -155,6 +155,7 @@ export const createReviewActions = (
   submitReviewAssessment: async (assessment: ReviewAssessment) => {
     try {
       const { reviewSession, currentWord } = get()
+
       if (!reviewSession || !currentWord) {
         logWarning('Missing session or word data', {}, 'review')
         return

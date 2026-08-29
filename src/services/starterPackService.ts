@@ -12,6 +12,7 @@ import type { ImportPreviewData, ImportableWord } from '@/types/ImportTypes'
 
 const OFFICIAL_PACK_MIN_ENTRIES = 50
 const OFFICIAL_PACK_MAX_ENTRIES = 100
+export const OFFICIAL_DUTCH_A1_PACK_SIZE = dutchA1PackAsset.entries.length
 const MUST_BE_OBJECT = 'must be an object'
 const MUST_BE_NON_EMPTY_STRING = 'must be a non-empty string'
 const MUST_BE_NULLABLE_STRING = 'must be a non-empty string or null'
@@ -303,11 +304,14 @@ const validateProvenance = (
     addIssue(issues, 'provenance', MUST_BE_OBJECT)
     return
   }
-  if (value.origin !== 'original-project-content') {
+  if (
+    value.origin !== 'original-project-content' &&
+    value.origin !== 'existing-project-library'
+  ) {
     addIssue(
       issues,
       'provenance.origin',
-      'must identify original project content'
+      'must identify an approved project content source'
     )
   }
   if (!isNonEmptyString(value.notes)) {
@@ -319,6 +323,23 @@ const validateProvenance = (
       'provenance.excluded_sources',
       'must list excluded competitor and community-deck sources'
     )
+  }
+
+  if (value.origin === 'existing-project-library') {
+    ;['source_snapshot_at', 'selection_method'].forEach(field => {
+      if (!isNonEmptyString(value[field])) {
+        addIssue(issues, `provenance.${field}`, MUST_BE_NON_EMPTY_STRING)
+      }
+    })
+    ;['source_card_count', 'source_unique_semantic_count'].forEach(field => {
+      if (
+        typeof value[field] !== 'number' ||
+        !Number.isInteger(value[field]) ||
+        value[field] <= 0
+      ) {
+        addIssue(issues, `provenance.${field}`, 'must be a positive integer')
+      }
+    })
   }
 }
 

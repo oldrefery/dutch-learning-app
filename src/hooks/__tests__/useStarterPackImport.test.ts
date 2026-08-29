@@ -108,8 +108,8 @@ describe('useStarterPackImport', () => {
   it('previews offline content without mutating the library', async () => {
     const { result } = await renderAndWait()
 
-    expect(result.current.previewData?.words).toHaveLength(53)
-    expect(result.current.selectedCount).toBe(53)
+    expect(result.current.previewData?.words).toHaveLength(60)
+    expect(result.current.selectedCount).toBe(60)
     expect(storeState.createNewCollection).not.toHaveBeenCalled()
     expect(storeState.addWordsToCollection).not.toHaveBeenCalled()
   })
@@ -163,8 +163,8 @@ describe('useStarterPackImport', () => {
     const { result } = await renderAndWait()
 
     expect(result.current.duplicateCount).toBe(1)
-    expect(result.current.wordSelections).toHaveLength(52)
-    expect(result.current.selectedCount).toBe(52)
+    expect(result.current.wordSelections).toHaveLength(59)
+    expect(result.current.selectedCount).toBe(59)
   })
 
   it('reports a collection creation failure without completing the import', async () => {

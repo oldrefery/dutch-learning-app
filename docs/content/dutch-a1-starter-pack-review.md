@@ -22,6 +22,8 @@ For every entry, confirm all applicable items:
 - Verbs have correct principal forms, separable parts, and fixed prepositions.
 - Register and expression metadata match normal contemporary usage.
 - English translations cover the intended meaning without misleading senses.
+- When a database card has broader senses, the retained first two translations
+  and examples are the most useful ones for an A1 learner.
 - Dutch examples are natural, grammatical, and appropriate for A1 learners.
 - English example translations accurately match the Dutch examples.
 - The entry is useful at A1 level and does not duplicate another semantic card.
@@ -32,7 +34,7 @@ technical validation after editing.
 
 ## Approval procedure
 
-When all 53 entries pass review:
+When all 60 entries pass review:
 
 1. Set `content_review.status` to `approved`.
 2. Set `content_review.reviewed_by` to the reviewer's name or stable project

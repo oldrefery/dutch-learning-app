@@ -8,12 +8,18 @@ The roadmap requires an offline starter pack that gives a new user an
 immediate review queue while preserving the existing rich Dutch word model,
 semantic duplicate handling, selective import, and explicit user consent.
 
-The content is original project material. It must not be presented as
-language-reviewed until a human reviewer has checked every entry.
+The content is a curated snapshot of linguistic fields from the existing
+project word library. It must not be presented as language-reviewed until a
+human reviewer has checked every selected entry.
 
 ## Decision
 
 - Ship one versioned JSON manifest as a bundled application asset.
+- Curate 60 high-value A1 concepts from the complete existing project library.
+- When duplicate semantic cards exist, deterministically select the most
+  complete and concise record rather than the record with the most senses.
+- Keep at most two translations, two examples, and three related words per
+  field so database richness does not overwhelm an A1 learner.
 - Validate the complete manifest at runtime before showing or importing it.
 - Reuse the existing import preview, target selector, selection list, and a
   shared pure semantic-duplicate utility.
@@ -27,6 +33,8 @@ language-reviewed until a human reviewer has checked every entry.
 - Keep the manifest review status `pending` until a human reviewer supplies
   their name and review date. Pending content may be imported in development
   builds for QA, but production import remains disabled.
+- Keep database access in a development-only generator. The application uses
+  the generated asset and remains fully offline at runtime.
 
 ## Alternatives Considered
 

@@ -13,6 +13,7 @@ import { TextThemed } from '@/components/Themed'
 import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
+import { OFFICIAL_DUTCH_A1_PACK_SIZE } from '@/services/starterPackService'
 import { collectionSharingService } from '@/services/collectionSharingService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { Sentry } from '@/lib/sentry'
@@ -184,7 +185,8 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
               lightColor={Colors.neutral[600]}
               darkColor={Colors.dark.textSecondary}
             >
-              Preview 53 built-in words — works offline
+              Preview {OFFICIAL_DUTCH_A1_PACK_SIZE} built-in words — works
+              offline
             </TextThemed>
           </View>
           <Ionicons

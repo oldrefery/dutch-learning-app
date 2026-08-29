@@ -30,6 +30,7 @@
     "update:production": "bash scripts/eas-update-production.sh",
     "sourcemaps:build": "bash scripts/upload-sourcemaps.sh",
     "sourcemaps:update": "bash scripts/upload-sourcemaps.sh --update-dist dist",
+    "starter-pack:generate": "node scripts/generate-starter-pack.js",
     "complexity": "eslint . --ext .ts,.tsx,.js,.jsx --format stylish",
     "complexity:strict": "eslint . --ext .ts,.tsx,.js,.jsx --rule 'sonarjs/cognitive-complexity: [error, 10]'",
     "complexity:report": "eslint . --ext .ts,.tsx,.js,.jsx --format json --output-file reports/complexity-report.json",
