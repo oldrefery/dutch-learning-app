@@ -1,0 +1,935 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`dark review mode snapshots renders Dutch Production 1`] = `
+<View
+  accessibilityLabel="Translate into Dutch: house"
+  accessible={true}
+  style={
+    [
+      {
+        "backgroundColor": "#1C1C1E",
+      },
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 32,
+        "paddingBottom": 110,
+      },
+    ]
+  }
+  testID="dutch-production-card"
+>
+  <Text
+    style={
+      [
+        {
+          "color": "rgba(255, 255, 255, 0.6)",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+          "marginBottom": 16,
+        },
+      ]
+    }
+  >
+    Translate into Dutch
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "color": "#E5E5E7",
+        },
+        {
+          "fontSize": 32,
+          "fontWeight": "700",
+          "lineHeight": 40,
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    house
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "color": "rgba(255, 255, 255, 0.6)",
+        },
+        {
+          "fontSize": 14,
+          "lineHeight": 20,
+          "marginTop": 24,
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    Say the Dutch word, then reveal the answer.
+  </Text>
+</View>
+`;
+
+exports[`dark review mode snapshots renders Meaning Recall 1`] = `
+<View
+  style={
+    {
+      "flex": 1,
+    }
+  }
+  testID="meaning-recall-card"
+>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#1C1C1E",
+        },
+        {
+          "alignItems": "center",
+          "borderRadius": 16,
+          "flex": 1,
+          "justifyContent": "center",
+          "overflow": "hidden",
+          "padding": 32,
+          "paddingBottom": 110,
+        },
+      ]
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "marginBottom": 16,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "fontSize": 32,
+              "fontWeight": "bold",
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        het 
+        huis
+      </Text>
+      <View />
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "marginBottom": 24,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "rgba(255, 255, 255, 0.6)",
+            },
+            {
+              "fontSize": 16,
+              "fontStyle": "italic",
+            },
+          ]
+        }
+      >
+        noun
+      </Text>
+    </View>
+    <Text
+      style={
+        [
+          {
+            "color": "rgba(255, 255, 255, 0.4)",
+          },
+          {
+            "fontSize": 14,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Tap to see translation
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`dark review mode snapshots renders Recognition 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#1C1C1E",
+      },
+      {
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 24,
+        "paddingBottom": 110,
+      },
+    ]
+  }
+  testID="recognition-card"
+>
+  <Text
+    style={
+      [
+        {
+          "color": "rgba(255, 255, 255, 0.6)",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+          "marginBottom": 8,
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    Choose the correct meaning
+  </Text>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "marginBottom": 24,
+      }
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 32,
+            "fontWeight": "700",
+            "lineHeight": 40,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      het huis
+    </Text>
+    <View />
+  </View>
+  <View
+    style={
+      {
+        "gap": 8,
+      }
+    }
+  >
+    <View
+      accessibilityHint="Selects this translation as your answer"
+      accessibilityLabel="house"
+      accessibilityRole="radio"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": false,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "justifyContent": "center",
+            "minHeight": 52,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+          },
+          {
+            "backgroundColor": "#2C2C2E",
+            "borderColor": "#374151",
+            "opacity": 1,
+          },
+        ]
+      }
+      testID="recognition-option-0"
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "fontSize": 16,
+              "fontWeight": "500",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        house
+      </Text>
+    </View>
+    <View
+      accessibilityHint="Selects this translation as your answer"
+      accessibilityLabel="table"
+      accessibilityRole="radio"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": false,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "justifyContent": "center",
+            "minHeight": 52,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+          },
+          {
+            "backgroundColor": "#2C2C2E",
+            "borderColor": "#374151",
+            "opacity": 1,
+          },
+        ]
+      }
+      testID="recognition-option-1"
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "fontSize": 16,
+              "fontWeight": "500",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        table
+      </Text>
+    </View>
+    <View
+      accessibilityHint="Selects this translation as your answer"
+      accessibilityLabel="chair"
+      accessibilityRole="radio"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": false,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "justifyContent": "center",
+            "minHeight": 52,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+          },
+          {
+            "backgroundColor": "#2C2C2E",
+            "borderColor": "#374151",
+            "opacity": 1,
+          },
+        ]
+      }
+      testID="recognition-option-2"
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "fontSize": 16,
+              "fontWeight": "500",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        chair
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`light review mode snapshots renders Dutch Production 1`] = `
+<View
+  accessibilityLabel="Translate into Dutch: house"
+  accessible={true}
+  style={
+    [
+      {
+        "backgroundColor": "#F2F2F7",
+      },
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 32,
+        "paddingBottom": 110,
+      },
+    ]
+  }
+  testID="dutch-production-card"
+>
+  <Text
+    style={
+      [
+        {
+          "color": "#4B5563",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+          "marginBottom": 16,
+        },
+      ]
+    }
+  >
+    Translate into Dutch
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "color": "#111827",
+        },
+        {
+          "fontSize": 32,
+          "fontWeight": "700",
+          "lineHeight": 40,
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    house
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "color": "#6B7280",
+        },
+        {
+          "fontSize": 14,
+          "lineHeight": 20,
+          "marginTop": 24,
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    Say the Dutch word, then reveal the answer.
+  </Text>
+</View>
+`;
+
+exports[`light review mode snapshots renders Meaning Recall 1`] = `
+<View
+  style={
+    {
+      "flex": 1,
+    }
+  }
+  testID="meaning-recall-card"
+>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#F2F2F7",
+        },
+        {
+          "alignItems": "center",
+          "borderRadius": 16,
+          "flex": 1,
+          "justifyContent": "center",
+          "overflow": "hidden",
+          "padding": 32,
+          "paddingBottom": 110,
+        },
+      ]
+    }
+  >
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "marginBottom": 16,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#374151",
+            },
+            {
+              "fontSize": 32,
+              "fontWeight": "bold",
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        het 
+        huis
+      </Text>
+      <View />
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "gap": 8,
+            "marginBottom": 24,
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#6B7280",
+            },
+            {
+              "fontSize": 16,
+              "fontStyle": "italic",
+            },
+          ]
+        }
+      >
+        noun
+      </Text>
+    </View>
+    <Text
+      style={
+        [
+          {
+            "color": "#9CA3AF",
+          },
+          {
+            "fontSize": 14,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      Tap to see translation
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`light review mode snapshots renders Recognition 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#F2F2F7",
+      },
+      {
+        "flex": 1,
+        "justifyContent": "center",
+        "padding": 24,
+        "paddingBottom": 110,
+      },
+    ]
+  }
+  testID="recognition-card"
+>
+  <Text
+    style={
+      [
+        {
+          "color": "#4B5563",
+        },
+        {
+          "fontSize": 16,
+          "lineHeight": 24,
+          "marginBottom": 8,
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    Choose the correct meaning
+  </Text>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "marginBottom": 24,
+      }
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 32,
+            "fontWeight": "700",
+            "lineHeight": 40,
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      het huis
+    </Text>
+    <View />
+  </View>
+  <View
+    style={
+      {
+        "gap": 8,
+      }
+    }
+  >
+    <View
+      accessibilityHint="Selects this translation as your answer"
+      accessibilityLabel="house"
+      accessibilityRole="radio"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": false,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "justifyContent": "center",
+            "minHeight": 52,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+          },
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E5E7EB",
+            "opacity": 1,
+          },
+        ]
+      }
+      testID="recognition-option-0"
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            {
+              "fontSize": 16,
+              "fontWeight": "500",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        house
+      </Text>
+    </View>
+    <View
+      accessibilityHint="Selects this translation as your answer"
+      accessibilityLabel="table"
+      accessibilityRole="radio"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": false,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "justifyContent": "center",
+            "minHeight": 52,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+          },
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E5E7EB",
+            "opacity": 1,
+          },
+        ]
+      }
+      testID="recognition-option-1"
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            {
+              "fontSize": 16,
+              "fontWeight": "500",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        table
+      </Text>
+    </View>
+    <View
+      accessibilityHint="Selects this translation as your answer"
+      accessibilityLabel="chair"
+      accessibilityRole="radio"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": false,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "justifyContent": "center",
+            "minHeight": 52,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+          },
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E5E7EB",
+            "opacity": 1,
+          },
+        ]
+      }
+      testID="recognition-option-2"
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            {
+              "fontSize": 16,
+              "fontWeight": "500",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        chair
+      </Text>
+    </View>
+  </View>
+</View>
+`;

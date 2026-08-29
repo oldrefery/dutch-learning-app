@@ -5,6 +5,7 @@
 
 import { createWordActions } from '../actions/wordActions'
 import { wordRepository } from '@/db/wordRepository'
+import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { Sentry } from '@/lib/sentry'
 import { wordService } from '@/lib/supabase'
 import { calculateNextReview } from '@/utils/srs'
@@ -12,8 +13,10 @@ import { logError } from '@/utils/logger'
 import type {
   AnalyzedWord,
   ApplicationState,
+  ReviewAssessment,
 } from '@/types/ApplicationStoreTypes'
 import type { Word } from '@/types/database'
+import { REVIEW_MODE, REVIEW_SCOPE } from '@/constants/ReviewConstants'
 
 jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
@@ -21,11 +24,17 @@ jest.mock('@/db/wordRepository', () => ({
     getWordBySemanticKey: jest.fn(),
     saveWords: jest.fn(),
     addWord: jest.fn(),
+    updateAnalyzedWord: jest.fn(),
     deleteWord: jest.fn(),
     updateWordProgress: jest.fn(),
     updateWordImage: jest.fn(),
     moveWordToCollection: jest.fn(),
     resetWordProgress: jest.fn(),
+  },
+}))
+jest.mock('@/db/reviewEventRepository', () => ({
+  reviewEventRepository: {
+    recordAssessment: jest.fn(),
   },
 }))
 jest.mock('@/lib/sentry', () => ({
@@ -43,6 +52,7 @@ jest.mock('@/utils/logger', () => ({
 }))
 jest.mock('@/lib/supabase', () => ({
   wordService: {
+    analyzeWord: jest.fn(),
     importWordsToCollection: jest.fn(),
   },
 }))
@@ -55,6 +65,7 @@ describe('wordActions', () => {
 
   const USER_ID = generateId('user')
   const WORD_ID = generateId('word')
+  const REVIEWED_AT = '2026-08-29T10:00:00.000Z'
   const COLLECTION_ID = generateId('collection')
   const UNAUTHENTICATED_ERROR_MSG = 'should set error if user not authenticated'
   const UNAUTHENTICATED_STATE = {
@@ -245,6 +256,10 @@ describe('wordActions', () => {
         is_reflexive: false,
         is_expression: false,
         is_separable: false,
+        usage_notes: {
+          summary: 'Use huis in everyday conversation.',
+          contrasts: [],
+        },
       }
       const currentWords = [createMockWord()]
       mockGet.mockReturnValue({
@@ -356,6 +371,10 @@ describe('wordActions', () => {
         is_reflexive: false,
         is_expression: false,
         is_separable: false,
+        usage_notes: {
+          summary: 'Use huis in everyday conversation.',
+          contrasts: [],
+        },
       }
       ;(wordRepository.addWord as jest.Mock).mockResolvedValue(undefined)
 
@@ -383,6 +402,7 @@ describe('wordActions', () => {
           easiness_factor: 2.5,
           last_reviewed_at: null,
           analysis_notes: null,
+          usage_notes: analyzedWord.usage_notes,
         })
       )
     })
@@ -425,6 +445,7 @@ describe('wordActions', () => {
           tts_url: null,
           last_reviewed_at: null,
           analysis_notes: null,
+          usage_notes: null,
         })
       )
       expect(wordRepository.addWord).toHaveBeenCalledWith(result)
@@ -473,7 +494,7 @@ describe('wordActions', () => {
   })
 
   describe('updateWordAfterReview', () => {
-    it('should update word progress in repository', async () => {
+    it('should atomically record word progress and review event', async () => {
       const mockWord = createMockWord({ word_id: WORD_ID })
       const currentWords = [mockWord]
       mockGet.mockReturnValue({
@@ -487,11 +508,18 @@ describe('wordActions', () => {
         easiness_factor: 2.6,
         next_review_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
       })
-      ;(wordRepository.updateWordProgress as jest.Mock).mockResolvedValue(
+      ;(reviewEventRepository.recordAssessment as jest.Mock).mockResolvedValue(
         undefined
       )
 
-      const assessment = { assessment: 4, rating: 4 }
+      const assessment = {
+        assessment: 4,
+        rating: 4,
+        reviewMode: 'recognition',
+        answeredCorrectly: true,
+        responseTime: 1200,
+        timestamp: new Date(REVIEWED_AT),
+      }
 
       await actions.updateWordAfterReview(WORD_ID, assessment as any)
 
@@ -503,13 +531,67 @@ describe('wordActions', () => {
           assessment: 4,
         })
       )
-      expect(wordRepository.updateWordProgress).toHaveBeenCalledWith(
-        WORD_ID,
-        USER_ID,
-        expect.objectContaining({
+      expect(reviewEventRepository.recordAssessment).toHaveBeenCalledWith({
+        progress: expect.objectContaining({
           interval_days: 3,
           repetition_count: 1,
           easiness_factor: 2.6,
+        }),
+        event: expect.objectContaining({
+          user_id: USER_ID,
+          word_id: WORD_ID,
+          review_mode: 'recognition',
+          answered_correctly: true,
+          response_time_ms: 1200,
+          previous_interval_days: 1,
+          next_interval_days: 3,
+          reviewed_at: REVIEWED_AT,
+        }),
+      })
+    })
+
+    it('should record the resolved per-word mode for an Adaptive session', async () => {
+      const mockWord = createMockWord({ word_id: WORD_ID })
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [mockWord],
+        error: null,
+        reviewSession: {
+          words: [mockWord],
+          currentIndex: 0,
+          completedCount: 0,
+          config: { mode: 'adaptive', scope: REVIEW_SCOPE.ALL_DUE },
+          adaptiveModeByWordId: {
+            [WORD_ID]: {
+              mode: REVIEW_MODE.DUTCH_PRODUCTION,
+              reason: 'promotion',
+              previousMode: REVIEW_MODE.MEANING_RECALL,
+            },
+          },
+        },
+      })
+      ;(calculateNextReview as jest.Mock).mockReturnValue({
+        interval_days: 3,
+        repetition_count: 1,
+        easiness_factor: 2.6,
+        next_review_date: '2026-09-01',
+      })
+      ;(reviewEventRepository.recordAssessment as jest.Mock).mockResolvedValue(
+        undefined
+      )
+      const assessment: ReviewAssessment = {
+        wordId: WORD_ID,
+        assessment: 'good',
+        timestamp: new Date(REVIEWED_AT),
+      }
+
+      await actions.updateWordAfterReview(WORD_ID, assessment)
+
+      expect(reviewEventRepository.recordAssessment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          event: expect.objectContaining({
+            review_mode: REVIEW_MODE.DUTCH_PRODUCTION,
+          }),
         })
       )
     })
@@ -532,7 +614,9 @@ describe('wordActions', () => {
         error: null,
       })
       const error = new Error('Update failed')
-      ;(wordRepository.updateWordProgress as jest.Mock).mockRejectedValue(error)
+      ;(reviewEventRepository.recordAssessment as jest.Mock).mockRejectedValue(
+        error
+      )
       ;(calculateNextReview as jest.Mock).mockReturnValue({
         interval_days: 1,
         repetition_count: 0,
@@ -914,6 +998,74 @@ describe('wordActions', () => {
     })
   })
 
+  describe('reanalyzeWord', () => {
+    it('should update the existing local word and preserve its progress', async () => {
+      const currentWord = createMockWord({
+        word_id: WORD_ID,
+        interval_days: 14,
+        repetition_count: 4,
+        easiness_factor: 2.8,
+      })
+      const analysis = {
+        dutch_lemma: 'wandelen',
+        part_of_speech: 'verb',
+        translations: { en: ['stroll'], ru: ['гулять'] },
+        examples: [{ nl: 'Ik wandel.', en: 'I walk.' }],
+        synonyms: ['lopen'],
+        antonyms: [],
+        usage_notes: {
+          summary: 'Wandelen usually suggests walking for pleasure.',
+          contrasts: [
+            {
+              term: 'lopen',
+              distinction: 'Lopen is the broader verb for walking or running.',
+            },
+          ],
+        },
+      }
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [currentWord],
+        error: null,
+      })
+      ;(wordService.analyzeWord as jest.Mock).mockResolvedValue({
+        data: analysis,
+      })
+      ;(wordRepository.updateAnalyzedWord as jest.Mock).mockImplementation(
+        async word => word
+      )
+
+      const result = await actions.reanalyzeWord(WORD_ID)
+
+      expect(wordService.analyzeWord).toHaveBeenCalledWith(
+        currentWord.dutch_lemma,
+        { forceRefresh: true }
+      )
+      expect(wordRepository.addWord).not.toHaveBeenCalled()
+      expect(wordRepository.updateAnalyzedWord).toHaveBeenCalledWith(
+        expect.objectContaining({
+          word_id: WORD_ID,
+          dutch_lemma: analysis.dutch_lemma,
+          translations: analysis.translations,
+          interval_days: 14,
+          repetition_count: 4,
+          easiness_factor: 2.8,
+          usage_notes: analysis.usage_notes,
+        })
+      )
+      expect(result).toEqual(
+        expect.objectContaining({
+          word_id: WORD_ID,
+          dutch_lemma: analysis.dutch_lemma,
+          interval_days: 14,
+        })
+      )
+      expect(mockSet).toHaveBeenCalledWith({
+        words: [expect.objectContaining({ word_id: WORD_ID })],
+      })
+    })
+  })
+
   describe('integration', () => {
     it('should provide all word action methods', () => {
       expect(actions).toHaveProperty('fetchWords')
@@ -925,6 +1077,7 @@ describe('wordActions', () => {
       expect(actions).toHaveProperty('moveWordToCollection')
       expect(actions).toHaveProperty('resetWordProgress')
       expect(actions).toHaveProperty('addWordsToCollection')
+      expect(actions).toHaveProperty('reanalyzeWord')
     })
   })
 })

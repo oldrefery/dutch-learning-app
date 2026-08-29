@@ -176,6 +176,28 @@ function RootLayoutNav() {
             options={{ headerShown: true }}
           />
           <Stack.Screen name="import/[token]" options={{ headerShown: true }} />
+          <Stack.Screen name="starter-pack" options={{ headerShown: true }} />
+          <Stack.Screen
+            name="batch-capture"
+            options={{
+              headerShown: true,
+              title: 'Batch Quick Capture',
+              headerBackTitle: 'Add Word',
+            }}
+          />
+          <Stack.Screen name="audio-review" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="learning-guide"
+            options={{
+              headerShown: true,
+              title: 'Learning Guide',
+              headerBackTitle: 'Back',
+            }}
+          />
+          <Stack.Screen
+            name="insights"
+            options={{ headerShown: true, title: 'Review Insights' }}
+          />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>
         <AppToast />

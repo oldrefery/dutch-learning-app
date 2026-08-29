@@ -3,9 +3,41 @@
  * Tests relative time formatting and date manipulation
  */
 
-import { formatRelativeTime } from '../dateUtils'
+import {
+  formatRelativeTime,
+  isDueOnLocalDate,
+  normalizeReviewDateToLocalKey,
+  toLocalDateKey,
+} from '../dateUtils'
+
+const LOCAL_TODAY = '2026-08-28'
 
 describe('dateUtils', () => {
+  describe('local review dates', () => {
+    it('should format a local calendar date without converting through UTC', () => {
+      const lateEvening = new Date(2026, 7, 28, 23, 59, 59)
+
+      expect(toLocalDateKey(lateEvening)).toBe(LOCAL_TODAY)
+    })
+
+    it('should keep date-only review values unchanged', () => {
+      expect(normalizeReviewDateToLocalKey(LOCAL_TODAY)).toBe(LOCAL_TODAY)
+    })
+
+    it('should not move tomorrow into the due queue late today', () => {
+      const lateToday = new Date(2026, 7, 28, 23, 59, 59)
+
+      expect(isDueOnLocalDate('2026-08-29', lateToday)).toBe(false)
+      expect(isDueOnLocalDate(LOCAL_TODAY, lateToday)).toBe(true)
+    })
+
+    it('should reject invalid or missing review dates', () => {
+      expect(normalizeReviewDateToLocalKey('not-a-date')).toBeNull()
+      expect(isDueOnLocalDate('', new Date(2026, 7, 28))).toBe(false)
+      expect(isDueOnLocalDate(null, new Date(2026, 7, 28))).toBe(false)
+    })
+  })
+
   describe('formatRelativeTime', () => {
     const ONE_HOUR_AGO = '1 hour ago'
 

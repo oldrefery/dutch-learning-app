@@ -10,10 +10,21 @@ import type {
   ReviewAssessment,
 } from '@/types/ApplicationStoreTypes'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
-import type { Word } from '@/types/database'
+import {
+  DEFAULT_REVIEW_SESSION_CONFIG,
+  REVIEW_MODE,
+  REVIEW_SCOPE,
+} from '@/constants/ReviewConstants'
+import type { Collection, Word } from '@/types/database'
+import { reviewEventRepository } from '@/db/reviewEventRepository'
 
 jest.mock('@/lib/sentry')
 jest.mock('@/utils/logger')
+jest.mock('@/db/reviewEventRepository', () => ({
+  reviewEventRepository: {
+    getRecentByWords: jest.fn().mockResolvedValue({}),
+  },
+}))
 
 describe('reviewActions', () => {
   // Helper to generate random IDs
@@ -58,6 +69,22 @@ describe('reviewActions', () => {
     analysis_notes: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    ...overrides,
+  })
+
+  const createMockCollection = (
+    overrides: Partial<Collection> = {}
+  ): Collection => ({
+    collection_id: 'collection-a',
+    user_id: USER_ID,
+    name: 'Collection A',
+    description: null,
+    updated_at: '2026-08-28T00:00:00.000Z',
+    created_at: '2026-08-28T00:00:00.000Z',
+    is_shared: false,
+    shared_with: null,
+    share_token: null,
+    shared_at: null,
     ...overrides,
   })
 
@@ -127,9 +154,103 @@ describe('reviewActions', () => {
           reviewSession: expect.objectContaining({
             words: expect.arrayContaining(mockWords),
             currentIndex: 0,
+            config: DEFAULT_REVIEW_SESSION_CONFIG,
           }),
           currentWord: mockWords[0],
           reviewLoading: false,
+        })
+      )
+    })
+
+    it('should resolve an Adaptive mode for every word from local history', async () => {
+      const mockWords = createReviewWordsWithToday()
+      ;(reviewEventRepository.getRecentByWords as jest.Mock).mockResolvedValue({
+        'word-1': [
+          {
+            event_id: 'event-1',
+            assessment: 'good',
+            review_mode: REVIEW_MODE.RECOGNITION,
+            answered_correctly: true,
+            reviewed_at: '2026-08-26T10:00:00.000Z',
+          },
+          {
+            event_id: 'event-2',
+            assessment: 'good',
+            review_mode: REVIEW_MODE.RECOGNITION,
+            answered_correctly: true,
+            reviewed_at: '2026-08-27T10:00:00.000Z',
+          },
+          {
+            event_id: 'event-3',
+            assessment: 'good',
+            review_mode: REVIEW_MODE.RECOGNITION,
+            answered_correctly: true,
+            reviewed_at: '2026-08-28T10:00:00.000Z',
+          },
+        ],
+        'word-2': [],
+      })
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        words: mockWords,
+        collections: [],
+        reviewSession: null,
+        currentWord: null,
+        error: null,
+      }))
+
+      await actions.startReviewSession({
+        mode: 'adaptive',
+        scope: REVIEW_SCOPE.ALL_DUE,
+      })
+
+      expect(reviewEventRepository.getRecentByWords).toHaveBeenCalledWith(
+        USER_ID,
+        ['word-1', 'word-2'],
+        100
+      )
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            adaptiveModeByWordId: {
+              'word-1': {
+                mode: REVIEW_MODE.MEANING_RECALL,
+                reason: 'promotion',
+                previousMode: REVIEW_MODE.RECOGNITION,
+              },
+              'word-2': {
+                mode: REVIEW_MODE.RECOGNITION,
+                reason: 'default',
+                previousMode: null,
+              },
+            },
+          }),
+        })
+      )
+    })
+
+    it('should not read or overwrite Adaptive state for a manual session', async () => {
+      const mockWords = createReviewWordsWithToday()
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        words: mockWords,
+        collections: [],
+        reviewSession: null,
+        currentWord: null,
+        error: null,
+      }))
+
+      await actions.startReviewSession({
+        mode: REVIEW_MODE.DUTCH_PRODUCTION,
+        scope: REVIEW_SCOPE.ALL_DUE,
+      })
+
+      expect(reviewEventRepository.getRecentByWords).not.toHaveBeenCalled()
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            adaptiveModeByWordId: {},
+          }),
         })
       )
     })
@@ -272,6 +393,82 @@ describe('reviewActions', () => {
                 user_id: USER_ID,
               }),
             ]),
+          }),
+        })
+      )
+    })
+
+    it('should filter a collection-scoped session', async () => {
+      const today = new Date().toISOString().split('T')[0]
+      const collection = createMockCollection()
+      const mockWords = [
+        createMockWord({
+          word_id: 'collection-word',
+          collection_id: collection.collection_id,
+          next_review_date: today,
+        }),
+        createMockWord({
+          word_id: 'other-word',
+          collection_id: 'other-collection',
+          next_review_date: today,
+        }),
+      ]
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        words: mockWords,
+        collections: [collection],
+        reviewSession: null,
+        currentWord: null,
+        error: null,
+      }))
+
+      await actions.startReviewSession({
+        mode: REVIEW_MODE.MEANING_RECALL,
+        scope: REVIEW_SCOPE.COLLECTION_DUE,
+        collectionId: collection.collection_id,
+      })
+
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            words: [expect.objectContaining({ word_id: 'collection-word' })],
+            config: {
+              mode: REVIEW_MODE.MEANING_RECALL,
+              scope: REVIEW_SCOPE.COLLECTION_DUE,
+              collectionId: collection.collection_id,
+            },
+          }),
+        })
+      )
+    })
+
+    it('should set an explicit error for a deleted collection', async () => {
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        words: [],
+        collections: [],
+        reviewSession: null,
+        currentWord: null,
+        error: null,
+      }))
+
+      await actions.startReviewSession({
+        mode: REVIEW_MODE.MEANING_RECALL,
+        scope: REVIEW_SCOPE.COLLECTION_DUE,
+        collectionId: 'deleted-collection',
+      })
+
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: null,
+          currentWord: null,
+          reviewLoading: false,
+          error: expect.objectContaining({
+            category: 'VALIDATION',
+            context: expect.objectContaining({
+              reason: 'collection-not-found',
+              collectionId: 'deleted-collection',
+            }),
           }),
         })
       )
@@ -438,6 +635,38 @@ describe('reviewActions', () => {
         expect.objectContaining({
           assessment: SRS_ASSESSMENT.GOOD,
           wordId: 'word-1',
+        })
+      )
+    })
+
+    it('should not advance when the atomic assessment write fails', async () => {
+      const mockWords = [
+        createMockWord({ word_id: 'word-1' }),
+        createMockWord({ word_id: 'word-2' }),
+      ]
+      const reviewSession = {
+        words: mockWords,
+        currentIndex: 0,
+        completedCount: 0,
+      }
+
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        reviewSession,
+        currentWord: mockWords[0],
+        words: mockWords,
+        updateWordAfterReview: jest.fn().mockResolvedValue(false),
+      }))
+
+      await actions.submitReviewAssessment({
+        wordId: 'word-1',
+        assessment: SRS_ASSESSMENT.GOOD,
+        timestamp: new Date(),
+      })
+
+      expect(mockSet).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({ currentIndex: 1 }),
         })
       )
     })

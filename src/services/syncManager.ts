@@ -14,12 +14,17 @@ import {
   type CollectionSyncAcknowledgement,
 } from '@/db/collectionRepository'
 import {
+  reviewEventRepository,
+  type ReviewEventSyncAcknowledgement,
+} from '@/db/reviewEventRepository'
+import {
   getSyncCursor,
   isNetworkAvailable,
   setSyncCursor,
 } from '@/utils/network'
 import type { SyncCursor } from '@/utils/network'
 import type { Word } from '@/types/database'
+import type { ReviewEvent } from '@/types/ReviewTypes'
 import { Sentry } from '@/lib/sentry'
 import { isNetworkError } from '@/utils/logger'
 import { useHistoryStore } from '@/stores/useHistoryStore'
@@ -60,9 +65,11 @@ type SyncStage =
   | 'pull_collections'
   | 'pull_words'
   | 'pull_progress'
+  | 'pull_review_events'
   | 'push_collections'
   | 'push_words'
   | 'push_progress'
+  | 'push_review_events'
 
 class ControlledSyncError extends Error {
   constructor(message: string) {
@@ -128,13 +135,14 @@ interface SupabaseWordPayload {
   conjugation: Word['conjugation']
   preposition: string | null
   image_url: string | null
-  tts_url: string | null
+  tts_url: string
   interval_days: number
   repetition_count: number
   easiness_factor: number
   next_review_date: string
   last_reviewed_at: string | null
   analysis_notes: string | null
+  usage_notes: Word['usage_notes']
 }
 
 interface SyncWord extends Word {
@@ -144,6 +152,8 @@ interface SyncWord extends Word {
 interface SyncProgress extends ProgressRecord {
   deleted_at: string | null
 }
+
+type SyncReviewEvent = ReviewEvent
 
 type SupabaseWordPayloadWithoutRegister = Omit<SupabaseWordPayload, 'register'>
 type SupabaseWordsUpsertPayload =
@@ -180,6 +190,7 @@ const WORDS_SELECT_COLUMNS_WITHOUT_REGISTER = [
   'next_review_date',
   'last_reviewed_at',
   'analysis_notes',
+  'usage_notes',
   'created_at',
   'updated_at',
   'deleted_at',
@@ -187,9 +198,11 @@ const WORDS_SELECT_COLUMNS_WITHOUT_REGISTER = [
 
 const WORD_SYNC_PAGE_SIZE = 500
 const PROGRESS_SYNC_PAGE_SIZE = 500
+const REVIEW_EVENT_SYNC_PAGE_SIZE = 500
 const WORD_ACKNOWLEDGEMENT_COLUMNS = 'word_id, updated_at, deleted_at'
 const PROGRESS_ACKNOWLEDGEMENT_COLUMNS = 'progress_id, updated_at, deleted_at'
 const COLLECTION_ACKNOWLEDGEMENT_COLUMNS = 'collection_id, updated_at'
+const REVIEW_EVENT_ACKNOWLEDGEMENT_COLUMNS = 'event_id, created_at'
 
 const toWordSyncCursor = (word: Word): SyncCursor => ({
   updatedAt: word.updated_at,
@@ -215,6 +228,16 @@ const isProgressAfterCursor = (
   progress: SyncProgress,
   cursor: SyncCursor
 ): boolean => compareSyncCursors(toProgressSyncCursor(progress), cursor) > 0
+
+const toReviewEventSyncCursor = (event: ReviewEvent): SyncCursor => ({
+  updatedAt: event.created_at,
+  id: event.event_id,
+})
+
+const isReviewEventAfterCursor = (
+  event: ReviewEvent,
+  cursor: SyncCursor
+): boolean => compareSyncCursors(toReviewEventSyncCursor(event), cursor) > 0
 
 export class SyncManager {
   private isSyncing = false
@@ -314,8 +337,17 @@ export class SyncManager {
         async () => this.pullProgressFromSupabase(userId, progressCursor)
       )
 
+      // Review events depend on words and use server-created timestamps.
+      console.log('[Sync] Stage 4: pull review events')
+      const reviewEventCursor = await getSyncCursor(userId, 'review_events')
+      const pulledReviewEvents = await this.runSyncStageWithSessionRetry(
+        'pull_review_events',
+        userId,
+        async () => this.pullReviewEventsFromSupabase(userId, reviewEventCursor)
+      )
+
       // Step 3: Push pending collection updates to Supabase (needed for FK on words)
-      console.log('[Sync] Stage 4: push collections')
+      console.log('[Sync] Stage 5: push collections')
       await this.runSyncStageWithSessionRetry(
         'push_collections',
         userId,
@@ -323,7 +355,7 @@ export class SyncManager {
       )
 
       // Step 4: Push pending word updates to Supabase
-      console.log('[Sync] Stage 5: push words')
+      console.log('[Sync] Stage 6: push words')
       const pushedWordsCount = await this.runSyncStageWithSessionRetry(
         'push_words',
         userId,
@@ -331,11 +363,18 @@ export class SyncManager {
       )
 
       // Step 5: Push pending progress to Supabase
-      console.log('[Sync] Stage 6: push progress')
+      console.log('[Sync] Stage 7: push progress')
       const pushedProgressCount = await this.runSyncStageWithSessionRetry(
         'push_progress',
         userId,
         async () => this.pushProgressToSupabase(userId)
+      )
+
+      console.log('[Sync] Stage 8: push review events')
+      const pushedReviewEventsCount = await this.runSyncStageWithSessionRetry(
+        'push_review_events',
+        userId,
+        async () => this.pushReviewEventsToSupabase(userId)
       )
 
       const result: SyncResult = {
@@ -346,6 +385,9 @@ export class SyncManager {
       }
 
       console.log('[Sync] Sync completed successfully:', result)
+      console.log(
+        `[Sync] Review events synchronized: ${pulledReviewEvents.length + pushedReviewEventsCount}`
+      )
       this.notifySyncStatus(result)
 
       return result
@@ -708,6 +750,10 @@ export class SyncManager {
             word.conjugation,
             null
           ),
+          usage_notes: parseJsonField<Word['usage_notes']>(
+            word.usage_notes,
+            null
+          ),
         }
       })
       .filter(word => !cursor || isWordAfterCursor(word, cursor))
@@ -890,6 +936,144 @@ export class SyncManager {
     }
   }
 
+  private async pullReviewEventsFromSupabase(
+    userId: string,
+    cursor: SyncCursor | null
+  ): Promise<SyncReviewEvent[]> {
+    const { data, error } = await this.fetchReviewEventPages(userId, cursor)
+
+    if (error) {
+      throw new Error(`Failed to pull review events: ${error.message}`)
+    }
+
+    const events = (data ?? [])
+      .filter(event => !cursor || isReviewEventAfterCursor(event, cursor))
+      .sort((left, right) =>
+        compareSyncCursors(
+          toReviewEventSyncCursor(left),
+          toReviewEventSyncCursor(right)
+        )
+      )
+
+    if (events.length === 0) {
+      console.log('[Sync] No new review events to pull from Supabase')
+      return []
+    }
+
+    await reviewEventRepository.saveRemoteEvents(events)
+
+    const newestEvent = events[events.length - 1]
+    await setSyncCursor(
+      userId,
+      'review_events',
+      toReviewEventSyncCursor(newestEvent)
+    )
+
+    console.log(`[Sync] Pulled ${events.length} review events from Supabase`)
+    return events
+  }
+
+  private async fetchReviewEventPages(
+    userId: string,
+    cursor: SyncCursor | null
+  ): Promise<{
+    data: SyncReviewEvent[] | null
+    error: SupabaseLikeError | null
+  }> {
+    const events: SyncReviewEvent[] = []
+    let from = 0
+
+    while (true) {
+      let query = supabase
+        .from('review_events')
+        .select('*')
+        .eq('user_id', userId)
+
+      if (cursor) {
+        query = query.gte('created_at', cursor.updatedAt)
+      }
+
+      const result = await query
+        .order('created_at', { ascending: true })
+        .order('event_id', { ascending: true })
+        .range(from, from + REVIEW_EVENT_SYNC_PAGE_SIZE - 1)
+
+      if (result.error) {
+        return {
+          data: null,
+          error: this.toSupabaseLikeError(result.error),
+        }
+      }
+
+      const page = Array.isArray(result.data)
+        ? (result.data as SyncReviewEvent[])
+        : []
+      events.push(...page)
+
+      if (page.length < REVIEW_EVENT_SYNC_PAGE_SIZE) {
+        return { data: events, error: null }
+      }
+
+      from += REVIEW_EVENT_SYNC_PAGE_SIZE
+    }
+  }
+
+  private async pushReviewEventsToSupabase(userId: string): Promise<number> {
+    let totalPushed = 0
+
+    while (true) {
+      const pendingEvents = await reviewEventRepository.getPendingSyncEvents(
+        userId,
+        REVIEW_EVENT_SYNC_PAGE_SIZE
+      )
+      if (pendingEvents.length === 0) {
+        if (totalPushed === 0) {
+          console.log('[Sync] No pending review events to sync')
+        }
+        return totalPushed
+      }
+
+      const payloads = pendingEvents.map(event => ({
+        event_id: event.event_id,
+        user_id: userId,
+        word_id: event.word_id,
+        assessment: event.assessment,
+        review_mode: event.review_mode,
+        answered_correctly: event.answered_correctly,
+        response_time_ms: event.response_time_ms,
+        previous_interval_days: event.previous_interval_days,
+        next_interval_days: event.next_interval_days,
+        previous_easiness_factor: event.previous_easiness_factor,
+        next_easiness_factor: event.next_easiness_factor,
+        reviewed_at: event.reviewed_at,
+      }))
+
+      const { data, error } = await supabase
+        .from('review_events')
+        .upsert(payloads, { onConflict: 'event_id' })
+        .select(REVIEW_EVENT_ACKNOWLEDGEMENT_COLUMNS)
+
+      if (error) {
+        throw new Error(`Failed to push review events: ${error.message}`)
+      }
+
+      const acknowledgements = this.requireReviewEventAcknowledgements(
+        data,
+        pendingEvents.map(event => event.event_id)
+      )
+      await reviewEventRepository.reconcilePushedEvents(
+        userId,
+        acknowledgements
+      )
+      totalPushed += pendingEvents.length
+
+      if (pendingEvents.length < REVIEW_EVENT_SYNC_PAGE_SIZE) {
+        console.log(`[Sync] Pushed ${totalPushed} review events to Supabase`)
+        return totalPushed
+      }
+    }
+  }
+
   private async pushProgressToSupabase(userId: string): Promise<number> {
     const deletedProgress = await progressRepository.getDeletedProgress(userId)
     const deletedCount = await this.pushProgressTombstones(
@@ -995,10 +1179,30 @@ export class SyncManager {
       throw new Error(`Failed to push word tombstones: ${error.message}`)
     }
 
-    const acknowledgements = this.requireWordAcknowledgements(data, wordIds)
+    const acknowledgements = this.parseWordAcknowledgements(data)
+    const acknowledgedWordIds = new Set(
+      acknowledgements.map(acknowledgement => acknowledgement.word_id)
+    )
+    const neverSyncedMissingWords = deletedWords.filter(
+      word => !word.synced_at && !acknowledgedWordIds.has(word.word_id)
+    )
+    const requiredWordIds = wordIds.filter(
+      wordId =>
+        acknowledgedWordIds.has(wordId) ||
+        !neverSyncedMissingWords.some(word => word.word_id === wordId)
+    )
+
+    this.assertAcknowledgementIds(
+      [...acknowledgedWordIds],
+      requiredWordIds,
+      'word'
+    )
     await wordRepository.reconcilePushedWords(
       acknowledgements,
       new Map(deletedWords.map(word => [word.word_id, word.updated_at]))
+    )
+    await wordRepository.markWordTombstonesSynced(
+      neverSyncedMissingWords.map(word => word.word_id)
     )
     console.log(`[Sync] Pushed ${wordIds.length} word tombstones to Supabase`)
     return wordIds.length
@@ -1320,13 +1524,16 @@ export class SyncManager {
       conjugation: word.conjugation,
       preposition: word.preposition,
       image_url: word.image_url,
-      tts_url: word.tts_url,
+      // The remote schema keeps this legacy column NOT NULL. An empty string
+      // means that no pre-generated audio is available.
+      tts_url: word.tts_url ?? '',
       interval_days: word.interval_days,
       repetition_count: word.repetition_count,
       easiness_factor: word.easiness_factor,
       next_review_date: word.next_review_date,
       last_reviewed_at: word.last_reviewed_at,
       analysis_notes: word.analysis_notes,
+      usage_notes: word.usage_notes ?? null,
     }
   }
 
@@ -1530,7 +1737,18 @@ export class SyncManager {
     data: unknown,
     expectedWordIds: string[]
   ): WordSyncAcknowledgement[] {
-    const acknowledgements = Array.isArray(data)
+    const acknowledgements = this.parseWordAcknowledgements(data)
+
+    this.assertAcknowledgementIds(
+      acknowledgements.map(value => value.word_id),
+      expectedWordIds,
+      'word'
+    )
+    return acknowledgements
+  }
+
+  private parseWordAcknowledgements(data: unknown): WordSyncAcknowledgement[] {
+    return Array.isArray(data)
       ? data.filter(
           (value): value is WordSyncAcknowledgement =>
             this.isRecord(value) &&
@@ -1539,13 +1757,6 @@ export class SyncManager {
             (typeof value.deleted_at === 'string' || value.deleted_at === null)
         )
       : []
-
-    this.assertAcknowledgementIds(
-      acknowledgements.map(value => value.word_id),
-      expectedWordIds,
-      'word'
-    )
-    return acknowledgements
   }
 
   private requireProgressAcknowledgements(
@@ -1566,6 +1777,27 @@ export class SyncManager {
       acknowledgements.map(value => value.progress_id),
       expectedProgressIds,
       'progress'
+    )
+    return acknowledgements
+  }
+
+  private requireReviewEventAcknowledgements(
+    data: unknown,
+    expectedEventIds: string[]
+  ): ReviewEventSyncAcknowledgement[] {
+    const acknowledgements = Array.isArray(data)
+      ? data.filter(
+          (value): value is ReviewEventSyncAcknowledgement =>
+            this.isRecord(value) &&
+            typeof value.event_id === 'string' &&
+            typeof value.created_at === 'string'
+        )
+      : []
+
+    this.assertAcknowledgementIds(
+      acknowledgements.map(value => value.event_id),
+      expectedEventIds,
+      'review event'
     )
     return acknowledgements
   }

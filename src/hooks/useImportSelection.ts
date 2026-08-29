@@ -6,9 +6,17 @@ import { collectionSharingService } from '@/services/collectionSharingService'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES, RouteHelpers } from '@/constants/Routes'
-import type { Word } from '@/types/database'
 import type { SharedCollectionWords } from '@/services/collectionSharingService'
 import { Sentry } from '@/lib/sentry'
+import type {
+  ImportTargetCollection,
+  ImportableWord,
+  WordSelectionItem,
+} from '@/types/ImportTypes'
+import {
+  buildImportWordSelections,
+  getImportSuccessMessage,
+} from '@/utils/importSelection'
 
 interface ImportHandledError {
   message?: string
@@ -44,64 +52,6 @@ const getImportErrorMessage = (
   return fallbackMessage
 }
 
-const normalizeLemma = (value?: string | null): string =>
-  value && value.trim() !== '' ? value.trim().toLowerCase() : ''
-
-const normalizePartOfSpeech = (value?: string | null): string =>
-  value && value.trim() !== '' ? value.trim() : 'unknown'
-
-const normalizeArticle = (value?: string | null): string =>
-  value && value.trim() !== '' ? value.trim() : ''
-
-const getSemanticWordKey = (
-  dutchLemma?: string | null,
-  partOfSpeech?: string | null,
-  article?: string | null
-): string =>
-  `${normalizeLemma(dutchLemma)}|${normalizePartOfSpeech(partOfSpeech)}|${normalizeArticle(article)}`
-
-const getWordLabel = (count: number): string => `word${count !== 1 ? 's' : ''}`
-
-const getDuplicateLabel = (count: number): string =>
-  `duplicate${count !== 1 ? 's' : ''}`
-
-const getImportSuccessMessage = (
-  selectedCount: number,
-  importedCount: number
-): string => {
-  const skippedCount = Math.max(selectedCount - importedCount, 0)
-
-  if (importedCount === 0) {
-    return 'No new words were imported. Selected words already exist in your collection.'
-  }
-
-  if (skippedCount > 0) {
-    return `Successfully imported ${importedCount} ${getWordLabel(importedCount)}. Skipped ${skippedCount} ${getDuplicateLabel(skippedCount)}.`
-  }
-
-  return `Successfully imported ${importedCount} ${getWordLabel(importedCount)}`
-}
-
-interface WordSelectionItem {
-  word: Omit<
-    Word,
-    | 'user_id'
-    | 'easiness_factor'
-    | 'interval_days'
-    | 'repetition_count'
-    | 'next_review_date'
-    | 'last_reviewed_at'
-  >
-  selected: boolean
-  isDuplicate: boolean
-  existingInCollection?: string
-}
-
-interface Collection {
-  collection_id: string
-  name: string
-}
-
 export function useImportSelection(token: string) {
   const [loading, setLoading] = useState(true)
   const [sharedData, setSharedData] = useState<SharedCollectionWords | null>(
@@ -109,7 +59,7 @@ export function useImportSelection(token: string) {
   )
   const [error, setError] = useState<string | null>(null)
   const [wordSelections, setWordSelections] = useState<WordSelectionItem[]>([])
-  const [collections, setCollections] = useState<Collection[]>([])
+  const [collections, setCollections] = useState<ImportTargetCollection[]>([])
   const [targetCollectionId, setTargetCollectionId] = useState<string | null>(
     null
   )
@@ -118,9 +68,9 @@ export function useImportSelection(token: string) {
 
   const loadCollections = useCallback(async () => {
     try {
-      const { fetchCollections, collections: storeCollections } =
-        useApplicationStore.getState()
+      const { fetchCollections } = useApplicationStore.getState()
       await fetchCollections()
+      const { collections: storeCollections } = useApplicationStore.getState()
       const collectionsData = storeCollections.map(c => ({
         collection_id: c.collection_id,
         name: c.name,
@@ -137,82 +87,22 @@ export function useImportSelection(token: string) {
     }
   }, [])
 
-  const checkForDuplicates = useCallback(
-    async (
-      words: Omit<
-        Word,
-        | 'user_id'
-        | 'easiness_factor'
-        | 'interval_days'
-        | 'repetition_count'
-        | 'next_review_date'
-        | 'last_reviewed_at'
-      >[]
-    ) => {
-      try {
-        // Get existing words and collections from the store to check duplicates
-        const { words: existingWords, collections: storeCollections } =
-          useApplicationStore.getState()
-
-        const collectionNameById = new Map(
-          storeCollections.map(collection => [
-            collection.collection_id,
-            collection.name,
-          ])
-        )
-        const existingWordKeys = new Set<string>()
-        const existingWordCollectionByKey = new Map<
-          string,
-          string | undefined
-        >()
-
-        existingWords.forEach(existingWord => {
-          const key = getSemanticWordKey(
-            existingWord.dutch_lemma,
-            existingWord.part_of_speech,
-            existingWord.article
-          )
-          existingWordKeys.add(key)
-          if (!existingWordCollectionByKey.has(key)) {
-            existingWordCollectionByKey.set(
-              key,
-              existingWord.collection_id
-                ? collectionNameById.get(existingWord.collection_id)
-                : undefined
-            )
-          }
-        })
-
-        const selections: WordSelectionItem[] = words.map(word => {
-          const semanticKey = getSemanticWordKey(
-            word.dutch_lemma,
-            word.part_of_speech,
-            word.article
-          )
-          const existingInCollectionName =
-            existingWordCollectionByKey.get(semanticKey)
-          const isDuplicate = existingWordKeys.has(semanticKey)
-
-          return {
-            word,
-            selected: !isDuplicate,
-            isDuplicate,
-            existingInCollection: existingInCollectionName,
-          }
-        })
-
-        setWordSelections(selections)
-      } catch {
-        const selections: WordSelectionItem[] = words.map(word => ({
-          word,
-          selected: true,
-          isDuplicate: false,
-        }))
-        setWordSelections(selections)
-      }
-    },
-    []
-  )
+  const checkForDuplicates = useCallback(async (words: ImportableWord[]) => {
+    try {
+      const { words: existingWords, collections: storeCollections } =
+        useApplicationStore.getState()
+      setWordSelections(
+        buildImportWordSelections(words, existingWords, storeCollections)
+      )
+    } catch {
+      const selections: WordSelectionItem[] = words.map(word => ({
+        word,
+        selected: true,
+        isDuplicate: false,
+      }))
+      setWordSelections(selections)
+    }
+  }, [])
 
   const loadSharedCollection = useCallback(async () => {
     try {

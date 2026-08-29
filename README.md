@@ -391,33 +391,32 @@ The project is ready for MVP feature implementation:
 
 Start development by modifying `src/app/(tabs)/index.tsx` for the home screen.
 
-## 10. Production Build
+## 10. Production Release Tooling
 
-The project includes an automated build script for creating **local** production builds:
+Version preparation, local builds, and store submission are intentionally
+separate operations. None of the scripts creates Git commits or promotes a
+release publicly.
 
 ```bash
-# Build and submit for both platforms
-./scripts/build-and-submit.sh
+# Preview or apply aligned app/package versions.
+node scripts/prepare-release.js --version 2.0.0 --build 79
+node scripts/prepare-release.js --version 2.0.0 --build 79 --apply
 
-# Build for specific platform only
-./scripts/build-and-submit.sh --platform ios
-./scripts/build-and-submit.sh --platform android
+# After committing the version bump and confirming that build 79 is unused.
+scripts/build-release.sh --platform both --confirmed-build-number 79 --dry-run
+scripts/build-release.sh --platform both --confirmed-build-number 79
 
-# Build only (don't submit to stores)
-./scripts/build-and-submit.sh --build-only
+# After artifact review and separate submission approval.
+scripts/submit-release.sh --platform both --dry-run
+scripts/submit-release.sh --platform both
 ```
 
-**Requirements for Local Builds:**
+The build command requires a clean worktree, matching versions in
+`app.base.json`, `package.json`, and `package-lock.json`, aligned iOS/Android
+build numbers, and `runtimeVersion.policy: fingerprint`. It writes exact
+artifact and commit metadata to `builds/build-context.json`; the submit command
+refuses artifacts that do not match that context.
 
-- `.sentryclirc` file must be present in the project root with valid Sentry auth token
-- EAS CLI must be configured with proper credentials
-- Apple ID and Google Play credentials must be set up in EAS
-
-The script automatically:
-
-- Increments build numbers for both platforms
-- Builds locally for faster performance
-- Uploads source maps to Sentry for crash reporting
-- Submits to App Store Connect and Google Play Store
-
-**Note:** This configuration is only needed for local builds. EAS cloud builds handle Sentry configuration automatically through environment variables and don't require the `.sentryclirc` file.
+Local builds require a valid `.sentryclirc` and configured EAS credentials.
+See [EAS_BUILD_GUIDE.md](docs/EAS_BUILD_GUIDE.md) for the complete gated
+workflow.

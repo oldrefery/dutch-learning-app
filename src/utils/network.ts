@@ -6,7 +6,11 @@ import { NetworkError } from '@/types/ErrorTypes'
 const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp'
 const SYNC_CURSOR_KEY_PREFIX = 'sync_cursor'
 
-export type SyncCursorTable = 'words' | 'collections' | 'user_progress'
+export type SyncCursorTable =
+  | 'words'
+  | 'collections'
+  | 'user_progress'
+  | 'review_events'
 
 export interface SyncCursor {
   updatedAt: string

@@ -1,0 +1,201 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`dark StarterPackReviewBanner shows the completed internal review and matches the theme snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#1C1C1E",
+      },
+      [
+        {
+          "alignItems": "flex-start",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "flexDirection": "row",
+          "gap": 12,
+          "marginHorizontal": 16,
+          "marginTop": 16,
+          "padding": 14,
+        },
+        {
+          "backgroundColor": "rgba(52, 211, 153, 0.15)",
+          "borderColor": "#34D399",
+        },
+      ],
+    ]
+  }
+  testID="starter-pack-review-banner"
+>
+  <Text
+    allowFontScaling={false}
+    selectable={false}
+    style={
+      [
+        {
+          "color": "#34D399",
+          "fontSize": 22,
+        },
+        undefined,
+        {
+          "fontFamily": "ionicons",
+          "fontStyle": "normal",
+          "fontWeight": "normal",
+        },
+        {},
+      ]
+    }
+  >
+    
+  </Text>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "transparent",
+        },
+        {
+          "flex": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "700",
+              "marginBottom": 4,
+            },
+            {
+              "color": "#34D399",
+            },
+          ],
+        ]
+      }
+    >
+      Language review complete
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 14,
+            "lineHeight": 20,
+          },
+        ]
+      }
+    >
+      The starter pack passed the project’s internal language review.
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`light StarterPackReviewBanner shows the completed internal review and matches the theme snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#F2F2F7",
+      },
+      [
+        {
+          "alignItems": "flex-start",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "flexDirection": "row",
+          "gap": 12,
+          "marginHorizontal": 16,
+          "marginTop": 16,
+          "padding": 14,
+        },
+        {
+          "backgroundColor": "#ECFDF5",
+          "borderColor": "#10B981",
+        },
+      ],
+    ]
+  }
+  testID="starter-pack-review-banner"
+>
+  <Text
+    allowFontScaling={false}
+    selectable={false}
+    style={
+      [
+        {
+          "color": "#10B981",
+          "fontSize": 22,
+        },
+        undefined,
+        {
+          "fontFamily": "ionicons",
+          "fontStyle": "normal",
+          "fontWeight": "normal",
+        },
+        {},
+      ]
+    }
+  >
+    
+  </Text>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "transparent",
+        },
+        {
+          "flex": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "700",
+              "marginBottom": 4,
+            },
+            {
+              "color": "#10B981",
+            },
+          ],
+        ]
+      }
+    >
+      Language review complete
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 14,
+            "lineHeight": 20,
+          },
+        ]
+      }
+    >
+      The starter pack passed the project’s internal language review.
+    </Text>
+  </View>
+</View>
+`;

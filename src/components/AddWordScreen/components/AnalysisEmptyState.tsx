@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -15,7 +15,13 @@ const TIPS = [
   { icon: 'images-outline' as const, text: 'Associate words with images' },
 ]
 
-export function AnalysisEmptyState() {
+interface AnalysisEmptyStateProps {
+  onOpenBatchCapture?: () => void
+}
+
+export function AnalysisEmptyState({
+  onOpenBatchCapture,
+}: AnalysisEmptyStateProps) {
   const colorScheme = useNormalizedColorScheme()
   const iconColor =
     colorScheme === 'dark' ? Colors.primary.darkMode : Colors.primary.DEFAULT
@@ -62,6 +68,30 @@ export function AnalysisEmptyState() {
           </View>
         ))}
       </View>
+
+      {onOpenBatchCapture && (
+        <TouchableOpacity
+          testID="open-batch-capture-button"
+          accessibilityRole="button"
+          accessibilityLabel="Open Batch Quick Capture"
+          onPress={onOpenBatchCapture}
+          style={[
+            styles.batchButton,
+            {
+              backgroundColor: iconColor,
+            },
+          ]}
+        >
+          <Ionicons name="list-outline" size={20} color={Colors.legacy.white} />
+          <TextThemed
+            style={styles.batchButtonText}
+            lightColor={Colors.legacy.white}
+            darkColor={Colors.legacy.white}
+          >
+            Add a list of words
+          </TextThemed>
+        </TouchableOpacity>
+      )}
     </ViewThemed>
   )
 }
@@ -106,5 +136,19 @@ const styles = StyleSheet.create({
   tipText: {
     fontSize: 15,
     flex: 1,
+  },
+  batchButton: {
+    minHeight: 48,
+    borderRadius: 14,
+    marginTop: 30,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  batchButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 })

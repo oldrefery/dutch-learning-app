@@ -1,63 +1,65 @@
-import { Dimensions } from 'react-native'
-import { Colors } from './Colors'
+import type {
+  ReviewMode,
+  ReviewScope,
+  ReviewSessionConfig,
+  ReviewSessionMode,
+} from '@/types/ReviewTypes'
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
+export const REVIEW_MODE = {
+  RECOGNITION: 'recognition',
+  MEANING_RECALL: 'meaning-recall',
+  DUTCH_PRODUCTION: 'dutch-production',
+} as const satisfies Record<string, ReviewMode>
 
-export const REVIEW_CONSTANTS = {
-  // Screen dimensions
-  SCREEN_WIDTH: screenWidth,
-  SCREEN_HEIGHT: screenHeight,
+export const REVIEW_SESSION_MODE = {
+  ...REVIEW_MODE,
+  ADAPTIVE: 'adaptive',
+} as const satisfies Record<string, ReviewSessionMode>
 
-  // Card dimensions
-  CARD_WIDTH: screenWidth * 0.9,
-  CARD_HEIGHT: screenHeight * 0.6,
-  CARD_MIN_HEIGHT: 200,
+export const REVIEW_SCOPE = {
+  ALL_DUE: 'all-due',
+  COLLECTION_DUE: 'collection-due',
+  DIFFICULT_DUE: 'difficult-due',
+} as const satisfies Record<string, ReviewScope>
 
-  // Animation durations
-  FLIP_DURATION: 300,
-  TOUCH_DEBOUNCE: 300,
+export const DEFAULT_REVIEW_SESSION_CONFIG = {
+  mode: REVIEW_MODE.MEANING_RECALL,
+  scope: REVIEW_SCOPE.ALL_DUE,
+} as const satisfies ReviewSessionConfig
 
-  // Touch sensitivity
-  SCROLL_THRESHOLD: 10,
+export const DIFFICULT_EASINESS_FACTOR_THRESHOLD = 2.1
 
-  // Audio
-  AUDIO_RETRY_ATTEMPTS: 3,
-  AUDIO_TIMEOUT: 5000,
+export const MAX_REVIEW_RESPONSE_TIME_MS = 60 * 60 * 1000
 
-  // UI
-  BUTTON_HEIGHT: 50,
-  BUTTON_MARGIN: 10,
-  CARD_PADDING: 20,
+/**
+ * A word is mastered after three successful repetitions.
+ * This matches the existing progress definition used across collection stats.
+ */
+export const MASTERED_MIN_REPETITIONS = 3
 
-  // Colors (using a centralized Colors system)
-  COLORS: {
-    PRIMARY: Colors.primary.DEFAULT,
-    SUCCESS: Colors.success.DEFAULT,
-    ERROR: Colors.error.DEFAULT,
-    WARNING: Colors.warning.DEFAULT,
-    BACKGROUND: Colors.background.secondary,
-    CARD_BACKGROUND: Colors.background.primary,
-    TEXT_PRIMARY: Colors.neutral[900],
-    TEXT_SECONDARY: Colors.neutral[500],
-    BORDER: Colors.neutral[200],
+export const REVIEW_MODE_OPTIONS = [
+  {
+    mode: REVIEW_SESSION_MODE.ADAPTIVE,
+    title: 'Adaptive',
+    description: 'Automatically choose the right challenge for each word.',
   },
-
-  // Typography
-  FONT_SIZES: {
-    TITLE: 24,
-    SUBTITLE: 18,
-    BODY: 16,
-    CAPTION: 14,
-    SMALL: 12,
+  {
+    mode: REVIEW_MODE.RECOGNITION,
+    title: 'Recognition',
+    description: 'Choose the correct meaning from several options.',
   },
-
-  // Spacing
-  SPACING: {
-    XS: 4,
-    SM: 8,
-    MD: 16,
-    LG: 24,
-    XL: 32,
-    XXL: 48,
+  {
+    mode: REVIEW_MODE.MEANING_RECALL,
+    title: 'Meaning Recall',
+    description: 'See the Dutch word and recall its meaning.',
   },
-} as const
+  {
+    mode: REVIEW_MODE.DUTCH_PRODUCTION,
+    title: 'Dutch Production',
+    description: 'See a translation and produce the Dutch word.',
+  },
+] as const satisfies readonly {
+  mode: ReviewSessionMode
+  title: string
+  description: string
+}[]

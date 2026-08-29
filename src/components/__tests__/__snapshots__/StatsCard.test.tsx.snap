@@ -1,0 +1,821 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`dark StatsCard opens review insights and matches the theme snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#1C1C1E",
+      },
+      {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borderRadius": 16,
+        "elevation": 6,
+        "marginBottom": 16,
+        "overflow": "hidden",
+        "shadowColor": "#000000",
+        "shadowOffset": {
+          "height": 4,
+          "width": 0,
+        },
+        "shadowOpacity": 0.12,
+        "shadowRadius": 12,
+      },
+    ]
+  }
+>
+  <View
+    blurMethod="dimezisBlurView"
+    style={
+      [
+        {
+          "backgroundColor": "transparent",
+        },
+        {
+          "borderRadius": 16,
+          "overflow": "hidden",
+        },
+      ]
+    }
+  >
+    <ViewManagerAdapter_ExpoBlur
+      blurMethod="dimezisBlurView"
+      blurReductionFactor={4}
+      intensity={100}
+      style={
+        {
+          "bottom": 0,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+      tint="dark"
+    />
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          [
+            {
+              "borderRadius": 16,
+              "borderWidth": 1,
+              "padding": 16,
+            },
+            {
+              "backgroundColor": "rgba(44, 44, 46, 0.95)",
+              "borderColor": "rgba(255, 255, 255, 0.1)",
+            },
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            {
+              "fontSize": 18,
+              "fontWeight": "600",
+              "marginBottom": 4,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        Today's Progress
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "rgba(255, 255, 255, 0.6)",
+            },
+            {
+              "fontSize": 14,
+              "marginBottom": 12,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        Across all collections
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+            },
+            {
+              "flexDirection": "row",
+              "justifyContent": "space-between",
+              "marginBottom": 12,
+            },
+          ]
+        }
+      >
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "rgba(0, 0, 0, 0)",
+              },
+              {
+                "alignItems": "center",
+                "flex": 1,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "fontSize": 24,
+                  "fontWeight": "700",
+                  "marginBottom": 4,
+                },
+              ]
+            }
+          >
+            24
+          </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "rgba(255, 255, 255, 0.6)",
+                },
+                {
+                  "fontSize": 14,
+                },
+              ]
+            }
+          >
+            Total Words
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "rgba(0, 0, 0, 0)",
+              },
+              {
+                "alignItems": "center",
+                "flex": 1,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "fontSize": 24,
+                  "fontWeight": "700",
+                  "marginBottom": 4,
+                },
+              ]
+            }
+          >
+            8
+          </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "rgba(255, 255, 255, 0.6)",
+                },
+                {
+                  "fontSize": 14,
+                },
+              ]
+            }
+          >
+            Mastered
+          </Text>
+        </View>
+      </View>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+            },
+            {
+              "flexDirection": "row",
+              "justifyContent": "space-between",
+              "marginBottom": 12,
+            },
+          ]
+        }
+      >
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "rgba(0, 0, 0, 0)",
+              },
+              {
+                "alignItems": "center",
+                "flex": 1,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "fontSize": 24,
+                  "fontWeight": "700",
+                  "marginBottom": 4,
+                },
+              ]
+            }
+          >
+            5
+          </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "rgba(255, 255, 255, 0.6)",
+                },
+                {
+                  "fontSize": 14,
+                },
+              ]
+            }
+          >
+            For Review
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "rgba(0, 0, 0, 0)",
+              },
+              {
+                "alignItems": "center",
+                "flex": 1,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "fontSize": 24,
+                  "fontWeight": "700",
+                  "marginBottom": 4,
+                },
+              ]
+            }
+          >
+            3
+          </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "rgba(255, 255, 255, 0.6)",
+                },
+                {
+                  "fontSize": 14,
+                },
+              ]
+            }
+          >
+            Day Streak
+          </Text>
+        </View>
+      </View>
+      <View
+        accessibilityHint="Shows your review forecast and difficult words"
+        accessibilityLabel="Open review insights"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "borderRadius": 12,
+              "borderWidth": 1,
+              "flexDirection": "row",
+              "justifyContent": "space-between",
+              "marginBottom": 4,
+              "marginTop": 4,
+              "minHeight": 48,
+              "paddingHorizontal": 14,
+            },
+            {
+              "backgroundColor": "rgba(255, 255, 255, 0.05)",
+              "borderColor": "#374151",
+              "opacity": 1,
+            },
+          ]
+        }
+        testID="stats-card-open-insights"
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 15,
+                "fontWeight": "600",
+              },
+            ]
+          }
+        >
+          View Review Insights
+        </Text>
+        <Text
+          allowFontScaling={false}
+          importantForAccessibility="no"
+          selectable={false}
+          style={
+            [
+              {
+                "color": "#409CFF",
+                "fontSize": 14,
+              },
+              undefined,
+              {
+                "fontFamily": "FontAwesome",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              {},
+            ]
+          }
+        >
+          
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`light StatsCard opens review insights and matches the theme snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#F2F2F7",
+      },
+      {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borderRadius": 16,
+        "elevation": 6,
+        "marginBottom": 16,
+        "overflow": "hidden",
+        "shadowColor": "#000000",
+        "shadowOffset": {
+          "height": 4,
+          "width": 0,
+        },
+        "shadowOpacity": 0.12,
+        "shadowRadius": 12,
+      },
+    ]
+  }
+>
+  <View
+    blurMethod="dimezisBlurView"
+    style={
+      [
+        {
+          "backgroundColor": "transparent",
+        },
+        {
+          "borderRadius": 16,
+          "overflow": "hidden",
+        },
+      ]
+    }
+  >
+    <ViewManagerAdapter_ExpoBlur
+      blurMethod="dimezisBlurView"
+      blurReductionFactor={4}
+      intensity={100}
+      style={
+        {
+          "bottom": 0,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+      tint="light"
+    />
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          [
+            {
+              "borderRadius": 16,
+              "borderWidth": 1,
+              "padding": 16,
+            },
+            {
+              "backgroundColor": "rgba(255, 255, 255, 0.95)",
+              "borderColor": "rgba(0, 0, 0, 0.05)",
+            },
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            {
+              "fontSize": 18,
+              "fontWeight": "600",
+              "marginBottom": 4,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        Today's Progress
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "color": "#6B7280",
+            },
+            {
+              "fontSize": 14,
+              "marginBottom": 12,
+              "textAlign": "center",
+            },
+          ]
+        }
+      >
+        Across all collections
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+            },
+            {
+              "flexDirection": "row",
+              "justifyContent": "space-between",
+              "marginBottom": 12,
+            },
+          ]
+        }
+      >
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "rgba(0, 0, 0, 0)",
+              },
+              {
+                "alignItems": "center",
+                "flex": 1,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "fontSize": 24,
+                  "fontWeight": "700",
+                  "marginBottom": 4,
+                },
+              ]
+            }
+          >
+            24
+          </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "#6B7280",
+                },
+                {
+                  "fontSize": 14,
+                },
+              ]
+            }
+          >
+            Total Words
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "rgba(0, 0, 0, 0)",
+              },
+              {
+                "alignItems": "center",
+                "flex": 1,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "fontSize": 24,
+                  "fontWeight": "700",
+                  "marginBottom": 4,
+                },
+              ]
+            }
+          >
+            8
+          </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "#6B7280",
+                },
+                {
+                  "fontSize": 14,
+                },
+              ]
+            }
+          >
+            Mastered
+          </Text>
+        </View>
+      </View>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "rgba(0, 0, 0, 0)",
+            },
+            {
+              "flexDirection": "row",
+              "justifyContent": "space-between",
+              "marginBottom": 12,
+            },
+          ]
+        }
+      >
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "rgba(0, 0, 0, 0)",
+              },
+              {
+                "alignItems": "center",
+                "flex": 1,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "fontSize": 24,
+                  "fontWeight": "700",
+                  "marginBottom": 4,
+                },
+              ]
+            }
+          >
+            5
+          </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "#6B7280",
+                },
+                {
+                  "fontSize": 14,
+                },
+              ]
+            }
+          >
+            For Review
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "rgba(0, 0, 0, 0)",
+              },
+              {
+                "alignItems": "center",
+                "flex": 1,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "fontSize": 24,
+                  "fontWeight": "700",
+                  "marginBottom": 4,
+                },
+              ]
+            }
+          >
+            3
+          </Text>
+          <Text
+            style={
+              [
+                {
+                  "color": "#6B7280",
+                },
+                {
+                  "fontSize": 14,
+                },
+              ]
+            }
+          >
+            Day Streak
+          </Text>
+        </View>
+      </View>
+      <View
+        accessibilityHint="Shows your review forecast and difficult words"
+        accessibilityLabel="Open review insights"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "borderRadius": 12,
+              "borderWidth": 1,
+              "flexDirection": "row",
+              "justifyContent": "space-between",
+              "marginBottom": 4,
+              "marginTop": 4,
+              "minHeight": 48,
+              "paddingHorizontal": 14,
+            },
+            {
+              "backgroundColor": "rgba(0, 0, 0, 0.03)",
+              "borderColor": "#E5E7EB",
+              "opacity": 1,
+            },
+          ]
+        }
+        testID="stats-card-open-insights"
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 15,
+                "fontWeight": "600",
+              },
+            ]
+          }
+        >
+          View Review Insights
+        </Text>
+        <Text
+          allowFontScaling={false}
+          importantForAccessibility="no"
+          selectable={false}
+          style={
+            [
+              {
+                "color": "#3B82F6",
+                "fontSize": 14,
+              },
+              undefined,
+              {
+                "fontFamily": "FontAwesome",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              {},
+            ]
+          }
+        >
+          
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;

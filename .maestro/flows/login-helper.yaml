@@ -7,7 +7,7 @@ appId: ${APP_ID}
 
 # Assumes we're on the login screen
 - assertVisible:
-    text: "Welcome Back"
+    id: "email-input"
 
 # Enter email
 - tapOn:
@@ -37,7 +37,10 @@ appId: ${APP_ID}
 - waitForAnimationToEnd
 
 # Wait for app to load
-- runScript: ../scripts/wait.js
+- extendedWaitUntil:
+    visible:
+      id: "screen-collections"
+    timeout: 30000
 
 # Should be on Collections screen after successful login
 - assertVisible:

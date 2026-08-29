@@ -1,5 +1,6 @@
 import type { Word } from '@/types/database'
 import type { WordAnalysisResponse } from '@/types/GeminiTypes'
+import type { StyleProp, ViewStyle } from 'react-native'
 import type {
   AnalysisResult,
   AnalysisMetadata,
@@ -18,6 +19,7 @@ export interface WordCardConfig {
   showGrammarInfo?: boolean
   showConjugation?: boolean
   showNotes?: boolean
+  showUsageNotes?: boolean
   extraHeightAddWord?: number
 
   // Interactive features
@@ -70,8 +72,8 @@ export interface UniversalWordCardProps {
   onChangeImage?: () => void
 
   // Custom styling
-  style?: any
-  contentStyle?: any
+  style?: StyleProp<ViewStyle>
+  contentStyle?: StyleProp<ViewStyle>
 }
 
 export interface WordSectionProps {

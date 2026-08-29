@@ -1,11 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { StyleSheet, View, ActivityIndicator } from 'react-native'
+import {
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  TouchableOpacity,
+  useColorScheme,
+} from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
-import { router } from 'expo-router'
+import { router, type Href } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
 import { TextThemed } from '@/components/Themed'
 import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
+import { OFFICIAL_DUTCH_A1_PACK_SIZE } from '@/services/starterPackService'
 import { collectionSharingService } from '@/services/collectionSharingService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { Sentry } from '@/lib/sentry'
@@ -19,6 +27,7 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
   visible,
   onClose,
 }) => {
+  const colorScheme = useColorScheme() ?? 'light'
   const [token, setToken] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
@@ -111,12 +120,17 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
     setError(null)
   }, [])
 
+  const handleOpenStarterPack = useCallback(() => {
+    onClose()
+    router.push(ROUTES.STARTER_PACK as Href)
+  }, [onClose])
+
   return (
     <GlassModalCenter
       visible={visible}
       title="Import Collection"
       onClose={onClose}
-      minHeight={360}
+      minHeight={520}
       leftAction={{
         label: 'Cancel',
         onPress: onClose,
@@ -131,6 +145,73 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
       }}
     >
       <View>
+        <TouchableOpacity
+          testID="open-starter-pack-button"
+          style={[
+            styles.starterPackCard,
+            {
+              backgroundColor:
+                colorScheme === 'dark'
+                  ? Colors.dark.backgroundTertiary
+                  : Colors.primary.light,
+              borderColor:
+                colorScheme === 'dark'
+                  ? Colors.dark.border
+                  : Colors.primary.DEFAULT,
+            },
+          ]}
+          onPress={handleOpenStarterPack}
+          accessibilityRole="button"
+          accessibilityLabel="Open Dutch A1 starter pack"
+          accessibilityHint="Preview and import the bundled offline starter pack"
+        >
+          <View style={styles.starterPackIcon}>
+            <Ionicons
+              name="library-outline"
+              size={24}
+              color={
+                colorScheme === 'dark'
+                  ? Colors.dark.tint
+                  : Colors.primary.DEFAULT
+              }
+            />
+          </View>
+          <View style={styles.starterPackText}>
+            <TextThemed style={styles.starterPackTitle}>
+              Dutch A1 Starter Pack
+            </TextThemed>
+            <TextThemed
+              style={styles.starterPackSubtitle}
+              lightColor={Colors.neutral[600]}
+              darkColor={Colors.dark.textSecondary}
+            >
+              Preview {OFFICIAL_DUTCH_A1_PACK_SIZE} built-in words — works
+              offline
+            </TextThemed>
+          </View>
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={
+              colorScheme === 'dark'
+                ? Colors.dark.textTertiary
+                : Colors.neutral[500]
+            }
+          />
+        </TouchableOpacity>
+
+        <View style={styles.dividerRow}>
+          <View style={styles.divider} />
+          <TextThemed
+            style={styles.dividerText}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textTertiary}
+          >
+            OR IMPORT BY CODE
+          </TextThemed>
+          <View style={styles.divider} />
+        </View>
+
         <TextThemed style={styles.label}>Collection Code</TextThemed>
         <TextInput
           style={[
@@ -208,6 +289,50 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
 }
 
 const styles = StyleSheet.create({
+  starterPackCard: {
+    minHeight: 78,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 18,
+  },
+  starterPackIcon: {
+    width: 42,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  starterPackText: {
+    flex: 1,
+  },
+  starterPackTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 3,
+  },
+  starterPackSubtitle: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 18,
+  },
+  divider: {
+    flex: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.neutral[400],
+  },
+  dividerText: {
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.6,
+  },
   label: {
     fontSize: 15,
     fontWeight: '600',

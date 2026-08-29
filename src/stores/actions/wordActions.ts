@@ -3,6 +3,7 @@ import { Sentry } from '@/lib/sentry'
 import { wordService } from '@/lib/supabase'
 import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
+import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { calculateNextReview } from '@/utils/srs'
 import * as Crypto from 'expo-crypto'
 import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
@@ -14,6 +15,12 @@ import type {
   ApplicationState,
 } from '@/types/ApplicationStoreTypes'
 import type { GeminiWordAnalysis, Word } from '@/types/database'
+import {
+  DEFAULT_REVIEW_SESSION_CONFIG,
+  MAX_REVIEW_RESPONSE_TIME_MS,
+  REVIEW_MODE,
+  REVIEW_SESSION_MODE,
+} from '@/constants/ReviewConstants'
 
 const USER_NOT_AUTHENTICATED_ERROR =
   APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
@@ -30,6 +37,14 @@ const WORD_RESET_FAILED = 'Failed to reset word progress'
 const WORDS_IMPORT_FAILED = 'Failed to import words'
 const WORD_REANALYZE_FAILED = 'Failed to re-analyze word'
 const INVALID_ANALYSIS_RESPONSE = 'Invalid response from word analysis'
+
+const normalizeResponseTime = (responseTime?: number): number | null => {
+  if (responseTime === undefined || !Number.isFinite(responseTime)) return null
+  return Math.min(
+    MAX_REVIEW_RESPONSE_TIME_MS,
+    Math.max(0, Math.round(responseTime))
+  )
+}
 
 interface ImportWordsActionError extends Error {
   userMessage?: string
@@ -121,6 +136,7 @@ const createWordFromAnalysis = (
     next_review_date: now.split('T')[0],
     last_reviewed_at: null,
     analysis_notes: analysis.analysis_notes ?? null,
+    usage_notes: analysis.usage_notes ?? null,
     created_at: now,
     updated_at: now,
   }
@@ -298,7 +314,7 @@ export const createWordActions = (
             context: { reason: 'Invalid word ID' },
           }),
         })
-        return
+        return false
       }
       if (!assessment || !assessment.assessment) {
         logError(
@@ -314,7 +330,7 @@ export const createWordActions = (
             context: { reason: 'Invalid assessment' },
           }),
         })
-        return
+        return false
       }
 
       const userId = get().currentUserId
@@ -333,7 +349,7 @@ export const createWordActions = (
             context: { reason: USER_NOT_AUTHENTICATED_ERROR },
           }),
         })
-        return
+        return false
       }
 
       // Get the current word to calculate new SRS values
@@ -352,7 +368,7 @@ export const createWordActions = (
             context: { reason: 'Word not found' },
           }),
         })
-        return
+        return false
       }
 
       // Calculate new SRS values
@@ -363,22 +379,50 @@ export const createWordActions = (
         assessment: assessment.assessment,
       })
 
-      const lastReviewedAt = new Date().toISOString()
+      const reviewedAt =
+        assessment.timestamp instanceof Date &&
+        !Number.isNaN(assessment.timestamp.getTime())
+          ? assessment.timestamp.toISOString()
+          : new Date().toISOString()
+      const reviewSession = get().reviewSession
+      const sessionMode = reviewSession?.config.mode
+      const resolvedSessionMode =
+        sessionMode === REVIEW_SESSION_MODE.ADAPTIVE
+          ? reviewSession?.adaptiveModeByWordId?.[wordId]?.mode
+          : sessionMode
+      const reviewMode =
+        assessment.reviewMode ??
+        resolvedSessionMode ??
+        DEFAULT_REVIEW_SESSION_CONFIG.mode
 
-      // Offline-first: always update local SQLite first
-      await wordRepository.updateWordProgress(wordId, userId, {
-        interval_days: srsUpdate.interval_days,
-        repetition_count: srsUpdate.repetition_count,
-        easiness_factor: srsUpdate.easiness_factor,
-        next_review_date: srsUpdate.next_review_date,
-        last_reviewed_at: lastReviewedAt,
+      // Offline-first: update SRS and append its matching event atomically.
+      await reviewEventRepository.recordAssessment({
+        progress: srsUpdate,
+        event: {
+          event_id: Crypto.randomUUID(),
+          user_id: userId,
+          word_id: wordId,
+          assessment: assessment.assessment,
+          review_mode: reviewMode,
+          answered_correctly:
+            reviewMode === REVIEW_MODE.RECOGNITION
+              ? (assessment.answeredCorrectly ?? null)
+              : null,
+          response_time_ms: normalizeResponseTime(assessment.responseTime),
+          previous_interval_days: currentWord.interval_days,
+          next_interval_days: srsUpdate.interval_days,
+          previous_easiness_factor: currentWord.easiness_factor,
+          next_easiness_factor: srsUpdate.easiness_factor,
+          reviewed_at: reviewedAt,
+        },
       })
 
       // Update the local store with calculated values
       const updatedWordData = {
         ...currentWord,
         ...srsUpdate,
-        last_reviewed_at: lastReviewedAt,
+        last_reviewed_at: reviewedAt,
+        updated_at: reviewedAt,
       }
 
       const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
@@ -387,6 +431,7 @@ export const createWordActions = (
         updatedWords[wordIndex] = updatedWordData
         set({ words: updatedWords })
       }
+      return true
     } catch (error) {
       logError(
         'Error updating word after review',
@@ -400,6 +445,7 @@ export const createWordActions = (
           originalError: error instanceof Error ? error : undefined,
         }),
       })
+      return false
     }
   },
 
@@ -841,17 +887,21 @@ export const createWordActions = (
         image_url: analysis.image_url ?? currentWord.image_url,
         tts_url: analysis.tts_url ?? currentWord.tts_url,
         analysis_notes: analysis.analysis_notes ?? currentWord.analysis_notes,
+        usage_notes: analysis.usage_notes ?? currentWord.usage_notes ?? null,
         updated_at: now,
       }
 
-      // Update the word in the local database (marks as pending sync)
-      await wordRepository.addWord(updatedWordData)
+      // Update the existing word in the local database (marks as pending sync).
+      // The repository preserves the current semantic key if the refreshed
+      // analysis would collide with another active word.
+      const persistedWord =
+        await wordRepository.updateAnalyzedWord(updatedWordData)
 
       // Update the store
       const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
       if (wordIndex !== -1) {
         const updatedWords = [...currentWords]
-        updatedWords[wordIndex] = updatedWordData
+        updatedWords[wordIndex] = persistedWord
         set({ words: updatedWords })
       }
 
@@ -861,7 +911,7 @@ export const createWordActions = (
         'words'
       )
 
-      return updatedWordData
+      return persistedWord
     } catch (error) {
       logError('Error re-analyzing word', error, { wordId }, 'words', false)
       Sentry.captureException(error, {

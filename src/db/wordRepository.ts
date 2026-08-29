@@ -111,6 +111,7 @@ const UPDATE_WORD_SQL = `
     next_review_date = ?,
     last_reviewed_at = ?,
     analysis_notes = ?,
+    usage_notes = ?,
     created_at = ?,
     updated_at = ?,
     deleted_at = ?,
@@ -128,12 +129,45 @@ const INSERT_WORD_SQL = `
     plural, register, translations, examples, synonyms, antonyms, conjugation,
     preposition, image_url, tts_url, interval_days, repetition_count,
     easiness_factor, next_review_date, last_reviewed_at, analysis_notes,
+    usage_notes,
     created_at, updated_at, deleted_at, sync_status,
     last_sync_attempt_at, synced_at
   ) VALUES (
     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
   )
+`
+
+const UPDATE_ANALYZED_WORD_SQL = `
+  UPDATE words SET
+    dutch_lemma = ?,
+    dutch_original = ?,
+    part_of_speech = ?,
+    is_irregular = ?,
+    is_reflexive = ?,
+    is_expression = ?,
+    expression_type = ?,
+    is_separable = ?,
+    prefix_part = ?,
+    root_verb = ?,
+    article = ?,
+    plural = ?,
+    register = ?,
+    translations = ?,
+    examples = ?,
+    synonyms = ?,
+    antonyms = ?,
+    conjugation = ?,
+    preposition = ?,
+    image_url = ?,
+    tts_url = ?,
+    analysis_notes = ?,
+    usage_notes = ?,
+    updated_at = ?,
+    sync_status = 'pending',
+    last_sync_attempt_at = NULL,
+    synced_at = NULL
+  WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL
 `
 
 const UPSERT_WORD_TOMBSTONE_SQL = `
@@ -360,6 +394,7 @@ export class WordRepository {
       this.toSqlValue(word.next_review_date),
       this.toNullableSqlValue(word.last_reviewed_at),
       this.toNullableSqlValue(word.analysis_notes),
+      word.usage_notes ? JSON.stringify(word.usage_notes) : null,
       this.toSqlValue(word.created_at),
       this.toSqlValue(word.updated_at),
       deletedAt,
@@ -780,10 +815,11 @@ export class WordRepository {
         plural, register, translations, examples, synonyms, antonyms, conjugation,
         preposition, image_url, tts_url, interval_days, repetition_count,
         easiness_factor, next_review_date, last_reviewed_at, analysis_notes,
+        usage_notes,
         created_at, updated_at, deleted_at, sync_status
       ) VALUES (
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `)
 
@@ -819,6 +855,7 @@ export class WordRepository {
         word.next_review_date,
         word.last_reviewed_at || null,
         word.analysis_notes || null,
+        word.usage_notes ? JSON.stringify(word.usage_notes) : null,
         word.created_at,
         word.updated_at,
         null,
@@ -827,6 +864,95 @@ export class WordRepository {
     } finally {
       await insertStatement.finalizeAsync()
     }
+  }
+
+  async updateAnalyzedWord(word: Word): Promise<Word> {
+    const db = await getDatabase()
+
+    try {
+      await this.runAnalyzedWordUpdate(db, word)
+      return word
+    } catch (error) {
+      if (!this.isSemanticKeyConstraintError(error)) {
+        throw error
+      }
+
+      const currentWord = await this.getWordByIdAndUserId(
+        word.word_id,
+        word.user_id
+      )
+      if (!currentWord) {
+        throw error
+      }
+
+      const conflictSafeWord: Word = {
+        ...word,
+        dutch_lemma: currentWord.dutch_lemma,
+        part_of_speech: currentWord.part_of_speech,
+        article: currentWord.article,
+      }
+
+      await this.runAnalyzedWordUpdate(db, conflictSafeWord)
+      Sentry.addBreadcrumb({
+        category: 'db.updateAnalyzedWord',
+        message: 'Preserved semantic key after re-analysis conflict',
+        level: 'warning',
+        data: { wordId: word.word_id },
+      })
+
+      return conflictSafeWord
+    }
+  }
+
+  private async runAnalyzedWordUpdate(
+    db: SQLiteDatabase,
+    word: Word
+  ): Promise<void> {
+    const result = await db.runAsync(
+      UPDATE_ANALYZED_WORD_SQL,
+      this.getAnalyzedWordUpdateValues(word)
+    )
+
+    if (result.changes === 0) {
+      throw new Error(`Cannot update missing word: ${word.word_id}`)
+    }
+  }
+
+  private getAnalyzedWordUpdateValues(word: Word): SQLiteBindValue[] {
+    return [
+      word.dutch_lemma,
+      this.toNullableSqlValue(word.dutch_original),
+      this.toNullableSqlValue(word.part_of_speech),
+      word.is_irregular ? 1 : 0,
+      word.is_reflexive ? 1 : 0,
+      word.is_expression ? 1 : 0,
+      this.toNullableSqlValue(word.expression_type),
+      word.is_separable ? 1 : 0,
+      this.toNullableSqlValue(word.prefix_part),
+      this.toNullableSqlValue(word.root_verb),
+      this.toNullableSqlValue(word.article),
+      this.toNullableSqlValue(word.plural),
+      this.toNullableSqlValue(word.register),
+      JSON.stringify(word.translations),
+      word.examples ? JSON.stringify(word.examples) : null,
+      JSON.stringify(word.synonyms || []),
+      JSON.stringify(word.antonyms || []),
+      word.conjugation ? JSON.stringify(word.conjugation) : null,
+      this.toNullableSqlValue(word.preposition),
+      this.toNullableSqlValue(word.image_url),
+      this.toNullableSqlValue(word.tts_url),
+      this.toNullableSqlValue(word.analysis_notes),
+      word.usage_notes ? JSON.stringify(word.usage_notes) : null,
+      word.updated_at,
+      word.word_id,
+      word.user_id,
+    ]
+  }
+
+  private isSemanticKeyConstraintError(error: unknown): boolean {
+    return (
+      error instanceof Error && error.message.includes('idx_words_semantic_key')
+    )
   }
 
   async updateWordImage(
@@ -946,6 +1072,9 @@ export class WordRepository {
       next_review_date: row.next_review_date as string,
       last_reviewed_at: (row.last_reviewed_at as string) || null,
       analysis_notes: (row.analysis_notes as string) || null,
+      usage_notes: row.usage_notes
+        ? JSON.parse(row.usage_notes as string)
+        : null,
       created_at: row.created_at as string,
       updated_at: row.updated_at as string,
       deleted_at: (row.deleted_at as string) || null,

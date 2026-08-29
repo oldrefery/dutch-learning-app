@@ -13,7 +13,7 @@ import {
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
-import { router } from 'expo-router'
+import { router, type Href } from 'expo-router'
 import Constants from 'expo-constants'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { ViewThemed, TextThemed } from '@/components/Themed'
@@ -410,7 +410,12 @@ export default function SettingsScreen() {
   )
   const { signOut, loading: authLoading } = useSimpleAuth()
   const { userAccessLevel, currentUserId } = useApplicationStore()
-  const { autoPlayPronunciation, setAutoPlayPronunciation } = useSettingsStore()
+  const {
+    autoPlayPronunciation,
+    adaptiveReviewEnabled,
+    setAutoPlayPronunciation,
+    setAdaptiveReviewEnabled,
+  } = useSettingsStore()
 
   const isDarkMode = colorScheme === 'dark'
   const blurTint = getBlurTint(isDarkMode)
@@ -785,6 +790,96 @@ export default function SettingsScreen() {
                   }
                 />
               </ViewThemed>
+
+              <ViewThemed
+                style={[styles.separator, { backgroundColor: separatorColor }]}
+              />
+
+              <ViewThemed
+                style={styles.preferenceRow}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <ViewThemed
+                  style={styles.preferenceTextContainer}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed style={styles.preferenceLabel}>
+                    Adaptive Review Modes
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.preferenceDescription}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Let review sessions choose a mode for each word from your
+                    history
+                  </TextThemed>
+                </ViewThemed>
+                <Switch
+                  testID="adaptive-review-modes-switch"
+                  value={adaptiveReviewEnabled}
+                  onValueChange={setAdaptiveReviewEnabled}
+                  trackColor={{
+                    false: isDarkMode
+                      ? Colors.neutral[700]
+                      : Colors.neutral[300],
+                    true: Colors.primary.DEFAULT,
+                  }}
+                  thumbColor={
+                    adaptiveReviewEnabled
+                      ? Colors.background.primary
+                      : isDarkMode
+                        ? Colors.neutral[400]
+                        : Colors.background.primary
+                  }
+                />
+              </ViewThemed>
+
+              <ViewThemed
+                style={[styles.separator, { backgroundColor: separatorColor }]}
+              />
+
+              <TouchableOpacity
+                testID="settings-learning-guide-row"
+                accessibilityRole="button"
+                accessibilityLabel="Learning Guide"
+                accessibilityHint="Opens the learning guide"
+                onPress={() => router.push(ROUTES.LEARNING_GUIDE as Href)}
+                style={styles.preferenceRow}
+              >
+                <ViewThemed
+                  style={styles.preferenceTextContainer}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed style={styles.preferenceLabel}>
+                    Learning Guide
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.preferenceDescription}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Review modes, SRS ratings, difficult words, and audio
+                  </TextThemed>
+                </ViewThemed>
+                <TextThemed
+                  style={[
+                    styles.disclosureIndicator,
+                    {
+                      color: isDarkMode
+                        ? Colors.primary.darkMode
+                        : Colors.primary.DEFAULT,
+                    },
+                  ]}
+                  accessibilityElementsHidden
+                  importantForAccessibility="no"
+                >
+                  ›
+                </TextThemed>
+              </TouchableOpacity>
             </ViewThemed>
           </PlatformBlurView>
         </ViewThemed>
@@ -1219,6 +1314,11 @@ const styles = StyleSheet.create({
   preferenceDescription: {
     fontSize: 13,
     lineHeight: 18,
+  },
+  disclosureIndicator: {
+    fontSize: 28,
+    fontWeight: '300',
+    lineHeight: 32,
   },
   accountSectionContainer: {
     marginBottom: 16,

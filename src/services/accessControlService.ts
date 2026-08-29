@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
 import type { AccessLevel, UserAccessLevel } from '@/types/database'
 import { logSupabaseError } from '@/utils/logger'
+import type { PostgrestError } from '@supabase/supabase-js'
 
 type Result<T, E = string> =
   | { success: true; data: T }
@@ -22,11 +23,16 @@ class AccessControlService {
     userId: string
   ): Promise<Result<AccessLevel, AccessControlError>> {
     try {
-      const { data, error } = await supabase
-        .from('user_access_levels')
-        .select('access_level')
-        .eq('user_id', userId)
-        .maybeSingle()
+      let response = await this.fetchUserAccessLevel(userId)
+
+      if (this.isFutureJwtError(response.error)) {
+        const sessionRefreshed = await this.refreshSessionAfterFutureJwt()
+        if (sessionRefreshed) {
+          response = await this.fetchUserAccessLevel(userId)
+        }
+      }
+
+      const { data, error } = response
 
       if (error) {
         logSupabaseError('Failed to fetch user access level', error, {
@@ -57,6 +63,50 @@ class AccessControlService {
       })
 
       return { success: false, error: AccessControlError.UNKNOWN_ERROR }
+    }
+  }
+
+  private fetchUserAccessLevel(userId: string) {
+    return supabase
+      .from('user_access_levels')
+      .select('access_level')
+      .eq('user_id', userId)
+      .maybeSingle()
+  }
+
+  private isFutureJwtError(error: PostgrestError | null): boolean {
+    return Boolean(
+      error?.code === 'PGRST303' &&
+      error.message.toLowerCase().includes('jwt issued at future')
+    )
+  }
+
+  private async refreshSessionAfterFutureJwt(): Promise<boolean> {
+    try {
+      const { data, error } = await supabase.auth.refreshSession()
+      if (error || !data.session) {
+        Sentry.addBreadcrumb({
+          category: 'access_control',
+          message: 'Session refresh failed after future JWT',
+          level: 'warning',
+          data: { reason: error ? 'refresh_failed' : 'missing_session' },
+        })
+        return false
+      }
+
+      Sentry.addBreadcrumb({
+        category: 'access_control',
+        message: 'Session refreshed after future JWT',
+        level: 'info',
+      })
+      return true
+    } catch {
+      Sentry.addBreadcrumb({
+        category: 'access_control',
+        message: 'Session refresh threw after future JWT',
+        level: 'warning',
+      })
+      return false
     }
   }
 

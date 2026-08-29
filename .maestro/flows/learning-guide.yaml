@@ -1,0 +1,80 @@
+appId: ${APP_ID}
+---
+- runFlow:
+    file: ensure-on-screen.yaml
+    env:
+      APP_ID: ${APP_ID}
+      screen_id: screen-review
+      tab_text: Review
+
+- openLink:
+    link: dutchlearning:///learning-guide?resetForE2E=1
+- runFlow:
+    when:
+      visible: Open
+    commands:
+      - tapOn: Open
+- extendedWaitUntil:
+    visible:
+      id: learning-guide-introduction
+    timeout: 15000
+- tapOn:
+    id: show-learning-guide-button
+- assertVisible:
+    id: screen-learning-guide
+- scrollUntilVisible:
+    element:
+      id: learning-guide-section-review-modes
+    direction: DOWN
+- assertVisible:
+    id: learning-guide-section-review-modes
+- scrollUntilVisible:
+    element:
+      id: learning-guide-section-difficult-words
+    direction: DOWN
+- assertVisible:
+    id: learning-guide-section-difficult-words
+- scrollUntilVisible:
+    element:
+      id: learning-guide-section-audio-review
+    direction: DOWN
+- assertVisible:
+    id: learning-guide-section-audio-review
+- scrollUntilVisible:
+    element:
+      id: learning-guide-section-usage-nuance
+    direction: DOWN
+- assertVisible:
+    id: learning-guide-section-usage-nuance
+- scrollUntilVisible:
+    element:
+      id: complete-learning-guide-button
+    direction: DOWN
+- tapOn:
+    id: complete-learning-guide-button
+- waitForAnimationToEnd
+
+- stopApp
+- runFlow:
+    file: ensure-on-screen.yaml
+    env:
+      APP_ID: ${APP_ID}
+      screen_id: screen-review
+      tab_text: Review
+- assertVisible:
+    id: review-mode-selector
+- assertNotVisible:
+    id: learning-guide-introduction
+
+- tapOn: Settings
+- assertVisible:
+    id: screen-settings
+- scrollUntilVisible:
+    element:
+      id: settings-learning-guide-row
+    direction: DOWN
+- tapOn:
+    id: settings-learning-guide-row
+- assertVisible:
+    id: screen-learning-guide
+- assertVisible: How Learning Works

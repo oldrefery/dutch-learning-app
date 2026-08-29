@@ -21,6 +21,7 @@ jest.mock('@/lib/sentry', () => ({
   Sentry: {
     captureException: jest.fn(),
     captureMessage: jest.fn(),
+    addBreadcrumb: jest.fn(),
   },
 }))
 
@@ -198,7 +199,7 @@ describe('appInitializationActions', () => {
       expect(mockSet).toHaveBeenCalledWith({ userAccessLevel: 'read_only' })
     })
 
-    it('should capture Sentry message on service failure', async () => {
+    it('should add fallback context without duplicating the service event', async () => {
       currentState.currentUserId = USER_ID
       ;(accessControlService.getUserAccessLevel as jest.Mock).mockResolvedValue(
         {
@@ -209,11 +210,12 @@ describe('appInitializationActions', () => {
 
       await actions.fetchUserAccessLevel()
 
-      expect(Sentry.captureMessage).toHaveBeenCalledWith(
-        'Failed to fetch user access level',
+      expect(Sentry.captureMessage).not.toHaveBeenCalled()
+      expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
         expect.objectContaining({
+          category: 'access_control',
+          message: 'Defaulted user access level to read_only',
           level: 'warning',
-          tags: { operation: 'fetchUserAccessLevel' },
         })
       )
     })

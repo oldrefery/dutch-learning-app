@@ -1,13 +1,17 @@
 import type {
   Word,
   Collection,
-  ReviewSession,
   GeminiWordAnalysis,
   SRSAssessment,
   WordTranslations,
   WordExample,
   AccessLevel,
 } from './database'
+import type {
+  ReviewMode,
+  ReviewSession,
+  ReviewSessionConfig,
+} from './ReviewTypes'
 import type { AppError } from './ErrorTypes'
 import { ExpressionType } from './ExpressionTypes'
 
@@ -48,7 +52,7 @@ export interface ApplicationState {
   updateWordAfterReview: (
     wordId: string,
     assessment: ReviewAssessment
-  ) => Promise<void>
+  ) => Promise<boolean>
   deleteWord: (wordId: string) => Promise<void>
   updateWordImage: (wordId: string, imageUrl: string) => Promise<void>
   moveWordToCollection: (
@@ -79,7 +83,7 @@ export interface ApplicationState {
   } | null>
 
   // Review session actions
-  startReviewSession: () => Promise<void>
+  startReviewSession: (config?: ReviewSessionConfig) => Promise<void>
   submitReviewAssessment: (assessment: ReviewAssessment) => Promise<void>
   endReviewSession: () => void
   markCorrect: () => Promise<void>
@@ -99,6 +103,8 @@ export interface ApplicationState {
 export interface ReviewAssessment {
   wordId: string
   assessment: SRSAssessment
+  reviewMode?: ReviewMode
+  answeredCorrectly?: boolean | null
   responseTime?: number
   timestamp: Date
 }
@@ -128,6 +134,7 @@ export interface AnalyzedWord {
   conjugation?: Word['conjugation']
   preposition?: string
   analysis_notes?: string
+  usage_notes?: Word['usage_notes']
 }
 
 export interface StoreSetFunction {

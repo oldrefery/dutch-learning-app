@@ -1,5 +1,6 @@
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import type { Word, ReviewSession } from '@/types/database'
+import type { Word } from '@/types/database'
+import type { ReviewSession } from '@/types/ReviewTypes'
 
 export interface UseReviewSessionReturn {
   reviewSession: ReviewSession | null

@@ -1,6 +1,16 @@
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
+import {
+  DEFAULT_REVIEW_SESSION_CONFIG,
+  REVIEW_SESSION_MODE,
+} from '@/constants/ReviewConstants'
+import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { logInfo, logWarning, logError } from '@/utils/logger'
+import { selectReviewWords } from '@/utils/reviewSession'
+import {
+  REVIEW_MODE_POLICY,
+  resolveAdaptiveReviewMode,
+} from '@/utils/reviewModePolicy'
 import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
 import type {
   StoreSetFunction,
@@ -29,7 +39,7 @@ export const createReviewActions = (
   | 'updateCurrentWordImage'
   | 'updateCurrentWordInReview'
 > => ({
-  startReviewSession: async () => {
+  startReviewSession: async (config = DEFAULT_REVIEW_SESSION_CONFIG) => {
     try {
       set({ reviewLoading: true })
 
@@ -58,32 +68,38 @@ export const createReviewActions = (
 
       // Offline-first: Get review words from the local cache (SQLite)
       logInfo('Fetching review words from local cache', { userId }, 'review')
-      const allWords = get().words
-      const today = new Date().toISOString().split('T')[0] // "2025-12-21"
+      const { words, collections } = get()
+      const selection = selectReviewWords({
+        words,
+        collections,
+        userId,
+        config,
+      })
 
-      // Filter words that are due for review: next_review_date <= today
-      const reviewWords = allWords.filter(
-        w =>
-          w &&
-          w.next_review_date &&
-          w.next_review_date <= today &&
-          w.user_id === userId
-      )
-
-      if (!reviewWords) {
+      if (!selection.success) {
         set({
+          reviewSession: null,
+          currentWord: null,
           error: createStoreError(
             APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
               .REVIEW_SESSION_START_FAILED,
             {
               category: ErrorCategory.VALIDATION,
-              context: { reason: 'Failed to fetch review words from service' },
+              context: {
+                reason: selection.reason,
+                collectionId:
+                  config.scope === 'collection-due'
+                    ? config.collectionId
+                    : undefined,
+              },
             }
           ),
           reviewLoading: false,
         })
         return
       }
+
+      const reviewWords = selection.words
 
       if (reviewWords.length === 0) {
         set({
@@ -94,10 +110,28 @@ export const createReviewActions = (
         return
       }
 
+      const adaptiveModeByWordId =
+        config.mode === REVIEW_SESSION_MODE.ADAPTIVE
+          ? Object.fromEntries(
+              Object.entries(
+                await reviewEventRepository.getRecentByWords(
+                  userId,
+                  reviewWords.map(word => word.word_id),
+                  REVIEW_MODE_POLICY.HISTORY_LIMIT_PER_WORD
+                )
+              ).map(([wordId, events]) => [
+                wordId,
+                resolveAdaptiveReviewMode(events),
+              ])
+            )
+          : {}
+
       const reviewSession = {
         words: reviewWords,
         currentIndex: 0,
         completedCount: 0,
+        config,
+        adaptiveModeByWordId,
       }
 
       set({
@@ -121,6 +155,7 @@ export const createReviewActions = (
   submitReviewAssessment: async (assessment: ReviewAssessment) => {
     try {
       const { reviewSession, currentWord } = get()
+
       if (!reviewSession || !currentWord) {
         logWarning('Missing session or word data', {}, 'review')
         return
@@ -149,7 +184,11 @@ export const createReviewActions = (
       }
 
       // Classic SRS: All assessments update the word in the database
-      await get().updateWordAfterReview(currentWord.word_id, assessment)
+      const assessmentRecorded = await get().updateWordAfterReview(
+        currentWord.word_id,
+        assessment
+      )
+      if (assessmentRecorded === false) return
 
       // Get a fresh state after a database update to ensure consistency
       const freshState = get()

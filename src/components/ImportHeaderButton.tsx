@@ -11,19 +11,22 @@ import { Colors } from '@/constants/Colors'
 interface ImportHeaderButtonProps {
   importing: boolean
   selectedCount: number
+  disabled?: boolean
   onPress: () => void
 }
 
 export function ImportHeaderButton({
   importing,
   selectedCount,
+  disabled: disabledByCaller = false,
   onPress,
 }: ImportHeaderButtonProps) {
   const colorScheme = useColorScheme() ?? 'light'
-  const disabled = importing || selectedCount === 0
+  const disabled = disabledByCaller || importing || selectedCount === 0
 
   return (
     <TouchableOpacity
+      testID="import-selected-words-button"
       style={[
         styles.importButton,
         {

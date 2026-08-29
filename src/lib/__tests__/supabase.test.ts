@@ -24,6 +24,7 @@ const mockedAssertNetworkConnection =
   assertNetworkConnection as jest.MockedFunction<typeof assertNetworkConnection>
 const COLLECTION_ID = 'collection-id'
 const USER_ID = 'user-id'
+const SERVER_WORD_ID = 'server-word-id'
 
 const getSupabaseFunctionsMock = (): SupabaseFunctionsMock =>
   supabase as unknown as SupabaseFunctionsMock
@@ -51,7 +52,7 @@ describe('wordService duplicate handling', () => {
     const result = {
       data: [
         {
-          word_id: 'server-word-id',
+          word_id: SERVER_WORD_ID,
           dutch_lemma: 'HUIS',
           collection_id: COLLECTION_ID,
           part_of_speech: null,
@@ -78,7 +79,7 @@ describe('wordService duplicate handling', () => {
     )
 
     expect(existingWord).toEqual(
-      expect.objectContaining({ word_id: 'server-word-id' })
+      expect.objectContaining({ word_id: SERVER_WORD_ID })
     )
     expect(ilike).toHaveBeenCalledWith('dutch_lemma', DUTCH_LEMMA)
     expect(is).toHaveBeenCalledWith('deleted_at', null)
@@ -104,6 +105,36 @@ describe('wordService duplicate handling', () => {
     )
 
     expect(ilike).toHaveBeenCalledWith('dutch_lemma', '\\%huis\\_')
+  })
+
+  it('should find a pre-analysis duplicate by exact escaped lemma', async () => {
+    const existingWord = {
+      word_id: SERVER_WORD_ID,
+      dutch_lemma: '%Huis_',
+      collection_id: COLLECTION_ID,
+      part_of_speech: 'noun',
+      article: 'het',
+    }
+    const limit = jest.fn().mockResolvedValue({
+      data: [existingWord],
+      error: null,
+    })
+    const is = jest.fn().mockReturnValue({ limit })
+    const ilike = jest.fn().mockReturnValue({ is })
+    const eq = jest.fn().mockReturnValue({ ilike })
+
+    ;(supabase.from as jest.Mock).mockReturnValue({
+      select: jest.fn().mockReturnValue({ eq }),
+    })
+
+    await expect(
+      wordService.findWordByLemma(USER_ID, '  %Huis_  ')
+    ).resolves.toEqual(existingWord)
+    expect(mockedAssertNetworkConnection).toHaveBeenCalledTimes(1)
+    expect(eq).toHaveBeenCalledWith('user_id', USER_ID)
+    expect(ilike).toHaveBeenCalledWith('dutch_lemma', '\\%huis\\_')
+    expect(is).toHaveBeenCalledWith('deleted_at', null)
+    expect(limit).toHaveBeenCalledWith(1)
   })
 
   it('should downgrade semantic duplicate import error to warning-level Sentry message', async () => {

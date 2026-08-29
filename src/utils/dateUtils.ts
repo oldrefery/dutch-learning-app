@@ -2,6 +2,43 @@
  * Date utilities - custom implementation for React Native
  */
 
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
+
+const padDatePart = (value: number): string => String(value).padStart(2, '0')
+
+export function toLocalDateKey(date: Date): string {
+  return [
+    date.getFullYear(),
+    padDatePart(date.getMonth() + 1),
+    padDatePart(date.getDate()),
+  ].join('-')
+}
+
+export function normalizeReviewDateToLocalKey(
+  reviewDate: string
+): string | null {
+  if (DATE_ONLY_PATTERN.test(reviewDate)) {
+    return reviewDate
+  }
+
+  const parsedDate = new Date(reviewDate)
+  return Number.isNaN(parsedDate.getTime()) ? null : toLocalDateKey(parsedDate)
+}
+
+export function isDueOnLocalDate(
+  reviewDate: string | null | undefined,
+  referenceDate: Date = new Date()
+): boolean {
+  if (!reviewDate) {
+    return false
+  }
+
+  const reviewDateKey = normalizeReviewDateToLocalKey(reviewDate)
+  return (
+    reviewDateKey !== null && reviewDateKey <= toLocalDateKey(referenceDate)
+  )
+}
+
 /**
  * Format a date as relative time (e.g., "5 minutes ago", "2 hours ago")
  * Custom implementation - no external dependencies needed

@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { isDueOnLocalDate } from '@/utils/dateUtils'
 
 /**
  * Hook to get the count of words available for review
@@ -14,7 +15,6 @@ export function useReviewWordsCount() {
   const [refreshing, setRefreshing] = useState(false)
 
   const reviewWordsCount = useMemo(() => {
-    const now = new Date()
     const collectionIdSet = new Set(
       collections.map(collection => collection.collection_id)
     )
@@ -23,8 +23,7 @@ export function useReviewWordsCount() {
         w &&
         w.collection_id &&
         collectionIdSet.has(w.collection_id) &&
-        w.next_review_date &&
-        new Date(w.next_review_date) <= now
+        isDueOnLocalDate(w.next_review_date)
     ).length
   }, [collections, words])
 

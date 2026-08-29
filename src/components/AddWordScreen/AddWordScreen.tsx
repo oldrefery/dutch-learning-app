@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { Keyboard, View } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
+import { type Href, useRouter } from 'expo-router'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
@@ -29,6 +30,8 @@ import { Colors } from '@/constants/Colors'
 import { wordRepository } from '@/db/wordRepository'
 import { isNetworkAvailable } from '@/utils/network'
 import type { AnalysisResult } from './types/AddWordTypes'
+import { ROUTES } from '@/constants/Routes'
+import { useBatchCaptureStore } from '@/stores/useBatchCaptureStore'
 
 interface DuplicateWordData {
   word_id: string
@@ -40,6 +43,9 @@ interface DuplicateWordData {
 
 interface AddWordScreenProps {
   preselectedCollectionId?: string
+  batchItemId?: string
+  initialWord?: string
+  translationHint?: string
 }
 
 interface DuplicateWordCandidate {
@@ -67,6 +73,8 @@ type DuplicateSource =
   | 'remote'
   | 'remote_missing_local'
   | 'button_guard'
+
+const BATCH_CAPTURE_ROUTE = ROUTES.BATCH_CAPTURE as Href
 
 const trackDuplicateWordDetection = ({
   source,
@@ -264,7 +272,13 @@ const handleRemoteDuplicate = ({
   )
 }
 
-export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
+export function AddWordScreen({
+  preselectedCollectionId,
+  batchItemId,
+  initialWord,
+  translationHint,
+}: AddWordScreenProps) {
+  const router = useRouter()
   const insets = useSafeAreaInsets()
   const reduceTransparency = usePreferReducedTransparency()
   const [inputWord, setInputWord] = useState('')
@@ -274,6 +288,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     useState<DuplicateWordData | null>(null)
   const [hasNavigatedToCollection, setHasNavigatedToCollection] =
     useState(false)
+  const startedBatchItemRef = useRef<string | null>(null)
 
   const { currentUserId } = useApplicationStore()
   const { isPlayingAudio, playPronunciation } = useAudioPlayer()
@@ -281,6 +296,7 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     isAnalyzing,
     analysisResult,
     analysisMetadata,
+    analysisError,
     analyzeWord,
     clearAnalysis,
     forceRefreshAnalysis,
@@ -296,6 +312,42 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     closeImageSelector,
   } = useAddWord(preselectedCollectionId)
   const { collections } = useCollections()
+
+  useEffect(() => {
+    if (
+      !batchItemId ||
+      !initialWord ||
+      startedBatchItemRef.current === batchItemId
+    ) {
+      return
+    }
+
+    const queuedItem = useBatchCaptureStore
+      .getState()
+      .items.find(item => item.id === batchItemId)
+    if (!queuedItem) return
+
+    startedBatchItemRef.current = batchItemId
+    setInputWord(initialWord)
+    useBatchCaptureStore.getState().setItemStatus(batchItemId, 'analyzing')
+    clearAnalysis()
+    void analyzeWord(initialWord)
+  }, [analyzeWord, batchItemId, clearAnalysis, initialWord])
+
+  useEffect(() => {
+    if (!batchItemId || !analysisResult) return
+    useBatchCaptureStore
+      .getState()
+      .setItemStatus(batchItemId, 'awaiting_review')
+  }, [analysisResult, batchItemId])
+
+  useEffect(() => {
+    if (!batchItemId || !analysisError) return
+    const batchStore = useBatchCaptureStore.getState()
+    batchStore.setItemStatus(batchItemId, 'failed', analysisError)
+    batchStore.pause()
+    router.replace(BATCH_CAPTURE_ROUTE)
+  }, [analysisError, batchItemId, router])
 
   // Check for duplicates after analysis is complete
   useEffect(() => {
@@ -441,10 +493,40 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
           analysisResult.dutch_lemma,
           selectedCollection?.name
         )
+
+      if (batchItemId) {
+        useBatchCaptureStore.getState().completeItem(batchItemId)
+        router.replace(BATCH_CAPTURE_ROUTE)
+      }
     }
   }
 
+  const handleBackToBatchQueue = () => {
+    if (!batchItemId) return
+
+    const batchStore = useBatchCaptureStore.getState()
+    if (duplicateWordInfo) {
+      batchStore.setPossibleDuplicate(batchItemId, {
+        wordId: duplicateWordInfo.word_id,
+        collectionId: duplicateWordInfo.collection_id,
+        collectionName: findCollectionName(
+          collections,
+          duplicateWordInfo.collection_id
+        ),
+      })
+    } else {
+      batchStore.setItemStatus(batchItemId, 'queued')
+      batchStore.pause()
+    }
+    router.replace(BATCH_CAPTURE_ROUTE)
+  }
+
   const handleCancel = () => {
+    if (batchItemId) {
+      handleBackToBatchQueue()
+      return
+    }
+
     setInputWord('')
     clearAnalysis()
     setIsAlreadyInCollection(false)
@@ -550,6 +632,35 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
               onNavigateToCollection={() => setHasNavigatedToCollection(true)}
             />
           )}
+          {batchItemId && (
+            <ViewThemed style={batchReviewStyles.container}>
+              <View style={batchReviewStyles.textContainer}>
+                <TextThemed style={batchReviewStyles.title}>
+                  Batch review
+                </TextThemed>
+                {translationHint && (
+                  <TextThemed
+                    style={batchReviewStyles.hint}
+                    lightColor={Colors.light.textSecondary}
+                    darkColor={Colors.dark.textSecondary}
+                    numberOfLines={2}
+                  >
+                    Unverified hint: {translationHint}
+                  </TextThemed>
+                )}
+              </View>
+              <TouchableOpacity
+                testID="back-to-batch-queue-button"
+                accessibilityRole="button"
+                onPress={handleBackToBatchQueue}
+                style={batchReviewStyles.backButton}
+              >
+                <TextThemed style={batchReviewStyles.backButtonText}>
+                  Back to queue
+                </TextThemed>
+              </TouchableOpacity>
+            </ViewThemed>
+          )}
         </View>
         <View
           style={{
@@ -563,7 +674,11 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
         />
       </View>
 
-      {!analysisResult && !isAnalyzing && <AnalysisEmptyState />}
+      {!analysisResult && !isAnalyzing && (
+        <AnalysisEmptyState
+          onOpenBatchCapture={() => router.push(BATCH_CAPTURE_ROUTE)}
+        />
+      )}
 
       {analysisResult && (
         <ViewThemed style={{ flex: 1 }}>
@@ -582,7 +697,9 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
             style={{ flex: 1 }}
             config={{
               extraHeightAddWord:
-                120 + (isAlreadyInCollection && duplicateWordInfo ? 80 : 0),
+                120 +
+                (isAlreadyInCollection && duplicateWordInfo ? 80 : 0) +
+                (batchItemId ? 70 : 0),
             }}
           />
 
@@ -633,3 +750,36 @@ export function AddWordScreen({ preselectedCollectionId }: AddWordScreenProps) {
     </ViewThemed>
   )
 }
+
+const batchReviewStyles = StyleSheet.create({
+  container: {
+    borderRadius: 12,
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  textContainer: {
+    flex: 1,
+    gap: 2,
+  },
+  title: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  hint: {
+    fontSize: 12,
+  },
+  backButton: {
+    minHeight: 36,
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  backButtonText: {
+    color: Colors.primary.DEFAULT,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+})

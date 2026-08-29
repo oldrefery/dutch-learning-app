@@ -15,6 +15,7 @@ import {
   SynonymsAntonymsSection,
   ConjugationSection,
   NotesSection,
+  UsageNotesSection,
   ActionsSection,
 } from './sections'
 
@@ -29,6 +30,7 @@ const FULL_CONFIG: WordCardConfig = {
   showGrammarInfo: true,
   showConjugation: true,
   showNotes: true,
+  showUsageNotes: true,
   enablePronunciation: true,
   enableImageChange: true,
   scrollable: true,
@@ -84,6 +86,7 @@ export function UniversalWordCard({
       <View style={{ height: finalConfig.extraHeightAddWord }} />
       <HeaderSection {...sectionProps} />
       <TranslationsSection {...sectionProps} />
+      <UsageNotesSection {...sectionProps} />
       <ConjugationSection {...sectionProps} />
       <ExamplesSection {...sectionProps} />
       <ImageSection {...sectionProps} />
@@ -168,6 +171,7 @@ export const WordCardPresets = {
       showAntonyms: false,
       showConjugation: false,
       showNotes: false,
+      showUsageNotes: false,
       enableImageChange: false,
       scrollable: false,
       compact: true,

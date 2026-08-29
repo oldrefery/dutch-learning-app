@@ -24,6 +24,7 @@ describe('WordRepository', () => {
 
   const mockDatabase = {
     prepareAsync: jest.fn(),
+    runAsync: jest.fn(),
     getAllAsync: jest.fn(),
     getFirstAsync: jest.fn(),
     execAsync: jest.fn(),
@@ -185,6 +186,15 @@ describe('WordRepository', () => {
         tts_url: 'https://example.com/house.mp3',
         last_reviewed_at: CREATED_AT,
         analysis_notes: 'Common noun',
+        usage_notes: {
+          summary: 'Use huis in everyday conversation.',
+          contrasts: [
+            {
+              term: 'woning',
+              distinction: 'Woning is common in formal housing contexts.',
+            },
+          ],
+        },
       }
 
       await wordRepository.saveWords([populatedWord])
@@ -203,6 +213,7 @@ describe('WordRepository', () => {
           'https://example.com/house.png',
           'https://example.com/house.mp3',
           'Common noun',
+          JSON.stringify(populatedWord.usage_notes),
         ])
       )
     })
@@ -396,6 +407,82 @@ describe('WordRepository', () => {
     })
   })
 
+  describe('updateAnalyzedWord', () => {
+    it('should update the existing word instead of inserting it again', async () => {
+      const analyzedWord = {
+        ...mockWord,
+        dutch_lemma: 'woning',
+        translations: { en: ['home'], ru: ['жилище'] },
+        updated_at: '2026-08-28T12:00:00.000Z',
+      }
+      mockDatabase.runAsync.mockResolvedValue({ changes: 1 })
+
+      const result = await wordRepository.updateAnalyzedWord(analyzedWord)
+
+      expect(result).toEqual(analyzedWord)
+      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(1)
+      expect(mockDatabase.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE words SET'),
+        expect.arrayContaining([
+          analyzedWord.dutch_lemma,
+          JSON.stringify(analyzedWord.translations),
+          analyzedWord.word_id,
+          analyzedWord.user_id,
+        ])
+      )
+    })
+
+    it('should preserve the current semantic key when analysis collides', async () => {
+      const semanticConflict = new Error(
+        "UNIQUE constraint failed: index 'idx_words_semantic_key'"
+      )
+      const analyzedWord = {
+        ...mockWord,
+        dutch_lemma: 'duplicate',
+        part_of_speech: 'noun',
+        article: 'de' as const,
+      }
+      mockDatabase.runAsync
+        .mockRejectedValueOnce(semanticConflict)
+        .mockResolvedValueOnce({ changes: 1 })
+      mockDatabase.getFirstAsync.mockResolvedValue({
+        ...mockWord,
+        translations: JSON.stringify(mockWord.translations),
+        examples: null,
+        synonyms: JSON.stringify(mockWord.synonyms),
+        antonyms: JSON.stringify(mockWord.antonyms),
+        conjugation: null,
+        dutch_lemma: 'huis',
+        part_of_speech: 'noun',
+        article: 'het',
+        sync_status: 'synced',
+      })
+
+      const result = await wordRepository.updateAnalyzedWord(analyzedWord)
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          dutch_lemma: 'huis',
+          part_of_speech: 'noun',
+          article: 'het',
+        })
+      )
+      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(2)
+      expect(mockDatabase.getFirstAsync).toHaveBeenCalledWith(
+        expect.stringContaining('word_id = ?'),
+        [analyzedWord.word_id, analyzedWord.user_id]
+      )
+    })
+
+    it('should fail when the target word no longer exists', async () => {
+      mockDatabase.runAsync.mockResolvedValue({ changes: 0 })
+
+      await expect(wordRepository.updateAnalyzedWord(mockWord)).rejects.toThrow(
+        `Cannot update missing word: ${mockWord.word_id}`
+      )
+    })
+  })
+
   describe('getWordsByUserId', () => {
     it('should retrieve words by user ID', async () => {
       const mockRow = {
@@ -452,6 +539,31 @@ describe('WordRepository', () => {
           ru: ['дом'],
         })
       }
+    })
+
+    it('should parse optional usage notes from local JSON', async () => {
+      const usageNotes = {
+        summary: 'Use huis for the everyday concept of a home.',
+        contrasts: [],
+      }
+      mockDatabase.getAllAsync.mockResolvedValue([
+        {
+          word_id: WORD_ID_1,
+          user_id: USER_ID,
+          dutch_lemma: 'huis',
+          translations: '{"en":["house"]}',
+          usage_notes: JSON.stringify(usageNotes),
+          interval_days: 1,
+          repetition_count: 0,
+          easiness_factor: 2.5,
+          next_review_date: NEXT_REVIEW_DATE,
+          created_at: CREATED_AT,
+        },
+      ])
+
+      const result = await wordRepository.getWordsByUserId(USER_ID)
+
+      expect(result[0].usage_notes).toEqual(usageNotes)
     })
   })
 

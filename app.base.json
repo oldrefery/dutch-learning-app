@@ -3,7 +3,7 @@
     "name": "De Woordenaar",
     "slug": "dutch-learning-app",
     "description": "AI-powered Dutch vocabulary learning app with spaced repetition system",
-    "version": "1.13.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icons/ios-light.png",
     "scheme": "dutchlearning",
@@ -21,24 +21,27 @@
       "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "com.oldrefery.dutch-learning-app",
-      "buildNumber": "78",
+      "buildNumber": "79",
       "icon": "./src/assets/icons/ios-light.png",
       "infoPlist": {
-        "UIBackgroundModes": ["audio"],
+        "UIBackgroundModes": [],
         "ITSAppUsesNonExemptEncryption": false
       },
       "appleTeamId": "7FQ395U52U"
     },
     "android": {
-      "versionCode": 78,
+      "versionCode": 79,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.VIBRATE"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ],
       "softwareKeyboardLayoutMode": "pan",
       "package": "com.oldrefery.dutchlearningapp",
@@ -68,7 +71,16 @@
       "expo-router",
       "expo-updates",
       "expo-sqlite",
-      "expo-audio",
+      "expo-asset",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundRecording": false,
+          "enableBackgroundPlayback": false
+        }
+      ],
       "expo-apple-authentication",
       [
         "@sentry/react-native/expo",

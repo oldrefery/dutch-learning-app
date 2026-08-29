@@ -1,4 +1,9 @@
 import { API_CONFIG } from './constants.ts'
+import type {
+  WordUsageContrast,
+  WordUsageExample,
+  WordUsageNotes,
+} from './types.ts'
 
 // Helper function to call Gemini API
 export async function callGeminiAPI(prompt: string): Promise<any> {
@@ -29,6 +34,7 @@ export async function callGeminiAPI(prompt: string): Promise<any> {
         topK: 40,
         topP: 0.95,
         maxOutputTokens: 8192,
+        responseMimeType: 'application/json',
       },
     }),
   })
@@ -120,6 +126,57 @@ export function formatTranslations(translations: any): {
       .filter((t: any) => t && typeof t === 'string')
       .map((t: string) => t.trim()),
   }
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const normalizeRequiredText = (
+  value: unknown,
+  maxLength: number
+): string | null => {
+  if (typeof value !== 'string') return null
+  const normalized = value.trim()
+  if (!normalized) return null
+  return normalized.slice(0, maxLength)
+}
+
+function normalizeUsageExample(value: unknown): WordUsageExample | undefined {
+  if (!isRecord(value)) return undefined
+
+  const nl = normalizeRequiredText(value.nl, 280)
+  const en = normalizeRequiredText(value.en, 280)
+  if (!nl || !en) return undefined
+
+  const ru = normalizeRequiredText(value.ru, 280)
+  return ru ? { nl, en, ru } : { nl, en }
+}
+
+function normalizeUsageContrast(value: unknown): WordUsageContrast | null {
+  if (!isRecord(value)) return null
+
+  const term = normalizeRequiredText(value.term, 80)
+  const distinction = normalizeRequiredText(value.distinction, 320)
+  if (!term || !distinction) return null
+
+  const example = normalizeUsageExample(value.example)
+  return example ? { term, distinction, example } : { term, distinction }
+}
+
+export function normalizeUsageNotes(value: unknown): WordUsageNotes | null {
+  if (!isRecord(value)) return null
+
+  const summary = normalizeRequiredText(value.summary, 420)
+  if (!summary) return null
+
+  const contrasts = Array.isArray(value.contrasts)
+    ? value.contrasts
+        .map(normalizeUsageContrast)
+        .filter((contrast): contrast is WordUsageContrast => contrast !== null)
+        .slice(0, 3)
+    : []
+
+  return { summary, contrasts }
 }
 
 // Helper function to parse input word and detect article/lemma

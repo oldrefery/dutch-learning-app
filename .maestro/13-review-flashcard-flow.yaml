@@ -15,39 +15,58 @@ appId: ${APP_ID}
 - runFlow:
     file: flows/ensure-on-screen.yaml
     env:
-      screen_id: "screen-add-word"
-      tab_text: "Add Word"
+      screen_id: 'screen-add-word'
+      tab_text: 'Add Word'
 
 # First, add a word to ensure we have something to review
 - tapOn:
-    text: "Add Word"
+    text: 'Add Word'
 - waitForAnimationToEnd
 - tapOn:
-    id: "word-input"
-- inputText: "slapen"
-- hideKeyboard
-- tapOn:
-    id: "analyze-button"
+    id: 'word-input'
+- inputText: 'slapen'
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: 'Search'
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard
+      - tapOn:
+          id: 'analyze-button'
 - extendedWaitUntil:
-    visible: "to sleep"
+    visible: 'to sleep'
     timeout: 15000
 - scroll
 - tapOn:
-    id: "collection-selector"
+    id: 'collection-selector'
 - tapOn:
-    text: "My Words"
+    text: 'My Words'
 - tapOn:
-    id: "save-word-button"
+    id: 'save-word-button'
 - waitForAnimationToEnd
 
 # Navigate to Review tab
 - tapOn:
-    text: "Review"
+    text: 'Review'
 - waitForAnimationToEnd
 
 # Verify review screen loaded
 - assertVisible:
-    id: "screen-review"
+    id: 'screen-review'
+
+# Choose Meaning Recall for the first session
+- assertVisible:
+    id: 'review-mode-selector'
+- tapOn:
+    id: 'review-mode-meaning-recall'
+- tapOn:
+    id: 'start-review-button'
+- waitForAnimationToEnd
 
 # Cycle through cards until "slapen" appears (handle existing reviews)
 - repeat:
@@ -55,40 +74,49 @@ appId: ${APP_ID}
     commands:
       - runFlow:
           when:
-            visible: "Great job"
+            visible:
+              id: 'change-review-mode-button'
           commands:
             - tapOn:
-                text: "Review Again"
+                text: 'Review Again'
             - waitForAnimationToEnd
       - runFlow:
           when:
-            notVisible: "slapen"
+            notVisible: 'slapen'
           commands:
+            - runFlow:
+                when:
+                  visible:
+                    id: 'reveal-answer-button'
+                commands:
+                  - tapOn:
+                      id: 'reveal-answer-button'
             - tapOn:
-                id: "srs-good-button"
+                id: 'srs-good-button'
             - waitForAnimationToEnd
 
 # Verify flashcard front shows (Dutch word)
 - extendedWaitUntil:
-    visible: "slapen"
+    visible: 'slapen'
     timeout: 8000
 
-# Tap to flip card
-- tapOn: "slapen"
+# Reveal with the visible control
+- tapOn:
+    id: 'reveal-answer-button'
 - waitForAnimationToEnd
 
 # Verify card back shows (translation and examples)
-- assertVisible: "to sleep"
+- assertVisible: 'to sleep'
 
 # Verify SRS buttons are visible
-- assertVisible: "Again"
-- assertVisible: "Hard"
-- assertVisible: "Good"
-- assertVisible: "Easy"
+- assertVisible: 'Again'
+- assertVisible: 'Hard'
+- assertVisible: 'Good'
+- assertVisible: 'Easy'
 
 # Rate the word as "Good"
 - tapOn:
-    id: "srs-good-button"
+    id: 'srs-good-button'
 - waitForAnimationToEnd
 
 # Wait a moment for animation
@@ -103,41 +131,144 @@ appId: ${APP_ID}
 # - Next card appears (if there are more words to review)
 - runFlow:
     when:
-      visible: "Great job"
+      visible:
+        id: 'change-review-mode-button'
     commands:
       # Session completed - verify completion screen
-      - assertVisible: "Review Again"
+      - assertVisible: 'Review Again'
 
 - runFlow:
     when:
-      notVisible: "Great job"
+      notVisible:
+        id: 'change-review-mode-button'
     commands:
       # More cards available - verify next card loaded
       # Just check that Review tab is still active
       - assertVisible:
-          id: "screen-review"
+          id: 'screen-review'
+
+# Finish any remaining Meaning Recall cards
+- repeat:
+    times: 8
+    commands:
+      - runFlow:
+          when:
+            notVisible:
+              id: 'change-review-mode-button'
+          commands:
+            - runFlow:
+                when:
+                  visible:
+                    id: 'reveal-answer-button'
+                commands:
+                  - tapOn:
+                      id: 'reveal-answer-button'
+            - runFlow:
+                when:
+                  visible:
+                    id: 'srs-good-button'
+                commands:
+                  - tapOn:
+                      id: 'srs-good-button'
+- extendedWaitUntil:
+    visible:
+      id: 'change-review-mode-button'
+    timeout: 15000
+
+# Add a fresh due word and complete Dutch Production
+- tapOn:
+    id: 'change-review-mode-button'
+- waitForAnimationToEnd
+- runFlow:
+    file: flows/add-word-for-review.yaml
+    env:
+      word_text: 'koken'
+      translation_text: 'to cook'
+- tapOn:
+    text: 'Review'
+- tapOn:
+    id: 'review-mode-dutch-production'
+- tapOn:
+    id: 'start-review-button'
+- extendedWaitUntil:
+    visible:
+      id: 'dutch-production-card'
+    timeout: 15000
+- tapOn:
+    id: 'reveal-answer-button'
+- assertVisible: 'koken'
+- tapOn:
+    id: 'srs-good-button'
+- extendedWaitUntil:
+    visible:
+      id: 'change-review-mode-button'
+    timeout: 15000
+
+# Add a fresh due word and complete Recognition. Previously reviewed words
+# remain available as deterministic distractors.
+- tapOn:
+    id: 'change-review-mode-button'
+- waitForAnimationToEnd
+- runFlow:
+    file: flows/add-word-for-review.yaml
+    env:
+      word_text: 'lezen'
+      translation_text: 'to read'
+- tapOn:
+    text: 'Review'
+- tapOn:
+    id: 'review-mode-recognition'
+- tapOn:
+    id: 'start-review-button'
+- extendedWaitUntil:
+    visible:
+      id: 'recognition-card'
+    timeout: 15000
+- tapOn:
+    text: 'to read'
+- assertVisible:
+    id: 'srs-good-button'
+- tapOn:
+    id: 'srs-good-button'
+- extendedWaitUntil:
+    visible:
+      id: 'change-review-mode-button'
+    timeout: 15000
 
 # Cleanup: delete added word and return to Collections
 - tapOn:
-    text: "Collections"
+    text: 'Collections'
+- waitForAnimationToEnd
+- swipe:
+    start: '50%,80%'
+    end: '50%,30%'
+    duration: 800
 - waitForAnimationToEnd
 - tapOn:
-    text: "My Words"
+    text: 'My Words'
 - waitForAnimationToEnd
 - runFlow:
     file: flows/delete-word-by-swipe.yaml
     env:
-      word_text: "slapen"
+      word_text: 'slapen'
+- runFlow:
+    file: flows/delete-word-by-swipe.yaml
+    env:
+      word_text: 'koken'
+- runFlow:
+    file: flows/delete-word-by-swipe.yaml
+    env:
+      word_text: 'lezen'
 - runFlow:
     when:
       visible:
-        id: "modal-close-button"
+        id: 'modal-close-button'
     commands:
       - tapOn:
-          id: "modal-close-button"
+          id: 'modal-close-button'
       - waitForAnimationToEnd
 - tapOn:
-    text: "Back"
+    text: 'Back'
 - waitForAnimationToEnd
 - assertVisible:
-    id: "screen-collections"
+    id: 'screen-collections'

@@ -45,6 +45,9 @@
     "e2e-test": {
       "withoutCredentials": true,
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_E2E_TEST_MODE": "true"
+      },
       "ios": {
         "simulator": true,
         "buildConfiguration": "Release"
@@ -58,7 +61,7 @@
     "production": {
       "ios": {
         "appleTeamId": "7FQ395U52U",
-        "ascAppId": "6738736062"
+        "ascAppId": "6752469146"
       },
       "android": {
         "track": "internal",

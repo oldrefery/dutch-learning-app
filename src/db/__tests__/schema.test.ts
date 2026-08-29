@@ -1,6 +1,8 @@
 import {
   MIGRATION_V5_TOMBSTONE_INDEXES,
   MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS,
+  MIGRATION_V7_REVIEW_EVENTS,
+  MIGRATION_V8_ADD_USAGE_NOTES,
   SQL_SCHEMA,
 } from '../schema'
 import fs from 'node:fs'
@@ -34,6 +36,118 @@ describe('delete tombstone schema', () => {
       'OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL'
     )
     expect(migration).toContain(ACTIVE_WORD_PREDICATE)
+  })
+})
+
+describe('usage notes schema', () => {
+  const migrationPath = path.resolve(
+    process.cwd(),
+    'supabase/migrations/20260829110000_add_usage_notes.sql'
+  )
+  const migration = fs.readFileSync(migrationPath, 'utf8')
+  const cacheUtils = fs.readFileSync(
+    path.resolve(
+      process.cwd(),
+      'supabase/functions/gemini-handler/cacheUtils.ts'
+    ),
+    'utf8'
+  )
+
+  it('keeps local usage guidance optional and forward-migratable', () => {
+    expect(SQL_SCHEMA).toContain('usage_notes TEXT')
+    expect(MIGRATION_V8_ADD_USAGE_NOTES).toContain(
+      'ALTER TABLE words ADD COLUMN usage_notes TEXT'
+    )
+  })
+
+  it('adds nullable JSON objects remotely without a data backfill', () => {
+    expect(migration).toContain(
+      'ALTER TABLE public.words\nADD COLUMN IF NOT EXISTS usage_notes JSONB'
+    )
+    expect(migration).toContain(
+      'ALTER TABLE public.word_analysis_cache\nADD COLUMN IF NOT EXISTS usage_notes JSONB'
+    )
+    expect(migration).toContain("jsonb_typeof(usage_notes) = 'object'")
+    expect(migration).not.toMatch(
+      /UPDATE\s+(public\.)?(words|word_analysis_cache)/i
+    )
+  })
+
+  it('invalidates legacy shared analyses and writes cache version 2', () => {
+    expect(cacheUtils).toContain('CURRENT_ANALYSIS_CACHE_VERSION = 2')
+    expect(cacheUtils).toContain(
+      ".eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)"
+    )
+    expect(cacheUtils).toContain(
+      'cache_version: CURRENT_ANALYSIS_CACHE_VERSION'
+    )
+  })
+})
+
+describe('access-level synchronization schema', () => {
+  const migrationPath = path.resolve(
+    process.cwd(),
+    'supabase/migrations/20260829120000_fix_sync_user_access_levels_return_type.sql'
+  )
+  const migration = fs.readFileSync(migrationPath, 'utf8')
+
+  it('replaces the function idempotently with an explicit email text cast', () => {
+    expect(migration).toContain(
+      'CREATE OR REPLACE FUNCTION public.sync_user_access_levels()'
+    )
+    expect(migration).toContain('email TEXT')
+    expect(migration).toContain('au.email::TEXT')
+    expect(migration).not.toContain('DROP FUNCTION')
+  })
+})
+
+describe('review event history schema', () => {
+  const migrationPath = path.resolve(
+    process.cwd(),
+    'supabase/migrations/20260829100000_create_review_events.sql'
+  )
+  const migration = fs.readFileSync(migrationPath, 'utf8')
+
+  it('creates bounded local event data without card content', () => {
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain(
+      'CREATE TABLE IF NOT EXISTS review_events'
+    )
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain('response_time_ms <= 3600000')
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain(
+      'FOREIGN KEY (word_id) REFERENCES words(word_id) ON DELETE CASCADE'
+    )
+    expect(MIGRATION_V7_REVIEW_EVENTS).not.toMatch(
+      /dutch_lemma|translations|examples/
+    )
+  })
+
+  it('uses deterministic local indexes and removes history on tombstones', () => {
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain(
+      'ON review_events(user_id, created_at, event_id)'
+    )
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain(
+      'delete_review_events_for_tombstoned_word'
+    )
+  })
+
+  it('enforces owner-only append semantics remotely', () => {
+    expect(migration).toContain('CREATE TABLE public.review_events')
+    expect(migration).toContain(
+      'ALTER TABLE public.review_events ENABLE ROW LEVEL SECURITY'
+    )
+    expect(migration).toContain('Users can view their own review events')
+    expect(migration).toContain('Users can create their own review events')
+    expect(migration).toContain('Users can retry their own review events')
+    expect(migration).not.toContain('FOR DELETE')
+    expect(migration).toContain('review_events rows are immutable')
+  })
+
+  it('cascades hard and soft parent deletion', () => {
+    expect(migration).toContain('REFERENCES public.users(id) ON DELETE CASCADE')
+    expect(migration).toContain(
+      'REFERENCES public.words(word_id) ON DELETE CASCADE'
+    )
+    expect(migration).toContain('delete_review_events_on_word_tombstone')
   })
 })
 

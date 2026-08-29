@@ -30,24 +30,21 @@ const showAppErrorToast = (appError: AppError) => {
   }
 }
 
-const handleWordAnalysisError = (error: unknown) => {
+const handleWordAnalysisError = (error: unknown): string => {
   if (isAppError(error)) {
     showAppErrorToast(error)
-    return
+    return error.userMessage
   }
 
   if (error instanceof Error) {
-    ToastService.show(
-      error.message || 'Could not analyze word. Please try again.',
-      ToastType.ERROR
-    )
-    return
+    const message = error.message || 'Could not analyze word. Please try again.'
+    ToastService.show(message, ToastType.ERROR)
+    return message
   }
 
-  ToastService.show(
-    'An unexpected error occurred. Please try again.',
-    ToastType.ERROR
-  )
+  const message = 'An unexpected error occurred. Please try again.'
+  ToastService.show(message, ToastType.ERROR)
+  return message
 }
 
 const applyAnalysisMetadata = (
@@ -80,6 +77,7 @@ export const useWordAnalysis = () => {
   )
   const [analysisMetadata, setAnalysisMetadata] =
     useState<AnalysisMetadata | null>(null)
+  const [analysisError, setAnalysisError] = useState<string | null>(null)
   const analyzeWord = async (
     inputWord: string,
     forceRefresh: boolean = false
@@ -95,6 +93,7 @@ export const useWordAnalysis = () => {
     // This prevents useEffect from triggering duplicate check prematurely
     setAnalysisResult(null)
     setAnalysisMetadata(null)
+    setAnalysisError(null)
 
     setIsAnalyzing(true)
 
@@ -106,7 +105,12 @@ export const useWordAnalysis = () => {
 
       // Validate response structure
       if (!response || !response.data) {
-        throw new Error('Invalid response from word analysis')
+        setAnalysisError(
+          handleWordAnalysisError(
+            new Error('Invalid response from word analysis')
+          )
+        )
+        return
       }
 
       const analysis = response.data
@@ -137,6 +141,7 @@ export const useWordAnalysis = () => {
         preposition: analysis.preposition || undefined,
         register: analysis.register || undefined,
         analysis_notes: analysis.analysis_notes || '',
+        usage_notes: analysis.usage_notes || null,
       }
 
       setAnalysisResult(result)
@@ -150,7 +155,7 @@ export const useWordAnalysis = () => {
 
       applyAnalysisMetadata(response.meta, setAnalysisMetadata)
     } catch (error: unknown) {
-      handleWordAnalysisError(error)
+      setAnalysisError(handleWordAnalysisError(error))
     } finally {
       setIsAnalyzing(false)
     }
@@ -159,6 +164,7 @@ export const useWordAnalysis = () => {
   const clearAnalysis = () => {
     setAnalysisResult(null)
     setAnalysisMetadata(null)
+    setAnalysisError(null)
   }
 
   const forceRefreshAnalysis = async (inputWord: string) => {
@@ -178,6 +184,7 @@ export const useWordAnalysis = () => {
     isAnalyzing,
     analysisResult,
     analysisMetadata,
+    analysisError,
     analyzeWord,
     clearAnalysis,
     forceRefreshAnalysis,

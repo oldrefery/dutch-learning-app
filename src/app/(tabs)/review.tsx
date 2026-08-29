@@ -1,4 +1,5 @@
-import React, { useRef, useState, useCallback, useMemo } from 'react'
+import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react'
+import { useRouter, type Href } from 'expo-router'
 import {
   TouchableOpacity,
   ActivityIndicator,
@@ -8,20 +9,15 @@ import {
   StyleSheet,
   useColorScheme,
 } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { Gesture } from 'react-native-gesture-handler'
 import type { GestureType } from 'react-native-gesture-handler'
 import { scheduleOnRN } from 'react-native-worklets'
-import { useFocusEffect } from 'expo-router'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
 import WordDetailModal from '@/components/WordDetailModal'
-import { CardFront } from '@/components/ReviewCard/CardFront'
-import {
-  UniversalWordCard,
-  WordCardPresets,
-} from '@/components/UniversalWordCard'
-import { GlassHeader } from '@/components/glass/GlassHeader'
-import { GestureErrorBoundary } from '@/components/GestureErrorBoundary'
+import { ReviewModeSelector } from '@/components/ReviewModeSelector'
+import { ReviewAssessmentControls } from '@/components/ReviewModes/ReviewAssessmentControls'
+import { ReviewSessionCard } from '@/components/ReviewModes/ReviewSessionCard'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { useReviewScreen } from '@/hooks/useReviewScreen'
@@ -33,30 +29,180 @@ import type { Word } from '@/types/database'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Sentry } from '@/lib/sentry'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
-import { ParentGestureContext } from '@/contexts/ParentGestureContext'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { GlassHeaderDefaults } from '@/constants/GlassConstants'
+import {
+  REVIEW_MODE,
+  REVIEW_SCOPE,
+  REVIEW_SESSION_MODE,
+} from '@/constants/ReviewConstants'
+import { useSettingsStore } from '@/stores/useSettingsStore'
+import type { ReviewMode, ReviewSessionMode } from '@/types/ReviewTypes'
+import type { RecognitionOption } from '@/utils/reviewDistractors'
+import {
+  buildRecognitionOptions,
+  getPreferredTranslation,
+} from '@/utils/reviewDistractors'
+import { getAdaptiveReviewModeExplanation } from '@/utils/reviewModePolicy'
+import { ROUTES } from '@/constants/Routes'
+import {
+  LEARNING_GUIDE_VERSION,
+  shouldShowLearningGuideIntroduction,
+} from '@/components/LearningGuide'
 
-export default function ReviewScreen() {
-  const colorScheme = useColorScheme()
-  const insets = useSafeAreaInsets()
+const showReanalysisError = (error: unknown) => {
+  const message =
+    error instanceof Error ? error.message : 'Could not re-analyze word'
+  ToastService.show(message, ToastType.ERROR)
+}
+
+interface ReviewModePresentation {
+  effectiveMode: ReviewMode
+  preferredTranslation: string | null
+  recognitionOptions: RecognitionOption[] | null
+  fallbackMessage: string | null
+}
+
+const getReviewModePresentation = (
+  configuredMode: ReviewMode,
+  currentWord: Word | null,
+  vocabulary: Word[]
+): ReviewModePresentation => {
+  const preferredTranslation = currentWord
+    ? getPreferredTranslation(currentWord)
+    : null
+
+  if (configuredMode === REVIEW_MODE.RECOGNITION && currentWord) {
+    const recognitionOptions = buildRecognitionOptions(currentWord, vocabulary)
+    return recognitionOptions
+      ? {
+          effectiveMode: configuredMode,
+          preferredTranslation,
+          recognitionOptions,
+          fallbackMessage: null,
+        }
+      : {
+          effectiveMode: REVIEW_MODE.MEANING_RECALL,
+          preferredTranslation,
+          recognitionOptions: null,
+          fallbackMessage:
+            'Not enough distinct translations. Using Meaning Recall for this word.',
+        }
+  }
+
+  if (
+    configuredMode === REVIEW_MODE.DUTCH_PRODUCTION &&
+    currentWord &&
+    !preferredTranslation
+  ) {
+    return {
+      effectiveMode: REVIEW_MODE.MEANING_RECALL,
+      preferredTranslation: null,
+      recognitionOptions: null,
+      fallbackMessage:
+        'No translation is available. Using Meaning Recall for this word.',
+    }
+  }
+
+  return {
+    effectiveMode: configuredMode,
+    preferredTranslation,
+    recognitionOptions: null,
+    fallbackMessage: null,
+  }
+}
+
+function useReviewWordDetails(currentWord: Word | null) {
   const [selectedWord, setSelectedWord] = useState<Word | null>(null)
   const [modalVisible, setModalVisible] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
   const [isReanalyzing, setIsReanalyzing] = useState(false)
+  const reanalyzeWord = useApplicationStore(state => state.reanalyzeWord)
+  const updateCurrentWordInReview = useApplicationStore(
+    state => state.updateCurrentWordInReview
+  )
+
+  const handleOpenDetails = useCallback(() => {
+    if (!currentWord) return
+    setSelectedWord(currentWord)
+    setModalVisible(true)
+  }, [currentWord])
+
+  const handleCloseDetails = useCallback(() => {
+    setModalVisible(false)
+    setSelectedWord(null)
+  }, [])
+
+  const handleReanalyzeSelectedWord = useCallback(async () => {
+    if (!selectedWord) return
+
+    setIsReanalyzing(true)
+    try {
+      const updatedWord = await reanalyzeWord(selectedWord.word_id)
+      if (!updatedWord) {
+        ToastService.show('Failed to re-analyze word', ToastType.ERROR)
+        return
+      }
+      setSelectedWord(updatedWord)
+      updateCurrentWordInReview(updatedWord)
+      ToastService.show('Word re-analyzed successfully', ToastType.SUCCESS)
+    } catch (error: unknown) {
+      showReanalysisError(error)
+    } finally {
+      setIsReanalyzing(false)
+    }
+  }, [reanalyzeWord, selectedWord, updateCurrentWordInReview])
+
+  const handleReanalyzeCurrentWord = useCallback(async () => {
+    if (!currentWord) return
+
+    setIsReanalyzing(true)
+    try {
+      const updatedWord = await reanalyzeWord(currentWord.word_id)
+      if (!updatedWord) {
+        ToastService.show('Failed to re-analyze word', ToastType.ERROR)
+        return
+      }
+      updateCurrentWordInReview(updatedWord)
+      ToastService.show('Word re-analyzed successfully', ToastType.SUCCESS)
+    } catch (error: unknown) {
+      showReanalysisError(error)
+    } finally {
+      setIsReanalyzing(false)
+    }
+  }, [currentWord, reanalyzeWord, updateCurrentWordInReview])
+
+  return {
+    selectedWord,
+    modalVisible,
+    isReanalyzing,
+    handleOpenDetails,
+    handleCloseDetails,
+    handleReanalyzeSelectedWord,
+    handleReanalyzeCurrentWord,
+  }
+}
+
+export default function ReviewScreen() {
+  const router = useRouter()
+  const colorScheme = useColorScheme()
+  const insets = useSafeAreaInsets()
+  const [refreshing, setRefreshing] = useState(false)
   const pronunciationRef = useRef<View>(null)
   const tapGestureRef = useRef<GestureType | undefined>(undefined)
 
   const {
     // State
+    reviewSession,
     currentWord,
     sessionComplete,
     reviewWords,
+    availableWords,
     isLoading,
     totalWords,
     currentWordNumber,
     isFlipped,
     isPlayingAudio,
+    sessionEmpty,
     // Actions
     playAudio,
     handleAgain,
@@ -65,96 +211,155 @@ export default function ReviewScreen() {
     handleEasy,
     handleDeleteWord,
     handleImageChange,
+    startSession,
     restartSession,
+    chooseAnotherMode,
     handleFlipCard,
+    revealAnswer,
     goToNextWord,
     goToPreviousWord,
   } = useReviewScreen()
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
+  const {
+    selectedWord,
+    modalVisible,
+    isReanalyzing,
+    handleOpenDetails,
+    handleCloseDetails,
+    handleReanalyzeSelectedWord,
+    handleReanalyzeCurrentWord,
+  } = useReviewWordDetails(currentWord)
 
-  // Use separate selectors to avoid unstable object references with Zustand
-  const startReviewSession = useApplicationStore(
-    state => state.startReviewSession
+  const lastSelectedReviewMode = useSettingsStore(
+    state => state.lastSelectedReviewMode
   )
-  const reanalyzeWord = useApplicationStore(state => state.reanalyzeWord)
-  const updateCurrentWordInReview = useApplicationStore(
-    state => state.updateCurrentWordInReview
+  const setLastSelectedReviewMode = useSettingsStore(
+    state => state.setLastSelectedReviewMode
   )
+  const adaptiveReviewEnabled = useSettingsStore(
+    state => state.adaptiveReviewEnabled
+  )
+  const learningGuideVersionSeen = useSettingsStore(
+    state => state.learningGuideVersionSeen
+  )
+  const markLearningGuideVersionSeen = useSettingsStore(
+    state => state.markLearningGuideVersionSeen
+  )
+  const [settingsHydrated, setSettingsHydrated] = useState(
+    useSettingsStore.persist.hasHydrated()
+  )
+  const [selectedRecognitionOption, setSelectedRecognitionOption] =
+    useState<RecognitionOption | null>(null)
+
+  useEffect(() => {
+    if (useSettingsStore.persist.hasHydrated()) {
+      setSettingsHydrated(true)
+      return
+    }
+
+    return useSettingsStore.persist.onFinishHydration(() => {
+      setSettingsHydrated(true)
+    })
+  }, [])
 
   // Enable pull-to-refresh to also refresh review count (badge)
   const { refreshCount } = useReviewWordsCount()
 
-  // Auto-fetch review words when the screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      // Only auto-fetch if there are no words or the session is complete
-      if (reviewWords.length === 0 || sessionComplete) {
-        startReviewSession()
-      }
-    }, [reviewWords.length, sessionComplete, startReviewSession])
+  const sessionMode = reviewSession?.config.mode ?? lastSelectedReviewMode
+  const adaptiveDecision = currentWord
+    ? reviewSession?.adaptiveModeByWordId[currentWord.word_id]
+    : undefined
+  const configuredMode: ReviewMode =
+    sessionMode === REVIEW_SESSION_MODE.ADAPTIVE
+      ? (adaptiveDecision?.mode ?? REVIEW_MODE.RECOGNITION)
+      : sessionMode
+  const adaptiveMessage =
+    sessionMode === REVIEW_SESSION_MODE.ADAPTIVE && adaptiveDecision
+      ? getAdaptiveReviewModeExplanation(adaptiveDecision)
+      : null
+  const {
+    effectiveMode,
+    preferredTranslation,
+    recognitionOptions,
+    fallbackMessage,
+  } = useMemo(
+    () =>
+      getReviewModePresentation(configuredMode, currentWord, availableWords),
+    [availableWords, configuredMode, currentWord]
   )
 
-  const handleWordPress = useCallback(() => {
-    if (currentWord) {
-      setSelectedWord(currentWord)
-      setModalVisible(true)
-    }
-  }, [currentWord])
+  useEffect(() => {
+    setSelectedRecognitionOption(null)
+  }, [configuredMode, currentWord?.word_id])
 
-  const handleCloseModal = useCallback(() => {
-    setModalVisible(false)
-    setSelectedWord(null)
-  }, [])
+  const assessmentContext = useMemo(
+    () => ({
+      reviewMode: effectiveMode,
+      answeredCorrectly:
+        effectiveMode === REVIEW_MODE.RECOGNITION
+          ? (selectedRecognitionOption?.isCorrect ?? null)
+          : null,
+    }),
+    [effectiveMode, selectedRecognitionOption?.isCorrect]
+  )
+  const submitAgain = useCallback(
+    () => handleAgain(assessmentContext),
+    [assessmentContext, handleAgain]
+  )
+  const submitHard = useCallback(
+    () => handleHard(assessmentContext),
+    [assessmentContext, handleHard]
+  )
+  const submitGood = useCallback(
+    () => handleGood(assessmentContext),
+    [assessmentContext, handleGood]
+  )
+  const submitEasy = useCallback(
+    () => handleEasy(assessmentContext),
+    [assessmentContext, handleEasy]
+  )
 
-  const handleReanalyzeWord = useCallback(async () => {
-    if (!selectedWord) return
+  const handleModeSelect = useCallback(
+    (mode: ReviewSessionMode) => {
+      setLastSelectedReviewMode(mode)
+    },
+    [setLastSelectedReviewMode]
+  )
 
-    setIsReanalyzing(true)
-    try {
-      const updatedWord = await reanalyzeWord(selectedWord.word_id)
-      if (updatedWord) {
-        setSelectedWord(updatedWord)
-        updateCurrentWordInReview(updatedWord)
-        ToastService.show('Word re-analyzed successfully', ToastType.SUCCESS)
-      } else {
-        ToastService.show('Failed to re-analyze word', ToastType.ERROR)
-      }
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Could not re-analyze word'
-      ToastService.show(errorMessage, ToastType.ERROR)
-    } finally {
-      setIsReanalyzing(false)
-    }
-  }, [selectedWord, reanalyzeWord, updateCurrentWordInReview])
+  const handleStartSession = useCallback(
+    async (mode: ReviewSessionMode) => {
+      setLastSelectedReviewMode(mode)
+      await startSession({ mode, scope: REVIEW_SCOPE.ALL_DUE })
+    },
+    [setLastSelectedReviewMode, startSession]
+  )
 
-  const handleReanalyzeCurrentWord = useCallback(async () => {
-    if (!currentWord) return
+  const handleStartAudioReview = useCallback(() => {
+    router.push(ROUTES.AUDIO_REVIEW)
+  }, [router])
 
-    setIsReanalyzing(true)
-    try {
-      const updatedWord = await reanalyzeWord(currentWord.word_id)
-      if (updatedWord) {
-        updateCurrentWordInReview(updatedWord)
-        ToastService.show('Word re-analyzed successfully', ToastType.SUCCESS)
-      } else {
-        ToastService.show('Failed to re-analyze word', ToastType.ERROR)
-      }
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Could not re-analyze word'
-      ToastService.show(errorMessage, ToastType.ERROR)
-    } finally {
-      setIsReanalyzing(false)
-    }
-  }, [currentWord, reanalyzeWord, updateCurrentWordInReview])
+  const handleRecognitionOption = useCallback(
+    (option: RecognitionOption) => {
+      setSelectedRecognitionOption(option)
+      revealAnswer()
+    },
+    [revealAnswer]
+  )
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     try {
-      await Promise.all([refreshCount(), startReviewSession()])
+      await Promise.all([
+        refreshCount(),
+        startSession(
+          reviewSession?.config ?? {
+            mode: lastSelectedReviewMode,
+            scope: REVIEW_SCOPE.ALL_DUE,
+          }
+        ),
+      ])
     } catch (error) {
       Sentry.captureException(error, {
         tags: { operation: 'refreshReviewSession' },
@@ -163,7 +368,12 @@ export default function ReviewScreen() {
     } finally {
       setRefreshing(false)
     }
-  }, [refreshCount, startReviewSession])
+  }, [
+    lastSelectedReviewMode,
+    refreshCount,
+    reviewSession?.config,
+    startSession,
+  ])
 
   // Create completely stable gestures to prevent recreation
   // withRef exposes this gesture so NonSwipeableArea can block it via context
@@ -197,102 +407,51 @@ export default function ReviewScreen() {
       })
   }, [goToNextWord, goToPreviousWord]) // Only depend on navigation functions
 
-  const doubleTapGestureInstance = useMemo(() => {
-    return Gesture.Tap()
-      .numberOfTaps(2)
-      .maxDuration(400)
-      .maxDistance(10)
-      .onEnd(() => {
-        'worklet'
-        scheduleOnRN(handleWordPress)
-      })
-  }, [handleWordPress])
+  const lockedGestureInstance = useMemo(() => Gesture.Tap().enabled(false), [])
 
-  const renderCard = useCallback(() => {
-    if (!currentWord) {
-      return null
-    }
-
-    try {
-      // Front: tap to flip + pan to navigate + double-tap for detail modal
-      // Back: only pan (no parent tap so buttons work); header handles flip back
-      const gesture = isFlipped
-        ? panGestureInstance
-        : Gesture.Exclusive(
-            panGestureInstance,
-            Gesture.Simultaneous(tapGestureInstance, doubleTapGestureInstance)
-          )
-
-      return (
-        <GestureErrorBoundary>
-          <ParentGestureContext.Provider value={tapGestureRef}>
-            <GestureDetector gesture={gesture}>
-              <ViewThemed style={reviewScreenStyles.flashcard}>
-                {!isFlipped ? (
-                  <CardFront
-                    currentWord={currentWord}
-                    isPlayingAudio={isPlayingAudio}
-                    onPlayPronunciation={playAudio}
-                    pronunciationRef={pronunciationRef}
-                  />
-                ) : (
-                  <>
-                    <GlassHeader
-                      title={currentWord.dutch_lemma}
-                      onPress={handleFlipCard}
-                    />
-                    <UniversalWordCard
-                      word={currentWord}
-                      config={WordCardPresets.review.config}
-                      actions={{
-                        ...WordCardPresets.review.actions,
-                        onDelete: handleDeleteWord,
-                        showReanalyzeButton: true,
-                        onReanalyze: handleReanalyzeCurrentWord,
-                        isReanalyzing,
-                      }}
-                      isPlayingAudio={isPlayingAudio}
-                      onPlayPronunciation={playAudio}
-                      onChangeImage={openImageSelector}
-                      style={reviewScreenStyles.universalWordCard}
-                      contentStyle={{ paddingTop: GlassHeaderDefaults.height }}
-                    />
-                  </>
-                )}
-              </ViewThemed>
-            </GestureDetector>
-          </ParentGestureContext.Provider>
-        </GestureErrorBoundary>
-      )
-    } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'renderReviewCard' },
-        extra: { message: 'Error rendering card' },
-      })
-
-      return (
-        <ViewThemed style={reviewScreenStyles.flashcard}>
-          <TextThemed>Error rendering card</TextThemed>
+  if (isLoading) {
+    return (
+      <ViewThemed style={reviewScreenStyles.container} testID="screen-review">
+        <ViewThemed style={reviewScreenStyles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
+          <TextThemed
+            style={reviewScreenStyles.loadingText}
+            lightColor={Colors.neutral[500]}
+            darkColor={Colors.dark.textSecondary}
+          >
+            Loading review session...
+          </TextThemed>
         </ViewThemed>
-      )
-    }
-  }, [
-    currentWord,
-    isFlipped,
-    isPlayingAudio,
-    isReanalyzing,
-    playAudio,
-    handleFlipCard,
-    handleDeleteWord,
-    handleReanalyzeCurrentWord,
-    openImageSelector,
-    tapGestureInstance,
-    panGestureInstance,
-    doubleTapGestureInstance,
-  ])
+      </ViewThemed>
+    )
+  }
 
-  // Check if we should show the empty state first
-  if (reviewWords.length === 0 && !isLoading) {
+  if (!reviewSession && !sessionComplete && !sessionEmpty) {
+    return (
+      <ViewThemed
+        style={[reviewScreenStyles.container, { paddingTop: insets.top }]}
+        testID="screen-review"
+      >
+        <ReviewModeSelector
+          selectedMode={lastSelectedReviewMode}
+          onSelectMode={handleModeSelect}
+          onStart={handleStartSession}
+          onStartAudioReview={handleStartAudioReview}
+          adaptiveEnabled={adaptiveReviewEnabled}
+          showLearningGuideIntro={
+            settingsHydrated &&
+            shouldShowLearningGuideIntroduction(learningGuideVersionSeen)
+          }
+          onOpenLearningGuide={() => router.push(ROUTES.LEARNING_GUIDE as Href)}
+          onDismissLearningGuideIntro={() =>
+            markLearningGuideVersionSeen(LEARNING_GUIDE_VERSION)
+          }
+        />
+      </ViewThemed>
+    )
+  }
+
+  if (sessionEmpty) {
     return (
       <ViewThemed style={reviewScreenStyles.container} testID="screen-review">
         <ScrollView
@@ -321,28 +480,24 @@ export default function ReviewScreen() {
             All your words are scheduled for future review. Pull to refresh or
             add new words to practice.
           </TextThemed>
-        </ScrollView>
-      </ViewThemed>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <ViewThemed style={reviewScreenStyles.container} testID="screen-review">
-        <ViewThemed style={reviewScreenStyles.loadingContainer}>
-          <ActivityIndicator
-            size="large"
-            // color={REVIEW_SCREEN_CONSTANTS.COLORS.PRIMARY}
-            color={Colors.primary.DEFAULT}
-          />
-          <TextThemed
-            style={reviewScreenStyles.loadingText}
-            lightColor={Colors.neutral[500]}
-            darkColor={Colors.dark.textSecondary}
+          <TouchableOpacity
+            testID="change-review-mode-button"
+            style={[
+              reviewScreenStyles.secondaryButton,
+              {
+                borderColor:
+                  Colors[colorScheme === 'dark' ? 'dark' : 'light'].border,
+              },
+            ]}
+            onPress={chooseAnotherMode}
+            accessibilityRole="button"
+            accessibilityLabel="Choose another review mode"
           >
-            Loading review session...
-          </TextThemed>
-        </ViewThemed>
+            <TextThemed style={reviewScreenStyles.secondaryButtonText}>
+              Change Mode
+            </TextThemed>
+          </TouchableOpacity>
+        </ScrollView>
       </ViewThemed>
     )
   }
@@ -367,11 +522,28 @@ export default function ReviewScreen() {
           </TextThemed>
           <TouchableOpacity
             testID="review-again-button"
-            style={reviewScreenStyles.srsButton}
+            style={[
+              reviewScreenStyles.completionPrimaryButton,
+              reviewScreenStyles.revealButton,
+            ]}
             onPress={restartSession}
+            accessibilityRole="button"
+            accessibilityLabel="Review again"
+            accessibilityHint="Starts another session in the same mode"
           >
             <TextThemed style={reviewScreenStyles.buttonText}>
               Review Again
+            </TextThemed>
+          </TouchableOpacity>
+          <TouchableOpacity
+            testID="change-review-mode-button"
+            style={reviewScreenStyles.secondaryButton}
+            onPress={chooseAnotherMode}
+            accessibilityRole="button"
+            accessibilityLabel="Choose another review mode"
+          >
+            <TextThemed style={reviewScreenStyles.secondaryButtonText}>
+              Change Mode
             </TextThemed>
           </TouchableOpacity>
         </ViewThemed>
@@ -392,10 +564,54 @@ export default function ReviewScreen() {
         >
           {currentWordNumber} / {totalWords}
         </TextThemed>
+        {adaptiveMessage && (
+          <TextThemed
+            style={reviewScreenStyles.adaptiveModeText}
+            lightColor={Colors.neutral[600]}
+            darkColor={Colors.dark.textSecondary}
+            accessibilityLabel={adaptiveMessage}
+          >
+            {adaptiveMessage}
+          </TextThemed>
+        )}
+        {fallbackMessage && (
+          <TextThemed
+            style={reviewScreenStyles.fallbackText}
+            lightColor={Colors.warning.darkTheme}
+            darkColor={Colors.warning.dark}
+            accessibilityRole="alert"
+          >
+            {fallbackMessage}
+          </TextThemed>
+        )}
       </ViewThemed>
 
       <ViewThemed style={reviewScreenStyles.cardContainer}>
-        {renderCard()}
+        {currentWord && (
+          <ReviewSessionCard
+            word={currentWord}
+            configuredMode={configuredMode}
+            effectiveMode={effectiveMode}
+            preferredTranslation={preferredTranslation}
+            recognitionOptions={recognitionOptions}
+            selectedRecognitionOption={selectedRecognitionOption}
+            isFlipped={isFlipped}
+            isPlayingAudio={isPlayingAudio}
+            isReanalyzing={isReanalyzing}
+            tapGesture={tapGestureInstance}
+            panGesture={panGestureInstance}
+            lockedGesture={lockedGestureInstance}
+            tapGestureRef={tapGestureRef}
+            pronunciationRef={pronunciationRef}
+            onPlayAudio={playAudio}
+            onSelectRecognitionOption={handleRecognitionOption}
+            onFlip={handleFlipCard}
+            onOpenDetails={handleOpenDetails}
+            onDelete={handleDeleteWord}
+            onReanalyze={handleReanalyzeCurrentWord}
+            onChangeImage={openImageSelector}
+          />
+        )}
       </ViewThemed>
 
       <View
@@ -420,55 +636,21 @@ export default function ReviewScreen() {
           blurMethod="dimezisBlurView"
         />
         <View style={reviewScreenStyles.hairline} />
-        <View style={reviewScreenStyles.buttonsRow}>
-          <TouchableOpacity
-            testID="srs-again-button"
-            style={[
-              reviewScreenStyles.srsButton,
-              reviewScreenStyles.againButton,
-            ]}
-            onPress={handleAgain}
-            disabled={isLoading}
-          >
-            <TextThemed style={reviewScreenStyles.buttonText}>Again</TextThemed>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            testID="srs-hard-button"
-            style={[
-              reviewScreenStyles.srsButton,
-              reviewScreenStyles.hardButton,
-            ]}
-            onPress={handleHard}
-            disabled={isLoading}
-          >
-            <TextThemed style={reviewScreenStyles.buttonText}>Hard</TextThemed>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            testID="srs-good-button"
-            style={[
-              reviewScreenStyles.srsButton,
-              reviewScreenStyles.goodButton,
-            ]}
-            onPress={handleGood}
-            disabled={isLoading}
-          >
-            <TextThemed style={reviewScreenStyles.buttonText}>Good</TextThemed>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            testID="srs-easy-button"
-            style={[
-              reviewScreenStyles.srsButton,
-              reviewScreenStyles.easyButton,
-            ]}
-            onPress={handleEasy}
-            disabled={isLoading}
-          >
-            <TextThemed style={reviewScreenStyles.buttonText}>Easy</TextThemed>
-          </TouchableOpacity>
-        </View>
+        <ReviewAssessmentControls
+          isRevealed={isFlipped}
+          effectiveMode={effectiveMode}
+          recognitionResult={
+            configuredMode === REVIEW_MODE.RECOGNITION
+              ? (selectedRecognitionOption?.isCorrect ?? null)
+              : null
+          }
+          disabled={isLoading}
+          onReveal={revealAnswer}
+          onAgain={submitAgain}
+          onHard={submitHard}
+          onGood={submitGood}
+          onEasy={submitEasy}
+        />
       </View>
 
       {currentWord && (
@@ -485,11 +667,11 @@ export default function ReviewScreen() {
 
       <WordDetailModal
         visible={modalVisible}
-        onClose={handleCloseModal}
+        onClose={handleCloseDetails}
         word={selectedWord}
         onChangeImage={openImageSelector}
         onDeleteWord={handleDeleteWord}
-        onReanalyzeWord={handleReanalyzeWord}
+        onReanalyzeWord={handleReanalyzeSelectedWord}
         isReanalyzing={isReanalyzing}
       />
     </ViewThemed>
