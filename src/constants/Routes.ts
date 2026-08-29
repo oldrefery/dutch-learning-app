@@ -26,6 +26,7 @@ export const ROUTES = {
   // Dynamic routes - use functions for type safety
   COLLECTION_DETAIL: (id: string) => `/collection/${id}` as const,
   IMPORT_COLLECTION: (token: string) => `/import/${token}` as const,
+  STARTER_PACK: '/starter-pack' as const,
 
   // Other routes
   INSIGHTS: '/insights' as const,
@@ -55,6 +56,7 @@ export const RouteHelpers = {
 export type RouteParams = {
   'collection/[id]': { id: string }
   'import/[token]': { token: string }
+  'starter-pack': Record<string, never>
 }
 
 export type Route = (typeof ROUTES)[keyof typeof ROUTES]

@@ -19,7 +19,11 @@ export function SelectAllToggle({
 
   return (
     <ViewThemed style={styles.selectAllSection}>
-      <TouchableOpacity style={styles.selectAllButton} onPress={onToggle}>
+      <TouchableOpacity
+        testID="import-select-all-toggle"
+        style={styles.selectAllButton}
+        onPress={onToggle}
+      >
         <Ionicons
           name={allSelected ? 'checkbox' : 'square-outline'}
           size={24}

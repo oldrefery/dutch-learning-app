@@ -135,7 +135,7 @@ interface SupabaseWordPayload {
   conjugation: Word['conjugation']
   preposition: string | null
   image_url: string | null
-  tts_url: string | null
+  tts_url: string
   interval_days: number
   repetition_count: number
   easiness_factor: number
@@ -1518,7 +1518,9 @@ export class SyncManager {
       conjugation: word.conjugation,
       preposition: word.preposition,
       image_url: word.image_url,
-      tts_url: word.tts_url,
+      // The remote schema keeps this legacy column NOT NULL. An empty string
+      // means that no pre-generated audio is available.
+      tts_url: word.tts_url ?? '',
       interval_days: word.interval_days,
       repetition_count: word.repetition_count,
       easiness_factor: word.easiness_factor,

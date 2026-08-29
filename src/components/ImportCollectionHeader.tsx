@@ -2,10 +2,10 @@ import React from 'react'
 import { useColorScheme, StyleSheet } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
-import type { SharedCollectionWords } from '@/services/collectionSharingService'
+import type { ImportPreviewData } from '@/types/ImportTypes'
 
 interface ImportCollectionHeaderProps {
-  sharedData: SharedCollectionWords
+  sharedData: ImportPreviewData
   selectedCount: number
   totalCount: number
   duplicateCount: number

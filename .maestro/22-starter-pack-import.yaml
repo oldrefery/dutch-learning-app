@@ -1,0 +1,104 @@
+appId: ${APP_ID}
+---
+# Test: Offline Dutch A1 starter pack import
+#
+# What it tests:
+# - Open the bundled pack from the existing import sheet
+# - Preview the language-review status and all built-in words
+# - Import one explicitly selected word into a new collection
+# - Follow the first-review call to action
+# - Clean up the imported collection
+
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: 'screen-collections'
+      tab_text: 'Collections'
+
+- tapOn:
+    id: 'import-collection-button'
+- waitForAnimationToEnd
+- assertVisible: 'Import Collection'
+
+- tapOn:
+    id: 'open-starter-pack-button'
+- extendedWaitUntil:
+    visible:
+      id: 'starter-pack-review-banner'
+    timeout: 5000
+
+- assertVisible: 'Dutch A1 Essentials'
+- assertVisible: 'Development preview'
+- assertVisible: '53 of 53 words selected'
+
+- scrollUntilVisible:
+    element:
+      id: 'import-select-all-toggle'
+    direction: DOWN
+- tapOn:
+    id: 'import-select-all-toggle'
+- runScript: scripts/wait.js
+- scrollUntilVisible:
+    element:
+      id: 'import-word-a1-001-huis'
+    direction: DOWN
+- tapOn:
+    id: 'import-word-a1-001-huis'
+- extendedWaitUntil:
+    visible:
+      id: 'starter-pack-import-button'
+    timeout: 3000
+
+- tapOn:
+    id: 'starter-pack-import-button'
+- extendedWaitUntil:
+    visible:
+      id: 'starter-pack-import-success'
+    timeout: 8000
+
+- assertVisible: '1 word is ready in “Dutch A1 Essentials”.'
+- tapOn:
+    id: 'starter-pack-start-review'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-review'
+    timeout: 5000
+- assertVisible:
+    id: 'review-mode-selector'
+
+# Restart to verify that the offline import persists, then clean up so the
+# flow can be repeated without polluting the signed-in test account.
+- stopApp
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: 'screen-collections'
+      tab_text: 'Collections'
+- scrollUntilVisible:
+    element:
+      id: 'collection-row-dutch-a1-essentials'
+    direction: DOWN
+    timeout: 20000
+- extendedWaitUntil:
+    visible:
+      id: 'collection-row-dutch-a1-essentials'
+    timeout: 5000
+- longPressOn:
+    id: 'collection-row-dutch-a1-essentials'
+- waitForAnimationToEnd
+- tapOn:
+    id: 'collection-context-delete'
+- extendedWaitUntil:
+    visible: 'Delete Collection'
+    timeout: 3000
+- tapOn:
+    text: 'Delete'
+- waitForAnimationToEnd
+- assertNotVisible: 'Dutch A1 Essentials'
+- stopApp
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: 'screen-collections'
+      tab_text: 'Collections'
+- runScript: scripts/wait.js

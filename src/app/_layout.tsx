@@ -176,6 +176,7 @@ function RootLayoutNav() {
             options={{ headerShown: true }}
           />
           <Stack.Screen name="import/[token]" options={{ headerShown: true }} />
+          <Stack.Screen name="starter-pack" options={{ headerShown: true }} />
           <Stack.Screen
             name="insights"
             options={{ headerShown: true, title: 'Review Insights' }}

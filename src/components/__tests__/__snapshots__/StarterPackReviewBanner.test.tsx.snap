@@ -1,0 +1,201 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`dark StarterPackReviewBanner shows the honest review gate and matches the theme snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#1C1C1E",
+      },
+      [
+        {
+          "alignItems": "flex-start",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "flexDirection": "row",
+          "gap": 12,
+          "marginHorizontal": 16,
+          "marginTop": 16,
+          "padding": 14,
+        },
+        {
+          "backgroundColor": "rgba(245, 158, 11, 0.2)",
+          "borderColor": "#FBBF24",
+        },
+      ],
+    ]
+  }
+  testID="starter-pack-review-banner"
+>
+  <Text
+    allowFontScaling={false}
+    selectable={false}
+    style={
+      [
+        {
+          "color": "#FBBF24",
+          "fontSize": 22,
+        },
+        undefined,
+        {
+          "fontFamily": "ionicons",
+          "fontStyle": "normal",
+          "fontWeight": "normal",
+        },
+        {},
+      ]
+    }
+  >
+    
+  </Text>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "transparent",
+        },
+        {
+          "flex": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "700",
+              "marginBottom": 4,
+            },
+            {
+              "color": "#FBBF24",
+            },
+          ],
+        ]
+      }
+    >
+      Development preview
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 14,
+            "lineHeight": 20,
+          },
+        ]
+      }
+    >
+      The content is awaiting human Dutch review. Import is enabled only for development QA.
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`light StarterPackReviewBanner shows the honest review gate and matches the theme snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#F2F2F7",
+      },
+      [
+        {
+          "alignItems": "flex-start",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "flexDirection": "row",
+          "gap": 12,
+          "marginHorizontal": 16,
+          "marginTop": 16,
+          "padding": 14,
+        },
+        {
+          "backgroundColor": "#FEF3C7",
+          "borderColor": "#F59E0B",
+        },
+      ],
+    ]
+  }
+  testID="starter-pack-review-banner"
+>
+  <Text
+    allowFontScaling={false}
+    selectable={false}
+    style={
+      [
+        {
+          "color": "#F59E0B",
+          "fontSize": 22,
+        },
+        undefined,
+        {
+          "fontFamily": "ionicons",
+          "fontStyle": "normal",
+          "fontWeight": "normal",
+        },
+        {},
+      ]
+    }
+  >
+    
+  </Text>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "transparent",
+        },
+        {
+          "flex": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "700",
+              "marginBottom": 4,
+            },
+            {
+              "color": "#F59E0B",
+            },
+          ],
+        ]
+      }
+    >
+      Development preview
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 14,
+            "lineHeight": 20,
+          },
+        ]
+      }
+    >
+      The content is awaiting human Dutch review. Import is enabled only for development QA.
+    </Text>
+  </View>
+</View>
+`;

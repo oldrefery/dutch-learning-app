@@ -443,7 +443,7 @@ Done criteria:
 
 ### WP1.2 Automatic Per-Word Mode Progression
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P1
 Estimated size: M
 Depends on: WP1.1
@@ -515,7 +515,7 @@ Implementation completed on 2026-08-29:
 
 ### WP1.3 Official Dutch A1 Starter Pack
 
-Status: `TODO`
+Status: `VALIDATION REQUIRED`
 Priority: P1
 Estimated size: M
 Depends on: WP0.2
@@ -575,6 +575,32 @@ Done criteria:
 - Content has documented human review and provenance.
 - Existing collection import remains unchanged.
 - All quality gates pass.
+
+Implementation notes (2026-08-29):
+
+- Added an independently authored, versioned 53-entry Dutch A1 manifest with
+  provenance, license, runtime validation, and an explicit content-review
+  status.
+- Added an offline-first preview/import flow with partial selection, semantic
+  duplicate filtering shared with regular collection imports, reset ownership
+  and SRS fields, a sticky import action, and a first-review call to action.
+- Production import remains disabled while `content_review.status` is
+  `pending`; development builds expose the pack as a clearly labelled preview
+  for technical QA.
+- Added unit, hook, snapshot, and Maestro coverage. The iOS 26.5 Simulator flow
+  verifies preview, one-card partial import, Review launch, persistence after an
+  app restart, and cleanup with successful Supabase tombstone synchronization.
+- Fixed the sync payload contract discovered during simulator QA by mapping a
+  missing local `tts_url` to the remote schema's required empty-string value.
+
+Validation gate:
+
+- A qualified Dutch reviewer must check every entry using
+  `docs/content/dutch-a1-starter-pack-review.md`.
+- After approval, record the reviewer and date in the manifest, change its
+  version from draft to release, rerun all gates, and move this package to
+  `READY FOR USER COMMIT`.
+- Do not start WP1.4 while this gate remains open.
 
 ### WP1.4 Batch Quick Capture
 

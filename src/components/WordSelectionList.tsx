@@ -3,22 +3,10 @@ import { TouchableOpacity, useColorScheme, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
-
-interface WordSelection {
-  word: {
-    word_id: string
-    dutch_lemma: string
-    translations: {
-      en: string[]
-    }
-  }
-  selected: boolean
-  isDuplicate: boolean
-  existingInCollection?: string
-}
+import type { WordSelectionItem } from '@/types/ImportTypes'
 
 interface WordSelectionListProps {
-  wordSelections: WordSelection[]
+  wordSelections: WordSelectionItem[]
   onToggleWord: (wordId: string) => void
 }
 
@@ -28,7 +16,7 @@ export function WordSelectionList({
 }: WordSelectionListProps) {
   const colorScheme = useColorScheme() ?? 'light'
 
-  const getItemBackgroundColor = (item: WordSelection) => {
+  const getItemBackgroundColor = (item: WordSelectionItem) => {
     if (item.isDuplicate) {
       return colorScheme === 'dark'
         ? Colors.dark.backgroundSecondary
@@ -42,7 +30,7 @@ export function WordSelectionList({
       : Colors.neutral[50]
   }
 
-  const getItemBorderColor = (item: WordSelection) => {
+  const getItemBorderColor = (item: WordSelectionItem) => {
     if (item.isDuplicate) {
       return colorScheme === 'dark' ? Colors.dark.border : Colors.neutral[300]
     }
@@ -52,14 +40,14 @@ export function WordSelectionList({
     return colorScheme === 'dark' ? Colors.dark.border : Colors.neutral[200]
   }
 
-  const getIconName = (item: WordSelection) => {
+  const getIconName = (item: WordSelectionItem) => {
     if (item.isDuplicate || item.selected) {
       return 'checkmark-circle'
     }
     return 'ellipse-outline'
   }
 
-  const getIconColor = (item: WordSelection) => {
+  const getIconColor = (item: WordSelectionItem) => {
     if (item.isDuplicate) {
       return colorScheme === 'dark'
         ? Colors.dark.textTertiary
@@ -79,6 +67,7 @@ export function WordSelectionList({
       {wordSelections.map(item => (
         <TouchableOpacity
           key={item.word.word_id}
+          testID={`import-word-${item.word.word_id}`}
           style={[
             styles.wordItem,
             {

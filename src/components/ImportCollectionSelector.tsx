@@ -50,6 +50,7 @@ export function ImportCollectionSelector({
       {collections.map(collection => (
         <TouchableOpacity
           key={collection.collection_id}
+          testID={`import-target-${collection.collection_id}`}
           style={[
             styles.collectionOption,
             {

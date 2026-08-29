@@ -632,6 +632,7 @@ describe('SyncManager', () => {
       expect(result.success).toBe(true)
       expect(Array.isArray(syncedWordsPayload)).toBe(true)
       expect(syncedWordsPayload[0].user_id).toBe(userId)
+      expect(syncedWordsPayload[0].tts_url).toBe('')
     })
   })
 

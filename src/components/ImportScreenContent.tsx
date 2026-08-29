@@ -1,4 +1,5 @@
 import React from 'react'
+import type { ReactNode } from 'react'
 import { ScrollView, StyleSheet } from 'react-native'
 import { ViewThemed } from '@/components/Themed'
 import { ImportCollectionHeader } from '@/components/ImportCollectionHeader'
@@ -6,35 +7,23 @@ import { ImportTargetSection } from '@/components/ImportTargetSection'
 import { SelectAllToggle } from '@/components/SelectAllToggle'
 import { DuplicateFilterToggle } from '@/components/DuplicateFilterToggle'
 import { WordSelectionList } from '@/components/WordSelectionList'
-import type { SharedCollectionWords } from '@/services/collectionSharingService'
-
-interface Collection {
-  collection_id: string
-  name: string
-}
-
-interface WordSelection {
-  word: {
-    word_id: string
-    dutch_lemma: string
-    translations: {
-      en: string[]
-    }
-  }
-  selected: boolean
-  isDuplicate: boolean
-  existingInCollection?: string
-}
+import type {
+  ImportPreviewData,
+  ImportTargetCollection,
+  WordSelectionItem,
+} from '@/types/ImportTypes'
 
 interface ImportScreenContentProps {
-  sharedData: SharedCollectionWords
-  wordSelections: WordSelection[]
-  collections: Collection[]
+  sharedData: ImportPreviewData
+  wordSelections: WordSelectionItem[]
+  collections: ImportTargetCollection[]
   targetCollectionId: string | null
   selectedCount: number
   duplicateCount: number
   allAvailableSelected: boolean
   hideDuplicates: boolean
+  contentBeforeTarget?: ReactNode
+  bottomBar?: ReactNode
   onSelectCollection: (collectionId: string) => void
   onToggleSelectAll: () => void
   onToggleWord: (wordId: string) => void
@@ -50,6 +39,8 @@ export function ImportScreenContent({
   duplicateCount,
   allAvailableSelected,
   hideDuplicates,
+  contentBeforeTarget,
+  bottomBar,
   onSelectCollection,
   onToggleSelectAll,
   onToggleWord,
@@ -67,6 +58,8 @@ export function ImportScreenContent({
           totalCount={wordSelections.length}
           duplicateCount={duplicateCount}
         />
+
+        {contentBeforeTarget}
 
         <ImportTargetSection
           collections={collections}
@@ -91,6 +84,7 @@ export function ImportScreenContent({
           onToggleWord={onToggleWord}
         />
       </ScrollView>
+      {bottomBar}
     </ViewThemed>
   )
 }
