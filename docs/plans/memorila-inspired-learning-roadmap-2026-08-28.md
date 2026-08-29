@@ -1,7 +1,7 @@
 # Memorila-Inspired Learning Roadmap
 
 Date: 2026-08-28
-Status: `READY FOR EXECUTION`
+Status: `COMPLETED`
 Planning branch: `feature/memorila-learning-roadmap`
 Repository: `/Users/devrush/code/pet/DutchLearningApp`
 
@@ -19,6 +19,8 @@ from the first work package marked `TODO`.
 - `PROCEED`: the user accepted a validation gate and dependent work may start.
 - `READY FOR USER COMMIT`: implementation and verification are complete.
 - `COMMITTED`: the user confirmed the work package was committed.
+- `COMPLETED`: every in-scope work package is committed; deferred ideas remain
+  outside the execution scope.
 - `BLOCKED`: requires a documented decision or an external dependency.
 - `DEFERRED`: explicitly outside the current execution scope.
 
@@ -608,7 +610,7 @@ Validation gate:
 
 ### WP1.4 Batch Quick Capture
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P1
 Estimated size: L
 Depends on: WP1.3
@@ -685,7 +687,7 @@ Validation completed on 2026-08-29:
 
 ### WP2.1 Audio Review MVP
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P2
 Estimated size: L
 Depends on: WP0.2 and Validation Gate A
@@ -802,7 +804,7 @@ Validation completed on 2026-08-29:
 
 ### WP2.2 Dutch Usage And Nuance Explanations
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P2
 Estimated size: L
 Depends on: WP0.2
@@ -1020,8 +1022,9 @@ feat: add audio-focused review mode
 feat: add Dutch usage explanations
 ```
 
-## Immediate Next Action
+## Execution Closure
 
-After this planning document is committed and merged, start WP0.1 on a fresh
-branch from updated `main`. Do not implement WP0.2 or any database migration in
-the same work package.
+All in-scope work packages were committed by 2026-08-29. The roadmap has no
+remaining `TODO`, `IN PROGRESS`, `VALIDATION REQUIRED`, or
+`READY FOR USER COMMIT` package. Start a new planning cycle before promoting a
+`DEFERRED` idea into implementation scope.
