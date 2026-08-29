@@ -123,7 +123,7 @@ Refresh before touching:
 
 ## WP3.0 Production Baseline And Release Blockers
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P0
 Estimated size: M
 Depends on: completed Memorila-inspired roadmap
@@ -211,7 +211,7 @@ release candidate.
 
 ## WP3.1 Contextual Onboarding And Learning Guide
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P0
 Estimated size: M
 Depends on: WP3.0
@@ -333,7 +333,7 @@ Add one deterministic flow per platform that:
 
 ## Validation Gate B: Onboarding Acceptance
 
-Status: `TODO`
+Status: `VALIDATION REQUIRED`
 Depends on: WP3.1
 
 Stop after WP3.1 is committed and present the user with:
