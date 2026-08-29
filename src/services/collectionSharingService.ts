@@ -282,6 +282,7 @@ class CollectionSharingService {
           image_url,
           tts_url,
           analysis_notes,
+          usage_notes,
           created_at
         `
         )

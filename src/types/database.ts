@@ -28,6 +28,17 @@ export interface WordExample {
   ru?: string
 }
 
+export interface WordUsageContrast {
+  term: string
+  distinction: string
+  example?: WordExample
+}
+
+export interface WordUsageNotes {
+  summary: string
+  contrasts: WordUsageContrast[]
+}
+
 export interface WordConjugation {
   present: string
   simple_past: string
@@ -70,6 +81,7 @@ export interface Word {
   next_review_date: string
   last_reviewed_at: string | null
   analysis_notes: string | null
+  usage_notes?: WordUsageNotes | null
   created_at: string
   updated_at: string
 }
@@ -98,6 +110,7 @@ export interface GeminiWordAnalysis {
   tts_url?: string
   image_url?: string // Associated image for visual learning
   analysis_notes?: string // User notes from analysis
+  usage_notes?: WordUsageNotes | null // AI-generated usage guidance
   collection_id?: string // Collection this word belongs to
 }
 

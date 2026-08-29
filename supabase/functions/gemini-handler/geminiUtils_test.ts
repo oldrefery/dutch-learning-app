@@ -12,6 +12,7 @@ import {
   cleanExamples,
   formatTranslations,
   parseGeminiResponse,
+  normalizeUsageNotes,
 } from './geminiUtils.ts'
 
 // =========================================
@@ -263,4 +264,83 @@ Deno.test('parseGeminiResponse - handles invalid JSON gracefully', () => {
   }
   const result = parseGeminiResponse(response)
   assertEquals(result.content, 'This is not JSON at all')
+})
+
+// =========================================
+// normalizeUsageNotes
+// =========================================
+
+Deno.test('normalizeUsageNotes - keeps bounded valid guidance', () => {
+  const result = normalizeUsageNotes({
+    summary: 'Use woning for a dwelling, especially in formal contexts.',
+    contrasts: [
+      {
+        term: 'huis',
+        distinction: 'Huis is the everyday word for a house or home.',
+        example: {
+          nl: 'Dit huis is oud.',
+          en: 'This house is old.',
+          ru: 'Этот дом старый.',
+        },
+      },
+      {
+        term: 'thuis',
+        distinction: 'Thuis describes being at home rather than the building.',
+      },
+    ],
+  })
+
+  assertEquals(result, {
+    summary: 'Use woning for a dwelling, especially in formal contexts.',
+    contrasts: [
+      {
+        term: 'huis',
+        distinction: 'Huis is the everyday word for a house or home.',
+        example: {
+          nl: 'Dit huis is oud.',
+          en: 'This house is old.',
+          ru: 'Этот дом старый.',
+        },
+      },
+      {
+        term: 'thuis',
+        distinction: 'Thuis describes being at home rather than the building.',
+      },
+    ],
+  })
+})
+
+Deno.test('normalizeUsageNotes - drops malformed contrasts', () => {
+  const result = normalizeUsageNotes({
+    summary: 'A valid summary.',
+    contrasts: [
+      null,
+      { term: '', distinction: 'Missing term.' },
+      { term: 'gebouw', distinction: 'A building.', example: { nl: 'x' } },
+    ],
+  })
+
+  assertEquals(result, {
+    summary: 'A valid summary.',
+    contrasts: [{ term: 'gebouw', distinction: 'A building.' }],
+  })
+})
+
+Deno.test('normalizeUsageNotes - returns null for invalid guidance', () => {
+  assertEquals(normalizeUsageNotes(null), null)
+  assertEquals(normalizeUsageNotes({ contrasts: [] }), null)
+  assertEquals(normalizeUsageNotes({ summary: '   ', contrasts: [] }), null)
+})
+
+Deno.test('normalizeUsageNotes - limits contrasts and text length', () => {
+  const result = normalizeUsageNotes({
+    summary: `  ${'s'.repeat(500)}  `,
+    contrasts: Array.from({ length: 5 }, (_, index) => ({
+      term: `term-${index}`,
+      distinction: 'difference',
+    })),
+  })
+
+  assertEquals(result?.summary.length, 420)
+  assertEquals(result?.contrasts.length, 3)
 })

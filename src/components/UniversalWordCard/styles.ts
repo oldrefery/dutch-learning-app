@@ -413,6 +413,58 @@ export const styles = StyleSheet.create({
     opacity: 0.6, // For placeholder appearance
   },
 
+  // Structured AI-generated usage guidance
+  usageTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  usageTitle: {
+    flex: 1,
+  },
+  aiGuidanceLabel: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontStyle: 'italic',
+    textAlign: 'right',
+  },
+  usageSummary: {
+    fontSize: 15,
+    lineHeight: 22,
+    marginBottom: 10,
+  },
+  usageContrastCard: {
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.primary.DEFAULT,
+    padding: 12,
+    marginBottom: 8,
+  },
+  usageContrastTerm: {
+    fontSize: 15,
+    lineHeight: 21,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  usageDistinction: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  usageExample: {
+    marginTop: 8,
+  },
+  usageExampleDutch: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '500',
+  },
+  usageExampleTranslation: {
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 2,
+  },
+
   // Cache status elements
   cacheStatusContainer: {
     flexDirection: 'row',

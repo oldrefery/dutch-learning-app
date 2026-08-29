@@ -186,6 +186,15 @@ describe('WordRepository', () => {
         tts_url: 'https://example.com/house.mp3',
         last_reviewed_at: CREATED_AT,
         analysis_notes: 'Common noun',
+        usage_notes: {
+          summary: 'Use huis in everyday conversation.',
+          contrasts: [
+            {
+              term: 'woning',
+              distinction: 'Woning is common in formal housing contexts.',
+            },
+          ],
+        },
       }
 
       await wordRepository.saveWords([populatedWord])
@@ -204,6 +213,7 @@ describe('WordRepository', () => {
           'https://example.com/house.png',
           'https://example.com/house.mp3',
           'Common noun',
+          JSON.stringify(populatedWord.usage_notes),
         ])
       )
     })
@@ -529,6 +539,31 @@ describe('WordRepository', () => {
           ru: ['дом'],
         })
       }
+    })
+
+    it('should parse optional usage notes from local JSON', async () => {
+      const usageNotes = {
+        summary: 'Use huis for the everyday concept of a home.',
+        contrasts: [],
+      }
+      mockDatabase.getAllAsync.mockResolvedValue([
+        {
+          word_id: WORD_ID_1,
+          user_id: USER_ID,
+          dutch_lemma: 'huis',
+          translations: '{"en":["house"]}',
+          usage_notes: JSON.stringify(usageNotes),
+          interval_days: 1,
+          repetition_count: 0,
+          easiness_factor: 2.5,
+          next_review_date: NEXT_REVIEW_DATE,
+          created_at: CREATED_AT,
+        },
+      ])
+
+      const result = await wordRepository.getWordsByUserId(USER_ID)
+
+      expect(result[0].usage_notes).toEqual(usageNotes)
     })
   })
 

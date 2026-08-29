@@ -142,6 +142,7 @@ interface SupabaseWordPayload {
   next_review_date: string
   last_reviewed_at: string | null
   analysis_notes: string | null
+  usage_notes: Word['usage_notes']
 }
 
 interface SyncWord extends Word {
@@ -189,6 +190,7 @@ const WORDS_SELECT_COLUMNS_WITHOUT_REGISTER = [
   'next_review_date',
   'last_reviewed_at',
   'analysis_notes',
+  'usage_notes',
   'created_at',
   'updated_at',
   'deleted_at',
@@ -746,6 +748,10 @@ export class SyncManager {
           antonyms: parseJsonField<string[]>(word.antonyms, []),
           conjugation: parseJsonField<Word['conjugation']>(
             word.conjugation,
+            null
+          ),
+          usage_notes: parseJsonField<Word['usage_notes']>(
+            word.usage_notes,
             null
           ),
         }
@@ -1527,6 +1533,7 @@ export class SyncManager {
       next_review_date: word.next_review_date,
       last_reviewed_at: word.last_reviewed_at,
       analysis_notes: word.analysis_notes,
+      usage_notes: word.usage_notes ?? null,
     }
   }
 

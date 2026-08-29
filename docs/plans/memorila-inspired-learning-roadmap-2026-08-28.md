@@ -802,7 +802,7 @@ Validation completed on 2026-08-29:
 
 ### WP2.2 Dutch Usage And Nuance Explanations
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 Priority: P2
 Estimated size: L
 Depends on: WP0.2
@@ -841,6 +841,44 @@ Done criteria:
 - New analyses can show concise, structured usage guidance.
 - AI failure never blocks saving or reviewing a word.
 - All app, Edge Function, and migration quality gates pass.
+
+Implementation completed on 2026-08-29:
+
+- Added optional structured `usage_notes` data with a concise summary, up to
+  three contrast explanations, and optional Dutch/English/Russian examples.
+  Existing words remain valid without a backfill.
+- Added the nullable JSONB field to Supabase words and analysis cache, SQLite
+  schema v8, repository serialization, sync, re-analysis, sharing reads, and
+  all application contracts.
+- Updated the Gemini prompt for structured JSON output, added bounded runtime
+  normalization so malformed guidance degrades to `null`, and moved cache
+  reads and writes to analysis cache version 2.
+- Added the compact `Usage & Nuance` section to analysis, review, and Word
+  Detail cards after translations. Guidance is explicitly labelled as
+  AI-generated and remains independent from SRS correctness.
+- Preserved backward compatibility for legacy cards and cached analyses that
+  do not contain usage notes.
+
+Validation completed on 2026-08-29:
+
+- Applied `20260829110000_add_usage_notes.sql` to the linked Supabase project;
+  local and remote migration histories align, the dry run selected only this
+  migration, and read-only REST probes confirmed both deployed columns.
+- Deployed the updated `gemini-handler` Edge Function and verified prompt,
+  output normalization, malformed fallback, and cache-version behavior with
+  63 passing Deno tests.
+- Added repository, sync, application-store, API-to-hook, light/dark rendering,
+  legacy-card, long-text, missing-contrast, and multilingual regression
+  coverage. The full Jest suite passes with 980 tests and 16 snapshots.
+- Release builds passed for iOS and Android. Maestro flow 26 passed against the
+  embedded Release bundles on iPhone 16 Pro / iOS 26.5 Simulator and Pixel 8 /
+  Android API 36 Emulator, including live cached analysis, scrolling, section
+  visibility, and the AI-generated label without saving the word.
+- TypeScript application/test checks, ESLint, Prettier, Maestro validation, and
+  `git diff --check` pass. The linked project-wide database lint still reports
+  one pre-existing unrelated return-type mismatch in
+  `public.sync_user_access_levels` (`varchar(255)` versus `text`); the new
+  migration itself introduced no lint finding.
 
 ## Deferred Ideas
 

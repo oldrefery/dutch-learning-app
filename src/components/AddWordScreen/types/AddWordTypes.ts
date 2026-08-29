@@ -1,4 +1,4 @@
-import type { Collection, WordRegister } from '@/types/database'
+import type { Collection, WordRegister, WordUsageNotes } from '@/types/database'
 import { ExpressionType } from '@/types/ExpressionTypes'
 
 export interface AnalysisResult {
@@ -36,6 +36,7 @@ export interface AnalysisResult {
   preposition?: string // Fixed preposition (e.g., "van" for "genieten van")
   register?: WordRegister // Formality level (formal, informal, neutral)
   analysis_notes?: string // User notes for word analysis
+  usage_notes?: WordUsageNotes | null // AI-generated usage guidance
 }
 
 export interface AnalysisMetadata {

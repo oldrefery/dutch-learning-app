@@ -49,6 +49,7 @@ export const SQL_SCHEMA = `
     next_review_date TEXT NOT NULL,
     last_reviewed_at TEXT,
     analysis_notes TEXT,
+    usage_notes TEXT,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
     deleted_at TEXT,
@@ -223,6 +224,11 @@ export const MIGRATION_V7_REVIEW_EVENTS = `
   BEGIN
     DELETE FROM review_events WHERE word_id = NEW.word_id;
   END;
+`
+
+// Migration v8: Optional structured AI-generated usage guidance.
+export const MIGRATION_V8_ADD_USAGE_NOTES = `
+  ALTER TABLE words ADD COLUMN usage_notes TEXT;
 `
 
 export type SyncStatus = 'synced' | 'pending' | 'error' | 'conflict' | 'deleted'

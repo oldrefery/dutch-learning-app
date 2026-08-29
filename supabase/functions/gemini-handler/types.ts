@@ -4,6 +4,23 @@ export interface WordAnalysisRequest {
   userId: string
 }
 
+export interface WordUsageExample {
+  nl: string
+  en: string
+  ru?: string
+}
+
+export interface WordUsageContrast {
+  term: string
+  distinction: string
+  example?: WordUsageExample
+}
+
+export interface WordUsageNotes {
+  summary: string
+  contrasts: WordUsageContrast[]
+}
+
 export interface WordAnalysisResponse {
   success: boolean
   data?: WordAnalysisResult
@@ -34,6 +51,7 @@ export interface WordAnalysisResult {
   register?: 'formal' | 'informal' | 'neutral' | null
   expression_type?: string
   tts_url: string
+  usage_notes?: WordUsageNotes | null
 }
 
 export interface GeminiAnalysisResult {
@@ -58,4 +76,5 @@ export interface GeminiAnalysisResult {
   article?: string
   register?: 'formal' | 'informal' | 'neutral' | null
   expression_type?: string
+  usage_notes?: WordUsageNotes | null
 }

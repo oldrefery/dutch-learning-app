@@ -1,0 +1,31 @@
+appId: ${APP_ID}
+---
+# Test: AI-generated Usage & Nuance analysis preview
+#
+# What it tests:
+# - A fresh cache-v2 Gemini analysis returns structured usage guidance
+# - The app labels the guidance as AI-generated
+# - The section is reachable without saving or changing SRS progress
+
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: 'screen-add-word'
+      tab_text: 'Add Word'
+
+- tapOn:
+    id: 'word-input'
+- eraseText: 80
+- inputText: 'woning'
+- tapOn:
+    id: 'analyze-button'
+
+- scrollUntilVisible:
+    element:
+      text: '.*Usage & Nuance.*'
+    direction: DOWN
+    timeout: 45000
+- assertVisible: '.*Usage & Nuance.*'
+- assertVisible: 'AI-generated guidance'
+- assertVisible:
+    id: 'usage-nuance-section'

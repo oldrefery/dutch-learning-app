@@ -1,0 +1,3467 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`dark Usage & Nuance rendering renders structured guidance in Word Detail 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#1C1C1E",
+      },
+      [
+        {
+          "borderRadius": 16,
+          "minHeight": 100,
+          "overflow": "hidden",
+          "width": "100%",
+        },
+        undefined,
+      ],
+    ]
+  }
+>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#1C1C1E",
+        },
+        [
+          {
+            "padding": 16,
+          },
+          undefined,
+        ],
+      ]
+    }
+  >
+    <View
+      style={
+        {
+          "height": 0,
+        }
+      }
+    />
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          {
+            "marginBottom": 16,
+          },
+        ]
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#1C1C1E",
+            },
+            {
+              "flexDirection": "row",
+              "justifyContent": "flex-end",
+              "marginBottom": 4,
+              "marginTop": 8,
+            },
+          ]
+        }
+      >
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "gap": 8,
+            }
+          }
+        />
+      </View>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#1C1C1E",
+            },
+            {
+              "flexDirection": "row",
+              "flexWrap": "wrap",
+              "gap": 8,
+              "marginTop": 8,
+            },
+          ]
+        }
+      >
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              {
+                "borderColor": "#E5E7EB",
+                "borderRadius": 12,
+                "borderWidth": 1,
+                "paddingHorizontal": 8,
+                "paddingVertical": 4,
+              },
+            ]
+          }
+        >
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "color": "#4B5563",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                },
+              ]
+            }
+          >
+            noun
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              {
+                "borderColor": "#E5E7EB",
+                "borderRadius": 12,
+                "borderWidth": 1,
+                "paddingHorizontal": 8,
+                "paddingVertical": 4,
+              },
+            ]
+          }
+        >
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "color": "#4B5563",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                },
+              ]
+            }
+          >
+            het
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              {
+                "borderColor": "#E5E7EB",
+                "borderRadius": 12,
+                "borderWidth": 1,
+                "paddingHorizontal": 8,
+                "paddingVertical": 4,
+              },
+            ]
+          }
+        >
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "color": "#4B5563",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                },
+              ]
+            }
+          >
+            plural: 
+            huizen
+          </Text>
+        </View>
+      </View>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            [
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 8,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "marginRight": 6,
+              },
+            ]
+          }
+        >
+          💬
+        </Text>
+        Translations
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#1C1C1E",
+            },
+            {
+              "marginBottom": 8,
+            },
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "color": "#4B5563",
+                "fontSize": 14,
+                "fontWeight": "500",
+                "marginBottom": 4,
+              },
+            ]
+          }
+        >
+          🇬🇧 English:
+        </Text>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              {
+                "alignItems": "flex-start",
+                "flexDirection": "row",
+                "marginBottom": 2,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "color": "#9CA3AF",
+                  "fontSize": 14,
+                  "marginRight": 6,
+                  "marginTop": 2,
+                },
+              ]
+            }
+          >
+            •
+          </Text>
+          <Text
+            copyText="house"
+            style={
+              [
+                {
+                  "flex": 1,
+                  "fontSize": 16,
+                },
+                false,
+              ]
+            }
+          >
+            house
+          </Text>
+        </View>
+      </View>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+      testID="usage-nuance-section"
+    >
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#1C1C1E",
+            },
+            {
+              "alignItems": "flex-start",
+              "flexDirection": "row",
+              "gap": 8,
+              "justifyContent": "space-between",
+            },
+          ]
+        }
+      >
+        <Text
+          accessibilityRole="header"
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              [
+                {
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "marginBottom": 8,
+                },
+                {
+                  "flex": 1,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "marginRight": 6,
+                },
+              ]
+            }
+          >
+            💡
+          </Text>
+          Usage & Nuance
+        </Text>
+        <Text
+          style={
+            [
+              {
+                "color": "rgba(255, 255, 255, 0.6)",
+              },
+              {
+                "fontSize": 11,
+                "fontStyle": "italic",
+                "lineHeight": 16,
+                "textAlign": "right",
+              },
+            ]
+          }
+        >
+          AI-generated guidance
+        </Text>
+      </View>
+      <Text
+        copyText="Woning is common in formal descriptions of housing; huis is more conversational."
+        style={
+          {
+            "fontSize": 15,
+            "lineHeight": 22,
+            "marginBottom": 10,
+          }
+        }
+      >
+        Woning is common in formal descriptions of housing; huis is more conversational.
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#2C2C2E",
+            },
+            {
+              "borderLeftColor": "#3B82F6",
+              "borderLeftWidth": 3,
+              "borderRadius": 8,
+              "marginBottom": 8,
+              "padding": 12,
+            },
+          ]
+        }
+      >
+        <Text
+          selectable={true}
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 15,
+                "fontWeight": "600",
+                "lineHeight": 21,
+                "marginBottom": 4,
+              },
+            ]
+          }
+        >
+          huis
+        </Text>
+        <Text
+          selectable={true}
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 14,
+                "lineHeight": 20,
+              },
+            ]
+          }
+        >
+          The everyday word for a house or home.
+        </Text>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              {
+                "marginTop": 8,
+              },
+            ]
+          }
+        >
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                {
+                  "fontSize": 14,
+                  "fontWeight": "500",
+                  "lineHeight": 20,
+                },
+              ]
+            }
+          >
+            We wonen in een klein huis.
+          </Text>
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "rgba(255, 255, 255, 0.6)",
+                },
+                {
+                  "fontSize": 13,
+                  "lineHeight": 18,
+                  "marginTop": 2,
+                },
+              ]
+            }
+          >
+            🇬🇧 
+            We live in a small house.
+          </Text>
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "rgba(255, 255, 255, 0.6)",
+                },
+                {
+                  "fontSize": 13,
+                  "lineHeight": 18,
+                  "marginTop": 2,
+                },
+              ]
+            }
+          >
+            🇷🇺 
+            Мы живём в маленьком доме.
+          </Text>
+        </View>
+      </View>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#2C2C2E",
+            },
+            {
+              "borderLeftColor": "#3B82F6",
+              "borderLeftWidth": 3,
+              "borderRadius": 8,
+              "marginBottom": 8,
+              "padding": 12,
+            },
+          ]
+        }
+      >
+        <Text
+          selectable={true}
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 15,
+                "fontWeight": "600",
+                "lineHeight": 21,
+                "marginBottom": 4,
+              },
+            ]
+          }
+        >
+          thuis
+        </Text>
+        <Text
+          selectable={true}
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "fontSize": 14,
+                "lineHeight": 20,
+              },
+            ]
+          }
+        >
+          Describes being at home, not the physical dwelling.
+        </Text>
+      </View>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            [
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 8,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "marginRight": 6,
+              },
+            ]
+          }
+        >
+          📝
+        </Text>
+        Examples
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#2C2C2E",
+            },
+            [
+              {
+                "borderLeftColor": "#3B82F6",
+                "borderLeftWidth": 3,
+                "borderRadius": 8,
+                "marginBottom": 8,
+                "padding": 12,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          copyText="Het huis is groot."
+          style={
+            [
+              {
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 4,
+              },
+              false,
+            ]
+          }
+        >
+          Het huis is groot.
+        </Text>
+        <Text
+          copyText="The house is big."
+          style={
+            [
+              {
+                "fontSize": 14,
+                "marginBottom": 2,
+              },
+              false,
+              {
+                "color": "#4B5563",
+              },
+            ]
+          }
+        >
+          🇬🇧 
+          The house is big.
+        </Text>
+      </View>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            [
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 8,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "marginRight": 6,
+              },
+            ]
+          }
+        >
+          🖼️
+        </Text>
+        Visual
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#1C1C1E",
+            },
+            {
+              "alignItems": "center",
+              "marginBottom": 8,
+            },
+          ]
+        }
+      />
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#1C1C1E",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#E5E5E7",
+            },
+            [
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 8,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              {
+                "marginRight": 6,
+              },
+            ]
+          }
+        >
+          📝
+        </Text>
+        Analysis Notes
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#2C2C2E",
+            },
+            {
+              "borderColor": "#E5E7EB",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "minHeight": 60,
+              "padding": 12,
+            },
+          ]
+        }
+      >
+        <Text
+          selectable={false}
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              [
+                {
+                  "fontSize": 14,
+                  "lineHeight": 20,
+                },
+                {
+                  "fontSize": 14,
+                  "fontStyle": "italic",
+                  "lineHeight": 20,
+                  "opacity": 0.6,
+                },
+              ],
+            ]
+          }
+        >
+          No analysis notes available
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`dark Usage & Nuance rendering renders structured guidance in review 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#1C1C1E",
+      },
+      [
+        {
+          "borderRadius": 16,
+          "minHeight": 100,
+          "overflow": "hidden",
+          "width": "100%",
+        },
+        undefined,
+      ],
+    ]
+  }
+>
+  <RCTScrollView
+    bounces={true}
+    contentContainerStyle={
+      {
+        "paddingBottom": 120,
+      }
+    }
+    showsVerticalScrollIndicator={false}
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  >
+    <View>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#1C1C1E",
+            },
+            [
+              {
+                "padding": 16,
+              },
+              undefined,
+            ],
+          ]
+        }
+      >
+        <View
+          style={
+            {
+              "height": 0,
+            }
+          }
+        />
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              {
+                "marginBottom": 16,
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#1C1C1E",
+                },
+                {
+                  "flexDirection": "row",
+                  "justifyContent": "flex-end",
+                  "marginBottom": 4,
+                  "marginTop": 8,
+                },
+              ]
+            }
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "gap": 8,
+                }
+              }
+            />
+          </View>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#1C1C1E",
+                },
+                {
+                  "flexDirection": "row",
+                  "flexWrap": "wrap",
+                  "gap": 8,
+                  "marginTop": 8,
+                },
+              ]
+            }
+          >
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#1C1C1E",
+                  },
+                  {
+                    "borderColor": "#E5E7EB",
+                    "borderRadius": 12,
+                    "borderWidth": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 4,
+                  },
+                ]
+              }
+            >
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#E5E5E7",
+                    },
+                    {
+                      "color": "#4B5563",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    },
+                  ]
+                }
+              >
+                noun
+              </Text>
+            </View>
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#1C1C1E",
+                  },
+                  {
+                    "borderColor": "#E5E7EB",
+                    "borderRadius": 12,
+                    "borderWidth": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 4,
+                  },
+                ]
+              }
+            >
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#E5E5E7",
+                    },
+                    {
+                      "color": "#4B5563",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    },
+                  ]
+                }
+              >
+                het
+              </Text>
+            </View>
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#1C1C1E",
+                  },
+                  {
+                    "borderColor": "#E5E7EB",
+                    "borderRadius": 12,
+                    "borderWidth": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 4,
+                  },
+                ]
+              }
+            >
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#E5E5E7",
+                    },
+                    {
+                      "color": "#4B5563",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    },
+                  ]
+                }
+              >
+                plural: 
+                huizen
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                [
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 8,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  {
+                    "marginRight": 6,
+                  },
+                ]
+              }
+            >
+              💬
+            </Text>
+            Translations
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#1C1C1E",
+                },
+                {
+                  "marginBottom": 8,
+                },
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  {
+                    "color": "#4B5563",
+                    "fontSize": 14,
+                    "fontWeight": "500",
+                    "marginBottom": 4,
+                  },
+                ]
+              }
+            >
+              🇬🇧 English:
+            </Text>
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#1C1C1E",
+                  },
+                  {
+                    "alignItems": "flex-start",
+                    "flexDirection": "row",
+                    "marginBottom": 2,
+                  },
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#E5E5E7",
+                    },
+                    {
+                      "color": "#9CA3AF",
+                      "fontSize": 14,
+                      "marginRight": 6,
+                      "marginTop": 2,
+                    },
+                  ]
+                }
+              >
+                •
+              </Text>
+              <Text
+                copyText="house"
+                style={
+                  [
+                    {
+                      "flex": 1,
+                      "fontSize": 16,
+                    },
+                    false,
+                  ]
+                }
+              >
+                house
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+          testID="usage-nuance-section"
+        >
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#1C1C1E",
+                },
+                {
+                  "alignItems": "flex-start",
+                  "flexDirection": "row",
+                  "gap": 8,
+                  "justifyContent": "space-between",
+                },
+              ]
+            }
+          >
+            <Text
+              accessibilityRole="header"
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  [
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                      "fontSize": 16,
+                      "fontWeight": "600",
+                      "marginBottom": 8,
+                    },
+                    {
+                      "flex": 1,
+                    },
+                    false,
+                  ],
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#E5E5E7",
+                    },
+                    {
+                      "marginRight": 6,
+                    },
+                  ]
+                }
+              >
+                💡
+              </Text>
+              Usage & Nuance
+            </Text>
+            <Text
+              style={
+                [
+                  {
+                    "color": "rgba(255, 255, 255, 0.6)",
+                  },
+                  {
+                    "fontSize": 11,
+                    "fontStyle": "italic",
+                    "lineHeight": 16,
+                    "textAlign": "right",
+                  },
+                ]
+              }
+            >
+              AI-generated guidance
+            </Text>
+          </View>
+          <Text
+            copyText="Woning is common in formal descriptions of housing; huis is more conversational."
+            style={
+              {
+                "fontSize": 15,
+                "lineHeight": 22,
+                "marginBottom": 10,
+              }
+            }
+          >
+            Woning is common in formal descriptions of housing; huis is more conversational.
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#2C2C2E",
+                },
+                {
+                  "borderLeftColor": "#3B82F6",
+                  "borderLeftWidth": 3,
+                  "borderRadius": 8,
+                  "marginBottom": 8,
+                  "padding": 12,
+                },
+              ]
+            }
+          >
+            <Text
+              selectable={true}
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  {
+                    "fontSize": 15,
+                    "fontWeight": "600",
+                    "lineHeight": 21,
+                    "marginBottom": 4,
+                  },
+                ]
+              }
+            >
+              huis
+            </Text>
+            <Text
+              selectable={true}
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  {
+                    "fontSize": 14,
+                    "lineHeight": 20,
+                  },
+                ]
+              }
+            >
+              The everyday word for a house or home.
+            </Text>
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#1C1C1E",
+                  },
+                  {
+                    "marginTop": 8,
+                  },
+                ]
+              }
+            >
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#E5E5E7",
+                    },
+                    {
+                      "fontSize": 14,
+                      "fontWeight": "500",
+                      "lineHeight": 20,
+                    },
+                  ]
+                }
+              >
+                We wonen in een klein huis.
+              </Text>
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "rgba(255, 255, 255, 0.6)",
+                    },
+                    {
+                      "fontSize": 13,
+                      "lineHeight": 18,
+                      "marginTop": 2,
+                    },
+                  ]
+                }
+              >
+                🇬🇧 
+                We live in a small house.
+              </Text>
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "rgba(255, 255, 255, 0.6)",
+                    },
+                    {
+                      "fontSize": 13,
+                      "lineHeight": 18,
+                      "marginTop": 2,
+                    },
+                  ]
+                }
+              >
+                🇷🇺 
+                Мы живём в маленьком доме.
+              </Text>
+            </View>
+          </View>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#2C2C2E",
+                },
+                {
+                  "borderLeftColor": "#3B82F6",
+                  "borderLeftWidth": 3,
+                  "borderRadius": 8,
+                  "marginBottom": 8,
+                  "padding": 12,
+                },
+              ]
+            }
+          >
+            <Text
+              selectable={true}
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  {
+                    "fontSize": 15,
+                    "fontWeight": "600",
+                    "lineHeight": 21,
+                    "marginBottom": 4,
+                  },
+                ]
+              }
+            >
+              thuis
+            </Text>
+            <Text
+              selectable={true}
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  {
+                    "fontSize": 14,
+                    "lineHeight": 20,
+                  },
+                ]
+              }
+            >
+              Describes being at home, not the physical dwelling.
+            </Text>
+          </View>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                [
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 8,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  {
+                    "marginRight": 6,
+                  },
+                ]
+              }
+            >
+              📝
+            </Text>
+            Examples
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#2C2C2E",
+                },
+                [
+                  {
+                    "borderLeftColor": "#3B82F6",
+                    "borderLeftWidth": 3,
+                    "borderRadius": 8,
+                    "marginBottom": 8,
+                    "padding": 12,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              copyText="Het huis is groot."
+              style={
+                [
+                  {
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 4,
+                  },
+                  false,
+                ]
+              }
+            >
+              Het huis is groot.
+            </Text>
+            <Text
+              copyText="The house is big."
+              style={
+                [
+                  {
+                    "fontSize": 14,
+                    "marginBottom": 2,
+                  },
+                  false,
+                  {
+                    "color": "#4B5563",
+                  },
+                ]
+              }
+            >
+              🇬🇧 
+              The house is big.
+            </Text>
+          </View>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                [
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 8,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  {
+                    "marginRight": 6,
+                  },
+                ]
+              }
+            >
+              🖼️
+            </Text>
+            Visual
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#1C1C1E",
+                },
+                {
+                  "alignItems": "center",
+                  "marginBottom": 8,
+                },
+              ]
+            }
+          />
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                [
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 8,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  {
+                    "marginRight": 6,
+                  },
+                ]
+              }
+            >
+              📝
+            </Text>
+            Analysis Notes
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#2C2C2E",
+                },
+                {
+                  "borderColor": "#E5E7EB",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "minHeight": 60,
+                  "padding": 12,
+                },
+              ]
+            }
+          >
+            <Text
+              selectable={false}
+              style={
+                [
+                  {
+                    "color": "#E5E5E7",
+                  },
+                  [
+                    {
+                      "fontSize": 14,
+                      "lineHeight": 20,
+                    },
+                    {
+                      "fontSize": 14,
+                      "fontStyle": "italic",
+                      "lineHeight": 20,
+                      "opacity": 0.6,
+                    },
+                  ],
+                ]
+              }
+            >
+              No analysis notes available
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>
+</View>
+`;
+
+exports[`light Usage & Nuance rendering renders structured guidance in Word Detail 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#F2F2F7",
+      },
+      [
+        {
+          "borderRadius": 16,
+          "minHeight": 100,
+          "overflow": "hidden",
+          "width": "100%",
+        },
+        undefined,
+      ],
+    ]
+  }
+>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#F2F2F7",
+        },
+        [
+          {
+            "padding": 16,
+          },
+          undefined,
+        ],
+      ]
+    }
+  >
+    <View
+      style={
+        {
+          "height": 0,
+        }
+      }
+    />
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          {
+            "marginBottom": 16,
+          },
+        ]
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#F2F2F7",
+            },
+            {
+              "flexDirection": "row",
+              "justifyContent": "flex-end",
+              "marginBottom": 4,
+              "marginTop": 8,
+            },
+          ]
+        }
+      >
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "gap": 8,
+            }
+          }
+        />
+      </View>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#F2F2F7",
+            },
+            {
+              "flexDirection": "row",
+              "flexWrap": "wrap",
+              "gap": 8,
+              "marginTop": 8,
+            },
+          ]
+        }
+      >
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              {
+                "borderColor": "#E5E7EB",
+                "borderRadius": 12,
+                "borderWidth": 1,
+                "paddingHorizontal": 8,
+                "paddingVertical": 4,
+              },
+            ]
+          }
+        >
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "color": "#4B5563",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                },
+              ]
+            }
+          >
+            noun
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              {
+                "borderColor": "#E5E7EB",
+                "borderRadius": 12,
+                "borderWidth": 1,
+                "paddingHorizontal": 8,
+                "paddingVertical": 4,
+              },
+            ]
+          }
+        >
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "color": "#4B5563",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                },
+              ]
+            }
+          >
+            het
+          </Text>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              {
+                "borderColor": "#E5E7EB",
+                "borderRadius": 12,
+                "borderWidth": 1,
+                "paddingHorizontal": 8,
+                "paddingVertical": 4,
+              },
+            ]
+          }
+        >
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "color": "#4B5563",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                },
+              ]
+            }
+          >
+            plural: 
+            huizen
+          </Text>
+        </View>
+      </View>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            [
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 8,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "marginRight": 6,
+              },
+            ]
+          }
+        >
+          💬
+        </Text>
+        Translations
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#F2F2F7",
+            },
+            {
+              "marginBottom": 8,
+            },
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "color": "#4B5563",
+                "fontSize": 14,
+                "fontWeight": "500",
+                "marginBottom": 4,
+              },
+            ]
+          }
+        >
+          🇬🇧 English:
+        </Text>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              {
+                "alignItems": "flex-start",
+                "flexDirection": "row",
+                "marginBottom": 2,
+              },
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "color": "#9CA3AF",
+                  "fontSize": 14,
+                  "marginRight": 6,
+                  "marginTop": 2,
+                },
+              ]
+            }
+          >
+            •
+          </Text>
+          <Text
+            copyText="house"
+            style={
+              [
+                {
+                  "flex": 1,
+                  "fontSize": 16,
+                },
+                false,
+              ]
+            }
+          >
+            house
+          </Text>
+        </View>
+      </View>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+      testID="usage-nuance-section"
+    >
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#F2F2F7",
+            },
+            {
+              "alignItems": "flex-start",
+              "flexDirection": "row",
+              "gap": 8,
+              "justifyContent": "space-between",
+            },
+          ]
+        }
+      >
+        <Text
+          accessibilityRole="header"
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              [
+                {
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "marginBottom": 8,
+                },
+                {
+                  "flex": 1,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "marginRight": 6,
+                },
+              ]
+            }
+          >
+            💡
+          </Text>
+          Usage & Nuance
+        </Text>
+        <Text
+          style={
+            [
+              {
+                "color": "#4B5563",
+              },
+              {
+                "fontSize": 11,
+                "fontStyle": "italic",
+                "lineHeight": 16,
+                "textAlign": "right",
+              },
+            ]
+          }
+        >
+          AI-generated guidance
+        </Text>
+      </View>
+      <Text
+        copyText="Woning is common in formal descriptions of housing; huis is more conversational."
+        style={
+          {
+            "fontSize": 15,
+            "lineHeight": 22,
+            "marginBottom": 10,
+          }
+        }
+      >
+        Woning is common in formal descriptions of housing; huis is more conversational.
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#FFFFFF",
+            },
+            {
+              "borderLeftColor": "#3B82F6",
+              "borderLeftWidth": 3,
+              "borderRadius": 8,
+              "marginBottom": 8,
+              "padding": 12,
+            },
+          ]
+        }
+      >
+        <Text
+          selectable={true}
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 15,
+                "fontWeight": "600",
+                "lineHeight": 21,
+                "marginBottom": 4,
+              },
+            ]
+          }
+        >
+          huis
+        </Text>
+        <Text
+          selectable={true}
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 14,
+                "lineHeight": 20,
+              },
+            ]
+          }
+        >
+          The everyday word for a house or home.
+        </Text>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              {
+                "marginTop": 8,
+              },
+            ]
+          }
+        >
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                {
+                  "fontSize": 14,
+                  "fontWeight": "500",
+                  "lineHeight": 20,
+                },
+              ]
+            }
+          >
+            We wonen in een klein huis.
+          </Text>
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#4B5563",
+                },
+                {
+                  "fontSize": 13,
+                  "lineHeight": 18,
+                  "marginTop": 2,
+                },
+              ]
+            }
+          >
+            🇬🇧 
+            We live in a small house.
+          </Text>
+          <Text
+            selectable={true}
+            style={
+              [
+                {
+                  "color": "#4B5563",
+                },
+                {
+                  "fontSize": 13,
+                  "lineHeight": 18,
+                  "marginTop": 2,
+                },
+              ]
+            }
+          >
+            🇷🇺 
+            Мы живём в маленьком доме.
+          </Text>
+        </View>
+      </View>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#FFFFFF",
+            },
+            {
+              "borderLeftColor": "#3B82F6",
+              "borderLeftWidth": 3,
+              "borderRadius": 8,
+              "marginBottom": 8,
+              "padding": 12,
+            },
+          ]
+        }
+      >
+        <Text
+          selectable={true}
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 15,
+                "fontWeight": "600",
+                "lineHeight": 21,
+                "marginBottom": 4,
+              },
+            ]
+          }
+        >
+          thuis
+        </Text>
+        <Text
+          selectable={true}
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "fontSize": 14,
+                "lineHeight": 20,
+              },
+            ]
+          }
+        >
+          Describes being at home, not the physical dwelling.
+        </Text>
+      </View>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            [
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 8,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "marginRight": 6,
+              },
+            ]
+          }
+        >
+          📝
+        </Text>
+        Examples
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#FFFFFF",
+            },
+            [
+              {
+                "borderLeftColor": "#3B82F6",
+                "borderLeftWidth": 3,
+                "borderRadius": 8,
+                "marginBottom": 8,
+                "padding": 12,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          copyText="Het huis is groot."
+          style={
+            [
+              {
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 4,
+              },
+              false,
+            ]
+          }
+        >
+          Het huis is groot.
+        </Text>
+        <Text
+          copyText="The house is big."
+          style={
+            [
+              {
+                "fontSize": 14,
+                "marginBottom": 2,
+              },
+              false,
+              {
+                "color": "#4B5563",
+              },
+            ]
+          }
+        >
+          🇬🇧 
+          The house is big.
+        </Text>
+      </View>
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            [
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 8,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "marginRight": 6,
+              },
+            ]
+          }
+        >
+          🖼️
+        </Text>
+        Visual
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#F2F2F7",
+            },
+            {
+              "alignItems": "center",
+              "marginBottom": 8,
+            },
+          ]
+        }
+      />
+    </View>
+    <View
+      style={
+        [
+          {
+            "backgroundColor": "#F2F2F7",
+          },
+          [
+            {
+              "marginBottom": 16,
+            },
+            false,
+          ],
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "color": "#111827",
+            },
+            [
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "fontSize": 16,
+                "fontWeight": "600",
+                "marginBottom": 8,
+              },
+              false,
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              {
+                "marginRight": 6,
+              },
+            ]
+          }
+        >
+          📝
+        </Text>
+        Analysis Notes
+      </Text>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#FFFFFF",
+            },
+            {
+              "borderColor": "#E5E7EB",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "minHeight": 60,
+              "padding": 12,
+            },
+          ]
+        }
+      >
+        <Text
+          selectable={false}
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              [
+                {
+                  "fontSize": 14,
+                  "lineHeight": 20,
+                },
+                {
+                  "fontSize": 14,
+                  "fontStyle": "italic",
+                  "lineHeight": 20,
+                  "opacity": 0.6,
+                },
+              ],
+            ]
+          }
+        >
+          No analysis notes available
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`light Usage & Nuance rendering renders structured guidance in review 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#F2F2F7",
+      },
+      [
+        {
+          "borderRadius": 16,
+          "minHeight": 100,
+          "overflow": "hidden",
+          "width": "100%",
+        },
+        undefined,
+      ],
+    ]
+  }
+>
+  <RCTScrollView
+    bounces={true}
+    contentContainerStyle={
+      {
+        "paddingBottom": 120,
+      }
+    }
+    showsVerticalScrollIndicator={false}
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  >
+    <View>
+      <View
+        style={
+          [
+            {
+              "backgroundColor": "#F2F2F7",
+            },
+            [
+              {
+                "padding": 16,
+              },
+              undefined,
+            ],
+          ]
+        }
+      >
+        <View
+          style={
+            {
+              "height": 0,
+            }
+          }
+        />
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              {
+                "marginBottom": 16,
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#F2F2F7",
+                },
+                {
+                  "flexDirection": "row",
+                  "justifyContent": "flex-end",
+                  "marginBottom": 4,
+                  "marginTop": 8,
+                },
+              ]
+            }
+          >
+            <View
+              style={
+                {
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "gap": 8,
+                }
+              }
+            />
+          </View>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#F2F2F7",
+                },
+                {
+                  "flexDirection": "row",
+                  "flexWrap": "wrap",
+                  "gap": 8,
+                  "marginTop": 8,
+                },
+              ]
+            }
+          >
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#F2F2F7",
+                  },
+                  {
+                    "borderColor": "#E5E7EB",
+                    "borderRadius": 12,
+                    "borderWidth": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 4,
+                  },
+                ]
+              }
+            >
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                    },
+                    {
+                      "color": "#4B5563",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    },
+                  ]
+                }
+              >
+                noun
+              </Text>
+            </View>
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#F2F2F7",
+                  },
+                  {
+                    "borderColor": "#E5E7EB",
+                    "borderRadius": 12,
+                    "borderWidth": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 4,
+                  },
+                ]
+              }
+            >
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                    },
+                    {
+                      "color": "#4B5563",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    },
+                  ]
+                }
+              >
+                het
+              </Text>
+            </View>
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#F2F2F7",
+                  },
+                  {
+                    "borderColor": "#E5E7EB",
+                    "borderRadius": 12,
+                    "borderWidth": 1,
+                    "paddingHorizontal": 8,
+                    "paddingVertical": 4,
+                  },
+                ]
+              }
+            >
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                    },
+                    {
+                      "color": "#4B5563",
+                      "fontSize": 12,
+                      "fontWeight": "500",
+                    },
+                  ]
+                }
+              >
+                plural: 
+                huizen
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                [
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 8,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  {
+                    "marginRight": 6,
+                  },
+                ]
+              }
+            >
+              💬
+            </Text>
+            Translations
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#F2F2F7",
+                },
+                {
+                  "marginBottom": 8,
+                },
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  {
+                    "color": "#4B5563",
+                    "fontSize": 14,
+                    "fontWeight": "500",
+                    "marginBottom": 4,
+                  },
+                ]
+              }
+            >
+              🇬🇧 English:
+            </Text>
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#F2F2F7",
+                  },
+                  {
+                    "alignItems": "flex-start",
+                    "flexDirection": "row",
+                    "marginBottom": 2,
+                  },
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                    },
+                    {
+                      "color": "#9CA3AF",
+                      "fontSize": 14,
+                      "marginRight": 6,
+                      "marginTop": 2,
+                    },
+                  ]
+                }
+              >
+                •
+              </Text>
+              <Text
+                copyText="house"
+                style={
+                  [
+                    {
+                      "flex": 1,
+                      "fontSize": 16,
+                    },
+                    false,
+                  ]
+                }
+              >
+                house
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+          testID="usage-nuance-section"
+        >
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#F2F2F7",
+                },
+                {
+                  "alignItems": "flex-start",
+                  "flexDirection": "row",
+                  "gap": 8,
+                  "justifyContent": "space-between",
+                },
+              ]
+            }
+          >
+            <Text
+              accessibilityRole="header"
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  [
+                    {
+                      "alignItems": "center",
+                      "flexDirection": "row",
+                      "fontSize": 16,
+                      "fontWeight": "600",
+                      "marginBottom": 8,
+                    },
+                    {
+                      "flex": 1,
+                    },
+                    false,
+                  ],
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                    },
+                    {
+                      "marginRight": 6,
+                    },
+                  ]
+                }
+              >
+                💡
+              </Text>
+              Usage & Nuance
+            </Text>
+            <Text
+              style={
+                [
+                  {
+                    "color": "#4B5563",
+                  },
+                  {
+                    "fontSize": 11,
+                    "fontStyle": "italic",
+                    "lineHeight": 16,
+                    "textAlign": "right",
+                  },
+                ]
+              }
+            >
+              AI-generated guidance
+            </Text>
+          </View>
+          <Text
+            copyText="Woning is common in formal descriptions of housing; huis is more conversational."
+            style={
+              {
+                "fontSize": 15,
+                "lineHeight": 22,
+                "marginBottom": 10,
+              }
+            }
+          >
+            Woning is common in formal descriptions of housing; huis is more conversational.
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#FFFFFF",
+                },
+                {
+                  "borderLeftColor": "#3B82F6",
+                  "borderLeftWidth": 3,
+                  "borderRadius": 8,
+                  "marginBottom": 8,
+                  "padding": 12,
+                },
+              ]
+            }
+          >
+            <Text
+              selectable={true}
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  {
+                    "fontSize": 15,
+                    "fontWeight": "600",
+                    "lineHeight": 21,
+                    "marginBottom": 4,
+                  },
+                ]
+              }
+            >
+              huis
+            </Text>
+            <Text
+              selectable={true}
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  {
+                    "fontSize": 14,
+                    "lineHeight": 20,
+                  },
+                ]
+              }
+            >
+              The everyday word for a house or home.
+            </Text>
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#F2F2F7",
+                  },
+                  {
+                    "marginTop": 8,
+                  },
+                ]
+              }
+            >
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                    },
+                    {
+                      "fontSize": 14,
+                      "fontWeight": "500",
+                      "lineHeight": 20,
+                    },
+                  ]
+                }
+              >
+                We wonen in een klein huis.
+              </Text>
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#4B5563",
+                    },
+                    {
+                      "fontSize": 13,
+                      "lineHeight": 18,
+                      "marginTop": 2,
+                    },
+                  ]
+                }
+              >
+                🇬🇧 
+                We live in a small house.
+              </Text>
+              <Text
+                selectable={true}
+                style={
+                  [
+                    {
+                      "color": "#4B5563",
+                    },
+                    {
+                      "fontSize": 13,
+                      "lineHeight": 18,
+                      "marginTop": 2,
+                    },
+                  ]
+                }
+              >
+                🇷🇺 
+                Мы живём в маленьком доме.
+              </Text>
+            </View>
+          </View>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#FFFFFF",
+                },
+                {
+                  "borderLeftColor": "#3B82F6",
+                  "borderLeftWidth": 3,
+                  "borderRadius": 8,
+                  "marginBottom": 8,
+                  "padding": 12,
+                },
+              ]
+            }
+          >
+            <Text
+              selectable={true}
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  {
+                    "fontSize": 15,
+                    "fontWeight": "600",
+                    "lineHeight": 21,
+                    "marginBottom": 4,
+                  },
+                ]
+              }
+            >
+              thuis
+            </Text>
+            <Text
+              selectable={true}
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  {
+                    "fontSize": 14,
+                    "lineHeight": 20,
+                  },
+                ]
+              }
+            >
+              Describes being at home, not the physical dwelling.
+            </Text>
+          </View>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                [
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 8,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  {
+                    "marginRight": 6,
+                  },
+                ]
+              }
+            >
+              📝
+            </Text>
+            Examples
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#FFFFFF",
+                },
+                [
+                  {
+                    "borderLeftColor": "#3B82F6",
+                    "borderLeftWidth": 3,
+                    "borderRadius": 8,
+                    "marginBottom": 8,
+                    "padding": 12,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              copyText="Het huis is groot."
+              style={
+                [
+                  {
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 4,
+                  },
+                  false,
+                ]
+              }
+            >
+              Het huis is groot.
+            </Text>
+            <Text
+              copyText="The house is big."
+              style={
+                [
+                  {
+                    "fontSize": 14,
+                    "marginBottom": 2,
+                  },
+                  false,
+                  {
+                    "color": "#4B5563",
+                  },
+                ]
+              }
+            >
+              🇬🇧 
+              The house is big.
+            </Text>
+          </View>
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                [
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 8,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  {
+                    "marginRight": 6,
+                  },
+                ]
+              }
+            >
+              🖼️
+            </Text>
+            Visual
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#F2F2F7",
+                },
+                {
+                  "alignItems": "center",
+                  "marginBottom": 8,
+                },
+              ]
+            }
+          />
+        </View>
+        <View
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              [
+                {
+                  "marginBottom": 16,
+                },
+                false,
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                [
+                  {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                    "fontSize": 16,
+                    "fontWeight": "600",
+                    "marginBottom": 8,
+                  },
+                  false,
+                ],
+              ]
+            }
+          >
+            <Text
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  {
+                    "marginRight": 6,
+                  },
+                ]
+              }
+            >
+              📝
+            </Text>
+            Analysis Notes
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "backgroundColor": "#FFFFFF",
+                },
+                {
+                  "borderColor": "#E5E7EB",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "minHeight": 60,
+                  "padding": 12,
+                },
+              ]
+            }
+          >
+            <Text
+              selectable={false}
+              style={
+                [
+                  {
+                    "color": "#111827",
+                  },
+                  [
+                    {
+                      "fontSize": 14,
+                      "lineHeight": 20,
+                    },
+                    {
+                      "fontSize": 14,
+                      "fontStyle": "italic",
+                      "lineHeight": 20,
+                      "opacity": 0.6,
+                    },
+                  ],
+                ]
+              }
+            >
+              No analysis notes available
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>
+</View>
+`;

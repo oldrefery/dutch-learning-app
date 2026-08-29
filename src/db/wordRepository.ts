@@ -111,6 +111,7 @@ const UPDATE_WORD_SQL = `
     next_review_date = ?,
     last_reviewed_at = ?,
     analysis_notes = ?,
+    usage_notes = ?,
     created_at = ?,
     updated_at = ?,
     deleted_at = ?,
@@ -128,11 +129,12 @@ const INSERT_WORD_SQL = `
     plural, register, translations, examples, synonyms, antonyms, conjugation,
     preposition, image_url, tts_url, interval_days, repetition_count,
     easiness_factor, next_review_date, last_reviewed_at, analysis_notes,
+    usage_notes,
     created_at, updated_at, deleted_at, sync_status,
     last_sync_attempt_at, synced_at
   ) VALUES (
     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
   )
 `
 
@@ -160,6 +162,7 @@ const UPDATE_ANALYZED_WORD_SQL = `
     image_url = ?,
     tts_url = ?,
     analysis_notes = ?,
+    usage_notes = ?,
     updated_at = ?,
     sync_status = 'pending',
     last_sync_attempt_at = NULL,
@@ -391,6 +394,7 @@ export class WordRepository {
       this.toSqlValue(word.next_review_date),
       this.toNullableSqlValue(word.last_reviewed_at),
       this.toNullableSqlValue(word.analysis_notes),
+      word.usage_notes ? JSON.stringify(word.usage_notes) : null,
       this.toSqlValue(word.created_at),
       this.toSqlValue(word.updated_at),
       deletedAt,
@@ -811,10 +815,11 @@ export class WordRepository {
         plural, register, translations, examples, synonyms, antonyms, conjugation,
         preposition, image_url, tts_url, interval_days, repetition_count,
         easiness_factor, next_review_date, last_reviewed_at, analysis_notes,
+        usage_notes,
         created_at, updated_at, deleted_at, sync_status
       ) VALUES (
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `)
 
@@ -850,6 +855,7 @@ export class WordRepository {
         word.next_review_date,
         word.last_reviewed_at || null,
         word.analysis_notes || null,
+        word.usage_notes ? JSON.stringify(word.usage_notes) : null,
         word.created_at,
         word.updated_at,
         null,
@@ -936,6 +942,7 @@ export class WordRepository {
       this.toNullableSqlValue(word.image_url),
       this.toNullableSqlValue(word.tts_url),
       this.toNullableSqlValue(word.analysis_notes),
+      word.usage_notes ? JSON.stringify(word.usage_notes) : null,
       word.updated_at,
       word.word_id,
       word.user_id,
@@ -1065,6 +1072,9 @@ export class WordRepository {
       next_review_date: row.next_review_date as string,
       last_reviewed_at: (row.last_reviewed_at as string) || null,
       analysis_notes: (row.analysis_notes as string) || null,
+      usage_notes: row.usage_notes
+        ? JSON.parse(row.usage_notes as string)
+        : null,
       created_at: row.created_at as string,
       updated_at: row.updated_at as string,
       deleted_at: (row.deleted_at as string) || null,

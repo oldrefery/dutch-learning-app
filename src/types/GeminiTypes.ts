@@ -1,6 +1,6 @@
 // Types for Gemini AI word analysis
 import { ExpressionType } from './ExpressionTypes'
-import { WordRegister } from './database'
+import { WordRegister, WordUsageNotes } from './database'
 
 export interface WordAnalysisRequest {
   word: string
@@ -56,6 +56,7 @@ export interface WordAnalysisResponse {
   // Metadata
   confidence_score?: number
   analysis_notes?: string
+  usage_notes?: WordUsageNotes | null
 }
 
 export interface GeminiAnalysisResult {
@@ -92,6 +93,7 @@ export interface GeminiAnalysisResult {
   image_url?: string
   confidence_score?: number
   analysis_notes?: string
+  usage_notes?: WordUsageNotes | null
 }
 
 export interface SeparableVerbAnalysis {

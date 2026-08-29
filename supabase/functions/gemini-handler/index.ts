@@ -8,6 +8,7 @@ import {
   cleanExamples,
   formatTranslations,
   parseWordInput,
+  normalizeUsageNotes,
 } from './geminiUtils.ts'
 import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
 import {
@@ -124,6 +125,7 @@ Deno.serve(async (req: Request) => {
           conjugation: cachedAnalysis.conjugation,
           preposition: cachedAnalysis.preposition,
           analysis_notes: cachedAnalysis.analysis_notes || '',
+          usage_notes: cachedAnalysis.usage_notes || null,
         }
 
         return new Response(
@@ -154,6 +156,7 @@ Deno.serve(async (req: Request) => {
     // Clean and format data
     const cleanedExamples = cleanExamples(analysis.examples)
     const formattedTranslations = formatTranslations(analysis.translations)
+    const usageNotes = normalizeUsageNotes(analysis.usage_notes)
 
     // Get multiple image options
     const imageOptions = await getMultipleImagesForWord(
@@ -193,6 +196,7 @@ Deno.serve(async (req: Request) => {
       conjugation: analysis.conjugation || null,
       preposition: analysis.preposition || null,
       analysis_notes: analysis.analysis_notes || '',
+      usage_notes: usageNotes,
     }
 
     // Save to cache for future use (async, don't wait for completion)
@@ -220,6 +224,7 @@ Deno.serve(async (req: Request) => {
       conjugation: analysis.conjugation,
       preposition: analysis.preposition,
       analysis_notes: analysis.analysis_notes || '',
+      usage_notes: usageNotes,
     }
 
     console.log('💾 Saving to cache:', {

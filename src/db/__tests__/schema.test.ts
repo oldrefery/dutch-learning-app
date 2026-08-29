@@ -2,6 +2,7 @@ import {
   MIGRATION_V5_TOMBSTONE_INDEXES,
   MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS,
   MIGRATION_V7_REVIEW_EVENTS,
+  MIGRATION_V8_ADD_USAGE_NOTES,
   SQL_SCHEMA,
 } from '../schema'
 import fs from 'node:fs'
@@ -35,6 +36,51 @@ describe('delete tombstone schema', () => {
       'OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL'
     )
     expect(migration).toContain(ACTIVE_WORD_PREDICATE)
+  })
+})
+
+describe('usage notes schema', () => {
+  const migrationPath = path.resolve(
+    process.cwd(),
+    'supabase/migrations/20260829110000_add_usage_notes.sql'
+  )
+  const migration = fs.readFileSync(migrationPath, 'utf8')
+  const cacheUtils = fs.readFileSync(
+    path.resolve(
+      process.cwd(),
+      'supabase/functions/gemini-handler/cacheUtils.ts'
+    ),
+    'utf8'
+  )
+
+  it('keeps local usage guidance optional and forward-migratable', () => {
+    expect(SQL_SCHEMA).toContain('usage_notes TEXT')
+    expect(MIGRATION_V8_ADD_USAGE_NOTES).toContain(
+      'ALTER TABLE words ADD COLUMN usage_notes TEXT'
+    )
+  })
+
+  it('adds nullable JSON objects remotely without a data backfill', () => {
+    expect(migration).toContain(
+      'ALTER TABLE public.words\nADD COLUMN IF NOT EXISTS usage_notes JSONB'
+    )
+    expect(migration).toContain(
+      'ALTER TABLE public.word_analysis_cache\nADD COLUMN IF NOT EXISTS usage_notes JSONB'
+    )
+    expect(migration).toContain("jsonb_typeof(usage_notes) = 'object'")
+    expect(migration).not.toMatch(
+      /UPDATE\s+(public\.)?(words|word_analysis_cache)/i
+    )
+  })
+
+  it('invalidates legacy shared analyses and writes cache version 2', () => {
+    expect(cacheUtils).toContain('CURRENT_ANALYSIS_CACHE_VERSION = 2')
+    expect(cacheUtils).toContain(
+      ".eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)"
+    )
+    expect(cacheUtils).toContain(
+      'cache_version: CURRENT_ANALYSIS_CACHE_VERSION'
+    )
   })
 })
 

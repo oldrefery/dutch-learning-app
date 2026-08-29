@@ -256,6 +256,10 @@ describe('wordActions', () => {
         is_reflexive: false,
         is_expression: false,
         is_separable: false,
+        usage_notes: {
+          summary: 'Use huis in everyday conversation.',
+          contrasts: [],
+        },
       }
       const currentWords = [createMockWord()]
       mockGet.mockReturnValue({
@@ -367,6 +371,10 @@ describe('wordActions', () => {
         is_reflexive: false,
         is_expression: false,
         is_separable: false,
+        usage_notes: {
+          summary: 'Use huis in everyday conversation.',
+          contrasts: [],
+        },
       }
       ;(wordRepository.addWord as jest.Mock).mockResolvedValue(undefined)
 
@@ -394,6 +402,7 @@ describe('wordActions', () => {
           easiness_factor: 2.5,
           last_reviewed_at: null,
           analysis_notes: null,
+          usage_notes: analyzedWord.usage_notes,
         })
       )
     })
@@ -436,6 +445,7 @@ describe('wordActions', () => {
           tts_url: null,
           last_reviewed_at: null,
           analysis_notes: null,
+          usage_notes: null,
         })
       )
       expect(wordRepository.addWord).toHaveBeenCalledWith(result)
@@ -1003,6 +1013,15 @@ describe('wordActions', () => {
         examples: [{ nl: 'Ik wandel.', en: 'I walk.' }],
         synonyms: ['lopen'],
         antonyms: [],
+        usage_notes: {
+          summary: 'Wandelen usually suggests walking for pleasure.',
+          contrasts: [
+            {
+              term: 'lopen',
+              distinction: 'Lopen is the broader verb for walking or running.',
+            },
+          ],
+        },
       }
       mockGet.mockReturnValue({
         currentUserId: USER_ID,
@@ -1031,6 +1050,7 @@ describe('wordActions', () => {
           interval_days: 14,
           repetition_count: 4,
           easiness_factor: 2.8,
+          usage_notes: analysis.usage_notes,
         })
       )
       expect(result).toEqual(

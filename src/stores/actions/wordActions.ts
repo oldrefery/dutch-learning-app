@@ -136,6 +136,7 @@ const createWordFromAnalysis = (
     next_review_date: now.split('T')[0],
     last_reviewed_at: null,
     analysis_notes: analysis.analysis_notes ?? null,
+    usage_notes: analysis.usage_notes ?? null,
     created_at: now,
     updated_at: now,
   }
@@ -886,6 +887,7 @@ export const createWordActions = (
         image_url: analysis.image_url ?? currentWord.image_url,
         tts_url: analysis.tts_url ?? currentWord.tts_url,
         analysis_notes: analysis.analysis_notes ?? currentWord.analysis_notes,
+        usage_notes: analysis.usage_notes ?? currentWord.usage_notes ?? null,
         updated_at: now,
       }
 

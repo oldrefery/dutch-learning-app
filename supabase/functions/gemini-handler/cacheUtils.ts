@@ -1,9 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 import type { WordAnalysisResult } from './types.ts'
+import type { WordUsageNotes } from './types.ts'
 
 type WordTranslations = WordAnalysisResult['translations']
 type WordExample = WordAnalysisResult['examples'][number]
 type WordRegister = 'formal' | 'informal' | 'neutral'
+
+export const CURRENT_ANALYSIS_CACHE_VERSION = 2
 
 // Supabase client for cache operations (using a service role)
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -35,6 +38,8 @@ export interface CacheEntry {
   conjugation: unknown | null
   preposition: string | null
   analysis_notes: string
+  usage_notes: WordUsageNotes | null
+  cache_version: number
   usage_count: number
   created_at: string
   last_used_at: string
@@ -63,6 +68,7 @@ export interface WordAnalysisData {
   conjugation?: unknown
   preposition?: string
   analysis_notes: string
+  usage_notes: WordUsageNotes | null
 }
 
 /**
@@ -85,6 +91,7 @@ export async function getCachedAnalysis(
       .eq('dutch_lemma', normalizedWord)
       .eq('part_of_speech', normalizedPartOfSpeech)
       .eq('article', normalizedArticle)
+      .eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)
       .gte(
         'last_used_at',
         new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString()
@@ -120,6 +127,7 @@ export async function getCachedVariants(
       .from('word_analysis_cache')
       .select('*')
       .eq('dutch_lemma', normalizedWord)
+      .eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)
       .gte(
         'last_used_at',
         new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString()
@@ -207,6 +215,8 @@ export async function saveToCache(
         conjugation: analysisData.conjugation || null,
         preposition: analysisData.preposition || null,
         analysis_notes: analysisData.analysis_notes,
+        usage_notes: analysisData.usage_notes,
+        cache_version: CURRENT_ANALYSIS_CACHE_VERSION,
         // Cache management fields
         usage_count: 1,
         last_used_at: new Date().toISOString(),
@@ -242,6 +252,8 @@ export async function saveToCache(
           conjugation: analysisData.conjugation || null,
           preposition: analysisData.preposition || null,
           analysis_notes: analysisData.analysis_notes,
+          usage_notes: analysisData.usage_notes,
+          cache_version: CURRENT_ANALYSIS_CACHE_VERSION,
           last_used_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })

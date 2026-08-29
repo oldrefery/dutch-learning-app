@@ -141,6 +141,7 @@ export const useWordAnalysis = () => {
         preposition: analysis.preposition || undefined,
         register: analysis.register || undefined,
         analysis_notes: analysis.analysis_notes || '',
+        usage_notes: analysis.usage_notes || null,
       }
 
       setAnalysisResult(result)

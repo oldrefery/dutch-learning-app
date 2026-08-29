@@ -108,6 +108,7 @@ describe('SyncManager', () => {
     next_review_date: DEFAULT_REVIEW_DATE,
     last_reviewed_at: null,
     analysis_notes: null,
+    usage_notes: null,
     created_at: DEFAULT_TIMESTAMP,
     updated_at: DEFAULT_TIMESTAMP,
     sync_status: 'pending',
@@ -575,6 +576,10 @@ describe('SyncManager', () => {
       const pendingWord = createPendingWord({
         word_id: 'word-user-normalized',
         user_id: 'stale-user-id',
+        usage_notes: {
+          summary: 'Use huis in everyday conversation.',
+          contrasts: [],
+        },
       })
 
       ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
@@ -633,6 +638,10 @@ describe('SyncManager', () => {
       expect(Array.isArray(syncedWordsPayload)).toBe(true)
       expect(syncedWordsPayload[0].user_id).toBe(userId)
       expect(syncedWordsPayload[0].tts_url).toBe('')
+      expect(syncedWordsPayload[0].usage_notes).toEqual({
+        summary: 'Use huis in everyday conversation.',
+        contrasts: [],
+      })
     })
   })
 
@@ -948,6 +957,10 @@ describe('SyncManager', () => {
         created_at: '2026-07-24T10:00:00.000Z',
         updated_at: nextUpdatedAt,
         sync_status: 'synced',
+        usage_notes: JSON.stringify({
+          summary: 'Use woning in formal housing contexts.',
+          contrasts: [],
+        }),
       })
       const query = mockWordPull([remoteWord])
 
@@ -963,6 +976,10 @@ describe('SyncManager', () => {
             word_id: updatedWordId,
             created_at: '2026-07-24T10:00:00.000Z',
             updated_at: nextUpdatedAt,
+            usage_notes: {
+              summary: 'Use woning in formal housing contexts.',
+              contrasts: [],
+            },
           }),
         ],
         { preserveUnsynced: true }

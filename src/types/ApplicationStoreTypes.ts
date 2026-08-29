@@ -134,6 +134,7 @@ export interface AnalyzedWord {
   conjugation?: Word['conjugation']
   preposition?: string
   analysis_notes?: string
+  usage_notes?: Word['usage_notes']
 }
 
 export interface StoreSetFunction {
