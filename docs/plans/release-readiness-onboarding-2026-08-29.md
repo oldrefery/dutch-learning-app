@@ -420,6 +420,10 @@ and upgrade behavior before production submission.
   native production build. Candidate build `79` is unused on both platforms
   and approved for version preparation. The verified De Woordenaar App Store
   Connect ID is `6752469146`.
+- Candidate version `2.0.0 (79)` is aligned locally. TypeScript, lint, format,
+  Maestro validation, 77 Jest suites with 1,006 tests, 63 Edge Function tests,
+  and all 20 Expo Doctor checks pass. Build and submission remain blocked until
+  this version is committed, reviewed through a PR, and merged to `main`.
 
 ### Device Matrix
 

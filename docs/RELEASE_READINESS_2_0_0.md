@@ -107,3 +107,15 @@ their commits were merged or silently copied into the release branch.
   `6738736062` was rejected by App Store Connect and has been corrected.
 - Perform the upgrade and contextual-onboarding validation defined in
   `docs/plans/release-readiness-onboarding-2026-08-29.md`.
+
+## Candidate Version Gate
+
+- Applied marketing version `2.0.0` with iOS build number and Android version
+  code `79` through `scripts/prepare-release.js`.
+- `npm run typecheck`, `npm run typecheck:test`, `npm run lint:ci`,
+  `npm run format:check`, and `npm run validate:maestro` pass.
+- Jest passes 77 suites, 1,006 tests, and 16 snapshots with coverage enabled.
+- Supabase Edge Function tests pass: 63 tests and no failures.
+- Expo Doctor passes all 20 checks.
+- No native artifact, EAS Update, store upload, submission, or public release
+  was created during version preparation.
