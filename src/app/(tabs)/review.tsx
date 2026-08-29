@@ -436,7 +436,7 @@ export default function ReviewScreen() {
           <TouchableOpacity
             testID="review-again-button"
             style={[
-              reviewScreenStyles.srsButton,
+              reviewScreenStyles.completionPrimaryButton,
               reviewScreenStyles.revealButton,
             ]}
             onPress={restartSession}

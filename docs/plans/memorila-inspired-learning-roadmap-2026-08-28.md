@@ -265,7 +265,7 @@ Done criteria:
 
 ### WP0.3 Review Insights And Difficult Words V1
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P0
 Estimated size: M
 Depends on: WP0.1
@@ -335,7 +335,7 @@ Done criteria:
 
 ### Validation Gate A: Manual Modes And Insights
 
-Status: `TODO`
+Status: `VALIDATION REQUIRED`
 Priority: P0
 Depends on: WP0.2 and WP0.3
 

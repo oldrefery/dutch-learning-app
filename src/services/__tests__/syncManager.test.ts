@@ -1461,11 +1461,12 @@ describe('SyncManager', () => {
   })
 
   describe('delete tombstone push', () => {
+    const DELETED_AT = '2026-07-25T12:00:00.000Z'
+
     it('should push word tombstones before considering active words', async () => {
-      const deletedAt = '2026-07-25T12:00:00.000Z'
       const deletedWord = createPendingWord({
         word_id: 'word-deleted-locally',
-        deleted_at: deletedAt,
+        deleted_at: DELETED_AT,
         sync_status: 'deleted',
       })
       const wordTombstoneSelect = jest.fn().mockResolvedValue({
@@ -1537,6 +1538,121 @@ describe('SyncManager', () => {
         ],
         new Map([[deletedWord.word_id, DEFAULT_TIMESTAMP]])
       )
+    })
+
+    it('acknowledges a never-synced local tombstone when no remote row exists', async () => {
+      const deletedWord = createPendingWord({
+        word_id: 'word-deleted-before-first-sync',
+        deleted_at: DELETED_AT,
+        sync_status: 'deleted',
+        synced_at: null,
+      })
+      const wordTombstoneSelect = jest.fn().mockResolvedValue({
+        data: [],
+        error: null,
+      })
+      const wordTombstoneIn = jest.fn().mockReturnValue({
+        select: wordTombstoneSelect,
+      })
+      const wordTombstoneEq = jest.fn().mockReturnValue({
+        in: wordTombstoneIn,
+      })
+      const wordUpdate = jest.fn().mockReturnValue({
+        eq: wordTombstoneEq,
+      })
+
+      ;(wordRepository.getDeletedWords as jest.Mock).mockResolvedValue([
+        deletedWord,
+      ])
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([])
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            update: wordUpdate,
+            upsert: createUpsertMock(),
+          }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable()
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: createUpsertMock(),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(result.wordsSynced).toBe(1)
+      expect(wordRepository.reconcilePushedWords).toHaveBeenCalledWith(
+        [],
+        new Map([[deletedWord.word_id, DEFAULT_TIMESTAMP]])
+      )
+      expect(wordRepository.markWordTombstonesSynced).toHaveBeenCalledWith([
+        deletedWord.word_id,
+      ])
+    })
+
+    it('requires a remote acknowledgement for a previously synced tombstone', async () => {
+      const deletedWord = createPendingWord({
+        word_id: 'word-deleted-after-sync',
+        deleted_at: DELETED_AT,
+        sync_status: 'deleted',
+        synced_at: DEFAULT_TIMESTAMP,
+      })
+      const wordTombstoneSelect = jest.fn().mockResolvedValue({
+        data: [],
+        error: null,
+      })
+      const wordTombstoneIn = jest.fn().mockReturnValue({
+        select: wordTombstoneSelect,
+      })
+      const wordTombstoneEq = jest.fn().mockReturnValue({
+        in: wordTombstoneIn,
+      })
+      const wordUpdate = jest.fn().mockReturnValue({
+        eq: wordTombstoneEq,
+      })
+
+      ;(wordRepository.getDeletedWords as jest.Mock).mockResolvedValue([
+        deletedWord,
+      ])
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([])
+      ;(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+        if (tableName === 'words') {
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            update: wordUpdate,
+            upsert: createUpsertMock(),
+          }
+        }
+
+        if (tableName === 'user_progress') {
+          return createProgressTable()
+        }
+
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: createUpsertMock(),
+        }
+      })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(false)
+      expect(result.error).toContain(
+        'Supabase returned an incomplete acknowledgement'
+      )
+      expect(wordRepository.reconcilePushedWords).not.toHaveBeenCalled()
+      expect(wordRepository.markWordTombstonesSynced).not.toHaveBeenCalled()
     })
 
     it('should push progress tombstones through the prepared remote contract', async () => {

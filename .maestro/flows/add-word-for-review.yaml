@@ -9,9 +9,19 @@ appId: ${APP_ID}
 - tapOn:
     id: 'word-input'
 - inputText: ${word_text}
-- hideKeyboard
-- tapOn:
-    id: 'analyze-button'
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: 'Search'
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard
+      - tapOn:
+          id: 'analyze-button'
 - extendedWaitUntil:
     visible: ${translation_text}
     timeout: 15000

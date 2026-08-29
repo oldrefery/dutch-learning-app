@@ -98,6 +98,18 @@ export const reviewScreenStyles = StyleSheet.create({
     backgroundColor: Colors.primary.DEFAULT,
   },
 
+  completionPrimaryButton: {
+    width: '100%',
+    maxWidth: 320,
+    minHeight: 48,
+    paddingVertical: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
+    paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
+  },
+
   againButton: {
     backgroundColor: Colors.error.DEFAULT,
   },

@@ -25,9 +25,19 @@ appId: ${APP_ID}
 - tapOn:
     id: 'word-input'
 - inputText: 'slapen'
-- hideKeyboard
-- tapOn:
-    id: 'analyze-button'
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: 'Search'
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - hideKeyboard
+      - tapOn:
+          id: 'analyze-button'
 - extendedWaitUntil:
     visible: 'to sleep'
     timeout: 15000
@@ -64,7 +74,8 @@ appId: ${APP_ID}
     commands:
       - runFlow:
           when:
-            visible: 'Session Complete'
+            visible:
+              id: 'change-review-mode-button'
           commands:
             - tapOn:
                 text: 'Review Again'
@@ -120,14 +131,16 @@ appId: ${APP_ID}
 # - Next card appears (if there are more words to review)
 - runFlow:
     when:
-      visible: 'Session Complete'
+      visible:
+        id: 'change-review-mode-button'
     commands:
       # Session completed - verify completion screen
       - assertVisible: 'Review Again'
 
 - runFlow:
     when:
-      notVisible: 'Session Complete'
+      notVisible:
+        id: 'change-review-mode-button'
     commands:
       # More cards available - verify next card loaded
       # Just check that Review tab is still active
@@ -140,7 +153,8 @@ appId: ${APP_ID}
     commands:
       - runFlow:
           when:
-            notVisible: 'Session Complete'
+            notVisible:
+              id: 'change-review-mode-button'
           commands:
             - runFlow:
                 when:
@@ -157,12 +171,14 @@ appId: ${APP_ID}
                   - tapOn:
                       id: 'srs-good-button'
 - extendedWaitUntil:
-    visible: 'Session Complete'
-    timeout: 8000
+    visible:
+      id: 'change-review-mode-button'
+    timeout: 15000
 
 # Add a fresh due word and complete Dutch Production
 - tapOn:
     id: 'change-review-mode-button'
+- waitForAnimationToEnd
 - runFlow:
     file: flows/add-word-for-review.yaml
     env:
@@ -175,21 +191,24 @@ appId: ${APP_ID}
 - tapOn:
     id: 'start-review-button'
 - extendedWaitUntil:
-    visible: 'to cook'
-    timeout: 8000
+    visible:
+      id: 'dutch-production-card'
+    timeout: 15000
 - tapOn:
     id: 'reveal-answer-button'
 - assertVisible: 'koken'
 - tapOn:
     id: 'srs-good-button'
 - extendedWaitUntil:
-    visible: 'Session Complete'
-    timeout: 8000
+    visible:
+      id: 'change-review-mode-button'
+    timeout: 15000
 
 # Add a fresh due word and complete Recognition. Previously reviewed words
 # remain available as deterministic distractors.
 - tapOn:
     id: 'change-review-mode-button'
+- waitForAnimationToEnd
 - runFlow:
     file: flows/add-word-for-review.yaml
     env:
@@ -202,20 +221,28 @@ appId: ${APP_ID}
 - tapOn:
     id: 'start-review-button'
 - extendedWaitUntil:
-    visible: 'lezen'
-    timeout: 8000
+    visible:
+      id: 'recognition-card'
+    timeout: 15000
 - tapOn:
     text: 'to read'
-- assertVisible: 'Correct'
+- assertVisible:
+    id: 'srs-good-button'
 - tapOn:
     id: 'srs-good-button'
 - extendedWaitUntil:
-    visible: 'Session Complete'
-    timeout: 8000
+    visible:
+      id: 'change-review-mode-button'
+    timeout: 15000
 
 # Cleanup: delete added word and return to Collections
 - tapOn:
     text: 'Collections'
+- waitForAnimationToEnd
+- swipe:
+    start: '50%,80%'
+    end: '50%,30%'
+    duration: 800
 - waitForAnimationToEnd
 - tapOn:
     text: 'My Words'

@@ -995,10 +995,30 @@ export class SyncManager {
       throw new Error(`Failed to push word tombstones: ${error.message}`)
     }
 
-    const acknowledgements = this.requireWordAcknowledgements(data, wordIds)
+    const acknowledgements = this.parseWordAcknowledgements(data)
+    const acknowledgedWordIds = new Set(
+      acknowledgements.map(acknowledgement => acknowledgement.word_id)
+    )
+    const neverSyncedMissingWords = deletedWords.filter(
+      word => !word.synced_at && !acknowledgedWordIds.has(word.word_id)
+    )
+    const requiredWordIds = wordIds.filter(
+      wordId =>
+        acknowledgedWordIds.has(wordId) ||
+        !neverSyncedMissingWords.some(word => word.word_id === wordId)
+    )
+
+    this.assertAcknowledgementIds(
+      [...acknowledgedWordIds],
+      requiredWordIds,
+      'word'
+    )
     await wordRepository.reconcilePushedWords(
       acknowledgements,
       new Map(deletedWords.map(word => [word.word_id, word.updated_at]))
+    )
+    await wordRepository.markWordTombstonesSynced(
+      neverSyncedMissingWords.map(word => word.word_id)
     )
     console.log(`[Sync] Pushed ${wordIds.length} word tombstones to Supabase`)
     return wordIds.length
@@ -1530,7 +1550,18 @@ export class SyncManager {
     data: unknown,
     expectedWordIds: string[]
   ): WordSyncAcknowledgement[] {
-    const acknowledgements = Array.isArray(data)
+    const acknowledgements = this.parseWordAcknowledgements(data)
+
+    this.assertAcknowledgementIds(
+      acknowledgements.map(value => value.word_id),
+      expectedWordIds,
+      'word'
+    )
+    return acknowledgements
+  }
+
+  private parseWordAcknowledgements(data: unknown): WordSyncAcknowledgement[] {
+    return Array.isArray(data)
       ? data.filter(
           (value): value is WordSyncAcknowledgement =>
             this.isRecord(value) &&
@@ -1539,13 +1570,6 @@ export class SyncManager {
             (typeof value.deleted_at === 'string' || value.deleted_at === null)
         )
       : []
-
-    this.assertAcknowledgementIds(
-      acknowledgements.map(value => value.word_id),
-      expectedWordIds,
-      'word'
-    )
-    return acknowledgements
   }
 
   private requireProgressAcknowledgements(
