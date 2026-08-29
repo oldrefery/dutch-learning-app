@@ -555,6 +555,28 @@ export const wordService = {
     return existingWord || null
   },
 
+  // Find a possible duplicate before AI analysis, when POS/article are unknown.
+  async findWordByLemma(userId: string, dutchLemma: string) {
+    const normalizedLemma = dutchLemma.trim().toLowerCase()
+
+    await assertNetworkConnection()
+
+    const data = await withSessionRetry(async () => {
+      const { data, error } = await supabase
+        .from('words')
+        .select('word_id, dutch_lemma, collection_id, part_of_speech, article')
+        .eq('user_id', userId)
+        .ilike('dutch_lemma', escapeIlikeLiteral(normalizedLemma))
+        .is('deleted_at', null)
+        .limit(1)
+
+      if (error) throw error
+      return data
+    }, 'findWordByLemma')
+
+    return data?.[0] ?? null
+  },
+
   // Get words due for review
   async getWordsForReview(userId: string) {
     const today = new Date().toISOString().split('T')[0]

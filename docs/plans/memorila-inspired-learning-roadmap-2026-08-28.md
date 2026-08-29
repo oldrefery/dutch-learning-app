@@ -515,7 +515,7 @@ Implementation completed on 2026-08-29:
 
 ### WP1.3 Official Dutch A1 Starter Pack
 
-Status: `READY FOR USER COMMIT`
+Status: `COMMITTED`
 Priority: P1
 Estimated size: M
 Depends on: WP0.2
@@ -608,7 +608,7 @@ Validation gate:
 
 ### WP1.4 Batch Quick Capture
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 Priority: P1
 Estimated size: L
 Depends on: WP1.3
@@ -655,6 +655,33 @@ Done criteria:
 - No item is silently saved or dropped.
 - AI cost and request concurrency remain bounded.
 - All quality gates pass.
+
+Implementation completed on 2026-08-29:
+
+- Added a pure parser for one Dutch word or expression per line with an
+  optional semicolon-separated translation hint, line-level errors, duplicate
+  filtering, and a maximum batch size of 30.
+- Added a persisted, user-scoped local queue with deterministic recovery after
+  app restart and explicit pause, retry, skip, cancel, clear, and offline
+  states.
+- Added sequential processing with a single active AI request, exact local and
+  remote lemma duplicate checks, and per-item error isolation.
+- Added the Batch Quick Capture screen and Add Word integration. Translation
+  input remains visibly unverified, and an analyzed item is completed only
+  after the user explicitly reviews and saves it.
+- Kept raw queued input local until processing starts and requeued interrupted
+  or offline work without silently saving or dropping items.
+
+Validation completed on 2026-08-29:
+
+- Parser, queue persistence/recovery, processor behavior, duplicate lookup,
+  and Add Word integration are covered by Jest regression tests.
+- Maestro flow 23 passed on iPhone 16 Pro / iOS 26.5 for parsing, persistence,
+  restart recovery, cancellation, and clearing the queue.
+- Maestro flow 24 passed on iPhone 16 Pro / iOS 26.5 for AI analysis, visible
+  unverified hint, explicit review/save, cleanup, relaunch, and tombstone sync.
+- TypeScript application/test checks, ESLint, Prettier, Maestro validation, and
+  the full Jest suite pass.
 
 ### WP2.1 Audio Review MVP
 

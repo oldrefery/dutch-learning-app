@@ -1,0 +1,58 @@
+appId: ${APP_ID}
+---
+# Test: Batch Quick Capture queue lifecycle
+#
+# What it tests:
+# - Multi-line parsing with an optional translation hint
+# - Local paused queue creation before any AI request
+# - Queue persistence across an app restart
+# - Explicit cancellation without saving unreviewed words
+
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: 'screen-add-word'
+      tab_text: 'Add Word'
+
+- tapOn:
+    id: 'open-batch-capture-button'
+- extendedWaitUntil:
+    visible:
+      id: 'screen-batch-capture'
+    timeout: 5000
+
+- tapOn:
+    id: 'batch-capture-input'
+- inputText: "huis ; house\nhoe gaat het"
+- assertVisible: '2 valid items · maximum 30'
+- tapOn:
+    id: 'create-batch-queue-compact-button'
+- extendedWaitUntil:
+    visible:
+      id: 'batch-capture-queue'
+    timeout: 3000
+- assertVisible: '0 of 2 resolved · 0 saved'
+- assertVisible: 'Hint: house'
+
+- stopApp
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: 'screen-add-word'
+      tab_text: 'Add Word'
+- tapOn:
+    id: 'open-batch-capture-button'
+- extendedWaitUntil:
+    visible:
+      id: 'batch-capture-queue'
+    timeout: 5000
+- assertVisible: '0 of 2 resolved · 0 saved'
+
+- tapOn:
+    id: 'cancel-batch-button'
+- assertVisible: '2 of 2 resolved · 0 saved'
+- assertVisible: 'Cancelled'
+- tapOn:
+    id: 'clear-batch-button'
+- assertVisible:
+    id: 'batch-capture-input'

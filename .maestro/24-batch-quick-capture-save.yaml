@@ -1,0 +1,94 @@
+appId: ${APP_ID}
+---
+# Test: Batch Quick Capture explicit review and save
+#
+# What it tests:
+# - Sequential duplicate precheck and AI analysis
+# - Translation hint remains visibly unverified
+# - Explicit review is required before save
+# - Successful save advances the queue exactly once
+# - Cleanup removes the test word from My Words
+
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: 'screen-add-word'
+      tab_text: 'Add Word'
+
+- tapOn:
+    id: 'open-batch-capture-button'
+- tapOn:
+    id: 'batch-capture-input'
+- inputText: 'mistflard ; wisp of mist'
+- assertVisible: '1 valid item · maximum 30'
+- tapOn:
+    id: 'create-batch-queue-compact-button'
+- extendedWaitUntil:
+    visible:
+      id: 'batch-capture-queue'
+    timeout: 3000
+- tapOn:
+    id: 'start-batch-button'
+
+- extendedWaitUntil:
+    visible:
+      id: 'screen-add-word'
+    timeout: 15000
+- assertVisible: 'Unverified hint: wisp of mist'
+- extendedWaitUntil:
+    visible:
+      id: 'save-word-button'
+    timeout: 30000
+- tapOn:
+    id: 'save-word-button'
+
+- extendedWaitUntil:
+    visible: '1 of 1 resolved · 1 saved'
+    timeout: 15000
+- assertVisible: 'Saved'
+- tapOn:
+    id: 'clear-batch-button'
+- tapOn:
+    text: 'Add Word'
+    repeat: 6
+    delay: 500
+- extendedWaitUntil:
+    visible:
+      id: 'screen-add-word'
+    timeout: 5000
+- waitForAnimationToEnd
+
+- tapOn: 'Collections'
+- waitForAnimationToEnd
+- swipe:
+    start: '50%, 75%'
+    end: '50%, 50%'
+    duration: 600
+- tapOn:
+    text: 'My Words'
+- extendedWaitUntil:
+    visible:
+      id: 'word-row-mistflard'
+    timeout: 15000
+- runFlow:
+    file: flows/delete-word-by-swipe.yaml
+    env:
+      word_text: 'mistflard'
+- runFlow:
+    when:
+      visible:
+        id: 'modal-close-button'
+    commands:
+      - tapOn:
+          id: 'modal-close-button'
+      - waitForAnimationToEnd
+- tapOn: 'Back'
+- assertVisible:
+    id: 'screen-collections'
+- stopApp
+- runFlow:
+    file: flows/ensure-on-screen.yaml
+    env:
+      screen_id: 'screen-collections'
+      tab_text: 'Collections'
+- runScript: scripts/wait.js
