@@ -10,6 +10,7 @@ import {
 import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import type { ReviewSessionMode } from '@/types/ReviewTypes'
+import { LearningGuideIntroduction } from '@/components/LearningGuide'
 
 interface ReviewModeSelectorProps {
   selectedMode: ReviewSessionMode
@@ -18,6 +19,9 @@ interface ReviewModeSelectorProps {
   onStartAudioReview?: () => void
   adaptiveEnabled?: boolean
   isLoading?: boolean
+  showLearningGuideIntro?: boolean
+  onOpenLearningGuide?: () => void
+  onDismissLearningGuideIntro?: () => void
 }
 
 export function ReviewModeSelector({
@@ -27,6 +31,9 @@ export function ReviewModeSelector({
   onStartAudioReview,
   adaptiveEnabled = true,
   isLoading = false,
+  showLearningGuideIntro = false,
+  onOpenLearningGuide,
+  onDismissLearningGuideIntro,
 }: ReviewModeSelectorProps) {
   const colorScheme = useNormalizedColorScheme()
   const theme = Colors[colorScheme]
@@ -51,6 +58,15 @@ export function ReviewModeSelector({
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
+        {showLearningGuideIntro &&
+          onOpenLearningGuide &&
+          onDismissLearningGuideIntro && (
+            <LearningGuideIntroduction
+              onShowGuide={onOpenLearningGuide}
+              onDismiss={onDismissLearningGuideIntro}
+            />
+          )}
+
         <TextThemed style={styles.title}>
           How do you want to practice?
         </TextThemed>
@@ -169,6 +185,24 @@ export function ReviewModeSelector({
             </TextThemed>
           </Pressable>
         )}
+
+        {onOpenLearningGuide && (
+          <Pressable
+            testID="open-learning-guide-button"
+            accessibilityRole="button"
+            accessibilityLabel="How Learning Works"
+            accessibilityHint="Opens the learning guide without starting a session"
+            onPress={onOpenLearningGuide}
+            style={({ pressed }) => [
+              styles.guideButton,
+              { opacity: pressed ? 0.65 : 1 },
+            ]}
+          >
+            <TextThemed style={[styles.guideButtonText, { color: theme.tint }]}>
+              How Learning Works
+            </TextThemed>
+          </Pressable>
+        )}
       </ScrollView>
     </ViewThemed>
   )
@@ -255,5 +289,17 @@ const styles = StyleSheet.create({
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
     lineHeight: 19,
     marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.XS,
+  },
+  guideButton: {
+    minHeight: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.SM,
+    paddingHorizontal: REVIEW_SCREEN_CONSTANTS.SPACING.MD,
+  },
+  guideButtonText: {
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 })

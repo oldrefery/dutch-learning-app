@@ -29,6 +29,7 @@ export const ROUTES = {
   STARTER_PACK: '/starter-pack' as const,
   BATCH_CAPTURE: '/batch-capture' as const,
   AUDIO_REVIEW: '/audio-review' as const,
+  LEARNING_GUIDE: '/learning-guide' as const,
 
   // Other routes
   INSIGHTS: '/insights' as const,
@@ -61,6 +62,7 @@ export type RouteParams = {
   'starter-pack': Record<string, never>
   'batch-capture': Record<string, never>
   'audio-review': Record<string, never>
+  'learning-guide': { resetForE2E?: '1' }
 }
 
 export type Route = (typeof ROUTES)[keyof typeof ROUTES]

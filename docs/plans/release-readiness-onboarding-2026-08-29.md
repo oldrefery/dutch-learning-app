@@ -211,7 +211,7 @@ release candidate.
 
 ## WP3.1 Contextual Onboarding And Learning Guide
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 Priority: P0
 Estimated size: M
 Depends on: WP3.0
@@ -310,6 +310,26 @@ Add one deterministic flow per platform that:
 - Permanent help is discoverable from Review and Settings.
 - Existing users and persisted settings remain backward compatible.
 - Both platform flows and all quality gates pass.
+
+### Execution Result
+
+- Added a single typed, versioned Learning Guide covering all six required
+  sections, with safe navigation-only actions and permanent entry points from
+  Review and Settings.
+- Added a hydration-safe first-Review introduction and local Zustand
+  persistence/migration; explicit dismissal or `Done` records the current
+  guide version, while manual opening does not mutate it.
+- Added Jest coverage for rendering, navigation boundaries, persistence,
+  migration, future guide versions, light/dark themes, scrolling, and explicit
+  completion.
+- Added deterministic iOS and Android Maestro flows that reset only the guide
+  flag, verify first presentation, exercise the content, relaunch without a
+  repeated prompt, and reopen the guide from Settings.
+- Passed simulator smoke checks on iPhone 16 Pro (iOS 26.5) and Pixel 8
+  (Android API 36), including light/dark visual checks and the corrected iOS
+  `Back` title.
+- Passed lint, formatting, both TypeScript configurations, and all 77 Jest
+  suites (1006 tests, 16 snapshots).
 
 ## Validation Gate B: Onboarding Acceptance
 

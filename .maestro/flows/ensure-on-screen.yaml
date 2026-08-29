@@ -19,6 +19,24 @@ appId: ${APP_ID}
 
 # Ensure app is running
 - launchApp
+- runFlow:
+    when:
+      visible: Open
+    commands:
+      - tapOn: Open
+- extendedWaitUntil:
+    visible:
+      id: "email-input|screen-(collections|history|settings|review|add-word|learning-guide)"
+    timeout: 60000
+
+# Return from the full-screen guide before using tab navigation
+- runFlow:
+    when:
+      visible:
+        id: "screen-learning-guide"
+    commands:
+      - tapOn: Back
+      - waitForAnimationToEnd
 
 # Step 1: If on signup screen, go back to login
 - runFlow:
@@ -32,7 +50,8 @@ appId: ${APP_ID}
 # Step 2: If on login screen, login first
 - runFlow:
     when:
-      visible: "Welcome Back"
+      visible:
+        id: "email-input"
     commands:
       - runFlow: login-helper.yaml
 

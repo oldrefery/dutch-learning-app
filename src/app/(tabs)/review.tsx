@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react'
-import { useRouter } from 'expo-router'
+import { useRouter, type Href } from 'expo-router'
 import {
   TouchableOpacity,
   ActivityIndicator,
@@ -45,6 +45,10 @@ import {
 } from '@/utils/reviewDistractors'
 import { getAdaptiveReviewModeExplanation } from '@/utils/reviewModePolicy'
 import { ROUTES } from '@/constants/Routes'
+import {
+  LEARNING_GUIDE_VERSION,
+  shouldShowLearningGuideIntroduction,
+} from '@/components/LearningGuide'
 
 const showReanalysisError = (error: unknown) => {
   const message =
@@ -237,8 +241,28 @@ export default function ReviewScreen() {
   const adaptiveReviewEnabled = useSettingsStore(
     state => state.adaptiveReviewEnabled
   )
+  const learningGuideVersionSeen = useSettingsStore(
+    state => state.learningGuideVersionSeen
+  )
+  const markLearningGuideVersionSeen = useSettingsStore(
+    state => state.markLearningGuideVersionSeen
+  )
+  const [settingsHydrated, setSettingsHydrated] = useState(
+    useSettingsStore.persist.hasHydrated()
+  )
   const [selectedRecognitionOption, setSelectedRecognitionOption] =
     useState<RecognitionOption | null>(null)
+
+  useEffect(() => {
+    if (useSettingsStore.persist.hasHydrated()) {
+      setSettingsHydrated(true)
+      return
+    }
+
+    return useSettingsStore.persist.onFinishHydration(() => {
+      setSettingsHydrated(true)
+    })
+  }, [])
 
   // Enable pull-to-refresh to also refresh review count (badge)
   const { refreshCount } = useReviewWordsCount()
@@ -414,6 +438,14 @@ export default function ReviewScreen() {
           onStart={handleStartSession}
           onStartAudioReview={handleStartAudioReview}
           adaptiveEnabled={adaptiveReviewEnabled}
+          showLearningGuideIntro={
+            settingsHydrated &&
+            shouldShowLearningGuideIntroduction(learningGuideVersionSeen)
+          }
+          onOpenLearningGuide={() => router.push(ROUTES.LEARNING_GUIDE as Href)}
+          onDismissLearningGuideIntro={() =>
+            markLearningGuideVersionSeen(LEARNING_GUIDE_VERSION)
+          }
         />
       </ViewThemed>
     )

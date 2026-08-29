@@ -179,6 +179,44 @@ describe('ReviewModeSelector', () => {
       getByTestId('start-audio-review-button').props.accessibilityLabel
     ).toBe('Start Audio Review')
   })
+
+  it('shows and dismisses the contextual learning guide introduction', () => {
+    const onOpenLearningGuide = jest.fn()
+    const onDismissLearningGuideIntro = jest.fn()
+    const { getByTestId } = render(
+      <ReviewModeSelector
+        selectedMode={REVIEW_MODE.MEANING_RECALL}
+        onSelectMode={jest.fn()}
+        onStart={jest.fn()}
+        showLearningGuideIntro
+        onOpenLearningGuide={onOpenLearningGuide}
+        onDismissLearningGuideIntro={onDismissLearningGuideIntro}
+      />
+    )
+
+    fireEvent.press(getByTestId('show-learning-guide-button'))
+    fireEvent.press(getByTestId('dismiss-learning-guide-button'))
+
+    expect(onOpenLearningGuide).toHaveBeenCalledTimes(1)
+    expect(onDismissLearningGuideIntro).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps the learning guide available after the introduction is hidden', () => {
+    const onOpenLearningGuide = jest.fn()
+    const { getByTestId, queryByTestId } = render(
+      <ReviewModeSelector
+        selectedMode={REVIEW_MODE.MEANING_RECALL}
+        onSelectMode={jest.fn()}
+        onStart={jest.fn()}
+        onOpenLearningGuide={onOpenLearningGuide}
+      />
+    )
+
+    expect(queryByTestId('learning-guide-introduction')).toBeNull()
+    fireEvent.press(getByTestId('open-learning-guide-button'))
+
+    expect(onOpenLearningGuide).toHaveBeenCalledTimes(1)
+  })
 })
 
 describe('ReviewAssessmentControls', () => {

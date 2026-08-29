@@ -5,7 +5,11 @@
  * autoPlayPronunciation, lastSelectedCollectionId, and review mode.
  */
 
-import { useSettingsStore } from '../useSettingsStore'
+import {
+  migrateSettingsState,
+  SETTINGS_STORAGE_VERSION,
+  useSettingsStore,
+} from '../useSettingsStore'
 import { REVIEW_MODE, REVIEW_SESSION_MODE } from '@/constants/ReviewConstants'
 
 describe('useSettingsStore', () => {
@@ -16,6 +20,7 @@ describe('useSettingsStore', () => {
       adaptiveReviewEnabled: true,
       lastSelectedCollectionId: null,
       lastSelectedReviewMode: REVIEW_SESSION_MODE.ADAPTIVE,
+      learningGuideVersionSeen: 0,
     })
   })
 
@@ -36,6 +41,10 @@ describe('useSettingsStore', () => {
 
     it('should enable adaptive review modes by default', () => {
       expect(useSettingsStore.getState().adaptiveReviewEnabled).toBe(true)
+    })
+
+    it('should show the current learning guide by default', () => {
+      expect(useSettingsStore.getState().learningGuideVersionSeen).toBe(0)
     })
   })
 
@@ -113,6 +122,60 @@ describe('useSettingsStore', () => {
       expect(useSettingsStore.persist.getOptions().name).toBe(
         'settings-storage'
       )
+      expect(useSettingsStore.persist.getOptions().version).toBe(
+        SETTINGS_STORAGE_VERSION
+      )
+    })
+  })
+
+  describe('learning guide version', () => {
+    it('marks the highest explicitly seen version without downgrading it', () => {
+      useSettingsStore.getState().markLearningGuideVersionSeen(2)
+      useSettingsStore.getState().markLearningGuideVersionSeen(1)
+
+      expect(useSettingsStore.getState().learningGuideVersionSeen).toBe(2)
+    })
+
+    it('supports an isolated reset for E2E onboarding coverage', () => {
+      useSettingsStore.getState().markLearningGuideVersionSeen(1)
+      useSettingsStore.getState().resetLearningGuideVersionSeenForTesting()
+
+      expect(useSettingsStore.getState().learningGuideVersionSeen).toBe(0)
+    })
+
+    it('migrates existing settings without losing user preferences', () => {
+      const migrated = migrateSettingsState(
+        {
+          autoPlayPronunciation: true,
+          adaptiveReviewEnabled: false,
+          lastSelectedCollectionId: 'collection-1',
+          lastSelectedReviewMode: REVIEW_MODE.DUTCH_PRODUCTION,
+        },
+        0
+      )
+
+      expect(migrated).toEqual({
+        autoPlayPronunciation: true,
+        adaptiveReviewEnabled: false,
+        lastSelectedCollectionId: 'collection-1',
+        lastSelectedReviewMode: REVIEW_MODE.DUTCH_PRODUCTION,
+        learningGuideVersionSeen: 0,
+      })
+    })
+
+    it('preserves a valid guide version after current-version hydration', () => {
+      const migrated = migrateSettingsState(
+        {
+          autoPlayPronunciation: false,
+          adaptiveReviewEnabled: true,
+          lastSelectedCollectionId: null,
+          lastSelectedReviewMode: REVIEW_SESSION_MODE.ADAPTIVE,
+          learningGuideVersionSeen: 3,
+        },
+        SETTINGS_STORAGE_VERSION
+      )
+
+      expect(migrated.learningGuideVersionSeen).toBe(3)
     })
   })
 })

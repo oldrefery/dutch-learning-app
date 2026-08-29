@@ -187,6 +187,14 @@ function RootLayoutNav() {
           />
           <Stack.Screen name="audio-review" options={{ headerShown: false }} />
           <Stack.Screen
+            name="learning-guide"
+            options={{
+              headerShown: true,
+              title: 'Learning Guide',
+              headerBackTitle: 'Back',
+            }}
+          />
+          <Stack.Screen
             name="insights"
             options={{ headerShown: true, title: 'Review Insights' }}
           />

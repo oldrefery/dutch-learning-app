@@ -45,6 +45,9 @@
     "e2e-test": {
       "withoutCredentials": true,
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_E2E_TEST_MODE": "true"
+      },
       "ios": {
         "simulator": true,
         "buildConfiguration": "Release"

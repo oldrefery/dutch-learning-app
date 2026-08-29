@@ -1,0 +1,7 @@
+appId: ${APP_ID}
+name: 28-learning-guide-android
+---
+- runFlow:
+    when:
+      platform: Android
+    file: flows/learning-guide.yaml
