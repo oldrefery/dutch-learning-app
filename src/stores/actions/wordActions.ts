@@ -19,6 +19,7 @@ import {
   DEFAULT_REVIEW_SESSION_CONFIG,
   MAX_REVIEW_RESPONSE_TIME_MS,
   REVIEW_MODE,
+  REVIEW_SESSION_MODE,
 } from '@/constants/ReviewConstants'
 
 const USER_NOT_AUTHENTICATED_ERROR =
@@ -382,9 +383,15 @@ export const createWordActions = (
         !Number.isNaN(assessment.timestamp.getTime())
           ? assessment.timestamp.toISOString()
           : new Date().toISOString()
+      const reviewSession = get().reviewSession
+      const sessionMode = reviewSession?.config.mode
+      const resolvedSessionMode =
+        sessionMode === REVIEW_SESSION_MODE.ADAPTIVE
+          ? reviewSession?.adaptiveModeByWordId?.[wordId]?.mode
+          : sessionMode
       const reviewMode =
         assessment.reviewMode ??
-        get().reviewSession?.config.mode ??
+        resolvedSessionMode ??
         DEFAULT_REVIEW_SESSION_CONFIG.mode
 
       // Offline-first: update SRS and append its matching event atomically.

@@ -2,10 +2,12 @@ import type { SRSAssessment, Word } from './database'
 
 export type ReviewMode = 'recognition' | 'meaning-recall' | 'dutch-production'
 
+export type ReviewSessionMode = ReviewMode | 'adaptive'
+
 export type ReviewScope = 'all-due' | 'collection-due' | 'difficult-due'
 
 interface BaseReviewSessionConfig {
-  mode: ReviewMode
+  mode: ReviewSessionMode
 }
 
 export type ReviewSessionConfig =
@@ -27,6 +29,15 @@ export interface ReviewSession {
   currentIndex: number
   completedCount: number
   config: ReviewSessionConfig
+  adaptiveModeByWordId: Record<string, AdaptiveReviewModeDecision>
+}
+
+export type AdaptiveReviewModeReason = 'default' | 'promotion' | 'demotion'
+
+export interface AdaptiveReviewModeDecision {
+  mode: ReviewMode
+  reason: AdaptiveReviewModeReason
+  previousMode: ReviewMode | null
 }
 
 export interface ReviewEvent {

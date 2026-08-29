@@ -1,7 +1,7 @@
 import React from 'react'
 import { fireEvent, render } from '@testing-library/react-native'
 import { createMockWord } from '@/__tests__/helpers/factories'
-import { REVIEW_MODE } from '@/constants/ReviewConstants'
+import { REVIEW_MODE, REVIEW_SESSION_MODE } from '@/constants/ReviewConstants'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { DutchProductionCard } from '../DutchProductionCard'
 import { MeaningRecallCard } from '../MeaningRecallCard'
@@ -135,6 +135,30 @@ describe('ReviewModeSelector', () => {
 
     fireEvent.press(getByTestId('start-review-button'))
     expect(onStart).toHaveBeenCalledWith(REVIEW_MODE.RECOGNITION)
+  })
+
+  it('offers Adaptive unless it is disabled in settings', () => {
+    const callbacks = { onSelectMode: jest.fn(), onStart: jest.fn() }
+    const { getByTestId, queryByTestId, rerender } = render(
+      <ReviewModeSelector
+        selectedMode={REVIEW_SESSION_MODE.ADAPTIVE}
+        {...callbacks}
+      />
+    )
+
+    expect(getByTestId('review-mode-adaptive')).toBeTruthy()
+
+    rerender(
+      <ReviewModeSelector
+        selectedMode={REVIEW_SESSION_MODE.ADAPTIVE}
+        adaptiveEnabled={false}
+        {...callbacks}
+      />
+    )
+
+    expect(queryByTestId('review-mode-adaptive')).toBeNull()
+    fireEvent.press(getByTestId('start-review-button'))
+    expect(callbacks.onStart).toHaveBeenCalledWith(REVIEW_MODE.MEANING_RECALL)
   })
 })
 

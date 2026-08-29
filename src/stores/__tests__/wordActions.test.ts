@@ -13,8 +13,10 @@ import { logError } from '@/utils/logger'
 import type {
   AnalyzedWord,
   ApplicationState,
+  ReviewAssessment,
 } from '@/types/ApplicationStoreTypes'
 import type { Word } from '@/types/database'
+import { REVIEW_MODE, REVIEW_SCOPE } from '@/constants/ReviewConstants'
 
 jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
@@ -63,6 +65,7 @@ describe('wordActions', () => {
 
   const USER_ID = generateId('user')
   const WORD_ID = generateId('word')
+  const REVIEWED_AT = '2026-08-29T10:00:00.000Z'
   const COLLECTION_ID = generateId('collection')
   const UNAUTHENTICATED_ERROR_MSG = 'should set error if user not authenticated'
   const UNAUTHENTICATED_STATE = {
@@ -505,7 +508,7 @@ describe('wordActions', () => {
         reviewMode: 'recognition',
         answeredCorrectly: true,
         responseTime: 1200,
-        timestamp: new Date('2026-08-29T10:00:00.000Z'),
+        timestamp: new Date(REVIEWED_AT),
       }
 
       await actions.updateWordAfterReview(WORD_ID, assessment as any)
@@ -532,9 +535,55 @@ describe('wordActions', () => {
           response_time_ms: 1200,
           previous_interval_days: 1,
           next_interval_days: 3,
-          reviewed_at: '2026-08-29T10:00:00.000Z',
+          reviewed_at: REVIEWED_AT,
         }),
       })
+    })
+
+    it('should record the resolved per-word mode for an Adaptive session', async () => {
+      const mockWord = createMockWord({ word_id: WORD_ID })
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [mockWord],
+        error: null,
+        reviewSession: {
+          words: [mockWord],
+          currentIndex: 0,
+          completedCount: 0,
+          config: { mode: 'adaptive', scope: REVIEW_SCOPE.ALL_DUE },
+          adaptiveModeByWordId: {
+            [WORD_ID]: {
+              mode: REVIEW_MODE.DUTCH_PRODUCTION,
+              reason: 'promotion',
+              previousMode: REVIEW_MODE.MEANING_RECALL,
+            },
+          },
+        },
+      })
+      ;(calculateNextReview as jest.Mock).mockReturnValue({
+        interval_days: 3,
+        repetition_count: 1,
+        easiness_factor: 2.6,
+        next_review_date: '2026-09-01',
+      })
+      ;(reviewEventRepository.recordAssessment as jest.Mock).mockResolvedValue(
+        undefined
+      )
+      const assessment: ReviewAssessment = {
+        wordId: WORD_ID,
+        assessment: 'good',
+        timestamp: new Date(REVIEWED_AT),
+      }
+
+      await actions.updateWordAfterReview(WORD_ID, assessment)
+
+      expect(reviewEventRepository.recordAssessment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          event: expect.objectContaining({
+            review_mode: REVIEW_MODE.DUTCH_PRODUCTION,
+          }),
+        })
+      )
     })
 
     it(UNAUTHENTICATED_ERROR_MSG, async () => {

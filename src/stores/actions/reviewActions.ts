@@ -1,8 +1,16 @@
 import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
-import { DEFAULT_REVIEW_SESSION_CONFIG } from '@/constants/ReviewConstants'
+import {
+  DEFAULT_REVIEW_SESSION_CONFIG,
+  REVIEW_SESSION_MODE,
+} from '@/constants/ReviewConstants'
+import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { logInfo, logWarning, logError } from '@/utils/logger'
 import { selectReviewWords } from '@/utils/reviewSession'
+import {
+  REVIEW_MODE_POLICY,
+  resolveAdaptiveReviewMode,
+} from '@/utils/reviewModePolicy'
 import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
 import type {
   StoreSetFunction,
@@ -102,11 +110,28 @@ export const createReviewActions = (
         return
       }
 
+      const adaptiveModeByWordId =
+        config.mode === REVIEW_SESSION_MODE.ADAPTIVE
+          ? Object.fromEntries(
+              Object.entries(
+                await reviewEventRepository.getRecentByWords(
+                  userId,
+                  reviewWords.map(word => word.word_id),
+                  REVIEW_MODE_POLICY.HISTORY_LIMIT_PER_WORD
+                )
+              ).map(([wordId, events]) => [
+                wordId,
+                resolveAdaptiveReviewMode(events),
+              ])
+            )
+          : {}
+
       const reviewSession = {
         words: reviewWords,
         currentIndex: 0,
         completedCount: 0,
         config,
+        adaptiveModeByWordId,
       }
 
       set({

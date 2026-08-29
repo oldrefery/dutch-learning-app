@@ -410,7 +410,12 @@ export default function SettingsScreen() {
   )
   const { signOut, loading: authLoading } = useSimpleAuth()
   const { userAccessLevel, currentUserId } = useApplicationStore()
-  const { autoPlayPronunciation, setAutoPlayPronunciation } = useSettingsStore()
+  const {
+    autoPlayPronunciation,
+    adaptiveReviewEnabled,
+    setAutoPlayPronunciation,
+    setAdaptiveReviewEnabled,
+  } = useSettingsStore()
 
   const isDarkMode = colorScheme === 'dark'
   const blurTint = getBlurTint(isDarkMode)
@@ -778,6 +783,52 @@ export default function SettingsScreen() {
                   }}
                   thumbColor={
                     autoPlayPronunciation
+                      ? Colors.background.primary
+                      : isDarkMode
+                        ? Colors.neutral[400]
+                        : Colors.background.primary
+                  }
+                />
+              </ViewThemed>
+
+              <ViewThemed
+                style={[styles.separator, { backgroundColor: separatorColor }]}
+              />
+
+              <ViewThemed
+                style={styles.preferenceRow}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <ViewThemed
+                  style={styles.preferenceTextContainer}
+                  lightColor="transparent"
+                  darkColor="transparent"
+                >
+                  <TextThemed style={styles.preferenceLabel}>
+                    Adaptive Review Modes
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.preferenceDescription}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    Let review sessions choose a mode for each word from your
+                    history
+                  </TextThemed>
+                </ViewThemed>
+                <Switch
+                  testID="adaptive-review-modes-switch"
+                  value={adaptiveReviewEnabled}
+                  onValueChange={setAdaptiveReviewEnabled}
+                  trackColor={{
+                    false: isDarkMode
+                      ? Colors.neutral[700]
+                      : Colors.neutral[300],
+                    true: Colors.primary.DEFAULT,
+                  }}
+                  thumbColor={
+                    adaptiveReviewEnabled
                       ? Colors.background.primary
                       : isDarkMode
                         ? Colors.neutral[400]

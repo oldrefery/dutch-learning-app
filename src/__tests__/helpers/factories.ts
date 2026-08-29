@@ -140,5 +140,6 @@ export const createMockReviewSession = (
   currentIndex: 0,
   completedCount: 0,
   config: DEFAULT_REVIEW_SESSION_CONFIG,
+  adaptiveModeByWordId: {},
   ...overrides,
 })

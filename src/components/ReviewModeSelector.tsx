@@ -1,16 +1,21 @@
 import React from 'react'
-import { Pressable, StyleSheet, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
-import { REVIEW_MODE_OPTIONS } from '@/constants/ReviewConstants'
+import {
+  REVIEW_MODE,
+  REVIEW_MODE_OPTIONS,
+  REVIEW_SESSION_MODE,
+} from '@/constants/ReviewConstants'
 import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
-import type { ReviewMode } from '@/types/ReviewTypes'
+import type { ReviewSessionMode } from '@/types/ReviewTypes'
 
 interface ReviewModeSelectorProps {
-  selectedMode: ReviewMode
-  onSelectMode: (mode: ReviewMode) => void
-  onStart: (mode: ReviewMode) => void | Promise<void>
+  selectedMode: ReviewSessionMode
+  onSelectMode: (mode: ReviewSessionMode) => void
+  onStart: (mode: ReviewSessionMode) => void | Promise<void>
+  adaptiveEnabled?: boolean
   isLoading?: boolean
 }
 
@@ -18,109 +23,130 @@ export function ReviewModeSelector({
   selectedMode,
   onSelectMode,
   onStart,
+  adaptiveEnabled = true,
   isLoading = false,
 }: ReviewModeSelectorProps) {
   const colorScheme = useNormalizedColorScheme()
   const theme = Colors[colorScheme]
+  const options = adaptiveEnabled
+    ? REVIEW_MODE_OPTIONS
+    : REVIEW_MODE_OPTIONS.filter(
+        option => option.mode !== REVIEW_SESSION_MODE.ADAPTIVE
+      )
+  const availableSelectedMode = options.some(
+    option => option.mode === selectedMode
+  )
+    ? selectedMode
+    : REVIEW_MODE.MEANING_RECALL
 
   return (
     <ViewThemed
-      style={styles.container}
+      style={styles.screen}
       testID="review-mode-selector"
       accessibilityLabel="Choose a review mode"
     >
-      <TextThemed style={styles.title}>How do you want to practice?</TextThemed>
-      <TextThemed
-        style={styles.subtitle}
-        lightColor={Colors.neutral[600]}
-        darkColor={Colors.dark.textSecondary}
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
       >
-        Your choice applies to this session. Scheduling still uses the same SRS
-        ratings.
-      </TextThemed>
+        <TextThemed style={styles.title}>
+          How do you want to practice?
+        </TextThemed>
+        <TextThemed
+          style={styles.subtitle}
+          lightColor={Colors.neutral[600]}
+          darkColor={Colors.dark.textSecondary}
+        >
+          Your choice applies to this session. Scheduling still uses the same
+          SRS ratings.
+        </TextThemed>
 
-      <View style={styles.options} accessibilityRole="radiogroup">
-        {REVIEW_MODE_OPTIONS.map(option => {
-          const isSelected = option.mode === selectedMode
+        <View style={styles.options} accessibilityRole="radiogroup">
+          {options.map(option => {
+            const isSelected = option.mode === availableSelectedMode
 
-          return (
-            <Pressable
-              key={option.mode}
-              testID={`review-mode-${option.mode}`}
-              onPress={() => onSelectMode(option.mode)}
-              accessibilityRole="radio"
-              accessibilityLabel={option.title}
-              accessibilityHint={option.description}
-              accessibilityState={{ selected: isSelected }}
-              style={({ pressed }) => [
-                styles.option,
-                {
-                  backgroundColor: isSelected
-                    ? colorScheme === 'dark'
-                      ? Colors.transparent.primary20
-                      : Colors.primary.light
-                    : theme.backgroundSecondary,
-                  borderColor: isSelected ? theme.tint : theme.border,
-                  opacity: pressed ? 0.75 : 1,
-                },
-              ]}
-            >
-              <View style={styles.optionCopy}>
-                <TextThemed style={styles.optionTitle}>
-                  {option.title}
-                </TextThemed>
-                <TextThemed
-                  style={styles.optionDescription}
-                  lightColor={Colors.neutral[600]}
-                  darkColor={Colors.dark.textSecondary}
-                >
-                  {option.description}
-                </TextThemed>
-              </View>
-              <View
-                style={[
-                  styles.selectionIndicator,
+            return (
+              <Pressable
+                key={option.mode}
+                testID={`review-mode-${option.mode}`}
+                onPress={() => onSelectMode(option.mode)}
+                accessibilityRole="radio"
+                accessibilityLabel={option.title}
+                accessibilityHint={option.description}
+                accessibilityState={{ selected: isSelected }}
+                style={({ pressed }) => [
+                  styles.option,
                   {
-                    borderColor: isSelected ? theme.tint : theme.border,
                     backgroundColor: isSelected
-                      ? theme.tint
-                      : Colors.transparent.clear,
+                      ? colorScheme === 'dark'
+                        ? Colors.transparent.primary20
+                        : Colors.primary.light
+                      : theme.backgroundSecondary,
+                    borderColor: isSelected ? theme.tint : theme.border,
+                    opacity: pressed ? 0.75 : 1,
                   },
                 ]}
-                importantForAccessibility="no"
-              />
-            </Pressable>
-          )
-        })}
-      </View>
+              >
+                <View style={styles.optionCopy}>
+                  <TextThemed style={styles.optionTitle}>
+                    {option.title}
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.optionDescription}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    {option.description}
+                  </TextThemed>
+                </View>
+                <View
+                  style={[
+                    styles.selectionIndicator,
+                    {
+                      borderColor: isSelected ? theme.tint : theme.border,
+                      backgroundColor: isSelected
+                        ? theme.tint
+                        : Colors.transparent.clear,
+                    },
+                  ]}
+                  importantForAccessibility="no"
+                />
+              </Pressable>
+            )
+          })}
+        </View>
 
-      <Pressable
-        testID="start-review-button"
-        accessibilityRole="button"
-        accessibilityLabel={`Start ${REVIEW_MODE_OPTIONS.find(option => option.mode === selectedMode)?.title ?? 'review'} session`}
-        accessibilityHint="Starts a review session using the selected mode"
-        accessibilityState={{ disabled: isLoading }}
-        disabled={isLoading}
-        onPress={() => void onStart(selectedMode)}
-        style={({ pressed }) => [
-          styles.startButton,
-          {
-            backgroundColor: theme.tint,
-            opacity: isLoading ? 0.5 : pressed ? 0.75 : 1,
-          },
-        ]}
-      >
-        <TextThemed style={styles.startButtonText}>
-          {isLoading ? 'Starting…' : 'Start Review'}
-        </TextThemed>
-      </Pressable>
+        <Pressable
+          testID="start-review-button"
+          accessibilityRole="button"
+          accessibilityLabel={`Start ${options.find(option => option.mode === availableSelectedMode)?.title ?? 'review'} session`}
+          accessibilityHint="Starts a review session using the selected mode"
+          accessibilityState={{ disabled: isLoading }}
+          disabled={isLoading}
+          onPress={() => void onStart(availableSelectedMode)}
+          style={({ pressed }) => [
+            styles.startButton,
+            {
+              backgroundColor: theme.tint,
+              opacity: isLoading ? 0.5 : pressed ? 0.75 : 1,
+            },
+          ]}
+        >
+          <TextThemed style={styles.startButtonText}>
+            {isLoading ? 'Starting…' : 'Start Review'}
+          </TextThemed>
+        </Pressable>
+      </ScrollView>
     </ViewThemed>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
+  },
+  container: {
+    flexGrow: 1,
     justifyContent: 'center',
     padding: REVIEW_SCREEN_CONSTANTS.SPACING.LG,
   },

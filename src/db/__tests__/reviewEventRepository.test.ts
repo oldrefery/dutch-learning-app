@@ -129,4 +129,33 @@ describe('ReviewEventRepository', () => {
       100
     )
   })
+
+  it('loads bounded histories for multiple words in one window query', async () => {
+    const getAllAsync = jest.fn().mockResolvedValue([
+      {
+        ...event,
+        created_at: null,
+        sync_status: 'pending',
+        last_sync_attempt_at: null,
+        synced_at: null,
+      },
+    ])
+    ;(getDatabase as jest.Mock).mockResolvedValue({ getAllAsync })
+
+    const result = await new ReviewEventRepository().getRecentByWords(
+      'user-1',
+      ['word-1', 'word-2'],
+      10_000
+    )
+
+    expect(getAllAsync).toHaveBeenCalledWith(
+      expect.stringContaining('ROW_NUMBER() OVER'),
+      'user-1',
+      'word-1',
+      'word-2',
+      100
+    )
+    expect(result['word-1']).toHaveLength(1)
+    expect(result['word-2']).toEqual([])
+  })
 })

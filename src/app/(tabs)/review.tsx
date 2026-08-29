@@ -30,14 +30,19 @@ import { Sentry } from '@/lib/sentry'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { GlassHeaderDefaults } from '@/constants/GlassConstants'
-import { REVIEW_MODE, REVIEW_SCOPE } from '@/constants/ReviewConstants'
+import {
+  REVIEW_MODE,
+  REVIEW_SCOPE,
+  REVIEW_SESSION_MODE,
+} from '@/constants/ReviewConstants'
 import { useSettingsStore } from '@/stores/useSettingsStore'
-import type { ReviewMode } from '@/types/ReviewTypes'
+import type { ReviewMode, ReviewSessionMode } from '@/types/ReviewTypes'
 import type { RecognitionOption } from '@/utils/reviewDistractors'
 import {
   buildRecognitionOptions,
   getPreferredTranslation,
 } from '@/utils/reviewDistractors'
+import { getAdaptiveReviewModeExplanation } from '@/utils/reviewModePolicy'
 
 const showReanalysisError = (error: unknown) => {
   const message =
@@ -226,13 +231,27 @@ export default function ReviewScreen() {
   const setLastSelectedReviewMode = useSettingsStore(
     state => state.setLastSelectedReviewMode
   )
+  const adaptiveReviewEnabled = useSettingsStore(
+    state => state.adaptiveReviewEnabled
+  )
   const [selectedRecognitionOption, setSelectedRecognitionOption] =
     useState<RecognitionOption | null>(null)
 
   // Enable pull-to-refresh to also refresh review count (badge)
   const { refreshCount } = useReviewWordsCount()
 
-  const configuredMode = reviewSession?.config.mode ?? lastSelectedReviewMode
+  const sessionMode = reviewSession?.config.mode ?? lastSelectedReviewMode
+  const adaptiveDecision = currentWord
+    ? reviewSession?.adaptiveModeByWordId[currentWord.word_id]
+    : undefined
+  const configuredMode: ReviewMode =
+    sessionMode === REVIEW_SESSION_MODE.ADAPTIVE
+      ? (adaptiveDecision?.mode ?? REVIEW_MODE.RECOGNITION)
+      : sessionMode
+  const adaptiveMessage =
+    sessionMode === REVIEW_SESSION_MODE.ADAPTIVE && adaptiveDecision
+      ? getAdaptiveReviewModeExplanation(adaptiveDecision)
+      : null
   const {
     effectiveMode,
     preferredTranslation,
@@ -276,14 +295,14 @@ export default function ReviewScreen() {
   )
 
   const handleModeSelect = useCallback(
-    (mode: ReviewMode) => {
+    (mode: ReviewSessionMode) => {
       setLastSelectedReviewMode(mode)
     },
     [setLastSelectedReviewMode]
   )
 
   const handleStartSession = useCallback(
-    async (mode: ReviewMode) => {
+    async (mode: ReviewSessionMode) => {
       setLastSelectedReviewMode(mode)
       await startSession({ mode, scope: REVIEW_SCOPE.ALL_DUE })
     },
@@ -386,6 +405,7 @@ export default function ReviewScreen() {
           selectedMode={lastSelectedReviewMode}
           onSelectMode={handleModeSelect}
           onStart={handleStartSession}
+          adaptiveEnabled={adaptiveReviewEnabled}
         />
       </ViewThemed>
     )
@@ -504,6 +524,16 @@ export default function ReviewScreen() {
         >
           {currentWordNumber} / {totalWords}
         </TextThemed>
+        {adaptiveMessage && (
+          <TextThemed
+            style={reviewScreenStyles.adaptiveModeText}
+            lightColor={Colors.neutral[600]}
+            darkColor={Colors.dark.textSecondary}
+            accessibilityLabel={adaptiveMessage}
+          >
+            {adaptiveMessage}
+          </TextThemed>
+        )}
         {fallbackMessage && (
           <TextThemed
             style={reviewScreenStyles.fallbackText}

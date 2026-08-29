@@ -29,6 +29,7 @@ const createSession = (
   currentIndex,
   completedCount: currentIndex,
   config: { mode, scope: REVIEW_SCOPE.ALL_DUE },
+  adaptiveModeByWordId: {},
 })
 
 describe('useReviewScreen', () => {

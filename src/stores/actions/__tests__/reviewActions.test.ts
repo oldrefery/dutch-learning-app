@@ -16,9 +16,15 @@ import {
   REVIEW_SCOPE,
 } from '@/constants/ReviewConstants'
 import type { Collection, Word } from '@/types/database'
+import { reviewEventRepository } from '@/db/reviewEventRepository'
 
 jest.mock('@/lib/sentry')
 jest.mock('@/utils/logger')
+jest.mock('@/db/reviewEventRepository', () => ({
+  reviewEventRepository: {
+    getRecentByWords: jest.fn().mockResolvedValue({}),
+  },
+}))
 
 describe('reviewActions', () => {
   // Helper to generate random IDs
@@ -152,6 +158,99 @@ describe('reviewActions', () => {
           }),
           currentWord: mockWords[0],
           reviewLoading: false,
+        })
+      )
+    })
+
+    it('should resolve an Adaptive mode for every word from local history', async () => {
+      const mockWords = createReviewWordsWithToday()
+      ;(reviewEventRepository.getRecentByWords as jest.Mock).mockResolvedValue({
+        'word-1': [
+          {
+            event_id: 'event-1',
+            assessment: 'good',
+            review_mode: REVIEW_MODE.RECOGNITION,
+            answered_correctly: true,
+            reviewed_at: '2026-08-26T10:00:00.000Z',
+          },
+          {
+            event_id: 'event-2',
+            assessment: 'good',
+            review_mode: REVIEW_MODE.RECOGNITION,
+            answered_correctly: true,
+            reviewed_at: '2026-08-27T10:00:00.000Z',
+          },
+          {
+            event_id: 'event-3',
+            assessment: 'good',
+            review_mode: REVIEW_MODE.RECOGNITION,
+            answered_correctly: true,
+            reviewed_at: '2026-08-28T10:00:00.000Z',
+          },
+        ],
+        'word-2': [],
+      })
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        words: mockWords,
+        collections: [],
+        reviewSession: null,
+        currentWord: null,
+        error: null,
+      }))
+
+      await actions.startReviewSession({
+        mode: 'adaptive',
+        scope: REVIEW_SCOPE.ALL_DUE,
+      })
+
+      expect(reviewEventRepository.getRecentByWords).toHaveBeenCalledWith(
+        USER_ID,
+        ['word-1', 'word-2'],
+        100
+      )
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            adaptiveModeByWordId: {
+              'word-1': {
+                mode: REVIEW_MODE.MEANING_RECALL,
+                reason: 'promotion',
+                previousMode: REVIEW_MODE.RECOGNITION,
+              },
+              'word-2': {
+                mode: REVIEW_MODE.RECOGNITION,
+                reason: 'default',
+                previousMode: null,
+              },
+            },
+          }),
+        })
+      )
+    })
+
+    it('should not read or overwrite Adaptive state for a manual session', async () => {
+      const mockWords = createReviewWordsWithToday()
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        words: mockWords,
+        collections: [],
+        reviewSession: null,
+        currentWord: null,
+        error: null,
+      }))
+
+      await actions.startReviewSession({
+        mode: REVIEW_MODE.DUTCH_PRODUCTION,
+        scope: REVIEW_SCOPE.ALL_DUE,
+      })
+
+      expect(reviewEventRepository.getRecentByWords).not.toHaveBeenCalled()
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({
+            adaptiveModeByWordId: {},
+          }),
         })
       )
     })

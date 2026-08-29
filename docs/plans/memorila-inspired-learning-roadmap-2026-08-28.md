@@ -364,7 +364,7 @@ Exit decision:
 
 ### WP1.1 Review Event History Foundation
 
-Status: `READY FOR USER COMMIT`
+Status: `DONE`
 Priority: P1
 Estimated size: XL
 Depends on: Validation Gate A = `PROCEED`
@@ -443,7 +443,7 @@ Done criteria:
 
 ### WP1.2 Automatic Per-Word Mode Progression
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 Priority: P1
 Estimated size: M
 Depends on: WP1.1
@@ -491,6 +491,27 @@ Done criteria:
 - Users can select manual modes at any time.
 - Mode changes do not alter the SM-2 schedule.
 - All quality gates pass.
+
+Implementation completed on 2026-08-29:
+
+- Added a pure, deterministic `reviewModePolicy` that replays up to 100 recent
+  events per word and centralizes promotion and demotion thresholds.
+- Kept `ReviewMode` limited to concrete prompt modes and introduced a separate
+  `ReviewSessionMode` for the `adaptive` session option.
+- Added one bounded SQLite window query for all words in a session, chunked to
+  stay below the SQLite bind-variable limit.
+- Adaptive decisions are derived once when a session starts and remain stable
+  for that session. Manual sessions do not query or persist adaptive state.
+- Added the Adaptive selector option, per-word explanations, a persisted
+  setting that can disable Adaptive without deleting history, and a scrollable
+  selector for compact screens and large text.
+- Verified every promotion and demotion boundary, mixed-mode isolation,
+  response-time independence, safe defaults, manual session behavior, and the
+  concrete mode written by Adaptive assessments.
+- Validation passed: build and test TypeScript checks, ESLint, Prettier, 62 Jest
+  suites with 926 tests, and an iOS 26.5 Simulator smoke-check covering the
+  setting, manual fallback, Adaptive selection, Recognition resolution, and
+  the on-screen explanation.
 
 ### WP1.3 Official Dutch A1 Starter Pack
 

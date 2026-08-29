@@ -2,6 +2,7 @@ import type {
   ReviewMode,
   ReviewScope,
   ReviewSessionConfig,
+  ReviewSessionMode,
 } from '@/types/ReviewTypes'
 
 export const REVIEW_MODE = {
@@ -9,6 +10,11 @@ export const REVIEW_MODE = {
   MEANING_RECALL: 'meaning-recall',
   DUTCH_PRODUCTION: 'dutch-production',
 } as const satisfies Record<string, ReviewMode>
+
+export const REVIEW_SESSION_MODE = {
+  ...REVIEW_MODE,
+  ADAPTIVE: 'adaptive',
+} as const satisfies Record<string, ReviewSessionMode>
 
 export const REVIEW_SCOPE = {
   ALL_DUE: 'all-due',
@@ -33,6 +39,11 @@ export const MASTERED_MIN_REPETITIONS = 3
 
 export const REVIEW_MODE_OPTIONS = [
   {
+    mode: REVIEW_SESSION_MODE.ADAPTIVE,
+    title: 'Adaptive',
+    description: 'Automatically choose the right challenge for each word.',
+  },
+  {
     mode: REVIEW_MODE.RECOGNITION,
     title: 'Recognition',
     description: 'Choose the correct meaning from several options.',
@@ -48,7 +59,7 @@ export const REVIEW_MODE_OPTIONS = [
     description: 'See a translation and produce the Dutch word.',
   },
 ] as const satisfies readonly {
-  mode: ReviewMode
+  mode: ReviewSessionMode
   title: string
   description: string
 }[]

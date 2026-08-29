@@ -6,15 +6,16 @@
  */
 
 import { useSettingsStore } from '../useSettingsStore'
-import { REVIEW_MODE } from '@/constants/ReviewConstants'
+import { REVIEW_MODE, REVIEW_SESSION_MODE } from '@/constants/ReviewConstants'
 
 describe('useSettingsStore', () => {
   beforeEach(() => {
     // Reset store to initial state between tests
     useSettingsStore.setState({
       autoPlayPronunciation: false,
+      adaptiveReviewEnabled: true,
       lastSelectedCollectionId: null,
-      lastSelectedReviewMode: REVIEW_MODE.MEANING_RECALL,
+      lastSelectedReviewMode: REVIEW_SESSION_MODE.ADAPTIVE,
     })
   })
 
@@ -27,9 +28,35 @@ describe('useSettingsStore', () => {
       expect(useSettingsStore.getState().lastSelectedCollectionId).toBeNull()
     })
 
-    it('should default to Meaning Recall review mode', () => {
+    it('should default to Adaptive review mode', () => {
+      expect(useSettingsStore.getState().lastSelectedReviewMode).toBe(
+        REVIEW_SESSION_MODE.ADAPTIVE
+      )
+    })
+
+    it('should enable adaptive review modes by default', () => {
+      expect(useSettingsStore.getState().adaptiveReviewEnabled).toBe(true)
+    })
+  })
+
+  describe('setAdaptiveReviewEnabled', () => {
+    it('should fall back to Meaning Recall when Adaptive is disabled', () => {
+      useSettingsStore.getState().setAdaptiveReviewEnabled(false)
+
+      expect(useSettingsStore.getState().adaptiveReviewEnabled).toBe(false)
       expect(useSettingsStore.getState().lastSelectedReviewMode).toBe(
         REVIEW_MODE.MEANING_RECALL
+      )
+    })
+
+    it('should preserve an explicitly selected manual mode', () => {
+      useSettingsStore
+        .getState()
+        .setLastSelectedReviewMode(REVIEW_MODE.DUTCH_PRODUCTION)
+      useSettingsStore.getState().setAdaptiveReviewEnabled(false)
+
+      expect(useSettingsStore.getState().lastSelectedReviewMode).toBe(
+        REVIEW_MODE.DUTCH_PRODUCTION
       )
     })
   })

@@ -22,6 +22,7 @@ interface RecordReviewAssessmentInput {
 
 const DEFAULT_QUERY_LIMIT = 50
 const MAX_QUERY_LIMIT = 100
+const WORD_QUERY_CHUNK_SIZE = 400
 
 const INSERT_LOCAL_EVENT_SQL = `
   INSERT INTO review_events (
@@ -197,6 +198,53 @@ export class ReviewEventRepository {
     )
 
     return rows.map(row => this.parseEventRow(row))
+  }
+
+  async getRecentByWords(
+    userId: string,
+    wordIds: readonly string[],
+    limitPerWord = DEFAULT_QUERY_LIMIT
+  ): Promise<Record<string, LocalReviewEvent[]>> {
+    const uniqueWordIds = [...new Set(wordIds)]
+    const eventsByWordId = Object.fromEntries(
+      uniqueWordIds.map(wordId => [wordId, [] as LocalReviewEvent[]])
+    )
+    if (uniqueWordIds.length === 0) return eventsByWordId
+
+    const db = await getDatabase()
+    const normalizedLimit = normalizeLimit(limitPerWord)
+
+    for (
+      let offset = 0;
+      offset < uniqueWordIds.length;
+      offset += WORD_QUERY_CHUNK_SIZE
+    ) {
+      const chunk = uniqueWordIds.slice(offset, offset + WORD_QUERY_CHUNK_SIZE)
+      const placeholders = chunk.map(() => '?').join(', ')
+      const rows = await db.getAllAsync<Record<string, unknown>>(
+        `SELECT * FROM (
+           SELECT review_events.*,
+             ROW_NUMBER() OVER (
+               PARTITION BY word_id
+               ORDER BY reviewed_at DESC, event_id DESC
+             ) AS review_rank
+           FROM review_events
+           WHERE user_id = ? AND word_id IN (${placeholders})
+         )
+         WHERE review_rank <= ?
+         ORDER BY word_id ASC, reviewed_at DESC, event_id DESC`,
+        userId,
+        ...chunk,
+        normalizedLimit
+      )
+
+      for (const row of rows) {
+        const parsedEvent = this.parseEventRow(row)
+        eventsByWordId[parsedEvent.word_id]?.push(parsedEvent)
+      }
+    }
+
+    return eventsByWordId
   }
 
   private toEventBindValues(event: ReviewEventDraft | ReviewEvent) {

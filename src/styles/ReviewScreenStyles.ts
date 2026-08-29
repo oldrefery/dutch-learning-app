@@ -185,6 +185,13 @@ export const reviewScreenStyles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  adaptiveModeText: {
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
+    lineHeight: 20,
+    textAlign: 'center',
+    marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.XS,
+  },
+
   fallbackText: {
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
     lineHeight: 20,
