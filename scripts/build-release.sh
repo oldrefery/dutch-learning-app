@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+source "$(dirname "$0")/verify-eas-identity.sh"
+
 PLATFORM="both"
 CONFIRMED_BUILD_NUMBER=""
 DRY_RUN="false"
@@ -109,6 +111,8 @@ if [ "$DRY_RUN" = "true" ]; then
   echo "Dry run only; no directory, artifact, upload, or submission was created."
   exit 0
 fi
+
+verify_eas_identity
 
 [ -f ".sentryclirc" ] || fail ".sentryclirc file not found in project root"
 SENTRY_AUTH_TOKEN_CLI=$(awk -F= '/^token=/{print $2}' .sentryclirc)

@@ -416,6 +416,10 @@ and upgrade behavior before production submission.
 - The remote Expo/EAS identity gate passed read-only validation for account and
   project owner `oldrefery`; it must be repeated before every subsequent remote
   Expo/EAS operation.
+- EAS, App Store Connect, and Google Play Console confirm `78` as their latest
+  native production build. Candidate build `79` is unused on both platforms
+  and approved for version preparation. The verified De Woordenaar App Store
+  Connect ID is `6752469146`.
 
 ### Device Matrix
 

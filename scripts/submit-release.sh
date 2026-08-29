@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+source "$(dirname "$0")/verify-eas-identity.sh"
+
 PLATFORM="both"
 CONTEXT_FILE="builds/build-context.json"
 DRY_RUN="false"
@@ -103,6 +105,10 @@ CURRENT_COMMIT=$(git rev-parse HEAD)
 [ "$CONTEXT_IOS_BUILD" = "$APP_IOS_BUILD" ] || fail "build context iOS build does not match app config"
 [ "$CONTEXT_ANDROID_BUILD" = "$APP_ANDROID_BUILD" ] || fail "build context Android build does not match app config"
 [ "$CONTEXT_COMMIT" = "$CURRENT_COMMIT" ] || fail "build context commit does not match HEAD"
+
+if [ "$DRY_RUN" != "true" ]; then
+  verify_eas_identity
+fi
 
 submit_platform() {
   local platform=$1

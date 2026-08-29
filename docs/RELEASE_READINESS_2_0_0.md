@@ -98,7 +98,12 @@ their commits were merged or silently copied into the release branch.
 ## Remaining Candidate Checks
 
 - Verify privacy declarations against the generated binaries.
-- During the release-candidate package, confirm the next unused native build
-  number in both stores before applying the version bump.
+- EAS build history, App Store Connect, and Google Play Console all confirm
+  build `78` as the latest native production build. Google Play has build `78`
+  in the internal-testing draft and no newer uploaded app bundle; TestFlight
+  has build `78` ready to submit and no newer iOS build.
+- Candidate build `79` is unused on both platforms. The verified De Woordenaar
+  App Store Connect ID is `6752469146`; the stale submit-profile value
+  `6738736062` was rejected by App Store Connect and has been corrected.
 - Perform the upgrade and contextual-onboarding validation defined in
   `docs/plans/release-readiness-onboarding-2026-08-29.md`.

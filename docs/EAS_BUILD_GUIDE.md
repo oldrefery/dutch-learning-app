@@ -23,6 +23,9 @@ push branches or tags, or promote a release publicly.
 - The intended build number is confirmed as unused in both App Store Connect
   and Google Play Console.
 - EAS and store credentials are configured.
+- The effective Expo/EAS account and linked project are exactly `oldrefery`
+  and `@oldrefery/dutch-learning-app`; build and submit scripts fail closed on
+  any mismatch, including an `EXPO_TOKEN` for another account.
 - A valid local `.sentryclirc` is available for local build-time source-map
   upload.
 - The branch is pushed and the worktree is clean before building.

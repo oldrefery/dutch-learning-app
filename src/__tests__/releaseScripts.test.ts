@@ -17,6 +17,7 @@ const PACKAGE_LOCK_PATH = 'package-lock.json'
 const PREPARE_SCRIPT_PATH = 'scripts/prepare-release.js'
 const BUILD_SCRIPT_PATH = 'scripts/build-release.sh'
 const SUBMIT_SCRIPT_PATH = 'scripts/submit-release.sh'
+const VERIFY_EAS_IDENTITY_SCRIPT_PATH = 'scripts/verify-eas-identity.sh'
 const CURRENT_VERSION = '1.13.0'
 const CURRENT_BUILD_NUMBER = '78'
 
@@ -35,6 +36,7 @@ const createFixture = (): string => {
     path.basename(PREPARE_SCRIPT_PATH),
     path.basename(BUILD_SCRIPT_PATH),
     path.basename(SUBMIT_SCRIPT_PATH),
+    path.basename(VERIFY_EAS_IDENTITY_SCRIPT_PATH),
   ]) {
     const target = path.join(fixtureDir, 'scripts', scriptName)
     writeFileSync(target, readRepoFile(path.join('scripts', scriptName)))
