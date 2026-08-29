@@ -248,6 +248,33 @@ export default function ReviewScreen() {
     setSelectedRecognitionOption(null)
   }, [configuredMode, currentWord?.word_id])
 
+  const assessmentContext = useMemo(
+    () => ({
+      reviewMode: effectiveMode,
+      answeredCorrectly:
+        effectiveMode === REVIEW_MODE.RECOGNITION
+          ? (selectedRecognitionOption?.isCorrect ?? null)
+          : null,
+    }),
+    [effectiveMode, selectedRecognitionOption?.isCorrect]
+  )
+  const submitAgain = useCallback(
+    () => handleAgain(assessmentContext),
+    [assessmentContext, handleAgain]
+  )
+  const submitHard = useCallback(
+    () => handleHard(assessmentContext),
+    [assessmentContext, handleHard]
+  )
+  const submitGood = useCallback(
+    () => handleGood(assessmentContext),
+    [assessmentContext, handleGood]
+  )
+  const submitEasy = useCallback(
+    () => handleEasy(assessmentContext),
+    [assessmentContext, handleEasy]
+  )
+
   const handleModeSelect = useCallback(
     (mode: ReviewMode) => {
       setLastSelectedReviewMode(mode)
@@ -549,10 +576,10 @@ export default function ReviewScreen() {
           }
           disabled={isLoading}
           onReveal={revealAnswer}
-          onAgain={handleAgain}
-          onHard={handleHard}
-          onGood={handleGood}
-          onEasy={handleEasy}
+          onAgain={submitAgain}
+          onHard={submitHard}
+          onGood={submitGood}
+          onEasy={submitEasy}
         />
       </View>
 

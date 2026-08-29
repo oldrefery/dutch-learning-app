@@ -7,6 +7,12 @@ import { ToastType } from '@/constants/ToastConstants'
 import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
 import { Sentry } from '@/lib/sentry'
 import type { ReviewSession, ReviewSessionConfig } from '@/types/ReviewTypes'
+import type { ReviewAssessment } from '@/types/ApplicationStoreTypes'
+
+type ReviewAssessmentContext = Pick<
+  ReviewAssessment,
+  'reviewMode' | 'answeredCorrectly'
+>
 
 export const useReviewScreen = () => {
   const {
@@ -83,7 +89,10 @@ export const useReviewScreen = () => {
   )
 
   const handleAssessment = useCallback(
-    async (assessment: keyof typeof SRS_ASSESSMENT) => {
+    async (
+      assessment: keyof typeof SRS_ASSESSMENT,
+      context: ReviewAssessmentContext = {}
+    ) => {
       if (!currentWord) return
 
       setIsLoading(true)
@@ -95,6 +104,7 @@ export const useReviewScreen = () => {
         await store.submitReviewAssessment({
           wordId: currentWord.word_id,
           assessment: SRS_ASSESSMENT[assessment],
+          ...context,
           responseTime:
             responseTimeRef.current ??
             Math.max(0, Date.now() - responseStartedAtRef.current),
@@ -124,19 +134,19 @@ export const useReviewScreen = () => {
   )
 
   const handleAgain = useCallback(
-    () => handleAssessment('AGAIN'),
+    (context?: ReviewAssessmentContext) => handleAssessment('AGAIN', context),
     [handleAssessment]
   )
   const handleHard = useCallback(
-    () => handleAssessment('HARD'),
+    (context?: ReviewAssessmentContext) => handleAssessment('HARD', context),
     [handleAssessment]
   )
   const handleGood = useCallback(
-    () => handleAssessment('GOOD'),
+    (context?: ReviewAssessmentContext) => handleAssessment('GOOD', context),
     [handleAssessment]
   )
   const handleEasy = useCallback(
-    () => handleAssessment('EASY'),
+    (context?: ReviewAssessmentContext) => handleAssessment('EASY', context),
     [handleAssessment]
   )
 

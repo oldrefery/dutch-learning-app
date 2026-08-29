@@ -8,12 +8,13 @@ import {
   MIGRATION_V5_ADD_WORD_DELETED_AT,
   MIGRATION_V5_TOMBSTONE_INDEXES,
   MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS,
+  MIGRATION_V7_REVIEW_EVENTS,
 } from './schema'
 import { Sentry } from '@/lib/sentry'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 6
+const SCHEMA_VERSION = 7
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -181,6 +182,12 @@ async function migrateToV6(db: SQLite.SQLiteDatabase): Promise<void> {
   console.log('[DB] Migration to v6 completed successfully')
 }
 
+async function migrateToV7(db: SQLite.SQLiteDatabase): Promise<void> {
+  console.log('[DB] Starting migration to v7: adding review events...')
+  await db.execAsync(MIGRATION_V7_REVIEW_EVENTS)
+  console.log('[DB] Migration to v7 completed successfully')
+}
+
 async function createBaseSchema(db: SQLite.SQLiteDatabase): Promise<void> {
   const statements = SQL_SCHEMA.split(';').filter(statement => statement.trim())
   for (const statement of statements) {
@@ -213,6 +220,9 @@ async function applyPendingMigrations(
   }
   if (currentVersion < 6) {
     await migrateToV6(db)
+  }
+  if (currentVersion < 7) {
+    await migrateToV7(db)
   }
 }
 
@@ -253,6 +263,7 @@ async function openAndInitializeDatabase(): Promise<SQLite.SQLiteDatabase> {
     openedDatabase = await SQLite.openDatabaseAsync(DB_NAME, {
       useNewConnection: true,
     })
+    await openedDatabase.execAsync('PRAGMA foreign_keys = ON')
     await ensureCurrentSchema(openedDatabase)
     database = openedDatabase
     return openedDatabase
@@ -299,6 +310,7 @@ export async function resetDatabase(): Promise<void> {
   try {
     const db = await getDatabase()
     const statements = [
+      'DROP TABLE IF EXISTS review_events',
       'DROP TABLE IF EXISTS user_progress',
       'DROP TABLE IF EXISTS words',
       'DROP TABLE IF EXISTS collections',

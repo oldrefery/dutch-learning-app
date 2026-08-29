@@ -5,6 +5,7 @@
 
 import { createWordActions } from '../actions/wordActions'
 import { wordRepository } from '@/db/wordRepository'
+import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { Sentry } from '@/lib/sentry'
 import { wordService } from '@/lib/supabase'
 import { calculateNextReview } from '@/utils/srs'
@@ -27,6 +28,11 @@ jest.mock('@/db/wordRepository', () => ({
     updateWordImage: jest.fn(),
     moveWordToCollection: jest.fn(),
     resetWordProgress: jest.fn(),
+  },
+}))
+jest.mock('@/db/reviewEventRepository', () => ({
+  reviewEventRepository: {
+    recordAssessment: jest.fn(),
   },
 }))
 jest.mock('@/lib/sentry', () => ({
@@ -475,7 +481,7 @@ describe('wordActions', () => {
   })
 
   describe('updateWordAfterReview', () => {
-    it('should update word progress in repository', async () => {
+    it('should atomically record word progress and review event', async () => {
       const mockWord = createMockWord({ word_id: WORD_ID })
       const currentWords = [mockWord]
       mockGet.mockReturnValue({
@@ -489,11 +495,18 @@ describe('wordActions', () => {
         easiness_factor: 2.6,
         next_review_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
       })
-      ;(wordRepository.updateWordProgress as jest.Mock).mockResolvedValue(
+      ;(reviewEventRepository.recordAssessment as jest.Mock).mockResolvedValue(
         undefined
       )
 
-      const assessment = { assessment: 4, rating: 4 }
+      const assessment = {
+        assessment: 4,
+        rating: 4,
+        reviewMode: 'recognition',
+        answeredCorrectly: true,
+        responseTime: 1200,
+        timestamp: new Date('2026-08-29T10:00:00.000Z'),
+      }
 
       await actions.updateWordAfterReview(WORD_ID, assessment as any)
 
@@ -505,15 +518,23 @@ describe('wordActions', () => {
           assessment: 4,
         })
       )
-      expect(wordRepository.updateWordProgress).toHaveBeenCalledWith(
-        WORD_ID,
-        USER_ID,
-        expect.objectContaining({
+      expect(reviewEventRepository.recordAssessment).toHaveBeenCalledWith({
+        progress: expect.objectContaining({
           interval_days: 3,
           repetition_count: 1,
           easiness_factor: 2.6,
-        })
-      )
+        }),
+        event: expect.objectContaining({
+          user_id: USER_ID,
+          word_id: WORD_ID,
+          review_mode: 'recognition',
+          answered_correctly: true,
+          response_time_ms: 1200,
+          previous_interval_days: 1,
+          next_interval_days: 3,
+          reviewed_at: '2026-08-29T10:00:00.000Z',
+        }),
+      })
     })
 
     it(UNAUTHENTICATED_ERROR_MSG, async () => {
@@ -534,7 +555,9 @@ describe('wordActions', () => {
         error: null,
       })
       const error = new Error('Update failed')
-      ;(wordRepository.updateWordProgress as jest.Mock).mockRejectedValue(error)
+      ;(reviewEventRepository.recordAssessment as jest.Mock).mockRejectedValue(
+        error
+      )
       ;(calculateNextReview as jest.Mock).mockReturnValue({
         interval_days: 1,
         repetition_count: 0,

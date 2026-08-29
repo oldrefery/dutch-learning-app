@@ -539,6 +539,38 @@ describe('reviewActions', () => {
         })
       )
     })
+
+    it('should not advance when the atomic assessment write fails', async () => {
+      const mockWords = [
+        createMockWord({ word_id: 'word-1' }),
+        createMockWord({ word_id: 'word-2' }),
+      ]
+      const reviewSession = {
+        words: mockWords,
+        currentIndex: 0,
+        completedCount: 0,
+      }
+
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        reviewSession,
+        currentWord: mockWords[0],
+        words: mockWords,
+        updateWordAfterReview: jest.fn().mockResolvedValue(false),
+      }))
+
+      await actions.submitReviewAssessment({
+        wordId: 'word-1',
+        assessment: SRS_ASSESSMENT.GOOD,
+        timestamp: new Date(),
+      })
+
+      expect(mockSet).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({ currentIndex: 1 }),
+        })
+      )
+    })
   })
 
   describe('endReviewSession', () => {

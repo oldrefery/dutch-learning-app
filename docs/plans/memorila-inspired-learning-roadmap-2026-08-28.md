@@ -16,6 +16,7 @@ from the first work package marked `TODO`.
 - `IN PROGRESS`: current work package; do not start a later package.
 - `VALIDATION REQUIRED`: implementation is complete, but the next package is
   intentionally blocked until the user validates the result.
+- `PROCEED`: the user accepted a validation gate and dependent work may start.
 - `READY FOR USER COMMIT`: implementation and verification are complete.
 - `COMMITTED`: the user confirmed the work package was committed.
 - `BLOCKED`: requires a documented decision or an external dependency.
@@ -335,7 +336,7 @@ Done criteria:
 
 ### Validation Gate A: Manual Modes And Insights
 
-Status: `VALIDATION REQUIRED`
+Status: `PROCEED`
 Priority: P0
 Depends on: WP0.2 and WP0.3
 
@@ -363,7 +364,7 @@ Exit decision:
 
 ### WP1.1 Review Event History Foundation
 
-Status: `TODO`
+Status: `READY FOR USER COMMIT`
 Priority: P1
 Estimated size: XL
 Depends on: Validation Gate A = `PROCEED`

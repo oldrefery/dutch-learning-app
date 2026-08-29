@@ -1,6 +1,7 @@
 import {
   MIGRATION_V5_TOMBSTONE_INDEXES,
   MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS,
+  MIGRATION_V7_REVIEW_EVENTS,
   SQL_SCHEMA,
 } from '../schema'
 import fs from 'node:fs'
@@ -34,6 +35,56 @@ describe('delete tombstone schema', () => {
       'OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL'
     )
     expect(migration).toContain(ACTIVE_WORD_PREDICATE)
+  })
+})
+
+describe('review event history schema', () => {
+  const migrationPath = path.resolve(
+    process.cwd(),
+    'supabase/migrations/20260829100000_create_review_events.sql'
+  )
+  const migration = fs.readFileSync(migrationPath, 'utf8')
+
+  it('creates bounded local event data without card content', () => {
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain(
+      'CREATE TABLE IF NOT EXISTS review_events'
+    )
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain('response_time_ms <= 3600000')
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain(
+      'FOREIGN KEY (word_id) REFERENCES words(word_id) ON DELETE CASCADE'
+    )
+    expect(MIGRATION_V7_REVIEW_EVENTS).not.toMatch(
+      /dutch_lemma|translations|examples/
+    )
+  })
+
+  it('uses deterministic local indexes and removes history on tombstones', () => {
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain(
+      'ON review_events(user_id, created_at, event_id)'
+    )
+    expect(MIGRATION_V7_REVIEW_EVENTS).toContain(
+      'delete_review_events_for_tombstoned_word'
+    )
+  })
+
+  it('enforces owner-only append semantics remotely', () => {
+    expect(migration).toContain('CREATE TABLE public.review_events')
+    expect(migration).toContain(
+      'ALTER TABLE public.review_events ENABLE ROW LEVEL SECURITY'
+    )
+    expect(migration).toContain('Users can view their own review events')
+    expect(migration).toContain('Users can create their own review events')
+    expect(migration).toContain('Users can retry their own review events')
+    expect(migration).not.toContain('FOR DELETE')
+    expect(migration).toContain('review_events rows are immutable')
+  })
+
+  it('cascades hard and soft parent deletion', () => {
+    expect(migration).toContain('REFERENCES public.users(id) ON DELETE CASCADE')
+    expect(migration).toContain(
+      'REFERENCES public.words(word_id) ON DELETE CASCADE'
+    )
+    expect(migration).toContain('delete_review_events_on_word_tombstone')
   })
 })
 

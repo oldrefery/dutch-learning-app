@@ -158,7 +158,11 @@ export const createReviewActions = (
       }
 
       // Classic SRS: All assessments update the word in the database
-      await get().updateWordAfterReview(currentWord.word_id, assessment)
+      const assessmentRecorded = await get().updateWordAfterReview(
+        currentWord.word_id,
+        assessment
+      )
+      if (assessmentRecorded === false) return
 
       // Get a fresh state after a database update to ensure consistency
       const freshState = get()

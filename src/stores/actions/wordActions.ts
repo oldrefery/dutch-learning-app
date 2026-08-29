@@ -3,6 +3,7 @@ import { Sentry } from '@/lib/sentry'
 import { wordService } from '@/lib/supabase'
 import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
+import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { calculateNextReview } from '@/utils/srs'
 import * as Crypto from 'expo-crypto'
 import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
@@ -14,6 +15,11 @@ import type {
   ApplicationState,
 } from '@/types/ApplicationStoreTypes'
 import type { GeminiWordAnalysis, Word } from '@/types/database'
+import {
+  DEFAULT_REVIEW_SESSION_CONFIG,
+  MAX_REVIEW_RESPONSE_TIME_MS,
+  REVIEW_MODE,
+} from '@/constants/ReviewConstants'
 
 const USER_NOT_AUTHENTICATED_ERROR =
   APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
@@ -30,6 +36,14 @@ const WORD_RESET_FAILED = 'Failed to reset word progress'
 const WORDS_IMPORT_FAILED = 'Failed to import words'
 const WORD_REANALYZE_FAILED = 'Failed to re-analyze word'
 const INVALID_ANALYSIS_RESPONSE = 'Invalid response from word analysis'
+
+const normalizeResponseTime = (responseTime?: number): number | null => {
+  if (responseTime === undefined || !Number.isFinite(responseTime)) return null
+  return Math.min(
+    MAX_REVIEW_RESPONSE_TIME_MS,
+    Math.max(0, Math.round(responseTime))
+  )
+}
 
 interface ImportWordsActionError extends Error {
   userMessage?: string
@@ -298,7 +312,7 @@ export const createWordActions = (
             context: { reason: 'Invalid word ID' },
           }),
         })
-        return
+        return false
       }
       if (!assessment || !assessment.assessment) {
         logError(
@@ -314,7 +328,7 @@ export const createWordActions = (
             context: { reason: 'Invalid assessment' },
           }),
         })
-        return
+        return false
       }
 
       const userId = get().currentUserId
@@ -333,7 +347,7 @@ export const createWordActions = (
             context: { reason: USER_NOT_AUTHENTICATED_ERROR },
           }),
         })
-        return
+        return false
       }
 
       // Get the current word to calculate new SRS values
@@ -352,7 +366,7 @@ export const createWordActions = (
             context: { reason: 'Word not found' },
           }),
         })
-        return
+        return false
       }
 
       // Calculate new SRS values
@@ -363,22 +377,44 @@ export const createWordActions = (
         assessment: assessment.assessment,
       })
 
-      const lastReviewedAt = new Date().toISOString()
+      const reviewedAt =
+        assessment.timestamp instanceof Date &&
+        !Number.isNaN(assessment.timestamp.getTime())
+          ? assessment.timestamp.toISOString()
+          : new Date().toISOString()
+      const reviewMode =
+        assessment.reviewMode ??
+        get().reviewSession?.config.mode ??
+        DEFAULT_REVIEW_SESSION_CONFIG.mode
 
-      // Offline-first: always update local SQLite first
-      await wordRepository.updateWordProgress(wordId, userId, {
-        interval_days: srsUpdate.interval_days,
-        repetition_count: srsUpdate.repetition_count,
-        easiness_factor: srsUpdate.easiness_factor,
-        next_review_date: srsUpdate.next_review_date,
-        last_reviewed_at: lastReviewedAt,
+      // Offline-first: update SRS and append its matching event atomically.
+      await reviewEventRepository.recordAssessment({
+        progress: srsUpdate,
+        event: {
+          event_id: Crypto.randomUUID(),
+          user_id: userId,
+          word_id: wordId,
+          assessment: assessment.assessment,
+          review_mode: reviewMode,
+          answered_correctly:
+            reviewMode === REVIEW_MODE.RECOGNITION
+              ? (assessment.answeredCorrectly ?? null)
+              : null,
+          response_time_ms: normalizeResponseTime(assessment.responseTime),
+          previous_interval_days: currentWord.interval_days,
+          next_interval_days: srsUpdate.interval_days,
+          previous_easiness_factor: currentWord.easiness_factor,
+          next_easiness_factor: srsUpdate.easiness_factor,
+          reviewed_at: reviewedAt,
+        },
       })
 
       // Update the local store with calculated values
       const updatedWordData = {
         ...currentWord,
         ...srsUpdate,
-        last_reviewed_at: lastReviewedAt,
+        last_reviewed_at: reviewedAt,
+        updated_at: reviewedAt,
       }
 
       const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
@@ -387,6 +423,7 @@ export const createWordActions = (
         updatedWords[wordIndex] = updatedWordData
         set({ words: updatedWords })
       }
+      return true
     } catch (error) {
       logError(
         'Error updating word after review',
@@ -400,6 +437,7 @@ export const createWordActions = (
           originalError: error instanceof Error ? error : undefined,
         }),
       })
+      return false
     }
   },
 

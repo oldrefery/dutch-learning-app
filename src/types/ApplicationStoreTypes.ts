@@ -7,7 +7,11 @@ import type {
   WordExample,
   AccessLevel,
 } from './database'
-import type { ReviewSession, ReviewSessionConfig } from './ReviewTypes'
+import type {
+  ReviewMode,
+  ReviewSession,
+  ReviewSessionConfig,
+} from './ReviewTypes'
 import type { AppError } from './ErrorTypes'
 import { ExpressionType } from './ExpressionTypes'
 
@@ -48,7 +52,7 @@ export interface ApplicationState {
   updateWordAfterReview: (
     wordId: string,
     assessment: ReviewAssessment
-  ) => Promise<void>
+  ) => Promise<boolean>
   deleteWord: (wordId: string) => Promise<void>
   updateWordImage: (wordId: string, imageUrl: string) => Promise<void>
   moveWordToCollection: (
@@ -99,6 +103,8 @@ export interface ApplicationState {
 export interface ReviewAssessment {
   wordId: string
   assessment: SRSAssessment
+  reviewMode?: ReviewMode
+  answeredCorrectly?: boolean | null
   responseTime?: number
   timestamp: Date
 }

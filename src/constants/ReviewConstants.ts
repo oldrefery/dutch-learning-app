@@ -23,6 +23,8 @@ export const DEFAULT_REVIEW_SESSION_CONFIG = {
 
 export const DIFFICULT_EASINESS_FACTOR_THRESHOLD = 2.1
 
+export const MAX_REVIEW_RESPONSE_TIME_MS = 60 * 60 * 1000
+
 /**
  * A word is mastered after three successful repetitions.
  * This matches the existing progress definition used across collection stats.

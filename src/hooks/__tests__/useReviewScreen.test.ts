@@ -88,11 +88,18 @@ describe('useReviewScreen', () => {
 
     await act(async () => {
       jest.setSystemTime(new Date('2026-08-28T12:00:03.000Z'))
-      await result.current.handleGood()
+      await result.current.handleGood({
+        reviewMode: REVIEW_MODE.RECOGNITION,
+        answeredCorrectly: true,
+      })
     })
 
     expect(submitReviewAssessment).toHaveBeenCalledWith(
-      expect.objectContaining({ responseTime: 1250 })
+      expect.objectContaining({
+        responseTime: 1250,
+        reviewMode: REVIEW_MODE.RECOGNITION,
+        answeredCorrectly: true,
+      })
     )
   })
 
