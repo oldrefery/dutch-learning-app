@@ -24,7 +24,7 @@
       "buildNumber": "78",
       "icon": "./src/assets/icons/ios-light.png",
       "infoPlist": {
-        "UIBackgroundModes": ["audio"],
+        "UIBackgroundModes": [],
         "ITSAppUsesNonExemptEncryption": false
       },
       "appleTeamId": "7FQ395U52U"
@@ -36,9 +36,12 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.VIBRATE"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ],
       "softwareKeyboardLayoutMode": "pan",
       "package": "com.oldrefery.dutchlearningapp",
@@ -68,7 +71,16 @@
       "expo-router",
       "expo-updates",
       "expo-sqlite",
-      "expo-audio",
+      "expo-asset",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundRecording": false,
+          "enableBackgroundPlayback": false
+        }
+      ],
       "expo-apple-authentication",
       [
         "@sentry/react-native/expo",

@@ -96,7 +96,7 @@ describe('Sentry sourcemap scripts', () => {
 
   it('keeps native sourcemap uploads aligned with release, dist, and app URL prefix', () => {
     const uploadScript = readRepoFile(UPLOAD_SCRIPT_PATH)
-    const buildScript = readRepoFile('scripts/build-and-submit.sh')
+    const buildScript = readRepoFile('scripts/build-release.sh')
     const easConfig = JSON.parse(readRepoFile('eas.json')) as {
       build: { production: { environment?: string } }
     }

@@ -84,6 +84,23 @@ describe('usage notes schema', () => {
   })
 })
 
+describe('access-level synchronization schema', () => {
+  const migrationPath = path.resolve(
+    process.cwd(),
+    'supabase/migrations/20260829120000_fix_sync_user_access_levels_return_type.sql'
+  )
+  const migration = fs.readFileSync(migrationPath, 'utf8')
+
+  it('replaces the function idempotently with an explicit email text cast', () => {
+    expect(migration).toContain(
+      'CREATE OR REPLACE FUNCTION public.sync_user_access_levels()'
+    )
+    expect(migration).toContain('email TEXT')
+    expect(migration).toContain('au.email::TEXT')
+    expect(migration).not.toContain('DROP FUNCTION')
+  })
+})
+
 describe('review event history schema', () => {
   const migrationPath = path.resolve(
     process.cwd(),
