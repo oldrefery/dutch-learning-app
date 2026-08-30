@@ -2,6 +2,7 @@ export interface CollectionFormState {
   status: 'idle' | 'success' | 'error'
   message: string | null
   fieldErrors?: {
+    confirmation?: string
     name?: string
   }
 }

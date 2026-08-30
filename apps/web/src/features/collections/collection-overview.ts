@@ -22,6 +22,7 @@ export interface CollectionOverview {
   totalWords: number
   masteredWords: number
   dueWords: number
+  newWords: number
   progressPercentage: number
 }
 
@@ -52,6 +53,9 @@ export const buildCollectionOverviews = (
     const masteredWords = collectionWords.filter(
       word => word.repetition_count > 2
     ).length
+    const newWords = collectionWords.filter(
+      word => word.repetition_count === 0
+    ).length
     const dueWords = collectionWords.filter(word =>
       isDue(word.next_review_date, now)
     ).length
@@ -65,6 +69,7 @@ export const buildCollectionOverviews = (
       totalWords,
       masteredWords,
       dueWords,
+      newWords,
       progressPercentage:
         totalWords === 0 ? 0 : Math.round((masteredWords / totalWords) * 100),
     }

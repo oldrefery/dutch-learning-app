@@ -2,6 +2,7 @@ import { CreateCollectionForm } from '@/features/collections/CreateCollectionFor
 import type { CollectionOverview } from '@/features/collections/collection-overview'
 import { listCollectionOverviews } from '@/features/collections/repository'
 import { requireAuthContext } from '@/lib/auth/session'
+import Link from 'next/link'
 
 const SummaryCard = ({ label, value }: { label: string; value: number }) => (
   <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
@@ -14,7 +15,14 @@ const CollectionCard = ({ collection }: { collection: CollectionOverview }) => (
   <article className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
     <div className="flex items-start justify-between gap-4">
       <div>
-        <h2 className="text-lg font-semibold">{collection.name}</h2>
+        <h2 className="text-lg font-semibold">
+          <Link
+            className="rounded-sm outline-none hover:underline focus-visible:ring-2 focus-visible:ring-neutral-500"
+            href={`/app/collections/${collection.id}`}
+          >
+            {collection.name}
+          </Link>
+        </h2>
         <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
           {collection.totalWords}{' '}
           {collection.totalWords === 1 ? 'word' : 'words'}
@@ -42,6 +50,12 @@ const CollectionCard = ({ collection }: { collection: CollectionOverview }) => (
         />
       </div>
     </div>
+    <Link
+      className="mt-5 inline-flex text-sm font-medium text-neutral-700 hover:underline dark:text-neutral-300"
+      href={`/app/collections/${collection.id}`}
+    >
+      View collection
+    </Link>
   </article>
 )
 
@@ -53,8 +67,9 @@ export default async function CollectionsPage() {
       words: result.words + collection.totalWords,
       mastered: result.mastered + collection.masteredWords,
       due: result.due + collection.dueWords,
+      newWords: result.newWords + collection.newWords,
     }),
-    { words: 0, mastered: 0, due: 0 }
+    { words: 0, mastered: 0, due: 0, newWords: 0 }
   )
 
   return (
@@ -74,10 +89,11 @@ export default async function CollectionsPage() {
         </p>
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+      <div className="mt-8 grid gap-4 sm:grid-cols-4">
         <SummaryCard label="Words" value={totals.words} />
         <SummaryCard label="Mastered" value={totals.mastered} />
         <SummaryCard label="Due now" value={totals.due} />
+        <SummaryCard label="New" value={totals.newWords} />
       </div>
 
       <div className="mt-6">

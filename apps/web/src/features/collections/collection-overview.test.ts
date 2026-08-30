@@ -38,6 +38,7 @@ describe('buildCollectionOverviews', () => {
         totalWords: 0,
         masteredWords: 0,
         dueWords: 0,
+        newWords: 0,
         progressPercentage: 0,
       },
     ])
@@ -62,6 +63,7 @@ describe('buildCollectionOverviews', () => {
       totalWords: 3,
       masteredWords: 2,
       dueWords: 1,
+      newWords: 0,
       progressPercentage: 67,
     })
   })
@@ -87,6 +89,10 @@ describe('buildCollectionOverviews', () => {
       'Work',
     ])
     expect(result[0].totalWords).toBe(0)
-    expect(result[1]).toMatchObject({ totalWords: 1, isShared: true })
+    expect(result[1]).toMatchObject({
+      totalWords: 1,
+      newWords: 1,
+      isShared: true,
+    })
   })
 })
