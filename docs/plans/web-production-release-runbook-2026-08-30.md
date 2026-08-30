@@ -141,10 +141,10 @@ repository, browser environment, documentation, or logs.
 ### Email authentication
 
 - Email/password authentication is enabled.
-- `Confirm email` is currently disabled, so a successful signup receives a
-  session immediately instead of waiting for an email confirmation.
-- Both the mobile and web clients already handle the no-session confirmation
-  response and have platform-appropriate callback routes.
+- `Confirm email` is enabled in Production. A new email/password signup does
+  not receive a session until the user follows the confirmation link.
+- Both the mobile and web clients handle the no-session confirmation response
+  and have validated platform-appropriate callback routes.
 - Custom SMTP is configured through the Resend Free plan. The verified sending
   domain is `auth.woordenaar.app`, with MX, SPF, DKIM, and a monitoring-only
   DMARC policy (`p=none`) published in Vercel DNS.
@@ -167,14 +167,22 @@ repository, browser environment, documentation, or logs.
   `/reset-password`. Password submission succeeded, the recovery session was
   signed out locally, and signing in with the new password returned the test
   account to Collections.
+- Production web signup confirmation was validated with a disposable email
+  alias in the same Chrome session: signup returned no session and displayed
+  the confirmation message, the Resend email arrived, and the confirmation
+  callback created the session and opened web Collections.
+- Production mobile signup confirmation was validated in the iOS dev client:
+  signup returned no session and displayed the confirmation message, the
+  Resend email arrived, and its `dutchlearning://` callback reopened the app
+  with an authenticated session on the main screen. The empty collection state
+  was expected for the new account.
 - Do not validate web recovery by calling `resetPasswordForEmail` from a
   standalone client. That bypasses the web SSR cookie context and can produce
   an implicit-flow URL fragment that the server callback cannot read. Start the
   flow from the production web form and open the email in the same browser.
-- Do not enable mandatory email confirmation for public signup until both the
-  mobile and web signup-confirmation callbacks are explicitly validated and
-  the desired rollout behavior is approved. SMTP delivery and sender-domain
-  authentication are now validated.
+- Mandatory email confirmation, SMTP delivery, sender-domain authentication,
+  and both production signup callback paths are now validated. Keep mandatory
+  confirmation enabled unless a rollback is explicitly approved.
 
 ## 6. Domain and deployment gate
 
