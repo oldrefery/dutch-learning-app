@@ -6,6 +6,7 @@ module.exports = {
 
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@woordenaar/domain$': '<rootDir>/packages/domain/src/index.ts',
   },
 
   transformIgnorePatterns: [

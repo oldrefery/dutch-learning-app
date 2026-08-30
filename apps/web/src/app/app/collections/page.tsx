@@ -94,6 +94,14 @@ export default async function CollectionsPage() {
           >
             Import starter pack
           </Link>
+          {auth.accessLevel === 'full_access' && (
+            <Link
+              className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+              href="/app/batch-capture"
+            >
+              Batch capture
+            </Link>
+          )}
         </div>
       </div>
 

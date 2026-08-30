@@ -44,6 +44,9 @@ Completed locally:
 - added the shared `@woordenaar/content` package as the single source for the reviewed 60-card Dutch A1 starter pack;
 - added the Phase 5 web starter-pack flow with approved-manifest validation, semantic duplicate detection, selectable cards, owned target collection selection, full-access collection creation, read-only import into existing collections, RPC-backed persistence, and review continuation;
 - verified the starter-pack slice with focused mobile and web tests, mobile and web type checking, web lint, a production Next.js build, and responsive Chrome smoke testing without mutating user data.
+- moved the portable batch-capture parser and contracts into `@woordenaar/domain` while preserving the existing mobile imports through compatibility re-exports;
+- added the full-access Phase 5 web batch-capture flow with a 30-item limit, optional hints, normalized input deduplication, user-scoped persistent queue recovery, sequential AI analysis, pre-analysis and semantic duplicate checks, pause/resume/retry/skip/cancel controls, and mandatory manual approval before persistence;
+- verified the batch-capture slice with shared mobile and web regression tests, mobile/domain/web type checking, web lint, a production Next.js build, and responsive Chrome smoke testing without creating a queue, consuming AI quota, or writing user data.
 
 Completed remotely:
 
