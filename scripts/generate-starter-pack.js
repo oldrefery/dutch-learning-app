@@ -16,7 +16,7 @@ const REVIEWED_ENTRIES_SHA256 =
   '67bce090ae7867a2b039033cd1cae067a2bd545e4fd03cb3959b2318e7a44ece'
 const OUTPUT_PATH = path.resolve(
   process.cwd(),
-  'src/assets/starter-packs/dutch-a1.json'
+  'packages/content/src/dutch-a1.json'
 )
 
 const SELECTED_CARDS = [

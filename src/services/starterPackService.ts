@@ -1,4 +1,4 @@
-import dutchA1PackAsset from '@/assets/starter-packs/dutch-a1.json'
+import dutchA1PackAsset from '@woordenaar/content'
 import type { Word, WordConjugation, WordExample } from '@/types/database'
 import { isValidExpressionType } from '@/types/ExpressionTypes'
 import type {

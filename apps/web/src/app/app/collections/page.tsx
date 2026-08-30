@@ -83,10 +83,18 @@ export default async function CollectionsPage() {
             Collections
           </h1>
         </div>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {collections.length}{' '}
-          {collections.length === 1 ? 'collection' : 'collections'}
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            {collections.length}{' '}
+            {collections.length === 1 ? 'collection' : 'collections'}
+          </p>
+          <Link
+            className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+            href="/app/starter-pack"
+          >
+            Import starter pack
+          </Link>
+        </div>
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-4">

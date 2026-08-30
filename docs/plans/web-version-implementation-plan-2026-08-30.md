@@ -1,6 +1,6 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** In progress — Phase 3 collection and word management
+**Status:** In progress — Phase 5 acquisition and import workflows
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -40,6 +40,10 @@ Completed locally:
 - added force-refresh reanalysis that preserves identifiers and SRS progress and mirrors the mobile semantic-key collision fallback;
 - added unit coverage for collection logic, word JSON normalization, media URL validation, and reset/delete mutation helpers;
 - verified the Phase 3 slice with the full Jest suite, web lint and type checking, a production Next.js build, and a read-only Chrome smoke test.
+- completed Phase 4 learning workflows with default, adaptive, and audio review sessions, atomic SRS and review-event persistence, scoped review entry points, and session completion UX;
+- added the shared `@woordenaar/content` package as the single source for the reviewed 60-card Dutch A1 starter pack;
+- added the Phase 5 web starter-pack flow with approved-manifest validation, semantic duplicate detection, selectable cards, owned target collection selection, full-access collection creation, read-only import into existing collections, RPC-backed persistence, and review continuation;
+- verified the starter-pack slice with focused mobile and web tests, mobile and web type checking, web lint, a production Next.js build, and responsive Chrome smoke testing without mutating user data.
 
 Completed remotely:
 
