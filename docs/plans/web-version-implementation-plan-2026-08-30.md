@@ -35,6 +35,9 @@ Completed locally:
 - added collection creation, detail, search, rename, and soft-delete-compatible collection removal flows;
 - added an owned-word detail route with translations, grammar, conjugation, examples, usage guidance, related words, analysis notes, learning progress, image, and pronunciation playback;
 - added ownership-scoped word move, mobile-compatible SRS reset, and tombstone delete actions against the shared Supabase records;
+- added a full-access Add Word workflow backed by the existing authenticated `gemini-handler`, including strict response validation, cache/fresh metadata, complete preview, semantic duplicate detection, collection selection, and server-authorized persistence;
+- added paginated image search and selection through the existing quota-protected `get-multiple-images` Edge Function for both new and saved words;
+- added force-refresh reanalysis that preserves identifiers and SRS progress and mirrors the mobile semantic-key collision fallback;
 - added unit coverage for collection logic, word JSON normalization, media URL validation, and reset/delete mutation helpers;
 - verified the Phase 3 slice with the full Jest suite, web lint and type checking, a production Next.js build, and a read-only Chrome smoke test.
 

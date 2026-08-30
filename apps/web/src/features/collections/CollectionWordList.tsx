@@ -66,7 +66,7 @@ export function CollectionWordList({
           </h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
             {words.length === 0
-              ? 'Add words from the web analysis flow when it becomes available in the next Phase 3 slice.'
+              ? 'Use Add word to analyze Dutch vocabulary and save it here.'
               : `No Dutch words match “${searchQuery.trim()}”.`}
           </p>
         </div>

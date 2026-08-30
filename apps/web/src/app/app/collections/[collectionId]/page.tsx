@@ -44,9 +44,19 @@ export default async function CollectionDetailPage({
             {collection.name}
           </h1>
         </div>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          {collection.progressPercentage}% mastered
-        </p>
+        <div className="flex flex-col items-start gap-3 sm:items-end">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            {collection.progressPercentage}% mastered
+          </p>
+          {auth.accessLevel === 'full_access' && (
+            <Link
+              className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-950"
+              href={`/app/collections/${collection.id}/words/new`}
+            >
+              Add word
+            </Link>
+          )}
+        </div>
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-4">

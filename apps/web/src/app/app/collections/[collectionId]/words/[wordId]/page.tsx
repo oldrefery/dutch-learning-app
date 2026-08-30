@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
+import { WordImageManager } from '@/features/words/WordImageManager'
 import { WordManagementForms } from '@/features/words/WordManagementForms'
 import { getOwnedWordPageData } from '@/features/words/repository'
 import { requireAuthContext } from '@/lib/auth/session'
@@ -57,6 +58,15 @@ export default async function WordDetailPage({
         <WordDetailCard word={data.word} />
       </div>
 
+      {auth.accessLevel === 'full_access' && (
+        <div className="mt-6">
+          <WordImageManager
+            collectionId={data.collection.id}
+            word={data.word}
+          />
+        </div>
+      )}
+
       <div className="mt-10 border-t border-neutral-200 pt-8 dark:border-neutral-800">
         <h2 className="text-2xl font-semibold tracking-tight">Word actions</h2>
         <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
@@ -64,6 +74,7 @@ export default async function WordDetailPage({
         </p>
         <div className="mt-4">
           <WordManagementForms
+            canUseAi={auth.accessLevel === 'full_access'}
             collectionId={data.collection.id}
             moveTargets={data.moveTargets}
             wordId={data.word.id}

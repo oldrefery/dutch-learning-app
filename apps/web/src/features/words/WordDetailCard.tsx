@@ -291,7 +291,13 @@ const ProgressSection = ({ word }: { word: WordDetail }) => (
   </Section>
 )
 
-export function WordDetailCard({ word }: { word: WordDetail }) {
+export function WordDetailCard({
+  showProgress = true,
+  word,
+}: {
+  showProgress?: boolean
+  word: WordDetail
+}) {
   return (
     <div className="grid gap-4">
       <MediaSection word={word} />
@@ -312,7 +318,7 @@ export function WordDetailCard({ word }: { word: WordDetail }) {
           <p className="whitespace-pre-wrap text-sm">{word.analysisNotes}</p>
         </Section>
       )}
-      <ProgressSection word={word} />
+      {showProgress && <ProgressSection word={word} />}
     </div>
   )
 }
