@@ -1,4 +1,5 @@
 import officialDutchA1Pack from '@woordenaar/content'
+import { getSemanticWordKey } from '@woordenaar/domain'
 import type { Json } from '@woordenaar/supabase-contracts'
 
 const MIN_OFFICIAL_ENTRIES = 50
@@ -195,19 +196,11 @@ export const loadOfficialStarterPack = (): StarterPackManifest => {
   }
 }
 
-const normalizeSemanticValue = (value: string | null | undefined): string =>
-  value?.trim().toLocaleLowerCase('nl-NL') ?? ''
-
 export const getStarterPackSemanticKey = (
   dutchLemma: string,
   partOfSpeech: string | null,
   article: string | null
-): string =>
-  [
-    normalizeSemanticValue(dutchLemma),
-    normalizeSemanticValue(partOfSpeech || 'unknown'),
-    normalizeSemanticValue(article),
-  ].join('|')
+): string => getSemanticWordKey(dutchLemma, partOfSpeech, article)
 
 export const buildStarterPackPreview = (
   manifest: StarterPackManifest,

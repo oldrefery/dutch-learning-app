@@ -11,6 +11,14 @@ describe('getSafeNextPath', () => {
     )
   })
 
+  it('keeps a shared collection destination through authentication', () => {
+    expect(
+      getSafeNextPath(
+        '/share/8c3616c6-d337-4e63-b0bf-a9dbb735a8b4?source=friend'
+      )
+    ).toBe('/share/8c3616c6-d337-4e63-b0bf-a9dbb735a8b4?source=friend')
+  })
+
   it.each([
     'https://example.com',
     '//example.com/path',

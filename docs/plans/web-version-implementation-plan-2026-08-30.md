@@ -1,6 +1,6 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** In progress — Phase 5 acquisition and import workflows
+**Status:** Phase 5 complete — Phase 6 next
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -47,6 +47,10 @@ Completed locally:
 - moved the portable batch-capture parser and contracts into `@woordenaar/domain` while preserving the existing mobile imports through compatibility re-exports;
 - added the full-access Phase 5 web batch-capture flow with a 30-item limit, optional hints, normalized input deduplication, user-scoped persistent queue recovery, sequential AI analysis, pre-analysis and semantic duplicate checks, pause/resume/retry/skip/cancel controls, and mandatory manual approval before persistence;
 - verified the batch-capture slice with shared mobile and web regression tests, mobile/domain/web type checking, web lint, a production Next.js build, and responsive Chrome smoke testing without creating a queue, consuming AI quota, or writing user data.
+- completed Phase 5 collection sharing with owner-scoped publish and stop-sharing actions, stable `woordenaar.app/share/{token}` links, copy-link UI, and the same authenticated user header on shared routes;
+- added authenticated shared-link continuation, RLS-backed collection preview, semantic duplicate marking, selectable words, owned target collection selection, and read-only-compatible imports through the existing `import_words_to_collection` RPC;
+- aligned mobile-generated browser share links with `woordenaar.app` and centralized semantic word keys in `@woordenaar/domain` for mobile, starter-pack, and shared-import parity;
+- verified the sharing/import slice with focused mobile and web tests, mobile/domain/web type checking, web lint, a production Next.js build, and read-only responsive Chrome smoke testing without publishing or importing user data.
 
 Completed remotely:
 

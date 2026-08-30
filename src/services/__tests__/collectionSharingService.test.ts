@@ -481,6 +481,6 @@ describe('collectionSharingService URL generators', () => {
   it('should generate web share URL', () => {
     const url = collectionSharingService.generateWebShareUrl('abc123')
 
-    expect(url).toBe('https://dutch-learning-app.vercel.app/share/abc123')
+    expect(url).toBe('https://woordenaar.app/share/abc123')
   })
 })

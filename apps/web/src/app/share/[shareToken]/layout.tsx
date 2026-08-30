@@ -1,7 +1,7 @@
 import { AuthenticatedShell } from '@/components/app/AuthenticatedShell'
 import { requireAuthContext } from '@/lib/auth/session'
 
-export default async function AppLayout({
+export default async function SharedCollectionLayout({
   children,
 }: {
   children: React.ReactNode

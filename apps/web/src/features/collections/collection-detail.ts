@@ -6,7 +6,13 @@ type WordRow = Database['public']['Tables']['words']['Row']
 
 export type CollectionDetailRow = Pick<
   CollectionRow,
-  'collection_id' | 'created_at' | 'is_shared' | 'name' | 'updated_at'
+  | 'collection_id'
+  | 'created_at'
+  | 'is_shared'
+  | 'name'
+  | 'share_token'
+  | 'shared_at'
+  | 'updated_at'
 >
 
 export type CollectionWordRow = Pick<
@@ -48,6 +54,8 @@ export interface CollectionDetail {
   name: string
   newWords: number
   progressPercentage: number
+  sharedAt: string | null
+  shareToken: string | null
   totalWords: number
   words: CollectionWordListItem[]
 }
@@ -93,6 +101,8 @@ export const buildCollectionDetail = (
     dueWords: overview.dueWords,
     newWords: overview.newWords,
     progressPercentage: overview.progressPercentage,
+    shareToken: collection.share_token,
+    sharedAt: collection.shared_at,
     words: words.map(word => ({
       id: word.word_id,
       article: word.article,

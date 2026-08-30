@@ -4,6 +4,8 @@ import { CollectionWordList } from '@/features/collections/CollectionWordList'
 import { DeleteCollectionForm } from '@/features/collections/DeleteCollectionForm'
 import { RenameCollectionForm } from '@/features/collections/RenameCollectionForm'
 import { getOwnedCollectionDetail } from '@/features/collections/repository'
+import { CollectionSharingPanel } from '@/features/sharing/CollectionSharingPanel'
+import { buildSharedCollectionUrl } from '@/features/sharing/shared-collection-domain'
 import { requireAuthContext } from '@/lib/auth/session'
 
 const SummaryCard = ({ label, value }: { label: string; value: number }) => (
@@ -97,24 +99,38 @@ export default async function CollectionDetailPage({
         <h2 className="text-2xl font-semibold tracking-tight">
           Collection settings
         </h2>
-        {auth.accessLevel === 'full_access' ? (
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <RenameCollectionForm
-              collectionId={collection.id}
-              currentName={collection.name}
-            />
-            <DeleteCollectionForm
-              collectionId={collection.id}
-              collectionName={collection.name}
-              totalWords={collection.totalWords}
-            />
-          </div>
-        ) : (
-          <div className="mt-4 rounded-2xl border border-neutral-200 bg-white p-5 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
-            This account has read-only access. Renaming and deletion are
-            disabled.
-          </div>
-        )}
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <CollectionSharingPanel
+            collectionId={collection.id}
+            initialState={{
+              status: 'idle',
+              message: null,
+              isShared: collection.isShared,
+              shareUrl:
+                collection.isShared && collection.shareToken
+                  ? buildSharedCollectionUrl(collection.shareToken)
+                  : null,
+            }}
+          />
+          {auth.accessLevel === 'full_access' ? (
+            <>
+              <RenameCollectionForm
+                collectionId={collection.id}
+                currentName={collection.name}
+              />
+              <DeleteCollectionForm
+                collectionId={collection.id}
+                collectionName={collection.name}
+                totalWords={collection.totalWords}
+              />
+            </>
+          ) : (
+            <div className="rounded-2xl border border-neutral-200 bg-white p-5 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
+              This account has read-only access. Renaming and deletion are
+              disabled.
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )

@@ -13,6 +13,8 @@ const collection: CollectionDetailRow = {
   created_at: '2026-08-01T12:00:00.000Z',
   is_shared: null,
   name: 'Travel',
+  share_token: null,
+  shared_at: null,
   updated_at: null,
 }
 
@@ -55,6 +57,8 @@ describe('collection detail', () => {
 
     expect(detail).toMatchObject({
       dueWords: 1,
+      sharedAt: null,
+      shareToken: null,
       masteredWords: 1,
       newWords: 1,
       progressPercentage: 50,

@@ -9,7 +9,10 @@ export async function proxy(request: NextRequest) {
   const { response, isAuthenticated } = await refreshSession(request)
   const { pathname } = request.nextUrl
 
-  if (pathname.startsWith('/app') && !isAuthenticated) {
+  if (
+    (pathname.startsWith('/app') || pathname.startsWith('/share/')) &&
+    !isAuthenticated
+  ) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set(
       'next',
@@ -28,6 +31,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     '/app/:path*',
+    '/share/:path*',
     '/login',
     '/signup',
     '/forgot-password',

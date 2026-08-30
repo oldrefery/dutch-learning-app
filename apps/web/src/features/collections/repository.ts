@@ -45,7 +45,9 @@ export async function getOwnedCollectionDetail(
   const supabase = await createClient()
   const { data: collection, error: collectionError } = await supabase
     .from('collections')
-    .select('collection_id, created_at, is_shared, name, updated_at')
+    .select(
+      'collection_id, created_at, is_shared, name, share_token, shared_at, updated_at'
+    )
     .eq('collection_id', collectionId)
     .eq('user_id', userId)
     .maybeSingle()
