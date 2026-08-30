@@ -1,10 +1,15 @@
 # De Woordenaar Web Production Release Runbook
 
 **Date:** 2026-08-30  
-**Status:** Ready for external configuration  
+**Status:** Preview deployed; validation pending
 **Production origin:** `https://woordenaar.app`  
 **Vercel project:** `woordenaar-web`  
 **Supabase project:** `Dutch Learning App` (`josxavjbcjbcjgulwcyy`)
+
+**Current preview:**
+`https://woordenaar-a16jox07y-rustems-projects.vercel.app`
+
+**Preview deployment ID:** `dpl_D6nSYuBopmkvMZgGd6g5YfbtT75g`
 
 ## 1. Release scope
 
@@ -29,6 +34,8 @@ current neutral interface as final brand design.
 - `robots.txt` disallows private routes and references a root-only sitemap.
 - Authentication callback origins come from configured deployment state, not
   user-controlled request headers.
+- `.vercelignore` excludes local Next.js, native, dependency, coverage, and
+  release artifacts from CLI deployment uploads.
 
 Content Security Policy is intentionally deferred. The current application has
 an inline pre-hydration theme script and several required remote services; add
@@ -45,28 +52,39 @@ Configure these values for the `woordenaar-web` project:
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Production publishable key | Same project until a preview backend is approved | Local `.env.local`      |
 | `NEXT_PUBLIC_SITE_URL`                 | `https://woordenaar.app`   | Leave unset so `VERCEL_URL` is used              | `http://localhost:3000` |
 
+Current audit result:
+
+- Preview has both required Supabase public variables.
+- Preview intentionally has no `NEXT_PUBLIC_SITE_URL`.
+- Production environment variables are not configured yet.
+- Vercel project ownership is `rustems-projects` and the authenticated CLI user
+  is `oldrefery`.
+
 Never add a Supabase service-role key, provider client secret, Sentry auth
 token, or other server administration credential to a `NEXT_PUBLIC_*`
 variable.
 
 ## 4. Supabase Auth URL configuration
 
-In Authentication URL Configuration:
+This Supabase project is shared with the mobile app. Keep Site URL as
+`dutchlearning://`; changing it to the web origin would change fallback and
+email-template behavior for the mobile client. The web application always
+supplies an explicit trusted `redirectTo` origin.
 
-1. Set Site URL to `https://woordenaar.app` only when the production domain is
-   ready to receive auth redirects.
-2. Add exact production redirect URL:
-   `https://woordenaar.app/auth/callback`.
-3. Keep local callback URL while local testing is required:
-   `http://localhost:3000/auth/callback`.
-4. Add a narrowly scoped Vercel preview wildcard matching only this project and
-   team, for example:
-   `https://woordenaar-*-rustems-projects.vercel.app/auth/callback`.
-5. Verify signup confirmation, password recovery, Google OAuth, and Apple OAuth
-   separately after saving the allow list.
+Current allow-list audit result:
 
-Do not use a broad `https://*.vercel.app/**` rule. Remove obsolete preview URLs
-and wildcards after the release is stable.
+- `dutchlearning://**` and the existing mobile/development URLs are present;
+- `http://localhost:3000/**` is present;
+- `https://*-rustems-projects.vercel.app/**` is present and covers the current
+  preview;
+- `https://woordenaar.app/auth/callback` is present;
+- `https://woordenaar.app/auth/confirm` is present.
+
+Before production promotion, verify signup confirmation, password recovery,
+Google OAuth, and Apple OAuth separately. Do not delete mobile URLs from this
+shared allow list. A future cleanup may replace the team-wide Vercel wildcard
+with a narrower project pattern only after confirming that no active preview
+flow depends on it.
 
 ## 5. OAuth providers
 
@@ -98,11 +116,21 @@ External changes require explicit release authorization:
 4. Attach `woordenaar.app` to `woordenaar-web`.
 5. Apply the required DNS records at the domain provider.
 6. Wait for Vercel TLS issuance and verify HTTPS without certificate warnings.
-7. Update Supabase Site URL and the exact production redirect URL.
+7. Reconfirm that the existing production redirect URLs remain in the Supabase
+   allow list without changing the mobile Site URL.
 8. Promote the verified deployment or deploy the approved release commit.
 
 Do not switch DNS before the preview, OAuth configuration, and rollback target
 are all verified.
+
+Current Git integration audit result:
+
+- provider: GitHub;
+- repository: `oldrefery/dutch-learning-app`;
+- Vercel production branch: `main`;
+- project Root Directory: `apps/web`;
+- framework preset: Next.js;
+- the preview deployment completed with state `READY` and no production target.
 
 ## 7. Required smoke tests
 
