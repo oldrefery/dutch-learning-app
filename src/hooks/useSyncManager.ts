@@ -20,6 +20,15 @@ const DEFAULT_OPTIONS: UseSyncManagerOptions = {
   syncIntervalMs: 5 * 60 * 1000, // 5 minutes
 }
 
+export const refreshApplicationStoreAfterSync = async (
+  result: SyncResult
+): Promise<void> => {
+  if (!result.success) return
+
+  const { fetchCollections, fetchWords } = useApplicationStore.getState()
+  await Promise.all([fetchCollections(), fetchWords()])
+}
+
 export function useSyncManager(options: UseSyncManagerOptions = {}) {
   const currentUserId = useApplicationStore(state => state.currentUserId)
   const autoSyncOnMount =
@@ -114,6 +123,12 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
     unsubscribeSyncRef.current = syncManager.subscribeSyncStatus(
       (result: SyncResult) => {
         setSyncResult(result)
+        void refreshApplicationStoreAfterSync(result).catch(error => {
+          console.error(
+            '[Sync] Error refreshing application store after sync:',
+            error
+          )
+        })
       }
     )
   }, [])

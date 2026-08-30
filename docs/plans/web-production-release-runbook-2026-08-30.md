@@ -1,7 +1,7 @@
 # De Woordenaar Web Production Release Runbook
 
 **Date:** 2026-08-30  
-**Status:** Production domain active; Google authentication validated
+**Status:** Production domain active; authentication and read-only smoke validated
 **Production origin:** `https://woordenaar.app`  
 **Vercel project:** `woordenaar-web`  
 **Supabase project:** `Dutch Learning App` (`josxavjbcjbcjgulwcyy`)
@@ -95,11 +95,11 @@ Current allow-list audit result:
 - `https://woordenaar.app/auth/callback` is present;
 - `https://woordenaar.app/auth/confirm` is present.
 
-Continue release validation with signup behavior. Google and Apple OAuth and
-web password recovery are validated on the production domain. Do not delete
-mobile URLs from this shared allow list. A future cleanup may replace the
-team-wide Vercel wildcard with a narrower project pattern only after confirming
-that no active preview flow depends on it.
+Signup confirmation, Google and Apple OAuth, and web password recovery are
+validated on the production domain. Do not delete mobile URLs from this shared
+allow list. A future cleanup may replace the team-wide Vercel wildcard with a
+narrower project pattern only after confirming that no active preview flow
+depends on it.
 
 ## 5. OAuth providers
 
@@ -260,11 +260,56 @@ Preview smoke result on 2026-08-30:
 - all checked routes fit a 390 px viewport without horizontal overflow;
 - no browser console warnings or errors were captured during the checked flow.
 
-This was intentionally a non-destructive smoke test. Data mutations,
-cross-client synchronization, keyboard and screen-reader coverage, and response
-credential inspection remain release gates. Production Google and Apple OAuth,
-custom-domain behavior, and the complete web password-recovery flow have since
-been validated.
+This was intentionally a non-destructive smoke test. Production Google and
+Apple OAuth, custom-domain behavior, the complete web password-recovery flow,
+signup confirmation, keyboard focus navigation, response security headers,
+browser-asset credential inspection, and the first cross-client mutation flow
+have since been validated. Screen-reader coverage, production monitoring, and
+the remaining mutation scenarios remain release gates.
+
+Production read-only smoke result on 2026-08-30:
+
+- the public root, `robots.txt`, `sitemap.xml`, and login page returned HTTP
+  `200` over HTTPS;
+- HSTS, `nosniff`, frame denial, strict-origin referrer handling, and the
+  restrictive browser permissions policy were present on the checked routes;
+- `robots.txt` excludes private and authentication routes, the sitemap contains
+  only the public root, and the login page declares `noindex, nofollow`;
+- the production login JavaScript graph contained no private credential names,
+  service-role markers, Sentry auth-token markers, provider-client-secret
+  markers, Resend private-key patterns, or private-key PEM markers;
+- authenticated Collections, Review, Insights, History, and Settings loaded
+  under the disposable web test account with the expected headings and no
+  captured console warnings or errors;
+- keyboard-only `Tab` navigation reached the brand link, all primary navigation
+  links, sign-out controls, and Settings inputs with a visible browser outline
+  or explicit focus ring.
+
+Production cross-client mutation result on 2026-08-30:
+
+- the disposable shared account
+  `curysef+woordenaar-web-20260830@gmail.com` was granted `full_access` by
+  updating only its existing `user_access_levels` row; no email allow-list
+  entry was created;
+- web created collection `E2E Cross-client 2026-08-30`
+  (`54e19201-07ea-43c9-b4bd-f45fdfa7dee9`), and mobile pulled it into the
+  shared account;
+- web analyzed and saved `de fiets`
+  (`8d0ae4eb-3b22-43aa-aeac-5a35ce35e084`) through the production
+  `gemini-handler`, and mobile pulled the word with one due review;
+- mobile completed a Meaning Recall assessment with `Good`, pushed the updated
+  word state and one immutable review event, and web History displayed the
+  synced `good` outcome, `1 → 1 days` interval, unchanged `2.50` easiness, and
+  a `2.0 s` response time;
+- no test collection, word, review event, account, or access record was deleted
+  or reverted after validation;
+- the mobile offline-first synchronization layer persisted pulled collections
+  and words correctly, but the active Collections screen did not reread SQLite
+  after the background pull. A JavaScript reload showed the new data. This was
+  a mobile UI-refresh defect rather than a backend synchronization failure. A
+  local fix now rehydrates the Zustand word and collection slices after every
+  successful sync notification and has regression coverage; it still requires
+  validation in a shipped mobile build before broader production promotion.
 
 ## 7. Required smoke tests
 

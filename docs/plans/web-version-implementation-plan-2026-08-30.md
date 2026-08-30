@@ -1,6 +1,8 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** Phase 8 in progress — Production domain active; auth validation pending
+**Status:** Phase 8 in progress — Auth, read-only smoke, and the first
+cross-client production mutation flow validated; monitoring,
+assistive-technology, and remaining mutation gates pending
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -103,6 +105,19 @@ Completed locally:
   Resend Custom SMTP uses a sending-only key restricted to the verified
   `auth.woordenaar.app` domain, MX/SPF/DKIM/DMARC records are published, and
   Supabase Auth recovery and signup emails were delivered successfully.
+- completed the first authenticated production cross-client mutation flow with
+  the disposable shared account
+  `curysef+woordenaar-web-20260830@gmail.com`: granted only its existing access
+  row `full_access`, created collection `E2E Cross-client 2026-08-30` on web,
+  analyzed and saved `de fiets` through the production Edge Function, pulled
+  both records into mobile, completed a Meaning Recall `Good` assessment on
+  mobile, pushed its updated SRS state and review event, and verified the result
+  in web History. The flow exposed a mobile UI-refresh defect: background sync
+  persisted pulled rows in SQLite, but the active Collections screen required a
+  JavaScript reload before showing them. The local mobile fix now rehydrates the
+  Zustand collection and word slices after successful sync notifications and is
+  covered by focused regression tests. It still needs shipped-build validation.
+  No production test data or access record was deleted or reverted.
 
 Completed remotely:
 
@@ -644,10 +659,15 @@ Deliverables:
 Status: in progress. The local release baseline, first Vercel preview, and
 authenticated non-destructive preview smoke validation are complete. Production
 environment variables are configured and a `READY` Production deployment now
-uses them. Google and Apple OAuth and the custom production domain are
-validated. Mutation and cross-client validation, domain monitoring, and the
-remaining release checks remain externally gated. The custom domain is
-attached and reports valid DNS/TLS configuration.
+uses them. Google and Apple OAuth, mandatory email confirmation, password
+recovery, the custom production domain, production security headers,
+browser-asset credential inspection, authenticated route loading, and keyboard
+focus navigation are validated. The first web-to-mobile create-and-review flow
+and mobile-to-web review-history flow are also validated. Production monitoring,
+screen-reader validation, the mobile post-sync UI refresh fix, and the remaining
+mutation scenarios remain gated. The UI refresh fix is implemented and tested
+locally but still needs shipped-build validation. The custom domain is attached
+and reports valid DNS/TLS configuration.
 
 Deliverables:
 
