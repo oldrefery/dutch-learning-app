@@ -1,7 +1,7 @@
 # De Woordenaar Web Production Release Runbook
 
 **Date:** 2026-08-30  
-**Status:** Preview deployed; read-only authenticated smoke validation passed
+**Status:** Production deployment ready; custom domain not attached
 **Production origin:** `https://woordenaar.app`  
 **Vercel project:** `woordenaar-web`  
 **Supabase project:** `Dutch Learning App` (`josxavjbcjbcjgulwcyy`)
@@ -10,6 +10,13 @@
 `https://woordenaar-a16jox07y-rustems-projects.vercel.app`
 
 **Preview deployment ID:** `dpl_D6nSYuBopmkvMZgGd6g5YfbtT75g`
+
+**Current production deployment:**
+`https://woordenaar-dap4bjiga-rustems-projects.vercel.app`
+
+**Production alias:** `https://woordenaar-web.vercel.app`
+
+**Production deployment ID:** `dpl_7S7q2GYsGiTiZLdCxbc8Eio1kwWZ`
 
 ## 1. Release scope
 
@@ -154,10 +161,20 @@ Current domain audit result:
 - the apex and wildcard DNS records already resolve through Vercel-managed
   ALIAS records;
 - `woordenaar.app` is not yet attached to `woordenaar-web`;
-- the project currently shows only `woordenaar-web.vercel.app` and has no
-  Production deployment;
+- the project has a `READY` Production deployment and the standard
+  `woordenaar-web.vercel.app` production alias;
 - no DNS record, project-domain assignment, or production alias changed during
   this audit.
+
+Production deployment result on 2026-08-30:
+
+- release commit: `2f7bf66`;
+- target: Production;
+- Next.js 16.3.3 production build completed successfully;
+- TypeScript checking completed successfully;
+- all 21 application routes were generated;
+- Vercel assigned the standard `woordenaar-web.vercel.app` alias;
+- `woordenaar.app` remained unattached and no DNS record changed.
 
 Preview smoke result on 2026-08-30:
 

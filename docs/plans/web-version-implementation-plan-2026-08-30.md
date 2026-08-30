@@ -1,6 +1,6 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** Phase 8 in progress — preview read-only smoke validation passed
+**Status:** Phase 8 in progress — Production deployment ready; domain pending
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -77,6 +77,9 @@ Completed locally:
   DNS-managed by Vercel with correct Vercel nameservers and apex/wildcard ALIAS
   records, but it is not attached to `woordenaar-web` and the project has no
   Production deployment yet.
+- deployed release commit `2f7bf66` to Vercel Production successfully; the
+  deployment is `READY`, all 21 routes built, and Vercel assigned
+  `https://woordenaar-web.vercel.app` while leaving `woordenaar.app` unattached.
 
 Completed remotely:
 
@@ -616,10 +619,11 @@ Deliverables:
 ### Phase 8 — production release
 
 Status: in progress. The local release baseline, first Vercel preview, and
-authenticated non-destructive preview smoke validation are complete. Mutation
-and cross-client validation, OAuth validation, domain attachment, monitoring,
-and promotion remain externally gated. Production environment variables are
-configured but have not been activated by a production deployment.
+authenticated non-destructive preview smoke validation are complete. Production
+environment variables are configured and a `READY` Production deployment now
+uses them. Mutation and cross-client validation, OAuth validation, domain
+attachment, monitoring, and final public-domain verification remain externally
+gated.
 
 Deliverables:
 
