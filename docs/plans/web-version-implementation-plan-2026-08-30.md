@@ -92,13 +92,15 @@ Completed locally:
   Supabase project domain and callback, ordered the web and native Client IDs
   correctly in Supabase, rotated the Apple OAuth secret through 2027-03-01, and
   completed production Apple sign-in back to Collections.
-- audited production email authentication: mandatory confirmation and custom
-  SMTP are disabled, the built-in Supabase sender is not production-ready, and
-  the existing reset template correctly uses the provider-generated
-  confirmation URL; validated the production web PKCE recovery flow from the
-  real `/forgot-password` form through password submission, local recovery
-  session invalidation, and successful sign-in with the new password back to
-  Collections. Custom SMTP and delivery monitoring remain release gates.
+- audited production email authentication: mandatory confirmation remains
+  disabled, the reset template correctly uses the provider-generated
+  confirmation URL, and the production web PKCE recovery flow is validated
+  from `/forgot-password` through successful sign-in with the new password;
+  configured Resend Custom SMTP with a sending-only key restricted to the
+  verified `auth.woordenaar.app` domain, published MX/SPF/DKIM/DMARC records,
+  and confirmed final delivery of a Supabase Auth recovery email. Explicit
+  mobile and web signup-confirmation tests remain release gates before enabling
+  mandatory confirmation.
 
 Completed remotely:
 

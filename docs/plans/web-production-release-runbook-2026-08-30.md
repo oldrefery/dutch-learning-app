@@ -145,8 +145,19 @@ repository, browser environment, documentation, or logs.
   session immediately instead of waiting for an email confirmation.
 - Both the mobile and web clients already handle the no-session confirmation
   response and have platform-appropriate callback routes.
-- Custom SMTP is not configured. Supabase reports that the built-in email
-  service is rate-limited and not intended for production applications.
+- Custom SMTP is configured through the Resend Free plan. The verified sending
+  domain is `auth.woordenaar.app`, with MX, SPF, DKIM, and a monitoring-only
+  DMARC policy (`p=none`) published in Vercel DNS.
+- Supabase sends as `De Woordenaar <no-reply@auth.woordenaar.app>` through
+  `smtp.resend.com:465` with the `resend` SMTP user. The Resend API key is
+  restricted to sending from `auth.woordenaar.app`, is stored only as the
+  encrypted Supabase SMTP password, and is not present in the repository or
+  documentation.
+- A recovery email initiated from the Supabase Auth user dashboard produced a
+  successful Resend SMTP request and reached final `delivered` status. The
+  dashboard-generated link used the shared mobile Site URL as expected and was
+  not opened; the production web recovery callback was validated separately
+  through the real web form.
 - The reset-password template uses `{{ .ConfirmationURL }}` and therefore
   preserves the explicit platform-specific `redirectTo` supplied by mobile or
   web.
@@ -160,9 +171,10 @@ repository, browser environment, documentation, or logs.
   standalone client. That bypasses the web SSR cookie context and can produce
   an implicit-flow URL fragment that the server callback cannot read. Start the
   flow from the production web form and open the email in the same browser.
-- Do not enable mandatory email confirmation for public signup until custom
-  SMTP, sender-domain authentication, delivery monitoring, and both mobile and
-  web confirmation callbacks are validated.
+- Do not enable mandatory email confirmation for public signup until both the
+  mobile and web signup-confirmation callbacks are explicitly validated and
+  the desired rollout behavior is approved. SMTP delivery and sender-domain
+  authentication are now validated.
 
 ## 6. Domain and deployment gate
 
