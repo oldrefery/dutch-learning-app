@@ -1,3 +1,4 @@
+import { DIFFICULT_EASINESS_FACTOR_THRESHOLD } from '@woordenaar/domain'
 import type { Json } from '@woordenaar/supabase-contracts'
 import type {
   AdaptiveReviewModeDecision,
@@ -9,7 +10,6 @@ import type {
   ReviewWord,
 } from './types'
 
-export const DIFFICULT_EASINESS_FACTOR_THRESHOLD = 2.1
 export const MAX_REVIEW_RESPONSE_TIME_MS = 60 * 60 * 1000
 
 const MODE_SEQUENCE: readonly ReviewMode[] = [

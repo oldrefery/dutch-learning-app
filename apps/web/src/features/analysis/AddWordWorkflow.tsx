@@ -100,9 +100,11 @@ const ImageOptions = ({
 export function AddWordWorkflow({
   collections,
   initialCollectionId,
+  userId,
 }: {
   collections: CollectionOption[]
   initialCollectionId: string
+  userId: string
 }) {
   const [inputWord, setInputWord] = useState('')
   const [analysis, setAnalysis] = useState<WordAnalysis | null>(null)
@@ -156,7 +158,11 @@ export function AddWordWorkflow({
     }
 
     try {
-      const result = await analyzeWordWithAi(validation.value, forceRefresh)
+      const result = await analyzeWordWithAi(
+        userId,
+        validation.value,
+        forceRefresh
+      )
       setAnalysis(result.analysis)
       setMetadata(result.metadata)
       await checkDuplicate(result.analysis)

@@ -62,7 +62,7 @@ export function BatchCaptureWorkspace({
       }
 
       patchItem(item.id, { status: 'analyzing', error: null })
-      const result = await analyzeWordWithAi(item.dutchText)
+      const result = await analyzeWordWithAi(userId, item.dutchText)
       let semanticDuplicate = null
       let duplicateWarning: string | null = null
       try {
@@ -83,7 +83,7 @@ export function BatchCaptureWorkspace({
       })
       setPaused(true)
     },
-    [patchItem, setPaused]
+    [patchItem, setPaused, userId]
   )
 
   useEffect(() => {

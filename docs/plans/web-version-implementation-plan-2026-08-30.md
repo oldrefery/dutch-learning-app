@@ -1,6 +1,6 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** Phase 5 complete — Phase 6 next
+**Status:** Phase 6 in progress — Insights and History complete
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -51,6 +51,9 @@ Completed locally:
 - added authenticated shared-link continuation, RLS-backed collection preview, semantic duplicate marking, selectable words, owned target collection selection, and read-only-compatible imports through the existing `import_words_to_collection` RPC;
 - aligned mobile-generated browser share links with `woordenaar.app` and centralized semantic word keys in `@woordenaar/domain` for mobile, starter-pack, and shared-import parity;
 - verified the sharing/import slice with focused mobile and web tests, mobile/domain/web type checking, web lint, a production Next.js build, and read-only responsive Chrome smoke testing without publishing or importing user data.
+- moved review forecasts, difficulty, mastery, interval, and easiness algorithms into `@woordenaar/domain` while preserving mobile imports;
+- added responsive web Insights with browser-local forecast dates, accessible chart labels, difficult-word detail links, and difficult-due review entry;
+- added web History with user-scoped browser-local AI analysis history and the latest immutable Supabase `review_events`, including interval/easiness transitions and word links.
 
 Completed remotely:
 
@@ -562,10 +565,13 @@ Deliverables:
 
 ### Phase 6 — insights, settings, and operational parity
 
+Status: in progress. Insights and History are complete; Settings and
+operational parity are next.
+
 Deliverables:
 
-- insights;
-- history;
+- insights — complete;
+- history — complete;
 - settings;
 - account deletion;
 - sync and connectivity state;

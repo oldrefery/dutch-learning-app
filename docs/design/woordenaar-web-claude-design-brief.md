@@ -643,7 +643,9 @@ Include:
 
 ## 21. History
 
-The initial History page contains recent AI-analyzed words rather than a complete activity timeline.
+History combines browser-local AI analysis activity with the durable review-event
+timeline from Supabase. Keep these sources visually distinct so users understand
+which history syncs between devices.
 
 Design:
 
@@ -654,7 +656,16 @@ Design:
 - reanalyze;
 - empty state.
 
-Also propose a future-compatible section for review-event history without making it a required first-release feature.
+The review-event section includes:
+
+- word and collection links;
+- review mode and assessment;
+- reviewed timestamp;
+- previous and next interval;
+- previous and next easiness factor;
+- answer correctness or self-assessed state;
+- response time when recorded;
+- empty state with a `Start review` action.
 
 ## 22. Settings
 

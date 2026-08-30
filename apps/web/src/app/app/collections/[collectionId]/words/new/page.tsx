@@ -46,6 +46,7 @@ export default async function AddWordPage({
           <AddWordWorkflow
             collections={collections}
             initialCollectionId={collectionId}
+            userId={auth.userId}
           />
         ) : (
           <div className="rounded-2xl border border-neutral-200 bg-white p-6 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">

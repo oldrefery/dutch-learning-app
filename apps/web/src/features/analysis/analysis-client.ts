@@ -11,10 +11,12 @@ import type {
   WordImageOption,
 } from './analysis-contract'
 import { getEdgeFunctionErrorMessage } from './edge-errors'
+import { recordAnalysisHistory } from '@/features/history/analysis-history'
 
 const IMAGE_PAGE_SIZE = 6
 
 export const analyzeWordWithAi = async (
+  userId: string,
   word: string,
   forceRefresh = false
 ): Promise<WordAnalysisResult> => {
@@ -35,7 +37,9 @@ export const analyzeWordWithAi = async (
     )
   }
 
-  return parseAnalysisFunctionResponse(data)
+  const result = parseAnalysisFunctionResponse(data)
+  recordAnalysisHistory(userId, word, result)
+  return result
 }
 
 export const findWordImages = async (

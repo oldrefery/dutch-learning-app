@@ -25,7 +25,10 @@ export function AuthenticatedShell({
             <Link className="font-semibold" href="/app/collections">
               {PRODUCT_NAME}
             </Link>
-            <nav aria-label="Primary navigation" className="flex gap-4">
+            <nav
+              aria-label="Primary navigation"
+              className="flex flex-wrap gap-x-4 gap-y-2"
+            >
               <Link
                 className="text-sm text-neutral-600 dark:text-neutral-300"
                 href="/app/collections"
@@ -37,6 +40,18 @@ export function AuthenticatedShell({
                 href="/app/review"
               >
                 Review
+              </Link>
+              <Link
+                className="text-sm text-neutral-600 dark:text-neutral-300"
+                href="/app/insights"
+              >
+                Insights
+              </Link>
+              <Link
+                className="text-sm text-neutral-600 dark:text-neutral-300"
+                href="/app/history"
+              >
+                History
               </Link>
             </nav>
           </div>
