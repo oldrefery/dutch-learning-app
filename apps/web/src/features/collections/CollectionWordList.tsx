@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { filterCollectionWords } from './collection-detail'
 import type { CollectionWordListItem } from './collection-detail'
@@ -25,8 +26,10 @@ const WordStatus = ({ word }: { word: CollectionWordListItem }) => {
 }
 
 export function CollectionWordList({
+  collectionId,
   words,
 }: {
+  collectionId: string
   words: CollectionWordListItem[]
 }) {
   const [searchQuery, setSearchQuery] = useState('')
@@ -76,7 +79,12 @@ export function CollectionWordList({
             >
               <div className="min-w-0">
                 <h3 className="truncate text-lg font-semibold">
-                  {[word.article, word.dutchLemma].filter(Boolean).join(' ')}
+                  <Link
+                    className="rounded-sm outline-none hover:underline focus-visible:ring-2 focus-visible:ring-neutral-500"
+                    href={`/app/collections/${collectionId}/words/${word.id}`}
+                  >
+                    {[word.article, word.dutchLemma].filter(Boolean).join(' ')}
+                  </Link>
                 </h3>
                 <p className="mt-1 truncate text-sm text-neutral-600 dark:text-neutral-400">
                   {word.translation}
@@ -86,7 +94,15 @@ export function CollectionWordList({
                   {word.intervalDays}d · {word.repetitionCount} repetitions
                 </p>
               </div>
-              <WordStatus word={word} />
+              <div className="flex shrink-0 flex-col items-end gap-3">
+                <WordStatus word={word} />
+                <Link
+                  className="text-xs font-medium text-neutral-600 hover:underline dark:text-neutral-400"
+                  href={`/app/collections/${collectionId}/words/${word.id}`}
+                >
+                  View details
+                </Link>
+              </div>
             </article>
           ))}
         </div>

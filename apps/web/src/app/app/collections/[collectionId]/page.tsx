@@ -67,7 +67,10 @@ export default async function CollectionDetailPage({
             </h2>
           </div>
         </div>
-        <CollectionWordList words={collection.words} />
+        <CollectionWordList
+          collectionId={collection.id}
+          words={collection.words}
+        />
       </div>
 
       <div className="mt-10 border-t border-neutral-200 pt-8 dark:border-neutral-800">

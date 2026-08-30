@@ -1,6 +1,6 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** In progress — Phase 1 complete; Phase 2 auth foundation deployed to preview
+**Status:** In progress — Phase 3 collection and word management
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -31,6 +31,12 @@ Completed locally:
 - added email/password signup and login, Google and Apple web OAuth initiation, confirmation and OAuth callbacks, password recovery, password update, and logout;
 - added a neutral responsive authentication UI and protected application shell that can be replaced after design handoff;
 - added regression coverage for safe post-auth redirects.
+- added the collection dashboard with aggregate word, mastered, due, and new-word statistics;
+- added collection creation, detail, search, rename, and soft-delete-compatible collection removal flows;
+- added an owned-word detail route with translations, grammar, conjugation, examples, usage guidance, related words, analysis notes, learning progress, image, and pronunciation playback;
+- added ownership-scoped word move, mobile-compatible SRS reset, and tombstone delete actions against the shared Supabase records;
+- added unit coverage for collection logic, word JSON normalization, media URL validation, and reset/delete mutation helpers;
+- verified the Phase 3 slice with the full Jest suite, web lint and type checking, a production Next.js build, and a read-only Chrome smoke test.
 
 Completed remotely:
 
