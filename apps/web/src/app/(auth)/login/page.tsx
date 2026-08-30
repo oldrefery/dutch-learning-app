@@ -28,6 +28,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           Password updated. Sign in with your new password.
         </p>
       )}
+      {params.message === 'oauth-start-failed' && (
+        <p className="mt-5 text-sm text-red-600 dark:text-red-400" role="alert">
+          Could not start social sign-in. Please try again.
+        </p>
+      )}
       <AuthForm action={login} mode="login" nextPath={nextPath} />
       <div className="mt-5 flex justify-between gap-4 text-sm">
         <Link className="underline underline-offset-4" href="/forgot-password">

@@ -1,6 +1,6 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** Phase 8 in progress — Production deployment ready; domain pending
+**Status:** Phase 8 in progress — Production domain active; auth validation pending
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -71,8 +71,8 @@ Completed locally:
   without deploying to Production or changing domain and DNS settings.
 - completed a read-only Supabase provider audit: Google and Apple are enabled,
   have configured Client IDs, and show the expected Supabase OAuth callback;
-  provider secrets remained masked and functional OAuth validation is still a
-  release gate.
+  provider secrets remained masked; Google OAuth is now validated in
+  Production, while Apple OAuth remains a release gate.
 - completed a read-only domain audit: `woordenaar.app` is registered and
   DNS-managed by Vercel with correct Vercel nameservers and apex/wildcard ALIAS
   records, but it is not attached to `woordenaar-web` and the project has no
@@ -80,6 +80,14 @@ Completed locally:
 - deployed release commit `2f7bf66` to Vercel Production successfully; the
   deployment is `READY`, all 21 routes built, and Vercel assigned
   `https://woordenaar-web.vercel.app` while leaving `woordenaar.app` unattached.
+- attached `woordenaar.app` to `woordenaar-web`; Vercel verified ownership,
+  project assignment, DNS, and TLS with no conflicts or manual DNS changes, and
+  the Production login now starts Google OAuth with the intended custom-domain
+  callback.
+- completed Google Cloud OAuth Branding and production Google sign-in; added
+  `https://woordenaar.app/**` to the shared Supabase Redirect URLs so callbacks
+  carrying a safe `next` query parameter no longer fall back to the mobile
+  `dutchlearning:` Site URL, while keeping all mobile deep links unchanged.
 
 Completed remotely:
 
@@ -622,8 +630,8 @@ Status: in progress. The local release baseline, first Vercel preview, and
 authenticated non-destructive preview smoke validation are complete. Production
 environment variables are configured and a `READY` Production deployment now
 uses them. Mutation and cross-client validation, OAuth validation, domain
-attachment, monitoring, and final public-domain verification remain externally
-gated.
+monitoring, and final public-domain verification remain externally gated. The
+custom domain is attached and reports valid DNS/TLS configuration.
 
 Deliverables:
 

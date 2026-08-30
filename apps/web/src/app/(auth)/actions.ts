@@ -1,6 +1,5 @@
 'use server'
 
-import type { Provider } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getSafeNextPath } from '@/lib/auth/navigation'
@@ -166,33 +165,6 @@ export async function updatePassword(
 
   await supabase.auth.signOut({ scope: 'local' })
   redirect('/login?message=password-updated')
-}
-
-export async function signInWithOAuth(
-  _state: AuthFormState,
-  formData: FormData
-): Promise<AuthFormState> {
-  const providerValue = getFormValue(formData, 'provider')
-  if (providerValue !== 'google' && providerValue !== 'apple') {
-    return { status: 'error', message: 'Unsupported sign-in provider.' }
-  }
-
-  const provider: Provider = providerValue
-  const next = getSafeNextPath(formData.get('next'))
-  const origin = getSiteOrigin()
-  const supabase = await createClient()
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: {
-      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
-    },
-  })
-
-  if (error || !data.url) {
-    return { status: 'error', message: 'Could not start social sign-in.' }
-  }
-
-  redirect(data.url)
 }
 
 export async function logout() {

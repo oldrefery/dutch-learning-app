@@ -1,7 +1,7 @@
 # De Woordenaar Web Production Release Runbook
 
 **Date:** 2026-08-30  
-**Status:** Production deployment ready; custom domain not attached
+**Status:** Production domain active; Google authentication validated
 **Production origin:** `https://woordenaar.app`  
 **Vercel project:** `woordenaar-web`  
 **Supabase project:** `Dutch Learning App` (`josxavjbcjbcjgulwcyy`)
@@ -12,11 +12,11 @@
 **Preview deployment ID:** `dpl_D6nSYuBopmkvMZgGd6g5YfbtT75g`
 
 **Current production deployment:**
-`https://woordenaar-dap4bjiga-rustems-projects.vercel.app`
+`https://woordenaar-vot5geoa9-rustems-projects.vercel.app`
 
 **Production alias:** `https://woordenaar-web.vercel.app`
 
-**Production deployment ID:** `dpl_7S7q2GYsGiTiZLdCxbc8Eio1kwWZ`
+**Production deployment ID:** `dpl_ELvAr7MEWnMDFRR4RYbX9iW6fEFE`
 
 ## 1. Release scope
 
@@ -90,14 +90,16 @@ Current allow-list audit result:
 - `http://localhost:3000/**` is present;
 - `https://*-rustems-projects.vercel.app/**` is present and covers the current
   preview;
+- `https://woordenaar.app/**` is present and covers production callbacks with
+  query parameters such as the safe post-auth `next` path;
 - `https://woordenaar.app/auth/callback` is present;
 - `https://woordenaar.app/auth/confirm` is present.
 
-Before production promotion, verify signup confirmation, password recovery,
-Google OAuth, and Apple OAuth separately. Do not delete mobile URLs from this
-shared allow list. A future cleanup may replace the team-wide Vercel wildcard
-with a narrower project pattern only after confirming that no active preview
-flow depends on it.
+Continue release validation with signup confirmation, password recovery, and
+Apple OAuth. Google OAuth is validated on the production domain. Do not delete
+mobile URLs from this shared allow list. A future cleanup may replace the
+team-wide Vercel wildcard with a narrower project pattern only after confirming
+that no active preview flow depends on it.
 
 ## 5. OAuth providers
 
@@ -107,7 +109,14 @@ flow depends on it.
   `https://josxavjbcjbcjgulwcyy.supabase.co/auth/v1/callback`.
 - Current Supabase audit: the provider is enabled, Client IDs are configured,
   and the displayed callback matches the project callback above.
-- Verify the Google OAuth consent screen and production status.
+- Google Cloud Branding is complete for `woordenaar.app`; the application
+  remains in Testing with the intended test users.
+- Production Google OAuth was validated with an existing test account and
+  returned successfully to web Collections.
+- If the browser console reports an attempted navigation to
+  `dutchlearning:?code=...`, Supabase rejected the requested web `redirectTo`
+  and fell back to the shared mobile Site URL. Verify that
+  `https://woordenaar.app/**` remains in the Redirect URLs allow list.
 - Test both a new account and an existing linked account from
   `https://woordenaar.app/login`.
 
@@ -160,11 +169,12 @@ Current domain audit result:
   and uses the intended Vercel nameservers;
 - the apex and wildcard DNS records already resolve through Vercel-managed
   ALIAS records;
-- `woordenaar.app` is not yet attached to `woordenaar-web`;
+- `woordenaar.app` is attached to `woordenaar-web` as a Production domain and
+  Vercel reports `Valid Configuration`;
 - the project has a `READY` Production deployment and the standard
   `woordenaar-web.vercel.app` production alias;
-- no DNS record, project-domain assignment, or production alias changed during
-  this audit.
+- the existing Vercel-managed DNS required no manual record changes;
+- TLS covers `woordenaar.app` and `*.woordenaar.app` with automatic renewal.
 
 Production deployment result on 2026-08-30:
 
@@ -172,9 +182,21 @@ Production deployment result on 2026-08-30:
 - target: Production;
 - Next.js 16.3.3 production build completed successfully;
 - TypeScript checking completed successfully;
-- all 21 application routes were generated;
+- all 22 application routes were generated;
 - Vercel assigned the standard `woordenaar-web.vercel.app` alias;
-- `woordenaar.app` remained unattached and no DNS record changed.
+- `woordenaar.app` was attached after deployment verification without changing
+  the existing Vercel-managed DNS records.
+
+Custom-domain activation result on 2026-08-30:
+
+- Vercel domain verification returned `configured-correctly` with no issues or
+  conflicts;
+- ownership and project assignment are verified for `woordenaar-web`;
+- the Production login page loads at `https://woordenaar.app/login`;
+- Google OAuth starts with `https://woordenaar.app/auth/callback` as the
+  application return URL;
+- Google account sign-in completes on the production domain and returns to
+  Collections; Apple account sign-in remains a functional smoke check.
 
 Preview smoke result on 2026-08-30:
 
