@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
+import { useWebSettings } from '@/features/settings/useWebSettings'
 import { ReviewCard } from './ReviewCard'
 import { ReviewSetup } from './ReviewSetup'
 import { useReviewSession } from './useReviewSession'
@@ -14,6 +15,7 @@ interface ReviewWorkspaceProps {
   data: ReviewWorkspaceData
   initialCollectionId: string | null
   initialScope: ReviewScope
+  userId: string
 }
 
 const Completion = ({
@@ -73,8 +75,13 @@ export function ReviewWorkspace({
   data,
   initialCollectionId,
   initialScope,
+  userId,
 }: ReviewWorkspaceProps) {
   const session = useReviewSession(data, initialScope, initialCollectionId)
+  const { isHydrated, settings, update } = useWebSettings(userId)
+  const appliedPreferencesRef = useRef(false)
+  const setSessionCollectionId = session.setCollectionId
+  const setSessionMode = session.setMode
 
   const playPronunciation = useCallback(() => {
     const word = session.currentWord
@@ -95,6 +102,52 @@ export function ReviewWorkspace({
 
     speakWithBrowser()
   }, [session.currentWord])
+
+  useEffect(() => {
+    if (!isHydrated || appliedPreferencesRef.current) return
+    appliedPreferencesRef.current = true
+
+    const preferredMode =
+      settings.adaptiveReviewEnabled ||
+      settings.lastSelectedReviewMode !== 'adaptive'
+        ? settings.lastSelectedReviewMode
+        : 'meaning-recall'
+    setSessionMode(preferredMode)
+
+    if (
+      !initialCollectionId &&
+      settings.lastSelectedCollectionId &&
+      data.collections.some(
+        collection => collection.id === settings.lastSelectedCollectionId
+      )
+    ) {
+      setSessionCollectionId(settings.lastSelectedCollectionId)
+    }
+  }, [
+    data.collections,
+    initialCollectionId,
+    isHydrated,
+    setSessionCollectionId,
+    setSessionMode,
+    settings,
+  ])
+
+  useEffect(() => {
+    if (
+      !settings.autoPlayPronunciation ||
+      session.stage !== 'review' ||
+      !session.currentWord
+    ) {
+      return
+    }
+
+    playPronunciation()
+  }, [
+    playPronunciation,
+    session.currentWord,
+    session.stage,
+    settings.autoPlayPronunciation,
+  ])
 
   useEffect(() => {
     if (session.stage !== 'review') return
@@ -141,13 +194,20 @@ export function ReviewWorkspace({
   if (session.stage === 'setup') {
     return (
       <ReviewSetup
+        adaptiveReviewEnabled={settings.adaptiveReviewEnabled}
         collectionId={session.collectionId}
         collections={data.collections}
         dueCount={session.dueCount}
         emptyMessage={session.emptyMessage}
         mode={session.mode}
-        onCollectionChange={session.setCollectionId}
-        onModeChange={session.setMode}
+        onCollectionChange={value => {
+          session.setCollectionId(value)
+          update({ lastSelectedCollectionId: value })
+        }}
+        onModeChange={value => {
+          session.setMode(value)
+          update({ lastSelectedReviewMode: value })
+        }}
         onScopeChange={value => {
           session.setScope(value)
           if (value === 'collection-due' && !session.collectionId) {

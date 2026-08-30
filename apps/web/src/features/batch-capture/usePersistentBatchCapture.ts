@@ -17,6 +17,18 @@ const listeners = new Set<() => void>()
 let browserState: WebBatchCaptureState | null = null
 let browserScopeKey = ''
 
+export const clearPersistentBatchCapture = (): void => {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.removeItem(STORAGE_KEY)
+  } catch {
+    return
+  }
+  browserState = null
+  browserScopeKey = ''
+  listeners.forEach(listener => listener())
+}
+
 interface PersistentBatchCaptureOptions {
   collectionIds: string[]
   defaultCollectionId: string

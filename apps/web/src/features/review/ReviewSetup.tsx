@@ -29,6 +29,7 @@ const MODE_OPTIONS: readonly {
 ]
 
 interface ReviewSetupProps {
+  adaptiveReviewEnabled: boolean
   collectionId: string | null
   collections: ReviewCollection[]
   dueCount: number
@@ -42,6 +43,7 @@ interface ReviewSetupProps {
 }
 
 export function ReviewSetup({
+  adaptiveReviewEnabled,
   collectionId,
   collections,
   dueCount,
@@ -75,8 +77,9 @@ export function ReviewSetup({
             className={`rounded-2xl border p-5 text-left transition ${
               mode === option.value
                 ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-950'
-                : 'border-neutral-200 bg-white hover:border-neutral-400 dark:border-neutral-800 dark:bg-neutral-900'
+                : 'border-neutral-200 bg-white hover:border-neutral-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900'
             }`}
+            disabled={option.value === 'adaptive' && !adaptiveReviewEnabled}
             key={option.value}
             onClick={() => onModeChange(option.value)}
             type="button"

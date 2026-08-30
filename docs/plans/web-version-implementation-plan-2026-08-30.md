@@ -1,6 +1,6 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** Phase 6 in progress — Insights and History complete
+**Status:** Phase 6 complete — production release preparation is next
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -54,6 +54,11 @@ Completed locally:
 - moved review forecasts, difficulty, mastery, interval, and easiness algorithms into `@woordenaar/domain` while preserving mobile imports;
 - added responsive web Insights with browser-local forecast dates, accessible chart labels, difficult-word detail links, and difficult-due review entry;
 - added web History with user-scoped browser-local AI analysis history and the latest immutable Supabase `review_events`, including interval/easiness transitions and word links.
+- completed Phase 6 Settings with shared Supabase account identity, user-scoped browser learning preferences, system/light/dark appearance, honest connectivity and storage status, deployment metadata, and legal links;
+- applied the saved default review mode and collection to web review setup, respected the adaptive-review preference, and added optional pronunciation autoplay after explicit review-session start;
+- added permanent account deletion through the existing authenticated `delete-account` Edge Function, guarded by current-email entry, exact `DELETE` confirmation, and an explicit irreversible-action checkbox;
+- verified Settings in an authenticated ordinary Chrome session in resolved dark mode and at a 390 px viewport, with no horizontal overflow and without submitting the destructive action;
+- completed the implementation-level accessibility review for Settings controls, labels, disclosure behavior, focusable native inputs, theme contrast states, and narrow-layout behavior. Full keyboard-only and screen-reader end-to-end coverage remains a Phase 8 release gate.
 
 Completed remotely:
 
@@ -565,18 +570,18 @@ Deliverables:
 
 ### Phase 6 — insights, settings, and operational parity
 
-Status: in progress. Insights and History are complete; Settings and
-operational parity are next.
+Status: complete locally. Production environment validation remains part of
+Phase 8.
 
 Deliverables:
 
 - insights — complete;
 - history — complete;
-- settings;
-- account deletion;
-- sync and connectivity state;
-- build/update information;
-- accessibility review.
+- settings — complete;
+- account deletion — complete;
+- connectivity and storage state — complete for the online-first web client;
+- build/deployment information — complete;
+- implementation-level accessibility review — complete; production assistive-technology validation remains a release gate.
 
 ### Phase 7 — offline and PWA, if required
 

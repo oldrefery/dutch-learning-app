@@ -676,7 +676,8 @@ Organize settings into clear sections.
 - email;
 - access level;
 - logout;
-- delete account.
+- user ID as secondary diagnostic information;
+- delete-account disclosure separated visually from ordinary settings.
 
 ### Learning preferences
 
@@ -686,6 +687,9 @@ Organize settings into clear sections.
 - default/last collection;
 - learning guide.
 
+These preferences are scoped to the signed-in user and stored in the current
+browser. Do not imply that browser preferences synchronize to the mobile app.
+
 ### Appearance
 
 - system, light, or dark theme.
@@ -693,26 +697,47 @@ Organize settings into clear sections.
 ### Data and synchronization
 
 - online/offline status;
-- last successful synchronization;
-- pending change count;
-- synchronization error;
-- manual sync action if offline support is enabled.
+- cloud storage destination: Supabase;
+- clear statement that web writes are direct while the browser is online;
+- clear `Offline queue: Not enabled` state in the initial online-first release;
+- no fake last-sync time, pending count, or manual-sync action before the PWA phase implements those capabilities.
 
 ### Application
 
 - web version;
-- build/commit identifier;
+- local/preview/production environment;
+- framework version;
+- Vercel branch, commit identifier, and deployment host when available;
 - legal links;
 - privacy policy;
-- credits.
+- terms and license agreement.
 
 ### Delete account
 
-Use a destructive confirmation flow that clearly states that collections, words, progress, and review history will be permanently deleted.
+Keep the destructive controls collapsed until the user chooses `Begin account
+deletion`. The expanded confirmation must clearly state that collections,
+words, progress, and review history will be permanently deleted and require all
+three confirmations:
+
+- the current account email;
+- the exact phrase `DELETE`;
+- an explicit checkbox acknowledging permanent deletion.
+
+Provide a neutral `Cancel` action. Never present deletion as a single-click
+action, and never visually group the final destructive button with sign-out.
 
 ## 23. Connectivity and synchronization UX
 
-Design unobtrusive global indicators for:
+The initial web release is online-first and writes directly to Supabase. Design
+an unobtrusive Settings status for:
+
+- browser online;
+- browser offline;
+- cloud storage destination;
+- offline queue not enabled.
+
+Do not imply that cached data can be edited offline in the initial release. If
+Phase 7 PWA support is approved, extend the design with:
 
 - online and synchronized;
 - offline and working from cached data;

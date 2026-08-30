@@ -139,3 +139,14 @@ export const getAnalysisHistorySnapshot = (userId: string) =>
   readHistory(userId)
 
 export const getAnalysisHistoryServerSnapshot = () => EMPTY_HISTORY
+
+export const clearAnalysisHistory = (userId: string): void => {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.removeItem(getStorageKey(userId))
+  } catch {
+    return
+  }
+  snapshots.delete(userId)
+  emitChange(userId)
+}

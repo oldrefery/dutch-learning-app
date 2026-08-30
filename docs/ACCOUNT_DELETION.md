@@ -15,14 +15,16 @@ These actions are permanent and cannot be undone.
 
 You can request the permanent deletion of your entire De Woordenaar account and all associated data in two ways.
 
-### Method 1: In-App Deletion (Recommended)
+### Method 1: In-App or Web Deletion (Recommended)
 
-The easiest and fastest way to delete your account is directly from within the app:
+The easiest and fastest way to delete your account is directly from the mobile
+app or the authenticated web application:
 
 1.  Open De Woordenaar and log in to your account.
 2.  Go to the "Settings" page.
-3.  Tap on the "Delete Account" button.
-4.  Follow the on-screen prompts to confirm the deletion. Your account and all your data (words, collections, progress) will be permanently deleted immediately.
+3.  Choose "Delete Account" in the mobile app or "Begin account deletion" on the web.
+4.  Follow the on-screen prompts. The web flow requires your current account email, the exact phrase `DELETE`, and an explicit permanent-deletion checkbox.
+5.  Submit the final destructive action. Your account and all associated data, including words, collections, progress, and review history, will be permanently deleted immediately.
 
 ### Method 2: Deletion via Email
 

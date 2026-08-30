@@ -31,6 +31,7 @@ export default async function ReviewPage({
       data={data}
       initialCollectionId={initialCollectionId}
       initialScope={getInitialScope(getQueryValue(query.scope))}
+      userId={auth.userId}
     />
   )
 }

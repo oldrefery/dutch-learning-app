@@ -53,6 +53,12 @@ export function AuthenticatedShell({
               >
                 History
               </Link>
+              <Link
+                className="text-sm text-neutral-600 dark:text-neutral-300"
+                href="/app/settings"
+              >
+                Settings
+              </Link>
             </nav>
           </div>
           <div className="ml-auto flex min-w-0 items-center gap-3">
