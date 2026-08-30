@@ -1,6 +1,6 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** Phase 8 in progress — preview deployed, validation pending
+**Status:** Phase 8 in progress — preview read-only smoke validation passed
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -61,6 +61,11 @@ Completed locally:
 - completed the implementation-level accessibility review for Settings controls, labels, disclosure behavior, focusable native inputs, theme contrast states, and narrow-layout behavior. Full keyboard-only and screen-reader end-to-end coverage remains a Phase 8 release gate.
 - started Phase 8 with CI coverage for the web build and shared workspace types, global production security headers, explicit private-route indexing policy, a root-only sitemap, trusted auth redirect origins, and a production release/rollback runbook.
 - created a `READY` Vercel preview at `https://woordenaar-a16jox07y-rustems-projects.vercel.app`, reduced the CLI upload from 1.6 GB of local/native artifacts to 2.1 MB through `.vercelignore`, and verified that the existing Supabase Auth allow list already covers localhost, Vercel previews, production callbacks, and mobile deep links without changing shared mobile Site URL behavior.
+- completed an authenticated, non-destructive Chrome smoke test of Collections,
+  collection and word details, Review, Audio Review, Insights, History,
+  Settings, Starter Pack, and Batch Capture; verified current-user identity in
+  the shared header, theme switching, cancellable account-deletion disclosure,
+  390 px layout without horizontal overflow, and an empty browser error log.
 
 Completed remotely:
 
@@ -599,9 +604,10 @@ Deliverables:
 
 ### Phase 8 — production release
 
-Status: in progress. The local release baseline and first Vercel preview are
-complete. Preview smoke validation, production environment, OAuth validation,
-domain attachment, monitoring, and promotion remain externally gated.
+Status: in progress. The local release baseline, first Vercel preview, and
+authenticated non-destructive preview smoke validation are complete. Mutation
+and cross-client validation, production environment, OAuth validation, domain
+attachment, monitoring, and promotion remain externally gated.
 
 Deliverables:
 

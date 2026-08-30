@@ -1,7 +1,7 @@
 # De Woordenaar Web Production Release Runbook
 
 **Date:** 2026-08-30  
-**Status:** Preview deployed; validation pending
+**Status:** Preview deployed; read-only authenticated smoke validation passed
 **Production origin:** `https://woordenaar.app`  
 **Vercel project:** `woordenaar-web`  
 **Supabase project:** `Dutch Learning App` (`josxavjbcjbcjgulwcyy`)
@@ -131,6 +131,26 @@ Current Git integration audit result:
 - project Root Directory: `apps/web`;
 - framework preset: Next.js;
 - the preview deployment completed with state `READY` and no production target.
+
+Preview smoke result on 2026-08-30:
+
+- email/password authentication reached the protected application successfully;
+- the authenticated header showed the current email and access level on every
+  checked page;
+- Collections, collection detail, word detail, Review, Audio Review, Insights,
+  History, Settings, Starter Pack, and Batch Capture loaded against the shared
+  Supabase backend;
+- Review started and displayed a due card without submitting an answer or
+  changing SRS state;
+- dark theme applied correctly and the preference was returned to System;
+- account-deletion confirmation opened and was cancelled without submitting;
+- all checked routes fit a 390 px viewport without horizontal overflow;
+- no browser console warnings or errors were captured during the checked flow.
+
+This was intentionally a non-destructive smoke test. Data mutations,
+cross-client synchronization, OAuth providers, password recovery, keyboard and
+screen-reader coverage, response credential inspection, and production-domain
+behavior remain release gates.
 
 ## 7. Required smoke tests
 
