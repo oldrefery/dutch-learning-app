@@ -9,11 +9,15 @@ export default async function AppLayout({
   children: React.ReactNode
 }) {
   const auth = await requireAuthContext()
+  const currentUserLabel =
+    auth.email?.trim() || `User ${auth.userId.slice(0, 8)}`
+  const accessLevelLabel =
+    auth.accessLevel === 'full_access' ? 'Full access' : 'Read only'
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
       <header className="border-b border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-6">
             <Link className="font-semibold" href="/app/collections">
               {PRODUCT_NAME}
@@ -33,10 +37,21 @@ export default async function AppLayout({
               </Link>
             </nav>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden text-xs text-neutral-500 sm:inline">
-              {auth.accessLevel === 'full_access' ? 'Full access' : 'Read only'}
-            </span>
+          <div className="ml-auto flex min-w-0 items-center gap-3">
+            <div
+              aria-label={`Current user: ${currentUserLabel}. ${accessLevelLabel}`}
+              className="min-w-0 text-right"
+            >
+              <p className="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+                Signed in as · {accessLevelLabel}
+              </p>
+              <p
+                className="max-w-60 truncate text-sm font-medium text-neutral-900 dark:text-neutral-100 sm:max-w-64"
+                title={currentUserLabel}
+              >
+                {currentUserLabel}
+              </p>
+            </div>
             <form action={logout}>
               <button
                 className="rounded-lg border border-neutral-300 px-3 py-2 text-sm dark:border-neutral-700"
