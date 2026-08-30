@@ -1,6 +1,6 @@
 # De Woordenaar Web Version Implementation Plan
 
-**Status:** In progress — Phase 1 local foundation complete
+**Status:** In progress — Phase 1 complete; Phase 2 auth foundation deployed to preview
 **Date:** 2026-08-30  
 **Production domain:** `https://woordenaar.app`  
 **Mobile application:** Expo / React Native  
@@ -25,21 +25,32 @@ Completed locally:
 - configured npm workspaces without moving the Expo application;
 - created the Next.js 16 App Router application in `apps/web`;
 - established `@woordenaar/domain` and `@woordenaar/supabase-contracts` package boundaries;
-- verified the web workspace with ESLint, TypeScript, and a production Webpack build.
+- verified the web workspace with ESLint, TypeScript, and a production Webpack build;
+- added typed Supabase browser/server clients and SSR cookie refresh through Next.js 16 `proxy.ts`;
+- added protected `/app` routing with server-side user verification and fail-closed access-level handling;
+- added email/password signup and login, Google and Apple web OAuth initiation, confirmation and OAuth callbacks, password recovery, password update, and logout;
+- added a neutral responsive authentication UI and protected application shell that can be replaced after design handoff;
+- added regression coverage for safe post-auth redirects.
 
 Completed remotely:
 
 - applied migrations `20260830100000`, `20260830101000`, and `20260830102000` to the linked production project;
 - deployed `gemini-handler` version 129 and `get-multiple-images` version 34;
-- regenerated `packages/supabase-contracts/src/database.generated.ts` from the deployed schema with the UUID cache RPC and quota contract included.
+- regenerated `packages/supabase-contracts/src/database.generated.ts` from the deployed schema with the UUID cache RPC and quota contract included;
+- created the Vercel project `woordenaar-web` with Root Directory `apps/web`, Next.js framework detection, and a web-safe install command;
+- deployed and verified the Phase 1 foundation preview;
+- deployed the Phase 2 auth foundation preview at `https://woordenaar-iwsmqjp7f-rustems-projects.vercel.app`.
 
 Pending before the generated contract types the legacy mobile client directly:
 
 - add explicit database-to-domain mappers before typing the legacy mobile Supabase client, because deployed database rows contain nullable fields while the mobile domain models intentionally expose normalized non-null values.
 
-Pending external Phase 1 deliverable:
+Pending external Phase 2 configuration:
 
-- create and verify a Vercel preview project with Root Directory `apps/web`; production domain attachment remains deferred until the application is release-ready.
+- add Supabase Auth redirect allow-list entries for localhost, Vercel preview URLs, and the exact production callback URL;
+- configure Google and Apple web OAuth credentials; Apple requires a Service ID and verified web domain;
+- connect the Vercel project to GitHub after explicit repository-access approval so pushes create previews automatically;
+- attach `woordenaar.app` only during Phase 8 release preparation.
 
 ## 1. Executive decision
 
@@ -425,6 +436,15 @@ Implement:
 ## 11. Vercel and domain configuration
 
 Create one Vercel project whose Root Directory is `apps/web`.
+
+Current preview project:
+
+- project: `rustems-projects/woordenaar-web`;
+- Root Directory: `apps/web`;
+- framework: Next.js;
+- install command: `npm install --ignore-scripts` so the root Expo `patch-package` lifecycle does not run in the web build;
+- current auth preview: `https://woordenaar-iwsmqjp7f-rustems-projects.vercel.app`;
+- Git integration: intentionally pending explicit approval.
 
 Production configuration:
 

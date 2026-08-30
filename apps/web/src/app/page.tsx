@@ -1,5 +1,6 @@
 import { PRODUCT_NAME, PRODUCTION_ORIGIN } from '@woordenaar/domain'
 import { REQUIRED_PUBLIC_TABLES } from '@/lib/backend-contract'
+import Link from 'next/link'
 
 export default function Home() {
   return (
@@ -16,6 +17,20 @@ export default function Home() {
           the approved design while sharing the existing Supabase backend and
           framework-independent contracts.
         </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            className="rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white dark:bg-white dark:text-neutral-950"
+            href="/login"
+          >
+            Sign in
+          </Link>
+          <Link
+            className="rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-medium dark:border-neutral-700"
+            href="/signup"
+          >
+            Create account
+          </Link>
+        </div>
       </div>
 
       <section
