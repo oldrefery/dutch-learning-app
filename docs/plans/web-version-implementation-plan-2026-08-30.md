@@ -66,6 +66,17 @@ Completed locally:
   Settings, Starter Pack, and Batch Capture; verified current-user identity in
   the shared header, theme switching, cancellable account-deletion disclosure,
   390 px layout without horizontal overflow, and an empty browser error log.
+- configured the Vercel Production environment with the shared Supabase public
+  URL and publishable key plus `NEXT_PUBLIC_SITE_URL=https://woordenaar.app`,
+  without deploying to Production or changing domain and DNS settings.
+- completed a read-only Supabase provider audit: Google and Apple are enabled,
+  have configured Client IDs, and show the expected Supabase OAuth callback;
+  provider secrets remained masked and functional OAuth validation is still a
+  release gate.
+- completed a read-only domain audit: `woordenaar.app` is registered and
+  DNS-managed by Vercel with correct Vercel nameservers and apex/wildcard ALIAS
+  records, but it is not attached to `woordenaar-web` and the project has no
+  Production deployment yet.
 
 Completed remotely:
 
@@ -606,8 +617,9 @@ Deliverables:
 
 Status: in progress. The local release baseline, first Vercel preview, and
 authenticated non-destructive preview smoke validation are complete. Mutation
-and cross-client validation, production environment, OAuth validation, domain
-attachment, monitoring, and promotion remain externally gated.
+and cross-client validation, OAuth validation, domain attachment, monitoring,
+and promotion remain externally gated. Production environment variables are
+configured but have not been activated by a production deployment.
 
 Deliverables:
 

@@ -56,9 +56,15 @@ Current audit result:
 
 - Preview has both required Supabase public variables.
 - Preview intentionally has no `NEXT_PUBLIC_SITE_URL`.
-- Production environment variables are not configured yet.
+- Production has `NEXT_PUBLIC_SUPABASE_URL`,
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and
+  `NEXT_PUBLIC_SITE_URL=https://woordenaar.app`, all scoped only to Production
+  and stored as Config values.
 - Vercel project ownership is `rustems-projects` and the authenticated CLI user
   is `oldrefery`.
+
+The Production values were configured without creating or promoting a
+production deployment. No domain or DNS setting changed during this step.
 
 Never add a Supabase service-role key, provider client secret, Sentry auth
 token, or other server administration credential to a `NEXT_PUBLIC_*`
@@ -92,6 +98,8 @@ flow depends on it.
 
 - Keep the provider callback at the Supabase callback URL:
   `https://josxavjbcjbcjgulwcyy.supabase.co/auth/v1/callback`.
+- Current Supabase audit: the provider is enabled, Client IDs are configured,
+  and the displayed callback matches the project callback above.
 - Verify the Google OAuth consent screen and production status.
 - Test both a new account and an existing linked account from
   `https://woordenaar.app/login`.
@@ -101,7 +109,14 @@ flow depends on it.
 - Use a web Service ID associated with the app's Apple developer team.
 - Register `woordenaar.app` as a verified web domain.
 - Use the same Supabase provider callback URL as the Apple return URL.
+- Current Supabase audit: the provider is enabled, Client IDs are configured,
+  and the displayed callback matches the project callback above.
 - Verify private-email relay behavior and an existing Apple-linked account.
+
+The dashboard keeps saved provider secrets masked. They were not revealed or
+changed during this audit. Google consent-screen state, Apple Service ID domain
+verification, Apple secret expiry, and end-to-end provider redirects therefore
+remain functional release checks.
 
 Provider secrets belong in Supabase provider configuration, never in the web
 repository or browser environment.
@@ -131,6 +146,18 @@ Current Git integration audit result:
 - project Root Directory: `apps/web`;
 - framework preset: Next.js;
 - the preview deployment completed with state `READY` and no production target.
+
+Current domain audit result:
+
+- `woordenaar.app` is owned by `rustems-projects`, registered through Vercel,
+  and uses the intended Vercel nameservers;
+- the apex and wildcard DNS records already resolve through Vercel-managed
+  ALIAS records;
+- `woordenaar.app` is not yet attached to `woordenaar-web`;
+- the project currently shows only `woordenaar-web.vercel.app` and has no
+  Production deployment;
+- no DNS record, project-domain assignment, or production alias changed during
+  this audit.
 
 Preview smoke result on 2026-08-30:
 
