@@ -584,6 +584,26 @@ export type Database = {
         Args: { cache_ttl_hours: number; created_at: string }
         Returns: boolean
       }
+      record_review_assessment: {
+        Args: {
+          p_answered_correctly: boolean | null
+          p_assessment: string
+          p_event_id: string
+          p_response_time_ms: number | null
+          p_review_date: string
+          p_review_mode: string
+          p_reviewed_at: string
+          p_word_id: string
+        }
+        Returns: {
+          easiness_factor: number
+          interval_days: number
+          last_reviewed_at: string
+          next_review_date: string
+          repetition_count: number
+          word_id: string
+        }[]
+      }
       sync_user_access_levels: {
         Args: never
         Returns: {

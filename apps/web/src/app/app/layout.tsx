@@ -18,12 +18,18 @@ export default async function AppLayout({
             <Link className="font-semibold" href="/app/collections">
               {PRODUCT_NAME}
             </Link>
-            <nav aria-label="Primary navigation">
+            <nav aria-label="Primary navigation" className="flex gap-4">
               <Link
                 className="text-sm text-neutral-600 dark:text-neutral-300"
                 href="/app/collections"
               >
                 Collections
+              </Link>
+              <Link
+                className="text-sm text-neutral-600 dark:text-neutral-300"
+                href="/app/review"
+              >
+                Review
               </Link>
             </nav>
           </div>

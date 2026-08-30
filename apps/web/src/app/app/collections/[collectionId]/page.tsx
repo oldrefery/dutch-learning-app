@@ -48,14 +48,24 @@ export default async function CollectionDetailPage({
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {collection.progressPercentage}% mastered
           </p>
-          {auth.accessLevel === 'full_access' && (
-            <Link
-              className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-950"
-              href={`/app/collections/${collection.id}/words/new`}
-            >
-              Add word
-            </Link>
-          )}
+          <div className="flex flex-wrap gap-3">
+            {collection.dueWords > 0 && (
+              <Link
+                className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+                href={`/app/review?scope=collection-due&collectionId=${collection.id}`}
+              >
+                Review {collection.dueWords} due
+              </Link>
+            )}
+            {auth.accessLevel === 'full_access' && (
+              <Link
+                className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-950"
+                href={`/app/collections/${collection.id}/words/new`}
+              >
+                Add word
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
