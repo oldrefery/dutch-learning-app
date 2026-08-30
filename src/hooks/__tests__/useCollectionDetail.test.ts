@@ -55,7 +55,8 @@ describe('useCollectionDetail', () => {
   })
 
   it('starts a collection-scoped session before navigating to review', async () => {
-    const startReviewSession = jest.fn(async (config: ReviewSessionConfig) => {
+    const startReviewSession = jest.fn(async (config?: ReviewSessionConfig) => {
+      if (!config) throw new Error('Expected a review session configuration.')
       useApplicationStore.setState({
         reviewSession: createMockReviewSession({ config }),
       })

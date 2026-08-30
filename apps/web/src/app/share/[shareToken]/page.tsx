@@ -6,6 +6,7 @@ import { getSharedCollectionImportContext } from '@/features/sharing/repository'
 import { requireAuthContext } from '@/lib/auth/session'
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: 'Import shared collection',
 }
 

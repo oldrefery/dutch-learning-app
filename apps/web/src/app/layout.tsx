@@ -6,6 +6,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(PRODUCTION_ORIGIN),
+  alternates: { canonical: '/' },
   title: {
     default: PRODUCT_NAME,
     template: `%s · ${PRODUCT_NAME}`,

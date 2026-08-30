@@ -1,11 +1,11 @@
 'use server'
 
 import type { Provider } from '@supabase/supabase-js'
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getSafeNextPath } from '@/lib/auth/navigation'
 import type { AuthFormState } from '@/lib/auth/types'
+import { getSiteOrigin } from '@/lib/site-origin'
 import { createClient } from '@/lib/supabase/server'
 
 const getFormValue = (formData: FormData, name: string) => {
@@ -33,17 +33,6 @@ const validateCredentials = (
   }
 
   return Object.keys(fieldErrors).length > 0 ? fieldErrors : undefined
-}
-
-const getRequestOrigin = async () => {
-  const requestHeaders = await headers()
-  const origin = requestHeaders.get('origin')
-  if (origin) return origin
-
-  const host =
-    requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
-  const protocol = requestHeaders.get('x-forwarded-proto') ?? 'https'
-  return host ? `${protocol}://${host}` : 'https://woordenaar.app'
 }
 
 const getAuthErrorMessage = (message: string) => {
@@ -97,7 +86,7 @@ export async function signup(
   }
 
   const next = getSafeNextPath(formData.get('next'))
-  const origin = await getRequestOrigin()
+  const origin = getSiteOrigin()
   const supabase = await createClient()
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -135,7 +124,7 @@ export async function requestPasswordReset(
     }
   }
 
-  const origin = await getRequestOrigin()
+  const origin = getSiteOrigin()
   const supabase = await createClient()
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/auth/callback?next=/reset-password`,
@@ -190,7 +179,7 @@ export async function signInWithOAuth(
 
   const provider: Provider = providerValue
   const next = getSafeNextPath(formData.get('next'))
-  const origin = await getRequestOrigin()
+  const origin = getSiteOrigin()
   const supabase = await createClient()
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,

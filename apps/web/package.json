@@ -8,7 +8,7 @@
     "build:turbopack": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@supabase/ssr": "0.9.0",
