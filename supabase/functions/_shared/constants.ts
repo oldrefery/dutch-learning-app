@@ -60,6 +60,12 @@ export const API_CONFIG = {
   EDGE_FUNCTION_TIMEOUT_MS: 30000,
 } as const
 
+export const EDGE_QUOTA_CONFIG = {
+  WINDOW_SECONDS: 60,
+  GEMINI_ANALYSIS_LIMIT: 10,
+  IMAGE_SEARCH_LIMIT: 30,
+} as const
+
 // ===========================
 // SEARCH CONFIGURATION
 // ===========================

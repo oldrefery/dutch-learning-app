@@ -12,6 +12,8 @@ module.exports = defineConfig([
       'android/*',
       'supabase/functions/*',
       '.tools/*',
+      'apps/web/**',
+      'packages/**',
     ],
   },
   {

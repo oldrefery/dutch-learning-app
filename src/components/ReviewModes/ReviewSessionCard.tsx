@@ -45,8 +45,8 @@ interface ReviewSessionCardProps {
   onFlip: () => void
   onOpenDetails: () => void
   onDelete: () => void
-  onReanalyze: () => void
-  onChangeImage: () => void
+  onReanalyze?: () => void
+  onChangeImage?: () => void
 }
 
 interface ReviewPromptProps {
@@ -223,7 +223,7 @@ export function ReviewSessionCard({
                   actions={{
                     ...WordCardPresets.review.actions,
                     onDelete,
-                    showReanalyzeButton: true,
+                    showReanalyzeButton: Boolean(onReanalyze),
                     onReanalyze,
                     isReanalyzing,
                   }}

@@ -56,6 +56,11 @@ const showReanalysisError = (error: unknown) => {
   ToastService.show(message, ToastType.ERROR)
 }
 
+const getAvailableAiAction = <Action,>(
+  canUseAiFeatures: boolean,
+  action: Action
+): Action | undefined => (canUseAiFeatures ? action : undefined)
+
 interface ReviewModePresentation {
   effectiveMode: ReviewMode
   preferredTranslation: string | null
@@ -189,6 +194,8 @@ export default function ReviewScreen() {
   const [refreshing, setRefreshing] = useState(false)
   const pronunciationRef = useRef<View>(null)
   const tapGestureRef = useRef<GestureType | undefined>(undefined)
+  const userAccessLevel = useApplicationStore(state => state.userAccessLevel)
+  const canUseAiFeatures = userAccessLevel === 'full_access'
 
   const {
     // State
@@ -231,6 +238,18 @@ export default function ReviewScreen() {
     handleReanalyzeSelectedWord,
     handleReanalyzeCurrentWord,
   } = useReviewWordDetails(currentWord)
+  const reanalyzeCurrentWord = getAvailableAiAction(
+    canUseAiFeatures,
+    handleReanalyzeCurrentWord
+  )
+  const reanalyzeSelectedWord = getAvailableAiAction(
+    canUseAiFeatures,
+    handleReanalyzeSelectedWord
+  )
+  const changeWordImage = getAvailableAiAction(
+    canUseAiFeatures,
+    openImageSelector
+  )
 
   const lastSelectedReviewMode = useSettingsStore(
     state => state.lastSelectedReviewMode
@@ -608,8 +627,8 @@ export default function ReviewScreen() {
             onFlip={handleFlipCard}
             onOpenDetails={handleOpenDetails}
             onDelete={handleDeleteWord}
-            onReanalyze={handleReanalyzeCurrentWord}
-            onChangeImage={openImageSelector}
+            onReanalyze={reanalyzeCurrentWord}
+            onChangeImage={changeWordImage}
           />
         )}
       </ViewThemed>
@@ -653,7 +672,7 @@ export default function ReviewScreen() {
         />
       </View>
 
-      {currentWord && (
+      {currentWord && canUseAiFeatures && (
         <ImageSelector
           visible={showImageSelector}
           onClose={closeImageSelector}
@@ -669,9 +688,9 @@ export default function ReviewScreen() {
         visible={modalVisible}
         onClose={handleCloseDetails}
         word={selectedWord}
-        onChangeImage={openImageSelector}
+        onChangeImage={changeWordImage}
         onDeleteWord={handleDeleteWord}
-        onReanalyzeWord={handleReanalyzeSelectedWord}
+        onReanalyzeWord={reanalyzeSelectedWord}
         isReanalyzing={isReanalyzing}
       />
     </ViewThemed>

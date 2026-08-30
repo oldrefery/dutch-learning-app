@@ -167,15 +167,21 @@ export async function getCachedVariants(
  */
 async function updateCacheUsage(cacheId: string): Promise<void> {
   try {
-    await supabase
-      .from('word_analysis_cache')
-      .update({
-        usage_count: supabase.rpc('increment_usage'),
-        last_used_at: new Date().toISOString(),
+    const { error } = await supabase.rpc('increment_cache_usage', {
+      p_cache_id: cacheId,
+    })
+
+    if (error) {
+      console.warn('Failed to update cache usage:', {
+        cacheId,
+        error: error instanceof Error ? error.message : 'Unknown error',
       })
-      .eq('cache_id', cacheId)
+    }
   } catch (error) {
-    // Silent fail
+    console.warn('Failed to update cache usage:', {
+      cacheId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
   }
 }
 

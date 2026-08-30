@@ -11,6 +11,9 @@ import {
   normalizeUsageNotes,
 } from './geminiUtils.ts'
 import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
+import { authorizeFullAccessRequest } from '../_shared/authorizeFullAccess.ts'
+import { EDGE_QUOTA_CONFIG } from '../_shared/constants.ts'
+import { consumeRequestQuotaWithServiceRole } from '../_shared/requestQuota.ts'
 import {
   getCachedAnalysis,
   getCachedVariants,
@@ -24,10 +27,42 @@ Deno.serve(async (req: Request) => {
     return new Response('ok', { headers: CORS_HEADERS })
   }
 
+  const authorization = await authorizeFullAccessRequest(req)
+  if (!authorization.ok) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: authorization.message,
+        code: authorization.code,
+      }),
+      {
+        status: authorization.status,
+        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+      }
+    )
+  }
+
   let requestBody: { word?: unknown; forceRefresh?: unknown } | null = null
 
   try {
-    requestBody = await req.json()
+    const parsedBody: unknown = await req.json()
+    if (typeof parsedBody !== 'object' || parsedBody === null) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Request body must be a JSON object.',
+        }),
+        {
+          status: 400,
+          headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    requestBody = parsedBody as {
+      word?: unknown
+      forceRefresh?: unknown
+    }
     const { word } = requestBody
     const forceRefresh = requestBody.forceRefresh === true
 
@@ -149,6 +184,31 @@ Deno.serve(async (req: Request) => {
     }
 
     // Cache miss or force refresh - call Gemini API
+    const quota = await consumeRequestQuotaWithServiceRole(
+      authorization.userId,
+      'gemini-analysis',
+      EDGE_QUOTA_CONFIG.GEMINI_ANALYSIS_LIMIT,
+      EDGE_QUOTA_CONFIG.WINDOW_SECONDS
+    )
+    if (!quota.ok) {
+      const headers: Record<string, string> = {
+        ...CORS_HEADERS,
+        'Content-Type': 'application/json',
+      }
+      if (quota.retryAfterSeconds) {
+        headers['Retry-After'] = String(quota.retryAfterSeconds)
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: quota.message,
+          code: quota.code,
+        }),
+        { status: quota.status, headers }
+      )
+    }
+
     const prompt = formatWordAnalysisPrompt(word)
     const geminiResponse = await callGeminiAPI(prompt)
     const analysis = parseGeminiResponse(geminiResponse)

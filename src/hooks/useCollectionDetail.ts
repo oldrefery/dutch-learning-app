@@ -4,7 +4,9 @@ import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
+import { REVIEW_SCOPE } from '@/constants/ReviewConstants'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 import type { Word, Collection } from '@/types/database'
 import { Sentry } from '@/lib/sentry'
 import { calculateCollectionStats } from '@/utils/collectionStats'
@@ -22,6 +24,7 @@ export function useCollectionDetail(collectionId: string) {
   const [isReanalyzing, setIsReanalyzing] = useState(false)
 
   const {
+    userAccessLevel,
     words,
     collections,
     fetchCollections,
@@ -33,7 +36,11 @@ export function useCollectionDetail(collectionId: string) {
     getCollectionShareStatus,
     unshareCollection,
     reanalyzeWord,
+    startReviewSession,
   } = useApplicationStore()
+  const lastSelectedReviewMode = useSettingsStore(
+    state => state.lastSelectedReviewMode
+  )
 
   const { refreshCount } = useReviewWordsCount()
 
@@ -75,7 +82,7 @@ export function useCollectionDetail(collectionId: string) {
     setSelectedWord(null)
   }
 
-  const handleStartReview = () => {
+  const handleStartReview = async () => {
     if (stats.wordsForReview === 0) {
       ToastService.show(
         'No words are due for review in this collection',
@@ -83,7 +90,26 @@ export function useCollectionDetail(collectionId: string) {
       )
       return
     }
-    router.push(ROUTES.TABS.REVIEW)
+
+    await startReviewSession({
+      mode: lastSelectedReviewMode,
+      scope: REVIEW_SCOPE.COLLECTION_DUE,
+      collectionId,
+    })
+
+    const session = useApplicationStore.getState().reviewSession
+    if (
+      session?.config.scope === REVIEW_SCOPE.COLLECTION_DUE &&
+      session.config.collectionId === collectionId
+    ) {
+      router.push(ROUTES.TABS.REVIEW)
+      return
+    }
+
+    ToastService.show(
+      'Unable to start review for this collection',
+      ToastType.ERROR
+    )
   }
 
   const handleDeleteWord = async (wordId: string) => {
@@ -305,6 +331,7 @@ export function useCollectionDetail(collectionId: string) {
     collections,
     words,
     isReanalyzing,
+    userAccessLevel,
 
     // Actions
     handleRefresh,
