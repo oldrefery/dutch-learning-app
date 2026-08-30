@@ -95,8 +95,8 @@ Current allow-list audit result:
 - `https://woordenaar.app/auth/callback` is present;
 - `https://woordenaar.app/auth/confirm` is present.
 
-Continue release validation with signup confirmation, password recovery, and
-Apple OAuth. Google OAuth is validated on the production domain. Do not delete
+Continue release validation with signup behavior. Google and Apple OAuth and
+web password recovery are validated on the production domain. Do not delete
 mobile URLs from this shared allow list. A future cleanup may replace the
 team-wide Vercel wildcard with a narrower project pattern only after confirming
 that no active preview flow depends on it.
@@ -122,20 +122,47 @@ that no active preview flow depends on it.
 
 ### Apple
 
-- Use a web Service ID associated with the app's Apple developer team.
-- Register `woordenaar.app` as a verified web domain.
-- Use the same Supabase provider callback URL as the Apple return URL.
-- Current Supabase audit: the provider is enabled, Client IDs are configured,
-  and the displayed callback matches the project callback above.
-- Verify private-email relay behavior and an existing Apple-linked account.
+- Web Service ID: `com.oldrefery.dutch-learning-app.auth`.
+- Primary native App ID: `7FQ395U52U.com.oldrefery.dutch-learning-app`.
+- The Services ID Web Authentication configuration contains domain
+  `josxavjbcjbcjgulwcyy.supabase.co` and return URL
+  `https://josxavjbcjbcjgulwcyy.supabase.co/auth/v1/callback`.
+- Supabase Client IDs are ordered with the web Services ID first and the native
+  bundle ID second:
+  `com.oldrefery.dutch-learning-app.auth,com.oldrefery.dutch-learning-app`.
+- The Apple OAuth secret was rotated on 2026-08-30 with key ID `GF98F24WVA`;
+  it expires on 2027-03-01 at 10:39:17 UTC. Rotate it before expiry.
+- Production Apple OAuth was validated end to end and returned successfully to
+  web Collections.
 
-The dashboard keeps saved provider secrets masked. They were not revealed or
-changed during this audit. Google consent-screen state, Apple Service ID domain
-verification, Apple secret expiry, and end-to-end provider redirects therefore
-remain functional release checks.
+Provider secrets remain masked in Supabase and must never be copied into the
+repository, browser environment, documentation, or logs.
 
-Provider secrets belong in Supabase provider configuration, never in the web
-repository or browser environment.
+### Email authentication
+
+- Email/password authentication is enabled.
+- `Confirm email` is currently disabled, so a successful signup receives a
+  session immediately instead of waiting for an email confirmation.
+- Both the mobile and web clients already handle the no-session confirmation
+  response and have platform-appropriate callback routes.
+- Custom SMTP is not configured. Supabase reports that the built-in email
+  service is rate-limited and not intended for production applications.
+- The reset-password template uses `{{ .ConfirmationURL }}` and therefore
+  preserves the explicit platform-specific `redirectTo` supplied by mobile or
+  web.
+- Production web password recovery was validated through the real
+  `/forgot-password` form in Chrome: the SSR client created the PKCE verifier,
+  the email callback exchanged the code successfully, and the browser opened
+  `/reset-password`. Password submission succeeded, the recovery session was
+  signed out locally, and signing in with the new password returned the test
+  account to Collections.
+- Do not validate web recovery by calling `resetPasswordForEmail` from a
+  standalone client. That bypasses the web SSR cookie context and can produce
+  an implicit-flow URL fragment that the server callback cannot read. Start the
+  flow from the production web form and open the email in the same browser.
+- Do not enable mandatory email confirmation for public signup until custom
+  SMTP, sender-domain authentication, delivery monitoring, and both mobile and
+  web confirmation callbacks are validated.
 
 ## 6. Domain and deployment gate
 
@@ -195,8 +222,8 @@ Custom-domain activation result on 2026-08-30:
 - the Production login page loads at `https://woordenaar.app/login`;
 - Google OAuth starts with `https://woordenaar.app/auth/callback` as the
   application return URL;
-- Google account sign-in completes on the production domain and returns to
-  Collections; Apple account sign-in remains a functional smoke check.
+- Google and Apple account sign-in complete on the production domain and return
+  to Collections.
 
 Preview smoke result on 2026-08-30:
 
@@ -214,9 +241,10 @@ Preview smoke result on 2026-08-30:
 - no browser console warnings or errors were captured during the checked flow.
 
 This was intentionally a non-destructive smoke test. Data mutations,
-cross-client synchronization, OAuth providers, password recovery, keyboard and
-screen-reader coverage, response credential inspection, and production-domain
-behavior remain release gates.
+cross-client synchronization, keyboard and screen-reader coverage, and response
+credential inspection remain release gates. Production Google and Apple OAuth,
+custom-domain behavior, and the complete web password-recovery flow have since
+been validated.
 
 ## 7. Required smoke tests
 

@@ -71,8 +71,8 @@ Completed locally:
   without deploying to Production or changing domain and DNS settings.
 - completed a read-only Supabase provider audit: Google and Apple are enabled,
   have configured Client IDs, and show the expected Supabase OAuth callback;
-  provider secrets remained masked; Google OAuth is now validated in
-  Production, while Apple OAuth remains a release gate.
+  provider secrets remained masked; Google and Apple OAuth are now validated in
+  Production.
 - completed a read-only domain audit: `woordenaar.app` is registered and
   DNS-managed by Vercel with correct Vercel nameservers and apex/wildcard ALIAS
   records, but it is not attached to `woordenaar-web` and the project has no
@@ -88,6 +88,17 @@ Completed locally:
   `https://woordenaar.app/**` to the shared Supabase Redirect URLs so callbacks
   carrying a safe `next` query parameter no longer fall back to the mobile
   `dutchlearning:` Site URL, while keeping all mobile deep links unchanged.
+- configured Apple Services ID `com.oldrefery.dutch-learning-app.auth` with the
+  Supabase project domain and callback, ordered the web and native Client IDs
+  correctly in Supabase, rotated the Apple OAuth secret through 2027-03-01, and
+  completed production Apple sign-in back to Collections.
+- audited production email authentication: mandatory confirmation and custom
+  SMTP are disabled, the built-in Supabase sender is not production-ready, and
+  the existing reset template correctly uses the provider-generated
+  confirmation URL; validated the production web PKCE recovery flow from the
+  real `/forgot-password` form through password submission, local recovery
+  session invalidation, and successful sign-in with the new password back to
+  Collections. Custom SMTP and delivery monitoring remain release gates.
 
 Completed remotely:
 
@@ -629,9 +640,10 @@ Deliverables:
 Status: in progress. The local release baseline, first Vercel preview, and
 authenticated non-destructive preview smoke validation are complete. Production
 environment variables are configured and a `READY` Production deployment now
-uses them. Mutation and cross-client validation, OAuth validation, domain
-monitoring, and final public-domain verification remain externally gated. The
-custom domain is attached and reports valid DNS/TLS configuration.
+uses them. Google and Apple OAuth and the custom production domain are
+validated. Mutation and cross-client validation, domain monitoring, and the
+remaining release checks remain externally gated. The custom domain is
+attached and reports valid DNS/TLS configuration.
 
 Deliverables:
 
