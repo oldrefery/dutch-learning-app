@@ -1,5 +1,6 @@
 'use server'
 
+import * as Sentry from '@sentry/nextjs'
 import { revalidatePath } from 'next/cache'
 import { requireAuthContext } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
@@ -50,6 +51,24 @@ export async function submitReviewAssessment(
   const update = data?.[0]
 
   if (error || !update) {
+    const persistenceError = new Error(
+      error?.message ?? 'record_review_assessment returned no update'
+    )
+    persistenceError.name = 'ReviewPersistenceError'
+
+    Sentry.captureException(persistenceError, {
+      tags: {
+        operation: 'record_review_assessment',
+        review_assessment: input.assessment,
+        review_mode: input.reviewMode,
+        supabase_error_code: error?.code ?? 'missing_result',
+      },
+      extra: {
+        supabase_details: error?.details ?? null,
+        supabase_hint: error?.hint ?? null,
+      },
+    })
+
     return {
       status: 'error',
       message: 'Could not save this review. Please try again.',
