@@ -1,11 +1,16 @@
 'use client'
 
+import { useReportError } from '@/lib/observability/useReportError'
+
 export default function SharedCollectionError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useReportError(error)
+
   return (
     <section className="mx-auto max-w-xl rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950/40">
       <h1 className="text-2xl font-semibold tracking-tight">

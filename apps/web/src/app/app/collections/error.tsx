@@ -1,6 +1,16 @@
 'use client'
 
-export default function CollectionsError({ reset }: { reset: () => void }) {
+import { useReportError } from '@/lib/observability/useReportError'
+
+export default function CollectionsError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  useReportError(error)
+
   return (
     <section className="rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950">
       <h1 className="text-lg font-semibold">Collections are unavailable</h1>

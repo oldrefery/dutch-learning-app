@@ -1,6 +1,16 @@
 'use client'
 
-export default function InsightsError({ reset }: { reset: () => void }) {
+import { useReportError } from '@/lib/observability/useReportError'
+
+export default function InsightsError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  useReportError(error)
+
   return (
     <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 dark:border-rose-900 dark:bg-rose-950">
       <h1 className="text-lg font-semibold">Insights could not be loaded</h1>

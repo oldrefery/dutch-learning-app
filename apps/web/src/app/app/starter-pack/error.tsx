@@ -1,6 +1,16 @@
 'use client'
 
-export default function StarterPackError({ reset }: { reset: () => void }) {
+import { useReportError } from '@/lib/observability/useReportError'
+
+export default function StarterPackError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  useReportError(error)
+
   return (
     <section className="rounded-2xl border border-red-200 bg-red-50 p-6 dark:border-red-900 dark:bg-red-950/40">
       <h1 className="text-xl font-semibold">Could not load starter pack</h1>
