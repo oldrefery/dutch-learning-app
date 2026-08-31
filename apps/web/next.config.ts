@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs'
 import type { NextConfig } from 'next'
 
 const SECURITY_HEADERS = [
@@ -37,4 +38,18 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  org: process.env.SENTRY_ORG ?? 'oldrefery',
+  project: process.env.SENTRY_PROJECT ?? 'dutch-learning-app-web',
+  silent: !process.env.CI,
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+  useRunAfterProductionCompileHook: true,
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
+})
