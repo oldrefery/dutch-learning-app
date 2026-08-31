@@ -60,10 +60,12 @@ export default function CollectionDetailScreen() {
     handleDeleteFromContextMenu,
     handleReanalyzeSelectedWord,
     isReanalyzing,
+    userAccessLevel,
   } = useCollectionDetail(id!)
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()
+  const canUseAiFeatures = userAccessLevel === 'full_access'
 
   const handleQuickAddWord = () => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
@@ -137,58 +139,61 @@ export default function CollectionDetailScreen() {
           topInset={headerHeight}
         />
 
-        {/* Floating Action Button */}
-        <TouchableOpacity
-          style={[
-            styles.fab,
-            {
-              shadowColor:
-                colorScheme === 'dark'
-                  ? Colors.primary.darkMode
-                  : Colors.primary.DEFAULT,
-            },
-          ]}
-          onPress={handleQuickAddWord}
-          activeOpacity={0.8}
-        >
-          <PlatformBlurView
-            style={styles.fabBlur}
-            intensity={90}
-            tint={colorScheme === 'dark' ? 'dark' : 'light'}
-            blurMethod={'dimezisBlurView'}
+        {canUseAiFeatures && (
+          <TouchableOpacity
+            style={[
+              styles.fab,
+              {
+                shadowColor:
+                  colorScheme === 'dark'
+                    ? Colors.primary.darkMode
+                    : Colors.primary.DEFAULT,
+              },
+            ]}
+            onPress={handleQuickAddWord}
+            activeOpacity={0.8}
           >
-            <ViewThemed
-              style={[
-                styles.fabInner,
-                {
-                  backgroundColor:
-                    colorScheme === 'dark'
-                      ? Colors.primary.darkMode
-                      : Colors.primary.DEFAULT,
-                },
-              ]}
+            <PlatformBlurView
+              style={styles.fabBlur}
+              intensity={90}
+              tint={colorScheme === 'dark' ? 'dark' : 'light'}
+              blurMethod={'dimezisBlurView'}
             >
-              <Ionicons
-                name="add"
-                size={28}
-                color={Colors.background.primary}
-              />
-            </ViewThemed>
-          </PlatformBlurView>
-        </TouchableOpacity>
+              <ViewThemed
+                style={[
+                  styles.fabInner,
+                  {
+                    backgroundColor:
+                      colorScheme === 'dark'
+                        ? Colors.primary.darkMode
+                        : Colors.primary.DEFAULT,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name="add"
+                  size={28}
+                  color={Colors.background.primary}
+                />
+              </ViewThemed>
+            </PlatformBlurView>
+          </TouchableOpacity>
+        )}
       </ViewThemed>
 
       <WordDetailModal
         visible={modalVisible}
         onClose={handleCloseModal}
         word={selectedWord}
-        onChangeImage={openImageSelector}
+        onChangeImage={canUseAiFeatures ? openImageSelector : undefined}
         onDeleteWord={handleDeleteSelectedWord}
-        onReanalyzeWord={handleReanalyzeSelectedWord}
+        onReanalyzeWord={
+          canUseAiFeatures ? handleReanalyzeSelectedWord : undefined
+        }
         isReanalyzing={isReanalyzing}
       />
 
-      {selectedWord && (
+      {selectedWord && canUseAiFeatures && (
         <ImageSelector
           visible={showImageSelector}
           onClose={closeImageSelector}

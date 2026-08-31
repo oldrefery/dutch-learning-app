@@ -6,6 +6,8 @@ import { ReviewSessionCard } from '../ReviewSessionCard'
 
 type ReactNativeModule = typeof import('react-native')
 const mockReactNativeModuleName = 'react-native'
+const mockImageTestId = 'mock-image'
+const mockReanalyzeTestId = 'mock-reanalyze'
 
 jest.mock('react-native-gesture-handler', () => ({
   Gesture: {
@@ -51,7 +53,11 @@ jest.mock('@/components/UniversalWordCard', () => ({
     onPlayPronunciation,
     onChangeImage,
   }: {
-    actions: { onDelete?: () => void; onReanalyze?: () => void }
+    actions: {
+      onDelete?: () => void
+      onReanalyze?: () => void
+      showReanalyzeButton?: boolean
+    }
     onPlayPronunciation?: (url: string) => void
     onChangeImage?: () => void
   }) => {
@@ -65,18 +71,22 @@ jest.mock('@/components/UniversalWordCard', () => ({
         testID: 'mock-audio',
         onPress: () => onPlayPronunciation?.('audio'),
       }),
-      mockReact.createElement(MockPressable, {
-        testID: 'mock-image',
-        onPress: onChangeImage,
-      }),
+      onChangeImage
+        ? mockReact.createElement(MockPressable, {
+            testID: mockImageTestId,
+            onPress: onChangeImage,
+          })
+        : null,
       mockReact.createElement(MockPressable, {
         testID: 'mock-delete',
         onPress: actions.onDelete,
       }),
-      mockReact.createElement(MockPressable, {
-        testID: 'mock-reanalyze',
-        onPress: actions.onReanalyze,
-      })
+      actions.showReanalyzeButton && actions.onReanalyze
+        ? mockReact.createElement(MockPressable, {
+            testID: mockReanalyzeTestId,
+            onPress: actions.onReanalyze,
+          })
+        : null
     )
   },
 }))
@@ -114,14 +124,43 @@ describe('ReviewSessionCard revealed actions', () => {
 
     fireEvent.press(getByTestId('review-details-button'))
     fireEvent.press(getByTestId('mock-audio'))
-    fireEvent.press(getByTestId('mock-image'))
+    fireEvent.press(getByTestId(mockImageTestId))
     fireEvent.press(getByTestId('mock-delete'))
-    fireEvent.press(getByTestId('mock-reanalyze'))
+    fireEvent.press(getByTestId(mockReanalyzeTestId))
 
     expect(callbacks.onOpenDetails).toHaveBeenCalledTimes(1)
     expect(callbacks.onPlayAudio).toHaveBeenCalledWith('audio')
     expect(callbacks.onChangeImage).toHaveBeenCalledTimes(1)
     expect(callbacks.onDelete).toHaveBeenCalledTimes(1)
     expect(callbacks.onReanalyze).toHaveBeenCalledTimes(1)
+  })
+
+  it('omits cost-bearing actions when callbacks are unavailable', () => {
+    const { queryByTestId } = render(
+      <ReviewSessionCard
+        word={createMockWord({ word_id: 'read-only-word' })}
+        configuredMode={REVIEW_MODE.MEANING_RECALL}
+        effectiveMode={REVIEW_MODE.MEANING_RECALL}
+        preferredTranslation="house"
+        recognitionOptions={null}
+        selectedRecognitionOption={null}
+        isFlipped
+        isPlayingAudio={false}
+        isReanalyzing={false}
+        tapGesture={{} as never}
+        panGesture={{} as never}
+        lockedGesture={{} as never}
+        tapGestureRef={{ current: undefined }}
+        pronunciationRef={{ current: null }}
+        onPlayAudio={jest.fn()}
+        onSelectRecognitionOption={jest.fn()}
+        onFlip={jest.fn()}
+        onOpenDetails={jest.fn()}
+        onDelete={jest.fn()}
+      />
+    )
+
+    expect(queryByTestId(mockImageTestId)).toBeNull()
+    expect(queryByTestId(mockReanalyzeTestId)).toBeNull()
   })
 })

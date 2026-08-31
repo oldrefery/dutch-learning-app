@@ -1,0 +1,367 @@
+# De Woordenaar Web Production Release Runbook
+
+**Date:** 2026-08-30  
+**Status:** Production domain active; authentication and read-only smoke validated
+**Production origin:** `https://woordenaar.app`  
+**Vercel project:** `woordenaar-web`  
+**Supabase project:** `Dutch Learning App` (`josxavjbcjbcjgulwcyy`)
+
+**Current preview:**
+`https://woordenaar-a16jox07y-rustems-projects.vercel.app`
+
+**Preview deployment ID:** `dpl_D6nSYuBopmkvMZgGd6g5YfbtT75g`
+
+**Current production deployment:**
+`https://woordenaar-vot5geoa9-rustems-projects.vercel.app`
+
+**Production alias:** `https://woordenaar-web.vercel.app`
+
+**Production deployment ID:** `dpl_ELvAr7MEWnMDFRR4RYbX9iW6fEFE`
+
+## 1. Release scope
+
+Release the existing online-first Next.js application against the shared
+Supabase backend. Offline queues, service workers, installable PWA behavior,
+and web Sentry instrumentation are not part of this release unless separately
+approved.
+
+The visual redesign remains a separate design-handoff task. Do not describe the
+current neutral interface as final brand design.
+
+## 2. Local baseline completed
+
+- Next.js production build is part of repository CI.
+- Mobile, shared-domain, Supabase-contract, and web TypeScript checks are part
+  of CI.
+- Global response headers prevent MIME sniffing and framing, restrict unused
+  browser permissions, reduce referrer leakage, and enable HTTPS transport
+  persistence.
+- The Next.js implementation header is disabled.
+- Protected application, authentication, and shared-token pages are `noindex`.
+- `robots.txt` disallows private routes and references a root-only sitemap.
+- Authentication callback origins come from configured deployment state, not
+  user-controlled request headers.
+- `.vercelignore` excludes local Next.js, native, dependency, coverage, and
+  release artifacts from CLI deployment uploads.
+
+Content Security Policy is intentionally deferred. The current application has
+an inline pre-hydration theme script and several required remote services; add
+CSP only with a nonce-based design and a verified Supabase, image, and
+observability allow list.
+
+## 3. Vercel environment
+
+Configure these values for the `woordenaar-web` project:
+
+| Variable                               | Production                 | Preview                                          | Development             |
+| -------------------------------------- | -------------------------- | ------------------------------------------------ | ----------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Production project URL     | Same project until a preview backend is approved | Local `.env.local`      |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Production publishable key | Same project until a preview backend is approved | Local `.env.local`      |
+| `NEXT_PUBLIC_SITE_URL`                 | `https://woordenaar.app`   | Leave unset so `VERCEL_URL` is used              | `http://localhost:3000` |
+
+Current audit result:
+
+- Preview has both required Supabase public variables.
+- Preview intentionally has no `NEXT_PUBLIC_SITE_URL`.
+- Production has `NEXT_PUBLIC_SUPABASE_URL`,
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and
+  `NEXT_PUBLIC_SITE_URL=https://woordenaar.app`, all scoped only to Production
+  and stored as Config values.
+- Vercel project ownership is `rustems-projects` and the authenticated CLI user
+  is `oldrefery`.
+
+The Production values were configured without creating or promoting a
+production deployment. No domain or DNS setting changed during this step.
+
+Never add a Supabase service-role key, provider client secret, Sentry auth
+token, or other server administration credential to a `NEXT_PUBLIC_*`
+variable.
+
+## 4. Supabase Auth URL configuration
+
+This Supabase project is shared with the mobile app. Keep Site URL as
+`dutchlearning://`; changing it to the web origin would change fallback and
+email-template behavior for the mobile client. The web application always
+supplies an explicit trusted `redirectTo` origin.
+
+Current allow-list audit result:
+
+- `dutchlearning://**` and the existing mobile/development URLs are present;
+- `http://localhost:3000/**` is present;
+- `https://*-rustems-projects.vercel.app/**` is present and covers the current
+  preview;
+- `https://woordenaar.app/**` is present and covers production callbacks with
+  query parameters such as the safe post-auth `next` path;
+- `https://woordenaar.app/auth/callback` is present;
+- `https://woordenaar.app/auth/confirm` is present.
+
+Signup confirmation, Google and Apple OAuth, and web password recovery are
+validated on the production domain. Do not delete mobile URLs from this shared
+allow list. A future cleanup may replace the team-wide Vercel wildcard with a
+narrower project pattern only after confirming that no active preview flow
+depends on it.
+
+## 5. OAuth providers
+
+### Google
+
+- Keep the provider callback at the Supabase callback URL:
+  `https://josxavjbcjbcjgulwcyy.supabase.co/auth/v1/callback`.
+- Current Supabase audit: the provider is enabled, Client IDs are configured,
+  and the displayed callback matches the project callback above.
+- Google Cloud Branding is complete for `woordenaar.app`; the application
+  remains in Testing with the intended test users.
+- Production Google OAuth was validated with an existing test account and
+  returned successfully to web Collections.
+- If the browser console reports an attempted navigation to
+  `dutchlearning:?code=...`, Supabase rejected the requested web `redirectTo`
+  and fell back to the shared mobile Site URL. Verify that
+  `https://woordenaar.app/**` remains in the Redirect URLs allow list.
+- Test both a new account and an existing linked account from
+  `https://woordenaar.app/login`.
+
+### Apple
+
+- Web Service ID: `com.oldrefery.dutch-learning-app.auth`.
+- Primary native App ID: `7FQ395U52U.com.oldrefery.dutch-learning-app`.
+- The Services ID Web Authentication configuration contains domain
+  `josxavjbcjbcjgulwcyy.supabase.co` and return URL
+  `https://josxavjbcjbcjgulwcyy.supabase.co/auth/v1/callback`.
+- Supabase Client IDs are ordered with the web Services ID first and the native
+  bundle ID second:
+  `com.oldrefery.dutch-learning-app.auth,com.oldrefery.dutch-learning-app`.
+- The Apple OAuth secret was rotated on 2026-08-30 with key ID `GF98F24WVA`;
+  it expires on 2027-03-01 at 10:39:17 UTC. Rotate it before expiry.
+- Production Apple OAuth was validated end to end and returned successfully to
+  web Collections.
+
+Provider secrets remain masked in Supabase and must never be copied into the
+repository, browser environment, documentation, or logs.
+
+### Email authentication
+
+- Email/password authentication is enabled.
+- `Confirm email` is enabled in Production. A new email/password signup does
+  not receive a session until the user follows the confirmation link.
+- Both the mobile and web clients handle the no-session confirmation response
+  and have validated platform-appropriate callback routes.
+- Custom SMTP is configured through the Resend Free plan. The verified sending
+  domain is `auth.woordenaar.app`, with MX, SPF, DKIM, and a monitoring-only
+  DMARC policy (`p=none`) published in Vercel DNS.
+- Supabase sends as `De Woordenaar <no-reply@auth.woordenaar.app>` through
+  `smtp.resend.com:465` with the `resend` SMTP user. The Resend API key is
+  restricted to sending from `auth.woordenaar.app`, is stored only as the
+  encrypted Supabase SMTP password, and is not present in the repository or
+  documentation.
+- A recovery email initiated from the Supabase Auth user dashboard produced a
+  successful Resend SMTP request and reached final `delivered` status. The
+  dashboard-generated link used the shared mobile Site URL as expected and was
+  not opened; the production web recovery callback was validated separately
+  through the real web form.
+- The reset-password template uses `{{ .ConfirmationURL }}` and therefore
+  preserves the explicit platform-specific `redirectTo` supplied by mobile or
+  web.
+- Production web password recovery was validated through the real
+  `/forgot-password` form in Chrome: the SSR client created the PKCE verifier,
+  the email callback exchanged the code successfully, and the browser opened
+  `/reset-password`. Password submission succeeded, the recovery session was
+  signed out locally, and signing in with the new password returned the test
+  account to Collections.
+- Production web signup confirmation was validated with a disposable email
+  alias in the same Chrome session: signup returned no session and displayed
+  the confirmation message, the Resend email arrived, and the confirmation
+  callback created the session and opened web Collections.
+- Production mobile signup confirmation was validated in the iOS dev client:
+  signup returned no session and displayed the confirmation message, the
+  Resend email arrived, and its `dutchlearning://` callback reopened the app
+  with an authenticated session on the main screen. The empty collection state
+  was expected for the new account.
+- Do not validate web recovery by calling `resetPasswordForEmail` from a
+  standalone client. That bypasses the web SSR cookie context and can produce
+  an implicit-flow URL fragment that the server callback cannot read. Start the
+  flow from the production web form and open the email in the same browser.
+- Mandatory email confirmation, SMTP delivery, sender-domain authentication,
+  and both production signup callback paths are now validated. Keep mandatory
+  confirmation enabled unless a rollback is explicitly approved.
+
+## 6. Domain and deployment gate
+
+External changes require explicit release authorization:
+
+1. Confirm the GitHub integration points to the intended repository and branch.
+2. Produce a Vercel preview from the release commit.
+3. Run the preview smoke checklist below.
+4. Attach `woordenaar.app` to `woordenaar-web`.
+5. Apply the required DNS records at the domain provider.
+6. Wait for Vercel TLS issuance and verify HTTPS without certificate warnings.
+7. Reconfirm that the existing production redirect URLs remain in the Supabase
+   allow list without changing the mobile Site URL.
+8. Promote the verified deployment or deploy the approved release commit.
+
+Do not switch DNS before the preview, OAuth configuration, and rollback target
+are all verified.
+
+Current Git integration audit result:
+
+- provider: GitHub;
+- repository: `oldrefery/dutch-learning-app`;
+- Vercel production branch: `main`;
+- project Root Directory: `apps/web`;
+- framework preset: Next.js;
+- the preview deployment completed with state `READY` and no production target.
+
+Current domain audit result:
+
+- `woordenaar.app` is owned by `rustems-projects`, registered through Vercel,
+  and uses the intended Vercel nameservers;
+- the apex and wildcard DNS records already resolve through Vercel-managed
+  ALIAS records;
+- `woordenaar.app` is attached to `woordenaar-web` as a Production domain and
+  Vercel reports `Valid Configuration`;
+- the project has a `READY` Production deployment and the standard
+  `woordenaar-web.vercel.app` production alias;
+- the existing Vercel-managed DNS required no manual record changes;
+- TLS covers `woordenaar.app` and `*.woordenaar.app` with automatic renewal.
+
+Production deployment result on 2026-08-30:
+
+- release commit: `2f7bf66`;
+- target: Production;
+- Next.js 16.3.3 production build completed successfully;
+- TypeScript checking completed successfully;
+- all 22 application routes were generated;
+- Vercel assigned the standard `woordenaar-web.vercel.app` alias;
+- `woordenaar.app` was attached after deployment verification without changing
+  the existing Vercel-managed DNS records.
+
+Custom-domain activation result on 2026-08-30:
+
+- Vercel domain verification returned `configured-correctly` with no issues or
+  conflicts;
+- ownership and project assignment are verified for `woordenaar-web`;
+- the Production login page loads at `https://woordenaar.app/login`;
+- Google OAuth starts with `https://woordenaar.app/auth/callback` as the
+  application return URL;
+- Google and Apple account sign-in complete on the production domain and return
+  to Collections.
+
+Preview smoke result on 2026-08-30:
+
+- email/password authentication reached the protected application successfully;
+- the authenticated header showed the current email and access level on every
+  checked page;
+- Collections, collection detail, word detail, Review, Audio Review, Insights,
+  History, Settings, Starter Pack, and Batch Capture loaded against the shared
+  Supabase backend;
+- Review started and displayed a due card without submitting an answer or
+  changing SRS state;
+- dark theme applied correctly and the preference was returned to System;
+- account-deletion confirmation opened and was cancelled without submitting;
+- all checked routes fit a 390 px viewport without horizontal overflow;
+- no browser console warnings or errors were captured during the checked flow.
+
+This was intentionally a non-destructive smoke test. Production Google and
+Apple OAuth, custom-domain behavior, the complete web password-recovery flow,
+signup confirmation, keyboard focus navigation, response security headers,
+browser-asset credential inspection, and the first cross-client mutation flow
+have since been validated. Screen-reader coverage, production monitoring, and
+the remaining mutation scenarios remain release gates.
+
+Production read-only smoke result on 2026-08-30:
+
+- the public root, `robots.txt`, `sitemap.xml`, and login page returned HTTP
+  `200` over HTTPS;
+- HSTS, `nosniff`, frame denial, strict-origin referrer handling, and the
+  restrictive browser permissions policy were present on the checked routes;
+- `robots.txt` excludes private and authentication routes, the sitemap contains
+  only the public root, and the login page declares `noindex, nofollow`;
+- the production login JavaScript graph contained no private credential names,
+  service-role markers, Sentry auth-token markers, provider-client-secret
+  markers, Resend private-key patterns, or private-key PEM markers;
+- authenticated Collections, Review, Insights, History, and Settings loaded
+  under the disposable web test account with the expected headings and no
+  captured console warnings or errors;
+- keyboard-only `Tab` navigation reached the brand link, all primary navigation
+  links, sign-out controls, and Settings inputs with a visible browser outline
+  or explicit focus ring.
+
+Production cross-client mutation result on 2026-08-30:
+
+- the disposable shared account
+  `curysef+woordenaar-web-20260830@gmail.com` was granted `full_access` by
+  updating only its existing `user_access_levels` row; no email allow-list
+  entry was created;
+- web created collection `E2E Cross-client 2026-08-30`
+  (`54e19201-07ea-43c9-b4bd-f45fdfa7dee9`), and mobile pulled it into the
+  shared account;
+- web analyzed and saved `de fiets`
+  (`8d0ae4eb-3b22-43aa-aeac-5a35ce35e084`) through the production
+  `gemini-handler`, and mobile pulled the word with one due review;
+- mobile completed a Meaning Recall assessment with `Good`, pushed the updated
+  word state and one immutable review event, and web History displayed the
+  synced `good` outcome, `1 → 1 days` interval, unchanged `2.50` easiness, and
+  a `2.0 s` response time;
+- no test collection, word, review event, account, or access record was deleted
+  or reverted after validation;
+- the mobile offline-first synchronization layer persisted pulled collections
+  and words correctly, but the active Collections screen did not reread SQLite
+  after the background pull. A JavaScript reload showed the new data. This was
+  a mobile UI-refresh defect rather than a backend synchronization failure. A
+  local fix now rehydrates the Zustand word and collection slices after every
+  successful sync notification and has regression coverage; it still requires
+  validation in a shipped mobile build before broader production promotion.
+
+## 7. Required smoke tests
+
+Use a non-critical test account. Never submit account deletion during a general
+smoke test.
+
+- Public root, `robots.txt`, and `sitemap.xml` load over HTTPS.
+- Email/password sign-in and sign-out work.
+- Signup confirmation returns to the intended safe internal path.
+- Password recovery completes and invalidates the local session afterward.
+- Google and Apple OAuth return to the correct domain.
+- Current user identity is visible in the authenticated header.
+- Collections list/detail, add word, image selection, and reanalysis work.
+- Review writes SRS state and creates review history visible on mobile.
+- Starter pack, Batch Capture, sharing, and shared import work.
+- Insights, History, Settings, theme persistence, and build information work.
+- Account-deletion confirmation can be opened and cancelled; destructive
+  submission is tested only with a disposable account and explicit approval.
+- Light, dark, desktop, tablet, and 390 px layouts have no blocking issues.
+- Keyboard navigation reaches authentication, primary navigation, forms, and
+  review controls with visible focus.
+- Browser console has no unhandled errors and responses include the expected
+  security headers.
+- No service-role key, provider secret, or Sentry auth token appears in browser
+  assets or network responses.
+
+## 8. Monitoring and stop conditions
+
+Before public promotion, choose and configure web error monitoring. The current
+`NEXT_PUBLIC_SENTRY_DSN` placeholder does not by itself initialize Sentry in the
+Next.js application.
+
+Stop or roll back when any of the following occurs:
+
+- auth callbacks loop, leave users unauthenticated, or land on another domain;
+- RLS or access-level checks expose another user's data;
+- create, review, import, or delete mutations fail consistently;
+- Edge Function quota or authorization errors regress for normal users;
+- browser assets contain a private credential;
+- error rate materially increases after promotion;
+- DNS or TLS behavior is inconsistent across the apex domain.
+
+## 9. Rollback
+
+1. Keep the last verified Vercel deployment available before promotion.
+2. Roll back the production alias to that deployment if an application defect
+   appears.
+3. If the failure is limited to OAuth, restore the last working Supabase Site
+   URL and redirect allow list while keeping password auth available.
+4. If DNS is the cause, restore the previous provider records and wait for TTL
+   propagation.
+5. Do not roll back database migrations destructively. Forward-fix shared
+   schema or RLS problems with a reviewed migration.
+6. Record the failed deployment URL, commit SHA, observed symptoms, and rollback
+   time before resuming release work.

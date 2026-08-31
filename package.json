@@ -1,12 +1,16 @@
 {
   "name": "dutch-learning-app",
   "main": "expo-router/entry",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "web:dev": "npm run dev --workspace @woordenaar/web",
+    "web:build": "npm run build --workspace @woordenaar/web",
+    "web:lint": "npm run lint --workspace @woordenaar/web",
+    "web:typecheck": "npm run typecheck --workspace @woordenaar/web",
     "test": "jest --watch",
     "test:ci": "jest --ci --coverage --maxWorkers=2 --watchman=false",
     "test:coverage": "jest --coverage",
@@ -63,6 +67,8 @@
     "@sentry/react-native": "~7.11.0",
     "@supabase/sentry-js-integration": "^0.3.0",
     "@supabase/supabase-js": "^2.57.0",
+    "@woordenaar/content": "*",
+    "@woordenaar/domain": "*",
     "@testing-library/user-event": "^14.6.1",
     "expo": "~55.0.30",
     "expo-apple-authentication": "~55.0.17",
@@ -125,6 +131,10 @@
     "react-test-renderer": "19.2.0",
     "typescript": "~5.9.2"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "private": true,
   "overrides": {
     "@types/react": "~19.2.10",

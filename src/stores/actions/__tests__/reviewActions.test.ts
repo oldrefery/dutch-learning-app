@@ -17,6 +17,7 @@ import {
 } from '@/constants/ReviewConstants'
 import type { Collection, Word } from '@/types/database'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
+import { toLocalDateKey } from '@/utils/dateUtils'
 
 jest.mock('@/lib/sentry')
 jest.mock('@/utils/logger')
@@ -133,6 +134,10 @@ describe('reviewActions', () => {
       mockSet as unknown as StoreSetFunction,
       mockGet as unknown as StoreGetFunction
     )
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
   })
 
   describe('startReviewSession', () => {
@@ -256,13 +261,12 @@ describe('reviewActions', () => {
     })
 
     it('should filter only words due for review (next_review_date <= today)', async () => {
-      const today = new Date().toISOString().split('T')[0]
-      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split('T')[0]
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split('T')[0]
+      const referenceDate = new Date(2026, 7, 30, 12)
+      jest.useFakeTimers().setSystemTime(referenceDate)
+
+      const today = toLocalDateKey(referenceDate)
+      const yesterday = toLocalDateKey(new Date(2026, 7, 29, 12))
+      const tomorrow = toLocalDateKey(new Date(2026, 7, 31, 12))
 
       const mockWords = [
         createMockWord({

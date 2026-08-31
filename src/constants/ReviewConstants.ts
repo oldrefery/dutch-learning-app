@@ -5,6 +5,11 @@ import type {
   ReviewSessionMode,
 } from '@/types/ReviewTypes'
 
+export {
+  DIFFICULT_EASINESS_FACTOR_THRESHOLD,
+  MASTERED_MIN_REPETITIONS,
+} from '@woordenaar/domain'
+
 export const REVIEW_MODE = {
   RECOGNITION: 'recognition',
   MEANING_RECALL: 'meaning-recall',
@@ -27,15 +32,7 @@ export const DEFAULT_REVIEW_SESSION_CONFIG = {
   scope: REVIEW_SCOPE.ALL_DUE,
 } as const satisfies ReviewSessionConfig
 
-export const DIFFICULT_EASINESS_FACTOR_THRESHOLD = 2.1
-
 export const MAX_REVIEW_RESPONSE_TIME_MS = 60 * 60 * 1000
-
-/**
- * A word is mastered after three successful repetitions.
- * This matches the existing progress definition used across collection stats.
- */
-export const MASTERED_MIN_REPETITIONS = 3
 
 export const REVIEW_MODE_OPTIONS = [
   {

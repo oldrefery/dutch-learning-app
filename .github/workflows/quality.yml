@@ -22,10 +22,14 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      NEXT_PUBLIC_SITE_URL: https://woordenaar.app
+      NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -45,6 +49,15 @@ jobs:
       - name: Type-check tests
         run: npm run typecheck:test
 
+      - name: Type-check shared domain
+        run: npm run typecheck --workspace @woordenaar/domain
+
+      - name: Type-check Supabase contracts
+        run: npm run typecheck --workspace @woordenaar/supabase-contracts
+
+      - name: Type-check web application
+        run: npm run web:typecheck
+
       - name: Check formatting
         run: npm run format:check
 
@@ -57,12 +70,15 @@ jobs:
       - name: Run Edge Function tests
         run: npm run test:edge
 
+      - name: Build web application
+        run: npm run web:build
+
       - name: Run Expo Doctor
         run: npx --yes expo-doctor@latest
 
       - name: Upload coverage
         if: always()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7
         with:
           name: jest-coverage
           path: coverage/

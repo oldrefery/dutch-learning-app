@@ -74,3 +74,5 @@ builds/
 
 # Maestro debug screenshots
 debug-*.png
+.vercel/
+.env.local

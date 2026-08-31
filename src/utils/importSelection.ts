@@ -1,21 +1,8 @@
 import type { Collection, Word } from '@/types/database'
 import type { ImportableWord, WordSelectionItem } from '@/types/ImportTypes'
+import { getSemanticWordKey } from '@woordenaar/domain'
 
-const normalizeLemma = (value?: string | null): string =>
-  value && value.trim() !== '' ? value.trim().toLowerCase() : ''
-
-const normalizePartOfSpeech = (value?: string | null): string =>
-  value && value.trim() !== '' ? value.trim().toLowerCase() : 'unknown'
-
-const normalizeArticle = (value?: string | null): string =>
-  value && value.trim() !== '' ? value.trim().toLowerCase() : ''
-
-export const getSemanticWordKey = (
-  dutchLemma?: string | null,
-  partOfSpeech?: string | null,
-  article?: string | null
-): string =>
-  `${normalizeLemma(dutchLemma)}|${normalizePartOfSpeech(partOfSpeech)}|${normalizeArticle(article)}`
+export { getSemanticWordKey } from '@woordenaar/domain'
 
 export const buildImportWordSelections = (
   words: ImportableWord[],

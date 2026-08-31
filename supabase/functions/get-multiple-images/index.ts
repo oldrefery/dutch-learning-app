@@ -1,10 +1,13 @@
 import {
+  EDGE_QUOTA_CONFIG,
   IMAGE_CONFIG,
   SEARCH_CONFIG,
   createPicsumUrl,
   getPreferredUnsplashUrl,
   generateImageHash,
 } from '../_shared/constants.ts'
+import { authorizeFullAccessRequest } from '../_shared/authorizeFullAccess.ts'
+import { consumeRequestQuotaWithServiceRole } from '../_shared/requestQuota.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -316,6 +319,21 @@ Deno.serve(async (req: Request) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  const authorization = await authorizeFullAccessRequest(req)
+  if (!authorization.ok) {
+    return new Response(
+      JSON.stringify({
+        error: authorization.message,
+        code: authorization.code,
+        images: [],
+      }),
+      {
+        status: authorization.status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
+
   try {
     const {
       englishTranslation,
@@ -334,6 +352,31 @@ Deno.serve(async (req: Request) => {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
+      )
+    }
+
+    const quota = await consumeRequestQuotaWithServiceRole(
+      authorization.userId,
+      'image-search',
+      EDGE_QUOTA_CONFIG.IMAGE_SEARCH_LIMIT,
+      EDGE_QUOTA_CONFIG.WINDOW_SECONDS
+    )
+    if (!quota.ok) {
+      const headers: Record<string, string> = {
+        ...corsHeaders,
+        'Content-Type': 'application/json',
+      }
+      if (quota.retryAfterSeconds) {
+        headers['Retry-After'] = String(quota.retryAfterSeconds)
+      }
+
+      return new Response(
+        JSON.stringify({
+          error: quota.message,
+          code: quota.code,
+          images: [],
+        }),
+        { status: quota.status, headers }
       )
     }
 
