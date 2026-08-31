@@ -1,4 +1,8 @@
-import { DIFFICULT_EASINESS_FACTOR_THRESHOLD } from '@woordenaar/domain'
+import {
+  DIFFICULT_EASINESS_FACTOR_THRESHOLD,
+  isDueOnLocalDate,
+  toLocalDateKey,
+} from '@woordenaar/domain'
 import type { Json } from '@woordenaar/supabase-contracts'
 import type {
   AdaptiveReviewModeDecision,
@@ -47,23 +51,13 @@ const stableHash = (value: string) => {
   return hash >>> 0
 }
 
-const getLocalDate = (date: Date) => {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
 export const isReviewMode = (value: string): value is ReviewMode =>
   MODE_SEQUENCE.includes(value as ReviewMode)
 
 export const isReviewAssessment = (value: string): value is ReviewAssessment =>
   ['again', 'hard', 'good', 'easy'].includes(value)
 
-export const isDueOnLocalDate = (value: string, date = new Date()) => {
-  const datePart = value.slice(0, 10)
-  return /^\d{4}-\d{2}-\d{2}$/.test(datePart) && datePart <= getLocalDate(date)
-}
+export { isDueOnLocalDate }
 
 export const selectReviewWords = (
   words: readonly ReviewWord[],
@@ -219,4 +213,4 @@ export const groupAdaptiveDecisions = (
   )
 }
 
-export const getLocalReviewDate = () => getLocalDate(new Date())
+export const getLocalReviewDate = () => toLocalDateKey(new Date())

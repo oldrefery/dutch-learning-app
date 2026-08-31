@@ -1,8 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import type { Database } from '@woordenaar/supabase-contracts'
 import { requireAuthContext } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
+import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import type { StarterPackImportState } from './form-state'
 import {
   buildStarterPackImportPayload,
@@ -11,6 +13,11 @@ import {
   NEW_STARTER_PACK_COLLECTION_ID,
   selectStarterPackEntries,
 } from './starter-pack-domain'
+
+type ExistingWordRow = Pick<
+  Database['public']['Tables']['words']['Row'],
+  'article' | 'dutch_lemma' | 'part_of_speech'
+>
 
 const getSelectedEntryIds = (formData: FormData): string[] =>
   formData
@@ -41,11 +48,16 @@ export async function importStarterPack(
   }
 
   const supabase = await createClient()
-  const { data: existingWords, error: existingWordsError } = await supabase
-    .from('words')
-    .select('article, dutch_lemma, part_of_speech')
-    .eq('user_id', auth.userId)
-    .is('deleted_at', null)
+  const { data: existingWords, error: existingWordsError } =
+    await fetchAllRows<ExistingWordRow>((from, to) =>
+      supabase
+        .from('words')
+        .select('article, dutch_lemma, part_of_speech')
+        .eq('user_id', auth.userId)
+        .is('deleted_at', null)
+        .order('word_id')
+        .range(from, to)
+    )
 
   if (existingWordsError) {
     return {

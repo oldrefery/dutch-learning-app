@@ -2,6 +2,7 @@ import 'server-only'
 
 import type { Database } from '@woordenaar/supabase-contracts'
 import { createClient } from '@/lib/supabase/server'
+import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import type { InsightCollection, InsightsData, InsightWord } from './types'
 
 type CollectionRow = Pick<
@@ -39,14 +40,18 @@ export async function getInsightsData(userId: string): Promise<InsightsData> {
       .select('collection_id, name')
       .eq('user_id', userId)
       .order('name'),
-    supabase
-      .from('words')
-      .select(
-        'article, collection_id, dutch_lemma, dutch_original, easiness_factor, interval_days, next_review_date, part_of_speech, repetition_count, translations, word_id'
-      )
-      .eq('user_id', userId)
-      .is('deleted_at', null)
-      .order('dutch_lemma'),
+    fetchAllRows<WordRow>((from, to) =>
+      supabase
+        .from('words')
+        .select(
+          'article, collection_id, dutch_lemma, dutch_original, easiness_factor, interval_days, next_review_date, part_of_speech, repetition_count, translations, word_id'
+        )
+        .eq('user_id', userId)
+        .is('deleted_at', null)
+        .order('dutch_lemma')
+        .order('word_id')
+        .range(from, to)
+    ),
   ])
 
   if (collectionsResult.error || wordsResult.error) {

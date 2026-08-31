@@ -177,8 +177,11 @@ export const isDifficultWord = <T extends ReviewInsightWord>(
   word: T
 ): boolean => word.easiness_factor <= DIFFICULT_EASINESS_FACTOR_THRESHOLD
 
-export const isMasteredWord = <T extends ReviewInsightWord>(word: T): boolean =>
-  word.repetition_count >= MASTERED_MIN_REPETITIONS
+export const isMasteredWord = <
+  T extends Pick<ReviewInsightWord, 'repetition_count'>,
+>(
+  word: T
+): boolean => word.repetition_count >= MASTERED_MIN_REPETITIONS
 
 export function buildReviewInsights<T extends ReviewInsightWord>(
   words: readonly T[],

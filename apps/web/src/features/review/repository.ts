@@ -2,6 +2,7 @@ import 'server-only'
 
 import type { Database } from '@woordenaar/supabase-contracts'
 import { createClient } from '@/lib/supabase/server'
+import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import { isReviewAssessment, isReviewMode } from './review-domain'
 import type {
   ReviewCollection,
@@ -88,24 +89,31 @@ export async function getReviewWorkspaceData(
       .select('collection_id, name')
       .eq('user_id', userId)
       .order('name'),
-    supabase
-      .from('words')
-      .select(
-        'article, collection_id, dutch_lemma, dutch_original, easiness_factor, image_url, interval_days, last_reviewed_at, next_review_date, part_of_speech, repetition_count, translations, tts_url, word_id'
-      )
-      .eq('user_id', userId)
-      .is('deleted_at', null)
-      .order('next_review_date')
-      .order('word_id'),
-    supabase
-      .from('review_events')
-      .select(
-        'answered_correctly, assessment, event_id, review_mode, reviewed_at, word_id'
-      )
-      .eq('user_id', userId)
-      .order('reviewed_at', { ascending: false })
-      .order('event_id', { ascending: false })
-      .limit(5000),
+    fetchAllRows<WordRow>((from, to) =>
+      supabase
+        .from('words')
+        .select(
+          'article, collection_id, dutch_lemma, dutch_original, easiness_factor, image_url, interval_days, last_reviewed_at, next_review_date, part_of_speech, repetition_count, translations, tts_url, word_id'
+        )
+        .eq('user_id', userId)
+        .is('deleted_at', null)
+        .order('next_review_date')
+        .order('word_id')
+        .range(from, to)
+    ),
+    fetchAllRows<ReviewEventRow>(
+      (from, to) =>
+        supabase
+          .from('review_events')
+          .select(
+            'answered_correctly, assessment, event_id, review_mode, reviewed_at, word_id'
+          )
+          .eq('user_id', userId)
+          .order('reviewed_at', { ascending: false })
+          .order('event_id', { ascending: false })
+          .range(from, to),
+      { maxRows: 5000 }
+    ),
   ])
 
   if (collectionsResult.error || wordsResult.error || eventsResult.error) {

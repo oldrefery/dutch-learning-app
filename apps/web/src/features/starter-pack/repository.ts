@@ -1,7 +1,14 @@
 import 'server-only'
 
+import type { Database } from '@woordenaar/supabase-contracts'
 import { createClient } from '@/lib/supabase/server'
+import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import type { ExistingStarterPackWord } from './starter-pack-domain'
+
+type WordRow = Pick<
+  Database['public']['Tables']['words']['Row'],
+  'article' | 'collection_id' | 'dutch_lemma' | 'part_of_speech'
+>
 
 export interface StarterPackTargetCollection {
   id: string
@@ -23,11 +30,15 @@ export async function getStarterPackContext(
       .select('collection_id, name')
       .eq('user_id', userId)
       .order('created_at', { ascending: false }),
-    supabase
-      .from('words')
-      .select('article, collection_id, dutch_lemma, part_of_speech')
-      .eq('user_id', userId)
-      .is('deleted_at', null),
+    fetchAllRows<WordRow>((from, to) =>
+      supabase
+        .from('words')
+        .select('article, collection_id, dutch_lemma, part_of_speech')
+        .eq('user_id', userId)
+        .is('deleted_at', null)
+        .order('word_id')
+        .range(from, to)
+    ),
   ])
 
   if (collectionsResult.error || wordsResult.error) {

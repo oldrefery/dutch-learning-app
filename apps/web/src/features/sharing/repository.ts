@@ -2,6 +2,7 @@ import 'server-only'
 
 import type { Database } from '@woordenaar/supabase-contracts'
 import { createClient } from '@/lib/supabase/server'
+import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import {
   buildSharedCollectionPreview,
   isSharedResourceId,
@@ -13,6 +14,10 @@ import {
 type CollectionRow = Database['public']['Tables']['collections']['Row']
 
 type SharedCollectionRow = Pick<CollectionRow, 'collection_id' | 'name'>
+type ExistingWordRow = Pick<
+  Database['public']['Tables']['words']['Row'],
+  'article' | 'collection_id' | 'dutch_lemma' | 'part_of_speech'
+>
 
 export interface SharedTargetCollection {
   id: string
@@ -51,12 +56,17 @@ export async function loadSharedCollectionRows(
   }
   if (!collection) return null
 
-  const { data: words, error: wordsError } = await supabase
-    .from('words')
-    .select(SHARED_WORD_COLUMNS)
-    .eq('collection_id', collection.collection_id)
-    .is('deleted_at', null)
-    .order('created_at', { ascending: true })
+  const { data: words, error: wordsError } =
+    await fetchAllRows<SharedCollectionWord>((from, to) =>
+      supabase
+        .from('words')
+        .select(SHARED_WORD_COLUMNS)
+        .eq('collection_id', collection.collection_id)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+        .order('word_id', { ascending: true })
+        .range(from, to)
+    )
 
   if (wordsError) {
     throw new Error('Could not load the shared collection words.')
@@ -79,11 +89,15 @@ export async function getOwnedImportContext(userId: string): Promise<{
       .select('collection_id, name')
       .eq('user_id', userId)
       .order('created_at', { ascending: false }),
-    supabase
-      .from('words')
-      .select('article, collection_id, dutch_lemma, part_of_speech')
-      .eq('user_id', userId)
-      .is('deleted_at', null),
+    fetchAllRows<ExistingWordRow>((from, to) =>
+      supabase
+        .from('words')
+        .select('article, collection_id, dutch_lemma, part_of_speech')
+        .eq('user_id', userId)
+        .is('deleted_at', null)
+        .order('word_id')
+        .range(from, to)
+    ),
   ])
 
   if (collectionsResult.error || wordsResult.error) {

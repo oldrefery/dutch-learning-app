@@ -68,6 +68,19 @@ describe('buildCollectionOverviews', () => {
     })
   })
 
+  it('uses the mobile local-calendar rule for words due later today', () => {
+    const localMorning = new Date(2026, 7, 30, 8)
+    const laterToday = new Date(2026, 7, 30, 23, 59).toISOString()
+
+    const [overview] = buildCollectionOverviews(
+      [createCollection()],
+      [createWord({ next_review_date: laterToday })],
+      localMorning
+    )
+
+    expect(overview.dueWords).toBe(1)
+  })
+
   it('ignores unassigned words and keeps collection order', () => {
     const collections = [
       createCollection(),

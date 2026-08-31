@@ -1,4 +1,5 @@
 import type { Database } from '@woordenaar/supabase-contracts'
+import { isDueOnLocalDate, isMasteredWord } from '@woordenaar/domain'
 
 type CollectionRow = Database['public']['Tables']['collections']['Row']
 type WordRow = Database['public']['Tables']['words']['Row']
@@ -26,11 +27,6 @@ export interface CollectionOverview {
   progressPercentage: number
 }
 
-const isDue = (nextReviewDate: string, now: Date) => {
-  const timestamp = Date.parse(nextReviewDate)
-  return Number.isFinite(timestamp) && timestamp <= now.getTime()
-}
-
 export const buildCollectionOverviews = (
   collections: CollectionSummaryRow[],
   words: WordSummaryRow[],
@@ -50,14 +46,12 @@ export const buildCollectionOverviews = (
     const collectionWords =
       wordsByCollection.get(collection.collection_id) ?? []
     const totalWords = collectionWords.length
-    const masteredWords = collectionWords.filter(
-      word => word.repetition_count > 2
-    ).length
+    const masteredWords = collectionWords.filter(isMasteredWord).length
     const newWords = collectionWords.filter(
       word => word.repetition_count === 0
     ).length
     const dueWords = collectionWords.filter(word =>
-      isDue(word.next_review_date, now)
+      isDueOnLocalDate(word.next_review_date, now)
     ).length
 
     return {
