@@ -2,6 +2,10 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 describe('atomic review assessment contract', () => {
+  const action = readFileSync(
+    join(process.cwd(), 'apps/web/src/features/review/actions.ts'),
+    'utf8'
+  )
   const migration = readFileSync(
     join(
       process.cwd(),
@@ -28,5 +32,17 @@ describe('atomic review assessment contract', () => {
   it('grants the RPC only to authenticated users', () => {
     expect(migration).toContain('FROM PUBLIC')
     expect(migration).toContain('TO authenticated')
+  })
+
+  it('reports handled RPC failures to Sentry with safe context', () => {
+    const captureStart = action.indexOf('Sentry.captureException')
+    const captureEnd = action.indexOf('\n\n    return {', captureStart)
+    const captureBlock = action.slice(captureStart, captureEnd)
+
+    expect(action).toContain("import * as Sentry from '@sentry/nextjs'")
+    expect(captureBlock).toContain('Sentry.captureException(persistenceError')
+    expect(captureBlock).toContain("operation: 'record_review_assessment'")
+    expect(captureBlock).not.toContain('input.wordId')
+    expect(captureBlock).not.toContain('input.eventId')
   })
 })
