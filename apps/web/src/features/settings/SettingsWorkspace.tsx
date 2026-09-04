@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useCallback, useSyncExternalStore } from 'react'
 import { logout } from '@/app/(auth)/actions'
 import type { AccessLevel } from '@woordenaar/domain'
@@ -215,6 +216,12 @@ export function SettingsWorkspace({
               Difficult words have an easiness factor of 2.10 or lower and can
               be reviewed separately from Insights.
             </p>
+            <Link
+              className="mt-2 font-semibold text-[var(--accent)]"
+              href="/app/guide"
+            >
+              Open the complete learning guide
+            </Link>
           </div>
         </details>
       </section>

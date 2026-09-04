@@ -1,21 +1,17 @@
 import { HistoryWorkspace } from '@/features/history/HistoryWorkspace'
-import { listRecentReviewEvents } from '@/features/history/repository'
 import { requireAuthContext } from '@/lib/auth/session'
 
 export default async function HistoryPage() {
   const auth = await requireAuthContext()
-  const reviewEvents = await listRecentReviewEvents(auth.userId)
-
   return (
     <section>
-      <p className="text-sm font-medium text-neutral-500">Learning activity</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">History</h1>
-      <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-        Revisit recent AI analyses and see how each review changed your learning
-        schedule.
+      <p className="dw-label">Learning activity</p>
+      <h1 className="dw-page-title mt-2">History</h1>
+      <p className="dw-support mt-2 max-w-2xl">
+        Revisit AI analyses from this browser, including words you did not save.
       </p>
       <div className="mt-8">
-        <HistoryWorkspace reviewEvents={reviewEvents} userId={auth.userId} />
+        <HistoryWorkspace userId={auth.userId} />
       </div>
     </section>
   )

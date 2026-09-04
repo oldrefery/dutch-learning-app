@@ -1,141 +1,241 @@
+import { BarChart3, MoreHorizontal, Plus, Share2 } from 'lucide-react'
+import Link from 'next/link'
+import { Badge } from '@/components/ui/Badge'
 import { CreateCollectionForm } from '@/features/collections/CreateCollectionForm'
 import type { CollectionOverview } from '@/features/collections/collection-overview'
-import { listCollectionOverviews } from '@/features/collections/repository'
+import {
+  getReviewStreak,
+  listCollectionOverviews,
+} from '@/features/collections/repository'
 import { requireAuthContext } from '@/lib/auth/session'
-import Link from 'next/link'
+import styles from './CollectionsPage.module.css'
 
-const SummaryCard = ({ label, value }: { label: string; value: number }) => (
-  <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-    <p className="text-sm text-neutral-600 dark:text-neutral-400">{label}</p>
-    <p className="mt-2 text-3xl font-semibold tracking-tight">{value}</p>
-  </div>
-)
+function Metric({
+  label,
+  suffix,
+  value,
+}: {
+  label: string
+  suffix?: string
+  value: number
+}) {
+  return (
+    <div className={styles.metric}>
+      <div className={styles.metricValue}>
+        {value}{' '}
+        {suffix && <span className={styles.metricSuffix}>{suffix}</span>}
+      </div>
+      <span className={styles.metricLabel}>{label}</span>
+    </div>
+  )
+}
 
-const CollectionCard = ({ collection }: { collection: CollectionOverview }) => (
-  <article className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-    <div className="flex items-start justify-between gap-4">
+function CollectionRow({
+  collection,
+  canEdit,
+}: {
+  collection: CollectionOverview
+  canEdit: boolean
+}) {
+  const hasWords = collection.totalWords > 0
+  const hasDueWords = collection.dueWords > 0
+
+  return (
+    <article className={styles.collectionRow}>
       <div>
-        <h2 className="text-lg font-semibold">
+        <Link
+          className={styles.collectionName}
+          href={`/app/collections/${collection.id}`}
+        >
+          {collection.name}
+        </Link>
+        <span className={styles.collectionMeta}>
+          {collection.totalWords} words · {collection.masteredWords} mastered
+        </span>
+      </div>
+
+      <div className={styles.progress}>
+        <div className={styles.progressTrack}>
+          <span style={{ width: `${collection.progressPercentage}%` }} />
+        </div>
+        <span className={styles.progressLabel}>
+          {hasWords
+            ? `${collection.progressPercentage}% mastered`
+            : 'Empty collection'}
+        </span>
+      </div>
+
+      <div className={styles.states}>
+        {hasDueWords ? (
+          <Badge tone="warning">◴ {collection.dueWords} due</Badge>
+        ) : (
+          <span className={styles.emptyDue}>
+            {hasWords ? 'Nothing due' : 'Not scheduled yet'}
+          </span>
+        )}
+        {collection.isShared && (
+          <Badge tone="accent">
+            <Share2 aria-hidden="true" size={12} /> Shared
+          </Badge>
+        )}
+      </div>
+
+      <div />
+
+      <div className={styles.rowActions}>
+        {hasDueWords ? (
           <Link
-            className="rounded-sm outline-none hover:underline focus-visible:ring-2 focus-visible:ring-neutral-500"
-            href={`/app/collections/${collection.id}`}
+            className={`dw-button dw-button--secondary ${styles.reviewLink}`}
+            href={`/app/review?scope=collection-due&collectionId=${collection.id}`}
           >
-            {collection.name}
+            Review {collection.dueWords}
           </Link>
-        </h2>
-        <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-          {collection.totalWords}{' '}
-          {collection.totalWords === 1 ? 'word' : 'words'}
-          {collection.isShared ? ' · Shared' : ''}
-        </p>
+        ) : !hasWords && canEdit ? (
+          <Link
+            className={`dw-button dw-button--primary ${styles.reviewLink}`}
+            href={`/app/collections/${collection.id}/words/new`}
+          >
+            Add first word
+          </Link>
+        ) : (
+          <span className={`dw-button ${styles.disabledButton}`}>Review</span>
+        )}
+        <Link
+          aria-label={`Open ${collection.name}`}
+          className={`dw-icon-button ${styles.menuButton}`}
+          href={`/app/collections/${collection.id}`}
+        >
+          <MoreHorizontal aria-hidden="true" size={19} />
+        </Link>
       </div>
-      {collection.dueWords > 0 && (
-        <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-900 dark:bg-amber-950 dark:text-amber-200">
-          {collection.dueWords} due
-        </span>
-      )}
-    </div>
-    <div className="mt-5">
-      <div className="mb-2 flex items-center justify-between gap-4 text-xs text-neutral-600 dark:text-neutral-400">
-        <span>
-          {collection.masteredWords}/{collection.totalWords} mastered
-        </span>
-        <span>{collection.progressPercentage}%</span>
-      </div>
-      <div className="h-2 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800">
-        <div
-          aria-hidden="true"
-          className="h-full rounded-full bg-emerald-600 dark:bg-emerald-400"
-          style={{ width: `${collection.progressPercentage}%` }}
-        />
-      </div>
-    </div>
-    <Link
-      className="mt-5 inline-flex text-sm font-medium text-neutral-700 hover:underline dark:text-neutral-300"
-      href={`/app/collections/${collection.id}`}
-    >
-      View collection
-    </Link>
-  </article>
-)
+    </article>
+  )
+}
 
 export default async function CollectionsPage() {
   const auth = await requireAuthContext()
-  const collections = await listCollectionOverviews(auth.userId)
+  const [collections, streak] = await Promise.all([
+    listCollectionOverviews(auth.userId),
+    getReviewStreak(auth.userId),
+  ])
   const totals = collections.reduce(
     (result, collection) => ({
       words: result.words + collection.totalWords,
       mastered: result.mastered + collection.masteredWords,
       due: result.due + collection.dueWords,
-      newWords: result.newWords + collection.newWords,
+      difficult: result.difficult + collection.difficultWords,
     }),
-    { words: 0, mastered: 0, due: 0, newWords: 0 }
+    { words: 0, mastered: 0, due: 0, difficult: 0 }
   )
+  const masteredPercentage =
+    totals.words === 0 ? 0 : Math.round((totals.mastered / totals.words) * 100)
+  const canEdit = auth.accessLevel === 'full_access'
 
   return (
-    <section>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-neutral-500">
-            Your learning workspace
+    <section className={styles.page}>
+      <div className={styles.intro}>
+        <div className={styles.introCopy}>
+          <p className={styles.eyebrow}>
+            {collections.length} collections · {totals.words} words
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-            Collections
-          </h1>
+          <h1 className="dw-page-title">Collections</h1>
+          <p className={styles.description}>
+            See what needs attention today and continue from the collection that
+            matters most.
+          </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {collections.length}{' '}
-            {collections.length === 1 ? 'collection' : 'collections'}
-          </p>
+        <div className={styles.headerActions}>
           <Link
-            className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+            className="dw-button dw-button--secondary"
             href="/app/starter-pack"
           >
-            Import starter pack
+            Starter pack
           </Link>
-          {auth.accessLevel === 'full_access' && (
-            <Link
-              className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
-              href="/app/batch-capture"
-            >
-              Batch capture
-            </Link>
+          {canEdit && (
+            <details className={styles.creator}>
+              <summary className="dw-button dw-button--secondary">
+                <Plus aria-hidden="true" size={16} />
+                New collection
+              </summary>
+              <div className={styles.creatorPanel}>
+                <CreateCollectionForm />
+              </div>
+            </details>
           )}
         </div>
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-4">
-        <SummaryCard label="Words" value={totals.words} />
-        <SummaryCard label="Mastered" value={totals.mastered} />
-        <SummaryCard label="Due now" value={totals.due} />
-        <SummaryCard label="New" value={totals.newWords} />
+      <div className={styles.metricsBand}>
+        <Metric label="Total words" value={totals.words} />
+        <Metric
+          label="Mastered"
+          suffix={`${masteredPercentage}%`}
+          value={totals.mastered}
+        />
+        <Metric label="Due today" value={totals.due} />
+        <Metric label="Difficult" value={totals.difficult} />
+        <Metric label="Streak" suffix="days" value={streak} />
+        <div className={styles.metricActions}>
+          {totals.due > 0 ? (
+            <Link
+              className={`dw-button dw-button--primary ${styles.reviewButton}`}
+              href="/app/review"
+            >
+              Start review · {totals.due}
+            </Link>
+          ) : (
+            <span
+              className={`dw-button ${styles.reviewButton} ${styles.disabledButton}`}
+            >
+              Nothing due
+            </span>
+          )}
+          <Link
+            aria-label="Open insights"
+            className="dw-icon-button"
+            href="/app/insights"
+          >
+            <BarChart3 aria-hidden="true" size={18} />
+          </Link>
+        </div>
       </div>
 
-      <div className="mt-6">
-        {auth.accessLevel === 'full_access' ? (
-          <CreateCollectionForm />
+      <div>
+        <div className={styles.sectionHeading}>
+          <span className="dw-label">Your collections</span>
+          <span className={styles.sort}>SORT · DUE FIRST</span>
+        </div>
+
+        {collections.length === 0 ? (
+          <div className={`${styles.emptyState} mt-3`}>
+            <h2>No collections yet</h2>
+            <p>
+              Create your first collection or import the A1 starter pack to get
+              to a reviewable set quickly.
+            </p>
+          </div>
         ) : (
-          <div className="rounded-2xl border border-neutral-200 bg-white p-5 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
-            This account has read-only access. You can study existing words, but
-            collection changes are disabled.
+          <div className={`${styles.collectionList} mt-3`}>
+            {[...collections]
+              .sort((left, right) => right.dueWords - left.dueWords)
+              .map(collection => (
+                <CollectionRow
+                  canEdit={canEdit}
+                  collection={collection}
+                  key={collection.id}
+                />
+              ))}
           </div>
         )}
       </div>
 
-      {collections.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-neutral-300 px-6 py-12 text-center dark:border-neutral-700">
-          <h2 className="text-lg font-semibold">No collections yet</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
-            Create your first collection to organize the Dutch words you want to
-            learn.
+      {!canEdit && (
+        <div className="dw-surface p-5">
+          <Badge>🔒 Read-only</Badge>
+          <p className="dw-support mt-3">
+            You can study existing words and import a shared collection.
+            Creating and editing collections is not part of your access.
           </p>
-        </div>
-      ) : (
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {collections.map(collection => (
-            <CollectionCard collection={collection} key={collection.id} />
-          ))}
         </div>
       )}
     </section>

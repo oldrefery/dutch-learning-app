@@ -1,19 +1,15 @@
+import { Ellipsis, Plus, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Badge } from '@/components/ui/Badge'
 import { CollectionWordList } from '@/features/collections/CollectionWordList'
+import styles from '@/features/collections/CollectionDetail.module.css'
 import { DeleteCollectionForm } from '@/features/collections/DeleteCollectionForm'
 import { RenameCollectionForm } from '@/features/collections/RenameCollectionForm'
 import { getOwnedCollectionDetail } from '@/features/collections/repository'
 import { CollectionSharingPanel } from '@/features/sharing/CollectionSharingPanel'
 import { buildSharedCollectionUrl } from '@/features/sharing/shared-collection-domain'
 import { requireAuthContext } from '@/lib/auth/session'
-
-const SummaryCard = ({ label, value }: { label: string; value: number }) => (
-  <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-    <p className="text-sm text-neutral-600 dark:text-neutral-400">{label}</p>
-    <p className="mt-2 text-3xl font-semibold tracking-tight">{value}</p>
-  </div>
-)
 
 export default async function CollectionDetailPage({
   params,
@@ -24,113 +20,105 @@ export default async function CollectionDetailPage({
   const { collectionId } = await params
   const collection = await getOwnedCollectionDetail(auth.userId, collectionId)
 
-  if (!collection) {
-    notFound()
-  }
+  if (!collection) notFound()
 
   return (
-    <section>
-      <Link
-        className="text-sm text-neutral-600 hover:underline dark:text-neutral-400"
-        href="/app/collections"
-      >
-        ← All collections
-      </Link>
+    <section className={styles.detail}>
+      <header className={styles.header}>
+        <Link className={styles.breadcrumb} href="/app/collections">
+          Collections <span>/</span> <strong>{collection.name}</strong>
+        </Link>
 
-      <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-neutral-500">
-            {collection.isShared ? 'Shared collection' : 'Private collection'}
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-            {collection.name}
-          </h1>
-        </div>
-        <div className="flex flex-col items-start gap-3 sm:items-end">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {collection.progressPercentage}% mastered
-          </p>
-          <div className="flex flex-wrap gap-3">
-            {collection.dueWords > 0 && (
+        <div className={styles.headingRow}>
+          <div>
+            <div className={styles.titleRow}>
+              <h1 className={styles.title}>{collection.name}</h1>
+              {collection.isShared && (
+                <Badge tone="accent">⇄ Shared · link active</Badge>
+              )}
+            </div>
+            <div className={styles.stats}>
+              <span>{collection.totalWords} words</span>
+              <span>
+                {collection.masteredWords} mastered ·{' '}
+                {collection.progressPercentage}%
+              </span>
+              <span className={styles.due}>{collection.dueWords} due</span>
+            </div>
+          </div>
+
+          <div className={styles.actions}>
+            {collection.dueWords > 0 ? (
               <Link
-                className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+                className="dw-button dw-button--primary"
                 href={`/app/review?scope=collection-due&collectionId=${collection.id}`}
               >
-                Review {collection.dueWords} due
+                <RotateCcw aria-hidden="true" size={16} />
+                Review this collection · {collection.dueWords}
               </Link>
+            ) : (
+              <span className="dw-button">Nothing due</span>
             )}
             {auth.accessLevel === 'full_access' && (
               <Link
-                className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-950"
+                className="dw-button dw-button--secondary"
                 href={`/app/collections/${collection.id}/words/new`}
               >
-                Add word
+                <Plus aria-hidden="true" size={16} /> Add word
               </Link>
             )}
+            <Link
+              aria-label="Collection settings"
+              className="dw-icon-button"
+              href={`/app/collections/${collection.id}#collection-settings`}
+            >
+              <Ellipsis aria-hidden="true" size={18} />
+            </Link>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-4">
-        <SummaryCard label="Words" value={collection.totalWords} />
-        <SummaryCard label="Mastered" value={collection.masteredWords} />
-        <SummaryCard label="Due now" value={collection.dueWords} />
-        <SummaryCard label="New" value={collection.newWords} />
-      </div>
-
-      <div className="mt-8">
-        <div className="mb-4 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-medium text-neutral-500">
-              Collection content
-            </p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight">
-              Words
-            </h2>
-          </div>
-        </div>
+      <div className={styles.content}>
         <CollectionWordList
           collectionId={collection.id}
           words={collection.words}
         />
-      </div>
 
-      <div className="mt-10 border-t border-neutral-200 pt-8 dark:border-neutral-800">
-        <h2 className="text-2xl font-semibold tracking-tight">
-          Collection settings
-        </h2>
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          <CollectionSharingPanel
-            collectionId={collection.id}
-            initialState={{
-              status: 'idle',
-              message: null,
-              isShared: collection.isShared,
-              shareUrl:
-                collection.isShared && collection.shareToken
-                  ? buildSharedCollectionUrl(collection.shareToken)
-                  : null,
-            }}
-          />
-          {auth.accessLevel === 'full_access' ? (
-            <>
-              <RenameCollectionForm
-                collectionId={collection.id}
-                currentName={collection.name}
-              />
-              <DeleteCollectionForm
-                collectionId={collection.id}
-                collectionName={collection.name}
-                totalWords={collection.totalWords}
-              />
-            </>
-          ) : (
-            <div className="rounded-2xl border border-neutral-200 bg-white p-5 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
-              This account has read-only access. Renaming and deletion are
-              disabled.
-            </div>
-          )}
-        </div>
+        <section className={styles.settings} id="collection-settings">
+          <h2>Collection settings</h2>
+          <div className={styles.settingsGrid}>
+            <CollectionSharingPanel
+              collectionId={collection.id}
+              initialState={{
+                status: 'idle',
+                message: null,
+                isShared: collection.isShared,
+                shareUrl:
+                  collection.isShared && collection.shareToken
+                    ? buildSharedCollectionUrl(collection.shareToken)
+                    : null,
+              }}
+            />
+            {auth.accessLevel === 'full_access' ? (
+              <>
+                <RenameCollectionForm
+                  collectionId={collection.id}
+                  currentName={collection.name}
+                />
+                <DeleteCollectionForm
+                  collectionId={collection.id}
+                  collectionName={collection.name}
+                  totalWords={collection.totalWords}
+                />
+              </>
+            ) : (
+              <div className="dw-surface dw-support" style={{ padding: 20 }}>
+                This account has read-only access. Renaming and deletion are
+                disabled.
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </section>
   )

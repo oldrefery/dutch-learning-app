@@ -76,3 +76,4 @@ builds/
 debug-*.png
 .vercel/
 .env.local
+/design/

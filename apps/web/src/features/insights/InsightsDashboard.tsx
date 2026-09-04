@@ -4,89 +4,105 @@ import { buildReviewInsights } from '@woordenaar/domain'
 import type { DistributionBucket, ForecastDay } from '@woordenaar/domain'
 import type { Json } from '@woordenaar/supabase-contracts'
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
+import { Badge } from '@/components/ui/Badge'
 import type { InsightsData, InsightWord } from './types'
-
-const SummaryCard = ({ label, value }: { label: string; value: number }) => (
-  <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-    <p className="text-sm text-neutral-600 dark:text-neutral-400">{label}</p>
-    <p className="mt-2 text-3xl font-semibold tracking-tight">{value}</p>
-  </div>
-)
-
-const Distribution = ({
-  buckets,
-  title,
-}: {
-  buckets: DistributionBucket[]
-  title: string
-}) => {
-  const maximum = Math.max(...buckets.map(bucket => bucket.count), 1)
-
-  return (
-    <section className="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <div className="mt-5 grid gap-4">
-        {buckets.map(bucket => (
-          <div key={bucket.id}>
-            <div className="flex items-center justify-between gap-4 text-sm">
-              <span>{bucket.label}</span>
-              <span className="font-medium">{bucket.count}</span>
-            </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800">
-              <div
-                aria-hidden="true"
-                className="h-full rounded-full bg-sky-600 dark:bg-sky-400"
-                style={{ width: `${(bucket.count / maximum) * 100}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
+import styles from './Insights.module.css'
 
 const formatForecastDay = (day: ForecastDay) =>
   new Intl.DateTimeFormat('en', { weekday: 'short', day: 'numeric' }).format(
     new Date(`${day.dateKey}T12:00:00`)
   )
 
-const Forecast = ({ days }: { days: ForecastDay[] }) => {
-  const maximum = Math.max(...days.map(day => day.count), 1)
-
+function BarList({
+  items,
+  variant = 'forecast',
+}: {
+  items: { count: number; id: string; label: string }[]
+  variant?: 'forecast' | 'distribution'
+}) {
+  const maximum = Math.max(...items.map(item => item.count), 1)
   return (
-    <section className="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
-      <h2 className="text-lg font-semibold">Next 7 days</h2>
-      <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-        Scheduled reviews after today, calculated in this browser’s local time.
-      </p>
-      <div className="mt-6 grid grid-cols-7 gap-2" role="list">
-        {days.map(day => (
-          <div
-            className="grid gap-2 text-center"
-            key={day.dateKey}
-            role="listitem"
-          >
-            <div className="flex h-28 items-end justify-center rounded-xl bg-neutral-100 px-2 pt-2 dark:bg-neutral-800">
-              <div
-                aria-hidden="true"
-                className="w-full min-w-2 rounded-t-md bg-emerald-600 dark:bg-emerald-400"
-                style={{
-                  height:
-                    day.count === 0 ? '2px' : `${(day.count / maximum) * 100}%`,
-                }}
-              />
-            </div>
-            <div>
-              <p className="text-xs text-neutral-500">
-                {formatForecastDay(day)}
-              </p>
-              <p className="text-sm font-semibold">{day.count}</p>
-            </div>
-          </div>
+    <div
+      className={`${styles.bars} ${variant === 'distribution' ? styles.distribution : ''}`}
+    >
+      {items.map(item => (
+        <div className={styles.barRow} key={item.id}>
+          <span className={styles.barLabel}>{item.label}</span>
+          <span className={styles.barTrack}>
+            <span
+              aria-hidden="true"
+              className={styles.barFill}
+              style={{ width: `${(item.count / maximum) * 100}%` }}
+            />
+          </span>
+          <span className={styles.barValue}>{item.count}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function DataTable({
+  items,
+}: {
+  items: { count: number; id: string; label: string }[]
+}) {
+  const total = items.reduce((sum, item) => sum + item.count, 0)
+  return (
+    <table className={styles.dataTable}>
+      <thead>
+        <tr>
+          <th>Range</th>
+          <th>Count</th>
+          <th>Share</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map(item => (
+          <tr key={item.id}>
+            <td>{item.label}</td>
+            <td>{item.count}</td>
+            <td>{total === 0 ? 0 : Math.round((item.count / total) * 100)}%</td>
+          </tr>
         ))}
+      </tbody>
+    </table>
+  )
+}
+
+function ChartPanel({
+  description,
+  items,
+  title,
+  variant,
+}: {
+  description?: string
+  items: { count: number; id: string; label: string }[]
+  title: string
+  variant?: 'forecast' | 'distribution'
+}) {
+  const [showTable, setShowTable] = useState(false)
+  return (
+    <section className={styles.panel}>
+      <div className={styles.panelHeader}>
+        <div>
+          <h2>{title}</h2>
+          {description && <p>{description}</p>}
+        </div>
+        <button
+          className={styles.tableToggle}
+          onClick={() => setShowTable(current => !current)}
+          type="button"
+        >
+          {showTable ? 'View as bars' : 'View as table'}
+        </button>
       </div>
+      {showTable ? (
+        <DataTable items={items} />
+      ) : (
+        <BarList items={items} variant={variant} />
+      )}
     </section>
   )
 }
@@ -108,48 +124,43 @@ const getTranslation = (translations: Json): string | null => {
     )
     if (typeof first === 'string') return first
   }
-
   return null
 }
 
-const DifficultWord = ({
+function DifficultWord({
   collectionName,
   word,
 }: {
   collectionName: string | null
   word: InsightWord
-}) => {
+}) {
+  const className = styles.wordRow
   const content = (
     <>
-      <div>
-        <h3 className="font-semibold">
-          {[word.article, word.dutch_lemma].filter(Boolean).join(' ')}
-        </h3>
-        <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-          {getTranslation(word.translations) ?? 'Translation unavailable'}
-          {collectionName ? ` · ${collectionName}` : ''}
-        </p>
-      </div>
-      <div className="text-right text-sm">
-        <p className="font-medium">EF {word.easiness_factor.toFixed(2)}</p>
-        <p className="mt-1 text-neutral-500">
-          {word.interval_days} day interval
-        </p>
-      </div>
+      <span className={styles.wordName}>
+        {[word.article, word.dutch_lemma].filter(Boolean).join(' ')}
+      </span>
+      <span className={styles.wordTranslation}>
+        {getTranslation(word.translations) ?? 'Translation unavailable'}
+      </span>
+      <span className={styles.wordCollection}>
+        {collectionName ?? 'Unsorted'}
+      </span>
+      <span className={styles.wordMetric}>
+        EF {word.easiness_factor.toFixed(2)}
+      </span>
     </>
   )
 
   return word.collection_id ? (
     <Link
-      className="flex items-start justify-between gap-4 rounded-xl border border-neutral-200 p-4 outline-none hover:border-neutral-400 focus-visible:ring-2 focus-visible:ring-neutral-500 dark:border-neutral-800 dark:hover:border-neutral-600"
+      className={className}
       href={`/app/collections/${word.collection_id}/words/${word.word_id}`}
     >
       {content}
     </Link>
   ) : (
-    <div className="flex items-start justify-between gap-4 rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
-      {content}
-    </div>
+    <div className={className}>{content}</div>
   )
 }
 
@@ -165,14 +176,15 @@ export function InsightsDashboard({ data }: { data: InsightsData }) {
 
   if (data.words.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-neutral-300 px-6 py-12 text-center dark:border-neutral-700">
-        <h2 className="text-lg font-semibold">No learning data yet</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm text-neutral-600 dark:text-neutral-400">
-          Add words to a collection to see review forecasts, difficulty, and
-          mastery insights.
+      <div className={styles.empty}>
+        <Badge>Not enough history</Badge>
+        <h2>Your insights will grow with you</h2>
+        <p className="dw-support">
+          Add words and complete a few reviews to see your forecast, interval
+          spread and difficult words.
         </p>
         <Link
-          className="mt-5 inline-flex rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+          className="dw-button dw-button--secondary mt-5"
           href="/app/collections"
         >
           View collections
@@ -181,51 +193,77 @@ export function InsightsDashboard({ data }: { data: InsightsData }) {
     )
   }
 
+  const forecastItems = insights.forecast.nextSevenDays
+    .slice(0, 5)
+    .map(day => ({
+      count: day.count,
+      id: day.dateKey,
+      label: formatForecastDay(day),
+    }))
+  const distributionItems = (buckets: DistributionBucket[]) =>
+    buckets.map(bucket => ({
+      count: bucket.count,
+      id: bucket.id,
+      label: bucket.label,
+    }))
+
   return (
-    <div className="grid gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <SummaryCard label="Due today" value={insights.forecast.today} />
-        <SummaryCard label="Overdue" value={insights.forecast.overdue} />
-        <SummaryCard label="Difficult" value={insights.difficultWords.length} />
-        <SummaryCard label="Mastered" value={insights.masteredWords.length} />
+    <div className={styles.dashboard}>
+      <dl className={styles.metrics}>
+        {[
+          ['Due today', insights.forecast.today],
+          ['Overdue', insights.forecast.overdue],
+          ['Difficult', insights.difficultWords.length],
+          ['Mastered', insights.masteredWords.length],
+        ].map(([label, value]) => (
+          <div className={styles.metric} key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div className={styles.charts}>
+        <ChartPanel
+          description="Scheduled reviews after today"
+          items={forecastItems}
+          title="Review forecast"
+        />
+        <div className={styles.dashboard}>
+          <ChartPanel
+            items={distributionItems(insights.intervalDistribution)}
+            title="Interval spread"
+            variant="distribution"
+          />
+          <ChartPanel
+            items={distributionItems(insights.easinessDistribution)}
+            title="Easiness"
+            variant="distribution"
+          />
+        </div>
       </div>
 
-      <Forecast days={insights.forecast.nextSevenDays} />
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Distribution
-          buckets={insights.intervalDistribution}
-          title="Review intervals"
-        />
-        <Distribution
-          buckets={insights.easinessDistribution}
-          title="Easiness factors"
-        />
-      </div>
-
-      <section className="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <section className={styles.words}>
+        <header className={styles.wordsHeader}>
           <div>
-            <h2 className="text-lg font-semibold">Difficult words</h2>
-            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-              Words with an easiness factor of 2.10 or lower, due items first.
-            </p>
+            <h2>Difficult words</h2>
+            <p>Easiness factor 2.10 or lower, due words first.</p>
           </div>
           <Link
-            className="rounded-xl bg-neutral-900 px-4 py-2 text-center text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-950"
+            className="dw-button dw-button--primary"
             href="/app/review?scope=difficult-due"
           >
-            Review {insights.dueDifficultWords.length} due
+            Review difficult words · {insights.dueDifficultWords.length}
           </Link>
-        </div>
-
+        </header>
         {insights.difficultWords.length === 0 ? (
-          <p className="mt-6 text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="dw-support" style={{ padding: 20 }}>
             No difficult words right now.
           </p>
         ) : (
-          <div className="mt-5 grid gap-3 lg:grid-cols-2">
-            {insights.difficultWords.slice(0, 12).map(word => (
+          insights.difficultWords
+            .slice(0, 12)
+            .map(word => (
               <DifficultWord
                 collectionName={
                   word.collection_id
@@ -235,8 +273,7 @@ export function InsightsDashboard({ data }: { data: InsightsData }) {
                 key={word.word_id}
                 word={word}
               />
-            ))}
-          </div>
+            ))
         )}
       </section>
     </div>

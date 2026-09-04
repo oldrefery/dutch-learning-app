@@ -14,11 +14,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <>
-      <h1 className="mt-8 text-3xl font-semibold tracking-tight">
-        Welcome back
-      </h1>
+      <h1 className="mt-8 text-3xl font-semibold tracking-tight">Sign in</h1>
       <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-        Sign in to continue learning on the web.
+        Your words, collections and review schedule stay in sync across devices.
       </p>
       {params.message === 'password-updated' && (
         <p

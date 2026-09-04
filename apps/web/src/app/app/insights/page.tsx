@@ -8,9 +8,9 @@ export default async function InsightsPage() {
 
   return (
     <section>
-      <p className="text-sm font-medium text-neutral-500">Learning analytics</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">Insights</h1>
-      <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
+      <p className="dw-label">Learning analytics</p>
+      <h1 className="dw-page-title mt-2">Insights</h1>
+      <p className="dw-support mt-2 max-w-2xl">
         Understand your review workload, word difficulty, and long-term
         progress.
       </p>

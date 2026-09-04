@@ -1,0 +1,498 @@
+.shell {
+  background: var(--bg-page);
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  min-height: 100svh;
+}
+
+.sidebar {
+  background: var(--bg-chrome);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  grid-row: 1 / span 2;
+  height: 100svh;
+  padding: 20px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.brand {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 12px;
+  text-decoration: none;
+}
+
+.brandMark {
+  align-items: center;
+  background: var(--accent);
+  color: var(--accent-on);
+  display: inline-flex;
+  flex: 0 0 26px;
+  font-size: 15px;
+  font-weight: 700;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+
+.brandName {
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 20px;
+}
+
+.groupLabel {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  margin: 20px 12px 6px;
+  text-transform: uppercase;
+}
+
+.navItem {
+  align-items: center;
+  color: var(--text-secondary);
+  display: flex;
+  font-size: 15px;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 12px;
+  position: relative;
+  text-decoration: none;
+  transition:
+    background var(--duration-state) var(--ease-product),
+    color var(--duration-state) var(--ease-product);
+}
+
+.navItem:hover {
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+.navItemActive {
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
+  color: var(--accent-soft-text);
+  font-weight: 600;
+}
+
+.navIcon {
+  flex: 0 0 20px;
+}
+
+.navLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dueBadge {
+  background: var(--accent);
+  border-radius: 9px;
+  color: var(--accent-on);
+  font-family: var(--font-plex-mono), 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: auto;
+  min-width: 24px;
+  padding: 2px 7px;
+  text-align: center;
+}
+
+.sidebarFooter {
+  border-top: 1px solid var(--divider);
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.syncLine {
+  align-items: center;
+  color: var(--text-meta);
+  display: flex;
+  font-family: var(--font-plex-mono), 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 12px;
+}
+
+.syncDot {
+  background: var(--success);
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+}
+
+.syncDotOffline {
+  background: var(--offline);
+}
+
+.account {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 32px minmax(0, 1fr) 36px;
+  min-height: 52px;
+  padding: 6px 8px 0 12px;
+}
+
+.avatar {
+  align-items: center;
+  background: var(--neutral-soft);
+  border-radius: 50%;
+  display: flex;
+  font-family: var(--font-plex-mono), 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+
+.accountText {
+  min-width: 0;
+}
+
+.accountName,
+.accountMeta {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accountName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.accountMeta {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+.signOut {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--text-meta);
+  display: flex;
+  height: 36px;
+  justify-content: center;
+  padding: 0;
+  width: 36px;
+}
+
+.workspace {
+  min-width: 0;
+}
+
+.topbar {
+  align-items: center;
+  background: var(--bg-chrome);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 18px;
+  height: var(--header-height);
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.pageContext {
+  min-width: 0;
+}
+
+.pageName {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.contextLine {
+  color: var(--text-meta);
+  display: block;
+  font-family: var(--font-plex-mono), 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+.topActions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.search {
+  align-items: center;
+  border: 1px solid var(--border-strong);
+  display: flex;
+  gap: 8px;
+  height: 38px;
+  padding: 0 10px;
+  width: 240px;
+}
+
+.search input {
+  background: transparent;
+  border: 0;
+  font-size: 13px;
+  min-width: 0;
+  outline: none;
+  width: 100%;
+}
+
+.search svg {
+  color: var(--text-meta);
+  flex: none;
+}
+
+.topButton {
+  min-height: 38px;
+}
+
+.mobileBrand,
+.mobileAvatar {
+  display: none;
+}
+
+.main {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 32px;
+  width: 100%;
+}
+
+.bottomNav {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .sidebar:global(.dw-compact-nav) .brandName,
+  .sidebar:global(.dw-compact-nav) .navLabel,
+  .sidebar:global(.dw-compact-nav) .groupLabel,
+  .sidebar:global(.dw-compact-nav) .accountText,
+  .sidebar:global(.dw-compact-nav) .syncLine span:not(.syncDot) {
+    display: none;
+  }
+
+  .sidebar:global(.dw-compact-nav) .brand,
+  .sidebar:global(.dw-compact-nav) .navItem,
+  .sidebar:global(.dw-compact-nav) .syncLine {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .sidebar:global(.dw-compact-nav) .account {
+    display: flex;
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .sidebar:global(.dw-compact-nav) .signOut {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .shell {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .sidebar {
+    padding-inline: 10px;
+  }
+
+  .brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .brandName,
+  .navLabel,
+  .groupLabel,
+  .accountText,
+  .syncLine span:not(.syncDot) {
+    display: none;
+  }
+
+  .navItem {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .dueBadge {
+    font-size: 9px;
+    margin: 0;
+    min-width: 18px;
+    padding: 1px 4px;
+    position: absolute;
+    right: 0;
+    top: 2px;
+  }
+
+  .syncLine {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .account {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 0;
+  }
+
+  .signOut {
+    display: none;
+  }
+
+  .main {
+    max-width: 1080px;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .shell {
+    display: block;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .topbar {
+    gap: 10px;
+    height: 56px;
+    padding: 0 14px;
+  }
+
+  .mobileBrand,
+  .mobileAvatar {
+    display: flex;
+  }
+
+  .mobileBrand {
+    flex: 0 0 26px;
+    text-decoration: none;
+  }
+
+  .mobileAvatar {
+    align-items: center;
+    background: var(--neutral-soft);
+    border-radius: 50%;
+    flex: 0 0 32px;
+    font-family: var(--font-plex-mono), 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    height: 32px;
+    justify-content: center;
+  }
+
+  .contextLine,
+  .topButton {
+    display: none;
+  }
+
+  .pageName {
+    font-size: 15px;
+  }
+
+  .topActions {
+    gap: 8px;
+  }
+
+  .search {
+    border: 0;
+    height: 44px;
+    justify-content: center;
+    padding: 0;
+    width: 44px;
+  }
+
+  .search input {
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  .main {
+    max-width: none;
+    padding: 24px 16px
+      calc(var(--mobile-nav-height) + 24px + env(safe-area-inset-bottom));
+  }
+
+  .bottomNav {
+    align-items: stretch;
+    background: var(--bg-chrome);
+    border-top: 1px solid var(--border);
+    bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    left: 0;
+    min-height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    position: fixed;
+    right: 0;
+    z-index: 40;
+  }
+
+  .bottomItem {
+    align-items: center;
+    color: var(--text-meta);
+    display: flex;
+    flex-direction: column;
+    font-size: 9px;
+    gap: 4px;
+    justify-content: center;
+    min-width: 0;
+    position: relative;
+    text-decoration: none;
+  }
+
+  .bottomItemActive {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .bottomItem .dueBadge {
+    font-size: 8px;
+    margin: 0;
+    min-width: 16px;
+    padding: 1px 4px;
+    position: absolute;
+    right: calc(50% - 21px);
+    top: 7px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1439px) {
+  .main {
+    max-width: 1080px;
+  }
+}

@@ -87,6 +87,37 @@ export const getReviewAnswer = (word: ReviewWord, mode: ReviewMode) =>
     ? getDutchProductionAnswer(word)
     : (getPreferredTranslation(word) ?? 'Translation unavailable')
 
+const formatInterval = (days: number) => {
+  if (days === 0) return 'in 10 minutes'
+  if (days === 1) return 'in 1 day'
+  return `in ${days} days`
+}
+
+export const getReviewIntervalLabel = (
+  word: ReviewWord,
+  assessment: ReviewAssessment
+) => {
+  if (assessment === 'again') return formatInterval(0)
+
+  if (assessment === 'hard') {
+    return formatInterval(Math.max(1, Math.round(word.intervalDays * 1.2)))
+  }
+
+  if (assessment === 'good') {
+    if (word.repetitionCount === 0) return formatInterval(1)
+    if (word.repetitionCount === 1) return formatInterval(6)
+    return formatInterval(
+      Math.max(1, Math.round(word.intervalDays * word.easinessFactor))
+    )
+  }
+
+  if (word.repetitionCount === 0) return formatInterval(4)
+  if (word.repetitionCount === 1) return formatInterval(10)
+  return formatInterval(
+    Math.max(1, Math.round(word.intervalDays * word.easinessFactor * 1.3))
+  )
+}
+
 const getTranslationKeys = (word: ReviewWord) =>
   new Set(getTranslationValues(word.translations).map(normalizeAnswer))
 

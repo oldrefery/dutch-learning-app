@@ -5,7 +5,9 @@ import {
   parseBatchCaptureInput,
 } from '@woordenaar/domain'
 import { useMemo, useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import type { CollectionOption } from '@/features/words/repository'
+import styles from './BatchCapture.module.css'
 
 interface BatchCaptureComposerProps {
   collections: CollectionOption[]
@@ -31,7 +33,7 @@ export function BatchCaptureComposer({
     targetCollectionId === ''
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
+    <div className={styles.composer}>
       <h2 className="text-xl font-semibold tracking-tight">
         Capture a word list
       </h2>
@@ -41,13 +43,12 @@ export function BatchCaptureComposer({
         before it is saved.
       </p>
 
-      <label className="mt-5 block text-sm font-medium" htmlFor="batch-input">
+      <label className={styles.fieldLabel} htmlFor="batch-input">
         Dutch words
       </label>
       <textarea
         autoCapitalize="none"
         autoComplete="off"
-        className="mt-2 min-h-64 w-full rounded-xl border border-neutral-300 bg-transparent px-4 py-3 text-sm leading-6 outline-none focus:border-neutral-600 dark:border-neutral-700 dark:focus:border-neutral-400"
         id="batch-input"
         onChange={event => setRawInput(event.target.value)}
         placeholder={'huis ; house\nopstaan ; to get up\nhoe gaat het'}
@@ -55,13 +56,12 @@ export function BatchCaptureComposer({
         value={rawInput}
       />
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+      <div className={styles.composerFooter}>
         <div>
           <label className="text-sm font-medium" htmlFor="batch-collection">
             Target collection
           </label>
           <select
-            className="mt-2 w-full rounded-xl border border-neutral-300 bg-transparent px-4 py-3 text-sm dark:border-neutral-700"
             id="batch-collection"
             onChange={event => setTargetCollectionId(event.target.value)}
             value={targetCollectionId}
@@ -73,32 +73,27 @@ export function BatchCaptureComposer({
             ))}
           </select>
         </div>
-        <button
-          className="rounded-xl bg-neutral-900 px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60 dark:bg-neutral-100 dark:text-neutral-950"
+        <Button
           disabled={disabled}
           onClick={() => onCreateQueue(parsed.items, targetCollectionId)}
           type="button"
         >
-          Create review queue
-        </button>
+          Analyze {parsed.items.length} words
+        </Button>
       </div>
 
-      <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
-        {parsed.items.length} valid{' '}
-        {parsed.items.length === 1 ? 'item' : 'items'} · maximum{' '}
-        {BATCH_CAPTURE_MAX_ITEMS}
+      <p className={styles.counters}>
+        <span>{parsed.items.length} valid</span>
+        <span>{parsed.issues.length} unrecognized</span>
+        <span>
+          {rawInput ? rawInput.split(/\r?\n/).length : 0} /{' '}
+          {BATCH_CAPTURE_MAX_ITEMS} lines
+        </span>
       </p>
       {parsed.issues.length > 0 && (
-        <ul className="mt-3 grid gap-2" aria-label="Batch input issues">
+        <ul className={styles.issues} aria-label="Batch input issues">
           {parsed.issues.map(issue => (
-            <li
-              className={`text-sm ${
-                issue.blocking
-                  ? 'text-red-600 dark:text-red-400'
-                  : 'text-amber-700 dark:text-amber-300'
-              }`}
-              key={`${issue.line}-${issue.code}`}
-            >
+            <li key={`${issue.line}-${issue.code}`}>
               Line {issue.line}: {issue.message}
             </li>
           ))}

@@ -1,0 +1,97 @@
+.main {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100svh;
+  padding: 32px 20px;
+}
+
+.panel {
+  background: var(--bg-page);
+  border: 1px solid var(--border-strong);
+  max-width: 440px;
+  padding: 34px 32px;
+  width: 100%;
+}
+
+.brand {
+  align-items: center;
+  display: inline-flex;
+  font-size: 16px;
+  font-weight: 600;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.mark {
+  align-items: center;
+  background: var(--accent);
+  color: var(--accent-on);
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 700;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+
+.form {
+  display: grid;
+  gap: 15px;
+  margin-top: 24px;
+}
+
+.field {
+  display: grid;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 6px;
+}
+
+.input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.error {
+  color: var(--destructive);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.submit {
+  font-size: 16px;
+  min-height: 52px;
+  width: 100%;
+}
+
+.oauth {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.oauth a {
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  display: flex;
+  font-size: 15px;
+  justify-content: center;
+  min-height: 48px;
+  text-decoration: none;
+}
+
+@media (max-width: 480px) {
+  .main {
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .panel {
+    border: 0;
+    padding: 28px 22px;
+  }
+}

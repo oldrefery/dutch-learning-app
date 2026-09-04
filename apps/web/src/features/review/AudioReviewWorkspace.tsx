@@ -2,10 +2,50 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useRef } from 'react'
+import { WordDetailCard } from '@/features/words/WordDetailCard'
+import type { WordDetail } from '@/features/words/word-detail'
 import { getPreferredTranslation } from './review-domain'
 import type { ReviewWorkspaceData } from './types'
 import { useAudioReviewPlayback } from './useAudioReviewPlayback'
 import { useReviewSession } from './useReviewSession'
+
+const toWordDetail = (
+  word: ReviewWorkspaceData['words'][number],
+  translation: string | null
+): WordDetail => ({
+  analysisNotes: null,
+  antonyms: [],
+  article: word.article,
+  collectionId: word.collectionId,
+  conjugation: null,
+  createdAt: word.lastReviewedAt ?? '1970-01-01T00:00:00.000Z',
+  dutchLemma: word.dutchLemma,
+  dutchOriginal: word.dutchOriginal,
+  easinessFactor: word.easinessFactor,
+  examples: [],
+  expressionType: null,
+  id: word.id,
+  imageUrl: word.imageUrl,
+  intervalDays: word.intervalDays,
+  isExpression: false,
+  isIrregular: false,
+  isReflexive: false,
+  isSeparable: false,
+  lastReviewedAt: word.lastReviewedAt,
+  nextReviewDate: word.nextReviewDate,
+  partOfSpeech: word.partOfSpeech,
+  plural: null,
+  prefixPart: null,
+  preposition: null,
+  register: null,
+  repetitionCount: word.repetitionCount,
+  rootVerb: null,
+  synonyms: [],
+  translations: { en: translation ? [translation] : [], ru: [] },
+  ttsUrl: word.ttsUrl,
+  updatedAt: null,
+  usageNotes: null,
+})
 
 export function AudioReviewWorkspace({ data }: { data: ReviewWorkspaceData }) {
   const session = useReviewSession(data, 'all-due', null, 'meaning-recall')
@@ -176,14 +216,6 @@ export function AudioReviewWorkspace({ data }: { data: ReviewWorkspaceData }) {
         <h1 className="mt-5 text-5xl font-semibold tracking-tight">
           {currentWord.dutchLemma}
         </h1>
-        {session.revealed && (
-          <p
-            aria-live="polite"
-            className="mt-5 text-2xl text-neutral-700 dark:text-neutral-300"
-          >
-            {translation ?? 'Translation unavailable'}
-          </p>
-        )}
         {playback.playbackMessage && (
           <p
             aria-live="polite"
@@ -250,6 +282,11 @@ export function AudioReviewWorkspace({ data }: { data: ReviewWorkspaceData }) {
           </p>
         )}
       </article>
+      {session.revealed && (
+        <div aria-live="polite" className="mt-5">
+          <WordDetailCard word={toWordDetail(currentWord, translation)} />
+        </div>
+      )}
     </section>
   )
 }

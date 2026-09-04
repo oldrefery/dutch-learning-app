@@ -1,324 +1,323 @@
 import Image from 'next/image'
+import { Badge } from '@/components/ui/Badge'
+import { AudioButton } from './AudioButton'
 import { canRenderWordImage } from './word-detail'
-import type { WordConjugation, WordDetail, WordExample } from './word-detail'
+import type { WordDetail, WordExample } from './word-detail'
+import styles from './WordDetailCard.module.css'
 
-const Section = ({
+function CardSection({
   children,
+  className = '',
   title,
 }: {
   children: React.ReactNode
+  className?: string
   title: string
-}) => (
-  <section className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-    <h2 className="text-lg font-semibold">{title}</h2>
-    <div className="mt-4">{children}</div>
-  </section>
-)
-
-const EmptyValue = () => (
-  <p className="text-sm text-neutral-500">Not available</p>
-)
-
-const Tag = ({ children }: { children: React.ReactNode }) => (
-  <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
-    {children}
-  </span>
-)
-
-const TranslationSection = ({ word }: { word: WordDetail }) => {
-  const hasTranslations =
-    word.translations.en.length > 0 || word.translations.ru.length > 0
-
+}) {
   return (
-    <Section title="Translations">
-      {!hasTranslations ? (
-        <EmptyValue />
-      ) : (
-        <div className="grid gap-5 sm:grid-cols-2">
-          {word.translations.en.length > 0 && (
-            <div>
-              <h3 className="text-sm font-medium text-neutral-500">English</h3>
-              <ul className="mt-2 space-y-1 text-sm">
-                {word.translations.en.map(translation => (
-                  <li key={translation}>• {translation}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {word.translations.ru.length > 0 && (
-            <div>
-              <h3 className="text-sm font-medium text-neutral-500">Russian</h3>
-              <ul className="mt-2 space-y-1 text-sm">
-                {word.translations.ru.map(translation => (
-                  <li key={translation}>• {translation}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-    </Section>
+    <section className={`${styles.section} ${className}`}>
+      <h2 className={styles.sectionTitle}>{title}</h2>
+      {children}
+    </section>
   )
 }
 
-const GrammarSection = ({ word }: { word: WordDetail }) => {
-  const tags = [
-    word.partOfSpeech,
-    word.article,
-    word.plural ? `plural: ${word.plural}` : null,
-    word.register,
-    word.preposition ? `+ ${word.preposition}` : null,
-    word.isIrregular ? 'irregular' : null,
-    word.isReflexive ? 'reflexive' : null,
-    word.isSeparable ? 'separable' : null,
-    word.isExpression ? (word.expressionType ?? 'expression') : null,
-  ].filter((value): value is string => Boolean(value))
+function TranslationBlock({
+  language,
+  translations,
+}: {
+  language: 'English' | 'Russian'
+  translations: string[]
+}) {
+  if (translations.length === 0) return null
+  const [primary, ...alternates] = translations
 
   return (
-    <Section title="Grammar">
-      {tags.length === 0 ? (
-        <EmptyValue />
-      ) : (
-        <div className="flex flex-wrap gap-2">
-          {tags.map(tag => (
-            <Tag key={tag}>{tag}</Tag>
+    <div className={styles.languageBlock}>
+      <span className="dw-label">{language}</span>
+      <span
+        className={
+          language === 'English'
+            ? styles.primaryTranslation
+            : styles.russianTranslation
+        }
+      >
+        {primary}
+      </span>
+      {alternates.length > 0 && (
+        <div className={styles.alternates}>
+          {alternates.slice(0, 5).map(translation => (
+            <span className={styles.alternate} key={translation}>
+              {translation}
+            </span>
           ))}
         </div>
       )}
-      {word.isSeparable && word.prefixPart && word.rootVerb && (
-        <p className="mt-4 text-sm">
-          <strong>{word.prefixPart}</strong> + {word.rootVerb}
-        </p>
-      )}
-    </Section>
+    </div>
   )
 }
 
-const ConjugationRows = ({ conjugation }: { conjugation: WordConjugation }) => {
-  const rows = [
-    ['Present (ik)', conjugation.present],
-    ['Past (ik)', conjugation.simplePast],
-    ['Past (plural)', conjugation.simplePastPlural],
-    ['Past participle', conjugation.pastParticiple],
-  ].filter((row): row is [string, string] => Boolean(row[1]))
+function Examples({ examples }: { examples: WordExample[] }) {
+  if (examples.length === 0) return null
 
   return (
-    <dl className="grid gap-3 sm:grid-cols-2">
-      {rows.map(([label, value]) => (
-        <div
-          className="rounded-xl bg-neutral-50 p-3 dark:bg-neutral-950"
-          key={label}
-        >
-          <dt className="text-xs text-neutral-500">{label}</dt>
-          <dd className="mt-1 text-sm font-medium">{value}</dd>
-        </div>
-      ))}
-    </dl>
-  )
-}
-
-const ExamplesSection = ({ examples }: { examples: WordExample[] }) => (
-  <Section title="Examples">
-    {examples.length === 0 ? (
-      <EmptyValue />
-    ) : (
-      <div className="space-y-3">
+    <CardSection title="Examples">
+      <div className={styles.examples}>
         {examples.map(example => (
           <article
-            className="rounded-xl bg-neutral-50 p-4 dark:bg-neutral-950"
+            className={styles.example}
             key={`${example.nl}-${example.en}`}
           >
-            <p className="font-medium">{example.nl}</p>
-            <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-              {example.en}
-            </p>
+            <p className={styles.exampleDutch}>{example.nl}</p>
+            <p className={styles.exampleEnglish}>{example.en}</p>
             {example.ru && (
-              <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                {example.ru}
-              </p>
+              <p className={styles.exampleRussian}>{example.ru}</p>
             )}
           </article>
         ))}
       </div>
-    )}
-  </Section>
-)
+    </CardSection>
+  )
+}
 
-const UsageSection = ({ word }: { word: WordDetail }) => {
+function Grammar({ word }: { word: WordDetail }) {
+  const rows = [
+    ['Present', word.conjugation?.present],
+    ['Past sg', word.conjugation?.simplePast],
+    ['Past pl', word.conjugation?.simplePastPlural],
+    ['Participle', word.conjugation?.pastParticiple],
+    ['Plural', word.plural],
+    ['Prefix', word.prefixPart],
+    ['Root', word.rootVerb],
+  ].filter((row): row is [string, string] => Boolean(row[1]))
+
+  if (rows.length === 0) return null
+
+  return (
+    <CardSection title="Grammar">
+      <dl className={styles.definitionGrid}>
+        {rows.map(([label, value]) => (
+          <div className="contents" key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </CardSection>
+  )
+}
+
+function Relations({ word }: { word: WordDetail }) {
+  if (word.synonyms.length === 0 && word.antonyms.length === 0) return null
+
+  return (
+    <div className={styles.section}>
+      {word.synonyms.length > 0 && (
+        <CardSection title="Synonyms">
+          <div className={styles.relations}>
+            {word.synonyms.map(synonym => (
+              <span className={styles.relation} key={synonym}>
+                {synonym}
+              </span>
+            ))}
+          </div>
+        </CardSection>
+      )}
+      {word.antonyms.length > 0 && (
+        <CardSection title="Antonyms">
+          <div className={styles.relations}>
+            {word.antonyms.map(antonym => (
+              <span
+                className={`${styles.relation} ${styles.relationAntonym}`}
+                key={antonym}
+              >
+                {antonym}
+              </span>
+            ))}
+          </div>
+        </CardSection>
+      )}
+    </div>
+  )
+}
+
+function Usage({ word }: { word: WordDetail }) {
   if (!word.usageNotes) return null
 
   return (
-    <Section title="Usage & nuance">
+    <CardSection title="Usage guidance">
       {word.usageNotes.summary && (
-        <p className="text-sm">{word.usageNotes.summary}</p>
+        <p className={styles.usageSummary}>{word.usageNotes.summary}</p>
       )}
       {word.usageNotes.contrasts.length > 0 && (
-        <div className="mt-4 space-y-3">
+        <div className={styles.contrasts}>
           {word.usageNotes.contrasts.map(contrast => (
-            <article
-              className="rounded-xl bg-neutral-50 p-4 dark:bg-neutral-950"
-              key={`${contrast.term}-${contrast.distinction}`}
-            >
-              <h3 className="font-medium">{contrast.term}</h3>
-              <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                {contrast.distinction}
-              </p>
+            <article className={styles.contrast} key={contrast.term}>
+              <div>
+                <span className={styles.contrastTitle}>{contrast.term}</span>
+                <span className={styles.contrastLabel}>Confused with</span>
+              </div>
+              <p className={styles.contrastText}>{contrast.distinction}</p>
               {contrast.example && (
-                <div className="mt-3 border-t border-neutral-200 pt-3 text-sm dark:border-neutral-800">
-                  <p>{contrast.example.nl}</p>
-                  <p className="mt-1 text-neutral-600 dark:text-neutral-400">
-                    {contrast.example.en}
-                  </p>
-                </div>
+                <p className={styles.contrastExample}>
+                  {contrast.example.nl} — {contrast.example.en}
+                </p>
               )}
             </article>
           ))}
         </div>
       )}
-      <p className="mt-4 text-xs text-neutral-500">AI-generated guidance</p>
-    </Section>
+    </CardSection>
   )
 }
 
-const WordRelationsSection = ({ word }: { word: WordDetail }) => {
-  if (word.synonyms.length === 0 && word.antonyms.length === 0) return null
+function formatDate(value: string | null): string {
+  if (!value) return 'NEVER'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return 'UNSCHEDULED'
+  return new Intl.DateTimeFormat('en', {
+    day: 'numeric',
+    month: 'short',
+  })
+    .format(date)
+    .toUpperCase()
+}
+
+function Progress({ word }: { word: WordDetail }) {
+  const progress = Math.min(100, Math.round((word.repetitionCount / 8) * 100))
+  const status = word.repetitionCount >= 3 ? 'Established' : 'Learning'
 
   return (
-    <Section title="Related words">
-      <div className="grid gap-5 sm:grid-cols-2">
-        {word.synonyms.length > 0 && (
-          <div>
-            <h3 className="text-sm font-medium text-neutral-500">Synonyms</h3>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {word.synonyms.map(synonym => (
-                <Tag key={synonym}>{synonym}</Tag>
-              ))}
-            </div>
-          </div>
-        )}
-        {word.antonyms.length > 0 && (
-          <div>
-            <h3 className="text-sm font-medium text-neutral-500">Antonyms</h3>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {word.antonyms.map(antonym => (
-                <Tag key={antonym}>{antonym}</Tag>
-              ))}
-            </div>
-          </div>
-        )}
+    <CardSection className={styles.progressSection} title="Progress">
+      <div className={styles.progressRow}>
+        <div className={styles.progressTrack}>
+          <span style={{ width: `${progress}%` }} />
+        </div>
+        <div className={styles.progressFacts}>
+          <span>EF {word.easinessFactor.toFixed(2)}</span>
+          <span>Interval {word.intervalDays} d</span>
+          <span>Next {formatDate(word.nextReviewDate)}</span>
+          <span>Last {formatDate(word.lastReviewedAt)}</span>
+        </div>
+        <Badge tone={status === 'Established' ? 'success' : 'warning'}>
+          {status}
+        </Badge>
       </div>
-    </Section>
+      <span className="dw-support">
+        Repetition {word.repetitionCount} of 8 to mastered
+      </span>
+    </CardSection>
   )
 }
 
-const MediaSection = ({ word }: { word: WordDetail }) => {
-  const showImage = word.imageUrl && canRenderWordImage(word.imageUrl)
+export function WordDetailCard({
+  headingLevel = 'h2',
+  showProgress = true,
+  word,
+}: {
+  headingLevel?: 'h1' | 'h2'
+  showProgress?: boolean
+  word: WordDetail
+}) {
+  const Heading = headingLevel
+  const grammarBadges = [
+    word.partOfSpeech,
+    word.isReflexive ? 'Reflexive' : null,
+    word.isSeparable && word.prefixPart && word.rootVerb
+      ? `Separable · ${word.prefixPart} + ${word.rootVerb}`
+      : null,
+    word.preposition ? `Fixed prep · ${word.preposition}` : null,
+    word.register ? `${word.register} register` : null,
+    word.isIrregular ? 'Irregular' : null,
+    word.isExpression ? (word.expressionType ?? 'Expression') : null,
+  ].filter((value): value is string => Boolean(value))
+  const displayImage = word.imageUrl && canRenderWordImage(word.imageUrl)
 
   return (
-    <Section title="Media">
-      <div className="grid gap-5 md:grid-cols-2">
-        <div>
-          <h3 className="text-sm font-medium text-neutral-500">Image</h3>
-          {showImage && word.imageUrl ? (
-            <div className="relative mt-2 aspect-[3/2] overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
-              <Image
-                alt={`${word.dutchLemma} illustration`}
-                className="object-cover"
-                fill
-                loading="eager"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                src={word.imageUrl}
-              />
+    <article className={styles.card}>
+      <header className={styles.header}>
+        <div className={styles.headerCopy}>
+          <div className={styles.lemmaRow}>
+            <Heading className={styles.lemma}>
+              {word.article && (
+                <span className={styles.article}>{word.article} </span>
+              )}
+              {word.dutchLemma}
+              {word.preposition && (
+                <span className={styles.preposition}> {word.preposition}</span>
+              )}
+            </Heading>
+            {word.ttsUrl && (
+              <AudioButton label={word.dutchLemma} source={word.ttsUrl} />
+            )}
+          </div>
+
+          {grammarBadges.length > 0 && (
+            <div className={styles.badges}>
+              {grammarBadges.map(badge => (
+                <Badge
+                  key={badge}
+                  tone={badge.startsWith('Fixed prep') ? 'accent' : 'neutral'}
+                >
+                  {badge}
+                </Badge>
+              ))}
             </div>
-          ) : word.imageUrl ? (
+          )}
+
+          <TranslationBlock
+            language="English"
+            translations={word.translations.en}
+          />
+          <TranslationBlock
+            language="Russian"
+            translations={word.translations.ru}
+          />
+        </div>
+
+        <div className={styles.imageColumn}>
+          {displayImage && word.imageUrl ? (
+            <Image
+              alt={`${word.dutchLemma} — ${word.translations.en[0] ?? 'Dutch word'}`}
+              className={styles.image}
+              height={152}
+              loading="eager"
+              src={word.imageUrl}
+              width={152}
+            />
+          ) : (
+            <div className={styles.imagePlaceholder}>No image selected</div>
+          )}
+          {word.imageUrl && !displayImage && (
             <a
-              className="mt-2 inline-flex text-sm font-medium underline"
+              className="dw-button dw-button--secondary"
               href={word.imageUrl}
               rel="noreferrer"
               target="_blank"
             >
-              Open external image
+              Open image
             </a>
-          ) : (
-            <div className="mt-2 rounded-xl bg-neutral-50 p-5 text-sm text-neutral-500 dark:bg-neutral-950">
-              No image selected
-            </div>
           )}
         </div>
-        <div>
-          <h3 className="text-sm font-medium text-neutral-500">
-            Pronunciation
-          </h3>
-          {word.ttsUrl ? (
-            <audio className="mt-2 w-full" controls preload="none">
-              <source src={word.ttsUrl} />
-              Your browser does not support audio playback.
-            </audio>
-          ) : (
-            <div className="mt-2 rounded-xl bg-neutral-50 p-5 text-sm text-neutral-500 dark:bg-neutral-950">
-              No pronunciation available
-            </div>
-          )}
-        </div>
-      </div>
-    </Section>
-  )
-}
+      </header>
 
-const ProgressSection = ({ word }: { word: WordDetail }) => (
-  <Section title="Learning progress">
-    <dl className="grid gap-3 sm:grid-cols-4">
-      {[
-        ['Interval', `${word.intervalDays} days`],
-        ['Repetitions', String(word.repetitionCount)],
-        ['Ease factor', word.easinessFactor.toFixed(2)],
-        ['Next review', word.nextReviewDate],
-      ].map(([label, value]) => (
-        <div
-          className="rounded-xl bg-neutral-50 p-3 dark:bg-neutral-950"
-          key={label}
-        >
-          <dt className="text-xs text-neutral-500">{label}</dt>
-          <dd className="mt-1 text-sm font-medium">{value}</dd>
+      <div className={styles.body}>
+        <Examples examples={word.examples} />
+        <div className={styles.twoColumn}>
+          <Grammar word={word} />
+          <Relations word={word} />
         </div>
-      ))}
-    </dl>
-    {word.lastReviewedAt && (
-      <p className="mt-3 text-xs text-neutral-500">
-        Last reviewed: {new Date(word.lastReviewedAt).toLocaleString('en-GB')}
-      </p>
-    )}
-  </Section>
-)
-
-export function WordDetailCard({
-  showProgress = true,
-  word,
-}: {
-  showProgress?: boolean
-  word: WordDetail
-}) {
-  return (
-    <div className="grid gap-4">
-      <MediaSection word={word} />
-      <div className="grid gap-4 lg:grid-cols-2">
-        <TranslationSection word={word} />
-        <GrammarSection word={word} />
+        <Usage word={word} />
+        {word.analysisNotes && (
+          <CardSection title="Analysis notes">
+            <p className={styles.analysisText}>{word.analysisNotes}</p>
+            <span className="dw-chip self-start">
+              Cached · {formatDate(word.updatedAt ?? word.createdAt)}
+            </span>
+          </CardSection>
+        )}
+        {showProgress && <Progress word={word} />}
       </div>
-      {word.conjugation && (
-        <Section title="Conjugation">
-          <ConjugationRows conjugation={word.conjugation} />
-        </Section>
-      )}
-      <UsageSection word={word} />
-      <ExamplesSection examples={word.examples} />
-      <WordRelationsSection word={word} />
-      {word.analysisNotes && (
-        <Section title="Analysis notes">
-          <p className="whitespace-pre-wrap text-sm">{word.analysisNotes}</p>
-        </Section>
-      )}
-      {showProgress && <ProgressSection word={word} />}
-    </div>
+    </article>
   )
 }

@@ -1,5 +1,9 @@
 import type { Database } from '@woordenaar/supabase-contracts'
-import { isDueOnLocalDate, isMasteredWord } from '@woordenaar/domain'
+import {
+  DIFFICULT_EASINESS_FACTOR_THRESHOLD,
+  isDueOnLocalDate,
+  isMasteredWord,
+} from '@woordenaar/domain'
 
 type CollectionRow = Database['public']['Tables']['collections']['Row']
 type WordRow = Database['public']['Tables']['words']['Row']
@@ -12,7 +16,8 @@ export type CollectionSummaryRow = Pick<
 export type WordSummaryRow = Pick<
   WordRow,
   'collection_id' | 'next_review_date' | 'repetition_count'
->
+> &
+  Partial<Pick<WordRow, 'easiness_factor'>>
 
 export interface CollectionOverview {
   id: string
@@ -23,6 +28,7 @@ export interface CollectionOverview {
   totalWords: number
   masteredWords: number
   dueWords: number
+  difficultWords: number
   newWords: number
   progressPercentage: number
 }
@@ -53,6 +59,11 @@ export const buildCollectionOverviews = (
     const dueWords = collectionWords.filter(word =>
       isDueOnLocalDate(word.next_review_date, now)
     ).length
+    const difficultWords = collectionWords.filter(
+      word =>
+        word.easiness_factor !== undefined &&
+        word.easiness_factor <= DIFFICULT_EASINESS_FACTOR_THRESHOLD
+    ).length
 
     return {
       id: collection.collection_id,
@@ -63,6 +74,7 @@ export const buildCollectionOverviews = (
       totalWords,
       masteredWords,
       dueWords,
+      difficultWords,
       newWords,
       progressPercentage:
         totalWords === 0 ? 0 : Math.round((masteredWords / totalWords) * 100),

@@ -21,6 +21,7 @@ const createWord = (
   overrides: Partial<WordSummaryRow> = {}
 ): WordSummaryRow => ({
   collection_id: 'collection-1',
+  easiness_factor: 2.5,
   next_review_date: '2026-08-31T12:00:00.000Z',
   repetition_count: 0,
   ...overrides,
@@ -38,6 +39,7 @@ describe('buildCollectionOverviews', () => {
         totalWords: 0,
         masteredWords: 0,
         dueWords: 0,
+        difficultWords: 0,
         newWords: 0,
         progressPercentage: 0,
       },
@@ -63,6 +65,7 @@ describe('buildCollectionOverviews', () => {
       totalWords: 3,
       masteredWords: 2,
       dueWords: 1,
+      difficultWords: 0,
       newWords: 0,
       progressPercentage: 67,
     })

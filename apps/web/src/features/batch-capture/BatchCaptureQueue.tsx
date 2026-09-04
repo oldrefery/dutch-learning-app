@@ -1,6 +1,8 @@
 'use client'
 
+import { Button } from '@/components/ui/Button'
 import type { CollectionOption } from '@/features/words/repository'
+import styles from './BatchCapture.module.css'
 import { isWebBatchCaptureFinished } from './batch-capture-domain'
 import type { WebBatchCaptureItem } from './types'
 
@@ -10,23 +12,34 @@ const STATUS_LABELS: Record<WebBatchCaptureItem['status'], string> = {
   possible_duplicate: 'Possible duplicate',
   analyzing: 'Analyzing',
   awaiting_review: 'Awaiting review',
-  failed: 'Needs attention',
-  completed: 'Saved',
+  failed: 'Failed',
+  completed: 'Completed · saved',
   skipped: 'Skipped',
   cancelled: 'Cancelled',
 }
 
-const statusClassName = (status: WebBatchCaptureItem['status']): string => {
-  if (status === 'completed') {
-    return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+const STATUS_GLYPHS: Record<WebBatchCaptureItem['status'], string> = {
+  queued: '·',
+  checking_duplicate: '◴',
+  possible_duplicate: '!',
+  analyzing: '◴',
+  awaiting_review: '!',
+  failed: '×',
+  completed: '✓',
+  skipped: '–',
+  cancelled: '×',
+}
+
+const statusClassName = (status: WebBatchCaptureItem['status']) => {
+  if (status === 'completed') return styles.stateSuccess
+  if (status === 'failed') return styles.stateError
+  if (status === 'possible_duplicate' || status === 'awaiting_review') {
+    return styles.stateWarning
   }
-  if (status === 'failed' || status === 'possible_duplicate') {
-    return 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200'
+  if (status === 'analyzing' || status === 'checking_duplicate') {
+    return styles.stateActive
   }
-  if (status === 'cancelled' || status === 'skipped') {
-    return 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'
-  }
-  return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
+  return styles.stateNeutral
 }
 
 interface BatchCaptureQueueProps {
@@ -67,140 +80,137 @@ export function BatchCaptureQueue({
   const resolvedCount = items.filter(item =>
     ['completed', 'skipped', 'cancelled'].includes(item.status)
   ).length
+  const progress = items.length === 0 ? 0 : (resolvedCount / items.length) * 100
 
   return (
-    <div className="grid gap-4">
-      <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div className={styles.queue}>
+      <header className={styles.queueHeader}>
+        <div className={styles.queueTop}>
           <div>
-            <p className="text-sm font-medium text-neutral-500">
-              Persistent review queue
-            </p>
-            <h2 className="mt-1 text-2xl font-semibold tracking-tight">
-              {resolvedCount} of {items.length} resolved
-            </h2>
-            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-              {completedCount} saved · queue progress is stored in this browser
+            <span className="dw-chip">
+              {finished ? 'Finished' : isPaused ? 'Paused' : 'Running'}
+            </span>
+            <h2>Batch queue</h2>
+            <p className={styles.summary}>
+              {completedCount} saved · {items.length - resolvedCount} remaining
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className={styles.queueActions}>
             {!finished && (
-              <button
-                className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60 dark:bg-neutral-100 dark:text-neutral-950"
+              <Button
                 disabled={Boolean(activeItemId)}
                 onClick={isPaused ? onStart : onPause}
                 type="button"
+                variant="secondary"
               >
-                {isPaused ? 'Start / Resume' : 'Pause'}
-              </button>
+                {isPaused ? 'Resume' : 'Pause'}
+              </Button>
             )}
-            <button
-              className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-700"
+            <Button
               disabled={Boolean(activeItemId)}
               onClick={finished ? onClear : onCancelRemaining}
               type="button"
+              variant="ghost"
             >
-              {finished ? 'Clear queue' : 'Cancel remaining'}
-            </button>
+              {finished ? 'Clear completed' : 'Cancel all'}
+            </Button>
           </div>
         </div>
-
-        <label
-          className="mt-5 block text-sm font-medium"
-          htmlFor="queue-target"
-        >
+        <div className={styles.progressRow}>
+          <div
+            className="dw-progress"
+            role="progressbar"
+            aria-valuenow={progress}
+          >
+            <span style={{ width: `${progress}%` }} />
+          </div>
+          <span className={styles.summary}>
+            {resolvedCount} / {items.length}
+          </span>
+        </div>
+        <label className={styles.target} htmlFor="queue-target">
           Target collection
+          <select
+            disabled={Boolean(activeItemId)}
+            id="queue-target"
+            onChange={event => onTargetCollectionChange(event.target.value)}
+            value={targetCollectionId}
+          >
+            {collections.map(collection => (
+              <option key={collection.id} value={collection.id}>
+                {collection.name}
+              </option>
+            ))}
+          </select>
         </label>
-        <select
-          className="mt-2 w-full rounded-xl border border-neutral-300 bg-transparent px-4 py-3 text-sm disabled:opacity-60 dark:border-neutral-700"
-          disabled={Boolean(activeItemId)}
-          id="queue-target"
-          onChange={event => onTargetCollectionChange(event.target.value)}
-          value={targetCollectionId}
-        >
-          {collections.map(collection => (
-            <option key={collection.id} value={collection.id}>
-              {collection.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      </header>
 
-      {items.map(item => (
-        <article
-          className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
-          key={item.id}
-        >
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h3 className="font-semibold">{item.dutchText}</h3>
-              {item.translationHint && (
-                <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                  Unverified hint: {item.translationHint}
-                </p>
-              )}
-            </div>
-            <span
-              className={`w-fit rounded-full px-3 py-1 text-xs font-medium ${statusClassName(item.status)}`}
-            >
+      <div className={styles.table}>
+        <div className={`${styles.row} ${styles.rowHeader}`}>
+          <span>#</span>
+          <span>Entry</span>
+          <span>Hint</span>
+          <span>State</span>
+          <span>Action</span>
+        </div>
+        {items.map((item, index) => (
+          <article className={styles.row} key={item.id}>
+            <span className={styles.index}>
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <span className={styles.entry}>{item.dutchText}</span>
+            <span className={styles.hint}>
+              {item.translationHint ?? 'No hint'}
+            </span>
+            <span className={`${styles.state} ${statusClassName(item.status)}`}>
+              <span aria-hidden="true">{STATUS_GLYPHS[item.status]}</span>
               {STATUS_LABELS[item.status]}
             </span>
-          </div>
-
-          {item.duplicate && (
-            <p className="mt-3 text-sm text-amber-700 dark:text-amber-300">
-              A word with this lemma already exists
-              {item.duplicate.collectionName
-                ? ` in “${item.duplicate.collectionName}”`
-                : ' in your vocabulary'}
-              .
-            </p>
-          )}
-          {item.error && (
-            <p className="mt-3 text-sm text-red-600 dark:text-red-400">
-              {item.error}
-            </p>
-          )}
-
-          {item.status === 'possible_duplicate' && (
-            <div className="mt-4 flex flex-wrap gap-3">
-              <button
-                className="rounded-xl bg-amber-700 px-4 py-2 text-sm font-medium text-white dark:bg-amber-600"
-                onClick={() => onAnalyzeDuplicate(item.id)}
-                type="button"
-              >
-                Analyze anyway
-              </button>
-              <button
-                className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
-                onClick={() => onSkip(item.id)}
-                type="button"
-              >
-                Skip
-              </button>
-            </div>
-          )}
-
-          {item.status === 'failed' && (
-            <div className="mt-4 flex flex-wrap gap-3">
-              <button
-                className="rounded-xl bg-amber-700 px-4 py-2 text-sm font-medium text-white dark:bg-amber-600"
-                onClick={() => onRetry(item.id)}
-                type="button"
-              >
-                Retry
-              </button>
-              <button
-                className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
-                onClick={() => onSkip(item.id)}
-                type="button"
-              >
-                Skip
-              </button>
-            </div>
-          )}
-        </article>
-      ))}
+            <span className={styles.itemActions}>
+              {item.status === 'possible_duplicate' && (
+                <>
+                  <Button
+                    onClick={() => onAnalyzeDuplicate(item.id)}
+                    type="button"
+                  >
+                    Analyze anyway
+                  </Button>
+                  <Button
+                    onClick={() => onSkip(item.id)}
+                    type="button"
+                    variant="ghost"
+                  >
+                    Skip
+                  </Button>
+                </>
+              )}
+              {item.status === 'failed' && (
+                <>
+                  <Button onClick={() => onRetry(item.id)} type="button">
+                    Retry
+                  </Button>
+                  <Button
+                    onClick={() => onSkip(item.id)}
+                    type="button"
+                    variant="ghost"
+                  >
+                    Skip
+                  </Button>
+                </>
+              )}
+              {!['possible_duplicate', 'failed'].includes(item.status) && (
+                <span className={styles.summary}>—</span>
+              )}
+            </span>
+            {(item.error || item.duplicate) && (
+              <span className={styles.itemMessage}>
+                {item.error ??
+                  `Already exists${item.duplicate?.collectionName ? ` in ${item.duplicate.collectionName}` : ''}.`}
+              </span>
+            )}
+          </article>
+        ))}
+      </div>
     </div>
   )
 }

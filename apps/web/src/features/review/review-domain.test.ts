@@ -2,6 +2,7 @@ import type { ReviewEventEvidence, ReviewWord } from './types'
 import {
   buildRecognitionOptions,
   getReviewAnswer,
+  getReviewIntervalLabel,
   isDueOnLocalDate,
   resolveAdaptiveReviewMode,
   selectReviewWords,
@@ -111,6 +112,22 @@ describe('review domain', () => {
     expect(getReviewAnswer(verb, 'recognition')).toBe('to walk')
     expect(getReviewAnswer(verb, 'meaning-recall')).toBe('to walk')
     expect(getReviewAnswer(noun, 'dutch-production')).toBe('het huis')
+  })
+
+  it('describes the next interval for every assessment', () => {
+    const newWord = makeWord()
+    const establishedWord = makeWord({
+      easinessFactor: 2.5,
+      intervalDays: 6,
+      repetitionCount: 2,
+    })
+
+    expect(getReviewIntervalLabel(newWord, 'again')).toBe('in 10 minutes')
+    expect(getReviewIntervalLabel(newWord, 'hard')).toBe('in 1 day')
+    expect(getReviewIntervalLabel(newWord, 'good')).toBe('in 1 day')
+    expect(getReviewIntervalLabel(newWord, 'easy')).toBe('in 4 days')
+    expect(getReviewIntervalLabel(establishedWord, 'good')).toBe('in 15 days')
+    expect(getReviewIntervalLabel(establishedWord, 'easy')).toBe('in 20 days')
   })
 
   it('promotes and demotes adaptive review mode with the mobile policy', () => {
