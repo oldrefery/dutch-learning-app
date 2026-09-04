@@ -67,6 +67,7 @@ module.exports = {
     '**/__tests__/**/?(*.)+(spec|test).[jt]s?(x)',
     '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
+  testPathIgnorePatterns: ['<rootDir>/apps/web/e2e/'],
 
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
 

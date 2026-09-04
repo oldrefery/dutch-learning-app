@@ -11,6 +11,8 @@
     "web:build": "npm run build --workspace @woordenaar/web",
     "web:lint": "npm run lint --workspace @woordenaar/web",
     "web:typecheck": "npm run typecheck --workspace @woordenaar/web",
+    "web:e2e": "npm run test:e2e --workspace @woordenaar/web",
+    "web:e2e:install": "npm run test:e2e:install --workspace @woordenaar/web",
     "test": "jest --watch",
     "test:ci": "jest --ci --coverage --maxWorkers=2 --watchman=false",
     "test:coverage": "jest --coverage",
@@ -137,7 +139,10 @@
   ],
   "private": true,
   "overrides": {
+    "@humanfs/node": "0.16.8",
+    "@xmldom/xmldom": "0.8.15",
     "@types/react": "~19.2.10",
+    "browserslist": "4.28.9",
     "react-server-dom-webpack": "19.2.0"
   },
   "packageManager": "npm@11.11.0"

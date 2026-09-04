@@ -1,0 +1,51 @@
+name: Web E2E smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * *'
+
+concurrency:
+  group: web-e2e-production
+  cancel-in-progress: false
+
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 20
+    env:
+      WEB_E2E_BASE_URL: https://woordenaar.app
+      WEB_E2E_EMAIL: ${{ secrets.MAESTRO_TEST_EMAIL }}
+      WEB_E2E_PASSWORD: ${{ secrets.MAESTRO_TEST_PASSWORD }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22.13.0'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run production smoke tests
+        run: npm run web:e2e
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-e2e-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+          if-no-files-found: ignore
+          retention-days: 14
