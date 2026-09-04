@@ -21,6 +21,12 @@ describe('semantic duplicate matching', () => {
   it('keeps article and part of speech variants distinct', () => {
     expect(
       isSemanticWordMatch(
+        { dutch_lemma: 'tuin', part_of_speech: 'noun', article: 'het' },
+        analysis
+      )
+    ).toBe(false)
+    expect(
+      isSemanticWordMatch(
         { dutch_lemma: 'huis', part_of_speech: 'verb', article: 'het' },
         analysis
       )
@@ -31,5 +37,19 @@ describe('semantic duplicate matching', () => {
         analysis
       )
     ).toBe(false)
+  })
+
+  it('normalizes missing optional uniqueness fields', () => {
+    const unknownWord = parseWordAnalysis({
+      dutch_lemma: 'hoi',
+      translations: { en: ['hello'] },
+    })
+
+    expect(
+      isSemanticWordMatch(
+        { dutch_lemma: ' hoi ', part_of_speech: null, article: null },
+        unknownWord
+      )
+    ).toBe(true)
   })
 })

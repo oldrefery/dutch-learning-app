@@ -31,6 +31,12 @@ describe('collection validation', () => {
         `Use ${MAX_COLLECTION_NAME_LENGTH} characters or fewer.`
       )
     })
+
+    it('accepts a name exactly at the length limit', () => {
+      const name = 'a'.repeat(MAX_COLLECTION_NAME_LENGTH)
+
+      expect(validateCollectionName(name)).toEqual({ error: null, value: name })
+    })
   })
 
   describe('validateDeletionConfirmation', () => {
@@ -43,6 +49,9 @@ describe('collection validation', () => {
 
     it('rejects empty confirmation', () => {
       expect(validateDeletionConfirmation('', 'Travel')).toBe(
+        'Enter the collection name to confirm deletion.'
+      )
+      expect(validateDeletionConfirmation(null, 'Travel')).toBe(
         'Enter the collection name to confirm deletion.'
       )
     })
