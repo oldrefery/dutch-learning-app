@@ -1,5 +1,9 @@
 import Link from 'next/link'
+import { Headphones, Play } from 'lucide-react'
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import type { ReviewCollection, ReviewScope, ReviewSessionMode } from './types'
+import styles from './Review.module.css'
 
 const MODE_OPTIONS: readonly {
   description: string
@@ -9,23 +13,29 @@ const MODE_OPTIONS: readonly {
   {
     value: 'adaptive',
     label: 'Adaptive',
-    description: 'Adjust the challenge separately for every word.',
+    description: 'Moves each word between recognition, recall and production.',
   },
   {
     value: 'recognition',
     label: 'Recognition',
-    description: 'Choose the correct meaning.',
+    description: 'Choose the correct meaning from four options.',
   },
   {
     value: 'meaning-recall',
-    label: 'Meaning Recall',
-    description: 'See Dutch and recall the meaning.',
+    label: 'Meaning recall',
+    description: 'See the Dutch word, then recall its meaning.',
   },
   {
     value: 'dutch-production',
-    label: 'Dutch Production',
+    label: 'Dutch production',
     description: 'See a translation and produce the Dutch word.',
   },
+]
+
+const SCOPE_OPTIONS: readonly { label: string; value: ReviewScope }[] = [
+  { value: 'all-due', label: 'All due' },
+  { value: 'collection-due', label: 'One collection' },
+  { value: 'difficult-due', label: 'Difficult' },
 ]
 
 interface ReviewSetupProps {
@@ -55,103 +65,128 @@ export function ReviewSetup({
   onStart,
   scope,
 }: ReviewSetupProps) {
-  return (
-    <section>
-      <p className="text-sm font-medium text-neutral-500">Learning session</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">Review</h1>
-      <p className="mt-3 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-        Choose a challenge and a due-word scope. Progress is shared with the
-        mobile app.
-      </p>
-      <Link
-        className="mt-5 inline-flex rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
-        href="/app/review/audio"
-      >
-        Open Audio Review
-      </Link>
+  const estimateMinutes = Math.max(1, Math.ceil(dueCount * 0.35))
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        {MODE_OPTIONS.map(option => (
-          <button
-            aria-pressed={mode === option.value}
-            className={`rounded-2xl border p-5 text-left transition ${
-              mode === option.value
-                ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-950'
-                : 'border-neutral-200 bg-white hover:border-neutral-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900'
-            }`}
-            disabled={option.value === 'adaptive' && !adaptiveReviewEnabled}
-            key={option.value}
-            onClick={() => onModeChange(option.value)}
-            type="button"
-          >
-            <span className="font-semibold">{option.label}</span>
-            <span
-              className={`mt-1 block text-sm ${
-                mode === option.value
-                  ? 'text-neutral-300 dark:text-neutral-600'
-                  : 'text-neutral-600 dark:text-neutral-400'
-              }`}
-            >
-              {option.description}
-            </span>
-          </button>
-        ))}
+  return (
+    <section className={styles.setup}>
+      <header className={styles.intro}>
+        <p className="dw-label">Learning session</p>
+        <h1 className="dw-page-title">Review</h1>
+        <p className="dw-support">
+          Choose how you want to practise. Your progress stays in sync with the
+          mobile app.
+        </p>
+      </header>
+
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>
+          <span className="dw-label">1 · Choose a mode</span>
+        </div>
+        <div
+          aria-label="Review mode"
+          className={styles.modeGrid}
+          role="radiogroup"
+        >
+          {MODE_OPTIONS.map(option => {
+            const disabled =
+              option.value === 'adaptive' && !adaptiveReviewEnabled
+            return (
+              <button
+                aria-checked={mode === option.value}
+                className={styles.modeCard}
+                disabled={disabled}
+                key={option.value}
+                onClick={() => onModeChange(option.value)}
+                role="radio"
+                type="button"
+              >
+                <span className={styles.modeTop}>
+                  <span aria-hidden="true" className={styles.radio} />
+                  <span className={styles.modeName}>{option.label}</span>
+                  {option.value === 'adaptive' && !disabled && (
+                    <Badge className={styles.modeBadge} tone="accent">
+                      Recommended
+                    </Badge>
+                  )}
+                  {disabled && (
+                    <Badge className={styles.modeBadge}>Needs 10+</Badge>
+                  )}
+                </span>
+                <span className={styles.modeDescription}>
+                  {option.description}
+                </span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-        <label className="text-sm font-medium" htmlFor="review-scope">
-          Review scope
-        </label>
-        <select
-          className="mt-2 w-full rounded-xl border border-neutral-300 bg-transparent px-3 py-2 dark:border-neutral-700"
-          id="review-scope"
-          onChange={event => onScopeChange(event.target.value as ReviewScope)}
-          value={scope}
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>
+          <span className="dw-label">2 · Choose a scope</span>
+        </div>
+        <div
+          aria-label="Review scope"
+          className={styles.scopeControl}
+          role="radiogroup"
         >
-          <option value="all-due">All due words</option>
-          <option value="collection-due">One collection</option>
-          <option value="difficult-due">Difficult due words</option>
-        </select>
+          {SCOPE_OPTIONS.map(option => (
+            <button
+              aria-checked={scope === option.value}
+              className={styles.scopeButton}
+              key={option.value}
+              onClick={() => onScopeChange(option.value)}
+              role="radio"
+              type="button"
+            >
+              {option.label}
+              <span className={styles.scopeCount}>
+                {scope === option.value ? dueCount : '—'} due
+              </span>
+            </button>
+          ))}
+        </div>
 
         {scope === 'collection-due' && (
-          <label className="mt-4 block text-sm font-medium">
-            Collection
-            <select
-              className="mt-2 w-full rounded-xl border border-neutral-300 bg-transparent px-3 py-2 dark:border-neutral-700"
-              onChange={event => onCollectionChange(event.target.value)}
-              value={collectionId ?? ''}
-            >
-              <option disabled value="">
-                Choose a collection
-              </option>
-              {collections.map(collection => (
-                <option key={collection.id} value={collection.id}>
-                  {collection.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {dueCount} {dueCount === 1 ? 'word is' : 'words are'} due in this
-            scope.
-          </p>
-          <button
-            className="rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-950"
-            disabled={dueCount === 0}
-            onClick={onStart}
-            type="button"
+          <select
+            aria-label="Collection"
+            className={`dw-field ${styles.collectionSelect}`}
+            onChange={event => onCollectionChange(event.target.value)}
+            value={collectionId ?? ''}
           >
-            Start review
-          </button>
-        </div>
-        {emptyMessage && (
-          <p className="mt-4 text-sm text-amber-700 dark:text-amber-300">
-            {emptyMessage}
-          </p>
+            <option disabled value="">
+              Choose a collection
+            </option>
+            {collections.map(collection => (
+              <option key={collection.id} value={collection.id}>
+                {collection.name}
+              </option>
+            ))}
+          </select>
         )}
+      </div>
+
+      {emptyMessage && (
+        <p aria-live="polite" className={styles.error}>
+          {emptyMessage} <Link href="/app/guide">Read the learning guide</Link>.
+        </p>
+      )}
+
+      <div className={styles.startRow}>
+        <p className={styles.estimate}>
+          {dueCount} {dueCount === 1 ? 'word' : 'words'} · about{' '}
+          {estimateMinutes} min
+        </p>
+        <div className={styles.startActions}>
+          <Link className={styles.audioLink} href="/app/review/audio">
+            <Headphones aria-hidden="true" size={16} /> Audio review
+          </Link>
+          <Button disabled={dueCount === 0} onClick={onStart} type="button">
+            <Play aria-hidden="true" fill="currentColor" size={15} />
+            Start · {dueCount}
+            <span className="dw-key">Enter</span>
+          </Button>
+        </div>
       </div>
     </section>
   )

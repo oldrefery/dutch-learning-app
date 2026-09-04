@@ -7,6 +7,7 @@ import type {
 import { Word } from '@/types/database'
 import type { SyncStatus } from './schema'
 import { Sentry } from '@/lib/sentry'
+import { addLocalCalendarDays, toLocalDateKey } from '@woordenaar/domain'
 
 export interface LocalWord extends Word {
   sync_status: SyncStatus
@@ -1019,9 +1020,7 @@ export class WordRepository {
     `)
 
     try {
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split('T')[0] // Store-only date: "2025-12-22"
+      const tomorrow = toLocalDateKey(addLocalCalendarDays(new Date(), 1))
 
       await updateStatement.executeAsync(
         1,

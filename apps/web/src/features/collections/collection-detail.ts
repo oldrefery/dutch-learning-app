@@ -1,4 +1,9 @@
 import type { Database, Json } from '@woordenaar/supabase-contracts'
+import {
+  DIFFICULT_EASINESS_FACTOR_THRESHOLD,
+  isDueOnLocalDate,
+  isMasteredWord,
+} from '@woordenaar/domain'
 import { buildCollectionOverviews } from './collection-overview'
 
 type CollectionRow = Database['public']['Tables']['collections']['Row']
@@ -22,6 +27,7 @@ export type CollectionWordRow = Pick<
   | 'created_at'
   | 'dutch_lemma'
   | 'dutch_original'
+  | 'easiness_factor'
   | 'image_url'
   | 'interval_days'
   | 'next_review_date'
@@ -39,9 +45,11 @@ export interface CollectionWordListItem {
   id: string
   imageUrl: string | null
   intervalDays: number
+  isDifficult: boolean
   isDue: boolean
   isMastered: boolean
   partOfSpeech: string | null
+  nextReviewDate: string
   repetitionCount: number
   translation: string
 }
@@ -80,11 +88,6 @@ const getFirstEnglishTranslation = (translations: Json) => {
     : 'No translation'
 }
 
-const isDue = (nextReviewDate: string, now: Date) => {
-  const timestamp = Date.parse(nextReviewDate)
-  return Number.isFinite(timestamp) && timestamp <= now.getTime()
-}
-
 export const buildCollectionDetail = (
   collection: CollectionDetailRow,
   words: CollectionWordRow[],
@@ -111,9 +114,11 @@ export const buildCollectionDetail = (
       dutchOriginal: word.dutch_original,
       imageUrl: word.image_url,
       intervalDays: word.interval_days,
-      isDue: isDue(word.next_review_date, now),
-      isMastered: word.repetition_count > 2,
+      isDifficult: word.easiness_factor <= DIFFICULT_EASINESS_FACTOR_THRESHOLD,
+      isDue: isDueOnLocalDate(word.next_review_date, now),
+      isMastered: isMasteredWord(word),
       partOfSpeech: word.part_of_speech,
+      nextReviewDate: word.next_review_date,
       repetitionCount: word.repetition_count,
       translation: getFirstEnglishTranslation(word.translations),
     })),
@@ -122,14 +127,27 @@ export const buildCollectionDetail = (
 
 export const filterCollectionWords = (
   words: CollectionWordListItem[],
-  searchQuery: string
+  searchQuery: string,
+  status: 'all' | 'due' | 'difficult' | 'mastered' = 'all',
+  partOfSpeech = 'all'
 ) => {
   const normalizedQuery = searchQuery.trim().toLocaleLowerCase('nl-NL')
-  if (!normalizedQuery) return words
 
-  return words.filter(word =>
-    word.dutchLemma.toLocaleLowerCase('nl-NL').includes(normalizedQuery)
-  )
+  return words.filter(word => {
+    const matchesSearch =
+      !normalizedQuery ||
+      word.dutchLemma.toLocaleLowerCase('nl-NL').includes(normalizedQuery) ||
+      word.translation.toLocaleLowerCase().includes(normalizedQuery)
+    const matchesStatus =
+      status === 'all' ||
+      (status === 'due' && word.isDue) ||
+      (status === 'difficult' && word.isDifficult) ||
+      (status === 'mastered' && word.isMastered)
+    const matchesPartOfSpeech =
+      partOfSpeech === 'all' || word.partOfSpeech === partOfSpeech
+
+    return matchesSearch && matchesStatus && matchesPartOfSpeech
+  })
 }
 
 export const isCollectionId = (value: string) =>

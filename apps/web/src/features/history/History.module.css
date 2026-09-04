@@ -1,0 +1,117 @@
+.history {
+  max-width: 900px;
+}
+
+.group {
+  margin-top: 28px;
+}
+
+.groupHeader {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.groupHeader::after {
+  background: var(--border);
+  content: '';
+  flex: 1;
+  height: 1px;
+}
+
+.groupCount {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+}
+
+.list {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.row {
+  align-items: center;
+  border-bottom: 1px solid var(--divider);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(170px, 1fr) minmax(150px, 1fr) 100px 80px 88px;
+  min-height: 62px;
+  padding: 8px 14px;
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.lemma {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.input {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.time {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.actions {
+  display: flex;
+}
+
+.empty,
+.later {
+  border: 1px dashed var(--border-strong);
+  padding: 34px;
+  text-align: center;
+}
+
+.empty h2,
+.later h2 {
+  font-size: 18px;
+  margin: 8px 0;
+}
+
+.later {
+  background: color-mix(in oklch, var(--bg-page) 75%, var(--bg-surface));
+  margin-top: 32px;
+  text-align: left;
+}
+
+.later p {
+  margin: 8px 0 0;
+}
+
+@media (max-width: 700px) {
+  .row {
+    gap: 4px 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 12px;
+  }
+
+  .input {
+    grid-column: 1;
+  }
+
+  .row > :nth-child(3) {
+    grid-column: 1;
+  }
+
+  .time {
+    grid-column: 1;
+    text-align: left;
+  }
+
+  .actions {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+  }
+}

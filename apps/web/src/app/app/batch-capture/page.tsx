@@ -17,13 +17,9 @@ export default async function BatchCapturePage() {
       </Link>
 
       <div className="mt-5 max-w-3xl">
-        <p className="text-sm font-medium text-neutral-500">
-          AI-assisted acquisition
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-          Batch capture
-        </h1>
-        <p className="mt-3 text-neutral-600 dark:text-neutral-400">
+        <p className="dw-label">AI-assisted acquisition</p>
+        <h1 className="dw-page-title mt-2">Batch capture</h1>
+        <p className="dw-support mt-3">
           Build a recoverable queue of up to 30 Dutch words. Analysis runs one
           item at a time, and nothing is saved without your approval.
         </p>

@@ -1,0 +1,250 @@
+.composer {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  max-width: 700px;
+  padding: 22px;
+}
+
+.composer h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.composer textarea {
+  background: var(--bg-page);
+  border: 1px solid var(--border-strong);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  margin-top: 8px;
+  min-height: 196px;
+  padding: 12px 14px;
+  resize: vertical;
+  width: 100%;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.composerFooter {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 16px;
+}
+
+.composer select,
+.queue select {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  min-height: 44px;
+  padding: 0 12px;
+  width: 100%;
+}
+
+.counters {
+  color: var(--text-meta);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  gap: 14px;
+  letter-spacing: 0.05em;
+  margin-top: 14px;
+  text-transform: uppercase;
+}
+
+.issues {
+  color: var(--destructive-soft-text);
+  font-size: 13px;
+  margin: 12px 0 0;
+  padding-left: 20px;
+}
+
+.queue {
+  display: grid;
+  gap: 14px;
+  max-width: 1120px;
+}
+
+.queueHeader {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+}
+
+.queueTop {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.queueTop h2 {
+  font-size: 22px;
+  margin: 5px 0;
+}
+
+.queueActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.progressRow {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(120px, 1fr) auto;
+  margin-top: 16px;
+}
+
+.summary {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.target {
+  display: grid;
+  font-size: 12px;
+  gap: 5px;
+  margin-top: 14px;
+  max-width: 340px;
+}
+
+.table {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.row {
+  align-items: center;
+  border-bottom: 1px solid var(--divider);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 38px 300px minmax(150px, 1fr) 190px 180px;
+  min-height: 56px;
+  padding: 6px 14px;
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.rowHeader {
+  background: var(--bg-page);
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  min-height: 40px;
+  text-transform: uppercase;
+}
+
+.index {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 11px;
+}
+
+.entry {
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  color: var(--text-secondary);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.state {
+  align-items: center;
+  display: flex;
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  gap: 7px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.stateSuccess {
+  color: var(--success);
+}
+.stateWarning {
+  color: var(--warning-soft-text);
+}
+.stateError {
+  color: var(--destructive);
+}
+.stateNeutral {
+  color: var(--text-meta);
+}
+.stateActive {
+  color: var(--accent);
+}
+
+.itemActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.itemActions button {
+  min-height: 36px;
+}
+
+.itemMessage {
+  color: var(--destructive);
+  font-size: 12px;
+  grid-column: 3 / -1;
+}
+
+@media (max-width: 1000px) {
+  .row {
+    grid-template-columns: 32px minmax(180px, 1.4fr) minmax(140px, 1fr) 150px;
+  }
+
+  .row > :nth-child(5) {
+    grid-column: 4;
+  }
+}
+
+@media (max-width: 700px) {
+  .composerFooter {
+    grid-template-columns: 1fr;
+  }
+
+  .rowHeader {
+    display: none;
+  }
+
+  .row {
+    gap: 4px 10px;
+    grid-template-columns: 24px minmax(0, 1fr);
+    padding: 12px;
+  }
+
+  .hint,
+  .state,
+  .itemActions,
+  .itemMessage {
+    grid-column: 2;
+  }
+
+  .itemActions {
+    justify-content: flex-start;
+  }
+}

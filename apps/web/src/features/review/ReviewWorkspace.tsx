@@ -1,6 +1,11 @@
 'use client'
 
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { Check, Headphones, Volume2, X } from 'lucide-react'
 import { useCallback, useEffect, useRef } from 'react'
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { useWebSettings } from '@/features/settings/useWebSettings'
 import { ReviewCard } from './ReviewCard'
 import { ReviewSetup } from './ReviewSetup'
@@ -10,15 +15,15 @@ import type {
   ReviewScope,
   ReviewWorkspaceData,
 } from './types'
+import styles from './Review.module.css'
 
-interface ReviewWorkspaceProps {
-  data: ReviewWorkspaceData
-  initialCollectionId: string | null
-  initialScope: ReviewScope
-  userId: string
-}
+const MODE_LABELS = {
+  recognition: 'Recognition',
+  'meaning-recall': 'Meaning recall',
+  'dutch-production': 'Dutch production',
+} as const
 
-const Completion = ({
+function Completion({
   counts,
   onChangeMode,
   onRestart,
@@ -28,48 +33,56 @@ const Completion = ({
   onChangeMode: () => void
   onRestart: () => void
   total: number
-}) => (
-  <section className="mx-auto max-w-2xl rounded-3xl border border-neutral-200 bg-white p-8 text-center dark:border-neutral-800 dark:bg-neutral-900">
-    <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-      Session complete
-    </p>
-    <h1 className="mt-2 text-3xl font-semibold tracking-tight">Great work!</h1>
-    <p className="mt-3 text-neutral-600 dark:text-neutral-400">
-      You reviewed {total} {total === 1 ? 'word' : 'words'}.
-    </p>
-    <dl className="mt-7 grid grid-cols-4 gap-3">
-      {(Object.entries(counts) as [ReviewAssessment, number][]).map(
-        ([assessment, count]) => (
-          <div
-            className="rounded-xl bg-neutral-100 p-3 dark:bg-neutral-800"
-            key={assessment}
-          >
-            <dt className="text-xs capitalize text-neutral-500">
-              {assessment}
-            </dt>
-            <dd className="mt-1 text-xl font-semibold">{count}</dd>
-          </div>
-        )
+}) {
+  return (
+    <section className={styles.completion}>
+      <span aria-hidden="true" className={styles.completionIcon}>
+        <Check size={28} strokeWidth={2.2} />
+      </span>
+      <h1>Session complete</h1>
+      <p className="dw-support">
+        You reviewed {total} {total === 1 ? 'word' : 'words'}. Progress is
+        saved.
+      </p>
+
+      <dl className={styles.completionStats}>
+        {(Object.entries(counts) as [ReviewAssessment, number][]).map(
+          ([assessment, count]) => (
+            <div
+              className={`${styles.completionStat} ${styles[assessment]}`}
+              key={assessment}
+            >
+              <dt>{assessment}</dt>
+              <dd>{count}</dd>
+            </div>
+          )
+        )}
+      </dl>
+
+      {counts.again > 0 && (
+        <p className={styles.attention}>
+          {counts.again} {counts.again === 1 ? 'word needs' : 'words need'} a
+          little more attention. They will return soon.
+        </p>
       )}
-    </dl>
-    <div className="mt-7 flex flex-wrap justify-center gap-3">
-      <button
-        className="rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-950"
-        onClick={onRestart}
-        type="button"
-      >
-        Review due words again
-      </button>
-      <button
-        className="rounded-xl border border-neutral-300 px-5 py-2.5 text-sm font-medium dark:border-neutral-700"
-        onClick={onChangeMode}
-        type="button"
-      >
-        Change mode
-      </button>
-    </div>
-  </section>
-)
+
+      <div className={styles.completionActions}>
+        <Button onClick={onRestart} type="button">
+          Review due words again
+        </Button>
+        <Button onClick={onChangeMode} type="button" variant="secondary">
+          Change mode
+        </Button>
+        <Link className="dw-button dw-button--secondary" href="/app/insights">
+          View insights
+        </Link>
+        <Link className="dw-button dw-button--ghost" href="/app/collections">
+          Back to collections
+        </Link>
+      </div>
+    </section>
+  )
+}
 
 export function ReviewWorkspace({
   data,
@@ -78,6 +91,7 @@ export function ReviewWorkspace({
   userId,
 }: ReviewWorkspaceProps) {
   const session = useReviewSession(data, initialScope, initialCollectionId)
+  const router = useRouter()
   const { isHydrated, settings, update } = useWebSettings(userId)
   const appliedPreferencesRef = useRef(false)
   const setSessionCollectionId = session.setCollectionId
@@ -149,27 +163,83 @@ export function ReviewWorkspace({
     settings.autoPlayPronunciation,
   ])
 
+  const {
+    assessed,
+    currentWord,
+    effectiveMode,
+    pending,
+    recognitionOptions,
+    revealed,
+    selectedOption,
+  } = session
+
   useEffect(() => {
     if (session.stage !== 'review') return
 
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target
       if (
+        target instanceof HTMLButtonElement ||
         target instanceof HTMLInputElement ||
         target instanceof HTMLSelectElement ||
-        target instanceof HTMLTextAreaElement
+        target instanceof HTMLTextAreaElement ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.repeat
       ) {
         return
       }
 
+      if (event.key === 'Escape') {
+        session.changeMode()
+        return
+      }
+      if (event.key.toLowerCase() === 'p') {
+        playPronunciation()
+        return
+      }
+      if (event.key.toLowerCase() === 'd' && currentWord?.collectionId) {
+        router.push(
+          `/app/collections/${currentWord.collectionId}/words/${currentWord.id}`
+        )
+        return
+      }
       if (event.key === 'ArrowLeft') session.goTo(-1)
       if (event.key === 'ArrowRight') session.goTo(1)
-      if (event.key === ' ' && session.effectiveMode !== 'recognition') {
-        event.preventDefault()
-        session.setRevealed(true)
-      }
-      if (!session.revealed || session.assessed) return
 
+      const optionIndex = Number(event.key) - 1
+      if (
+        effectiveMode === 'recognition' &&
+        !revealed &&
+        optionIndex >= 0 &&
+        optionIndex < (recognitionOptions?.length ?? 0)
+      ) {
+        const option = recognitionOptions?.[optionIndex]
+        if (option) session.selectOption(option)
+        return
+      }
+
+      if (event.key === ' ') {
+        event.preventDefault()
+        if (!revealed && effectiveMode !== 'recognition') {
+          session.setRevealed(true)
+          return
+        }
+        if (revealed && !assessed) {
+          const assessment =
+            effectiveMode === 'recognition' &&
+            selectedOption?.isCorrect === false
+              ? 'again'
+              : 'good'
+          void session.submit(assessment)
+        }
+        return
+      }
+
+      if (!revealed || assessed || pending || effectiveMode === 'recognition') {
+        return
+      }
       const assessmentByKey: Partial<Record<string, ReviewAssessment>> = {
         '1': 'again',
         '2': 'hard',
@@ -177,19 +247,23 @@ export function ReviewWorkspace({
         '4': 'easy',
       }
       const assessment = assessmentByKey[event.key]
-      const wrongRecognition =
-        session.effectiveMode === 'recognition' &&
-        session.selectedOption?.isCorrect === false
-      if (wrongRecognition && assessment !== 'again') return
-      if (session.effectiveMode === 'recognition' && assessment === 'again') {
-        if (!wrongRecognition) return
-      }
       if (assessment) void session.submit(assessment)
     }
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [session])
+  }, [
+    assessed,
+    currentWord,
+    effectiveMode,
+    pending,
+    playPronunciation,
+    recognitionOptions,
+    revealed,
+    router,
+    selectedOption?.isCorrect,
+    session,
+  ])
 
   if (session.stage === 'setup') {
     return (
@@ -233,70 +307,90 @@ export function ReviewWorkspace({
 
   if (!session.currentWord) return null
 
+  const completedCount = Object.values(session.assessmentCounts).reduce(
+    (total, count) => total + count,
+    0
+  )
+  const progress =
+    ((session.currentIndex + 1) / session.sessionWords.length) * 100
+  const modeLabel = MODE_LABELS[session.effectiveMode]
+
   return (
-    <section>
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-neutral-500">
-            {session.assessed ? 'Reviewed' : 'Current card'}
-          </p>
-          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-            Card {session.currentIndex + 1} of {session.sessionWords.length} ·{' '}
-            {session.assessmentCounts.again +
-              session.assessmentCounts.hard +
-              session.assessmentCounts.good +
-              session.assessmentCounts.easy}{' '}
-            complete
-          </p>
-        </div>
+    <section className={`dw-review-focus ${styles.focus}`}>
+      <header className={styles.sessionTopbar}>
         <button
-          className="text-sm text-neutral-600 hover:underline dark:text-neutral-400"
+          className={styles.exit}
           onClick={session.changeMode}
           type="button"
         >
-          End session
+          <X aria-hidden="true" size={18} /> <span>Exit</span>
+          <span className={styles.key}>Esc</span>
         </button>
-      </div>
+        <div className={styles.sessionProgress}>
+          <div
+            className="dw-progress"
+            role="progressbar"
+            aria-valuemax={100}
+            aria-valuenow={progress}
+          >
+            <span style={{ width: `${progress}%` }} />
+          </div>
+          <span>
+            {session.currentIndex + 1} / {session.sessionWords.length}
+          </span>
+        </div>
+        <div className={styles.sessionMeta}>
+          <Badge className={styles.modeChip} tone="accent">
+            {session.mode === 'adaptive'
+              ? `Adaptive → ${modeLabel}`
+              : modeLabel}
+          </Badge>
+          <button
+            aria-label="Play pronunciation"
+            className="dw-icon-button"
+            onClick={playPronunciation}
+            type="button"
+          >
+            {session.effectiveMode === 'dutch-production' ? (
+              <Headphones aria-hidden="true" size={17} />
+            ) : (
+              <Volume2 aria-hidden="true" size={17} />
+            )}
+          </button>
+        </div>
+      </header>
 
-      <ReviewCard
-        adaptiveMessage={session.adaptiveMessage}
-        answer={session.answer}
-        assessed={session.assessed}
-        error={session.error}
-        mode={session.effectiveMode}
-        onAssessment={assessment => void session.submit(assessment)}
-        onPlayPronunciation={playPronunciation}
-        onReveal={() => session.setRevealed(true)}
-        onSelectOption={session.selectOption}
-        options={session.recognitionOptions}
-        pending={session.pending}
-        revealed={session.revealed}
-        selectedOption={session.selectedOption}
-        translation={session.translation}
-        word={session.currentWord}
-      />
+      <div className={styles.sessionBody}>
+        <ReviewCard
+          adaptiveMessage={session.adaptiveMessage}
+          answer={session.answer}
+          assessed={session.assessed}
+          error={session.error}
+          mode={session.effectiveMode}
+          onAssessment={assessment => void session.submit(assessment)}
+          onPlayPronunciation={playPronunciation}
+          onReveal={() => session.setRevealed(true)}
+          onSelectOption={session.selectOption}
+          options={session.recognitionOptions}
+          pending={session.pending}
+          revealed={session.revealed}
+          selectedOption={session.selectedOption}
+          translation={session.translation}
+          word={session.currentWord}
+        />
 
-      <div className="mx-auto mt-5 flex max-w-3xl items-center justify-between gap-4">
-        <button
-          className="rounded-xl border border-neutral-300 px-4 py-2 text-sm disabled:opacity-40 dark:border-neutral-700"
-          disabled={session.sessionWords.length < 2 || session.pending}
-          onClick={() => session.goTo(-1)}
-          type="button"
-        >
-          ← Previous
-        </button>
-        <p className="hidden text-xs text-neutral-500 sm:block">
-          Space reveals · 1–4 rates · arrows navigate
-        </p>
-        <button
-          className="rounded-xl border border-neutral-300 px-4 py-2 text-sm disabled:opacity-40 dark:border-neutral-700"
-          disabled={session.sessionWords.length < 2 || session.pending}
-          onClick={() => session.goTo(1)}
-          type="button"
-        >
-          Next →
-        </button>
+        <footer className={styles.sessionFooter}>
+          <span>{completedCount} completed</span>
+          <span>Space continue · P audio · D details · Esc exit</span>
+        </footer>
       </div>
     </section>
   )
+}
+
+interface ReviewWorkspaceProps {
+  data: ReviewWorkspaceData
+  initialCollectionId: string | null
+  initialScope: ReviewScope
+  userId: string
 }

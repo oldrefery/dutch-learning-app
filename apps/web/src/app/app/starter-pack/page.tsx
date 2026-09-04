@@ -24,15 +24,11 @@ export default async function StarterPackPage() {
       </Link>
 
       <div className="mt-5 max-w-3xl">
-        <p className="text-sm font-medium text-neutral-500">
+        <p className="dw-label">
           Official content · Version {manifest.version}
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-          {manifest.title}
-        </h1>
-        <p className="mt-3 text-neutral-600 dark:text-neutral-400">
-          {manifest.description}
-        </p>
+        <h1 className="dw-page-title mt-2">{manifest.title}</h1>
+        <p className="dw-support mt-3">{manifest.description}</p>
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">

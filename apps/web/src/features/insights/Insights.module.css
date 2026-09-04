@@ -1,0 +1,241 @@
+.dashboard {
+  display: grid;
+  gap: 24px;
+}
+
+.metrics {
+  background: var(--border);
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.metric {
+  background: var(--bg-surface);
+  padding: 16px 18px;
+}
+
+.metric dt {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.metric dd {
+  font-size: 30px;
+  font-weight: 600;
+  margin: 6px 0 0;
+}
+
+.charts {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1.35fr 1fr;
+}
+
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 22px;
+}
+
+.panelHeader {
+  align-items: flex-start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.panelHeader h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.panelHeader p {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin: 5px 0 0;
+}
+
+.tableToggle {
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bars {
+  display: grid;
+  gap: 13px;
+  margin-top: 22px;
+}
+
+.barRow {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 120px minmax(60px, 1fr) 56px;
+}
+
+.distribution .barRow {
+  grid-template-columns: 132px minmax(50px, 1fr) 44px;
+}
+
+.barLabel {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.barTrack {
+  background: var(--neutral-soft);
+  height: 8px;
+}
+
+.barFill {
+  background: var(--accent);
+  display: block;
+  height: 100%;
+  min-width: 2px;
+}
+
+.distribution .barFill {
+  background: var(--success);
+}
+
+.barValue {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 11px;
+  text-align: right;
+}
+
+.dataTable {
+  border-collapse: collapse;
+  margin-top: 18px;
+  width: 100%;
+}
+
+.dataTable th,
+.dataTable td {
+  border-bottom: 1px solid var(--divider);
+  padding: 10px;
+  text-align: left;
+}
+
+.dataTable th {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.words {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.wordsHeader {
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  padding: 18px 20px;
+}
+
+.wordsHeader h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.wordsHeader p {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+.wordRow {
+  align-items: center;
+  border-bottom: 1px solid var(--divider);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(180px, 1fr) minmax(150px, 1fr) 80px 90px;
+  min-height: 58px;
+  padding: 8px 20px;
+  text-decoration: none;
+}
+
+.wordRow:last-child {
+  border-bottom: 0;
+}
+
+.wordName {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.wordTranslation,
+.wordCollection {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wordMetric {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 11px;
+  text-align: right;
+}
+
+.empty {
+  border: 1px dashed var(--border-strong);
+  padding: 56px 24px;
+  text-align: center;
+}
+
+.empty h2 {
+  margin: 12px 0 6px;
+}
+
+@media (max-width: 900px) {
+  .charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .barRow,
+  .distribution .barRow {
+    grid-template-columns: 92px minmax(40px, 1fr) 40px;
+  }
+
+  .wordsHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wordRow {
+    gap: 3px 10px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 12px 14px;
+  }
+
+  .wordTranslation,
+  .wordCollection {
+    grid-column: 1;
+  }
+
+  .wordMetric {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+}

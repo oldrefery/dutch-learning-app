@@ -1,3 +1,5 @@
+import styles from './Auth.module.css'
+
 interface OAuthButtonsProps {
   nextPath: string
 }
@@ -13,19 +15,9 @@ export function OAuthButtons({ nextPath }: OAuthButtonsProps) {
   }
 
   return (
-    <nav aria-label="Social sign-in" className="mt-6 grid gap-3 sm:grid-cols-2">
-      <a
-        className="rounded-xl border border-neutral-300 px-4 py-3 text-center text-sm font-medium dark:border-neutral-700"
-        href={getOAuthHref('google')}
-      >
-        Continue with Google
-      </a>
-      <a
-        className="rounded-xl border border-neutral-300 px-4 py-3 text-center text-sm font-medium dark:border-neutral-700"
-        href={getOAuthHref('apple')}
-      >
-        Continue with Apple
-      </a>
+    <nav aria-label="Social sign-in" className={styles.oauth}>
+      <a href={getOAuthHref('google')}>Continue with Google</a>
+      <a href={getOAuthHref('apple')}>Continue with Apple</a>
     </nav>
   )
 }

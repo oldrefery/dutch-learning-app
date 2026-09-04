@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { findOwnedSemanticDuplicate } from '@/features/analysis/actions'
 import { analyzeWordWithAi } from '@/features/analysis/analysis-client'
 import { serializeWordAnalysis } from '@/features/analysis/analysis-contract'
+import { useWebSettings } from '@/features/settings/useWebSettings'
 import type { CollectionOption } from '@/features/words/repository'
 import { findOwnedLemmaDuplicateForBatch } from './actions'
 import { BatchCaptureComposer } from './BatchCaptureComposer'
@@ -26,7 +27,14 @@ export function BatchCaptureWorkspace({
     () => collections.map(collection => collection.id),
     [collections]
   )
-  const defaultCollectionId = collections[0]?.id ?? ''
+  const { isHydrated, settings } = useWebSettings(userId)
+  const preferredCollectionId = collections.some(
+    collection => collection.id === settings.lastSelectedCollectionId
+  )
+    ? settings.lastSelectedCollectionId
+    : null
+  const defaultCollectionId =
+    (isHydrated ? preferredCollectionId : null) ?? collections[0]?.id ?? ''
   const {
     cancelRemaining,
     clearQueue,
@@ -41,6 +49,24 @@ export function BatchCaptureWorkspace({
     userId,
   })
   const processingRef = useRef(false)
+
+  useEffect(() => {
+    if (
+      !isHydrated ||
+      state.items.length > 0 ||
+      !preferredCollectionId ||
+      state.targetCollectionId === preferredCollectionId
+    ) {
+      return
+    }
+    setTargetCollectionId(preferredCollectionId)
+  }, [
+    isHydrated,
+    preferredCollectionId,
+    setTargetCollectionId,
+    state.items.length,
+    state.targetCollectionId,
+  ])
 
   const processItem = useCallback(
     async (item: WebBatchCaptureItem) => {
@@ -161,6 +187,7 @@ export function BatchCaptureWorkspace({
           item={reviewItem}
           onSaved={itemId => resolveItem(itemId, 'completed')}
           onSkip={itemId => resolveItem(itemId, 'skipped')}
+          userId={userId}
         />
       )}
       <BatchCaptureQueue

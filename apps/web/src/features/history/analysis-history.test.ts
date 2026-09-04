@@ -10,6 +10,7 @@ describe('analysis history', () => {
           dutchLemma: 'huis',
           analyzedAt: '2026-08-30T12:00:00.000Z',
           cacheHit: true,
+          collectionName: 'Essentials',
           source: 'cache',
         },
         { id: 'invalid' },
@@ -23,6 +24,7 @@ describe('analysis history', () => {
         dutchLemma: 'huis',
         analyzedAt: '2026-08-30T12:00:00.000Z',
         cacheHit: true,
+        collectionName: 'Essentials',
         source: 'cache',
       },
     ])

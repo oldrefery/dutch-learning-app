@@ -1,4 +1,5 @@
 import {
+  calculateSRSProgress,
   DIFFICULT_EASINESS_FACTOR_THRESHOLD,
   isDueOnLocalDate,
   toLocalDateKey,
@@ -86,6 +87,27 @@ export const getReviewAnswer = (word: ReviewWord, mode: ReviewMode) =>
   mode === 'dutch-production'
     ? getDutchProductionAnswer(word)
     : (getPreferredTranslation(word) ?? 'Translation unavailable')
+
+const formatInterval = (days: number) => {
+  if (days === 0) return 'in 10 minutes'
+  if (days === 1) return 'in 1 day'
+  return `in ${days} days`
+}
+
+export const getReviewIntervalLabel = (
+  word: ReviewWord,
+  assessment: ReviewAssessment
+) =>
+  formatInterval(
+    calculateSRSProgress(
+      {
+        easinessFactor: word.easinessFactor,
+        intervalDays: word.intervalDays,
+        repetitionCount: word.repetitionCount,
+      },
+      assessment
+    ).intervalDays
+  )
 
 const getTranslationKeys = (word: ReviewWord) =>
   new Set(getTranslationValues(word.translations).map(normalizeAnswer))

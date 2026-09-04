@@ -179,7 +179,7 @@ export function StarterPackImport({
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-2">
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {visibleEntries.map(item => {
           const { entry } = item
           const translation = entry.translations.en.join(', ')

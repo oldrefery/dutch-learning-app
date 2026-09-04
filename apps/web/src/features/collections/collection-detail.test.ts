@@ -26,6 +26,7 @@ const createWord = (
   created_at: '2026-08-01T12:00:00.000Z',
   dutch_lemma: 'reizen',
   dutch_original: null,
+  easiness_factor: 2.5,
   image_url: null,
   interval_days: 1,
   next_review_date: '2026-08-31T12:00:00.000Z',
@@ -67,6 +68,7 @@ describe('collection detail', () => {
     expect(detail.words[0]).toMatchObject({
       dutchLemma: 'reizen',
       isDue: true,
+      isDifficult: false,
       isMastered: true,
       translation: 'to travel',
     })
@@ -78,6 +80,17 @@ describe('collection detail', () => {
     ])
 
     expect(detail.words[0].translation).toBe('No translation')
+  })
+
+  it('marks a date-only word due for the whole local calendar day', () => {
+    const localHalfPastMidnight = new Date(2026, 7, 30, 0, 30)
+    const detail = buildCollectionDetail(
+      collection,
+      [createWord({ next_review_date: '2026-08-30' })],
+      localHalfPastMidnight
+    )
+
+    expect(detail.words[0].isDue).toBe(true)
   })
 
   it('filters Dutch lemmas case-insensitively', () => {

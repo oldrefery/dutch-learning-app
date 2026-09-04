@@ -1,0 +1,207 @@
+.workflow {
+  display: grid;
+  gap: 20px;
+}
+
+.capture {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 22px;
+}
+
+.captureLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.captureRow {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.captureInput {
+  background: var(--bg-page);
+  border: 1px solid var(--border-strong);
+  font-size: 20px;
+  font-weight: 500;
+  height: 64px;
+  min-width: 0;
+  padding: 0 18px;
+}
+
+.captureButton {
+  min-width: 132px;
+}
+
+.collectionRow {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 14px;
+}
+
+.collectionRow label {
+  color: var(--text-meta);
+  display: grid;
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  gap: 6px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.collectionSelect {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  height: 44px;
+  padding: 0 12px;
+}
+
+.alternateLinks {
+  display: flex;
+  font-size: 13px;
+  gap: 16px;
+}
+
+.alternateLinks a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hint {
+  color: var(--text-meta);
+  font-size: 12px;
+  margin: 9px 0 0;
+}
+
+.analyzing {
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  color: var(--accent-soft-text);
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px;
+}
+
+.checklist {
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  gap: 8px 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.error {
+  background: var(--destructive-soft);
+  border-left: 3px solid var(--destructive);
+  color: var(--destructive-soft-text);
+  margin-top: 14px;
+  padding: 14px;
+}
+
+.resultHeader {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.duplicate {
+  background: var(--warning-soft);
+  border: 1px solid color-mix(in oklch, var(--warning) 50%, var(--border));
+  border-left: 3px solid var(--warning);
+  color: var(--warning-soft-text);
+  padding: 15px 17px;
+}
+
+.duplicate a {
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.cardWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.imagePanel,
+.savePanel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 20px;
+}
+
+.panelHeader {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.panelHeader h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.panelHeader p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 4px 0 0;
+}
+
+.saveRow {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 8px;
+}
+
+.savePanel label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.saveSelect {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  min-height: 48px;
+  padding: 0 12px;
+}
+
+@media (max-width: 600px) {
+  .capture {
+    padding: 16px;
+  }
+
+  .captureRow,
+  .collectionRow,
+  .saveRow {
+    grid-template-columns: 1fr;
+  }
+
+  .captureButton {
+    min-height: 50px;
+    width: 100%;
+  }
+
+  .alternateLinks {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

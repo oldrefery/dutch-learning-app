@@ -13,6 +13,7 @@ module.exports = defineConfig([
       'supabase/functions/*',
       '.tools/*',
       'apps/web/**',
+      'design/**',
       'packages/**',
     ],
   },

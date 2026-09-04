@@ -1,5 +1,5 @@
 export const DIFFICULT_EASINESS_FACTOR_THRESHOLD = 2.1
-export const MASTERED_MIN_REPETITIONS = 3
+import { isMasteredWord } from './srs'
 
 const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
@@ -74,7 +74,7 @@ export const isDueOnLocalDate = (
   )
 }
 
-const addLocalCalendarDays = (date: Date, dayOffset: number): Date =>
+export const addLocalCalendarDays = (date: Date, dayOffset: number): Date =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate() + dayOffset, 12)
 
 export function buildReviewForecast<T extends ReviewInsightWord>(
@@ -176,12 +176,6 @@ export function buildEasinessDistribution<T extends ReviewInsightWord>(
 export const isDifficultWord = <T extends ReviewInsightWord>(
   word: T
 ): boolean => word.easiness_factor <= DIFFICULT_EASINESS_FACTOR_THRESHOLD
-
-export const isMasteredWord = <
-  T extends Pick<ReviewInsightWord, 'repetition_count'>,
->(
-  word: T
-): boolean => word.repetition_count >= MASTERED_MIN_REPETITIONS
 
 export function buildReviewInsights<T extends ReviewInsightWord>(
   words: readonly T[],

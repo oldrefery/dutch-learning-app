@@ -1,9 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useActionState, useState } from 'react'
+import { useActionState, useState, useSyncExternalStore } from 'react'
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
 import type { CollectionOption } from '@/features/words/repository'
+import { useWebSettings } from '@/features/settings/useWebSettings'
 import { findOwnedSemanticDuplicate, saveAnalyzedWord } from './actions'
 import {
   analyzeWordWithAi,
@@ -24,19 +27,32 @@ import { buildAnalysisPreview } from './analysis-preview'
 import type { DuplicateWordResult } from './form-state'
 import { INITIAL_ADD_WORD_ACTION_STATE } from './form-state'
 import { ImageOptionGrid } from './ImageOptionGrid'
+import styles from './AddWordWorkflow.module.css'
+
+const subscribeToConnectivity = (listener: () => void) => {
+  window.addEventListener('online', listener)
+  window.addEventListener('offline', listener)
+  return () => {
+    window.removeEventListener('online', listener)
+    window.removeEventListener('offline', listener)
+  }
+}
+
+const getConnectivitySnapshot = () => navigator.onLine
+const getConnectivityServerSnapshot = () => true
 
 const AnalysisMetadataBadge = ({
   metadata,
 }: {
   metadata: AnalysisMetadata
 }) => (
-  <p className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+  <Badge tone={metadata.cacheHit ? 'neutral' : 'success'}>
     {metadata.cacheHit
       ? `Cached analysis${metadata.usageCount ? ` · used ${metadata.usageCount} times` : ''}`
       : metadata.forceRefresh
         ? 'Fresh AI reanalysis'
         : 'Fresh AI analysis'}
-  </p>
+  </Badge>
 )
 
 const ImageOptions = ({
@@ -55,8 +71,8 @@ const ImageOptions = ({
   onSelect: (url: string) => void
 }) => {
   return (
-    <section className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <section className={styles.imagePanel}>
+      <div className={styles.panelHeader}>
         <div>
           <h2 className="text-lg font-semibold">Choose an image</h2>
           <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
@@ -64,14 +80,14 @@ const ImageOptions = ({
             context.
           </p>
         </div>
-        <button
-          className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-700"
+        <Button
           disabled={loading}
           onClick={onLoad}
           type="button"
+          variant="secondary"
         >
           {loading ? 'Finding images…' : 'Find other images'}
-        </button>
+        </Button>
       </div>
 
       {images.length > 0 && (
@@ -83,14 +99,15 @@ const ImageOptions = ({
               onSelect={onSelect}
             />
           </div>
-          <button
-            className="mt-4 rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-700"
+          <Button
+            className="mt-4"
             disabled={loading}
             onClick={onLoadMore}
             type="button"
+            variant="secondary"
           >
             {loading ? 'Loading…' : 'Load more'}
-          </button>
+          </Button>
         </>
       )}
     </section>
@@ -100,10 +117,12 @@ const ImageOptions = ({
 export function AddWordWorkflow({
   collections,
   initialCollectionId,
+  useStoredCollectionPreference = false,
   userId,
 }: {
   collections: CollectionOption[]
   initialCollectionId: string
+  useStoredCollectionPreference?: boolean
   userId: string
 }) {
   const [inputWord, setInputWord] = useState('')
@@ -117,12 +136,34 @@ export function AddWordWorkflow({
   const [imageOffset, setImageOffset] = useState(0)
   const [imageError, setImageError] = useState<string | null>(null)
   const [isLoadingImages, setIsLoadingImages] = useState(false)
-  const [selectedCollectionId, setSelectedCollectionId] =
-    useState(initialCollectionId)
+  const [selectedCollectionOverride, setSelectedCollectionOverride] = useState<
+    string | null
+  >(null)
+  const { isHydrated, settings, update } = useWebSettings(userId)
+  const storedCollectionId = collections.some(
+    collection => collection.id === settings.lastSelectedCollectionId
+  )
+    ? settings.lastSelectedCollectionId
+    : null
+  const selectedCollectionId =
+    selectedCollectionOverride ??
+    (isHydrated && useStoredCollectionPreference
+      ? (storedCollectionId ?? initialCollectionId)
+      : initialCollectionId)
+  const isOnline = useSyncExternalStore(
+    subscribeToConnectivity,
+    getConnectivitySnapshot,
+    getConnectivityServerSnapshot
+  )
   const [saveState, saveAction, isSaving] = useActionState(
     saveAnalyzedWord,
     INITIAL_ADD_WORD_ACTION_STATE
   )
+
+  const selectCollection = (collectionId: string) => {
+    setSelectedCollectionOverride(collectionId)
+    update({ lastSelectedCollectionId: collectionId })
+  }
 
   const checkDuplicate = async (nextAnalysis: WordAnalysis) => {
     setDuplicate(null)
@@ -211,21 +252,27 @@ export function AddWordWorkflow({
   }
 
   return (
-    <div className="grid gap-6">
+    <div className={styles.workflow}>
       <form
-        className="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900"
+        className={styles.capture}
         onSubmit={event => {
           event.preventDefault()
           void runAnalysis(false)
         }}
       >
-        <label className="text-sm font-medium" htmlFor="dutch-word">
+        {!isOnline && (
+          <p className={styles.error} role="status">
+            You are offline. Your word stays here; analysis becomes available
+            again when the connection returns.
+          </p>
+        )}
+        <label className={styles.captureLabel} htmlFor="dutch-word">
           Dutch word or expression
         </label>
-        <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+        <div className={styles.captureRow}>
           <input
             autoComplete="off"
-            className="min-w-0 flex-1 rounded-xl border border-neutral-300 bg-transparent px-4 py-3 outline-none focus:border-neutral-600 dark:border-neutral-700 dark:focus:border-neutral-400"
+            className={styles.captureInput}
             disabled={isAnalyzing}
             id="dutch-word"
             maxLength={120}
@@ -234,23 +281,52 @@ export function AddWordWorkflow({
             required
             value={inputWord}
           />
-          <button
-            className="rounded-xl bg-neutral-900 px-6 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60 dark:bg-neutral-100 dark:text-neutral-950"
-            disabled={isAnalyzing}
+          <Button
+            className={styles.captureButton}
+            disabled={isAnalyzing || !isOnline}
             type="submit"
           >
             {isAnalyzing ? 'Analyzing…' : 'Analyze'}
-          </button>
+          </Button>
         </div>
-        <p className="mt-2 text-xs text-neutral-500">
+        <div className={styles.collectionRow}>
+          <label>
+            Collection
+            <select
+              className={styles.collectionSelect}
+              onChange={event => selectCollection(event.target.value)}
+              value={selectedCollectionId}
+            >
+              {collections.map(collection => (
+                <option key={collection.id} value={collection.id}>
+                  {collection.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className={styles.alternateLinks}>
+            <Link href="/app/batch-capture">Add a list</Link>
+            <Link href="/app/starter-pack">Use starter pack</Link>
+          </div>
+        </div>
+        <p className={styles.hint}>
           Linguistic analysis can take several seconds after a cache miss.
         </p>
+        {isAnalyzing && (
+          <div aria-live="polite" className={styles.analyzing}>
+            <div className="dw-progress">
+              <span style={{ width: '58%' }} />
+            </div>
+            <div className={styles.checklist}>
+              <span>✓ Checked for duplicates</span>
+              <span>✓ Translations</span>
+              <span>◴ Examples and grammar</span>
+              <span>· Image options</span>
+            </div>
+          </div>
+        )}
         {analysisError && (
-          <p
-            aria-live="polite"
-            className="mt-3 text-sm text-red-600 dark:text-red-400"
-            role="alert"
-          >
+          <p aria-live="polite" className={styles.error} role="alert">
             {analysisError}
           </p>
         )}
@@ -258,32 +334,25 @@ export function AddWordWorkflow({
 
       {analysis && metadata && (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className={styles.resultHeader}>
             <AnalysisMetadataBadge metadata={metadata} />
-            <div className="flex flex-wrap gap-2">
-              <button
-                className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-700"
+            <div className={styles.resultActions}>
+              <Button
                 disabled={isAnalyzing}
                 onClick={() => void runAnalysis(true)}
                 type="button"
+                variant="secondary"
               >
                 Analyze again with fresh AI
-              </button>
-              <button
-                className="rounded-xl px-4 py-2 text-sm font-medium text-neutral-600 hover:underline dark:text-neutral-400"
-                onClick={startOver}
-                type="button"
-              >
+              </Button>
+              <Button onClick={startOver} type="button" variant="ghost">
                 Start over
-              </button>
+              </Button>
             </div>
           </div>
 
           {duplicate && (
-            <div
-              className="rounded-2xl border border-amber-300 bg-amber-50 p-5 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100"
-              role="status"
-            >
+            <div className={styles.duplicate} role="status">
               This semantic word already exists
               {duplicate.collectionName
                 ? ` in “${duplicate.collectionName}”`
@@ -306,10 +375,12 @@ export function AddWordWorkflow({
             </p>
           )}
 
-          <WordDetailCard
-            showProgress={false}
-            word={buildAnalysisPreview(analysis)}
-          />
+          <div className={styles.cardWrap}>
+            <WordDetailCard
+              showProgress={false}
+              word={buildAnalysisPreview(analysis)}
+            />
+          </div>
 
           <ImageOptions
             analysis={analysis}
@@ -329,10 +400,7 @@ export function AddWordWorkflow({
             </p>
           )}
 
-          <form
-            action={saveAction}
-            className="rounded-2xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900"
-          >
+          <form action={saveAction} className={styles.savePanel}>
             <input
               name="analysis"
               type="hidden"
@@ -341,12 +409,12 @@ export function AddWordWorkflow({
             <label className="text-sm font-medium" htmlFor="save-collection">
               Save to collection
             </label>
-            <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+            <div className={styles.saveRow}>
               <select
-                className="min-w-0 flex-1 rounded-xl border border-neutral-300 bg-transparent px-4 py-3 text-sm dark:border-neutral-700"
+                className={styles.saveSelect}
                 id="save-collection"
                 name="collectionId"
-                onChange={event => setSelectedCollectionId(event.target.value)}
+                onChange={event => selectCollection(event.target.value)}
                 value={selectedCollectionId}
               >
                 {collections.map(collection => (
@@ -355,13 +423,9 @@ export function AddWordWorkflow({
                   </option>
                 ))}
               </select>
-              <button
-                className="rounded-xl bg-emerald-700 px-6 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60 dark:bg-emerald-600"
-                disabled={isSaving || Boolean(duplicate)}
-                type="submit"
-              >
+              <Button disabled={isSaving || Boolean(duplicate)} type="submit">
                 {isSaving ? 'Saving…' : 'Save word'}
-              </button>
+              </Button>
             </div>
             {saveState.fieldErrors?.collectionId && (
               <p className="mt-2 text-sm text-red-600 dark:text-red-400">

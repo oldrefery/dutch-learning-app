@@ -8,12 +8,10 @@ export default async function SettingsPage() {
   const collections = await listOwnedCollectionOptions(auth.userId)
 
   return (
-    <section>
-      <p className="text-sm font-medium text-neutral-500">
-        Account and application
-      </p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">Settings</h1>
-      <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
+    <section className="max-w-[760px]">
+      <p className="dw-label">Account and application</p>
+      <h1 className="dw-page-title mt-2">Settings</h1>
+      <p className="dw-support mt-2 max-w-2xl">
         Manage browser preferences, inspect connectivity, and control your
         account.
       </p>

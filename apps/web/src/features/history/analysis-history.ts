@@ -9,6 +9,7 @@ const listeners = new Map<string, Set<() => void>>()
 export interface AnalysisHistoryEntry {
   analyzedAt: string
   cacheHit: boolean
+  collectionName: string | null
   dutchLemma: string
   id: string
   input: string
@@ -40,6 +41,10 @@ const parseEntry = (value: unknown): AnalysisHistoryEntry | null => {
     dutchLemma: value.dutchLemma.slice(0, 120),
     analyzedAt: value.analyzedAt,
     cacheHit: value.cacheHit,
+    collectionName:
+      typeof value.collectionName === 'string'
+        ? value.collectionName.slice(0, 120)
+        : null,
     source: value.source,
   }
 }
@@ -97,6 +102,7 @@ export const recordAnalysisHistory = (
       dutchLemma: result.analysis.dutchLemma,
       analyzedAt: new Date().toISOString(),
       cacheHit: result.metadata.cacheHit,
+      collectionName: null,
       source: result.metadata.source,
     }
     const current = readHistory(userId)
@@ -111,6 +117,40 @@ export const recordAnalysisHistory = (
   } catch {
     return
   }
+}
+
+export const markAnalysisHistorySaved = (
+  userId: string,
+  dutchLemma: string,
+  collectionName: string
+): void => {
+  if (typeof window === 'undefined') return
+
+  const normalizedLemma = dutchLemma.trim().toLocaleLowerCase('nl')
+  const current = readHistory(userId)
+  let changed = false
+  const next = current.map(entry => {
+    if (
+      changed ||
+      entry.dutchLemma.trim().toLocaleLowerCase('nl') !== normalizedLemma ||
+      entry.collectionName === collectionName
+    ) {
+      return entry
+    }
+
+    changed = true
+    return { ...entry, collectionName: collectionName.slice(0, 120) }
+  })
+
+  if (!changed) return
+
+  try {
+    window.localStorage.setItem(getStorageKey(userId), JSON.stringify(next))
+  } catch {
+    // Keep the updated history available in memory when storage is unavailable.
+  }
+  snapshots.set(userId, next)
+  emitChange(userId)
 }
 
 export const subscribeToAnalysisHistory = (

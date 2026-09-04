@@ -21,6 +21,7 @@ import {
   REVIEW_MODE,
   REVIEW_SESSION_MODE,
 } from '@/constants/ReviewConstants'
+import { addLocalCalendarDays, toLocalDateKey } from '@woordenaar/domain'
 
 const USER_NOT_AUTHENTICATED_ERROR =
   APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
@@ -620,9 +621,7 @@ export const createWordActions = (
 
       if (wordIndex !== -1) {
         const updatedWords = [...currentWords]
-        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split('T')[0] // Store-only date: "2025-12-22"
+        const tomorrow = toLocalDateKey(addLocalCalendarDays(new Date(), 1))
         updatedWords[wordIndex] = {
           ...updatedWords[wordIndex],
           interval_days: 1,

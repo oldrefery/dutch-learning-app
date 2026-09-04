@@ -1,0 +1,68 @@
+.page {
+  margin: 0 auto;
+  max-width: 920px;
+}
+
+.breadcrumb {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--accent);
+}
+
+.cardWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.origin {
+  color: var(--text-meta);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  margin: 10px auto 0;
+  max-width: 840px;
+  text-transform: uppercase;
+}
+
+.management {
+  border-top: 1px solid var(--border);
+  margin: 32px auto 0;
+  max-width: 840px;
+  padding-top: 28px;
+}
+
+.managementTitle {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.managementTitle::after {
+  background: var(--border);
+  content: '';
+  flex: 1;
+  height: 1px;
+}
+
+.managementStack {
+  display: grid;
+  gap: 16px;
+}
+
+@media (max-width: 767px) {
+  .page {
+    margin-inline: -4px;
+  }
+}

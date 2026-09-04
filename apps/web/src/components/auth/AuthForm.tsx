@@ -3,6 +3,7 @@
 import { useActionState } from 'react'
 import type { AuthFormAction } from '@/lib/auth/types'
 import { INITIAL_AUTH_FORM_STATE } from '@/lib/auth/types'
+import styles from './Auth.module.css'
 
 type AuthFormMode = 'login' | 'signup' | 'forgot-password' | 'reset-password'
 
@@ -29,60 +30,56 @@ export function AuthForm({ action, mode, nextPath }: AuthFormProps) {
   const showConfirmation = mode === 'signup' || mode === 'reset-password'
 
   return (
-    <form action={formAction} className="mt-8 space-y-5">
+    <form action={formAction} className={styles.form}>
       {nextPath && <input name="next" type="hidden" value={nextPath} />}
       {showEmail && (
-        <label className="block text-sm font-medium">
+        <label className={styles.field}>
           Email
           <input
             autoComplete="email"
-            className="mt-2 w-full rounded-xl border border-neutral-300 bg-transparent px-4 py-3 outline-none focus:border-neutral-900 dark:border-neutral-700 dark:focus:border-white"
+            className={styles.input}
             name="email"
             required
             type="email"
           />
           {state.fieldErrors?.email && (
-            <span className="mt-2 block text-sm text-red-600 dark:text-red-400">
-              {state.fieldErrors.email}
-            </span>
+            <span className={styles.error}>{state.fieldErrors.email}</span>
           )}
         </label>
       )}
 
       {showPassword && (
-        <label className="block text-sm font-medium">
+        <label className={styles.field}>
           {mode === 'reset-password' ? 'New password' : 'Password'}
           <input
             autoComplete={
               mode === 'login' ? 'current-password' : 'new-password'
             }
-            className="mt-2 w-full rounded-xl border border-neutral-300 bg-transparent px-4 py-3 outline-none focus:border-neutral-900 dark:border-neutral-700 dark:focus:border-white"
+            className={styles.input}
             minLength={6}
             name="password"
             required
             type="password"
           />
           {state.fieldErrors?.password && (
-            <span className="mt-2 block text-sm text-red-600 dark:text-red-400">
-              {state.fieldErrors.password}
-            </span>
+            <span className={styles.error}>{state.fieldErrors.password}</span>
           )}
         </label>
       )}
 
       {showConfirmation && (
-        <label className="block text-sm font-medium">
+        <label className={styles.field}>
           Confirm password
           <input
             autoComplete="new-password"
-            className="mt-2 w-full rounded-xl border border-neutral-300 bg-transparent px-4 py-3 outline-none focus:border-neutral-900 dark:border-neutral-700 dark:focus:border-white"
+            className={styles.input}
             minLength={6}
             name="confirmPassword"
             required
             type="password"
           />
           {state.fieldErrors?.confirmPassword && (
-            <span className="mt-2 block text-sm text-red-600 dark:text-red-400">
+            <span className={styles.error}>
               {state.fieldErrors.confirmPassword}
             </span>
           )}
@@ -103,7 +100,7 @@ export function AuthForm({ action, mode, nextPath }: AuthFormProps) {
       )}
 
       <button
-        className="w-full rounded-xl bg-neutral-900 px-4 py-3 font-medium text-white disabled:cursor-wait disabled:opacity-60 dark:bg-white dark:text-neutral-950"
+        className={`dw-button dw-button--primary ${styles.submit}`}
         disabled={pending}
         type="submit"
       >
