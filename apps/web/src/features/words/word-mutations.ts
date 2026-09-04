@@ -1,4 +1,4 @@
-const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000
+import { addLocalCalendarDays, toLocalDateKey } from '@woordenaar/domain'
 
 export interface ResetWordProgressUpdate {
   easiness_factor: number
@@ -14,9 +14,7 @@ export const buildResetWordProgressUpdate = (
   interval_days: 1,
   repetition_count: 0,
   easiness_factor: 2.5,
-  next_review_date: new Date(now.getTime() + DAY_IN_MILLISECONDS)
-    .toISOString()
-    .split('T')[0],
+  next_review_date: toLocalDateKey(addLocalCalendarDays(now, 1)),
   last_reviewed_at: null,
 })
 

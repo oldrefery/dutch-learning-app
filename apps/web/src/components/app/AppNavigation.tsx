@@ -14,10 +14,12 @@ import {
   Settings,
 } from 'lucide-react'
 import Link from 'next/link'
+import Form from 'next/form'
 import { usePathname } from 'next/navigation'
 import { useSyncExternalStore } from 'react'
 import type { AccessLevel } from '@woordenaar/domain'
 import { logout } from '@/app/(auth)/actions'
+import { WORD_SEARCH_PATH } from '@/features/search/routes'
 import styles from './AuthenticatedShell.module.css'
 
 type NavigationIcon = typeof LibraryBig
@@ -102,6 +104,10 @@ const getPageContext = (pathname: string) => {
 
   if (pathname.includes('/words/')) {
     return { title: 'Word', context: 'Complete card · learning progress' }
+  }
+
+  if (pathname === '/app/search') {
+    return { title: 'Search', context: 'Find words across collections' }
   }
 
   return {
@@ -274,11 +280,18 @@ export function AppNavigation({
           <span className={styles.contextLine}>{pageContext.context}</span>
         </div>
         <div className={styles.topActions}>
-          <label className={styles.search}>
-            <Search aria-hidden="true" size={16} />
+          <Form action={WORD_SEARCH_PATH} className={styles.search}>
+            <button aria-label="Search words" type="submit">
+              <Search aria-hidden="true" size={16} />
+            </button>
             <span className="dw-sr-only">Search your words</span>
-            <input placeholder="Search your words" type="search" />
-          </label>
+            <input
+              autoComplete="off"
+              name="q"
+              placeholder="Search your words"
+              type="search"
+            />
+          </Form>
           {accessLevel === 'full_access' && (
             <Link
               className={`dw-button dw-button--primary ${styles.topButton}`}

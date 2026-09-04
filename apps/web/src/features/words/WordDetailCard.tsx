@@ -1,4 +1,9 @@
 import Image from 'next/image'
+import {
+  getMasteryProgressPercentage,
+  getWordKnowledgeLevel,
+  MASTERED_MIN_REPETITIONS,
+} from '@woordenaar/domain'
 import { Badge } from '@/components/ui/Badge'
 import { AudioButton } from './AudioButton'
 import { canRenderWordImage } from './word-detail'
@@ -184,8 +189,14 @@ function formatDate(value: string | null): string {
 }
 
 function Progress({ word }: { word: WordDetail }) {
-  const progress = Math.min(100, Math.round((word.repetitionCount / 8) * 100))
-  const status = word.repetitionCount >= 3 ? 'Established' : 'Learning'
+  const progress = getMasteryProgressPercentage(word.repetitionCount)
+  const knowledgeLevel = getWordKnowledgeLevel(word.repetitionCount)
+  const status =
+    knowledgeLevel === 'new'
+      ? 'New'
+      : knowledgeLevel === 'established'
+        ? 'Established'
+        : 'Learning'
 
   return (
     <CardSection className={styles.progressSection} title="Progress">
@@ -199,12 +210,21 @@ function Progress({ word }: { word: WordDetail }) {
           <span>Next {formatDate(word.nextReviewDate)}</span>
           <span>Last {formatDate(word.lastReviewedAt)}</span>
         </div>
-        <Badge tone={status === 'Established' ? 'success' : 'warning'}>
+        <Badge
+          tone={
+            status === 'Established'
+              ? 'success'
+              : status === 'Learning'
+                ? 'warning'
+                : 'neutral'
+          }
+        >
           {status}
         </Badge>
       </div>
       <span className="dw-support">
-        Repetition {word.repetitionCount} of 8 to mastered
+        Repetition {word.repetitionCount} of {MASTERED_MIN_REPETITIONS} to
+        established
       </span>
     </CardSection>
   )

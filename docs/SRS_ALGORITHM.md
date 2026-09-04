@@ -29,7 +29,7 @@ Each word in the system tracks three key parameters:
 
 When a word is first added to the system:
 
-- `interval_days`: 0 (available for immediate review)
+- `interval_days`: 1 (new words are still due immediately via `next_review_date`)
 - `repetition_count`: 0
 - `easiness_factor`: 2.5 (maximum difficulty)
 
@@ -127,7 +127,7 @@ The system uses two queues to manage reviews:
 **Day 1** - New word (Good assessment):
 
 ```
-Initial: EF=2.5, Count=0, Interval=0
+Initial: EF=2.5, Count=0, Interval=1 (due today)
 Result: EF=2.5, Count=1, Interval=1 → Next review: Day 2
 ```
 
@@ -157,7 +157,7 @@ Result: EF=2.5, Count=4, Interval=49 → Next review: Day 72
 **Day 1** - New word (Hard assessment):
 
 ```
-Initial: EF=2.5, Count=0, Interval=0
+Initial: EF=2.5, Count=0, Interval=1 (due today)
 Result: EF=2.35, Count=1, Interval=1 → Next review: Day 2
 ```
 
@@ -202,7 +202,7 @@ Result: EF=2.15, Count=1, Interval=1 → Next review: Day 3
 Each word stores SRS parameters:
 
 ```sql
-interval_days INTEGER DEFAULT 0,
+interval_days INTEGER DEFAULT 1,
 repetition_count INTEGER DEFAULT 0,
 easiness_factor DECIMAL(3,2) DEFAULT 2.5,
 next_review_date DATE DEFAULT CURRENT_DATE,

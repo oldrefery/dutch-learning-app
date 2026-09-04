@@ -129,7 +129,8 @@ function ResetWordForm({
     >
       <h2 className="text-base font-semibold">Reset learning progress</h2>
       <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-        Return this word to its initial SRS state. Review history remains
+        Clear the successful repetition count, restore the default easiness
+        factor, and schedule the word for tomorrow. Review history remains
         available for future insights.
       </p>
       <button

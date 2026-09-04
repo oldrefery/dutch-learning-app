@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
 import type { CollectionOption } from '@/features/words/repository'
+import { useWebSettings } from '@/features/settings/useWebSettings'
 import { findOwnedSemanticDuplicate, saveAnalyzedWord } from './actions'
 import {
   analyzeWordWithAi,
@@ -116,10 +117,12 @@ const ImageOptions = ({
 export function AddWordWorkflow({
   collections,
   initialCollectionId,
+  useStoredCollectionPreference = false,
   userId,
 }: {
   collections: CollectionOption[]
   initialCollectionId: string
+  useStoredCollectionPreference?: boolean
   userId: string
 }) {
   const [inputWord, setInputWord] = useState('')
@@ -133,8 +136,20 @@ export function AddWordWorkflow({
   const [imageOffset, setImageOffset] = useState(0)
   const [imageError, setImageError] = useState<string | null>(null)
   const [isLoadingImages, setIsLoadingImages] = useState(false)
-  const [selectedCollectionId, setSelectedCollectionId] =
-    useState(initialCollectionId)
+  const [selectedCollectionOverride, setSelectedCollectionOverride] = useState<
+    string | null
+  >(null)
+  const { isHydrated, settings, update } = useWebSettings(userId)
+  const storedCollectionId = collections.some(
+    collection => collection.id === settings.lastSelectedCollectionId
+  )
+    ? settings.lastSelectedCollectionId
+    : null
+  const selectedCollectionId =
+    selectedCollectionOverride ??
+    (isHydrated && useStoredCollectionPreference
+      ? (storedCollectionId ?? initialCollectionId)
+      : initialCollectionId)
   const isOnline = useSyncExternalStore(
     subscribeToConnectivity,
     getConnectivitySnapshot,
@@ -144,6 +159,11 @@ export function AddWordWorkflow({
     saveAnalyzedWord,
     INITIAL_ADD_WORD_ACTION_STATE
   )
+
+  const selectCollection = (collectionId: string) => {
+    setSelectedCollectionOverride(collectionId)
+    update({ lastSelectedCollectionId: collectionId })
+  }
 
   const checkDuplicate = async (nextAnalysis: WordAnalysis) => {
     setDuplicate(null)
@@ -274,7 +294,7 @@ export function AddWordWorkflow({
             Collection
             <select
               className={styles.collectionSelect}
-              onChange={event => setSelectedCollectionId(event.target.value)}
+              onChange={event => selectCollection(event.target.value)}
               value={selectedCollectionId}
             >
               {collections.map(collection => (
@@ -394,7 +414,7 @@ export function AddWordWorkflow({
                 className={styles.saveSelect}
                 id="save-collection"
                 name="collectionId"
-                onChange={event => setSelectedCollectionId(event.target.value)}
+                onChange={event => selectCollection(event.target.value)}
                 value={selectedCollectionId}
               >
                 {collections.map(collection => (

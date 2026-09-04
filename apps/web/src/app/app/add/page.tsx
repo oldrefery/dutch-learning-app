@@ -44,6 +44,7 @@ export default async function AddWordPage() {
           <AddWordWorkflow
             collections={collections}
             initialCollectionId={collections[0].id}
+            useStoredCollectionPreference
             userId={auth.userId}
           />
         )}

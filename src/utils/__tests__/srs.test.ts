@@ -354,16 +354,33 @@ describe('calculateNextReview', () => {
     })
 
     it('should handle review date for today (0 days)', () => {
-      const today = new Date().toISOString().split('T')[0]
+      const reviewDate = new Date(2026, 7, 30, 0, 30)
 
-      const result = calculateNextReview({
-        interval_days: 0,
-        repetition_count: 0,
-        easiness_factor: 2.5,
-        assessment: SRS_ASSESSMENT.AGAIN,
-      })
+      const result = calculateNextReview(
+        {
+          interval_days: 0,
+          repetition_count: 0,
+          easiness_factor: 2.5,
+          assessment: SRS_ASSESSMENT.AGAIN,
+        },
+        reviewDate
+      )
 
-      expect(result.next_review_date).toBe(today)
+      expect(result.next_review_date).toBe('2026-08-30')
+    })
+
+    it('should add intervals using local calendar days after midnight', () => {
+      const result = calculateNextReview(
+        {
+          interval_days: 0,
+          repetition_count: 0,
+          easiness_factor: 2.5,
+          assessment: SRS_ASSESSMENT.GOOD,
+        },
+        new Date(2026, 7, 30, 0, 30)
+      )
+
+      expect(result.next_review_date).toBe('2026-08-31')
     })
   })
 

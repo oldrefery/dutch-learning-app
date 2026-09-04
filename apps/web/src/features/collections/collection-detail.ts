@@ -1,5 +1,9 @@
 import type { Database, Json } from '@woordenaar/supabase-contracts'
-import { DIFFICULT_EASINESS_FACTOR_THRESHOLD } from '@woordenaar/domain'
+import {
+  DIFFICULT_EASINESS_FACTOR_THRESHOLD,
+  isDueOnLocalDate,
+  isMasteredWord,
+} from '@woordenaar/domain'
 import { buildCollectionOverviews } from './collection-overview'
 
 type CollectionRow = Database['public']['Tables']['collections']['Row']
@@ -84,11 +88,6 @@ const getFirstEnglishTranslation = (translations: Json) => {
     : 'No translation'
 }
 
-const isDue = (nextReviewDate: string, now: Date) => {
-  const timestamp = Date.parse(nextReviewDate)
-  return Number.isFinite(timestamp) && timestamp <= now.getTime()
-}
-
 export const buildCollectionDetail = (
   collection: CollectionDetailRow,
   words: CollectionWordRow[],
@@ -116,8 +115,8 @@ export const buildCollectionDetail = (
       imageUrl: word.image_url,
       intervalDays: word.interval_days,
       isDifficult: word.easiness_factor <= DIFFICULT_EASINESS_FACTOR_THRESHOLD,
-      isDue: isDue(word.next_review_date, now),
-      isMastered: word.repetition_count > 2,
+      isDue: isDueOnLocalDate(word.next_review_date, now),
+      isMastered: isMasteredWord(word),
       partOfSpeech: word.part_of_speech,
       nextReviewDate: word.next_review_date,
       repetitionCount: word.repetition_count,

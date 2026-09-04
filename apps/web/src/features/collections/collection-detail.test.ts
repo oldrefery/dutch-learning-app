@@ -82,6 +82,17 @@ describe('collection detail', () => {
     expect(detail.words[0].translation).toBe('No translation')
   })
 
+  it('marks a date-only word due for the whole local calendar day', () => {
+    const localHalfPastMidnight = new Date(2026, 7, 30, 0, 30)
+    const detail = buildCollectionDetail(
+      collection,
+      [createWord({ next_review_date: '2026-08-30' })],
+      localHalfPastMidnight
+    )
+
+    expect(detail.words[0].isDue).toBe(true)
+  })
+
   it('filters Dutch lemmas case-insensitively', () => {
     const detail = buildCollectionDetail(collection, [
       createWord({ dutch_lemma: 'Één', word_id: 'word-1' }),

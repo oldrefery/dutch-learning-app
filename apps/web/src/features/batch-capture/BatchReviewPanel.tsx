@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { serializeWordAnalysis } from '@/features/analysis/analysis-contract'
 import { buildAnalysisPreview } from '@/features/analysis/analysis-preview'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
+import { markAnalysisHistorySaved } from '@/features/history/analysis-history'
 import { saveBatchAnalyzedWord } from './actions'
 import type { WebBatchCaptureItem } from './types'
 
@@ -14,6 +15,7 @@ interface BatchReviewPanelProps {
   item: WebBatchCaptureItem
   onSaved: (itemId: string) => void
   onSkip: (itemId: string) => void
+  userId: string
 }
 
 export function BatchReviewPanel({
@@ -22,6 +24,7 @@ export function BatchReviewPanel({
   item,
   onSaved,
   onSkip,
+  userId,
 }: BatchReviewPanelProps) {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -41,6 +44,7 @@ export function BatchReviewPanel({
         setSaveError(result.message)
         return
       }
+      markAnalysisHistorySaved(userId, item.analysis.dutchLemma, collectionName)
       onSaved(item.id)
     } catch {
       setSaveError('Could not save this word. Please try again.')

@@ -11,32 +11,79 @@ export function AudioButton({
   source: string
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const playbackSourceRef = useRef<'audio' | 'speech' | null>(null)
   const [playing, setPlaying] = useState(false)
 
   useEffect(() => {
     const audio = new Audio(source)
-    const handleEnded = () => setPlaying(false)
+    const handleEnded = () => {
+      playbackSourceRef.current = null
+      setPlaying(false)
+    }
     audio.addEventListener('ended', handleEnded)
     audioRef.current = audio
 
     return () => {
       audio.pause()
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel()
       audio.removeEventListener('ended', handleEnded)
       audioRef.current = null
+      playbackSourceRef.current = null
     }
   }, [source])
+
+  const playWithBrowserVoice = () => {
+    if (!('speechSynthesis' in window)) {
+      setPlaying(false)
+      return
+    }
+
+    window.speechSynthesis.cancel()
+    const utterance = new SpeechSynthesisUtterance(label)
+    utterance.lang = 'nl-NL'
+    utterance.onend = () => {
+      playbackSourceRef.current = null
+      setPlaying(false)
+    }
+    utterance.onerror = () => {
+      playbackSourceRef.current = null
+      setPlaying(false)
+    }
+    playbackSourceRef.current = 'speech'
+    setPlaying(true)
+    window.speechSynthesis.speak(utterance)
+  }
 
   const togglePlayback = () => {
     const audio = audioRef.current
     if (!audio) return
 
     if (playing) {
-      audio.pause()
+      if (playbackSourceRef.current === 'speech') {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+      } else {
+        audio.pause()
+      }
+      playbackSourceRef.current = null
       setPlaying(false)
       return
     }
 
-    void audio.play().then(() => setPlaying(true))
+    let settled = false
+    const fallback = () => {
+      if (settled) return
+      settled = true
+      audio.removeEventListener('error', fallback)
+      playWithBrowserVoice()
+    }
+
+    audio.addEventListener('error', fallback, { once: true })
+    void audio.play().then(() => {
+      settled = true
+      audio.removeEventListener('error', fallback)
+      playbackSourceRef.current = 'audio'
+      setPlaying(true)
+    }, fallback)
   }
 
   return (

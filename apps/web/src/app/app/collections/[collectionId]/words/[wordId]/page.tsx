@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
+import { MarkAnalysisSaved } from '@/features/history/MarkAnalysisSaved'
 import { WordImageManager } from '@/features/words/WordImageManager'
 import { WordManagementForms } from '@/features/words/WordManagementForms'
 import styles from '@/features/words/WordPage.module.css'
@@ -20,6 +21,11 @@ export default async function WordDetailPage({
 
   return (
     <section className={styles.page}>
+      <MarkAnalysisSaved
+        collectionName={data.collection.name}
+        dutchLemma={data.word.dutchLemma}
+        userId={auth.userId}
+      />
       <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
         <Link href="/app/collections">Collections</Link> <span>/</span>{' '}
         <Link href={`/app/collections/${data.collection.id}`}>

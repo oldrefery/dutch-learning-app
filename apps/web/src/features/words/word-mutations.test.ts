@@ -16,6 +16,13 @@ describe('word mutations', () => {
     })
   })
 
+  it('uses the next local calendar date when reset happens after midnight', () => {
+    expect(
+      buildResetWordProgressUpdate(new Date(2026, 7, 30, 0, 30))
+        .next_review_date
+    ).toBe('2026-08-31')
+  })
+
   it('requires the explicit delete checkbox value', () => {
     expect(hasDeleteConfirmation('delete')).toBe(true)
     expect(hasDeleteConfirmation('on')).toBe(false)

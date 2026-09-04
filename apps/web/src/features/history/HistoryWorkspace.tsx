@@ -91,8 +91,8 @@ export function HistoryWorkspace({ userId }: { userId: string }) {
                   <span className={styles.lemma}>{entry.dutchLemma}</span>
                   <span className={styles.input}>Input · {entry.input}</span>
                   <span>
-                    <Badge tone={entry.cacheHit ? 'neutral' : 'accent'}>
-                      {entry.cacheHit ? 'Cached' : 'Not saved'}
+                    <Badge tone={entry.collectionName ? 'accent' : 'neutral'}>
+                      {entry.collectionName ?? 'Not saved'}
                     </Badge>
                   </span>
                   <span className={styles.time}>
