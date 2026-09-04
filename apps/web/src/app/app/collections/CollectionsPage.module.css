@@ -307,9 +307,13 @@
   .collectionRow {
     background: var(--bg-surface);
     border: 1px solid var(--border);
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     min-height: 0;
     padding: 16px;
+  }
+
+  .collectionRow > :first-child {
+    min-width: 0;
   }
 
   .collectionRow:last-child {
