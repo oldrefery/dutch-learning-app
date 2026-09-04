@@ -9,11 +9,10 @@ import type { Word } from '@/types/database'
 
 interface WordItemProps {
   word: Word
-  index: number
   onPress: () => void
 }
 
-export default function WordItem({ word, index, onPress }: WordItemProps) {
+export default function WordItem({ word, onPress }: WordItemProps) {
   const getStatusColor = () => {
     if (word.repetition_count > 2) return Colors.success.DEFAULT // Green - mastered
     if (word.repetition_count > 0) return Colors.warning.DEFAULT // Yellow - learning

@@ -498,7 +498,7 @@ describe('reviewActions', () => {
         reviewSession,
         currentWord: mockWords[0],
         words: mockWords,
-        updateWordAfterReview: jest.fn().mockResolvedValue(undefined),
+        updateWordAfterReview: jest.fn().mockResolvedValue(true),
       }))
 
       const assessment: ReviewAssessment = {
@@ -538,7 +538,7 @@ describe('reviewActions', () => {
         reviewSession,
         currentWord: mockWords[0],
         words: mockWords,
-        updateWordAfterReview: jest.fn().mockResolvedValue(undefined),
+        updateWordAfterReview: jest.fn().mockResolvedValue(true),
       }))
 
       const assessment: ReviewAssessment = {
@@ -609,7 +609,7 @@ describe('reviewActions', () => {
         createMockWord({ word_id: 'word-1', next_review_date: today }),
       ]
 
-      const updateWordMock = jest.fn().mockResolvedValue(undefined)
+      const updateWordMock = jest.fn().mockResolvedValue(true)
       const reviewSession = {
         words: mockWords,
         currentIndex: 0,

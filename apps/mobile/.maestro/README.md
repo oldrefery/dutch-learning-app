@@ -222,7 +222,7 @@ Before tests can run in CI, configure these secrets in repository settings:
 2. **MAESTRO_TEST_EMAIL** - Test user email
 3. **MAESTRO_TEST_PASSWORD** - Test user password
 
-See [docs/GITHUB_SECRETS.md](../docs/GITHUB_SECRETS.md) for detailed setup instructions.
+See [docs/GITHUB_SECRETS.md](../../../docs/GITHUB_SECRETS.md) for detailed setup instructions.
 
 ### Local Configuration
 

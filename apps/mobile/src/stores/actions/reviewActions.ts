@@ -188,7 +188,7 @@ export const createReviewActions = (
         currentWord.word_id,
         assessment
       )
-      if (assessmentRecorded === false) return
+      if (!assessmentRecorded) return
 
       // Get a fresh state after a database update to ensure consistency
       const freshState = get()

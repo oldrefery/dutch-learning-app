@@ -174,7 +174,7 @@ import MoveWordToCollectionSheet from '@/components/glass/modals/MoveWordToColle
 ;<MoveWordToCollectionSheet
   visible={visible}
   onClose={handleClose}
-  onSelectCollection={targetCollection => {
+  onSelectCollection={async targetCollection => {
     // Move word to selected collection
     await moveWordToCollection(wordId, targetCollection.collection_id)
   }}

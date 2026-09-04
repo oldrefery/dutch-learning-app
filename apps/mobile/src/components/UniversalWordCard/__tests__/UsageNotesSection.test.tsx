@@ -20,10 +20,7 @@ jest.mock('@/components/SelectableText', () => ({
   SelectableText: ({
     children,
     ...props
-  }: {
-    children: React.ReactNode
-    [key: string]: unknown
-  }) => {
+  }: React.PropsWithChildren<Record<string, unknown>>) => {
     const mockReact = jest.requireActual<typeof import('react')>('react')
     const { Text: MockText } =
       jest.requireActual<typeof import('react-native')>('react-native')

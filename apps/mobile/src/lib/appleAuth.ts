@@ -45,6 +45,41 @@ export async function isAppleAuthAvailable(): Promise<boolean> {
   }
 }
 
+async function authenticateWithApple(): Promise<void> {
+  // Generate and hash nonce for security
+  const nonce = await generateNonce()
+  const hashedNonce = await hashNonce(nonce)
+
+  // Request Apple credentials
+  const credential = await AppleAuthentication.signInAsync({
+    requestedScopes: [
+      AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+      AppleAuthentication.AppleAuthenticationScope.EMAIL,
+    ],
+    nonce: hashedNonce,
+  })
+
+  // Check for required tokens
+  if (!credential.identityToken) {
+    throw new Error('No identity token returned from Apple')
+  }
+
+  // Sign in with Supabase using Apple ID token
+  const { error } = await supabase.auth.signInWithIdToken({
+    provider: 'apple',
+    token: credential.identityToken,
+    nonce: nonce,
+  })
+
+  if (error) {
+    Sentry.captureException(error, {
+      tags: { operation: 'appleAuthSupabaseSignIn' },
+      extra: { message: 'Failed to sign in with Supabase using Apple token' },
+    })
+    throw error
+  }
+}
+
 /**
  * Initiate Apple Sign-In flow
  * Returns success/failure result
@@ -54,7 +89,6 @@ export async function initiateAppleSignIn(): Promise<{
   error?: Error
 }> {
   try {
-    // Check availability first
     const isAvailable = await isAppleAuthAvailable()
     if (!isAvailable) {
       return {
@@ -63,39 +97,7 @@ export async function initiateAppleSignIn(): Promise<{
       }
     }
 
-    // Generate and hash nonce for security
-    const nonce = await generateNonce()
-    const hashedNonce = await hashNonce(nonce)
-
-    // Request Apple credentials
-    const credential = await AppleAuthentication.signInAsync({
-      requestedScopes: [
-        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-        AppleAuthentication.AppleAuthenticationScope.EMAIL,
-      ],
-      nonce: hashedNonce,
-    })
-
-    // Check for required tokens
-    if (!credential.identityToken) {
-      throw new Error('No identity token returned from Apple')
-    }
-
-    // Sign in with Supabase using Apple ID token
-    const { error } = await supabase.auth.signInWithIdToken({
-      provider: 'apple',
-      token: credential.identityToken,
-      nonce: nonce,
-    })
-
-    if (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'appleAuthSupabaseSignIn' },
-        extra: { message: 'Failed to sign in with Supabase using Apple token' },
-      })
-      throw error
-    }
-
+    await authenticateWithApple()
     return { type: 'success' }
   } catch (error) {
     // Check if user cancelled

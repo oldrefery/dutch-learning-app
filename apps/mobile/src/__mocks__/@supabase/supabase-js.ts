@@ -47,7 +47,7 @@ export const mockSupabaseClient = {
     })),
   },
 
-  from: jest.fn((tableName: string) => ({
+  from: jest.fn((_tableName: string) => ({
     select: jest.fn().mockReturnValue({
       eq: jest.fn().mockReturnValue({
         single: jest.fn().mockResolvedValue({

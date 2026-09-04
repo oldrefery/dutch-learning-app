@@ -55,13 +55,10 @@ export default function WordDetailModal({
   const colorScheme = useColorScheme() ?? 'light'
   const { playWord, isPlaying } = useAudio()
 
-  const handlePlayAudio = useCallback(
-    async (url?: string) => {
-      if (!word?.dutch_lemma) return
-      await playWord(word.dutch_lemma, word.tts_url)
-    },
-    [playWord, word?.dutch_lemma, word?.tts_url]
-  )
+  const handlePlayAudio = useCallback(async () => {
+    if (!word?.dutch_lemma) return
+    await playWord(word.dutch_lemma, word.tts_url)
+  }, [playWord, word?.dutch_lemma, word?.tts_url])
 
   // Create a native gesture for ScrollView
   const nativeScrollGesture = Gesture.Native()

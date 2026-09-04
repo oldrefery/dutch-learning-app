@@ -50,17 +50,15 @@ jest.mock('@/components/Themed', () => ({
   ViewThemed: ({
     children,
     ...props
-  }: {
-    children?: React.ReactNode
-    [key: string]: unknown
-  }) => <MockView {...props}>{children}</MockView>,
+  }: React.ComponentProps<typeof MockView>) => (
+    <MockView {...props}>{children}</MockView>
+  ),
   TextThemed: ({
     children,
     ...props
-  }: {
-    children?: React.ReactNode
-    [key: string]: unknown
-  }) => <MockText {...props}>{children}</MockText>,
+  }: React.ComponentProps<typeof MockText>) => (
+    <MockText {...props}>{children}</MockText>
+  ),
 }))
 
 jest.mock('@/components/auth/AuthInput', () => ({

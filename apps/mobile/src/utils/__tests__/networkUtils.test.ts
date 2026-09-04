@@ -92,6 +92,33 @@ describe('network utilities', () => {
       expect(mockNetInfoRefresh).toHaveBeenCalledTimes(1)
     })
 
+    it('should report a disconnection discovered during refresh', async () => {
+      mockNetInfoFetch.mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: false,
+      })
+      mockNetInfoRefresh.mockResolvedValue({
+        isConnected: false,
+        isInternetReachable: false,
+      })
+
+      await expect(assertNetworkConnection()).rejects.toThrow(
+        'No network connection'
+      )
+    })
+
+    it('should wrap unexpected refresh failures', async () => {
+      mockNetInfoFetch.mockResolvedValue({
+        isConnected: true,
+        isInternetReachable: false,
+      })
+      mockNetInfoRefresh.mockRejectedValue(new Error(API_FAILURE_ERROR))
+
+      await expect(assertNetworkConnection()).rejects.toThrow(
+        'Network check failed'
+      )
+    })
+
     it('should rethrow if error is already a NetworkError', async () => {
       const networkError = new NetworkError('Custom error', 'Custom message')
       mockNetInfoFetch.mockRejectedValue(networkError)

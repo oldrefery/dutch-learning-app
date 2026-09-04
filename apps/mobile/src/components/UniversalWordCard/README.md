@@ -14,17 +14,22 @@
 ## Быстрый старт
 
 ```tsx
-import { UniversalWordCard, WordCardPresets } from '@/components/UniversalWordCard'
+import {
+  UniversalWordCard,
+  WordCardPresets,
+} from '@/components/UniversalWordCard'
 
-// По умолчанию - максимальная информация!
-<UniversalWordCard word={wordData} />
+// Show all available information by default.
+const fullCard = <UniversalWordCard word={wordData} />
 
-// С пресетом (переопределяет только отличия)
-<UniversalWordCard
-  word={wordData}
-  config={WordCardPresets.modal.config}
-  actions={WordCardPresets.modal.actions}
-/>
+// Override only the differences with a preset.
+const modalCard = (
+  <UniversalWordCard
+    word={wordData}
+    config={WordCardPresets.modal.config}
+    actions={WordCardPresets.modal.actions}
+  />
+)
 ```
 
 ## Пресеты - только отличия!
@@ -35,9 +40,9 @@ import { UniversalWordCard, WordCardPresets } from '@/components/UniversalWordCa
 
 ```tsx
 // Максимальная информация - все поля видимы
-<UniversalWordCard word={word} />
+;<UniversalWordCard word={word} />
 // ИЛИ явно
-<UniversalWordCard word={word} config={WordCardPresets.full.config} />
+;<UniversalWordCard word={word} config={WordCardPresets.full.config} />
 ```
 
 ### 2. Modal - добавляет прогресс изучения
@@ -157,10 +162,10 @@ word.preposition = 'van' // genieten van
 
 ```tsx
 // Было
-<WordDetailModal visible={visible} word={word} onClose={onClose} />
+;<WordDetailModal visible={visible} word={word} onClose={onClose} />
 
 // Стало
-<Modal visible={visible} onRequestClose={onClose}>
+;<Modal visible={visible} onRequestClose={onClose}>
   <UniversalWordCard
     word={word}
     config={WordCardPresets.modal.config}
@@ -173,7 +178,7 @@ word.preposition = 'van' // genieten van
 
 ```tsx
 // Было
-<AnalysisResultCard
+;<AnalysisResultCard
   analysisResult={result}
   isPlayingAudio={isPlaying}
   onPlayPronunciation={handlePlay}
@@ -182,7 +187,7 @@ word.preposition = 'van' // genieten van
 />
 
 // Стало
-<UniversalWordCard
+;<UniversalWordCard
   word={result}
   config={WordCardPresets.analysis.config}
   actions={{
@@ -199,7 +204,7 @@ word.preposition = 'van' // genieten van
 
 ```tsx
 // Было - множество отдельных компонентов
-<CardBack
+;<CardBack
   currentWord={word}
   onChangeImage={handleImage}
   onPlayPronunciation={handlePlay}
@@ -207,7 +212,7 @@ word.preposition = 'van' // genieten van
 />
 
 // Стало - один универсальный
-<UniversalWordCard
+;<UniversalWordCard
   word={word}
   config={WordCardPresets.review.config}
   actions={{
