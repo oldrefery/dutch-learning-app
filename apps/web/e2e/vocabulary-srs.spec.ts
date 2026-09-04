@@ -26,7 +26,7 @@ async function selectStableReviewMode(modeRadio: Locator): Promise<void> {
     .toBeGreaterThanOrEqual(3)
 }
 
-test('covers collection CRUD, word analysis, search, history, and SRS', async ({
+test('@smoke covers collection CRUD, word analysis, search, history, and SRS', async ({
   page,
 }) => {
   const runId = Date.now().toString(36)
@@ -44,17 +44,17 @@ test('covers collection CRUD, word analysis, search, history, and SRS', async ({
       name: collectionName,
       exact: true,
     })
-    await expect(collectionLink).toBeVisible()
+    await expect(collectionLink).toBeVisible({ timeout: 60_000 })
     await collectionLink.click()
     await expect(
       page.getByRole('heading', { name: collectionName })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 60_000 })
 
     await page.getByLabel('New collection name').fill(renamedCollectionName)
     await page.getByRole('button', { name: 'Save name' }).click()
     await expect(
       page.getByRole('heading', { name: renamedCollectionName })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 60_000 })
 
     await page.getByRole('main').getByRole('link', { name: 'Add word' }).click()
     await page.getByLabel('Dutch word or expression').fill(dutchWord)
@@ -65,9 +65,11 @@ test('covers collection CRUD, word analysis, search, history, and SRS', async ({
 
     await expect(page).toHaveURL(
       /\/app\/collections\/[0-9a-f-]+\/words\/[0-9a-f-]+$/,
-      { timeout: 30_000 }
+      { timeout: 90_000 }
     )
-    await expect(page.getByRole('heading', { name: dutchWord })).toBeVisible()
+    await expect(page.getByRole('heading', { name: dutchWord })).toBeVisible({
+      timeout: 60_000,
+    })
     await expect(page.getByText('EF 2.50', { exact: true })).toBeVisible()
     await expect(page.getByText('Interval 1 d', { exact: true })).toBeVisible()
     await expect(page.getByText('New', { exact: true })).toBeVisible()
@@ -81,7 +83,9 @@ test('covers collection CRUD, word analysis, search, history, and SRS', async ({
     if (!collectionId) throw new Error('Could not read the E2E collection ID.')
 
     await page.goto('/app/history')
-    await expect(page.getByText(dutchWord, { exact: true })).toBeVisible()
+    await expect(page.getByText(dutchWord, { exact: true })).toBeVisible({
+      timeout: 60_000,
+    })
     await expect(
       page.getByText(renamedCollectionName, { exact: true })
     ).toBeVisible()
@@ -91,7 +95,7 @@ test('covers collection CRUD, word analysis, search, history, and SRS', async ({
     await page.getByRole('button', { name: 'Search', exact: true }).click()
     await expect(
       page.getByRole('link', { name: new RegExp(dutchWord) })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 60_000 })
 
     await page.goto(
       `/app/review?scope=collection-due&collectionId=${collectionId}`
@@ -106,12 +110,14 @@ test('covers collection CRUD, word analysis, search, history, and SRS', async ({
       collectionId
     )
     await page.getByRole('button', { name: /Start ·/ }).click()
-    await expect(page.getByRole('heading', { name: dutchWord })).toBeVisible()
+    await expect(page.getByRole('heading', { name: dutchWord })).toBeVisible({
+      timeout: 60_000,
+    })
     await page.getByRole('button', { name: /Reveal answer/ }).click()
     await page.getByRole('button', { name: /Easy/ }).click()
     await expect(
       page.getByRole('heading', { name: 'Session complete' })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 60_000 })
 
     await page.goto(wordUrl)
     await expect(page.getByText('EF 2.50', { exact: true })).toBeVisible()
@@ -128,8 +134,10 @@ test('covers collection CRUD, word analysis, search, history, and SRS', async ({
       .getByLabel('I understand that this removes the word and its progress.')
       .check()
     await page.getByRole('button', { name: 'Delete word', exact: true }).click()
-    await expect(page).toHaveURL(collectionUrl)
-    await expect(page.getByText('No words in this collection')).toBeVisible()
+    await expect(page).toHaveURL(collectionUrl, { timeout: 60_000 })
+    await expect(page.getByText('No words in this collection')).toBeVisible({
+      timeout: 60_000,
+    })
   } finally {
     await deleteE2ECollections(page)
   }

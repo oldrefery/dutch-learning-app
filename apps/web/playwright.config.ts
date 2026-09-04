@@ -30,10 +30,37 @@ export default defineConfig({
     {
       name: 'chromium',
       dependencies: ['setup'],
-      testIgnore: /auth\.setup\.ts/,
+      testIgnore: [
+        /auth\.setup\.ts/,
+        /browser-compat\.spec\.ts/,
+        /responsive\.spec\.ts/,
+      ],
       use: {
         ...devices['Desktop Chrome'],
         storageState: authStatePath,
+      },
+    },
+    {
+      name: 'mobile-chromium',
+      dependencies: ['setup'],
+      testMatch: /responsive\.spec\.ts/,
+      use: {
+        ...devices['Pixel 7'],
+        storageState: authStatePath,
+      },
+    },
+    {
+      name: 'firefox',
+      testMatch: /browser-compat\.spec\.ts/,
+      use: {
+        ...devices['Desktop Firefox'],
+      },
+    },
+    {
+      name: 'webkit',
+      testMatch: /browser-compat\.spec\.ts/,
+      use: {
+        ...devices['Desktop Safari'],
       },
     },
   ],

@@ -1,7 +1,18 @@
-name: Web E2E smoke
+name: Web E2E
 
 on:
   workflow_dispatch:
+    inputs:
+      suite:
+        description: Playwright suite to run against production
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - extended
+          - cross-browser
+          - all
   schedule:
     - cron: '17 5 * * *'
 
@@ -22,7 +33,7 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
@@ -34,14 +45,32 @@ jobs:
         run: npm ci
 
       - name: Install Chromium
+        if: ${{ github.event_name == 'schedule' || inputs.suite == 'smoke' || inputs.suite == 'extended' }}
         run: npx playwright install --with-deps chromium
 
+      - name: Install all browser engines
+        if: ${{ inputs.suite == 'cross-browser' || inputs.suite == 'all' }}
+        run: npx playwright install --with-deps chromium firefox webkit
+
       - name: Run production smoke tests
+        if: ${{ github.event_name == 'schedule' || inputs.suite == 'smoke' }}
+        run: npm run web:e2e:smoke
+
+      - name: Run production extended tests
+        if: ${{ inputs.suite == 'extended' }}
+        run: npm run web:e2e:extended
+
+      - name: Run all Chromium tests
+        if: ${{ inputs.suite == 'all' }}
         run: npm run web:e2e
+
+      - name: Run cross-browser compatibility tests
+        if: ${{ inputs.suite == 'cross-browser' || inputs.suite == 'all' }}
+        run: npm run web:e2e:cross-browser
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-e2e-report
           path: |

@@ -1,3 +1,6 @@
 node_modules/
 apps/web/.next/
 apps/web/next-env.d.ts
+apps/web/.playwright/
+apps/web/playwright-report/
+apps/web/test-results/

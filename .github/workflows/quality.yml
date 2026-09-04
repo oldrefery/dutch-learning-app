@@ -67,6 +67,9 @@ jobs:
       - name: Run Jest tests
         run: npm run test:ci
 
+      - name: Run web Jest coverage
+        run: npm run web:test:coverage
+
       - name: Run Edge Function tests
         run: npm run test:edge
 

@@ -9,8 +9,12 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "test:e2e": "playwright test",
-    "test:e2e:install": "playwright install chromium"
+    "test:e2e": "node e2e/credential-preflight.mjs && playwright test --project=chromium --project=mobile-chromium",
+    "test:e2e:smoke": "node e2e/credential-preflight.mjs && playwright test --project=chromium --grep @smoke",
+    "test:e2e:extended": "node e2e/credential-preflight.mjs && playwright test --project=chromium --project=mobile-chromium --grep @extended",
+    "test:e2e:cross-browser": "playwright test --project=firefox --project=webkit",
+    "test:e2e:install": "playwright install chromium",
+    "test:e2e:install:all": "playwright install chromium firefox webkit"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.72.0",
