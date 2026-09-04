@@ -29,12 +29,12 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.0.0
         with:
-          node-version: '22.13.0'
+          node-version: '24.20.0'
           cache: 'npm'
 
       - name: Install dependencies
@@ -42,6 +42,9 @@ jobs:
 
       - name: Lint
         run: npm run lint:ci
+
+      - name: Lint web application
+        run: npm run web:lint
 
       - name: Type-check application
         run: npm run typecheck
@@ -70,6 +73,9 @@ jobs:
       - name: Run web Jest coverage
         run: npm run web:test:coverage
 
+      - name: Run web mutation tests
+        run: npm run web:mutation
+
       - name: Run Edge Function tests
         run: npm run test:edge
 
@@ -77,13 +83,24 @@ jobs:
         run: npm run web:build
 
       - name: Run Expo Doctor
-        run: npx --yes expo-doctor@latest
+        run: npm run mobile:expo:doctor
 
       - name: Upload coverage
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: jest-coverage
-          path: coverage/
+          path: |
+            apps/mobile/coverage/
+            coverage/web/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload mutation report
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: web-mutation-report
+          path: reports/mutation/
           if-no-files-found: warn
           retention-days: 14

@@ -29,32 +29,33 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v7.0.0
         with:
-          node-version: '22.13.0'
+          node-version: '24.20.0'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Setup Java for Android
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6.0.0
         with:
           distribution: 'temurin'
           java-version: '17'
 
       - name: Setup EAS
-        uses: expo/expo-github-action@v9
+        uses: expo/expo-github-action@9.0.0
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Debug - Check EAS config
+        working-directory: apps/mobile
         run: |
           echo "=== EAS Configuration ==="
           cat eas.json | jq '.build["e2e-test"]'
@@ -63,6 +64,7 @@ jobs:
 
       - name: Build Android APK for E2E tests
         id: build
+        working-directory: apps/mobile
         run: |
           echo "=== Starting EAS Build ==="
           BUILD_OUTPUT=$(eas build --platform android --profile e2e-test --non-interactive --wait --json)
@@ -91,7 +93,7 @@ jobs:
           file ./app.apk
 
       - name: Setup Android emulator and run tests
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@v2.38.0
         with:
           api-level: 31
           target: default
@@ -115,7 +117,7 @@ jobs:
             $HOME/.maestro/bin/maestro --version
 
             echo "=== Running E2E tests ==="
-            $HOME/.maestro/bin/maestro test .maestro -e APP_ID=com.oldrefery.dutchlearningapp --env MAESTRO_TEST_EMAIL="${{ secrets.MAESTRO_TEST_EMAIL }}" --env MAESTRO_TEST_PASSWORD="${{ secrets.MAESTRO_TEST_PASSWORD }}" --format junit --output ./maestro-results.xml || TEST_EXIT_CODE=$?
+            $HOME/.maestro/bin/maestro test apps/mobile/.maestro -e APP_ID=com.oldrefery.dutchlearningapp --env MAESTRO_TEST_EMAIL="${{ secrets.MAESTRO_TEST_EMAIL }}" --env MAESTRO_TEST_PASSWORD="${{ secrets.MAESTRO_TEST_PASSWORD }}" --format junit --output ./maestro-results.xml || TEST_EXIT_CODE=$?
 
             echo "=== Tests finished with exit code: ${TEST_EXIT_CODE:-0} ==="
 
@@ -123,7 +125,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: maestro-test-results
           path: |
@@ -133,7 +135,7 @@ jobs:
 
       - name: Comment PR with results
         if: github.event_name == 'pull_request' && success()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             github.rest.issues.createComment({
@@ -145,7 +147,7 @@ jobs:
 
       - name: Comment PR with failure
         if: github.event_name == 'pull_request' && failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             github.rest.issues.createComment({

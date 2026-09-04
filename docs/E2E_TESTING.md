@@ -51,7 +51,7 @@ Maestro is a modern E2E testing framework that enables writing tests in YAML wit
 
 ### System Requirements
 
-- Node.js 18+
+- Node.js 24.x (24.20.0 recommended via `.nvmrc`)
 - iOS Simulator (for macOS) or Android Emulator
 - Xcode Command Line Tools (for iOS)
 - Android SDK (for Android)
@@ -90,7 +90,7 @@ Maestro is a modern E2E testing framework that enables writing tests in YAML wit
    npm run e2e:test:all
    ```
 
-   This runs all test files in `.maestro/` directory in alphabetical order.
+   This runs all test files in `apps/mobile/.maestro/` in alphabetical order.
 
 ### Available Commands
 
@@ -105,10 +105,10 @@ npm run e2e:test:all
 npm run e2e:record
 
 # Run specific test with Maestro CLI
-maestro test .maestro/01-auth-login.yaml
+maestro test apps/mobile/.maestro/01-auth-login.yaml
 
 # Run test with verbose output
-maestro test .maestro/01-auth-login.yaml --verbose
+maestro test apps/mobile/.maestro/01-auth-login.yaml --verbose
 ```
 
 ### Expected Output
@@ -137,7 +137,7 @@ Error: Could not find element
 
 ### Test File Structure
 
-Create a new YAML file in `.maestro/` directory. Use numerical prefix for ordering:
+Create a new YAML file in `apps/mobile/.maestro/`. Use a numerical prefix for ordering:
 
 ```yaml
 appId: com.oldrefery.dutchlearningapp
@@ -300,7 +300,7 @@ export function LoginForm() {
 2. **Use console debugging:**
 
    ```bash
-   maestro test .maestro/test.yaml --verbose
+   maestro test apps/mobile/.maestro/test.yaml --verbose
    ```
 
 3. **Check component source code:**
@@ -313,7 +313,7 @@ Maestro test files use environment variables to keep sensitive credentials out o
 
 ### How It Works
 
-1. **Environment variables are defined in `.maestro/.maestro.env` or `.env`** (not tracked in git):
+1. **Environment variables are defined in `apps/mobile/.maestro/.maestro.env` or `apps/mobile/.env`** (not tracked in git):
 
    ```
    MAESTRO_TEST_EMAIL=test@example.com
@@ -355,7 +355,7 @@ In GitHub Actions or other CI systems:
    ```bash
    MAESTRO_TEST_EMAIL=${{ secrets.MAESTRO_TEST_EMAIL }} \
    MAESTRO_TEST_PASSWORD=${{ secrets.MAESTRO_TEST_PASSWORD }} \
-   maestro test .maestro/
+   maestro test apps/mobile/.maestro/
    ```
 
 ## CI/CD Integration
@@ -518,7 +518,7 @@ chmod +x $HOME/.maestro/bin/maestro
 ### 2. Test Organization
 
 ```
-.maestro/
+apps/mobile/.maestro/
 ├── 01-auth-login.yaml        # Auth flows
 ├── 02-auth-signup.yaml
 ├── 03-app-navigation.yaml    # Core features
@@ -567,8 +567,8 @@ chmod +x $HOME/.maestro/bin/maestro
 If you encounter issues:
 
 1. Check this guide's **Troubleshooting** section
-2. Review `.maestro/README.md` for quick reference
-3. Check Maestro logs: `maestro test .maestro/ --verbose`
+2. Review `apps/mobile/.maestro/README.md` for quick reference
+3. Check Maestro logs: `maestro test apps/mobile/.maestro/ --verbose`
 4. Ask in team Slack or create an issue
 
 ---

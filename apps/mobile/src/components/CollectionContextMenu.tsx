@@ -1,0 +1,470 @@
+import React, { useEffect } from 'react'
+import {
+  Modal,
+  TouchableOpacity,
+  useColorScheme,
+  StyleSheet,
+  Pressable,
+  Platform,
+  View,
+} from 'react-native'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
+import { GlassHeader } from '@/components/glass/GlassHeader'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated'
+import { Ionicons } from '@expo/vector-icons'
+import { SymbolView } from 'expo-symbols'
+import { TextThemed, ViewThemed } from '@/components/Themed'
+import { Colors } from '@/constants/Colors'
+import type { Collection } from '@/types/database'
+
+interface CollectionContextMenuProps {
+  visible: boolean
+  collection: Collection | null
+  onClose: () => void
+  onRename: () => void
+  onShare: () => void
+  onCopyCode: () => void
+  onStopSharing: () => void
+  onDelete: () => void
+  isReadOnly?: boolean
+  totalCollections?: number
+}
+
+interface MenuItemsProps {
+  isShared: boolean
+  isDarkMode: boolean
+  totalCollections: number
+  handleAction: (action: () => void) => void
+  onCopyCode: () => void
+  onDelete: () => void
+  onRename: () => void
+  onShare: () => void
+  onStopSharing: () => void
+}
+
+// Read-only user menu items
+function ReadOnlyMenuItems({
+  isShared,
+  isDarkMode,
+  totalCollections,
+  handleAction,
+  onCopyCode,
+  onDelete,
+}: Omit<MenuItemsProps, 'onRename' | 'onShare' | 'onStopSharing'>) {
+  return (
+    <>
+      {isShared && (
+        <TouchableOpacity
+          testID="collection-context-copy-code"
+          accessibilityLabel="Copy Code"
+          accessibilityRole="button"
+          accessible
+          style={styles.menuItem}
+          onPress={() => handleAction(onCopyCode)}
+        >
+          <ViewThemed style={styles.iconContainer}>
+            <Ionicons
+              name="copy"
+              size={22}
+              color={isDarkMode ? Colors.dark.text : Colors.light.text}
+            />
+          </ViewThemed>
+          <TextThemed style={styles.menuItemText}>Copy Code</TextThemed>
+        </TouchableOpacity>
+      )}
+
+      {totalCollections > 1 ? (
+        <>
+          {isShared && (
+            <ViewThemed
+              style={[
+                styles.separator,
+                {
+                  backgroundColor: isDarkMode
+                    ? Colors.dark.border
+                    : Colors.light.border,
+                },
+              ]}
+            />
+          )}
+          <TouchableOpacity
+            testID="collection-context-delete"
+            accessibilityLabel="Delete"
+            accessibilityRole="button"
+            accessible
+            style={styles.menuItem}
+            onPress={() => handleAction(onDelete)}
+          >
+            <ViewThemed style={styles.iconContainer}>
+              <Ionicons name="trash" size={22} color={Colors.error.DEFAULT} />
+            </ViewThemed>
+            <TextThemed style={[styles.menuItemText, styles.destructiveText]}>
+              Delete
+            </TextThemed>
+          </TouchableOpacity>
+        </>
+      ) : (
+        !isShared && (
+          <ViewThemed style={styles.readOnlyMessage}>
+            <TextThemed
+              style={styles.readOnlyText}
+              lightColor={Colors.neutral[500]}
+              darkColor={Colors.dark.textSecondary}
+            >
+              Cannot delete your last collection
+            </TextThemed>
+          </ViewThemed>
+        )
+      )}
+    </>
+  )
+}
+
+// Full access user menu items
+function FullAccessMenuItems({
+  isShared,
+  isDarkMode,
+  handleAction,
+  onRename,
+  onCopyCode,
+  onStopSharing,
+  onShare,
+  onDelete,
+}: Omit<MenuItemsProps, 'totalCollections'>) {
+  return (
+    <>
+      {/* Rename */}
+      <TouchableOpacity
+        testID="collection-context-rename"
+        accessibilityLabel="Rename"
+        accessibilityRole="button"
+        accessible
+        style={styles.menuItem}
+        onPress={() => handleAction(onRename)}
+      >
+        <ViewThemed style={styles.iconContainer}>
+          <Ionicons
+            name="pencil"
+            size={22}
+            color={isDarkMode ? Colors.dark.text : Colors.light.text}
+          />
+        </ViewThemed>
+        <TextThemed style={styles.menuItemText}>Rename</TextThemed>
+      </TouchableOpacity>
+
+      {/* Share or Copy Code + Stop Sharing */}
+      {isShared ? (
+        <>
+          <TouchableOpacity
+            testID="collection-context-copy-code"
+            accessibilityLabel="Copy Code"
+            accessibilityRole="button"
+            accessible
+            style={styles.menuItem}
+            onPress={() => handleAction(onCopyCode)}
+          >
+            <ViewThemed style={styles.iconContainer}>
+              <Ionicons
+                name="copy"
+                size={22}
+                color={isDarkMode ? Colors.dark.text : Colors.light.text}
+              />
+            </ViewThemed>
+            <TextThemed style={styles.menuItemText}>Copy Code</TextThemed>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            testID="collection-context-stop-sharing"
+            accessibilityLabel="Stop Sharing"
+            accessibilityRole="button"
+            accessible
+            style={styles.menuItem}
+            onPress={() => handleAction(onStopSharing)}
+          >
+            <ViewThemed style={styles.iconContainer}>
+              {Platform.OS === 'ios' ? (
+                <SymbolView
+                  name="person.2.slash"
+                  size={22}
+                  type="hierarchical"
+                  tintColor={Colors.error.DEFAULT}
+                  fallback={
+                    <Ionicons
+                      name="close-circle"
+                      size={22}
+                      color={Colors.error.DEFAULT}
+                    />
+                  }
+                />
+              ) : (
+                <Ionicons
+                  name="close-circle"
+                  size={22}
+                  color={Colors.error.DEFAULT}
+                />
+              )}
+            </ViewThemed>
+            <TextThemed style={[styles.menuItemText, styles.destructiveText]}>
+              Stop Sharing
+            </TextThemed>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <TouchableOpacity
+          testID="collection-context-share"
+          accessibilityLabel="Share Collection"
+          accessibilityRole="button"
+          accessible
+          style={styles.menuItem}
+          onPress={() => handleAction(onShare)}
+        >
+          <ViewThemed style={styles.iconContainer}>
+            <Ionicons
+              name="share"
+              size={22}
+              color={isDarkMode ? Colors.dark.text : Colors.light.text}
+            />
+          </ViewThemed>
+          <TextThemed style={styles.menuItemText}>Share Collection</TextThemed>
+        </TouchableOpacity>
+      )}
+
+      {/* Separator */}
+      <ViewThemed
+        style={[
+          styles.separator,
+          {
+            backgroundColor: isDarkMode
+              ? Colors.dark.border
+              : Colors.light.border,
+          },
+        ]}
+      />
+
+      {/* Delete */}
+      <TouchableOpacity
+        testID="collection-context-delete"
+        accessibilityLabel="Delete"
+        accessibilityRole="button"
+        accessible
+        style={styles.menuItem}
+        onPress={() => handleAction(onDelete)}
+      >
+        <ViewThemed style={styles.iconContainer}>
+          <Ionicons name="trash" size={22} color={Colors.error.DEFAULT} />
+        </ViewThemed>
+        <TextThemed style={[styles.menuItemText, styles.destructiveText]}>
+          Delete
+        </TextThemed>
+      </TouchableOpacity>
+    </>
+  )
+}
+
+export default function CollectionContextMenu({
+  visible,
+  collection,
+  onClose,
+  onRename,
+  onShare,
+  onCopyCode,
+  onStopSharing,
+  onDelete,
+  isReadOnly = false,
+  totalCollections = 1,
+}: CollectionContextMenuProps) {
+  const colorScheme = useColorScheme() ?? 'light'
+  const isDarkMode = colorScheme === 'dark'
+  const slideAnim = useSharedValue(300)
+  const opacityAnim = useSharedValue(0)
+
+  useEffect(() => {
+    if (visible) {
+      slideAnim.value = withSpring(0, {
+        damping: 20,
+        stiffness: 300,
+      })
+      opacityAnim.value = withTiming(1, { duration: 200 })
+    } else {
+      slideAnim.value = withTiming(300, { duration: 200 })
+      opacityAnim.value = withTiming(0, { duration: 200 })
+    }
+  }, [visible, slideAnim, opacityAnim])
+
+  const animatedMenuStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: slideAnim.value }],
+  }))
+
+  const animatedBackdropStyle = useAnimatedStyle(() => ({
+    opacity: opacityAnim.value,
+  }))
+
+  if (!collection) return null
+
+  const isShared = collection.is_shared
+
+  const handleAction = (action: () => void) => {
+    onClose()
+    // Small delay to allow modal to close smoothly
+    setTimeout(action, 100)
+  }
+
+  return (
+    <Modal visible={visible} transparent animationType="none">
+      <Pressable style={styles.backdrop} onPress={onClose} accessible={false}>
+        <Animated.View
+          style={[styles.backdropOverlay, animatedBackdropStyle]}
+        />
+      </Pressable>
+
+      <Animated.View style={[styles.menuContainer, animatedMenuStyle]}>
+        <PlatformBlurView
+          intensity={isDarkMode ? 80 : 60}
+          tint={isDarkMode ? 'dark' : 'light'}
+          style={styles.blurContainer}
+        >
+          <ViewThemed
+            style={[
+              styles.menu,
+              {
+                backgroundColor: isDarkMode
+                  ? Colors.transparent.iosDarkSurface92
+                  : Colors.transparent.white92,
+              },
+            ]}
+          >
+            {/* Header */}
+            <View style={{ height: 56 }}>
+              <GlassHeader
+                title={collection.name}
+                roundedTop={true}
+                renderBackground={false}
+              />
+            </View>
+
+            {/* Menu Items */}
+            <ViewThemed style={styles.menuItems}>
+              {isReadOnly ? (
+                <ReadOnlyMenuItems
+                  isShared={isShared}
+                  isDarkMode={isDarkMode}
+                  totalCollections={totalCollections}
+                  handleAction={handleAction}
+                  onCopyCode={onCopyCode}
+                  onDelete={onDelete}
+                />
+              ) : (
+                <FullAccessMenuItems
+                  isShared={isShared}
+                  isDarkMode={isDarkMode}
+                  handleAction={handleAction}
+                  onRename={onRename}
+                  onCopyCode={onCopyCode}
+                  onStopSharing={onStopSharing}
+                  onShare={onShare}
+                  onDelete={onDelete}
+                />
+              )}
+            </ViewThemed>
+
+            {/* Cancel Button */}
+            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+              <TextThemed style={styles.cancelButtonText}>Cancel</TextThemed>
+            </TouchableOpacity>
+          </ViewThemed>
+        </PlatformBlurView>
+      </Animated.View>
+    </Modal>
+  )
+}
+
+const styles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  backdropOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: Colors.transparent.black40,
+  },
+  menuContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  blurContainer: {
+    overflow: 'hidden',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  menu: {
+    paddingTop: 20,
+    paddingBottom: 40,
+    paddingHorizontal: 16,
+  },
+  header: {
+    paddingBottom: 12,
+    borderBottomWidth: 0,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  menuItems: {
+    paddingTop: 8,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+  },
+  iconContainer: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  menuItemText: {
+    fontSize: 17,
+    fontWeight: '500',
+  },
+  destructiveText: {
+    color: Colors.error.DEFAULT,
+  },
+  separator: {
+    height: 1,
+    marginVertical: 8,
+    marginHorizontal: 12,
+  },
+  cancelButton: {
+    marginTop: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderRadius: 12,
+  },
+  cancelButtonText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: Colors.primary.DEFAULT,
+  },
+  readOnlyMessage: {
+    paddingVertical: 20,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  readOnlyText: {
+    fontSize: 15,
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+})

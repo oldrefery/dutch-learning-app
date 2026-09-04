@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
+MOBILE_DIR="$REPO_ROOT/apps/mobile"
+cd "$REPO_ROOT"
+
 source "$(dirname "$0")/verify-eas-identity.sh"
 
 PLATFORM="both"
@@ -96,9 +100,9 @@ CONTEXT_BUILT_ANDROID="${CONTEXT_PARTS[5]}"
 IOS_ARTIFACT="${CONTEXT_PARTS[6]}"
 ANDROID_ARTIFACT="${CONTEXT_PARTS[7]}"
 
-APP_VERSION=$(node -p "require('./app.base.json').expo.version")
-APP_IOS_BUILD=$(node -p "require('./app.base.json').expo.ios.buildNumber")
-APP_ANDROID_BUILD=$(node -p "require('./app.base.json').expo.android.versionCode")
+APP_VERSION=$(node -p "require('./apps/mobile/app.base.json').expo.version")
+APP_IOS_BUILD=$(node -p "require('./apps/mobile/app.base.json').expo.ios.buildNumber")
+APP_ANDROID_BUILD=$(node -p "require('./apps/mobile/app.base.json').expo.android.versionCode")
 CURRENT_COMMIT=$(git rev-parse HEAD)
 
 [ "$CONTEXT_VERSION" = "$APP_VERSION" ] || fail "build context version does not match app config"
@@ -120,11 +124,11 @@ submit_platform() {
 
   echo "npx -y eas-cli@latest submit --platform ${platform} --profile production --path ${artifact} --non-interactive"
   if [ "$DRY_RUN" != "true" ]; then
-    npx -y eas-cli@latest submit \
+    (cd "$MOBILE_DIR" && npx -y eas-cli@latest submit \
       --platform "$platform" \
       --profile production \
-      --path "$artifact" \
-      --non-interactive
+      --path "$REPO_ROOT/$artifact" \
+      --non-interactive)
   fi
 }
 

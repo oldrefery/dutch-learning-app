@@ -27,13 +27,16 @@ The flow for adding a new word will be centered around a Generative AI model (e.
   \- "type": e.g., "irregular", "reflexive".  
   \- "translation_en": The primary English translation of the lemma.
 
-- **Expected AI Response:**  
-  {  
-   "lemma": "kopen",  
-   "part_of_speech": "verb",  
-   "type": "irregular",  
-   "translation_en": "to buy"  
+- **Expected AI Response:**
+
+  ```json
+  {
+    "lemma": "kopen",
+    "part_of_speech": "verb",
+    "type": "irregular",
+    "translation_en": "to buy"
   }
+  ```
 
 This single API call solves the most complex grammatical challenge.
 

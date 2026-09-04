@@ -2,8 +2,8 @@
 set -e
 
 echo "🚀 Publishing production EAS update..."
-npx -y eas-cli@latest update --channel production --environment production "$@"
+(cd apps/mobile && npx -y eas-cli@latest update --channel production --environment production "$@")
 
 echo ""
 echo "⬆️ Uploading EAS Update source maps to Sentry..."
-scripts/upload-sourcemaps.sh --update-dist dist
+scripts/upload-sourcemaps.sh --update-dist apps/mobile/dist

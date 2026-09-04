@@ -233,7 +233,7 @@
 
 ```
 DutchLearningApp/
-├── src/                               ✅ Source code root (restructured)
+├── apps/mobile/src/                   ✅ Mobile source code root
 │   ├── app/                           ✅ Expo Router screens
 │   │   ├── (tabs)/
 │   │   │   ├── _layout.tsx            ✅ Tab navigation configured
@@ -267,7 +267,7 @@ DutchLearningApp/
 │   ├── CURRENT_STATUS.md              ✅ This file
 │   └── SETUP_INSTRUCTIONS.md          ✅ Manual setup guide
 ├── .env                               ✅ Configured
-├── package.json                       ✅ Dependencies & scripts
+├── package.json                       ✅ Workspace orchestration & scripts
 ├── eslint.config.js                   ✅ Code quality configuration
 └── [Other config files...]            ✅ TypeScript, Prettier, etc.
 ```
@@ -351,7 +351,7 @@ DutchLearningApp/
   - React Native 0.81.4 with React 19.1
   - React Native Reanimated 4.1.0 (New Architecture)
   - React Native Worklets 0.5.1 integration
-  - Node.js 20+ compatibility
+  - Node.js 24.x compatibility
   - All dependencies updated to latest compatible versions
 - **Pull-to-Refresh Enhancement**: Added review screen refresh functionality
   - ScrollView with RefreshControl implementation
@@ -630,7 +630,7 @@ node test-setup.js  # (file was deleted after successful test)
 - ✅ **Modern project structure** with src/ directory organization
 - ✅ **Centralized constants** and color system (69+ colors)
 - ✅ **Pull-to-refresh** functionality in review screen
-- ✅ **Node.js 20+** compatibility
+- ✅ **Node.js 24.x** compatibility
 - ✅ **Updated documentation** reflecting all changes
 
 **Production Ready Features:**

@@ -6,6 +6,8 @@ push branches or tags, or promote a release publicly.
 
 ## Production Configuration
 
+- The Expo/EAS project root is `apps/mobile`; root scripts enter it before any
+  EAS project operation.
 - Expo version source: local.
 - Runtime version policy: fingerprint.
 - Production channel and environment: `production`.
@@ -17,6 +19,11 @@ push branches or tags, or promote a release publicly.
 
 ## Prerequisites
 
+- Expo SDK 57 requires a rebuilt native development client; an SDK 55 binary
+  cannot receive this migration as an OTA-only update.
+- Local iOS builds require Xcode 26.4 or newer and target iOS 16.4 or newer.
+- Use the repository's Node 24 / npm 11 versions and install from the root
+  lockfile with `npm ci`.
 - The release-readiness and onboarding gates are complete.
 - CI, linked Supabase lint, production Sentry triage, and device smoke checks
   pass.
@@ -44,7 +51,8 @@ Apply only after build `79` is confirmed as unused:
 node scripts/prepare-release.js --version 2.0.0 --build 79 --apply
 ```
 
-The command updates `app.base.json`, `package.json`, and `package-lock.json`.
+The command updates `apps/mobile/app.base.json`, the root and mobile
+`package.json` files, and `package-lock.json`.
 It does not commit. Review the diff, run the quality gate, and create the
 Conventional Commit yourself.
 
@@ -106,7 +114,7 @@ scripts/submit-release.sh --platform both
 
 The script validates the app version, both build numbers, current commit, built
 platform flags, and artifact paths against `builds/build-context.json`. It uses
-the `production` submit profile from `eas.json`.
+the `production` submit profile from `apps/mobile/eas.json`.
 
 Submission uploads to App Store Connect/TestFlight and the Google Play internal
 draft track. It does not release publicly.

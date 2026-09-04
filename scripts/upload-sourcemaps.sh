@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
+MOBILE_DIR="$REPO_ROOT/apps/mobile"
+cd "$REPO_ROOT"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -37,12 +41,12 @@ echo "🔍 Sourcemap upload script for Sentry"
 echo ""
 
 # Resolve Expo config file (app.json or app.base.json)
-if [ -f "./app.json" ]; then
-    APP_CONFIG_FILE="./app.json"
-elif [ -f "./app.base.json" ]; then
-    APP_CONFIG_FILE="./app.base.json"
+if [ -f "$MOBILE_DIR/app.json" ]; then
+    APP_CONFIG_FILE="$MOBILE_DIR/app.json"
+elif [ -f "$MOBILE_DIR/app.base.json" ]; then
+    APP_CONFIG_FILE="$MOBILE_DIR/app.base.json"
 else
-    echo -e "${RED}Error: app.json or app.base.json not found in project root${NC}"
+    echo -e "${RED}Error: app.json or app.base.json not found in apps/mobile${NC}"
     exit 1
 fi
 
@@ -210,7 +214,7 @@ create_and_upload() {
 
   local platform_lower
   platform_lower=$(echo "$platform" | tr '[:upper:]' '[:lower:]')
-  local output_dir="builds/sourcemaps-$platform_lower"
+  local output_dir="$REPO_ROOT/builds/sourcemaps-$platform_lower"
   local runtime_bundle_name="index.$platform_lower.bundle"
   if [ "$platform_lower" == "ios" ]; then
     runtime_bundle_name="main.jsbundle"
@@ -254,7 +258,8 @@ create_and_upload() {
   if is_true_flag "$SENTRY_FORCE_RESET_CACHE"; then
     embed_args+=(--reset-cache)
   fi
-  SENTRY_DISABLE_AUTO_UPLOAD=true NODE_ENV=production npx expo export:embed "${embed_args[@]}"
+  (cd "$MOBILE_DIR" && \
+    SENTRY_DISABLE_AUTO_UPLOAD=true NODE_ENV=production npx expo export:embed "${embed_args[@]}")
 
   # Check if sourcemap was generated
   if [ ! -f "$sourcemap_file" ]; then

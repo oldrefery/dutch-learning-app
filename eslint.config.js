@@ -4,12 +4,19 @@ const expoConfig = require('eslint-config-expo/flat')
 module.exports = defineConfig([
   expoConfig,
   {
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: ['apps/mobile/tsconfig.json'],
+        },
+      },
+    },
     ignores: [
       'dist/*',
-      '.expo/*',
-      '.maestro/*',
-      'ios/*',
-      'android/*',
+      '**/.expo/**',
+      '**/.maestro/**',
+      '**/ios/**',
+      '**/android/**',
       'supabase/functions/*',
       '.tools/*',
       'apps/web/**',
