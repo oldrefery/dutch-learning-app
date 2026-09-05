@@ -150,6 +150,110 @@ describe('useAudioReviewSession', () => {
     )
   })
 
+  it('preserves an existing collection-scoped session', () => {
+    mockUseReviewScreen.mockReturnValue(
+      createReviewState({
+        reviewSession: {
+          ...reviewSession,
+          config: {
+            mode: REVIEW_MODE.MEANING_RECALL,
+            scope: REVIEW_SCOPE.COLLECTION_DUE,
+            collectionId: 'audio-collection',
+          },
+        },
+      })
+    )
+
+    const { result } = renderHook(() => useAudioReviewSession())
+
+    expect(startSession).not.toHaveBeenCalled()
+    expect(result.current.isStarting).toBe(false)
+    expect(result.current.currentWord).toEqual(word)
+  })
+
+  it('does not assess a hidden answer', async () => {
+    const { result } = renderHook(() => useAudioReviewSession())
+
+    await act(async () => {
+      await result.current.submitAgain()
+      await result.current.submitGood()
+    })
+
+    expect(handleAgain).not.toHaveBeenCalled()
+    expect(handleGood).not.toHaveBeenCalled()
+  })
+
+  it('does not play, reveal, or assess an absent word', async () => {
+    mockUseReviewScreen.mockReturnValue(
+      createReviewState({ currentWord: null, isFlipped: true })
+    )
+    const { result } = renderHook(() => useAudioReviewSession())
+
+    await act(async () => {
+      await result.current.revealAnswer()
+      await result.current.replayPrompt()
+      await result.current.submitAgain()
+      await result.current.submitGood()
+    })
+
+    expect(playWord).not.toHaveBeenCalled()
+    expect(revealAnswer).not.toHaveBeenCalled()
+    expect(handleAgain).not.toHaveBeenCalled()
+    expect(handleGood).not.toHaveBeenCalled()
+  })
+
+  it.each(['submitAgain', 'submitGood'] as const)(
+    '%s records Meaning Recall with no recognition result',
+    async action => {
+      mockUseReviewScreen.mockReturnValue(
+        createReviewState({ isFlipped: true })
+      )
+      const { result } = renderHook(() => useAudioReviewSession())
+
+      await act(async () => {
+        await result.current[action]()
+      })
+
+      const handler = action === 'submitAgain' ? handleAgain : handleGood
+      expect(handler).toHaveBeenCalledTimes(1)
+      expect(handler).toHaveBeenCalledWith({
+        reviewMode: REVIEW_MODE.MEANING_RECALL,
+        answeredCorrectly: null,
+      })
+      expect(result.current.isAssessing).toBe(false)
+    }
+  )
+
+  it('replays a paused prompt from the beginning', async () => {
+    const { result } = renderHook(() => useAudioReviewSession())
+
+    act(() => result.current.togglePause())
+    expect(pauseAudio).toHaveBeenCalledTimes(1)
+    expect(result.current.isPaused).toBe(true)
+    playWord.mockClear()
+
+    await act(async () => {
+      await result.current.replayPrompt()
+    })
+
+    expect(playWord).toHaveBeenCalledWith('huis', AUDIO_URL)
+    expect(result.current.isPaused).toBe(false)
+  })
+
+  it('stops audio before leaving the session', async () => {
+    const { result } = renderHook(() => useAudioReviewSession())
+
+    await act(async () => {
+      await result.current.exitSession()
+    })
+
+    expect(stopAudio).toHaveBeenCalledTimes(1)
+    expect(chooseAnotherMode).toHaveBeenCalledTimes(1)
+    expect(stopAudio.mock.invocationCallOrder[0]).toBeLessThan(
+      chooseAnotherMode.mock.invocationCallOrder[0]
+    )
+  })
+
   it('reveals and announces the answer before replaying Dutch audio', async () => {
     const { result } = renderHook(() => useAudioReviewSession())
     playWord.mockClear()
