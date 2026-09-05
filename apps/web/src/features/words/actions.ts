@@ -14,10 +14,7 @@ import {
 import type { WordActionState } from './form-state'
 import { isUuid } from './word-detail'
 import { validateWordImageUrl } from './word-image'
-import {
-  buildResetWordProgressUpdate,
-  hasDeleteConfirmation,
-} from './word-mutations'
+import { hasDeleteConfirmation } from './word-mutations'
 
 const getCollectionPath = (collectionId: string) =>
   `/app/collections/${collectionId}`
@@ -105,26 +102,39 @@ export async function resetWordProgress(
   formData: FormData
 ): Promise<WordActionState> {
   void previousState
-  void formData
 
-  const auth = await requireAuthContext()
+  await requireAuthContext()
 
   if (!hasValidIdentifiers(collectionId, wordId)) {
     return { status: 'error', message: 'The word could not be found.' }
   }
 
+  const resetId = formData.get('resetId')
+  const resetAt = formData.get('resetAt')
+  const reviewDate = formData.get('reviewDate')
+  if (
+    typeof resetId !== 'string' ||
+    !isUuid(resetId) ||
+    typeof resetAt !== 'string' ||
+    !Number.isFinite(Date.parse(resetAt)) ||
+    typeof reviewDate !== 'string' ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(reviewDate)
+  ) {
+    return {
+      status: 'error',
+      message: 'The reset request is invalid. Please reload and try again.',
+    }
+  }
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('words')
-    .update(buildResetWordProgressUpdate())
-    .eq('word_id', wordId)
-    .eq('collection_id', collectionId)
-    .eq('user_id', auth.userId)
-    .is('deleted_at', null)
-    .select('word_id')
-    .maybeSingle()
+  const { data, error } = await supabase.rpc('reset_word_learning_progress', {
+    p_word_id: wordId,
+    p_collection_id: collectionId,
+    p_reset_id: resetId,
+    p_reset_at: resetAt,
+    p_review_date: reviewDate,
+  })
 
-  if (error || !data) {
+  if (error || data?.length !== 1 || data[0]?.word_id !== wordId) {
     return {
       status: 'error',
       message: 'Could not reset word progress. Please try again.',

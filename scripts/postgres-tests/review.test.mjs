@@ -49,6 +49,7 @@ test('applies an assessment and persists matching immutable before/after history
     next_easiness_factor: 2.5,
     reviewed_at: '2026-09-05T12:00:00+00:00',
     created_at: saved.events[0].created_at,
+    review_date: '2026-09-05',
   })
 })
 
@@ -101,7 +102,7 @@ for (const fields of [
   })
 }
 
-test('an event primary-key failure after the word update rolls back progress', async () => {
+test('a foreign event ID collision rolls back progress', async () => {
   const foreignWord = await seedWord(db, other)
   const existing = assessment(foreignWord)
   await review(db, existing, other)
@@ -109,7 +110,7 @@ test('an event primary-key failure after the word update rolls back progress', a
   const before = await state(db, word)
   await assert.rejects(
     review(db, assessment(word, { event: existing.event })),
-    /23505/
+    /42501.*row-level security/s
   )
   assert.deepEqual(await state(db, word), before)
   assert.equal((await state(db, foreignWord)).events.length, 1)

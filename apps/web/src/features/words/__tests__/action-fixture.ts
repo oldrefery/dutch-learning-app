@@ -12,6 +12,7 @@ export const wordPath = `${collectionPath}/words/${wordId}`
 export const redirectSignal = new Error('NEXT_REDIRECT')
 export const from = jest.fn()
 export const invoke = jest.fn()
+export const rpc = jest.fn()
 
 export const form = (fields: Record<string, string> = {}) => {
   const result = new FormData()
@@ -37,6 +38,7 @@ export function queueQuery(
 export function setupActions() {
   from.mockReset()
   invoke.mockReset()
+  rpc.mockReset()
   jest.mocked(requireAuthContext).mockResolvedValue({
     userId,
     email: null,
@@ -44,6 +46,7 @@ export function setupActions() {
   })
   jest.mocked(createClient).mockResolvedValue({
     from,
+    rpc,
     functions: { invoke },
   } as unknown as Awaited<ReturnType<typeof createClient>>)
   jest.mocked(redirect).mockImplementation(() => {

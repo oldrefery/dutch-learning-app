@@ -4,6 +4,8 @@ import {
   SQL_SCHEMA,
   MIGRATION_V5_TOMBSTONE_INDEXES,
   MIGRATION_V7_REVIEW_EVENTS,
+  MIGRATION_V9_LEARNING_COMMANDS,
+  MIGRATION_V9_REVIEW_DATE,
 } from '../schema'
 
 // Only the native Expo bridge is replaced; execute actual repository SQL.
@@ -12,9 +14,13 @@ export const createTestDatabase = () => {
   database.exec(SQL_SCHEMA)
   database.exec(MIGRATION_V5_TOMBSTONE_INDEXES)
   database.exec(MIGRATION_V7_REVIEW_EVENTS)
+  database.exec(MIGRATION_V9_REVIEW_DATE)
+  database.exec(MIGRATION_V9_LEARNING_COMMANDS)
   const runAsync = async (sql: string, ...values: SQLInputValue[]) =>
     database.prepare(sql).run(...values)
   const adapter = {
+    getAllAsync: async (sql: string, ...values: SQLInputValue[]) =>
+      database.prepare(sql).all(...values),
     getFirstAsync: async (sql: string, values: SQLInputValue[]) =>
       database.prepare(sql).get(...values) ?? null,
     prepareAsync: async (sql: string) => {

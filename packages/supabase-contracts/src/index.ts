@@ -1,9 +1,9 @@
 export type {
   CompositeTypes,
-  Database,
   Enums,
   Json,
   Tables,
   TablesInsert,
   TablesUpdate,
 } from './database.generated'
+export type { Database } from './database'

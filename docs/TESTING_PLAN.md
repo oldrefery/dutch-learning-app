@@ -51,7 +51,7 @@ server binaries, but no account, connection string or Docker service.
 | Expired web session                   | SDK adapter/redirect unit tests plus Chromium and real Supabase refresh-token rotation through private pages and redirects; invalid-token cleanup and return-path reauthentication                                | Actual signed JWT expiry, concurrent refresh and remotely revoked sessions                   |
 | Authentication/authorization          | Verified-user lookup, fail-closed access defaults, OAuth code exchange, safe next destination                                                                                                                     | Provider login, revoked sessions, real RLS enforcement                                       |
 | Expired mobile session/reconnection   | Preflight expiry/refresh-failure tests; Android airplane-mode assessment survives cold restart and syncs on reconnect; foreground sync and hook lifecycle tests                                                   | Actual expired/revoked native sessions, offline Settings fallback and iOS                    |
-| In-flight sync conflicts              | SQLite stale-acknowledgement/tombstone tests; two real Android clients reproduce an older offline snapshot overwriting newer remote progress                                                                      | Confirmed unresolved progress conflict; event ordering and old-client policy                 |
+| In-flight sync conflicts              | Native QA reproduced stale snapshot overwrite; protocol 2 PostgreSQL/SQLite regressions now verify atomic reviews, reset ordering, idempotency and snapshot protection                                            | Hosted rollout, upgraded-device QA and reconciliation of ambiguous legacy queues             |
 | Review persistence                    | Action tests, isolated PostgreSQL RPC/RLS/concurrency and browser offline/lost-response retries against real Supabase; unchanged retry payload and durable single-assessment progress                             | Broader hosted schema drift, other assessments under network failures and device transitions |
 | Word writes and progress preservation | Execute all five word actions with a recording API double: owner/collection/live-word filters, exact reset/delete/move/image payloads, failed or missing writes, reanalysis conflict fallback without SRS changes | Real PostgreSQL/RLS ownership checks, competing writes and cache refresh in a browser        |
 | Mobile review atomicity               | Real SQLite constraints/transactions: event failure or duplicate event rolls back word progress; wrong owner/deleted word denied                                                                                  | Expo SQLite native bridge behavior on both platforms                                         |
@@ -110,11 +110,11 @@ no persistent offline queue across reloads is claimed.
 
 1. Extend auth validation to actual JWT expiry, concurrent refresh requests and
    remotely revoked disposable sessions; these are not proved by metadata expiry.
-2. Fix the confirmed native two-client conflict: an older offline assessment
-   overwrites newer remote progress after reconnect. Both events survive, but
-   the repetition count loses an assessment and the last-review date regresses.
-   Define event ordering, resets and old-client compatibility before changing
-   the protocol. See [native QA findings](native-sync-qa-2026-09-05.md).
+2. Validate and roll out [learning sync protocol 2](learning-sync-protocol.md),
+   which fixes the native snapshot conflict locally using atomic server commands.
+   PostgreSQL/SQLite tests now cover the conflict, native batches, reset ordering
+   and retry durability. Hosted migration and a fresh native two-client run remain
+   pending; pre-cutover queues and old reset clients require explicit handling.
 3. Diagnose the offline cold-start Settings fallback (missing email / Read Only).
    Native Android pending-event durability, reconnect and foreground sync were
    exercised; iOS and actual expired/revoked native sessions remain unverified.

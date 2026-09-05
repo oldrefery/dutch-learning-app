@@ -271,3 +271,62 @@ requires separate authorization. Investigate offline Settings hydration as a
 separate issue without weakening fail-closed authorization.
 
 Commit message: `test(mobile): cover sync lifecycle and conflict QA`
+
+## Follow-up: Server-Authoritative Learning Commands
+
+Implemented protocol 2 on the same branch. The forward-only migration protects
+SRS from client word snapshots and applies uniquely identified review events
+atomically under a word row lock. The web review RPC and native event upsert
+share this path. Repeated requests are idempotent; canonical before/after values
+are calculated by the server, including multiple same-word events in one batch.
+
+Ordering is explicitly server acceptance order, not retrospective chronological
+replay. The reproduced Good → delayed Easy scenario now yields two repetitions,
+10 days, EF 2.50 and a non-regressing last-review timestamp. Scheduling also
+respects the last accepted reset's date. Reset is its own identified command;
+retrying it after another review cannot erase that review.
+
+SQLite v9 introduces a persistent sequence shared by reviews and resets. Local
+SRS changes and queue inserts are transactional; upload acknowledgement and
+tombstones clean up only corresponding commands. Native sync checks the backend
+protocol, omits snapshot SRS fields, preserves command order and retrieves
+canonical progress/history after upload. Pending commands protect provisional
+progress during pulls. Web reset retries reuse the same request in the open form.
+Direct mobile service helpers were moved off raw SRS updates as well.
+
+Cutover cannot safely infer whether an unknown old event was already represented
+in a previously uploaded snapshot. The transactional migration records existing
+word cutovers; ambiguous pre-cutover events fail closed and remain queued, while
+known retries remain accepted. Legacy reset snapshots also require a coordinated
+client upgrade. No queue is silently cleared and no historical progress is
+backfilled. See [protocol and rollout](../learning-sync-protocol.md) for the
+complete contract, privilege boundaries and required reconciliation decisions.
+
+Validation:
+
+- 56 local PostgreSQL tests pass, including 240 SQL/shared-SRS comparisons,
+  native batch/stale snapshot regression, reset rollback/idempotency/ownership,
+  three additional concurrent reset/review cases and cutover protection.
+- 93 mobile suites / 1149 tests / 16 snapshots pass; six new real-SQLite command
+  tests and three additional sync orchestration tests cover the new boundaries.
+- 46 web suites / 319 tests pass, including the real React reset form retry;
+  configured web coverage thresholds pass.
+- Root/mobile lint, web lint, both application test typechecks and diff checks pass.
+- Full forced Stryker: 786 mutants, 98.04%. Four useful reset-validation survivors
+  prompted additional tests. A forced rerun of all 52 mutants in that validation
+  range updates the combined report to **98.91%**: 454 killed, four survivors,
+  one uncovered and 327 TypeScript compile errors; no timeouts. Other results
+  are from the preceding full forced run. The remaining findings are the
+  previously documented equivalent/defensive cases; no thresholds were lowered.
+
+Hosted migrations, deployment and a fresh native device run were NOT performed.
+The deployed generated Supabase contract is unchanged; a temporary typed RPC
+overlay covers the undeployed migration and must be removed after regeneration.
+The unrelated staged/deleted plugin remains unchanged and excluded. No push,
+PR, merge, EAS command or application-account operation was performed.
+
+Next: staging rollout and two-device QA with upgraded clients, followed by an
+explicitly approved coordinated production rollout. Preserve/reconcile legacy
+queues before cutover; the separate offline Settings hydration issue remains open.
+
+Commit message: `fix(sync): apply learning commands atomically on the server`

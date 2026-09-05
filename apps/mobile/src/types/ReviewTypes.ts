@@ -53,6 +53,7 @@ export interface ReviewEvent {
   previous_easiness_factor: number
   next_easiness_factor: number
   reviewed_at: string
+  review_date?: string | null
   created_at: string
 }
 

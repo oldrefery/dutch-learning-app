@@ -232,3 +232,37 @@ export const MIGRATION_V8_ADD_USAGE_NOTES = `
 `
 
 export type SyncStatus = 'synced' | 'pending' | 'error' | 'conflict' | 'deleted'
+
+// Migration v9: Durable ordering across offline reviews and explicit resets.
+export const MIGRATION_V9_REVIEW_DATE =
+  'ALTER TABLE review_events ADD COLUMN review_date TEXT;'
+export const MIGRATION_V9_LEARNING_COMMANDS = `
+  CREATE TABLE IF NOT EXISTS learning_commands (
+    sequence INTEGER PRIMARY KEY AUTOINCREMENT,
+    operation_id TEXT NOT NULL UNIQUE,
+    kind TEXT NOT NULL CHECK (kind IN ('review', 'reset')),
+    user_id TEXT NOT NULL,
+    word_id TEXT NOT NULL REFERENCES words(word_id) ON DELETE CASCADE,
+    reset_at TEXT,
+    review_date TEXT
+  );
+  INSERT OR IGNORE INTO learning_commands(operation_id, kind, user_id, word_id)
+    SELECT event_id, 'review', user_id, word_id FROM review_events
+    WHERE sync_status = 'pending' ORDER BY reviewed_at, event_id;
+  CREATE TRIGGER IF NOT EXISTS queue_review_command AFTER INSERT ON review_events
+  WHEN NEW.sync_status = 'pending' BEGIN
+    INSERT INTO learning_commands(operation_id, kind, user_id, word_id)
+      VALUES (NEW.event_id, 'review', NEW.user_id, NEW.word_id);
+  END;
+  CREATE TRIGGER IF NOT EXISTS acknowledge_review_command AFTER UPDATE ON review_events
+  WHEN NEW.sync_status = 'synced' BEGIN
+    DELETE FROM learning_commands WHERE operation_id = NEW.event_id AND kind = 'review';
+  END;
+  CREATE TRIGGER IF NOT EXISTS delete_review_command AFTER DELETE ON review_events BEGIN
+    DELETE FROM learning_commands WHERE operation_id = OLD.event_id AND kind = 'review';
+  END;
+  CREATE TRIGGER IF NOT EXISTS delete_learning_commands_on_tombstone
+  AFTER UPDATE OF deleted_at ON words WHEN NEW.deleted_at IS NOT NULL BEGIN
+    DELETE FROM learning_commands WHERE word_id = NEW.word_id;
+  END;
+`

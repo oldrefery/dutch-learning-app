@@ -40,10 +40,10 @@ async function overlap(first, second) {
   try {
     a.child.stdin.write(`SET statement_timeout = '10s';
       SET idle_in_transaction_session_timeout = '10s'; BEGIN;
-      ${asUser(owner, rpc(first))}\n\\echo ASSESSMENT_HELD\n`)
+      ${asUser(owner, typeof first === 'string' ? first : rpc(first))}\n\\echo ASSESSMENT_HELD\n`)
     await until(() => a.output().includes('ASSESSMENT_HELD'))
     b = db.sql(
-      `SET application_name = '${application}'; ${asUser(owner, rpc(second))}`
+      `SET application_name = '${application}'; ${asUser(owner, typeof second === 'string' ? second : rpc(second))}`
     )
     void b.catch(() => {})
     await until(
@@ -113,8 +113,51 @@ test('concurrent event collision across different words rolls back the losing wo
   const a = assessment(first)
   await assert.rejects(
     overlap(a, assessment(second, { event: a.event })),
-    /23505/
+    /immutable/
   )
   assert.deepEqual(await state(db, second), before)
   assert.equal((await state(db, first)).events.length, 1)
+})
+
+const resetSql = (
+  word,
+  id = randomUUID()
+) => `SELECT * FROM reset_word_learning_progress(
+  '${word}', '${id}', '2026-09-05T12:00:00Z', '2026-09-05');`
+
+test('concurrent reset retries create one receipt and reset once', async () => {
+  const word = await seedWord(db, owner, {
+    repetitionCount: 3,
+    intervalDays: 15,
+  })
+  const reset = resetSql(word)
+  await overlap(reset, reset)
+  assert.equal((await state(db, word)).word.repetition_count, 0)
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM learning_resets WHERE word_id = '${word}';`
+    ),
+    '1'
+  )
+})
+
+test('a review waiting behind a reset uses initial SRS', async () => {
+  const word = await seedWord(db, owner, {
+    repetitionCount: 3,
+    intervalDays: 15,
+  })
+  await overlap(resetSql(word), assessment(word))
+  const saved = await state(db, word)
+  assert.equal(saved.word.repetition_count, 1)
+  assert.equal(saved.word.interval_days, 1)
+  assert.equal(saved.events[0].previous_interval_days, 1)
+})
+
+test('a reset waiting behind a review clears progress but preserves its event', async () => {
+  const word = await seedWord(db)
+  await overlap(assessment(word), resetSql(word))
+  const saved = await state(db, word)
+  assert.equal(saved.word.repetition_count, 0)
+  assert.equal(saved.word.last_reviewed_at, null)
+  assert.equal(saved.events.length, 1)
 })

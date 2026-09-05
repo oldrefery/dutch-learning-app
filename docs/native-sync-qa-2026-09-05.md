@@ -7,6 +7,10 @@ Both review events survive, but the word retains only one repetition and its
 last-review timestamp moves backwards. This is not a successful conflict merge.
 No runtime fix or hosted migration was applied during this investigation.
 
+Follow-up: [protocol 2](learning-sync-protocol.md) implements a local fix with
+PostgreSQL/SQLite regression tests. It is not deployed and has not yet been
+retested on native devices; this document preserves the original failing run.
+
 ## Scope And Isolation
 
 - Two isolated, read-only Android instances of `WoordenaarSDK57QA20260905`,

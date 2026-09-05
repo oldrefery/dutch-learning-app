@@ -2,8 +2,10 @@ import type { SRSResult } from '@/types/database'
 import type { ReviewEvent, ReviewEventDraft } from '@/types/ReviewTypes'
 import { getDatabase } from './initDB'
 import type { SyncStatus } from './schema'
+import { toLocalDateKey } from '@woordenaar/domain'
 
 export interface LocalReviewEvent extends Omit<ReviewEvent, 'created_at'> {
+  local_sequence?: number
   created_at: string | null
   sync_status: SyncStatus
   last_sync_attempt_at: string | null
@@ -29,8 +31,8 @@ const INSERT_LOCAL_EVENT_SQL = `
     event_id, user_id, word_id, assessment, review_mode,
     answered_correctly, response_time_ms, previous_interval_days,
     next_interval_days, previous_easiness_factor, next_easiness_factor,
-    reviewed_at, created_at, sync_status, last_sync_attempt_at, synced_at
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 'pending', NULL, NULL)
+    reviewed_at, review_date, created_at, sync_status, last_sync_attempt_at, synced_at
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 'pending', NULL, NULL)
 `
 
 const SAVE_REMOTE_EVENT_SQL = `
@@ -38,14 +40,25 @@ const SAVE_REMOTE_EVENT_SQL = `
     event_id, user_id, word_id, assessment, review_mode,
     answered_correctly, response_time_ms, previous_interval_days,
     next_interval_days, previous_easiness_factor, next_easiness_factor,
-    reviewed_at, created_at, sync_status, last_sync_attempt_at, synced_at
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', NULL, ?)
+    reviewed_at, review_date, created_at, sync_status, last_sync_attempt_at, synced_at
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', NULL, ?)
   ON CONFLICT(event_id) DO UPDATE SET
+    previous_interval_days = excluded.previous_interval_days,
+    next_interval_days = excluded.next_interval_days,
+    previous_easiness_factor = excluded.previous_easiness_factor,
+    next_easiness_factor = excluded.next_easiness_factor,
+    review_date = excluded.review_date,
     created_at = excluded.created_at,
     sync_status = 'synced',
     last_sync_attempt_at = review_events.last_sync_attempt_at,
     synced_at = excluded.synced_at
   WHERE review_events.user_id = excluded.user_id
+    AND review_events.word_id = excluded.word_id
+    AND review_events.assessment = excluded.assessment
+    AND review_events.review_mode = excluded.review_mode
+    AND review_events.answered_correctly IS excluded.answered_correctly
+    AND review_events.response_time_ms IS excluded.response_time_ms
+    AND julianday(review_events.reviewed_at) = julianday(excluded.reviewed_at)
 `
 
 const normalizeLimit = (limit: number): number => {
@@ -89,7 +102,10 @@ export class ReviewEventRepository {
 
       await transaction.runAsync(
         INSERT_LOCAL_EVENT_SQL,
-        ...this.toEventBindValues(event)
+        ...this.toEventBindValues({
+          ...event,
+          review_date: toLocalDateKey(new Date(event.reviewed_at)),
+        })
       )
     })
   }
@@ -102,12 +118,16 @@ export class ReviewEventRepository {
 
     await db.withExclusiveTransactionAsync(async transaction => {
       for (const event of events) {
-        await transaction.runAsync(
+        const result = await transaction.runAsync(
           SAVE_REMOTE_EVENT_SQL,
           ...this.toEventBindValues(event),
           event.created_at,
           syncedAt
         )
+        if (result.changes !== 1)
+          throw new Error(
+            'Remote review conflicts with the local event identity'
+          )
       }
 
       await transaction.runAsync(
@@ -125,9 +145,10 @@ export class ReviewEventRepository {
   ): Promise<LocalReviewEvent[]> {
     const db = await getDatabase()
     const rows = await db.getAllAsync<Record<string, unknown>>(
-      `SELECT * FROM review_events
-       WHERE user_id = ? AND sync_status = 'pending'
-       ORDER BY reviewed_at ASC, event_id ASC
+      `SELECT review_events.*, learning_commands.sequence AS local_sequence
+       FROM review_events JOIN learning_commands ON operation_id = event_id AND kind = 'review'
+       WHERE review_events.user_id = ? AND sync_status = 'pending'
+       ORDER BY learning_commands.sequence
        LIMIT ?`,
       userId,
       Math.max(1, Math.trunc(limit))
@@ -265,11 +286,15 @@ export class ReviewEventRepository {
       event.previous_easiness_factor,
       event.next_easiness_factor,
       event.reviewed_at,
+      event.review_date ?? null,
     ] as const
   }
 
   private parseEventRow(row: Record<string, unknown>): LocalReviewEvent {
     return {
+      ...(typeof row.local_sequence === 'number'
+        ? { local_sequence: row.local_sequence }
+        : {}),
       event_id: String(row.event_id),
       user_id: String(row.user_id),
       word_id: String(row.word_id),
@@ -286,6 +311,7 @@ export class ReviewEventRepository {
       previous_easiness_factor: Number(row.previous_easiness_factor),
       next_easiness_factor: Number(row.next_easiness_factor),
       reviewed_at: String(row.reviewed_at),
+      review_date: typeof row.review_date === 'string' ? row.review_date : null,
       created_at: row.created_at === null ? null : String(row.created_at),
       sync_status: row.sync_status as SyncStatus,
       last_sync_attempt_at:
