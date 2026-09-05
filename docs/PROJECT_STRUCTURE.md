@@ -2,10 +2,13 @@
 
 ## 📁 Directory Organization
 
-### React Native Application
+### React Native Application (`apps/mobile`)
+
+This workspace targets iOS and Android. Browser development and deployment are
+owned exclusively by the Next.js application in `apps/web`.
 
 ```
-src/                   # Source code root
+apps/mobile/src/       # Mobile source code root
 ├── types/             # TypeScript type definitions
 │   ├── database.ts    # Database types (generated)
 │   ├── GeminiTypes.ts # Gemini AI analysis types
@@ -137,17 +140,15 @@ export default function ReviewScreen() {
 }
 
 // After: Extracted structure
-// src/hooks/useReviewScreen.ts
+// apps/mobile/src/hooks/useReviewScreen.ts
 export const useReviewScreen = () => {
   /* logic */
 }
 
-// src/constants/ReviewConstants.ts
-export const REVIEW_CONSTANTS = {
-  /* constants */
-}
+// apps/mobile/src/constants/ReviewConstants.ts
+export const REVIEW_CONSTANTS = {/* constants */}
 
-// src/app/(tabs)/review.tsx
+// apps/mobile/src/app/(tabs)/review.tsx
 export default function ReviewScreen() {
   // Clean, focused component
 }
@@ -204,7 +205,7 @@ export default function ReviewScreen() {
 ### React Native App:
 
 - Can use absolute imports with `@/` prefix
-- All shared code in root-level folders
+- Mobile-local code lives under `apps/mobile/src`; cross-app code lives in `packages/*`
 - TypeScript path mapping configured
 
 ## 🔧 Tools & Automation
@@ -222,7 +223,7 @@ export default function ReviewScreen() {
 npm run file-length        # Check file lengths
 npm run complexity         # Check cognitive complexity
 npm run lint              # Run ESLint
-npm run type-check        # TypeScript validation
+npm run mobile:typecheck  # Mobile TypeScript validation
 ```
 
 This structure ensures clean, maintainable, and scalable code organization following industry best practices.

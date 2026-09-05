@@ -1,0 +1,414 @@
+import { APPLICATION_STORE_CONSTANTS } from '@/constants/ApplicationStoreConstants'
+import { SRS_ASSESSMENT } from '@/constants/SRSConstants'
+import {
+  DEFAULT_REVIEW_SESSION_CONFIG,
+  REVIEW_SESSION_MODE,
+} from '@/constants/ReviewConstants'
+import { reviewEventRepository } from '@/db/reviewEventRepository'
+import { logInfo, logWarning, logError } from '@/utils/logger'
+import { selectReviewWords } from '@/utils/reviewSession'
+import {
+  REVIEW_MODE_POLICY,
+  resolveAdaptiveReviewMode,
+} from '@/utils/reviewModePolicy'
+import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
+import type {
+  StoreSetFunction,
+  StoreGetFunction,
+  ReviewAssessment,
+  ApplicationState,
+} from '@/types/ApplicationStoreTypes'
+
+const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
+const INVALID_ASSESSMENT_ERROR = 'Invalid assessment object'
+
+export const createReviewActions = (
+  set: StoreSetFunction,
+  get: StoreGetFunction
+): Pick<
+  ApplicationState,
+  | 'startReviewSession'
+  | 'submitReviewAssessment'
+  | 'endReviewSession'
+  | 'markCorrect'
+  | 'markIncorrect'
+  | 'flipCard'
+  | 'goToNextWord'
+  | 'goToPreviousWord'
+  | 'deleteWordFromReview'
+  | 'updateCurrentWordImage'
+  | 'updateCurrentWordInReview'
+> => ({
+  startReviewSession: async (config = DEFAULT_REVIEW_SESSION_CONFIG) => {
+    try {
+      set({ reviewLoading: true })
+
+      const userId = get().currentUserId
+      if (!userId) {
+        logError(
+          USER_NOT_AUTHENTICATED_ERROR,
+          new Error(USER_NOT_AUTHENTICATED_ERROR),
+          {},
+          'review',
+          false
+        )
+        set({
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+              .REVIEW_SESSION_START_FAILED,
+            {
+              category: ErrorCategory.CLIENT,
+              context: { reason: USER_NOT_AUTHENTICATED_ERROR },
+            }
+          ),
+          reviewLoading: false,
+        })
+        return
+      }
+
+      // Offline-first: Get review words from the local cache (SQLite)
+      logInfo('Fetching review words from local cache', { userId }, 'review')
+      const { words, collections } = get()
+      const selection = selectReviewWords({
+        words,
+        collections,
+        userId,
+        config,
+      })
+
+      if (!selection.success) {
+        set({
+          reviewSession: null,
+          currentWord: null,
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+              .REVIEW_SESSION_START_FAILED,
+            {
+              category: ErrorCategory.VALIDATION,
+              context: {
+                reason: selection.reason,
+                collectionId:
+                  config.scope === 'collection-due'
+                    ? config.collectionId
+                    : undefined,
+              },
+            }
+          ),
+          reviewLoading: false,
+        })
+        return
+      }
+
+      const reviewWords = selection.words
+
+      if (reviewWords.length === 0) {
+        set({
+          reviewSession: null,
+          currentWord: null,
+          reviewLoading: false,
+        })
+        return
+      }
+
+      const adaptiveModeByWordId =
+        config.mode === REVIEW_SESSION_MODE.ADAPTIVE
+          ? Object.fromEntries(
+              Object.entries(
+                await reviewEventRepository.getRecentByWords(
+                  userId,
+                  reviewWords.map(word => word.word_id),
+                  REVIEW_MODE_POLICY.HISTORY_LIMIT_PER_WORD
+                )
+              ).map(([wordId, events]) => [
+                wordId,
+                resolveAdaptiveReviewMode(events),
+              ])
+            )
+          : {}
+
+      const reviewSession = {
+        words: reviewWords,
+        currentIndex: 0,
+        completedCount: 0,
+        config,
+        adaptiveModeByWordId,
+      }
+
+      set({
+        reviewSession,
+        currentWord: reviewWords[0],
+        reviewLoading: false,
+      })
+    } catch (error) {
+      logError('Error starting review session', error, {}, 'review', false)
+      set({
+        error: createStoreError(
+          APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+            .REVIEW_SESSION_START_FAILED,
+          { originalError: error instanceof Error ? error : undefined }
+        ),
+        reviewLoading: false,
+      })
+    }
+  },
+
+  submitReviewAssessment: async (assessment: ReviewAssessment) => {
+    try {
+      const { reviewSession, currentWord } = get()
+
+      if (!reviewSession || !currentWord) {
+        logWarning('Missing session or word data', {}, 'review')
+        return
+      }
+
+      // Validate assessment object
+      if (!assessment || !assessment.assessment) {
+        logError(
+          INVALID_ASSESSMENT_ERROR,
+          new Error(INVALID_ASSESSMENT_ERROR),
+          { assessment },
+          'review',
+          false
+        )
+        set({
+          error: createStoreError(
+            APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+              .REVIEW_ASSESSMENT_SUBMIT_FAILED,
+            {
+              category: ErrorCategory.VALIDATION,
+              context: { reason: INVALID_ASSESSMENT_ERROR },
+            }
+          ),
+        })
+        return
+      }
+
+      // Classic SRS: All assessments update the word in the database
+      const assessmentRecorded = await get().updateWordAfterReview(
+        currentWord.word_id,
+        assessment
+      )
+      if (!assessmentRecorded) return
+
+      // Get a fresh state after a database update to ensure consistency
+      const freshState = get()
+      const freshReviewSession = freshState.reviewSession
+
+      if (!freshReviewSession) {
+        logWarning('Review session was cleared during update', {}, 'review')
+        return
+      }
+
+      // Move to the next word
+      const nextIndex = freshReviewSession.currentIndex + 1
+      const nextWord = freshReviewSession.words[nextIndex] || null
+
+      if (nextWord && nextIndex < freshReviewSession.words.length) {
+        // Validate the next word before setting
+        if (!nextWord.word_id || !nextWord.dutch_lemma) {
+          logError(
+            'Invalid next word data',
+            undefined,
+            { nextWord },
+            'review',
+            false
+          )
+          set({
+            error: createStoreError(
+              APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+                .REVIEW_ASSESSMENT_SUBMIT_FAILED,
+              {
+                category: ErrorCategory.VALIDATION,
+                context: { reason: 'Invalid word data in review session' },
+              }
+            ),
+          })
+          return
+        }
+
+        // Continue with the next word
+        logInfo('Moving to next word', { word: nextWord.dutch_lemma }, 'review')
+        set({
+          reviewSession: {
+            ...freshReviewSession,
+            currentIndex: nextIndex,
+          },
+          currentWord: nextWord,
+        })
+      } else {
+        // Session completes
+        logInfo('Session complete', {}, 'review')
+        set({
+          reviewSession: null,
+          currentWord: null,
+        })
+      }
+    } catch (error) {
+      logError('Error submitting review assessment', error, {}, 'review', false)
+      set({
+        error: createStoreError(
+          APPLICATION_STORE_CONSTANTS.ERROR_MESSAGES
+            .REVIEW_ASSESSMENT_SUBMIT_FAILED,
+          { originalError: error instanceof Error ? error : undefined }
+        ),
+      })
+      // Don't throw - let caller handle via store state
+    }
+  },
+
+  endReviewSession: () => {
+    set({
+      reviewSession: null,
+      currentWord: null,
+    })
+  },
+
+  markCorrect: async () => {
+    const state = get()
+    if (state.currentWord) {
+      await get().submitReviewAssessment({
+        wordId: state.currentWord.word_id,
+        assessment: SRS_ASSESSMENT.GOOD,
+        timestamp: new Date(),
+      })
+    }
+  },
+
+  markIncorrect: async () => {
+    const state = get()
+    if (state.currentWord) {
+      await get().submitReviewAssessment({
+        wordId: state.currentWord.word_id,
+        assessment: SRS_ASSESSMENT.AGAIN,
+        timestamp: new Date(),
+      })
+    }
+  },
+
+  flipCard: () => {
+    // This would be handled by the UI component
+    // The store doesn't need to track card flip state
+  },
+
+  goToNextWord: () => {
+    const { reviewSession, currentWord } = get()
+    if (!reviewSession || !currentWord) return
+
+    const nextIndex = reviewSession.currentIndex + 1
+    const nextWord = reviewSession.words[nextIndex]
+
+    // Only allow navigation to unassessed words within the session
+    if (nextWord && nextIndex < reviewSession.words.length) {
+      set({
+        reviewSession: {
+          ...reviewSession,
+          currentIndex: nextIndex,
+        },
+        currentWord: nextWord,
+      })
+    }
+  },
+
+  goToPreviousWord: () => {
+    const { reviewSession, currentWord } = get()
+    if (!reviewSession || !currentWord) return
+
+    const prevIndex = reviewSession.currentIndex - 1
+
+    // Only allow navigation to previous words (not beyond the start)
+    if (prevIndex >= 0) {
+      const prevWord = reviewSession.words[prevIndex]
+      set({
+        reviewSession: {
+          ...reviewSession,
+          currentIndex: prevIndex,
+        },
+        currentWord: prevWord,
+      })
+    }
+  },
+
+  deleteWordFromReview: (wordId: string) => {
+    const { reviewSession, currentWord } = get()
+    if (!reviewSession || !currentWord) return
+
+    // Remove the word from the review session words array
+    const updatedWords = reviewSession.words.filter(
+      word => word.word_id !== wordId
+    )
+    const currentIndex = reviewSession.currentIndex
+
+    if (updatedWords.length === 0) {
+      // No more words in the session, end the session
+      set({
+        reviewSession: null,
+        currentWord: null,
+      })
+      return
+    }
+
+    // Adjust the current index if we deleted a word before the current position
+    let newIndex = currentIndex
+    if (currentIndex >= updatedWords.length) {
+      // If the current index is beyond the new array length, go to the last word
+      newIndex = updatedWords.length - 1
+    } else if (currentWord.word_id === wordId) {
+      // If we deleted the current word, stay at the same index (the next word will be shown)
+      newIndex = Math.min(currentIndex, updatedWords.length - 1)
+    }
+
+    const nextWord = updatedWords[newIndex]
+
+    set({
+      reviewSession: {
+        ...reviewSession,
+        words: updatedWords,
+        currentIndex: newIndex,
+      },
+      currentWord: nextWord,
+    })
+  },
+
+  updateCurrentWordImage: (imageUrl: string) => {
+    const { currentWord, reviewSession } = get()
+
+    if (!currentWord || !reviewSession) return
+
+    // Update current word
+    const updatedCurrentWord = { ...currentWord, image_url: imageUrl }
+
+    // Update word in the review session
+    const updatedWords = reviewSession.words.map(word =>
+      word.word_id === currentWord.word_id
+        ? { ...word, image_url: imageUrl }
+        : word
+    )
+
+    set({
+      currentWord: updatedCurrentWord,
+      reviewSession: {
+        ...reviewSession,
+        words: updatedWords,
+      },
+    })
+  },
+
+  updateCurrentWordInReview: updatedWord => {
+    const { currentWord, reviewSession } = get()
+
+    if (!currentWord || !reviewSession) return
+    if (currentWord.word_id !== updatedWord.word_id) return
+
+    const updatedWords = reviewSession.words.map(word =>
+      word.word_id === updatedWord.word_id ? updatedWord : word
+    )
+
+    set({
+      currentWord: updatedWord,
+      reviewSession: {
+        ...reviewSession,
+        words: updatedWords,
+      },
+    })
+  },
+})

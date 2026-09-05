@@ -1,14 +1,13 @@
 import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
+
+const repositoryRoot = resolve(__dirname, '../../../../..')
 
 describe('atomic review assessment contract', () => {
-  const action = readFileSync(
-    join(process.cwd(), 'apps/web/src/features/review/actions.ts'),
-    'utf8'
-  )
+  const action = readFileSync(join(__dirname, 'actions.ts'), 'utf8')
   const migration = readFileSync(
     join(
-      process.cwd(),
+      repositoryRoot,
       'supabase/migrations/20260830110000_add_atomic_review_assessment_rpc.sql'
     ),
     'utf8'

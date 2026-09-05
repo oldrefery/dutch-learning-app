@@ -1,10 +1,12 @@
 import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import {
   calculateSRSProgress,
   getMasteryProgressPercentage,
   getWordKnowledgeLevel,
 } from '@woordenaar/domain'
+
+const repositoryRoot = resolve(__dirname, '../../../../..')
 
 describe('shared SRS contract', () => {
   it.each([
@@ -75,7 +77,7 @@ describe('shared SRS contract', () => {
   it('keeps the database RPC coefficients aligned with the shared calculator', () => {
     const migration = readFileSync(
       join(
-        process.cwd(),
+        repositoryRoot,
         'supabase/migrations/20260830110000_add_atomic_review_assessment_rpc.sql'
       ),
       'utf8'

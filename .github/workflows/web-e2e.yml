@@ -1,0 +1,80 @@
+name: Web E2E
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Playwright suite to run against production
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - extended
+          - cross-browser
+          - all
+  schedule:
+    - cron: '17 5 * * *'
+
+concurrency:
+  group: web-e2e-production
+  cancel-in-progress: false
+
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 20
+    env:
+      WEB_E2E_BASE_URL: https://woordenaar.app
+      WEB_E2E_EMAIL: ${{ secrets.MAESTRO_TEST_EMAIL }}
+      WEB_E2E_PASSWORD: ${{ secrets.MAESTRO_TEST_PASSWORD }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24.20.0'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        if: ${{ github.event_name == 'schedule' || inputs.suite == 'smoke' || inputs.suite == 'extended' }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Install all browser engines
+        if: ${{ inputs.suite == 'cross-browser' || inputs.suite == 'all' }}
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Run production smoke tests
+        if: ${{ github.event_name == 'schedule' || inputs.suite == 'smoke' }}
+        run: npm run web:e2e:smoke
+
+      - name: Run production extended tests
+        if: ${{ inputs.suite == 'extended' }}
+        run: npm run web:e2e:extended
+
+      - name: Run all Chromium tests
+        if: ${{ inputs.suite == 'all' }}
+        run: npm run web:e2e
+
+      - name: Run cross-browser compatibility tests
+        if: ${{ inputs.suite == 'cross-browser' || inputs.suite == 'all' }}
+        run: npm run web:e2e:cross-browser
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: web-e2e-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+          if-no-files-found: ignore
+          retention-days: 14

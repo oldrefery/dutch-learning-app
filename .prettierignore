@@ -1,3 +1,11 @@
 node_modules/
+.stryker-tmp/
 apps/web/.next/
 apps/web/next-env.d.ts
+apps/web/.playwright/
+apps/web/playwright-report/
+apps/web/test-results/
+apps/mobile/.expo/
+apps/mobile/ios/
+apps/mobile/android/
+apps/mobile/dist/

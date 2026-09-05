@@ -1,0 +1,795 @@
+import React, { useState, useEffect, useRef } from 'react'
+import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useFocusEffect } from 'expo-router/react-navigation'
+import { type Href, useRouter } from 'expo-router'
+import { ViewThemed, TextThemed } from '@/components/Themed'
+import { PlatformBlurView } from '@/components/PlatformBlurView'
+import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparency'
+import ImageSelector from '@/components/ImageSelector'
+import { FloatingActionButton } from '@/components/FloatingActionButton'
+import { CompactWordInput } from './components/CompactWordInput'
+import { DuplicateBanner } from './components/DuplicateBanner'
+import { AnalysisEmptyState } from './components/AnalysisEmptyState'
+import {
+  UniversalWordCard,
+  WordCardPresets,
+} from '@/components/UniversalWordCard'
+import { useAudioPlayer } from './hooks/useAudioPlayer'
+import { useWordAnalysis } from './hooks/useWordAnalysis'
+import { useAddWord } from './hooks/useAddWord'
+import { useCollections } from '@/hooks/useCollections'
+import { useApplicationStore } from '@/stores/useApplicationStore'
+import { wordService } from '@/lib/supabase'
+import { ToastService } from '@/components/AppToast'
+import { ToastType } from '@/constants/ToastConstants'
+import { addWordScreenStyles } from './styles/AddWordScreen.styles'
+import { Sentry } from '@/lib/sentry'
+import { useHistoryStore } from '@/stores/useHistoryStore'
+import { Colors } from '@/constants/Colors'
+import { wordRepository } from '@/db/wordRepository'
+import { isNetworkAvailable } from '@/utils/network'
+import type { AnalysisResult } from './types/AddWordTypes'
+import { ROUTES } from '@/constants/Routes'
+import { useBatchCaptureStore } from '@/stores/useBatchCaptureStore'
+
+interface DuplicateWordData {
+  word_id: string
+  dutch_lemma: string
+  collection_id: string
+  part_of_speech: string | null
+  article?: string
+}
+
+interface AddWordScreenProps {
+  preselectedCollectionId?: string
+  batchItemId?: string
+  initialWord?: string
+  translationHint?: string
+}
+
+interface DuplicateWordCandidate {
+  word_id: string
+  dutch_lemma: string
+  collection_id: string | null
+  part_of_speech: string | null
+  article?: string | null
+}
+
+interface CollectionNameRecord {
+  collection_id: string
+  name: string
+}
+
+interface DuplicateStateHandlers {
+  setIsAlreadyInCollection: React.Dispatch<React.SetStateAction<boolean>>
+  setDuplicateWordInfo: React.Dispatch<
+    React.SetStateAction<DuplicateWordData | null>
+  >
+}
+
+type DuplicateSource =
+  'local' | 'remote' | 'remote_missing_local' | 'button_guard'
+
+const BATCH_CAPTURE_ROUTE = ROUTES.BATCH_CAPTURE as Href
+
+const trackDuplicateWordDetection = ({
+  source,
+  dutchLemma,
+  partOfSpeech,
+  article,
+  wordId,
+  collectionId,
+  collectionName,
+}: {
+  source: DuplicateSource
+  dutchLemma: string
+  partOfSpeech: string | null
+  article?: string | null
+  wordId?: string | null
+  collectionId?: string | null
+  collectionName?: string | null
+}) => {
+  const context = {
+    source,
+    dutchLemma,
+    partOfSpeech,
+    article: article ?? null,
+    wordId: wordId ?? null,
+    collectionId: collectionId ?? null,
+    collectionName: collectionName ?? null,
+  }
+
+  Sentry.addBreadcrumb({
+    category: 'add-word.duplicate',
+    message: 'Duplicate word detected during add flow',
+    level: source === 'remote_missing_local' ? 'warning' : 'info',
+    data: context,
+  })
+
+  if (source !== 'remote_missing_local') {
+    return
+  }
+
+  Sentry.captureMessage('Duplicate word exists remotely but not locally', {
+    level: 'warning',
+    tags: {
+      operation: 'checkForDuplicates',
+      duplicate_source: source,
+    },
+    extra: context,
+    fingerprint: ['add-word-duplicate', 'remote-missing-local'],
+  })
+}
+
+const toDuplicateWordData = (
+  word: DuplicateWordCandidate | null | undefined
+): DuplicateWordData | null => {
+  if (!word?.collection_id) {
+    return null
+  }
+
+  return {
+    word_id: word.word_id,
+    dutch_lemma: word.dutch_lemma,
+    collection_id: word.collection_id,
+    part_of_speech: word.part_of_speech,
+    article: word.article ?? undefined,
+  }
+}
+
+const findCollectionName = (
+  collections: CollectionNameRecord[],
+  collectionId: string | null | undefined
+) => {
+  if (!collectionId) {
+    return null
+  }
+
+  return (
+    collections.find(collection => collection.collection_id === collectionId)
+      ?.name ?? null
+  )
+}
+
+const getDuplicateLookup = (
+  word: DuplicateWordCandidate | null | undefined,
+  collections: CollectionNameRecord[]
+) => {
+  const duplicateInfo = toDuplicateWordData(word)
+
+  return {
+    duplicateInfo,
+    collectionName: findCollectionName(
+      collections,
+      duplicateInfo?.collection_id
+    ),
+  }
+}
+
+const clearDuplicateState = ({
+  setIsAlreadyInCollection,
+  setDuplicateWordInfo,
+}: DuplicateStateHandlers) => {
+  setIsAlreadyInCollection(false)
+  setDuplicateWordInfo(null)
+}
+
+const showAlreadyExistsToast = (dutchLemma: string) => {
+  ToastService.show(
+    `Word "${dutchLemma}" already exists in collection`,
+    ToastType.ERROR
+  )
+}
+
+const logDuplicateCheckResult = (
+  scope: 'Local' | 'Remote',
+  word: DuplicateWordCandidate | null | undefined,
+  collectionName: string | null
+) => {
+  if (!__DEV__) {
+    return
+  }
+
+  console.log(`[AddWord][DuplicateCheck] ${scope} result`, {
+    isDuplicate: Boolean(word && collectionName),
+    wordId: word?.word_id ?? null,
+    collectionId: word?.collection_id ?? null,
+    collectionName: collectionName ?? null,
+    dutchLemma: word?.dutch_lemma ?? null,
+    partOfSpeech: word?.part_of_speech ?? null,
+    article: word?.article ?? null,
+  })
+}
+
+const handleLocalDuplicate = ({
+  analysisResult,
+  duplicateInfo,
+  collectionName,
+  state,
+}: {
+  analysisResult: AnalysisResult
+  duplicateInfo: DuplicateWordData
+  collectionName: string
+  state: DuplicateStateHandlers
+}) => {
+  trackDuplicateWordDetection({
+    source: 'local',
+    dutchLemma: analysisResult.dutch_lemma,
+    partOfSpeech: analysisResult.part_of_speech,
+    article: analysisResult.article,
+    wordId: duplicateInfo.word_id,
+    collectionId: duplicateInfo.collection_id,
+    collectionName,
+  })
+  state.setIsAlreadyInCollection(true)
+  state.setDuplicateWordInfo(duplicateInfo)
+  showAlreadyExistsToast(analysisResult.dutch_lemma)
+}
+
+const handleRemoteDuplicate = ({
+  analysisResult,
+  existingWord,
+  duplicateInfo,
+  collectionName,
+  state,
+}: {
+  analysisResult: AnalysisResult
+  existingWord: DuplicateWordCandidate | null | undefined
+  duplicateInfo: DuplicateWordData | null
+  collectionName: string | null
+  state: DuplicateStateHandlers
+}) => {
+  const isDuplicate = Boolean(existingWord)
+  state.setIsAlreadyInCollection(isDuplicate)
+  state.setDuplicateWordInfo(collectionName ? duplicateInfo : null)
+
+  if (!existingWord) {
+    return
+  }
+
+  trackDuplicateWordDetection({
+    source: collectionName ? 'remote' : 'remote_missing_local',
+    dutchLemma: analysisResult.dutch_lemma,
+    partOfSpeech: analysisResult.part_of_speech,
+    article: analysisResult.article,
+    wordId: existingWord.word_id,
+    collectionId: existingWord.collection_id,
+    collectionName,
+  })
+
+  if (collectionName) {
+    showAlreadyExistsToast(analysisResult.dutch_lemma)
+    return
+  }
+
+  ToastService.show(
+    `Word "${analysisResult.dutch_lemma}" exists in your cloud data but not on this device`,
+    ToastType.ERROR
+  )
+}
+
+export function AddWordScreen({
+  preselectedCollectionId,
+  batchItemId,
+  initialWord,
+  translationHint,
+}: AddWordScreenProps) {
+  const router = useRouter()
+  const insets = useSafeAreaInsets()
+  const reduceTransparency = usePreferReducedTransparency()
+  const queuedBatchWord = useBatchCaptureStore(state =>
+    state.items.some(item => item.id === batchItemId) ? initialWord : undefined
+  )
+  const [inputWord, setInputWord] = useState(queuedBatchWord ?? '')
+  const [inputBatchId, setInputBatchId] = useState(batchItemId)
+
+  if (inputBatchId !== batchItemId) {
+    setInputBatchId(batchItemId)
+    if (queuedBatchWord) setInputWord(queuedBatchWord)
+  }
+
+  const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
+  const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
+  const [duplicateWordInfo, setDuplicateWordInfo] =
+    useState<DuplicateWordData | null>(null)
+  const [hasNavigatedToCollection, setHasNavigatedToCollection] =
+    useState(false)
+  const startedBatchItemRef = useRef<string | null>(null)
+
+  const { currentUserId } = useApplicationStore()
+  const { isPlayingAudio, playPronunciation } = useAudioPlayer()
+  const {
+    isAnalyzing,
+    analysisResult,
+    analysisMetadata,
+    analysisError,
+    analyzeWord,
+    clearAnalysis,
+    forceRefreshAnalysis,
+    updateImageUrl,
+  } = useWordAnalysis()
+  const {
+    isAdding,
+    selectedCollection,
+    selectCollection,
+    showImageSelector,
+    addWord,
+    openImageSelector,
+    closeImageSelector,
+  } = useAddWord(preselectedCollectionId)
+  const { collections } = useCollections()
+
+  useEffect(() => {
+    if (
+      !batchItemId ||
+      !initialWord ||
+      startedBatchItemRef.current === batchItemId
+    ) {
+      return
+    }
+
+    const queuedItem = useBatchCaptureStore
+      .getState()
+      .items.find(item => item.id === batchItemId)
+    if (!queuedItem) return
+
+    startedBatchItemRef.current = batchItemId
+    useBatchCaptureStore.getState().setItemStatus(batchItemId, 'analyzing')
+    clearAnalysis()
+    void analyzeWord(initialWord)
+  }, [analyzeWord, batchItemId, clearAnalysis, initialWord])
+
+  useEffect(() => {
+    if (!batchItemId || !analysisResult) return
+    useBatchCaptureStore
+      .getState()
+      .setItemStatus(batchItemId, 'awaiting_review')
+  }, [analysisResult, batchItemId])
+
+  useEffect(() => {
+    if (!batchItemId || !analysisError) return
+    const batchStore = useBatchCaptureStore.getState()
+    batchStore.setItemStatus(batchItemId, 'failed', analysisError)
+    batchStore.pause()
+    router.replace(BATCH_CAPTURE_ROUTE)
+  }, [analysisError, batchItemId, router])
+
+  // Check for duplicates after analysis is complete
+  useEffect(() => {
+    const checkForDuplicates = async () => {
+      const duplicateState = {
+        setIsAlreadyInCollection,
+        setDuplicateWordInfo,
+      }
+
+      if (!analysisResult || !currentUserId) {
+        clearDuplicateState(duplicateState)
+        setIsCheckingDuplicate(false)
+        return
+      }
+
+      setIsCheckingDuplicate(true)
+
+      try {
+        const localMatch = await wordRepository.getWordBySemanticKey(
+          currentUserId,
+          analysisResult.dutch_lemma,
+          analysisResult.part_of_speech,
+          analysisResult.article
+        )
+        const localLookup = getDuplicateLookup(localMatch, collections)
+        logDuplicateCheckResult('Local', localMatch, localLookup.collectionName)
+
+        if (localLookup.duplicateInfo && localLookup.collectionName) {
+          handleLocalDuplicate({
+            analysisResult,
+            duplicateInfo: localLookup.duplicateInfo,
+            collectionName: localLookup.collectionName,
+            state: duplicateState,
+          })
+          return
+        }
+
+        const hasNetwork = await isNetworkAvailable()
+
+        if (!hasNetwork) {
+          clearDuplicateState(duplicateState)
+          return
+        }
+
+        if (__DEV__) {
+          console.log('[AddWord][DuplicateCheck] Querying remote word', {
+            userId: currentUserId,
+            dutchLemma: analysisResult.dutch_lemma,
+            partOfSpeech: analysisResult.part_of_speech,
+            article: analysisResult.article ?? null,
+          })
+        }
+
+        const existingWord = await wordService.checkWordExists(
+          currentUserId,
+          analysisResult.dutch_lemma,
+          analysisResult.part_of_speech,
+          analysisResult.article
+        )
+        const remoteLookup = getDuplicateLookup(existingWord, collections)
+        logDuplicateCheckResult(
+          'Remote',
+          existingWord,
+          remoteLookup.collectionName
+        )
+        handleRemoteDuplicate({
+          analysisResult,
+          existingWord,
+          duplicateInfo: remoteLookup.duplicateInfo,
+          collectionName: remoteLookup.collectionName,
+          state: duplicateState,
+        })
+      } catch (error) {
+        clearDuplicateState(duplicateState)
+        Sentry.captureException(error, {
+          tags: { operation: 'checkForDuplicates' },
+          extra: {
+            message: 'Error checking for duplicate word',
+            dutchLemma: analysisResult?.dutch_lemma,
+          },
+        })
+      } finally {
+        setIsCheckingDuplicate(false)
+      }
+    }
+
+    void checkForDuplicates()
+  }, [analysisResult, currentUserId, collections])
+
+  const handleAnalyze = async () => {
+    // Normalize input: trim, remove periods, replace multiple spaces with a single space
+    const normalizedWord = inputWord
+      .trim()
+      .replace(/\./g, '')
+      .replace(/\s+/g, ' ')
+
+    if (!normalizedWord) {
+      return
+    }
+
+    setInputWord(normalizedWord)
+
+    Keyboard.dismiss()
+
+    setIsAlreadyInCollection(false)
+    setDuplicateWordInfo(null)
+    setIsCheckingDuplicate(false) // Don't set to true - useEffect will handle it after analysis
+    setHasNavigatedToCollection(false)
+
+    clearAnalysis()
+    void analyzeWord(normalizedWord)
+  }
+
+  const handleAddWord = async () => {
+    if (!analysisResult) return
+
+    // Prevent adding duplicates (race condition protection)
+    if (isAlreadyInCollection) {
+      trackDuplicateWordDetection({
+        source: 'button_guard',
+        dutchLemma: analysisResult.dutch_lemma,
+        partOfSpeech: analysisResult.part_of_speech,
+        article: analysisResult.article,
+        wordId: duplicateWordInfo?.word_id ?? null,
+        collectionId: duplicateWordInfo?.collection_id ?? null,
+      })
+      ToastService.show(
+        `Word "${analysisResult.dutch_lemma}" already exists in your collection`,
+        ToastType.ERROR
+      )
+      return
+    }
+
+    const success = await addWord(analysisResult)
+
+    if (success) {
+      setInputWord('')
+      setIsAlreadyInCollection(true)
+
+      // Add to word history with a collection name
+      useHistoryStore
+        .getState()
+        .addAnalyzedWord(
+          inputWord,
+          analysisResult.dutch_lemma,
+          selectedCollection?.name
+        )
+
+      if (batchItemId) {
+        useBatchCaptureStore.getState().completeItem(batchItemId)
+        router.replace(BATCH_CAPTURE_ROUTE)
+      }
+    }
+  }
+
+  const handleBackToBatchQueue = () => {
+    if (!batchItemId) return
+
+    const batchStore = useBatchCaptureStore.getState()
+
+    if (duplicateWordInfo) {
+      batchStore.setPossibleDuplicate(batchItemId, {
+        wordId: duplicateWordInfo.word_id,
+        collectionId: duplicateWordInfo.collection_id,
+        collectionName: findCollectionName(
+          collections,
+          duplicateWordInfo.collection_id
+        ),
+      })
+    } else {
+      batchStore.setItemStatus(batchItemId, 'queued')
+      batchStore.pause()
+    }
+    router.replace(BATCH_CAPTURE_ROUTE)
+  }
+
+  const handleCancel = () => {
+    if (batchItemId) {
+      handleBackToBatchQueue()
+      return
+    }
+
+    setInputWord('')
+    clearAnalysis()
+    setIsAlreadyInCollection(false)
+    setDuplicateWordInfo(null)
+    setHasNavigatedToCollection(false)
+  }
+
+  const handleForceRefresh = async () => {
+    const normalizedWord = inputWord
+      .trim()
+      .replace(/\./g, '')
+      .replace(/\s+/g, ' ')
+
+    if (!normalizedWord) return
+
+    setInputWord(normalizedWord)
+    await forceRefreshAnalysis(normalizedWord)
+  }
+
+  const handleImageChange = (newImageUrl: string) => {
+    updateImageUrl(newImageUrl)
+    closeImageSelector()
+  }
+
+  // Reset navigation flag when returning to the screen
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reset the navigation flag if it was set, but preserve all duplicate state
+      if (hasNavigatedToCollection) {
+        setHasNavigatedToCollection(false)
+      }
+    }, [hasNavigatedToCollection])
+  )
+
+  return (
+    <ViewThemed
+      testID="screen-add-word"
+      style={[
+        addWordScreenStyles.container,
+        {
+          paddingTop: insets.top,
+        },
+      ]}
+    >
+      <View
+        style={{
+          overflow: 'hidden',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+        }}
+      >
+        {reduceTransparency ? (
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: Colors.transparent.white50,
+            }}
+          />
+        ) : (
+          <PlatformBlurView
+            tint="default"
+            intensity={25}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+            blurMethod={'dimezisBlurView'}
+          />
+        )}
+        <View
+          style={{
+            paddingTop: insets.top + 12,
+            paddingBottom: 12,
+            paddingHorizontal: 16,
+            backgroundColor: 'transparent',
+          }}
+        >
+          <CompactWordInput
+            inputWord={inputWord}
+            setInputWord={setInputWord}
+            onAnalyze={handleAnalyze}
+            isAnalyzing={isAnalyzing}
+            isCheckingDuplicate={isCheckingDuplicate}
+            selectedCollection={selectedCollection}
+            collections={collections}
+            onCollectionSelect={selectCollection}
+            onCancel={handleCancel}
+            variant="glass"
+          />
+          {isAlreadyInCollection && duplicateWordInfo && (
+            <DuplicateBanner
+              duplicateWord={duplicateWordInfo}
+              collections={collections}
+              onNavigateToCollection={() => setHasNavigatedToCollection(true)}
+            />
+          )}
+          {batchItemId && (
+            <ViewThemed style={batchReviewStyles.container}>
+              <View style={batchReviewStyles.textContainer}>
+                <TextThemed style={batchReviewStyles.title}>
+                  Batch review
+                </TextThemed>
+                {translationHint && (
+                  <TextThemed
+                    style={batchReviewStyles.hint}
+                    lightColor={Colors.light.textSecondary}
+                    darkColor={Colors.dark.textSecondary}
+                    numberOfLines={2}
+                  >
+                    Unverified hint: {translationHint}
+                  </TextThemed>
+                )}
+              </View>
+              <TouchableOpacity
+                testID="back-to-batch-queue-button"
+                accessibilityRole="button"
+                onPress={handleBackToBatchQueue}
+                style={batchReviewStyles.backButton}
+              >
+                <TextThemed style={batchReviewStyles.backButtonText}>
+                  Back to queue
+                </TextThemed>
+              </TouchableOpacity>
+            </ViewThemed>
+          )}
+        </View>
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 1,
+            backgroundColor: Colors.transparent.hairlineLight,
+          }}
+        />
+      </View>
+
+      {!analysisResult && !isAnalyzing && (
+        <AnalysisEmptyState
+          onOpenBatchCapture={() => router.push(BATCH_CAPTURE_ROUTE)}
+        />
+      )}
+
+      {analysisResult && (
+        <ViewThemed style={{ flex: 1 }}>
+          <UniversalWordCard
+            word={analysisResult}
+            metadata={analysisMetadata}
+            actions={{
+              ...WordCardPresets.analysis.actions,
+              isDuplicateChecking: isCheckingDuplicate,
+              isAlreadyInCollection: isAlreadyInCollection,
+            }}
+            isPlayingAudio={isPlayingAudio}
+            onPlayPronunciation={playPronunciation}
+            onChangeImage={openImageSelector}
+            onForceRefresh={handleForceRefresh}
+            style={{ flex: 1 }}
+            config={{
+              extraHeightAddWord:
+                120 +
+                (isAlreadyInCollection && duplicateWordInfo ? 80 : 0) +
+                (batchItemId ? 70 : 0),
+            }}
+          />
+
+          {/* Loading indicator while checking duplicates */}
+          {isCheckingDuplicate && (
+            <ViewThemed
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: Colors.transparent.black10,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 12,
+              }}
+            >
+              <TextThemed style={{ fontSize: 14, opacity: 0.7 }}>
+                Checking for duplicates...
+              </TextThemed>
+            </ViewThemed>
+          )}
+        </ViewThemed>
+      )}
+
+      {analysisResult && !isAlreadyInCollection && !isCheckingDuplicate && (
+        <FloatingActionButton
+          testID="save-word-button"
+          onPress={handleAddWord}
+          disabled={isAdding}
+          loading={isAdding}
+          icon="checkmark"
+        />
+      )}
+
+      {analysisResult && (
+        <ImageSelector
+          visible={showImageSelector}
+          onClose={closeImageSelector}
+          onSelect={handleImageChange}
+          currentImageUrl={analysisResult.image_url || undefined}
+          englishTranslation={analysisResult.translations.en[0] || ''}
+          partOfSpeech={analysisResult.part_of_speech || ''}
+          examples={analysisResult.examples || undefined}
+        />
+      )}
+    </ViewThemed>
+  )
+}
+
+const batchReviewStyles = StyleSheet.create({
+  container: {
+    borderRadius: 12,
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  textContainer: {
+    flex: 1,
+    gap: 2,
+  },
+  title: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  hint: {
+    fontSize: 12,
+  },
+  backButton: {
+    minHeight: 36,
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  backButtonText: {
+    color: Colors.primary.DEFAULT,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+})

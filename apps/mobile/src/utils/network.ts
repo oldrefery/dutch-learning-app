@@ -1,0 +1,239 @@
+import NetInfo, { NetInfoState } from '@react-native-community/netinfo'
+import { useEffect, useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { NetworkError } from '@/types/ErrorTypes'
+
+const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp'
+const SYNC_CURSOR_KEY_PREFIX = 'sync_cursor'
+
+export type SyncCursorTable =
+  'words' | 'collections' | 'user_progress' | 'review_events'
+
+export interface SyncCursor {
+  updatedAt: string
+  id: string
+}
+
+const getSyncCursorKey = (userId: string, table: SyncCursorTable): string =>
+  `${SYNC_CURSOR_KEY_PREFIX}:${userId}:${table}`
+
+const isSyncCursor = (value: unknown): value is SyncCursor => {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const candidate = value as Record<string, unknown>
+  return (
+    typeof candidate.updatedAt === 'string' &&
+    candidate.updatedAt.length > 0 &&
+    typeof candidate.id === 'string'
+  )
+}
+
+const getNetworkStateContext = (
+  state: NetInfoState,
+  refreshedState?: NetInfoState
+) => ({
+  networkState: {
+    isConnected: state.isConnected,
+    isInternetReachable: state.isInternetReachable,
+  },
+  refreshedNetworkState: refreshedState
+    ? {
+        isConnected: refreshedState.isConnected,
+        isInternetReachable: refreshedState.isInternetReachable,
+      }
+    : undefined,
+})
+
+const isNetworkReachable = (state: NetInfoState): boolean =>
+  state.isConnected === true && state.isInternetReachable !== false
+
+export async function checkNetworkConnection(): Promise<boolean> {
+  try {
+    const state = await NetInfo.fetch()
+    return state.isConnected ?? false
+  } catch (error) {
+    console.error('[Network] Error checking connection:', error)
+    return false
+  }
+}
+
+export async function isNetworkAvailable(): Promise<boolean> {
+  try {
+    const state = await NetInfo.fetch()
+    if (isNetworkReachable(state)) {
+      return true
+    }
+
+    if (state.isConnected === true && state.isInternetReachable === false) {
+      const refreshedState = await NetInfo.refresh()
+      return isNetworkReachable(refreshedState)
+    }
+
+    return false
+  } catch (error) {
+    console.error('[Network] Error checking network availability:', error)
+    return false
+  }
+}
+
+async function readNetworkStatesForRequest() {
+  try {
+    const state = await NetInfo.fetch()
+    const refreshedState =
+      state.isConnected && state.isInternetReachable === false
+        ? await NetInfo.refresh()
+        : undefined
+    return { state, refreshedState }
+  } catch (error) {
+    if (error instanceof NetworkError) {
+      throw error
+    }
+
+    throw new NetworkError(
+      'Network check failed',
+      'Unable to verify network connection. Please try again.',
+      error instanceof Error ? error : undefined
+    )
+  }
+}
+
+/**
+ * Assert that network is available, throws NetworkError if not.
+ * Use this before making network requests that require connectivity.
+ */
+export async function assertNetworkConnection(): Promise<void> {
+  const { state, refreshedState } = await readNetworkStatesForRequest()
+
+  if (!state.isConnected) {
+    throw new NetworkError(
+      'No network connection',
+      'No internet connection. Please check your network settings.',
+      undefined,
+      getNetworkStateContext(state)
+    )
+  }
+
+  if (refreshedState && !isNetworkReachable(refreshedState)) {
+    throw new NetworkError(
+      refreshedState.isConnected
+        ? 'Internet not reachable'
+        : 'No network connection',
+      refreshedState.isConnected
+        ? 'Cannot reach the internet. Please check your connection.'
+        : 'No internet connection. Please check your network settings.',
+      undefined,
+      getNetworkStateContext(state, refreshedState)
+    )
+  }
+}
+
+export function subscribeToNetworkChanges(
+  callback: (isConnected: boolean) => void
+): () => void {
+  const unsubscribe = NetInfo.addEventListener((state: NetInfoState) => {
+    const isConnected = state.isConnected ?? false
+    callback(isConnected)
+  })
+
+  return () => {
+    unsubscribe()
+  }
+}
+
+export async function getLastSyncTimestamp(): Promise<string | null> {
+  try {
+    return await AsyncStorage.getItem(LAST_SYNC_TIMESTAMP_KEY)
+  } catch (error) {
+    console.error('[Network] Error getting last sync timestamp:', error)
+    return null
+  }
+}
+
+export async function setLastSyncTimestamp(timestamp: string): Promise<void> {
+  try {
+    await AsyncStorage.setItem(LAST_SYNC_TIMESTAMP_KEY, timestamp)
+  } catch (error) {
+    console.error('[Network] Error setting last sync timestamp:', error)
+    throw error
+  }
+}
+
+export async function getSyncCursor(
+  userId: string,
+  table: SyncCursorTable
+): Promise<SyncCursor | null> {
+  try {
+    const storedCursor = await AsyncStorage.getItem(
+      getSyncCursorKey(userId, table)
+    )
+    if (!storedCursor) {
+      return null
+    }
+
+    const parsedCursor: unknown = JSON.parse(storedCursor)
+    return isSyncCursor(parsedCursor) ? parsedCursor : null
+  } catch (error) {
+    console.error('[Network] Error getting sync cursor:', error)
+    return null
+  }
+}
+
+export async function setSyncCursor(
+  userId: string,
+  table: SyncCursorTable,
+  cursor: SyncCursor
+): Promise<void> {
+  try {
+    await AsyncStorage.setItem(
+      getSyncCursorKey(userId, table),
+      JSON.stringify(cursor)
+    )
+  } catch (error) {
+    console.error('[Network] Error setting sync cursor:', error)
+    throw error
+  }
+}
+
+export function useNetworkStatus() {
+  const [isConnected, setIsConnected] = useState<boolean | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    void checkNetworkConnection()
+      .then(connected => {
+        if (active) {
+          setIsConnected(connected)
+          setIsLoading(false)
+        }
+      })
+      .catch(error => {
+        console.error('[Network] Error in useNetworkStatus:', error)
+        if (active) {
+          setIsConnected(false)
+          setIsLoading(false)
+        }
+      })
+    const unsubscribe = subscribeToNetworkChanges((connected: boolean) => {
+      setIsConnected(connected)
+    })
+    return () => {
+      active = false
+      unsubscribe()
+    }
+  }, [])
+
+  return { isConnected, isLoading }
+}
+
+export const NetworkStatus = {
+  checkConnection: checkNetworkConnection,
+  subscribe: subscribeToNetworkChanges,
+  getLastSyncTimestamp,
+  setLastSyncTimestamp,
+  getSyncCursor,
+  setSyncCursor,
+  useNetworkStatus,
+}

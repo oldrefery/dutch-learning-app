@@ -3,6 +3,7 @@ export const PRODUCTION_ORIGIN = 'https://woordenaar.app'
 
 export type AccessLevel = 'read_only' | 'full_access'
 
+export * from './app-config'
 export * from './batch-capture'
 export * from './review-insights'
 export * from './semantic-word'

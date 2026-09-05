@@ -17,6 +17,7 @@ npx lint-staged
 # Check for file length limits
 .husky/check-file-length
 
-# Run tests to ensure no regressions.
+# Run the mobile and web suites with their framework-specific Jest configs.
 # --silent keeps pre-commit output focused on real test failures.
 CI=true npm test -- --no-watch --no-coverage --bail --watchman=false --silent
+CI=true npm run web:test -- --no-coverage --bail --silent

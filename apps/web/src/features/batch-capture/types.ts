@@ -31,5 +31,4 @@ export interface WebBatchCaptureState {
 }
 
 export type BatchSaveResult =
-  | { success: true; wordId: string }
-  | { success: false; message: string }
+  { success: true; wordId: string } | { success: false; message: string }

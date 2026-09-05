@@ -7,8 +7,11 @@ verify_eas_identity() {
   local project_output
   local linked_project
   local eas_cli=(npx -y eas-cli@latest)
+  local mobile_dir
 
-  if ! account_output=$("${eas_cli[@]}" account:view 2>&1); then
+  mobile_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/../apps/mobile" && pwd)
+
+  if ! account_output=$(cd "$mobile_dir" && "${eas_cli[@]}" account:view 2>&1); then
     echo "Error: unable to verify the active Expo/EAS account" >&2
     return 1
   fi
@@ -18,7 +21,7 @@ verify_eas_identity() {
     return 1
   fi
 
-  if ! project_output=$("${eas_cli[@]}" project:info 2>&1); then
+  if ! project_output=$(cd "$mobile_dir" && "${eas_cli[@]}" project:info 2>&1); then
     echo "Error: unable to verify the linked Expo/EAS project" >&2
     return 1
   fi

@@ -28,26 +28,25 @@ cd <repository-name>
 ### 2. Install dependencies:
 
 ```
-npm install
-# or
-yarn install
+nvm use
+npm ci
 ```
 
 ### 3. Set up environment variables:
 
-- Copy `env.example` to `.env` and fill in your actual values:
+- Copy the mobile example to `apps/mobile/.env` and fill in your actual values:
 
 ```bash
-cp env.example .env
+cp apps/mobile/env.example apps/mobile/.env
 ```
 
-- Copy `env.local.example` to `.env.local` for local development overrides (optional):
+- Copy `apps/mobile/env.local.example` to `apps/mobile/.env.local` for local development overrides (optional):
 
 ```bash
-cp env.local.example .env.local
+cp apps/mobile/env.local.example apps/mobile/.env.local
 ```
 
-- Required variables in `.env`:
+- Required variables in `apps/mobile/.env`:
 
 ```
 EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -58,7 +57,7 @@ EXPO_PUBLIC_DEV_USER_PASSWORD=password123
 EXPO_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
 ```
 
-- Optional variables in `.env.local`:
+- Optional variables in `apps/mobile/.env.local`:
 
 ```
 SENTRY_AUTH_TOKEN=your_sentry_auth_token_here
@@ -121,13 +120,17 @@ curl -sS "${SENTRY_BASE_URL:-https://sentry.io}/api/0/projects/${SENTRY_ORG}/${S
 
 If these calls still return 403, check your Sentry organization role. Billing-only users cannot access Issues; use at least Member/Contributor access to the project.
 
-### 5. Run the application:
+### 5. Run the applications:
 
 ```
 npm start
-# or
-yarn start
+# Equivalent explicit command: npm run mobile:start
+
+npm run web:dev
 ```
+
+`@woordenaar/mobile` intentionally targets iOS and Android only. The browser
+application is the Next.js workspace at `apps/web`.
 
 ## 4. Key Features
 
@@ -302,8 +305,9 @@ The application uses a modern Backend-as-a-Service (BaaS) architecture, which mi
 
 ## 6. Technology Stack
 
-- **Platform**: React Native with Expo SDK 54 (for iOS, Android, and Web)
-- **React**: React 19.1.0 with React Native 0.81.4
+- **Mobile**: React Native 0.86.3 with Expo SDK 57 in `apps/mobile`
+- **Web**: Next.js 16 in `apps/web`
+- **React**: React 19.2
 - **Architecture**: New Architecture enabled (Reanimated 4.0)
 - **Navigation**: expo-router (file-based routing)
 - **Backend**: Supabase (PostgreSQL Database, Auth, Edge Functions)
@@ -314,14 +318,14 @@ The application uses a modern Backend-as-a-Service (BaaS) architecture, which mi
 - **Gestures**: React Native Gesture Handler 2.28.0
 - **Testing**: Jest & React Native Testing Library
 - **Code Quality**: ESLint & Prettier
-- **Node.js**: Version 20+ required
+- **Node.js**: Version 24.x required (24.20.0 recommended via `.nvmrc`)
 
 ## 7. Project Status 🎉
 
 ✅ **Phase 0 Complete** - Supabase infrastructure fully deployed and tested
 ✅ **Phase 1 Foundation Complete** - React Native app initialized and running
 ✅ **Phase 2 Complete** - Backend integration and MVP features
-✅ **Phase 3 Complete** - Modern stack upgrade (SDK 54, React 19.1, Reanimated 4.0)
+✅ **Phase 3 Complete** - Modern stack upgrade (SDK 55, React 19.2, Reanimated 4.2)
 🚀 **Ready for Enhanced Features** - Advanced functionality development
 
 ### Current Architecture:
@@ -356,11 +360,11 @@ The application uses a modern Backend-as-a-Service (BaaS) architecture, which mi
 
 ### 🔧 Technical Improvements
 
-- **Authentication Library**: Added `src/lib/appleAuth.ts` for Apple Sign-In logic
+- **Authentication Library**: Added `apps/mobile/src/lib/appleAuth.ts` for Apple Sign-In logic
   - Secure nonce generation using expo-crypto
   - Identity token validation and session management
   - Availability checking for Apple authentication services
-- **Configuration**: Updated app.json with Apple Sign-In capabilities
+- **Configuration**: Updated `apps/mobile/app.base.json` with Apple Sign-In capabilities
   - Enabled `usesAppleSignIn` flag for iOS
   - Added `expo-apple-authentication` plugin
 - **Dependencies**: Added `expo-apple-authentication` (~8.0.7) for native Apple Sign-In support
@@ -389,7 +393,8 @@ The project is ready for MVP feature implementation:
 3. **Create review session UI** with SRS algorithm
 4. **Add flashcard animations** and user interactions
 
-Start development by modifying `src/app/(tabs)/index.tsx` for the home screen.
+Start mobile development in `apps/mobile/src/app/` and web development in
+`apps/web/src/app/`.
 
 ## 10. Production Release Tooling
 
@@ -412,7 +417,8 @@ scripts/submit-release.sh --platform both
 ```
 
 The build command requires a clean worktree, matching versions in
-`app.base.json`, `package.json`, and `package-lock.json`, aligned iOS/Android
+`apps/mobile/app.base.json`, the root/mobile package manifests, and
+`package-lock.json`, aligned iOS/Android
 build numbers, and `runtimeVersion.policy: fingerprint`. It writes exact
 artifact and commit metadata to `builds/build-context.json`; the submit command
 refuses artifacts that do not match that context.

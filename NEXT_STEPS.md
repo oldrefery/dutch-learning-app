@@ -2,7 +2,7 @@
 
 ## What Was Fixed ✅
 
-1. **Removed hardcoded credentials** from `.maestro/config.yaml` and `.maestro/.maestro.env`
+1. **Removed hardcoded credentials** from `apps/mobile/.maestro/config.yaml` and `apps/mobile/.maestro/.maestro.env`
 2. **Updated .gitignore** to prevent committing credentials
 3. **Fixed GitHub Actions workflow** with proper build and test flow
 4. **Added debug logging** for troubleshooting
@@ -79,7 +79,7 @@ If tests still fail, check:
 
 - 📖 Full secrets setup guide: [docs/GITHUB_SECRETS.md](docs/GITHUB_SECRETS.md)
 - 📖 E2E testing guide: [docs/E2E_TESTING.md](docs/E2E_TESTING.md)
-- 📖 Maestro local testing: [.maestro/README.md](.maestro/README.md)
+- 📖 Maestro local testing: [apps/mobile/.maestro/README.md](apps/mobile/.maestro/README.md)
 
 ---
 

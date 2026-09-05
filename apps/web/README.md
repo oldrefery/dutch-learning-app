@@ -11,11 +11,37 @@ npm run web:dev
 npm run web:build
 npm run web:lint
 npm run web:typecheck
+npm run web:e2e:install
+npm run web:e2e
 ```
 
-The visual product UI is intentionally deferred until the approved design is
-available. Backend contracts are consumed through workspace packages; the web
-application must not import implementation files from the Expo application.
+Backend contracts are consumed through workspace packages; the web application
+must not import implementation files from the Expo application.
+
+## Browser E2E tests
+
+The Playwright suite covers password authentication, collection and word CRUD,
+analysis history, global search, and the first successful SRS transition. It
+uses only collections whose names start with `Web E2E` and removes those test
+collections after each run.
+
+Provide a dedicated full-access test account without committing credentials:
+
+```bash
+export WEB_E2E_EMAIL=test-user@example.com
+export WEB_E2E_PASSWORD=replace-me
+npm run web:e2e
+```
+
+`oldrefery@gmail.com` and its Gmail aliases are rejected unconditionally. To
+test an already deployed environment, also set `WEB_E2E_BASE_URL`; otherwise
+Playwright starts the local Next.js app on `http://127.0.0.1:3100` using
+`apps/web/.env.local`.
+
+The `Web E2E smoke` GitHub Actions workflow runs daily and on manual dispatch
+against `https://woordenaar.app`. It reuses the dedicated
+`MAESTRO_TEST_EMAIL` and `MAESTRO_TEST_PASSWORD` repository secrets; that
+account must retain full access.
 
 ## Authentication environment
 

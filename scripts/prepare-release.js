@@ -4,11 +4,13 @@ const { spawnSync } = require('node:child_process')
 const fs = require('node:fs')
 const path = require('node:path')
 
-const rootDir = process.cwd()
+const rootDir = path.resolve(path.dirname(process.argv[1]), '..')
+const mobileDir = path.join(rootDir, 'apps/mobile')
 const appConfigPath = ['app.json', 'app.base.json']
-  .map(file => path.join(rootDir, file))
+  .map(file => path.join(mobileDir, file))
   .find(file => fs.existsSync(file))
 const packageJsonPath = path.join(rootDir, 'package.json')
+const mobilePackageJsonPath = path.join(mobileDir, 'package.json')
 const packageLockPath = path.join(rootDir, 'package-lock.json')
 
 function printHelp() {
@@ -104,12 +106,15 @@ function assertCleanWorktree() {
 function loadReleaseState() {
   const appConfig = readJson(appConfigPath)
   const packageJson = readJson(packageJsonPath)
+  const mobilePackageJson = readJson(mobilePackageJsonPath)
   const packageLock = readJson(packageLockPath)
   const versions = {
     app: appConfig.expo?.version,
-    package: packageJson.version,
+    rootPackage: packageJson.version,
+    mobilePackage: mobilePackageJson.version,
     lock: packageLock.version,
     lockRoot: packageLock.packages?.['']?.version,
+    lockMobile: packageLock.packages?.['apps/mobile']?.version,
   }
   const iosBuild = appConfig.expo?.ios?.buildNumber
   const androidBuild = appConfig.expo?.android?.versionCode
@@ -133,6 +138,7 @@ function loadReleaseState() {
   return {
     appConfig,
     packageJson,
+    mobilePackageJson,
     packageLock,
     version: versions.app,
     build: Number(iosBuild),
@@ -187,12 +193,17 @@ state.appConfig.expo.version = options.version
 state.appConfig.expo.ios.buildNumber = String(targetBuild)
 state.appConfig.expo.android.versionCode = targetBuild
 state.packageJson.version = options.version
+state.mobilePackageJson.version = options.version
 state.packageLock.version = options.version
 state.packageLock.packages[''].version = options.version
+state.packageLock.packages['apps/mobile'].version = options.version
 
 writeJson(appConfigPath, state.appConfig)
 writeJson(packageJsonPath, state.packageJson)
+writeJson(mobilePackageJsonPath, state.mobilePackageJson)
 writeJson(packageLockPath, state.packageLock)
 
-console.log('Updated app config, package.json, and package-lock.json.')
+console.log(
+  'Updated app config, root/mobile package manifests, and package-lock.json.'
+)
 console.log('No Git commit, build, upload, or submission was performed.')

@@ -13,13 +13,17 @@ supabase/supabase/
 
 # Expo
 .expo/
+apps/mobile/.expo/
 dist/
+apps/mobile/dist/
 web-build/
 expo-env.d.ts
 
 # Native
 ios/
 android/
+apps/mobile/ios/
+apps/mobile/android/
 .kotlin/
 *.orig.*
 *.jks
@@ -47,6 +51,8 @@ yarn-error.*
 # Maestro test credentials
 .maestro/.maestro.env
 .maestro/config.yaml
+apps/mobile/.maestro/.maestro.env
+apps/mobile/.maestro/config.yaml
 
 # typescript
 *.tsbuildinfo
@@ -62,6 +68,7 @@ test-*.ts
 # Reports and analysis
 reports/
 coverage/
+.stryker-tmp/
 
 # Build artifacts
 builds/

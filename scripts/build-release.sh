@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
+MOBILE_DIR="$REPO_ROOT/apps/mobile"
+cd "$REPO_ROOT"
+
 source "$(dirname "$0")/verify-eas-identity.sh"
 
 PLATFORM="both"
@@ -71,12 +75,12 @@ esac
 [ "$CONFIRMED_BUILD_NUMBER" -gt 0 ] || \
   fail "--confirmed-build-number must be a positive integer"
 
-if [ -f "./app.json" ]; then
-  APP_CONFIG_FILE="./app.json"
-elif [ -f "./app.base.json" ]; then
-  APP_CONFIG_FILE="./app.base.json"
+if [ -f "$MOBILE_DIR/app.json" ]; then
+  APP_CONFIG_FILE="./apps/mobile/app.json"
+elif [ -f "$MOBILE_DIR/app.base.json" ]; then
+  APP_CONFIG_FILE="./apps/mobile/app.base.json"
 else
-  fail "app.json or app.base.json not found in project root"
+  fail "app.json or app.base.json not found in apps/mobile"
 fi
 
 node scripts/prepare-release.js --check --require-clean
@@ -101,7 +105,7 @@ ANDROID_ARTIFACT="builds/app-${VERSION}-${CONFIRMED_BUILD_NUMBER}.aab"
 print_build_command() {
   local platform=$1
   local artifact=$2
-  echo "NODE_ENV=production npx -y eas-cli@latest build --platform ${platform} --profile production --local --output ${artifact} --non-interactive --json"
+  echo "(cd apps/mobile && NODE_ENV=production npx -y eas-cli@latest build --platform ${platform} --profile production --local --output ../../${artifact} --non-interactive --json)"
 }
 
 echo "Release build context: ${VERSION} (${CONFIRMED_BUILD_NUMBER}), platform=${PLATFORM}"
@@ -128,25 +132,25 @@ ANDROID_BUILT="false"
 
 if [ "$PLATFORM" = "ios" ] || [ "$PLATFORM" = "both" ]; then
   print_build_command "ios" "$IOS_ARTIFACT"
-  NODE_ENV=production npx -y eas-cli@latest build \
-    --platform ios \
-    --profile production \
-    --local \
-    --output "$IOS_ARTIFACT" \
-    --non-interactive \
-    --json > builds/ios-build-metadata.json
+  (cd "$MOBILE_DIR" && NODE_ENV=production npx -y eas-cli@latest build \
+      --platform ios \
+      --profile production \
+      --local \
+      --output "$REPO_ROOT/$IOS_ARTIFACT" \
+      --non-interactive \
+      --json) > builds/ios-build-metadata.json
   IOS_BUILT="true"
 fi
 
 if [ "$PLATFORM" = "android" ] || [ "$PLATFORM" = "both" ]; then
   print_build_command "android" "$ANDROID_ARTIFACT"
-  NODE_ENV=production npx -y eas-cli@latest build \
-    --platform android \
-    --profile production \
-    --local \
-    --output "$ANDROID_ARTIFACT" \
-    --non-interactive \
-    --json > builds/android-build-metadata.json
+  (cd "$MOBILE_DIR" && NODE_ENV=production npx -y eas-cli@latest build \
+      --platform android \
+      --profile production \
+      --local \
+      --output "$REPO_ROOT/$ANDROID_ARTIFACT" \
+      --non-interactive \
+      --json) > builds/android-build-metadata.json
   ANDROID_BUILT="true"
 fi
 
