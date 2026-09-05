@@ -226,3 +226,48 @@ are unchanged, so Stryker was not rerun for this browser-only coverage change.
 The unrelated staged/deleted mobile plugin was preserved byte-for-byte.
 
 Commit message: `test(web): verify session and review recovery`
+
+## Follow-up: Native Lifecycle And Two-Client Conflict QA
+
+Ran two isolated read-only Android QA instances with the retained 2.1.0 (80)
+artifact. Mobile/domain runtime sources match this branch; this does not certify
+the 2.2.0 store artifact or iOS. Only the explicitly allowed dedicated test
+account and one newly created collection/word were used.
+
+Confirmed a high-priority unresolved defect: A's older offline Easy assessment
+overwrites B's already-synced newer Good assessment after reconnection. Both
+review events survive exactly once, but repetitions stay at one and
+`last_reviewed_at` moves backwards. B then converges to the same stale progress.
+Whole-word snapshot upsert and later independent event upload explain the result;
+existing pending-row/stale-acknowledgement protections do not merge assessments.
+
+Offline assessment durability across native cold restart, reconnect-triggered
+upload and foreground-triggered convergence were verified using real native
+SQLite and authenticated server snapshots. Settings also showed a missing email
+and Read Only fallback after offline cold start; an online restart restored the
+email assertion. Its profile/access-state cause remains to be diagnosed.
+
+Added nine hook lifecycle tests covering network/foreground triggers, background
+timer behavior, cleanup, identity gating and retry recovery. These are boundary
+tests, not an automated reproduction or fix of the hosted conflict.
+See [the native QA report](../native-sync-qa-2026-09-05.md) for exact steps,
+values, limitations and private evidence location.
+
+Cleanup removed the fixture collection/history and propagated the word tombstone
+to both clients. All baseline rows compared unchanged. Both temporary Android
+instances were shut down; the existing iOS simulator was not used. No remote
+schema, deployment, provider configuration or EAS operation was performed.
+
+Validation: 92 mobile suites / 1140 tests / 16 snapshots and 45 web suites /
+308 tests pass. Changed-file ESLint, mobile test typecheck, formatting and
+`git diff --check` pass. Runtime code and mutation targets are unchanged;
+Stryker was not rerun. The unrelated staged/deleted plugin remains excluded.
+
+Next: define and implement server-authoritative, idempotent review-event
+application, including out-of-order events, resets and installed-client
+compatibility; then repeat this native conflict scenario. Do not silently select
+timestamp-only or maximum-counter merging. Hosted migration/deployment still
+requires separate authorization. Investigate offline Settings hydration as a
+separate issue without weakening fail-closed authorization.
+
+Commit message: `test(mobile): cover sync lifecycle and conflict QA`
