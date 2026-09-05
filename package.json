@@ -92,7 +92,7 @@
     "deno": "2.9.4",
     "dotenv": "^17.2.2",
     "eslint": "^9.35.0",
-    "eslint-config-expo": "~55.0.1",
+    "eslint-config-expo": "~57.0.2",
     "eslint-plugin-sonarjs": "^4.2.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
@@ -100,7 +100,7 @@
     "prettier": "^3.6.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "typescript": "~5.9.2"
+    "typescript": "~6.0.3"
   },
   "engines": {
     "node": "24.x",
