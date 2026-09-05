@@ -109,11 +109,47 @@ describe('Apple sign-in', () => {
 
   it('treats user cancellation as a non-error result', async () => {
     ;(AppleAuthentication.signInAsync as jest.Mock).mockRejectedValue(
-      new Error('ERR_REQUEST_CANCELED')
+      Object.assign(new Error('The user canceled the authorization attempt'), {
+        code: 'ERR_REQUEST_CANCELED',
+      })
     )
     await expect(initiateAppleSignIn()).resolves.toEqual({ type: 'cancel' })
     expect(supabase.auth.signInWithIdToken).not.toHaveBeenCalled()
     expect(Sentry.captureException).not.toHaveBeenCalled()
+  })
+
+  it('recognizes cancellation codes on native rejection objects', async () => {
+    ;(AppleAuthentication.signInAsync as jest.Mock).mockRejectedValue({
+      code: 'ERR_REQUEST_CANCELED',
+      message: 'Authorization canceled',
+    })
+
+    await expect(initiateAppleSignIn()).resolves.toEqual({ type: 'cancel' })
+    expect(supabase.auth.signInWithIdToken).not.toHaveBeenCalled()
+    expect(Sentry.captureException).not.toHaveBeenCalled()
+  })
+
+  it('does not confuse an unrelated error message with cancellation', async () => {
+    const error = Object.assign(new Error('Unexpected ERR_REQUEST_CANCELED'), {
+      code: 'ERR_REQUEST_FAILED',
+    })
+    ;(AppleAuthentication.signInAsync as jest.Mock).mockRejectedValue(error)
+
+    await expect(initiateAppleSignIn()).resolves.toEqual({
+      type: 'error',
+      error,
+    })
+    expect(Sentry.captureException).toHaveBeenCalled()
+  })
+
+  it('handles a null rejection without throwing from error classification', async () => {
+    ;(AppleAuthentication.signInAsync as jest.Mock).mockRejectedValue(null)
+
+    await expect(initiateAppleSignIn()).resolves.toEqual({
+      type: 'error',
+      error: new Error('Unknown error'),
+    })
+    expect(supabase.auth.signInWithIdToken).not.toHaveBeenCalled()
   })
 
   it('normalizes unexpected non-Error rejections', async () => {

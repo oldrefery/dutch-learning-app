@@ -86,8 +86,40 @@ describe('Google auth callbacks', () => {
     expect(WebBrowser.openAuthSessionAsync).not.toHaveBeenCalled()
   })
 
-  it('returns cancellation without creating a session', async () => {
-    await expect(initiateGoogleOAuth()).resolves.toEqual({ type: 'cancel' })
+  it.each(['cancel', 'dismiss'])(
+    'returns %s without creating a session or reporting an error',
+    async type => {
+      ;(WebBrowser.openAuthSessionAsync as jest.Mock).mockResolvedValue({
+        type,
+      })
+      await expect(initiateGoogleOAuth()).resolves.toEqual({ type })
+      expect(supabase.auth.setSession).not.toHaveBeenCalled()
+      expect(Sentry.captureException).not.toHaveBeenCalled()
+      await expect(handleOAuthCallback(oauthCallbackUrl)).resolves.toBe(true)
+    }
+  )
+
+  it('releases callback ownership when the browser fails to open', async () => {
+    const error = new Error('No browser is available')
+    ;(WebBrowser.openAuthSessionAsync as jest.Mock).mockRejectedValueOnce(error)
+
+    await expect(initiateGoogleOAuth()).rejects.toBe(error)
+    expect(supabase.auth.setSession).not.toHaveBeenCalled()
+    await expect(handleOAuthCallback(oauthCallbackUrl)).resolves.toBe(true)
+  })
+
+  it.each([
+    'dutchlearning://#error=access_denied',
+    'dutchlearning://#access_token=incomplete-access',
+  ])('rejects an invalid browser callback without a session: %s', async url => {
+    ;(WebBrowser.openAuthSessionAsync as jest.Mock).mockResolvedValueOnce({
+      type: 'success',
+      url,
+    })
+
+    await expect(initiateGoogleOAuth()).rejects.toThrow(
+      'URL is not a primary auth session callback'
+    )
     expect(supabase.auth.setSession).not.toHaveBeenCalled()
     await expect(handleOAuthCallback(oauthCallbackUrl)).resolves.toBe(true)
   })
@@ -135,5 +167,16 @@ describe('Google auth callbacks', () => {
       url: oauthCallbackUrl,
     })
     expect(supabase.auth.setSession).toHaveBeenCalledTimes(1)
+    expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google',
+      options: {
+        redirectTo: 'dutchlearning://',
+        skipBrowserRedirect: true,
+      },
+    })
+    expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(
+      'https://example.supabase.co/oauth',
+      'dutchlearning://'
+    )
   })
 })

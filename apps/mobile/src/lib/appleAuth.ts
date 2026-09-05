@@ -102,8 +102,10 @@ export async function initiateAppleSignIn(): Promise<{
   } catch (error) {
     // Check if user cancelled
     if (
-      error instanceof Error &&
-      error.message.includes('ERR_REQUEST_CANCELED')
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'ERR_REQUEST_CANCELED'
     ) {
       return { type: 'cancel' }
     }
