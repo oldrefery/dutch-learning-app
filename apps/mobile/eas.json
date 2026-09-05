@@ -51,6 +51,7 @@
       "withoutCredentials": true,
       "distribution": "internal",
       "env": {
+        "WOORDENAAR_QA_BUILD": "true",
         "EXPO_PUBLIC_E2E_TEST_MODE": "true"
       },
       "ios": {

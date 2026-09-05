@@ -28,6 +28,33 @@ describe('useUpdateStatus', () => {
   })
 
   describe('initial state', () => {
+    it('does not check, download or reload in a release build with OTA disabled', async () => {
+      const previousDev = __DEV__
+      const runtimeGlobal = globalThis as typeof globalThis & {
+        __DEV__: boolean
+      }
+      runtimeGlobal.__DEV__ = false
+      ;(Updates as Record<string, unknown>).isEnabled = false
+
+      try {
+        const { result, unmount } = renderHook(() => useUpdateStatus())
+
+        await act(async () => {
+          await result.current.checkForUpdate()
+          await result.current.downloadAndApplyUpdate()
+        })
+
+        expect(result.current.status.isEnabled).toBe(false)
+        expect(result.current.status.error).toBeNull()
+        expect(Updates.checkForUpdateAsync).not.toHaveBeenCalled()
+        expect(Updates.fetchUpdateAsync).not.toHaveBeenCalled()
+        expect(Updates.reloadAsync).not.toHaveBeenCalled()
+        unmount()
+      } finally {
+        runtimeGlobal.__DEV__ = previousDev
+      }
+    })
+
     it('should reflect Updates constants in initial status', () => {
       const { result } = renderHook(() => useUpdateStatus())
 
