@@ -66,8 +66,12 @@ The ignored root `ios/` and `android/` directories are not moved or deleted duri
   This is an explicit exception to Expo's bundled Sentry 7.11 recommendation:
   the older plugin imports `@expo/config-plugins`, while this SDK exposes it
   through `expo/config-plugins`. The exception is recorded in `expo.install.exclude`.
-- Keep the existing ESLint configuration for this migration; enabling the new
-  React Compiler lint rules is a separate refactor, not an SDK runtime requirement.
+- The initial migration kept the existing ESLint configuration; the separate
+  follow-up is now complete on the same branch. Commit `d54cbaa` aligns the
+  root tooling with SDK 57, and `dd085de` resolves the 63 React Hooks/Compiler
+  diagnostics without disabling rules. Web retains TypeScript 5.9.3 while
+  root/mobile use TypeScript 6.0.3. Post-refactor checks are recorded in
+  `docs/native-qa-2026-09-05.md`.
 - Rebuild native clients after this upgrade. JavaScript export and prebuild
   checks do not substitute for native compilation or device smoke tests.
 
