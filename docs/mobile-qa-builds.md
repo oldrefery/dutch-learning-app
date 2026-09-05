@@ -68,5 +68,8 @@ installed, and no remote EAS operation was run.
 The subsequent iOS device pass rebuilt and installed the QA variant successfully,
 then verified persisted login and the absence of update-check errors across a
 simulator reboot. See the final section of
-[the native QA report](native-qa-2026-09-05.md). Android runtime verification of
-this variant remains separate.
+[the native QA report](native-qa-2026-09-05.md). The subsequent Android pass also
+verified email/password login, Settings, persisted login after app relaunch and
+device reboot, and logout. Native logs confirmed OTA was explicitly disabled,
+with no HTTP 400; the crash buffer was empty. These checks do not cover actual
+OTA delivery through preview or production channels.
