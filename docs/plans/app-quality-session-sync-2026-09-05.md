@@ -430,3 +430,32 @@ APK/manifest and unrelated staged plugin were preserved. No push, PR, merge,
 hosted migration or EAS operation was performed.
 
 Commit message: `fix(auth): bound native session checks`
+
+## Follow-up: Stalled Native Auth Transport
+
+The primary native client now aborts first-party Auth requests after ten seconds,
+leaving retries, rotation and session invalidation to the Auth SDK. Generic
+data-request retries are unchanged. Network failures preserve the session;
+definitive refresh rejection still signs out. Caller cancellation and transport
+resources are cleaned up. The eight-second UI deadline remains separate.
+
+Validation: 101 mobile suites / 1207 tests / 18 snapshots, typecheck and lint
+pass. Twenty new tests include five using the actual installed Auth SDK for
+cold startup, concurrent readers, exhausted failures, recovery and invalidation.
+A loopback fault proxy reproduced the failure on the original Android client:
+manual retry could not release a request held for 148 seconds. The fixed client
+cancelled held requests at approximately ten seconds and recovered automatically
+once new requests were allowed. Identity, SRS fields, history and command queue
+were unchanged. See [the evidence and limits](../native-auth-transport-qa-2026-09-06.md).
+
+A normal Auth stop/start passed even on the original client. The prior full-stack
+restart had no request trace, so that historical incident is not conclusively
+explained. The controlled stalled-request defect is fixed. Next: isolated iOS
+and physical-device recovery checks; long-duration offline and coordinated
+hosted rollout remain separate. Stryker and PostgreSQL/HTTP suites were not rerun.
+
+Only one new synthetic local account was used and removed; the disposable
+backend/proxy/emulator were stopped, original native artifacts restored, and
+the unrelated staged/deleted plugin preserved. No hosted writes, push or PR.
+
+Commit message: `fix(auth): time out stalled native requests`

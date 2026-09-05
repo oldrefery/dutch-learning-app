@@ -1,5 +1,9 @@
 # Bounded Native Session Startup
 
+Follow-up: [native Auth transport QA](native-auth-transport-qa-2026-09-06.md)
+reproduces and fixes a controlled stalled-request failure. The historical
+full-stack restart did not have a transport trace; its exact cause is unproven.
+
 ## Change
 
 Follow-up to [Settings/reset QA](native-settings-reset-qa-2026-09-05.md), based
