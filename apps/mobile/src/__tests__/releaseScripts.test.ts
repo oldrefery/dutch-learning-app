@@ -25,15 +25,14 @@ const CURRENT_BUILD_NUMBER = '78'
 const readRepoFile = (relativePath: string): string =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
 
-const run = (cwd: string, command: string, args: string[] = []) =>
-  spawnSync(command, args, {
-    cwd,
-    encoding: 'utf8',
-    // Git hooks may export the parent repository's index and object paths.
-    env: Object.fromEntries(
-      Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_'))
-    ),
-  })
+const run = (cwd: string, command: string, args: string[] = []) => {
+  const env = { ...process.env }
+  // Git hooks may export the parent repository's index and object paths.
+  for (const key of Object.keys(env)) {
+    if (key.startsWith('GIT_')) delete env[key]
+  }
+  return spawnSync(command, args, { cwd, encoding: 'utf8', env })
+}
 
 const createFixture = (): string => {
   const fixtureDir = mkdtempSync(path.join(tmpdir(), 'dutch-release-'))
