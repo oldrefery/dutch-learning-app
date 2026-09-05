@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   TextInput,
   ActivityIndicator,
@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
+import { CollectionSelectorSheet } from '@/components/glass/modals/CollectionSelectorSheet'
 import { AnalyzeButton } from './AnalyzeButton'
 import { CollectionSelector } from './CollectionSelector'
 import type { Collection } from '@/types/database'
@@ -102,8 +103,15 @@ export function CompactWordInput({
 }: CompactWordInputProps) {
   const colorScheme = useNormalizedColorScheme()
   const styles = getStyles(colorScheme, variant)
+  const [collectionSelectorVisible, setCollectionSelectorVisible] =
+    useState(false)
 
   const handleCollectionPress = () => {
+    if (Platform.OS === 'android') {
+      setCollectionSelectorVisible(true)
+      return
+    }
+
     if (Platform.OS === 'ios') {
       const options = collections.map(c => c.name)
       options.push('Cancel')
@@ -198,6 +206,15 @@ export function CompactWordInput({
               : 'Analyzing word with AI...'}
           </TextThemed>
         </ViewThemed>
+      )}
+      {Platform.OS === 'android' && (
+        <CollectionSelectorSheet
+          visible={collectionSelectorVisible}
+          onClose={() => setCollectionSelectorVisible(false)}
+          onSelect={onCollectionSelect}
+          collections={collections}
+          selectedCollectionId={selectedCollection?.collection_id ?? null}
+        />
       )}
     </ViewThemed>
   )
