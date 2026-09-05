@@ -46,17 +46,17 @@ server binaries, but no account, connection string or Docker service.
 
 ## Critical Regression Matrix
 
-| Risk                                  | Executable evidence                                                                                                                                                                                               | Boundary still requiring live validation                                              |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Expired web session                   | SDK cookie adapter, route redirects preserve refreshed/deleted cookies, configured route matchers                                                                                                                 | Real Supabase token rotation and concurrent browser requests                          |
-| Authentication/authorization          | Verified-user lookup, fail-closed access defaults, OAuth code exchange, safe next destination                                                                                                                     | Provider login, revoked sessions, real RLS enforcement                                |
-| Expired mobile session/reconnection   | Sync preflight expiry boundaries, refresh failure, offline → online retry; existing JWT/RLS retry tests                                                                                                           | OS connectivity events, background/foreground and native SDK storage                  |
-| In-flight sync conflicts              | Real in-memory SQLite executes repository SQL; stale word/progress acknowledgements cannot clear newer pending edits; tombstones survive                                                                          | Concurrent devices and remote last-writer policy                                      |
-| Review persistence                    | Web action boundary checks plus real PostgreSQL RPC/RLS: atomicity, idempotency, denied ownership and concurrent assessments on independent sessions                                                              | Hosted schema drift and real JWT/PostgREST delivery                                   |
-| Word writes and progress preservation | Execute all five word actions with a recording API double: owner/collection/live-word filters, exact reset/delete/move/image payloads, failed or missing writes, reanalysis conflict fallback without SRS changes | Real PostgreSQL/RLS ownership checks, competing writes and cache refresh in a browser |
-| Mobile review atomicity               | Real SQLite constraints/transactions: event failure or duplicate event rolls back word progress; wrong owner/deleted word denied                                                                                  | Expo SQLite native bridge behavior on both platforms                                  |
-| SRS/knowledge                         | Explicit coefficient/rounding/boundary examples, new → learning → established → forgotten, reset and durable event history                                                                                        | End-to-end rendering after cross-device synchronization                               |
-| Production OTA safety                 | Fake executable CLI in isolated temp project tests identity, token identity format, project mismatch, option rejection, publication/map-upload failures                                                           | Actual EAS/Sentry permissions and production channel mapping                          |
+| Risk                                  | Executable evidence                                                                                                                                                                                               | Boundary still requiring live validation                                                     |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Expired web session                   | SDK adapter/redirect unit tests plus Chromium and real Supabase refresh-token rotation through private pages and redirects; invalid-token cleanup and return-path reauthentication                                | Actual signed JWT expiry, concurrent refresh and remotely revoked sessions                   |
+| Authentication/authorization          | Verified-user lookup, fail-closed access defaults, OAuth code exchange, safe next destination                                                                                                                     | Provider login, revoked sessions, real RLS enforcement                                       |
+| Expired mobile session/reconnection   | Sync preflight expiry boundaries, refresh failure, offline → online retry; existing JWT/RLS retry tests                                                                                                           | OS connectivity events, background/foreground and native SDK storage                         |
+| In-flight sync conflicts              | Real in-memory SQLite executes repository SQL; stale word/progress acknowledgements cannot clear newer pending edits; tombstones survive                                                                          | Concurrent devices and remote last-writer policy                                             |
+| Review persistence                    | Action tests, isolated PostgreSQL RPC/RLS/concurrency and browser offline/lost-response retries against real Supabase; unchanged retry payload and durable single-assessment progress                             | Broader hosted schema drift, other assessments under network failures and device transitions |
+| Word writes and progress preservation | Execute all five word actions with a recording API double: owner/collection/live-word filters, exact reset/delete/move/image payloads, failed or missing writes, reanalysis conflict fallback without SRS changes | Real PostgreSQL/RLS ownership checks, competing writes and cache refresh in a browser        |
+| Mobile review atomicity               | Real SQLite constraints/transactions: event failure or duplicate event rolls back word progress; wrong owner/deleted word denied                                                                                  | Expo SQLite native bridge behavior on both platforms                                         |
+| SRS/knowledge                         | Explicit coefficient/rounding/boundary examples, new → learning → established → forgotten, reset and durable event history                                                                                        | End-to-end rendering after cross-device synchronization                                      |
+| Production OTA safety                 | Fake executable CLI in isolated temp project tests identity, token identity format, project mismatch, option rejection, publication/map-upload failures                                                           | Actual EAS/Sentry permissions and production channel mapping                                 |
 
 SQLite tests replace only the Expo bridge with Node's in-memory SQLite engine.
 They use the real schema, repository statements, constraints and triggers, and
@@ -103,8 +103,13 @@ Isolated PostgreSQL review RPC/RLS, duplicate events, rollback and concurrent
 assessment tests are implemented. The SRS comparison exposed rounding/minimum
 interval differences, corrected by a new migration (not deployed by tests).
 
-1. Validate expired-session rotation and offline-to-online retry through the
-   browser with disposable users; verify durable progress after reload.
+Browser recovery tests now exercise real Supabase refresh and review writes:
+see `apps/web/e2e/README.md`. Cookie expiry is accelerated without modifying or
+waiting for the signed JWT's real expiry. Offline retry stays in the open tab;
+no persistent offline queue across reloads is claimed.
+
+1. Extend auth validation to actual JWT expiry, concurrent refresh requests and
+   remotely revoked disposable sessions; these are not proved by metadata expiry.
 2. Exercise two native clients with conflicting progress edits and OS network/
    foreground transitions. Do not infer these results from API/SQLite doubles.
 

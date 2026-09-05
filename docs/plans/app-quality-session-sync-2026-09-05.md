@@ -175,3 +175,54 @@ intervals. A production database migration needs separate approval. Real
 JWT/HTTP refresh and browser/native reconnection tests remain the next step.
 
 Commit message: `fix(srs): align review RPC with shared calculator`
+
+## Follow-up: Browser Session and Review Recovery
+
+Added five extended Chromium scenarios against local Next.js and real hosted
+Supabase, using the configured dedicated QA account. Each scenario starts with
+empty browser storage, signs in through the UI and verifies the displayed user.
+The forbidden application account is rejected before login. No service-role key
+or mocked successful auth/database response is used.
+
+- Force the cookie session's `expires_at` into the past and verify real refresh
+  token rotation, user continuity and persisted cookies through a private page.
+- Repeat through `/login`, exercising refreshed cookies on the proxy redirect.
+- Supply an invalid refresh token with expired metadata: auth cookies disappear,
+  the requested path/query survives login, and successful reauthentication
+  returns to the original destination.
+- Disconnect Chromium before an Easy assessment: show the recoverable error,
+  keep the card uncompleted, verify unchanged server progress from another tab,
+  reconnect and retry the identical request payload.
+- Execute the real review action but discard its successful HTTP response:
+  another tab sees the already-saved assessment; retrying the same payload must
+  not apply it twice. Reload still shows EF 2.50, interval 4 days, one repetition
+  and Learning status.
+
+Review fixtures import one available starter-pack word into a UUID-named test
+collection without AI calls. Cleanup targets only that exact collection through
+the application's deletion flow, including on test failure. A first fixture
+version exceeded the collection field's 50-character limit; names now fit and
+the shared creation helper checks for browser truncation before submitting.
+Both empty collections from that failed run were individually identified and
+removed. The temporary cleanup spec is not retained.
+
+Traces, videos and screenshots are disabled for these credential/cookie tests;
+assertions compare token changes as booleans to avoid secret-valued diffs.
+The local test process overrides Sentry DSNs with empty values. No deployment,
+provider settings, remote schema or existing user collection was changed.
+
+Scope limits: cookie expiry is accelerated; the signed JWT itself is neither
+modified nor allowed to expire naturally. Concurrent refresh, revoked sessions,
+durable offline retry after closing/reloading the review tab and native OS
+network/foreground transitions are not covered by these scenarios. The pending
+SRS SQL migration remains undeployed. Native two-client synchronization is still
+the next device integration task.
+
+Validation: the five scenarios pass, followed by a two-repeat run with all
+10 executions passing without runner retries. Web Jest remains 308 passing
+tests in 45 suites; web lint, typecheck, changed-file formatting and
+`git diff --check` pass. Runtime application code and the mutation target set
+are unchanged, so Stryker was not rerun for this browser-only coverage change.
+The unrelated staged/deleted mobile plugin was preserved byte-for-byte.
+
+Commit message: `test(web): verify session and review recovery`
