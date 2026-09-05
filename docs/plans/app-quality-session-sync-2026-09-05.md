@@ -131,3 +131,47 @@ checks and two-client native synchronization. The unrelated staged/deleted plugi
 remains outside this change.
 
 Commit message: `test(web): cover word writes and mutation gaps`
+
+## Follow-up: PostgreSQL Review Integration
+
+Added `npm run test:db`, using Node's built-in runner and a fresh local PostgreSQL
+cluster per test file. All 36 application migrations execute unmodified. Only
+the Supabase platform boundary (roles, auth identity adapter, core grants) is a
+fixture. No hosted database, application account or provider is used.
+
+The first complete run passed 35 of 37 tests and exposed two failing SRS groups:
+PostgreSQL float rounding chose even numbers at ties (`2.5 -> 2`, `22.5 -> 22`),
+and later Good/Easy assessments could return zero days instead of the shared
+calculator's minimum one day. The forward-only migration
+`20260905180000_align_review_rpc_srs_rounding.sql` fixes both. Fractional-part
+rounding also preserves a binary float just below a half (`25 * 2.3 -> 57`).
+The original deployed migration remains unchanged.
+
+Coverage includes:
+
+- Non-owner, non-superuser, non-BYPASSRLS execution; anonymous/missing identities,
+  foreign/private/shared words, forged event ownership and product read-only access.
+- Atomic event/progress persistence, identical retries, conflicting retry data,
+  SQL constraint failure rollback and explicit transaction rollback.
+- Immutable event upserts, DELETE denial both at table privilege and RLS layers,
+  word tombstones and removal of related history.
+- Four deterministic concurrency tests using independent psql sessions and an
+  observed PostgreSQL lock wait, not timing-based race assumptions.
+- 240 SQL/shared-SRS comparisons plus five independent numeric regression cases.
+
+The CI Quality workflow has a separate credential-free PostgreSQL 16 job on
+Ubuntu 24.04; local validation uses PostgreSQL 15. No CI run was dispatched.
+See `docs/DATABASE_TESTING.md` for prerequisites and explicit scope boundaries.
+Local teardown stops and removes only generated test clusters. The final run
+also uses deliberately invalid ambient PGHOST/PGDATABASE/PGSERVICE values to
+confirm they cannot redirect the harness away from its private socket.
+
+Validation: all 43 PostgreSQL tests pass, including the 240-case SRS matrix.
+Root lint, web typecheck, changed-file formatting, workflow YAML parsing and
+`git diff --check` pass. Generated test clusters were stopped and removed.
+
+The migration has NOT been applied to hosted Supabase and does not backfill old
+intervals. A production database migration needs separate approval. Real
+JWT/HTTP refresh and browser/native reconnection tests remain the next step.
+
+Commit message: `fix(srs): align review RPC with shared calculator`

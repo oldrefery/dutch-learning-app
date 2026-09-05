@@ -33,11 +33,16 @@ npm run lint
 npm run web:lint
 npm run web:test:coverage
 npm run web:mutation
+npm run test:db
 ```
 
 Mobile coverage is available with `npm run mobile:test:coverage`. Browser and
 device E2E setup is documented in `docs/E2E_TESTING.md`; these are separate
 checks, not implied by a passing Jest run.
+
+PostgreSQL prerequisites, isolation and test scope are in
+[DATABASE_TESTING.md](DATABASE_TESTING.md). The database suite requires local
+server binaries, but no account, connection string or Docker service.
 
 ## Critical Regression Matrix
 
@@ -47,7 +52,7 @@ checks, not implied by a passing Jest run.
 | Authentication/authorization          | Verified-user lookup, fail-closed access defaults, OAuth code exchange, safe next destination                                                                                                                     | Provider login, revoked sessions, real RLS enforcement                                |
 | Expired mobile session/reconnection   | Sync preflight expiry boundaries, refresh failure, offline → online retry; existing JWT/RLS retry tests                                                                                                           | OS connectivity events, background/foreground and native SDK storage                  |
 | In-flight sync conflicts              | Real in-memory SQLite executes repository SQL; stale word/progress acknowledgements cannot clear newer pending edits; tombstones survive                                                                          | Concurrent devices and remote last-writer policy                                      |
-| Review persistence                    | Web action validates/authenticates and calls atomic RPC; failure does not revalidate; retries preserve event identity                                                                                             | Execute PostgreSQL RPC/RLS and competing submissions against an isolated database     |
+| Review persistence                    | Web action boundary checks plus real PostgreSQL RPC/RLS: atomicity, idempotency, denied ownership and concurrent assessments on independent sessions                                                              | Hosted schema drift and real JWT/PostgREST delivery                                   |
 | Word writes and progress preservation | Execute all five word actions with a recording API double: owner/collection/live-word filters, exact reset/delete/move/image payloads, failed or missing writes, reanalysis conflict fallback without SRS changes | Real PostgreSQL/RLS ownership checks, competing writes and cache refresh in a browser |
 | Mobile review atomicity               | Real SQLite constraints/transactions: event failure or duplicate event rolls back word progress; wrong owner/deleted word denied                                                                                  | Expo SQLite native bridge behavior on both platforms                                  |
 | SRS/knowledge                         | Explicit coefficient/rounding/boundary examples, new → learning → established → forgotten, reset and durable event history                                                                                        | End-to-end rendering after cross-device synchronization                               |
@@ -94,11 +99,13 @@ The query double does not execute SQL or simulate RLS enforcement.
 
 ## Next Integration Work
 
-1. Execute review RPC/RLS against an isolated PostgreSQL/Supabase test instance,
-   including duplicate event IDs, rollback and concurrent assessments.
-2. Validate expired-session rotation and offline-to-online retry through the
+Isolated PostgreSQL review RPC/RLS, duplicate events, rollback and concurrent
+assessment tests are implemented. The SRS comparison exposed rounding/minimum
+interval differences, corrected by a new migration (not deployed by tests).
+
+1. Validate expired-session rotation and offline-to-online retry through the
    browser with disposable users; verify durable progress after reload.
-3. Exercise two native clients with conflicting progress edits and OS network/
+2. Exercise two native clients with conflicting progress edits and OS network/
    foreground transitions. Do not infer these results from API/SQLite doubles.
 
 ## Account And Side-Effect Safety

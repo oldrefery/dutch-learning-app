@@ -19,6 +19,28 @@ permissions:
   contents: read
 
 jobs:
+  database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      WOORDENAAR_PG_BIN: /usr/lib/postgresql/16/bin
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: '24.20.0'
+
+      - name: Install isolated database test prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-16 postgresql-contrib
+
+      - name: Test migrations, review transactions and RLS
+        run: npm run test:db
+
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 30

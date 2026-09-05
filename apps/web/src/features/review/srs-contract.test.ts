@@ -158,7 +158,7 @@ describe('shared SRS contract', () => {
     const migration = readFileSync(
       join(
         repositoryRoot,
-        'supabase/migrations/20260830110000_add_atomic_review_assessment_rpc.sql'
+        'supabase/migrations/20260905180000_align_review_rpc_srs_rounding.sql'
       ),
       'utf8'
     )
