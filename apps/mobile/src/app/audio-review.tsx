@@ -231,6 +231,7 @@ export default function AudioReviewScreen() {
           testID="exit-audio-review-button"
           label="Exit Audio Review"
           hint="Returns to review mode selection"
+          compact
           emphasis="primary"
           onPress={() => void handleExit()}
         />
