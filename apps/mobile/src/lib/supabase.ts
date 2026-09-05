@@ -19,18 +19,8 @@ import { FunctionsHttpError } from '@supabase/supabase-js'
 import { assertNetworkConnection } from '@/utils/network'
 import { logWarning } from '@/utils/logger'
 
-// Load environment variables
-const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
-const devUserPassword = process.env.EXPO_PUBLIC_DEV_USER_PASSWORD!
-
 // Error messages
 const NO_ACTIVE_SESSION_ERROR = 'No active session found'
-
-if (!devUserEmail || !devUserPassword) {
-  throw new Error(
-    'Missing development user credentials. Please check your .env file.'
-  )
-}
 
 // Re-export the client for backward compatibility
 export { supabase }

@@ -330,3 +330,38 @@ explicitly approved coordinated production rollout. Preserve/reconcile legacy
 queues before cutover; the separate offline Settings hydration issue remains open.
 
 Commit message: `fix(sync): apply learning commands atomically on the server`
+
+## Follow-up: Isolated Auth/REST And Native Protocol QA
+
+Completed the reproduced two-client conflict against a fresh local Supabase
+stack and newly rebuilt Android QA clients. Offline Easy survives cold restart;
+online Good is acknowledged first; reconnect then converges both clients and
+the server to two repetitions, interval 10, EF 2.50 and the newer timestamp.
+Repeat sync creates no duplicates. The UI changes New to Learning and displays
+two reviews, EF 2.5 and the expected due date. No hosted account was used.
+
+This found and fixed two previously hidden prerequisites: unused development
+credentials caused an import-time crash in a clean release bundle; and the
+historical migration chain omitted `words.analysis_notes`, blocking native
+metadata upload on a fresh backend. Added startup and schema-preservation
+regressions. Explicit fixed-bundle QA now skips live Sentry initialization.
+
+Added `test:sync:http` for real local Auth/REST testing with generated users:
+delayed event upserts, canonical batch/reset retries, JWT/RLS isolation and
+actual five-minute access-token expiry/refresh. The fixtures send the full
+native metadata field set. Initial administrative cleanup failed under mixed
+cached CLI/Auth versions; exact-user local database cleanup replaced it, then
+the complete run passed. See [setup and evidence](../local-sync-qa.md).
+
+Validation: 95 mobile suites / 1151 tests / 16 snapshots, 58 PostgreSQL tests,
+four HTTP scenarios, mobile test typecheck, lint and diff checks pass. A fresh
+ARM64 APK was built and exercised. Commit hooks also passed 46 web suites /
+319 tests; Stryker was not rerun in this follow-up.
+The unrelated staged/deleted plugin remains excluded and unchanged.
+
+Next: diagnose offline Settings profile/access hydration and verify native
+reset-command recovery after process death. A coordinated hosted rollout still
+requires explicit approval, legacy queue reconciliation and client-version policy.
+No push, PR, merge, hosted migration, EAS operation or store submission was made.
+
+Commit message: `fix(mobile): support isolated sync QA builds`

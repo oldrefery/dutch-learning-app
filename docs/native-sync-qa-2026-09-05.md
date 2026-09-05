@@ -11,6 +11,11 @@ Follow-up: [protocol 2](learning-sync-protocol.md) implements a local fix with
 PostgreSQL/SQLite regression tests. It is not deployed and has not yet been
 retested on native devices; this document preserves the original failing run.
 
+Subsequent [isolated native/HTTP QA](local-sync-qa.md) verified the two-client
+fix after repairing a missing migration column and clean-build startup. The
+hosted backend remains unchanged; the passing local run does not erase this
+original production-backend reproduction.
+
 ## Scope And Isolation
 
 - Two isolated, read-only Android instances of `WoordenaarSDK57QA20260905`,

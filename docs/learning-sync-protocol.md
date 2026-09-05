@@ -96,7 +96,8 @@ Before an explicitly approved rollout:
    environment, including the two-device scenario and upgraded-device queues.
 3. Coordinate minimum native version/update messaging and web deployment. New
    native clients fail closed against the old backend; old clients have the reset
-   limitations above. The earlier SRS rounding migration must also be applied.
+   limitations above. The earlier SRS rounding migration and the follow-up
+   `words.analysis_notes` schema repair must also be applied.
 4. Apply the schema only with explicit approval, regenerate Supabase contracts
    and remove the temporary RPC type overlay. Do not edit the deployed generated
    contract file by hand.
@@ -108,3 +109,7 @@ batches, stale snapshots, idempotency, reset retries, rollback and cutover safet
 SQLite tests execute the real repositories and command triggers. Hook/service and
 web tests cover orchestration and retry payloads. These do **not** constitute a
 new native-device or hosted-backend verification of protocol 2.
+
+The subsequent [local native/HTTP QA](local-sync-qa.md) verifies the original
+two-Android-client regression with a real isolated Auth/REST stack. Hosted and
+store-release validation, legacy cutover decisions and rollout are still pending.
