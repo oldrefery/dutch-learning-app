@@ -77,3 +77,57 @@ The first commit attempt exposed a separate monorepo lint-staged issue: ESLint
 9 selected the root Expo config for web files, although the two app-specific
 lint commands passed. The staged command now enables per-file config lookup,
 with executable regression tests for both workspaces. Hooks remain enabled.
+
+## Follow-up: Word Persistence And Mutation Gaps
+
+Continued on the same branch after the release status check. No application
+account, cloud service, provider configuration or store state was changed.
+
+- Added executable tests for all five word actions: reset, soft delete, move,
+  image update and reanalysis. Authentication failures stop before data access.
+- Recorded each query independently and asserted owner, collection and live-word
+  filters. Missing results and errors cannot produce successful cache refresh or
+  navigation. Exact update payloads protect unrelated fields and SRS state.
+- Tested unique-key collision recovery: one restricted retry preserves the
+  semantic key, original input and learning progress; a failed retry stays an error.
+- Added complete analysis-to-database mapping assertions for conjugations,
+  examples, usage contrasts, optional fields and initial SRS/date defaults.
+- Expanded malformed account-response/search cases and semantic-key comparisons,
+  including Unicode spellings that uppercasing would incorrectly collapse.
+- Expanded Stryker from 14 to 16 modules, adding word actions and persistence
+  mapping. Word actions now participate in the configured coverage denominator.
+
+Validation: 45 web suites / 308 tests pass (73 additional tests). Web typecheck,
+web lint and changed-file ESLint checks pass. Configured web coverage is 45.72%
+statements/lines, 83.29% branches and 78.4% functions. Word actions cover 99.71%
+lines / 98.52% branches; analysis mapping covers 100% of each metric.
+
+The full forced Stryker run tested 745 mutants across 16 modules without reusing
+cached results: 98.65%. It exposed a missing assertion for an analysis error
+without a message. Two regression cases were added, then all six mutants in
+that error-handling range were forcibly rerun. The combined report is 98.87%:
+438 killed, four survived, one uncovered and 302 TypeScript compile errors;
+zero timeouts or runtime errors. Other results in the combined report come from
+the immediately preceding full forced run, not a second full run.
+
+Survivor review (no exclusions or reduced thresholds):
+
+- Search's removed object guard is equivalent for JSON primitives: the remaining
+  array-value filter still yields no translations. Non-JSON callable objects
+  with custom properties are outside the database payload contract.
+- The image validator always pairs an error with a null value, or a valid value
+  with no error. Replacing the caller's OR with AND is equivalent for these results.
+- The two shared SRS survivors are the previously documented equivalent changes.
+- The uncovered reanalysis fallback handles non-Error throws; the actual parser
+  only throws Error for JSON input. No artificial parser mock was added to make
+  that defensive branch appear covered.
+
+Semantic duplicate matching, account response parsing and analysis persistence
+mapping now have 100% mutation scores in the selected set.
+
+These are API-boundary tests, not PostgreSQL integration tests. The next work is
+isolated review RPC/RLS execution, followed by real-provider session/reconnection
+checks and two-client native synchronization. The unrelated staged/deleted plugin
+remains outside this change.
+
+Commit message: `test(web): cover word writes and mutation gaps`

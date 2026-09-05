@@ -29,6 +29,8 @@ const config = {
     'apps/web/src/lib/supabase/proxy.ts',
     'apps/web/src/proxy.ts',
     'apps/web/src/features/review/actions.ts',
+    'apps/web/src/features/words/actions.ts',
+    'apps/web/src/features/analysis/word-persistence.ts',
     'packages/domain/src/srs.ts',
     'apps/web/src/features/analysis/analysis-preview.ts',
     'apps/web/src/features/analysis/semantic-duplicate.ts',

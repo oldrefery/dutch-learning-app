@@ -52,4 +52,22 @@ describe('semantic duplicate matching', () => {
       )
     ).toBe(true)
   })
+
+  it('treats empty legacy articles as absent and empty analysis POS as unknown', () => {
+    expect(
+      isSemanticWordMatch(
+        { dutch_lemma: 'hoi', part_of_speech: null, article: '' },
+        { ...analysis, dutchLemma: 'hoi', partOfSpeech: '', article: null }
+      )
+    ).toBe(true)
+  })
+
+  it('does not collapse distinct Unicode spellings when comparing semantic keys', () => {
+    expect(
+      isSemanticWordMatch(
+        { dutch_lemma: 'straße', part_of_speech: 'noun', article: null },
+        { ...analysis, dutchLemma: 'strasse', article: null }
+      )
+    ).toBe(false)
+  })
 })

@@ -24,6 +24,7 @@ const config = {
     '!apps/web/src/lib/build-info.ts',
     '!apps/web/src/lib/supabase/server.ts',
     'apps/web/src/features/review/actions.ts',
+    'apps/web/src/features/words/actions.ts',
     'apps/web/src/app/auth/callback/route.ts',
   ],
   coverageDirectory: '<rootDir>/coverage/web',
