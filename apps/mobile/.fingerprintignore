@@ -1,0 +1,2 @@
+# Local Gradle output is absent on clean EAS workers. Keep Sentry sources hashed.
+**/node_modules/@sentry/react-native/android/expo-handler/build/**/*
