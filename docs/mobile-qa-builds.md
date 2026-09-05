@@ -64,3 +64,9 @@ passed. Both mobile typechecks and lint passed. No native project was regenerate
 and no installed app was replaced in this pass; the existing QA simulator binary
 still needs a rebuild before this policy takes effect. No OTA was published or
 installed, and no remote EAS operation was run.
+
+The subsequent iOS device pass rebuilt and installed the QA variant successfully,
+then verified persisted login and the absence of update-check errors across a
+simulator reboot. See the final section of
+[the native QA report](native-qa-2026-09-05.md). Android runtime verification of
+this variant remains separate.
