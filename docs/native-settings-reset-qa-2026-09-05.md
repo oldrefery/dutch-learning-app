@@ -11,6 +11,10 @@ restoration after reconnect, and persistent reset delivery after process death.
 **OPEN:** one repeated offline cold-start UI check exceeded its 30-second wait;
 this is not a complete offline-startup or expired-session sign-off.
 
+The subsequent [bounded startup follow-up](native-session-startup-qa-2026-09-05.md)
+adds recoverable session-check deadlines and native expired-token evidence; it
+also records an open backend-restart recovery case.
+
 ## Implementation
 
 - Settings subscribes to auth session events, including `INITIAL_SESSION`,

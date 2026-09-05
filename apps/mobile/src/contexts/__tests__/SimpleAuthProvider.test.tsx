@@ -1,4 +1,5 @@
 import React from 'react'
+import type { Session } from '@supabase/supabase-js'
 import { act, renderHook, waitFor } from '@testing-library/react-native'
 import { router } from 'expo-router'
 import { SimpleAuthProvider, useSimpleAuth } from '../SimpleAuthProvider'
@@ -127,6 +128,61 @@ describe('SimpleAuthProvider', () => {
 
   afterEach(() => {
     jest.useRealTimers()
+  })
+
+  it('keeps local identity when the initial session check throws offline', async () => {
+    jest
+      .mocked(supabase.auth.getSession)
+      .mockRejectedValue(new Error('Offline'))
+    renderHook(() => useSimpleAuth(), { wrapper })
+    await act(async () => {})
+    expect(mockInitializeApp).not.toHaveBeenCalled()
+  })
+
+  it('does not clear local state for an empty INITIAL_SESSION after refresh failure', async () => {
+    jest
+      .mocked(supabase.auth.getSession)
+      .mockImplementation(() => new Promise(() => {}))
+    renderHook(() => useSimpleAuth(), { wrapper })
+    const callback = jest.mocked(supabase.auth.onAuthStateChange).mock
+      .calls[0][0]
+    await act(async () => callback('INITIAL_SESSION', null))
+    expect(mockInitializeApp).not.toHaveBeenCalled()
+    await act(async () => callback('SIGNED_OUT', null))
+    expect(mockInitializeApp).toHaveBeenCalledWith()
+  })
+
+  it('ignores an old absent-session response after refresh restores a user', async () => {
+    let finish: () => void = () => {}
+    jest.mocked(supabase.auth.getSession).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          finish = () => resolve({ data: { session: null }, error: null })
+        })
+    )
+    renderHook(() => useSimpleAuth(), { wrapper })
+    const callback = jest.mocked(supabase.auth.onAuthStateChange).mock
+      .calls[0][0]
+    await act(async () =>
+      callback('TOKEN_REFRESHED', { user: { id: 'qa-restored' } } as Session)
+    )
+    await act(async () => finish())
+    expect(mockInitializeApp).toHaveBeenCalledTimes(1)
+    expect(mockInitializeApp).toHaveBeenCalledWith('qa-restored')
+  })
+
+  it('does not initialize from a session response after unmount', async () => {
+    let finish: () => void = () => {}
+    jest.mocked(supabase.auth.getSession).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          finish = () => resolve({ data: { session: null }, error: null })
+        })
+    )
+    const { unmount } = renderHook(() => useSimpleAuth(), { wrapper })
+    unmount()
+    await act(async () => finish())
+    expect(mockInitializeApp).not.toHaveBeenCalled()
   })
 
   it('reports password reset throttling as a warning message', async () => {

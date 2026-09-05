@@ -1,10 +1,8 @@
-import React, { useEffect, useMemo, useState, ComponentProps } from 'react'
+import React, { useMemo, ComponentProps } from 'react'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { NativeTabs } from 'expo-router/unstable-native-tabs'
-import { router } from 'expo-router'
+import { Redirect } from 'expo-router'
 import {
-  ActivityIndicator,
-  View,
   StyleSheet,
   Platform,
   PlatformColor,
@@ -16,10 +14,11 @@ import * as Haptics from 'expo-haptics'
 import { Colors } from '@/constants/Colors'
 import { useClientOnlyValue } from '@/components/useClientOnlyValue'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
-import { supabase } from '@/lib/supabaseClient'
+import { useSessionGate } from '@/hooks/useSessionGate'
+import { LoadingScreen } from '@/components/LoadingScreen'
+import { SessionUnavailableScreen } from '@/components/SessionUnavailableScreen'
 import { ROUTES } from '@/constants/Routes'
 import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
-import { Sentry } from '@/lib/sentry'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useSyncManager } from '@/hooks/useSyncManager'
 
@@ -46,7 +45,7 @@ const StyledBadge = NativeTabs.Trigger
 
 export default function TabLayout() {
   const colorScheme = useNormalizedColorScheme()
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const session = useSessionGate()
 
   // Get review words count for badge
   const { reviewWordsCount } = useReviewWordsCount()
@@ -54,7 +53,7 @@ export default function TabLayout() {
   // Get user access level
   const userAccessLevel = useApplicationStore(state => state.userAccessLevel)
 
-  const shouldAutoSync = isAuthenticated === true
+  const shouldAutoSync = session.status === 'signed-in'
   const syncOptions = useMemo(
     () => ({
       autoSyncOnMount: shouldAutoSync,
@@ -69,95 +68,6 @@ export default function TabLayout() {
 
   // Call this unconditionally to follow the rules of hooks (not used in Native Tabs)
   useClientOnlyValue(false, true)
-
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession()
-
-        if (error) {
-          Sentry.addBreadcrumb({
-            category: 'auth',
-            level: 'warning',
-            message: '[TabLayout] Session check failed',
-            data: { errorMessage: error.message },
-          })
-          setIsAuthenticated(prev => (prev === false ? prev : false))
-          Sentry.captureException(error, {
-            tags: { operation: 'tabLayoutSessionCheck' },
-            extra: { message: '[TabLayout] Session check error' },
-          })
-
-          return
-        }
-
-        const authenticated = !!session?.user
-
-        Sentry.addBreadcrumb({
-          category: 'auth',
-          level: 'info',
-          message: '[TabLayout] Session check complete',
-          data: { authenticated },
-        })
-
-        setIsAuthenticated(prev =>
-          prev === authenticated ? prev : authenticated
-        )
-
-        if (!authenticated) {
-          router.replace(ROUTES.AUTH.LOGIN)
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'Unknown auth check error'
-        Sentry.addBreadcrumb({
-          category: 'auth',
-          level: 'error',
-          message: '[TabLayout] Auth check threw',
-          data: { errorMessage },
-        })
-        setIsAuthenticated(prev => (prev === false ? prev : false))
-        Sentry.captureException(error, {
-          tags: { operation: 'tabLayoutAuthCheck' },
-          extra: { message: '[TabLayout] Auth check failed' },
-        })
-
-        router.replace(ROUTES.AUTH.LOGIN)
-      }
-    }
-
-    checkAuthStatus()
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      const authenticated = !!session?.user
-      Sentry.addBreadcrumb({
-        category: 'auth',
-        level: 'info',
-        message: '[TabLayout] onAuthStateChange',
-        data: {
-          event,
-          authenticated,
-        },
-      })
-      setIsAuthenticated(prev =>
-        prev === authenticated ? prev : authenticated
-      )
-
-      if (!authenticated) {
-        router.replace(ROUTES.AUTH.LOGIN)
-      }
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
 
   const labelStyle: NativeTabsLabelStyle = useMemo(
     () => ({
@@ -183,28 +93,15 @@ export default function TabLayout() {
     [colorScheme]
   )
 
-  // Show loading while checking authentication and user access level
-  if (isAuthenticated === null || userAccessLevel === null) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: Colors[colorScheme ?? 'light'].background,
-        }}
-      >
-        <ActivityIndicator
-          size="large"
-          color={Colors[colorScheme ?? 'light'].tint}
-        />
-      </View>
-    )
+  if (session.status === 'unavailable') {
+    return <SessionUnavailableScreen onRetry={session.retry} />
+  }
+  if (session.status === 'checking') {
+    return <LoadingScreen />
   }
 
-  // Don't render tabs if not authenticated (will redirect)
-  if (!isAuthenticated) {
-    return null
+  if (session.status === 'signed-out') {
+    return <Redirect href={ROUTES.AUTH.LOGIN} />
   }
 
   return (

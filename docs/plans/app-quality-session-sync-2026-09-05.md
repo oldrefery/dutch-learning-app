@@ -399,3 +399,34 @@ The unrelated staged/deleted plugin remains untouched and excluded. No push,
 PR, merge, EAS operation or hosted write was performed.
 
 Commit message: `fix(mobile): restore profile and access after reconnect`
+
+## Follow-up: Bounded Session Startup
+
+Entry/tab routing now shares a session gate with an eight-second UI deadline,
+recoverable error state, manual retry and reconnect recovery. Pending SDK refresh
+work is reused rather than cancelled or multiplied. Confirmed sign-out/absence
+still routes to login; failed refresh checks do not discard local state.
+Initialization no longer blocks entry on the network access lookup; tabs remain
+read-only while access is unknown. Provider startup results are identity-event
+scoped and ignored after unmount or newer auth events.
+
+Validation: 99 mobile suites / 1187 tests / 18 snapshots, typecheck and lint pass.
+22 new regressions cover routing, retry deadlines, stale results, auth-provider
+state preservation and light/dark UI. Native QA used a rebuilt local-only APK
+and one generated local account. A genuinely expired 180-second JWT showed the
+retry screen; reconnect restored the same account and Full Access without
+credentials, with unchanged SQLite progress. A separate 600-second-token
+offline launch passed. See [evidence and limitations](../native-session-startup-qa-2026-09-05.md).
+
+OPEN / next: after deliberately restarting the local Auth backend, automatic
+recovery exceeded the 45-second UI wait despite a healthy backend and matching
+API key. An app restart recovered without clearing data or logging in again.
+Investigate pending transport/SDK work and retry behavior; do not mark all
+native startup paths complete. The existing iOS/physical-device and coordinated
+hosted rollout requirements remain in force.
+
+The synthetic account/backend/read-only emulator were cleaned up; original
+APK/manifest and unrelated staged plugin were preserved. No push, PR, merge,
+hosted migration or EAS operation was performed.
+
+Commit message: `fix(auth): bound native session checks`

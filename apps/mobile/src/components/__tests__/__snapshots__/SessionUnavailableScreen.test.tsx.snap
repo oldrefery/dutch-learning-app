@@ -1,0 +1,211 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders an accessible dark retry screen 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#1C1C1E",
+      },
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "gap": 16,
+        "justifyContent": "center",
+        "padding": 24,
+      },
+    ]
+  }
+  testID="session-unavailable"
+>
+  <Text
+    style={
+      [
+        {
+          "color": "#E5E5E7",
+        },
+        {
+          "fontSize": 20,
+          "fontWeight": "600",
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    Unable to check your session
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "color": "#E5E5E7",
+        },
+        {
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    Check your connection and try again. Your saved session has not been cleared.
+  </Text>
+  <View
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "borderColor": "#3B82F6",
+        "borderRadius": 12,
+        "borderWidth": 1,
+        "minHeight": 48,
+        "opacity": 1,
+        "padding": 16,
+      }
+    }
+    testID="retry-session-button"
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          undefined,
+        ]
+      }
+    >
+      Try again
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`renders an accessible light retry screen 1`] = `
+<View
+  style={
+    [
+      {
+        "backgroundColor": "#F2F2F7",
+      },
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "gap": 16,
+        "justifyContent": "center",
+        "padding": 24,
+      },
+    ]
+  }
+  testID="session-unavailable"
+>
+  <Text
+    style={
+      [
+        {
+          "color": "#111827",
+        },
+        {
+          "fontSize": 20,
+          "fontWeight": "600",
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    Unable to check your session
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "color": "#111827",
+        },
+        {
+          "textAlign": "center",
+        },
+      ]
+    }
+  >
+    Check your connection and try again. Your saved session has not been cleared.
+  </Text>
+  <View
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "borderColor": "#3B82F6",
+        "borderRadius": 12,
+        "borderWidth": 1,
+        "minHeight": 48,
+        "opacity": 1,
+        "padding": 16,
+      }
+    }
+    testID="retry-session-button"
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          undefined,
+        ]
+      }
+    >
+      Try again
+    </Text>
+  </View>
+</View>
+`;
