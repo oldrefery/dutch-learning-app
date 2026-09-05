@@ -358,6 +358,70 @@ describe('SyncManager', () => {
   })
 
   describe('auth preflight', () => {
+    it.each([
+      [-1, true],
+      [0, true],
+      [30, true],
+      [31, false],
+    ])(
+      'refreshes at the expiry safety boundary of %i seconds (refresh=%s)',
+      async (seconds, shouldRefresh) => {
+        jest
+          .spyOn(Date, 'now')
+          .mockReturnValue(Date.parse('2026-09-05T12:00:00Z'))
+        try {
+          jest.mocked(supabase.auth.getSession).mockResolvedValue({
+            data: { session: createSession(seconds) },
+            error: null,
+          } as Awaited<ReturnType<typeof supabase.auth.getSession>>)
+          expect((await syncManager.performSync(userId)).success).toBe(true)
+          expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(
+            shouldRefresh ? 1 : 0
+          )
+        } finally {
+          jest.restoreAllMocks()
+        }
+      }
+    )
+
+    it('recovers offline → expired session → failed refresh → online retry without discarding pending data', async () => {
+      jest.mocked(networkUtils.isNetworkAvailable).mockResolvedValueOnce(false)
+      jest
+        .mocked(supabase.auth.getSession)
+        .mockResolvedValue({ data: { session: null }, error: null })
+      jest
+        .mocked(supabase.auth.refreshSession)
+        .mockRejectedValueOnce(new Error('Network interrupted'))
+
+      expect((await syncManager.performSync(userId)).error).toBe(
+        'No network connection'
+      )
+      expect(supabase.auth.getSession).not.toHaveBeenCalled()
+      expect((await syncManager.performSync(userId)).error).toBe(
+        SYNC_AUTH_PRECHECK_ERROR
+      )
+      expect(supabase.from).not.toHaveBeenCalled()
+      expect(wordRepository.getPendingSyncWords).not.toHaveBeenCalled()
+      expect(wordRepository.markWordsSynced).not.toHaveBeenCalled()
+      expect((await syncManager.performSync(userId)).success).toBe(true)
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(2)
+      expect(wordRepository.getPendingSyncWords).toHaveBeenCalledWith(userId)
+    })
+
+    it('blocks database writes if refresh returns an already-expired session', async () => {
+      jest
+        .mocked(supabase.auth.getSession)
+        .mockResolvedValue({ data: { session: null }, error: null })
+      jest.mocked(supabase.auth.refreshSession).mockResolvedValue({
+        data: { session: createSession(-1) },
+        error: null,
+      } as Awaited<ReturnType<typeof supabase.auth.refreshSession>>)
+      expect((await syncManager.performSync(userId)).error).toBe(
+        SYNC_AUTH_PRECHECK_ERROR
+      )
+      expect(supabase.from).not.toHaveBeenCalled()
+    })
+
     it('should refresh expired session before sync stages', async () => {
       ;(supabase.auth.getSession as jest.Mock).mockResolvedValue({
         data: { session: createSession(-60) },

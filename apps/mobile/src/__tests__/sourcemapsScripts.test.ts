@@ -130,7 +130,7 @@ describe('Sentry sourcemap scripts', () => {
     }
 
     const updateCommandIndex = updateScript.indexOf(
-      'npx -y eas-cli@latest update --channel production --environment production "$@"'
+      'npx -y eas-cli@latest update --channel production --environment production'
     )
     const uploadCommandIndex = updateScript.indexOf(
       'scripts/upload-sourcemaps.sh --update-dist apps/mobile/dist'

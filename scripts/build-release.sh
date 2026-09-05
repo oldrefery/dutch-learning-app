@@ -6,7 +6,7 @@ REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 MOBILE_DIR="$REPO_ROOT/apps/mobile"
 cd "$REPO_ROOT"
 
-source "$(dirname "$0")/verify-eas-identity.sh"
+source "$REPO_ROOT/scripts/verify-eas-identity.sh"
 
 PLATFORM="both"
 CONFIRMED_BUILD_NUMBER=""

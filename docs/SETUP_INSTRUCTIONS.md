@@ -1,5 +1,20 @@
 # Setup Instructions for Dutch Learning App
 
+## Monorepo Entry Points
+
+Install dependencies once from the repository root with `npm ci` (Node 24 / npm 11).
+Use `npm run mobile:start` for Expo and `npm run web:dev` for Next.js. Direct Expo/EAS
+commands belong in `apps/mobile`; web configuration belongs in `apps/web`.
+The mobile app configuration is `apps/mobile/app.base.json` plus
+`apps/mobile/app.config.js`, not a root `app.json`.
+
+The provider provisioning notes below are historical setup reference, not a
+current release checklist. Use [EAS_BUILD_GUIDE.md](EAS_BUILD_GUIDE.md) for
+releases and [TESTING_PLAN.md](TESTING_PLAN.md) for current test commands.
+Use disposable test credentials; never use a real personal account or the
+example password below for deployed access. Web environment setup is separate:
+see `apps/web/.env.example` and create an untracked `apps/web/.env.local`.
+
 ## ✅ Completed Steps
 
 1. **Database Schema** - Created and applied to Supabase

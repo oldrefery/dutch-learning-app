@@ -23,6 +23,13 @@ const config = {
     projectType: 'custom',
   },
   mutate: [
+    'apps/web/src/lib/auth/navigation.ts',
+    'apps/web/src/app/auth/callback/route.ts',
+    'apps/web/src/lib/auth/session.ts',
+    'apps/web/src/lib/supabase/proxy.ts',
+    'apps/web/src/proxy.ts',
+    'apps/web/src/features/review/actions.ts',
+    'packages/domain/src/srs.ts',
     'apps/web/src/features/analysis/analysis-preview.ts',
     'apps/web/src/features/analysis/semantic-duplicate.ts',
     'apps/web/src/features/collections/collection-validation.ts',
@@ -39,7 +46,7 @@ const config = {
     low: 75,
   },
   timeoutMS: 15_000,
-  tsconfigFile: 'apps/web/tsconfig.json',
+  tsconfigFile: 'apps/web/tsconfig.stryker.json',
   typescriptChecker: {
     prioritizePerformanceOverAccuracy: true,
   },

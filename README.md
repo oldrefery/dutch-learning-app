@@ -96,8 +96,8 @@ python3 "$HOME/.codex/skills/sentry/scripts/sentry_api.py" \
   --project "${SENTRY_PROJECT:-dutch-learning-app}" \
   --base-url "${SENTRY_BASE_URL:-https://sentry.io}" \
   list-issues \
-  --environment prod \
-  --time-range 24h \
+  --environment production \
+  --time-range 14d \
   --limit 10 \
   --query "is:unresolved"
 ```
@@ -398,31 +398,28 @@ Start mobile development in `apps/mobile/src/app/` and web development in
 
 ## 10. Production Release Tooling
 
-Version preparation, local builds, and store submission are intentionally
-separate operations. None of the scripts creates Git commits or promotes a
-release publicly.
+Use cloud EAS Build for the normal mobile release workflow. Run the commands
+below from the repository root; the Expo project itself lives in `apps/mobile`.
+Build/submission consumes quota and uploads to internal store tracks, so run it
+only after release approval. It does not publish publicly or create a Git commit.
 
 ```bash
-# Preview or apply aligned app/package versions.
-node scripts/prepare-release.js --version 2.0.0 --build 79
-node scripts/prepare-release.js --version 2.0.0 --build 79 --apply
-
-# After committing the version bump and confirming that build 79 is unused.
-scripts/build-release.sh --platform both --confirmed-build-number 79 --dry-run
-scripts/build-release.sh --platform both --confirmed-build-number 79
-
-# After artifact review and separate submission approval.
-scripts/submit-release.sh --platform both --dry-run
-scripts/submit-release.sh --platform both
+node scripts/prepare-release.js --check --require-clean
+bash -c 'source scripts/verify-eas-identity.sh; verify_eas_identity && cd apps/mobile && npx -y eas-cli@latest build --platform all --profile production --auto-submit'
 ```
 
-The build command requires a clean worktree, matching versions in
-`apps/mobile/app.base.json`, the root/mobile package manifests, and
-`package-lock.json`, aligned iOS/Android
-build numbers, and `runtimeVersion.policy: fingerprint`. It writes exact
-artifact and commit metadata to `builds/build-context.json`; the submit command
-refuses artifacts that do not match that context.
+Confirm the configured build numbers are unused before starting. Native source
+maps upload during bundling using the EAS production `SENTRY_AUTH_TOKEN`; verify
+the upload in each build's logs. Do not re-export a local bundle to repair maps
+for a cloud binary.
 
-Local builds require a valid `.sentryclirc` and configured EAS credentials.
-See [EAS_BUILD_GUIDE.md](docs/EAS_BUILD_GUIDE.md) for the complete gated
-workflow.
+For compatible JS-only OTA updates, use `npm run update:production -- --message
+"Describe the update"`. It verifies the effective personal EAS account and
+project, publishes to production, and uploads the generated `apps/mobile/dist`
+maps. A map-upload failure after publication must be retried with
+`npm run sourcemaps:update`, not by publishing again.
+
+Local build/submit scripts remain an alternative; `build-and-submit.sh` is a
+deprecated **build-only** alias, not a combined release command.
+See [EAS_BUILD_GUIDE.md](docs/EAS_BUILD_GUIDE.md) for credentials, version
+preparation, source-map recovery limitations, and public promotion gates.

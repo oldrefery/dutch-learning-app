@@ -1,273 +1,97 @@
-# Testing Plan - Dutch Learning App
+# Application Quality And Testing
 
-## Current Status
+Updated: 2026-09-05. This replaces the pre-monorepo, pre-test-suite proposal.
 
-**Test Coverage:** 0% (No tests currently implemented)
-**Priority:** 🔴 **HIGH** - Critical for production readiness
+## Workspace Layout
 
-## Testing Strategy
+- `apps/mobile/src`: Expo screens, stores, repositories and native UI.
+- `apps/mobile/jest.config.js`: mobile Jest/Expo configuration.
+- `apps/web/src`: Next.js routes, auth, feature actions and web UI.
+- `apps/web/jest.config.mjs`: web Jest configuration.
+- `packages/domain/src/srs.ts`: shared SRS and knowledge-level definitions.
+- `apps/web/e2e` and `apps/mobile/.maestro`: browser/device workflows.
 
-### Phase 1: Unit Tests (5-7 days)
+Use the root lockfile and pinned Node 24 / npm 11. Do not install the obsolete
+test dependencies or root Jest snippets from the original 2025 testing plan.
 
-#### 1.1 Utility Functions (2 days)
+The root staged-lint command uses ESLint 9's `v10_config_lookup_from_file`
+flag so each file selects its nearest workspace config, not the root Expo
+config. Remove the flag when upgrading to ESLint 10, where this is the default.
+`lintStagedConfig.test.ts` executes configuration resolution from the root for
+both mobile and web files to guard against regressions.
 
-**Priority:** High
+## Deterministic Local Checks
 
-- `src/utils/srs.ts` - SRS algorithm
-  - Test `calculateNextReview()` with all difficulty levels
-  - Test edge cases (first review, max interval, etc.)
-  - Validate interval calculations
-
-- `src/utils/logger.ts` - Logging utilities
-  - Test log levels (debug, info, warning, error)
-  - Verify development vs production behavior
-
-- `src/utils/wordTextFormatter.ts` - Text formatting
-  - Test all word type formatting
-  - Verify fallback behavior
-
-- `src/utils/validators.ts` - Input validation
-  - Test email validation
-  - Test password strength
-
-**Estimated tests:** ~30-40 unit tests
-
-#### 1.2 Services (2-3 days)
-
-**Priority:** High
-
-- `src/services/collectionSharingService.ts`
-  - Test share code generation
-  - Test import validation
-  - Test duplicate detection
-
-- `src/services/accessControlService.ts`
-  - Test access level checks
-  - Test permission validation
-
-**Estimated tests:** ~20-25 unit tests
-
-#### 1.3 Hooks (1-2 days)
-
-**Priority:** Medium
-
-- `src/hooks/useDebounce.ts`
-- `src/hooks/useAudioPlayer.ts`
-- `src/hooks/useReviewScreen.ts`
-
-**Estimated tests:** ~15-20 unit tests
-
-### Phase 2: Integration Tests (3-4 days)
-
-#### 2.1 Supabase Integration
-
-**Priority:** High
-
-- Test database queries (mocked)
-- Test RLS policy compliance
-- Test Edge Function calls (mocked)
-
-#### 2.2 State Management
-
-**Priority:** Medium
-
-- Test Zustand store actions
-- Test state updates and side effects
-- Test error handling in store
-
-**Estimated tests:** ~25-30 integration tests
-
-### Phase 3: Component Tests (4-5 days)
-
-#### 3.1 Core Components
-
-**Priority:** Medium
-
-- `UniversalWordCard` - Word display
-- `AddWordScreen` - Word addition flow
-- `ReviewCard` - Review session UI
-- `CollectionSelector` - Collection selection
-
-#### 3.2 UI Components
-
-**Priority:** Low
-
-- Toast notifications
-- Modals and dialogs
-- Form inputs
-
-**Estimated tests:** ~30-40 component tests
-
-### Phase 4: E2E Tests (Optional - Future)
-
-**Priority:** Low (post-MVP)
-
-- Critical user flows
-- Authentication flow
-- Word addition flow
-- Review session flow
-
-## Testing Tools & Setup
-
-### Required Dependencies
+Run from the repository root:
 
 ```bash
-npm install --save-dev \
-  @testing-library/react-native \
-  @testing-library/jest-native \
-  jest-expo \
-  @types/jest
+npm run mobile:test -- --runInBand --watch=false --watchman=false
+npm run web:test
+npm run mobile:typecheck:test
+npm run web:typecheck
+npm run lint
+npm run web:lint
+npm run web:test:coverage
+npm run web:mutation
 ```
 
-### Jest Configuration
+Mobile coverage is available with `npm run mobile:test:coverage`. Browser and
+device E2E setup is documented in `docs/E2E_TESTING.md`; these are separate
+checks, not implied by a passing Jest run.
 
-Update `package.json`:
+## Critical Regression Matrix
 
-```json
-{
-  "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
-  },
-  "jest": {
-    "preset": "jest-expo",
-    "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
-    ],
-    "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
-    "collectCoverageFrom": [
-      "src/**/*.{ts,tsx}",
-      "!src/**/*.d.ts",
-      "!src/**/*.types.ts",
-      "!src/**/*.styles.ts"
-    ],
-    "coverageThresholds": {
-      "global": {
-        "branches": 50,
-        "functions": 50,
-        "lines": 50,
-        "statements": 50
-      }
-    }
-  }
-}
-```
+| Risk                                | Executable evidence                                                                                                                                     | Boundary still requiring live validation                                          |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Expired web session                 | SDK cookie adapter, route redirects preserve refreshed/deleted cookies, configured route matchers                                                       | Real Supabase token rotation and concurrent browser requests                      |
+| Authentication/authorization        | Verified-user lookup, fail-closed access defaults, OAuth code exchange, safe next destination                                                           | Provider login, revoked sessions, real RLS enforcement                            |
+| Expired mobile session/reconnection | Sync preflight expiry boundaries, refresh failure, offline → online retry; existing JWT/RLS retry tests                                                 | OS connectivity events, background/foreground and native SDK storage              |
+| In-flight sync conflicts            | Real in-memory SQLite executes repository SQL; stale word/progress acknowledgements cannot clear newer pending edits; tombstones survive                | Concurrent devices and remote last-writer policy                                  |
+| Review persistence                  | Web action validates/authenticates and calls atomic RPC; failure does not revalidate; retries preserve event identity                                   | Execute PostgreSQL RPC/RLS and competing submissions against an isolated database |
+| Mobile review atomicity             | Real SQLite constraints/transactions: event failure or duplicate event rolls back word progress; wrong owner/deleted word denied                        | Expo SQLite native bridge behavior on both platforms                              |
+| SRS/knowledge                       | Explicit coefficient/rounding/boundary examples, new → learning → established → forgotten, reset and durable event history                              | End-to-end rendering after cross-device synchronization                           |
+| Production OTA safety               | Fake executable CLI in isolated temp project tests identity, token identity format, project mismatch, option rejection, publication/map-upload failures | Actual EAS/Sentry permissions and production channel mapping                      |
 
-### Test File Structure
+SQLite tests replace only the Expo bridge with Node's in-memory SQLite engine.
+They use the real schema, repository statements, constraints and triggers, and
+never open application database files. API mocks test our orchestration, not
+Supabase's refresh internals or PostgreSQL transaction semantics.
 
-```
-src/
-├── utils/
-│   ├── srs.ts
-│   └── __tests__/
-│       └── srs.test.ts
-├── services/
-│   ├── wordService.ts
-│   └── __tests__/
-│       └── wordService.test.ts
-└── components/
-    ├── WordCard.tsx
-    └── __tests__/
-        └── WordCard.test.tsx
-```
+Existing SQL text assertions are useful schema-contract smoke checks, but must
+not be described as database integration tests. Likewise, a successful mocked
+RPC is not evidence that live RLS or server idempotency works.
 
-## Coverage Goals
+## Mutation Testing
 
-### Minimum Viable Coverage
+`stryker.web.config.mjs` selects risk-bearing modules rather than every UI file:
+auth/session/proxy/callback, review persistence, shared SRS, and the existing
+analysis, collection validation, search, deletion and word mutation helpers.
+The break threshold stays at 90%; do not lower it merely to accommodate new
+modules.
 
-- **Utilities:** 80% coverage
-- **Services:** 70% coverage
-- **Hooks:** 60% coverage
-- **Components:** 50% coverage
+- Review survivors before adding tests. Assert externally meaningful outcomes.
+- Preserve type checking. `apps/web/tsconfig.stryker.json` explicitly includes
+  the workspace SRS sources so the checker observes mutations outside the web app.
+- Node-environment tests use Stryker's documented environment wrapper, which
+  also works with ordinary Jest and reports per-test mutation coverage.
+- Web Jest ignores its own nested `.stryker-tmp` directories to avoid duplicate
+  workspace package names after an interrupted mutation run.
+- The incremental report is a cache, not a substitute for final validation.
+  Run `npm run web:mutation -- --force` to retest every mutant.
+- Reports are local artifacts under `reports/mutation` and
+  `reports/stryker-web-incremental.json`. Do not commit generated reports.
 
-### Target Coverage (Long-term)
+Coverage percentages apply to the configured file set, not the whole product.
+Keep uncovered real-provider, real-database and device scenarios visible rather
+than claiming that a high score proves all production behavior.
 
-- **Overall:** 70% coverage
-- **Critical paths:** 90% coverage
+## Account And Side-Effect Safety
 
-## Test Examples
+Only approved QA accounts or disposable accounts may be used for live tests.
+Never use the application's `oldrefery` account. Offline unit/SQLite/CLI tests
+need no account, network mutation, build quota or store access. Mock CLI fixtures
+do not inherit EAS credentials.
 
-### Unit Test Example
-
-```typescript
-// src/utils/__tests__/srs.test.ts
-import { calculateNextReview } from '../srs'
-
-describe('calculateNextReview', () => {
-  it('should calculate correct interval for "good" response', () => {
-    const result = calculateNextReview({
-      current_interval: 1,
-      easiness_factor: 2.5,
-      repetition_count: 1,
-      quality: 3, // "good"
-    })
-
-    expect(result.interval).toBe(6)
-    expect(result.easiness_factor).toBe(2.5)
-  })
-
-  it('should reset interval for "again" response', () => {
-    const result = calculateNextReview({
-      current_interval: 10,
-      easiness_factor: 2.5,
-      repetition_count: 5,
-      quality: 0, // "again"
-    })
-
-    expect(result.interval).toBe(1)
-    expect(result.repetition_count).toBe(0)
-  })
-})
-```
-
-### Component Test Example
-
-```typescript
-// src/components/__tests__/WordCard.test.tsx
-import { render, screen } from '@testing-library/react-native'
-import { WordCard } from '../WordCard'
-
-describe('WordCard', () => {
-  const mockWord = {
-    word_id: '1',
-    dutch_lemma: 'huis',
-    part_of_speech: 'noun',
-    article: 'het',
-    translations: { en: ['house'], ru: ['дом'] }
-  }
-
-  it('should display word with article', () => {
-    render(<WordCard word={mockWord} />)
-
-    expect(screen.getByText('het huis')).toBeTruthy()
-  })
-
-  it('should display translations', () => {
-    render(<WordCard word={mockWord} />)
-
-    expect(screen.getByText(/house/)).toBeTruthy()
-  })
-})
-```
-
-## Implementation Timeline
-
-**Week 1:** Setup + Unit tests (utils)
-**Week 2:** Unit tests (services, hooks) + Integration tests
-**Week 3:** Component tests + Coverage improvements
-
-**Total Estimated Effort:** 12-16 days
-
-## Success Criteria
-
-- [ ] Jest configured and running
-- [ ] Minimum 50% code coverage
-- [ ] All critical paths tested
-- [ ] CI/CD integration (optional)
-- [ ] Test documentation complete
-
----
-
-**Last Updated:** October 4, 2025
-**Status:** Planning phase
+Real environment changes, releases and Git operations require their own explicit
+authorization. See `docs/EAS_BUILD_GUIDE.md` for the current cloud-first release
+workflow and the limitations of legacy native source-map re-export.

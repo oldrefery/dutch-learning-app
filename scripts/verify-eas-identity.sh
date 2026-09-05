@@ -4,6 +4,7 @@ verify_eas_identity() {
   local expected_account="oldrefery"
   local expected_project="@oldrefery/dutch-learning-app"
   local account_output
+  local active_account
   local project_output
   local linked_project
   local eas_cli=(npx -y eas-cli@latest)
@@ -11,17 +12,19 @@ verify_eas_identity() {
 
   mobile_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/../apps/mobile" && pwd)
 
-  if ! account_output=$(cd "$mobile_dir" && "${eas_cli[@]}" account:view 2>&1); then
+  if ! account_output=$(cd "$mobile_dir" && NO_COLOR=1 "${eas_cli[@]}" account:view); then
     echo "Error: unable to verify the active Expo/EAS account" >&2
     return 1
   fi
 
-  if ! printf '%s\n' "$account_output" | grep -Fxq "$expected_account"; then
+  active_account=$(printf '%s\n' "$account_output" | head -n 1)
+  if [ "$active_account" != "$expected_account" ] &&
+    [ "$active_account" != "$expected_account (authenticated using EXPO_TOKEN)" ]; then
     echo "Error: Expo/EAS account must be ${expected_account}" >&2
     return 1
   fi
 
-  if ! project_output=$(cd "$mobile_dir" && "${eas_cli[@]}" project:info 2>&1); then
+  if ! project_output=$(cd "$mobile_dir" && NO_COLOR=1 "${eas_cli[@]}" project:info); then
     echo "Error: unable to verify the linked Expo/EAS project" >&2
     return 1
   fi
