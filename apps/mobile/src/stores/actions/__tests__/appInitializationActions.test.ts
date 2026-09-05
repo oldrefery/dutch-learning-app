@@ -6,7 +6,10 @@
  */
 
 import { createAppInitializationActions } from '../appInitializationActions'
-import { accessControlService } from '@/services/accessControlService'
+import {
+  accessControlService,
+  AccessControlError,
+} from '@/services/accessControlService'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 import { Sentry } from '@/lib/sentry'
 import type {
@@ -44,6 +47,10 @@ describe('appInitializationActions', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockFetchWords.mockReset().mockResolvedValue(undefined)
+    mockFetchCollections.mockReset().mockResolvedValue(undefined)
+    mockFetchUserAccessLevel.mockReset().mockResolvedValue(undefined)
+    jest.mocked(accessControlService.getUserAccessLevel).mockReset()
 
     currentState = {
       currentUserId: USER_ID,
@@ -154,6 +161,73 @@ describe('appInitializationActions', () => {
   })
 
   describe('fetchUserAccessLevel', () => {
+    it('restores server-confirmed access after an offline fallback', async () => {
+      jest
+        .mocked(accessControlService.getUserAccessLevel)
+        .mockRejectedValueOnce(new Error('Offline'))
+        .mockResolvedValueOnce({ success: true, data: 'full_access' })
+      await actions.fetchUserAccessLevel()
+      expect(currentState.userAccessLevel).toBe('read_only')
+      await actions.fetchUserAccessLevel()
+      expect(currentState.userAccessLevel).toBe('full_access')
+    })
+
+    it.each(['success', 'failure', 'exception'] as const)(
+      'ignores an older %s after a newer access request succeeds',
+      async outcome => {
+        let finish: () => void = () => {}
+        jest
+          .mocked(accessControlService.getUserAccessLevel)
+          .mockImplementationOnce(
+            () =>
+              new Promise((resolve, reject) => {
+                finish = () => {
+                  if (outcome === 'exception') reject(new Error('Late error'))
+                  else if (outcome === 'failure')
+                    resolve({
+                      success: false,
+                      error: AccessControlError.DATABASE_ERROR,
+                    })
+                  else resolve({ success: true, data: 'read_only' })
+                }
+              })
+          )
+          .mockResolvedValueOnce({ success: true, data: 'full_access' })
+        const oldRequest = actions.fetchUserAccessLevel()
+        await actions.fetchUserAccessLevel()
+        finish()
+        await oldRequest
+        expect(currentState.userAccessLevel).toBe('full_access')
+        expect(Sentry.captureException).not.toHaveBeenCalled()
+        expect(Sentry.addBreadcrumb).not.toHaveBeenCalled()
+      }
+    )
+
+    it.each(['logout', 'switch', 'switch-back'] as const)(
+      'invalidates an in-flight permission grant on %s',
+      async transition => {
+        let finish: () => void = () => {}
+        jest
+          .mocked(accessControlService.getUserAccessLevel)
+          .mockImplementationOnce(
+            () =>
+              new Promise(resolve => {
+                finish = () => resolve({ success: true, data: 'full_access' })
+              })
+          )
+        currentState.userAccessLevel = 'full_access'
+        const pending = actions.fetchUserAccessLevel()
+        await actions.initializeApp(
+          transition === 'logout' ? undefined : 'second-user'
+        )
+        expect(currentState.userAccessLevel).toBeNull()
+        if (transition === 'switch-back') await actions.initializeApp(USER_ID)
+        finish()
+        await pending
+        expect(currentState.userAccessLevel).toBeNull()
+      }
+    )
+
     it('should set userAccessLevel from successful service call', async () => {
       currentState.currentUserId = USER_ID
       ;(accessControlService.getUserAccessLevel as jest.Mock).mockResolvedValue(
@@ -179,7 +253,7 @@ describe('appInitializationActions', () => {
       ;(accessControlService.getUserAccessLevel as jest.Mock).mockResolvedValue(
         {
           success: false,
-          error: 'DATABASE_ERROR',
+          error: AccessControlError.DATABASE_ERROR,
         }
       )
 

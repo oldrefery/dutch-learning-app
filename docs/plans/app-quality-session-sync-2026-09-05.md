@@ -365,3 +365,37 @@ requires explicit approval, legacy queue reconciliation and client-version polic
 No push, PR, merge, hosted migration, EAS operation or store submission was made.
 
 Commit message: `fix(mobile): support isolated sync QA builds`
+
+## Follow-up: Settings Recovery And Persistent Native Reset
+
+Settings now uses display-only auth session events instead of a network
+`getUser()` race. Successful sync revalidates server access. Permission requests
+are scoped to the current identity/generation; logout, account switches and
+newer requests invalidate late successes/failures. Offline access remains
+fail-closed; stored profile metadata never grants authorization.
+
+Added 14 regressions for initial session display, auth events, logout/unmount,
+identity changes, request races and offline-to-online access recovery; sync
+tests also require access refresh only after successful synchronization.
+Validation: 96 mobile suites / 1165 tests / 16 snapshots, mobile test typecheck,
+lint and diff checks pass.
+
+A rebuilt local-only Android client verified the email after offline cold
+start and Full Access after reconnect. A UI-created reset survived process
+death with the exact same persistent command; reconnect delivered it once,
+emptied the queue and converged server/SQLite to zero repetitions. Repeat sync
+was unchanged; UI showed New and Reviews 0. See the detailed
+[evidence and limitations](../native-settings-reset-qa-2026-09-05.md).
+
+One repeated offline cold-start UI flow exceeded its 30-second wait despite the
+reset remaining safely stored. Next: isolate startup auth/network waits with
+expired and valid tokens; ensure bounded loading without discarding sessions
+or weakening authorization. Native iOS/physical-device checks and coordinated
+hosted rollout remain separate, with the previous approval/cutover requirements.
+
+Only a new synthetic local account was used and removed. The temporary backend
+and read-only emulator were stopped; original APK/manifest were restored.
+The unrelated staged/deleted plugin remains untouched and excluded. No push,
+PR, merge, EAS operation or hosted write was performed.
+
+Commit message: `fix(mobile): restore profile and access after reconnect`

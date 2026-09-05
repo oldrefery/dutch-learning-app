@@ -117,9 +117,10 @@ the mixed-version Auth Admin API is compatible.
   its preceding results are in the
   [branch plan](plans/app-quality-session-sync-2026-09-05.md).
 
-The separate offline Settings profile/access-label hydration finding is not
-resolved by these changes. Native reset sequencing after process death, legacy
-queue cutover/reconciliation and physical-device/iOS release checks remain
+The subsequent [Settings/reset follow-up](native-settings-reset-qa-2026-09-05.md)
+addresses profile/access hydration and verifies native reset delivery after
+process death. That follow-up records a remaining offline startup UI timeout.
+Legacy queue cutover/reconciliation and physical-device/iOS release checks remain
 distinct work. Hosted migrations, rollout and minimum-client-version decisions
 still require explicit approval; do not deploy protocol 2 as an isolated change.
 

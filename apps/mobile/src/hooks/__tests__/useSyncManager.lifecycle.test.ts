@@ -67,6 +67,7 @@ describe('native synchronization lifecycle', () => {
       currentUserId: 'qa-lifecycle-user',
       fetchCollections: jest.fn().mockResolvedValue(undefined),
       fetchWords: jest.fn().mockResolvedValue(undefined),
+      fetchUserAccessLevel: jest.fn().mockResolvedValue(undefined),
     })
   })
 
@@ -190,16 +191,19 @@ describe('native synchronization lifecycle', () => {
 
   it('rehydrates visible data only for successful sync notifications', async () => {
     renderHook(() => useSyncManager(options))
-    const { fetchCollections, fetchWords } = useApplicationStore.getState()
+    const { fetchCollections, fetchWords, fetchUserAccessLevel } =
+      useApplicationStore.getState()
     await act(async () => {
       statusListener({ ...successfulSync, success: false })
     })
     expect(fetchCollections).not.toHaveBeenCalled()
     expect(fetchWords).not.toHaveBeenCalled()
+    expect(fetchUserAccessLevel).not.toHaveBeenCalled()
     await act(async () => {
       statusListener(successfulSync)
     })
     expect(fetchCollections).toHaveBeenCalledTimes(1)
     expect(fetchWords).toHaveBeenCalledTimes(1)
+    expect(fetchUserAccessLevel).toHaveBeenCalledTimes(1)
   })
 })
