@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useMemo, useEffect, useCallback } from 'react'
 import {
   TouchableOpacity,
   Dimensions,
@@ -58,95 +58,105 @@ export default function WordDetailModal({
   const handlePlayAudio = useCallback(async () => {
     if (!word?.dutch_lemma) return
     await playWord(word.dutch_lemma, word.tts_url)
-  }, [playWord, word?.dutch_lemma, word?.tts_url])
+  }, [playWord, word])
 
   // Create a native gesture for ScrollView
-  const nativeScrollGesture = Gesture.Native()
+  const nativeScrollGesture = useMemo(() => Gesture.Native(), [])
 
   // Animate modal appearance
   useEffect(() => {
     if (visible) {
-      translateY.value = withSpring(0, { damping: 20, stiffness: 300 })
-      backdropOpacity.value = withTiming(1, { duration: 300 })
+      translateY.set(withSpring(0, { damping: 20, stiffness: 300 }))
+      backdropOpacity.set(withTiming(1, { duration: 300 }))
     } else {
-      translateY.value = withTiming(screenHeight, { duration: 300 })
-      backdropOpacity.value = withTiming(0, { duration: 300 })
+      translateY.set(withTiming(screenHeight, { duration: 300 }))
+      backdropOpacity.set(withTiming(0, { duration: 300 }))
     }
   }, [backdropOpacity, translateY, visible])
 
   // Handle closing modal
-  const closeModal = () => {
-    translateY.value = withTiming(screenHeight, { duration: 300 })
-    backdropOpacity.value = withTiming(0, { duration: 300 }, () => {
-      scheduleOnRN(onClose)
-    })
-  }
+  const closeModal = useCallback(() => {
+    translateY.set(withTiming(screenHeight, { duration: 300 }))
+    backdropOpacity.set(
+      withTiming(0, { duration: 300 }, () => {
+        scheduleOnRN(onClose)
+      })
+    )
+  }, [translateY, backdropOpacity, onClose])
 
   // Gesture for closing modal with swipe down
-  const panGesture = Gesture.Pan()
-    .onUpdate(event => {
-      'worklet'
-      // Start dismissing gesture only if:
-      // 1. We're at the top of the scroll AND
-      // 2. Moving down (positive translationY) AND
-      // 3. Have moved at least 10 px down to confirm intent
-      if (scrollOffset.value <= 0 && event.translationY > 10) {
-        isDragging.value = true
-        translateY.value = event.translationY
-        // Update backdrop opacity based on drag distance
-        const progress = Math.min(event.translationY / screenHeight, 1)
-        backdropOpacity.value = interpolate(
-          progress,
-          [0, 1],
-          [1, 0],
-          Extrapolation.CLAMP
-        )
-      } else if (event.translationY <= 0) {
-        // Reset if moving up
-        isDragging.value = false
-        translateY.value = 0
-        backdropOpacity.value = 1
-      }
-    })
-    .onEnd(event => {
-      'worklet'
-      if (!isDragging.value) return
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .onUpdate(event => {
+          'worklet'
+          // Start dismissing gesture only if:
+          // 1. We're at the top of the scroll AND
+          // 2. Moving down (positive translationY) AND
+          // 3. Have moved at least 10 px down to confirm intent
+          if (scrollOffset.get() <= 0 && event.translationY > 10) {
+            isDragging.set(true)
+            translateY.set(event.translationY)
+            // Update backdrop opacity based on drag distance
+            const progress = Math.min(event.translationY / screenHeight, 1)
+            backdropOpacity.set(
+              interpolate(progress, [0, 1], [1, 0], Extrapolation.CLAMP)
+            )
+          } else if (event.translationY <= 0) {
+            // Reset if moving up
+            isDragging.set(false)
+            translateY.set(0)
+            backdropOpacity.set(1)
+          }
+        })
+        .onEnd(event => {
+          'worklet'
+          if (!isDragging.get()) return
 
-      // Closing conditions: significant distance OR high velocity
-      const dismissThreshold = screenHeight * 0.2 // 20% of screen height
-      const shouldClose =
-        translateY.value > dismissThreshold || event.velocityY > 800
+          // Closing conditions: significant distance OR high velocity
+          const dismissThreshold = screenHeight * 0.2 // 20% of screen height
+          const shouldClose =
+            translateY.get() > dismissThreshold || event.velocityY > 800
 
-      if (shouldClose) {
-        scheduleOnRN(closeModal)
-      } else {
-        // Return to the original position if not closed
-        translateY.value = withSpring(0)
-        backdropOpacity.value = withTiming(1)
-      }
+          if (shouldClose) {
+            scheduleOnRN(closeModal)
+          } else {
+            // Return to the original position if not closed
+            translateY.set(withSpring(0))
+            backdropOpacity.set(withTiming(1))
+          }
 
-      isDragging.value = false
-    })
-    // Link with native scroll gesture
-    .simultaneousWithExternalGesture(nativeScrollGesture)
+          isDragging.set(false)
+        })
+        // Link with native scroll gesture
+        .simultaneousWithExternalGesture(nativeScrollGesture),
+    [
+      scrollOffset,
+      isDragging,
+      translateY,
+      backdropOpacity,
+      closeModal,
+      nativeScrollGesture,
+    ]
+  )
 
   // Simple handler for tracking scroll position
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
-      scrollOffset.value = event.contentOffset.y
+      scrollOffset.set(event.contentOffset.y)
     },
   })
 
   // Animated styles
   const animatedContainerStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value }],
+      transform: [{ translateY: translateY.get() }],
     }
   })
 
   const animatedBackdropStyle = useAnimatedStyle(() => {
     return {
-      opacity: backdropOpacity.value,
+      opacity: backdropOpacity.get(),
     }
   })
 

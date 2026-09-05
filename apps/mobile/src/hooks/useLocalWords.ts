@@ -5,7 +5,14 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 export function useLocalWords() {
   const { currentUserId } = useApplicationStore()
   const [words, setWords] = useState<LocalWord[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(Boolean(currentUserId))
+
+  const [previousUserId, setPreviousUserId] = useState(currentUserId)
+  if (previousUserId !== currentUserId) {
+    setPreviousUserId(currentUserId)
+    setWords([])
+    setIsLoading(Boolean(currentUserId))
+  }
 
   const fetchWords = useCallback(async () => {
     if (!currentUserId) return
@@ -66,12 +73,28 @@ export function useLocalWords() {
     [currentUserId, fetchWords]
   )
 
-  // Load words on mount if user is available
   useEffect(() => {
-    if (currentUserId) {
-      fetchWords()
+    if (!currentUserId) return
+    let active = true
+    void wordRepository.getWordsByUserId(currentUserId).then(
+      result => {
+        if (active) {
+          setWords(result)
+          setIsLoading(false)
+        }
+      },
+      error => {
+        console.error('[LocalWords] Error fetching words:', error)
+        if (active) {
+          setWords([])
+          setIsLoading(false)
+        }
+      }
+    )
+    return () => {
+      active = false
     }
-  }, [currentUserId, fetchWords])
+  }, [currentUserId])
 
   return {
     words,

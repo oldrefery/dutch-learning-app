@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import {
   StyleSheet,
   View,
@@ -34,12 +34,14 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
 
   const { words } = useApplicationStore()
 
-  useEffect(() => {
+  const [previousVisible, setPreviousVisible] = useState(false)
+  if (previousVisible !== visible) {
+    setPreviousVisible(visible)
     if (visible) {
       setToken('')
       setError(null)
     }
-  }, [visible])
+  }
 
   const canImport = useMemo(() => {
     const trimmed = token.trim()

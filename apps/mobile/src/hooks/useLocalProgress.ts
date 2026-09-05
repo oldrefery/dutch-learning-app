@@ -5,7 +5,14 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 export function useLocalProgress() {
   const { currentUserId } = useApplicationStore()
   const [progress, setProgress] = useState<UserProgress[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(Boolean(currentUserId))
+
+  const [previousUserId, setPreviousUserId] = useState(currentUserId)
+  if (previousUserId !== currentUserId) {
+    setPreviousUserId(currentUserId)
+    setProgress([])
+    setIsLoading(Boolean(currentUserId))
+  }
 
   const fetchProgress = useCallback(async () => {
     if (!currentUserId) return
@@ -66,12 +73,28 @@ export function useLocalProgress() {
     [currentUserId, fetchProgress]
   )
 
-  // Load progress on mount if a user is available
   useEffect(() => {
-    if (currentUserId) {
-      fetchProgress()
+    if (!currentUserId) return
+    let active = true
+    void progressRepository.getProgressByUserId(currentUserId).then(
+      result => {
+        if (active) {
+          setProgress(result)
+          setIsLoading(false)
+        }
+      },
+      error => {
+        console.error('[LocalProgress] Error fetching progress:', error)
+        if (active) {
+          setProgress([])
+          setIsLoading(false)
+        }
+      }
+    )
+    return () => {
+      active = false
     }
-  }, [currentUserId, fetchProgress])
+  }, [currentUserId])
 
   return {
     progress,

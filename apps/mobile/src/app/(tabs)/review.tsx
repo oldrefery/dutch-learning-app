@@ -1,4 +1,10 @@
-import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react'
+import React, {
+  useRef,
+  useSyncExternalStore,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react'
 import { useRouter, type Href } from 'expo-router'
 import {
   TouchableOpacity,
@@ -10,7 +16,6 @@ import {
   useColorScheme,
 } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
-import type { GestureType } from 'react-native-gesture-handler'
 import { scheduleOnRN } from 'react-native-worklets'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import ImageSelector from '@/components/ImageSelector'
@@ -193,7 +198,6 @@ export default function ReviewScreen() {
   const insets = useSafeAreaInsets()
   const [refreshing, setRefreshing] = useState(false)
   const pronunciationRef = useRef<View>(null)
-  const tapGestureRef = useRef<GestureType | undefined>(undefined)
   const userAccessLevel = useApplicationStore(state => state.userAccessLevel)
   const canUseAiFeatures = userAccessLevel === 'full_access'
 
@@ -266,22 +270,14 @@ export default function ReviewScreen() {
   const markLearningGuideVersionSeen = useSettingsStore(
     state => state.markLearningGuideVersionSeen
   )
-  const [settingsHydrated, setSettingsHydrated] = useState(
-    useSettingsStore.persist.hasHydrated()
-  )
   const [selectedRecognitionOption, setSelectedRecognitionOption] =
     useState<RecognitionOption | null>(null)
 
-  useEffect(() => {
-    if (useSettingsStore.persist.hasHydrated()) {
-      setSettingsHydrated(true)
-      return
-    }
-
-    return useSettingsStore.persist.onFinishHydration(() => {
-      setSettingsHydrated(true)
-    })
-  }, [])
+  const settingsHydrated = useSyncExternalStore(
+    useSettingsStore.persist.onFinishHydration,
+    useSettingsStore.persist.hasHydrated,
+    () => false
+  )
 
   // Enable pull-to-refresh to also refresh review count (badge)
   const { refreshCount } = useReviewWordsCount()
@@ -309,9 +305,13 @@ export default function ReviewScreen() {
     [availableWords, configuredMode, currentWord]
   )
 
-  useEffect(() => {
+  const recognitionKey = `${configuredMode}:${currentWord?.word_id ?? ''}`
+  const [previousRecognitionKey, setPreviousRecognitionKey] =
+    useState(recognitionKey)
+  if (previousRecognitionKey !== recognitionKey) {
+    setPreviousRecognitionKey(recognitionKey)
     setSelectedRecognitionOption(null)
-  }, [configuredMode, currentWord?.word_id])
+  }
 
   const assessmentContext = useMemo(
     () => ({
@@ -387,18 +387,12 @@ export default function ReviewScreen() {
     } finally {
       setRefreshing(false)
     }
-  }, [
-    lastSelectedReviewMode,
-    refreshCount,
-    reviewSession?.config,
-    startSession,
-  ])
+  }, [lastSelectedReviewMode, refreshCount, reviewSession, startSession])
 
   // Create completely stable gestures to prevent recreation
-  // withRef exposes this gesture so NonSwipeableArea can block it via context
+  // Share the gesture itself so child controls can block card flips.
   const tapGestureInstance = useMemo(() => {
     return Gesture.Tap()
-      .withRef(tapGestureRef)
       .maxDuration(200)
       .maxDistance(5)
       .onBegin(() => {
@@ -620,7 +614,6 @@ export default function ReviewScreen() {
             tapGesture={tapGestureInstance}
             panGesture={panGestureInstance}
             lockedGesture={lockedGestureInstance}
-            tapGestureRef={tapGestureRef}
             pronunciationRef={pronunciationRef}
             onPlayAudio={playAudio}
             onSelectRecognitionOption={handleRecognitionOption}

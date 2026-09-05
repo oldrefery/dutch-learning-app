@@ -133,11 +133,6 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
     )
   }, [])
 
-  // Initialize database on mount
-  useEffect(() => {
-    initializeSync()
-  }, [initializeSync])
-
   // Setup sync listeners and periodic sync
   useEffect(() => {
     setupSyncStatusListener()
@@ -199,10 +194,14 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
 
   // Initial sync on mount
   useEffect(() => {
-    if (autoSyncOnMount && currentUserId) {
-      performSync()
+    let active = true
+    void initializeSync().then(() => {
+      if (active && autoSyncOnMount && currentUserId) return performSync()
+    })
+    return () => {
+      active = false
     }
-  }, [autoSyncOnMount, currentUserId, performSync])
+  }, [autoSyncOnMount, currentUserId, performSync, initializeSync])
 
   return {
     syncResult,

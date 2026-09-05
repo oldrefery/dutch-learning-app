@@ -81,6 +81,9 @@ describe('useAddWord', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    ;(useSettingsStore as unknown as jest.Mock).mockImplementation(selector =>
+      selector({ lastSelectedCollectionId: null })
+    )
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       saveAnalyzedWord,
       clearError,
@@ -115,6 +118,29 @@ describe('useAddWord', () => {
       lastSelectedCollectionId: null,
       setLastSelectedCollectionId,
     }))
+  })
+
+  it('restores the persisted selection after collections finish loading', () => {
+    const secondCollection = {
+      ...collection,
+      collection_id: 'collection-2',
+      name: 'Travel',
+    }
+    ;(useSettingsStore as unknown as jest.Mock).mockImplementation(selector =>
+      selector({
+        lastSelectedCollectionId: secondCollection.collection_id,
+      })
+    )
+    ;(useCollections as jest.Mock).mockReturnValue({ collections: [] })
+    const { result, rerender } = renderHook(() => useAddWord())
+    expect(result.current.selectedCollection).toBeNull()
+    expect(setLastSelectedCollectionId).not.toHaveBeenCalled()
+    ;(useCollections as jest.Mock).mockReturnValue({
+      collections: [collection, secondCollection],
+    })
+    rerender({})
+    expect(result.current.selectedCollection).toEqual(secondCollection)
+    expect(setLastSelectedCollectionId).not.toHaveBeenCalled()
   })
 
   it('shows success only after saveAnalyzedWord returns a saved word', async () => {

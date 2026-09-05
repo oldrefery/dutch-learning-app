@@ -52,6 +52,21 @@ const getImportErrorMessage = (
   return fallbackMessage
 }
 
+const getErrorMessage = (error: string): string => {
+  switch (error) {
+    case 'COLLECTION_NOT_FOUND':
+      return 'This collection no longer exists or the share link has expired.'
+    case 'COLLECTION_NOT_SHARED':
+      return 'This collection is no longer being shared publicly.'
+    case 'DATABASE_ERROR':
+      return 'Server error occurred while loading the collection. Please try again.'
+    case 'UNAUTHORIZED':
+      return 'Access denied. You may need to sign in or the share link might be invalid.'
+    default:
+      return 'Unable to load the shared collection. Please check your internet connection.'
+  }
+}
+
 export function useImportSelection(token: string) {
   const [loading, setLoading] = useState(true)
   const [sharedData, setSharedData] = useState<SharedCollectionWords | null>(
@@ -129,51 +144,40 @@ export function useImportSelection(token: string) {
     }
   }, [token, checkForDuplicates])
 
-  const checkAuthAndLoad = useCallback(async () => {
-    try {
-      const {
-        data: { session },
-        error: authError,
-      } = await supabase.auth.getSession()
-
-      if (authError || !session) {
-        const currentUrl = ROUTES.IMPORT_COLLECTION(token)
-        router.replace(RouteHelpers.createAuthRedirect(currentUrl))
-        return
-      }
-
-      if (!token) {
-        setError('Invalid import link')
-        setLoading(false)
-        return
-      }
-
-      await loadSharedCollection()
-      await loadCollections()
-    } catch (err) {
-      Sentry.captureException(err, {
-        tags: { operation: 'checkAuthAndLoad' },
-        extra: { message: 'Auth check failed', token },
+  useEffect(() => {
+    let active = true
+    void supabase.auth
+      .getSession()
+      .then(async ({ data: { session }, error: authError }) => {
+        if (!active) return
+        if (authError || !session) {
+          router.replace(
+            RouteHelpers.createAuthRedirect(ROUTES.IMPORT_COLLECTION(token))
+          )
+          return
+        }
+        if (!token) {
+          setError('Invalid import link')
+          setLoading(false)
+          return
+        }
+        await loadSharedCollection()
+        if (active) await loadCollections()
       })
-      const currentUrl = ROUTES.IMPORT_COLLECTION(token)
-      router.replace(RouteHelpers.createAuthRedirect(currentUrl))
+      .catch(err => {
+        if (!active) return
+        Sentry.captureException(err, {
+          tags: { operation: 'checkAuthAndLoad' },
+          extra: { message: 'Auth check failed', token },
+        })
+        router.replace(
+          RouteHelpers.createAuthRedirect(ROUTES.IMPORT_COLLECTION(token))
+        )
+      })
+    return () => {
+      active = false
     }
   }, [token, loadSharedCollection, loadCollections])
-
-  const getErrorMessage = (error: string): string => {
-    switch (error) {
-      case 'COLLECTION_NOT_FOUND':
-        return 'This collection no longer exists or the share link has expired.'
-      case 'COLLECTION_NOT_SHARED':
-        return 'This collection is no longer being shared publicly.'
-      case 'DATABASE_ERROR':
-        return 'Server error occurred while loading the collection. Please try again.'
-      case 'UNAUTHORIZED':
-        return 'Access denied. You may need to sign in or the share link might be invalid.'
-      default:
-        return 'Unable to load the shared collection. Please check your internet connection.'
-    }
-  }
 
   const toggleWordSelection = (wordId: string) => {
     setWordSelections(prev =>
@@ -276,10 +280,6 @@ export function useImportSelection(token: string) {
   const toggleHideDuplicates = () => {
     setHideDuplicates(prev => !prev)
   }
-
-  useEffect(() => {
-    void checkAuthAndLoad()
-  }, [checkAuthAndLoad])
 
   const selectedCount = wordSelections.filter(item => item.selected).length
   const duplicateCount = wordSelections.filter(item => item.isDuplicate).length

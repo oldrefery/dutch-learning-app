@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { StyleSheet, View, useColorScheme } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 import { TextThemed } from '@/components/Themed'
@@ -26,12 +26,15 @@ export const RenameCollectionSheet: React.FC<RenameCollectionSheetProps> = ({
   const [isFocused, setIsFocused] = useState<boolean>(false)
   const colorScheme = useColorScheme()
 
-  // Update name when modal opens
-  useEffect(() => {
+  const [previousVisible, setPreviousVisible] = useState(false)
+  const [previousName, setPreviousName] = useState(currentName)
+  if (previousVisible !== visible || previousName !== currentName) {
+    setPreviousVisible(visible)
+    setPreviousName(currentName)
     if (visible) {
       setNewName(currentName)
     }
-  }, [visible, currentName])
+  }
 
   const canSave = useMemo(() => {
     const trimmed = newName.trim()

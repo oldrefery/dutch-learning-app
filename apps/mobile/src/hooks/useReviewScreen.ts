@@ -37,39 +37,50 @@ export const useReviewScreen = () => {
   const [completedSession, setCompletedSession] =
     useState<ReviewSession | null>(null)
   const isMountedRef = useRef(true)
-  const previousReviewSessionRef = useRef<ReviewSession | null>(reviewSession)
-  const responseStartedAtRef = useRef(Date.now())
+  const [previousReviewSession, setPreviousReviewSession] =
+    useState<ReviewSession | null>(reviewSession)
+  const responseStartedAtRef = useRef(0)
   const responseTimeRef = useRef<number | null>(null)
 
   // Cleanup on unmounting
   useEffect(() => {
+    isMountedRef.current = true
     return () => {
       isMountedRef.current = false
     }
   }, [])
 
-  useEffect(() => {
-    const previousSession = previousReviewSessionRef.current
+  const [observedSession, setObservedSession] = useState(reviewSession)
+  if (reviewSession !== observedSession) {
+    setObservedSession(reviewSession)
+  }
+  if (reviewSession !== observedSession && reviewSession) {
+    setPreviousReviewSession(reviewSession)
+    setCompletedSession(null)
+    setSessionEmpty(false)
+  } else if (
+    !reviewSession &&
+    !currentWord &&
+    previousReviewSession &&
+    !sessionEmpty
+  ) {
+    setCompletedSession(previousReviewSession)
+    setPreviousReviewSession(null)
+  }
 
-    if (reviewSession) {
-      previousReviewSessionRef.current = reviewSession
-      setCompletedSession(null)
-      setSessionEmpty(false)
-      return
-    }
-
-    if (previousSession && !currentWord && !sessionEmpty) {
-      setCompletedSession(previousSession)
-    }
-  }, [currentWord, reviewSession, sessionEmpty])
-
-  // Reset transient response state when the word or mode changes
-  useEffect(() => {
+  const wordId = currentWord?.word_id
+  const mode = reviewSession?.config.mode
+  const [responseKey, setResponseKey] = useState({ wordId, mode })
+  if (responseKey.wordId !== wordId || responseKey.mode !== mode) {
+    setResponseKey({ wordId, mode })
     setIsFlipped(false)
     setLastTouchTime(0)
+  }
+
+  useEffect(() => {
     responseStartedAtRef.current = Date.now()
     responseTimeRef.current = null
-  }, [currentWord?.word_id, reviewSession?.config.mode])
+  }, [wordId, mode])
 
   const recordResponseTime = useCallback(() => {
     if (responseTimeRef.current === null) {
@@ -85,7 +96,7 @@ export const useReviewScreen = () => {
       if (!currentWord?.dutch_lemma) return
       playAudio(url, currentWord.dutch_lemma, currentWord.tts_url)
     },
-    [playAudio, currentWord?.dutch_lemma, currentWord?.tts_url]
+    [playAudio, currentWord]
   )
 
   const handleAssessment = useCallback(
@@ -204,7 +215,7 @@ export const useReviewScreen = () => {
 
   const startSession = useCallback(
     async (config: ReviewSessionConfig) => {
-      previousReviewSessionRef.current = null
+      setPreviousReviewSession(null)
       setCompletedSession(null)
       setSessionEmpty(false)
       await startReviewSession(config)
@@ -223,15 +234,20 @@ export const useReviewScreen = () => {
     const config =
       reviewSession?.config ??
       completedSession?.config ??
-      previousReviewSessionRef.current?.config
+      previousReviewSession?.config
 
     if (config) {
       void startSession(config)
     }
-  }, [completedSession?.config, reviewSession?.config, startSession])
+  }, [
+    completedSession?.config,
+    reviewSession?.config,
+    previousReviewSession?.config,
+    startSession,
+  ])
 
   const chooseAnotherMode = useCallback(() => {
-    previousReviewSessionRef.current = null
+    setPreviousReviewSession(null)
     setCompletedSession(null)
     setSessionEmpty(false)
     endReviewSession()
@@ -257,15 +273,8 @@ export const useReviewScreen = () => {
     setIsFlipped(true)
   }, [recordResponseTime])
 
-  const isCompletingSession =
-    !reviewSession &&
-    !currentWord &&
-    previousReviewSessionRef.current !== null &&
-    !sessionEmpty
-  const sessionComplete = completedSession !== null || isCompletingSession
-  const lastCompletedSession =
-    completedSession ??
-    (isCompletingSession ? previousReviewSessionRef.current : null)
+  const sessionComplete = completedSession !== null
+  const lastCompletedSession = completedSession
   const reviewWords = reviewSession?.words ?? lastCompletedSession?.words ?? []
   const currentIndex = reviewSession?.currentIndex || 0
   const totalWords = reviewWords.length

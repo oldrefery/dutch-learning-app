@@ -56,8 +56,8 @@ const loadStarterPack = (): StarterPackLoadResult => {
 }
 
 export function useStarterPackImport() {
-  const pack = useMemo(loadStarterPack, [])
-  const [loading, setLoading] = useState(true)
+  const pack = useMemo(() => loadStarterPack(), [])
+  const [loading, setLoading] = useState(Boolean(pack.previewData))
   const [wordSelections, setWordSelections] = useState<WordSelectionItem[]>([])
   const [collections, setCollections] = useState<ImportTargetCollection[]>([])
   const [targetCollectionId, setTargetCollectionId] = useState<string | null>(
@@ -68,56 +68,58 @@ export function useStarterPackImport() {
   const [success, setSuccess] = useState<StarterPackImportSuccess | null>(null)
 
   const loadCollectionsAndSelections = useCallback(async () => {
-    if (!pack.previewData) {
-      setLoading(false)
-      return
-    }
+    const previewData = pack.previewData
+    if (!previewData) return
 
-    try {
-      await useApplicationStore.getState().fetchCollections()
-      const state = useApplicationStore.getState()
-      setCollections([
-        {
-          collection_id: NEW_STARTER_COLLECTION_ID,
-          name: `Create “${pack.previewData.collection.name}”`,
-        },
-        ...state.collections.map(collection => ({
-          collection_id: collection.collection_id,
-          name: collection.name,
-        })),
-      ])
-      setWordSelections(
-        buildImportWordSelections(
-          pack.previewData.words,
-          state.words,
-          state.collections
+    return useApplicationStore
+      .getState()
+      .fetchCollections()
+      .then(() => {
+        const state = useApplicationStore.getState()
+        setCollections([
+          {
+            collection_id: NEW_STARTER_COLLECTION_ID,
+            name: `Create “${previewData.collection.name}”`,
+          },
+          ...state.collections.map(collection => ({
+            collection_id: collection.collection_id,
+            name: collection.name,
+          })),
+        ])
+        setWordSelections(
+          buildImportWordSelections(
+            previewData.words,
+            state.words,
+            state.collections
+          )
         )
-      )
-    } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'prepareStarterPackImport' },
       })
-      const state = useApplicationStore.getState()
-      setCollections([
-        {
-          collection_id: NEW_STARTER_COLLECTION_ID,
-          name: `Create “${pack.previewData.collection.name}”`,
-        },
-        ...state.collections.map(collection => ({
-          collection_id: collection.collection_id,
-          name: collection.name,
-        })),
-      ])
-      setWordSelections(
-        buildImportWordSelections(
-          pack.previewData.words,
-          state.words,
-          state.collections
+      .catch(error => {
+        Sentry.captureException(error, {
+          tags: { operation: 'prepareStarterPackImport' },
+        })
+        const state = useApplicationStore.getState()
+        setCollections([
+          {
+            collection_id: NEW_STARTER_COLLECTION_ID,
+            name: `Create “${previewData.collection.name}”`,
+          },
+          ...state.collections.map(collection => ({
+            collection_id: collection.collection_id,
+            name: collection.name,
+          })),
+        ])
+        setWordSelections(
+          buildImportWordSelections(
+            previewData.words,
+            state.words,
+            state.collections
+          )
         )
-      )
-    } finally {
-      setLoading(false)
-    }
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [pack.previewData])
 
   useEffect(() => {

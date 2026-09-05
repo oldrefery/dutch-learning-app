@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react'
+import React, { useMemo, useEffect, useCallback, useRef } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -12,7 +12,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
@@ -47,10 +46,7 @@ export default function SwipeableWordItem({
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(20)
-  const [shouldShowDeleteDialog, setShouldShowDeleteDialog] = useState(false)
-  const [shouldShowMoveDialog, setShouldShowMoveDialog] = useState(false)
-  const [wasModalVisibleForThisWord, setWasModalVisibleForThisWord] =
-    useState(false)
+  const wasModalVisibleForThisWord = useRef(false)
 
   const handleDelete = useCallback(() => {
     Alert.alert(
@@ -62,7 +58,7 @@ export default function SwipeableWordItem({
           style: 'cancel',
           onPress: () => {
             // Reset position when a user cancels deletion
-            translateX.value = withSpring(0)
+            translateX.set(withSpring(0))
           },
         },
         {
@@ -74,7 +70,7 @@ export default function SwipeableWordItem({
       {
         onDismiss: () => {
           // Reset position when the alert is dismissed by tapping outside
-          translateX.value = withSpring(0)
+          translateX.set(withSpring(0))
         },
       }
     )
@@ -87,7 +83,7 @@ export default function SwipeableWordItem({
   ])
 
   const resetPosition = useCallback(() => {
-    translateX.value = withSpring(0)
+    translateX.set(withSpring(0))
   }, [translateX])
 
   const handleMoveToCollection = useCallback(() => {
@@ -98,37 +94,17 @@ export default function SwipeableWordItem({
   }, [word.word_id, onMoveToCollection])
 
   useEffect(() => {
-    translateY.value = withTiming(0, { duration: 400 }, () => {})
+    translateY.set(withTiming(0, { duration: 400 }, () => {}))
   }, [translateY])
 
   useEffect(() => {
-    if (shouldShowDeleteDialog) {
-      handleDelete()
-      setShouldShowDeleteDialog(false)
-    }
-  }, [shouldShowDeleteDialog, handleDelete])
-
-  useEffect(() => {
-    if (shouldShowMoveDialog) {
-      handleMoveToCollection()
-      setShouldShowMoveDialog(false)
-    }
-  }, [shouldShowMoveDialog, handleMoveToCollection])
-
-  // Track when modal becomes visible for this word
-  useEffect(() => {
     if (moveModalVisible && wordBeingMoved === word.word_id) {
-      setWasModalVisibleForThisWord(true)
-    }
-  }, [moveModalVisible, wordBeingMoved, word.word_id])
-
-  // Reset position when modal is closed and this word had the modal open
-  useEffect(() => {
-    if (!moveModalVisible && wasModalVisibleForThisWord) {
+      wasModalVisibleForThisWord.current = true
+    } else if (!moveModalVisible && wasModalVisibleForThisWord.current) {
+      wasModalVisibleForThisWord.current = false
       resetPosition()
-      setWasModalVisibleForThisWord(false)
     }
-  }, [moveModalVisible, wasModalVisibleForThisWord, resetPosition])
+  }, [moveModalVisible, wordBeingMoved, word.word_id, resetPosition])
 
   const getStatusStyle = () => {
     if (word.repetition_count > 2)
@@ -191,25 +167,25 @@ export default function SwipeableWordItem({
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateX: translateX.value },
-        { translateY: translateY.value },
+        { translateX: translateX.get() },
+        { translateY: translateY.get() },
       ],
     }
   })
 
   const deleteButtonAnimatedStyle = useAnimatedStyle(() => {
     // Only expand on the long swipe left (>= 150 px)
-    const isLongSwipeLeft = translateX.value <= -150
+    const isLongSwipeLeft = translateX.get() <= -150
     return {
-      width: isLongSwipeLeft ? Math.abs(translateX.value) + 80 : 80,
+      width: isLongSwipeLeft ? Math.abs(translateX.get()) + 80 : 80,
     }
   })
 
   const moveButtonAnimatedStyle = useAnimatedStyle(() => {
     // Only expand on the long swipe right (>= 150 px)
-    const isLongSwipeRight = translateX.value >= 150
+    const isLongSwipeRight = translateX.get() >= 150
     return {
-      width: isLongSwipeRight ? Math.abs(translateX.value) + 80 : 80,
+      width: isLongSwipeRight ? Math.abs(translateX.get()) + 80 : 80,
     }
   })
 
@@ -220,71 +196,86 @@ export default function SwipeableWordItem({
     }
   }, [onLongPress])
 
-  const tapGesture = Gesture.Tap()
-    .maxDistance(10) // Tap must be within 10 px of the start point
-    .maxDuration(300) // Tap must be under 300 ms
-    .onEnd(() => {
-      'worklet'
-      // Only trigger tap if card is in resting position
-      if (Math.abs(translateX.value) < 5) {
-        scheduleOnRN(onPress)
-      }
-    })
-
-  const longPressGesture = Gesture.LongPress()
-    .minDuration(500) // 500 ms for long press
-    .maxDistance(10) // Maximum movement allowed during long press
-    .onStart(() => {
-      'worklet'
-      scheduleOnRN(handleLongPress)
-    })
-
-  const panGesture = Gesture.Pan()
-    .activeOffsetX([-15, 15]) // Only activate after 15 px horizontal movement
-    .failOffsetY([-20, 20]) // Fail if vertical movement exceeds 20 px
-    .maxPointers(1) // Only allow a single finger swipe
-    .onUpdate(event => {
-      'worklet'
-      translateX.value = event.translationX
-    })
-    .onEnd(event => {
-      'worklet'
-      const { translationX } = event
-
-      if (translationX > 150 && onMoveToCollection) {
-        // Long swipe right - show move to collection dialog
-        translateX.value = withSpring(300, {}, () => {
+  const tapGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .maxDistance(10) // Tap must be within 10 px of the start point
+        .maxDuration(300) // Tap must be under 300 ms
+        .onEnd(() => {
           'worklet'
-          // Show the move dialog after animation
-          scheduleOnRN(setShouldShowMoveDialog, true)
-        })
-      } else if (translationX > 80 && onMoveToCollection) {
-        // Short swipe right - show the move button
-        translateX.value = withSpring(100)
-      } else if (translationX < -150) {
-        // Long swipe left - show deletion dialog
-        // Strongest haptic feedback to warn about destructive action
-        // Note: runOnJS to call the external library (expo-haptics) from worklet
-        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Heavy)
-        translateX.value = withSpring(-300, {}, () => {
+          // Only trigger tap if card is in resting position
+          if (Math.abs(translateX.get()) < 5) {
+            scheduleOnRN(onPress)
+          }
+        }),
+    [translateX, onPress]
+  )
+
+  const longPressGesture = useMemo(
+    () =>
+      Gesture.LongPress()
+        .minDuration(500) // 500 ms for long press
+        .maxDistance(10) // Maximum movement allowed during long press
+        .onStart(() => {
           'worklet'
-          // Show deletion dialog after animation
-          scheduleOnRN(setShouldShowDeleteDialog, true)
+          scheduleOnRN(handleLongPress)
+        }),
+    [handleLongPress]
+  )
+
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetX([-15, 15]) // Only activate after 15 px horizontal movement
+        .failOffsetY([-20, 20]) // Fail if vertical movement exceeds 20 px
+        .maxPointers(1) // Only allow a single finger swipe
+        .onUpdate(event => {
+          'worklet'
+          translateX.set(event.translationX)
         })
-      } else if (translationX < -80) {
-        // Short swipe left - show the delete button
-        translateX.value = withSpring(-100)
-      } else {
-        // Return to the original position
-        translateX.value = withSpring(0)
-      }
-    })
+        .onEnd(event => {
+          'worklet'
+          const { translationX } = event
+
+          if (translationX > 150 && onMoveToCollection) {
+            // Long swipe right - show move to collection dialog
+            translateX.set(
+              withSpring(300, {}, () => {
+                'worklet'
+                // Show the move dialog after animation
+                scheduleOnRN(handleMoveToCollection)
+              })
+            )
+          } else if (translationX > 80 && onMoveToCollection) {
+            // Short swipe right - show the move button
+            translateX.set(withSpring(100))
+          } else if (translationX < -150) {
+            // Long swipe left - show deletion dialog
+            // Strongest haptic feedback to warn about destructive action
+            // Dispatch haptics to the RN thread.
+            scheduleOnRN(Haptics.impactAsync, Haptics.ImpactFeedbackStyle.Heavy)
+            translateX.set(
+              withSpring(-300, {}, () => {
+                'worklet'
+                // Show deletion dialog after animation
+                scheduleOnRN(handleDelete)
+              })
+            )
+          } else if (translationX < -80) {
+            // Short swipe left - show the delete button
+            translateX.set(withSpring(-100))
+          } else {
+            // Return to the original position
+            translateX.set(withSpring(0))
+          }
+        }),
+    [translateX, onMoveToCollection, handleMoveToCollection, handleDelete]
+  )
 
   // Compose gestures: long press should block pan, tap should be separate
-  const combinedGesture = Gesture.Exclusive(
-    longPressGesture,
-    panGesture,
-    tapGesture
+  const combinedGesture = useMemo(
+    () => Gesture.Exclusive(longPressGesture, panGesture, tapGesture),
+    [longPressGesture, panGesture, tapGesture]
   )
 
   return (

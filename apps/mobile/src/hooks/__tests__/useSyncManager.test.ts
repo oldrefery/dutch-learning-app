@@ -1,6 +1,24 @@
+import { act, renderHook, waitFor } from '@testing-library/react-native'
+import { AppState } from 'react-native'
+import { initializeDatabase } from '@/db/initDB'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import type { SyncResult } from '@/services/syncManager'
-import { refreshApplicationStoreAfterSync } from '../useSyncManager'
+import { syncManager, type SyncResult } from '@/services/syncManager'
+import {
+  useSyncManager,
+  refreshApplicationStoreAfterSync,
+} from '../useSyncManager'
+
+jest.mock('expo-router/react-navigation', () => ({ useFocusEffect: jest.fn() }))
+jest.mock('@/db/initDB', () => ({ initializeDatabase: jest.fn() }))
+jest.mock('@/services/syncManager', () => ({
+  syncManager: {
+    performSync: jest.fn(),
+    subscribeSyncStatus: jest.fn(() => () => {}),
+  },
+}))
+jest.mock('@/utils/network', () => ({
+  subscribeToNetworkChanges: jest.fn(() => () => {}),
+}))
 
 const successfulSync: SyncResult = {
   success: true,
@@ -39,5 +57,65 @@ describe('refreshApplicationStoreAfterSync', () => {
 
     expect(fetchCollections).not.toHaveBeenCalled()
     expect(fetchWords).not.toHaveBeenCalled()
+  })
+})
+
+describe('initial synchronization', () => {
+  const initializedDatabase = {} as Awaited<
+    ReturnType<typeof initializeDatabase>
+  >
+  const options = {
+    autoSyncOnMount: true,
+    autoSyncOnFocus: false,
+    autoSyncOnNetworkChange: false,
+    syncIntervalMs: 0,
+  }
+  beforeEach(() => {
+    jest.mocked(initializeDatabase).mockReset()
+    jest
+      .mocked(syncManager.performSync)
+      .mockReset()
+      .mockResolvedValue(successfulSync)
+    useApplicationStore.setState({ currentUserId: 'sync-user' })
+  })
+
+  it('waits for database initialization before synchronizing', async () => {
+    const previousAppState = AppState.currentState
+    AppState.currentState = 'active'
+    let finishInitialization: () => void = () => {}
+    jest.mocked(initializeDatabase).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          finishInitialization = () => resolve(initializedDatabase)
+        })
+    )
+    const { result, unmount } = renderHook(() => useSyncManager(options))
+    expect(syncManager.performSync).not.toHaveBeenCalled()
+    await act(async () => {
+      finishInitialization()
+    })
+    await waitFor(() =>
+      expect(result.current.syncResult).toEqual(successfulSync)
+    )
+    expect(syncManager.performSync).toHaveBeenCalledWith('sync-user')
+    expect(result.current.isSyncing).toBe(false)
+    unmount()
+    AppState.currentState = previousAppState
+  })
+
+  it('does not start synchronization after unmounting during initialization', async () => {
+    let finishInitialization: () => void = () => {}
+    jest.mocked(initializeDatabase).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          finishInitialization = () => resolve(initializedDatabase)
+        })
+    )
+    const { unmount } = renderHook(() => useSyncManager(options))
+    unmount()
+    await act(async () => {
+      finishInitialization()
+    })
+    expect(syncManager.performSync).not.toHaveBeenCalled()
   })
 })

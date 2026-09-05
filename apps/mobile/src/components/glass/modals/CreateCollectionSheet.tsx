@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 import { TextThemed } from '@/components/Themed'
@@ -24,12 +24,13 @@ export const CreateCollectionSheet: React.FC<CreateCollectionSheetProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const { createNewCollection } = useCollections()
 
-  // Reset name when modal opens
-  useEffect(() => {
+  const [previousVisible, setPreviousVisible] = useState(false)
+  if (previousVisible !== visible) {
+    setPreviousVisible(visible)
     if (visible) {
       setName('')
     }
-  }, [visible])
+  }
 
   const canCreate = useMemo(() => {
     const trimmed = name.trim()

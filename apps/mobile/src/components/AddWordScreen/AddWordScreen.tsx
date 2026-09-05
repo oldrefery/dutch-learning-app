@@ -278,7 +278,17 @@ export function AddWordScreen({
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const reduceTransparency = usePreferReducedTransparency()
-  const [inputWord, setInputWord] = useState('')
+  const queuedBatchWord = useBatchCaptureStore(state =>
+    state.items.some(item => item.id === batchItemId) ? initialWord : undefined
+  )
+  const [inputWord, setInputWord] = useState(queuedBatchWord ?? '')
+  const [inputBatchId, setInputBatchId] = useState(batchItemId)
+
+  if (inputBatchId !== batchItemId) {
+    setInputBatchId(batchItemId)
+    if (queuedBatchWord) setInputWord(queuedBatchWord)
+  }
+
   const [isAlreadyInCollection, setIsAlreadyInCollection] = useState(false)
   const [isCheckingDuplicate, setIsCheckingDuplicate] = useState(false)
   const [duplicateWordInfo, setDuplicateWordInfo] =
@@ -325,7 +335,6 @@ export function AddWordScreen({
     if (!queuedItem) return
 
     startedBatchItemRef.current = batchItemId
-    setInputWord(initialWord)
     useBatchCaptureStore.getState().setItemStatus(batchItemId, 'analyzing')
     clearAnalysis()
     void analyzeWord(initialWord)
@@ -383,6 +392,7 @@ export function AddWordScreen({
         }
 
         const hasNetwork = await isNetworkAvailable()
+
         if (!hasNetwork) {
           clearDuplicateState(duplicateState)
           return
@@ -478,6 +488,7 @@ export function AddWordScreen({
     }
 
     const success = await addWord(analysisResult)
+
     if (success) {
       setInputWord('')
       setIsAlreadyInCollection(true)
@@ -502,6 +513,7 @@ export function AddWordScreen({
     if (!batchItemId) return
 
     const batchStore = useBatchCaptureStore.getState()
+
     if (duplicateWordInfo) {
       batchStore.setPossibleDuplicate(batchItemId, {
         wordId: duplicateWordInfo.word_id,
@@ -536,6 +548,7 @@ export function AddWordScreen({
       .trim()
       .replace(/\./g, '')
       .replace(/\s+/g, ' ')
+
     if (!normalizedWord) return
 
     setInputWord(normalizedWord)

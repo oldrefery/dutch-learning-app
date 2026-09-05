@@ -47,25 +47,29 @@ export function useAudioReviewSession() {
   const mountedRef = useRef(true)
   const assessmentInFlightRef = useRef(false)
 
+  const wordId = currentWord?.word_id
+  const [previousWordId, setPreviousWordId] = useState(wordId)
+  if (previousWordId !== wordId) {
+    setPreviousWordId(wordId)
+    setIsPaused(false)
+  }
+
   const preferredTranslation = currentWord
     ? getPreferredTranslation(currentWord)
     : null
 
+  const dutchLemma = currentWord?.dutch_lemma
+  const ttsUrl = currentWord?.tts_url
   const playCurrentWord = useCallback(async () => {
-    if (!currentWord?.dutch_lemma) return
-
-    setIsPaused(false)
-    await playWord(currentWord.dutch_lemma, currentWord.tts_url)
-  }, [currentWord?.dutch_lemma, currentWord?.tts_url, playWord])
+    if (!dutchLemma) return
+    await playWord(dutchLemma, ttsUrl)
+  }, [dutchLemma, ttsUrl, playWord])
 
   useEffect(() => {
     if (startedRef.current) return
     startedRef.current = true
 
-    if (reviewSession) {
-      setIsStarting(false)
-      return
-    }
+    if (reviewSession) return
 
     const start = async () => {
       try {
@@ -120,6 +124,7 @@ export function useAudioReviewSession() {
     }
 
     void Haptics.selectionAsync().catch(() => undefined)
+    setIsPaused(false)
     await playCurrentWord()
   }, [
     currentWord,
@@ -131,6 +136,7 @@ export function useAudioReviewSession() {
 
   const replayPrompt = useCallback(async () => {
     void Haptics.selectionAsync().catch(() => undefined)
+    setIsPaused(false)
     await playCurrentWord()
   }, [playCurrentWord])
 

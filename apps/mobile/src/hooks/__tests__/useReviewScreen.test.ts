@@ -118,4 +118,42 @@ describe('useReviewScreen', () => {
     expect(result.current.reviewWords).toHaveLength(2)
     expect(result.current.totalWords).toBe(2)
   })
+  it('clears the previous summary when choosing another mode', () => {
+    const endReviewSession = jest.fn(() => {
+      useApplicationStore.setState({ reviewSession: null, currentWord: null })
+    })
+    useApplicationStore.setState({ endReviewSession })
+    const { result } = renderHook(() => useReviewScreen())
+    act(() => result.current.chooseAnotherMode())
+    expect(result.current.sessionComplete).toBe(false)
+    expect(result.current.reviewWords).toEqual([])
+  })
+
+  it('starts timing the next word again after revealing the previous word', async () => {
+    jest.useFakeTimers().setSystemTime(1000)
+    const submitReviewAssessment = jest.fn().mockResolvedValue(undefined)
+    useApplicationStore.setState({ submitReviewAssessment })
+    const { result } = renderHook(() => useReviewScreen())
+    act(() => {
+      jest.setSystemTime(2500)
+      result.current.revealAnswer()
+    })
+    act(() => {
+      jest.setSystemTime(5000)
+      useApplicationStore.setState({
+        reviewSession: createSession(REVIEW_MODE.MEANING_RECALL, 1),
+        currentWord: secondWord,
+      })
+    })
+    await act(async () => {
+      jest.setSystemTime(5700)
+      await result.current.handleGood()
+    })
+    expect(submitReviewAssessment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        wordId: secondWord.word_id,
+        responseTime: 700,
+      })
+    )
+  })
 })

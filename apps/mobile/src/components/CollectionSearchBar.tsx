@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import {
   View,
   TextInput,
@@ -33,10 +33,11 @@ export default function CollectionSearchBar({
   const [localValue, setLocalValue] = useState(searchQuery)
   const inputRef = useRef<TextInput>(null)
 
-  // Sync local value with external searchQuery when it changes from outside
-  useEffect(() => {
+  const [previousQuery, setPreviousQuery] = useState(searchQuery)
+  if (previousQuery !== searchQuery) {
+    setPreviousQuery(searchQuery)
     setLocalValue(searchQuery)
-  }, [searchQuery])
+  }
 
   // Debounce search to avoid excessive filtering while typing
   const debouncedSearch = useDebounce((query: string) => {

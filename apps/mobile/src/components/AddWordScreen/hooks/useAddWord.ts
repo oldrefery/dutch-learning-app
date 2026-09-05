@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { useApplicationStore } from '@/stores/useApplicationStore'
@@ -13,22 +13,20 @@ import type { Collection, GeminiWordAnalysis } from '@/types/database'
  */
 function resolveCollection(
   collections: Collection[],
+  lastId: string | null,
   preselectedId?: string
-): { collection: Collection; isPersistedMatch: boolean } | null {
+): Collection | null {
   if (preselectedId) {
     const preselected = collections.find(c => c.collection_id === preselectedId)
-    if (preselected) return { collection: preselected, isPersistedMatch: false }
+    if (preselected) return preselected
   }
 
-  const lastId = useSettingsStore.getState().lastSelectedCollectionId
   if (lastId) {
     const lastUsed = collections.find(c => c.collection_id === lastId)
-    if (lastUsed) return { collection: lastUsed, isPersistedMatch: true }
+    if (lastUsed) return lastUsed
   }
 
-  return collections.length > 0
-    ? { collection: collections[0], isPersistedMatch: false }
-    : null
+  return collections[0] ?? null
 }
 
 export const useAddWord = (preselectedCollectionId?: string) => {
@@ -58,44 +56,38 @@ export const useAddWord = (preselectedCollectionId?: string) => {
       .setLastSelectedCollectionId(collection?.collection_id ?? null)
   }, [])
 
-  // Auto-select collection when needed
+  const lastSelectedCollectionId = useSettingsStore(
+    state => state.lastSelectedCollectionId
+  )
+  const isCurrentValid =
+    selectedCollection &&
+    collections.some(
+      collection =>
+        collection.collection_id === selectedCollection.collection_id
+    )
+  if (isSettingsHydrated && !isCurrentValid) {
+    const resolved = resolveCollection(
+      collections,
+      lastSelectedCollectionId,
+      preselectedCollectionId
+    )
+    const nextCollection = resolved
+    if (selectedCollection !== nextCollection)
+      setSelectedCollection(nextCollection)
+  }
+
+  const hadSelectionRef = useRef(false)
+
+  // Persist the resolved selection to the external settings store.
   useEffect(() => {
     if (!isSettingsHydrated) return
-
-    if (collections.length === 0) {
-      if (selectedCollection) selectCollection(null)
-      return
+    if (selectedCollection) hadSelectionRef.current = true
+    if (!hadSelectionRef.current) return
+    const selectedId = selectedCollection?.collection_id ?? null
+    if (selectedId !== lastSelectedCollectionId) {
+      useSettingsStore.getState().setLastSelectedCollectionId(selectedId)
     }
-
-    const isCurrentValid =
-      selectedCollection &&
-      collections.some(
-        c => c.collection_id === selectedCollection.collection_id
-      )
-    if (isCurrentValid) return
-
-    // Clean up stale persisted ID before resolution
-    const lastId = useSettingsStore.getState().lastSelectedCollectionId
-    if (lastId && !collections.some(c => c.collection_id === lastId)) {
-      useSettingsStore.getState().setLastSelectedCollectionId(null)
-    }
-
-    const resolved = resolveCollection(collections, preselectedCollectionId)
-    if (!resolved) return
-
-    // Skip persistence write if the match came from persisted store (already saved)
-    if (resolved.isPersistedMatch) {
-      setSelectedCollection(resolved.collection)
-    } else {
-      selectCollection(resolved.collection)
-    }
-  }, [
-    collections,
-    selectedCollection,
-    preselectedCollectionId,
-    selectCollection,
-    isSettingsHydrated,
-  ])
+  }, [isSettingsHydrated, selectedCollection, lastSelectedCollectionId])
 
   const addWord = async (analysisResult: GeminiWordAnalysis) => {
     setIsAdding(true)

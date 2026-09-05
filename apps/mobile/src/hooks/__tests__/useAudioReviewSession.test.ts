@@ -312,4 +312,15 @@ describe('useAudioReviewSession', () => {
     expect(resumeAudio).toHaveBeenCalled()
     expect(result.current.isPaused).toBe(false)
   })
+  it('does not replay audio when unrelated word metadata changes', () => {
+    const { rerender } = renderHook(() => useAudioReviewSession())
+    expect(playWord).toHaveBeenCalledTimes(1)
+    mockUseReviewScreen.mockReturnValue(
+      createReviewState({
+        currentWord: { ...word, repetition_count: 5 },
+      })
+    )
+    rerender({})
+    expect(playWord).toHaveBeenCalledTimes(1)
+  })
 })

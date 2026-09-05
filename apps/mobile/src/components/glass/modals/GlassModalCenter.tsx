@@ -61,7 +61,7 @@ export const GlassModalCenter: React.FC<GlassModalCenterProps> = ({
   width = '92%',
   maxWidth = 560,
 }) => {
-  const [isMounted, setIsMounted] = useState<boolean>(false)
+  const [isMounted, setIsMounted] = useState<boolean>(visible)
   const reduceTransparency = usePreferReducedTransparency()
   const colorScheme = useColorScheme()
   const isDarkMode = colorScheme === 'dark'
@@ -73,19 +73,22 @@ export const GlassModalCenter: React.FC<GlassModalCenterProps> = ({
     setIsMounted(false)
   }, [])
 
+  const [previousVisible, setPreviousVisible] = useState(visible)
+  if (previousVisible !== visible) {
+    setPreviousVisible(visible)
+    if (visible) setIsMounted(true)
+  }
+
   // Mount/unmount handling to allow exit animation
   useEffect(() => {
     if (visible) {
-      setIsMounted(true)
-      progress.value = withTiming(0, { duration: ANIMATION_DURATION_MS })
+      progress.set(withTiming(0, { duration: ANIMATION_DURATION_MS }))
     } else {
-      progress.value = withTiming(
-        1,
-        { duration: ANIMATION_DURATION_MS },
-        () => {
+      progress.set(
+        withTiming(1, { duration: ANIMATION_DURATION_MS }, finished => {
           'worklet'
-          scheduleOnRN(unmountSheet)
-        }
+          if (finished) scheduleOnRN(unmountSheet)
+        })
       )
     }
   }, [visible, progress, unmountSheet])
@@ -95,12 +98,12 @@ export const GlassModalCenter: React.FC<GlassModalCenterProps> = ({
   }, [onClose])
 
   const sheetStyle = useAnimatedStyle(() => ({
-    opacity: 1 - progress.value,
-    transform: [{ scale: 0.96 + 0.04 * (1 - progress.value) }],
+    opacity: 1 - progress.get(),
+    transform: [{ scale: 0.96 + 0.04 * (1 - progress.get()) }],
   }))
 
   const backdropStyle = useAnimatedStyle(() => ({
-    opacity: 1 - progress.value,
+    opacity: 1 - progress.get(),
   }))
 
   if (!isMounted) return null

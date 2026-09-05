@@ -1,5 +1,5 @@
 import NetInfo, { NetInfoState } from '@react-native-community/netinfo'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NetworkError } from '@/types/ErrorTypes'
 
@@ -200,26 +200,30 @@ export function useNetworkStatus() {
   const [isConnected, setIsConnected] = useState<boolean | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const checkConnection = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const connected = await checkNetworkConnection()
-      setIsConnected(connected)
-    } catch (error) {
-      console.error('[Network] Error in useNetworkStatus:', error)
-      setIsConnected(false)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
-
   useEffect(() => {
-    checkConnection()
-
-    return subscribeToNetworkChanges((connected: boolean) => {
+    let active = true
+    void checkNetworkConnection()
+      .then(connected => {
+        if (active) {
+          setIsConnected(connected)
+          setIsLoading(false)
+        }
+      })
+      .catch(error => {
+        console.error('[Network] Error in useNetworkStatus:', error)
+        if (active) {
+          setIsConnected(false)
+          setIsLoading(false)
+        }
+      })
+    const unsubscribe = subscribeToNetworkChanges((connected: boolean) => {
       setIsConnected(connected)
     })
-  }, [checkConnection])
+    return () => {
+      active = false
+      unsubscribe()
+    }
+  }, [])
 
   return { isConnected, isLoading }
 }

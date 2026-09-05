@@ -15,20 +15,20 @@ interface NonSwipeableAreaProps {
  * wait until taps inside this area complete. Child Pressable components with
  * cancelable={false} continue to work normally while the parent tap is blocked.
  *
- * Requires ParentGestureContext to provide a ref to the gesture that should be blocked.
+ * Requires ParentGestureContext to provide the gesture that should be blocked.
  * When no context is provided, renders children without gesture wrapping.
  */
 export function NonSwipeableArea({ children, style }: NonSwipeableAreaProps) {
-  const parentGestureRef = useContext(ParentGestureContext)
+  const parentGesture = useContext(ParentGestureContext)
 
   const blockingGesture = useMemo(() => {
-    if (!parentGestureRef) return null
+    if (!parentGesture) return null
     return Gesture.Tap()
       .maxDuration(10000)
       .shouldCancelWhenOutside(false)
       .cancelsTouchesInView(false)
-      .blocksExternalGesture(parentGestureRef)
-  }, [parentGestureRef])
+      .blocksExternalGesture(parentGesture)
+  }, [parentGesture])
 
   if (!blockingGesture) {
     return <View style={style}>{children}</View>

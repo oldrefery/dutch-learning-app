@@ -72,6 +72,36 @@ describe('useLocalWords', () => {
     })
   })
 
+  it('discards a previous user request after switching users', async () => {
+    let finishPrevious: (words: LocalWord[]) => void = () => {}
+    const nextWords = [createMockWord({ user_id: 'next-user' })]
+    jest
+      .mocked(wordRepository.getWordsByUserId)
+      .mockImplementationOnce(
+        () =>
+          new Promise(resolve => {
+            finishPrevious = resolve
+          })
+      )
+      .mockResolvedValueOnce(nextWords)
+    const { result, rerender } = renderHook(() => useLocalWords())
+    ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
+      currentUserId: 'next-user',
+    })
+    rerender({})
+    await waitFor(() => expect(result.current.words).toEqual(nextWords))
+    await act(async () => {
+      finishPrevious([createMockWord()])
+    })
+    expect(result.current.words).toEqual(nextWords)
+    ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
+      currentUserId: null,
+    })
+    rerender({})
+    expect(result.current.words).toEqual([])
+    expect(result.current.isLoading).toBe(false)
+  })
+
   describe('fetchWords', () => {
     it('should fetch words by user ID', async () => {
       const mockWords = [

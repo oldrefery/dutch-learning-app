@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react'
+import React, { useMemo, useState, useCallback } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -49,7 +49,6 @@ function SwipeableCollectionCardContent({
 }: SwipeableCollectionCardProps) {
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
-  const lastGestureX = useRef<number>(0)
   const [showContextMenu, setShowContextMenu] = useState(false)
   const { userAccessLevel, collections } = useApplicationStore()
 
@@ -68,11 +67,11 @@ function SwipeableCollectionCardContent({
       : `collection-row-${collection.collection_id}`
   })()
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     // Prevent read-only users from deleting their last collection
     if (userAccessLevel === 'read_only' && collections.length <= 1) {
       ToastService.show('Cannot delete your last collection', ToastType.ERROR)
-      translateX.value = withSpring(0)
+      translateX.set(withSpring(0))
       return
     }
 
@@ -85,7 +84,7 @@ function SwipeableCollectionCardContent({
           style: 'cancel',
           onPress: () => {
             // Reset position when a user cancels deletion
-            translateX.value = withSpring(0)
+            translateX.set(withSpring(0))
           },
         },
         {
@@ -97,20 +96,28 @@ function SwipeableCollectionCardContent({
       {
         onDismiss: () => {
           // Reset position when the alert is dismissed by tapping outside
-          translateX.value = withSpring(0)
+          translateX.set(withSpring(0))
         },
       }
     )
-  }
+  }, [
+    userAccessLevel,
+    collections.length,
+    translateX,
+    collection.name,
+    collection.collection_id,
+    stats.totalWords,
+    onDelete,
+  ])
 
-  const handleRename = async () => {
+  const handleRename = useCallback(async () => {
     try {
       await onRename(collection.collection_id, collection.name)
       // Reset position after a successful rename
-      translateX.value = withSpring(0)
+      translateX.set(withSpring(0))
     } catch (error) {
       // Reset position on cancel/error
-      translateX.value = withSpring(0)
+      translateX.set(withSpring(0))
 
       // Only log actual errors, not cancellations
       if (error instanceof Error && error.name !== 'CancelledError') {
@@ -123,7 +130,7 @@ function SwipeableCollectionCardContent({
         })
       }
     }
-  }
+  }, [onRename, collection.collection_id, collection.name, translateX])
 
   const handleLongPress = useCallback(() => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
@@ -166,92 +173,106 @@ function SwipeableCollectionCardContent({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: translateX.value }],
+      transform: [{ translateX: translateX.get() }],
     }
   })
 
   const deleteButtonAnimatedStyle = useAnimatedStyle(() => {
     // Only expand on the long swipe left (>= 150 px)
-    const isLongSwipeLeft = translateX.value <= -150
+    const isLongSwipeLeft = translateX.get() <= -150
     return {
-      width: isLongSwipeLeft ? Math.abs(translateX.value) + 80 : 80,
+      width: isLongSwipeLeft ? Math.abs(translateX.get()) + 80 : 80,
     }
   })
 
   const renameButtonAnimatedStyle = useAnimatedStyle(() => {
     // Only expand on the long swipe right (>= 150 px)
-    const isLongSwipeRight = translateX.value >= 150
+    const isLongSwipeRight = translateX.get() >= 150
     return {
-      width: isLongSwipeRight ? translateX.value + 80 : 80,
+      width: isLongSwipeRight ? translateX.get() + 80 : 80,
     }
   })
 
-  const tapGesture = Gesture.Tap()
-    .maxDistance(10) // Tap must be within 10 px of the start point
-    .maxDuration(300) // Tap must be under 300 ms
-    .onEnd(() => {
-      'worklet'
-      // Only trigger tap if card is in resting position
-      if (Math.abs(translateX.value) < 5) {
-        scheduleOnRN(onPress)
-      }
-    })
-
-  const longPressGesture = Gesture.LongPress()
-    .minDuration(500)
-    .maxDistance(10)
-    .onStart(() => {
-      'worklet'
-      // Only trigger long press if card is in resting position
-      if (Math.abs(translateX.value) < 5) {
-        scheduleOnRN(handleLongPress)
-      }
-    })
-
-  const panGesture = Gesture.Pan()
-    .activeOffsetX([-15, 15]) // Only activate after 15 px horizontal movement
-    .failOffsetY([-20, 20]) // Fail if vertical movement exceeds 20 px
-    .maxPointers(1) // Only allow a single finger swipe
-    .onUpdate(event => {
-      'worklet'
-      translateX.value = event.translationX
-    })
-    .onEnd(event => {
-      'worklet'
-      const { translationX } = event
-      lastGestureX.current = translationX
-
-      if (translationX < -150) {
-        // Long swipe left - trigger immediate deletion
-        translateX.value = withSpring(-300, {}, () => {
+  const tapGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .maxDistance(10) // Tap must be within 10 px of the start point
+        .maxDuration(300) // Tap must be under 300 ms
+        .onEnd(() => {
           'worklet'
-          // Trigger deletion after animation
-          scheduleOnRN(handleDelete)
-        })
-      } else if (translationX > 150) {
-        // Long swipe right - trigger immediate rename
-        translateX.value = withSpring(300, {}, () => {
+          // Only trigger tap if card is in resting position
+          if (Math.abs(translateX.get()) < 5) {
+            scheduleOnRN(onPress)
+          }
+        }),
+    [translateX, onPress]
+  )
+
+  const longPressGesture = useMemo(
+    () =>
+      Gesture.LongPress()
+        .minDuration(500)
+        .maxDistance(10)
+        .onStart(() => {
           'worklet'
-          // Trigger rename after animation
-          scheduleOnRN(handleRename)
+          // Only trigger long press if card is in resting position
+          if (Math.abs(translateX.get()) < 5) {
+            scheduleOnRN(handleLongPress)
+          }
+        }),
+    [translateX, handleLongPress]
+  )
+
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetX([-15, 15]) // Only activate after 15 px horizontal movement
+        .failOffsetY([-20, 20]) // Fail if vertical movement exceeds 20 px
+        .maxPointers(1) // Only allow a single finger swipe
+        .onUpdate(event => {
+          'worklet'
+          translateX.set(event.translationX)
         })
-      } else if (translationX < -80) {
-        // Short swipe left - show the delete button
-        translateX.value = withSpring(-80)
-      } else if (translationX > 80) {
-        // Short swipe right - show the rename button
-        translateX.value = withSpring(80)
-      } else {
-        // Return to the original position
-        translateX.value = withSpring(0)
-      }
-    })
+        .onEnd(event => {
+          'worklet'
+          const { translationX } = event
+
+          if (translationX < -150) {
+            // Long swipe left - trigger immediate deletion
+            translateX.set(
+              withSpring(-300, {}, () => {
+                'worklet'
+                // Trigger deletion after animation
+                scheduleOnRN(handleDelete)
+              })
+            )
+          } else if (translationX > 150) {
+            // Long swipe right - trigger immediate rename
+            translateX.set(
+              withSpring(300, {}, () => {
+                'worklet'
+                // Trigger rename after animation
+                scheduleOnRN(handleRename)
+              })
+            )
+          } else if (translationX < -80) {
+            // Short swipe left - show the delete button
+            translateX.set(withSpring(-80))
+          } else if (translationX > 80) {
+            // Short swipe right - show the rename button
+            translateX.set(withSpring(80))
+          } else {
+            // Return to the original position
+            translateX.set(withSpring(0))
+          }
+        }),
+    [translateX, handleDelete, handleRename]
+  )
 
   // Use Exclusive to ensure only one gesture can win
-  const combinedGesture = Gesture.Exclusive(
-    longPressGesture,
-    panGesture,
-    tapGesture
+  const combinedGesture = useMemo(
+    () => Gesture.Exclusive(longPressGesture, panGesture, tapGesture),
+    [longPressGesture, panGesture, tapGesture]
   )
 
   return (

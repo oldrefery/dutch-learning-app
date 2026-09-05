@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   TouchableOpacity,
   Modal,
@@ -28,59 +28,92 @@ export default function ImageSelector({
   examples,
 }: ImageSelectorProps) {
   const [images, setImages] = useState<ImageOption[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(visible)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [offset, setOffset] = useState(0)
   const [searchQuery, setSearchQuery] = useState(englishTranslation)
-  const prevEnglishTranslation = useRef(englishTranslation)
+  const [previousProps, setPreviousProps] = useState({
+    visible,
+    englishTranslation,
+  })
+  const [request, setRequest] = useState(
+    visible ? { query: englishTranslation, partOfSpeech, examples } : null
+  )
+  if (
+    previousProps.visible !== visible ||
+    previousProps.englishTranslation !== englishTranslation
+  ) {
+    const query =
+      previousProps.englishTranslation !== englishTranslation
+        ? englishTranslation
+        : searchQuery
+    setPreviousProps({ visible, englishTranslation })
+    setSearchQuery(query)
+    setImages([])
+    setError(null)
+    setOffset(0)
+    setLoading(visible && Boolean(query.trim()))
+    setLoadingMore(false)
+    setRequest(
+      visible && query.trim() ? { query, partOfSpeech, examples } : null
+    )
+  }
   const colorScheme = useNormalizedColorScheme()
   const styles = getImageSelectorStyles(colorScheme)
 
-  const loadImages = useCallback(async () => {
+  const loadImages = useCallback(() => {
     if (!searchQuery.trim()) {
       setError('Please enter a search query')
       return
     }
-
     setLoading(true)
     setError(null)
-    setImages([]) // Clear previous images
-    setOffset(0) // Reset offset
-
-    try {
-      const result = await withSessionRetry(async () => {
-        const { data, error } = await supabase.functions.invoke(
-          'get-multiple-images',
-          {
-            body: {
-              englishTranslation: searchQuery,
-              partOfSpeech,
-              examples,
-              count: IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT,
-            },
-          }
-        )
-
-        if (error) throw new Error(error.message)
-        return data
-      }, 'loadImages')
-
-      setImages(result?.images || [])
-    } catch (err) {
-      setError('Failed to load image options. Please try again.')
-      Sentry.captureException(err, {
-        tags: { operation: 'loadImages' },
-        extra: {
-          message: 'Failed to load images',
-          searchQuery,
-          partOfSpeech,
-        },
-      })
-    } finally {
-      setLoading(false)
-    }
+    setImages([])
+    setOffset(0)
+    setRequest({ query: searchQuery, partOfSpeech, examples })
   }, [searchQuery, partOfSpeech, examples])
+
+  useEffect(() => {
+    if (!request) return
+    let active = true
+    void withSessionRetry(async () => {
+      const { data, error: responseError } = await supabase.functions.invoke(
+        'get-multiple-images',
+        {
+          body: {
+            englishTranslation: request.query,
+            partOfSpeech: request.partOfSpeech,
+            examples: request.examples,
+            count: IMAGE_CONFIG.SELECTOR_OPTIONS_COUNT,
+          },
+        }
+      )
+      if (responseError) throw new Error(responseError.message)
+      return data
+    }, 'loadImages')
+      .then(result => {
+        if (active) setImages(result?.images || [])
+      })
+      .catch(err => {
+        if (!active) return
+        setError('Failed to load image options. Please try again.')
+        Sentry.captureException(err, {
+          tags: { operation: 'loadImages' },
+          extra: {
+            message: 'Failed to load images',
+            searchQuery: request.query,
+            partOfSpeech: request.partOfSpeech,
+          },
+        })
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [request])
 
   const loadMoreImages = useCallback(async () => {
     setLoadingMore(true)
@@ -130,27 +163,6 @@ export default function ImageSelector({
       setLoadingMore(false)
     }
   }, [searchQuery, partOfSpeech, examples, offset])
-
-  // Handle modal open/close and word changes
-  useEffect(() => {
-    if (visible) {
-      // Update the search query only if the word changed
-      if (englishTranslation !== prevEnglishTranslation.current) {
-        setSearchQuery(englishTranslation)
-        prevEnglishTranslation.current = englishTranslation
-        loadImages()
-      } else if (images.length === 0) {
-        // First time opening - load images
-        loadImages()
-      }
-    } else {
-      // Clear images when modal closes to save memory
-      setImages([])
-      setError(null)
-      setOffset(0)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, englishTranslation])
 
   const handleImageSelect = (imageUrl: string) => {
     onSelect(imageUrl)

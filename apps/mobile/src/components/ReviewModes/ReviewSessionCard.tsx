@@ -38,7 +38,6 @@ interface ReviewSessionCardProps {
   tapGesture: GestureType
   panGesture: GestureType
   lockedGesture: GestureType
-  tapGestureRef: React.RefObject<GestureType | undefined>
   pronunciationRef: React.RefObject<View | null>
   onPlayAudio: (url?: string) => void
   onSelectRecognitionOption: (option: RecognitionOption) => void
@@ -126,7 +125,6 @@ export function ReviewSessionCard({
   tapGesture,
   panGesture,
   lockedGesture,
-  tapGestureRef,
   pronunciationRef,
   onPlayAudio,
   onSelectRecognitionOption,
@@ -152,7 +150,7 @@ export function ReviewSessionCard({
 
   return (
     <GestureErrorBoundary>
-      <ParentGestureContext.Provider value={tapGestureRef}>
+      <ParentGestureContext.Provider value={tapGesture}>
         <GestureDetector gesture={gesture}>
           <ViewThemed style={reviewScreenStyles.flashcard}>
             {!isFlipped ? (
