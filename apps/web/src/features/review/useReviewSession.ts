@@ -1,284 +1,221 @@
 'use client'
 
-import { useCallback, useMemo, useRef, useState } from 'react'
-import { submitReviewAssessment } from './actions'
 import {
-  buildRecognitionOptions,
-  getLocalReviewDate,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from 'react'
+import {
+  autoAdvanceReview,
+  browseReviewHistory,
+  closeReviewDetails,
+  getAllowedReviewAssessments,
+  getReviewAutoAdvance,
+  openReviewDetails,
+  previousReviewWord,
+  returnToReviewQuestion,
+  revealReviewAnswer,
+  setReviewForeground,
+  setReviewManualRecognition,
+  skipAssistedReview,
+  summarizeReviewFlow,
+} from '@woordenaar/domain'
+import { submitReviewAssessment } from './actions'
+import { createReviewSessionController } from './session-controller'
+import {
   getPreferredTranslation,
   getReviewAnswer,
-  groupAdaptiveDecisions,
-  MAX_REVIEW_RESPONSE_TIME_MS,
   selectReviewWords,
 } from './review-domain'
 import type {
   RecognitionOption,
-  ReviewAssessment,
   ReviewScope,
   ReviewSessionMode,
-  ReviewSubmissionInput,
-  ReviewWord,
   ReviewWorkspaceData,
 } from './types'
-
-type SessionStage = 'setup' | 'review' | 'complete'
-
-const getNextUnassessedIndex = (
-  words: readonly ReviewWord[],
-  assessedIds: ReadonlySet<string>,
-  currentIndex: number
-) => {
-  for (let offset = 1; offset <= words.length; offset += 1) {
-    const index = (currentIndex + offset) % words.length
-    if (!assessedIds.has(words[index].id)) return index
-  }
-  return currentIndex
-}
-
-const getAdaptiveMessage = (
-  mode: ReviewSessionMode,
-  decision: ReturnType<typeof groupAdaptiveDecisions>[string] | undefined
-) => {
-  if (mode !== 'adaptive' || !decision) return null
-  if (decision.reason === 'promotion') {
-    return `Adaptive challenge promoted this word to ${decision.mode}.`
-  }
-  if (decision.reason === 'demotion') {
-    return `Adaptive challenge moved this word back to ${decision.mode}.`
-  }
-  return 'Adaptive challenge starts this word in recognition mode.'
-}
 
 export function useReviewSession(
   data: ReviewWorkspaceData,
   initialScope: ReviewScope,
   initialCollectionId: string | null,
+  userId: string,
   initialMode: ReviewSessionMode = 'adaptive'
 ) {
-  const [words, setWords] = useState(data.words)
-  const [events, setEvents] = useState(data.events)
-  const [mode, setMode] = useState<ReviewSessionMode>(initialMode)
+  const [controller] = useState(() =>
+    createReviewSessionController(userId, data, submitReviewAssessment)
+  )
+  const { flow, words } = useSyncExternalStore(
+    controller.subscribe,
+    controller.getSnapshot,
+    controller.getServerSnapshot
+  )
+  const [mode, setMode] = useState(initialMode)
   const [scope, setScope] = useState(initialScope)
   const [collectionId, setCollectionId] = useState(initialCollectionId)
-  const [sessionWords, setSessionWords] = useState<ReviewWord[]>([])
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [assessedIds, setAssessedIds] = useState<ReadonlySet<string>>(new Set())
-  const [assessmentCounts, setAssessmentCounts] = useState<
-    Record<ReviewAssessment, number>
-  >({ again: 0, hard: 0, good: 0, easy: 0 })
-  const [stage, setStage] = useState<SessionStage>('setup')
-  const [revealed, setRevealed] = useState(false)
-  const [selectedOption, setSelectedOption] =
-    useState<RecognitionOption | null>(null)
-  const [pending, setPending] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [manualRecognition, setManualPreference] = useState(false)
   const [emptyMessage, setEmptyMessage] = useState<string | null>(null)
-  const responseStartedAtRef = useRef(0)
-  const retryInputRef = useRef<ReviewSubmissionInput | null>(null)
-
   const dueWords = useMemo(
     () => selectReviewWords(words, scope, collectionId),
-    [collectionId, scope, words]
-  )
-  const adaptiveDecisions = useMemo(
-    () => groupAdaptiveDecisions(words, events),
-    [events, words]
-  )
-  const currentWord = sessionWords[currentIndex] ?? null
-  const configuredMode = currentWord
-    ? mode === 'adaptive'
-      ? (adaptiveDecisions[currentWord.id]?.mode ?? 'recognition')
-      : mode
-    : 'meaning-recall'
-  const recognitionOptions = useMemo(
-    () =>
-      currentWord && configuredMode === 'recognition'
-        ? buildRecognitionOptions(currentWord, words)
-        : null,
-    [configuredMode, currentWord, words]
-  )
-  const effectiveMode =
-    configuredMode === 'recognition' && !recognitionOptions
-      ? 'meaning-recall'
-      : configuredMode
-  const translation = currentWord ? getPreferredTranslation(currentWord) : null
-  const answer = currentWord ? getReviewAnswer(currentWord, effectiveMode) : ''
-  const adaptiveMessage = getAdaptiveMessage(
-    mode,
-    currentWord ? adaptiveDecisions[currentWord.id] : undefined
+    [words, scope, collectionId]
   )
 
-  const resetCardState = useCallback(() => {
-    setRevealed(false)
-    setSelectedOption(null)
-    setError(null)
-    responseStartedAtRef.current = Date.now()
-    retryInputRef.current = null
-  }, [])
-
-  const start = useCallback(() => {
-    const nextWords = selectReviewWords(words, scope, collectionId)
-    if (nextWords.length === 0) {
-      setEmptyMessage('No words are due in this scope. Try another scope.')
-      setStage('setup')
-      return
-    }
-
-    setSessionWords(nextWords)
-    setCurrentIndex(0)
-    setAssessedIds(new Set())
-    setAssessmentCounts({ again: 0, hard: 0, good: 0, easy: 0 })
-    setEmptyMessage(null)
-    resetCardState()
-    setStage('review')
-  }, [collectionId, resetCardState, scope, words])
-
-  const goTo = useCallback(
-    (direction: -1 | 1) => {
-      if (sessionWords.length < 2 || pending) return
-      resetCardState()
-      setCurrentIndex(
-        index => (index + direction + sessionWords.length) % sessionWords.length
+  useEffect(() => {
+    controller.attach()
+    const visibility = () =>
+      controller.transition(state =>
+        setReviewForeground(state, !document.hidden)
       )
+    visibility()
+    document.addEventListener('visibilitychange', visibility)
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      if (!controller.getSnapshot().flow) return
+      event.preventDefault()
+    }
+    window.addEventListener('beforeunload', beforeUnload)
+    return () => {
+      controller.detach()
+      document.removeEventListener('visibilitychange', visibility)
+      window.removeEventListener('beforeunload', beforeUnload)
+    }
+  }, [controller])
+
+  useEffect(() => {
+    if (!flow) return
+    const ticket = getReviewAutoAdvance(flow)
+    if (!ticket) return
+    const timer = window.setTimeout(
+      () => {
+        controller.transition(state =>
+          setReviewForeground(state, !document.hidden)
+        )
+        controller.transition(state =>
+          autoAdvanceReview(state, ticket, Date.now())
+        )
+      },
+      Math.max(0, ticket.notBefore - Date.now())
+    )
+    return () => window.clearTimeout(timer)
+  }, [controller, flow])
+
+  const setManualRecognition = useCallback(
+    (value: boolean) => {
+      setManualPreference(value)
+      controller.transition(state => setReviewManualRecognition(state, value))
     },
-    [pending, resetCardState, sessionWords.length]
+    [controller]
   )
-
-  const submit = useCallback(
-    async (assessment: ReviewAssessment) => {
-      if (!currentWord || pending || assessedIds.has(currentWord.id)) return
-
-      const answeredCorrectly =
-        effectiveMode === 'recognition'
-          ? (selectedOption?.isCorrect ?? null)
-          : null
-      const retryInput = retryInputRef.current
-      const input =
-        retryInput?.assessment === assessment
-          ? retryInput
-          : {
-              answeredCorrectly,
-              assessment,
-              eventId: crypto.randomUUID(),
-              responseTimeMs: Math.min(
-                MAX_REVIEW_RESPONSE_TIME_MS,
-                Math.max(0, Date.now() - responseStartedAtRef.current)
-              ),
-              reviewDate: getLocalReviewDate(),
-              reviewedAt: new Date().toISOString(),
-              reviewMode: effectiveMode,
-              wordId: currentWord.id,
-            }
-
-      retryInputRef.current = input
-      setPending(true)
-      setError(null)
-
-      try {
-        const result = await submitReviewAssessment(input)
-        if (result.status === 'error') {
-          setError(result.message)
-          return
-        }
-
-        retryInputRef.current = null
-        const updateWord = (word: ReviewWord) =>
-          word.id === result.update.wordId
-            ? {
-                ...word,
-                easinessFactor: result.update.easinessFactor,
-                intervalDays: result.update.intervalDays,
-                lastReviewedAt: result.update.lastReviewedAt,
-                nextReviewDate: result.update.nextReviewDate,
-                repetitionCount: result.update.repetitionCount,
-              }
-            : word
-        setWords(current => current.map(updateWord))
-        setSessionWords(current => current.map(updateWord))
-        setEvents(current => [
-          {
-            answeredCorrectly: input.answeredCorrectly,
-            assessment: input.assessment,
-            eventId: input.eventId,
-            reviewMode: input.reviewMode,
-            reviewedAt: input.reviewedAt,
-            wordId: input.wordId,
-          },
-          ...current,
-        ])
-        setAssessmentCounts(current => ({
-          ...current,
-          [assessment]: current[assessment] + 1,
-        }))
-
-        const nextAssessedIds = new Set(assessedIds).add(currentWord.id)
-        setAssessedIds(nextAssessedIds)
-        if (nextAssessedIds.size === sessionWords.length) {
-          setStage('complete')
-        } else {
-          resetCardState()
-          setCurrentIndex(
-            getNextUnassessedIndex(sessionWords, nextAssessedIds, currentIndex)
-          )
-        }
-      } catch {
-        setError('Could not save this review. Please try again.')
-      } finally {
-        setPending(false)
-      }
-    },
-    [
-      assessedIds,
-      currentIndex,
-      currentWord,
-      effectiveMode,
-      pending,
-      resetCardState,
-      selectedOption?.isCorrect,
-      sessionWords,
-    ]
-  )
-
-  const selectOption = useCallback((option: RecognitionOption) => {
-    setSelectedOption(option)
-    setRevealed(true)
-  }, [])
-
-  const changeMode = useCallback(() => {
-    setStage('setup')
-    setEmptyMessage(null)
-  }, [])
+  const start = () => {
+    if (!controller.start(scope, collectionId, mode, manualRecognition)) {
+      if (!controller.exit()) return
+      setEmptyMessage('No words are due in this scope. Try another scope.')
+    } else {
+      controller.transition(state =>
+        setReviewForeground(state, !document.hidden)
+      )
+      setEmptyMessage(null)
+    }
+  }
+  const historyEntry =
+    flow?.view.kind === 'history' ? flow.history[flow.view.index] : null
+  const displayed = historyEntry?.question ?? flow?.active
+  const currentWord = displayed?.question.payload.word ?? null
+  const effectiveMode = displayed?.question.mode ?? 'meaning-recall'
+  const options =
+    displayed?.question.options.map(option => ({ ...option })) ?? []
+  const summary = flow ? summarizeReviewFlow(flow) : null
+  const sessionWords = flow
+    ? [
+        ...flow.history.map(entry => entry.question.question.payload.word),
+        ...(flow.active ? [flow.active.question.payload.word] : []),
+        ...flow.remaining.map(question => question.payload.word),
+      ]
+    : []
+  const status = flow?.active?.submission?.status
 
   return {
-    adaptiveMessage,
-    answer,
-    assessed: currentWord ? assessedIds.has(currentWord.id) : false,
-    assessmentCounts,
+    flow,
+    historyEntry,
+    summary,
+    manualRecognition,
+    setManualRecognition,
+    adaptiveMessage: displayed?.question.payload.adaptiveMessage ?? null,
+    answer: currentWord ? getReviewAnswer(currentWord, effectiveMode) : '',
+    assessed:
+      Boolean(historyEntry) || displayed?.submission?.status === 'saved',
+    assessmentCounts: summary?.counts ?? {
+      again: 0,
+      hard: 0,
+      good: 0,
+      easy: 0,
+    },
     collectionId,
-    currentIndex,
+    currentIndex:
+      flow?.view.kind === 'history'
+        ? flow.view.index
+        : (flow?.history.length ?? 0),
     currentWord,
     dueWords,
     dueCount: dueWords.length,
     effectiveMode,
     emptyMessage,
-    error,
+    error: flow?.active?.submission?.error ?? null,
     mode,
-    pending,
-    recognitionOptions,
-    revealed,
-    selectedOption,
+    pending: status === 'saving',
+    unsettled: status === 'saving' || status === 'failed',
+    recognitionOptions: options.length ? options : null,
+    revealed: historyEntry ? true : (displayed?.revealed ?? false),
+    selectedOption:
+      options.find(option => option.id === displayed?.selectedOptionId) ?? null,
     sessionWords,
-    stage,
-    translation,
-    changeMode,
-    goTo,
-    selectOption,
+    stage: !flow
+      ? 'setup'
+      : summary?.finished && !historyEntry
+        ? 'complete'
+        : 'review',
+    translation: currentWord ? getPreferredTranslation(currentWord) : null,
+    allowedAssessments: flow ? getAllowedReviewAssessments(flow) : [],
+    detailsVisible:
+      flow?.view.kind === 'details' ||
+      (flow?.view.kind === 'history' && flow.view.details),
+    openDetails: () => controller.transition(openReviewDetails),
+    closeDetails: () => controller.transition(closeReviewDetails),
+    returnToCurrent: () => controller.transition(returnToReviewQuestion),
+    browseHistory: (index: number) =>
+      controller.transition(state => browseReviewHistory(state, index)),
+    skip: () =>
+      controller.transition(state =>
+        state.active
+          ? skipAssistedReview(state, state.active.question.id, Date.now())
+          : state
+      ),
+    changeMode: () => {
+      controller.exit()
+    },
+    goTo: (direction: -1 | 1) =>
+      controller.transition(state => {
+        if (direction === -1) return previousReviewWord(state)
+        if (state.view.kind !== 'history') return state
+        return state.view.index + 1 < state.history.length
+          ? browseReviewHistory(state, state.view.index + 1)
+          : returnToReviewQuestion(state)
+      }),
+    selectOption: (option: RecognitionOption) =>
+      controller.selectOption(option.id),
     setCollectionId,
     setMode,
-    setRevealed,
     setScope,
     start,
-    submit,
+    submit: controller.submit,
     scope,
+    setRevealed: (value: boolean) => {
+      if (value)
+        controller.transition(state =>
+          state.active
+            ? revealReviewAnswer(state, state.active.question.id, Date.now())
+            : state
+        )
+    },
   }
 }

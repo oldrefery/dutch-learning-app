@@ -1,168 +1,311 @@
 import { act, renderHook } from '@testing-library/react'
 import { submitReviewAssessment } from './actions'
-import type {
-  ReviewSubmissionResult,
-  ReviewWord,
-  ReviewWorkspaceData,
-} from './types'
+import { makeData, makeWord, successfulResult } from './__fixtures__/session'
 import { useReviewSession } from './useReviewSession'
+import type { ReviewSubmissionResult, ReviewSessionMode } from './types'
 
-jest.mock('./actions', () => ({
-  submitReviewAssessment: jest.fn(),
-}))
-
-const mockSubmitReviewAssessment = jest.mocked(submitReviewAssessment)
-
-const makeWord = (
-  id: string,
-  translation: string,
-  overrides: Partial<ReviewWord> = {}
-): ReviewWord => ({
-  article: null,
-  collectionId: 'collection-1',
-  dutchLemma: `woord-${id}`,
-  dutchOriginal: null,
-  easinessFactor: 2.5,
-  id,
-  imageUrl: null,
-  intervalDays: 0,
-  lastReviewedAt: null,
-  nextReviewDate: '2020-01-01',
-  partOfSpeech: 'noun',
-  repetitionCount: 0,
-  translations: { en: [translation] },
-  ttsUrl: null,
-  ...overrides,
-})
-
-const makeData = (words: ReviewWord[]): ReviewWorkspaceData => ({
-  collections: [{ id: 'collection-1', name: 'Test collection' }],
-  events: [],
-  words,
-})
-
-const successfulResult = (
-  wordId: string
-): Extract<ReviewSubmissionResult, { status: 'success' }> => ({
-  status: 'success',
-  update: {
-    easinessFactor: 2.6,
-    intervalDays: 1,
-    lastReviewedAt: '2026-09-04T12:00:00.000Z',
-    nextReviewDate: '2026-09-05',
-    repetitionCount: 1,
-    wordId,
-  },
-})
-
-describe('useReviewSession', () => {
-  beforeEach(() => {
-    mockSubmitReviewAssessment.mockReset()
+jest.mock('./actions', () => ({ submitReviewAssessment: jest.fn() }))
+const persist = jest.mocked(submitReviewAssessment)
+const setup = (mode: ReviewSessionMode = 'recognition', data = makeData()) => {
+  const rendered = renderHook(() =>
+    useReviewSession(data, 'all-due', null, 'test-user', mode)
+  )
+  act(() => rendered.result.current.start())
+  return rendered
+}
+const selectCorrect = (result: ReturnType<typeof setup>['result']) => {
+  const option = result.current.recognitionOptions?.find(
+    candidate => candidate.isCorrect
+  )
+  if (!option) throw new Error('Missing correct option')
+  return result.current.selectOption(option)
+}
+const flush = async () => {
+  await act(async () => {})
+}
+const tick = (ms: number) =>
+  act(() => {
+    jest.advanceTimersByTime(ms)
   })
 
-  test('completes a session and applies the returned SRS update', async () => {
-    const word = makeWord('word-1', 'house')
-    mockSubmitReviewAssessment.mockResolvedValue(successfulResult(word.id))
-    const { result } = renderHook(() =>
-      useReviewSession(makeData([word]), 'all-due', null, 'meaning-recall')
-    )
+beforeEach(() => {
+  jest.useFakeTimers().setSystemTime(new Date('2026-09-06T12:00:00Z'))
+  Object.defineProperty(document, 'hidden', {
+    configurable: true,
+    value: false,
+  })
+  persist
+    .mockReset()
+    .mockImplementation(async input => successfulResult(input.wordId))
+})
+afterEach(() => {
+  jest.useRealTimers()
+})
 
-    expect(result.current.stage).toBe('setup')
-    expect(result.current.dueCount).toBe(1)
+test('fast correct recognition saves Good once and advances after 600ms', async () => {
+  const { result } = setup()
+  act(() => {
+    selectCorrect(result)
+    selectCorrect(result)
+  })
+  await flush()
+  expect(persist).toHaveBeenCalledTimes(1)
+  expect(persist).toHaveBeenCalledWith(
+    expect.objectContaining({ assessment: 'good', answeredCorrectly: true })
+  )
+  expect(result.current.currentIndex).toBe(0)
+  tick(599)
+  expect(result.current.currentIndex).toBe(0)
+  tick(1)
+  expect(result.current.currentIndex).toBe(1)
+  tick(5000)
+  expect(result.current.currentIndex).toBe(1)
+  expect(result.current.summary?.assessed).toBe(1)
+})
 
-    act(() => result.current.start())
-    expect(result.current.stage).toBe('review')
-    expect(result.current.currentWord?.id).toBe(word.id)
-
-    await act(async () => result.current.submit('good'))
-
-    expect(result.current.stage).toBe('complete')
-    expect(result.current.assessmentCounts.good).toBe(1)
-    expect(result.current.sessionWords[0]).toMatchObject({
-      easinessFactor: 2.6,
-      intervalDays: 1,
-      nextReviewDate: '2026-09-05',
-      repetitionCount: 1,
-    })
-    expect(mockSubmitReviewAssessment).toHaveBeenCalledWith(
-      expect.objectContaining({
-        answeredCorrectly: null,
-        assessment: 'good',
-        reviewMode: 'meaning-recall',
-        wordId: word.id,
+test('slow acknowledgement cannot advance before save', async () => {
+  let resolve!: (value: ReviewSubmissionResult) => void
+  persist.mockImplementationOnce(
+    () =>
+      new Promise(done => {
+        resolve = done
       })
-    )
+  )
+  const { result } = setup()
+  act(() => selectCorrect(result))
+  tick(5000)
+  expect(result.current.currentIndex).toBe(0)
+  expect(result.current.pending).toBe(true)
+  await act(async () => resolve(successfulResult('word-1')))
+  tick(0)
+  expect(result.current.currentIndex).toBe(1)
+})
+
+test('wrong choice opens details and waits for explicit Again', async () => {
+  const { result } = setup()
+  const option = result.current.recognitionOptions!.find(
+    candidate => !candidate.isCorrect
+  )!
+  act(() => result.current.selectOption(option))
+  expect(result.current.detailsVisible).toBe(true)
+  tick(5000)
+  expect(persist).not.toHaveBeenCalled()
+  await act(async () => result.current.submit('good'))
+  expect(persist).not.toHaveBeenCalled()
+  await act(async () => result.current.submit('again'))
+  expect(result.current.currentIndex).toBe(1)
+  expect(persist).toHaveBeenCalledWith(
+    expect.objectContaining({ assessment: 'again', answeredCorrectly: false })
+  )
+})
+
+test('details during success feedback cancel auto-advance until Continue', async () => {
+  const { result } = setup()
+  act(() => selectCorrect(result))
+  await flush()
+  act(() => result.current.openDetails())
+  tick(5000)
+  act(() => result.current.closeDetails())
+  tick(5000)
+  expect(result.current.currentIndex).toBe(0)
+  await act(async () => result.current.submit('good'))
+  expect(result.current.currentIndex).toBe(1)
+  expect(persist).toHaveBeenCalledTimes(1)
+})
+
+test('backgrounding pauses the timer and foregrounding does not resume it', async () => {
+  const { result } = setup()
+  act(() => selectCorrect(result))
+  await flush()
+  Object.defineProperty(document, 'hidden', { configurable: true, value: true })
+  act(() => document.dispatchEvent(new Event('visibilitychange')))
+  tick(1000)
+  Object.defineProperty(document, 'hidden', {
+    configurable: true,
+    value: false,
   })
+  act(() => document.dispatchEvent(new Event('visibilitychange')))
+  tick(1000)
+  expect(result.current.currentIndex).toBe(0)
+  await act(async () => result.current.submit('good'))
+  expect(result.current.currentIndex).toBe(1)
+})
 
-  test('keeps a failed submission retryable with the same event id', async () => {
-    const word = makeWord('word-1', 'house')
-    mockSubmitReviewAssessment.mockResolvedValueOnce({
-      status: 'error',
-      message: 'Could not persist review.',
-    })
-    const { result } = renderHook(() =>
-      useReviewSession(makeData([word]), 'all-due', null, 'meaning-recall')
-    )
-
-    act(() => result.current.start())
-    await act(async () => result.current.submit('easy'))
-
-    expect(result.current.error).toBe('Could not persist review.')
-    expect(result.current.stage).toBe('review')
-    const firstInput = mockSubmitReviewAssessment.mock.calls[0][0]
-
-    mockSubmitReviewAssessment.mockResolvedValueOnce(successfulResult(word.id))
-    await act(async () => result.current.submit('easy'))
-
-    expect(mockSubmitReviewAssessment.mock.calls[1][0].eventId).toBe(
-      firstInput.eventId
-    )
-    expect(result.current.stage).toBe('complete')
+test('history preserves the exact pending question and options without new writes', async () => {
+  const { result } = setup()
+  act(() => selectCorrect(result))
+  await flush()
+  tick(600)
+  const pending = result.current.flow!.active
+  act(() => result.current.goTo(-1))
+  expect(result.current.historyEntry?.result).toMatchObject({
+    assessment: 'good',
   })
+  await act(async () => result.current.submit('easy'))
+  act(() => result.current.openDetails())
+  act(() => result.current.returnToCurrent())
+  expect(result.current.flow!.active).toEqual({ ...pending, autoPaused: true })
+  expect(result.current.flow!.active!.question).toBe(pending!.question)
+  expect(persist).toHaveBeenCalledTimes(1)
+})
 
-  test('records whether a selected recognition option was correct', async () => {
-    const words = [
-      makeWord('word-1', 'house'),
-      makeWord('word-2', 'tree'),
-      makeWord('word-3', 'street'),
-      makeWord('word-4', 'book'),
-    ]
-    mockSubmitReviewAssessment.mockResolvedValue(successfulResult('word-1'))
-    const { result } = renderHook(() =>
-      useReviewSession(makeData(words), 'all-due', null, 'recognition')
-    )
+test('peek allows only Again or Skip even after closing details', async () => {
+  const { result } = setup()
+  act(() => result.current.openDetails())
+  act(() => result.current.closeDetails())
+  act(() => selectCorrect(result))
+  await act(async () => result.current.submit('easy'))
+  expect(persist).not.toHaveBeenCalled()
+  expect(result.current.allowedAssessments).toEqual(['again'])
+  act(() => result.current.skip())
+  expect(result.current.summary).toMatchObject({ skipped: 1, assessed: 0 })
+  expect(result.current.currentIndex).toBe(1)
+})
 
-    act(() => result.current.start())
-    const correctOption = result.current.recognitionOptions?.find(
-      option => option.isCorrect
-    )
-    if (!correctOption) throw new Error('Expected a correct recognition option')
+test('manual recognition waits for a chosen rating', async () => {
+  const data = makeData()
+  const { result } = renderHook(() =>
+    useReviewSession(data, 'all-due', null, 'test-user', 'recognition')
+  )
+  act(() => result.current.setManualRecognition(true))
+  act(() => result.current.start())
+  act(() => selectCorrect(result))
+  tick(5000)
+  expect(persist).not.toHaveBeenCalled()
+  await act(async () => result.current.submit('hard'))
+  expect(persist).toHaveBeenCalledWith(
+    expect.objectContaining({ assessment: 'hard' })
+  )
+  expect(result.current.currentIndex).toBe(1)
+})
 
-    act(() => result.current.selectOption(correctOption))
-    await act(async () => result.current.submit('good'))
+test('preference changes affect the next question, not an in-flight answer', async () => {
+  const { result } = setup()
+  act(() => result.current.setManualRecognition(true))
+  act(() => selectCorrect(result))
+  await flush()
+  tick(600)
+  act(() => selectCorrect(result))
+  await flush()
+  tick(1000)
+  expect(result.current.currentIndex).toBe(1)
+  expect(persist).toHaveBeenCalledTimes(1)
+  expect(result.current.flow?.active?.manualRecognition).toBe(true)
+})
 
-    expect(mockSubmitReviewAssessment).toHaveBeenCalledWith(
-      expect.objectContaining({
-        answeredCorrectly: true,
-        reviewMode: 'recognition',
+test('uncertain submission locks its full retry payload and blocks exit/new rating', async () => {
+  persist.mockRejectedValueOnce(new Error('Offline'))
+  const { result } = setup('meaning-recall')
+  act(() => result.current.setRevealed(true))
+  await act(async () => result.current.submit('easy'))
+  const input = persist.mock.calls[0][0]
+  expect(result.current.unsettled).toBe(true)
+  act(() => {
+    result.current.changeMode()
+    result.current.start()
+  })
+  await act(async () => result.current.submit('good'))
+  expect(persist).toHaveBeenCalledTimes(1)
+  tick(2000)
+  await act(async () => result.current.submit('easy'))
+  expect(persist.mock.calls[1][0]).toBe(input)
+  expect(result.current.currentIndex).toBe(1)
+})
+
+test('explicit save cannot move the question after details were opened during I/O', async () => {
+  let resolve!: (value: ReviewSubmissionResult) => void
+  persist.mockImplementationOnce(
+    () =>
+      new Promise(done => {
+        resolve = done
       })
-    )
+  )
+  const { result } = setup('meaning-recall')
+  act(() => result.current.setRevealed(true))
+  act(() => {
+    void result.current.submit('hard')
+  })
+  act(() => result.current.openDetails())
+  await act(async () => resolve(successfulResult('word-1')))
+  expect(result.current.currentIndex).toBe(0)
+  expect(result.current.detailsVisible).toBe(true)
+  expect(result.current.assessed).toBe(true)
+})
+
+test('completed session keeps read-only history and uses canonical SRS for the next session', async () => {
+  const word = makeWord('word-1', 'house')
+  const { result } = setup('meaning-recall', makeData([word]))
+  await act(async () => result.current.submit('good'))
+  expect(persist).not.toHaveBeenCalled()
+  act(() => result.current.setRevealed(true))
+  await act(async () => result.current.submit('good'))
+  expect(result.current.stage).toBe('complete')
+  expect(result.current.dueCount).toBe(0)
+  expect(result.current.sessionWords[0]).toEqual(word)
+  act(() => result.current.goTo(-1))
+  expect(result.current.stage).toBe('review')
+  expect(result.current.historyEntry?.result).toMatchObject({
+    assessment: 'good',
+  })
+  expect(result.current.sessionWords[0].intervalDays).toBe(0)
+  act(() => result.current.returnToCurrent())
+  expect(result.current.stage).toBe('complete')
+})
+
+test('unmount cancels feedback and ignores late acknowledgements', async () => {
+  let resolve!: (value: ReviewSubmissionResult) => void
+  persist.mockImplementationOnce(
+    () =>
+      new Promise(done => {
+        resolve = done
+      })
+  )
+  const { result, unmount } = setup()
+  act(() => selectCorrect(result))
+  unmount()
+  await act(async () => resolve(successfulResult('word-1')))
+  tick(5000)
+  expect(persist).toHaveBeenCalledTimes(1)
+})
+
+test('empty scope does not enter review', () => {
+  const { result } = setup(
+    'adaptive',
+    makeData([makeWord('future', 'house', { nextReviewDate: '2999-01-01' })])
+  )
+  expect(result.current.stage).toBe('setup')
+  expect(result.current.emptyMessage).toContain('No words are due')
+})
+
+test('restart after completing all due words returns to setup with an explanation', async () => {
+  const { result } = setup(
+    'meaning-recall',
+    makeData([makeWord('word-1', 'house')])
+  )
+  act(() => result.current.setRevealed(true))
+  await act(async () => result.current.submit('good'))
+  expect(result.current.stage).toBe('complete')
+  act(() => result.current.start())
+  expect(result.current.stage).toBe('setup')
+  expect(result.current.emptyMessage).toContain('No words are due')
+})
+
+test.each<ReviewSubmissionResult>([
+  { status: 'error', message: 'Save unavailable' },
+  successfulResult('unexpected-word'),
+])(
+  'a rejected or mismatched acknowledgement remains retryable',
+  async response => {
+    persist.mockResolvedValueOnce(response)
+    const { result } = setup('meaning-recall')
+    act(() => result.current.setRevealed(true))
+    await act(async () => result.current.submit('good'))
+    expect(result.current.currentIndex).toBe(0)
+    expect(result.current.summary?.assessed).toBe(0)
+    expect(result.current.error).toBeTruthy()
+    const original = persist.mock.calls[0][0]
+    await act(async () => result.current.submit('good'))
+    expect(persist.mock.calls[1][0]).toBe(original)
     expect(result.current.currentIndex).toBe(1)
-  })
-
-  test('reports an empty scope without entering review', () => {
-    const futureWord = makeWord('word-1', 'house', {
-      nextReviewDate: '2999-01-01',
-    })
-    const { result } = renderHook(() =>
-      useReviewSession(makeData([futureWord]), 'all-due', null)
-    )
-
-    act(() => result.current.start())
-
-    expect(result.current.stage).toBe('setup')
-    expect(result.current.emptyMessage).toBe(
-      'No words are due in this scope. Try another scope.'
-    )
-  })
-})
+  }
+)

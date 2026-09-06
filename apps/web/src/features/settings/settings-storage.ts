@@ -6,6 +6,7 @@ export const THEME_STORAGE_KEY = 'woordenaar:web:theme'
 export type ThemePreference = 'system' | 'light' | 'dark'
 
 export interface WebSettings {
+  manualRecognition: boolean
   adaptiveReviewEnabled: boolean
   autoPlayPronunciation: boolean
   lastSelectedCollectionId: string | null
@@ -14,6 +15,7 @@ export interface WebSettings {
 }
 
 export const DEFAULT_WEB_SETTINGS: Readonly<WebSettings> = {
+  manualRecognition: false,
   adaptiveReviewEnabled: true,
   autoPlayPronunciation: false,
   lastSelectedCollectionId: null,
@@ -53,6 +55,10 @@ export const normalizeWebSettings = (value: unknown): WebSettings => {
     : DEFAULT_WEB_SETTINGS.lastSelectedReviewMode
 
   return {
+    manualRecognition:
+      typeof settings.manualRecognition === 'boolean'
+        ? settings.manualRecognition
+        : false,
     adaptiveReviewEnabled,
     autoPlayPronunciation:
       typeof settings.autoPlayPronunciation === 'boolean'

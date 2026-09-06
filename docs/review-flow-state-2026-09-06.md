@@ -4,9 +4,10 @@
 
 The framework-independent state transitions for fast review are implemented in
 `packages/domain/src/review-flow*.ts`. They are exported by `@woordenaar/domain`
-and tested through the mobile Jest runner. Existing web and mobile screens are
-**not connected to this state yet**. This is implementation stage 3, not a rollout
-of the new review experience.
+and tested through the mobile Jest runner. The web screen is now connected for
+fast Recognition, optional manual ratings, in-session details, and read-only
+history. Web correction controls/conflict resolution and mobile screen integration
+remain incomplete. This is a local implementation, not a deployed rollout.
 
 ## Ownership
 
@@ -82,19 +83,51 @@ reconciled. The shared model does not claim server eligibility for a correction.
 
 ## Remaining integration work
 
-The web server prerequisites are now implemented: authenticated full-card reads,
+The web server prerequisites are implemented: authenticated full-card reads,
 validated correction commands, and capability-aware effective-history readers.
-They are covered with mocked transport tests; the hook and controls below remain
-unconnected. See the [correction contract](review-correction-contract-2026-09-06.md).
+The web controller uses the shared state with immutable question snapshots,
+synchronous submission claiming, identical-payload retry, and independent history
+navigation. Authenticated details are loaded inside the session; stale detail
+responses cannot replace a different word. See the
+[correction contract](review-correction-contract-2026-09-06.md).
 
-- Replace the web hook's destructive previous/next navigation with this state.
-- Add in-session details and history, correction requests, optional persisted
-  manual preference, and accessible feedback/keyboard behavior.
+- Add web correction controls with explicit pending/retry/conflict handling and
+  canonical progress reconciliation. Read-only history must not become an ordinary
+  review submission entrypoint.
 - Connect mobile screens, lifecycle events, durable commands, and conflict UI.
 - Persist/restore account-bound session state if session restoration is exposed;
   validate restored data and reconcile uncertain commands before resuming.
 - Run real browser/native and HTTP/Auth checks on authorized test accounts only.
-  Current tests exercise pure transitions, not real rendering or lifecycle APIs.
+  Current web tests exercise React rendering in jsdom and mocked server actions;
+  they do not prove real browser layout, HTTP/Auth, or native lifecycle behavior.
+
+## Web interaction and verification
+
+- Fast mode saves Good immediately after a correct Recognition selection and
+  advances only after acknowledgement and at least 600 ms of feedback.
+- Wrong answers open the full card and wait for Continue (Again). A pre-answer
+  peek permits Again or Skip only; skipping does not change SRS or review totals.
+- Manual Recognition is off by default and stored in account-scoped web settings.
+  The setup switch enables explicit ratings after a correct choice. Preference
+  changes apply to the next activated question, never an in-flight response.
+- Previous word, a history selector, full details, and Return to current question
+  preserve the pending question/options. Completion retains the same history.
+- Details/history/background transitions cancel timers. Returning requires an
+  explicit Continue for an already answered question. Focus moves to the content
+  region when changing question/view; D, arrows, Space, and rating keys are scoped
+  so browsing history does not submit another review.
+- Exit/restart is blocked while an assessment is saving or its outcome is unknown.
+  Browser unload warns about session loss. Full reload restoration is not
+  implemented; this is an in-memory session, not a durable offline web queue.
+- Account changes remount the workspace and invalidate old asynchronous results.
+  Historical question payloads stay unchanged; confirmed canonical SRS is used
+  when preparing the next session.
+
+The web regression suite covers delayed/failed saves, exact retry identity,
+double selections, hidden-tab timers, peeking/skipping, manual preferences,
+history after completion, stale detail responses, account changes, keyboard
+interaction, and rendering under both theme attributes. Real visual and
+screen-reader validation remain required before release.
 
 No remote migration, publication, or protected application-account testing was
 performed for this stage.

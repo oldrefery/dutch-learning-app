@@ -142,11 +142,11 @@ tests cover this persistence layer; real HTTP and native runtime QA remain. See 
 compatibility boundaries, and the remaining session/conflict-resolution work.
 The migration has not been deployed. Shared question/history state transitions
 are now implemented and covered by pure regression tests; see the
-[session state contract](../review-flow-state-2026-09-06.md). The review UI is
-unchanged and does not expose correction actions yet. Web server prerequisites
-are implemented: authenticated full-card and correction actions, capability-aware
-effective-history readers, and mocked-transport regression tests. Next: connect the web flow,
-then mobile, with explicit pending/conflict handling and runtime QA.
+[session state contract](../review-flow-state-2026-09-06.md). Web now connects fast
+Recognition, manual ratings, in-session full cards, and read-only history, including
+after completion. Timers, retries, account changes, and rendering are tested in
+jsdom with mocked server actions. Correction controls are not exposed yet. Next:
+connect web correction/conflict handling, then mobile, followed by runtime QA.
 
 Keep the current feature branch; the user has committed the earlier sync-badge
 contrast fix. Do not commit, push, publish, or migrate a remote environment without

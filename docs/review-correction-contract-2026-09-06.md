@@ -8,7 +8,8 @@ No application account or hosted database was used during implementation.
 Mobile now has a durable correction queue and effective-history reader, tested
 against SQLite and mocked transport. Web now has authenticated correction/detail
 actions and capability-aware effective-history readers, tested with mocked transport.
-Session integration, conflict-resolution UI, and fast review UI remain the next
+The web fast-review/details/read-only-history flow is connected. Web correction
+controls, conflict-resolution UI, and mobile session integration remain the next
 stages. There is no UI entry
 point for creating corrections yet; the feature is not available in the app.
 
@@ -167,8 +168,9 @@ large-ledger optimization requires a separately verified protocol.
 - Additive RPC/view types remain feature-local until migration deployment and
   schema regeneration. The adapter uses the existing cookie-authenticated client,
   never an elevated database client.
-- These actions are not connected to review controls yet. Capability detection
-  does not enable correction UI by itself.
+- The full-card action is connected to web session navigation. The correction
+  action is not connected to review controls yet; capability detection does not
+  enable correction UI by itself.
 
 ### Required before exposing correction actions
 
@@ -178,8 +180,9 @@ large-ledger optimization requires a separately verified protocol.
 - Keep a same-word follow-up review from using unconfirmed correction progress.
   The session layer must wait for reconciliation or explicitly resolve the edit;
   do not calculate a new assessment from a guessed optimistic state.
-- Preserve active-question/history state, completion history, and account-bound
-  session restoration. Wire effective results into the new summaries and web.
+- Wire confirmed correction results into web session summaries and canonical
+  progress, preserving active-question/history state and completion history.
+  Add account-bound restoration if session persistence is exposed.
 - Verify real HTTP/Auth integration and native runtime behavior before rollout.
   No fallback may send an extra ordinary review to simulate a correction.
 
@@ -209,7 +212,7 @@ receipt validation, and full-ledger pagination/reconciliation.
 Web server tests cover authentication redirects, cross-account rejection, exact
 retry payloads, conflict/error classification, malformed acknowledgements, reset
 retries, read-only full details, effective assessment reads, and 501-event paging.
-The full web suite passes 371 tests across 48 suites. These are local tests with
+The server-integration milestone passed 371 tests across 48 suites. These are local tests with
 mocked transport, not proof of deployed RPC or browser behavior. New correction
 adapters have not yet been added to the mutation-testing target set.
 
