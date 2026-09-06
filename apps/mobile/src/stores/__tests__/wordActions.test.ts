@@ -21,6 +21,7 @@ import { REVIEW_MODE, REVIEW_SCOPE } from '@/constants/ReviewConstants'
 jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
     getWordsByUserId: jest.fn(),
+    getWordByIdAndUserId: jest.fn(),
     getWordBySemanticKey: jest.fn(),
     saveWords: jest.fn(),
     addWord: jest.fn(),
@@ -164,6 +165,14 @@ describe('wordActions', () => {
     })
 
     mockGet = jest.fn(() => currentState)
+    jest
+      .mocked(wordRepository.getWordByIdAndUserId)
+      .mockImplementation(
+        async (wordId, userId) =>
+          mockGet().words.find(
+            (word: Word) => word.word_id === wordId && word.user_id === userId
+          ) ?? null
+      )
 
     // Mock getWordBySemanticKey to return null by default (no duplicate)
     ;(wordRepository.getWordBySemanticKey as jest.Mock).mockResolvedValue(null)
@@ -513,7 +522,7 @@ describe('wordActions', () => {
       )
 
       const assessment = {
-        assessment: 4,
+        assessment: 'good',
         rating: 4,
         reviewMode: 'recognition',
         answeredCorrectly: true,
@@ -528,8 +537,9 @@ describe('wordActions', () => {
           interval_days: 1,
           repetition_count: 0,
           easiness_factor: 2.5,
-          assessment: 4,
-        })
+          assessment: 'good',
+        }),
+        new Date(REVIEWED_AT)
       )
       expect(reviewEventRepository.recordAssessment).toHaveBeenCalledWith({
         progress: expect.objectContaining({
@@ -599,7 +609,7 @@ describe('wordActions', () => {
     it(UNAUTHENTICATED_ERROR_MSG, async () => {
       mockGet.mockReturnValue(UNAUTHENTICATED_STATE)
 
-      const assessment = { assessment: 4 }
+      const assessment = { assessment: 'good' }
 
       await actions.updateWordAfterReview(WORD_ID, assessment as any)
 
@@ -623,7 +633,7 @@ describe('wordActions', () => {
         easiness_factor: 2.5,
       })
 
-      const assessment = { assessment: 4 }
+      const assessment = { assessment: 'good' }
 
       await actions.updateWordAfterReview(WORD_ID, assessment as any)
 

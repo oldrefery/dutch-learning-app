@@ -178,16 +178,23 @@ large-ledger optimization requires a separately verified protocol.
   SRS. Existing tombstone synchronization retains responsibility for deletions.
   Normal synchronization is still required after resolution, especially when
   later queued reviews prevent applying the refreshed progress immediately.
-- Conflict resolution, complete background sync passes, and fast-review persistence
+- Conflict resolution, complete background sync passes, fast-review persistence,
+  Audio Review assessments, and local progress resets
   now share an in-process FIFO operation queue. Commands are copied before waiting;
   ownership is checked inside the operation. Failed operations release the queue.
   Sync checks the current/refreshed client session owner after acquiring its turn;
   this stale-work guard does not replace server authentication and RLS.
 - These storage/transport adapters are not connected to the mobile screen yet.
-  Before enabling correction UI, include remaining learning entry points (legacy
-  audio-review assessment and progress reset) in the same serialization boundary,
-  guard stale session callbacks, reload effective history/local words, and resume
+  Before enabling correction UI, guard stale session callbacks, reload effective
+  history/local words, and resume
   the remaining queue. Do not enable correction UI before that integration.
+- Audio Review reads owned SQLite progress after acquiring the queue instead of
+  calculating from the UI cache. It freezes rating, mode, and answer time before
+  waiting. Review and reset actions suppress same-word duplicate calls while in
+  flight, recheck ownership after asynchronous work, and merge progress into the
+  latest cache without reverting metadata. A late completion cannot advance a
+  replaced review session. These guards do not restore sessions after restart
+  or provide uncertain-commit retry identity for legacy Audio Review.
 - Server receipt and word reads are separate requests, not a transactional
   snapshot. This adapter does not claim immunity to later server-side changes;
   normal sync and server write arbitration remain necessary.

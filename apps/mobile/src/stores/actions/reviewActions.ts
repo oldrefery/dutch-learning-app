@@ -156,7 +156,7 @@ export const createReviewActions = (
 
   submitReviewAssessment: async (assessment: ReviewAssessment) => {
     try {
-      const { reviewSession, currentWord } = get()
+      const { reviewSession, currentWord, currentUserId: userId } = get()
 
       if (!reviewSession || !currentWord) {
         logWarning('Missing session or word data', {}, 'review')
@@ -195,6 +195,13 @@ export const createReviewActions = (
       // Get a fresh state after a database update to ensure consistency
       const freshState = get()
       const freshReviewSession = freshState.reviewSession
+
+      if (
+        freshState.currentUserId !== userId ||
+        freshReviewSession !== reviewSession ||
+        freshState.currentWord?.word_id !== currentWord.word_id
+      )
+        return
 
       if (!freshReviewSession) {
         logWarning('Review session was cleared during update', {}, 'review')

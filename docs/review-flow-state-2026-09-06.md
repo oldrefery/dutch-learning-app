@@ -194,8 +194,11 @@ performed for this stage.
   a FIFO in-process queue. Reads used to calculate SRS happen after acquiring the
   queue. While a sync pass is running, an answer remains in the saving state;
   it cannot auto-advance before its local commit. This may delay offline-local
-  acknowledgement during a slow online sync. Legacy audio review and progress
-  reset still need integration before correction controls can be enabled.
+  acknowledgement during a slow online sync. Audio Review and progress reset now
+  use the same queue. Audio Review calculates SRS from SQLite after waiting,
+  freezes the original answer time, and rejects in-flight duplicate submissions.
+  Late saves cannot advance another account or a replacement session. Correction
+  UI and effective-history reconciliation remain the next integration stage.
 
 Local tests cover double taps, timer cancellation, delayed/failed saves, identical
 retry payloads, account switches, actual SQLite idempotency, per-account settings,

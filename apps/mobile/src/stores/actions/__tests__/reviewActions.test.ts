@@ -512,6 +512,38 @@ describe('reviewActions', () => {
   })
 
   describe('submitReviewAssessment', () => {
+    it.each(['account', 'session'])(
+      'does not advance a replaced %s after saving',
+      async replacement => {
+        const words = createReviewWordsWithToday()
+        const session = { words, currentIndex: 0, completedCount: 0 }
+        let finish!: (saved: boolean) => void
+        const saving = new Promise<boolean>(resolve => {
+          finish = resolve
+        })
+        mockSet({
+          currentUserId: USER_ID,
+          reviewSession: session,
+          currentWord: words[0],
+          updateWordAfterReview: jest.fn(() => saving),
+        })
+        const pending = actions.submitReviewAssessment({
+          wordId: words[0].word_id,
+          assessment: 'good',
+          timestamp: new Date(),
+        })
+        mockSet(
+          replacement === 'account'
+            ? { currentUserId: 'another-user' }
+            : { reviewSession: { ...session } }
+        )
+        mockSet.mockClear()
+        finish(true)
+        await pending
+        expect(mockSet).not.toHaveBeenCalled()
+      }
+    )
+
     it('should move to next word after assessment', async () => {
       const today = new Date().toISOString().split('T')[0]
       const mockWords = [
