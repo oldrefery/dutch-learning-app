@@ -23,6 +23,8 @@ import {
   summarizeReviewFlow,
 } from '@woordenaar/domain'
 import { submitReviewAssessment } from './actions'
+import { submitReviewCorrection } from './correction-actions'
+import { loadReviewCorrectionState } from './correction-refresh'
 import { createReviewSessionController } from './session-controller'
 import {
   getPreferredTranslation,
@@ -44,9 +46,20 @@ export function useReviewSession(
   initialMode: ReviewSessionMode = 'adaptive'
 ) {
   const [controller] = useState(() =>
-    createReviewSessionController(userId, data, submitReviewAssessment)
+    createReviewSessionController(userId, data, submitReviewAssessment, {
+      submit: submitReviewCorrection,
+      refresh: loadReviewCorrectionState,
+    })
   )
-  const { flow, words } = useSyncExternalStore(
+  const {
+    flow,
+    words,
+    correction,
+    correctionsAvailable,
+    blockedCorrections,
+    notice,
+    detailRevision,
+  } = useSyncExternalStore(
     controller.subscribe,
     controller.getSnapshot,
     controller.getServerSnapshot
@@ -135,6 +148,14 @@ export function useReviewSession(
   const status = flow?.active?.submission?.status
 
   return {
+    correction,
+    correctionsAvailable,
+    blockedCorrections,
+    notice,
+    detailRevision,
+    correct: controller.correct,
+    retryCorrection: controller.retryCorrection,
+    keepServerVersion: controller.keepServerVersion,
     flow,
     historyEntry,
     summary,
@@ -163,7 +184,8 @@ export function useReviewSession(
     error: flow?.active?.submission?.error ?? null,
     mode,
     pending: status === 'saving',
-    unsettled: status === 'saving' || status === 'failed',
+    unsettled:
+      Boolean(correction) || status === 'saving' || status === 'failed',
     recognitionOptions: options.length ? options : null,
     revealed: historyEntry ? true : (displayed?.revealed ?? false),
     selectedOption:

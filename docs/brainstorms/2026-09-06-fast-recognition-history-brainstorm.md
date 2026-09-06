@@ -145,8 +145,11 @@ are now implemented and covered by pure regression tests; see the
 [session state contract](../review-flow-state-2026-09-06.md). Web now connects fast
 Recognition, manual ratings, in-session full cards, and read-only history, including
 after completion. Timers, retries, account changes, and rendering are tested in
-jsdom with mocked server actions. Correction controls are not exposed yet. Next:
-connect web correction/conflict handling, then mobile, followed by runtime QA.
+jsdom with mocked server actions. Web correction controls are now connected behind
+backend capability, with immutable retries, confirmed-only summaries/progress,
+and explicit read-only conflict resolution. The migration remains undeployed.
+Next: connect the mobile session/correction UI, followed by runtime QA and
+coordinated rollout of correction-aware clients.
 
 Keep the current feature branch; the user has committed the earlier sync-badge
 contrast fix. Do not commit, push, publish, or migrate a remote environment without

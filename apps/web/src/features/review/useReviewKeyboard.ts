@@ -43,7 +43,8 @@ export function useReviewKeyboard(
         session.goTo(1)
         return
       }
-      if (session.historyEntry || !session.flow?.active) return
+      if (session.historyEntry || !session.flow?.active || session.correction)
+        return
       if (!session.revealed && session.effectiveMode === 'recognition') {
         const option = session.recognitionOptions?.[Number(key) - 1]
         if (option) session.selectOption(option)

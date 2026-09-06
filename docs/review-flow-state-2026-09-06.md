@@ -6,8 +6,9 @@ The framework-independent state transitions for fast review are implemented in
 `packages/domain/src/review-flow*.ts`. They are exported by `@woordenaar/domain`
 and tested through the mobile Jest runner. The web screen is now connected for
 fast Recognition, optional manual ratings, in-session details, and read-only
-history. Web correction controls/conflict resolution and mobile screen integration
-remain incomplete. This is a local implementation, not a deployed rollout.
+history. Web now includes explicit correction controls and conflict resolution.
+Mobile screen integration remains incomplete. This is a local implementation,
+not a deployed rollout; correction controls require the undeployed backend capability.
 
 ## Ownership
 
@@ -77,9 +78,9 @@ older receipts do nothing. Summaries distinguish assessed and skipped questions;
 corrections move counts between ratings without incrementing the total.
 
 Pending/conflicted corrections are deliberately not optimistic session results.
-The next client stage must expose them separately, implement explicit conflict
-resolution, and block a same-word follow-up assessment until its progress is
-reconciled. The shared model does not claim server eligibility for a correction.
+Web exposes them separately and blocks new assessment writes, restart, and the
+session Exit action until reconciliation. Browsing remains available. The shared
+model does not claim server eligibility for a correction.
 
 ## Remaining integration work
 
@@ -91,9 +92,6 @@ navigation. Authenticated details are loaded inside the session; stale detail
 responses cannot replace a different word. See the
 [correction contract](review-correction-contract-2026-09-06.md).
 
-- Add web correction controls with explicit pending/retry/conflict handling and
-  canonical progress reconciliation. Read-only history must not become an ordinary
-  review submission entrypoint.
 - Connect mobile screens, lifecycle events, durable commands, and conflict UI.
 - Persist/restore account-bound session state if session restoration is exposed;
   validate restored data and reconcile uncertain commands before resuming.
@@ -102,6 +100,36 @@ responses cannot replace a different word. See the
   they do not prove real browser layout, HTTP/Auth, or native lifecycle behavior.
 
 ## Web interaction and verification
+
+### Assessment correction
+
+- History shows separate Change to Again/Hard/Good/Easy controls for assessed,
+  unassisted entries when correction capability is available. Selecting the
+  existing rating does nothing. Skipped and assisted entries cannot be upgraded.
+- One immutable correction command may be outstanding per session. It is claimed
+  synchronously before I/O, so repeated clicks cannot issue a second operation.
+  Unknown outcomes expose only Retry same correction; they cannot be abandoned
+  in favor of a different rating or an ordinary review submission.
+- A confirmed receipt updates the effective history rating, summary counts,
+  adaptive evidence, and canonical word pool without adding a review. The active
+  question and original history snapshots remain intact. Open full details reload
+  after reconciliation to show current progress.
+- Conflicts, invalid commands, and unavailable capability expose Keep server
+  version. This performs authenticated, user/word/event-scoped reads, not a write.
+  Read failures retain the unresolved edit. Successful reads replace canonical
+  progress and effective history where available; deleted words are removed from
+  the next-session pool without destroying readable session snapshots.
+- A resolved conflicting event is locked against further edits in that session.
+  The notice retains the requested rating and says it was not confirmed, rather
+  than falsely claiming it never reached the server. Transport retries may have
+  followed a previously accepted operation whose receipt was later deleted.
+- Receipt reconciliation is atomic in the correction RPC. Conflict refresh uses
+  separate read-only word/event queries, not a transactional snapshot; later
+  concurrent changes are still arbitrated by the server's next write command.
+- Corrections remain in memory on web, with the existing unload warning. This
+  does not provide recovery after reload or intercept every application navigation.
+
+### Session behavior
 
 - Fast mode saves Good immediately after a correct Recognition selection and
   advances only after acknowledgement and at least 600 ms of feedback.

@@ -5,6 +5,7 @@ import type { RecognitionOption, ReviewMode, ReviewWord } from './types'
 import styles from './Review.module.css'
 
 interface ReviewCardProps {
+  interactionBlocked?: boolean
   adaptiveMessage: string | null
   answer: string
   assessed: boolean
@@ -20,6 +21,7 @@ interface ReviewCardProps {
 }
 
 export function ReviewCard({
+  interactionBlocked = false,
   adaptiveMessage,
   answer,
   assessed,
@@ -95,7 +97,7 @@ export function ReviewCard({
               return (
                 <button
                   className={`${styles.option} ${optionClass}`}
-                  disabled={revealed}
+                  disabled={revealed || interactionBlocked}
                   key={option.id}
                   onClick={() => onSelectOption(option)}
                   type="button"
@@ -127,6 +129,7 @@ export function ReviewCard({
         {!revealed && mode !== 'recognition' && !assessed && (
           <Button
             className={styles.revealButton}
+            disabled={interactionBlocked}
             onClick={onReveal}
             type="button"
           >

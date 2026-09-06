@@ -9,7 +9,7 @@ export function ReviewSessionControls({
   session: ReturnType<typeof useReviewSession>
 }) {
   const active = session.flow?.active
-  if (session.historyEntry || !active) return null
+  if (session.historyEntry || !active || session.correction) return null
   const failed = active.submission?.status === 'failed'
   const saved = active.submission?.status === 'saved'
   const againOnly = active.assisted || active.answeredCorrectly === false

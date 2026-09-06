@@ -8,10 +8,10 @@ No application account or hosted database was used during implementation.
 Mobile now has a durable correction queue and effective-history reader, tested
 against SQLite and mocked transport. Web now has authenticated correction/detail
 actions and capability-aware effective-history readers, tested with mocked transport.
-The web fast-review/details/read-only-history flow is connected. Web correction
-controls, conflict-resolution UI, and mobile session integration remain the next
-stages. There is no UI entry
-point for creating corrections yet; the feature is not available in the app.
+The web fast-review/details/history flow now includes capability-gated correction
+controls and explicit conflict resolution. Mobile session integration remains the
+next stage. Nothing is deployed: the current remote backend cannot enable these
+controls until its migration and coordinated client rollout are authorized.
 
 This is the persistence foundation for
 [fast recognition with review history](brainstorms/2026-09-06-fast-recognition-history-brainstorm.md).
@@ -168,21 +168,24 @@ large-ledger optimization requires a separately verified protocol.
 - Additive RPC/view types remain feature-local until migration deployment and
   schema regeneration. The adapter uses the existing cookie-authenticated client,
   never an elevated database client.
-- The full-card action is connected to web session navigation. The correction
-  action is not connected to review controls yet; capability detection does not
-  enable correction UI by itself.
+- The full-card and correction actions are connected to web session navigation.
+  Correction controls use effective history and explicit conflict handling; they
+  remain disabled when backend capability is missing.
+- Web serializes correction writes separately from ordinary reviews, without
+  optimistic progress. Unknown outcomes retain the exact command. Terminal
+  rejection requires an explicit read-only refresh before releasing the write
+  lock; the affected event then remains non-editable in that session.
 
-### Required before exposing correction actions
+### Remaining client and rollout requirements
 
-- Present pending/conflicted edits and implement explicit conflict resolution.
+- On mobile, present pending/conflicted edits and implement explicit conflict resolution.
   Currently an unresolved correction prevents another edit of the same event;
   terminal conflicts intentionally block later queue commands until resolved.
 - Keep a same-word follow-up review from using unconfirmed correction progress.
   The session layer must wait for reconciliation or explicitly resolve the edit;
   do not calculate a new assessment from a guessed optimistic state.
-- Wire confirmed correction results into web session summaries and canonical
-  progress, preserving active-question/history state and completion history.
-  Add account-bound restoration if session persistence is exposed.
+- Preserve active-question/history state and completion history on mobile.
+  Add account-bound restoration if session persistence is exposed on either client.
 - Verify real HTTP/Auth integration and native runtime behavior before rollout.
   No fallback may send an extra ordinary review to simulate a correction.
 
@@ -215,6 +218,13 @@ retries, read-only full details, effective assessment reads, and 501-event pagin
 The server-integration milestone passed 371 tests across 48 suites. These are local tests with
 mocked transport, not proof of deployed RPC or browser behavior. New correction
 adapters have not yet been added to the mutation-testing target set.
+
+The web UI integration milestone passes 427 tests across 51 suites, including
+double-click claiming, immutable retries, no optimistic SRS, effective summary
+replacement, stale/unmounted responses, conflict refresh, deleted words,
+capability gating, and rendered correction controls. Server refresh tests verify
+authentication, user/word/event filters, deleted-word handling, malformed effective
+events, and generic errors without provider-detail leaks.
 
 HTTP/Auth integration and native/web runtime checks for this feature are not yet
 performed. Remote migration and rollout require separate explicit authorization.

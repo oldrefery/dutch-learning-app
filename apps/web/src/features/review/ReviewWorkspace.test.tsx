@@ -4,12 +4,18 @@ import { ReviewDetails } from './ReviewDetails'
 import { makeData, makeWord, successfulResult } from './__fixtures__/session'
 import { submitReviewAssessment } from './actions'
 import { loadReviewWordDetails } from './details-action'
+import { submitReviewCorrection } from './correction-actions'
+import { loadReviewCorrectionState } from './correction-refresh'
 import { useWebSettings } from '@/features/settings/useWebSettings'
 import { DEFAULT_WEB_SETTINGS } from '@/features/settings/settings-storage'
 import type { WordDetail } from '@/features/words/word-detail'
 import type { ReviewSubmissionResult } from './types'
 
 jest.mock('./actions', () => ({ submitReviewAssessment: jest.fn() }))
+jest.mock('./correction-actions', () => ({ submitReviewCorrection: jest.fn() }))
+jest.mock('./correction-refresh', () => ({
+  loadReviewCorrectionState: jest.fn(),
+}))
 jest.mock('./details-action', () => ({ loadReviewWordDetails: jest.fn() }))
 jest.mock('@/features/settings/useWebSettings', () => ({
   useWebSettings: jest.fn(),
@@ -49,6 +55,8 @@ beforeEach(() => {
   details
     .mockReset()
     .mockResolvedValue({ status: 'error', message: 'Details unavailable' })
+  jest.mocked(submitReviewCorrection).mockReset()
+  jest.mocked(loadReviewCorrectionState).mockReset()
   jest.mocked(useWebSettings).mockReturnValue({
     isHydrated: true,
     settings: DEFAULT_WEB_SETTINGS,
@@ -57,6 +65,95 @@ beforeEach(() => {
 })
 afterEach(() => {
   jest.useRealTimers()
+})
+
+async function openCorrectionHistory() {
+  renderWorkspace({ ...makeData(), correctionsAvailable: true })
+  start()
+  fireEvent.click(screen.getByRole('button', { name: /house/ }))
+  await flush()
+  tick(600)
+  fireEvent.click(screen.getByRole('button', { name: 'Previous word' }))
+}
+
+test('changing a history rating updates its label without submitting another review', async () => {
+  jest.mocked(submitReviewCorrection).mockImplementation(async input => ({
+    status: 'success',
+    correctionId: input.correctionId,
+    eventId: input.eventId,
+    acceptedRevision: 1,
+    effectiveRevision: 1,
+    assessment: input.assessment,
+    update: {
+      ...successfulResult(input.wordId).update,
+      repetitionCount: 0,
+      intervalDays: 0,
+    },
+  }))
+  await openCorrectionHistory()
+  fireEvent.click(screen.getByRole('button', { name: 'Full details' }))
+  await flush()
+  fireEvent.click(screen.getByRole('button', { name: 'Change to Again' }))
+  await flush()
+  expect(screen.getByText(/Previously reviewed/)).toHaveTextContent('again')
+  expect(screen.getByRole('button', { name: 'Change to Again' })).toBeDisabled()
+  expect(
+    screen.getByText('Assessment corrected. No extra review was added.')
+  ).toBeInTheDocument()
+  expect(persist).toHaveBeenCalledTimes(1)
+  expect(details).toHaveBeenCalledTimes(2)
+})
+
+test('uncertain corrections expose only same-edit retry and block new answers', async () => {
+  jest.mocked(submitReviewCorrection).mockRejectedValue(new Error('Offline'))
+  await openCorrectionHistory()
+  fireEvent.click(screen.getByRole('button', { name: 'Change to Hard' }))
+  await flush()
+  const original = jest.mocked(submitReviewCorrection).mock.calls[0][0]
+  expect(
+    screen.queryByRole('button', { name: 'Keep server version' })
+  ).not.toBeInTheDocument()
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Return to current question' })
+  )
+  expect(screen.getByRole('button', { name: /\btree\b/ })).toBeDisabled()
+  fireEvent.keyDown(document.body, { key: '2' })
+  expect(persist).toHaveBeenCalledTimes(1)
+  fireEvent.click(screen.getByRole('button', { name: 'Retry same correction' }))
+  await flush()
+  expect(jest.mocked(submitReviewCorrection).mock.calls[1][0]).toBe(original)
+})
+
+test('conflict requires Keep server version and refreshes the effective rating', async () => {
+  jest.mocked(submitReviewCorrection).mockResolvedValue({
+    status: 'conflict',
+    message: 'Changed on another device',
+  })
+  jest.mocked(loadReviewCorrectionState).mockImplementation(async input => ({
+    status: 'success',
+    userId: input.userId,
+    wordId: input.wordId,
+    eventId: input.eventId,
+    correctionsAvailable: true,
+    progress: successfulResult(input.wordId).update,
+    event: { assessment: 'easy', revision: 2 },
+  }))
+  await openCorrectionHistory()
+  fireEvent.click(screen.getByRole('button', { name: 'Change to Again' }))
+  await flush()
+  expect(screen.getByRole('alert')).toHaveTextContent(
+    'Changed on another device'
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Keep server version' }))
+  await flush()
+  expect(screen.getByText(/Previously reviewed/)).toHaveTextContent('easy')
+  expect(
+    screen.queryByRole('button', { name: 'Change to Good' })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.getByText(/Your requested again edit was not confirmed/)
+  ).toBeInTheDocument()
+  expect(persist).toHaveBeenCalledTimes(1)
 })
 
 test.each(['light', 'dark'])(

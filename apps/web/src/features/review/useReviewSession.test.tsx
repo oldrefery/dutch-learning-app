@@ -5,6 +5,10 @@ import { useReviewSession } from './useReviewSession'
 import type { ReviewSubmissionResult, ReviewSessionMode } from './types'
 
 jest.mock('./actions', () => ({ submitReviewAssessment: jest.fn() }))
+jest.mock('./correction-actions', () => ({ submitReviewCorrection: jest.fn() }))
+jest.mock('./correction-refresh', () => ({
+  loadReviewCorrectionState: jest.fn(),
+}))
 const persist = jest.mocked(submitReviewAssessment)
 const setup = (mode: ReviewSessionMode = 'recognition', data = makeData()) => {
   const rendered = renderHook(() =>

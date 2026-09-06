@@ -25,19 +25,40 @@ import type {
   ReviewSubmissionResult,
   ReviewWorkspaceData,
 } from './types'
+import {
+  createSessionCorrections,
+  type SessionCorrection,
+  type CorrectionTransport,
+} from './session-corrections'
 
 export type WebReviewFlow = ReviewFlowState<ReviewQuestionPayload>
+export interface WebReviewSnapshot {
+  flow: WebReviewFlow | null
+  words: ReviewWorkspaceData['words']
+  events: ReviewWorkspaceData['events']
+  correction: SessionCorrection | null
+  correctionsAvailable: boolean
+  blockedCorrections: string[]
+  notice: string | null
+  detailRevision: number
+}
 
 /** One controller per mounted account. Commands synchronously claim state before I/O. */
 export function createReviewSessionController(
   userId: string,
   data: ReviewWorkspaceData,
-  persist: (input: ReviewSubmissionInput) => Promise<ReviewSubmissionResult>
+  persist: (input: ReviewSubmissionInput) => Promise<ReviewSubmissionResult>,
+  correctionTransport: CorrectionTransport
 ) {
-  let snapshot = {
-    flow: null as WebReviewFlow | null,
+  let snapshot: WebReviewSnapshot = {
+    flow: null,
     words: data.words,
     events: data.events,
+    correction: null,
+    correctionsAvailable: data.correctionsAvailable === true,
+    blockedCorrections: [],
+    notice: null,
+    detailRevision: 0,
   }
   const initial = snapshot
   const listeners = new Set<() => void>()
@@ -53,12 +74,14 @@ export function createReviewSessionController(
   }
   const unsettled = () => {
     const status = snapshot.flow?.active?.submission?.status
-    return status === 'saving' || status === 'failed'
+    return (
+      Boolean(snapshot.correction) || status === 'saving' || status === 'failed'
+    )
   }
   const submit = async (assessment: ReviewAssessment, advance = true) => {
     const before = snapshot.flow
     const active = before?.active
-    if (!attached || !before || !active) return
+    if (!attached || !before || !active || snapshot.correction) return
     if (active.submission?.status === 'saved') {
       transition(flow =>
         continueReviewFlow(flow, active.question.id, Date.now())
@@ -138,7 +161,19 @@ export function createReviewSessionController(
       )
     }
   }
+  const corrections = createSessionCorrections(
+    {
+      get: () => snapshot,
+      attached: () => attached,
+      set: next => {
+        snapshot = next
+        emit()
+      },
+    },
+    correctionTransport
+  )
   return {
+    ...corrections,
     getSnapshot: () => snapshot,
     getServerSnapshot: () => initial,
     subscribe: (listener: () => void) => {
@@ -157,6 +192,7 @@ export function createReviewSessionController(
     transition,
     submit,
     selectOption: (optionId: string) => {
+      if (snapshot.correction) return
       const active = snapshot.flow?.active
       if (!active) return
       transition(flow =>
@@ -177,6 +213,8 @@ export function createReviewSessionController(
       retry = null
       snapshot = {
         ...snapshot,
+        blockedCorrections: [],
+        notice: null,
         flow: createReviewFlow({
           sessionId: crypto.randomUUID(),
           userId,

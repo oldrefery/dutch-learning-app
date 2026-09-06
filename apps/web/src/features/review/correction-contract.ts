@@ -41,6 +41,23 @@ export type ReviewCorrectionResult =
       message: string
     }
 
+export type ReviewCorrectionRefreshInput = Pick<
+  ReviewCorrectionInput,
+  'userId' | 'wordId' | 'eventId'
+>
+export type ReviewCorrectionRefreshResult =
+  | {
+      status: 'success'
+      userId: string
+      wordId: string
+      eventId: string
+      correctionsAvailable: boolean
+      progress:
+        Extract<ReviewCorrectionResult, { status: 'success' }>['update'] | null
+      event: { assessment: ReviewAssessment; revision: number } | null
+    }
+  | { status: 'error'; message: string }
+
 /** Planned additive schema, scoped to capability-aware callers only.
  * Keep generated/deployed Database metadata unchanged until migration rollout.
  */

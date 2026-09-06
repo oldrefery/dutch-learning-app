@@ -10,6 +10,7 @@ import { ReviewCard } from './ReviewCard'
 import { ReviewSetup } from './ReviewSetup'
 import { ReviewDetails } from './ReviewDetails'
 import { ReviewContent } from './ReviewContent'
+import { ReviewCorrectionControls } from './ReviewCorrectionControls'
 import { ReviewSessionControls } from './ReviewSessionControls'
 import { ReviewSessionNavigation } from './ReviewSessionNavigation'
 import { useReviewKeyboard } from './useReviewKeyboard'
@@ -229,6 +230,7 @@ function AccountReviewWorkspace({
     return (
       <>
         <ReviewSessionNavigation session={session} />
+        <ReviewCorrectionControls session={session} />
         <Completion
           counts={session.assessmentCounts}
           onChangeMode={session.changeMode}
@@ -302,6 +304,7 @@ function AccountReviewWorkspace({
         focusKey={`${session.currentWord.id}:${session.flow?.view.kind}`}
       >
         <ReviewSessionNavigation session={session} />
+        <ReviewCorrectionControls session={session} />
         {session.historyEntry && (
           <p role="status">
             Previously reviewed ·{' '}
@@ -313,12 +316,13 @@ function AccountReviewWorkspace({
         )}
         {session.detailsVisible ? (
           <ReviewDetails
-            key={`${userId}:${session.currentWord.id}`}
+            key={`${userId}:${session.currentWord.id}:${session.detailRevision}`}
             userId={userId}
             wordId={session.currentWord.id}
           />
         ) : (
           <ReviewCard
+            interactionBlocked={Boolean(session.correction)}
             adaptiveMessage={session.adaptiveMessage}
             answer={session.answer}
             assessed={session.assessed}
