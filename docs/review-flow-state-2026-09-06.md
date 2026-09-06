@@ -9,6 +9,9 @@ fast Recognition, optional manual ratings, in-session details, and read-only
 history. Web now includes explicit correction controls and conflict resolution.
 Mobile screen integration remains incomplete. This is a local implementation,
 not a deployed rollout; correction controls require the undeployed backend capability.
+Mobile now also has a tested explicit conflict-resolution storage/transport adapter
+and additive SQLite v11 resolution marker. It is not wired to the native screen or
+background-sync serialization yet; see the correction contract for its boundary.
 
 ## Ownership
 
@@ -93,6 +96,8 @@ responses cannot replace a different word. See the
 [correction contract](review-correction-contract-2026-09-06.md).
 
 - Connect mobile screens, lifecycle events, durable commands, and conflict UI.
+  Use the new resolution adapter only after serializing it with background sync;
+  then reload effective local history/word state and resume the retained queue.
 - Persist/restore account-bound session state if session restoration is exposed;
   validate restored data and reconcile uncertain commands before resuming.
 - Run real browser/native and HTTP/Auth checks on authorized test accounts only.

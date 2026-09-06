@@ -150,6 +150,46 @@ large-ledger optimization requires a separately verified protocol.
   commands. Conflict responses persist a conflict state and also stop the queue;
   they are never acknowledged as successful.
 
+### Mobile conflict-resolution adapter
+
+- SQLite schema v11 adds only a nullable `resolved_at` column. It does not rebuild
+  word data, replay SRS, rewrite events, or renumber pending commands. Initialization
+  tolerates interruption after adding the column and before storing the version.
+- `resolveReviewCorrectionConflict` is an explicit user-action adapter, not an
+  automatic sync policy. It verifies the immutable local command, rejects pending
+  commands with unknown outcomes, checks the authenticated owner and capability,
+  reconciles correction receipts, and reads owned canonical word progress.
+  Authentication is checked again before the final local transaction.
+- The transaction preserves the original requested rating and terminal status,
+  records resolution time, and removes only that correction's queue entry. It
+  applies confirmed SRS only if no other learning command remains for the word;
+  later offline reviews/resets and unsent word metadata remain intact.
+- A storage failure rolls back both the resolution marker and queue removal.
+  Repeated resolution is a no-op, including after a later local review. Reusing
+  the resolved operation ID never queues it again; a genuinely new edit needs a
+  new ID and the effective revision.
+- A receipt discovered during refresh can acknowledge the operation before the
+  word read completes. If the word read then fails, retry can finish resolution
+  from that acknowledged state. Read failures never discard an unacknowledged
+  intent; an actual validated receipt may acknowledge it. A late receipt remains
+  authoritative even after explicit resolution, without re-enqueuing the command.
+- Missing/inaccessible remote words do not trigger local deletion or fabricate
+  SRS. Existing tombstone synchronization retains responsibility for deletions.
+  Normal synchronization is still required after resolution, especially when
+  later queued reviews prevent applying the refreshed progress immediately.
+- These storage/transport adapters are not connected to the mobile screen yet.
+  The native controller must serialize the action with background synchronization,
+  guard stale session callbacks, reload effective history/local words, and resume
+  the remaining queue. Do not enable correction UI before that integration.
+- Server receipt and word reads are separate requests, not a transactional
+  snapshot. This adapter does not claim immunity to later server-side changes;
+  normal sync and server write arbitration remain necessary.
+
+Verification uses disposable file-backed SQLite and mocked authenticated transport,
+not an application account. It covers unknown outcomes, wrong owners, malformed
+progress, account changes, late acknowledgements, atomic rollback, repeated action,
+subsequent command preservation, and interrupted schema upgrades.
+
 ### Implemented web server integration
 
 - Authenticated server actions validate caller identity and command fields before
@@ -178,7 +218,7 @@ large-ledger optimization requires a separately verified protocol.
 
 ### Remaining client and rollout requirements
 
-- On mobile, present pending/conflicted edits and implement explicit conflict resolution.
+- On mobile, present pending/conflicted edits and connect the explicit resolution adapter.
   Currently an unresolved correction prevents another edit of the same event;
   terminal conflicts intentionally block later queue commands until resolved.
 - Keep a same-word follow-up review from using unconfirmed correction progress.

@@ -1,5 +1,8 @@
 import { MIGRATION_V9_LEARNING_COMMANDS } from './schema'
 
+export const MIGRATION_V11_CORRECTION_RESOLUTION =
+  'ALTER TABLE review_corrections ADD COLUMN resolved_at TEXT;'
+
 // Run atomically. Rebuilding the CHECK constraint retains durable sequence IDs,
 // including the high-water mark when earlier commands have been acknowledged.
 export const MIGRATION_V10_REVIEW_CORRECTIONS = `

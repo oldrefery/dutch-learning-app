@@ -3,6 +3,7 @@ import type {
   PendingReviewCorrection,
   ReviewCorrectionCommand,
   ReviewCorrectionReceipt,
+  LocalReviewCorrection,
 } from '@/types/ReviewCorrection'
 
 const COMMAND_FIELDS = [
@@ -13,7 +14,7 @@ const COMMAND_FIELDS = [
   'expected_revision',
   'assessment',
 ] as const
-const sameCommand = (
+export const sameReviewCorrectionCommand = (
   left: ReviewCorrectionCommand,
   right: ReviewCorrectionCommand
 ) => COMMAND_FIELDS.every(field => left[field] === right[field])
@@ -26,6 +27,16 @@ const RECEIPT_FIELDS = [
 ] as const
 
 export const reviewCorrectionRepository = {
+  async getById(
+    userId: string,
+    correctionId: string
+  ): Promise<LocalReviewCorrection | null> {
+    const db = await getDatabase()
+    return db.getFirstAsync<LocalReviewCorrection>(
+      'SELECT * FROM review_corrections WHERE user_id = ? AND correction_id = ?',
+      [userId, correctionId]
+    )
+  },
   async getTombstonedWordIds(
     userId: string,
     wordIds: string[]
@@ -70,7 +81,7 @@ export const reviewCorrectionRepository = {
         [command.correction_id]
       )
       if (existing) {
-        if (!sameCommand(existing, command))
+        if (!sameReviewCorrectionCommand(existing, command))
           throw new Error('Correction ID already exists with different data')
         return
       }
@@ -83,7 +94,7 @@ export const reviewCorrectionRepository = {
       if (!event) throw new Error('Review word or event not found')
       const pending = await transaction.getFirstAsync<{ count: number }>(
         `SELECT COUNT(*) AS count FROM review_corrections
-         WHERE user_id = ? AND event_id = ? AND status != 'synced'`,
+         WHERE user_id = ? AND event_id = ? AND status != 'synced' AND resolved_at IS NULL`,
         [command.user_id, command.event_id]
       )
       // Resolve an uncertain outcome before accepting another edit of that event.
@@ -142,7 +153,7 @@ export const reviewCorrectionRepository = {
         >('SELECT * FROM review_corrections WHERE correction_id = ?', [
           receipt.correction_id,
         ])
-        if (existing && !sameCommand(existing, receipt))
+        if (existing && !sameReviewCorrectionCommand(existing, receipt))
           throw new Error('Correction receipt conflicts with local intent')
         if (
           existing?.status === 'synced' &&

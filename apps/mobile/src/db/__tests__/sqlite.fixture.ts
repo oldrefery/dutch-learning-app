@@ -1,6 +1,9 @@
 import { DatabaseSync, type SQLInputValue } from 'node:sqlite'
 import { getDatabase } from '../initDB'
-import { MIGRATION_V10_REVIEW_CORRECTIONS } from '../reviewCorrectionSchema'
+import {
+  MIGRATION_V10_REVIEW_CORRECTIONS,
+  MIGRATION_V11_CORRECTION_RESOLUTION,
+} from '../reviewCorrectionSchema'
 import {
   SQL_SCHEMA,
   MIGRATION_V5_TOMBSTONE_INDEXES,
@@ -19,6 +22,7 @@ export const createTestDatabase = (path = ':memory:', initialize = true) => {
     database.exec(MIGRATION_V9_REVIEW_DATE)
     database.exec(MIGRATION_V9_LEARNING_COMMANDS)
     database.exec(MIGRATION_V10_REVIEW_CORRECTIONS)
+    database.exec(MIGRATION_V11_CORRECTION_RESOLUTION)
   }
   const runAsync = async (sql: string, ...values: SQLInputValue[]) =>
     database.prepare(sql).run(...values)

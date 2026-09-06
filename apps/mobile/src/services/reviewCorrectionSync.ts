@@ -44,7 +44,7 @@ function parseReceipt(value: unknown, userId: string): ReviewCorrectionReceipt {
   return row as unknown as ReviewCorrectionReceipt
 }
 
-async function ensureIdentity(userId: string): Promise<void> {
+export async function ensureCorrectionIdentity(userId: string): Promise<void> {
   const { data, error } = await supabase.auth.getUser()
   if (error) throw error
   if (data.user?.id !== userId)
@@ -96,7 +96,7 @@ export const reviewCorrectionSync = {
   },
 
   async pull(userId: string): Promise<number> {
-    await ensureIdentity(userId)
+    await ensureCorrectionIdentity(userId)
     let count = 0
     // Reconcile the complete correction ledger on every pass. No timestamp
     // cursor can hide a transaction committed later with an earlier timestamp.
@@ -121,7 +121,7 @@ export const reviewCorrectionSync = {
     if (command.user_id !== userId)
       throw new Error('Foreign correction command')
     if (command.status === 'conflict') throw new Error(CONFLICT_MESSAGE)
-    await ensureIdentity(userId)
+    await ensureCorrectionIdentity(userId)
     const { data, error } = await supabase.rpc('correct_review_assessment', {
       p_word_id: command.word_id,
       p_event_id: command.event_id,
