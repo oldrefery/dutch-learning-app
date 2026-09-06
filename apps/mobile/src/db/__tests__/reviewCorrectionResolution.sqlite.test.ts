@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { createTestDatabase } from './sqlite.fixture'
 import { reviewCorrectionRepository as corrections } from '../reviewCorrectionRepository'
 import { keepServerReviewCorrection } from '../reviewCorrectionResolutionRepository'
+import { reviewCorrectionRecoveryRepository as recovery } from '../reviewCorrectionRecoveryRepository'
 import { reviewEventRepository } from '../reviewEventRepository'
 import type {
   ReviewCorrectionCommand,
@@ -101,9 +102,11 @@ describe('explicit correction resolution on SQLite', () => {
   })
 
   it.each(['reset', 'review'])(
-    'keeps subsequent %s commands and their provisional SRS untouched',
+    'preserves legacy subsequent %s commands and their provisional SRS untouched',
     async kind => {
       await conflict()
+      // Simulate a queue written before v12; new writers are now prevented.
+      db.exec('DROP TRIGGER guard_learning_during_correction')
       db.prepare(
         'INSERT INTO learning_commands(operation_id, kind, user_id, word_id) VALUES (?, ?, ?, ?)'
       ).run('later', kind, 'qa', 'word')
@@ -160,6 +163,7 @@ describe('explicit correction resolution on SQLite', () => {
   it('makes a duplicate resolution a no-op, even after a newer local review', async () => {
     await conflict()
     await resolve()
+    await recovery.finish(command, progress)
     db.exec('UPDATE words SET repetition_count = 99')
     const before = word()
     await resolve()

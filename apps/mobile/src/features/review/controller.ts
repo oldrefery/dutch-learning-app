@@ -38,7 +38,7 @@ export function createNativeReviewController(
   let flow = createReviewFlow(config)
   const listeners = new Set<() => void>()
   let retry: NativeReviewSubmission | null = null
-  let writesBlocked = false
+  let writesBlocked = Boolean(correctionTransport?.loadPending)
   const transition = (
     change: (state: NativeReviewFlow) => NativeReviewFlow
   ) => {
@@ -109,7 +109,15 @@ export function createNativeReviewController(
     transition(state => ({
       ...state,
       timerRevision: state.timerRevision + 1,
-      active: state.active ? { ...state.active, autoPaused: true } : null,
+      active: state.active
+        ? {
+            ...state.active,
+            autoPaused:
+              blocked ||
+              state.active.answeredAt !== null ||
+              state.active.autoPaused,
+          }
+        : null,
     }))
   }
   const corrections = createNativeCorrectionController(

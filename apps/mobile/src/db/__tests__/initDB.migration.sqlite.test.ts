@@ -13,6 +13,7 @@ import {
   MIGRATION_V9_LEARNING_COMMANDS,
 } from '../schema'
 import { MIGRATION_V11_CORRECTION_RESOLUTION } from '../reviewCorrectionSchema'
+import { MIGRATION_V12_CORRECTION_RECOVERY } from '../reviewCorrectionRecoverySchema'
 
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }))
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -31,6 +32,7 @@ type Fault =
   | 'version'
   | 'corrections'
   | 'resolution'
+  | 'recovery'
   | null
 
 // Execute the actual initializer and SQL on a disposable file, replacing only
@@ -96,7 +98,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       ['pending-b', 'qa-a'],
       ['pending-c', 'qa-b'],
     ])
-    expect(version).toBe('11')
+    expect(version).toBe('12')
     expect(db.prepare('PRAGMA foreign_keys').get()).toEqual({ foreign_keys: 1 })
     expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
   }
@@ -163,6 +165,11 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
                   interrupt()
                 }
                 db.exec(sql)
+                if (
+                  sql === MIGRATION_V12_CORRECTION_RECOVERY &&
+                  fault === 'recovery'
+                )
+                  interrupt()
               },
             })
             db.exec('COMMIT')
@@ -224,6 +231,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     'version',
     'corrections',
     'resolution',
+    'recovery',
   ] as const)(
     'retries after interruption at %s without losing or duplicating commands',
     async phase => {
@@ -268,7 +276,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     version = '10'
     await closeDatabase()
     await initializeDatabase()
-    expect(version).toBe('11')
+    expect(version).toBe('12')
     expect(words()).toEqual(wordsBefore)
     expect(events()).toEqual(history)
     expect(commands()).toEqual(queue)

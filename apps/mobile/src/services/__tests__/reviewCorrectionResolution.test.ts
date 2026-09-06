@@ -102,7 +102,7 @@ describe('explicit mobile correction conflict resolution', () => {
     ])
     expect(query.is).toHaveBeenCalledWith('deleted_at', null)
     expect(keepServerReviewCorrection).toHaveBeenCalledWith(command, progress)
-    expect(supabase.auth.getUser).toHaveBeenCalledTimes(2)
+    expect(supabase.auth.getUser).toHaveBeenCalledTimes(3)
     expect(
       jest.mocked(reviewCorrectionSync.pull).mock.invocationCallOrder[0]
     ).toBeLessThan(query.maybeSingle.mock.invocationCallOrder[0])

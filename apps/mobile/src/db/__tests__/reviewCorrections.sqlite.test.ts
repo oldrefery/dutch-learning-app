@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { createTestDatabase } from './sqlite.fixture'
 import { reviewCorrectionRepository as corrections } from '../reviewCorrectionRepository'
 import { reviewEventRepository } from '../reviewEventRepository'
+import { reviewCorrectionRecoveryRepository as recovery } from '../reviewCorrectionRecoveryRepository'
 import { getLearningQueueHealth } from '../learningQueueHealth'
 import { MIGRATION_V10_REVIEW_CORRECTIONS } from '../reviewCorrectionSchema'
 import type {
@@ -77,19 +78,17 @@ describe('durable review corrections on SQLite', () => {
     expect(events()[0].assessment).toBe('good')
   })
 
-  it('queues once between review and reset, preserving original events and SRS', async () => {
+  it('queues once after review and blocks reset, preserving original events and SRS', async () => {
     const before = word()
     const original = events()
     await corrections.enqueue(command)
     await corrections.enqueue(command)
-    db.exec(
-      `INSERT INTO learning_commands(operation_id, kind, user_id, word_id) VALUES ('reset', 'reset', 'qa', 'word')`
-    )
-    expect(commands().map(row => row.kind)).toEqual([
-      'review',
-      'correction',
-      'reset',
-    ])
+    expect(() =>
+      db.exec(
+        `INSERT INTO learning_commands(operation_id, kind, user_id, word_id) VALUES ('reset', 'reset', 'qa', 'word')`
+      )
+    ).toThrow('Finish synchronizing')
+    expect(commands().map(row => row.kind)).toEqual(['review', 'correction'])
     expect(word()).toEqual(before)
     expect(events()).toEqual(original)
     expect(await corrections.getNext('qa')).toMatchObject({
@@ -100,7 +99,7 @@ describe('durable review corrections on SQLite', () => {
     expect(await corrections.getNext('other')).toBeNull()
     expect(
       await getLearningQueueHealth('qa', Date.parse(at) + 10000)
-    ).toMatchObject({ count: 3, oldestAgeSeconds: 10 })
+    ).toMatchObject({ count: 2, oldestAgeSeconds: 10 })
   })
 
   it('rolls back the edit when its queue insert fails', async () => {
@@ -156,6 +155,18 @@ describe('durable review corrections on SQLite', () => {
     expect(
       (await reviewEventRepository.getPendingSyncEvents('qa'))[0].assessment
     ).toBe('good')
+    db.exec(
+      "UPDATE review_events SET sync_status = 'synced' WHERE event_id = 'event'"
+    )
+    await recovery.finish(command, {
+      user_id: 'qa',
+      word_id: 'word',
+      interval_days: 0,
+      repetition_count: 0,
+      easiness_factor: 2.3,
+      next_review_date: '2026-09-07',
+      last_reviewed_at: at,
+    })
     await corrections.enqueue({
       ...command,
       correction_id: 'second',

@@ -14,6 +14,7 @@ import {
 } from '../schema'
 import { closeDatabase, initializeDatabase } from '../initDB'
 import { MIGRATION_V11_CORRECTION_RESOLUTION } from '../reviewCorrectionSchema'
+import { MIGRATION_V12_CORRECTION_RECOVERY } from '../reviewCorrectionRecoverySchema'
 
 jest.mock('expo-sqlite', () => ({
   openDatabaseAsync: jest.fn(),
@@ -46,7 +47,7 @@ describe('initializeDatabase', () => {
       async callback => callback(mockDatabase)
     )
     ;(SQLite.openDatabaseAsync as jest.Mock).mockResolvedValue(mockDatabase)
-    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('11')
+    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('12')
     ;(AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined)
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
@@ -134,7 +135,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V11_CORRECTION_RESOLUTION
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '11')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '12')
   })
 
   it('treats a malformed stored version as a fresh database', async () => {
@@ -148,7 +149,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V3_UNIQUE_INDEX
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '11')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '12')
   })
 
   it('continues when an idempotent column migration finds the column', async () => {
@@ -164,7 +165,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V5_TOMBSTONE_INDEXES
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '11')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '12')
   })
 
   it('discards a failed connection so initialization can retry', async () => {
@@ -182,7 +183,7 @@ describe('initializeDatabase', () => {
     await initializeDatabase()
 
     expect(SQLite.openDatabaseAsync).toHaveBeenCalledTimes(2)
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '11')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '12')
   })
 
   it.each([false, true])(
@@ -198,11 +199,14 @@ describe('initializeDatabase', () => {
       expect(mockDatabase.execAsync.mock.calls).toEqual([
         ['PRAGMA foreign_keys = ON'],
         [MIGRATION_V11_CORRECTION_RESOLUTION],
+        [MIGRATION_V12_CORRECTION_RECOVERY],
       ])
-      expect(mockDatabase.withExclusiveTransactionAsync).not.toHaveBeenCalled()
+      expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalledTimes(
+        1
+      )
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         'db_schema_version',
-        '11'
+        '12'
       )
     }
   )

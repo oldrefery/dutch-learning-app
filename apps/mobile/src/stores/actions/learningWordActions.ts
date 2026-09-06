@@ -3,6 +3,7 @@ import { addLocalCalendarDays, toLocalDateKey } from '@woordenaar/domain'
 import { wordRepository } from '@/db/wordRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { learningOperationQueue } from '@/services/learningOperationQueue'
+import { reviewCorrectionRecoveryRepository } from '@/db/reviewCorrectionRecoveryRepository'
 import { calculateNextReview } from '@/utils/srs'
 import { logError } from '@/utils/logger'
 import { createStoreError } from '@/types/ErrorTypes'
@@ -74,6 +75,7 @@ export function createLearningWordActions(
             !['again', 'hard', 'good', 'easy'].includes(command.assessment)
           )
             throw new Error('Invalid review identity or assessment')
+          await reviewCorrectionRecoveryRepository.assertReady(userId)
           const word = await wordRepository.getWordByIdAndUserId(wordId, userId)
           if (!sameAccount(userId)) return false
           if (!word) throw new Error('Review word not found')
@@ -144,6 +146,7 @@ export function createLearningWordActions(
         return await learningOperationQueue.run(async () => {
           if (!sameAccount(userId)) return
           if (!userId || !wordId) throw new Error('Invalid reset identity')
+          await reviewCorrectionRecoveryRepository.assertReady(userId)
           await wordRepository.resetWordProgress(wordId, userId)
           if (!sameAccount(userId)) return
           const now = new Date()

@@ -1,5 +1,6 @@
 import { collectionService, supabase, wordService } from '@/lib/supabase'
 import { learningOperationQueue } from './learningOperationQueue'
+import { recoverConfirmedReviewCorrections } from './reviewCorrectionRecovery'
 import {
   wordRepository,
   type WordSyncAcknowledgement,
@@ -455,6 +456,11 @@ export class SyncManager {
         )
       }
 
+      if (correctionsAvailable) {
+        await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
+          recoverConfirmedReviewCorrections(userId)
+        )
+      }
       const timestamp = new Date().toISOString()
       // Status metadata must not turn an acknowledged data sync into a failure.
       await setLastSyncTimestamp(userId, timestamp).catch(() => {

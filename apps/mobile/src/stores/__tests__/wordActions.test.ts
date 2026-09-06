@@ -1091,3 +1091,4 @@ describe('wordActions', () => {
     })
   })
 })
+jest.mock('@/db/reviewCorrectionRecoveryRepository')

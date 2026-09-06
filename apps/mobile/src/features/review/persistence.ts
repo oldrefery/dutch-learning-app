@@ -4,6 +4,7 @@ import { calculateNextReview } from '@/utils/srs'
 import { toLocalDateKey } from '@woordenaar/domain'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { learningOperationQueue } from '@/services/learningOperationQueue'
+import { reviewCorrectionRecoveryRepository } from '@/db/reviewCorrectionRecoveryRepository'
 import type { NativeReviewSubmission } from './controller'
 
 /** Keep the full local persistence payload stable through a failed acknowledgement. */
@@ -17,6 +18,7 @@ export function createNativeReviewPersistence(userId: string) {
     ) {
       throw new Error('Review account changed')
     }
+    await reviewCorrectionRecoveryRepository.assertReady(userId)
     if (!pending) {
       const word = await wordRepository.getWordByIdAndUserId(
         input.wordId,

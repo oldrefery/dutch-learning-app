@@ -2,49 +2,30 @@ import {
   reconcileReviewHistory,
   type SRSAssessmentType,
 } from '@woordenaar/domain'
-import type { NativeReviewFlow } from './controller'
 import type { ReviewCorrectionCommand } from '@/types/ReviewCorrection'
-
-export interface CorrectionResult {
-  eventId: string
-  wordId: string
-  revision: number
-  assessment: SRSAssessmentType
-}
-
-/** A result may be returned only after durable intent and canonical SRS reconciliation. */
-export interface NativeCorrectionTransport {
-  ownsSession: () => boolean
-  apply: (
-    command: Readonly<ReviewCorrectionCommand>
-  ) => Promise<
-    { kind: 'confirmed'; result: CorrectionResult } | { kind: 'conflict' }
-  >
-  keepServer: (
-    command: Readonly<ReviewCorrectionCommand>
-  ) => Promise<CorrectionResult | null>
-}
-
-export interface NativeCorrectionState {
-  status: 'unavailable' | 'idle' | 'saving' | 'retry' | 'conflict' | 'resolving'
-  command: Readonly<ReviewCorrectionCommand> | null
-  lockedEvents: readonly string[]
-  notice: string | null
-}
-
-interface Target {
-  getSnapshot: () => NativeReviewFlow
-  transition: (change: (state: NativeReviewFlow) => NativeReviewFlow) => void
-  blockWrites: (blocked: boolean) => void
-}
+import { createCorrectionRestoration } from './restoreCorrections'
+import type {
+  CorrectionResult,
+  NativeCorrectionTransport,
+  NativeCorrectionState,
+  CorrectionTarget,
+} from './correctionTypes'
+export type {
+  CorrectionResult,
+  NativeCorrectionTransport,
+} from './correctionTypes'
 
 export function createNativeCorrectionController(
-  target: Target,
+  target: CorrectionTarget,
   newId: () => string,
   transport?: NativeCorrectionTransport
 ) {
   let state: NativeCorrectionState = {
-    status: transport ? 'idle' : 'unavailable',
+    status: transport?.loadPending
+      ? 'checking'
+      : transport
+        ? 'idle'
+        : 'unavailable',
     command: null,
     lockedEvents: [],
     notice: null,
@@ -56,6 +37,13 @@ export function createNativeCorrectionController(
   }
   const validSession = () =>
     Boolean(transport?.ownsSession()) && !target.getSnapshot().closed
+  const restore = createCorrectionRestoration(
+    target,
+    transport,
+    () => state,
+    update,
+    validSession
+  )
   const reconcile = (
     command: Readonly<ReviewCorrectionCommand>,
     result: CorrectionResult
@@ -94,12 +82,13 @@ export function createNativeCorrectionController(
       if (response.result.revision <= command.expected_revision)
         throw new Error('Correction was not confirmed')
       reconcile(command, response.result)
-      target.blockWrites(false)
+      if (!transport.loadPending) target.blockWrites(false)
       update({
-        status: 'idle',
+        status: transport.loadPending ? 'checking' : 'idle',
         command: null,
         notice: 'Assessment updated. No extra review was recorded.',
       })
+      await restore()
     } catch {
       if (validSession())
         update({
@@ -109,6 +98,39 @@ export function createNativeCorrectionController(
     }
   }
   return {
+    restore,
+    canCancelUnqueued: Boolean(transport?.cancelUnqueued),
+    cancelUnqueued: async () => {
+      if (
+        state.status !== 'retry' ||
+        !state.command ||
+        !validSession() ||
+        !transport?.cancelUnqueued
+      )
+        return
+      const command = state.command
+      update({ status: 'saving' })
+      try {
+        const cancelled = await transport.cancelUnqueued(command)
+        if (!validSession()) return
+        update(
+          cancelled
+            ? {
+                status: 'checking',
+                command: null,
+                notice: 'Unsent change cancelled.',
+              }
+            : {
+                status: 'retry',
+                notice:
+                  'This change is already saved locally. Retry to finish synchronizing it.',
+              }
+        )
+        if (cancelled) await restore()
+      } catch {
+        if (validSession()) update({ status: 'retry' })
+      }
+    },
     getSnapshot: () => state,
     subscribe: (listener: () => void) => {
       listeners.add(listener)
@@ -150,6 +172,10 @@ export function createNativeCorrectionController(
       await apply(command)
     },
     retry: async () => {
+      if (state.status === 'loadFailed') {
+        await restore()
+        return
+      }
       if (
         state.status === 'retry' &&
         state.command &&
@@ -172,13 +198,14 @@ export function createNativeCorrectionController(
         const result = await transport.keepServer(command)
         if (!validSession()) return
         if (result) reconcile(command, result)
-        target.blockWrites(false)
+        if (!transport.loadPending) target.blockWrites(false)
         update({
-          status: 'idle',
+          status: transport.loadPending ? 'checking' : 'idle',
           command: null,
           lockedEvents: [...state.lockedEvents, command.event_id],
           notice: `Server version refreshed. The requested ${command.assessment} rating was not confirmed.`,
         })
+        await restore()
       } catch {
         if (validSession())
           update({

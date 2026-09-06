@@ -1,4 +1,5 @@
 import { createLearningWordActions } from '../learningWordActions'
+import { reviewCorrectionRecoveryRepository as recovery } from '@/db/reviewCorrectionRecoveryRepository'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { wordRepository } from '@/db/wordRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
@@ -28,6 +29,19 @@ const answer: ReviewAssessment = {
 }
 const store = useApplicationStore
 const actions = () => createLearningWordActions(store.setState, store.getState)
+
+it('blocks Audio Review and reset before preparing stale progress during recovery', async () => {
+  jest
+    .mocked(recovery.assertReady)
+    .mockRejectedValue(new Error('pending correction'))
+  expect(await actions().updateWordAfterReview(word.word_id, answer)).toBe(
+    false
+  )
+  await actions().resetWordProgress(word.word_id)
+  expect(wordRepository.getWordByIdAndUserId).not.toHaveBeenCalled()
+  expect(reviewEventRepository.recordAssessment).not.toHaveBeenCalled()
+  expect(wordRepository.resetWordProgress).not.toHaveBeenCalled()
+})
 function deferred() {
   let resolve!: () => void
   const promise = new Promise<void>(done => {
@@ -195,3 +209,4 @@ it('uses the committed reset state when a review is queued immediately after res
     })
   )
 })
+jest.mock('@/db/reviewCorrectionRecoveryRepository')

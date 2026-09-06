@@ -85,6 +85,12 @@ export const reviewCorrectionRepository = {
           throw new Error('Correction ID already exists with different data')
         return
       }
+      const recovering = await transaction.getFirstAsync<{ count: number }>(
+        'SELECT COUNT(*) AS count FROM review_correction_recovery WHERE user_id = ?',
+        [command.user_id]
+      )
+      if (recovering?.count)
+        throw new Error('Resolve the pending correction before editing again')
       const event = await transaction.getFirstAsync<{ revision: number }>(
         `SELECT e.revision FROM effective_review_events e JOIN words w ON w.word_id = e.word_id
          WHERE e.event_id = ? AND e.word_id = ? AND e.user_id = ?

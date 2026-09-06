@@ -11,6 +11,11 @@ import {
 import { useSettingsStore } from '@/stores/useSettingsStore'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
+import { createNativeCorrectionTransport } from '@/features/review/correctionTransport'
+
+jest.mock('@/features/review/correctionTransport', () => ({
+  createNativeCorrectionTransport: jest.fn(),
+}))
 
 jest.mock('@/features/review/persistence', () => ({
   createNativeReviewPersistence: jest.fn(),
@@ -39,15 +44,56 @@ const persist = jest.fn()
 const SECOND_WORD = 'Word 2 / 3'
 const EXAMPLE_TRANSLATION = /The house is big\./
 const GOOD_BUTTON = 'srs-good-button'
+const PREVIOUS_WORD = 'Previous word'
 beforeEach(() => {
   jest.useFakeTimers().setSystemTime(new Date('2026-09-06T12:00:00Z'))
   AppState.currentState = 'active'
   persist.mockReset().mockResolvedValue(undefined)
+  jest.mocked(createNativeCorrectionTransport).mockReset()
   jest.mocked(createNativeReviewPersistence).mockReturnValue(persist)
   useSettingsStore.setState({ manualRecognitionByUser: {} })
   useApplicationStore.setState({ currentUserId: userId, words: vocabulary })
 })
 afterEach(() => jest.useRealTimers())
+
+it('wires production session creation through restoration and assessment correction controls', async () => {
+  const apply = jest.fn(
+    async (
+      command: import('@/types/ReviewCorrection').ReviewCorrectionCommand
+    ) => ({
+      kind: 'confirmed' as const,
+      result: {
+        eventId: command.event_id,
+        wordId: command.word_id,
+        revision: command.expected_revision + 1,
+        assessment: command.assessment,
+      },
+    })
+  )
+  jest.mocked(createNativeCorrectionTransport).mockReturnValue({
+    ownsSession: () => true,
+    loadPending: jest.fn().mockResolvedValue(null),
+    apply,
+    keepServer: jest.fn(),
+  })
+  const screen = render(
+    <NativeReviewSession session={makeSession()} userId={userId} />
+  )
+  expect(screen.getByLabelText('house')).toBeDisabled()
+  await act(async () => {})
+  fireEvent.press(screen.getByLabelText('house'))
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(600)
+  })
+  fireEvent.press(screen.getByLabelText(PREVIOUS_WORD))
+  fireEvent.press(screen.getByLabelText('Change to hard'))
+  await act(async () => {})
+  expect(screen.getByText('Recorded: hard')).toBeTruthy()
+  expect(persist).toHaveBeenCalledTimes(1)
+  expect(apply).toHaveBeenCalledTimes(1)
+  fireEvent.press(screen.getByLabelText('Return to current question'))
+  expect(screen.getByLabelText('chair')).toBeEnabled()
+})
 
 describe.each(['light', 'dark'] as const)(
   'native review in %s theme',
@@ -65,7 +111,7 @@ describe.each(['light', 'dark'] as const)(
         await jest.advanceTimersByTimeAsync(600)
       })
       expect(screen.getByText(SECOND_WORD)).toBeTruthy()
-      fireEvent.press(screen.getByLabelText('Previous word'))
+      fireEvent.press(screen.getByLabelText(PREVIOUS_WORD))
       expect(screen.getByText('History 1 / 1')).toBeTruthy()
       fireEvent.press(screen.getByLabelText('Full details'))
       expect(screen.getByText(EXAMPLE_TRANSLATION)).toBeTruthy()
@@ -117,7 +163,7 @@ it('shows manual ratings when opted in and retains history after completion', as
   fireEvent.press(screen.getByTestId('srs-easy-button'))
   await act(async () => {})
   expect(screen.getByText('Session Complete!')).toBeTruthy()
-  fireEvent.press(screen.getByLabelText('Previous word'))
+  fireEvent.press(screen.getByLabelText(PREVIOUS_WORD))
   expect(screen.getByText('Recorded: easy')).toBeTruthy()
   expect(persist).toHaveBeenCalledTimes(1)
 })

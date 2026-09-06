@@ -1,4 +1,5 @@
 import { createNativeReviewPersistence } from '../persistence'
+import { reviewCorrectionRecoveryRepository as recovery } from '@/db/reviewCorrectionRecoveryRepository'
 import { wordRepository } from '@/db/wordRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { useApplicationStore } from '@/stores/useApplicationStore'
@@ -26,6 +27,24 @@ const word = {
   last_sync_attempt_at: null,
   synced_at: null,
 }
+
+it('does not freeze provisional SRS while a correction needs recovery', async () => {
+  const persist = createNativeReviewPersistence(userId)
+  jest
+    .mocked(recovery.assertReady)
+    .mockRejectedValueOnce(new Error('pending correction'))
+  await expect(persist(input)).rejects.toThrow('pending correction')
+  expect(wordRepository.getWordByIdAndUserId).not.toHaveBeenCalled()
+  jest
+    .mocked(wordRepository.getWordByIdAndUserId)
+    .mockResolvedValue({ ...word, interval_days: 8 })
+  await persist(input)
+  expect(reviewEventRepository.recordAssessment).toHaveBeenCalledWith(
+    expect.objectContaining({
+      event: expect.objectContaining({ previous_interval_days: 8 }),
+    })
+  )
+})
 
 it('waits for sync before reading SRS and freezes input while waiting', async () => {
   const gate = deferred()
@@ -147,3 +166,4 @@ it('does not restore old-account words after a save completes during logout', as
   await createNativeReviewPersistence(userId)(input)
   expect(useApplicationStore.getState().words).toEqual([])
 })
+jest.mock('@/db/reviewCorrectionRecoveryRepository')

@@ -28,6 +28,7 @@ export function attachNativeReviewLifecycle(
   const update = () =>
     controller.setForeground(AppState.currentState === 'active' && !blurred)
   update()
+  void controller.corrections.restore()
   const unsubscribe = controller.subscribe(schedule)
   const subscriptions = [
     AppState.addEventListener('change', state => {

@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite'
+import { MIGRATION_V12_CORRECTION_RECOVERY } from './reviewCorrectionRecoverySchema'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
   SQL_SCHEMA,
@@ -21,7 +22,7 @@ import {
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 11
+const SCHEMA_VERSION = 12
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -264,6 +265,11 @@ async function applyPendingMigrations(
       'review_corrections.resolved_at'
     )
   }
+  if (currentVersion < 12) {
+    await db.withExclusiveTransactionAsync(async transaction => {
+      await transaction.execAsync(MIGRATION_V12_CORRECTION_RECOVERY)
+    })
+  }
 }
 
 function parseSchemaVersion(storedVersion: string | null): number {
@@ -351,6 +357,7 @@ export async function resetDatabase(): Promise<void> {
     const db = await getDatabase()
     const statements = [
       'DROP VIEW IF EXISTS effective_review_events',
+      'DROP TABLE IF EXISTS review_correction_recovery',
       'DROP TABLE IF EXISTS review_corrections',
       'DROP TABLE IF EXISTS learning_commands',
       'DROP TABLE IF EXISTS review_events',

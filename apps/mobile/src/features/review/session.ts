@@ -7,6 +7,7 @@ import {
 } from './controller'
 import { createNativeReviewPersistence } from './persistence'
 import { prepareNativeReviewQuestions } from './questions'
+import { createNativeCorrectionTransport } from './correctionTransport'
 
 // Route remounts reuse the same in-memory session. App restart does not restore
 // a session, but committed assessments remain in the durable SQLite queue.
@@ -31,7 +32,8 @@ export function getNativeReviewSession(
       ),
     },
     createNativeReviewPersistence(userId),
-    randomUUID
+    randomUUID,
+    createNativeCorrectionTransport(userId)
   )
   controllers.set(session, controller)
   return controller

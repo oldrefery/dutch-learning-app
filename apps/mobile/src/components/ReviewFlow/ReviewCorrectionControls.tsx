@@ -41,9 +41,16 @@ export function ReviewCorrectionControls({
       {state.notice && (
         <TextThemed accessibilityLiveRegion="polite">{state.notice}</TextThemed>
       )}
-      {state.status === 'retry' && (
+      {state.status === 'checking' && (
+        <TextThemed>Checking unfinished assessment changes…</TextThemed>
+      )}
+      {(state.status === 'retry' || state.status === 'loadFailed') && (
         <ReviewFlowButton
-          label="Retry same correction"
+          label={
+            state.status === 'loadFailed'
+              ? 'Retry loading corrections'
+              : 'Retry same correction'
+          }
           disabled={!flow.foreground}
           onPress={() => {
             void corrections.retry()
@@ -56,6 +63,15 @@ export function ReviewCorrectionControls({
           disabled={!flow.foreground}
           onPress={() => {
             void corrections.keepServer()
+          }}
+        />
+      )}
+      {state.status === 'retry' && corrections.canCancelUnqueued && (
+        <ReviewFlowButton
+          label="Cancel if not saved"
+          disabled={!flow.foreground}
+          onPress={() => {
+            void corrections.cancelUnqueued()
           }}
         />
       )}

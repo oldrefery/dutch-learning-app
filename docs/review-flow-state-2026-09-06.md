@@ -194,11 +194,14 @@ performed for this stage.
   blocks answering/exiting, while read-only browsing remains available. Late
   results for a different account are ignored. Successful reconciliation replaces
   effective history and leaves the pending question paused and intact.
-- Production sessions still omit that transport, so correction UI displays an
-  unavailable notice. Before enabling it, persist a canonical-progress barrier
-  that survives restart and blocks every learning writer until refreshed SRS is
-  applied. A correction receipt alone is insufficient: it can acknowledge the
-  queue entry before the canonical word pull completes. Browsing is not a correction.
+- Production session creation now connects the authenticated correction transport.
+  SQLite v12 retains a recovery barrier across receipt acknowledgement and restart.
+  New sessions first restore unfinished changes from local storage; pending edits
+  offer retry, conflicts offer explicit server refresh. Sync also recovers confirmed
+  edits after restart, applying canonical SRS before atomically releasing the barrier.
+  No network is required just to start review when no correction is pending.
+  A failed attempt can be cancelled only if SQLite confirms it was never persisted.
+  Backend migration deployment and real-device verification are still pending.
 - Fast-review persistence, sync passes, and explicit conflict resolution share
   a FIFO in-process queue. Reads used to calculate SRS happen after acquiring the
   queue. While a sync pass is running, an answer remains in the saving state;
@@ -206,8 +209,9 @@ performed for this stage.
   acknowledgement during a slow online sync. Audio Review and progress reset now
   use the same queue. Audio Review calculates SRS from SQLite after waiting,
   freezes the original answer time, and rejects in-flight duplicate submissions.
-  Late saves cannot advance another account or a replacement session. Durable
-  recovery and production correction transport remain the next integration stage.
+  Late saves cannot advance another account or a replacement session. All learning
+  writers check the correction barrier before preparing SRS, with an additional
+  SQLite trigger guarding new review/reset queue entries.
 
 Local tests cover double taps, timer cancellation, delayed/failed saves, identical
 retry payloads, account switches, actual SQLite idempotency, per-account settings,

@@ -16,6 +16,9 @@ import { learningResetRepository } from '@/db/learningResetRepository'
 import { getLearningQueueHealth } from '@/db/learningQueueHealth'
 import { reviewCorrectionRepository } from '@/db/reviewCorrectionRepository'
 import { reviewCorrectionSync } from '../reviewCorrectionSync'
+jest.mock('../reviewCorrectionRecovery', () => ({
+  recoverConfirmedReviewCorrections: jest.fn(),
+}))
 
 jest.mock('@/db/reviewCorrectionRepository', () => ({
   reviewCorrectionRepository: { getNext: jest.fn().mockResolvedValue(null) },

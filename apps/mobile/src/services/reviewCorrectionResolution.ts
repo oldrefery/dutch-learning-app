@@ -76,6 +76,16 @@ async function resolveConflict(
   // Reconcile receipts before releasing a rejected intent. A previously accepted
   // operation may have lost its acknowledgement before a later terminal response.
   await reviewCorrectionSync.pull(userId)
+  const progress = await readCanonicalCorrectionProgress(command)
+  await keepServerReviewCorrection(command, progress)
+}
+
+/** Fresh, authenticated progress; callers serialize application with learning writes. */
+export async function readCanonicalCorrectionProgress(
+  command: ReviewCorrectionCommand
+) {
+  const userId = command.user_id
+  await ensureCorrectionIdentity(userId)
   const { data, error } = await supabase
     .from('words')
     .select(
@@ -88,5 +98,5 @@ async function resolveConflict(
   if (error) throw error
   const progress = parseProgress(data, command)
   await ensureCorrectionIdentity(userId)
-  await keepServerReviewCorrection(command, progress)
+  return progress
 }

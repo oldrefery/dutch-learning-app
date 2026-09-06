@@ -237,18 +237,22 @@ subsequent command preservation, and interrupted schema upgrades.
   compatibility layers for hypothetical users. Retain data-integrity guarantees
   for interrupted writes, retries, and restarts; the protected application account
   must not be used for testing.
-- Mobile now has correction controls and a controller transport contract for
-  saving, immutable retry, conflict, and explicit server refresh. Production
-  session creation deliberately supplies no correction transport: history shows
-  an unavailable notice and cannot send correction writes. Deployment of the
-  migration alone does not enable the controls.
-- Before connecting the transport, add a durable, account-bound canonical-progress
-  barrier. A synced correction receipt can remove its queue command before the
-  following canonical word pull succeeds. That acknowledgement must not release
-  new learning writes against stale SRS. Persist and restore the barrier across
-  restarts; release it only after validated canonical progress is applied or the
-  conflict is explicitly resolved. Cover all learning entry points, not just the
-  mounted review screen. The existing in-process FIFO is not this durable barrier.
+- Mobile session creation now supplies the correction transport. Saving, immutable
+  retry, conflict refresh, and restoration are connected to the existing authenticated
+  sync pipeline. Backend capability is checked before enqueueing an edit. Unsupported
+  backends cannot receive correction writes; an attempt that was never persisted
+  can be cancelled after a serialized local database check.
+- SQLite v12 persists a per-account recovery barrier atomically with each local
+  correction. A receipt may remove the learning queue entry, but cannot release
+  this barrier. Successful sync runs a fresh canonical SRS read even if no new
+  commands were uploaded; progress application and barrier removal are atomic.
+  Explicit conflict resolution is followed by the same reconciliation. Deleted
+  server words remain local tombstones, not reviewable stale copies.
+- New assessments and resets are blocked at the SQLite command boundary while
+  recovery is pending. Fast review and Audio Review also check before calculating
+  SRS, so retries cannot retain a result prepared against stale progress. The
+  controller restores pending/conflicting edits when a new session opens after
+  restart; normal offline review only requires the local restoration check.
 - Keep a same-word follow-up review from using unconfirmed correction progress.
   The session layer must wait for reconciliation or explicitly resolve the edit;
   do not calculate a new assessment from a guessed optimistic state.
@@ -285,14 +289,21 @@ The native correction controller/UI milestone adds isolated transport tests for
 single claiming (including re-entrant subscribers), immutable uncertain retries,
 write/exit blocking, conflict refresh failures, deleted events, malformed results,
 late account changes, assisted-answer protection, and unavailable production
-transport. Rendered controls are exercised in light and dark themes. These tests
-do not establish durable recovery or real HTTP/Auth integration. A transport must
+transport. Rendered controls are exercised in light and dark themes. Those
+controller-only tests do not exercise SQLite or real HTTP/Auth integration. A transport must
 return success only after durable intent and canonical SRS reconciliation, not
 merely after enqueueing or receiving a correction receipt.
 
-At this milestone the full mobile suite passes 1,467 tests across 123 suites,
-including 22 snapshots. Mobile application/test typechecks, repository mobile
-lint, and changed-file formatting checks also pass.
+The recovery/transport milestone adds file-backed SQLite restart, rollback,
+account isolation, reset blocking, and deleted-word tests; transport tests for
+capability gating, lost responses, late account changes, and cancellation; and
+controller/UI tests for restoring and completing previous-session corrections.
+Migration interruption tests include v12. All transport tests remain local mocks.
+
+The completed local milestone passes 1,494 mobile tests across 127 suites and
+22 snapshots, including the mounted native review session with correction
+transport and the initial fast-Recognition auto-advance regression. Application
+and test typechecks, mobile lint, formatting, and whitespace checks also pass.
 
 Web server tests cover authentication redirects, cross-account rejection, exact
 retry payloads, conflict/error classification, malformed acknowledgements, reset
