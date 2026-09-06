@@ -58,6 +58,7 @@ export function useReviewSession(
     correctionsAvailable,
     blockedCorrections,
     notice,
+    noticeEventId,
     detailRevision,
   } = useSyncExternalStore(
     controller.subscribe,
@@ -151,7 +152,11 @@ export function useReviewSession(
     correction,
     correctionsAvailable,
     blockedCorrections,
-    notice,
+    notice:
+      historyEntry?.result.kind === 'assessed' &&
+      historyEntry.result.eventId === noticeEventId
+        ? notice
+        : null,
     detailRevision,
     correct: controller.correct,
     retryCorrection: controller.retryCorrection,

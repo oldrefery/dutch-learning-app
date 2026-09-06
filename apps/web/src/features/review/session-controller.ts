@@ -40,6 +40,7 @@ export interface WebReviewSnapshot {
   correctionsAvailable: boolean
   blockedCorrections: string[]
   notice: string | null
+  noticeEventId: string | null
   detailRevision: number
 }
 
@@ -58,6 +59,7 @@ export function createReviewSessionController(
     correctionsAvailable: data.correctionsAvailable === true,
     blockedCorrections: [],
     notice: null,
+    noticeEventId: null,
     detailRevision: 0,
   }
   const initial = snapshot
@@ -215,6 +217,7 @@ export function createReviewSessionController(
         ...snapshot,
         blockedCorrections: [],
         notice: null,
+        noticeEventId: null,
         flow: createReviewFlow({
           sessionId: crypto.randomUUID(),
           userId,

@@ -259,6 +259,7 @@ function AccountReviewWorkspace({
       <header className={styles.sessionTopbar}>
         <button
           className={styles.exit}
+          aria-label="Exit review"
           onClick={session.changeMode}
           disabled={session.unsettled}
           type="button"

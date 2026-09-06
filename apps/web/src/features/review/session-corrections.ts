@@ -77,6 +77,7 @@ export function createSessionCorrections(
       ...current,
       correction: null,
       notice: 'Assessment corrected. No extra review was added.',
+      noticeEventId: input.eventId,
       detailRevision: current.detailRevision + 1,
       flow: current.flow
         ? reconcileReviewHistory(
@@ -189,6 +190,7 @@ export function createSessionCorrections(
         ],
         detailRevision: current.detailRevision + 1,
         notice: `Server progress kept. Your requested ${command.input.assessment} edit was not confirmed. This review cannot be edited again in this session.`,
+        noticeEventId: command.input.eventId,
         flow:
           current.flow && result.event
             ? reconcileReviewHistory(

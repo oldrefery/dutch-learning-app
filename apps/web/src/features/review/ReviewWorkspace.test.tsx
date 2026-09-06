@@ -102,6 +102,12 @@ test('changing a history rating updates its label without submitting another rev
   ).toBeInTheDocument()
   expect(persist).toHaveBeenCalledTimes(1)
   expect(details).toHaveBeenCalledTimes(2)
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Return to current question' })
+  )
+  expect(screen.queryByText(/Assessment corrected/)).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Previous word' }))
+  expect(screen.getByText(/Assessment corrected/)).toBeInTheDocument()
 })
 
 test('uncertain corrections expose only same-edit retry and block new answers', async () => {
@@ -122,6 +128,42 @@ test('uncertain corrections expose only same-edit retry and block new answers', 
   fireEvent.click(screen.getByRole('button', { name: 'Retry same correction' }))
   await flush()
   expect(jest.mocked(submitReviewCorrection).mock.calls[1][0]).toBe(original)
+})
+
+test('late reconciliation notices belong only to the corrected history event', async () => {
+  jest.mocked(submitReviewCorrection).mockResolvedValue({
+    status: 'conflict',
+    message: 'Changed on another device',
+  })
+  jest.mocked(loadReviewCorrectionState).mockImplementation(async input => ({
+    status: 'success',
+    ...input,
+    correctionsAvailable: true,
+    progress: successfulResult(input.wordId).update,
+    event: { assessment: 'easy', revision: 2 },
+  }))
+  await openCorrectionHistory()
+  fireEvent.click(screen.getByRole('button', { name: 'Change to Again' }))
+  await flush()
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Return to current question' })
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Keep server version' }))
+  await flush()
+  const notice = /Your requested again edit was not confirmed/
+  expect(screen.queryByText(notice)).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: /\btree\b/ }))
+  await flush()
+  fireEvent.click(screen.getByRole('button', { name: /^Good ·/ }))
+  await flush()
+  fireEvent.click(screen.getByRole('button', { name: 'Previous word' }))
+  expect(screen.queryByText(notice)).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Previous word' }))
+  expect(screen.getByText(notice)).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Full details' }))
+  await flush()
+  expect(screen.getByText(notice)).toBeInTheDocument()
+  expect(persist).toHaveBeenCalledTimes(2)
 })
 
 test('conflict requires Keep server version and refreshes the effective rating', async () => {
@@ -162,6 +204,10 @@ test.each(['light', 'dark'])(
     document.documentElement.dataset.theme = theme
     renderWorkspace()
     start()
+    expect(screen.getByRole('button', { name: 'Exit review' })).toHaveAttribute(
+      'aria-label',
+      'Exit review'
+    )
     expect(screen.getByRole('button', { name: 'Full details' })).toBeEnabled()
     fireEvent.click(screen.getByRole('button', { name: /house/ }))
     await flush()
