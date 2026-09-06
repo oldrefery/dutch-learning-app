@@ -8,6 +8,12 @@ interface SmokeCollection {
   renamedName: string
 }
 
+export function createSmokeCollectionNames(): SmokeCollection {
+  // Preserve the complete UUID while leaving room for the rename suffix.
+  const name = `${E2E_COLLECTION_PREFIX} ${randomUUID().replaceAll('-', '')}`
+  return { name, renamedName: `${name} Renamed` }
+}
+
 async function deleteExactCollection(page: Page, name: string): Promise<void> {
   if (!name.startsWith(`${E2E_COLLECTION_PREFIX} `)) {
     throw new Error('Refusing to delete a collection outside the test fixture.')
@@ -35,8 +41,7 @@ export const test = base.extend<{ smokeCollection: SmokeCollection }>({
   smokeCollection: [
     async ({ browser, baseURL, storageState }, runTest) => {
       getE2ECredentials()
-      const name = `${E2E_COLLECTION_PREFIX} ${randomUUID()}`
-      const renamedName = `${name} Renamed`
+      const { name, renamedName } = createSmokeCollectionNames()
       try {
         await runTest({ name, renamedName })
       } finally {

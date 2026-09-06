@@ -36,9 +36,31 @@ test page no longer masks the primary failure with a cleanup navigation error.
 The Start button must be enabled within the normal assertion timeout; a new word
 scheduled incorrectly for tomorrow fails explicitly instead of waiting 180 seconds.
 
-The server-side initial-date correction is a separate, not-yet-deployed migration:
-`20260906110000_make_new_words_immediately_reviewable.sql`. Do not claim a passing
-production SRS smoke before that approved rollout and an actual successful run.
+Fixture names retain all UUID digits without hyphens, leaving room for the rename
+suffix within the 50-character form limit. Create/rename steps assert the actual
+input value before submitting, so browser truncation cannot silently orphan a
+collection. `smoke-collection.spec.ts` checks validation, UUID preservation and
+the browser maxlength behavior without application requests or authentication.
+Run just these contracts locally (Chromium must already be installed):
+
+```bash
+cd apps/web
+WEB_E2E_BASE_URL=http://127.0.0.1:9 npx playwright test e2e/smoke-collection.spec.ts --project=chromium --no-deps
+```
+
+The loopback URL disables automatic app startup; these tests do not navigate to
+it. `--no-deps` skips the login setup, and the spec uses empty browser storage.
+
+The server-side initial-date migration
+`20260906110000_make_new_words_immediately_reviewable.sql` was applied on
+2026-09-06. The first subsequent hosted smoke exposed the fixture name-length
+regression before reaching SRS. Only a successful rerun verifies the complete
+hosted learning workflow.
+
+The corrected local suite on `feature/fix-smoke-collection-name` passed against
+production on 2026-09-06: 7/7 checks, including same-day first review, persisted
+Easy progress and fixture cleanup. This was a local run against the deployed app,
+not a new successful GitHub Actions run; CI still needs the test fix to be pushed.
 
 ## Session and review recovery
 

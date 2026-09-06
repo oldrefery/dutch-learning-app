@@ -39,6 +39,7 @@ test('@smoke covers collection CRUD, word analysis, search, history, and SRS', a
 
   await page.getByText('New collection', { exact: true }).click()
   await page.getByLabel('Collection name').fill(collectionName)
+  await expect(page.getByLabel('Collection name')).toHaveValue(collectionName)
   await page.getByRole('button', { name: 'Create', exact: true }).click()
   const collectionLink = page.getByRole('link', {
     name: collectionName,
@@ -51,6 +52,9 @@ test('@smoke covers collection CRUD, word analysis, search, history, and SRS', a
   )
 
   await page.getByLabel('New collection name').fill(renamedCollectionName)
+  await expect(page.getByLabel('New collection name')).toHaveValue(
+    renamedCollectionName
+  )
   await page.getByRole('button', { name: 'Save name' }).click()
   await expect(
     page.getByRole('heading', { name: renamedCollectionName })
