@@ -22,6 +22,7 @@ const configProbe = `
       updates: exp.updates,
       runtimeVersion: exp.runtimeVersion,
       experiments: exp.experiments,
+      qaBuild: exp.extra.qaBuild,
       iosEnabled: ios.EXUpdatesEnabled,
       androidEnabled: enabled.$['android:value'],
     }));
@@ -56,6 +57,7 @@ describe('mobile OTA build configuration', () => {
         updates: appJson.expo.updates,
         runtimeVersion: appJson.expo.runtimeVersion,
         experiments: { nativeTabs: true, typedRoutes: true },
+        qaBuild: false,
         iosEnabled: true,
         androidEnabled: 'true',
       })
@@ -68,6 +70,7 @@ describe('mobile OTA build configuration', () => {
     expect(result.status).toBe(0)
     expect(JSON.parse(result.stdout)).toMatchObject({
       updates: { ...appJson.expo.updates, enabled: false },
+      qaBuild: true,
       runtimeVersion: appJson.expo.runtimeVersion,
       iosEnabled: false,
       androidEnabled: 'false',

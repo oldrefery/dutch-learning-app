@@ -19,4 +19,23 @@ describe('account deletion contract', () => {
       error: 'Account deletion failed.',
     })
   })
+
+  it.each([
+    undefined,
+    false,
+    true,
+    1,
+    'success',
+    [],
+    [{ success: true }],
+    {},
+    { success: 'true' },
+    { success: 1 },
+    { error: 42 },
+  ])('never reports deletion success for malformed payloads: %j', response => {
+    expect(parseDeleteAccountResponse(response)).toEqual({
+      success: false,
+      error: 'Account deletion failed.',
+    })
+  })
 })

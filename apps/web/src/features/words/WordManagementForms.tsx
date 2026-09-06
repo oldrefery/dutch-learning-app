@@ -1,6 +1,7 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useRef } from 'react'
+import { toLocalDateKey } from '@woordenaar/domain'
 import type { CollectionOption } from './repository'
 import {
   deleteWord,
@@ -117,8 +118,25 @@ function ResetWordForm({
   wordId: string
 }) {
   const resetWordWithIds = resetWordProgress.bind(null, collectionId, wordId)
+  const request = useRef<{
+    resetId: string
+    resetAt: string
+    reviewDate: string
+  } | null>(null)
   const [state, action, pending] = useActionState(
-    resetWordWithIds,
+    async (previous: typeof INITIAL_WORD_ACTION_STATE, formData: FormData) => {
+      const now = new Date()
+      request.current ??= {
+        resetId: crypto.randomUUID(),
+        resetAt: now.toISOString(),
+        reviewDate: toLocalDateKey(now),
+      }
+      for (const [key, value] of Object.entries(request.current))
+        formData.set(key, value)
+      const result = await resetWordWithIds(previous, formData)
+      if (result.status === 'success') request.current = null
+      return result
+    },
     INITIAL_WORD_ACTION_STATE
   )
 

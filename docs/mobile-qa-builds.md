@@ -9,6 +9,17 @@ startup checks and the `expo-updates` APIs. The existing Settings badge is hidde
 when updates are disabled. This flag does not enable test authentication or
 change accounts, application identifiers, runtime policy, or backend selection.
 
+The flag also sets `extra.qaBuild=true`; the Sentry initializer skips initialization
+for this explicit mode, keeping synthetic failures out of the live Sentry project.
+Normal builds retain Sentry. Use a separately approved non-QA setup when testing
+actual telemetry delivery. QA is not an authorization or access-control bypass.
+
+For an isolated backend build, set `EXPO_NO_DOTENV=1` and explicitly provide only
+the intended public Supabase URL/key in the build environment. Development login
+credentials are not required by the runtime and must not be added just to make
+a release build start. Expo inlines public variables at bundle time; changing
+them when launching an installed app does not replace its backend.
+
 For a local build, run from the repository root in a scoped shell:
 
 ```bash

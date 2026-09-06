@@ -10,12 +10,14 @@ import {
   MIGRATION_V6_SYNC_TIMESTAMP_COLUMNS,
   MIGRATION_V7_REVIEW_EVENTS,
   MIGRATION_V8_ADD_USAGE_NOTES,
+  MIGRATION_V9_LEARNING_COMMANDS,
+  MIGRATION_V9_REVIEW_DATE,
 } from './schema'
 import { Sentry } from '@/lib/sentry'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 8
+const SCHEMA_VERSION = 9
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -237,6 +239,14 @@ async function applyPendingMigrations(
   }
   if (currentVersion < 8) {
     await migrateToV8(db)
+  }
+  if (currentVersion < 9) {
+    await addColumnIfMissing(
+      db,
+      MIGRATION_V9_REVIEW_DATE,
+      'review_events.review_date'
+    )
+    await db.execAsync(MIGRATION_V9_LEARNING_COMMANDS)
   }
 }
 

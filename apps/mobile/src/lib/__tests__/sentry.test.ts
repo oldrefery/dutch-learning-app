@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'
 import '../sentry'
 
 const REDACTED = '[REDACTED]'
+const PRIVATE_WORD = 'private-word'
 
 jest.mock('../supabaseClient', () => ({
   supabase: {
@@ -66,6 +67,41 @@ describe('Sentry initialization', () => {
       authorization: REDACTED,
       safe: 'visible',
     })
+  })
+
+  it('allowlists sync-health events after scope enrichment, removing unrelated private context', () => {
+    const result = getInitOptions().beforeSend({
+      type: undefined,
+      release: 'test-release',
+      environment: 'production',
+      tags: {
+        module: 'sync-health',
+        sync_health: 'protocol',
+        secretTag: PRIVATE_WORD,
+      },
+      extra: {
+        queue_count: 2,
+        queue_resets: -1,
+        outage_ms: Infinity,
+        content: PRIVATE_WORD,
+      },
+      user: { id: 'private-id', email: 'private@example.invalid' },
+      breadcrumbs: [{ message: PRIVATE_WORD }],
+      contexts: { custom: { token: 'private-token' } },
+      request: { url: 'https://example.invalid/private-word' },
+      exception: { values: [{ value: PRIVATE_WORD }] },
+    })
+    expect(result.extra).toMatchObject({
+      queue_count: 2,
+      queue_resets: null,
+      outage_ms: null,
+    })
+    expect(result.tags).toEqual({
+      module: 'sync-health',
+      sync_health: 'protocol',
+    })
+    expect(result.release).toBe('test-release')
+    expect(JSON.stringify(result)).not.toContain('private')
   })
 
   it('scrubs outgoing transactions and spans', () => {

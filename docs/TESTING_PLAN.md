@@ -1,273 +1,158 @@
-# Testing Plan - Dutch Learning App
+# Application Quality And Testing
 
-## Current Status
+Updated: 2026-09-06. This replaces the pre-monorepo, pre-test-suite proposal.
 
-**Test Coverage:** 0% (No tests currently implemented)
-**Priority:** 🔴 **HIGH** - Critical for production readiness
+## Workspace Layout
 
-## Testing Strategy
+- `apps/mobile/src`: Expo screens, stores, repositories and native UI.
+- `apps/mobile/jest.config.js`: mobile Jest/Expo configuration.
+- `apps/web/src`: Next.js routes, auth, feature actions and web UI.
+- `apps/web/jest.config.mjs`: web Jest configuration.
+- `packages/domain/src/srs.ts`: shared SRS and knowledge-level definitions.
+- `apps/web/e2e` and `apps/mobile/.maestro`: browser/device workflows.
 
-### Phase 1: Unit Tests (5-7 days)
+Use the root lockfile and pinned Node 24 / npm 11. Do not install the obsolete
+test dependencies or root Jest snippets from the original 2025 testing plan.
 
-#### 1.1 Utility Functions (2 days)
+The root staged-lint command uses ESLint 9's `v10_config_lookup_from_file`
+flag so each file selects its nearest workspace config, not the root Expo
+config. Remove the flag when upgrading to ESLint 10, where this is the default.
+`lintStagedConfig.test.ts` executes configuration resolution from the root for
+both mobile and web files to guard against regressions.
 
-**Priority:** High
+## Deterministic Local Checks
 
-- `src/utils/srs.ts` - SRS algorithm
-  - Test `calculateNextReview()` with all difficulty levels
-  - Test edge cases (first review, max interval, etc.)
-  - Validate interval calculations
-
-- `src/utils/logger.ts` - Logging utilities
-  - Test log levels (debug, info, warning, error)
-  - Verify development vs production behavior
-
-- `src/utils/wordTextFormatter.ts` - Text formatting
-  - Test all word type formatting
-  - Verify fallback behavior
-
-- `src/utils/validators.ts` - Input validation
-  - Test email validation
-  - Test password strength
-
-**Estimated tests:** ~30-40 unit tests
-
-#### 1.2 Services (2-3 days)
-
-**Priority:** High
-
-- `src/services/collectionSharingService.ts`
-  - Test share code generation
-  - Test import validation
-  - Test duplicate detection
-
-- `src/services/accessControlService.ts`
-  - Test access level checks
-  - Test permission validation
-
-**Estimated tests:** ~20-25 unit tests
-
-#### 1.3 Hooks (1-2 days)
-
-**Priority:** Medium
-
-- `src/hooks/useDebounce.ts`
-- `src/hooks/useAudioPlayer.ts`
-- `src/hooks/useReviewScreen.ts`
-
-**Estimated tests:** ~15-20 unit tests
-
-### Phase 2: Integration Tests (3-4 days)
-
-#### 2.1 Supabase Integration
-
-**Priority:** High
-
-- Test database queries (mocked)
-- Test RLS policy compliance
-- Test Edge Function calls (mocked)
-
-#### 2.2 State Management
-
-**Priority:** Medium
-
-- Test Zustand store actions
-- Test state updates and side effects
-- Test error handling in store
-
-**Estimated tests:** ~25-30 integration tests
-
-### Phase 3: Component Tests (4-5 days)
-
-#### 3.1 Core Components
-
-**Priority:** Medium
-
-- `UniversalWordCard` - Word display
-- `AddWordScreen` - Word addition flow
-- `ReviewCard` - Review session UI
-- `CollectionSelector` - Collection selection
-
-#### 3.2 UI Components
-
-**Priority:** Low
-
-- Toast notifications
-- Modals and dialogs
-- Form inputs
-
-**Estimated tests:** ~30-40 component tests
-
-### Phase 4: E2E Tests (Optional - Future)
-
-**Priority:** Low (post-MVP)
-
-- Critical user flows
-- Authentication flow
-- Word addition flow
-- Review session flow
-
-## Testing Tools & Setup
-
-### Required Dependencies
+Run from the repository root:
 
 ```bash
-npm install --save-dev \
-  @testing-library/react-native \
-  @testing-library/jest-native \
-  jest-expo \
-  @types/jest
+npm run mobile:test -- --runInBand --watch=false --watchman=false
+npm run web:test
+npm run mobile:typecheck:test
+npm run web:typecheck
+npm run lint
+npm run web:lint
+npm run web:test:coverage
+npm run web:mutation
+npm run test:db
 ```
 
-### Jest Configuration
+Mobile coverage is available with `npm run mobile:test:coverage`. Browser and
+device E2E setup is documented in `docs/E2E_TESTING.md`; these are separate
+checks, not implied by a passing Jest run.
 
-Update `package.json`:
+PostgreSQL prerequisites, isolation and test scope are in
+[DATABASE_TESTING.md](DATABASE_TESTING.md). The database suite requires local
+server binaries, but no account, connection string or Docker service.
 
-```json
-{
-  "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
-  },
-  "jest": {
-    "preset": "jest-expo",
-    "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
-    ],
-    "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
-    "collectCoverageFrom": [
-      "src/**/*.{ts,tsx}",
-      "!src/**/*.d.ts",
-      "!src/**/*.types.ts",
-      "!src/**/*.styles.ts"
-    ],
-    "coverageThresholds": {
-      "global": {
-        "branches": 50,
-        "functions": 50,
-        "lines": 50,
-        "statements": 50
-      }
-    }
-  }
-}
-```
+## Critical Regression Matrix
 
-### Test File Structure
+| Risk                                  | Executable evidence                                                                                                                                                                                               | Boundary still requiring live validation                                                     |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Expired web session                   | SDK adapter/redirect unit tests plus Chromium and real Supabase refresh-token rotation through private pages and redirects; invalid-token cleanup and return-path reauthentication                                | Actual signed JWT expiry, concurrent refresh and remotely revoked sessions                   |
+| Authentication/authorization          | Verified-user lookup, fail-closed access defaults, OAuth code exchange, safe next destination                                                                                                                     | Provider login, revoked sessions, real RLS enforcement                                       |
+| Expired mobile session/reconnection   | Actual JWT expiry on isolated Android/iOS builds; bounded stalled transport and same-account recovery; real Auth SDK tests for repeated offline reads, cold-start recovery and token rotation across modeled days | Physical-device network loss, live revocation policies, real multi-day soak                  |
+| In-flight sync conflicts              | Native QA reproduced stale snapshot overwrite; protocol 2 PostgreSQL/SQLite regressions now verify atomic reviews, reset ordering, idempotency and snapshot protection                                            | Hosted rollout, upgraded-device QA and reconciliation of ambiguous legacy queues             |
+| Review persistence                    | Action tests, isolated PostgreSQL RPC/RLS/concurrency and browser offline/lost-response retries against real Supabase; unchanged retry payload and durable single-assessment progress                             | Broader hosted schema drift, other assessments under network failures and device transitions |
+| Word writes and progress preservation | Execute all five word actions with a recording API double: owner/collection/live-word filters, exact reset/delete/move/image payloads, failed or missing writes, reanalysis conflict fallback without SRS changes | Real PostgreSQL/RLS ownership checks, competing writes and cache refresh in a browser        |
+| Mobile review atomicity               | Real SQLite constraints/transactions: event failure or duplicate event rolls back word progress; wrong owner/deleted word denied                                                                                  | Expo SQLite native bridge behavior on both platforms                                         |
+| SRS/knowledge                         | Explicit coefficient/rounding/boundary examples, new → learning → established → forgotten, reset and durable event history                                                                                        | End-to-end rendering after cross-device synchronization                                      |
+| Production OTA safety                 | Fake executable CLI in isolated temp project tests identity, token identity format, project mismatch, option rejection, publication/map-upload failures                                                           | Actual EAS/Sentry permissions and production channel mapping                                 |
 
-```
-src/
-├── utils/
-│   ├── srs.ts
-│   └── __tests__/
-│       └── srs.test.ts
-├── services/
-│   ├── wordService.ts
-│   └── __tests__/
-│       └── wordService.test.ts
-└── components/
-    ├── WordCard.tsx
-    └── __tests__/
-        └── WordCard.test.tsx
-```
+SQLite tests replace only the Expo bridge with Node's in-memory SQLite engine.
+They use the real schema, repository statements, constraints and triggers, and
+never open application database files. API mocks test our orchestration, not
+Supabase's refresh internals or PostgreSQL transaction semantics.
 
-## Coverage Goals
+The `supabaseFetch.session` and `supabaseFetch.offline` tests are explicitly
+different: they execute the installed Auth SDK and the application's transport,
+with only HTTP responses, storage and time replaced. The offline suite models
+failed foreground reads on days 1/3/7, cold-start recovery, persisted rotation
+across another client on day 9, and definitive refresh rejection. It does not
+run MMKV/Keychain, NetInfo, a real Auth server, or nine days of device uptime.
+Server responses determine refresh validity; the modeled elapsed time must not
+be interpreted as a guarantee about hosted inactivity/session-lifetime policies.
 
-### Minimum Viable Coverage
+`initDB.migration.sqlite` executes the actual database initializer against a new
+file-backed SQLite database with a reconstructed v8 schema and synthetic rows.
+It checks v9 upgrade/reopen, concurrent initialization, and failures after column
+creation, queue-table creation, backfill, or before the AsyncStorage version is
+saved. Retrying must preserve SRS/history, enqueue pending events once in order,
+and install working insert/acknowledgement/delete/tombstone triggers. Fixtures
+are removed after each test. The Expo bridge and AsyncStorage remain doubles:
+this is not an actual shipped-device upgrade or an OS/power-loss durability test.
 
-- **Utilities:** 80% coverage
-- **Services:** 70% coverage
-- **Hooks:** 60% coverage
-- **Components:** 50% coverage
+Existing SQL text assertions are useful schema-contract smoke checks, but must
+not be described as database integration tests. Likewise, a successful mocked
+RPC is not evidence that live RLS or server idempotency works.
 
-### Target Coverage (Long-term)
+## Mutation Testing
 
-- **Overall:** 70% coverage
-- **Critical paths:** 90% coverage
+`stryker.web.config.mjs` selects risk-bearing modules rather than every UI file:
+auth/session/proxy/callback, review persistence, word actions/analysis mapping, shared SRS, and the existing
+analysis, collection validation, search, deletion and word mutation helpers.
+The break threshold stays at 90%; do not lower it merely to accommodate new
+modules.
 
-## Test Examples
+- Review survivors before adding tests. Assert externally meaningful outcomes.
+- Preserve type checking. `apps/web/tsconfig.stryker.json` explicitly includes
+  the workspace SRS sources so the checker observes mutations outside the web app.
+- Node-environment tests use Stryker's documented environment wrapper, which
+  also works with ordinary Jest and reports per-test mutation coverage.
+- Web Jest ignores its own nested `.stryker-tmp` directories to avoid duplicate
+  workspace package names after an interrupted mutation run.
+- The incremental report is a cache, not a substitute for final validation.
+  Run `npm run web:mutation -- --force` to retest every mutant.
+- Reports are local artifacts under `reports/mutation` and
+  `reports/stryker-web-incremental.json`. Do not commit generated reports.
 
-### Unit Test Example
+Coverage percentages apply to the configured file set, not the whole product.
+Keep uncovered real-provider, real-database and device scenarios visible rather
+than claiming that a high score proves all production behavior.
 
-```typescript
-// src/utils/__tests__/srs.test.ts
-import { calculateNextReview } from '../srs'
+Word action tests mock only the auth context, server client and Next.js cache/
+redirect boundaries. The real validation, parsing, mapping and action code runs.
+Each queued query records its filters and payload independently; missing-row
+responses and errors must not trigger successful navigation/revalidation.
+The query double does not execute SQL or simulate RLS enforcement.
 
-describe('calculateNextReview', () => {
-  it('should calculate correct interval for "good" response', () => {
-    const result = calculateNextReview({
-      current_interval: 1,
-      easiness_factor: 2.5,
-      repetition_count: 1,
-      quality: 3, // "good"
-    })
+## Next Integration Work
 
-    expect(result.interval).toBe(6)
-    expect(result.easiness_factor).toBe(2.5)
-  })
+Isolated PostgreSQL review RPC/RLS, duplicate events, rollback and concurrent
+assessment tests are implemented. The SRS comparison exposed rounding/minimum
+interval differences, corrected by a new migration (not deployed by tests).
 
-  it('should reset interval for "again" response', () => {
-    const result = calculateNextReview({
-      current_interval: 10,
-      easiness_factor: 2.5,
-      repetition_count: 5,
-      quality: 0, // "again"
-    })
+Browser recovery tests now exercise real Supabase refresh and review writes:
+see `apps/web/e2e/README.md`. Cookie expiry is accelerated without modifying or
+waiting for the signed JWT's real expiry. Offline retry stays in the open tab;
+no persistent offline queue across reloads is claimed.
 
-    expect(result.interval).toBe(1)
-    expect(result.repetition_count).toBe(0)
-  })
-})
-```
+1. Extend auth validation to actual JWT expiry, concurrent refresh requests and
+   remotely revoked disposable sessions; these are not proved by metadata expiry.
+2. Validate and roll out [learning sync protocol 2](learning-sync-protocol.md),
+   which fixes the native snapshot conflict locally using atomic server commands.
+   PostgreSQL/SQLite tests now cover the conflict, native batches, reset ordering
+   and retry durability. Hosted migration and a fresh native two-client run remain
+   pending; pre-cutover queues and old reset clients require explicit handling.
+3. Run physical-device network transitions and a real long-duration offline soak.
+   The Settings fallback and stalled transport have been addressed and checked
+   on isolated native builds. Android expiry/recovery and iOS expiry with a
+   loopback stalled-request proxy passed; see
+   [iOS evidence and limits](ios-session-recovery-qa-2026-09-06.md) and
+   [Android transport evidence](native-auth-transport-qa-2026-09-06.md).
+   iOS simulator airplane mode is a no-op, not a valid offline test. Real-server
+   revocation/inactivity policies and on-device multi-day recovery remain open.
 
-### Component Test Example
+Nine `useSyncManager.lifecycle` hook tests cover reconnect/foreground triggers,
+background timers, cleanup, missing identity and failed-attempt recovery. Their
+mocked event boundaries do not cover the live progress-conflict defect.
 
-```typescript
-// src/components/__tests__/WordCard.test.tsx
-import { render, screen } from '@testing-library/react-native'
-import { WordCard } from '../WordCard'
+## Account And Side-Effect Safety
 
-describe('WordCard', () => {
-  const mockWord = {
-    word_id: '1',
-    dutch_lemma: 'huis',
-    part_of_speech: 'noun',
-    article: 'het',
-    translations: { en: ['house'], ru: ['дом'] }
-  }
+Only approved QA accounts or disposable accounts may be used for live tests.
+Never use the application's `oldrefery` account. Offline unit/SQLite/CLI tests
+need no account, network mutation, build quota or store access. Mock CLI fixtures
+do not inherit EAS credentials.
 
-  it('should display word with article', () => {
-    render(<WordCard word={mockWord} />)
-
-    expect(screen.getByText('het huis')).toBeTruthy()
-  })
-
-  it('should display translations', () => {
-    render(<WordCard word={mockWord} />)
-
-    expect(screen.getByText(/house/)).toBeTruthy()
-  })
-})
-```
-
-## Implementation Timeline
-
-**Week 1:** Setup + Unit tests (utils)
-**Week 2:** Unit tests (services, hooks) + Integration tests
-**Week 3:** Component tests + Coverage improvements
-
-**Total Estimated Effort:** 12-16 days
-
-## Success Criteria
-
-- [ ] Jest configured and running
-- [ ] Minimum 50% code coverage
-- [ ] All critical paths tested
-- [ ] CI/CD integration (optional)
-- [ ] Test documentation complete
-
----
-
-**Last Updated:** October 4, 2025
-**Status:** Planning phase
+Real environment changes, releases and Git operations require their own explicit
+authorization. See `docs/EAS_BUILD_GUIDE.md` for the current cloud-first release
+workflow and the limitations of legacy native source-map re-export.

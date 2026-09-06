@@ -13,6 +13,10 @@ export default () => {
 
   return {
     ...appJson.expo,
+    extra: {
+      ...appJson.expo.extra,
+      qaBuild: isQaBuild,
+    },
     // Disable the native updater too, not just the Settings status check.
     updates: {
       ...appJson.expo.updates,

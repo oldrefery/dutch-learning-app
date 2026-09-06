@@ -135,12 +135,18 @@ export function SimpleAuthProvider({
 
   // Check for the existing session on app start and handle OAuth deep links
   useEffect(() => {
+    let active = true
+    let authRevision = 0
+    let appStateRevision = 0
     const checkExistingSession = async () => {
+      const revision = authRevision
       try {
         const {
           data: { session },
           error: sessionError,
         } = await supabase.auth.getSession()
+
+        if (!active || revision !== authRevision) return
 
         if (sessionError) {
           Sentry.captureException(sessionError, {
@@ -157,12 +163,12 @@ export function SimpleAuthProvider({
           await initializeApp()
         }
       } catch (error) {
+        if (!active || revision !== authRevision) return
         Sentry.captureException(error, {
           tags: { operation: 'simpleAuthProviderCheckSession' },
           extra: { message: 'Error checking session' },
         })
-        // Initialize with no user to clear any stale data
-        await initializeApp()
+        // A failed network check is not a sign-out. Keep local state intact.
       }
     }
 
@@ -172,6 +178,7 @@ export function SimpleAuthProvider({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return
       Sentry.addBreadcrumb({
         category: 'auth',
         level: 'info',
@@ -183,9 +190,14 @@ export function SimpleAuthProvider({
       })
 
       // Fire initializeApp without blocking - this prevents setSession() from hanging
-      if (event === 'SIGNED_OUT' || !session?.user?.id) {
+      if (event === 'SIGNED_OUT') {
+        authRevision += 1
         initializeApp() // Clear user data (fire and forget)
-      } else if (event === 'SIGNED_IN' && session?.user?.id) {
+      } else if (
+        session?.user?.id &&
+        ['INITIAL_SESSION', 'SIGNED_IN', 'TOKEN_REFRESHED'].includes(event)
+      ) {
+        authRevision += 1
         initializeApp(session.user.id) // Initialize with the user (fire and forget)
       }
     })
@@ -193,9 +205,12 @@ export function SimpleAuthProvider({
     // Manage auto-refresh based on app state
     // Guard with network check to avoid clearing session when offline (GitHub #36906)
     const handleAppStateChange = async (nextState: AppStateStatus) => {
+      if (!active) return
+      const revision = ++appStateRevision
+      const isCurrentResume = () => active && revision === appStateRevision
       if (nextState === 'active') {
         const hasNetwork = await isNetworkAvailable()
-        if (hasNetwork) {
+        if (hasNetwork && isCurrentResume()) {
           // Force immediate session refresh if JWT expired in background
           try {
             await supabase.auth.getSession()
@@ -206,7 +221,8 @@ export function SimpleAuthProvider({
               level: 'warning',
             })
           }
-          supabase.auth.startAutoRefresh()
+          // A late refresh must not restart polling after background/unmount.
+          if (isCurrentResume()) supabase.auth.startAutoRefresh()
         }
       } else {
         supabase.auth.stopAutoRefresh()
@@ -219,6 +235,7 @@ export function SimpleAuthProvider({
     )
 
     return () => {
+      active = false
       subscription.unsubscribe()
       appStateSubscription.remove()
     }

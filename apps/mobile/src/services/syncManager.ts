@@ -26,10 +26,15 @@ import type { SyncCursor } from '@/utils/network'
 import type { Word } from '@/types/database'
 import type { ReviewEvent } from '@/types/ReviewTypes'
 import { Sentry } from '@/lib/sentry'
+import { SyncHealthReporter, type SyncOutcome } from './syncHealth'
 import { isNetworkError } from '@/utils/logger'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
+import {
+  learningResetRepository,
+  type PendingLearningReset,
+} from '@/db/learningResetRepository'
 
 export interface SyncResult {
   success: boolean
@@ -62,6 +67,7 @@ const RLS_ERROR_PATTERNS = [
 
 type SyncErrorType = 'auth_expired' | 'rls' | 'other'
 type SyncStage =
+  | 'check_protocol'
   | 'pull_collections'
   | 'pull_words'
   | 'pull_progress'
@@ -136,11 +142,6 @@ interface SupabaseWordPayload {
   preposition: string | null
   image_url: string | null
   tts_url: string
-  interval_days: number
-  repetition_count: number
-  easiness_factor: number
-  next_review_date: string
-  last_reviewed_at: string | null
   analysis_notes: string | null
   usage_notes: Word['usage_notes']
 }
@@ -239,6 +240,7 @@ const isReviewEventAfterCursor = (
 ): boolean => compareSyncCursors(toReviewEventSyncCursor(event), cursor) > 0
 
 export class SyncManager {
+  private health = new SyncHealthReporter()
   private isSyncing = false
   private syncListeners: ((result: SyncResult) => void)[] = []
   private wordsRegisterColumnAvailable: boolean | null = null
@@ -275,11 +277,14 @@ export class SyncManager {
     }
 
     this.isSyncing = true
+    const startedAt = Date.now()
+    let outcome: SyncOutcome = 'error'
 
     try {
       console.log('[Sync] Stage 0: checking network')
       const isOnline = await isNetworkAvailable()
       if (!isOnline) {
+        outcome = 'offline'
         console.log('[Sync] No network connection, skipping sync')
         return {
           success: false,
@@ -293,6 +298,7 @@ export class SyncManager {
       console.log('[Sync] Stage 0.5: auth preflight')
       const authPrecheckError = await this.ensureSessionForSync()
       if (authPrecheckError) {
+        outcome = 'session'
         const result: SyncResult = {
           success: false,
           wordsSynced: 0,
@@ -306,6 +312,13 @@ export class SyncManager {
       }
 
       const timestamp = new Date().toISOString()
+
+      // Never fall back to snapshot progress writes against an older backend.
+      outcome = 'protocol'
+      await this.runSyncStageWithSessionRetry('check_protocol', userId, () =>
+        this.ensureLearningProtocol()
+      )
+      outcome = 'error'
 
       // Step 0: Pull collections from Supabase
       console.log('[Sync] Stage 1: pull collections')
@@ -376,6 +389,23 @@ export class SyncManager {
         async () => this.pushReviewEventsToSupabase(userId)
       )
 
+      // Upload acknowledgements confirm metadata/event receipt, not the local
+      // provisional SRS result. Re-read canonical progress before reporting success.
+      if (
+        pushedWordsCount > 0 ||
+        pushedReviewEventsCount > 0 ||
+        pulledReviewEvents.length > 0
+      ) {
+        await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
+          this.pullWordsFromSupabase(userId, wordCursor)
+        )
+        await this.runSyncStageWithSessionRetry(
+          'pull_review_events',
+          userId,
+          () => this.pullReviewEventsFromSupabase(userId, reviewEventCursor)
+        )
+      }
+
       const result: SyncResult = {
         success: true,
         wordsSynced: pulledWords.length + pushedWordsCount,
@@ -384,6 +414,7 @@ export class SyncManager {
       }
 
       console.log('[Sync] Sync completed successfully:', result)
+      outcome = 'success'
       console.log(
         `[Sync] Review events synchronized: ${pulledReviewEvents.length + pushedReviewEventsCount}`
       )
@@ -393,6 +424,7 @@ export class SyncManager {
     } catch (error) {
       const errorMessage = this.getErrorMessage(error)
       const isNetworkErr = isNetworkError(errorMessage)
+      outcome = this.getHealthOutcome(error, outcome)
 
       // Don't report network errors - they're expected when offline
       if (isNetworkErr) {
@@ -439,7 +471,27 @@ export class SyncManager {
 
       return result
     } finally {
+      await this.health.record(userId, outcome, startedAt)
       this.isSyncing = false
+    }
+  }
+
+  private getHealthOutcome(error: unknown, previous: SyncOutcome): SyncOutcome {
+    const message = this.getErrorMessage(error)
+    if (isNetworkError(message)) return 'network'
+    if (message === SYNC_AUTH_PRECHECK_ERROR) return 'session'
+    if (error instanceof ControlledSyncError) return previous
+    return this.categorizeSyncError(error) === 'rls' ? 'rls' : 'error'
+  }
+
+  private async ensureLearningProtocol(): Promise<void> {
+    const { data, error } = await supabase.rpc('learning_sync_protocol')
+    if (error && error.code !== 'PGRST202' && error.code !== '42883')
+      throw error
+    if (error || data !== 2) {
+      throw new ControlledSyncError(
+        'Learning sync requires backend protocol 2. Pending changes are kept on this device.'
+      )
     }
   }
 
@@ -1015,13 +1067,23 @@ export class SyncManager {
     let totalPushed = 0
 
     while (true) {
-      const pendingEvents = await reviewEventRepository.getPendingSyncEvents(
+      const reset = await learningResetRepository.getNext(userId)
+      const allPendingEvents = await reviewEventRepository.getPendingSyncEvents(
         userId,
         REVIEW_EVENT_SYNC_PAGE_SIZE
       )
+      const pendingEvents = reset
+        ? allPendingEvents.filter(event => {
+            if (event.local_sequence === undefined)
+              throw new Error('Missing durable review sequence')
+            return event.local_sequence < reset.sequence
+          })
+        : allPendingEvents
       if (pendingEvents.length === 0) {
-        if (totalPushed === 0) {
-          console.log('[Sync] No pending review events to sync')
+        if (reset) {
+          await this.pushLearningReset(userId, reset)
+          totalPushed += 1
+          continue
         }
         return totalPushed
       }
@@ -1039,6 +1101,7 @@ export class SyncManager {
         previous_easiness_factor: event.previous_easiness_factor,
         next_easiness_factor: event.next_easiness_factor,
         reviewed_at: event.reviewed_at,
+        ...(event.review_date ? { review_date: event.review_date } : {}),
       }))
 
       const { data, error } = await supabase
@@ -1060,11 +1123,34 @@ export class SyncManager {
       )
       totalPushed += pendingEvents.length
 
-      if (pendingEvents.length < REVIEW_EVENT_SYNC_PAGE_SIZE) {
+      if (!reset && pendingEvents.length < REVIEW_EVENT_SYNC_PAGE_SIZE) {
         console.log(`[Sync] Pushed ${totalPushed} review events to Supabase`)
         return totalPushed
       }
     }
+  }
+
+  private async pushLearningReset(
+    userId: string,
+    reset: PendingLearningReset
+  ): Promise<void> {
+    const { data, error } = await supabase.rpc('reset_word_learning_progress', {
+      p_word_id: reset.word_id,
+      p_reset_id: reset.operation_id,
+      p_reset_at: reset.reset_at,
+      p_review_date: reset.review_date,
+    })
+    if (
+      error ||
+      !Array.isArray(data) ||
+      data.length !== 1 ||
+      data[0]?.word_id !== reset.word_id
+    ) {
+      throw new Error(
+        `Failed to reset learning progress: ${error?.message ?? 'missing acknowledgement'}`
+      )
+    }
+    await learningResetRepository.acknowledge(userId, reset.operation_id)
   }
 
   private async pushProgressToSupabase(userId: string): Promise<number> {
@@ -1520,11 +1606,6 @@ export class SyncManager {
       // The remote schema keeps this legacy column NOT NULL. An empty string
       // means that no pre-generated audio is available.
       tts_url: word.tts_url ?? '',
-      interval_days: word.interval_days,
-      repetition_count: word.repetition_count,
-      easiness_factor: word.easiness_factor,
-      next_review_date: word.next_review_date,
-      last_reviewed_at: word.last_reviewed_at,
       analysis_notes: word.analysis_notes,
       usage_notes: word.usage_notes ?? null,
     }

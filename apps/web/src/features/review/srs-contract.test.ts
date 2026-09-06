@@ -4,11 +4,91 @@ import {
   calculateSRSProgress,
   getMasteryProgressPercentage,
   getWordKnowledgeLevel,
+  isMasteredWord,
 } from '@woordenaar/domain'
 
 const repositoryRoot = resolve(__dirname, '../../../../..')
 
 describe('shared SRS contract', () => {
+  it.each([
+    [0, 'new', 0, false],
+    [1, 'learning', 33, false],
+    [2, 'learning', 67, false],
+    [3, 'established', 100, true],
+    [4, 'established', 100, true],
+    [100, 'established', 100, true],
+  ] as const)(
+    'keeps the label, mastery flag and percentage consistent at %i repetitions',
+    (count, level, percentage, mastered) => {
+      expect(getWordKnowledgeLevel(count)).toBe(level)
+      expect(getMasteryProgressPercentage(count)).toBe(percentage)
+      expect(isMasteredWord({ repetition_count: count })).toBe(mastered)
+    }
+  )
+
+  it('clamps corrupted negative mastery progress at zero', () => {
+    expect(getMasteryProgressPercentage(-1)).toBe(0)
+  })
+
+  it('demotes a forgotten established word and relearns it from the first interval', () => {
+    const established = {
+      intervalDays: 15,
+      repetitionCount: 3,
+      easinessFactor: 2.5,
+    }
+    const forgotten = calculateSRSProgress(established, 'again')
+    expect(forgotten).toEqual({
+      intervalDays: 0,
+      repetitionCount: 0,
+      easinessFactor: 2.3,
+    })
+    expect(getWordKnowledgeLevel(forgotten.repetitionCount)).toBe('new')
+    expect(getMasteryProgressPercentage(forgotten.repetitionCount)).toBe(0)
+    expect(calculateSRSProgress(forgotten, 'good')).toEqual({
+      intervalDays: 1,
+      repetitionCount: 1,
+      easinessFactor: 2.3,
+    })
+    expect(established).toEqual({
+      intervalDays: 15,
+      repetitionCount: 3,
+      easinessFactor: 2.5,
+    })
+  })
+
+  it.each([
+    ['good', 1, 0, 2.5, 1, 1, 2.5],
+    ['easy', 4, 1, 2.3, 10, 2, 2.45],
+    ['easy', 0, 2, 2.3, 1, 3, 2.45],
+    ['good', 0, 2, 2.3, 1, 3, 2.3],
+    ['good', 7, 3, 2.35, 16, 4, 2.35],
+    ['hard', 1, 1, 1.3, 1, 2, 1.3],
+    ['hard', 2, 1, 2.3, 2, 2, 2.15],
+    ['hard', 3, 1, 2.3, 4, 2, 2.15],
+    ['again', 1, 1, 1.4, 0, 0, 1.3],
+  ] as const)(
+    'calculates %s from interval %i and repetitions %i',
+    (
+      assessment,
+      intervalDays,
+      repetitionCount,
+      easinessFactor,
+      interval,
+      repetitions,
+      factor
+    ) => {
+      expect(
+        calculateSRSProgress(
+          { intervalDays, repetitionCount, easinessFactor },
+          assessment
+        )
+      ).toEqual({
+        intervalDays: interval,
+        repetitionCount: repetitions,
+        easinessFactor: factor,
+      })
+    }
+  )
   it.each([
     ['again', 0, 0, 2.3],
     ['hard', 1, 1, 2.35],
@@ -78,7 +158,7 @@ describe('shared SRS contract', () => {
     const migration = readFileSync(
       join(
         repositoryRoot,
-        'supabase/migrations/20260830110000_add_atomic_review_assessment_rpc.sql'
+        'supabase/migrations/20260905180000_align_review_rpc_srs_rounding.sql'
       ),
       'utf8'
     )

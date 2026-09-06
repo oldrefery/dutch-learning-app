@@ -8,6 +8,7 @@ import { Word } from '@/types/database'
 import type { SyncStatus } from './schema'
 import { Sentry } from '@/lib/sentry'
 import { addLocalCalendarDays, toLocalDateKey } from '@woordenaar/domain'
+import { randomUUID } from 'expo-crypto'
 
 export interface LocalWord extends Word {
   sync_status: SyncStatus
@@ -22,6 +23,7 @@ interface ExistingWordCheck {
   sync_status: SyncStatus
   updated_at: string
   deleted_at: string | null
+  has_pending_learning?: number
 }
 
 interface SaveWordsOptions {
@@ -64,7 +66,8 @@ const UNSYNCED_STATUSES = new Set<SyncStatus>([
 ])
 
 const CHECK_EXISTING_WORD_SQL = `
-  SELECT word_id, sync_status, updated_at, deleted_at
+  SELECT word_id, sync_status, updated_at, deleted_at,
+    EXISTS(SELECT 1 FROM learning_commands WHERE learning_commands.word_id = words.word_id) AS has_pending_learning
   FROM words
   WHERE user_id = ?
     AND (
@@ -330,7 +333,8 @@ export class WordRepository {
 
     return Boolean(
       options.preserveUnsynced &&
-      UNSYNCED_STATUSES.has(existingWord.sync_status)
+      (UNSYNCED_STATUSES.has(existingWord.sync_status) ||
+        existingWord.has_pending_learning)
     )
   }
 
@@ -1006,35 +1010,30 @@ export class WordRepository {
 
   async resetWordProgress(wordId: string, userId: string): Promise<void> {
     const db = await getDatabase()
-
-    const updateStatement = await db.prepareAsync(`
-      UPDATE words SET
-        interval_days = ?,
-        repetition_count = ?,
-        easiness_factor = ?,
-        next_review_date = ?,
-        last_reviewed_at = NULL,
-        updated_at = ?,
-        sync_status = ?
-      WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL
-    `)
-
-    try {
-      const tomorrow = toLocalDateKey(addLocalCalendarDays(new Date(), 1))
-
-      await updateStatement.executeAsync(
-        1,
-        0,
-        2.5,
-        tomorrow,
-        new Date().toISOString(),
-        'pending',
+    const now = new Date()
+    const resetId = randomUUID()
+    await db.withExclusiveTransactionAsync(async transaction => {
+      const result = await transaction.runAsync(
+        `UPDATE words SET interval_days = 1, repetition_count = 0,
+         easiness_factor = 2.5, next_review_date = ?, last_reviewed_at = NULL,
+         updated_at = ?, sync_status = 'pending'
+         WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL`,
+        toLocalDateKey(addLocalCalendarDays(now, 1)),
+        now.toISOString(),
         wordId,
         userId
       )
-    } finally {
-      await updateStatement.finalizeAsync()
-    }
+      if (result.changes !== 1) throw new Error('Reset word was not found')
+      await transaction.runAsync(
+        `INSERT INTO learning_commands(operation_id, kind, user_id, word_id, reset_at, review_date)
+         VALUES (?, 'reset', ?, ?, ?, ?)`,
+        resetId,
+        userId,
+        wordId,
+        now.toISOString(),
+        toLocalDateKey(now)
+      )
+    })
   }
 
   private parseWordRow(row: Record<string, unknown>): LocalWord {

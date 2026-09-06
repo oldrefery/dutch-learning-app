@@ -49,8 +49,8 @@ describe('word search', () => {
         dutch_original: null,
         part_of_speech: null,
         translations: {
-          en: ['apple', 42, null],
           metadata: 'not-a-list',
+          en: ['apple', 42, null],
         },
         word_id: 'word-2',
       },
@@ -101,5 +101,54 @@ describe('word search', () => {
     expect(buildWordSearchResults(sortableRows, collections, 'a', 1)).toEqual([
       expect.objectContaining({ dutchLemma: 'appel', wordId: 'word-a' }),
     ])
+  })
+
+  it.each([null, undefined, false, 42, 'invalid'])(
+    'keeps words searchable without a translations object: %j',
+    translations => {
+      expect(
+        buildWordSearchResults(
+          [{ ...rows[0], translations }],
+          collections,
+          'uitwaai'
+        )
+      ).toEqual([
+        expect.objectContaining({
+          primaryTranslation: 'Translation unavailable',
+        }),
+      ])
+    }
+  )
+
+  it('searches the original inflected form, but never invents one when absent', () => {
+    const word = {
+      ...rows[0],
+      dutch_lemma: 'zijn',
+      dutch_original: 'was',
+      translations: {},
+    }
+    expect(buildWordSearchResults([word], collections, 'was')).toHaveLength(1)
+    expect(
+      buildWordSearchResults(
+        [{ ...word, dutch_original: null }],
+        collections,
+        'was'
+      )
+    ).toEqual([])
+  })
+
+  it('applies the default forty-result limit after sorting', () => {
+    const manyRows = Array.from({ length: 41 }, (_, index) => ({
+      ...rows[0],
+      word_id: `word-${index}`,
+      dutch_lemma: `woord${String(index).padStart(2, '0')}`,
+    })).reverse()
+    const results = buildWordSearchResults(manyRows, collections, 'woord')
+    expect(results).toHaveLength(40)
+    expect(results[0].wordId).toBe('word-0')
+    expect(results[39].wordId).toBe('word-39')
+    expect(buildWordSearchResults(manyRows, collections, 'woord', 0)).toEqual(
+      []
+    )
   })
 })

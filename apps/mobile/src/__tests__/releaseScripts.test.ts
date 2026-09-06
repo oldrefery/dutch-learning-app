@@ -45,6 +45,7 @@ const createFixture = (): string => {
     path.basename(BUILD_SCRIPT_PATH),
     path.basename(SUBMIT_SCRIPT_PATH),
     path.basename(VERIFY_EAS_IDENTITY_SCRIPT_PATH),
+    'build-and-submit.sh',
   ]) {
     const target = path.join(fixtureDir, 'scripts', scriptName)
     writeFileSync(target, readRepoFile(path.join('scripts', scriptName)))
@@ -123,6 +124,20 @@ describe('release scripts', () => {
       fixtureDir = null
     }
   })
+
+  it.each(['build-release.sh', 'submit-release.sh', 'build-and-submit.sh'])(
+    'supports %s help from the mobile workspace without contacting EAS',
+    script => {
+      fixtureDir = createFixture()
+      const result = run(path.join(fixtureDir, 'apps/mobile'), 'bash', [
+        `../../scripts/${script}`,
+        '--help',
+      ])
+      expect(result.status).toBe(0)
+      expect(result.stdout).toContain('Usage:')
+      expect(result.stdout).not.toContain('Verified Expo/EAS identity')
+    }
+  )
 
   it('keeps build, submit, version mutation, and Git ownership separate', () => {
     const prepareScript = readRepoFile(PREPARE_SCRIPT_PATH)

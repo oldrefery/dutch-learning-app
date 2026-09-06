@@ -1,46 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Redirect } from 'expo-router'
-import { supabase } from '@/lib/supabaseClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { LoadingScreen } from '@/components/LoadingScreen'
+import { SessionUnavailableScreen } from '@/components/SessionUnavailableScreen'
+import { useSessionGate } from '@/hooks/useSessionGate'
 
 // Main app entry point - check auth state first
 export default function Index() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const session = useSessionGate()
   const initializeApp = useApplicationStore(state => state.initializeApp)
+  const currentUserId = useApplicationStore(state => state.currentUserId)
 
   useEffect(() => {
-    let active = true
-    void supabase.auth
-      .getSession()
-      .then(async ({ data: { session }, error }) => {
-        if (error || !session) return false
-        await initializeApp(session.user.id)
-        return true
-      })
-      .then(authenticated => {
-        if (active) {
-          setIsAuthenticated(authenticated)
-          setIsLoading(false)
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setIsAuthenticated(false)
-          setIsLoading(false)
-        }
-      })
-    return () => {
-      active = false
+    if (session.userId) {
+      // initializeApp sets identity synchronously. Network access lookup must
+      // not hold the entry screen while local collections are already readable.
+      void initializeApp(session.userId)
     }
-  }, [initializeApp])
+  }, [initializeApp, session.userId])
 
-  if (isLoading) {
+  if (session.status === 'unavailable') {
+    return <SessionUnavailableScreen onRetry={session.retry} />
+  }
+  if (
+    session.status === 'checking' ||
+    (session.userId && currentUserId !== session.userId)
+  ) {
     return <LoadingScreen />
   }
 
-  if (isAuthenticated) {
+  if (session.status === 'signed-in') {
     return <Redirect href="/(tabs)" />
   } else {
     return <Redirect href="/(auth)/login" />

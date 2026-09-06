@@ -14,6 +14,8 @@ export async function createE2ECollection(
   })
   await page.getByText('New collection', { exact: true }).click()
   await page.getByLabel('Collection name').fill(name)
+  // Catch browser maxLength truncation before creating an unidentifiable fixture.
+  await expect(page.getByLabel('Collection name')).toHaveValue(name)
   await page.getByRole('button', { name: 'Create', exact: true }).click()
   await page.getByRole('link', { name, exact: true }).click()
   await expect(page.getByRole('heading', { name })).toBeVisible({

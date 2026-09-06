@@ -24,7 +24,15 @@ describe('getSafeNextPath', () => {
     '//example.com/path',
     '/\\example.com/path',
     'app/collections',
+    '//[',
+    '',
   ])('rejects unsafe destination %s', destination => {
     expect(getSafeNextPath(destination)).toBe('/app/collections')
+  })
+
+  it('rejects non-string form entries', () => {
+    expect(getSafeNextPath(new File(['data'], 'destination.txt'))).toBe(
+      '/app/collections'
+    )
   })
 })

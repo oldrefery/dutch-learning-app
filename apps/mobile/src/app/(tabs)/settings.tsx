@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -17,7 +17,8 @@ import { router, type Href } from 'expo-router'
 import Constants from 'expo-constants'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { ViewThemed, TextThemed } from '@/components/Themed'
-import { supabase, type User } from '@/lib/supabaseClient'
+import { useSessionUser } from '@/hooks/useSessionUser'
+import { supabase } from '@/lib/supabaseClient'
 import { userService } from '@/lib/supabase'
 import { Colors } from '@/constants/Colors'
 import { ToastService } from '@/components/AppToast'
@@ -402,7 +403,6 @@ const formatLastSyncAt = (lastSyncAt: string | null) => {
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets()
   const colorScheme = useColorScheme() ?? 'light'
-  const [user, setUser] = useState<User | null>(null)
   const [isSyncing, setIsSyncing] = useState(false)
   const [isLoadingSyncStatus, setIsLoadingSyncStatus] = useState(false)
   const [syncSnapshot, setSyncSnapshot] = useState<SyncStatusSnapshot | null>(
@@ -410,6 +410,7 @@ export default function SettingsScreen() {
   )
   const { signOut, loading: authLoading } = useSimpleAuth()
   const { userAccessLevel, currentUserId } = useApplicationStore()
+  const user = useSessionUser(currentUserId)
   const {
     autoPlayPronunciation,
     adaptiveReviewEnabled,
@@ -452,25 +453,6 @@ export default function SettingsScreen() {
       setIsLoadingSyncStatus(false)
     }
   }, [currentUserId])
-
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      setUser(user)
-    }
-
-    getUser()
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
 
   useFocusEffect(
     useCallback(() => {

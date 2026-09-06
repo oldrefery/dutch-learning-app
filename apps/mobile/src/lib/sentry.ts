@@ -1,14 +1,16 @@
 import * as SentryLib from '@sentry/react-native'
+import Constants from 'expo-constants'
 import { supabaseIntegration } from '@supabase/sentry-js-integration'
 import { sanitizeLogContext } from '@/utils/logSanitizer'
 import { getSentryRuntimeConfig } from './sentryConfig'
+import { scrubSyncHealthEvent } from './syncHealthPrivacy'
 import { supabase } from './supabaseClient'
 
 // Flag to prevent multiple initializations
 let sentryInitialized = false
 
 export function initializeSentry() {
-  if (sentryInitialized) {
+  if (sentryInitialized || Constants.expoConfig?.extra?.qaBuild === true) {
     return
   }
 
@@ -16,7 +18,7 @@ export function initializeSentry() {
   const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
   const runtimeConfig = getSentryRuntimeConfig()
 
-  // Always initialize Sentry (even in development for debugging)
+  // Fixed-bundle QA runs must not send synthetic failures to the live project.
   SentryLib.init({
     dsn: 'https://b9380e4ad548d88fe5c8bfecabcdf2e3@o4506263035904000.ingest.us.sentry.io/4509999490727936',
     debug: false, // Disable debug logging to reduce noise
@@ -25,7 +27,7 @@ export function initializeSentry() {
     environment: runtimeConfig.environment,
     release: runtimeConfig.release,
     dist: runtimeConfig.dist,
-    beforeSend: event => sanitizeLogContext(event),
+    beforeSend: event => sanitizeLogContext(scrubSyncHealthEvent(event)),
     beforeSendTransaction: event => sanitizeLogContext(event),
     beforeSendSpan: span => sanitizeLogContext(span),
     beforeBreadcrumb: breadcrumb => sanitizeLogContext(breadcrumb),

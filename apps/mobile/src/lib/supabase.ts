@@ -1,6 +1,7 @@
 import 'react-native-url-polyfill/auto'
 import { supabase } from './supabaseClient'
-import { calculateNextReview } from '@/utils/srs'
+import { randomUUID } from 'expo-crypto'
+import { toLocalDateKey } from '@woordenaar/domain'
 import type { Word } from '@/types/database'
 import type { ReviewAssessment } from '@/types/ApplicationStoreTypes'
 import { SRS_PARAMS } from '@/constants/SRSConstants'
@@ -18,18 +19,8 @@ import { FunctionsHttpError } from '@supabase/supabase-js'
 import { assertNetworkConnection } from '@/utils/network'
 import { logWarning } from '@/utils/logger'
 
-// Load environment variables
-const devUserEmail = process.env.EXPO_PUBLIC_DEV_USER_EMAIL!
-const devUserPassword = process.env.EXPO_PUBLIC_DEV_USER_PASSWORD!
-
 // Error messages
 const NO_ACTIVE_SESSION_ERROR = 'No active session found'
-
-if (!devUserEmail || !devUserPassword) {
-  throw new Error(
-    'Missing development user credentials. Please check your .env file.'
-  )
-}
 
 // Re-export the client for backward compatibility
 export { supabase }
@@ -706,39 +697,24 @@ export const wordService = {
 
   // Update word after review (with session-refresh retry on auth/RLS errors)
   async updateWordProgress(wordId: string, assessment: ReviewAssessment) {
+    const eventId = randomUUID()
     return withSessionRetry(async () => {
-      const { data: currentWord, error: fetchError } = await supabase
-        .from('words')
-        .select('interval_days, repetition_count, easiness_factor')
-        .eq('word_id', wordId)
-        .is('deleted_at', null)
-        .single()
-
-      if (fetchError) {
-        throw fetchError
-      }
-
-      const assessmentValue = assessment.assessment
-
-      const srsUpdate = calculateNextReview({
-        interval_days: currentWord.interval_days,
-        repetition_count: currentWord.repetition_count,
-        easiness_factor: currentWord.easiness_factor,
-        assessment: assessmentValue,
+      const result = await supabase.rpc('record_review_assessment', {
+        p_word_id: wordId,
+        p_event_id: eventId,
+        p_assessment: assessment.assessment,
+        p_review_mode: assessment.reviewMode ?? 'recognition',
+        p_answered_correctly: assessment.answeredCorrectly ?? null,
+        p_response_time_ms: assessment.responseTime ?? null,
+        p_reviewed_at: assessment.timestamp.toISOString(),
+        p_review_date: toLocalDateKey(assessment.timestamp),
       })
-
+      if (result.error) throw result.error
       const { data, error } = await supabase
         .from('words')
-        .update({
-          interval_days: srsUpdate.interval_days,
-          repetition_count: srsUpdate.repetition_count,
-          easiness_factor: srsUpdate.easiness_factor,
-          next_review_date: srsUpdate.next_review_date,
-          last_reviewed_at: new Date().toISOString(),
-        })
+        .select()
         .eq('word_id', wordId)
         .is('deleted_at', null)
-        .select()
         .single()
 
       if (error) {
@@ -783,18 +759,21 @@ export const wordService = {
 
   // Reset word SRS statistics to initial values
   async resetWordProgress(wordId: string) {
+    const resetId = randomUUID()
+    const now = new Date()
     return withSessionRetry(async () => {
+      const result = await supabase.rpc('reset_word_learning_progress', {
+        p_word_id: wordId,
+        p_reset_id: resetId,
+        p_reset_at: now.toISOString(),
+        p_review_date: toLocalDateKey(now),
+      })
+      if (result.error) throw result.error
       const { data, error } = await supabase
         .from('words')
-        .update({
-          easiness_factor: SRS_PARAMS.INITIAL.EASINESS_FACTOR,
-          interval_days: SRS_PARAMS.INITIAL.INTERVAL_DAYS,
-          repetition_count: SRS_PARAMS.INITIAL.REPETITION_COUNT,
-          next_review_date: new Date().toISOString().split('T')[0],
-        })
+        .select()
         .eq('word_id', wordId)
         .is('deleted_at', null)
-        .select()
         .single()
 
       if (error) throw error

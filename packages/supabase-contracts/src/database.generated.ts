@@ -80,6 +80,81 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_progress_cutovers: {
+        Row: {
+          cutover_at: string
+          user_id: string
+          word_id: string
+        }
+        Insert: {
+          cutover_at: string
+          user_id: string
+          word_id: string
+        }
+        Update: {
+          cutover_at?: string
+          user_id?: string
+          word_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'learning_progress_cutovers_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'learning_progress_cutovers_word_id_fkey'
+            columns: ['word_id']
+            isOneToOne: true
+            referencedRelation: 'words'
+            referencedColumns: ['word_id']
+          },
+        ]
+      }
+      learning_resets: {
+        Row: {
+          created_at: string
+          reset_at: string
+          reset_id: string
+          review_date: string
+          user_id: string
+          word_id: string
+        }
+        Insert: {
+          created_at?: string
+          reset_at: string
+          reset_id: string
+          review_date: string
+          user_id: string
+          word_id: string
+        }
+        Update: {
+          created_at?: string
+          reset_at?: string
+          reset_id?: string
+          review_date?: string
+          user_id?: string
+          word_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'learning_resets_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'learning_resets_word_id_fkey'
+            columns: ['word_id']
+            isOneToOne: false
+            referencedRelation: 'words'
+            referencedColumns: ['word_id']
+          },
+        ]
+      }
       pre_approved_emails: {
         Row: {
           access_level: string
@@ -115,6 +190,7 @@ export type Database = {
           previous_easiness_factor: number
           previous_interval_days: number
           response_time_ms: number | null
+          review_date: string | null
           review_mode: string
           reviewed_at: string
           user_id: string
@@ -130,6 +206,7 @@ export type Database = {
           previous_easiness_factor: number
           previous_interval_days: number
           response_time_ms?: number | null
+          review_date?: string | null
           review_mode: string
           reviewed_at: string
           user_id: string
@@ -145,6 +222,7 @@ export type Database = {
           previous_easiness_factor?: number
           previous_interval_days?: number
           response_time_ms?: number | null
+          review_date?: string | null
           review_mode?: string
           reviewed_at?: string
           user_id?: string
@@ -490,6 +568,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_review_progress: {
+        Args: {
+          p_assessment: string
+          p_easiness: number
+          p_interval: number
+          p_repetitions: number
+        }
+        Returns: {
+          easiness_factor: number
+          interval_days: number
+          repetition_count: number
+        }[]
+      }
       consume_edge_function_quota: {
         Args: {
           p_capability: string
@@ -584,12 +675,13 @@ export type Database = {
         Args: { cache_ttl_hours: number; created_at: string }
         Returns: boolean
       }
+      learning_sync_protocol: { Args: never; Returns: number }
       record_review_assessment: {
         Args: {
-          p_answered_correctly: boolean | null
+          p_answered_correctly: boolean
           p_assessment: string
           p_event_id: string
-          p_response_time_ms: number | null
+          p_response_time_ms: number
           p_review_date: string
           p_review_mode: string
           p_reviewed_at: string
@@ -601,6 +693,18 @@ export type Database = {
           last_reviewed_at: string
           next_review_date: string
           repetition_count: number
+          word_id: string
+        }[]
+      }
+      reset_word_learning_progress: {
+        Args: {
+          p_collection_id?: string
+          p_reset_at: string
+          p_reset_id: string
+          p_review_date: string
+          p_word_id: string
+        }
+        Returns: {
           word_id: string
         }[]
       }

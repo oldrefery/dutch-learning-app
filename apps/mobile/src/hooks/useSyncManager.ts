@@ -25,8 +25,9 @@ export const refreshApplicationStoreAfterSync = async (
 ): Promise<void> => {
   if (!result.success) return
 
-  const { fetchCollections, fetchWords } = useApplicationStore.getState()
-  await Promise.all([fetchCollections(), fetchWords()])
+  const { fetchCollections, fetchWords, fetchUserAccessLevel } =
+    useApplicationStore.getState()
+  await Promise.all([fetchCollections(), fetchWords(), fetchUserAccessLevel()])
 }
 
 export function useSyncManager(options: UseSyncManagerOptions = {}) {

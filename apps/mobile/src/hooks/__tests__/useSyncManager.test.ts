@@ -38,11 +38,17 @@ const failedSync: SyncResult = {
 describe('refreshApplicationStoreAfterSync', () => {
   const fetchCollections = jest.fn<Promise<void>, []>()
   const fetchWords = jest.fn<Promise<void>, []>()
+  const fetchUserAccessLevel = jest.fn<Promise<void>, []>()
 
   beforeEach(() => {
     fetchCollections.mockReset().mockResolvedValue(undefined)
     fetchWords.mockReset().mockResolvedValue(undefined)
-    useApplicationStore.setState({ fetchCollections, fetchWords })
+    fetchUserAccessLevel.mockReset().mockResolvedValue(undefined)
+    useApplicationStore.setState({
+      fetchCollections,
+      fetchWords,
+      fetchUserAccessLevel,
+    })
   })
 
   it('rehydrates collections and words after a successful sync', async () => {
@@ -50,6 +56,7 @@ describe('refreshApplicationStoreAfterSync', () => {
 
     expect(fetchCollections).toHaveBeenCalledTimes(1)
     expect(fetchWords).toHaveBeenCalledTimes(1)
+    expect(fetchUserAccessLevel).toHaveBeenCalledTimes(1)
   })
 
   it('does not rehydrate the store after an unsuccessful sync', async () => {
@@ -57,6 +64,7 @@ describe('refreshApplicationStoreAfterSync', () => {
 
     expect(fetchCollections).not.toHaveBeenCalled()
     expect(fetchWords).not.toHaveBeenCalled()
+    expect(fetchUserAccessLevel).not.toHaveBeenCalled()
   })
 })
 

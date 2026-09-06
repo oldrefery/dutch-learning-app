@@ -1,6 +1,6 @@
 {
   "name": "woordenaar",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -44,7 +44,7 @@
     "typecheck": "npm run mobile:typecheck",
     "typecheck:test": "npm run mobile:typecheck:test",
     "lint": "eslint apps/mobile/src apps/mobile/app.config.js apps/mobile/babel.config.js apps/mobile/jest.config.js apps/mobile/metro.config.js scripts eslint.config.js .eslintrc.js .prettierrc.js stryker.web.config.mjs --ext .ts,.tsx,.js,.jsx",
-    "lint:ci": "npm run lint -- --max-warnings=7",
+    "lint:ci": "npm run lint -- --max-warnings=0",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
@@ -66,6 +66,8 @@
     "file-length": "find apps/mobile/src -name '*.tsx' -o -name '*.ts' | xargs wc -l | sort -nr | head -10",
     "file-length:check": ".husky/check-file-length",
     "test:edge": "deno test --config supabase/functions/deno.json supabase/functions/ --allow-env --allow-net",
+    "test:db": "node --test --test-concurrency=1 --test-timeout=120000 scripts/postgres-tests/*.test.mjs",
+    "test:sync:http": "node --test --test-concurrency=1 --test-timeout=400000 scripts/local-sync-tests/*.test.mjs",
     "e2e:test": "bash scripts/run-mobile-e2e.sh apps/mobile/.maestro/01-auth-login.yaml ios",
     "e2e:test:all": "bash scripts/run-mobile-e2e.sh apps/mobile/.maestro ios",
     "e2e:test:all:ios": "bash scripts/run-mobile-e2e.sh apps/mobile/.maestro ios",
@@ -74,7 +76,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
+      "eslint --flag v10_config_lookup_from_file --fix",
       "prettier --write"
     ],
     "*.{json,md}": [

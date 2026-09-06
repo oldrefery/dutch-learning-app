@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
+
 for argument in "$@"; do
   case "$argument" in
     --submit|--build-only)
@@ -12,5 +14,5 @@ for argument in "$@"; do
   esac
 done
 
-echo "Note: scripts/build-and-submit.sh is a build-only compatibility wrapper."
-exec scripts/build-release.sh "$@"
+echo "Deprecated: build-and-submit.sh only builds locally; it never submits. Use scripts/build-release.sh and scripts/submit-release.sh, or the cloud workflow in docs/EAS_BUILD_GUIDE.md." >&2
+exec "$REPO_ROOT/scripts/build-release.sh" "$@"

@@ -11,6 +11,24 @@ import { collectionRepository } from '@/db/collectionRepository'
 import { wordRepository } from '@/db/wordRepository'
 import { progressRepository } from '@/db/progressRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
+import { learningResetRepository } from '@/db/learningResetRepository'
+import { getLearningQueueHealth } from '@/db/learningQueueHealth'
+
+jest.mock('@/db/learningQueueHealth', () => ({
+  getLearningQueueHealth: jest.fn().mockResolvedValue({
+    count: 0,
+    reviews: 0,
+    resets: 0,
+    oldestAgeSeconds: null,
+  }),
+}))
+
+jest.mock('@/db/learningResetRepository', () => ({
+  learningResetRepository: {
+    getNext: jest.fn().mockResolvedValue(null),
+    acknowledge: jest.fn().mockResolvedValue(undefined),
+  },
+}))
 
 jest.mock('@/lib/supabaseClient')
 jest.mock('@/lib/supabase')
@@ -69,6 +87,7 @@ describe('SyncManager', () => {
   const generateId = (prefix: string) =>
     `${prefix}_${Math.random().toString(36).substring(2, 9)}`
   const MAIN_COLLECTION_ID = 'collection-main'
+  const REMOTE_WORD_ID = 'word-remote'
   const DEFAULT_TIMESTAMP = '2026-02-23T00:00:00.000Z'
   const SERVER_TIMESTAMP = '2026-07-25T16:00:00.000Z'
   const DEFAULT_REVIEW_DATE = '2026-02-23'
@@ -249,6 +268,18 @@ describe('SyncManager', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     syncManager = new SyncManager()
+    jest.mocked(supabase.rpc).mockResolvedValue({
+      data: 2,
+      error: null,
+      count: null,
+      status: 200,
+      statusText: 'OK',
+    })
+    jest.mocked(learningResetRepository.getNext).mockResolvedValue(null)
+    jest
+      .mocked(learningResetRepository.acknowledge)
+      .mockReset()
+      .mockResolvedValue(undefined)
     ;(supabase as any).auth = {
       getSession: jest.fn().mockResolvedValue({
         data: { session: createSession(60 * 60) },
@@ -307,6 +338,28 @@ describe('SyncManager', () => {
   })
 
   describe('sync status subscriptions', () => {
+    it('keeps local changes when the backend does not support command sync', async () => {
+      jest.mocked(supabase.rpc).mockResolvedValueOnce({
+        data: 1,
+        error: null,
+        count: null,
+        status: 200,
+        statusText: 'OK',
+      })
+      const result = await syncManager.performSync(userId)
+      expect(result.success).toBe(false)
+      expect(result.error).toContain('backend protocol 2')
+      expect(supabase.from).not.toHaveBeenCalled()
+      expect(wordRepository.reconcilePushedWords).not.toHaveBeenCalled()
+      expect(reviewEventRepository.reconcilePushedEvents).not.toHaveBeenCalled()
+      expect(learningResetRepository.acknowledge).not.toHaveBeenCalled()
+      expect(getLearningQueueHealth).toHaveBeenCalledWith(userId)
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        'Learning synchronization health',
+        expect.objectContaining({ fingerprint: ['sync-health', 'protocol'] })
+      )
+    })
+
     it('should subscribe to sync status updates', () => {
       const callback = jest.fn()
       const unsubscribe = syncManager.subscribeSyncStatus(callback)
@@ -358,6 +411,70 @@ describe('SyncManager', () => {
   })
 
   describe('auth preflight', () => {
+    it.each([
+      [-1, true],
+      [0, true],
+      [30, true],
+      [31, false],
+    ])(
+      'refreshes at the expiry safety boundary of %i seconds (refresh=%s)',
+      async (seconds, shouldRefresh) => {
+        jest
+          .spyOn(Date, 'now')
+          .mockReturnValue(Date.parse('2026-09-05T12:00:00Z'))
+        try {
+          jest.mocked(supabase.auth.getSession).mockResolvedValue({
+            data: { session: createSession(seconds) },
+            error: null,
+          } as Awaited<ReturnType<typeof supabase.auth.getSession>>)
+          expect((await syncManager.performSync(userId)).success).toBe(true)
+          expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(
+            shouldRefresh ? 1 : 0
+          )
+        } finally {
+          jest.restoreAllMocks()
+        }
+      }
+    )
+
+    it('recovers offline → expired session → failed refresh → online retry without discarding pending data', async () => {
+      jest.mocked(networkUtils.isNetworkAvailable).mockResolvedValueOnce(false)
+      jest
+        .mocked(supabase.auth.getSession)
+        .mockResolvedValue({ data: { session: null }, error: null })
+      jest
+        .mocked(supabase.auth.refreshSession)
+        .mockRejectedValueOnce(new Error('Network interrupted'))
+
+      expect((await syncManager.performSync(userId)).error).toBe(
+        'No network connection'
+      )
+      expect(supabase.auth.getSession).not.toHaveBeenCalled()
+      expect((await syncManager.performSync(userId)).error).toBe(
+        SYNC_AUTH_PRECHECK_ERROR
+      )
+      expect(supabase.from).not.toHaveBeenCalled()
+      expect(wordRepository.getPendingSyncWords).not.toHaveBeenCalled()
+      expect(wordRepository.markWordsSynced).not.toHaveBeenCalled()
+      expect((await syncManager.performSync(userId)).success).toBe(true)
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(2)
+      expect(wordRepository.getPendingSyncWords).toHaveBeenCalledWith(userId)
+    })
+
+    it('blocks database writes if refresh returns an already-expired session', async () => {
+      jest
+        .mocked(supabase.auth.getSession)
+        .mockResolvedValue({ data: { session: null }, error: null })
+      jest.mocked(supabase.auth.refreshSession).mockResolvedValue({
+        data: { session: createSession(-1) },
+        error: null,
+      } as Awaited<ReturnType<typeof supabase.auth.refreshSession>>)
+      expect((await syncManager.performSync(userId)).error).toBe(
+        SYNC_AUTH_PRECHECK_ERROR
+      )
+      expect(supabase.from).not.toHaveBeenCalled()
+    })
+
     it('should refresh expired session before sync stages', async () => {
       ;(supabase.auth.getSession as jest.Mock).mockResolvedValue({
         data: { session: createSession(-60) },
@@ -1122,7 +1239,7 @@ describe('SyncManager', () => {
     const createRemoteProgress = (overrides: Record<string, unknown> = {}) => ({
       progress_id: 'progress-remote',
       user_id: userId,
-      word_id: 'word-remote',
+      word_id: REMOTE_WORD_ID,
       status: 'learning',
       reviewed_count: 2,
       last_reviewed_at: nextUpdatedAt,
@@ -1338,7 +1455,7 @@ describe('SyncManager', () => {
     ) => ({
       event_id: 'event-remote',
       user_id: userId,
-      word_id: 'word-remote',
+      word_id: REMOTE_WORD_ID,
       assessment: 'good',
       review_mode: 'recognition',
       answered_correctly: true,
@@ -1423,6 +1540,7 @@ describe('SyncManager', () => {
         .fn()
         .mockResolvedValueOnce({ data: events.slice(0, 500), error: null })
         .mockResolvedValueOnce({ data: events.slice(500), error: null })
+        .mockResolvedValue({ data: [], error: null })
       const query = createWordsPullQuery(range)
       installReviewEventTable(createReviewEventTable(query))
 
@@ -1499,6 +1617,99 @@ describe('SyncManager', () => {
         userId,
         [{ event_id: offlineEventId, created_at: SERVER_TIMESTAMP }]
       )
+    })
+
+    it('sends reviews and explicit resets in durable local order', async () => {
+      const reset = {
+        operation_id: 'reset-1',
+        sequence: 2,
+        word_id: REMOTE_WORD_ID,
+        reset_at: createdAt,
+        review_date: '2026-08-29',
+      }
+      const pending = [1, 3].map(sequence => ({
+        ...createRemoteReviewEvent({
+          event_id: `event-${sequence}`,
+          local_sequence: sequence,
+        }),
+        created_at: null,
+        sync_status: 'pending',
+        last_sync_attempt_at: null,
+        synced_at: null,
+      }))
+      const upsert = createUpsertMock()
+      installReviewEventTable(
+        createReviewEventTable(createWordsPullQuery(), upsert)
+      )
+      jest
+        .mocked(learningResetRepository.getNext)
+        .mockResolvedValueOnce(reset)
+        .mockResolvedValueOnce(reset)
+      ;(reviewEventRepository.getPendingSyncEvents as jest.Mock)
+        .mockResolvedValueOnce(pending)
+        .mockResolvedValueOnce([pending[1]])
+        .mockResolvedValueOnce([pending[1]])
+      jest
+        .mocked(supabase.rpc)
+        .mockResolvedValueOnce({
+          data: 2,
+          error: null,
+          count: null,
+          status: 200,
+          statusText: 'OK',
+        })
+        .mockResolvedValueOnce({
+          data: [{ word_id: reset.word_id }],
+          error: null,
+          count: null,
+          status: 200,
+          statusText: 'OK',
+        })
+      expect((await syncManager.performSync(userId)).success).toBe(true)
+      expect(upsert.mock.calls.map(call => call[0][0].event_id)).toEqual([
+        'event-1',
+        'event-3',
+      ])
+      const rpcOrder = jest.mocked(supabase.rpc).mock.invocationCallOrder[1]
+      expect(upsert.mock.invocationCallOrder[0]).toBeLessThan(rpcOrder)
+      expect(upsert.mock.invocationCallOrder[1]).toBeGreaterThan(rpcOrder)
+      expect(learningResetRepository.acknowledge).toHaveBeenCalledWith(
+        userId,
+        reset.operation_id
+      )
+    })
+
+    it('retains a reset after a lost response and retries the same command', async () => {
+      const reset = {
+        operation_id: 'reset-retry',
+        sequence: 1,
+        word_id: REMOTE_WORD_ID,
+        reset_at: createdAt,
+        review_date: '2026-08-29',
+      }
+      installReviewEventTable(createReviewEventTable(createWordsPullQuery()))
+      jest.mocked(learningResetRepository.getNext).mockResolvedValue(reset)
+      jest
+        .mocked(learningResetRepository.acknowledge)
+        .mockImplementation(async () => {
+          jest.mocked(learningResetRepository.getNext).mockResolvedValue(null)
+        })
+      const ok = { error: null, count: null, status: 200, statusText: 'OK' }
+      jest
+        .mocked(supabase.rpc)
+        .mockResolvedValueOnce({ ...ok, data: 2 })
+        .mockRejectedValueOnce(new Error('Connection lost'))
+        .mockResolvedValueOnce({ ...ok, data: 2 })
+        .mockResolvedValueOnce({ ...ok, data: [{ word_id: reset.word_id }] })
+      expect((await syncManager.performSync(userId)).success).toBe(false)
+      expect(learningResetRepository.acknowledge).not.toHaveBeenCalled()
+      expect((await syncManager.performSync(userId)).success).toBe(true)
+      const requests = jest
+        .mocked(supabase.rpc)
+        .mock.calls.filter(call => call[0] === 'reset_word_learning_progress')
+      expect(requests).toHaveLength(2)
+      expect(requests[0]).toEqual(requests[1])
+      expect(learningResetRepository.acknowledge).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -1683,6 +1894,16 @@ describe('SyncManager', () => {
       )
       expect(wordRepository.reconcilePushedWords).not.toHaveBeenCalled()
       expect(wordRepository.markWordsSynced).not.toHaveBeenCalled()
+      const payload = wordsUpsert.mock.calls[0][0][0]
+      for (const key of [
+        'interval_days',
+        'repetition_count',
+        'easiness_factor',
+        'next_review_date',
+        'last_reviewed_at',
+      ]) {
+        expect(payload).not.toHaveProperty(key)
+      }
     })
   })
 

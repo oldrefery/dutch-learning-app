@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store'
 import * as Crypto from 'expo-crypto'
 import { MMKV } from 'react-native-mmkv'
 import { createClient } from '@supabase/supabase-js'
-import fetchRetry from 'fetch-retry'
+import { createSupabaseFetch } from './supabaseFetch'
 
 const ENCRYPTION_KEY_NAME = 'supabase-session-encryption-key'
 
@@ -79,13 +79,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables')
 }
 
-// Wrap fetch with automatic retry for transient server errors
-const fetchWithRetry = fetchRetry(fetch, {
-  retries: 2,
-  retryDelay: (attempt: number) => Math.min(1000 * Math.pow(2, attempt), 10000),
-  retryOn: [503, 504, 520, 546],
-})
-
 // Create Supabase client with encrypted MMKV storage
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -95,7 +88,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
   },
   global: {
-    fetch: fetchWithRetry as typeof fetch,
+    fetch: createSupabaseFetch(supabaseUrl, fetch),
   },
 })
 
