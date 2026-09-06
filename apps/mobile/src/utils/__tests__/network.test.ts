@@ -28,7 +28,7 @@ jest.mock('@react-native-community/netinfo', () => ({
   },
 }))
 
-const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp'
+const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp:user-1'
 const STORED_TIMESTAMP = '2025-10-01T00:00:00Z'
 const STORAGE_ERROR_MESSAGE = 'Storage error'
 const USER_ID = 'user-1'
@@ -172,7 +172,7 @@ describe('network', () => {
     it('should return stored timestamp', async () => {
       ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue(STORED_TIMESTAMP)
 
-      const result = await getLastSyncTimestamp()
+      const result = await getLastSyncTimestamp(USER_ID)
 
       expect(result).toBe(STORED_TIMESTAMP)
       expect(AsyncStorage.getItem).toHaveBeenCalledWith(LAST_SYNC_TIMESTAMP_KEY)
@@ -183,15 +183,39 @@ describe('network', () => {
         new Error(STORAGE_ERROR_MESSAGE)
       )
 
-      const result = await getLastSyncTimestamp()
+      const result = await getLastSyncTimestamp(USER_ID)
 
       expect(result).toBeNull()
+    })
+
+    it('isolates accounts and ignores an unattributed legacy timestamp', async () => {
+      const stored = new Map([['last_sync_timestamp', STORED_TIMESTAMP]])
+      jest
+        .mocked(AsyncStorage.getItem)
+        .mockImplementation(async key => stored.get(key) ?? null)
+      jest
+        .mocked(AsyncStorage.setItem)
+        .mockImplementation(async (key, value) => {
+          stored.set(key, value)
+        })
+
+      await expect(getLastSyncTimestamp(USER_ID)).resolves.toBeNull()
+      await setLastSyncTimestamp(USER_ID, STORED_TIMESTAMP)
+      await expect(getLastSyncTimestamp('user-2')).resolves.toBeNull()
+      await setLastSyncTimestamp('user-2', '2026-09-06T12:00:00Z')
+      await expect(getLastSyncTimestamp(USER_ID)).resolves.toBe(
+        STORED_TIMESTAMP
+      )
+      await expect(getLastSyncTimestamp('user-2')).resolves.toBe(
+        '2026-09-06T12:00:00Z'
+      )
+      expect(stored.get('last_sync_timestamp')).toBe(STORED_TIMESTAMP)
     })
   })
 
   describe('setLastSyncTimestamp', () => {
     it('should save timestamp to AsyncStorage', async () => {
-      await setLastSyncTimestamp(STORED_TIMESTAMP)
+      await setLastSyncTimestamp(USER_ID, STORED_TIMESTAMP)
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         LAST_SYNC_TIMESTAMP_KEY,
@@ -204,9 +228,9 @@ describe('network', () => {
         new Error(STORAGE_ERROR_MESSAGE)
       )
 
-      await expect(setLastSyncTimestamp(STORED_TIMESTAMP)).rejects.toThrow(
-        STORAGE_ERROR_MESSAGE
-      )
+      await expect(
+        setLastSyncTimestamp(USER_ID, STORED_TIMESTAMP)
+      ).rejects.toThrow(STORAGE_ERROR_MESSAGE)
     })
   })
 

@@ -33,7 +33,7 @@ export const syncStatusService = {
       wordRepository.getPendingSyncWords(userId),
       collectionRepository.getPendingSyncCollections(userId),
       progressRepository.getPendingSyncProgress(userId),
-      getLastSyncTimestamp(),
+      getLastSyncTimestamp(userId),
       isNetworkAvailable(),
     ])
 

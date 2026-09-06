@@ -20,6 +20,7 @@ import {
 import {
   getSyncCursor,
   isNetworkAvailable,
+  setLastSyncTimestamp,
   setSyncCursor,
 } from '@/utils/network'
 import type { SyncCursor } from '@/utils/network'
@@ -311,8 +312,6 @@ export class SyncManager {
         return result
       }
 
-      const timestamp = new Date().toISOString()
-
       // Never fall back to snapshot progress writes against an older backend.
       outcome = 'protocol'
       await this.runSyncStageWithSessionRetry('check_protocol', userId, () =>
@@ -405,6 +404,12 @@ export class SyncManager {
           () => this.pullReviewEventsFromSupabase(userId, reviewEventCursor)
         )
       }
+
+      const timestamp = new Date().toISOString()
+      // Status metadata must not turn an acknowledged data sync into a failure.
+      await setLastSyncTimestamp(userId, timestamp).catch(() => {
+        console.warn('[Sync] Could not persist last successful sync time')
+      })
 
       const result: SyncResult = {
         success: true,
