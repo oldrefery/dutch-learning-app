@@ -1,6 +1,6 @@
 # Web end-to-end tests
 
-The Playwright suite uses only a dedicated test account. A preflight runs before
+Authenticated Playwright suites use only a dedicated test account. A preflight runs before
 the browser starts, and the runtime credential guard repeats the check. Both
 reject `oldrefery@gmail.com`, including Gmail aliases.
 
@@ -9,6 +9,8 @@ reject `oldrefery@gmail.com`, including Gmail aliases.
 - `npm run web:test:coverage` runs the dedicated web Jest suite and enforces
   its coverage floor.
 - `npm run web:e2e:smoke` runs the short Chromium production smoke suite.
+- `npm run web:e2e:fixtures` runs three isolated fixture contracts without an
+  app server, credentials, saved sessions or production access.
 - `npm run web:e2e:extended` runs authenticated UI, sharing, validation, and
   mobile Chromium scenarios.
 - `npm run web:e2e` runs smoke and extended Chromium coverage.
@@ -41,26 +43,36 @@ suffix within the 50-character form limit. Create/rename steps assert the actual
 input value before submitting, so browser truncation cannot silently orphan a
 collection. `smoke-collection.spec.ts` checks validation, UUID preservation and
 the browser maxlength behavior without application requests or authentication.
-Run just these contracts locally (Chromium must already be installed):
+Run just these contracts from the repository root (Chromium must already be installed):
 
 ```bash
-cd apps/web
-WEB_E2E_BASE_URL=http://127.0.0.1:9 npx playwright test e2e/smoke-collection.spec.ts --project=chromium --no-deps
+npm run web:e2e:fixtures
 ```
 
-The loopback URL disables automatic app startup; these tests do not navigate to
-it. `--no-deps` skips the login setup, and the spec uses empty browser storage.
+`playwright.fixtures.config.ts` selects only `smoke-collection.spec.ts` and does
+not import the authenticated configuration. It has no setup dependency, webServer,
+base URL or env-file loading. The Chromium context is offline, service workers
+are blocked and storage is empty. No `WEB_E2E_*` values are required or used by
+this runner. Tests use in-memory HTML rather than a live application. This is
+browser isolation, not a network sandbox for arbitrary Node.js test code.
+
+The Quality workflow runs the same command in its parallel `web-fixtures` job
+on PRs and main/develop pushes, without repository secrets. Dependency/browser
+installation needs network access; the three test scenarios need none. The job
+is configured in this change but has not yet run remotely. Repository branch
+protection is not changed; making the new check mandatory is a separate setting.
 
 The server-side initial-date migration
 `20260906110000_make_new_words_immediately_reviewable.sql` was applied on
 2026-09-06. The first subsequent hosted smoke exposed the fixture name-length
-regression before reaching SRS. Only a successful rerun verifies the complete
-hosted learning workflow.
+regression before reaching SRS; that test-only issue was corrected in PR #109.
 
 The corrected local suite on `feature/fix-smoke-collection-name` passed against
 production on 2026-09-06: 7/7 checks, including same-day first review, persisted
-Easy progress and fixture cleanup. This was a local run against the deployed app,
-not a new successful GitHub Actions run; CI still needs the test fix to be pushed.
+Easy progress and fixture cleanup. After PR #109 merged as `15b5c73`,
+[GitHub production smoke](https://github.com/oldrefery/dutch-learning-app/actions/runs/34030539690)
+also passed 7/7 in 41.6 seconds without retries. That run used a dedicated test
+account and completed word deletion and exact-name collection cleanup.
 
 ## Session and review recovery
 

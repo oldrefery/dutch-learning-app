@@ -5,8 +5,10 @@ and their internal-store submissions finished. Public store release is not perfo
 
 ## Authorization And Source
 
-- Work stays on `codex/app-quality-session-sync-tests`; local commits only.
-  No push, PR, merge or public store promotion was performed.
+- The initial release was prepared on `codex/app-quality-session-sync-tests`.
+  Subsequent separately approved/user-performed Git operations merged PRs
+  #107–#109; this report is not standing permission for another operation.
+  No public store promotion was performed by this work.
 - The owner confirmed all protected-account devices were synchronized, had no
   pending changes and would remain unused on the old client during cutover.
 - Existing legacy-client limitations are accepted for this coordinated release;
@@ -20,8 +22,9 @@ and their internal-store submissions finished. Public store release is not perfo
 A fresh private logical backup was taken after the synchronization confirmation:
 roles, application/managed schema, data and migration history. It is kept under
 ignored `builds/`, with restrictive permissions, and excluded from EAS/Vercel
-uploads. An earlier backup is also retained. The project currently has no listed
-hosted backups and PITR is disabled; recovery must not assume otherwise.
+uploads. An earlier backup is also retained. At the 2026-09-06 cutover inspection,
+the project had no listed hosted backups and PITR was disabled; this dated report
+does not assert current provider settings. Recovery must recheck availability.
 
 The fresh snapshot was restored into isolated PostgreSQL 17.4 without network or
 published ports. All **40 tables / 12,460 rows** matched sorted COPY row-content
@@ -58,8 +61,9 @@ reported missing maps, so this is not a claim that every chunk was symbolicated.
 The custom domain was verified to still reference the previous deployment
 `dpl_1m2J5ivHadH6VN1xLNb723rojdm5` while backend cutover was pending.
 After migration and hosted RPC checks, `vercel promote` completed successfully;
-CLI inspection of `woordenaar.app` resolved to the new deployment. This confirms
-routing/build state, not an authenticated production-browser smoke test.
+CLI inspection of `woordenaar.app` resolved to the new deployment. This initial
+inspection confirmed routing/build state only. Later main deployments superseded
+that deployment; the final browser smoke evidence is recorded below.
 
 ## Gates And Remaining Checks
 
@@ -82,3 +86,15 @@ routing/build state, not an authenticated production-browser smoke test.
   multi-day soak remain unverified; build/submission success does not replace them.
 - Do not resume the protected account on a legacy client. Do not clear app data or
   restore the backup blindly: accepted post-cutover commands require preservation.
+
+## Completed Browser Follow-up
+
+The later first-review-date regression was corrected by the forward migration in
+PR #108. After correcting a test-fixture name-length issue in PR #109, main
+revision `15b5c73bb020b8340c2b253cfb612813ffd8f3ea` deployed successfully and
+[production smoke 34030539690](https://github.com/oldrefery/dutch-learning-app/actions/runs/34030539690)
+passed 7/7 without retries. It covered auth/account safeguards, fixture contracts,
+collection CRUD, word analysis/search/history, same-day first review and persisted
+Easy progress, followed by test-data cleanup. See the
+[preservation and test details](new-word-review-eligibility-2026-09-06.md).
+This closes the browser smoke gap, not the remaining real-device/session gaps.

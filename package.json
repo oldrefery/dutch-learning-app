@@ -32,6 +32,7 @@
     "web:mutation": "stryker run stryker.web.config.mjs",
     "web:e2e": "npm run test:e2e --workspace @woordenaar/web",
     "web:e2e:smoke": "npm run test:e2e:smoke --workspace @woordenaar/web",
+    "web:e2e:fixtures": "npm run test:e2e:fixtures --workspace @woordenaar/web --",
     "web:e2e:extended": "npm run test:e2e:extended --workspace @woordenaar/web",
     "web:e2e:cross-browser": "npm run test:e2e:cross-browser --workspace @woordenaar/web",
     "web:e2e:install": "npm run test:e2e:install --workspace @woordenaar/web",

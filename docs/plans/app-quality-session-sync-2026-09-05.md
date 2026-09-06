@@ -4,6 +4,21 @@ Date: 2026-09-05
 Branch: `codex/app-quality-session-sync-tests`
 Base: `8056d5e8797587e0b41d358bc454e1d91d95a730`
 
+## Current Status — 2026-09-06
+
+This file is a chronological implementation log. Branch names, permissions and
+"not deployed" statements below describe each historical checkpoint, not current
+authority or rollout state. PRs #107–#109 are merged. Protocol 2 and the new-word
+initial-date fix are deployed, and production smoke from main passed 7/7 without
+retries. Native 2.2.1 (82) was submitted to internal store destinations; public
+release and the declined manual scenarios are not claimed as verified.
+
+Use [the current test matrix](../TESTING_PLAN.md),
+[release evidence](../protocol2-release-2026-09-06.md) and
+[the final SRS follow-up](../new-word-review-eligibility-2026-09-06.md) for current
+status. The next CI-only change isolates fixture contracts on PRs without an app
+server or test-account credentials. It grants no standing Git/release permission.
+
 ## Scope Delivered
 
 - Web session refresh: preserve rotated and deleted cookies on authentication

@@ -10,7 +10,8 @@ See the [rollout and recovery checklist](learning-sync-rollout.md) and
 
 ## Contract
 
-- The server owns SRS progress. Client word inserts start with initial SRS;
+- The server owns SRS progress. Client word inserts start with initial SRS and
+  become due on the server's current date after the deployed initial-date fix;
   word upserts/metadata updates cannot replace existing learning fields.
 - A unique review event is a command. PostgreSQL locks its owned live word,
   calculates from the current server state and commits progress plus canonical
@@ -117,7 +118,9 @@ web tests cover orchestration and retry payloads. These do **not** constitute a
 new native-device or hosted-backend verification of protocol 2.
 
 The subsequent [local native/HTTP QA](local-sync-qa.md) verifies the original
-two-Android-client regression with a real isolated Auth/REST stack. Hosted and
-device validation and public store release remain pending. The approved hosted
-cutover, preservation comparison and test-account RPC smoke results are recorded
-in the [release evidence](protocol2-release-2026-09-06.md).
+two-Android-client regression with a real isolated Auth/REST stack. Hosted
+two-device/store-build validation and public store release remain unverified.
+The approved hosted cutover, preservation comparison and test-account RPC smoke
+are recorded in the [release evidence](protocol2-release-2026-09-06.md).
+The [initial-date follow-up](new-word-review-eligibility-2026-09-06.md) records
+the subsequent successful production browser smoke from main.

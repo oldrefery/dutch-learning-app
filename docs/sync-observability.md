@@ -1,7 +1,10 @@
 # Learning Sync Diagnostics
 
-Status: implemented locally on the quality branch; not deployed or verified in
-live Sentry. No alert rules, dashboards or scheduled monitoring were created.
+Status: implemented and included in the native 2.2.1 (82) artifacts submitted to
+internal store destinations; see [release evidence](protocol2-release-2026-09-06.md).
+Public distribution, real-device ingestion of these events and live Sentry payload
+validation remain unverified. No alert rules, dashboards or scheduled monitoring
+were created by this work; the documentation update does not inspect/change Sentry.
 
 `SyncHealthReporter` observes completed native `SyncManager.performSync` attempts.
 It does not observe startup/session-gate failures before synchronization starts,
