@@ -489,3 +489,35 @@ be counted as real iOS offline/online validation. Coordinated hosted rollout
 still needs explicit authorization and the documented protocol/cutover checks.
 
 Commit message: `fix(auth): ignore stale foreground session checks`
+
+## Follow-up: Extended Offline Session Contracts
+
+Added seven deterministic tests that execute the installed Auth SDK and native
+transport with isolated storage, HTTP responses and a controlled clock. Repeated
+network rejection, stalled fetch and HTTP 503 on days 1/3/7 preserve the exact
+stored credentials without publishing a sign-out. Recreated clients recover the
+same identity and persist token rotation; another initialization on day 9 must
+send the rotated token, not the original one. A separate automatic-refresh cold
+start recovers after exhausted 503 attempts without replacing the client.
+
+Definitive `refresh_token_not_found`, `refresh_token_already_used` and
+`session_not_found` responses remove the stored session; a later initialization
+does not resurrect it or call the server again. Error fixtures include the Auth
+API-version response header, matching the installed SDK's code parsing contract.
+
+No application-code change was needed. A temporary local mutation increasing the
+Auth request timeout from ten seconds to ten minutes caused the stalled-request
+test to fail. The original value was restored before final validation. This is
+a targeted sensitivity check, not a new Stryker run or native-device evidence.
+
+Validation: 102 mobile suites / 1,223 tests / 18 snapshots, mobile test typecheck,
+repository lint and diff checks pass. Stryker was not rerun because neither its
+web/domain targets nor their tests changed.
+
+The main testing matrix now distinguishes real native evidence from the modeled
+days in these tests. The physical-device and real multi-day soak checks remain
+open; hosted refresh validity/inactivity settings are not simulated or changed.
+No accounts, devices, backend services or release tools were used in this step.
+The unrelated staged/deleted plugin remains untouched.
+
+Commit message: `test(auth): cover extended offline session recovery`

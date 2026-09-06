@@ -1,6 +1,6 @@
 # Application Quality And Testing
 
-Updated: 2026-09-05. This replaces the pre-monorepo, pre-test-suite proposal.
+Updated: 2026-09-06. This replaces the pre-monorepo, pre-test-suite proposal.
 
 ## Workspace Layout
 
@@ -50,7 +50,7 @@ server binaries, but no account, connection string or Docker service.
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | Expired web session                   | SDK adapter/redirect unit tests plus Chromium and real Supabase refresh-token rotation through private pages and redirects; invalid-token cleanup and return-path reauthentication                                | Actual signed JWT expiry, concurrent refresh and remotely revoked sessions                   |
 | Authentication/authorization          | Verified-user lookup, fail-closed access defaults, OAuth code exchange, safe next destination                                                                                                                     | Provider login, revoked sessions, real RLS enforcement                                       |
-| Expired mobile session/reconnection   | Preflight expiry/refresh-failure tests; Android airplane-mode assessment survives cold restart and syncs on reconnect; foreground sync and hook lifecycle tests                                                   | Actual expired/revoked native sessions, offline Settings fallback and iOS                    |
+| Expired mobile session/reconnection   | Actual JWT expiry on isolated Android/iOS builds; bounded stalled transport and same-account recovery; real Auth SDK tests for repeated offline reads, cold-start recovery and token rotation across modeled days | Physical-device network loss, live revocation policies, real multi-day soak                  |
 | In-flight sync conflicts              | Native QA reproduced stale snapshot overwrite; protocol 2 PostgreSQL/SQLite regressions now verify atomic reviews, reset ordering, idempotency and snapshot protection                                            | Hosted rollout, upgraded-device QA and reconciliation of ambiguous legacy queues             |
 | Review persistence                    | Action tests, isolated PostgreSQL RPC/RLS/concurrency and browser offline/lost-response retries against real Supabase; unchanged retry payload and durable single-assessment progress                             | Broader hosted schema drift, other assessments under network failures and device transitions |
 | Word writes and progress preservation | Execute all five word actions with a recording API double: owner/collection/live-word filters, exact reset/delete/move/image payloads, failed or missing writes, reanalysis conflict fallback without SRS changes | Real PostgreSQL/RLS ownership checks, competing writes and cache refresh in a browser        |
@@ -62,6 +62,15 @@ SQLite tests replace only the Expo bridge with Node's in-memory SQLite engine.
 They use the real schema, repository statements, constraints and triggers, and
 never open application database files. API mocks test our orchestration, not
 Supabase's refresh internals or PostgreSQL transaction semantics.
+
+The `supabaseFetch.session` and `supabaseFetch.offline` tests are explicitly
+different: they execute the installed Auth SDK and the application's transport,
+with only HTTP responses, storage and time replaced. The offline suite models
+failed foreground reads on days 1/3/7, cold-start recovery, persisted rotation
+across another client on day 9, and definitive refresh rejection. It does not
+run MMKV/Keychain, NetInfo, a real Auth server, or nine days of device uptime.
+Server responses determine refresh validity; the modeled elapsed time must not
+be interpreted as a guarantee about hosted inactivity/session-lifetime policies.
 
 Existing SQL text assertions are useful schema-contract smoke checks, but must
 not be described as database integration tests. Likewise, a successful mocked
@@ -115,9 +124,14 @@ no persistent offline queue across reloads is claimed.
    PostgreSQL/SQLite tests now cover the conflict, native batches, reset ordering
    and retry durability. Hosted migration and a fresh native two-client run remain
    pending; pre-cutover queues and old reset clients require explicit handling.
-3. Diagnose the offline cold-start Settings fallback (missing email / Read Only).
-   Native Android pending-event durability, reconnect and foreground sync were
-   exercised; iOS and actual expired/revoked native sessions remain unverified.
+3. Run physical-device network transitions and a real long-duration offline soak.
+   The Settings fallback and stalled transport have been addressed and checked
+   on isolated native builds. Android expiry/recovery and iOS expiry with a
+   loopback stalled-request proxy passed; see
+   [iOS evidence and limits](ios-session-recovery-qa-2026-09-06.md) and
+   [Android transport evidence](native-auth-transport-qa-2026-09-06.md).
+   iOS simulator airplane mode is a no-op, not a valid offline test. Real-server
+   revocation/inactivity policies and on-device multi-day recovery remain open.
 
 Nine `useSyncManager.lifecycle` hook tests cover reconnect/foreground triggers,
 background timers, cleanup, missing identity and failed-attempt recovery. Their
