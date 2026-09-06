@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import * as Sentry from '@sentry/nextjs'
 import { revalidatePath } from 'next/cache'
 import { requireAuthContext } from '@/lib/auth/session'
@@ -172,7 +172,10 @@ it.each([
   async value => {
     expect(
       await submitReviewCorrection(value as ReviewCorrectionInput)
-    ).toMatchObject({ status: 'invalid' })
+    ).toMatchObject({
+      status: 'invalid',
+      message: expect.stringContaining('signed-in account'),
+    })
     expect(createClient).not.toHaveBeenCalled()
   }
 )
@@ -183,6 +186,7 @@ it.each(['PGRST202', '42883'])(
     rpc.mockResolvedValueOnce({ data: null, error: { code } })
     expect(await submitReviewCorrection(input)).toMatchObject({
       status: 'unavailable',
+      message: expect.stringContaining('not available'),
     })
     expect(rpc).toHaveBeenCalledTimes(1)
     expect(revalidatePath).not.toHaveBeenCalled()
@@ -213,7 +217,10 @@ it.each([
       data: null,
       error: { code, message: 'private provider payload' },
     })
-    expect(await submitReviewCorrection(input)).toMatchObject({ status })
+    expect(await submitReviewCorrection(input)).toMatchObject({
+      status,
+      message: expect.stringMatching(/\S/),
+    })
     expect(rpc.mock.calls.map(call => call[0])).toEqual([
       'review_correction_protocol',
       'correct_review_assessment',
@@ -222,8 +229,24 @@ it.each([
     expect(
       JSON.stringify(jest.mocked(Sentry.captureException).mock.calls)
     ).not.toContain('private provider payload')
+    if (status === 'retry') {
+      expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureException).toHaveBeenCalledWith(
+        new Error('Review correction could not be confirmed'),
+        { tags: { operation: 'correct_review_assessment' } }
+      )
+    } else expect(Sentry.captureException).not.toHaveBeenCalled()
   }
 )
+
+it('rejects an error response even when it also contains a valid-looking receipt', async () => {
+  rpc.mockResolvedValueOnce(ok(1)).mockResolvedValueOnce({
+    data: [acknowledgement],
+    error: { code: 'NETWORK', message: 'private provider payload' },
+  })
+  expect(await submitReviewCorrection(input)).toMatchObject({ status: 'retry' })
+  expect(revalidatePath).not.toHaveBeenCalled()
+})
 
 it('retries identical arguments after a transport failure instead of allocating another command', async () => {
   rpc

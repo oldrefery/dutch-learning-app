@@ -10,8 +10,8 @@ against SQLite and mocked transport. Web now has authenticated correction/detail
 actions and capability-aware effective-history readers, tested with mocked transport.
 The web fast-review/details/history flow now includes capability-gated correction
 controls and explicit conflict resolution. Mobile now connects fast review, details,
-and read-only session history; correction UI and sync serialization remain the
-next stage. Nothing is deployed: the current remote backend cannot enable these
+session history, correction UI, serialized sync, and durable recovery as described
+below. Nothing is deployed: the current remote backend cannot enable these
 controls until its migration and coordinated client rollout are authorized.
 
 This is the persistence foundation for
@@ -184,10 +184,9 @@ large-ledger optimization requires a separately verified protocol.
   ownership is checked inside the operation. Failed operations release the queue.
   Sync checks the current/refreshed client session owner after acquiring its turn;
   this stale-work guard does not replace server authentication and RLS.
-- These storage/transport adapters are not connected to the mobile screen yet.
-  Before enabling correction UI, guard stale session callbacks, reload effective
-  history/local words, and resume
-  the remaining queue. Do not enable correction UI before that integration.
+- The later recovery/transport milestone connects these adapters to the mobile
+  screen, guards stale session callbacks, reloads effective history/local words,
+  and resumes the remaining queue. Runtime rollout verification is still pending.
 - Audio Review reads owned SQLite progress after acquiring the queue instead of
   calculating from the UI cache. It freezes rating, mode, and answer time before
   waiting. Review and reset actions suppress same-word duplicate calls while in
@@ -309,8 +308,8 @@ Web server tests cover authentication redirects, cross-account rejection, exact
 retry payloads, conflict/error classification, malformed acknowledgements, reset
 retries, read-only full details, effective assessment reads, and 501-event paging.
 The server-integration milestone passed 371 tests across 48 suites. These are local tests with
-mocked transport, not proof of deployed RPC or browser behavior. New correction
-adapters have not yet been added to the mutation-testing target set.
+mocked transport, not proof of deployed RPC or browser behavior. Correction
+adapters were not yet in the mutation-testing target set at that milestone.
 
 The web UI integration milestone passes 427 tests across 51 suites, including
 double-click claiming, immutable retries, no optimistic SRS, effective summary
@@ -321,3 +320,10 @@ events, and generic errors without provider-detail leaks.
 
 HTTP/Auth integration and native/web runtime checks for this feature are not yet
 performed. Remote migration and rollout require separate explicit authorization.
+
+The subsequent [local quality milestone](review-correction-quality-2026-09-06.md)
+adds 93 web regression cases (520 tests across 53 suites) and five correction
+modules to Stryker. The expanded 21-file mutation scope scores 97.95%, including
+100% for the session correction controller. All 102 isolated SQL tests and 1,494
+mobile tests pass. The report documents residual mutants and a recovered local
+Node/V8 test-worker crash; it is not a deployed/runtime acceptance report.

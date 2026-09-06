@@ -120,7 +120,10 @@ test('double clicks claim one correction synchronously and do not update optimis
   await controller.correct('hard')
   expect(submit).toHaveBeenCalledTimes(1)
   expect(summary().counts.good).toBe(1)
-  expect(controller.getSnapshot().correction?.status).toBe('saving')
+  expect(controller.getSnapshot().correction).toMatchObject({
+    status: 'saving',
+    message: 'Saving correction…',
+  })
   resolve(receipt(submit.mock.calls[0][0]))
   await pending
   expect(summary().counts.again).toBe(1)
@@ -252,28 +255,47 @@ test('account unmount ignores a late correction response', async () => {
   expect(summary().counts.good).toBe(1)
 })
 
-test('receipt identity mismatch keeps the uncertain edit retryable', async () => {
+test.each([
+  { correctionId: 'wrong-id' },
+  { eventId: 'wrong-event' },
+  { update: successfulResult('wrong-word').update },
+  { acceptedRevision: 0 },
+  { acceptedRevision: 2 },
+  { effectiveRevision: 0 },
+])('a mismatched receipt stays retryable: %j', async mismatch => {
   const { controller, submit, summary } = await setup()
   submit.mockImplementationOnce(
     async input =>
       ({
         ...receipt(input),
-        correctionId: 'wrong-id',
+        ...mismatch,
       }) as ReviewCorrectionResult
   )
   await controller.correct('again')
-  expect(controller.getSnapshot().correction?.status).toBe('retry')
+  expect(controller.getSnapshot().correction).toMatchObject({
+    status: 'retry',
+    message: 'Could not verify the receipt. Retry the same edit.',
+  })
   expect(summary().counts.good).toBe(1)
 })
 
-test('cross-account refresh responses cannot resolve the conflict', async () => {
-  const { controller, submit, refresh, serverState } = await setup()
-  submit.mockResolvedValueOnce({
-    status: 'conflict',
-    message: 'Changed elsewhere',
-  })
-  await controller.correct('again')
-  refresh.mockResolvedValueOnce({ ...serverState(), userId: 'other-user' })
-  await controller.keepServerVersion()
-  expect(controller.getSnapshot().correction?.status).toBe('conflict')
-})
+test.each(['userId', 'wordId', 'eventId'])(
+  'a refresh with mismatched %s cannot resolve the conflict',
+  async field => {
+    const { controller, submit, refresh, serverState } = await setup()
+    submit.mockResolvedValueOnce({
+      status: 'conflict',
+      message: 'Changed elsewhere',
+    })
+    await controller.correct('again')
+    refresh.mockResolvedValueOnce({
+      ...serverState(),
+      [field]: 'other-identity',
+    })
+    await controller.keepServerVersion()
+    expect(controller.getSnapshot().correction).toMatchObject({
+      status: 'conflict',
+      message: 'Could not verify server progress. Try again.',
+    })
+  }
+)

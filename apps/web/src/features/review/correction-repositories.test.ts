@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import { createClient } from '@/lib/supabase/server'
 import { getReviewWorkspaceData } from './repository'
 import { listRecentReviewEvents } from '@/features/history/repository'

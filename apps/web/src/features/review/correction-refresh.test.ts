@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import { requireAuthContext } from '@/lib/auth/session'
 import {
   createCorrectionClient,
@@ -59,13 +59,25 @@ beforeEach(() => {
 })
 
 test('reads only the owned word and its bound effective event, including reset progress', async () => {
-  expect(await loadReviewCorrectionState(input)).toMatchObject({
+  expect(await loadReviewCorrectionState(input)).toEqual({
     status: 'success',
     ...input,
     correctionsAvailable: true,
-    progress: { wordId: input.wordId, lastReviewedAt: null },
+    progress: {
+      wordId: input.wordId,
+      intervalDays: 0,
+      repetitionCount: 0,
+      easinessFactor: 2.5,
+      nextReviewDate: '2026-09-06',
+      lastReviewedAt: null,
+    },
     event: { assessment: 'easy', revision: 2 },
   })
+  expect(from.mock.calls).toEqual([['words'], ['effective_review_events']])
+  expect(word.select).toHaveBeenCalledWith(
+    'word_id, interval_days, repetition_count, easiness_factor, next_review_date, last_reviewed_at'
+  )
+  expect(event.select).toHaveBeenCalledWith('assessment, revision')
   expect(word.eq.mock.calls).toEqual([
     ['user_id', input.userId],
     ['word_id', input.wordId],
@@ -84,12 +96,18 @@ test.each([
   { ...input, userId: 'other-user' },
   { ...input, wordId: '../word' },
   { ...input, eventId: 7 },
+  { ...input, eventId: 'not-a-uuid' },
+  { ...input, wordId: [input.wordId] },
+  { ...input, eventId: [input.eventId] },
 ])(
   'invalid ownership or identity never reaches the database: %j',
   async value => {
     expect(
       await loadReviewCorrectionState(value as ReviewCorrectionRefreshInput)
-    ).toMatchObject({ status: 'error' })
+    ).toEqual({
+      status: 'error',
+      message: 'This review is not available for the signed-in account.',
+    })
     expect(createCorrectionClient).not.toHaveBeenCalled()
   }
 )
@@ -150,5 +168,25 @@ test.each([
   event.maybeSingle.mockResolvedValueOnce({ data, error: null })
   expect(await loadReviewCorrectionState(input)).toMatchObject({
     status: 'error',
+  })
+})
+
+test('a missing effective event preserves readable progress without inventing a rating', async () => {
+  event.maybeSingle.mockResolvedValueOnce({ data: null, error: null })
+  expect(await loadReviewCorrectionState(input)).toMatchObject({
+    status: 'success',
+    progress: { wordId: input.wordId },
+    event: null,
+  })
+})
+
+test('an uncorrected event at revision zero is valid', async () => {
+  event.maybeSingle.mockResolvedValueOnce({
+    data: { assessment: 'good', revision: 0 },
+    error: null,
+  })
+  expect(await loadReviewCorrectionState(input)).toMatchObject({
+    status: 'success',
+    event: { assessment: 'good', revision: 0 },
   })
 })
