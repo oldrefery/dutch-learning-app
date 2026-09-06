@@ -1,4 +1,5 @@
 import React from 'react'
+import { AppState, type AppStateStatus } from 'react-native'
 import type { Session } from '@supabase/supabase-js'
 import { act, renderHook, waitFor } from '@testing-library/react-native'
 import { router } from 'expo-router'
@@ -8,6 +9,9 @@ import { createPasswordRecoveryClient } from '@/lib/passwordRecoveryClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { Sentry } from '@/lib/sentry'
 import { ROUTES } from '@/constants/Routes'
+import { isNetworkAvailable } from '@/utils/network'
+
+jest.mock('@/utils/network', () => ({ isNetworkAvailable: jest.fn() }))
 
 jest.mock('@/stores/useApplicationStore')
 jest.mock('@/lib/supabaseClient')
@@ -80,6 +84,7 @@ describe('SimpleAuthProvider', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.mocked(isNetworkAvailable).mockReset().mockResolvedValue(true)
     ;(useApplicationStore as unknown as jest.Mock).mockImplementation(
       (
         selector: (state: {
@@ -127,7 +132,100 @@ describe('SimpleAuthProvider', () => {
   })
 
   afterEach(() => {
+    jest.restoreAllMocks()
     jest.useRealTimers()
+  })
+
+  it.each([
+    ['network', 'background'],
+    ['network', 'inactive'],
+    ['network', 'unmounted'],
+    ['session', 'background'],
+    ['session', 'inactive'],
+    ['session', 'unmounted'],
+  ] as const)(
+    'ignores late %s completion after becoming %s',
+    async (phase, destination) => {
+      const listen = jest.spyOn(AppState, 'addEventListener')
+      const { unmount } = await renderAuth()
+      const change = listen.mock.calls.find(([event]) => event === 'change')![1]
+      let finish: () => void = () => {}
+      const getSession = jest.mocked(supabase.auth.getSession)
+      getSession.mockClear()
+      if (phase === 'network') {
+        jest.mocked(isNetworkAvailable).mockImplementationOnce(
+          () =>
+            new Promise(resolve => {
+              finish = () => resolve(true)
+            })
+        )
+      } else {
+        getSession.mockImplementationOnce(
+          () =>
+            new Promise(resolve => {
+              finish = () => resolve({ data: { session: null }, error: null })
+            })
+        )
+      }
+      await act(async () => {
+        void change('active')
+      })
+      if (destination === 'unmounted') unmount()
+      else
+        await act(async () => {
+          void change(destination)
+        })
+      await act(async () => finish())
+      expect(supabase.auth.startAutoRefresh).not.toHaveBeenCalled()
+      expect(getSession).toHaveBeenCalledTimes(phase === 'network' ? 0 : 1)
+      if (destination !== 'unmounted')
+        expect(supabase.auth.stopAutoRefresh).toHaveBeenCalledTimes(1)
+    }
+  )
+
+  it.each([false, true])(
+    'checks foreground session only when online (%s)',
+    async online => {
+      const listen = jest.spyOn(AppState, 'addEventListener')
+      await renderAuth()
+      const change = listen.mock.calls.find(([event]) => event === 'change')![1]
+      jest.mocked(supabase.auth.getSession).mockClear()
+      jest.mocked(isNetworkAvailable).mockResolvedValue(online)
+      await act(async () => {
+        void change('active')
+      })
+      expect(supabase.auth.getSession).toHaveBeenCalledTimes(online ? 1 : 0)
+      expect(supabase.auth.startAutoRefresh).toHaveBeenCalledTimes(
+        online ? 1 : 0
+      )
+    }
+  )
+
+  it('ignores an older foreground check after a newer foreground transition', async () => {
+    const listen = jest.spyOn(AppState, 'addEventListener')
+    await renderAuth()
+    const change = listen.mock.calls.find(([event]) => event === 'change')![1]
+    const finish: (() => void)[] = []
+    jest.mocked(supabase.auth.getSession).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          finish.push(() => resolve({ data: { session: null }, error: null }))
+        })
+    )
+    for (const state of [
+      'active',
+      'background',
+      'active',
+    ] as AppStateStatus[]) {
+      await act(async () => {
+        void change(state)
+      })
+    }
+    expect(finish).toHaveLength(2)
+    await act(async () => finish[0]())
+    expect(supabase.auth.startAutoRefresh).not.toHaveBeenCalled()
+    await act(async () => finish[1]())
+    expect(supabase.auth.startAutoRefresh).toHaveBeenCalledTimes(1)
   })
 
   it('keeps local identity when the initial session check throws offline', async () => {

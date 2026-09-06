@@ -459,3 +459,33 @@ backend/proxy/emulator were stopped, original native artifacts restored, and
 the unrelated staged/deleted plugin preserved. No hosted writes, push or PR.
 
 Commit message: `fix(auth): time out stalled native requests`
+
+## Follow-up: iOS Session Recovery And Foreground Races
+
+An isolated iOS 26.5 Release build now verifies login, natural expiry of a
+180-second JWT, bounded unavailable UI while refresh requests stall, and
+automatic recovery without credentials or relaunch. Held native requests abort
+at approximately ten seconds. The same identity, Full Access and byte-equal
+SQLite progress/history/queue survive recovery. See [evidence and scope](../ios-session-recovery-qa-2026-09-06.md).
+
+During the lifecycle audit, a pending network/session check could restart
+auto-refresh after background, inactive or unmount, or supersede a newer resume.
+Effect-lifetime and app-state generation guards prevent this stale work without
+cancelling SDK token rotation. Nine regression cases cover the two await points
+and current online/offline behavior; seven fail before the fix. Full mobile
+validation passes 101 suites / 1,216 tests / 18 snapshots, with typecheck and lint.
+The full configured web/SRS Stryker run was repeated with `--force`: 98.91%,
+454 killed / four survived / one uncovered / 327 compile errors; zero reused
+results. The configured mutation scope and its remaining gaps are unchanged.
+
+The test used only a new local synthetic account and a new simulator. Both and
+the disposable backend were deleted; the fault proxy was stopped. Existing
+devices, unrelated containers, native configuration and the staged/deleted
+plugin remain untouched. No push, PR, merge, EAS, deployment or hosted write.
+
+Next: physical-device network disconnect/reconnect and long-duration offline
+recovery. iOS simulator airplane-mode commands are no-ops, so this run must not
+be counted as real iOS offline/online validation. Coordinated hosted rollout
+still needs explicit authorization and the documented protocol/cutover checks.
+
+Commit message: `fix(auth): ignore stale foreground session checks`

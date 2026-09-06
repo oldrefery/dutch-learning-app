@@ -137,6 +137,7 @@ export function SimpleAuthProvider({
   useEffect(() => {
     let active = true
     let authRevision = 0
+    let appStateRevision = 0
     const checkExistingSession = async () => {
       const revision = authRevision
       try {
@@ -204,9 +205,12 @@ export function SimpleAuthProvider({
     // Manage auto-refresh based on app state
     // Guard with network check to avoid clearing session when offline (GitHub #36906)
     const handleAppStateChange = async (nextState: AppStateStatus) => {
+      if (!active) return
+      const revision = ++appStateRevision
+      const isCurrentResume = () => active && revision === appStateRevision
       if (nextState === 'active') {
         const hasNetwork = await isNetworkAvailable()
-        if (hasNetwork) {
+        if (hasNetwork && isCurrentResume()) {
           // Force immediate session refresh if JWT expired in background
           try {
             await supabase.auth.getSession()
@@ -217,7 +221,8 @@ export function SimpleAuthProvider({
               level: 'warning',
             })
           }
-          supabase.auth.startAutoRefresh()
+          // A late refresh must not restart polling after background/unmount.
+          if (isCurrentResume()) supabase.auth.startAutoRefresh()
         }
       } else {
         supabase.auth.stopAutoRefresh()
