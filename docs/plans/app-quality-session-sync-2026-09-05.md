@@ -554,3 +554,36 @@ and coordinated hosted protocol rollout remain open. The staged/deleted plugin
 is still excluded; no push, PR or deployment.
 
 Commit message: `test(db): cover interrupted learning queue migrations`
+
+## Follow-up: Diagnostics, Rollout And Final Local Gates
+
+Implemented per-attempt native sync health breadcrumbs and bounded warning
+signals for unusable sessions, unsupported protocol, old queues and repeated
+failure windows. Queue reads expose only aggregates, time out after one second
+and remain best effort. Offline attempts alone create no new health issues;
+known empty-queue recovery is reported once with per-reason cooldown. New events
+are allowlisted after Sentry scope enrichment to discard unrelated private data.
+See [diagnostic scope and limitations](../sync-observability.md).
+
+Four real SQLite aggregation cases, nine reporter cases and a Sentry privacy
+regression add 14 tests; the protocol-rejection integration assertion also now
+checks health reporting. No sync data semantics or release versions changed.
+
+Prepared the [rollout/recovery checklist](../learning-sync-rollout.md), including
+old-client reset limitations, ambiguous pre-cutover queues, migration ordering,
+the missing minimum-version gate and the need for a forward-compatible recovery.
+No hosted deployment or automated reconciliation was performed.
+
+The [final local readiness report](../branch-quality-readiness-2026-09-06.md)
+records 1,243 mobile tests, 319 web tests, 58 PostgreSQL tests, 72 Edge tests,
+98.91% scoped Stryker score, type/lint/format checks, a dummy-config web build and
+21/21 Expo Doctor checks. Remote CI and a fresh dependency install are not claimed.
+The unrelated staged/deleted plugin remains outside this work and prevents a
+clean release preflight.
+
+The user declined further manual device-networking, installed-old-build upgrade
+and real-provider web-expiry checks. They remain unverified risks; waiting for
+organic incidents is not a successful test. No account/device/live Sentry action,
+push, PR, merge, migration or deployment is part of this follow-up.
+
+Commit message: `feat(sync): add bounded health diagnostics and rollout guidance`

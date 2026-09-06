@@ -3,6 +3,9 @@
 Status: implemented on the quality branch; **not deployed**. This replaces the
 whole-word progress upload responsible for the [native QA failure](native-sync-qa-2026-09-05.md).
 
+See the [rollout and recovery checklist](learning-sync-rollout.md) and
+[bounded sync diagnostics](sync-observability.md) before planning deployment.
+
 ## Contract
 
 - The server owns SRS progress. Client word inserts start with initial SRS;

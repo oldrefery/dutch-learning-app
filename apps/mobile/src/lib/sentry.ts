@@ -3,6 +3,7 @@ import Constants from 'expo-constants'
 import { supabaseIntegration } from '@supabase/sentry-js-integration'
 import { sanitizeLogContext } from '@/utils/logSanitizer'
 import { getSentryRuntimeConfig } from './sentryConfig'
+import { scrubSyncHealthEvent } from './syncHealthPrivacy'
 import { supabase } from './supabaseClient'
 
 // Flag to prevent multiple initializations
@@ -26,7 +27,7 @@ export function initializeSentry() {
     environment: runtimeConfig.environment,
     release: runtimeConfig.release,
     dist: runtimeConfig.dist,
-    beforeSend: event => sanitizeLogContext(event),
+    beforeSend: event => sanitizeLogContext(scrubSyncHealthEvent(event)),
     beforeSendTransaction: event => sanitizeLogContext(event),
     beforeSendSpan: span => sanitizeLogContext(span),
     beforeBreadcrumb: breadcrumb => sanitizeLogContext(breadcrumb),

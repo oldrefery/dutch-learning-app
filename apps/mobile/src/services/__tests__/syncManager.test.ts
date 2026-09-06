@@ -12,6 +12,16 @@ import { wordRepository } from '@/db/wordRepository'
 import { progressRepository } from '@/db/progressRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { learningResetRepository } from '@/db/learningResetRepository'
+import { getLearningQueueHealth } from '@/db/learningQueueHealth'
+
+jest.mock('@/db/learningQueueHealth', () => ({
+  getLearningQueueHealth: jest.fn().mockResolvedValue({
+    count: 0,
+    reviews: 0,
+    resets: 0,
+    oldestAgeSeconds: null,
+  }),
+}))
 
 jest.mock('@/db/learningResetRepository', () => ({
   learningResetRepository: {
@@ -343,6 +353,11 @@ describe('SyncManager', () => {
       expect(wordRepository.reconcilePushedWords).not.toHaveBeenCalled()
       expect(reviewEventRepository.reconcilePushedEvents).not.toHaveBeenCalled()
       expect(learningResetRepository.acknowledge).not.toHaveBeenCalled()
+      expect(getLearningQueueHealth).toHaveBeenCalledWith(userId)
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        'Learning synchronization health',
+        expect.objectContaining({ fingerprint: ['sync-health', 'protocol'] })
+      )
     })
 
     it('should subscribe to sync status updates', () => {

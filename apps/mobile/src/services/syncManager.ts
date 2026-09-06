@@ -26,6 +26,7 @@ import type { SyncCursor } from '@/utils/network'
 import type { Word } from '@/types/database'
 import type { ReviewEvent } from '@/types/ReviewTypes'
 import { Sentry } from '@/lib/sentry'
+import { SyncHealthReporter, type SyncOutcome } from './syncHealth'
 import { isNetworkError } from '@/utils/logger'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 import { ToastService } from '@/components/AppToast'
@@ -239,6 +240,7 @@ const isReviewEventAfterCursor = (
 ): boolean => compareSyncCursors(toReviewEventSyncCursor(event), cursor) > 0
 
 export class SyncManager {
+  private health = new SyncHealthReporter()
   private isSyncing = false
   private syncListeners: ((result: SyncResult) => void)[] = []
   private wordsRegisterColumnAvailable: boolean | null = null
@@ -275,11 +277,14 @@ export class SyncManager {
     }
 
     this.isSyncing = true
+    const startedAt = Date.now()
+    let outcome: SyncOutcome = 'error'
 
     try {
       console.log('[Sync] Stage 0: checking network')
       const isOnline = await isNetworkAvailable()
       if (!isOnline) {
+        outcome = 'offline'
         console.log('[Sync] No network connection, skipping sync')
         return {
           success: false,
@@ -293,6 +298,7 @@ export class SyncManager {
       console.log('[Sync] Stage 0.5: auth preflight')
       const authPrecheckError = await this.ensureSessionForSync()
       if (authPrecheckError) {
+        outcome = 'session'
         const result: SyncResult = {
           success: false,
           wordsSynced: 0,
@@ -308,9 +314,11 @@ export class SyncManager {
       const timestamp = new Date().toISOString()
 
       // Never fall back to snapshot progress writes against an older backend.
+      outcome = 'protocol'
       await this.runSyncStageWithSessionRetry('check_protocol', userId, () =>
         this.ensureLearningProtocol()
       )
+      outcome = 'error'
 
       // Step 0: Pull collections from Supabase
       console.log('[Sync] Stage 1: pull collections')
@@ -406,6 +414,7 @@ export class SyncManager {
       }
 
       console.log('[Sync] Sync completed successfully:', result)
+      outcome = 'success'
       console.log(
         `[Sync] Review events synchronized: ${pulledReviewEvents.length + pushedReviewEventsCount}`
       )
@@ -415,6 +424,7 @@ export class SyncManager {
     } catch (error) {
       const errorMessage = this.getErrorMessage(error)
       const isNetworkErr = isNetworkError(errorMessage)
+      outcome = this.getHealthOutcome(error, outcome)
 
       // Don't report network errors - they're expected when offline
       if (isNetworkErr) {
@@ -461,8 +471,17 @@ export class SyncManager {
 
       return result
     } finally {
+      await this.health.record(userId, outcome, startedAt)
       this.isSyncing = false
     }
+  }
+
+  private getHealthOutcome(error: unknown, previous: SyncOutcome): SyncOutcome {
+    const message = this.getErrorMessage(error)
+    if (isNetworkError(message)) return 'network'
+    if (message === SYNC_AUTH_PRECHECK_ERROR) return 'session'
+    if (error instanceof ControlledSyncError) return previous
+    return this.categorizeSyncError(error) === 'rls' ? 'rls' : 'error'
   }
 
   private async ensureLearningProtocol(): Promise<void> {
