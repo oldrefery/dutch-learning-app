@@ -33,7 +33,10 @@
 - With Chrome temporarily disabled, each link displayed
   `Could not open link. Please try again.` and kept the app on Settings.
 - Light and dark Settings rendered. The dark-theme `Up to date` badge has low
-  visual contrast; this is a follow-up UI observation, not fixed in this task.
+  visual contrast in the tested APK. A subsequent source fix uses the opaque
+  `darkModeChipText` token instead of the translucent `darkModeChip` background
+  token. A rendered-screen regression test failed before the fix and passes
+  afterward; that follow-up color change is not part of the APK tested above.
 - UI counts remained 9 active words, 9 collections, 0 progress, and no pending
   items. Raw local counts were 107 words, 0 progress, 0 learning commands, and
   0 review events. No intentional vocabulary or learning-progress writes.
