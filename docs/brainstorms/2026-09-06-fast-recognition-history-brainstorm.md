@@ -1,7 +1,7 @@
 ---
 date: 2026-09-06
 topic: fast-recognition-history
-status: accepted-ux-persistence-design-pending
+status: server-contract-implemented-client-integration-pending
 ---
 
 # Fast recognition with review history
@@ -134,11 +134,13 @@ lost updates. Reading an older result remains available even if editing is block
 
 ## Operational constraints and current status
 
-UX accepted by the user. This document records the design and implementation
-sequence; runtime behavior and the database have not been changed for this feature.
-The correction contract and rollout details still need implementation validation.
+UX accepted by the user. The first implementation stage now includes an additive
+server migration and isolated PostgreSQL regression tests. See the
+[correction contract](../review-correction-contract-2026-09-06.md) for API semantics,
+compatibility boundaries, and the remaining client/sync work. The migration has
+not been deployed; mobile and web runtime behavior have not changed yet.
 
-Keep the current feature branch and preserve the separate uncommitted sync-badge
+Keep the current feature branch; the user has committed the earlier sync-badge
 contrast fix. Do not commit, push, publish, or migrate a remote environment without
 explicit authorization. Never test on the protected oldrefery application account.
 Start with isolated local fixtures; use only authorized test accounts for live QA.

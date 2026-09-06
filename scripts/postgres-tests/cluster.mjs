@@ -23,7 +23,7 @@ function command(name, args) {
 }
 
 // No connection string, ambient PG* variables, credentials or existing cluster.
-export async function createCluster() {
+export async function createCluster({ throughMigration } = {}) {
   command('initdb', ['--version'])
   // macOS TMPDIR is too long for PostgreSQL's Unix socket path limit.
   const directory = await mkdtemp(
@@ -127,7 +127,11 @@ export async function createCluster() {
     )
     const migrations = join(repository, 'supabase/migrations')
     for (const name of (await readdir(migrations))
-      .filter(name => name.endsWith('.sql'))
+      .filter(
+        name =>
+          name.endsWith('.sql') &&
+          (!throughMigration || name <= throughMigration)
+      )
       .sort()) {
       try {
         await sql(await readFile(join(migrations, name), 'utf8'))
