@@ -1,7 +1,7 @@
 ---
 date: 2026-09-06
 topic: fast-recognition-history
-status: server-contract-implemented-client-integration-pending
+status: shared-session-state-implemented-ui-integration-pending
 ---
 
 # Fast recognition with review history
@@ -140,9 +140,11 @@ storage/sync with an effective-history projection. SQLite and mocked transport
 tests cover this persistence layer; real HTTP and native runtime QA remain. See the
 [correction contract](../review-correction-contract-2026-09-06.md) for API semantics,
 compatibility boundaries, and the remaining session/conflict-resolution work.
-The migration has not been deployed. The review UI is unchanged and does not
-expose correction actions yet. Next: separate question/history session state,
-then implement the web and mobile flows with explicit pending/conflict handling.
+The migration has not been deployed. Shared question/history state transitions
+are now implemented and covered by pure regression tests; see the
+[session state contract](../review-flow-state-2026-09-06.md). The review UI is
+unchanged and does not expose correction actions yet. Next: connect the web flow,
+then mobile, with explicit pending/conflict handling and runtime QA.
 
 Keep the current feature branch; the user has committed the earlier sync-badge
 contrast fix. Do not commit, push, publish, or migrate a remote environment without
