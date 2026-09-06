@@ -38,6 +38,12 @@ const getErrorMessage = (error: unknown, fallback: string) =>
 
 const JUSTIFY_SPACE_BETWEEN = 'space-between'
 
+const openSettingsLink = (url: string): void => {
+  void Linking.openURL(url).catch(() => {
+    ToastService.show('Could not open link. Please try again.', ToastType.ERROR)
+  })
+}
+
 const executeDeleteAccount = async () => {
   try {
     await userService.deleteAccount()
@@ -530,7 +536,7 @@ export default function SettingsScreen() {
                 <TouchableOpacity
                   style={styles.linkItem}
                   onPress={() => {
-                    Linking.openURL(
+                    openSettingsLink(
                       'https://www.termsfeed.com/live/3e576e8c-54c9-4543-b808-890d7c98f662'
                     )
                   }}
@@ -556,7 +562,7 @@ export default function SettingsScreen() {
                 <TouchableOpacity
                   style={styles.linkItem}
                   onPress={() => {
-                    Linking.openURL(
+                    openSettingsLink(
                       'https://www.termsfeed.com/live/855aec0d-a235-42e8-af6f-28166c93901a'
                     )
                   }}
@@ -582,8 +588,8 @@ export default function SettingsScreen() {
                 <TouchableOpacity
                   style={styles.linkItem}
                   onPress={() => {
-                    Linking.openURL(
-                      'http://www.apple.com/legal/itunes/appstore/dev/stdeula'
+                    openSettingsLink(
+                      'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'
                     )
                   }}
                 >

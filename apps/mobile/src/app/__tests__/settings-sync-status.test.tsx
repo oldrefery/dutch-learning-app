@@ -9,6 +9,8 @@ import {
   type SyncStatusSnapshot,
 } from '@/services/syncStatusService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { ToastService } from '@/components/AppToast'
+import { ToastType } from '@/constants/ToastConstants'
 
 jest.mock('expo-router/react-navigation', () => ({ useFocusEffect: jest.fn() }))
 jest.mock('react-native-safe-area-context', () => ({
@@ -39,6 +41,20 @@ jest.mock('@/services/syncStatusService', () => ({
 
 const completedAt = '2026-09-06T13:00:00.000Z'
 const SYNC_BUTTON_ID = 'force-sync-button'
+const LEGAL_LINKS = [
+  [
+    'Privacy Policy',
+    'https://www.termsfeed.com/live/3e576e8c-54c9-4543-b808-890d7c98f662',
+  ],
+  [
+    'Terms and Conditions',
+    'https://www.termsfeed.com/live/855aec0d-a235-42e8-af6f-28166c93901a',
+  ],
+  [
+    'License Agreement',
+    'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/',
+  ],
+] as const
 const snapshot = (lastSyncAt: string | null): SyncStatusSnapshot => ({
   totalLocalWords: 0,
   totalLocalCollections: 0,
@@ -89,6 +105,28 @@ describe('Settings sync status integration', () => {
   afterEach(() => {
     jest.restoreAllMocks()
     useApplicationStore.setState(originalState)
+  })
+
+  it.each(LEGAL_LINKS)('opens %s via HTTPS', async (label, url) => {
+    const openURL = jest
+      .spyOn(ReactNative.Linking, 'openURL')
+      .mockResolvedValue(undefined)
+    const screen = render(<SettingsScreen />)
+    await act(async () => fireEvent.press(screen.getByText(label)))
+    expect(openURL).toHaveBeenCalledWith(url)
+    expect(ToastService.show).not.toHaveBeenCalled()
+  })
+
+  it.each(LEGAL_LINKS)('handles rejection when opening %s', async label => {
+    jest
+      .spyOn(ReactNative.Linking, 'openURL')
+      .mockRejectedValue(new Error('No browser available'))
+    const screen = render(<SettingsScreen />)
+    await act(async () => fireEvent.press(screen.getByText(label)))
+    expect(ToastService.show).toHaveBeenCalledWith(
+      'Could not open link. Please try again.',
+      ToastType.ERROR
+    )
   })
 
   it.each(['light', 'dark'] as const)(
