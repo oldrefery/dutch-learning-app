@@ -2,6 +2,7 @@ import { createMockWord } from '@/__tests__/helpers/factories'
 import type { ReviewSession } from '@/types/ReviewTypes'
 import { prepareNativeReviewQuestions } from '../questions'
 import { createNativeReviewController } from '../controller'
+import type { NativeCorrectionTransport } from '../correctionController'
 
 export const userId = 'review-qa'
 export const vocabulary = ['house', 'chair', 'table', 'door'].map(
@@ -24,7 +25,8 @@ export const makeSession = (
 })
 export const makeController = (
   persist = jest.fn().mockResolvedValue(undefined),
-  manualRecognition = false
+  manualRecognition = false,
+  correctionTransport?: NativeCorrectionTransport
 ) => {
   let sequence = 0
   return createNativeReviewController(
@@ -40,7 +42,8 @@ export const makeController = (
       ),
     },
     persist,
-    () => `event-${++sequence}`
+    () => `event-${++sequence}`,
+    correctionTransport
   )
 }
 export function deferred() {

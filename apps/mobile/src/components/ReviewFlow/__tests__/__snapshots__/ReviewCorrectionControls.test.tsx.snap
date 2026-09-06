@@ -1,0 +1,565 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`correction controls in dark theme disables the existing rating and updates controls after acknowledgement 1`] = `
+<View
+  style={
+    {
+      "alignItems": "center",
+      "flexDirection": "row",
+      "flexWrap": "wrap",
+      "gap": 8,
+    }
+  }
+>
+  <View
+    accessibilityLabel="Change to again"
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "justifyContent": "center",
+          "minHeight": 48,
+          "paddingHorizontal": 16,
+          "paddingVertical": 8,
+        },
+        {
+          "backgroundColor": "#2C2C2E",
+          "borderColor": "#374151",
+          "opacity": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 16,
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      Change to again
+    </Text>
+  </View>
+  <View
+    accessibilityLabel="Change to hard"
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "justifyContent": "center",
+          "minHeight": 48,
+          "paddingHorizontal": 16,
+          "paddingVertical": 8,
+        },
+        {
+          "backgroundColor": "#2C2C2E",
+          "borderColor": "#374151",
+          "opacity": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 16,
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      Change to hard
+    </Text>
+  </View>
+  <View
+    accessibilityLabel="Change to good"
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": true,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "justifyContent": "center",
+          "minHeight": 48,
+          "paddingHorizontal": 16,
+          "paddingVertical": 8,
+        },
+        {
+          "backgroundColor": "#2C2C2E",
+          "borderColor": "#374151",
+          "opacity": 0.5,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 16,
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      Change to good
+    </Text>
+  </View>
+  <View
+    accessibilityLabel="Change to easy"
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "justifyContent": "center",
+          "minHeight": 48,
+          "paddingHorizontal": 16,
+          "paddingVertical": 8,
+        },
+        {
+          "backgroundColor": "#2C2C2E",
+          "borderColor": "#374151",
+          "opacity": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#E5E5E7",
+          },
+          {
+            "fontSize": 16,
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      Change to easy
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`correction controls in light theme disables the existing rating and updates controls after acknowledgement 1`] = `
+<View
+  style={
+    {
+      "alignItems": "center",
+      "flexDirection": "row",
+      "flexWrap": "wrap",
+      "gap": 8,
+    }
+  }
+>
+  <View
+    accessibilityLabel="Change to again"
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "justifyContent": "center",
+          "minHeight": 48,
+          "paddingHorizontal": 16,
+          "paddingVertical": 8,
+        },
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E5E7EB",
+          "opacity": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 16,
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      Change to again
+    </Text>
+  </View>
+  <View
+    accessibilityLabel="Change to hard"
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "justifyContent": "center",
+          "minHeight": 48,
+          "paddingHorizontal": 16,
+          "paddingVertical": 8,
+        },
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E5E7EB",
+          "opacity": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 16,
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      Change to hard
+    </Text>
+  </View>
+  <View
+    accessibilityLabel="Change to good"
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": true,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "justifyContent": "center",
+          "minHeight": 48,
+          "paddingHorizontal": 16,
+          "paddingVertical": 8,
+        },
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E5E7EB",
+          "opacity": 0.5,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 16,
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      Change to good
+    </Text>
+  </View>
+  <View
+    accessibilityLabel="Change to easy"
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "borderRadius": 12,
+          "borderWidth": 1,
+          "justifyContent": "center",
+          "minHeight": 48,
+          "paddingHorizontal": 16,
+          "paddingVertical": 8,
+        },
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E5E7EB",
+          "opacity": 1,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "color": "#111827",
+          },
+          {
+            "fontSize": 16,
+            "fontWeight": "600",
+          },
+        ]
+      }
+    >
+      Change to easy
+    </Text>
+  </View>
+</View>
+`;

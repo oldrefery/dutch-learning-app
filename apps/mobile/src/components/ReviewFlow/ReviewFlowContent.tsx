@@ -87,6 +87,7 @@ export function ReviewFlowContent({
           isPlayingAudio={isPlaying}
           onPlayPronunciation={playAudio}
           disabled={
+            controller.areWritesBlocked() ||
             Boolean(history) ||
             !flow.foreground ||
             active.answeredAt !== null ||

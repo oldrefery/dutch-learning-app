@@ -188,8 +188,17 @@ performed for this stage.
   idempotent local write validates the existing event identity and never reapplies
   SRS or re-enqueues an acknowledged event. Account checks protect asynchronous
   preparation and cache updates. Local acknowledgement is not server sync success.
-- Native correction UI stays unavailable until it is serialized with background
-  sync and effective-history reconciliation. Browsing is not a correction.
+- Native correction controls and their controller are implemented against an
+  optional transport. They support explicit rating changes, identical-command
+  retry, and conflict refresh without another ordinary review. Pending correction
+  blocks answering/exiting, while read-only browsing remains available. Late
+  results for a different account are ignored. Successful reconciliation replaces
+  effective history and leaves the pending question paused and intact.
+- Production sessions still omit that transport, so correction UI displays an
+  unavailable notice. Before enabling it, persist a canonical-progress barrier
+  that survives restart and blocks every learning writer until refreshed SRS is
+  applied. A correction receipt alone is insufficient: it can acknowledge the
+  queue entry before the canonical word pull completes. Browsing is not a correction.
 - Fast-review persistence, sync passes, and explicit conflict resolution share
   a FIFO in-process queue. Reads used to calculate SRS happen after acquiring the
   queue. While a sync pass is running, an answer remains in the saving state;
@@ -197,8 +206,8 @@ performed for this stage.
   acknowledgement during a slow online sync. Audio Review and progress reset now
   use the same queue. Audio Review calculates SRS from SQLite after waiting,
   freezes the original answer time, and rejects in-flight duplicate submissions.
-  Late saves cannot advance another account or a replacement session. Correction
-  UI and effective-history reconciliation remain the next integration stage.
+  Late saves cannot advance another account or a replacement session. Durable
+  recovery and production correction transport remain the next integration stage.
 
 Local tests cover double taps, timer cancellation, delayed/failed saves, identical
 retry payloads, account switches, actual SQLite idempotency, per-account settings,

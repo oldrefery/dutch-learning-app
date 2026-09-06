@@ -21,6 +21,12 @@ export function ReviewFlowControls({
 }) {
   const active = flow.active
   if (!active || flow.view.kind === 'history') return null
+  if (controller.areWritesBlocked())
+    return (
+      <TextThemed>
+        Resolve the pending correction before answering another word.
+      </TextThemed>
+    )
   const submission = active.submission
   if (submission?.status === 'saving')
     return (

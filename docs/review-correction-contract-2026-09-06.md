@@ -232,9 +232,23 @@ subsequent command preservation, and interrupted schema upgrades.
 
 ### Remaining client and rollout requirements
 
-- On mobile, present pending/conflicted edits and connect the explicit resolution adapter.
-  Currently an unresolved correction prevents another edit of the same event;
-  terminal conflicts intentionally block later queue commands until resolved.
+- The owner confirmed that they are currently the only user and tester. Prefer
+  a coordinated client/server update over staged rollout machinery or extra
+  compatibility layers for hypothetical users. Retain data-integrity guarantees
+  for interrupted writes, retries, and restarts; the protected application account
+  must not be used for testing.
+- Mobile now has correction controls and a controller transport contract for
+  saving, immutable retry, conflict, and explicit server refresh. Production
+  session creation deliberately supplies no correction transport: history shows
+  an unavailable notice and cannot send correction writes. Deployment of the
+  migration alone does not enable the controls.
+- Before connecting the transport, add a durable, account-bound canonical-progress
+  barrier. A synced correction receipt can remove its queue command before the
+  following canonical word pull succeeds. That acknowledgement must not release
+  new learning writes against stale SRS. Persist and restore the barrier across
+  restarts; release it only after validated canonical progress is applied or the
+  conflict is explicitly resolved. Cover all learning entry points, not just the
+  mounted review screen. The existing in-process FIFO is not this durable barrier.
 - Keep a same-word follow-up review from using unconfirmed correction progress.
   The session layer must wait for reconciliation or explicitly resolve the edit;
   do not calculate a new assessment from a guessed optimistic state.
@@ -266,6 +280,19 @@ migration failure/retry, effective history without duplicate events, ownership,
 tombstones, and review/correction/reset ordering. Transport is mocked for lost
 acknowledgements, unsupported capability, stale conflicts, account switches,
 receipt validation, and full-ledger pagination/reconciliation.
+
+The native correction controller/UI milestone adds isolated transport tests for
+single claiming (including re-entrant subscribers), immutable uncertain retries,
+write/exit blocking, conflict refresh failures, deleted events, malformed results,
+late account changes, assisted-answer protection, and unavailable production
+transport. Rendered controls are exercised in light and dark themes. These tests
+do not establish durable recovery or real HTTP/Auth integration. A transport must
+return success only after durable intent and canonical SRS reconciliation, not
+merely after enqueueing or receiving a correction receipt.
+
+At this milestone the full mobile suite passes 1,467 tests across 123 suites,
+including 22 snapshots. Mobile application/test typechecks, repository mobile
+lint, and changed-file formatting checks also pass.
 
 Web server tests cover authentication redirects, cross-account rejection, exact
 retry payloads, conflict/error classification, malformed acknowledgements, reset

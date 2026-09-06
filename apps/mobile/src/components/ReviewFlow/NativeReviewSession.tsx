@@ -28,6 +28,7 @@ import { ManualRecognitionPreference } from './ManualRecognitionPreference'
 import { ReviewFlowButton } from './ReviewFlowButton'
 import { ReviewFlowContent } from './ReviewFlowContent'
 import { ReviewFlowControls } from './ReviewFlowControls'
+import { ReviewCorrectionControls } from './ReviewCorrectionControls'
 import { reviewFlowStyles as styles } from './styles'
 
 export function NativeReviewSession({
@@ -75,6 +76,7 @@ export function NativeReviewSession({
   )
   const summary = summarizeReviewFlow(flow)
   const busy =
+    controller.areWritesBlocked() ||
     flow.active?.submission?.status === 'saving' ||
     flow.active?.submission?.status === 'failed'
   const exit = () => {
@@ -153,6 +155,7 @@ export function NativeReviewSession({
           isPlaying={isPlaying}
         />
         <ReviewFlowControls flow={flow} controller={controller} />
+        <ReviewCorrectionControls flow={flow} controller={controller} />
         {summary.finished && historyIndex === null && (
           <TextThemed>
             Again {summary.counts.again} · Hard {summary.counts.hard} · Good{' '}
