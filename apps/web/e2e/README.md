@@ -28,6 +28,18 @@ in cleanup. They never submit the account deletion form. OAuth consent, email
 delivery, and password-reset links require provider-controlled test accounts
 and are intentionally limited to local validation and error-state coverage.
 
+The vocabulary/SRS smoke keeps its initial `Web E2E` prefix cleanup to recover
+the fixed analysis word from older failed runs. Its own teardown deletes only
+the exact UUID-named collection (original or renamed), using a fresh authenticated
+browser context and an independent 60-second fixture budget. A closed/timed-out
+test page no longer masks the primary failure with a cleanup navigation error.
+The Start button must be enabled within the normal assertion timeout; a new word
+scheduled incorrectly for tomorrow fails explicitly instead of waiting 180 seconds.
+
+The server-side initial-date correction is a separate, not-yet-deployed migration:
+`20260906110000_make_new_words_immediately_reviewable.sql`. Do not claim a passing
+production SRS smoke before that approved rollout and an actual successful run.
+
 ## Session and review recovery
 
 The extended Chromium suite includes `session-recovery.spec.ts` and
