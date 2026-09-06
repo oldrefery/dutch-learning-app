@@ -1,7 +1,8 @@
 # New Word Review Eligibility — 2026-09-06
 
-Status: fixed and tested locally on `feature/new-word-review-eligibility`.
-Not committed, pushed or deployed by this change. No production data was modified.
+Status: SQL correction merged in PR #108 and applied to production on 2026-09-06.
+The subsequent fixture-name fix is local on `feature/fix-smoke-collection-name`;
+its production smoke passed, but the test fix is not committed or pushed yet.
 
 ## Cause
 
@@ -42,9 +43,36 @@ for the failing hosted learning workflow.
   its original timeout remains visible, cleanup succeeds and an unrelated
   sentinel collection survives. This is not production UI verification.
 
+## Hosted Rollout And Follow-up
+
+- PR #108 merged as `16736f61d0b925e8131814dc6395c66a67b82ad1` after green CI.
+- The approved dry run listed only the initial-date migration. A fresh private
+  schema/data snapshot was saved before applying it; the earlier restore-verified
+  backup checksums were also checked. A final dry run reported up to date.
+- Before/after COPY-content comparisons preserved all 11 public tables / 9,539
+  rows. The protected-account comparison also preserved its original data across
+  seven public tables, including 12 collections, 2,288 words and 144 review events.
+  No protected-account login or test action was used.
+- The merged Vercel deployment succeeded. GitHub smoke `34028548652` failed before
+  word creation: UUID plus rename suffix produced 52 characters but the form
+  allows 50. The browser saved the truncated name, so assertions and exact-name
+  cleanup missed it. Its remaining empty fixture was subsequently removed using
+  verified dedicated-account credentials and exact ownership/name/ID filters.
+- The follow-up preserves every UUID digit but removes its hyphens, producing
+  40/48-character names. Both form values are checked before submitting. Three
+  contract tests cover validation, UUID uniqueness and browser maxlength behavior;
+  the old implementation reproduced both the 52-character violation and actual
+  browser truncation before the corrected tests passed.
+- The corrected local Chromium suite passed 7/7 against `https://woordenaar.app`
+  in 41.9 seconds on 2026-09-06. It verified collection create/rename, word analysis,
+  search/history, immediate first-review eligibility, and persisted Easy progress:
+  interval 1 to 4 days, repetition 0 to 1, New to Learning, EF remaining 2.50.
+  Word deletion and exact-name collection teardown completed successfully.
+- All 319 web Jest tests, lint and typecheck passed for the test-only follow-up.
+
 ## Next Gate
 
-Commit/push/PR and hosted migration require separate approval. After applying the
-forward migration, rerun the updated smoke against production on a dedicated test
-account. No mobile rebuild is needed for this database-body/test-only correction.
-Never use the protected application account for QA or clear its device data.
+Commit/push/PR for the local fixture-name fix still require explicit permission.
+GitHub production smoke has not been rerun with that fix: the successful run was
+local against production. No additional SQL migration, web deployment or mobile
+rebuild is needed to use the deployed initial-date correction.
