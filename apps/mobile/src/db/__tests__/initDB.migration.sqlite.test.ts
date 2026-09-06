@@ -12,6 +12,8 @@ import {
   MIGRATION_V9_REVIEW_DATE,
   MIGRATION_V9_LEARNING_COMMANDS,
 } from '../schema'
+import { MIGRATION_V11_CORRECTION_RESOLUTION } from '../reviewCorrectionSchema'
+import { MIGRATION_V12_CORRECTION_RECOVERY } from '../reviewCorrectionRecoverySchema'
 
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }))
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -21,11 +23,21 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }))
 jest.mock('@/lib/sentry')
 
-type Fault = 'column' | 'table' | 'backfill' | 'version' | null
+const CHECK_FOREIGN_KEYS = 'PRAGMA foreign_key_check'
+
+type Fault =
+  | 'column'
+  | 'table'
+  | 'backfill'
+  | 'version'
+  | 'corrections'
+  | 'resolution'
+  | 'recovery'
+  | null
 
 // Execute the actual initializer and SQL on a disposable file, replacing only
 // the Expo bridge and AsyncStorage. Closing/reopening uses a new SQLite handle.
-describe('v8 to v9 migration recovery on file-backed SQLite', () => {
+describe('v8 to current migration recovery on file-backed SQLite', () => {
   let directory: string
   let db: DatabaseSync
   let version: string
@@ -74,7 +86,7 @@ describe('v8 to v9 migration recovery on file-backed SQLite', () => {
       'pending-a',
       'synced',
     ])
-    expect(db.prepare('PRAGMA foreign_key_check').all()).toEqual([])
+    expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
   }
   const checkPreserved = () => {
     expect(words()).toEqual(wordsBefore)
@@ -86,9 +98,9 @@ describe('v8 to v9 migration recovery on file-backed SQLite', () => {
       ['pending-b', 'qa-a'],
       ['pending-c', 'qa-b'],
     ])
-    expect(version).toBe('9')
+    expect(version).toBe('12')
     expect(db.prepare('PRAGMA foreign_keys').get()).toEqual({ foreign_keys: 1 })
-    expect(db.prepare('PRAGMA foreign_key_check').all()).toEqual([])
+    expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
   }
 
   beforeEach(() => {
@@ -137,6 +149,35 @@ describe('v8 to v9 migration recovery on file-backed SQLite', () => {
     jest.mocked(SQLite.openDatabaseAsync).mockImplementation(async () => {
       db = new DatabaseSync(file)
       return {
+        withExclusiveTransactionAsync: async (
+          callback: (tx: {
+            execAsync: (sql: string) => Promise<void>
+          }) => Promise<void>
+        ) => {
+          db.exec('BEGIN')
+          try {
+            await callback({
+              execAsync: async (sql: string) => {
+                if (fault === 'corrections') {
+                  db.exec(
+                    sql.slice(0, sql.indexOf('DROP TABLE learning_commands;'))
+                  )
+                  interrupt()
+                }
+                db.exec(sql)
+                if (
+                  sql === MIGRATION_V12_CORRECTION_RECOVERY &&
+                  fault === 'recovery'
+                )
+                  interrupt()
+              },
+            })
+            db.exec('COMMIT')
+          } catch (error) {
+            db.exec('ROLLBACK')
+            throw error
+          }
+        },
         execAsync: async (sql: string) => {
           if (
             sql === MIGRATION_V9_LEARNING_COMMANDS &&
@@ -149,6 +190,11 @@ describe('v8 to v9 migration recovery on file-backed SQLite', () => {
           }
           db.exec(sql)
           if (sql === MIGRATION_V9_REVIEW_DATE && fault === 'column')
+            interrupt()
+          if (
+            sql === MIGRATION_V11_CORRECTION_RESOLUTION &&
+            fault === 'resolution'
+          )
             interrupt()
         },
         closeAsync: async () => {
@@ -178,7 +224,15 @@ describe('v8 to v9 migration recovery on file-backed SQLite', () => {
     checkQueueTriggers()
   })
 
-  it.each(['column', 'table', 'backfill', 'version'] as const)(
+  it.each([
+    'column',
+    'table',
+    'backfill',
+    'version',
+    'corrections',
+    'resolution',
+    'recovery',
+  ] as const)(
     'retries after interruption at %s without losing or duplicating commands',
     async phase => {
       fault = phase
@@ -207,5 +261,28 @@ describe('v8 to v9 migration recovery on file-backed SQLite', () => {
     checkPreserved()
     expect(SQLite.openDatabaseAsync).toHaveBeenCalledTimes(1)
     expect(AsyncStorage.setItem).toHaveBeenCalledTimes(1)
+  })
+
+  it('adds the v11 marker without rewriting existing corrections, words, or queue sequences', async () => {
+    await initializeDatabase()
+    db.exec(`ALTER TABLE review_corrections DROP COLUMN resolved_at;
+      INSERT INTO review_corrections(correction_id, event_id, word_id, user_id,
+        expected_revision, assessment, queued_at, status)
+      VALUES ('edit', 'pending-a', 'qa-a', 'qa-a', 0, 'hard', '2026-09-06', 'pending');
+      UPDATE review_corrections SET status = 'conflict', error = 'Conflict';`)
+    const queue = commands()
+    const history = events()
+    const corrections = db.prepare('SELECT * FROM review_corrections').all()
+    version = '10'
+    await closeDatabase()
+    await initializeDatabase()
+    expect(version).toBe('12')
+    expect(words()).toEqual(wordsBefore)
+    expect(events()).toEqual(history)
+    expect(commands()).toEqual(queue)
+    expect(db.prepare('SELECT * FROM review_corrections').all()).toEqual(
+      corrections.map(row => ({ ...row, resolved_at: null }))
+    )
+    expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
   })
 })

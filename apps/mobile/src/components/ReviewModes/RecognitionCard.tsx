@@ -10,6 +10,7 @@ import type { Word } from '@/types/database'
 import type { RecognitionOption } from '@/utils/reviewDistractors'
 
 interface RecognitionCardProps {
+  disabled?: boolean
   word: Word
   options: RecognitionOption[]
   selectedOptionId: string | null
@@ -20,6 +21,7 @@ interface RecognitionCardProps {
 }
 
 export function RecognitionCard({
+  disabled = false,
   word,
   options,
   selectedOptionId,
@@ -65,6 +67,7 @@ export function RecognitionCard({
               key={option.id}
               testID={`recognition-option-${index}`}
               onPress={() => onSelectOption(option)}
+              disabled={disabled}
               accessibilityRole="radio"
               accessibilityLabel={option.label}
               accessibilityHint="Selects this translation as your answer"

@@ -389,7 +389,7 @@ const getSyncSummaryColor = (
   if (!snapshot) return isDarkMode ? Colors.neutral[400] : Colors.neutral[500]
   if (!snapshot.isOnline) return Colors.warning.DEFAULT
   if (snapshot.totalPending > 0) return Colors.warning.DEFAULT
-  return isDarkMode ? Colors.success.darkModeChip : Colors.success.DEFAULT
+  return isDarkMode ? Colors.success.darkModeChipText : Colors.success.DEFAULT
 }
 
 const formatLastSyncAt = (lastSyncAt: string | null) => {

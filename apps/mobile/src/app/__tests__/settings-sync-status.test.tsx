@@ -11,6 +11,7 @@ import {
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
+import { Colors } from '@/constants/Colors'
 
 jest.mock('expo-router/react-navigation', () => ({ useFocusEffect: jest.fn() }))
 jest.mock('react-native-safe-area-context', () => ({
@@ -41,6 +42,7 @@ jest.mock('@/services/syncStatusService', () => ({
 
 const completedAt = '2026-09-06T13:00:00.000Z'
 const SYNC_BUTTON_ID = 'force-sync-button'
+const UP_TO_DATE_LABEL = 'Up to date'
 const LEGAL_LINKS = [
   [
     'Privacy Policy',
@@ -129,6 +131,24 @@ describe('Settings sync status integration', () => {
     )
   })
 
+  it.each([
+    ['light', Colors.success.DEFAULT],
+    ['dark', Colors.success.darkModeChipText],
+  ] as const)(
+    'uses an opaque success text token for the %s sync badge',
+    async (theme, expectedColor) => {
+      jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue(theme)
+      jest
+        .mocked(syncStatusService.getSnapshot)
+        .mockResolvedValue(snapshot(completedAt))
+      const screen = render(<SettingsScreen />)
+      const badge = await screen.findByText(UP_TO_DATE_LABEL)
+      expect(badge).toHaveStyle({ color: expectedColor })
+      // A translucent chip-background token must never become the text color.
+      expect(expectedColor).toMatch(/^#[\da-f]{6}$/i)
+    }
+  )
+
   it.each(['light', 'dark'] as const)(
     'updates the open %s screen on automatic synchronization',
     async theme => {
@@ -142,7 +162,7 @@ describe('Settings sync status integration', () => {
         .mocked(syncStatusService.getSnapshot)
         .mockResolvedValue(snapshot(completedAt))
       await act(async () => listener(successfulSync))
-      expect(screen.getByText('Up to date')).toBeTruthy()
+      expect(screen.getByText(UP_TO_DATE_LABEL)).toBeTruthy()
       expect(screen.queryByText('Never')).toBeNull()
       expect(syncManager.performSync).not.toHaveBeenCalled()
     }
@@ -157,7 +177,7 @@ describe('Settings sync status integration', () => {
       .mocked(syncStatusService.getSnapshot)
       .mockResolvedValue(snapshot(completedAt))
     fireEvent.press(screen.getByTestId(SYNC_BUTTON_ID))
-    await waitFor(() => expect(screen.getByText('Up to date')).toBeTruthy())
+    await waitFor(() => expect(screen.getByText(UP_TO_DATE_LABEL)).toBeTruthy())
     expect(syncManager.performSync).toHaveBeenCalledWith('qa-settings-user')
     jest.mocked(syncManager.performSync).mockResolvedValueOnce({
       ...successfulSync,

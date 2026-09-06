@@ -1,89 +1,41 @@
-import Link from 'next/link'
-import { ArrowRight, BookOpen, Volume2 } from 'lucide-react'
+import { Volume2 } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { getReviewIntervalLabel } from './review-domain'
-import type {
-  RecognitionOption,
-  ReviewAssessment,
-  ReviewMode,
-  ReviewWord,
-} from './types'
+import type { RecognitionOption, ReviewMode, ReviewWord } from './types'
 import styles from './Review.module.css'
 
-const ASSESSMENTS: readonly ReviewAssessment[] = [
-  'again',
-  'hard',
-  'good',
-  'easy',
-]
-
 interface ReviewCardProps {
+  interactionBlocked?: boolean
   adaptiveMessage: string | null
   answer: string
   assessed: boolean
-  error: string | null
   mode: ReviewMode
-  onAssessment: (assessment: ReviewAssessment) => void
   onPlayPronunciation: () => void
   onReveal: () => void
   onSelectOption: (option: RecognitionOption) => void
   options: RecognitionOption[] | null
-  pending: boolean
   revealed: boolean
   selectedOption: RecognitionOption | null
   translation: string | null
   word: ReviewWord
 }
 
-function RatingButton({
-  assessment,
-  disabled,
-  onAssessment,
-  word,
-}: {
-  assessment: ReviewAssessment
-  disabled: boolean
-  onAssessment: (assessment: ReviewAssessment) => void
-  word: ReviewWord
-}) {
-  const index = ASSESSMENTS.indexOf(assessment) + 1
-  return (
-    <button
-      className={`${styles.rating} ${styles[assessment]}`}
-      disabled={disabled}
-      onClick={() => onAssessment(assessment)}
-      type="button"
-    >
-      <span className={styles.ratingTop}>
-        <span className={styles.key}>{index}</span>
-        <span>{assessment[0].toUpperCase() + assessment.slice(1)}</span>
-      </span>
-      <small>{getReviewIntervalLabel(word, assessment)}</small>
-    </button>
-  )
-}
-
 export function ReviewCard({
+  interactionBlocked = false,
   adaptiveMessage,
   answer,
   assessed,
-  error,
   mode,
-  onAssessment,
   onPlayPronunciation,
   onReveal,
   onSelectOption,
   options,
-  pending,
   revealed,
   selectedOption,
   translation,
   word,
 }: ReviewCardProps) {
   const prompt = mode === 'dutch-production' ? translation : word.dutchLemma
-  const recognitionWrong =
-    mode === 'recognition' && selectedOption?.isCorrect === false
 
   return (
     <>
@@ -145,7 +97,7 @@ export function ReviewCard({
               return (
                 <button
                   className={`${styles.option} ${optionClass}`}
-                  disabled={revealed}
+                  disabled={revealed || interactionBlocked}
                   key={option.id}
                   onClick={() => onSelectOption(option)}
                   type="button"
@@ -177,6 +129,7 @@ export function ReviewCard({
         {!revealed && mode !== 'recognition' && !assessed && (
           <Button
             className={styles.revealButton}
+            disabled={interactionBlocked}
             onClick={onReveal}
             type="button"
           >
@@ -186,51 +139,7 @@ export function ReviewCard({
             <span className="dw-key">Space</span>
           </Button>
         )}
-
-        {revealed && mode === 'recognition' && !assessed && (
-          <div className={styles.continueRow}>
-            {word.collectionId && (
-              <Link
-                className="dw-button dw-button--secondary"
-                href={`/app/collections/${word.collectionId}/words/${word.id}`}
-              >
-                <BookOpen aria-hidden="true" size={16} /> Full details
-                <span className="dw-key">D</span>
-              </Link>
-            )}
-            <Button
-              disabled={pending}
-              onClick={() => onAssessment(recognitionWrong ? 'again' : 'good')}
-              type="button"
-            >
-              Continue <ArrowRight aria-hidden="true" size={16} />
-            </Button>
-          </div>
-        )}
-
-        {pending && <p className="dw-support">Saving…</p>}
-        {error && (
-          <p aria-live="polite" className={styles.error}>
-            {error}
-          </p>
-        )}
       </article>
-
-      {revealed && mode !== 'recognition' && !assessed && (
-        <div className={styles.answerBar}>
-          <div className={styles.answerGrid}>
-            {ASSESSMENTS.map(assessment => (
-              <RatingButton
-                assessment={assessment}
-                disabled={pending}
-                key={assessment}
-                onAssessment={onAssessment}
-                word={word}
-              />
-            ))}
-          </div>
-        </div>
-      )}
     </>
   )
 }

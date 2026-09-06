@@ -76,6 +76,7 @@ describe.each(['light', 'dark'] as const)('%s review mode snapshots', theme => {
 })
 
 describe('RecognitionCard', () => {
+  const FIRST_OPTION_ID = 'recognition-option-0'
   beforeEach(() => {
     mockUseNormalizedColorScheme.mockReturnValue('light')
   })
@@ -94,7 +95,7 @@ describe('RecognitionCard', () => {
       />
     )
 
-    fireEvent.press(getByTestId('recognition-option-0'))
+    fireEvent.press(getByTestId(FIRST_OPTION_ID))
 
     expect(onSelectOption).toHaveBeenCalledWith(options[0])
     expect(onAssessment).not.toHaveBeenCalled()
@@ -114,7 +115,27 @@ describe('RecognitionCard', () => {
 
     expect(
       getByTestId('recognition-option-1').props.accessibilityState
-    ).toEqual({ selected: true })
+    ).toMatchObject({ selected: true, disabled: false })
+  })
+
+  it('prevents answers while showing read-only history', () => {
+    const onSelectOption = jest.fn()
+    const { getByTestId } = render(
+      <RecognitionCard
+        word={word}
+        options={options}
+        selectedOptionId={null}
+        isPlayingAudio={false}
+        onPlayPronunciation={noOp}
+        onSelectOption={onSelectOption}
+        disabled
+      />
+    )
+    fireEvent.press(getByTestId(FIRST_OPTION_ID))
+    expect(onSelectOption).not.toHaveBeenCalled()
+    expect(getByTestId(FIRST_OPTION_ID).props.accessibilityState).toMatchObject(
+      { disabled: true }
+    )
   })
 })
 

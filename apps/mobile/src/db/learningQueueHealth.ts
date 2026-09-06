@@ -23,10 +23,14 @@ export async function getLearningQueueHealth(
       COALESCE(SUM(c.kind = 'review'), 0) AS reviews,
       COALESCE(SUM(c.kind = 'reset'), 0) AS resets,
       MIN(CAST(strftime('%s', CASE WHEN c.kind = 'reset' THEN c.reset_at
+        WHEN c.kind = 'correction' THEN r.queued_at
         ELSE e.reviewed_at END) AS INTEGER)) AS oldest
      FROM learning_commands c LEFT JOIN review_events e
        ON c.kind = 'review' AND e.event_id = c.operation_id
        AND e.user_id = c.user_id AND e.word_id = c.word_id
+     LEFT JOIN review_corrections r ON c.kind = 'correction'
+       AND r.correction_id = c.operation_id AND r.user_id = c.user_id
+       AND r.word_id = c.word_id
      WHERE c.user_id = ?`,
     [userId]
   )

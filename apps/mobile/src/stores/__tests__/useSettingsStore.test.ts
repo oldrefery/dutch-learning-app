@@ -25,6 +25,25 @@ describe('useSettingsStore', () => {
   })
 
   describe('initial state', () => {
+    it('keeps manual Recognition opt-in separate for each account', () => {
+      useSettingsStore.setState({ manualRecognitionByUser: {} })
+      useSettingsStore.getState().setManualRecognition('qa-a', true)
+      expect(useSettingsStore.getState().manualRecognitionByUser).toEqual({
+        'qa-a': true,
+      })
+      useSettingsStore.getState().setManualRecognition('qa-b', false)
+      expect(useSettingsStore.getState().manualRecognitionByUser).toEqual({
+        'qa-a': true,
+        'qa-b': false,
+      })
+      expect(
+        migrateSettingsState(
+          { manualRecognitionByUser: { a: true, b: 'false' } },
+          1
+        ).manualRecognitionByUser
+      ).toEqual({ a: true })
+      expect(migrateSettingsState(null, 1).manualRecognitionByUser).toEqual({})
+    })
     it('should default autoPlayPronunciation to false', () => {
       expect(useSettingsStore.getState().autoPlayPronunciation).toBe(false)
     })
@@ -155,6 +174,7 @@ describe('useSettingsStore', () => {
       )
 
       expect(migrated).toEqual({
+        manualRecognitionByUser: {},
         autoPlayPronunciation: true,
         adaptiveReviewEnabled: false,
         lastSelectedCollectionId: 'collection-1',

@@ -1,7 +1,11 @@
 import 'server-only'
 
 import type { Database } from '@woordenaar/supabase-contracts'
-import { createClient } from '@/lib/supabase/server'
+import {
+  createCorrectionClient,
+  readCorrectionCapability,
+  reviewEventsSource,
+} from './correction-client'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import { isReviewAssessment, isReviewMode } from './review-domain'
 import type {
@@ -82,7 +86,8 @@ const mapEvent = (row: ReviewEventRow): ReviewEventEvidence | null => {
 export async function getReviewWorkspaceData(
   userId: string
 ): Promise<ReviewWorkspaceData> {
-  const supabase = await createClient()
+  const supabase = await createCorrectionClient()
+  const correctionsAvailable = await readCorrectionCapability(supabase)
   const [collectionsResult, wordsResult, eventsResult] = await Promise.all([
     supabase
       .from('collections')
@@ -103,8 +108,7 @@ export async function getReviewWorkspaceData(
     ),
     fetchAllRows<ReviewEventRow>(
       (from, to) =>
-        supabase
-          .from('review_events')
+        reviewEventsSource(supabase, correctionsAvailable)
           .select(
             'answered_correctly, assessment, event_id, review_mode, reviewed_at, word_id'
           )
@@ -121,6 +125,7 @@ export async function getReviewWorkspaceData(
   }
 
   return {
+    correctionsAvailable,
     collections: (collectionsResult.data ?? []).map(mapCollection),
     words: (wordsResult.data ?? []).map(mapWord),
     events: (eventsResult.data ?? [])

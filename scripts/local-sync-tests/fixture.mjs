@@ -38,7 +38,12 @@ export function localStack() {
     )
   )
   const options = { auth: { persistSession: false, autoRefreshToken: false } }
-  const client = () => createClient(status.API_URL, status.ANON_KEY, options)
+  const client = ({ fetch: transport, accessToken } = {}) =>
+    createClient(status.API_URL, status.ANON_KEY, {
+      ...options,
+      ...(transport ? { global: { fetch: transport } } : {}),
+      ...(accessToken ? { accessToken } : {}),
+    })
   const database = `supabase_db_${project}`
   const label = execFileSync(
     'docker',

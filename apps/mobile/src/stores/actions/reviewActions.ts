@@ -40,10 +40,10 @@ export const createReviewActions = (
   | 'updateCurrentWordInReview'
 > => ({
   startReviewSession: async (config = DEFAULT_REVIEW_SESSION_CONFIG) => {
+    const userId = get().currentUserId
     try {
-      set({ reviewLoading: true })
+      set({ reviewLoading: true, error: null })
 
-      const userId = get().currentUserId
       if (!userId) {
         logError(
           USER_NOT_AUTHENTICATED_ERROR,
@@ -126,6 +126,7 @@ export const createReviewActions = (
             )
           : {}
 
+      if (get().currentUserId !== userId) return
       const reviewSession = {
         words: reviewWords,
         currentIndex: 0,
@@ -140,6 +141,7 @@ export const createReviewActions = (
         reviewLoading: false,
       })
     } catch (error) {
+      if (get().currentUserId !== userId) return
       logError('Error starting review session', error, {}, 'review', false)
       set({
         error: createStoreError(
@@ -154,7 +156,7 @@ export const createReviewActions = (
 
   submitReviewAssessment: async (assessment: ReviewAssessment) => {
     try {
-      const { reviewSession, currentWord } = get()
+      const { reviewSession, currentWord, currentUserId: userId } = get()
 
       if (!reviewSession || !currentWord) {
         logWarning('Missing session or word data', {}, 'review')
@@ -193,6 +195,13 @@ export const createReviewActions = (
       // Get a fresh state after a database update to ensure consistency
       const freshState = get()
       const freshReviewSession = freshState.reviewSession
+
+      if (
+        freshState.currentUserId !== userId ||
+        freshReviewSession !== reviewSession ||
+        freshState.currentWord?.word_id !== currentWord.word_id
+      )
+        return
 
       if (!freshReviewSession) {
         logWarning('Review session was cleared during update', {}, 'review')

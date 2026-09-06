@@ -1,7 +1,11 @@
 import 'server-only'
 
 import type { Database } from '@woordenaar/supabase-contracts'
-import { createClient } from '@/lib/supabase/server'
+import {
+  createCorrectionClient,
+  readCorrectionCapability,
+  reviewEventsSource,
+} from '@/features/review/correction-client'
 import type { ReviewHistoryEvent } from './types'
 
 type ReviewEventRow = Pick<
@@ -22,10 +26,10 @@ type ReviewEventRow = Pick<
 export async function listRecentReviewEvents(
   userId: string
 ): Promise<ReviewHistoryEvent[]> {
-  const supabase = await createClient()
+  const supabase = await createCorrectionClient()
+  const correctionsAvailable = await readCorrectionCapability(supabase)
   const [eventsResult, collectionsResult] = await Promise.all([
-    supabase
-      .from('review_events')
+    reviewEventsSource(supabase, correctionsAvailable)
       .select(
         'answered_correctly, assessment, event_id, next_easiness_factor, next_interval_days, previous_easiness_factor, previous_interval_days, response_time_ms, review_mode, reviewed_at, word_id'
       )

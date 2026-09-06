@@ -1,17 +1,9 @@
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
-import { setTimeout } from 'node:timers/promises'
 import { after, before, test } from 'node:test'
 import { createCluster } from './cluster.mjs'
-import {
-  assessment,
-  asUser,
-  owner,
-  rpc,
-  seedUsers,
-  seedWord,
-  state,
-} from './fixtures.mjs'
+import { assessment, owner, seedUsers, seedWord, state } from './fixtures.mjs'
+import { overlap as overlapTransactions } from './concurrency-fixtures.mjs'
 
 let db
 before(async () => {
@@ -22,45 +14,7 @@ after(async () => {
   await db?.close()
 })
 
-async function until(predicate) {
-  const deadline = Date.now() + 5000
-  while (Date.now() < deadline) {
-    if (await predicate()) return
-    await setTimeout(20)
-  }
-  throw new Error('Expected PostgreSQL concurrency barrier was not reached')
-}
-
-// A stays uncommitted until pg_stat_activity proves B is blocked on a lock.
-// This tests actual overlapping transactions, not a race based on sleep timing.
-async function overlap(first, second) {
-  const a = db.connect()
-  const application = `qa-review-${randomUUID()}`
-  let b
-  try {
-    a.child.stdin.write(`SET statement_timeout = '10s';
-      SET idle_in_transaction_session_timeout = '10s'; BEGIN;
-      ${asUser(owner, typeof first === 'string' ? first : rpc(first))}\n\\echo ASSESSMENT_HELD\n`)
-    await until(() => a.output().includes('ASSESSMENT_HELD'))
-    b = db.sql(
-      `SET application_name = '${application}'; ${asUser(owner, typeof second === 'string' ? second : rpc(second))}`
-    )
-    void b.catch(() => {})
-    await until(
-      async () =>
-        (await db.sql(`SELECT count(*) FROM pg_stat_activity
-      WHERE application_name = '${application}' AND wait_event_type = 'Lock';`)) ===
-        '1'
-    )
-    a.child.stdin.end('COMMIT;\n')
-    await a.completed
-    return await b
-  } finally {
-    if (!a.child.stdin.writableEnded) a.child.stdin.end('ROLLBACK;\n')
-    await a.completed.catch(() => {})
-    await b?.catch(() => {})
-  }
-}
+const overlap = (first, second) => overlapTransactions(db, first, second)
 
 test('two distinct assessments serialize against the latest word state without lost updates', async () => {
   const word = await seedWord(db)

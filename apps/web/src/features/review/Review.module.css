@@ -489,9 +489,15 @@
 .continueRow {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
   margin-top: 22px;
+}
+
+.continueRow select {
+  max-width: 100%;
+  width: auto;
 }
 
 .completion {
@@ -623,4 +629,18 @@
   .sessionFooter {
     display: none;
   }
+}
+.manualPreference {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-block: 1rem;
+  color: var(--text-primary);
+}
+.correctionPanel {
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  padding: 1rem;
+  margin-block: 1rem;
 }

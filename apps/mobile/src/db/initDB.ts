@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite'
+import { MIGRATION_V12_CORRECTION_RECOVERY } from './reviewCorrectionRecoverySchema'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
   SQL_SCHEMA,
@@ -14,10 +15,14 @@ import {
   MIGRATION_V9_REVIEW_DATE,
 } from './schema'
 import { Sentry } from '@/lib/sentry'
+import {
+  MIGRATION_V10_REVIEW_CORRECTIONS,
+  MIGRATION_V11_CORRECTION_RESOLUTION,
+} from './reviewCorrectionSchema'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 9
+const SCHEMA_VERSION = 12
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -248,6 +253,23 @@ async function applyPendingMigrations(
     )
     await db.execAsync(MIGRATION_V9_LEARNING_COMMANDS)
   }
+  if (currentVersion < 10) {
+    await db.withExclusiveTransactionAsync(async transaction => {
+      await transaction.execAsync(MIGRATION_V10_REVIEW_CORRECTIONS)
+    })
+  }
+  if (currentVersion < 11) {
+    await addColumnIfMissing(
+      db,
+      MIGRATION_V11_CORRECTION_RESOLUTION,
+      'review_corrections.resolved_at'
+    )
+  }
+  if (currentVersion < 12) {
+    await db.withExclusiveTransactionAsync(async transaction => {
+      await transaction.execAsync(MIGRATION_V12_CORRECTION_RECOVERY)
+    })
+  }
 }
 
 function parseSchemaVersion(storedVersion: string | null): number {
@@ -334,6 +356,10 @@ export async function resetDatabase(): Promise<void> {
   try {
     const db = await getDatabase()
     const statements = [
+      'DROP VIEW IF EXISTS effective_review_events',
+      'DROP TABLE IF EXISTS review_correction_recovery',
+      'DROP TABLE IF EXISTS review_corrections',
+      'DROP TABLE IF EXISTS learning_commands',
       'DROP TABLE IF EXISTS review_events',
       'DROP TABLE IF EXISTS user_progress',
       'DROP TABLE IF EXISTS words',

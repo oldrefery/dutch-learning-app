@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Check, Headphones, Volume2, X } from 'lucide-react'
 import { useCallback, useEffect, useRef } from 'react'
 import { Badge } from '@/components/ui/Badge'
@@ -9,6 +8,12 @@ import { Button } from '@/components/ui/Button'
 import { useWebSettings } from '@/features/settings/useWebSettings'
 import { ReviewCard } from './ReviewCard'
 import { ReviewSetup } from './ReviewSetup'
+import { ReviewDetails } from './ReviewDetails'
+import { ReviewContent } from './ReviewContent'
+import { ReviewCorrectionControls } from './ReviewCorrectionControls'
+import { ReviewSessionControls } from './ReviewSessionControls'
+import { ReviewSessionNavigation } from './ReviewSessionNavigation'
+import { useReviewKeyboard } from './useReviewKeyboard'
 import { useReviewSession } from './useReviewSession'
 import type {
   ReviewAssessment,
@@ -84,18 +89,23 @@ function Completion({
   )
 }
 
-export function ReviewWorkspace({
+function AccountReviewWorkspace({
   data,
   initialCollectionId,
   initialScope,
   userId,
 }: ReviewWorkspaceProps) {
-  const session = useReviewSession(data, initialScope, initialCollectionId)
-  const router = useRouter()
+  const session = useReviewSession(
+    data,
+    initialScope,
+    initialCollectionId,
+    userId
+  )
   const { isHydrated, settings, update } = useWebSettings(userId)
   const appliedPreferencesRef = useRef(false)
   const setSessionCollectionId = session.setCollectionId
   const setSessionMode = session.setMode
+  const setManualRecognition = session.setManualRecognition
 
   const playPronunciation = useCallback(() => {
     const word = session.currentWord
@@ -127,6 +137,7 @@ export function ReviewWorkspace({
         ? settings.lastSelectedReviewMode
         : 'meaning-recall'
     setSessionMode(preferredMode)
+    setManualRecognition(settings.manualRecognition)
 
     if (
       !initialCollectionId &&
@@ -143,6 +154,7 @@ export function ReviewWorkspace({
     isHydrated,
     setSessionCollectionId,
     setSessionMode,
+    setManualRecognition,
     settings,
   ])
 
@@ -150,7 +162,9 @@ export function ReviewWorkspace({
     if (
       !settings.autoPlayPronunciation ||
       session.stage !== 'review' ||
-      !session.currentWord
+      !session.currentWord ||
+      session.historyEntry ||
+      session.detailsVisible
     ) {
       return
     }
@@ -159,149 +173,74 @@ export function ReviewWorkspace({
   }, [
     playPronunciation,
     session.currentWord,
+    session.historyEntry,
+    session.detailsVisible,
     session.stage,
     settings.autoPlayPronunciation,
   ])
 
-  const {
-    assessed,
-    currentWord,
-    effectiveMode,
-    pending,
-    recognitionOptions,
-    revealed,
-    selectedOption,
-  } = session
-
-  useEffect(() => {
-    if (session.stage !== 'review') return
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      const target = event.target
-      if (
-        target instanceof HTMLButtonElement ||
-        target instanceof HTMLInputElement ||
-        target instanceof HTMLSelectElement ||
-        target instanceof HTMLTextAreaElement ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.altKey ||
-        event.repeat
-      ) {
-        return
-      }
-
-      if (event.key === 'Escape') {
-        session.changeMode()
-        return
-      }
-      if (event.key.toLowerCase() === 'p') {
-        playPronunciation()
-        return
-      }
-      if (event.key.toLowerCase() === 'd' && currentWord?.collectionId) {
-        router.push(
-          `/app/collections/${currentWord.collectionId}/words/${currentWord.id}`
-        )
-        return
-      }
-      if (event.key === 'ArrowLeft') session.goTo(-1)
-      if (event.key === 'ArrowRight') session.goTo(1)
-
-      const optionIndex = Number(event.key) - 1
-      if (
-        effectiveMode === 'recognition' &&
-        !revealed &&
-        optionIndex >= 0 &&
-        optionIndex < (recognitionOptions?.length ?? 0)
-      ) {
-        const option = recognitionOptions?.[optionIndex]
-        if (option) session.selectOption(option)
-        return
-      }
-
-      if (event.key === ' ') {
-        event.preventDefault()
-        if (!revealed && effectiveMode !== 'recognition') {
-          session.setRevealed(true)
-          return
-        }
-        if (revealed && !assessed) {
-          const assessment =
-            effectiveMode === 'recognition' &&
-            selectedOption?.isCorrect === false
-              ? 'again'
-              : 'good'
-          void session.submit(assessment)
-        }
-        return
-      }
-
-      if (!revealed || assessed || pending || effectiveMode === 'recognition') {
-        return
-      }
-      const assessmentByKey: Partial<Record<string, ReviewAssessment>> = {
-        '1': 'again',
-        '2': 'hard',
-        '3': 'good',
-        '4': 'easy',
-      }
-      const assessment = assessmentByKey[event.key]
-      if (assessment) void session.submit(assessment)
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [
-    assessed,
-    currentWord,
-    effectiveMode,
-    pending,
-    playPronunciation,
-    recognitionOptions,
-    revealed,
-    router,
-    selectedOption?.isCorrect,
-    session,
-  ])
+  useReviewKeyboard(session, playPronunciation)
 
   if (session.stage === 'setup') {
     return (
-      <ReviewSetup
-        adaptiveReviewEnabled={settings.adaptiveReviewEnabled}
-        collectionId={session.collectionId}
-        collections={data.collections}
-        dueCount={session.dueCount}
-        emptyMessage={session.emptyMessage}
-        mode={session.mode}
-        onCollectionChange={value => {
-          session.setCollectionId(value)
-          update({ lastSelectedCollectionId: value })
-        }}
-        onModeChange={value => {
-          session.setMode(value)
-          update({ lastSelectedReviewMode: value })
-        }}
-        onScopeChange={value => {
-          session.setScope(value)
-          if (value === 'collection-due' && !session.collectionId) {
-            session.setCollectionId(data.collections[0]?.id ?? null)
-          }
-        }}
-        onStart={session.start}
-        scope={session.scope}
-      />
+      <>
+        <label className={styles.manualPreference}>
+          <input
+            type="checkbox"
+            checked={session.manualRecognition}
+            onChange={event => {
+              session.setManualRecognition(event.target.checked)
+              update({ manualRecognition: event.target.checked })
+            }}
+          />{' '}
+          Rate correct recognition answers manually
+        </label>
+        <p className="dw-support">
+          Off: correct answers are saved as Good and advance automatically.
+        </p>
+        <ReviewSetup
+          adaptiveReviewEnabled={settings.adaptiveReviewEnabled}
+          collectionId={session.collectionId}
+          collections={data.collections}
+          dueCount={session.dueCount}
+          emptyMessage={session.emptyMessage}
+          mode={session.mode}
+          onCollectionChange={value => {
+            session.setCollectionId(value)
+            update({ lastSelectedCollectionId: value })
+          }}
+          onModeChange={value => {
+            session.setMode(value)
+            update({ lastSelectedReviewMode: value })
+          }}
+          onScopeChange={value => {
+            session.setScope(value)
+            if (value === 'collection-due' && !session.collectionId) {
+              session.setCollectionId(data.collections[0]?.id ?? null)
+            }
+          }}
+          onStart={session.start}
+          scope={session.scope}
+        />
+      </>
     )
   }
 
   if (session.stage === 'complete') {
     return (
-      <Completion
-        counts={session.assessmentCounts}
-        onChangeMode={session.changeMode}
-        onRestart={session.start}
-        total={session.sessionWords.length}
-      />
+      <>
+        <ReviewSessionNavigation session={session} />
+        <ReviewCorrectionControls session={session} />
+        <Completion
+          counts={session.assessmentCounts}
+          onChangeMode={session.changeMode}
+          onRestart={session.start}
+          total={session.summary?.assessed ?? 0}
+        />
+        {!!session.summary?.skipped && (
+          <p>{session.summary.skipped} skipped without changing progress.</p>
+        )}
+      </>
     )
   }
 
@@ -312,7 +251,7 @@ export function ReviewWorkspace({
     0
   )
   const progress =
-    ((session.currentIndex + 1) / session.sessionWords.length) * 100
+    ((session.summary?.completed ?? 0) / session.sessionWords.length) * 100
   const modeLabel = MODE_LABELS[session.effectiveMode]
 
   return (
@@ -320,7 +259,9 @@ export function ReviewWorkspace({
       <header className={styles.sessionTopbar}>
         <button
           className={styles.exit}
+          aria-label="Exit review"
           onClick={session.changeMode}
+          disabled={session.unsettled}
           type="button"
         >
           <X aria-hidden="true" size={18} /> <span>Exit</span>
@@ -360,30 +301,53 @@ export function ReviewWorkspace({
         </div>
       </header>
 
-      <div className={styles.sessionBody}>
-        <ReviewCard
-          adaptiveMessage={session.adaptiveMessage}
-          answer={session.answer}
-          assessed={session.assessed}
-          error={session.error}
-          mode={session.effectiveMode}
-          onAssessment={assessment => void session.submit(assessment)}
-          onPlayPronunciation={playPronunciation}
-          onReveal={() => session.setRevealed(true)}
-          onSelectOption={session.selectOption}
-          options={session.recognitionOptions}
-          pending={session.pending}
-          revealed={session.revealed}
-          selectedOption={session.selectedOption}
-          translation={session.translation}
-          word={session.currentWord}
-        />
+      <ReviewContent
+        focusKey={`${session.currentWord.id}:${session.flow?.view.kind}`}
+      >
+        <ReviewSessionNavigation session={session} />
+        <ReviewCorrectionControls session={session} />
+        {session.historyEntry && (
+          <p role="status">
+            Previously reviewed ·{' '}
+            {session.historyEntry.result.kind === 'assessed'
+              ? session.historyEntry.result.assessment
+              : 'Skipped'}
+            . Viewing does not submit another review.
+          </p>
+        )}
+        {session.detailsVisible ? (
+          <ReviewDetails
+            key={`${userId}:${session.currentWord.id}:${session.detailRevision}`}
+            userId={userId}
+            wordId={session.currentWord.id}
+          />
+        ) : (
+          <ReviewCard
+            interactionBlocked={Boolean(session.correction)}
+            adaptiveMessage={session.adaptiveMessage}
+            answer={session.answer}
+            assessed={session.assessed}
+            mode={session.effectiveMode}
+            onPlayPronunciation={playPronunciation}
+            onReveal={() => session.setRevealed(true)}
+            onSelectOption={session.selectOption}
+            options={session.recognitionOptions}
+            revealed={session.revealed}
+            selectedOption={session.selectedOption}
+            translation={session.translation}
+            word={session.currentWord}
+          />
+        )}
+        <ReviewSessionControls session={session} />
+        {!session.historyEntry && session.selectedOption?.isCorrect && (
+          <p role="status">Correct{session.assessed ? ' · Saved' : ''}</p>
+        )}
 
         <footer className={styles.sessionFooter}>
           <span>{completedCount} completed</span>
           <span>Space continue · P audio · D details · Esc exit</span>
         </footer>
-      </div>
+      </ReviewContent>
     </section>
   )
 }
@@ -393,4 +357,8 @@ interface ReviewWorkspaceProps {
   initialCollectionId: string | null
   initialScope: ReviewScope
   userId: string
+}
+
+export function ReviewWorkspace(props: ReviewWorkspaceProps) {
+  return <AccountReviewWorkspace key={props.userId} {...props} />
 }

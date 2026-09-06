@@ -6,6 +6,8 @@ const config = {
   disableTypeChecks: false,
   incremental: true,
   incrementalFile: 'reports/stryker-web-incremental.json',
+  // Bound worker lifetime after reproducible Node 24/V8 crashes in long Jest runs.
+  maxTestRunnerReuse: 100,
   ignorePatterns: [
     'android',
     'ios',
@@ -29,6 +31,11 @@ const config = {
     'apps/web/src/lib/supabase/proxy.ts',
     'apps/web/src/proxy.ts',
     'apps/web/src/features/review/actions.ts',
+    'apps/web/src/features/review/correction-validation.ts',
+    'apps/web/src/features/review/correction-client.ts',
+    'apps/web/src/features/review/correction-actions.ts',
+    'apps/web/src/features/review/correction-refresh.ts',
+    'apps/web/src/features/review/session-corrections.ts',
     'apps/web/src/features/words/actions.ts',
     'apps/web/src/features/analysis/word-persistence.ts',
     'packages/domain/src/srs.ts',
@@ -40,7 +47,7 @@ const config = {
     'apps/web/src/features/words/word-image.ts',
     'apps/web/src/features/words/word-mutations.ts',
   ],
-  reporters: ['clear-text', 'progress', 'html'],
+  reporters: ['clear-text', 'progress', 'html', 'json'],
   testRunner: 'jest',
   thresholds: {
     break: 90,

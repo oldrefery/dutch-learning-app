@@ -1,5 +1,10 @@
 import { DatabaseSync, type SQLInputValue } from 'node:sqlite'
 import { getDatabase } from '../initDB'
+import { MIGRATION_V12_CORRECTION_RECOVERY } from '../reviewCorrectionRecoverySchema'
+import {
+  MIGRATION_V10_REVIEW_CORRECTIONS,
+  MIGRATION_V11_CORRECTION_RESOLUTION,
+} from '../reviewCorrectionSchema'
 import {
   SQL_SCHEMA,
   MIGRATION_V5_TOMBSTONE_INDEXES,
@@ -9,20 +14,26 @@ import {
 } from '../schema'
 
 // Only the native Expo bridge is replaced; execute actual repository SQL.
-export const createTestDatabase = () => {
-  const database = new DatabaseSync(':memory:')
-  database.exec(SQL_SCHEMA)
-  database.exec(MIGRATION_V5_TOMBSTONE_INDEXES)
-  database.exec(MIGRATION_V7_REVIEW_EVENTS)
-  database.exec(MIGRATION_V9_REVIEW_DATE)
-  database.exec(MIGRATION_V9_LEARNING_COMMANDS)
+export const createTestDatabase = (path = ':memory:', initialize = true) => {
+  const database = new DatabaseSync(path)
+  if (initialize) {
+    database.exec(SQL_SCHEMA)
+    database.exec(MIGRATION_V5_TOMBSTONE_INDEXES)
+    database.exec(MIGRATION_V7_REVIEW_EVENTS)
+    database.exec(MIGRATION_V9_REVIEW_DATE)
+    database.exec(MIGRATION_V9_LEARNING_COMMANDS)
+    database.exec(MIGRATION_V10_REVIEW_CORRECTIONS)
+    database.exec(MIGRATION_V11_CORRECTION_RESOLUTION)
+    database.exec(MIGRATION_V12_CORRECTION_RECOVERY)
+  }
   const runAsync = async (sql: string, ...values: SQLInputValue[]) =>
     database.prepare(sql).run(...values)
+  const getFirstAsync = async (sql: string, values: SQLInputValue[]) =>
+    database.prepare(sql).get(...values) ?? null
   const adapter = {
     getAllAsync: async (sql: string, ...values: SQLInputValue[]) =>
       database.prepare(sql).all(...values),
-    getFirstAsync: async (sql: string, values: SQLInputValue[]) =>
-      database.prepare(sql).get(...values) ?? null,
+    getFirstAsync,
     prepareAsync: async (sql: string) => {
       const statement = database.prepare(sql)
       return {
@@ -38,11 +49,14 @@ export const createTestDatabase = () => {
     },
     runAsync,
     withExclusiveTransactionAsync: async (
-      callback: (transaction: { runAsync: typeof runAsync }) => Promise<void>
+      callback: (transaction: {
+        runAsync: typeof runAsync
+        getFirstAsync: typeof getFirstAsync
+      }) => Promise<void>
     ) => {
       database.exec('BEGIN')
       try {
-        await callback({ runAsync })
+        await callback(adapter)
         database.exec('COMMIT')
       } catch (error) {
         database.exec('ROLLBACK')

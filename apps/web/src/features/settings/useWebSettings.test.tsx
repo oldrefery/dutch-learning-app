@@ -38,15 +38,38 @@ describe('useWebSettings', () => {
     expect(result.current.settings.theme).toBe('system')
 
     act(() => {
-      result.current.update({ autoPlayPronunciation: true, theme: 'dark' })
+      result.current.update({
+        autoPlayPronunciation: true,
+        theme: 'dark',
+        manualRecognition: true,
+      })
     })
 
     expect(result.current.settings).toMatchObject({
+      manualRecognition: true,
       autoPlayPronunciation: true,
       theme: 'dark',
     })
     expect(document.documentElement.dataset.theme).toBe('dark')
     expect(window.localStorage.getItem('woordenaar:web:theme')).toBe('dark')
+    expect(
+      JSON.parse(
+        window.localStorage.getItem('woordenaar:web:settings:settings-user') ??
+          '{}'
+      )
+    ).toMatchObject({ manualRecognition: true })
+  })
+
+  test('manual recognition preference is isolated by account', () => {
+    const { result, rerender } = renderHook(
+      ({ userId }) => useWebSettings(userId),
+      { initialProps: { userId: 'settings-user' } }
+    )
+    act(() => result.current.update({ manualRecognition: true }))
+    rerender({ userId: 'different-settings-user' })
+    expect(result.current.settings.manualRecognition).toBe(false)
+    rerender({ userId: 'settings-user' })
+    expect(result.current.settings.manualRecognition).toBe(true)
   })
 
   test('subscribes to system theme changes and cleans up', () => {

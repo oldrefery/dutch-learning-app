@@ -11,10 +11,13 @@ const createJestConfig = nextJest({ dir: currentDirectory })
 
 const config = {
   clearMocks: true,
+  // Apply to programmatic runners (Stryker) as well as the npm test command.
+  watchman: false,
   collectCoverageFrom: [
     'apps/web/src/**/*.{ts,tsx}',
     '!apps/web/src/**/*.d.ts',
     '!apps/web/src/**/__tests__/**',
+    '!apps/web/src/**/__fixtures__/**',
     '!apps/web/src/**/*.test.{ts,tsx}',
     '!apps/web/src/app/**',
     '!apps/web/src/**/*repository.ts',

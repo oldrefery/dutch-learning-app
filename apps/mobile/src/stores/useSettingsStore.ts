@@ -10,6 +10,7 @@ import { REVIEW_MODE, REVIEW_SESSION_MODE } from '@/constants/ReviewConstants'
 import type { ReviewSessionMode } from '@/types/ReviewTypes'
 
 interface SettingsState {
+  manualRecognitionByUser: Record<string, boolean>
   autoPlayPronunciation: boolean
   adaptiveReviewEnabled: boolean
   lastSelectedCollectionId: string | null
@@ -18,6 +19,7 @@ interface SettingsState {
 }
 
 interface SettingsActions {
+  setManualRecognition: (userId: string, enabled: boolean) => void
   setAutoPlayPronunciation: (enabled: boolean) => void
   setAdaptiveReviewEnabled: (enabled: boolean) => void
   setLastSelectedCollectionId: (id: string | null) => void
@@ -33,6 +35,7 @@ export type PersistedSettingsState = SettingsState
 export const SETTINGS_STORAGE_VERSION = 1
 
 const DEFAULT_SETTINGS_STATE: SettingsState = {
+  manualRecognitionByUser: {},
   autoPlayPronunciation: false,
   adaptiveReviewEnabled: true,
   lastSelectedCollectionId: null,
@@ -59,6 +62,13 @@ export const migrateSettingsState = (
   const state = isRecord(persistedState) ? persistedState : {}
 
   return {
+    manualRecognitionByUser: isRecord(state.manualRecognitionByUser)
+      ? (Object.fromEntries(
+          Object.entries(state.manualRecognitionByUser).filter(
+            ([, value]) => typeof value === 'boolean'
+          )
+        ) as Record<string, boolean>)
+      : {},
     autoPlayPronunciation:
       typeof state.autoPlayPronunciation === 'boolean'
         ? state.autoPlayPronunciation
@@ -89,6 +99,14 @@ export const useSettingsStore = create<SettingsStore>()(
       ...DEFAULT_SETTINGS_STATE,
 
       // Actions
+      setManualRecognition: (userId, enabled) => {
+        set(state => ({
+          manualRecognitionByUser: {
+            ...state.manualRecognitionByUser,
+            [userId]: enabled,
+          },
+        }))
+      },
       setAutoPlayPronunciation: (enabled: boolean) => {
         set({ autoPlayPronunciation: enabled })
       },
@@ -125,7 +143,12 @@ export const useSettingsStore = create<SettingsStore>()(
       storage: createJSONStorage(() => AsyncStorage),
       version: SETTINGS_STORAGE_VERSION,
       migrate: migrateSettingsState,
+      merge: (persisted, current) => ({
+        ...current,
+        ...migrateSettingsState(persisted, SETTINGS_STORAGE_VERSION),
+      }),
       partialize: state => ({
+        manualRecognitionByUser: state.manualRecognitionByUser,
         autoPlayPronunciation: state.autoPlayPronunciation,
         adaptiveReviewEnabled: state.adaptiveReviewEnabled,
         lastSelectedCollectionId: state.lastSelectedCollectionId,

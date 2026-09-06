@@ -15,6 +15,7 @@ describe('web settings storage', () => {
         theme: 'dark',
       })
     ).toEqual({
+      manualRecognition: false,
       adaptiveReviewEnabled: false,
       autoPlayPronunciation: true,
       lastSelectedCollectionId: 'collection-1',

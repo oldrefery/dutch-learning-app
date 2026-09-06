@@ -141,6 +141,38 @@ describe('reviewActions', () => {
   })
 
   describe('startReviewSession', () => {
+    it.each(['success', 'failure'])(
+      'ignores late adaptive history %s after an account change',
+      async outcome => {
+        mockSet({
+          currentUserId: USER_ID,
+          words: createReviewWordsWithToday(),
+          collections: [],
+        })
+        let finish!: () => void
+        jest
+          .mocked(reviewEventRepository.getRecentByWords)
+          .mockImplementationOnce(
+            () =>
+              new Promise((resolve, reject) => {
+                finish = () =>
+                  outcome === 'success'
+                    ? resolve({})
+                    : reject(new Error('History unavailable'))
+              })
+          )
+        const pending = actions.startReviewSession({
+          mode: 'adaptive',
+          scope: REVIEW_SCOPE.ALL_DUE,
+        })
+        mockSet({ currentUserId: 'another-user', reviewLoading: false })
+        mockSet.mockClear()
+        finish()
+        await pending
+        expect(mockSet).not.toHaveBeenCalled()
+      }
+    )
+
     it('should start review session with words due for review', async () => {
       const mockWords = createReviewWordsWithToday()
 
@@ -480,6 +512,38 @@ describe('reviewActions', () => {
   })
 
   describe('submitReviewAssessment', () => {
+    it.each(['account', 'session'])(
+      'does not advance a replaced %s after saving',
+      async replacement => {
+        const words = createReviewWordsWithToday()
+        const session = { words, currentIndex: 0, completedCount: 0 }
+        let finish!: (saved: boolean) => void
+        const saving = new Promise<boolean>(resolve => {
+          finish = resolve
+        })
+        mockSet({
+          currentUserId: USER_ID,
+          reviewSession: session,
+          currentWord: words[0],
+          updateWordAfterReview: jest.fn(() => saving),
+        })
+        const pending = actions.submitReviewAssessment({
+          wordId: words[0].word_id,
+          assessment: 'good',
+          timestamp: new Date(),
+        })
+        mockSet(
+          replacement === 'account'
+            ? { currentUserId: 'another-user' }
+            : { reviewSession: { ...session } }
+        )
+        mockSet.mockClear()
+        finish(true)
+        await pending
+        expect(mockSet).not.toHaveBeenCalled()
+      }
+    )
+
     it('should move to next word after assessment', async () => {
       const today = new Date().toISOString().split('T')[0]
       const mockWords = [

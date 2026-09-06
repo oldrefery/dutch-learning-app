@@ -60,12 +60,16 @@ clients, empty queues and repeat-sync equality. Screenshots were inspected too.
 
 ## Repeatable HTTP Tests
 
-`npm run test:sync:http` runs four real Auth/REST scenarios: delayed event upserts
-versus newer progress, batch history/reset retry, foreign-user ownership/private
-receipts, and a genuinely expired access JWT followed by refresh and replay of
-the same event ID. Word fixtures include the full native metadata field set.
-The JWT test waits approximately five minutes; it does not forge tokens, change
-clocks or mock auth responses. Fixture users are removed after the run.
+`npm run test:sync:http` now runs ten local Auth/REST scenarios: the original
+event/reset/ownership checks plus six correction scenarios documented in
+[the HTTP correction follow-up](review-correction-http-qa-2026-09-06.md).
+The expired-JWT test now verifies rejection of an actual correction RPC,
+refresh and replay of the same review/correction IDs. Word fixtures include
+the full native metadata field set. The JWT test waits approximately five and
+a half minutes, including PostgREST's 30-second clock-skew allowance; it does
+not forge tokens, change clocks or mock auth responses. Fixture users are
+removed after the run. Offline and lost-response cases inject faults in the
+client transport around real HTTP, not through device network controls.
 
 This deliberately restricted macOS runner requires a disposable project created
 under `/private/tmp/woordenaar-sync-v2.<suffix>`, matching `project_id`, no hosted

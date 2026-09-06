@@ -3,25 +3,16 @@ import { Sentry } from '@/lib/sentry'
 import { wordService } from '@/lib/supabase'
 import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
-import { reviewEventRepository } from '@/db/reviewEventRepository'
-import { calculateNextReview } from '@/utils/srs'
 import * as Crypto from 'expo-crypto'
 import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
 import type {
   StoreSetFunction,
   StoreGetFunction,
   AnalyzedWord,
-  ReviewAssessment,
   ApplicationState,
 } from '@/types/ApplicationStoreTypes'
 import type { GeminiWordAnalysis, Word } from '@/types/database'
-import {
-  DEFAULT_REVIEW_SESSION_CONFIG,
-  MAX_REVIEW_RESPONSE_TIME_MS,
-  REVIEW_MODE,
-  REVIEW_SESSION_MODE,
-} from '@/constants/ReviewConstants'
-import { addLocalCalendarDays, toLocalDateKey } from '@woordenaar/domain'
+import { createLearningWordActions } from './learningWordActions'
 
 const USER_NOT_AUTHENTICATED_ERROR =
   APPLICATION_STORE_CONSTANTS.AUTH_ERRORS.USER_NOT_AUTHENTICATED
@@ -30,22 +21,12 @@ const UNKNOWN_ERROR = 'Unknown error'
 
 // Error messages for word operations
 const WORD_SAVE_FAILED = 'Failed to save analyzed word'
-const WORD_UPDATE_FAILED = 'Failed to update word progress'
 const WORD_DELETE_FAILED = 'Failed to delete word'
 const WORD_IMAGE_UPDATE_FAILED = 'Failed to update word image'
 const WORD_MOVE_FAILED = 'Failed to move word to collection'
-const WORD_RESET_FAILED = 'Failed to reset word progress'
 const WORDS_IMPORT_FAILED = 'Failed to import words'
 const WORD_REANALYZE_FAILED = 'Failed to re-analyze word'
 const INVALID_ANALYSIS_RESPONSE = 'Invalid response from word analysis'
-
-const normalizeResponseTime = (responseTime?: number): number | null => {
-  if (responseTime === undefined || !Number.isFinite(responseTime)) return null
-  return Math.min(
-    MAX_REVIEW_RESPONSE_TIME_MS,
-    Math.max(0, Math.round(responseTime))
-  )
-}
 
 interface ImportWordsActionError extends Error {
   userMessage?: string
@@ -159,6 +140,7 @@ export const createWordActions = (
   | 'addWordsToCollection'
   | 'reanalyzeWord'
 > => ({
+  ...createLearningWordActions(set, get),
   fetchWords: async () => {
     try {
       set({ wordsLoading: true })
@@ -292,161 +274,6 @@ export const createWordActions = (
         }),
       })
       throw saveError
-    }
-  },
-
-  updateWordAfterReview: async (
-    wordId: string,
-    assessment: ReviewAssessment
-  ) => {
-    try {
-      // Validate inputs
-      if (!wordId) {
-        logError(
-          'Invalid wordId provided to updateWordAfterReview',
-          new Error('wordId is required'),
-          { wordId },
-          'words',
-          false
-        )
-        set({
-          error: createStoreError(WORD_UPDATE_FAILED, {
-            category: ErrorCategory.VALIDATION,
-            context: { reason: 'Invalid word ID' },
-          }),
-        })
-        return false
-      }
-      if (!assessment || !assessment.assessment) {
-        logError(
-          'Invalid assessment provided to updateWordAfterReview',
-          new Error('assessment is required'),
-          { assessment },
-          'words',
-          false
-        )
-        set({
-          error: createStoreError(WORD_UPDATE_FAILED, {
-            category: ErrorCategory.VALIDATION,
-            context: { reason: 'Invalid assessment' },
-          }),
-        })
-        return false
-      }
-
-      const userId = get().currentUserId
-
-      if (!userId) {
-        logError(
-          USER_NOT_AUTHENTICATED_LOG,
-          new Error(USER_NOT_AUTHENTICATED_ERROR),
-          { wordId, assessment },
-          'words',
-          false
-        )
-        set({
-          error: createStoreError(WORD_UPDATE_FAILED, {
-            category: ErrorCategory.CLIENT,
-            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
-          }),
-        })
-        return false
-      }
-
-      // Get the current word to calculate new SRS values
-      const currentWords = get().words
-      const currentWord = currentWords.find(w => w.word_id === wordId)
-
-      if (!currentWord) {
-        logInfo(
-          `Word with ID ${wordId} not found in local cache`,
-          { wordId, wordsCount: currentWords.length },
-          'words'
-        )
-        set({
-          error: createStoreError(WORD_UPDATE_FAILED, {
-            category: ErrorCategory.VALIDATION,
-            context: { reason: 'Word not found' },
-          }),
-        })
-        return false
-      }
-
-      // Calculate new SRS values
-      const srsUpdate = calculateNextReview({
-        interval_days: currentWord.interval_days,
-        repetition_count: currentWord.repetition_count,
-        easiness_factor: currentWord.easiness_factor,
-        assessment: assessment.assessment,
-      })
-
-      const reviewedAt =
-        assessment.timestamp instanceof Date &&
-        !Number.isNaN(assessment.timestamp.getTime())
-          ? assessment.timestamp.toISOString()
-          : new Date().toISOString()
-      const reviewSession = get().reviewSession
-      const sessionMode = reviewSession?.config.mode
-      const resolvedSessionMode =
-        sessionMode === REVIEW_SESSION_MODE.ADAPTIVE
-          ? reviewSession?.adaptiveModeByWordId?.[wordId]?.mode
-          : sessionMode
-      const reviewMode =
-        assessment.reviewMode ??
-        resolvedSessionMode ??
-        DEFAULT_REVIEW_SESSION_CONFIG.mode
-
-      // Offline-first: update SRS and append its matching event atomically.
-      await reviewEventRepository.recordAssessment({
-        progress: srsUpdate,
-        event: {
-          event_id: Crypto.randomUUID(),
-          user_id: userId,
-          word_id: wordId,
-          assessment: assessment.assessment,
-          review_mode: reviewMode,
-          answered_correctly:
-            reviewMode === REVIEW_MODE.RECOGNITION
-              ? (assessment.answeredCorrectly ?? null)
-              : null,
-          response_time_ms: normalizeResponseTime(assessment.responseTime),
-          previous_interval_days: currentWord.interval_days,
-          next_interval_days: srsUpdate.interval_days,
-          previous_easiness_factor: currentWord.easiness_factor,
-          next_easiness_factor: srsUpdate.easiness_factor,
-          reviewed_at: reviewedAt,
-        },
-      })
-
-      // Update the local store with calculated values
-      const updatedWordData = {
-        ...currentWord,
-        ...srsUpdate,
-        last_reviewed_at: reviewedAt,
-        updated_at: reviewedAt,
-      }
-
-      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
-      if (wordIndex !== -1) {
-        const updatedWords = [...currentWords]
-        updatedWords[wordIndex] = updatedWordData
-        set({ words: updatedWords })
-      }
-      return true
-    } catch (error) {
-      logError(
-        'Error updating word after review',
-        error,
-        { wordId, assessment },
-        'words',
-        false
-      )
-      set({
-        error: createStoreError(WORD_UPDATE_FAILED, {
-          originalError: error instanceof Error ? error : undefined,
-        }),
-      })
-      return false
     }
   },
 
@@ -589,64 +416,6 @@ export const createWordActions = (
         }),
       })
       return null
-    }
-  },
-
-  resetWordProgress: async (wordId: string) => {
-    try {
-      const userId = get().currentUserId
-      if (!userId) {
-        logError(
-          USER_NOT_AUTHENTICATED_LOG,
-          new Error(USER_NOT_AUTHENTICATED_ERROR),
-          { wordId },
-          'words',
-          false
-        )
-        set({
-          error: createStoreError(WORD_RESET_FAILED, {
-            category: ErrorCategory.CLIENT,
-            context: { reason: USER_NOT_AUTHENTICATED_ERROR },
-          }),
-        })
-        return
-      }
-
-      // Offline-first: reset progress in local SQLite
-      await wordRepository.resetWordProgress(wordId, userId)
-
-      // Update the local store with reset values
-      const currentWords = get().words
-      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
-
-      if (wordIndex !== -1) {
-        const updatedWords = [...currentWords]
-        const tomorrow = toLocalDateKey(addLocalCalendarDays(new Date(), 1))
-        updatedWords[wordIndex] = {
-          ...updatedWords[wordIndex],
-          interval_days: 1,
-          repetition_count: 0,
-          easiness_factor: 2.5,
-          next_review_date: tomorrow,
-          last_reviewed_at: null,
-          updated_at: new Date().toISOString(),
-        }
-        set({ words: updatedWords })
-        return updatedWords[wordIndex]
-      }
-    } catch (error) {
-      logError(
-        'Error resetting word progress',
-        error,
-        { wordId },
-        'words',
-        false
-      )
-      set({
-        error: createStoreError(WORD_RESET_FAILED, {
-          originalError: error instanceof Error ? error : undefined,
-        }),
-      })
     }
   },
 
