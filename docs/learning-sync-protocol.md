@@ -1,6 +1,8 @@
 # Learning Synchronization Protocol 2
 
-Status: implemented on the quality branch; **not deployed**. This replaces the
+Status: **deployed to the hosted backend and web on 2026-09-06**; native 2.2.1 (82)
+builds were submitted to App Store Connect and Play internal draft, not publicly
+released. See the [release evidence](protocol2-release-2026-09-06.md). This replaces the
 whole-word progress upload responsible for the [native QA failure](native-sync-qa-2026-09-05.md).
 
 See the [rollout and recovery checklist](learning-sync-rollout.md) and
@@ -101,9 +103,10 @@ Before an explicitly approved rollout:
    native clients fail closed against the old backend; old clients have the reset
    limitations above. The earlier SRS rounding migration and the follow-up
    `words.analysis_notes` schema repair must also be applied.
-4. Apply the schema only with explicit approval, regenerate Supabase contracts
-   and remove the temporary RPC type overlay. Do not edit the deployed generated
-   contract file by hand.
+4. Apply the schema only with explicit approval and regenerate Supabase contracts.
+   The initial forward RPC overlay was removed during the approved release;
+   a separate nullable-argument correction remains. Do not edit generated types
+   by hand.
 5. Repeat native offline/restart/two-client QA, then watch sync errors and command
    acknowledgements. Never test with the forbidden application account.
 
@@ -115,4 +118,6 @@ new native-device or hosted-backend verification of protocol 2.
 
 The subsequent [local native/HTTP QA](local-sync-qa.md) verifies the original
 two-Android-client regression with a real isolated Auth/REST stack. Hosted and
-store-release validation, legacy cutover decisions and rollout are still pending.
+device validation and public store release remain pending. The approved hosted
+cutover, preservation comparison and test-account RPC smoke results are recorded
+in the [release evidence](protocol2-release-2026-09-06.md).

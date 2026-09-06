@@ -1,7 +1,9 @@
 # Learning Protocol 2: Rollout And Recovery
 
-Status: **not deployed; not an authorization to deploy**. The protocol is tested
-locally, but old-client compatibility needs a release decision. See the
+Status: the **approved hosted/backend and web cutover completed on 2026-09-06**;
+native 2.2.1 (82) was submitted to internal store destinations. See the
+[release evidence](protocol2-release-2026-09-06.md). This checklist is not standing
+authorization for another deployment or a public store release. See the
 [contract](learning-sync-protocol.md), [diagnostics](sync-observability.md) and
 [release guide](EAS_BUILD_GUIDE.md).
 
@@ -26,7 +28,8 @@ zero-downtime migration.
    and resolve unrelated working-tree changes before the clean-release check.
 2. Inspect the target's migration history read-only under separate authorization.
    Confirm a backup and a practical restore/reconciliation procedure; do not merely
-   assume a backup exists. This turn has not inspected hosted state.
+   assume a backup exists. The release evidence records the approved target's
+   inspection and verified private backup; repeat this gate for a new rollout.
 3. Preserve pending device databases, event IDs, local sequence and reset receipts
    where investigation is required. Never ask users to reinstall/clear app data as
    a sync fix. Diagnostic aggregates are not a backup or reconciliation ledger.

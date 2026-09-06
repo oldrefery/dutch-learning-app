@@ -5,6 +5,10 @@ Review baseline: `8056d5e8797587e0b41d358bc454e1d91d95a730`.
 Previous commit: `51b3768` (interrupted local queue migration tests).
 This report accompanies bounded sync diagnostics and rollout documentation.
 
+This is the historical pre-release baseline. For the subsequent authorized
+2.2.1 (82) builds, hosted cutover, regenerated contracts and preservation checks,
+see [Protocol 2 release evidence](protocol2-release-2026-09-06.md).
+
 ## Local Evidence
 
 Checks used Node 24.20.0 / npm 11.19.0 and the installed lockfile dependencies.
