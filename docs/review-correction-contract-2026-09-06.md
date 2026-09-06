@@ -6,8 +6,10 @@ The server contract is implemented and tested in isolated local PostgreSQL.
 Migration `20260906160000_add_review_corrections.sql` is **not deployed**.
 No application account or hosted database was used during implementation.
 Mobile now has a durable correction queue and effective-history reader, tested
-against SQLite and mocked transport. Session integration, conflict-resolution UI,
-web integration, and fast review UI remain the next stages. There is no UI entry
+against SQLite and mocked transport. Web now has authenticated correction/detail
+actions and capability-aware effective-history readers, tested with mocked transport.
+Session integration, conflict-resolution UI, and fast review UI remain the next
+stages. There is no UI entry
 point for creating corrections yet; the feature is not available in the app.
 
 This is the persistence foundation for
@@ -56,6 +58,8 @@ It returns its receipt without reapplying anything. `accepted_revision` may then
 be smaller than `effective_revision`. Word progress may reflect a later review or
 reset, not just the event whose correction receipt is being acknowledged. Do not
 replace effective state with an old receipt or recompute a word from that receipt.
+After a subsequent reset, `last_reviewed_at` can be null. This is valid canonical
+progress, including when returned by a retry of an earlier accepted correction.
 
 | SQLSTATE                                  | Meaning / client action                                                                                         |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -145,6 +149,27 @@ large-ledger optimization requires a separately verified protocol.
   commands. Conflict responses persist a conflict state and also stop the queue;
   they are never acknowledged as successful.
 
+### Implemented web server integration
+
+- Authenticated server actions validate caller identity and command fields before
+  database access. Full-card reads are scoped to the owned, non-deleted word and
+  do not submit a review or change learning progress.
+- Correction writes use only the dedicated RPC, preserving the caller's operation
+  ID. They distinguish unsupported capability, conflicts, invalid commands, and
+  uncertain outcomes that require retrying the exact same payload.
+- Responses are validated before returning canonical progress or invalidating
+  review, history, insights, and collection paths. Null last-review timestamps
+  after a reset are accepted; older receipts never trigger client-side SRS replay.
+- Review/adaptive history and global history use the effective view when protocol
+  version 1 is available. A missing or unsupported protocol uses original history;
+  a capability transport failure or failed effective-view query does not silently
+  downgrade to stale original ratings.
+- Additive RPC/view types remain feature-local until migration deployment and
+  schema regeneration. The adapter uses the existing cookie-authenticated client,
+  never an elevated database client.
+- These actions are not connected to review controls yet. Capability detection
+  does not enable correction UI by itself.
+
 ### Required before exposing correction actions
 
 - Present pending/conflicted edits and implement explicit conflict resolution.
@@ -180,6 +205,13 @@ migration failure/retry, effective history without duplicate events, ownership,
 tombstones, and review/correction/reset ordering. Transport is mocked for lost
 acknowledgements, unsupported capability, stale conflicts, account switches,
 receipt validation, and full-ledger pagination/reconciliation.
+
+Web server tests cover authentication redirects, cross-account rejection, exact
+retry payloads, conflict/error classification, malformed acknowledgements, reset
+retries, read-only full details, effective assessment reads, and 501-event paging.
+The full web suite passes 371 tests across 48 suites. These are local tests with
+mocked transport, not proof of deployed RPC or browser behavior. New correction
+adapters have not yet been added to the mutation-testing target set.
 
 HTTP/Auth integration and native/web runtime checks for this feature are not yet
 performed. Remote migration and rollout require separate explicit authorization.

@@ -143,7 +143,9 @@ compatibility boundaries, and the remaining session/conflict-resolution work.
 The migration has not been deployed. Shared question/history state transitions
 are now implemented and covered by pure regression tests; see the
 [session state contract](../review-flow-state-2026-09-06.md). The review UI is
-unchanged and does not expose correction actions yet. Next: connect the web flow,
+unchanged and does not expose correction actions yet. Web server prerequisites
+are implemented: authenticated full-card and correction actions, capability-aware
+effective-history readers, and mocked-transport regression tests. Next: connect the web flow,
 then mobile, with explicit pending/conflict handling and runtime QA.
 
 Keep the current feature branch; the user has committed the earlier sync-badge

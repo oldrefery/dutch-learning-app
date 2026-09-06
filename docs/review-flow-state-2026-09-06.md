@@ -82,6 +82,11 @@ reconciled. The shared model does not claim server eligibility for a correction.
 
 ## Remaining integration work
 
+The web server prerequisites are now implemented: authenticated full-card reads,
+validated correction commands, and capability-aware effective-history readers.
+They are covered with mocked transport tests; the hook and controls below remain
+unconnected. See the [correction contract](review-correction-contract-2026-09-06.md).
+
 - Replace the web hook's destructive previous/next navigation with this state.
 - Add in-session details and history, correction requests, optional persisted
   manual preference, and accessible feedback/keyboard behavior.

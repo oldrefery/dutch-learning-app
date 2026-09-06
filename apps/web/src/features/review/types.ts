@@ -38,6 +38,7 @@ export interface ReviewEventEvidence {
 }
 
 export interface ReviewWorkspaceData {
+  correctionsAvailable?: boolean
   collections: ReviewCollection[]
   events: ReviewEventEvidence[]
   words: ReviewWord[]
