@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NetworkError } from '@/types/ErrorTypes'
 
-const LAST_SYNC_TIMESTAMP_KEY = 'last_sync_timestamp'
+const LAST_SYNC_TIMESTAMP_KEY_PREFIX = 'last_sync_timestamp'
+const getLastSyncTimestampKey = (userId: string): string =>
+  `${LAST_SYNC_TIMESTAMP_KEY_PREFIX}:${userId}`
 const SYNC_CURSOR_KEY_PREFIX = 'sync_cursor'
 
 export type SyncCursorTable =
@@ -142,18 +144,24 @@ export function subscribeToNetworkChanges(
   }
 }
 
-export async function getLastSyncTimestamp(): Promise<string | null> {
+export async function getLastSyncTimestamp(
+  userId: string
+): Promise<string | null> {
   try {
-    return await AsyncStorage.getItem(LAST_SYNC_TIMESTAMP_KEY)
+    // The legacy shared key has no owner and must not be assigned to an account.
+    return await AsyncStorage.getItem(getLastSyncTimestampKey(userId))
   } catch (error) {
     console.error('[Network] Error getting last sync timestamp:', error)
     return null
   }
 }
 
-export async function setLastSyncTimestamp(timestamp: string): Promise<void> {
+export async function setLastSyncTimestamp(
+  userId: string,
+  timestamp: string
+): Promise<void> {
   try {
-    await AsyncStorage.setItem(LAST_SYNC_TIMESTAMP_KEY, timestamp)
+    await AsyncStorage.setItem(getLastSyncTimestampKey(userId), timestamp)
   } catch (error) {
     console.error('[Network] Error setting last sync timestamp:', error)
     throw error

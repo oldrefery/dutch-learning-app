@@ -323,6 +323,10 @@ describe('SyncManager', () => {
     ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
     ;(networkUtils.getSyncCursor as jest.Mock).mockResolvedValue(null)
     ;(networkUtils.setSyncCursor as jest.Mock).mockResolvedValue(void 0)
+    jest
+      .mocked(networkUtils.setLastSyncTimestamp)
+      .mockReset()
+      .mockResolvedValue(undefined)
     ;(wordService.checkWordExists as jest.Mock).mockResolvedValue(null)
     ;(
       collectionRepository.getCollectionsByUserId as jest.Mock
@@ -786,6 +790,7 @@ describe('SyncManager', () => {
       // Both results should have the required properties
       expect(result1).toHaveProperty('success')
       expect(result2).toHaveProperty('success')
+      expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledTimes(1)
     })
 
     it('should reset sync state after completion', async () => {
@@ -853,6 +858,116 @@ describe('SyncManager', () => {
   })
 
   describe('sync timing', () => {
+    it('waits for timestamp persistence before publishing success', async () => {
+      let completeWrite: () => void = () => undefined
+      let signalWriteStarted: () => void = () => undefined
+      const writePending = new Promise<void>(resolve => {
+        completeWrite = resolve
+      })
+      const writeStarted = new Promise<void>(resolve => {
+        signalWriteStarted = resolve
+      })
+      jest
+        .mocked(networkUtils.setLastSyncTimestamp)
+        .mockImplementationOnce(() => {
+          signalWriteStarted()
+          return writePending
+        })
+      const listener = jest.fn()
+      syncManager.subscribeSyncStatus(listener)
+      const sync = syncManager.performSync(userId)
+      await writeStarted
+      try {
+        expect(listener).not.toHaveBeenCalled()
+      } finally {
+        completeWrite()
+      }
+      const result = await sync
+      expect(result.success).toBe(true)
+      expect(listener).toHaveBeenCalledWith(result)
+    })
+
+    it('persists completion time for the syncing account before notifying subscribers', async () => {
+      const startedAt = Date.now()
+      const completedAt = startedAt + 60_000
+      jest.useFakeTimers({ now: startedAt })
+      try {
+        jest
+          .mocked(reviewEventRepository.getPendingSyncEvents)
+          .mockImplementationOnce(async () => {
+            expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+            jest.setSystemTime(completedAt)
+            return []
+          })
+        const listener = jest.fn(
+          () => jest.mocked(networkUtils.setLastSyncTimestamp).mock.calls.length
+        )
+        syncManager.subscribeSyncStatus(listener)
+        const result = await syncManager.performSync(userId)
+        expect(result.success).toBe(true)
+        expect(result.timestamp).toBe(new Date(completedAt).toISOString())
+        expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledTimes(1)
+        expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledWith(
+          userId,
+          result.timestamp
+        )
+        expect(listener).toHaveBeenCalledWith(result)
+        expect(listener).toHaveReturnedWith(1)
+      } finally {
+        jest.useRealTimers()
+      }
+    })
+
+    it('keeps the previous success time on offline, auth, protocol and late-stage failures', async () => {
+      const first = await syncManager.performSync(userId)
+      expect(first.success).toBe(true)
+      expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledTimes(1)
+
+      jest.mocked(networkUtils.isNetworkAvailable).mockResolvedValueOnce(false)
+      expect((await syncManager.performSync(userId)).success).toBe(false)
+      jest
+        .mocked(supabase.auth.getSession)
+        .mockResolvedValueOnce({ data: { session: null }, error: null })
+      jest
+        .mocked(supabase.auth.refreshSession)
+        .mockRejectedValueOnce(new Error('Session expired'))
+      expect((await syncManager.performSync(userId)).success).toBe(false)
+      jest.mocked(supabase.rpc).mockResolvedValueOnce({
+        data: 1,
+        error: null,
+        count: null,
+        status: 200,
+        statusText: 'OK',
+      })
+      expect((await syncManager.performSync(userId)).success).toBe(false)
+      jest
+        .mocked(reviewEventRepository.getPendingSyncEvents)
+        .mockRejectedValueOnce(new Error('Late sync failure'))
+      expect((await syncManager.performSync(userId)).success).toBe(false)
+      expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledTimes(1)
+      expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledWith(
+        userId,
+        first.timestamp
+      )
+    })
+
+    it('does not turn an acknowledged sync into failure when timestamp storage rejects', async () => {
+      jest
+        .mocked(networkUtils.setLastSyncTimestamp)
+        .mockRejectedValueOnce(new Error('Storage unavailable'))
+      const listener = jest.fn()
+      syncManager.subscribeSyncStatus(listener)
+      const result = await syncManager.performSync(userId)
+      expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledTimes(1)
+      expect(result.success).toBe(true)
+      expect(listener).toHaveBeenCalledWith(result)
+      expect((await syncManager.performSync('user-2')).success).toBe(true)
+      expect(networkUtils.setLastSyncTimestamp).toHaveBeenLastCalledWith(
+        'user-2',
+        expect.any(String)
+      )
+    })
+
     it('should include timestamp in sync result', async () => {
       const mockTimestamp = '2025-10-20T00:00:00Z'
       ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
