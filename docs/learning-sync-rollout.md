@@ -43,6 +43,10 @@ zero-downtime migration.
   1. `20260905180000_align_review_rpc_srs_rounding.sql`
   2. `20260905200000_server_authoritative_review_events.sql`
   3. `20260905210000_restore_words_analysis_notes.sql`
+- The subsequent initial-review-date correction
+  `20260906110000_make_new_words_immediately_reviewable.sql` was also applied in
+  the approved follow-up. Do not reapply these migrations merely because they
+  are listed here; inspect target history for any future rollout.
 - Backend protocol 2 must be available before promoting the new native client.
   Coordinate web deployment with the new RPC contract. This ordering does not
   remove the legacy-client limitations during the transition.
@@ -95,5 +99,6 @@ two-client regression; it is not evidence about a hosted migration or store buil
 The user declined additional manual checks for physical-device network behavior,
 upgrading an actual installed old build and real-provider web session expiry.
 These remain **unverified risks**, not successful checks. Real multi-day soak and
-hosted rollout are also unverified. Observing future incidents may expose problems
+hosted two-device/store-build QA remain unverified; the hosted backend/web rollout,
+test-account RPC checks and main production browser smoke are complete. Observing future incidents may expose problems
 but cannot retroactively validate these scenarios or recover unpreserved data.

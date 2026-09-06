@@ -1,8 +1,8 @@
 # New Word Review Eligibility — 2026-09-06
 
 Status: SQL correction merged in PR #108 and applied to production on 2026-09-06.
-The subsequent fixture-name fix is local on `feature/fix-smoke-collection-name`;
-its production smoke passed, but the test fix is not committed or pushed yet.
+The subsequent fixture-name fix merged in PR #109. Local and GitHub production
+smokes both passed; no additional SQL change was needed for the fixture fix.
 
 ## Cause
 
@@ -70,9 +70,16 @@ for the failing hosted learning workflow.
   Word deletion and exact-name collection teardown completed successfully.
 - All 319 web Jest tests, lint and typecheck passed for the test-only follow-up.
 
-## Next Gate
+## Completed Production Verification
 
-Commit/push/PR for the local fixture-name fix still require explicit permission.
-GitHub production smoke has not been rerun with that fix: the successful run was
-local against production. No additional SQL migration, web deployment or mobile
-rebuild is needed to use the deployed initial-date correction.
+PR #109 merged as `15b5c73bb020b8340c2b253cfb612813ffd8f3ea` after green CI.
+The automatic Vercel deployment succeeded, and
+[production smoke 34030539690](https://github.com/oldrefery/dutch-learning-app/actions/runs/34030539690)
+passed all seven checks in 41.6 seconds without retries from that main revision.
+It covered login/account safeguards, three fixture contracts and the complete
+collection/word/SRS scenario, including test-data cleanup. No protected-account
+QA, additional migration or native build was used for this follow-up.
+
+The next CI-only improvement runs the same fixture contracts in an isolated
+credential-free PR job; see `apps/web/e2e/README.md`. It does not replace the
+hosted smoke or the unverified device/session scenarios in `docs/TESTING_PLAN.md`.
