@@ -4,6 +4,39 @@ import path from 'node:path'
 
 const repoRoot = path.resolve(__dirname, '../../../..')
 
+describe('CI warning budget', () => {
+  it.each([
+    [0, 'const ready = true\n'],
+    [1, '// TODO: regression fixture\nconst ready = true\n'],
+  ] as const)(
+    'returns exit status %i for the warning fixture',
+    (status, source) => {
+      const manifest = JSON.parse(
+        readFileSync(path.join(repoRoot, 'package.json'), 'utf8')
+      ) as { scripts: Record<string, string> }
+      const command = manifest.scripts['lint:ci'].split(' ')
+      expect(command.slice(0, 4)).toEqual(['npm', 'run', 'lint', '--'])
+      const result = spawnSync(
+        process.execPath,
+        [
+          path.join(repoRoot, 'node_modules/eslint/bin/eslint.js'),
+          ...command.slice(4),
+          '--no-config-lookup',
+          '--stdin',
+          '--stdin-filename',
+          'warning-budget.js',
+          '--rule',
+          'no-warning-comments:warn',
+        ],
+        { cwd: repoRoot, input: source, encoding: 'utf8', timeout: 15_000 }
+      )
+      expect(result.error).toBeUndefined()
+      expect(result.status).toBe(status)
+      if (status === 1) expect(result.stdout).toContain('no-warning-comments')
+    }
+  )
+})
+
 describe('workspace-aware staged linting', () => {
   it.each([
     ['apps/web/src/proxy.ts', true],

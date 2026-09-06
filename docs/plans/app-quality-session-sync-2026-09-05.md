@@ -587,3 +587,27 @@ organic incidents is not a successful test. No account/device/live Sentry action
 push, PR, merge, migration or deployment is part of this follow-up.
 
 Commit message: `feat(sync): add bounded health diagnostics and rollout guidance`
+
+## Follow-up: Zero-Warning CI Gate
+
+Removed the five remaining duplicate-string warnings in the session profile and
+extended-offline tests by naming synthetic user IDs and rotated token fixtures.
+Assertions, scenario order and application behavior are unchanged. CI now uses
+`--max-warnings=0` instead of allowing seven warnings; no lint rule was disabled.
+
+Two executable gate regressions pass the warning-budget arguments from the actual
+package script to ESLint: a clean stdin fixture exits zero, while a warning-only
+fixture exits one. This catches removal or relaxation of the warning budget,
+not just a lint error in application code. Both existing workspace-selection
+regressions remain active.
+
+Repository lint now reports no warnings. Focused tests, mobile test typecheck and
+format/diff checks pass. Commit hooks rerun the complete mobile and web suites.
+Stryker and database tests were not rerun: their application targets and test
+inputs are unchanged. The previous readiness report remains the dated evidence
+for those broader checks, with its five-warning baseline now eliminated.
+
+Legacy-client rollout policy still requires an explicit decision. The unrelated
+staged/deleted plugin remains untouched; no remote operations were performed.
+
+Commit message: `chore(quality): enforce zero-warning CI lint gate`

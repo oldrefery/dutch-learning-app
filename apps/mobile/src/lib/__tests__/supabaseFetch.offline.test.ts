@@ -5,6 +5,9 @@ jest.unmock('@supabase/supabase-js')
 
 const base = 'https://offline-qa.example.invalid'
 const storageKey = 'qa-offline-session'
+const FIRST_ROTATION_TOKEN = 'rotation-one'
+const SECOND_ROTATION_TOKEN = 'rotation-two'
+const COLD_START_ROTATION_TOKEN = 'cold-start-rotation'
 const day = 24 * 60 * 60 * 1000
 const start = Date.parse('2026-09-06T06:00:00Z')
 const saved = {
@@ -121,7 +124,7 @@ describe('native session persistence over extended offline periods', () => {
       }
 
       transport.mockClear()
-      allowRotation(saved.refresh_token, 'rotation-one')
+      allowRotation(saved.refresh_token, FIRST_ROTATION_TOKEN)
       const recovered = createClient(true)
       await recovered.initialize()
       const results = await Promise.all([
@@ -131,27 +134,27 @@ describe('native session persistence over extended offline periods', () => {
       for (const result of results) {
         expect(result.error).toBeNull()
         expect(result.data.session?.user.id).toBe(saved.user.id)
-        expect(result.data.session?.refresh_token).toBe('rotation-one')
+        expect(result.data.session?.refresh_token).toBe(FIRST_ROTATION_TOKEN)
       }
       expect(transport).toHaveBeenCalledTimes(1)
       expect(JSON.parse(values.get(storageKey)!)).toMatchObject({
         user: saved.user,
-        refresh_token: 'rotation-one',
+        refresh_token: FIRST_ROTATION_TOKEN,
       })
       await recovered.stopAutoRefresh()
 
       jest.setSystemTime(start + 9 * day)
       transport.mockClear()
-      allowRotation('rotation-one', 'rotation-two')
+      allowRotation(FIRST_ROTATION_TOKEN, SECOND_ROTATION_TOKEN)
       const restarted = createClient(true)
       await restarted.initialize()
       expect((await restarted.getSession()).data.session?.refresh_token).toBe(
-        'rotation-two'
+        SECOND_ROTATION_TOKEN
       )
       expect(transport).toHaveBeenCalledTimes(1)
       expect(JSON.parse(values.get(storageKey)!)).toMatchObject({
         user: saved.user,
-        refresh_token: 'rotation-two',
+        refresh_token: SECOND_ROTATION_TOKEN,
       })
     }
   )
@@ -174,24 +177,24 @@ describe('native session persistence over extended offline periods', () => {
     const {
       data: { subscription },
     } = client.onAuthStateChange(events)
-    allowRotation(saved.refresh_token, 'cold-start-rotation')
+    allowRotation(saved.refresh_token, COLD_START_ROTATION_TOKEN)
     try {
       const result = await client.getSession()
       expect(result.error).toBeNull()
       expect(result.data.session?.user.id).toBe(saved.user.id)
-      expect(result.data.session?.refresh_token).toBe('cold-start-rotation')
+      expect(result.data.session?.refresh_token).toBe(COLD_START_ROTATION_TOKEN)
       expect(events).toHaveBeenCalledWith(
         'TOKEN_REFRESHED',
         expect.objectContaining({
           user: saved.user,
-          refresh_token: 'cold-start-rotation',
+          refresh_token: COLD_START_ROTATION_TOKEN,
         })
       )
       expect(events.mock.calls.map(([event]) => event)).not.toContain(
         'SIGNED_OUT'
       )
       expect(JSON.parse(values.get(storageKey)!)).toMatchObject({
-        refresh_token: 'cold-start-rotation',
+        refresh_token: COLD_START_ROTATION_TOKEN,
       })
     } finally {
       subscription.unsubscribe()
