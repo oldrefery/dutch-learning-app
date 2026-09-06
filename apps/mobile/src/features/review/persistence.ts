@@ -3,13 +3,14 @@ import { wordRepository } from '@/db/wordRepository'
 import { calculateNextReview } from '@/utils/srs'
 import { toLocalDateKey } from '@woordenaar/domain'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { learningOperationQueue } from '@/services/learningOperationQueue'
 import type { NativeReviewSubmission } from './controller'
 
 /** Keep the full local persistence payload stable through a failed acknowledgement. */
 export function createNativeReviewPersistence(userId: string) {
   let pending:
     Parameters<typeof reviewEventRepository.recordAssessment>[0] | null = null
-  return async (input: NativeReviewSubmission): Promise<void> => {
+  const persist = async (input: NativeReviewSubmission): Promise<void> => {
     if (
       input.userId !== userId ||
       useApplicationStore.getState().currentUserId !== userId
@@ -60,5 +61,9 @@ export function createNativeReviewPersistence(userId: string) {
       }))
     }
     pending = null
+  }
+  return (input: NativeReviewSubmission): Promise<void> => {
+    const command = { ...input }
+    return learningOperationQueue.run(() => persist(command))
   }
 }

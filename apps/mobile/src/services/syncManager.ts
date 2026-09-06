@@ -1,4 +1,5 @@
 import { collectionService, supabase, wordService } from '@/lib/supabase'
+import { learningOperationQueue } from './learningOperationQueue'
 import {
   wordRepository,
   type WordSyncAcknowledgement,
@@ -115,6 +116,7 @@ interface WordsUpsertResult {
 
 interface SupabaseSessionLike {
   expires_at?: number | null
+  user?: { id?: string }
 }
 
 /**
@@ -295,6 +297,16 @@ export class SyncManager {
     }
 
     this.isSyncing = true
+    try {
+      return await learningOperationQueue.run(() =>
+        this.performSyncPass(userId)
+      )
+    } finally {
+      this.isSyncing = false
+    }
+  }
+
+  private async performSyncPass(userId: string): Promise<SyncResult> {
     const startedAt = Date.now()
     let outcome: SyncOutcome = 'error'
 
@@ -314,7 +326,7 @@ export class SyncManager {
       }
 
       console.log('[Sync] Stage 0.5: auth preflight')
-      const authPrecheckError = await this.ensureSessionForSync()
+      const authPrecheckError = await this.ensureSessionForSync(userId)
       if (authPrecheckError) {
         outcome = 'session'
         const result: SyncResult = {
@@ -515,7 +527,6 @@ export class SyncManager {
       return result
     } finally {
       await this.health.record(userId, outcome, startedAt)
-      this.isSyncing = false
     }
   }
 
@@ -538,7 +549,7 @@ export class SyncManager {
     }
   }
 
-  private async ensureSessionForSync(): Promise<string | null> {
+  private async ensureSessionForSync(userId: string): Promise<string | null> {
     try {
       const { data, error } = await supabase.auth.getSession()
 
@@ -550,7 +561,8 @@ export class SyncManager {
 
       const session = data?.session as SupabaseSessionLike | null | undefined
       if (session && !this.isSessionExpired(session)) {
-        return null
+        // Client-side stale-work guard after queueing, not server authentication.
+        return session.user?.id === userId ? null : SYNC_AUTH_PRECHECK_ERROR
       }
 
       console.log('[Sync] Session missing/expired; attempting refresh')
@@ -562,6 +574,7 @@ export class SyncManager {
       if (
         refreshError ||
         !refreshedSession ||
+        refreshedSession.user?.id !== userId ||
         this.isSessionExpired(refreshedSession)
       ) {
         console.warn('[Sync] Session refresh failed before sync:', {

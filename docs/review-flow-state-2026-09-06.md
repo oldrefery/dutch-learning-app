@@ -190,6 +190,12 @@ performed for this stage.
   preparation and cache updates. Local acknowledgement is not server sync success.
 - Native correction UI stays unavailable until it is serialized with background
   sync and effective-history reconciliation. Browsing is not a correction.
+- Fast-review persistence, sync passes, and explicit conflict resolution share
+  a FIFO in-process queue. Reads used to calculate SRS happen after acquiring the
+  queue. While a sync pass is running, an answer remains in the saving state;
+  it cannot auto-advance before its local commit. This may delay offline-local
+  acknowledgement during a slow online sync. Legacy audio review and progress
+  reset still need integration before correction controls can be enabled.
 
 Local tests cover double taps, timer cancellation, delayed/failed saves, identical
 retry payloads, account switches, actual SQLite idempotency, per-account settings,

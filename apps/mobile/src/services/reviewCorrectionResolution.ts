@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { learningOperationQueue } from './learningOperationQueue'
 import {
   reviewCorrectionRepository,
   sameReviewCorrectionCommand,
@@ -43,12 +44,19 @@ function parseProgress(
 }
 
 /** Explicit Keep server version action. Never called by automatic synchronization. */
-export async function resolveReviewCorrectionConflict(
+export function resolveReviewCorrectionConflict(
   userId: string,
   input: ReviewCorrectionCommand
 ): Promise<void> {
   // Freeze identity and intent across awaits and repeated UI interactions.
   const command = { ...input }
+  return learningOperationQueue.run(() => resolveConflict(userId, command))
+}
+
+async function resolveConflict(
+  userId: string,
+  command: ReviewCorrectionCommand
+): Promise<void> {
   if (command.user_id !== userId) throw new Error('Foreign correction command')
   const local = await reviewCorrectionRepository.getById(
     userId,

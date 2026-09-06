@@ -1,4 +1,5 @@
 import { resolveReviewCorrectionConflict } from '../reviewCorrectionResolution'
+import { learningOperationQueue } from '../learningOperationQueue'
 import { supabase } from '@/lib/supabase'
 import { reviewCorrectionRepository } from '@/db/reviewCorrectionRepository'
 import { keepServerReviewCorrection } from '@/db/reviewCorrectionResolutionRepository'
@@ -73,6 +74,24 @@ beforeEach(() => {
 })
 
 describe('explicit mobile correction conflict resolution', () => {
+  it('waits for sync and freezes the command before joining the queue', async () => {
+    let release!: () => void
+    const gate = new Promise<void>(resolve => {
+      release = resolve
+    })
+    const sync = learningOperationQueue.run(() => gate)
+    const input = { ...command }
+    const result = resolveReviewCorrectionConflict(userId, input)
+    input.assessment = 'easy'
+    await Promise.resolve()
+    const readsBeforeRelease = jest.mocked(reviewCorrectionRepository.getById)
+      .mock.calls.length
+    release()
+    await Promise.all([sync, result])
+    expect(readsBeforeRelease).toBe(0)
+    expect(keepServerReviewCorrection).toHaveBeenCalledWith(command, progress)
+  })
+
   it('refreshes receipts and canonical SRS with account-scoped reads before releasing local intent', async () => {
     await resolve()
     expect(reviewCorrectionSync.pull).toHaveBeenCalledWith(userId)

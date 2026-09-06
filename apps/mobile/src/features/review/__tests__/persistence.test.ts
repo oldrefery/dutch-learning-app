@@ -2,11 +2,13 @@ import { createNativeReviewPersistence } from '../persistence'
 import { wordRepository } from '@/db/wordRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { useApplicationStore } from '@/stores/useApplicationStore'
-import { vocabulary, userId } from './fixtures'
+import { vocabulary, userId, deferred } from './fixtures'
+import { learningOperationQueue } from '@/services/learningOperationQueue'
 import type { NativeReviewSubmission } from '../controller'
 
 jest.mock('@/db/wordRepository')
 jest.mock('@/db/reviewEventRepository')
+const ACCOUNT_CHANGED = 'account changed'
 const input: NativeReviewSubmission = {
   eventId: 'event',
   userId,
@@ -24,6 +26,37 @@ const word = {
   last_sync_attempt_at: null,
   synced_at: null,
 }
+
+it('waits for sync before reading SRS and freezes input while waiting', async () => {
+  const gate = deferred()
+  const sync = learningOperationQueue.run(() => gate.promise)
+  const command = { ...input }
+  const result = createNativeReviewPersistence(userId)(command)
+  command.assessment = 'again'
+  await Promise.resolve()
+  const readsBeforeRelease = jest.mocked(wordRepository.getWordByIdAndUserId)
+    .mock.calls.length
+  gate.resolve()
+  await Promise.all([sync, result])
+  expect(readsBeforeRelease).toBe(0)
+  expect(reviewEventRepository.recordAssessment).toHaveBeenCalledWith(
+    expect.objectContaining({
+      event: expect.objectContaining({ assessment: 'good' }),
+    })
+  )
+})
+
+it('rechecks the account after waiting and does not touch the next account data', async () => {
+  const gate = deferred()
+  const sync = learningOperationQueue.run(() => gate.promise)
+  const result = createNativeReviewPersistence(userId)(input)
+  useApplicationStore.setState({ currentUserId: 'other', words: [] })
+  gate.resolve()
+  await sync
+  await expect(result).rejects.toThrow(ACCOUNT_CHANGED)
+  expect(wordRepository.getWordByIdAndUserId).not.toHaveBeenCalled()
+  expect(reviewEventRepository.recordAssessment).not.toHaveBeenCalled()
+})
 beforeEach(() => {
   jest.clearAllMocks()
   useApplicationStore.setState({ currentUserId: userId, words: vocabulary })
@@ -84,7 +117,7 @@ it('retains the payload after a failed transaction', async () => {
 it('does not write for a foreign account or an unavailable word', async () => {
   const persist = createNativeReviewPersistence(userId)
   await expect(persist({ ...input, userId: 'other' })).rejects.toThrow(
-    'account changed'
+    ACCOUNT_CHANGED
   )
   jest.mocked(wordRepository.getWordByIdAndUserId).mockResolvedValueOnce(null)
   await expect(persist(input)).rejects.toThrow('unavailable')
@@ -99,7 +132,7 @@ it('rejects an account switch during preparation and never overwrites the next a
       return word
     })
   await expect(createNativeReviewPersistence(userId)(input)).rejects.toThrow(
-    'account changed'
+    ACCOUNT_CHANGED
   )
   expect(reviewEventRepository.recordAssessment).not.toHaveBeenCalled()
   expect(useApplicationStore.getState().words).toEqual([])

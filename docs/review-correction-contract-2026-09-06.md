@@ -178,8 +178,14 @@ large-ledger optimization requires a separately verified protocol.
   SRS. Existing tombstone synchronization retains responsibility for deletions.
   Normal synchronization is still required after resolution, especially when
   later queued reviews prevent applying the refreshed progress immediately.
+- Conflict resolution, complete background sync passes, and fast-review persistence
+  now share an in-process FIFO operation queue. Commands are copied before waiting;
+  ownership is checked inside the operation. Failed operations release the queue.
+  Sync checks the current/refreshed client session owner after acquiring its turn;
+  this stale-work guard does not replace server authentication and RLS.
 - These storage/transport adapters are not connected to the mobile screen yet.
-  The native controller must serialize the action with background synchronization,
+  Before enabling correction UI, include remaining learning entry points (legacy
+  audio-review assessment and progress reset) in the same serialization boundary,
   guard stale session callbacks, reload effective history/local words, and resume
   the remaining queue. Do not enable correction UI before that integration.
 - Server receipt and word reads are separate requests, not a transactional

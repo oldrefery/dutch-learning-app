@@ -4,6 +4,7 @@
  */
 
 import { SyncManager } from '../syncManager'
+import { learningOperationQueue } from '../learningOperationQueue'
 import * as networkUtils from '@/utils/network'
 import { supabase, wordService } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
@@ -105,6 +106,7 @@ describe('SyncManager', () => {
   const SERVER_TIMESTAMP = '2026-07-25T16:00:00.000Z'
   const DEFAULT_REVIEW_DATE = '2026-02-23'
   const createSession = (expiresInSeconds: number) => ({
+    user: { id: userId },
     access_token: 'access-token',
     refresh_token: 'refresh-token',
     expires_at: Math.floor(Date.now() / 1000) + expiresInSeconds,
@@ -786,6 +788,71 @@ describe('SyncManager', () => {
   describe('sync state management', () => {
     const SYNC_IN_PROGRESS_ERROR = 'Sync already in progress'
 
+    it('does not pull or push for an account changed while waiting', async () => {
+      let release!: () => void
+      const gate = new Promise<void>(resolve => {
+        release = resolve
+      })
+      const correction = learningOperationQueue.run(() => gate)
+      const sync = syncManager.performSync(userId)
+      jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({
+        data: {
+          session: { ...createSession(3600), user: { id: 'another-user' } },
+        },
+        error: null,
+      } as never)
+      release()
+      await correction
+      expect((await sync).success).toBe(false)
+      expect(supabase.from).not.toHaveBeenCalled()
+      expect(supabase.rpc).not.toHaveBeenCalled()
+    })
+
+    it('holds later operations until sync finishes, including an offline result', async () => {
+      let entered!: () => void
+      let release!: (online: boolean) => void
+      const started = new Promise<void>(resolve => {
+        entered = resolve
+      })
+      const network = new Promise<boolean>(resolve => {
+        release = resolve
+      })
+      jest
+        .mocked(networkUtils.isNetworkAvailable)
+        .mockImplementationOnce(() => {
+          entered()
+          return network
+        })
+      const sync = syncManager.performSync(userId)
+      await started
+      const operation = jest.fn(async () => 'saved')
+      const next = learningOperationQueue.run(operation)
+      await Promise.resolve()
+      const callsBeforeRelease = operation.mock.calls.length
+      release(false)
+      expect((await sync).success).toBe(false)
+      await expect(next).resolves.toBe('saved')
+      expect(callsBeforeRelease).toBe(0)
+    })
+
+    it('waits for learning operations before starting network work', async () => {
+      let release!: () => void
+      const gate = new Promise<void>(resolve => {
+        release = resolve
+      })
+      const correction = learningOperationQueue.run(() => gate)
+      const sync = syncManager.performSync(userId)
+      await Promise.resolve()
+      const callsBeforeRelease = jest.mocked(networkUtils.isNetworkAvailable)
+        .mock.calls.length
+      const duplicate = await syncManager.performSync(userId)
+      release()
+      await Promise.all([correction, sync])
+      expect(callsBeforeRelease).toBe(0)
+      expect(duplicate.error).toBe(SYNC_IN_PROGRESS_ERROR)
+      expect(networkUtils.isNetworkAvailable).toHaveBeenCalledTimes(1)
+    })
+
     it('should prevent concurrent syncs', async () => {
       ;(networkUtils.isNetworkAvailable as jest.Mock).mockResolvedValue(true)
 
@@ -978,6 +1045,10 @@ describe('SyncManager', () => {
       expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledTimes(1)
       expect(result.success).toBe(true)
       expect(listener).toHaveBeenCalledWith(result)
+      jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({
+        data: { session: { ...createSession(3600), user: { id: 'user-2' } } },
+        error: null,
+      } as never)
       expect((await syncManager.performSync('user-2')).success).toBe(true)
       expect(networkUtils.setLastSyncTimestamp).toHaveBeenLastCalledWith(
         'user-2',
