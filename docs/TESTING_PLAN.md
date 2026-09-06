@@ -72,6 +72,15 @@ run MMKV/Keychain, NetInfo, a real Auth server, or nine days of device uptime.
 Server responses determine refresh validity; the modeled elapsed time must not
 be interpreted as a guarantee about hosted inactivity/session-lifetime policies.
 
+`initDB.migration.sqlite` executes the actual database initializer against a new
+file-backed SQLite database with a reconstructed v8 schema and synthetic rows.
+It checks v9 upgrade/reopen, concurrent initialization, and failures after column
+creation, queue-table creation, backfill, or before the AsyncStorage version is
+saved. Retrying must preserve SRS/history, enqueue pending events once in order,
+and install working insert/acknowledgement/delete/tombstone triggers. Fixtures
+are removed after each test. The Expo bridge and AsyncStorage remain doubles:
+this is not an actual shipped-device upgrade or an OS/power-loss durability test.
+
 Existing SQL text assertions are useful schema-contract smoke checks, but must
 not be described as database integration tests. Likewise, a successful mocked
 RPC is not evidence that live RLS or server idempotency works.

@@ -521,3 +521,36 @@ No accounts, devices, backend services or release tools were used in this step.
 The unrelated staged/deleted plugin remains untouched.
 
 Commit message: `test(auth): cover extended offline session recovery`
+
+## Follow-up: Interrupted Local Queue Migration
+
+Added six file-backed SQLite tests executing the actual `initializeDatabase`
+path rather than only replaying migration constants or asserting mock calls.
+A reconstructed v8 database contains two synthetic users' pending, synced,
+error and conflict events plus existing SRS state. Pending rows are enqueued
+once in timestamp/ID order; non-pending history and all word fields survive.
+
+Injected failures after adding `review_date`, creating the queue table, filling
+the queue and before saving the external schema version leave version 8 intact.
+The failed connection closes; a new connection retries to v9, preserves data and
+reopens without duplicates. Concurrent initializers share one migration. After
+recovery, actual SQL triggers enqueue new events, acknowledge/delete commands
+and clear only the tombstoned word's queue/history.
+
+No application-code change was required. Temporarily disabling the backfill
+selection caused the healthy-upgrade test to fail on an empty queue; the original
+SQL was restored before validation. This targeted sensitivity check is not a
+Stryker score. Node SQLite uses a disposable file, but Expo/AsyncStorage and
+interruptions are test doubles, not an OS crash or a real old-device upgrade.
+No existing database, account, device or hosted migration was touched. Each
+generated fixture directory is deleted by test teardown.
+
+Validation: 103 mobile suites / 1,229 tests / 18 snapshots pass, along with
+mobile test typecheck, repository lint and diff checks. Web/domain mutation
+targets are unchanged; Stryker and hosted/native checks were not rerun.
+
+Physical-device networking, real multi-day soak, actual shipped-device upgrade
+and coordinated hosted protocol rollout remain open. The staged/deleted plugin
+is still excluded; no push, PR or deployment.
+
+Commit message: `test(db): cover interrupted learning queue migrations`
