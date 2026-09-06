@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -12,12 +12,12 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useFocusEffect } from 'expo-router/react-navigation'
 import { router, type Href } from 'expo-router'
 import Constants from 'expo-constants'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
 import { ViewThemed, TextThemed } from '@/components/Themed'
 import { useSessionUser } from '@/hooks/useSessionUser'
+import { useSyncStatus } from '@/hooks/useSyncStatus'
 import { supabase } from '@/lib/supabaseClient'
 import { userService } from '@/lib/supabase'
 import { Colors } from '@/constants/Colors'
@@ -30,10 +30,7 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useSettingsStore } from '@/stores/useSettingsStore'
 import { UpdateStatusBadge } from '@/components/UpdateStatusBadge'
 import { syncManager } from '@/services/syncManager'
-import {
-  syncStatusService,
-  type SyncStatusSnapshot,
-} from '@/services/syncStatusService'
+import type { SyncStatusSnapshot } from '@/services/syncStatusService'
 import { wordRepository } from '@/db/wordRepository'
 
 const getErrorMessage = (error: unknown, fallback: string) =>
@@ -404,12 +401,13 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets()
   const colorScheme = useColorScheme() ?? 'light'
   const [isSyncing, setIsSyncing] = useState(false)
-  const [isLoadingSyncStatus, setIsLoadingSyncStatus] = useState(false)
-  const [syncSnapshot, setSyncSnapshot] = useState<SyncStatusSnapshot | null>(
-    null
-  )
   const { signOut, loading: authLoading } = useSimpleAuth()
   const { userAccessLevel, currentUserId } = useApplicationStore()
+  const {
+    snapshot: syncSnapshot,
+    isLoading: isLoadingSyncStatus,
+    refresh: loadSyncStatus,
+  } = useSyncStatus(currentUserId)
   const user = useSessionUser(currentUserId)
   const {
     autoPlayPronunciation,
@@ -431,33 +429,6 @@ export default function SettingsScreen() {
     syncSnapshot,
     isSyncing,
     isDarkMode
-  )
-
-  const loadSyncStatus = useCallback(async () => {
-    if (!currentUserId) {
-      setSyncSnapshot(null)
-      return
-    }
-
-    setIsLoadingSyncStatus(true)
-    try {
-      const snapshot = await syncStatusService.getSnapshot(currentUserId)
-      setSyncSnapshot(snapshot)
-    } catch (error) {
-      Sentry.captureException(error, {
-        tags: { operation: 'loadSyncStatus' },
-        extra: { currentUserId },
-      })
-      ToastService.show('Could not load sync status.', ToastType.ERROR)
-    } finally {
-      setIsLoadingSyncStatus(false)
-    }
-  }, [currentUserId])
-
-  useFocusEffect(
-    useCallback(() => {
-      void loadSyncStatus()
-    }, [loadSyncStatus])
   )
 
   const handleLogout = async () => {
