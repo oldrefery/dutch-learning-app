@@ -13,6 +13,19 @@ import { progressRepository } from '@/db/progressRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { learningResetRepository } from '@/db/learningResetRepository'
 import { getLearningQueueHealth } from '@/db/learningQueueHealth'
+import { reviewCorrectionRepository } from '@/db/reviewCorrectionRepository'
+import { reviewCorrectionSync } from '../reviewCorrectionSync'
+
+jest.mock('@/db/reviewCorrectionRepository', () => ({
+  reviewCorrectionRepository: { getNext: jest.fn().mockResolvedValue(null) },
+}))
+jest.mock('../reviewCorrectionSync', () => ({
+  reviewCorrectionSync: {
+    isAvailable: jest.fn().mockResolvedValue(false),
+    pull: jest.fn().mockResolvedValue(0),
+    push: jest.fn().mockResolvedValue(undefined),
+  },
+}))
 
 jest.mock('@/db/learningQueueHealth', () => ({
   getLearningQueueHealth: jest.fn().mockResolvedValue({
@@ -276,6 +289,10 @@ describe('SyncManager', () => {
       statusText: 'OK',
     })
     jest.mocked(learningResetRepository.getNext).mockResolvedValue(null)
+    jest.mocked(reviewCorrectionRepository.getNext).mockResolvedValue(null)
+    jest.mocked(reviewCorrectionSync.isAvailable).mockResolvedValue(false)
+    jest.mocked(reviewCorrectionSync.pull).mockResolvedValue(0)
+    jest.mocked(reviewCorrectionSync.push).mockResolvedValue(undefined)
     jest
       .mocked(learningResetRepository.acknowledge)
       .mockReset()
@@ -1564,6 +1581,7 @@ describe('SyncManager', () => {
 
   describe('review event synchronization', () => {
     const createdAt = '2026-08-29T10:00:00.000Z'
+    const reviewDate = '2026-08-29'
 
     const createRemoteReviewEvent = (
       overrides: Record<string, unknown> = {}
@@ -1585,12 +1603,13 @@ describe('SyncManager', () => {
     })
 
     const installReviewEventTable = (
-      reviewEventTable: ReturnType<typeof createReviewEventTable>
+      reviewEventTable: ReturnType<typeof createReviewEventTable>,
+      wordsQuery = createWordsPullQuery()
     ) => {
       mockSupabaseFrom((tableName: string) => {
         if (tableName === 'words') {
           return {
-            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            select: jest.fn().mockReturnValue(wordsQuery),
             upsert: createUpsertMock(),
           }
         }
@@ -1740,7 +1759,7 @@ describe('SyncManager', () => {
         sequence: 2,
         word_id: REMOTE_WORD_ID,
         reset_at: createdAt,
-        review_date: '2026-08-29',
+        review_date: reviewDate,
       }
       const pending = [1, 3].map(sequence => ({
         ...createRemoteReviewEvent({
@@ -1794,13 +1813,136 @@ describe('SyncManager', () => {
       )
     })
 
+    it('orders review, correction, reset and next review without overtaking an edit', async () => {
+      const correction = {
+        correction_id: 'correction-2',
+        event_id: 'event-1',
+        word_id: REMOTE_WORD_ID,
+        user_id: userId,
+        expected_revision: 0,
+        assessment: 'hard' as const,
+        sequence: 2,
+        status: 'pending' as const,
+        error: null,
+      }
+      const reset = {
+        operation_id: 'reset-3',
+        sequence: 3,
+        word_id: REMOTE_WORD_ID,
+        reset_at: createdAt,
+        review_date: reviewDate,
+      }
+      const pending = [1, 4].map(sequence => ({
+        ...createRemoteReviewEvent({
+          event_id: `event-${sequence}`,
+          local_sequence: sequence,
+        }),
+        created_at: null,
+        sync_status: 'pending',
+        last_sync_attempt_at: null,
+        synced_at: null,
+      }))
+      const upsert = createUpsertMock()
+      const wordsRange = jest.fn().mockResolvedValue({ data: [], error: null })
+      installReviewEventTable(
+        createReviewEventTable(createWordsPullQuery(), upsert),
+        createWordsPullQuery(wordsRange)
+      )
+      jest.mocked(reviewCorrectionSync.isAvailable).mockResolvedValue(true)
+      jest
+        .mocked(reviewCorrectionRepository.getNext)
+        .mockResolvedValueOnce(correction)
+        .mockResolvedValueOnce(correction)
+      jest
+        .mocked(learningResetRepository.getNext)
+        .mockResolvedValueOnce(reset)
+        .mockResolvedValueOnce(reset)
+        .mockResolvedValueOnce(reset)
+      ;(reviewEventRepository.getPendingSyncEvents as jest.Mock)
+        .mockResolvedValueOnce(pending)
+        .mockResolvedValueOnce([pending[1]])
+        .mockResolvedValueOnce([pending[1]])
+        .mockResolvedValueOnce([pending[1]])
+      const ok = { error: null, count: null, status: 200, statusText: 'OK' }
+      jest
+        .mocked(supabase.rpc)
+        .mockResolvedValueOnce({ ...ok, data: 2 })
+        .mockResolvedValueOnce({ ...ok, data: [{ word_id: REMOTE_WORD_ID }] })
+      expect((await syncManager.performSync(userId)).success).toBe(true)
+      const editOrder = jest.mocked(reviewCorrectionSync.push).mock
+        .invocationCallOrder[0]
+      const resetOrder = jest.mocked(learningResetRepository.acknowledge).mock
+        .invocationCallOrder[0]
+      expect(upsert.mock.calls.map(call => call[0][0].event_id)).toEqual([
+        'event-1',
+        'event-4',
+      ])
+      expect(upsert.mock.invocationCallOrder[0]).toBeLessThan(editOrder)
+      expect(editOrder).toBeLessThan(resetOrder)
+      expect(resetOrder).toBeLessThan(upsert.mock.invocationCallOrder[1])
+      expect(reviewCorrectionSync.push).toHaveBeenCalledWith(userId, correction)
+      expect(reviewCorrectionSync.pull).toHaveBeenCalledTimes(2)
+      expect(wordsRange.mock.invocationCallOrder.at(-1)).toBeGreaterThan(
+        jest.mocked(reviewCorrectionSync.pull).mock.invocationCallOrder[1]
+      )
+    })
+
+    it.each([false, true])(
+      'retains a blocked correction and does not send subsequent reviews (capability=%s)',
+      async available => {
+        const correction = {
+          correction_id: 'blocked',
+          event_id: 'original',
+          word_id: REMOTE_WORD_ID,
+          user_id: userId,
+          expected_revision: 0,
+          assessment: 'hard' as const,
+          sequence: 1,
+          status: 'pending' as const,
+          error: null,
+        }
+        const upsert = createUpsertMock()
+        installReviewEventTable(
+          createReviewEventTable(createWordsPullQuery(), upsert)
+        )
+        jest
+          .mocked(reviewCorrectionSync.isAvailable)
+          .mockResolvedValue(available)
+        jest
+          .mocked(reviewCorrectionRepository.getNext)
+          .mockResolvedValue(correction)
+        jest
+          .mocked(reviewCorrectionSync.push)
+          .mockRejectedValueOnce(new Error('Correction conflict'))
+        ;(
+          reviewEventRepository.getPendingSyncEvents as jest.Mock
+        ).mockResolvedValue([
+          {
+            ...createRemoteReviewEvent({
+              event_id: 'later',
+              local_sequence: 2,
+            }),
+            sync_status: 'pending',
+          },
+        ])
+        expect((await syncManager.performSync(userId)).success).toBe(false)
+        expect(upsert).not.toHaveBeenCalled()
+        expect(
+          reviewEventRepository.reconcilePushedEvents
+        ).not.toHaveBeenCalled()
+        expect(reviewCorrectionSync.push).toHaveBeenCalledTimes(
+          available ? 1 : 0
+        )
+      }
+    )
+
     it('retains a reset after a lost response and retries the same command', async () => {
       const reset = {
         operation_id: 'reset-retry',
         sequence: 1,
         word_id: REMOTE_WORD_ID,
         reset_at: createdAt,
-        review_date: '2026-08-29',
+        review_date: reviewDate,
       }
       installReviewEventTable(createReviewEventTable(createWordsPullQuery()))
       jest.mocked(learningResetRepository.getNext).mockResolvedValue(reset)

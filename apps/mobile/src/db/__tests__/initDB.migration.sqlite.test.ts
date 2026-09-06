@@ -21,11 +21,11 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }))
 jest.mock('@/lib/sentry')
 
-type Fault = 'column' | 'table' | 'backfill' | 'version' | null
+type Fault = 'column' | 'table' | 'backfill' | 'version' | 'corrections' | null
 
 // Execute the actual initializer and SQL on a disposable file, replacing only
 // the Expo bridge and AsyncStorage. Closing/reopening uses a new SQLite handle.
-describe('v8 to v9 migration recovery on file-backed SQLite', () => {
+describe('v8 to current migration recovery on file-backed SQLite', () => {
   let directory: string
   let db: DatabaseSync
   let version: string
@@ -86,7 +86,7 @@ describe('v8 to v9 migration recovery on file-backed SQLite', () => {
       ['pending-b', 'qa-a'],
       ['pending-c', 'qa-b'],
     ])
-    expect(version).toBe('9')
+    expect(version).toBe('10')
     expect(db.prepare('PRAGMA foreign_keys').get()).toEqual({ foreign_keys: 1 })
     expect(db.prepare('PRAGMA foreign_key_check').all()).toEqual([])
   }
@@ -137,6 +137,30 @@ describe('v8 to v9 migration recovery on file-backed SQLite', () => {
     jest.mocked(SQLite.openDatabaseAsync).mockImplementation(async () => {
       db = new DatabaseSync(file)
       return {
+        withExclusiveTransactionAsync: async (
+          callback: (tx: {
+            execAsync: (sql: string) => Promise<void>
+          }) => Promise<void>
+        ) => {
+          db.exec('BEGIN')
+          try {
+            await callback({
+              execAsync: async (sql: string) => {
+                if (fault === 'corrections') {
+                  db.exec(
+                    sql.slice(0, sql.indexOf('DROP TABLE learning_commands;'))
+                  )
+                  interrupt()
+                }
+                db.exec(sql)
+              },
+            })
+            db.exec('COMMIT')
+          } catch (error) {
+            db.exec('ROLLBACK')
+            throw error
+          }
+        },
         execAsync: async (sql: string) => {
           if (
             sql === MIGRATION_V9_LEARNING_COMMANDS &&
@@ -178,7 +202,7 @@ describe('v8 to v9 migration recovery on file-backed SQLite', () => {
     checkQueueTriggers()
   })
 
-  it.each(['column', 'table', 'backfill', 'version'] as const)(
+  it.each(['column', 'table', 'backfill', 'version', 'corrections'] as const)(
     'retries after interruption at %s without losing or duplicating commands',
     async phase => {
       fault = phase

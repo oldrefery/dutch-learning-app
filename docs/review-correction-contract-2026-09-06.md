@@ -5,8 +5,10 @@
 The server contract is implemented and tested in isolated local PostgreSQL.
 Migration `20260906160000_add_review_corrections.sql` is **not deployed**.
 No application account or hosted database was used during implementation.
-Web/mobile integration, durable mobile correction sync, and fast review UI remain
-the next implementation stages. The feature is not yet available in the app.
+Mobile now has a durable correction queue and effective-history reader, tested
+against SQLite and mocked transport. Session integration, conflict-resolution UI,
+web integration, and fast review UI remain the next stages. There is no UI entry
+point for creating corrections yet; the feature is not available in the app.
 
 This is the persistence foundation for
 [fast recognition with review history](brainstorms/2026-09-06-fast-recognition-history-brainstorm.md).
@@ -115,13 +117,46 @@ possible upload: the server may already have committed it without an acknowledge
 
 The ledger has its own `(user_id, created_at, correction_id)` index. Original
 event `created_at` does not change, so the existing event cursor cannot discover
-corrections. A correction pull/reconciliation strategy still needs implementation
-and tests for pagination and late transaction commits; the index alone does not
-make a timestamp cursor safe against out-of-order commits.
+corrections. Mobile reconciles the complete correction ledger in pages of 250 on
+each capable sync pass, ordered by correction ID. Every pass restarts at zero:
+late commits missed by offset pagination are recovered on the next pass, without
+persisting an unsafe timestamp cursor. This favors correctness over bandwidth;
+large-ledger optimization requires a separately verified protocol.
 
-Local correction optimism, rollback on conflicts, process restart, account changes,
-and session history restoration must be tested before enabling the UI. No fallback
-may send an extra ordinary review to simulate a correction.
+### Implemented mobile persistence
+
+- SQLite schema v10 rebuilds the learning-command constraint atomically and
+  preserves pending review/reset sequences and the AUTOINCREMENT high-water mark.
+- A correction and its queue entry commit together. Commands are user-scoped and
+  sent in durable order alongside ordinary answers and explicit resets.
+- Original review payloads are never rewritten. Only confirmed receipts affect
+  the local effective view used by history and adaptive decisions.
+- There is **no optimistic correction SRS update**. Receipt reconciliation is
+  followed by a canonical word pull after acknowledgements clear the queue.
+- Lost responses retain the same operation ID and payload. The client obtains
+  that operation's immutable receipt, not the potentially newer effective state
+  returned by an idempotent RPC retry.
+- Missing original events are fetched before receipts are stored. Locally
+  tombstoned words are not resurrected and do not block their pending deletion.
+- Confirmed receipts cannot silently change. SQLite enforces required confirmed
+  SRS fields, while transport validation checks ownership, identities, revisions,
+  assessment values, numeric bounds, and timestamps.
+- An unavailable backend retains pending corrections and stops before later
+  commands. Conflict responses persist a conflict state and also stop the queue;
+  they are never acknowledged as successful.
+
+### Required before exposing correction actions
+
+- Present pending/conflicted edits and implement explicit conflict resolution.
+  Currently an unresolved correction prevents another edit of the same event;
+  terminal conflicts intentionally block later queue commands until resolved.
+- Keep a same-word follow-up review from using unconfirmed correction progress.
+  The session layer must wait for reconciliation or explicitly resolve the edit;
+  do not calculate a new assessment from a guessed optimistic state.
+- Preserve active-question/history state, completion history, and account-bound
+  session restoration. Wire effective results into the new summaries and web.
+- Verify real HTTP/Auth integration and native runtime behavior before rollout.
+  No fallback may send an extra ordinary review to simulate a correction.
 
 ## Verification
 
@@ -139,6 +174,12 @@ Coverage includes:
 - RLS, anonymous access, forged word/event binding, forbidden direct writes;
 - caller rollback, tombstones, legacy multi-row retries, and late offline dates;
 - applying the migration over existing data without changing its contents.
+
+Mobile tests additionally cover actual SQLite rollback, close/reopen persistence,
+migration failure/retry, effective history without duplicate events, ownership,
+tombstones, and review/correction/reset ordering. Transport is mocked for lost
+acknowledgements, unsupported capability, stale conflicts, account switches,
+receipt validation, and full-ledger pagination/reconciliation.
 
 HTTP/Auth integration and native/web runtime checks for this feature are not yet
 performed. Remote migration and rollout require separate explicit authorization.

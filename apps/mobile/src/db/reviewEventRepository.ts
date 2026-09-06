@@ -191,7 +191,7 @@ export class ReviewEventRepository {
   ): Promise<LocalReviewEvent[]> {
     const db = await getDatabase()
     const rows = await db.getAllAsync<Record<string, unknown>>(
-      `SELECT * FROM review_events
+      `SELECT * FROM effective_review_events
        WHERE user_id = ?
        ORDER BY reviewed_at DESC, event_id DESC
        LIMIT ?`,
@@ -209,7 +209,7 @@ export class ReviewEventRepository {
   ): Promise<LocalReviewEvent[]> {
     const db = await getDatabase()
     const rows = await db.getAllAsync<Record<string, unknown>>(
-      `SELECT * FROM review_events
+      `SELECT * FROM effective_review_events
        WHERE user_id = ? AND word_id = ?
        ORDER BY reviewed_at DESC, event_id DESC
        LIMIT ?`,
@@ -244,12 +244,12 @@ export class ReviewEventRepository {
       const placeholders = chunk.map(() => '?').join(', ')
       const rows = await db.getAllAsync<Record<string, unknown>>(
         `SELECT * FROM (
-           SELECT review_events.*,
+           SELECT effective_review_events.*,
              ROW_NUMBER() OVER (
                PARTITION BY word_id
                ORDER BY reviewed_at DESC, event_id DESC
              ) AS review_rank
-           FROM review_events
+           FROM effective_review_events
            WHERE user_id = ? AND word_id IN (${placeholders})
          )
          WHERE review_rank <= ?

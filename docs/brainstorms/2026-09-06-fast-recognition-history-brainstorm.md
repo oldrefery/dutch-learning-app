@@ -134,11 +134,15 @@ lost updates. Reading an older result remains available even if editing is block
 
 ## Operational constraints and current status
 
-UX accepted by the user. The first implementation stage now includes an additive
-server migration and isolated PostgreSQL regression tests. See the
+UX accepted by the user. The implementation now includes an additive server
+migration, isolated PostgreSQL regression tests, and mobile durable correction
+storage/sync with an effective-history projection. SQLite and mocked transport
+tests cover this persistence layer; real HTTP and native runtime QA remain. See the
 [correction contract](../review-correction-contract-2026-09-06.md) for API semantics,
-compatibility boundaries, and the remaining client/sync work. The migration has
-not been deployed; mobile and web runtime behavior have not changed yet.
+compatibility boundaries, and the remaining session/conflict-resolution work.
+The migration has not been deployed. The review UI is unchanged and does not
+expose correction actions yet. Next: separate question/history session state,
+then implement the web and mobile flows with explicit pending/conflict handling.
 
 Keep the current feature branch; the user has committed the earlier sync-badge
 contrast fix. Do not commit, push, publish, or migrate a remote environment without

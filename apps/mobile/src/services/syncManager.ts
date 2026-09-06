@@ -15,6 +15,7 @@ import {
 } from '@/db/collectionRepository'
 import {
   reviewEventRepository,
+  type LocalReviewEvent,
   type ReviewEventSyncAcknowledgement,
 } from '@/db/reviewEventRepository'
 import {
@@ -36,6 +37,9 @@ import {
   learningResetRepository,
   type PendingLearningReset,
 } from '@/db/learningResetRepository'
+import { reviewCorrectionRepository } from '@/db/reviewCorrectionRepository'
+import { reviewCorrectionSync } from './reviewCorrectionSync'
+import type { PendingReviewCorrection } from '@/types/ReviewCorrection'
 
 export interface SyncResult {
   success: boolean
@@ -66,9 +70,22 @@ const RLS_ERROR_PATTERNS = [
   'permission denied for table',
 ]
 
+function reviewsBeforeBoundary(
+  events: LocalReviewEvent[],
+  boundary: number
+): LocalReviewEvent[] {
+  if (!Number.isFinite(boundary)) return events
+  return events.filter(event => {
+    if (event.local_sequence === undefined)
+      throw new Error('Missing durable review sequence')
+    return event.local_sequence < boundary
+  })
+}
+
 type SyncErrorType = 'auth_expired' | 'rls' | 'other'
 type SyncStage =
   | 'check_protocol'
+  | 'pull_review_corrections'
   | 'pull_collections'
   | 'pull_words'
   | 'pull_progress'
@@ -318,6 +335,11 @@ export class SyncManager {
         this.ensureLearningProtocol()
       )
       outcome = 'error'
+      const correctionsAvailable = await this.runSyncStageWithSessionRetry(
+        'check_protocol',
+        userId,
+        () => reviewCorrectionSync.isAvailable()
+      )
 
       // Step 0: Pull collections from Supabase
       console.log('[Sync] Stage 1: pull collections')
@@ -356,6 +378,13 @@ export class SyncManager {
         userId,
         async () => this.pullReviewEventsFromSupabase(userId, reviewEventCursor)
       )
+      const pulledCorrections = correctionsAvailable
+        ? await this.runSyncStageWithSessionRetry(
+            'pull_review_corrections',
+            userId,
+            () => reviewCorrectionSync.pull(userId)
+          )
+        : 0
 
       // Step 3: Push pending collection updates to Supabase (needed for FK on words)
       console.log('[Sync] Stage 5: push collections')
@@ -385,7 +414,8 @@ export class SyncManager {
       const pushedReviewEventsCount = await this.runSyncStageWithSessionRetry(
         'push_review_events',
         userId,
-        async () => this.pushReviewEventsToSupabase(userId)
+        async () =>
+          this.pushReviewEventsToSupabase(userId, correctionsAvailable)
       )
 
       // Upload acknowledgements confirm metadata/event receipt, not the local
@@ -393,15 +423,23 @@ export class SyncManager {
       if (
         pushedWordsCount > 0 ||
         pushedReviewEventsCount > 0 ||
-        pulledReviewEvents.length > 0
+        pulledReviewEvents.length > 0 ||
+        pulledCorrections > 0
       ) {
-        await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
-          this.pullWordsFromSupabase(userId, wordCursor)
-        )
         await this.runSyncStageWithSessionRetry(
           'pull_review_events',
           userId,
           () => this.pullReviewEventsFromSupabase(userId, reviewEventCursor)
+        )
+        if (correctionsAvailable) {
+          await this.runSyncStageWithSessionRetry(
+            'pull_review_corrections',
+            userId,
+            () => reviewCorrectionSync.pull(userId)
+          )
+        }
+        await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
+          this.pullWordsFromSupabase(userId, wordCursor)
         )
       }
 
@@ -1068,25 +1106,33 @@ export class SyncManager {
     }
   }
 
-  private async pushReviewEventsToSupabase(userId: string): Promise<number> {
+  private async pushReviewEventsToSupabase(
+    userId: string,
+    correctionsAvailable: boolean
+  ): Promise<number> {
     let totalPushed = 0
 
     while (true) {
       const reset = await learningResetRepository.getNext(userId)
+      const correction = await reviewCorrectionRepository.getNext(userId)
+      const boundary = Math.min(
+        reset?.sequence ?? Infinity,
+        correction?.sequence ?? Infinity
+      )
       const allPendingEvents = await reviewEventRepository.getPendingSyncEvents(
         userId,
         REVIEW_EVENT_SYNC_PAGE_SIZE
       )
-      const pendingEvents = reset
-        ? allPendingEvents.filter(event => {
-            if (event.local_sequence === undefined)
-              throw new Error('Missing durable review sequence')
-            return event.local_sequence < reset.sequence
-          })
-        : allPendingEvents
+      const pendingEvents = reviewsBeforeBoundary(allPendingEvents, boundary)
       if (pendingEvents.length === 0) {
-        if (reset) {
-          await this.pushLearningReset(userId, reset)
+        if (
+          await this.pushNextControlCommand(
+            userId,
+            reset,
+            correction,
+            correctionsAvailable
+          )
+        ) {
           totalPushed += 1
           continue
         }
@@ -1128,11 +1174,34 @@ export class SyncManager {
       )
       totalPushed += pendingEvents.length
 
-      if (!reset && pendingEvents.length < REVIEW_EVENT_SYNC_PAGE_SIZE) {
+      if (
+        !reset &&
+        !correction &&
+        pendingEvents.length < REVIEW_EVENT_SYNC_PAGE_SIZE
+      ) {
         console.log(`[Sync] Pushed ${totalPushed} review events to Supabase`)
         return totalPushed
       }
     }
+  }
+
+  private async pushNextControlCommand(
+    userId: string,
+    reset: PendingLearningReset | null,
+    correction: PendingReviewCorrection | null,
+    correctionsAvailable: boolean
+  ): Promise<boolean> {
+    if (correction && correction.sequence < (reset?.sequence ?? Infinity)) {
+      if (!correctionsAvailable)
+        throw new Error(
+          'Review corrections require an updated backend. Pending edits are retained.'
+        )
+      await reviewCorrectionSync.push(userId, correction)
+      return true
+    }
+    if (!reset) return false
+    await this.pushLearningReset(userId, reset)
+    return true
   }
 
   private async pushLearningReset(

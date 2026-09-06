@@ -30,6 +30,7 @@ describe('initializeDatabase', () => {
     getAllAsync: jest.fn(),
     runAsync: jest.fn(),
     closeAsync: jest.fn(),
+    withExclusiveTransactionAsync: jest.fn(),
   }
   let consoleLogSpy: jest.SpyInstance
   let consoleErrorSpy: jest.SpyInstance
@@ -40,8 +41,11 @@ describe('initializeDatabase', () => {
     mockDatabase.getAllAsync.mockResolvedValue([])
     mockDatabase.runAsync.mockResolvedValue(undefined)
     mockDatabase.closeAsync.mockResolvedValue(undefined)
+    mockDatabase.withExclusiveTransactionAsync.mockImplementation(
+      async callback => callback(mockDatabase)
+    )
     ;(SQLite.openDatabaseAsync as jest.Mock).mockResolvedValue(mockDatabase)
-    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('9')
+    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('10')
     ;(AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined)
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
@@ -126,7 +130,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V9_LEARNING_COMMANDS
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '9')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '10')
   })
 
   it('treats a malformed stored version as a fresh database', async () => {
@@ -140,7 +144,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V3_UNIQUE_INDEX
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '9')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '10')
   })
 
   it('continues when an idempotent column migration finds the column', async () => {
@@ -156,7 +160,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V5_TOMBSTONE_INDEXES
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '9')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '10')
   })
 
   it('discards a failed connection so initialization can retry', async () => {
@@ -174,6 +178,6 @@ describe('initializeDatabase', () => {
     await initializeDatabase()
 
     expect(SQLite.openDatabaseAsync).toHaveBeenCalledTimes(2)
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '9')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '10')
   })
 })
