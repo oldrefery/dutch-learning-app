@@ -34,7 +34,8 @@ describe('atomic review progress in real SQLite', () => {
   const assess = (
     assessment: SRSAssessmentType,
     eventId: string,
-    overrides: Partial<ReviewEventDraft> = {}
+    overrides: Partial<ReviewEventDraft> = {},
+    idempotent = false
   ) => {
     const current = word()
     const progress = calculateSRSProgress(
@@ -46,6 +47,7 @@ describe('atomic review progress in real SQLite', () => {
       assessment
     )
     return reviewEventRepository.recordAssessment({
+      idempotent,
       progress: {
         easiness_factor: progress.easinessFactor,
         interval_days: progress.intervalDays,
@@ -117,6 +119,20 @@ describe('atomic review progress in real SQLite', () => {
     await expect(assess('good', 'same-event')).rejects.toThrow()
     expect(word()).toEqual(acknowledged)
     expect(events()).toHaveLength(1)
+  })
+
+  it('acknowledges an exact retry without replaying SRS, even after a later review', async () => {
+    await assess('good', 'once', {}, true)
+    await assess('easy', 'later')
+    const before = word()
+    await assess('good', 'once', {}, true)
+    expect(word()).toEqual(before)
+    expect(events()).toHaveLength(2)
+    await expect(assess('hard', 'once', {}, true)).rejects.toThrow('conflicts')
+    await expect(
+      assess('good', 'once', { user_id: 'other' }, true)
+    ).rejects.toThrow('conflicts')
+    expect(word()).toEqual(before)
   })
 
   it('never writes a review for another user', async () => {

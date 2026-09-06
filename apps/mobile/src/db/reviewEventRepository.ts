@@ -20,6 +20,7 @@ export interface ReviewEventSyncAcknowledgement {
 interface RecordReviewAssessmentInput {
   event: ReviewEventDraft
   progress: SRSResult
+  idempotent?: boolean
 }
 
 const DEFAULT_QUERY_LIMIT = 50
@@ -70,10 +71,38 @@ export class ReviewEventRepository {
   async recordAssessment({
     event,
     progress,
+    idempotent = false,
   }: RecordReviewAssessmentInput): Promise<void> {
     const db = await getDatabase()
 
     await db.withExclusiveTransactionAsync(async transaction => {
+      if (idempotent) {
+        const existing = await transaction.getFirstAsync<{ matches: number }>(
+          `SELECT (user_id = ? AND word_id = ? AND assessment = ? AND review_mode = ?
+            AND answered_correctly IS ? AND response_time_ms IS ?
+            AND julianday(reviewed_at) = julianday(?)) AS matches
+           FROM review_events WHERE event_id = ?`,
+          [
+            event.user_id,
+            event.word_id,
+            event.assessment,
+            event.review_mode,
+            event.answered_correctly === null
+              ? null
+              : Number(event.answered_correctly),
+            event.response_time_ms,
+            event.reviewed_at,
+            event.event_id,
+          ]
+        )
+        if (existing) {
+          if (existing.matches !== 1)
+            throw new Error(
+              'Review event ID conflicts with the original answer'
+            )
+          return
+        }
+      }
       const updateResult = await transaction.runAsync(
         `UPDATE words SET
           interval_days = ?,
@@ -104,7 +133,8 @@ export class ReviewEventRepository {
         INSERT_LOCAL_EVENT_SQL,
         ...this.toEventBindValues({
           ...event,
-          review_date: toLocalDateKey(new Date(event.reviewed_at)),
+          review_date:
+            event.review_date ?? toLocalDateKey(new Date(event.reviewed_at)),
         })
       )
     })

@@ -40,10 +40,10 @@ export const createReviewActions = (
   | 'updateCurrentWordInReview'
 > => ({
   startReviewSession: async (config = DEFAULT_REVIEW_SESSION_CONFIG) => {
+    const userId = get().currentUserId
     try {
-      set({ reviewLoading: true })
+      set({ reviewLoading: true, error: null })
 
-      const userId = get().currentUserId
       if (!userId) {
         logError(
           USER_NOT_AUTHENTICATED_ERROR,
@@ -126,6 +126,7 @@ export const createReviewActions = (
             )
           : {}
 
+      if (get().currentUserId !== userId) return
       const reviewSession = {
         words: reviewWords,
         currentIndex: 0,
@@ -140,6 +141,7 @@ export const createReviewActions = (
         reviewLoading: false,
       })
     } catch (error) {
+      if (get().currentUserId !== userId) return
       logError('Error starting review session', error, {}, 'review', false)
       set({
         error: createStoreError(

@@ -7,7 +7,9 @@ The framework-independent state transitions for fast review are implemented in
 and tested through the mobile Jest runner. The web screen is now connected for
 fast Recognition, optional manual ratings, in-session details, and read-only
 history. Web now includes explicit correction controls and conflict resolution.
-Mobile screen integration remains incomplete. This is a local implementation,
+Mobile now connects fast Recognition, optional manual ratings, full details,
+and read-only session history. Mobile correction controls remain incomplete.
+This is a local implementation,
 not a deployed rollout; correction controls require the undeployed backend capability.
 Mobile now also has a tested explicit conflict-resolution storage/transport adapter
 and additive SQLite v11 resolution marker. It is not wired to the native screen or
@@ -95,7 +97,7 @@ navigation. Authenticated details are loaded inside the session; stale detail
 responses cannot replace a different word. See the
 [correction contract](review-correction-contract-2026-09-06.md).
 
-- Connect mobile screens, lifecycle events, durable commands, and conflict UI.
+- Connect mobile correction commands and conflict UI.
   Use the new resolution adapter only after serializing it with background sync;
   then reload effective local history/word state and resume the retained queue.
 - Persist/restore account-bound session state if session restoration is exposed;
@@ -164,3 +166,33 @@ screen-reader validation remain required before release.
 
 No remote migration, publication, or protected application-account testing was
 performed for this stage.
+
+## Mobile interaction and verification
+
+- The native review route uses the shared state machine through a synchronous
+  controller. Correct fast Recognition records Good once and advances after
+  SQLite acknowledgement and at least 600 ms. Wrong answers open the full card
+  and wait for Continue (Again). Early details allow Again or Skip only.
+- Manual Recognition defaults off and is persisted per account. Changes apply
+  to the next question. Setup waits for settings hydration.
+- Previous/next reviewed word, full details, and return-to-current navigation
+  preserve the exact pending question/options. History remains after completion.
+  Full cards in this flow are read-only; word deletion, image replacement, and
+  reanalysis are not offered inside the session.
+- Route blur/unmount, application background, Android focus loss, and details
+  cancel auto-advance. Returning never restarts the timer for that answer.
+- A WeakMap retains the controller for the same store session across route
+  remounts. This is not restoration after app restart: only committed assessments
+  and their SQLite queue entries are durable.
+- Persistence freezes the full event and SRS payload across retries. An opt-in
+  idempotent local write validates the existing event identity and never reapplies
+  SRS or re-enqueues an acknowledged event. Account checks protect asynchronous
+  preparation and cache updates. Local acknowledgement is not server sync success.
+- Native correction UI stays unavailable until it is serialized with background
+  sync and effective-history reconciliation. Browsing is not a correction.
+
+Local tests cover double taps, timer cancellation, delayed/failed saves, identical
+retry payloads, account switches, actual SQLite idempotency, per-account settings,
+rendered light/dark flows, history after completion, and route remounts. React
+rendering tests mock native modules; they do not replace real-device, accessibility,
+or HTTP/Auth verification before rollout.

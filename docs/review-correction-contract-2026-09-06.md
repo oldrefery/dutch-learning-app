@@ -9,7 +9,8 @@ Mobile now has a durable correction queue and effective-history reader, tested
 against SQLite and mocked transport. Web now has authenticated correction/detail
 actions and capability-aware effective-history readers, tested with mocked transport.
 The web fast-review/details/history flow now includes capability-gated correction
-controls and explicit conflict resolution. Mobile session integration remains the
+controls and explicit conflict resolution. Mobile now connects fast review, details,
+and read-only session history; correction UI and sync serialization remain the
 next stage. Nothing is deployed: the current remote backend cannot enable these
 controls until its migration and coordinated client rollout are authorized.
 
@@ -224,8 +225,9 @@ subsequent command preservation, and interrupted schema upgrades.
 - Keep a same-word follow-up review from using unconfirmed correction progress.
   The session layer must wait for reconciliation or explicitly resolve the edit;
   do not calculate a new assessment from a guessed optimistic state.
-- Preserve active-question/history state and completion history on mobile.
-  Add account-bound restoration if session persistence is exposed on either client.
+- Mobile now preserves active-question/history state and completion history in
+  memory, including route remounts. Add account-bound restoration if persistence
+  across application restarts is exposed on either client.
 - Verify real HTTP/Auth integration and native runtime behavior before rollout.
   No fallback may send an extra ordinary review to simulate a correction.
 

@@ -141,6 +141,38 @@ describe('reviewActions', () => {
   })
 
   describe('startReviewSession', () => {
+    it.each(['success', 'failure'])(
+      'ignores late adaptive history %s after an account change',
+      async outcome => {
+        mockSet({
+          currentUserId: USER_ID,
+          words: createReviewWordsWithToday(),
+          collections: [],
+        })
+        let finish!: () => void
+        jest
+          .mocked(reviewEventRepository.getRecentByWords)
+          .mockImplementationOnce(
+            () =>
+              new Promise((resolve, reject) => {
+                finish = () =>
+                  outcome === 'success'
+                    ? resolve({})
+                    : reject(new Error('History unavailable'))
+              })
+          )
+        const pending = actions.startReviewSession({
+          mode: 'adaptive',
+          scope: REVIEW_SCOPE.ALL_DUE,
+        })
+        mockSet({ currentUserId: 'another-user', reviewLoading: false })
+        mockSet.mockClear()
+        finish()
+        await pending
+        expect(mockSet).not.toHaveBeenCalled()
+      }
+    )
+
     it('should start review session with words due for review', async () => {
       const mockWords = createReviewWordsWithToday()
 
