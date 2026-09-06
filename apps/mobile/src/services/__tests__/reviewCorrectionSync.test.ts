@@ -165,7 +165,7 @@ describe('review correction transport', () => {
     expect(reviewCorrectionRepository.saveRemote).toHaveBeenCalledTimes(1)
   })
 
-  it.each(['40001', '22023', '42501'])(
+  it.each(['PT409', '40001', '22023', '42501'])(
     'persists a terminal %s conflict without acknowledging it',
     async code => {
       jest

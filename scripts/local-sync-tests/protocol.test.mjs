@@ -144,14 +144,32 @@ test('real JWT ownership rejects foreign commands and hides private receipts', a
   assert.ok((await owner.a.from('learning_resets').select('*')).error)
 })
 
-test('an actually expired access JWT is rejected, refreshed, and reuses the same review id', async () => {
+test('an actually expired JWT rejects correction RPC; refresh reuses review and correction IDs', async () => {
   const f = await fixture()
   const input = assessment(f)
   await review(f.a, input)
+  const correction = {
+    p_word_id: f.wordId,
+    p_event_id: input.p_event_id,
+    p_correction_id: randomUUID(),
+    p_expected_revision: 0,
+    p_assessment: 'hard',
+  }
+  const ack = ok(await f.a.rpc('correct_review_assessment', correction))
   const accepted = await state(f.a, f)
-  const wait = f.session.expires_at * 1000 - Date.now() + 2_000
+  const receipts = async client =>
+    ok(
+      await client
+        .from('review_assessment_corrections')
+        .select('*')
+        .eq('word_id', f.wordId)
+    )
+  const acceptedReceipts = await receipts(f.a)
+  assert.equal(acceptedReceipts.length, 1)
+  // PostgREST allows 30 seconds of clock skew; GoTrue rejects sooner.
+  const wait = f.session.expires_at * 1000 - Date.now() + 35_000
   assert.ok(
-    wait > 0 && wait <= 310_000,
+    wait > 0 && wait <= 340_000,
     'Use jwt_expiry = 300 in the disposable local stack'
   )
   // No forged token, clock manipulation or mocked auth endpoint.
@@ -160,6 +178,14 @@ test('an actually expired access JWT is rejected, refreshed, and reuses the same
   const rejected = await expired.auth.getUser(f.session.access_token)
   assert.ok(rejected.error)
   assert.equal(rejected.error.status, 403)
+  // Bypass getSession's automatic refresh to send the genuinely expired JWT.
+  const stale = stack.client({
+    accessToken: async () => f.session.access_token,
+  })
+  const denied = await stale.rpc('correct_review_assessment', correction)
+  assert.equal(denied.status, 401)
+  assert.ok(['PGRST301', 'PGRST303'].includes(denied.error.code))
+  assert.match(denied.error.message, /jwt.*expired/i)
   const refreshed = ok(
     await expired.auth.refreshSession({
       refresh_token: f.session.refresh_token,
@@ -168,5 +194,10 @@ test('an actually expired access JWT is rejected, refreshed, and reuses the same
   assert.equal(refreshed.user.id, f.userId)
   assert.notEqual(refreshed.session.access_token, f.session.access_token)
   await review(expired, input)
+  assert.deepEqual(
+    ok(await expired.rpc('correct_review_assessment', correction)),
+    ack
+  )
   assert.deepEqual(await state(expired, f), accepted)
+  assert.deepEqual(await receipts(expired), acceptedReceipts)
 })

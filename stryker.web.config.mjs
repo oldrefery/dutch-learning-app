@@ -6,6 +6,8 @@ const config = {
   disableTypeChecks: false,
   incremental: true,
   incrementalFile: 'reports/stryker-web-incremental.json',
+  // Bound worker lifetime after reproducible Node 24/V8 crashes in long Jest runs.
+  maxTestRunnerReuse: 100,
   ignorePatterns: [
     'android',
     'ios',

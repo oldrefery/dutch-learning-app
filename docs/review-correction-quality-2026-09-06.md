@@ -117,7 +117,9 @@ reproduction: `npm run web:mutation -- --force`; incremental verification:
   Node 24.20.0. This identifies the crash site, not the initiating cause. Stryker
   recreated the worker and retried its operation; neither completed report has
   `RuntimeError` or timeout results. Stabilizing/minimizing this local native
-  test-runner crash remains a follow-up, not a resolved application bug.
+  test-runner crash remained a follow-up at this milestone; the subsequent
+  [HTTP/Auth verification](review-correction-http-qa-2026-09-06.md) bounds worker
+  lifetime and records full reruns. This is not a resolved application bug.
 - Generated browser and mutation reports are excluded from Prettier. Source/test
   files remain checked; no lint rule or test threshold was suppressed.
 - Run production builds and Stryker sequentially: both consume `.next` route
@@ -131,6 +133,8 @@ reproduction: `npm run web:mutation -- --force`; incremental verification:
 
 The fixture browser tests do not run the review UI against a deployed backend.
 Correction server actions and mobile transport still use mocks in these tests.
-Real HTTP/Auth integration, browser interaction with the correction RPC, and
-native runtime verification remain separate work before coordinated rollout.
+The subsequent [HTTP/Auth follow-up](review-correction-http-qa-2026-09-06.md)
+extends this evidence with real local requests and a conflict-contract fix.
+Browser interaction with the correction RPC and native runtime verification
+remain separate work before coordinated rollout.
 Migration `20260906160000_add_review_corrections.sql` remains undeployed.

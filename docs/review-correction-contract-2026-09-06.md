@@ -3,6 +3,8 @@
 ## Status and scope
 
 The server contract is implemented and tested in isolated local PostgreSQL.
+The [HTTP/Auth follow-up](review-correction-http-qa-2026-09-06.md) also verifies
+the real local RPC, JWT expiry/refresh, conflict status and idempotent retries.
 Migration `20260906160000_add_review_corrections.sql` is **not deployed**.
 No application account or hosted database was used during implementation.
 Mobile now has a durable correction queue and effective-history reader, tested
@@ -63,15 +65,20 @@ replace effective state with an old receipt or recompute a word from that receip
 After a subsequent reset, `last_reviewed_at` can be null. This is valid canonical
 progress, including when returned by a retry of an earlier accepted correction.
 
-| SQLSTATE                                  | Meaning / client action                                                                                         |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `42501`                                   | Missing identity or inaccessible/missing/deleted word/event; stop the write                                     |
-| `22023`                                   | Invalid payload, conflicting operation-ID reuse, or unavailable checkpoint; do not retry blindly                |
-| `40001` with `Review correction conflict` | Stale revision, newer review/reset, or out-of-ledger progress change; fetch canonical state and show a conflict |
-| `23505`                                   | Concurrent operation-ID collision; retry the identical payload to reconcile, never silently allocate another ID |
+| SQLSTATE           | Meaning / client action                                                                                         |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `42501`            | Missing identity or inaccessible/missing/deleted word/event; stop the write                                     |
+| `22023`            | Invalid payload, conflicting operation-ID reuse, or unavailable checkpoint; do not retry blindly                |
+| `PT409` (HTTP 409) | Stale revision, newer review/reset, or out-of-ledger progress change; fetch canonical state and show a conflict |
+| `23505`            | Concurrent operation-ID collision; retry the identical payload to reconcile, never silently allocate another ID |
 
 Transport errors have an unknown commit outcome: retain the exact command until
 its receipt is obtained. A failed edit must not be counted as successful.
+
+Business conflicts must not use PostgreSQL's `40001` serialization-failure code:
+transaction middleware may retry it instead of returning the conflict. The web
+and mobile adapters still recognize `40001` from earlier local implementations,
+but the undeployed migration now emits PostgREST's documented `PT409` status.
 
 ## Storage and eligibility
 

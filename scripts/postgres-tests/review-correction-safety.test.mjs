@@ -68,7 +68,7 @@ test('stale and changed-payload corrections cannot overwrite a newer assessment'
   }
   await assert.rejects(
     correct(db, correction(input)),
-    /Review correction conflict: stale revision/
+    /PT409.*Review correction conflict: stale revision/s
   )
   assert.deepEqual(await state(db, input.word), before)
   assert.deepEqual(await correctionState(db, input.word), ledger)
@@ -81,7 +81,7 @@ test('a later reset invalidates correction eligibility without deleting review h
   const before = await state(db, input.word)
   await assert.rejects(
     correct(db, correction(input)),
-    /Review correction conflict/
+    /PT409.*Review correction conflict/s
   )
   assert.deepEqual(await state(db, input.word), before)
   assert.equal((await correctionState(db, input.word)).heads.length, 0)
@@ -106,7 +106,7 @@ test('out-of-ledger progress changes are rejected rather than replaced by a chec
   const before = await state(db, input.word)
   await assert.rejects(
     correct(db, correction(input)),
-    /Review correction conflict: progress changed/
+    /PT409.*Review correction conflict: progress changed/s
   )
   assert.deepEqual(await state(db, input.word), before)
 })

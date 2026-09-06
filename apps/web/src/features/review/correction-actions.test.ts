@@ -205,6 +205,7 @@ it.each([null, 0, 2])(
 )
 
 it.each([
+  ['PT409', 'conflict'],
   ['40001', 'conflict'],
   ['22023', 'invalid'],
   ['42501', 'invalid'],

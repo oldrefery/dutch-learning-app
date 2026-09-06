@@ -130,7 +130,7 @@ export const reviewCorrectionSync = {
       p_assessment: command.assessment,
     })
     if (error) {
-      if (['40001', '22023', '42501'].includes(error.code)) {
+      if (['PT409', '40001', '22023', '42501'].includes(error.code)) {
         await reviewCorrectionRepository.markConflict(
           userId,
           command.correction_id,

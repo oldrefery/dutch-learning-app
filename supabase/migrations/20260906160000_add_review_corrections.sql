@@ -170,12 +170,14 @@ BEGIN
     END IF;
     IF NOT EXISTS (SELECT 1 FROM public.review_progress_heads h
       WHERE h.word_id = p_word_id AND h.event_id = p_event_id AND h.user_id = v_user) THEN
-      RAISE EXCEPTION 'Review correction conflict: word has a newer review or reset' USING ERRCODE = '40001';
+      RAISE EXCEPTION 'Review correction conflict: word has a newer review or reset' USING ERRCODE = 'PT409';
     END IF;
     SELECT e.revision, e.assessment INTO v_revision, v_assessment
       FROM public.effective_review_events e WHERE e.event_id = p_event_id;
     IF v_revision <> p_expected_revision THEN
-      RAISE EXCEPTION 'Review correction conflict: stale revision' USING ERRCODE = '40001';
+      -- This is a business conflict, not a retryable serialization failure.
+      -- PostgREST must return it immediately instead of retrying the transaction.
+      RAISE EXCEPTION 'Review correction conflict: stale revision' USING ERRCODE = 'PT409';
     END IF;
     -- Fail closed if an administrative write changed progress outside this ledger.
     SELECT * INTO v_progress FROM public.calculate_review_progress(
@@ -185,7 +187,7 @@ BEGIN
         v_word.next_review_date, v_word.last_reviewed_at) IS DISTINCT FROM
       (v_progress.interval_days, v_progress.repetition_count, v_progress.easiness_factor,
         v_checkpoint.review_base_date + v_progress.interval_days, v_checkpoint.last_reviewed_at) THEN
-      RAISE EXCEPTION 'Review correction conflict: progress changed' USING ERRCODE = '40001';
+      RAISE EXCEPTION 'Review correction conflict: progress changed' USING ERRCODE = 'PT409';
     END IF;
     SELECT * INTO v_progress FROM public.calculate_review_progress(
       v_checkpoint.previous_interval_days, v_checkpoint.previous_repetition_count,

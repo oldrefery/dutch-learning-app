@@ -46,7 +46,7 @@ export async function submitReviewCorrection(
       p_expected_revision: input.expectedRevision,
       p_assessment: input.assessment,
     })
-    if (error?.code === '40001') {
+    if (error?.code === 'PT409' || error?.code === '40001') {
       return {
         status: 'conflict',
         message:
