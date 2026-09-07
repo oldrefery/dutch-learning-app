@@ -53,8 +53,40 @@ a complete production stale-plan check or rollback implementation.
 
 ```bash
 node --test scripts/vocabulary/*.test.mjs
+python3 -B -m unittest discover -s scripts/vocabulary -p 'test_*.py'
 ```
 
 Tests use synthetic in-memory data and disposable ignored fixture directories;
 they do not access application accounts. Test cleanup deletes only directories
 created by the test itself.
+
+## General-frequency evidence
+
+Use Python 3.11+ (standard library only) to stream the author's full SUBTLEX-NL
+workbook without modifying or exporting Excel files:
+
+```bash
+python3 scripts/vocabulary/subtlex.py \
+  --source reports/vocabulary-organization/sources/SUBTLEX-NL-with-pos-and-Zipf.xlsx \
+  --evidence reports/vocabulary-organization/evidence.json \
+  --output reports/vocabulary-organization/frequency.json
+```
+
+Input evidence must come from the owner/count-validated analyzer above. The output
+excludes protected cards, retains card IDs/content hashes and hashes both inputs.
+It never overwrites an existing report. The source is the author's
+[full workbook](https://osf.io/3d8cx/files/2dcvs), under CC BY-NC-SA 4.0; retain
+attribution to Keuleers, Brysbaert and New (2010). Do not distribute the corpus.
+
+Matching uses exact normalized surface spelling and the source's `all.pos` tags.
+`surface-and-pos` is NOT a verified sense match or a lemmatized frequency score.
+All original fields and Excel row numbers are retained; surface counts, lemma
+counts and dominant-POS lemma counts must not be summed together. Inflections,
+reflexive phrases and missing entries are not guessed. Multiple matching source
+rows remain separate; no ranking score is assigned automatically.
+
+Selected rows must have finite nonnegative numbers, aligned POS counts that sum
+to the surface count, and cached Zipf values matching the author's formula.
+The stream does not validate unrelated corpus rows or repair source Excel errors.
+Source zeros remain distinct from missing entries. Per-sense usefulness and CEFR
+still need editorial review; subtitles alone cannot determine either.

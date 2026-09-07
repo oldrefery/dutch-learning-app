@@ -55,6 +55,13 @@ and expressions. No levels have been saved and no collection has been changed.
   SHA-256: `6a43c784b30a9dc097f8d903b22c830dac631654efed430c86f2f9ec0a7cdd05`.
 - `reports/vocabulary-organization/sources/SUBTLEX-NL-license.txt`: author's license,
   OSF file `w5mhg`; CC BY-NC-SA 4.0.
+- `reports/vocabulary-organization/frequency-2026-09-07.json`: SUBTLEX surface/POS
+  evidence for all 2,218 cards outside the protected collection, with input hashes.
+- `reports/vocabulary-organization/semantic-review-uncertain-2026-09-07.json`:
+  private editorial proposals for the 67 formerly uncertain cards, keyed by ID and
+  content hash. Includes 53 estimated CEFR levels with rationales, NOT approved
+  classifications. The private `review-uncertain-2026-09-07.mjs` records the explicit
+  editorial input used to produce this report; neither file belongs in Git.
 - [Read-only snapshot query](../scripts/vocabulary-analysis-snapshot.sql): reusable
   export query; replace its email placeholder only after checking task authority.
 
@@ -63,12 +70,14 @@ and source downloads. Never commit them to make a handoff portable.
 
 ## Immediate next steps
 
-1. Review provisional exclusions and the 67 uncertain cards semantically. Many are
-   reflexive verbs written with `zich`, which must not be automatically excluded.
-   Check expression metadata against actual meanings, including single-word labels.
-2. Read the downloaded SUBTLEX-NL workbook and add general-frequency evidence.
-   Dataset origin/license are verified; row structure and matching remain to do.
-3. Produce meaning-aware CEFR proposals with confidence and rationale. Do not
+1. Continue semantic review of the 158 expression candidates and other cards.
+   The 67 uncertain cards now have proposals: 53 include, 10 preserve as expressions,
+   4 hold for content/sense ambiguity (identified in the private report).
+   Do not fix, split or merge these cards automatically.
+2. Improve frequency evidence for reflexive/inflected entries using explicitly
+   justified lemma relationships; never silently substitute a base verb's sense
+   or sum duplicated lemma totals. Current matching is exact surface/POS only.
+3. Continue meaning-aware CEFR proposals with confidence and rationale. Do not
    assign levels from first appearance in NT2Lex or from missing frequency alone.
 4. Update this handoff with actual artifact paths, completed checks and next action.
 
@@ -76,7 +85,7 @@ and source downloads. Never commit them to make a handoff portable.
 
 [Local analyzer instructions](../scripts/vocabulary/README.md) describe the reusable
 CLI and its synthetic tests. It has no network/database writes or apply command.
-All 26 analyzer/CLI tests pass; scoped ESLint and Prettier also pass.
+All 26 analyzer/CLI tests and 8 synthetic SUBTLEX extraction tests pass.
 
 Provisional dispositions: 69 protected, 1,623 vocabulary candidates, 370 lexical
 compound candidates, 158 expression candidates and 67 needing review. These counts
@@ -84,7 +93,14 @@ sum to 2,287 but are NOT an approved collection mapping.
 
 Outside the protected collection: 1,216 lemma+POS matches, 39 lemma-only matches
 and 963 missing from NT2Lex. Two repeated lemma/POS groups were reported without
-merging any records. All CEFR assignments remain null pending semantic review.
+merging any records. The original NT2Lex evidence keeps CEFR null; the separate
+semantic report now contains 53 medium-confidence editorial level proposals.
+
+SUBTLEX extraction scanned 437,503 source rows. Outside the protected collection:
+1,811 surface+POS matches, 52 surface-only matches and 355 missing. All selected
+numeric rows passed POS-count reconciliation and cached Zipf formula checks.
+These matches remain sense-unverified; ranking scores are null. No lemma totals
+were summed and no reflexive pronouns or accents were removed to force matches.
 
 ## Source research
 
@@ -106,5 +122,7 @@ Use locally with attribution; do not redistribute the corpus in the app/reposito
 The downloaded full file is <https://osf.io/3d8cx/files/2dcvs> (not the filtered
 minimum-two-films subset). Its wiki describes smoothed Zipf values; keep absent
 entries distinguishable rather than silently imputing them as observed counts.
-NT2Lex matching is complete; SUBTLEX matching and CEFR classification are not.
+NT2Lex and exact-surface SUBTLEX matching are complete. Meaning-aware classification
+is still in progress; full eligibility, frequency ordering and collection mapping
+are not finalized.
 No profile data has been changed.
