@@ -1,11 +1,34 @@
 import { createMockWord } from '@/__tests__/helpers/factories'
 import {
   buildRecognitionOptions,
+  createRecognitionOptionBuilder,
   getDutchProductionAnswer,
   getPreferredTranslation,
 } from '../reviewDistractors'
 
 describe('reviewDistractors', () => {
+  it('indexes the pool once and never sorts the vocabulary per question', () => {
+    const words = Array.from({ length: 100 }, (_, index) =>
+      createMockWord({
+        word_id: `pool-${index}`,
+        translations: { en: [`meaning ${index}`] },
+      })
+    )
+    const normalize = jest.spyOn(String.prototype, 'toLocaleLowerCase')
+    const sort = jest.spyOn(Array.prototype, 'sort')
+    try {
+      const build = createRecognitionOptionBuilder(words)
+      sort.mockClear()
+      const normalizedPool = normalize.mock.calls.length
+      expect(normalizedPool).toBe(100)
+      for (const word of words) expect(build(word)).toHaveLength(4)
+      expect(normalize.mock.calls.length - normalizedPool).toBe(100)
+      expect(sort.mock.contexts.every(array => array.length <= 4)).toBe(true)
+    } finally {
+      normalize.mockRestore()
+      sort.mockRestore()
+    }
+  })
   const currentWord = createMockWord({
     word_id: 'current',
     dutch_lemma: 'huis',
@@ -49,6 +72,9 @@ describe('reviewDistractors', () => {
     const second = buildRecognitionOptions(currentWord, [...vocabulary])
 
     expect(first).toEqual(second)
+    expect(
+      buildRecognitionOptions(currentWord, [...vocabulary].reverse())
+    ).toEqual(first)
     expect(first).toHaveLength(4)
     expect(first?.filter(option => option.isCorrect)).toEqual([
       expect.objectContaining({ label: 'house' }),

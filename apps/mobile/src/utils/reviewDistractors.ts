@@ -47,75 +47,84 @@ export const buildRecognitionOptions = (
   currentWord: Word,
   vocabulary: Word[],
   maximumOptions = 4
-): RecognitionOption[] | null => {
-  const correctLabel = getPreferredTranslation(currentWord)
-  if (!correctLabel || maximumOptions < 3) return null
+): RecognitionOption[] | null =>
+  createRecognitionOptionBuilder(vocabulary)(currentWord, maximumOptions)
 
-  const currentTranslationKeys = getTranslationKeys(currentWord)
-  const usedTranslationKeys = new Set(currentTranslationKeys)
-
-  const candidates = vocabulary
-    .filter(word => word.word_id !== currentWord.word_id)
+/** Normalize vocabulary once per session, not once per question. */
+export const createRecognitionOptionBuilder = (vocabulary: Word[]) => {
+  const pool = vocabulary
     .map(word => ({
       word,
       label: getPreferredTranslation(word),
       translationKeys: getTranslationKeys(word),
+      rank: stableHash(word.word_id),
     }))
-    .filter(
-      (candidate): candidate is typeof candidate & { label: string } =>
-        Boolean(candidate.label) &&
-        ![...candidate.translationKeys].some(key =>
-          currentTranslationKeys.has(key)
-        )
+    .filter((candidate): candidate is typeof candidate & { label: string } =>
+      Boolean(candidate.label)
     )
-    .sort((first, second) => {
-      const firstMatchesPartOfSpeech =
-        first.word.part_of_speech === currentWord.part_of_speech
-      const secondMatchesPartOfSpeech =
-        second.word.part_of_speech === currentWord.part_of_speech
-
-      if (firstMatchesPartOfSpeech !== secondMatchesPartOfSpeech) {
-        return firstMatchesPartOfSpeech ? -1 : 1
+    .sort(
+      (a, b) => a.rank - b.rank || a.word.word_id.localeCompare(b.word.word_id)
+    )
+  const byPartOfSpeech = new Map<Word['part_of_speech'], typeof pool>()
+  for (const candidate of pool) {
+    const group = byPartOfSpeech.get(candidate.word.part_of_speech) ?? []
+    group.push(candidate)
+    byPartOfSpeech.set(candidate.word.part_of_speech, group)
+  }
+  return (
+    currentWord: Word,
+    maximumOptions = 4
+  ): RecognitionOption[] | null => {
+    const correctLabel = getPreferredTranslation(currentWord)
+    if (!correctLabel || maximumOptions < 3) return null
+    const usedTranslationKeys = getTranslationKeys(currentWord)
+    const selected: typeof pool = []
+    // One stable pool per session. Rotate per word, prefer its part of speech,
+    // and stop as soon as enough semantically distinct alternatives are found.
+    const preferred = byPartOfSpeech.get(currentWord.part_of_speech) ?? []
+    const seed = stableHash(currentWord.word_id)
+    for (const candidates of [preferred, pool].filter(
+      group => group.length > 0
+    )) {
+      const offset = seed % candidates.length
+      for (
+        let index = 0;
+        index < candidates.length && selected.length < maximumOptions - 1;
+        index++
+      ) {
+        const candidate = candidates[(offset + index) % candidates.length]
+        if (candidate.word.word_id === currentWord.word_id) continue
+        if (
+          [...candidate.translationKeys].some(key =>
+            usedTranslationKeys.has(key)
+          )
+        )
+          continue
+        selected.push(candidate)
+        candidate.translationKeys.forEach(key => usedTranslationKeys.add(key))
       }
+      if (selected.length >= maximumOptions - 1) break
+    }
 
-      const firstRank = stableHash(
-        `${currentWord.word_id}:${first.word.word_id}`
-      )
+    if (selected.length < 2) return null
+
+    return [
+      {
+        id: currentWord.word_id,
+        label: correctLabel,
+        isCorrect: true,
+      },
+      ...selected.map(candidate => ({
+        id: candidate.word.word_id,
+        label: candidate.label,
+        isCorrect: false,
+      })),
+    ].sort((first, second) => {
+      const firstRank = stableHash(`${currentWord.word_id}:option:${first.id}`)
       const secondRank = stableHash(
-        `${currentWord.word_id}:${second.word.word_id}`
+        `${currentWord.word_id}:option:${second.id}`
       )
-
-      return (
-        firstRank - secondRank ||
-        first.word.word_id.localeCompare(second.word.word_id)
-      )
+      return firstRank - secondRank || first.id.localeCompare(second.id)
     })
-    .filter(candidate => {
-      const hasSemanticDuplicate = [...candidate.translationKeys].some(key =>
-        usedTranslationKeys.has(key)
-      )
-      if (hasSemanticDuplicate) return false
-      candidate.translationKeys.forEach(key => usedTranslationKeys.add(key))
-      return true
-    })
-    .slice(0, maximumOptions - 1)
-
-  if (candidates.length < 2) return null
-
-  return [
-    {
-      id: currentWord.word_id,
-      label: correctLabel,
-      isCorrect: true,
-    },
-    ...candidates.map(candidate => ({
-      id: candidate.word.word_id,
-      label: candidate.label,
-      isCorrect: false,
-    })),
-  ].sort((first, second) => {
-    const firstRank = stableHash(`${currentWord.word_id}:option:${first.id}`)
-    const secondRank = stableHash(`${currentWord.word_id}:option:${second.id}`)
-    return firstRank - secondRank || first.id.localeCompare(second.id)
-  })
+  }
 }
