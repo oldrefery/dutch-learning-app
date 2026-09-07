@@ -29,7 +29,7 @@ export function ReviewSessionLoader({
     useCallback(() => {
       const abort = new AbortController()
       const manual =
-        useSettingsStore.getState().manualRecognitionByUser[userId] === true
+        useSettingsStore.getState().manualRecognitionByUser[userId] ?? false
       void loadNativeReviewSession(
         session,
         userId,

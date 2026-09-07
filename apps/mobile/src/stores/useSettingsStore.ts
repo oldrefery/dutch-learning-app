@@ -10,7 +10,7 @@ import { REVIEW_MODE, REVIEW_SESSION_MODE } from '@/constants/ReviewConstants'
 import type { ReviewSessionMode } from '@/types/ReviewTypes'
 
 interface SettingsState {
-  manualRecognitionByUser: Record<string, boolean>
+  manualRecognitionByUser: Partial<Record<string, boolean>>
   autoPlayPronunciation: boolean
   adaptiveReviewEnabled: boolean
   lastSelectedCollectionId: string | null

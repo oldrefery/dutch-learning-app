@@ -4,6 +4,7 @@ import { ReviewSessionLoader } from '../ReviewSessionLoader'
 import { loadNativeReviewSession } from '@/features/review/session'
 import { makeSession, userId } from '@/features/review/__tests__/fixtures'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 
 jest.mock('@/features/review/session', () => ({
   loadNativeReviewSession: jest.fn(),
@@ -19,7 +20,21 @@ Object.assign(jest.requireMock('expo-router'), {
 const load = jest.mocked(loadNativeReviewSession)
 beforeEach(() => {
   load.mockReset()
+  useSettingsStore.setState({ manualRecognitionByUser: {} })
 })
+
+it.each([undefined, false, true])(
+  'passes a boolean manual preference when the saved value is %s',
+  preference => {
+    useSettingsStore.setState({
+      manualRecognitionByUser:
+        preference === undefined ? {} : { [userId]: preference },
+    })
+    load.mockReturnValue(new Promise(() => {}))
+    render(<ReviewSessionLoader session={makeSession()} userId={userId} />)
+    expect(load.mock.calls[0][2]).toBe(preference ?? false)
+  }
+)
 
 it('renders progress and keeps cancellation available before preparation finishes', async () => {
   const session = makeSession()
