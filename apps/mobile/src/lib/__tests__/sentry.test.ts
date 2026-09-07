@@ -5,6 +5,9 @@ import '../sentry'
 
 const REDACTED = '[REDACTED]'
 const PRIVATE_WORD = 'private-word'
+const PRIVATE_ID = 'private-id'
+const RELEASE = 'release-83'
+const REVIEW_OP = 'review.prepare'
 
 jest.mock('../supabaseClient', () => ({
   supabase: {
@@ -85,7 +88,7 @@ describe('Sentry initialization', () => {
         outage_ms: Infinity,
         content: PRIVATE_WORD,
       },
-      user: { id: 'private-id', email: 'private@example.invalid' },
+      user: { id: PRIVATE_ID, email: 'private@example.invalid' },
       breadcrumbs: [{ message: PRIVATE_WORD }],
       contexts: { custom: { token: 'private-token' } },
       request: { url: 'https://example.invalid/private-word' },
@@ -138,5 +141,115 @@ describe('Sentry initialization', () => {
       maskAllImages: true,
       maskAllVectors: true,
     })
+  })
+
+  it('removes inherited private context from slow-review warnings', () => {
+    const result = getInitOptions().beforeSend({
+      release: RELEASE,
+      dist: '83',
+      environment: 'production',
+      tags: { module: REVIEW_OP, account: PRIVATE_ID },
+      extra: {
+        'review.word_count': 2500,
+        'review.vocabulary_count': 5000,
+        'review.duration_ms': 3100,
+        'review.mode': 'adaptive',
+        'review.platform': 'android',
+        'review.update_id': '01a07acf-427b-7a76-8d6d-47d30dee1681',
+        content: PRIVATE_WORD,
+      },
+      user: { id: PRIVATE_ID },
+      breadcrumbs: [{ message: PRIVATE_WORD }],
+      contexts: { custom: { word: PRIVATE_WORD } },
+      request: { url: 'https://example.invalid/private-word' },
+    })
+    expect(result.extra).toMatchObject({
+      'review.word_count': 2500,
+      'review.duration_ms': 3100,
+      'review.platform': 'android',
+      'review.update_id': '01a07acf-427b-7a76-8d6d-47d30dee1681',
+    })
+    expect(result.release).toBe(RELEASE)
+    expect(result.tags).toEqual({ module: REVIEW_OP })
+    expect(JSON.stringify(result)).not.toContain('private')
+  })
+
+  it('keeps review timing and trace identity but removes private transaction context', () => {
+    const result = getInitOptions().beforeSendTransaction({
+      type: 'transaction',
+      transaction: REVIEW_OP,
+      start_timestamp: 100,
+      timestamp: 103,
+      release: RELEASE,
+      user: { id: PRIVATE_ID },
+      tags: { account: PRIVATE_ID },
+      breadcrumbs: [{ message: PRIVATE_WORD }],
+      extra: { content: PRIVATE_WORD },
+      spans: [{ description: PRIVATE_WORD }],
+      contexts: {
+        custom: { word: PRIVATE_WORD },
+        trace: {
+          trace_id: 'trace',
+          span_id: 'span',
+          op: REVIEW_OP,
+          status: 'ok',
+          data: {
+            'review.mode': 'adaptive',
+            'review.platform': 'ios',
+            'review.update_id': 'embedded',
+            'review.outcome': 'ready',
+            'review.duration_ms': 3100,
+            'review.word_count': 2500,
+            'review.vocabulary_count': 5000,
+            content: PRIVATE_WORD,
+          },
+        },
+      },
+    })
+    expect(result).toMatchObject({
+      start_timestamp: 100,
+      timestamp: 103,
+      release: RELEASE,
+    })
+    expect(result.contexts.trace).toMatchObject({
+      trace_id: 'trace',
+      span_id: 'span',
+      status: 'ok',
+      data: {
+        'review.duration_ms': 3100,
+        'review.platform': 'ios',
+        'review.update_id': 'embedded',
+      },
+    })
+    expect(result.spans).toEqual([])
+    expect(JSON.stringify(result)).not.toContain('private')
+  })
+
+  it('rejects unexpected diagnostic values and tolerates missing trace context', () => {
+    const options = getInitOptions()
+    const warning = options.beforeSend({
+      tags: { module: REVIEW_OP },
+      extra: {
+        'review.mode': PRIVATE_WORD,
+        'review.outcome': PRIVATE_WORD,
+        'review.word_count': -1,
+        'review.duration_ms': Infinity,
+        'review.vocabulary_count': PRIVATE_WORD,
+        'review.platform': PRIVATE_WORD,
+        'review.update_id': PRIVATE_WORD,
+      },
+    })
+    expect(warning.extra).toEqual({
+      'review.platform': 'unknown',
+      'review.update_id': 'unknown',
+      'review.mode': 'unknown',
+      'review.outcome': 'unknown',
+      'review.word_count': null,
+      'review.duration_ms': null,
+      'review.vocabulary_count': null,
+    })
+    expect(
+      options.beforeSendTransaction({ transaction: REVIEW_OP }).contexts
+    ).toBeUndefined()
   })
 })

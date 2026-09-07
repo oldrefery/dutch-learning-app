@@ -11,6 +11,7 @@ import {
   prepareNativeReviewQuestionsAsync,
 } from './questions'
 import { createNativeCorrectionTransport } from './correctionTransport'
+import { measureReviewPreparation } from './preparationTelemetry'
 
 // Route remounts reuse the same in-memory session. App restart does not restore
 // a session, but committed assessments remain in the durable SQLite queue.
@@ -54,13 +55,30 @@ export async function loadNativeReviewSession(
 ) {
   const existing = controllers.get(session)
   if (existing?.getSnapshot().userId === userId) return existing
-  const questions = await prepareNativeReviewQuestionsAsync(
-    session,
-    useApplicationStore.getState().words,
-    userId,
+  if (signal.aborted) return null
+  const vocabulary = useApplicationStore.getState().words
+  return measureReviewPreparation(
+    {
+      wordCount: session.words.length,
+      vocabularyCount: vocabulary.length,
+      mode: session.config.mode,
+    },
     signal,
-    onProgress
+    async () => {
+      const questions = await prepareNativeReviewQuestionsAsync(
+        session,
+        vocabulary,
+        userId,
+        signal,
+        onProgress
+      )
+      if (!questions || signal.aborted) return null
+      return getNativeReviewSession(
+        session,
+        userId,
+        manualRecognition,
+        questions
+      )
+    }
   )
-  if (!questions || signal.aborted) return null
-  return getNativeReviewSession(session, userId, manualRecognition, questions)
 }
