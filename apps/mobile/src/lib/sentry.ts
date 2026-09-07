@@ -4,6 +4,10 @@ import { supabaseIntegration } from '@supabase/sentry-js-integration'
 import { sanitizeLogContext } from '@/utils/logSanitizer'
 import { getSentryRuntimeConfig } from './sentryConfig'
 import { scrubSyncHealthEvent } from './syncHealthPrivacy'
+import {
+  scrubReviewPreparationEvent,
+  scrubReviewPreparationTransaction,
+} from './reviewPreparationPrivacy'
 import { supabase } from './supabaseClient'
 
 // Flag to prevent multiple initializations
@@ -27,8 +31,12 @@ export function initializeSentry() {
     environment: runtimeConfig.environment,
     release: runtimeConfig.release,
     dist: runtimeConfig.dist,
-    beforeSend: event => sanitizeLogContext(scrubSyncHealthEvent(event)),
-    beforeSendTransaction: event => sanitizeLogContext(event),
+    beforeSend: event =>
+      sanitizeLogContext(
+        scrubReviewPreparationEvent(scrubSyncHealthEvent(event))
+      ),
+    beforeSendTransaction: event =>
+      sanitizeLogContext(scrubReviewPreparationTransaction(event)),
     beforeSendSpan: span => sanitizeLogContext(span),
     beforeBreadcrumb: breadcrumb => sanitizeLogContext(breadcrumb),
     tracesSampleRate: runtimeConfig.tracesSampleRate,
