@@ -4,7 +4,7 @@ import { useRouter, type Href } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { ReviewModeSelector } from '@/components/ReviewModeSelector'
-import { NativeReviewSession } from '@/components/ReviewFlow/NativeReviewSession'
+import { ReviewSessionLoader } from '@/components/ReviewFlow/ReviewSessionLoader'
 import { ManualRecognitionPreference } from '@/components/ReviewFlow/ManualRecognitionPreference'
 import { ReviewFlowButton } from '@/components/ReviewFlow/ReviewFlowButton'
 import { reviewFlowStyles as styles } from '@/components/ReviewFlow/styles'
@@ -44,7 +44,7 @@ export default function ReviewScreen() {
     )
   if (session)
     return (
-      <NativeReviewSession key={userId} session={session} userId={userId} />
+      <ReviewSessionLoader key={userId} session={session} userId={userId} />
     )
   return <ReviewSetup userId={userId} loading={loading} />
 }
@@ -82,10 +82,16 @@ function ReviewSetup({
   }
   if (loading)
     return (
-      <ActivityIndicator
-        color={Colors.primary.DEFAULT}
-        accessibilityLabel="Loading review session"
-      />
+      <ViewThemed
+        testID="screen-review"
+        style={[styles.root, styles.scroll, { paddingTop: insets.top }]}
+      >
+        <ActivityIndicator
+          color={Colors.primary.DEFAULT}
+          accessibilityLabel="Loading review session"
+        />
+        <TextThemed>Loading review history…</TextThemed>
+      </ViewThemed>
     )
   return (
     <ViewThemed
