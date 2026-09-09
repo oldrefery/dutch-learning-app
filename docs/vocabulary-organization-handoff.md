@@ -100,6 +100,14 @@ and expressions. No levels have been saved and no collection has been changed.
 - `reports/vocabulary-organization/semantic-review-lexical-009-010-2026-09-07.json`:
   candidates at offsets 800–999: 191 include, 9 hold after translation and register
   review. This combined artifact retains the same per-card schema and input hashes.
+- `semantic-review-lexical-011`, `012-013`, `014-015`, `016-017` and `018-020`:
+  meaning-aware review artifacts covering offsets 1000–1992, the end of the
+  ordinary/compound candidate list.
+- `reports/vocabulary-organization/semantic-review-held-resolutions-2026-09-07.json`:
+  conservative collection levels for all 88 formerly held cards. Quality notes
+  retain spelling, register and sense-grouping concerns without editing content.
+- `reports/vocabulary-organization/semantic-review-usefulness-backfill-2026-09-07.json`:
+  fills the 161 missing usefulness judgments; every included card now has one.
 - `reports/vocabulary-organization/review-coverage-2026-09-07.json`: reconciled
   coverage across all 2,287 IDs, source report hashes and explicit pending entries.
   Produced by private `reconcile-review-2026-09-07.mjs`; no overlapping decisions,
@@ -107,14 +115,14 @@ and expressions. No levels have been saved and no collection has been changed.
 - `reports/vocabulary-organization/review-coverage-002-2026-09-07.json`: latest
   coverage manifest across five batches. The earlier coverage report is retained.
   The private reconciliation script now targets this newer report (exclusive write).
-- `reports/vocabulary-organization/review-coverage-003-2026-09-07.json`: current
+- `reports/vocabulary-organization/review-coverage-003-2026-09-07.json`: prior
   manifest spanning seven semantic-review batches. Its ID/hash/no-overlap checks
   passed. The coverage script now writes this filename exclusively.
-- `reports/vocabulary-organization/review-coverage-004-2026-09-07.json`: current
+- `reports/vocabulary-organization/review-coverage-004-2026-09-07.json`: prior
   manifest spanning eight semantic-review batches. Its ID/hash/no-overlap checks
   passed; it records 825 reviewed cards and 1,393 pending cards. The coverage
   script now writes this filename exclusively.
-- `reports/vocabulary-organization/review-coverage-005-2026-09-07.json`: current
+- `reports/vocabulary-organization/review-coverage-005-2026-09-07.json`: prior
   manifest spanning nine semantic-review batches. Its ID/hash/no-overlap checks
   passed; it records 925 reviewed cards and 1,293 pending cards. The coverage
   script now writes this filename exclusively.
@@ -123,9 +131,15 @@ and expressions. No levels have been saved and no collection has been changed.
 - `reports/vocabulary-organization/review-coverage-007-2026-09-07.json`: prior
   validated manifest across ten meaning-aware review batches. It records 1,025
   reviewed cards outside the protected collection and 1,193 pending cards.
-- `reports/vocabulary-organization/review-coverage-008-2026-09-07.json`: current
+- `reports/vocabulary-organization/review-coverage-008-2026-09-07.json`: prior
   validated manifest. It records 1,225 reviewed cards outside the protected
   collection and 993 pending cards.
+- `reports/vocabulary-organization/review-coverage-012-2026-09-07.json`: current
+  complete manifest: 2,065 include, 153 preserve-expression, 69 protected,
+  zero hold and zero pending. `classificationComplete` is true.
+- `reports/vocabulary-organization/classification-proposal-final-2026-09-07.json`:
+  final private classification proposal joining CEFR, usefulness, SUBTLEX evidence,
+  original collection and stable hashes for all 2,287 cards.
 - [Read-only snapshot query](../scripts/vocabulary-analysis-snapshot.sql): reusable
   export query; replace its email placeholder only after checking task authority.
 
@@ -134,21 +148,16 @@ and source downloads. Never commit them to make a handoff portable.
 
 ## Immediate next steps
 
-1. Continue meaning-aware review from ordinary/compound offset 1000. Review saved
-   translations, register and usefulness; save by stable ID and content hash.
-2. Resolve the 43 held cards individually, keeping their originals untouched.
-   Some cards mix unrelated senses or have questionable headword forms. Quality
-   notes also exist on preserved expressions; preservation does not certify spelling.
-   Do not fix, split or merge cards automatically.
-3. Improve frequency evidence for reflexive/inflected entries using explicitly
+1. Prepare the exact collection proposal from the final classification artifact.
+   Split each level into balanced groups of about 80–120 cards, ordered by observed
+   frequency first and usefulness second. Keep missing frequency explicit.
+2. Improve frequency evidence for reflexive/inflected entries using explicitly
    justified lemma relationships; never silently substitute a base verb's sense
    or sum duplicated lemma totals. Current matching is exact surface/POS only.
-4. Continue meaning-aware CEFR proposals with confidence and rationale. Do not
-   assign levels from first appearance in NT2Lex or from missing frequency alone.
-   Continue separate usefulness proposals and backfill earlier reviewed batches:
-   lexical batches 002–010 include that dimension. None of
-   the current reports is a finalized frequency/usefulness ordering.
-5. Update this handoff with actual artifact paths, completed checks and next action.
+3. Decide how active shared links should behave after moves, then present the exact
+   mapping for approval. Do not apply it yet.
+4. Build and test stale-plan validation, idempotent apply, verification and targeted
+   rollback before any production write.
 
 ## Completed analysis pass
 
@@ -163,14 +172,14 @@ sum to 2,287 but are NOT an approved collection mapping.
 Outside the protected collection: 1,216 lemma+POS matches, 39 lemma-only matches
 and 963 missing from NT2Lex. Two repeated lemma/POS groups were reported without
 merging any records. The original NT2Lex evidence keeps CEFR null; the separate
-semantic reports now contain 1,029 editorial level proposals. The source evidence
+semantic reports now contain 2,065 editorial level proposals. The source evidence
 and private snapshot have not been overwritten.
 
-Semantic coverage reconciles to the full inventory: 69 protected, 1,029 proposed
-for classification, 153 proposed for expression preservation, 43 held and 993
-pending. The 1,225 reviewed cards outside the protected collection have unique IDs
-and matching input hashes. Proposed levels: A1 58, A2 253, B1 452, B2 247, C1 19,
-C2 0. The incomplete distribution is not a verified CEFR certification.
+Semantic coverage reconciles to the full inventory: 69 protected, 2,065 proposed
+for classification, 153 proposed for expression preservation, zero held and zero
+pending. All 2,218 cards outside the protected collection have unique IDs and
+matching input hashes. Proposed levels: A1 122, A2 500, B1 889, B2 506, C1 48,
+C2 0. Usefulness: 321 high, 1,538 medium and 206 context-dependent.
 Levels are editorial estimates, generally medium confidence, with explicitly low
 confidence for specialized/cultural items. They are not verified CEFR certifications.
 No level was generated from the frequency score or personal learning progress.
