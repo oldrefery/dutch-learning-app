@@ -84,6 +84,9 @@ and expressions. No levels have been saved and no collection has been changed.
   candidates at offsets 400–499: 99 include, 1 hold. This is the validated
   replacement for the earlier private `005` draft, which remains untouched and
   must not be used in planning. The review script writes only the revised file.
+- `reports/vocabulary-organization/semantic-review-lexical-006-2026-09-07.json`:
+  candidates at offsets 500–599: 97 include, 3 hold. Everyday usefulness is
+  recorded separately from CEFR and corpus frequency.
 - `reports/vocabulary-organization/review-coverage-2026-09-07.json`: reconciled
   coverage across all 2,287 IDs, source report hashes and explicit pending entries.
   Produced by private `reconcile-review-2026-09-07.mjs`; no overlapping decisions,
@@ -94,6 +97,10 @@ and expressions. No levels have been saved and no collection has been changed.
 - `reports/vocabulary-organization/review-coverage-003-2026-09-07.json`: current
   manifest spanning seven semantic-review batches. Its ID/hash/no-overlap checks
   passed. The coverage script now writes this filename exclusively.
+- `reports/vocabulary-organization/review-coverage-004-2026-09-07.json`: current
+  manifest spanning eight semantic-review batches. Its ID/hash/no-overlap checks
+  passed; it records 825 reviewed cards and 1,393 pending cards. The coverage
+  script now writes this filename exclusively.
 - [Read-only snapshot query](../scripts/vocabulary-analysis-snapshot.sql): reusable
   export query; replace its email placeholder only after checking task authority.
 
@@ -102,13 +109,13 @@ and source downloads. Never commit them to make a handoff portable.
 
 ## Immediate next steps
 
-1. Continue ordinary/compound semantic review from offset 500 in the original
+1. Continue ordinary/compound semantic review from offset 600 in the original
    evidence's combined `vocabulary-candidate` / `lexical-compound-candidate` list.
-   The first 500, all 158 expression candidates and all 67 uncertain candidates
-   have editorial proposals. There are 1,493 ordinary/compound cards still pending.
+   The first 600, all 158 expression candidates and all 67 uncertain candidates
+   have editorial proposals. There are 1,393 ordinary/compound cards still pending.
    Use stable IDs and content hashes, not offsets alone, when saving decisions.
    Check meanings for expressions even among ordinary candidates.
-2. Resolve the 21 held cards individually, keeping their originals untouched.
+2. Resolve the 24 held cards individually, keeping their originals untouched.
    Some cards mix unrelated senses or have questionable headword forms. Quality
    notes also exist on preserved expressions; preservation does not certify spelling.
    Do not fix, split or merge cards automatically.
@@ -118,7 +125,7 @@ and source downloads. Never commit them to make a handoff portable.
 4. Continue meaning-aware CEFR proposals with confidence and rationale. Do not
    assign levels from first appearance in NT2Lex or from missing frequency alone.
    Continue separate usefulness proposals and backfill earlier reviewed batches:
-   currently only lexical batches 002–005 include that dimension. None of the
+   currently only lexical batches 002–006 include that dimension. None of the
    current reports is a finalized frequency/usefulness ordering.
 5. Update this handoff with actual artifact paths, completed checks and next action.
 
@@ -135,13 +142,13 @@ sum to 2,287 but are NOT an approved collection mapping.
 Outside the protected collection: 1,216 lemma+POS matches, 39 lemma-only matches
 and 963 missing from NT2Lex. Two repeated lemma/POS groups were reported without
 merging any records. The original NT2Lex evidence keeps CEFR null; the separate
-semantic reports now contain 551 editorial level proposals. The source evidence
+semantic reports now contain 648 editorial level proposals. The source evidence
 and private snapshot have not been overwritten.
 
-Semantic coverage reconciles to the full inventory: 69 protected, 551 proposed for
-classification, 153 proposed for expression preservation, 21 held and 1,493 pending.
-The 725 reviewed cards outside the protected collection have unique IDs and matching
-input hashes across seven batches. Proposed levels: A1 20, A2 116, B1 266, B2 142,
+Semantic coverage reconciles to the full inventory: 69 protected, 648 proposed for
+classification, 153 proposed for expression preservation, 24 held and 1,393 pending.
+The 825 reviewed cards outside the protected collection have unique IDs and matching
+input hashes across eight batches. Proposed levels: A1 34, A2 141, B1 305, B2 161,
 C1 7, C2 0. This partial distribution is NOT representative of the complete profile.
 Levels are editorial estimates, generally medium confidence, with explicitly low
 confidence for specialized/cultural items. They are not verified CEFR certifications.
