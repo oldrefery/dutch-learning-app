@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/dutch-a1.json"
+    ".": "./src/dutch-a1.json",
+    "./manifest": "./src/manifest.ts",
+    "./remote": "./src/remote.ts"
   }
 }

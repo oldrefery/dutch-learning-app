@@ -25,6 +25,7 @@ jest.mock('@/db/wordRepository', () => ({
     getWordBySemanticKey: jest.fn(),
     saveWords: jest.fn(),
     addWord: jest.fn(),
+    addWords: jest.fn(),
     updateAnalyzedWord: jest.fn(),
     deleteWord: jest.fn(),
     updateWordProgress: jest.fn(),
@@ -276,7 +277,7 @@ describe('wordActions', () => {
         words: currentWords,
         error: null,
       })
-      ;(wordRepository.addWord as jest.Mock).mockResolvedValue(undefined)
+      ;(wordRepository.addWords as jest.Mock).mockResolvedValue(undefined)
 
       const result = await actions.saveAnalyzedWord(analyzedWord)
 
@@ -866,23 +867,22 @@ describe('wordActions', () => {
 
       const result = await actions.addWordsToCollection(COLLECTION_ID, newWords)
 
-      expect(wordRepository.addWord).toHaveBeenCalledTimes(2)
-      expect(wordRepository.addWord).toHaveBeenCalledWith(
-        expect.objectContaining({
-          dutch_lemma: 'eten',
-          user_id: USER_ID,
-          collection_id: COLLECTION_ID,
-          interval_days: 1,
-          repetition_count: 0,
-          easiness_factor: 2.5,
-        })
-      )
-      expect(wordRepository.addWord).toHaveBeenCalledWith(
-        expect.objectContaining({
-          dutch_lemma: 'drinken',
-          user_id: USER_ID,
-          collection_id: COLLECTION_ID,
-        })
+      expect(wordRepository.addWords).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            dutch_lemma: 'eten',
+            user_id: USER_ID,
+            collection_id: COLLECTION_ID,
+            interval_days: 1,
+            repetition_count: 0,
+            easiness_factor: 2.5,
+          }),
+          expect.objectContaining({
+            dutch_lemma: 'drinken',
+            user_id: USER_ID,
+            collection_id: COLLECTION_ID,
+          }),
+        ])
       )
       expect(result).toBe(true)
     })
@@ -893,11 +893,11 @@ describe('wordActions', () => {
         words: [],
         error: null,
       })
-      ;(wordRepository.addWord as jest.Mock).mockResolvedValue(undefined)
+      ;(wordRepository.addWords as jest.Mock).mockResolvedValue(undefined)
 
       const result = await actions.addWordsToCollection(COLLECTION_ID, [])
 
-      expect(wordRepository.addWord).not.toHaveBeenCalled()
+      expect(wordRepository.addWords).toHaveBeenCalledWith([])
       expect(result).toBe(true)
     })
 
@@ -983,7 +983,7 @@ describe('wordActions', () => {
         words: [],
         error: null,
       })
-      ;(wordRepository.addWord as jest.Mock).mockRejectedValue(error)
+      ;(wordRepository.addWords as jest.Mock).mockRejectedValue(error)
 
       const result = await actions.addWordsToCollection(COLLECTION_ID, newWords)
 

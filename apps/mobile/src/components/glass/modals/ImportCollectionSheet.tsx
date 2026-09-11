@@ -124,7 +124,7 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
 
   const handleOpenStarterPack = useCallback(() => {
     onClose()
-    router.push(ROUTES.STARTER_PACK as Href)
+    router.push(ROUTES.OFFICIAL_CONTENT as Href)
   }, [onClose])
 
   return (
@@ -164,8 +164,8 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
           ]}
           onPress={handleOpenStarterPack}
           accessibilityRole="button"
-          accessibilityLabel="Open Dutch A1 starter pack"
-          accessibilityHint="Preview and import the bundled offline starter pack"
+          accessibilityLabel="Open official vocabulary packs"
+          accessibilityHint="Choose an offline or downloadable official pack"
         >
           <View style={styles.starterPackIcon}>
             <Ionicons
@@ -180,15 +180,15 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
           </View>
           <View style={styles.starterPackText}>
             <TextThemed style={styles.starterPackTitle}>
-              Dutch A1 Starter Pack
+              Official Vocabulary Packs
             </TextThemed>
             <TextThemed
               style={styles.starterPackSubtitle}
               lightColor={Colors.neutral[600]}
               darkColor={Colors.dark.textSecondary}
             >
-              Preview {OFFICIAL_DUTCH_A1_PACK_SIZE} built-in words — works
-              offline
+              {OFFICIAL_DUTCH_A1_PACK_SIZE} built-in A1 words plus downloadable
+              level packs
             </TextThemed>
           </View>
           <Ionicons

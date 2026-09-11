@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity, useColorScheme } from 'react-native'
-import { Stack } from 'expo-router'
+import { Stack, useLocalSearchParams } from 'expo-router'
 import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { ImportHeaderButton } from '@/components/ImportHeaderButton'
@@ -11,16 +11,30 @@ import { StarterPackImportSuccess } from '@/components/StarterPackImportSuccess'
 import { StarterPackImportBar } from '@/components/StarterPackImportBar'
 import { StarterPackReviewBanner } from '@/components/StarterPackReviewBanner'
 import { useStarterPackImport } from '@/hooks/useStarterPackImport'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 
-export default function StarterPackScreen() {
+interface StarterPackScreenContentProps {
+  packId?: string
+  version?: string
+}
+
+export function StarterPackScreenContent({
+  packId,
+  version,
+}: StarterPackScreenContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
-  const starterPack = useStarterPackImport()
+  const starterPack = useStarterPackImport({ packId, version })
+  const screenTitle = starterPack.manifest?.title ?? 'Official Pack'
 
   if (starterPack.loading) {
     return (
       <SharedCollectionLoadingScreen
-        title="Dutch A1 Starter Pack"
-        message="Preparing the offline pack..."
+        title={screenTitle}
+        message={
+          packId
+            ? 'Downloading and verifying the pack…'
+            : 'Preparing the offline pack…'
+        }
       />
     )
   }
@@ -28,9 +42,11 @@ export default function StarterPackScreen() {
   if (starterPack.error || !starterPack.previewData || !starterPack.manifest) {
     return (
       <SharedCollectionErrorScreen
-        title="Dutch A1 Starter Pack"
+        title={screenTitle}
         error={starterPack.error ?? 'No starter pack data is available.'}
         onGoBack={starterPack.handleGoBack}
+        onRetry={starterPack.retryRemotePack}
+        showRetry={Boolean(packId && version)}
       />
     )
   }
@@ -40,7 +56,7 @@ export default function StarterPackScreen() {
       <>
         <Stack.Screen
           options={{
-            title: 'Dutch A1 Starter Pack',
+            title: screenTitle,
             headerBackVisible: false,
             headerStyle: {
               backgroundColor:
@@ -64,7 +80,7 @@ export default function StarterPackScreen() {
     <>
       <Stack.Screen
         options={{
-          title: 'Dutch A1 Starter Pack',
+          title: screenTitle,
           headerBackTitle: 'Back',
           headerStyle: {
             backgroundColor:
@@ -128,6 +144,25 @@ export default function StarterPackScreen() {
         onToggleHideDuplicates={starterPack.toggleHideDuplicates}
       />
     </>
+  )
+}
+
+export default function StarterPackScreen() {
+  const currentUserId = useApplicationStore(state => state.currentUserId)
+  const { packId, version } = useLocalSearchParams<{
+    packId?: string
+    version?: string
+  }>()
+  const routeIdentity = `${currentUserId ?? 'signed-out'}:${
+    packId ?? 'bundled'
+  }@${version ?? 'bundled'}`
+
+  return (
+    <StarterPackScreenContent
+      key={routeIdentity}
+      packId={packId}
+      version={version}
+    />
   )
 }
 

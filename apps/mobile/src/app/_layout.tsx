@@ -176,6 +176,10 @@ function RootLayoutNav() {
             options={{ headerShown: true }}
           />
           <Stack.Screen name="import/[token]" options={{ headerShown: true }} />
+          <Stack.Screen
+            name="official-content"
+            options={{ headerShown: true }}
+          />
           <Stack.Screen name="starter-pack" options={{ headerShown: true }} />
           <Stack.Screen
             name="batch-capture"

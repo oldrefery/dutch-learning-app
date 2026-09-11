@@ -1,6 +1,6 @@
 {
   "name": "woordenaar",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -60,6 +60,13 @@
     "sourcemaps:build": "bash scripts/upload-sourcemaps.sh",
     "sourcemaps:update": "bash scripts/upload-sourcemaps.sh --update-dist apps/mobile/dist",
     "starter-pack:generate": "node scripts/generate-starter-pack.js",
+    "official-content:build": "node scripts/official-content/build-vocabulary-packs.mjs",
+    "official-content:prepare-review": "node scripts/official-content/prepare-review-inventory.mjs",
+    "official-content:rebuild-review": "node scripts/official-content/rebuild-review-ledger.mjs",
+    "official-content:test": "node --test scripts/official-content/*.test.mjs",
+    "official-content:approve": "node scripts/official-content/approve-vocabulary-packs.mjs",
+    "official-content:publish": "node scripts/official-content/publish-vocabulary-packs.mjs",
+    "official-content:verify": "node scripts/official-content/verify-published-vocabulary-packs.mjs",
     "complexity": "npm run lint -- --format stylish",
     "complexity:strict": "npm run lint -- --rule 'sonarjs/cognitive-complexity: [error, 10]'",
     "complexity:report": "npm run lint -- --format json --output-file reports/complexity-report.json",

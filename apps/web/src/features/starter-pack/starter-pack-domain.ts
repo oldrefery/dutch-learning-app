@@ -1,4 +1,9 @@
 import officialDutchA1Pack from '@woordenaar/content'
+import {
+  OfficialContentValidationError,
+  validateOfficialContentManifest,
+} from '@woordenaar/content/manifest'
+import type { OfficialContentManifest } from '@woordenaar/content/manifest'
 import { getSemanticWordKey } from '@woordenaar/domain'
 import type { Json } from '@woordenaar/supabase-contracts'
 
@@ -159,33 +164,10 @@ const parseEntry = (value: unknown, index: number): StarterPackEntry => {
   }
 }
 
-export const loadOfficialStarterPack = (): StarterPackManifest => {
-  const value: unknown = officialDutchA1Pack
-  if (!isRecord(value) || !Array.isArray(value.entries)) {
-    throw new Error('The official starter pack is invalid.')
-  }
-  if (value.schema_version !== 1) {
-    throw new Error('The official starter pack schema is not supported.')
-  }
-  if (
-    value.entries.length < MIN_OFFICIAL_ENTRIES ||
-    value.entries.length > MAX_OFFICIAL_ENTRIES
-  ) {
-    throw new Error('The official starter pack has an invalid size.')
-  }
-  if (
-    !isRecord(value.content_review) ||
-    value.content_review.status !== 'approved'
-  ) {
-    throw new Error('The official starter pack is awaiting content review.')
-  }
-
+export const toStarterPackManifest = (
+  value: OfficialContentManifest
+): StarterPackManifest => {
   const entries = value.entries.map(parseEntry)
-  const entryIds = new Set(entries.map(entry => entry.entryId))
-  if (entryIds.size !== entries.length) {
-    throw new Error('The official starter pack contains duplicate entry IDs.')
-  }
-
   return {
     packId: requiredText(value.pack_id, 'pack_id'),
     version: requiredText(value.version, 'version'),
@@ -194,6 +176,23 @@ export const loadOfficialStarterPack = (): StarterPackManifest => {
     reviewedAt: requiredText(value.content_review.reviewed_at, 'reviewed_at'),
     entries,
   }
+}
+
+export const loadOfficialStarterPack = (): StarterPackManifest => {
+  const result = validateOfficialContentManifest(officialDutchA1Pack)
+  if (!result.success) {
+    throw new OfficialContentValidationError(result.issues)
+  }
+  if (
+    result.data.entries.length < MIN_OFFICIAL_ENTRIES ||
+    result.data.entries.length > MAX_OFFICIAL_ENTRIES
+  ) {
+    throw new Error('The official starter pack has an invalid size.')
+  }
+  if (result.data.content_review.status !== 'approved') {
+    throw new Error('The official starter pack is awaiting content review.')
+  }
+  return toStarterPackManifest(result.data)
 }
 
 export const getStarterPackSemanticKey = (

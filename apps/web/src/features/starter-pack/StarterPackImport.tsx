@@ -14,14 +14,18 @@ interface StarterPackImportProps {
   canCreateCollection: boolean
   collections: StarterPackTargetCollection[]
   entries: StarterPackPreviewEntry[]
+  packId: string
   packTitle: string
+  packVersion: string
 }
 
 export function StarterPackImport({
   canCreateCollection,
   collections,
   entries,
+  packId,
   packTitle,
+  packVersion,
 }: StarterPackImportProps) {
   const availableEntryIds = useMemo(
     () =>
@@ -72,8 +76,11 @@ export function StarterPackImport({
           Starter pack imported
         </p>
         <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-          {state.importedCount} new{' '}
-          {state.importedCount === 1 ? 'word is' : 'words are'} ready
+          {state.importedCount === undefined
+            ? 'Import completed'
+            : `${state.importedCount} new ${
+                state.importedCount === 1 ? 'word is' : 'words are'
+              } ready`}
         </h2>
         <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-300">
           {state.message}
@@ -100,6 +107,8 @@ export function StarterPackImport({
 
   return (
     <form action={action}>
+      <input name="packId" type="hidden" value={packId} />
+      <input name="packVersion" type="hidden" value={packVersion} />
       <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>

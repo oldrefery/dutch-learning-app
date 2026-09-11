@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { router } from 'expo-router'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -8,6 +8,7 @@ import {
   starterPackService,
   StarterPackValidationError,
 } from '@/services/starterPackService'
+import { officialContentCatalogService } from '@/services/officialContentCatalogService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type {
   ImportPreviewData,
@@ -34,6 +35,15 @@ export interface StarterPackImportSuccess {
   importedCount: number
 }
 
+interface RequestedOfficialPack {
+  packId?: string
+  version?: string
+}
+
+interface ResolvedImportTarget extends ImportTargetCollection {
+  wasCreated: boolean
+}
+
 const loadStarterPack = (): StarterPackLoadResult => {
   try {
     const manifest = starterPackService.loadOfficialDutchA1Pack()
@@ -55,9 +65,31 @@ const loadStarterPack = (): StarterPackLoadResult => {
   }
 }
 
-export function useStarterPackImport() {
-  const pack = useMemo(() => loadStarterPack(), [])
-  const [loading, setLoading] = useState(Boolean(pack.previewData))
+export function useStarterPackImport(
+  requestedPack: RequestedOfficialPack = {}
+) {
+  const bundledPack = useMemo(() => loadStarterPack(), [])
+  const hasRemoteRequest = Boolean(
+    requestedPack.packId || requestedPack.version
+  )
+  const hasCompleteRemoteRequest = Boolean(
+    requestedPack.packId && requestedPack.version
+  )
+  const [pack, setPack] = useState<StarterPackLoadResult>(() =>
+    hasRemoteRequest
+      ? {
+          manifest: null,
+          previewData: null,
+          error: hasCompleteRemoteRequest
+            ? null
+            : 'The selected official pack link is incomplete.',
+        }
+      : bundledPack
+  )
+  const [loading, setLoading] = useState(
+    hasCompleteRemoteRequest ||
+      (!hasRemoteRequest && Boolean(bundledPack.previewData))
+  )
   const [wordSelections, setWordSelections] = useState<WordSelectionItem[]>([])
   const [collections, setCollections] = useState<ImportTargetCollection[]>([])
   const [targetCollectionId, setTargetCollectionId] = useState<string | null>(
@@ -66,65 +98,118 @@ export function useStarterPackImport() {
   const [importing, setImporting] = useState(false)
   const [hideDuplicates, setHideDuplicates] = useState(true)
   const [success, setSuccess] = useState<StarterPackImportSuccess | null>(null)
+  const [remoteLoadAttempt, setRemoteLoadAttempt] = useState(0)
+  const importInFlightRef = useRef(false)
 
-  const loadCollectionsAndSelections = useCallback(async () => {
-    const previewData = pack.previewData
-    if (!previewData) return
+  useEffect(() => {
+    if (!requestedPack.packId || !requestedPack.version) {
+      return undefined
+    }
 
-    return useApplicationStore
-      .getState()
-      .fetchCollections()
-      .then(() => {
-        const state = useApplicationStore.getState()
-        setCollections([
-          {
-            collection_id: NEW_STARTER_COLLECTION_ID,
-            name: `Create “${previewData.collection.name}”`,
-          },
-          ...state.collections.map(collection => ({
-            collection_id: collection.collection_id,
-            name: collection.name,
-          })),
-        ])
-        setWordSelections(
-          buildImportWordSelections(
-            previewData.words,
-            state.words,
-            state.collections
-          )
-        )
+    let active = true
+    void officialContentCatalogService
+      .getPack(requestedPack.packId, requestedPack.version)
+      .then(({ manifest }) => {
+        if (!active) return
+        const mobileManifest = manifest as unknown as StarterPackManifest
+        setPack({
+          manifest: mobileManifest,
+          previewData: starterPackService.getStarterPackPreview(mobileManifest),
+          error: null,
+        })
       })
       .catch(error => {
+        if (!active) return
+        Sentry.captureException(error, {
+          tags: { operation: 'loadRemoteOfficialPack' },
+        })
+        setPack({
+          manifest: null,
+          previewData: null,
+          error:
+            'This official pack could not be downloaded and is not cached on this device.',
+        })
+        setLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [remoteLoadAttempt, requestedPack.packId, requestedPack.version])
+
+  useEffect(() => {
+    const previewData = pack.previewData
+    if (!previewData) return undefined
+
+    let active = true
+
+    const prepareImport = () => {
+      if (!active) return
+      const state = useApplicationStore.getState()
+      const targetCollections: ImportTargetCollection[] = [
+        ...(state.userAccessLevel === 'full_access'
+          ? [
+              {
+                collection_id: NEW_STARTER_COLLECTION_ID,
+                name: `Create “${previewData.collection.name}”`,
+              },
+            ]
+          : []),
+        ...state.collections.map(collection => ({
+          collection_id: collection.collection_id,
+          name: collection.name,
+        })),
+      ]
+      setCollections(targetCollections)
+      setTargetCollectionId(currentTarget =>
+        targetCollections.some(
+          collection => collection.collection_id === currentTarget
+        )
+          ? currentTarget
+          : (targetCollections[0]?.collection_id ?? null)
+      )
+      setWordSelections(
+        buildImportWordSelections(
+          previewData.words,
+          state.words,
+          state.collections
+        )
+      )
+    }
+
+    void useApplicationStore
+      .getState()
+      .fetchCollections()
+      .then(prepareImport)
+      .catch(error => {
+        if (!active) return
         Sentry.captureException(error, {
           tags: { operation: 'prepareStarterPackImport' },
         })
-        const state = useApplicationStore.getState()
-        setCollections([
-          {
-            collection_id: NEW_STARTER_COLLECTION_ID,
-            name: `Create “${previewData.collection.name}”`,
-          },
-          ...state.collections.map(collection => ({
-            collection_id: collection.collection_id,
-            name: collection.name,
-          })),
-        ])
-        setWordSelections(
-          buildImportWordSelections(
-            previewData.words,
-            state.words,
-            state.collections
-          )
-        )
+        prepareImport()
       })
       .finally(() => {
-        setLoading(false)
+        if (active) setLoading(false)
       })
+
+    return () => {
+      active = false
+    }
   }, [pack.previewData])
 
-  useEffect(() => {
-    void loadCollectionsAndSelections()
-  }, [loadCollectionsAndSelections])
+  const retryRemotePack = useCallback(() => {
+    if (requestedPack.packId && requestedPack.version) {
+      setPack({ manifest: null, previewData: null, error: null })
+      setWordSelections([])
+      setCollections([])
+      setTargetCollectionId(NEW_STARTER_COLLECTION_ID)
+      setImporting(false)
+      setHideDuplicates(true)
+      setSuccess(null)
+      setLoading(true)
+      setRemoteLoadAttempt(previous => previous + 1)
+    }
+  }, [requestedPack.packId, requestedPack.version])
 
   const toggleWordSelection = useCallback((wordId: string) => {
     setWordSelections(previous =>
@@ -156,19 +241,36 @@ export function useStarterPackImport() {
         ? {
             collection_id: existingCollection.collection_id,
             name: existingCollection.name,
+            wasCreated: false,
           }
         : null
     }
 
-    const collection = await useApplicationStore
-      .getState()
-      .createNewCollection(pack.manifest.title)
+    const state = useApplicationStore.getState()
+    if (state.userAccessLevel !== 'full_access') return null
+    const collection = await state.createNewCollection(pack.manifest.title)
     return collection
-      ? { collection_id: collection.collection_id, name: collection.name }
+      ? {
+          collection_id: collection.collection_id,
+          name: collection.name,
+          wasCreated: true,
+        }
       : null
   }, [collections, pack.manifest, targetCollectionId])
 
+  const removeFailedNewCollection = useCallback(
+    async (targetCollection: ResolvedImportTarget | null) => {
+      if (!targetCollection?.wasCreated) return
+      await useApplicationStore
+        .getState()
+        .deleteCollection(targetCollection.collection_id)
+    },
+    []
+  )
+
   const handleImport = useCallback(async () => {
+    if (importInFlightRef.current) return
+
     if (!pack.manifest || !targetCollectionId) {
       ToastService.show('Please select a collection first', ToastType.ERROR)
       return
@@ -196,9 +298,11 @@ export function useStarterPackImport() {
       return
     }
 
+    importInFlightRef.current = true
     setImporting(true)
+    let targetCollection: ResolvedImportTarget | null = null
     try {
-      const targetCollection = await resolveTargetCollection()
+      targetCollection = await resolveTargetCollection()
       if (!targetCollection) {
         const storeMessage = useApplicationStore.getState().error?.userMessage
         ToastService.show(
@@ -219,6 +323,8 @@ export function useStarterPackImport() {
         importWords
       )
       if (!imported) {
+        await removeFailedNewCollection(targetCollection)
+        targetCollection = null
         const storeMessage = useApplicationStore.getState().error?.userMessage
         ToastService.show(
           storeMessage ?? 'Starter pack import failed',
@@ -242,6 +348,7 @@ export function useStarterPackImport() {
         importedCount,
       })
     } catch (error) {
+      await removeFailedNewCollection(targetCollection)
       Sentry.captureException(error, {
         tags: { operation: 'importStarterPack' },
         extra: {
@@ -257,10 +364,12 @@ export function useStarterPackImport() {
         ToastType.ERROR
       )
     } finally {
+      importInFlightRef.current = false
       setImporting(false)
     }
   }, [
     pack.manifest,
+    removeFailedNewCollection,
     resolveTargetCollection,
     targetCollectionId,
     wordSelections,
@@ -275,6 +384,7 @@ export function useStarterPackImport() {
     : wordSelections
   const importEnabled = Boolean(
     pack.manifest &&
+    targetCollectionId &&
     (starterPackService.isStarterPackReleaseReady(pack.manifest) || __DEV__)
   )
 
@@ -297,6 +407,7 @@ export function useStarterPackImport() {
     toggleWordSelection,
     toggleSelectAll,
     toggleHideDuplicates: () => setHideDuplicates(previous => !previous),
+    retryRemotePack,
     handleImport,
     handleGoBack: () => router.back(),
     handleStartReview: () => router.replace(ROUTES.TABS.REVIEW),

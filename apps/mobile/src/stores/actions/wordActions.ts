@@ -514,28 +514,47 @@ export const createWordActions = (
       // Generate word_id on a client for offline-first architecture
       const now = new Date().toISOString()
       const today = now.split('T')[0] // Extract date only: "2025-12-21"
-      const wordsWithIds = words.map(word => ({
-        ...word,
+      const wordsWithIds: Word[] = words.map(word => ({
         word_id: word.word_id || Crypto.randomUUID(),
         user_id: userId,
         collection_id: collectionId,
+        dutch_lemma: word.dutch_lemma ?? '',
+        dutch_original: word.dutch_original ?? null,
+        part_of_speech: word.part_of_speech ?? null,
+        is_irregular: word.is_irregular ?? false,
+        is_reflexive: word.is_reflexive ?? false,
+        is_expression: word.is_expression ?? false,
+        expression_type: word.expression_type ?? null,
+        is_separable: word.is_separable ?? false,
+        prefix_part: word.prefix_part ?? null,
+        root_verb: word.root_verb ?? null,
+        article: word.article ?? null,
+        plural: word.plural ?? null,
+        register: word.register ?? null,
+        translations: word.translations ?? { en: [] },
+        examples: word.examples ?? null,
+        synonyms: word.synonyms ?? [],
+        antonyms: word.antonyms ?? [],
+        conjugation: word.conjugation ?? null,
+        preposition: word.preposition ?? null,
+        image_url: word.image_url ?? null,
+        tts_url: word.tts_url ?? null,
         interval_days: word.interval_days ?? 1,
         repetition_count: word.repetition_count ?? 0,
         easiness_factor: word.easiness_factor ?? 2.5,
-        next_review_date: word.next_review_date ?? today, // Store-only date
+        next_review_date: word.next_review_date ?? today,
+        last_reviewed_at: word.last_reviewed_at ?? null,
+        analysis_notes: word.analysis_notes ?? null,
+        usage_notes: word.usage_notes ?? null,
         created_at: word.created_at ?? now,
         updated_at: word.updated_at ?? now,
       }))
 
-      await Promise.all(
-        wordsWithIds.map(word => wordRepository.addWord(word as any))
-      )
+      await wordRepository.addWords(wordsWithIds)
 
       // Update the store with new words (in offline-first, we just track the count)
       const currentWords = get().words
-      const wordsToAdd = wordsWithIds as any
-
-      set({ words: [...currentWords, ...wordsToAdd] })
+      set({ words: [...currentWords, ...wordsWithIds] })
 
       return true
     } catch (error) {

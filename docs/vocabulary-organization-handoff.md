@@ -1,0 +1,259 @@
+# Vocabulary organization: resume here
+
+Updated: 2026-09-11.
+Primary continuation plan:
+[detailed implementation and release handoff](plans/official-content-completion-handoff-2026-09-11.md).
+It supersedes the immediate next steps below for official catalog implementation.
+The private inventory and source history in this file remain relevant.
+Plan: [approved approach](plans/vocabulary-organization-2026-09-07.md).
+Branch: `feature/vocabulary-organization` (from main `bf197d9`).
+
+## Current authority
+
+The user approved saving the plan and beginning read-only analysis of the personal
+`oldrefery` profile. Production classification writes and collection moves still
+need approval of their exact proposals. The user authorized commits in
+`feature/vocabulary-organization` only. Pushes, PRs and deployments still require
+separate permission.
+Never use this personal account for tests. Preserve sayings/expressions everywhere.
+
+## Verified inventory
+
+Read-only SQL on 2026-09-07 confirmed exactly one matching account,
+12 collections and 2,287 active cards with 2,287 distinct IDs. There are no
+unassigned cards, missing lemmas or missing POS values. Seven collections are shared.
+The protected collection `Spreekwoorden en uitdrukkingen` has 69 cards.
+This leaves an upper bound of 2,218 cards before excluding expressions elsewhere.
+The complete analysis JSON was inspected in the SQL editor at
+2026-09-07T09:35:25.768039Z. This is NOT a recovery backup: it excludes SRS,
+review history and media. The complete CSV is now saved locally and validated
+against the previously verified owner ID and card count. No new snapshot timestamp
+is inferred from the download time.
+
+Of 614 cards flagged as expressions, 545 are outside the protected collection.
+The other 1,673 cards outside that collection are unflagged. These are NOT final
+exclusion/eligibility counts: many ordinary lexical compounds have expression
+flags. Review actual meanings and types instead of excluding all flagged cards.
+The `expression_type` field can also be present on unflagged cards.
+
+Other collections: New words (813), Peter (443), Arjan (309), Wij slaven (186),
+Een tompoes en bitterballen (74), Ik omhels je (78), De finale (194),
+Ad Appel B1 (74), Waar is mijn fiets? 2 (35), Belgische woorden (4), Dieren (8).
+Several collections have active shared links. `New words` also contains proverbs
+and expressions. No levels have been saved and no collection has been changed.
+
+## Durable local artifacts
+
+- `reports/vocabulary-organization/inventory-2026-09-07.json`: verified aggregate
+  inventory from the initial pass, ignored by Git; contains no full vocabulary.
+- `reports/vocabulary-organization/snapshot-2026-09-07.csv`: full analysis snapshot,
+  2,287 cards. SHA-256: `11296b11ec1c6b3b932d137f884c0315c072fb7fce409c6c086eeac717ba0583`.
+- `reports/vocabulary-organization/evidence-2026-09-07.json`: complete per-card
+  provisional dispositions and NT2Lex matches, not final classification decisions.
+  SHA-256: `c8a73b87bfdd0716e0990438fe57af0b58199e1de571710e16505b51c250cce5`.
+- `reports/vocabulary-organization/sources/NT2Lex-CGN-v01.tsv`: downloaded source,
+  ignored by Git; 15,227 rows plus header.
+- Source SHA-256: `0acae87e65a6ceb4237dcf23c5576488338570f3431ac52e159b6fce9e1a0515`.
+- `reports/vocabulary-organization/sources/SUBTLEX-NL-with-pos-and-Zipf.xlsx`:
+  complete source from OSF file `2dcvs`, downloaded and ZIP integrity checked.
+  SHA-256: `6a43c784b30a9dc097f8d903b22c830dac631654efed430c86f2f9ec0a7cdd05`.
+- `reports/vocabulary-organization/sources/SUBTLEX-NL-license.txt`: author's license,
+  OSF file `w5mhg`; CC BY-NC-SA 4.0.
+- `reports/vocabulary-organization/frequency-2026-09-07.json`: SUBTLEX surface/POS
+  evidence for all 2,218 cards outside the protected collection, with input hashes.
+- `reports/vocabulary-organization/semantic-review-uncertain-2026-09-07.json`:
+  private editorial proposals for the 67 formerly uncertain cards, keyed by ID and
+  content hash. Includes 53 estimated CEFR levels with rationales, NOT approved
+  classifications. The private `review-uncertain-2026-09-07.mjs` records the explicit
+  editorial input used to produce this report; neither file belongs in Git.
+- `reports/vocabulary-organization/semantic-review-expressions-2026-09-07.json`:
+  editorial proposals for all 158 expression candidates: 143 preserve, 13 include,
+  2 hold. The private `review-expressions-2026-09-07.mjs` records the decisions.
+- `reports/vocabulary-organization/semantic-review-lexical-001-2026-09-07.json`:
+  first 100 ordinary/compound candidates in evidence order: 95 include with level
+  estimates, 5 hold. Private decision source: `review-lexical-001-2026-09-07.mjs`.
+- `reports/vocabulary-organization/semantic-review-lexical-002-2026-09-07.json`:
+  candidates at offsets 100–199: 95 include, 5 hold; saved meanings and first two
+  examples inspected. Private decision source: `review-lexical-002-2026-09-07.mjs`.
+- `reports/vocabulary-organization/semantic-review-lexical-003-2026-09-07.json`:
+  candidates at offsets 200–299: 98 include, 2 hold; saved meanings and first
+  example inspected. Private decision source: `review-lexical-003-2026-09-07.mjs`.
+  Both new batches include separately justified everyday usefulness for the
+  193 level proposals: high, medium or context-dependent. These are editorial
+  judgments for daily life in the Netherlands, not observed corpus frequencies.
+- `reports/vocabulary-organization/semantic-review-lexical-004-2026-09-07.json`:
+  candidates at offsets 300–399: 98 include, 2 hold. Everyday usefulness is
+  recorded separately from CEFR and corpus frequency.
+- `reports/vocabulary-organization/semantic-review-lexical-005-revised-2026-09-07.json`:
+  candidates at offsets 400–499: 99 include, 1 hold. This is the validated
+  replacement for the earlier private `005` draft, which remains untouched and
+  must not be used in planning. The review script writes only the revised file.
+- `reports/vocabulary-organization/semantic-review-lexical-006-2026-09-07.json`:
+  candidates at offsets 500–599: 97 include, 3 hold. Everyday usefulness is
+  recorded separately from CEFR and corpus frequency.
+- `reports/vocabulary-organization/semantic-review-lexical-007-2026-09-07.json`:
+  candidates at offsets 600–699: 95 include, 5 hold. Everyday usefulness is
+  recorded separately from CEFR and corpus frequency.
+- `reports/vocabulary-organization/semantic-review-lexical-remaining-2026-09-07.json`:
+  rejected heuristic backlog draft. It did not inspect meanings and must never be
+  used for classification or collection planning. It remains private only as an
+  audit trail of the discarded approach.
+- `reports/vocabulary-organization/semantic-review-lexical-008-2026-09-07.json`:
+  candidates at offsets 700–799: 95 include, 5 hold after translation and register
+  review. Everyday usefulness is recorded independently from CEFR.
+- `reports/vocabulary-organization/semantic-review-lexical-009-010-2026-09-07.json`:
+  candidates at offsets 800–999: 191 include, 9 hold after translation and register
+  review. This combined artifact retains the same per-card schema and input hashes.
+- `semantic-review-lexical-011`, `012-013`, `014-015`, `016-017` and `018-020`:
+  meaning-aware review artifacts covering offsets 1000–1992, the end of the
+  ordinary/compound candidate list.
+- `reports/vocabulary-organization/semantic-review-held-resolutions-2026-09-07.json`:
+  conservative collection levels for all 88 formerly held cards. Quality notes
+  retain spelling, register and sense-grouping concerns without editing content.
+- `reports/vocabulary-organization/semantic-review-usefulness-backfill-2026-09-07.json`:
+  fills the 161 missing usefulness judgments; every included card now has one.
+- `reports/vocabulary-organization/review-coverage-2026-09-07.json`: reconciled
+  coverage across all 2,287 IDs, source report hashes and explicit pending entries.
+  Produced by private `reconcile-review-2026-09-07.mjs`; no overlapping decisions,
+  unknown IDs, changed content hashes or protected-card reviews were found.
+- `reports/vocabulary-organization/review-coverage-002-2026-09-07.json`: latest
+  coverage manifest across five batches. The earlier coverage report is retained.
+  The private reconciliation script now targets this newer report (exclusive write).
+- `reports/vocabulary-organization/review-coverage-003-2026-09-07.json`: prior
+  manifest spanning seven semantic-review batches. Its ID/hash/no-overlap checks
+  passed. The coverage script now writes this filename exclusively.
+- `reports/vocabulary-organization/review-coverage-004-2026-09-07.json`: prior
+  manifest spanning eight semantic-review batches. Its ID/hash/no-overlap checks
+  passed; it records 825 reviewed cards and 1,393 pending cards. The coverage
+  script now writes this filename exclusively.
+- `reports/vocabulary-organization/review-coverage-005-2026-09-07.json`: prior
+  manifest spanning nine semantic-review batches. Its ID/hash/no-overlap checks
+  passed; it records 925 reviewed cards and 1,293 pending cards. The coverage
+  script now writes this filename exclusively.
+- `reports/vocabulary-organization/review-coverage-006-2026-09-07.json`: complete
+  but rejected manifest built with the heuristic backlog draft. Do not use it.
+- `reports/vocabulary-organization/review-coverage-007-2026-09-07.json`: prior
+  validated manifest across ten meaning-aware review batches. It records 1,025
+  reviewed cards outside the protected collection and 1,193 pending cards.
+- `reports/vocabulary-organization/review-coverage-008-2026-09-07.json`: prior
+  validated manifest. It records 1,225 reviewed cards outside the protected
+  collection and 993 pending cards.
+- `reports/vocabulary-organization/review-coverage-012-2026-09-07.json`: current
+  complete manifest: 2,065 include, 153 preserve-expression, 69 protected,
+  zero hold and zero pending. `classificationComplete` is true.
+- `reports/vocabulary-organization/classification-proposal-final-2026-09-07.json`:
+  final private classification proposal joining CEFR, usefulness, SUBTLEX evidence,
+  original collection and stable hashes for all 2,287 cards.
+- `reports/vocabulary-organization/frequency-enrichment-2026-09-07.json`:
+  45 explicit ordering-only enrichments: 44 reflexive base-verb proxies and one
+  orthographic variant. SHA-256:
+  `8e80e4aaa4f8c721af272a53eb06b7412dfa08fdf161a7baa405600761c5a1d1`.
+  The saved frequency remains missing and every proxy remains sense-unverified.
+- `reports/vocabulary-organization/collection-plan-proposal-002-2026-09-07.json`:
+  superseded dry-run mapping for all 2,287 IDs. It mapped 2,065 cards to 21
+  unshared target collections and retained 69 protected plus 153 expression
+  cards. SHA-256:
+  `b3f196fe459028f90cdba17667aadc8d8053d39021dfbab7a248a267e28e69bc`.
+  It predates the owner's sensitive-content decision and must not be used.
+- `reports/vocabulary-organization/public-pack-content-decisions-2026-09-11.json`:
+  owner decisions for all 40 reviewed sensitive-content candidates. Six are
+  retained in their original private collections and the other 34 are allowed.
+  SHA-256: `46de39a0b1a957fcafa54d684ab27c0b4851ad7a57dc4192873f6e01f9c40c98`.
+- `reports/vocabulary-organization/collection-plan-proposal-003-2026-09-11.json`:
+  current exact dry-run mapping. It maps 2,059 cards to 21 targets and retains
+  228 cards: 69 protected, 153 expressions and six owner exclusions. SHA-256:
+  `1f1b5a14735aecd3d63ca7da293dddeebf86259accc632977d3863c76f895123`.
+  All prior collection-plan artifacts are superseded.
+- [Read-only snapshot query](../scripts/vocabulary-analysis-snapshot.sql): reusable
+  export query; replace its email placeholder only after checking task authority.
+
+These ignored files exist only in this checkout. A fresh clone needs new exports
+and source downloads. Never commit them to make a handoff portable.
+
+## Immediate next steps
+
+1. Define the official multi-pack manifest/catalog contract so the approved level
+   sets are publicly importable like Dutch A1 Essentials while the owner's 21 new
+   collections remain unshared. Do not expose personal IDs or learning progress.
+2. Define and review the independent classification-storage contract for current
+   web/mobile clients. Do not move cards merely to persist CEFR metadata.
+3. Build and test stale-plan validation, idempotent apply, verification and targeted
+   rollback before any production write.
+4. Immediately before an approved apply, refresh the complete recovery snapshot
+   and reject the operation if any card hash, membership, owner or exclusion changed.
+
+## Completed analysis pass
+
+[Local analyzer instructions](../scripts/vocabulary/README.md) describe the reusable
+CLI and its synthetic tests. It has no network/database writes or apply command.
+All 26 analyzer/CLI tests and 8 synthetic SUBTLEX extraction tests pass.
+
+Provisional dispositions: 69 protected, 1,623 vocabulary candidates, 370 lexical
+compound candidates, 158 expression candidates and 67 needing review. These counts
+sum to 2,287 but are NOT an approved collection mapping.
+
+Outside the protected collection: 1,216 lemma+POS matches, 39 lemma-only matches
+and 963 missing from NT2Lex. Two repeated lemma/POS groups were reported without
+merging any records. The original NT2Lex evidence keeps CEFR null; the separate
+semantic reports now contain 2,065 editorial level proposals. The source evidence
+and private snapshot have not been overwritten.
+
+Semantic coverage reconciles to the full inventory: 69 protected, 2,065 proposed
+for classification, 153 proposed for expression preservation, zero held and zero
+pending. All 2,218 cards outside the protected collection have unique IDs and
+matching input hashes. Proposed levels: A1 122, A2 500, B1 889, B2 506, C1 48,
+C2 0. Usefulness: 321 high, 1,538 medium and 206 context-dependent.
+Levels are editorial estimates, generally medium confidence, with explicitly low
+confidence for specialized/cultural items. They are not verified CEFR certifications.
+No level was generated from the frequency score or personal learning progress.
+
+SUBTLEX extraction scanned 437,503 source rows. Outside the protected collection:
+1,811 surface+POS matches, 52 surface-only matches and 355 missing. All selected
+numeric rows passed POS-count reconciliation and cached Zipf formula checks.
+These matches remain sense-unverified; ranking scores are null. No lemma totals
+were summed and no reflexive pronouns or accents were removed to force matches.
+
+The final collection proposal contains 21 stable, unshared personal targets: A1
+has one 122-card group; A2 has five groups of 100; B1 has four groups of 99 and
+five of 98; B2 has four groups of 101 and one of 100; C1 has one group of 47;
+C2 has none.
+The 122-card A1 exception is preferable to two undersized groups of 61. Ordering
+uses observed Zipf or an explicitly labelled ordering proxy, then everyday
+usefulness and stable lemma/ID tie-breakers. The current proposal maps 2,059 cards;
+six owner-selected sensitive entries remain in their original private collections.
+Of the mapped cards, 1,850 have observed frequency, 45 have explicit ordering-only
+proxies and 164 remain missing. All missing entries stay explicit and sort after
+numeric evidence within a level.
+
+Six shared source collections contain cards that would move. The protected shared
+collection is unaffected. The owner approved keeping the old collections and their
+sharing flags, accepting that their links will retain only excluded cards. No old
+collection is scheduled for deletion and no personal target is shared automatically.
+Public availability of the approved level sets will use official content manifests,
+like Dutch A1 Essentials, with no personal IDs, SRS data or account dependency.
+
+## Source research
+
+- NT2Lex: <https://cental.uclouvain.be/cefrlex/nt2lex/>
+- NT2Lex downloads: <https://cental.uclouvain.be/cefrlex/nt2lex/download/>
+- SUBTLEX-NL paper: <https://doi.org/10.3758/BRM.42.3.643>
+
+NT2Lex provides frequencies in graded receptive texts at A1, A2, B1, B2 and C1;
+there is no C2 column. Its download page specifies CC BY-NC-SA 4.0 and research/
+teaching use. Keep the source local, retain attribution and do not bundle it in
+the app or redistribute it. Cite Tack, Francois, Desmet and Fairon (2018), NT2Lex.
+The extended CGN+ODWN version may assist sense matching; it is not yet downloaded.
+Corpus occurrence is evidence, not an official per-sense CEFR assignment.
+
+SUBTLEX-NL origin and license were verified in the author's public OSF project:
+<https://osf.io/3d8cx/overview> and <https://osf.io/3d8cx/files/w5mhg>.
+The project lists Marc Brysbaert as contributor and specifies CC BY-NC-SA 4.0.
+Use locally with attribution; do not redistribute the corpus in the app/repository.
+The downloaded full file is <https://osf.io/3d8cx/files/2dcvs> (not the filtered
+minimum-two-films subset). Its wiki describes smoothed Zipf values; keep absent
+entries distinguishable rather than silently imputing them as observed counts.
+NT2Lex and exact-surface SUBTLEX matching, meaning-aware classification, explicit
+frequency enrichment and exact collection mapping are complete. The private plan
+has passed full-ID coverage, uniqueness, source/target count, ordering and exclusion
+checks. It remains a proposal and has not been approved for production writes.
+No profile data has been changed.
