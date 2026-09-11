@@ -30,6 +30,9 @@ export async function callGeminiAPI(prompt: string): Promise<any> {
         },
       ],
       generationConfig: {
+        thinkingConfig: {
+          thinkingLevel: API_CONFIG.GEMINI_THINKING_LEVEL,
+        },
         maxOutputTokens: 8192,
         responseMimeType: 'application/json',
       },

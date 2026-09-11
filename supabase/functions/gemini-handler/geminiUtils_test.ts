@@ -21,6 +21,7 @@ Deno.test('Gemini configuration uses the stable production model', () => {
     API_CONFIG.GEMINI_API_URL,
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent'
   )
+  assertEquals(API_CONFIG.GEMINI_THINKING_LEVEL, 'low')
 })
 
 // =========================================
