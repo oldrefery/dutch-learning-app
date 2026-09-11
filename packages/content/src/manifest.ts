@@ -230,6 +230,24 @@ const isStringArray = (value: unknown, allowEmpty = true): value is string[] =>
   (allowEmpty || value.length > 0) &&
   value.every(isNonEmptyString)
 
+const semanticEntryKey = (entry: UnknownRecord): string | null => {
+  if (
+    !isNonEmptyString(entry.dutch_lemma) ||
+    !isNonEmptyString(entry.part_of_speech)
+  ) {
+    return null
+  }
+  const normalize = (value: unknown, fallback = '') =>
+    (typeof value === 'string'
+      ? value.trim().toLocaleLowerCase('nl-NL')
+      : '') || fallback
+  return [
+    normalize(entry.dutch_lemma),
+    normalize(entry.part_of_speech, 'unknown'),
+    normalize(entry.article),
+  ].join('|')
+}
+
 const addIssue = (
   issues: OfficialContentValidationIssue[],
   path: string,
@@ -580,6 +598,10 @@ export const validateOfficialContentManifest = (
     addIssue(issues, 'entries', 'must contain at least one entry')
   } else {
     const ids = new Set<string>()
+    const semanticKeys = new Set<string>()
+    const requireUniqueSemanticKeys =
+      isRecord(value.content_review) &&
+      value.content_review.status === 'approved'
     value.entries.forEach((entry, index) => {
       validateEntry(entry, index, issues)
       if (!isRecord(entry) || !isNonEmptyString(entry.entry_id)) return
@@ -587,6 +609,19 @@ export const validateOfficialContentManifest = (
         addIssue(issues, `entries[${index}].entry_id`, 'must be unique')
       }
       ids.add(entry.entry_id)
+      const semanticKey = semanticEntryKey(entry)
+      if (
+        requireUniqueSemanticKeys &&
+        semanticKey &&
+        semanticKeys.has(semanticKey)
+      ) {
+        addIssue(
+          issues,
+          `entries[${index}]`,
+          'must have a unique import semantic key'
+        )
+      }
+      if (semanticKey) semanticKeys.add(semanticKey)
     })
   }
 

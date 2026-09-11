@@ -39,11 +39,13 @@ jest.mock('expo-router', () => ({
 
 interface MockStoreState {
   currentUserId: string
+  userAccessLevel: 'full_access' | 'read_only'
   collections: Collection[]
   words: Word[]
   error: null
   fetchCollections: jest.Mock<Promise<void>, []>
   createNewCollection: jest.Mock<Promise<Collection | null>, [string]>
+  deleteCollection: jest.Mock<Promise<void>, [string]>
   addWordsToCollection: jest.Mock<Promise<boolean>, [string, Partial<Word>[]]>
 }
 
@@ -99,11 +101,13 @@ describe('useStarterPackImport', () => {
     const collection = createCollection()
     storeState = {
       currentUserId: 'user-id',
+      userAccessLevel: 'full_access',
       collections: [],
       words: [],
       error: null,
       fetchCollections: jest.fn().mockResolvedValue(undefined),
       createNewCollection: jest.fn().mockResolvedValue(collection),
+      deleteCollection: jest.fn().mockResolvedValue(undefined),
       addWordsToCollection: jest.fn(async (_collectionId, words) => {
         storeState = {
           ...storeState,
@@ -318,6 +322,66 @@ describe('useStarterPackImport', () => {
     expect(result.current.selectedCount).toBe(59)
   })
 
+  it('does not create an empty collection when every entry is a duplicate', async () => {
+    const collection = createCollection()
+    const previewWords = getStarterPackPreview(loadOfficialDutchA1Pack()).words
+    storeState = {
+      ...storeState,
+      collections: [collection],
+      words: previewWords.map((word, index) => ({
+        ...createExistingWord(),
+        ...word,
+        collection_id: collection.collection_id,
+        word_id: `existing-${index}`,
+        interval_days: 30,
+        repetition_count: 7,
+        easiness_factor: 2.8,
+      })),
+    }
+
+    const { result } = await renderAndWait()
+    expect(result.current.duplicateCount).toBe(60)
+    expect(result.current.selectedCount).toBe(0)
+
+    await act(async () => {
+      await result.current.handleImport()
+    })
+
+    expect(storeState.createNewCollection).not.toHaveBeenCalled()
+    expect(storeState.addWordsToCollection).not.toHaveBeenCalled()
+  })
+
+  it('limits a read-only account to an existing target collection', async () => {
+    const collection = createCollection()
+    storeState = {
+      ...storeState,
+      userAccessLevel: 'read_only',
+      collections: [collection],
+    }
+
+    const { result } = await renderAndWait()
+
+    expect(result.current.collections).toEqual([
+      { collection_id: collection.collection_id, name: collection.name },
+    ])
+    expect(result.current.targetCollectionId).toBe(collection.collection_id)
+    expect(result.current.importEnabled).toBe(true)
+  })
+
+  it('disables import for a read-only account without a target collection', async () => {
+    storeState = {
+      ...storeState,
+      userAccessLevel: 'read_only',
+      collections: [],
+    }
+
+    const { result } = await renderAndWait()
+
+    expect(result.current.collections).toEqual([])
+    expect(result.current.targetCollectionId).toBeNull()
+    expect(result.current.importEnabled).toBe(false)
+  })
+
   it('reports a collection creation failure without completing the import', async () => {
     storeState.createNewCollection.mockResolvedValue(null)
     const { result } = await renderAndWait()
@@ -343,9 +407,54 @@ describe('useStarterPackImport', () => {
     })
 
     expect(result.current.success).toBeNull()
+    expect(storeState.deleteCollection).toHaveBeenCalledWith(
+      STARTER_COLLECTION_ID
+    )
     expect(ToastService.show).toHaveBeenCalledWith(
       'Starter pack import failed',
       expect.any(String)
     )
+  })
+
+  it('does not delete an existing target collection when import fails', async () => {
+    const collection = createCollection()
+    storeState = {
+      ...storeState,
+      collections: [collection],
+    }
+    storeState.addWordsToCollection.mockResolvedValue(false)
+    const { result } = await renderAndWait()
+
+    act(() => result.current.setTargetCollectionId(collection.collection_id))
+    await act(async () => {
+      await result.current.handleImport()
+    })
+
+    expect(storeState.deleteCollection).not.toHaveBeenCalled()
+  })
+
+  it('ignores a second submit while the first import is still running', async () => {
+    const pendingImport = deferred<boolean>()
+    storeState.addWordsToCollection.mockReturnValue(pendingImport.promise)
+    const { result } = await renderAndWait()
+
+    let firstImport!: Promise<void>
+    act(() => {
+      firstImport = result.current.handleImport()
+    })
+    await waitFor(() =>
+      expect(storeState.addWordsToCollection).toHaveBeenCalledTimes(1)
+    )
+
+    await act(async () => {
+      await result.current.handleImport()
+    })
+    expect(storeState.createNewCollection).toHaveBeenCalledTimes(1)
+    expect(storeState.addWordsToCollection).toHaveBeenCalledTimes(1)
+
+    await act(async () => {
+      pendingImport.resolve(true)
+      await firstImport
+    })
   })
 })

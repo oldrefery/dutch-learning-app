@@ -247,4 +247,21 @@ describe('StarterPackPage', () => {
     expect(screen.getAllByText('A2 · Pack 01 · 1 word')).toHaveLength(2)
     expect(screen.queryByText(/A2 · Dutch A2/)).not.toBeInTheDocument()
   })
+
+  it('keeps all 21 online packs available in the compact picker', async () => {
+    mockGetOfficialContentCatalog.mockResolvedValue(
+      Array.from({ length: 21 }, (_, index) => ({
+        ...catalog[0],
+        displayOrder: index + 1,
+        packId: `dutch-pack-${index + 1}`,
+        slug: `dutch-pack-${index + 1}`,
+        title: `Dutch A1 · Pack ${String(index + 1).padStart(2, '0')}`,
+      }))
+    )
+
+    await renderPage()
+
+    expect(screen.getAllByRole('option')).toHaveLength(22)
+    expect(screen.getByRole('option', { name: /Pack 21/ })).toBeVisible()
+  })
 })

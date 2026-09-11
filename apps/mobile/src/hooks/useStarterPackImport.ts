@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { router } from 'expo-router'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -38,6 +38,10 @@ export interface StarterPackImportSuccess {
 interface RequestedOfficialPack {
   packId?: string
   version?: string
+}
+
+interface ResolvedImportTarget extends ImportTargetCollection {
+  wasCreated: boolean
 }
 
 const loadStarterPack = (): StarterPackLoadResult => {
@@ -95,6 +99,7 @@ export function useStarterPackImport(
   const [hideDuplicates, setHideDuplicates] = useState(true)
   const [success, setSuccess] = useState<StarterPackImportSuccess | null>(null)
   const [remoteLoadAttempt, setRemoteLoadAttempt] = useState(0)
+  const importInFlightRef = useRef(false)
 
   useEffect(() => {
     if (!requestedPack.packId || !requestedPack.version) {
@@ -138,53 +143,50 @@ export function useStarterPackImport(
 
     let active = true
 
+    const prepareImport = () => {
+      if (!active) return
+      const state = useApplicationStore.getState()
+      const targetCollections: ImportTargetCollection[] = [
+        ...(state.userAccessLevel === 'full_access'
+          ? [
+              {
+                collection_id: NEW_STARTER_COLLECTION_ID,
+                name: `Create “${previewData.collection.name}”`,
+              },
+            ]
+          : []),
+        ...state.collections.map(collection => ({
+          collection_id: collection.collection_id,
+          name: collection.name,
+        })),
+      ]
+      setCollections(targetCollections)
+      setTargetCollectionId(currentTarget =>
+        targetCollections.some(
+          collection => collection.collection_id === currentTarget
+        )
+          ? currentTarget
+          : (targetCollections[0]?.collection_id ?? null)
+      )
+      setWordSelections(
+        buildImportWordSelections(
+          previewData.words,
+          state.words,
+          state.collections
+        )
+      )
+    }
+
     void useApplicationStore
       .getState()
       .fetchCollections()
-      .then(() => {
-        if (!active) return
-        const state = useApplicationStore.getState()
-        setCollections([
-          {
-            collection_id: NEW_STARTER_COLLECTION_ID,
-            name: `Create “${previewData.collection.name}”`,
-          },
-          ...state.collections.map(collection => ({
-            collection_id: collection.collection_id,
-            name: collection.name,
-          })),
-        ])
-        setWordSelections(
-          buildImportWordSelections(
-            previewData.words,
-            state.words,
-            state.collections
-          )
-        )
-      })
+      .then(prepareImport)
       .catch(error => {
         if (!active) return
         Sentry.captureException(error, {
           tags: { operation: 'prepareStarterPackImport' },
         })
-        const state = useApplicationStore.getState()
-        setCollections([
-          {
-            collection_id: NEW_STARTER_COLLECTION_ID,
-            name: `Create “${previewData.collection.name}”`,
-          },
-          ...state.collections.map(collection => ({
-            collection_id: collection.collection_id,
-            name: collection.name,
-          })),
-        ])
-        setWordSelections(
-          buildImportWordSelections(
-            previewData.words,
-            state.words,
-            state.collections
-          )
-        )
+        prepareImport()
       })
       .finally(() => {
         if (active) setLoading(false)
@@ -239,19 +241,36 @@ export function useStarterPackImport(
         ? {
             collection_id: existingCollection.collection_id,
             name: existingCollection.name,
+            wasCreated: false,
           }
         : null
     }
 
-    const collection = await useApplicationStore
-      .getState()
-      .createNewCollection(pack.manifest.title)
+    const state = useApplicationStore.getState()
+    if (state.userAccessLevel !== 'full_access') return null
+    const collection = await state.createNewCollection(pack.manifest.title)
     return collection
-      ? { collection_id: collection.collection_id, name: collection.name }
+      ? {
+          collection_id: collection.collection_id,
+          name: collection.name,
+          wasCreated: true,
+        }
       : null
   }, [collections, pack.manifest, targetCollectionId])
 
+  const removeFailedNewCollection = useCallback(
+    async (targetCollection: ResolvedImportTarget | null) => {
+      if (!targetCollection?.wasCreated) return
+      await useApplicationStore
+        .getState()
+        .deleteCollection(targetCollection.collection_id)
+    },
+    []
+  )
+
   const handleImport = useCallback(async () => {
+    if (importInFlightRef.current) return
+
     if (!pack.manifest || !targetCollectionId) {
       ToastService.show('Please select a collection first', ToastType.ERROR)
       return
@@ -279,9 +298,11 @@ export function useStarterPackImport(
       return
     }
 
+    importInFlightRef.current = true
     setImporting(true)
+    let targetCollection: ResolvedImportTarget | null = null
     try {
-      const targetCollection = await resolveTargetCollection()
+      targetCollection = await resolveTargetCollection()
       if (!targetCollection) {
         const storeMessage = useApplicationStore.getState().error?.userMessage
         ToastService.show(
@@ -302,6 +323,8 @@ export function useStarterPackImport(
         importWords
       )
       if (!imported) {
+        await removeFailedNewCollection(targetCollection)
+        targetCollection = null
         const storeMessage = useApplicationStore.getState().error?.userMessage
         ToastService.show(
           storeMessage ?? 'Starter pack import failed',
@@ -325,6 +348,7 @@ export function useStarterPackImport(
         importedCount,
       })
     } catch (error) {
+      await removeFailedNewCollection(targetCollection)
       Sentry.captureException(error, {
         tags: { operation: 'importStarterPack' },
         extra: {
@@ -340,10 +364,12 @@ export function useStarterPackImport(
         ToastType.ERROR
       )
     } finally {
+      importInFlightRef.current = false
       setImporting(false)
     }
   }, [
     pack.manifest,
+    removeFailedNewCollection,
     resolveTargetCollection,
     targetCollectionId,
     wordSelections,
@@ -358,6 +384,7 @@ export function useStarterPackImport(
     : wordSelections
   const importEnabled = Boolean(
     pack.manifest &&
+    targetCollectionId &&
     (starterPackService.isStarterPackReleaseReady(pack.manifest) || __DEV__)
   )
 

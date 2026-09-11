@@ -76,8 +76,11 @@ export function StarterPackImport({
           Starter pack imported
         </p>
         <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-          {state.importedCount} new{' '}
-          {state.importedCount === 1 ? 'word is' : 'words are'} ready
+          {state.importedCount === undefined
+            ? 'Import completed'
+            : `${state.importedCount} new ${
+                state.importedCount === 1 ? 'word is' : 'words are'
+              } ready`}
         </h2>
         <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-300">
           {state.message}

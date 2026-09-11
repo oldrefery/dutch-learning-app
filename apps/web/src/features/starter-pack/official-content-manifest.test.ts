@@ -40,4 +40,21 @@ describe('official content manifest contract', () => {
       expect.objectContaining({ path: `entries[0].${field}` })
     )
   })
+
+  it('rejects two entries that collapse to one import semantic key', () => {
+    const remotePack = cloneBundledPack()
+    const duplicate = JSON.parse(JSON.stringify(remotePack.entries[0]))
+    duplicate.entry_id = 'duplicate-entry-id'
+    duplicate.dutch_lemma = `  ${duplicate.dutch_lemma.toUpperCase()}  `
+    remotePack.entries = [remotePack.entries[0], duplicate]
+
+    const result = validateOfficialContentManifest(remotePack)
+
+    expect(result.success).toBe(false)
+    if (result.success) return
+    expect(result.issues).toContainEqual({
+      path: 'entries[1]',
+      message: 'must have a unique import semantic key',
+    })
+  })
 })

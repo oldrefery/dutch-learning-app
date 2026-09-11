@@ -3,10 +3,19 @@ import { fireEvent, render } from '@testing-library/react-native'
 import { useLocalSearchParams } from 'expo-router'
 import StarterPackScreen from '../starter-pack'
 
+const mockApplicationState = { currentUserId: 'qa-user-a' }
+const mockMutatePackStateTestId = 'mutate-pack-state'
+
 jest.mock('expo-router', () => ({
   Color: { android: { dynamic: {} }, ios: {} },
   Stack: { Screen: () => null },
   useLocalSearchParams: jest.fn(),
+}))
+
+jest.mock('@/stores/useApplicationStore', () => ({
+  useApplicationStore: (
+    selector: (state: typeof mockApplicationState) => unknown
+  ) => selector(mockApplicationState),
 }))
 
 jest.mock('@/hooks/useStarterPackImport', () => {
@@ -49,7 +58,7 @@ jest.mock('@/components/SharedCollectionErrorScreen', () => ({
         ReactModule.createElement(NativeText, null, error),
         ReactModule.createElement(
           NativePressable,
-          { onPress: onRetry, testID: 'mutate-pack-state' },
+          { onPress: onRetry, testID: mockMutatePackStateTestId },
           ReactModule.createElement(NativeText, null, 'Mutate pack state')
         )
       )
@@ -65,7 +74,7 @@ it('remounts all pack-bound state when route identity changes rapidly', () => {
   })
   const screen = render(<StarterPackScreen />)
 
-  fireEvent.press(screen.getByTestId('mutate-pack-state'))
+  fireEvent.press(screen.getByTestId(mockMutatePackStateTestId))
   expect(
     screen.getByText(
       'dutch-a2-01:selection=changed,target=pack-a,success=complete'
@@ -80,6 +89,26 @@ it('remounts all pack-bound state when route identity changes rapidly', () => {
 
   expect(
     screen.getByText('dutch-b1-01:selection=fresh,target=fresh,success=empty')
+  ).toBeTruthy()
+  expect(screen.queryByText(/selection=changed/)).toBeNull()
+})
+
+it('resets personal import state when the signed-in account changes', () => {
+  mockApplicationState.currentUserId = 'qa-user-a'
+  mockUseLocalSearchParams.mockReturnValue({
+    packId: 'dutch-a2-01',
+    version: '1.0.0',
+  })
+  const screen = render(<StarterPackScreen />)
+
+  fireEvent.press(screen.getByTestId(mockMutatePackStateTestId))
+  expect(screen.getByText(/selection=changed/)).toBeTruthy()
+
+  mockApplicationState.currentUserId = 'qa-user-b'
+  screen.rerender(<StarterPackScreen />)
+
+  expect(
+    screen.getByText('dutch-a2-01:selection=fresh,target=fresh,success=empty')
   ).toBeTruthy()
   expect(screen.queryByText(/selection=changed/)).toBeNull()
 })

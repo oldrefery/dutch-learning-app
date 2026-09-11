@@ -797,9 +797,28 @@ export class WordRepository {
   }
 
   async addWord(word: Word): Promise<void> {
-    const db = await getDatabase()
+    await this.addWords([word])
+  }
 
-    // Validate word_id before adding
+  async addWords(words: Word[]): Promise<void> {
+    if (words.length === 0) return
+
+    for (const word of words) {
+      this.validateWordId(word)
+    }
+
+    const db = await getDatabase()
+    await db.withExclusiveTransactionAsync(async transaction => {
+      for (const word of words) {
+        await transaction.runAsync(
+          INSERT_WORD_SQL,
+          ...this.getInsertValues(word, null, 'pending', null)
+        )
+      }
+    })
+  }
+
+  private validateWordId(word: Word): void {
     if (!word.word_id) {
       console.error(
         '[WordRepository] ERROR: Attempting to add word with null/undefined word_id:',
@@ -810,64 +829,6 @@ export class WordRepository {
         }
       )
       throw new Error(`Cannot add word with null word_id: ${word.dutch_lemma}`)
-    }
-
-    const insertStatement = await db.prepareAsync(`
-      INSERT INTO words (
-        word_id, user_id, collection_id, dutch_lemma, dutch_original,
-        part_of_speech, is_irregular, is_reflexive, is_expression,
-        expression_type, is_separable, prefix_part, root_verb, article,
-        plural, register, translations, examples, synonyms, antonyms, conjugation,
-        preposition, image_url, tts_url, interval_days, repetition_count,
-        easiness_factor, next_review_date, last_reviewed_at, analysis_notes,
-        usage_notes,
-        created_at, updated_at, deleted_at, sync_status
-      ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-      )
-    `)
-
-    try {
-      await insertStatement.executeAsync(
-        word.word_id,
-        word.user_id,
-        word.collection_id || null,
-        word.dutch_lemma,
-        word.dutch_original || null,
-        word.part_of_speech || null,
-        word.is_irregular ? 1 : 0,
-        word.is_reflexive ? 1 : 0,
-        word.is_expression ? 1 : 0,
-        word.expression_type || null,
-        word.is_separable ? 1 : 0,
-        word.prefix_part || null,
-        word.root_verb || null,
-        word.article || null,
-        word.plural || null,
-        word.register || null,
-        JSON.stringify(word.translations),
-        word.examples ? JSON.stringify(word.examples) : null,
-        JSON.stringify(word.synonyms || []),
-        JSON.stringify(word.antonyms || []),
-        word.conjugation ? JSON.stringify(word.conjugation) : null,
-        word.preposition || null,
-        word.image_url || null,
-        word.tts_url || null,
-        word.interval_days,
-        word.repetition_count,
-        word.easiness_factor,
-        word.next_review_date,
-        word.last_reviewed_at || null,
-        word.analysis_notes || null,
-        word.usage_notes ? JSON.stringify(word.usage_notes) : null,
-        word.created_at,
-        word.updated_at,
-        null,
-        'pending'
-      )
-    } finally {
-      await insertStatement.finalizeAsync()
     }
   }
 

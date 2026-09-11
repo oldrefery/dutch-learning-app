@@ -13,11 +13,12 @@ import {
   loadOfficialStarterPack,
   NEW_STARTER_PACK_COLLECTION_ID,
   selectStarterPackEntries,
+  type StarterPackEntry,
 } from './starter-pack-domain'
 
 type ExistingWordRow = Pick<
   Database['public']['Tables']['words']['Row'],
-  'article' | 'dutch_lemma' | 'part_of_speech'
+  'article' | 'collection_id' | 'dutch_lemma' | 'part_of_speech'
 >
 
 const getSelectedEntryIds = (formData: FormData): string[] =>
@@ -26,6 +27,179 @@ const getSelectedEntryIds = (formData: FormData): string[] =>
     .flatMap(value => (typeof value === 'string' ? [value] : []))
 
 const BUNDLED_PACK_ID = 'official-dutch-a1-essentials'
+
+const getWordRowSemanticKey = (word: ExistingWordRow) =>
+  getStarterPackSemanticKey(word.dutch_lemma, word.part_of_speech, word.article)
+
+const completeImport = (
+  targetCollection: { id: string; name: string },
+  importedCount?: number
+): StarterPackImportState => {
+  revalidatePath('/app/collections')
+  revalidatePath(`/app/collections/${targetCollection.id}`)
+  revalidatePath('/app/starter-pack')
+
+  return {
+    status: 'success',
+    message:
+      importedCount === undefined
+        ? `The import into “${targetCollection.name}” completed, but the final word count could not be verified.`
+        : `Imported ${importedCount} ${importedCount === 1 ? 'word' : 'words'} into “${targetCollection.name}”.`,
+    importedCount,
+    collectionId: targetCollection.id,
+    collectionName: targetCollection.name,
+  }
+}
+
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>
+type AuthContext = Awaited<ReturnType<typeof requireAuthContext>>
+
+type TargetResolution =
+  | {
+      targetCollection: { id: string; name: string }
+      createdCollectionId: string | null
+    }
+  | {
+      error: string
+    }
+
+async function resolveImportTarget(
+  supabase: SupabaseClient,
+  auth: AuthContext,
+  requestedTarget: string,
+  collectionName: string
+): Promise<TargetResolution> {
+  if (requestedTarget === NEW_STARTER_PACK_COLLECTION_ID) {
+    if (auth.accessLevel !== 'full_access') {
+      return {
+        error: 'Read-only accounts must import into an existing collection.',
+      }
+    }
+
+    const { data, error } = await supabase
+      .from('collections')
+      .insert({ name: collectionName, user_id: auth.userId })
+      .select('collection_id, name')
+      .single()
+
+    return error || !data
+      ? { error: 'Could not create the starter-pack collection.' }
+      : {
+          targetCollection: { id: data.collection_id, name: data.name },
+          createdCollectionId: data.collection_id,
+        }
+  }
+
+  const { data, error } = await supabase
+    .from('collections')
+    .select('collection_id, name')
+    .eq('collection_id', requestedTarget)
+    .eq('user_id', auth.userId)
+    .maybeSingle()
+
+  return error || !data
+    ? { error: 'The selected target collection could not be found.' }
+    : {
+        targetCollection: { id: data.collection_id, name: data.name },
+        createdCollectionId: null,
+      }
+}
+
+const countVerifiedImports = (
+  entries: StarterPackEntry[],
+  targetKeysBefore: Set<string>,
+  targetWordsAfter: ExistingWordRow[]
+): number => {
+  const targetKeysAfter = new Set(targetWordsAfter.map(getWordRowSemanticKey))
+  return entries.reduce((count, entry) => {
+    const key = getStarterPackSemanticKey(
+      entry.dutchLemma,
+      entry.partOfSpeech,
+      entry.article
+    )
+    return (
+      count + (!targetKeysBefore.has(key) && targetKeysAfter.has(key) ? 1 : 0)
+    )
+  }, 0)
+}
+
+interface VerifyImportOptions {
+  auth: AuthContext
+  createdCollectionId: string | null
+  importEntries: StarterPackEntry[]
+  importError: unknown
+  supabase: SupabaseClient
+  targetCollection: { id: string; name: string }
+  targetKeysBefore: Set<string>
+}
+
+async function verifyImportResult({
+  auth,
+  createdCollectionId,
+  importEntries,
+  importError,
+  supabase,
+  targetCollection,
+  targetKeysBefore,
+}: VerifyImportOptions): Promise<StarterPackImportState> {
+  const { data: targetWordsAfter, error: verificationError } =
+    await fetchAllRows<ExistingWordRow>((from, to) =>
+      supabase
+        .from('words')
+        .select('article, collection_id, dutch_lemma, part_of_speech')
+        .eq('user_id', auth.userId)
+        .eq('collection_id', targetCollection.id)
+        .is('deleted_at', null)
+        .order('word_id')
+        .range(from, to)
+    )
+
+  if (verificationError) {
+    if (!importError) return completeImport(targetCollection)
+    return {
+      status: 'error',
+      message:
+        'The import result could not be verified. The target collection was kept to avoid losing committed words; reload before retrying.',
+      collectionId: targetCollection.id,
+      collectionName: targetCollection.name,
+    }
+  }
+
+  const verifiedWords = targetWordsAfter ?? []
+  const importedCount = countVerifiedImports(
+    importEntries,
+    targetKeysBefore,
+    verifiedWords
+  )
+  if (importedCount > 0) {
+    return completeImport(targetCollection, importedCount)
+  }
+
+  if (createdCollectionId && verifiedWords.length === 0) {
+    const { error: cleanupError } = await supabase
+      .from('collections')
+      .delete()
+      .eq('collection_id', createdCollectionId)
+      .eq('user_id', auth.userId)
+
+    if (cleanupError) {
+      return {
+        status: 'error',
+        message:
+          'No words were imported, and the empty collection could not be removed. Reload before retrying.',
+        collectionId: targetCollection.id,
+        collectionName: targetCollection.name,
+      }
+    }
+  }
+
+  return {
+    status: 'error',
+    message: importError
+      ? 'Could not import the starter pack. Please try again.'
+      : 'The selected words already exist in your collections.',
+  }
+}
 
 async function loadRequestedManifest(formData: FormData) {
   const packId = formData.get('packId')
@@ -86,7 +260,7 @@ export async function importStarterPack(
     await fetchAllRows<ExistingWordRow>((from, to) =>
       supabase
         .from('words')
-        .select('article, dutch_lemma, part_of_speech')
+        .select('article, collection_id, dutch_lemma, part_of_speech')
         .eq('user_id', auth.userId)
         .is('deleted_at', null)
         .order('word_id')
@@ -100,15 +274,7 @@ export async function importStarterPack(
     }
   }
 
-  const existingKeys = new Set(
-    (existingWords ?? []).map(word =>
-      getStarterPackSemanticKey(
-        word.dutch_lemma,
-        word.part_of_speech,
-        word.article
-      )
-    )
-  )
+  const existingKeys = new Set((existingWords ?? []).map(getWordRowSemanticKey))
   const importEntries = selectedEntries.filter(
     entry =>
       !existingKeys.has(
@@ -127,51 +293,24 @@ export async function importStarterPack(
     }
   }
 
-  let targetCollection: { id: string; name: string } | null = null
-  let createdCollectionId: string | null = null
-
-  if (requestedTarget === NEW_STARTER_PACK_COLLECTION_ID) {
-    if (auth.accessLevel !== 'full_access') {
-      return {
-        status: 'error',
-        message: 'Read-only accounts must import into an existing collection.',
-      }
-    }
-
-    const { data, error } = await supabase
-      .from('collections')
-      .insert({ name: manifest.title, user_id: auth.userId })
-      .select('collection_id, name')
-      .single()
-
-    if (error || !data) {
-      return {
-        status: 'error',
-        message: 'Could not create the starter-pack collection.',
-      }
-    }
-
-    targetCollection = { id: data.collection_id, name: data.name }
-    createdCollectionId = data.collection_id
-  } else {
-    const { data, error } = await supabase
-      .from('collections')
-      .select('collection_id, name')
-      .eq('collection_id', requestedTarget)
-      .eq('user_id', auth.userId)
-      .maybeSingle()
-
-    if (error || !data) {
-      return {
-        status: 'error',
-        message: 'The selected target collection could not be found.',
-      }
-    }
-
-    targetCollection = { id: data.collection_id, name: data.name }
+  const target = await resolveImportTarget(
+    supabase,
+    auth,
+    requestedTarget,
+    manifest.title
+  )
+  if ('error' in target) {
+    return { status: 'error', message: target.error }
   }
+  const { createdCollectionId, targetCollection } = target
 
-  const { data: importedWords, error: importError } = await supabase.rpc(
+  const targetKeysBefore = new Set(
+    (existingWords ?? [])
+      .filter(word => word.collection_id === targetCollection.id)
+      .map(getWordRowSemanticKey)
+  )
+
+  const { error: importError } = await supabase.rpc(
     'import_words_to_collection',
     {
       p_collection_id: targetCollection.id,
@@ -179,31 +318,13 @@ export async function importStarterPack(
     }
   )
 
-  if (importError) {
-    if (createdCollectionId) {
-      await supabase
-        .from('collections')
-        .delete()
-        .eq('collection_id', createdCollectionId)
-        .eq('user_id', auth.userId)
-    }
-
-    return {
-      status: 'error',
-      message: 'Could not import the starter pack. Please try again.',
-    }
-  }
-
-  const importedCount = importedWords?.length ?? 0
-  revalidatePath('/app/collections')
-  revalidatePath(`/app/collections/${targetCollection.id}`)
-  revalidatePath('/app/starter-pack')
-
-  return {
-    status: 'success',
-    message: `Imported ${importedCount} ${importedCount === 1 ? 'word' : 'words'} into “${targetCollection.name}”.`,
-    importedCount,
-    collectionId: targetCollection.id,
-    collectionName: targetCollection.name,
-  }
+  return verifyImportResult({
+    auth,
+    createdCollectionId,
+    importEntries,
+    importError,
+    supabase,
+    targetCollection,
+    targetKeysBefore,
+  })
 }

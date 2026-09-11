@@ -11,6 +11,7 @@ import { StarterPackImportSuccess } from '@/components/StarterPackImportSuccess'
 import { StarterPackImportBar } from '@/components/StarterPackImportBar'
 import { StarterPackReviewBanner } from '@/components/StarterPackReviewBanner'
 import { useStarterPackImport } from '@/hooks/useStarterPackImport'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 
 interface StarterPackScreenContentProps {
   packId?: string
@@ -147,11 +148,14 @@ export function StarterPackScreenContent({
 }
 
 export default function StarterPackScreen() {
+  const currentUserId = useApplicationStore(state => state.currentUserId)
   const { packId, version } = useLocalSearchParams<{
     packId?: string
     version?: string
   }>()
-  const routeIdentity = `${packId ?? 'bundled'}@${version ?? 'bundled'}`
+  const routeIdentity = `${currentUserId ?? 'signed-out'}:${
+    packId ?? 'bundled'
+  }@${version ?? 'bundled'}`
 
   return (
     <StarterPackScreenContent

@@ -374,6 +374,40 @@ Verify the public manifests are not bundled in either platform's output. Record 
 was run on a real browser, simulator, isolated DB or mocks. Clean up only test data
 created for this task. Suggested commit: `test(content): verify cross-platform pack imports`.
 
+Completion record for local and isolated import verification:
+
+- Mobile regular imports now use one exclusive SQLite transaction instead of
+  parallel per-card inserts. A semantic conflict or malformed card rolls back the
+  complete batch, and only committed batches enter Zustand state. A newly created
+  collection is removed after a confirmed local import failure.
+- The mobile import handler synchronously rejects a second submit, excludes the new-
+  collection target for read-only accounts, and remounts personal import state when
+  `currentUserId` changes. The verified public download cache remains account-neutral.
+- Web imports now verify the requested semantic keys in the target collection after
+  the RPC. A lost response that committed data is reported as success; an unverifiable
+  result retains the collection instead of risking deletion; only a confirmed empty
+  new collection is cleaned up. Counts come from verified target contents rather than
+  the conflict-safe RPC response, which also returns pre-existing cards.
+- Approved manifests with two entries that collapse to the same import key are
+  rejected by the shared client contract. Pending editorial drafts may still contain
+  a duplicate so the approval workflow can explicitly exclude or resolve it before
+  promotion.
+- Real SQLite tests imported a synthetic 122-card pack, preserved supplied SRS, and
+  proved full rollback/retry and existing-progress preservation. Isolated PostgreSQL
+  tests passed 4/4 for 122-card RPC import, duplicate/SRS preservation, transaction
+  rollback, ownership, and read-only import into an existing collection.
+- Web starter-pack tests passed 7 suites / 35 tests. Scoped mobile catalog/import tests
+  passed, including all-duplicate, double-submit, account-switch, read-only, cache,
+  light/dark, retry, and 21-item catalog cases. Official-content tooling passed 37/37.
+- `next build --webpack` and Expo production exports for iOS and Android completed.
+  Inspection found the bundled `official-dutch-a1-essentials` fallback in native
+  bytecode, but none of the sampled remote pack IDs in production web/native bundles;
+  the native export contained only application bundles and ordinary static assets.
+- No application account, personal profile, remote catalog, or production data was
+  mutated. Authenticated real-browser and released-native remote-pack smoke checks
+  remain part of E6: the central migration/release is not deployed and dedicated
+  `WEB_E2E_*` credentials are not configured in this checkout.
+
 ## 9. Work package E: stage the concrete production release
 
 Complete A–D before presenting a release approval request.
@@ -515,7 +549,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
   - [x] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [x] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [x] C10: exact complete ledger approved into an immutable release.
-- [ ] D: cross-platform import scenarios verified with disposable data.
+- [x] D: cross-platform import scenarios verified with synthetic and isolated data.
 - [ ] E: concrete production release prepared and outstanding authorization obtained.
 - [ ] E: server/catalog and both clients released and verified.
 - [ ] Personal classification/apply/rollback tooling prepared and tested.
