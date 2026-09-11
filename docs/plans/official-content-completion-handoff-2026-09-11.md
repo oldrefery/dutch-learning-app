@@ -462,7 +462,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: 33/83 balanced review batches inspected and saved incrementally.
+  - [ ] C2: 37/83 balanced review batches inspected and saved incrementally.
     - [x] Dutch A1: 5/5 batches and 122/122 entries inspected.
     - [x] Dutch A2: 20/20 batches and 500/500 entries inspected.
       - [x] `dutch-a2-01`: 4/4 batches and 100/100 entries inspected.
@@ -470,9 +470,10 @@ this plan. Harden tooling in B before treating current approval commands as fina
       - [x] `dutch-a2-03`: 4/4 batches and 100/100 entries inspected.
       - [x] `dutch-a2-04`: 4/4 batches and 100/100 entries inspected.
       - [x] `dutch-a2-05`: 4/4 batches and 100/100 entries inspected.
-    - [ ] Dutch B1: 8/36 batches and 198/884 entries inspected.
+    - [ ] Dutch B1: 12/36 batches and 297/884 entries inspected.
       - [x] `dutch-b1-01`: 4/4 batches and 99/99 entries inspected.
       - [x] `dutch-b1-02`: 4/4 batches and 99/99 entries inspected.
+      - [x] `dutch-b1-03`: 4/4 batches and 99/99 entries inspected.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [ ] C10: exact complete ledger approved into an immutable release.
@@ -667,7 +668,25 @@ false or regional meanings, invalid plurals, missing Russian examples, Markdown
 leaking into learning text, and malformed Dutch, English, and Russian examples. No
 profile or production writes occurred.
 
-Next action: C2, inspect and persist `dutch-b1-03-batch-01`, retaining pack order.
+The four `dutch-b1-03` batches are complete: all 99 entries were inspected, 20
+were approved unchanged, 77 received explicit corrections, and two remain
+unresolved for C3–C8. The native noun `fee` and English loanword `fee` require a
+homograph split with distinct plurals; `winden` combines winding, reflexive
+coiling, and flatulence with incompatible paradigms. The reviewed batch SHA-256
+values, in order, are
+`710a781ab6314eb8b00377fbce9ac652ce9afd11a34424f17a5f7b0daff49832`,
+`3fd4bb73454fee90602c4c28e5a454b1e28fc7f2a5313e7ffff2aea38a250a3c`,
+`9cd24d257f42bbf36e9b9878cd73567008d1eb4933dadf4ef391de4c30391fe7`,
+and `a2c3327f58b596986883310cea9d61f466b6f91ab67e2420c9d351bf5a599bb8`.
+The rebuilt ledger now contains 209 approved, 702 overridden, and 1148 unresolved
+decisions; its SHA-256 is
+`378065a2bb4498159922c9b3a16baf1687c95ba2cee7752d666ffa378d50d04c`.
+Corrections include homograph and part-of-speech focusing, reflexive and irregular
+paradigms, register, invalid plurals, false lexical relations, parenthetical
+annotations, contradictory kinship examples, and malformed Dutch, English, and
+Russian examples. No profile or production writes occurred.
+
+Next action: C2, inspect and persist `dutch-b1-04-batch-01`, retaining pack order.
 Do not approve the release until all 2059 decisions and every grammatical value
 have been reviewed.
 
