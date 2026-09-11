@@ -6,11 +6,14 @@ import type {
   RemoteOfficialContentVersion,
   Sha256,
 } from '@woordenaar/content/remote'
-import { verifyRemoteOfficialContentVersion } from '@woordenaar/content/remote'
+import {
+  assertRequestedOfficialContentIdentity,
+  verifyRemoteOfficialContentVersion,
+} from '@woordenaar/content/remote'
 import { supabase } from '@/lib/supabaseClient'
 
-const CATALOG_CACHE_KEY = '@woordenaar/official-content/catalog/v1'
-const PACK_CACHE_PREFIX = '@woordenaar/official-content/pack/v1'
+const CATALOG_CACHE_KEY = '@woordenaar/official-content/catalog/v2'
+const PACK_CACHE_PREFIX = '@woordenaar/official-content/pack/v2'
 const CEFR_LEVELS = new Set(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
 
 type UnknownRecord = Record<string, unknown>
@@ -181,6 +184,7 @@ export const createOfficialContentCatalogService = ({
       const remote = parseRemoteVersion(
         await gateway.fetchVersion(packId, version)
       )
+      assertRequestedOfficialContentIdentity(remote, packId, version)
       const manifest = await verifyRemoteOfficialContentVersion(remote, sha256)
       await writeCache(storage, cacheKey, {
         pack_id: remote.packId,
@@ -194,6 +198,7 @@ export const createOfficialContentCatalogService = ({
       if (cached) {
         try {
           const remote = parseRemoteVersion(JSON.parse(cached))
+          assertRequestedOfficialContentIdentity(remote, packId, version)
           const manifest = await verifyRemoteOfficialContentVersion(
             remote,
             sha256

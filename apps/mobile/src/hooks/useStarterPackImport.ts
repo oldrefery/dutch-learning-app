@@ -83,7 +83,8 @@ export function useStarterPackImport(
       : bundledPack
   )
   const [loading, setLoading] = useState(
-    hasCompleteRemoteRequest || Boolean(bundledPack.previewData)
+    hasCompleteRemoteRequest ||
+      (!hasRemoteRequest && Boolean(bundledPack.previewData))
   )
   const [wordSelections, setWordSelections] = useState<WordSelectionItem[]>([])
   const [collections, setCollections] = useState<ImportTargetCollection[]>([])
@@ -93,10 +94,11 @@ export function useStarterPackImport(
   const [importing, setImporting] = useState(false)
   const [hideDuplicates, setHideDuplicates] = useState(true)
   const [success, setSuccess] = useState<StarterPackImportSuccess | null>(null)
+  const [remoteLoadAttempt, setRemoteLoadAttempt] = useState(0)
 
   useEffect(() => {
     if (!requestedPack.packId || !requestedPack.version) {
-      return
+      return undefined
     }
 
     let active = true
@@ -128,16 +130,19 @@ export function useStarterPackImport(
     return () => {
       active = false
     }
-  }, [requestedPack.packId, requestedPack.version])
+  }, [remoteLoadAttempt, requestedPack.packId, requestedPack.version])
 
-  const loadCollectionsAndSelections = useCallback(async () => {
+  useEffect(() => {
     const previewData = pack.previewData
-    if (!previewData) return
+    if (!previewData) return undefined
 
-    return useApplicationStore
+    let active = true
+
+    void useApplicationStore
       .getState()
       .fetchCollections()
       .then(() => {
+        if (!active) return
         const state = useApplicationStore.getState()
         setCollections([
           {
@@ -158,6 +163,7 @@ export function useStarterPackImport(
         )
       })
       .catch(error => {
+        if (!active) return
         Sentry.captureException(error, {
           tags: { operation: 'prepareStarterPackImport' },
         })
@@ -181,13 +187,27 @@ export function useStarterPackImport(
         )
       })
       .finally(() => {
-        setLoading(false)
+        if (active) setLoading(false)
       })
+
+    return () => {
+      active = false
+    }
   }, [pack.previewData])
 
-  useEffect(() => {
-    void loadCollectionsAndSelections()
-  }, [loadCollectionsAndSelections])
+  const retryRemotePack = useCallback(() => {
+    if (requestedPack.packId && requestedPack.version) {
+      setPack({ manifest: null, previewData: null, error: null })
+      setWordSelections([])
+      setCollections([])
+      setTargetCollectionId(NEW_STARTER_COLLECTION_ID)
+      setImporting(false)
+      setHideDuplicates(true)
+      setSuccess(null)
+      setLoading(true)
+      setRemoteLoadAttempt(previous => previous + 1)
+    }
+  }, [requestedPack.packId, requestedPack.version])
 
   const toggleWordSelection = useCallback((wordId: string) => {
     setWordSelections(previous =>
@@ -360,6 +380,7 @@ export function useStarterPackImport(
     toggleWordSelection,
     toggleSelectAll,
     toggleHideDuplicates: () => setHideDuplicates(previous => !previous),
+    retryRemotePack,
     handleImport,
     handleGoBack: () => router.back(),
     handleStartReview: () => router.replace(ROUTES.TABS.REVIEW),

@@ -12,12 +12,16 @@ import { StarterPackImportBar } from '@/components/StarterPackImportBar'
 import { StarterPackReviewBanner } from '@/components/StarterPackReviewBanner'
 import { useStarterPackImport } from '@/hooks/useStarterPackImport'
 
-export default function StarterPackScreen() {
+interface StarterPackScreenContentProps {
+  packId?: string
+  version?: string
+}
+
+export function StarterPackScreenContent({
+  packId,
+  version,
+}: StarterPackScreenContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
-  const { packId, version } = useLocalSearchParams<{
-    packId?: string
-    version?: string
-  }>()
   const starterPack = useStarterPackImport({ packId, version })
   const screenTitle = starterPack.manifest?.title ?? 'Official Pack'
 
@@ -40,6 +44,8 @@ export default function StarterPackScreen() {
         title={screenTitle}
         error={starterPack.error ?? 'No starter pack data is available.'}
         onGoBack={starterPack.handleGoBack}
+        onRetry={starterPack.retryRemotePack}
+        showRetry={Boolean(packId && version)}
       />
     )
   }
@@ -137,6 +143,22 @@ export default function StarterPackScreen() {
         onToggleHideDuplicates={starterPack.toggleHideDuplicates}
       />
     </>
+  )
+}
+
+export default function StarterPackScreen() {
+  const { packId, version } = useLocalSearchParams<{
+    packId?: string
+    version?: string
+  }>()
+  const routeIdentity = `${packId ?? 'bundled'}@${version ?? 'bundled'}`
+
+  return (
+    <StarterPackScreenContent
+      key={routeIdentity}
+      packId={packId}
+      version={version}
+    />
   )
 }
 

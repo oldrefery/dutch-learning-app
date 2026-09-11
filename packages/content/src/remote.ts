@@ -28,6 +28,21 @@ export type Sha256 = (canonicalJson: string) => Promise<string>
 
 export { canonicalizeOfficialContent } from './manifest'
 
+export function assertRequestedOfficialContentIdentity(
+  remote: Pick<RemoteOfficialContentVersion, 'packId' | 'version'>,
+  requestedPackId: string,
+  requestedVersion: string
+): void {
+  if (
+    remote.packId !== requestedPackId ||
+    remote.version !== requestedVersion
+  ) {
+    throw new Error(
+      'Official content response does not match the requested identity.'
+    )
+  }
+}
+
 export async function verifyRemoteOfficialContentVersion(
   remote: RemoteOfficialContentVersion,
   sha256: Sha256

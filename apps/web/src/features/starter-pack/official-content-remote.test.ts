@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import bundledPack from '@woordenaar/content'
 import {
+  assertRequestedOfficialContentIdentity,
   canonicalizeOfficialContent,
   verifyRemoteOfficialContentVersion,
 } from '@woordenaar/content/remote'
@@ -57,5 +58,25 @@ describe('remote official content integrity', () => {
         sha256
       )
     ).rejects.toThrow('identity does not match')
+  })
+
+  it('rejects a valid response for a different requested pack', async () => {
+    const manifest = cloneBundledPack()
+    manifest.pack_id = 'dutch-b1-01'
+    manifest.version = '2.0.0'
+    const remote = {
+      packId: manifest.pack_id,
+      version: manifest.version,
+      manifest,
+      contentSha256: await sha256(canonicalizeOfficialContent(manifest)),
+    }
+
+    expect(() =>
+      assertRequestedOfficialContentIdentity(
+        remote,
+        'dutch-a2-01',
+        remote.version
+      )
+    ).toThrow('does not match the requested identity')
   })
 })

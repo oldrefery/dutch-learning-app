@@ -2,7 +2,10 @@ import 'server-only'
 
 import { createHash } from 'node:crypto'
 import type { OfficialContentCatalogItem } from '@woordenaar/content/remote'
-import { verifyRemoteOfficialContentVersion } from '@woordenaar/content/remote'
+import {
+  assertRequestedOfficialContentIdentity,
+  verifyRemoteOfficialContentVersion,
+} from '@woordenaar/content/remote'
 import { createClient } from '@/lib/supabase/server'
 import type { StarterPackManifest } from './starter-pack-domain'
 import { toStarterPackManifest } from './starter-pack-domain'
@@ -72,14 +75,13 @@ export async function loadRemoteOfficialStarterPack(
     throw new Error('The selected official content version is unavailable.')
   }
 
-  const manifest = await verifyRemoteOfficialContentVersion(
-    {
-      packId: data.pack_id,
-      version: data.version,
-      manifest: data.manifest,
-      contentSha256: data.content_sha256,
-    },
-    sha256
-  )
+  const remote = {
+    packId: data.pack_id,
+    version: data.version,
+    manifest: data.manifest,
+    contentSha256: data.content_sha256,
+  }
+  assertRequestedOfficialContentIdentity(remote, packId, version)
+  const manifest = await verifyRemoteOfficialContentVersion(remote, sha256)
   return toStarterPackManifest(manifest)
 }

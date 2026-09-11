@@ -451,7 +451,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [x] 21 draft packs / 2059 entries generated locally; excluded words absent as lemmas.
 - [x] A1: version promotion/rollback/count/state-transition regressions resolved.
 - [x] A2: web navigation state and unavailable catalog/pack recovery verified.
-- [ ] A3: requested identity and mobile loading/cache/route lifecycle verified.
+- [x] A3: requested identity and mobile loading/cache/route lifecycle verified.
 - [ ] B: source-bound, atomic artifact preparation and release CLI tests complete.
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
 - [ ] D: cross-platform import scenarios verified with disposable data.
@@ -460,15 +460,19 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] Personal classification/apply/rollback tooling prepared and tested.
 - [ ] Personal write proposal authorized, applied, and invariants verified.
 
-Latest verification: catalog DB 14/14 and full DB 116/116 passed after A1. After
-A2, web passed 57 suites / 542 tests, typecheck, ESLint, production build, and
-`git diff --check`. Pack/version identity now keys the import boundary; unknown or
-unavailable remote packs have explicit recovery; an unavailable catalog preserves
-bundled Essentials; and 21-pack navigation uses a compact mobile control with
-concise labels.
+Latest verification: catalog DB 14/14 and full DB 116/116 passed after A1. A2 web
+passed 57 suites / 542 tests plus production build. After A3, mobile passed 132
+suites / 1541 tests and web passed 58 suites / 544 tests; mobile build/test
+typechecks, web typecheck, ESLint, and `git diff --check` passed. Requested pack
+identity is enforced for network, cache, and web repository rows. Mobile cache v2
+intentionally invalidates legacy metadata, retains verified content after failed
+downloads/writes, supports offline reopening, and rejects corrupt entries. A keyed
+route boundary plus stale-request cleanup keeps selection, collection target,
+success, loading, and errors scoped to the current pack; remote failures are
+retryable and bundled Essentials remains available offline.
 
-Next action: A3, reject a response or cache entry whose pack ID/version differs
-from the requested mobile identity, then cover route and cache lifecycle failures.
+Next action: B step 1, lock snapshot bytes, owner identity, per-card evidence,
+mappings, target keys, exclusions, and counts before any artifact is written.
 
 Stop only the dependent action when authority, a missing private input, or an
 unresolved editorial decision truly blocks it. Complete independent local work.

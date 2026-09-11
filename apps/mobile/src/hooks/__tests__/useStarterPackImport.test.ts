@@ -7,6 +7,7 @@ import {
   loadOfficialDutchA1Pack,
 } from '@/services/starterPackService'
 import { officialContentCatalogService } from '@/services/officialContentCatalogService'
+import { Sentry } from '@/lib/sentry'
 import type { Collection, Word } from '@/types/database'
 
 jest.mock('@/stores/useApplicationStore', () => ({
@@ -47,6 +48,7 @@ interface MockStoreState {
 }
 
 const STARTER_COLLECTION_ID = 'starter-collection-id'
+const REMOTE_A2_PACK_ID = 'dutch-a2-01'
 
 const createCollection = (): Collection => ({
   collection_id: STARTER_COLLECTION_ID,
@@ -71,6 +73,23 @@ const createExistingWord = (): Word => ({
   next_review_date: '2026-08-29',
   last_reviewed_at: null,
 })
+
+const createRemoteManifest = (packId: string, title: string) => ({
+  ...loadOfficialDutchA1Pack(),
+  pack_id: packId,
+  version: '1.0.0',
+  title,
+})
+
+const deferred = <T>() => {
+  let resolve!: (value: T) => void
+  let reject!: (reason: unknown) => void
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise
+    reject = rejectPromise
+  })
+  return { promise, reject, resolve }
+}
 
 describe('useStarterPackImport', () => {
   let storeState: MockStoreState
@@ -121,12 +140,10 @@ describe('useStarterPackImport', () => {
   })
 
   it('downloads a selected remote pack before preparing its import', async () => {
-    const manifest = {
-      ...loadOfficialDutchA1Pack(),
-      pack_id: 'official-dutch-a2-frequency-1',
-      version: '1.0.0',
-      title: 'Dutch A2 · 1',
-    }
+    const manifest = createRemoteManifest(
+      'official-dutch-a2-frequency-1',
+      'Dutch A2 · 1'
+    )
     jest.mocked(officialContentCatalogService.getPack).mockResolvedValue({
       manifest: manifest as never,
       source: 'network',
@@ -146,6 +163,106 @@ describe('useStarterPackImport', () => {
     )
     expect(result.current.manifest?.title).toBe('Dutch A2 · 1')
     expect(result.current.previewData?.words).toHaveLength(60)
+  })
+
+  it('rejects an incomplete remote route without leaving the screen loading', async () => {
+    const { result } = renderHook(() =>
+      useStarterPackImport({ packId: REMOTE_A2_PACK_ID })
+    )
+
+    await waitFor(() => expect(result.current.loading).toBe(false))
+
+    expect(result.current.manifest).toBeNull()
+    expect(result.current.error).toBe(
+      'The selected official pack link is incomplete.'
+    )
+    expect(officialContentCatalogService.getPack).not.toHaveBeenCalled()
+  })
+
+  it('ignores a stale A response that finishes after B', async () => {
+    const manifestA = createRemoteManifest(
+      REMOTE_A2_PACK_ID,
+      'Dutch A2 · Pack 01'
+    )
+    const manifestB = createRemoteManifest('dutch-b1-01', 'Dutch B1 · Pack 01')
+    const pendingA = deferred<{ manifest: never; source: 'network' }>()
+    const pendingB = deferred<{ manifest: never; source: 'network' }>()
+    jest
+      .mocked(officialContentCatalogService.getPack)
+      .mockReturnValueOnce(pendingA.promise)
+      .mockReturnValueOnce(pendingB.promise)
+
+    const hook = renderHook<
+      ReturnType<typeof useStarterPackImport>,
+      { packId: string }
+    >(({ packId }) => useStarterPackImport({ packId, version: '1.0.0' }), {
+      initialProps: { packId: manifestA.pack_id },
+    })
+    hook.rerender({ packId: manifestB.pack_id })
+
+    await act(async () => {
+      pendingB.resolve({
+        manifest: manifestB as never,
+        source: 'network',
+      })
+      await pendingB.promise
+    })
+    await waitFor(() => expect(hook.result.current.loading).toBe(false))
+
+    await act(async () => {
+      pendingA.resolve({
+        manifest: manifestA as never,
+        source: 'network',
+      })
+      await pendingA.promise
+    })
+
+    expect(hook.result.current.manifest?.pack_id).toBe(manifestB.pack_id)
+  })
+
+  it('retries a failed remote download and prepares the recovered pack', async () => {
+    const manifest = createRemoteManifest(
+      REMOTE_A2_PACK_ID,
+      'Dutch A2 · Pack 01'
+    )
+    jest
+      .mocked(officialContentCatalogService.getPack)
+      .mockRejectedValueOnce(new Error('offline'))
+      .mockResolvedValueOnce({ manifest: manifest as never, source: 'network' })
+
+    const { result } = renderHook(() =>
+      useStarterPackImport({
+        packId: manifest.pack_id,
+        version: manifest.version,
+      })
+    )
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(result.current.error).toContain('could not be downloaded')
+
+    act(() => result.current.retryRemotePack())
+
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(result.current.error).toBeNull()
+    expect(result.current.manifest?.pack_id).toBe(manifest.pack_id)
+    expect(officialContentCatalogService.getPack).toHaveBeenCalledTimes(2)
+  })
+
+  it('ignores a rejected download after leaving the screen', async () => {
+    const pending = deferred<{ manifest: never; source: 'network' }>()
+    jest
+      .mocked(officialContentCatalogService.getPack)
+      .mockReturnValueOnce(pending.promise)
+    const hook = renderHook(() =>
+      useStarterPackImport({ packId: REMOTE_A2_PACK_ID, version: '1.0.0' })
+    )
+
+    hook.unmount()
+    await act(async () => {
+      pending.reject(new Error('late failure'))
+      await expect(pending.promise).rejects.toThrow('late failure')
+    })
+
+    expect(Sentry.captureException).not.toHaveBeenCalled()
   })
 
   it('imports only the selected entry after an explicit action', async () => {
