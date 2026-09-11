@@ -504,9 +504,10 @@ export const buildPackManifest = ({
     translation_languages: ['en', 'ru'],
     created_at: snapshot.capturedAt,
     license: {
-      name: 'Woordenaar official content',
-      url: null,
-      notes: 'May be imported and studied inside Woordenaar.',
+      name: 'CC BY-NC-SA 4.0',
+      url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+      notes:
+        'Vocabulary selection and ordering use NT2Lex (Tack, Francois, Desmet and Fairon, 2018) and SUBTLEX-NL (Keuleers, Brysbaert and New, 2010). Source corpus files are not redistributed.',
     },
     provenance: {
       origin: 'existing-project-library',
@@ -516,8 +517,9 @@ export const buildPackManifest = ({
       selection_method:
         'CEFR classification followed by descending Dutch usage frequency and balanced groups.',
       notes:
-        'Generated from reviewed project vocabulary. Personal ownership, collection IDs, progress, SRS state, media, and timestamps are excluded.',
+        'Generated from reviewed project vocabulary. NT2Lex and SUBTLEX-NL supplied selection and ordering evidence, not copied card text. Personal ownership, collection IDs, progress, SRS state, media, and timestamps are excluded.',
       excluded_sources: [
+        'NT2Lex and SUBTLEX-NL source corpus files',
         'Protected personal expression collections',
         'Owner-excluded sensitive vocabulary',
         'Personal learning and synchronization metadata',

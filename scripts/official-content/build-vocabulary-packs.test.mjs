@@ -193,6 +193,14 @@ test('builds a valid pending manifest that cannot be published accidentally', ()
   assert.equal(manifest.content_review.status, 'pending')
   assert.equal(manifest.content_review.reviewed_by, null)
   assert.equal(manifest.entries.length, 1)
+  assert.equal(manifest.license.name, 'CC BY-NC-SA 4.0')
+  assert.match(manifest.license.notes, /NT2Lex/u)
+  assert.match(manifest.license.notes, /SUBTLEX-NL/u)
+  assert.ok(
+    manifest.provenance.excluded_sources.includes(
+      'NT2Lex and SUBTLEX-NL source corpus files'
+    )
+  )
 })
 
 test('records omitted linguistic fields without defaulting unknown values', () => {

@@ -60,6 +60,17 @@ const applyDecision = (entry, decision) => {
     }
     return entry
   }
+  if (decision.decision === 'exclude') {
+    if (
+      typeof decision.explanation !== 'string' ||
+      decision.explanation.trim() === '' ||
+      decision.finalEntry !== undefined ||
+      decision.finalContentSha256 !== undefined
+    ) {
+      throw new Error(`Invalid exclusion decision for ${entry.entry_id}.`)
+    }
+    return null
+  }
   if (
     decision.decision !== 'override' ||
     typeof decision.explanation !== 'string' ||
@@ -120,28 +131,29 @@ export const validateReviewLedger = ({
   if (decisionById.size !== entryCount) {
     throw new Error('The review ledger does not cover every draft entry.')
   }
+  const draftIds = new Set(
+    packs.flatMap(pack => pack.manifest.entries.map(entry => entry.entry_id))
+  )
+  if ([...decisionById].some(([entryId]) => !draftIds.has(entryId))) {
+    throw new Error('The review ledger contains an unknown entry.')
+  }
   const reviewedPacks = packs.map(pack => ({
     ...pack,
     manifest: {
       ...pack.manifest,
-      entries: pack.manifest.entries.map(entry => {
+      entries: pack.manifest.entries.flatMap(entry => {
         const reviewedEntry = applyDecision(
           entry,
           decisionById.get(entry.entry_id)
         )
+        if (reviewedEntry === null) {
+          return []
+        }
         assertLinguisticReviewComplete(reviewedEntry)
-        return reviewedEntry
+        return [reviewedEntry]
       }),
     },
   }))
-  const reviewedIds = new Set(
-    reviewedPacks.flatMap(pack =>
-      pack.manifest.entries.map(entry => entry.entry_id)
-    )
-  )
-  if ([...decisionById].some(([entryId]) => !reviewedIds.has(entryId))) {
-    throw new Error('The review ledger contains an unknown entry.')
-  }
   const semanticUniqueness = analyzeSemanticUniqueness(
     reviewedPacks.map(pack => pack.manifest)
   )
@@ -152,7 +164,11 @@ export const validateReviewLedger = ({
     pack.manifest.provenance.source_unique_semantic_count =
       semanticUniqueness.uniqueSemanticCount
   }
-  return { reviewedPacks, reviewLedgerSha256: sha256(ledgerBytes) }
+  return {
+    reviewedPacks,
+    reviewLedgerSha256: sha256(ledgerBytes),
+    semanticUniqueness,
+  }
 }
 
 export const approveVocabularyPacks = async ({
@@ -171,13 +187,14 @@ export const approveVocabularyPacks = async ({
     readFile(reviewLedgerPath),
   ])
   const ledger = JSON.parse(ledgerBytes)
-  const { reviewedPacks, reviewLedgerSha256 } = validateReviewLedger({
-    ledger,
-    ledgerBytes,
-    draftIndex,
-    packs,
-    ...review,
-  })
+  const { reviewedPacks, reviewLedgerSha256, semanticUniqueness } =
+    validateReviewLedger({
+      ledger,
+      ledgerBytes,
+      draftIndex,
+      packs,
+      ...review,
+    })
 
   const artifacts = new Map()
   const files = reviewedPacks.map(pack => {
@@ -204,18 +221,22 @@ export const approveVocabularyPacks = async ({
       fileSha256: sha256(serialized),
     }
   })
-  const contentHashByIdentity = new Map(
-    files.map(file => [`${file.packId}@${file.version}`, file.contentSha256])
+  const fileByIdentity = new Map(
+    files.map(file => [`${file.packId}@${file.version}`, file])
   )
-  const catalog = draftIndex.catalog.map(item => ({
-    ...item,
-    content_sha256: contentHashByIdentity.get(
-      `${item.pack_id}@${item.version}`
-    ),
-    review_status: 'published',
-  }))
+  const catalog = draftIndex.catalog.map(item => {
+    const file = fileByIdentity.get(`${item.pack_id}@${item.version}`)
+    return {
+      ...item,
+      entry_count: file.entryCount,
+      content_sha256: file.contentSha256,
+      review_status: 'published',
+    }
+  })
   const releaseIndex = {
     ...draftIndex,
+    entryCount: files.reduce((count, file) => count + file.entryCount, 0),
+    semanticUniqueness,
     approvedFromDraftSha256: draftIndex.draftAggregateSha256,
     approvedAt: review.reviewedAt,
     approvedBy: review.reviewedBy,

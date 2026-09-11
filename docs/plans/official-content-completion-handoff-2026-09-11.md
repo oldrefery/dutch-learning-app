@@ -1,9 +1,9 @@
 # Official vocabulary packs: detailed completion and handoff plan
 
-Updated: 2026-09-11. Verified implementation baseline: `ee06c37` plus completed A1 changes.
+Updated: 2026-09-11. Verified implementation baseline: `ee06c37` plus completed A-C changes.
 Working branch: `feature/vocabulary-organization`.
-Status: client/catalog implementation and draft export exist; production release
-and personal collection reorganization have NOT happened.
+Status: client/catalog implementation and a locally approved release exist; production
+release and personal collection reorganization have NOT happened.
 
 ## 1. How to use this plan
 
@@ -134,10 +134,10 @@ media, and some linguistic fields are absent.
 - Original cards: 2287.
 - Mapped personal cards: 2059.
 - Retained exclusions: 228 = 69 protected + 153 other expressions + 6 owner exclusions.
-- Current immutable drafts: `official-content-drafts-v3-2026-09-11/index.json`
+- Current immutable drafts: `official-content-drafts-v4-2026-09-11/index.json`
   and 21 manifests. Aggregate SHA-256:
-  `964bc2aa394509c729fabadc1a6d91f11cd5fbbcacb3a7f8d1a3eb7c9e1725f2`.
-  Earlier v1/v2 directories are superseded pending drafts and are not release inputs.
+  `8c33406b0a64c6e701ff6a3e1d5f91e9a5d671d3d241fefea5da967f85f4a1d4`.
+  Earlier v1/v2/v3 directories are superseded pending drafts and are not release inputs.
 - A1: 1 × 122; A2: 5 × 100; B1: 4 × 99 + 5 × 98;
   B2: 4 × 101 + 1 × 100; C1: 1 × 47; no C2.
 - Frequency evidence for mapped cards: 1850 observed, 45 ordering proxies,
@@ -316,6 +316,30 @@ claims are supported by saved records. Keep all per-card artifacts ignored. Comm
 only generic tooling and aggregate documentation:
 `docs(content): record reviewed official pack release`.
 
+Completion record for the local reviewed release:
+
+- Approved release: `official-content-release-v4-002-2026-09-11`, 21 packs and
+  2053 entries. Release aggregate SHA-256:
+  `5e02d4e1e02c1d56222ced6dca23f720a479e991f16c0af13bc124de707ac90b`.
+- Complete private ledger: 2059 decisions = 2053 reviewed entries plus six explicit
+  semantic-duplicate exclusions. Ledger SHA-256:
+  `4ef254df1d3459a07cde3b602f6fc75011fd02ea264f7bbe348200245c6b5e08`.
+- The six public exclusions preserve every personal source card. Final pack counts
+  are A1 122; A2 5 × 100; B1 4 × 99, 4 × 98, 1 × 97; B2 2 × 100,
+  2 × 101, 1 × 98; C1 46.
+- Actual import-key uniqueness is 2053/2053 with zero collision groups. The bundled
+  Essentials pack overlaps eight keys: `zien|verb|`, `blijven|verb|`,
+  `denken|verb|`, `stad|noun|de`, `lezen|verb|`, `adres|noun|het`,
+  `huis|noun|het`, and `brengen|verb|`. Existing web/mobile duplicate preview and
+  skip behavior applies; imported cards and progress are not overwritten.
+- Whole-word scanning of every public field found none of the six prohibited terms.
+- Every manifest records CC BY-NC-SA 4.0, attributes NT2Lex (Tack, Francois,
+  Desmet and Fairon, 2018) and SUBTLEX-NL (Keuleers, Brysbaert and New, 2010),
+  and states that the source corpus files are not distributed.
+- Reproducible private audit evidence is stored in
+  `official-content-review-v3-003-2026-09-11/final-release-audit-v4-002.json`.
+  Approval and publisher dry-run both reported `productionWrites: 0`.
+
 ## 8. Work package D: prove imports on both clients
 
 Use isolated database fixtures and disposable test accounts only. Unit tests alone
@@ -459,7 +483,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [x] A2: web navigation state and unavailable catalog/pack recovery verified.
 - [x] A3: requested identity and mobile loading/cache/route lifecycle verified.
 - [x] B: source-bound, atomic artifact preparation and release CLI tests complete.
-- [ ] C: full public editorial review ledger complete; stable approved release exists.
+- [x] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
   - [x] C2: 83/83 balanced review batches inspected and saved incrementally.
@@ -488,9 +512,9 @@ this plan. Harden tooling in B before treating current approval commands as fina
       - [x] `dutch-b2-05`: 4/4 batches and 100/100 entries inspected.
     - [x] Dutch C1: 2/2 batches and 47/47 entries inspected.
       - [x] `dutch-c1-01`: 2/2 batches and 47/47 entries inspected.
-  - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
-  - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
-  - [ ] C10: exact complete ledger approved into an immutable release.
+  - [x] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
+  - [x] C9: final reviewed manifests rebuilt with reconciled public counts.
+  - [x] C10: exact complete ledger approved into an immutable release.
 - [ ] D: cross-platform import scenarios verified with disposable data.
 - [ ] E: concrete production release prepared and outstanding authorization obtained.
 - [ ] E: server/catalog and both clients released and verified.
@@ -905,10 +929,21 @@ its SHA-256 is
 Corrections include legal-sense focusing, misspelled lemmas and compounds, invalid
 mass-noun plurals, and false translations. No profile or production writes occurred.
 
-Next action: C3–C8, resolve the 119 explicit language, sense, level, overlap,
-exclusion, and licensing findings before rebuilding final manifests.
-Do not approve the release until all 2059 decisions and every grammatical value
-have been reviewed.
+Final editorial reconciliation resolved all 119 held language, sense, level,
+overlap, exclusion, and licensing findings. The immutable local v4 release contains
+2053 reviewed entries and six explicit semantic-duplicate exclusions across all
+21 packs. Its complete ledger, audit record, per-file hashes, aggregate hashes,
+forbidden-term scan, Essentials overlap list, and attribution are recorded above.
+The approved-release validator and publisher dry-run pass with zero production
+writes. Work package C is complete; the next package is D, isolated cross-platform
+import verification.
+
+Final C verification: official-content tooling passes 37/37 tests; mobile catalog,
+pack, import-hook, and semantic-selection coverage passes 4 suites / 32 tests; web
+starter-pack coverage passes 5 suites / 19 tests. A second real draft build produced
+the same aggregate SHA-256. Mobile and web typechecks, repository ESLint, web ESLint,
+and `git diff --check` pass. No application account, remote service, or production
+state was read or changed during final approval and audit.
 
 Stop only the dependent action when authority, a missing private input, or an
 unresolved editorial decision truly blocks it. Complete independent local work.

@@ -348,6 +348,81 @@ test('rejects semantic collisions introduced by review overrides', () => {
   )
 })
 
+test('excludes a reviewed semantic duplicate and reconciles release counts', async context => {
+  const root = await mkdtemp(path.join(tmpdir(), 'official-content-exclude-'))
+  context.after(() => rm(root, { recursive: true, force: true }))
+  const manifest = pendingManifest()
+  const duplicate = structuredClone(manifest.entries[0])
+  duplicate.entry_id = 'entry-duplicate'
+  manifest.entries.push(duplicate)
+  manifest.provenance.source_card_count = 2
+  const { draftDir, index } = await prepareDraft(root, [manifest])
+  const decisions = [
+    {
+      entryId: manifest.entries[0].entry_id,
+      sourceContentSha256: sha256(
+        canonicalizeOfficialContent(manifest.entries[0])
+      ),
+      decision: 'approved',
+    },
+    {
+      entryId: duplicate.entry_id,
+      sourceContentSha256: sha256(canonicalizeOfficialContent(duplicate)),
+      decision: 'exclude',
+      explanation: 'The released semantic key is already represented.',
+    },
+  ]
+  const reviewLedgerPath = await prepareLedger(root, index, manifest, decisions)
+  const outputDir = path.join(root, 'release')
+
+  const release = await approveVocabularyPacks({
+    inputDir: draftDir,
+    outputDir,
+    reviewLedgerPath,
+    reviewedBy: REVIEWED_BY,
+    reviewedAt: REVIEWED_AT,
+  })
+
+  assert.equal(release.entryCount, 1)
+  assert.deepEqual(release.semanticUniqueness, {
+    entryCount: 1,
+    uniqueSemanticCount: 1,
+    collisionGroupCount: 0,
+    collidingEntryCount: 0,
+    collisions: [],
+  })
+  assert.equal(release.files[0].entryCount, 1)
+  assert.equal(release.catalog[0].entry_count, 1)
+  const verified = await loadVerifiedArtifactSet(outputDir, {
+    requiredStatus: 'approved',
+    aggregateField: 'releaseAggregateSha256',
+  })
+  assert.deepEqual(
+    verified.packs[0].manifest.entries.map(entry => entry.entry_id),
+    [manifest.entries[0].entry_id]
+  )
+
+  decisions[1].finalEntry = duplicate
+  assert.throws(
+    () =>
+      validateReviewLedger({
+        ledger: {
+          schemaVersion: 1,
+          draftAggregateSha256: index.draftAggregateSha256,
+          reviewedBy: REVIEWED_BY,
+          reviewedAt: REVIEWED_AT,
+          decisions,
+        },
+        ledgerBytes: 'invalid exclusion',
+        draftIndex: index,
+        packs: [{ manifest }],
+        reviewedBy: REVIEWED_BY,
+        reviewedAt: REVIEWED_AT,
+      }),
+    /Invalid exclusion decision/
+  )
+})
+
 test('scans every public string field for excluded whole words', () => {
   assert.throws(
     () =>
