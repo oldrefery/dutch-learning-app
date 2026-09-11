@@ -8,6 +8,7 @@ import { submitReviewCorrection } from './correction-actions'
 import { loadReviewCorrectionState } from './correction-refresh'
 import { useWebSettings } from '@/features/settings/useWebSettings'
 import { DEFAULT_WEB_SETTINGS } from '@/features/settings/settings-storage'
+import { reanalyzeWord } from '@/features/words/actions'
 import type { WordDetail } from '@/features/words/word-detail'
 import type { ReviewSubmissionResult } from './types'
 
@@ -17,16 +18,19 @@ jest.mock('./correction-refresh', () => ({
   loadReviewCorrectionState: jest.fn(),
 }))
 jest.mock('./details-action', () => ({ loadReviewWordDetails: jest.fn() }))
+jest.mock('@/features/words/actions', () => ({ reanalyzeWord: jest.fn() }))
 jest.mock('@/features/settings/useWebSettings', () => ({
   useWebSettings: jest.fn(),
 }))
 
 const persist = jest.mocked(submitReviewAssessment)
 const details = jest.mocked(loadReviewWordDetails)
+const reanalyze = jest.mocked(reanalyzeWord)
 const update = jest.fn()
 const renderWorkspace = (data = makeData(), userId = 'test-user') =>
   render(
     <ReviewWorkspace
+      canUseAi
       data={data}
       userId={userId}
       initialScope="all-due"
@@ -42,6 +46,29 @@ const tick = (ms: number) =>
   act(() => {
     jest.advanceTimersByTime(ms)
   })
+const makeWordDetail = (overrides: Partial<WordDetail> = {}): WordDetail => ({
+  ...makeWord('word-1', 'house'),
+  analysisNotes: null,
+  antonyms: [],
+  conjugation: null,
+  createdAt: '2026-09-06',
+  examples: [],
+  expressionType: null,
+  isExpression: false,
+  isIrregular: false,
+  isReflexive: false,
+  isSeparable: false,
+  plural: null,
+  prefixPart: null,
+  preposition: null,
+  register: null,
+  rootVerb: null,
+  synonyms: [],
+  translations: { en: ['house'], ru: ['дом'] },
+  updatedAt: null,
+  usageNotes: null,
+  ...overrides,
+})
 
 beforeEach(() => {
   jest.useFakeTimers().setSystemTime(new Date('2026-09-06T12:00:00Z'))
@@ -55,6 +82,10 @@ beforeEach(() => {
   details
     .mockReset()
     .mockResolvedValue({ status: 'error', message: 'Details unavailable' })
+  reanalyze.mockReset().mockResolvedValue({
+    status: 'success',
+    message: 'Fresh analysis saved. Learning progress was preserved.',
+  })
   jest.mocked(submitReviewCorrection).mockReset()
   jest.mocked(loadReviewCorrectionState).mockReset()
   jest.mocked(useWebSettings).mockReturnValue({
@@ -318,6 +349,7 @@ test('a new account remounts the session and late saves cannot restore old data'
   fireEvent.click(screen.getByRole('button', { name: /house/ }))
   view.rerender(
     <ReviewWorkspace
+      canUseAi
       data={makeData([makeWord('other', 'other')])}
       userId="other-user"
       initialScope="all-due"
@@ -370,28 +402,10 @@ test('old full-card requests cannot replace a newly selected word', async () => 
 })
 
 test('full details render the actual complete card without leaving the session', async () => {
-  const word: WordDetail = {
-    ...makeWord('word-1', 'house'),
-    translations: { en: ['house'], ru: ['дом'] },
-    analysisNotes: null,
-    antonyms: [],
-    conjugation: null,
-    createdAt: '2026-09-06',
+  const word = makeWordDetail({
     examples: [{ nl: 'Dit is mijn huis.', en: 'This is my house.', ru: null }],
-    expressionType: null,
-    isExpression: false,
-    isIrregular: false,
-    isReflexive: false,
-    isSeparable: false,
     plural: 'huizen',
-    prefixPart: null,
-    preposition: null,
-    register: null,
-    rootVerb: null,
-    synonyms: [],
-    updatedAt: null,
-    usageNotes: null,
-  }
+  })
   details.mockResolvedValue({ status: 'success', word })
   renderWorkspace()
   start()
@@ -403,4 +417,63 @@ test('full details render the actual complete card without leaving the session',
     screen.getByRole('button', { name: 'Back to question' })
   ).toBeInTheDocument()
   expect(persist).not.toHaveBeenCalled()
+})
+
+test('reanalyzes an open review card and reloads fresh details without submitting progress', async () => {
+  details
+    .mockResolvedValueOnce({ status: 'success', word: makeWordDetail() })
+    .mockResolvedValueOnce({
+      status: 'success',
+      word: makeWordDetail({ plural: 'huizen' }),
+    })
+
+  renderWorkspace()
+  start()
+  fireEvent.click(screen.getByRole('button', { name: 'Full details' }))
+  await flush()
+  fireEvent.click(screen.getByRole('button', { name: 'Reanalyze with AI' }))
+  await flush()
+
+  expect(reanalyze).toHaveBeenCalledWith(
+    'collection-1',
+    'word-1',
+    expect.objectContaining({ status: 'idle' }),
+    expect.any(FormData)
+  )
+  expect(details).toHaveBeenCalledTimes(2)
+  expect(screen.getByText('huizen')).toBeInTheDocument()
+  expect(
+    screen.getByText('Fresh analysis saved. Learning progress was preserved.')
+  ).toBeInTheDocument()
+  expect(persist).not.toHaveBeenCalled()
+})
+
+test('shows review reanalysis failures without replacing the open card', async () => {
+  details.mockResolvedValue({ status: 'success', word: makeWordDetail() })
+  reanalyze.mockResolvedValue({
+    status: 'error',
+    message: 'Analysis quota reached.',
+  })
+
+  renderWorkspace()
+  start()
+  fireEvent.click(screen.getByRole('button', { name: 'Full details' }))
+  await flush()
+  fireEvent.click(screen.getByRole('button', { name: 'Reanalyze with AI' }))
+  await flush()
+
+  expect(screen.getByRole('alert')).toHaveTextContent('Analysis quota reached.')
+  expect(screen.getByText('house')).toBeInTheDocument()
+  expect(details).toHaveBeenCalledTimes(1)
+})
+
+test('hides review reanalysis for accounts without AI access', async () => {
+  details.mockResolvedValue({ status: 'success', word: makeWordDetail() })
+
+  render(<ReviewDetails userId="test-user" wordId="word-1" />)
+  await flush()
+
+  expect(
+    screen.queryByRole('button', { name: 'Reanalyze with AI' })
+  ).not.toBeInTheDocument()
 })

@@ -30,9 +30,6 @@ export async function callGeminiAPI(prompt: string): Promise<any> {
         },
       ],
       generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
         maxOutputTokens: 8192,
         responseMimeType: 'application/json',
       },
@@ -91,7 +88,7 @@ export function validateWordInput(word: string): boolean {
 // Helper function to clean examples
 export function cleanExamples(
   examples: any[]
-): Array<{ nl: string; en: string; ru?: string }> {
+): { nl: string; en: string; ru?: string }[] {
   if (!Array.isArray(examples)) {
     return []
   }
