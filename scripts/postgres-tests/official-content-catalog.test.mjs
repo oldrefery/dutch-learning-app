@@ -3,6 +3,11 @@ import { after, before, test } from 'node:test'
 import { createCluster } from './cluster.mjs'
 
 const digest = 'a'.repeat(64)
+const VERSION_1_0_0 = '1.0.0'
+const VISIBLE_PACK = 'official-visible'
+const DRAFT_PACK = 'official-draft'
+const ROLLOUT_PACK = 'official-rollout'
+const HISTORY_PACK = 'official-history'
 const manifest = (packId, version) =>
   JSON.stringify({
     schema_version: 1,
@@ -44,12 +49,12 @@ after(async () => {
 
 test('anonymous and authenticated clients see only published catalog content', async () => {
   await db.sql(`
-    ${insertPack('official-visible')}
-    ${insertVersion('official-visible', '1.0.0', 'published')}
-    ${publishPack('official-visible', '1.0.0')}
-    ${insertPack('official-draft')}
-    ${insertVersion('official-draft', '1.0.0')}
-    ${publishPack('official-draft', '1.0.0')}
+    ${insertPack(VISIBLE_PACK)}
+    ${insertVersion(VISIBLE_PACK, VERSION_1_0_0, 'published')}
+    ${publishPack(VISIBLE_PACK, VERSION_1_0_0)}
+    ${insertPack(DRAFT_PACK)}
+    ${insertVersion(DRAFT_PACK, VERSION_1_0_0)}
+    ${publishPack(DRAFT_PACK, VERSION_1_0_0)}
   `)
 
   for (const role of ['anon', 'authenticated']) {
@@ -131,10 +136,10 @@ test('catalog constraints reject malformed or inconsistent manifests', async () 
 
 test('current version must belong to the same pack and can be rolled back by a trusted writer', async () => {
   await db.sql(`
-    ${insertPack('official-rollout')}
-    ${insertVersion('official-rollout', '1.0.0', 'published')}
-    ${insertVersion('official-rollout', '1.1.0', 'published')}
-    ${publishPack('official-rollout', '1.1.0')}
+    ${insertPack(ROLLOUT_PACK)}
+    ${insertVersion(ROLLOUT_PACK, VERSION_1_0_0, 'published')}
+    ${insertVersion(ROLLOUT_PACK, '1.1.0', 'published')}
+    ${publishPack(ROLLOUT_PACK, '1.1.0')}
   `)
 
   assert.equal(
@@ -163,11 +168,11 @@ test('current version must belong to the same pack and can be rolled back by a t
 
 test('retired and draft versions stay hidden while older published versions remain downloadable', async () => {
   await db.sql(`
-    ${insertPack('official-history')}
-    ${insertVersion('official-history', '1.0.0', 'published')}
-    ${insertVersion('official-history', '1.1.0', 'retired')}
-    ${insertVersion('official-history', '1.2.0')}
-    ${publishPack('official-history', '1.0.0')}
+    ${insertPack(HISTORY_PACK)}
+    ${insertVersion(HISTORY_PACK, VERSION_1_0_0, 'published')}
+    ${insertVersion(HISTORY_PACK, '1.1.0', 'retired')}
+    ${insertVersion(HISTORY_PACK, '1.2.0')}
+    ${publishPack(HISTORY_PACK, VERSION_1_0_0)}
   `)
 
   assert.equal(
