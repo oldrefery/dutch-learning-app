@@ -260,7 +260,7 @@ if (isMain) {
     args.get('--review-ledger') ??
       path.join(
         root,
-        'reports/vocabulary-organization/official-content-review-ledger-2026-09-11.json'
+        'reports/vocabulary-organization/official-content-review-v3-002-2026-09-11/review-ledger.json'
       )
   )
   const release = await approveVocabularyPacks({

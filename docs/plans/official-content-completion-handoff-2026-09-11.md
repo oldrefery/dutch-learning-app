@@ -460,6 +460,11 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [x] A3: requested identity and mobile loading/cache/route lifecycle verified.
 - [x] B: source-bound, atomic artifact preparation and release CLI tests complete.
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
+  - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
+  - [ ] C2: all 83 balanced review batches inspected and saved incrementally.
+  - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
+  - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
+  - [ ] C10: exact complete ledger approved into an immutable release.
 - [ ] D: cross-platform import scenarios verified with disposable data.
 - [ ] E: concrete production release prepared and outstanding authorization obtained.
 - [ ] E: server/catalog and both clients released and verified.
@@ -493,10 +498,22 @@ typechecks, web typecheck, ESLint, web ESLint, and `git diff --check` passed dur
 The final wider gate passed mobile 132 suites / 1541 tests, web 58 suites / 544
 tests, and a Next.js production build.
 
-Next action: C step 1, generate the ignored private review inventory and a review
-ledger skeleton bound to v3 aggregate hash, with explicit unresolved linguistic
-fields and priority flags. Do not approve the release until all 2059 decisions and
-missing grammatical values have been reviewed.
+C1 produced the ignored directory
+`official-content-review-v3-002-2026-09-11/` with `inventory.json`,
+`review-ledger.json`, and an integrity index. The inventory SHA-256 is
+`7bde9b7ad34de66d755afb7fc7593e5aea46e879b0e85ddf7d4773aba0bf9c92`; the initial
+needs-review ledger SHA-256 is
+`10e6ebf75eb936ed53e740a5ed60f116ab0fba7c15d0300c33c16658ccf2c7af`.
+It contains 83 balanced batches of 23–26 entries, all
+2059 decisions remain `needs-review`, and priority counts include 1693 entries with
+unresolved linguistic fields, 1400 analysis notes, 115 low-confidence CEFR records,
+85 mapped quality concerns, 9 omitted usage notes, 8 Essentials overlaps, and one
+spelling override. The generator and its evidence mismatch/balancing constraints
+pass as part of 28/28 official-content tests. No profile or production writes occurred.
+
+Next action: C2, review and persist the 87 complete batches, starting with the
+priority entries while retaining pack order. Do not approve the release until all
+2059 decisions and missing grammatical values have been reviewed.
 
 Stop only the dependent action when authority, a missing private input, or an
 unresolved editorial decision truly blocks it. Complete independent local work.
