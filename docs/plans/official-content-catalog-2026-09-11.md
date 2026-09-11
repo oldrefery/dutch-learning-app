@@ -80,3 +80,7 @@ by application code and therefore never increase either bundle.
 
 Future content corrections use a new semantic version. Published JSON cannot be
 edited or deleted; promotion and rollback only move `current_version`.
+
+The concrete first-release sequence, verification commands, and withdrawal procedure
+are recorded in
+[`../official-content-production-release-2026-09-11.md`](../official-content-production-release-2026-09-11.md).

@@ -265,6 +265,46 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION public.withdraw_official_content_pack(
+  p_pack_id TEXT
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  selected_version TEXT;
+BEGIN
+  PERFORM pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_pack_id, 20260911)
+  );
+
+  SELECT current_version
+  INTO selected_version
+  FROM public.official_content_packs
+  WHERE pack_id = p_pack_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Official content pack is unavailable';
+  END IF;
+
+  IF selected_version IS NULL THEN
+    RETURN;
+  END IF;
+
+  UPDATE public.official_content_packs
+  SET current_version = NULL,
+      published_at = NULL
+  WHERE pack_id = p_pack_id;
+
+  UPDATE public.official_content_pack_versions
+  SET review_status = 'retired'
+  WHERE pack_id = p_pack_id
+    AND version = selected_version;
+END;
+$$;
+
 CREATE FUNCTION public.publish_official_content_pack(
   p_manifest JSONB,
   p_content_sha256 TEXT,
@@ -411,6 +451,10 @@ REVOKE ALL ON FUNCTION public.promote_official_content_pack_version(
 GRANT EXECUTE ON FUNCTION public.promote_official_content_pack_version(
   TEXT, TEXT, TIMESTAMPTZ
 ) TO service_role;
+REVOKE ALL ON FUNCTION public.withdraw_official_content_pack(TEXT)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.withdraw_official_content_pack(TEXT)
+  TO service_role;
 REVOKE ALL ON FUNCTION public.publish_official_content_pack(
   JSONB, TEXT, TEXT, INTEGER, INTEGER, TIMESTAMPTZ, TIMESTAMPTZ
 ) FROM PUBLIC, anon, authenticated;
@@ -465,3 +509,5 @@ COMMENT ON FUNCTION public.promote_official_content_pack_version(
   TEXT, TEXT, TIMESTAMPTZ
 ) IS
   'Atomically promotes or rolls back to a published immutable version and restores its exact catalog metadata.';
+COMMENT ON FUNCTION public.withdraw_official_content_pack(TEXT) IS
+  'Atomically removes a pack from catalog discovery and retires its current immutable version without changing imported user cards.';

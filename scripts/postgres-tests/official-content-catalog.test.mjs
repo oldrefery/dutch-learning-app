@@ -336,7 +336,71 @@ test('trusted publication is reviewed, atomic, idempotent, and client roles cann
       );`),
       /42501.*permission denied for function promote_official_content_pack_version/s
     )
+    await assert.rejects(
+      db.sql(`SET ROLE ${role}; SELECT withdraw_official_content_pack(
+        'official-rpc'
+      );`),
+      /42501.*permission denied for function withdraw_official_content_pack/s
+    )
   }
+})
+
+test('first-release withdrawal hides the pack and retires its immutable version', async () => {
+  const packId = 'official-withdrawal'
+  const secondPackId = 'official-withdrawal-second'
+  const manifestJson = reviewedManifest(packId, '1.0.0')
+  await db.sql(publicationSql({ manifestJson }))
+
+  await db.sql(`SELECT withdraw_official_content_pack('${packId}');`)
+
+  assert.equal(
+    await db.sql(`SELECT current_version IS NULL AND published_at IS NULL
+      FROM official_content_packs WHERE pack_id = '${packId}';`),
+    't'
+  )
+  assert.equal(
+    await db.sql(`SELECT review_status
+      FROM official_content_pack_versions
+      WHERE pack_id = '${packId}' AND version = '1.0.0';`),
+    'retired'
+  )
+  for (const role of ['anon', 'authenticated']) {
+    assert.equal(
+      await db.sql(`SET ROLE ${role}; SELECT count(*)
+        FROM official_content_packs WHERE pack_id = '${packId}';`),
+      '0'
+    )
+    assert.equal(
+      await db.sql(`SET ROLE ${role}; SELECT count(*)
+        FROM official_content_pack_versions
+        WHERE pack_id = '${packId}' AND version = '1.0.0';`),
+      '0'
+    )
+  }
+
+  await db.sql(`SELECT withdraw_official_content_pack('${packId}');`)
+  await db.sql(
+    publicationSql({ manifestJson: reviewedManifest(secondPackId, '1.0.0') })
+  )
+  await db.sql(`SELECT withdraw_official_content_pack(release.pack_id)
+    FROM unnest(ARRAY[
+      '${packId}', '${secondPackId}', 'official-not-published'
+    ]::text[]) AS release(pack_id)
+    JOIN official_content_packs AS packs
+      ON packs.pack_id = release.pack_id
+    WHERE packs.current_version = '1.0.0';`)
+  assert.equal(
+    await db.sql(`SELECT review_status
+      FROM official_content_pack_versions
+      WHERE pack_id = '${secondPackId}' AND version = '1.0.0';`),
+    'retired'
+  )
+  await assert.rejects(
+    db.sql(`SELECT promote_official_content_pack_version(
+      '${packId}', '1.0.0', '${PUBLISHED_AT}'
+    );`),
+    /Published official content version is unavailable/
+  )
 })
 
 test('publishing a new version can change entry count and rollback restores version metadata', async () => {

@@ -66,6 +66,7 @@
     "official-content:test": "node --test scripts/official-content/*.test.mjs",
     "official-content:approve": "node scripts/official-content/approve-vocabulary-packs.mjs",
     "official-content:publish": "node scripts/official-content/publish-vocabulary-packs.mjs",
+    "official-content:verify": "node scripts/official-content/verify-published-vocabulary-packs.mjs",
     "complexity": "npm run lint -- --format stylish",
     "complexity:strict": "npm run lint -- --rule 'sonarjs/cognitive-complexity: [error, 10]'",
     "complexity:report": "npm run lint -- --format json --output-file reports/complexity-report.json",

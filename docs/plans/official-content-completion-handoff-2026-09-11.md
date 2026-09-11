@@ -1,6 +1,6 @@
 # Official vocabulary packs: detailed completion and handoff plan
 
-Updated: 2026-09-11. Verified implementation baseline: `ee06c37` plus completed A-C changes.
+Updated: 2026-09-11. Verified implementation baseline: `0e8c635` plus local E preparation.
 Working branch: `feature/vocabulary-organization`.
 Status: client/catalog implementation and a locally approved release exist; production
 release and personal collection reorganization have NOT happened.
@@ -90,6 +90,9 @@ Completed commits:
 | `16eac17` | Consistent pack version promotion, rollback, and immutable state changes  |
 | `010e5d5` | Web pack navigation reset and recoverable catalog/pack errors             |
 | `5ea1072` | Mobile requested identity, cache integrity, and route lifecycle handling  |
+| `91726e1` | Source-bound, atomic official-content release tooling and tests           |
+| `223bdf7` | Fully reviewed immutable 21-pack release record                           |
+| `0e8c635` | Cross-platform import integrity and production bundle verification        |
 
 Key files:
 
@@ -550,10 +553,22 @@ this plan. Harden tooling in B before treating current approval commands as fina
   - [x] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [x] C10: exact complete ledger approved into an immutable release.
 - [x] D: cross-platform import scenarios verified with synthetic and isolated data.
-- [ ] E: concrete production release prepared and outstanding authorization obtained.
+- [x] E: concrete production release prepared; outstanding authorization identified.
 - [ ] E: server/catalog and both clients released and verified.
 - [ ] Personal classification/apply/rollback tooling prepared and tested.
 - [ ] Personal write proposal authorized, applied, and invariants verified.
+
+E preparation is recorded in
+`docs/official-content-production-release-2026-09-11.md`. The approved 21-pack,
+2053-entry release passed another zero-write publisher dry-run. Read-only linked
+Supabase checks confirm that only
+`20260911120000_add_official_content_catalog.sql` is pending remotely. A tested
+service-role-only withdrawal RPC now covers first-release rollback, and an anonymous
+remote verifier checks exact catalog metadata, manifests, versions, counts, and
+hashes after publication. No migration, catalog payload, client deployment, EAS
+update, personal-profile mutation, push, or PR was performed during preparation.
+The EAS identity guard did not confirm the required `oldrefery` identity, so runtime
+comparison and all further EAS reads/writes stopped as required.
 
 Latest verification: catalog DB 14/14 and full DB 116/116 passed after A1. A2 web
 passed 57 suites / 542 tests plus production build. After A3, mobile passed 132

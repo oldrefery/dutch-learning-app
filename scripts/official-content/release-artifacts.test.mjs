@@ -20,6 +20,7 @@ import {
   OfficialContentPublicationError,
   publishVocabularyPacks,
 } from './publish-vocabulary-packs.mjs'
+import { verifyPublishedVocabularyPacks } from './verify-published-vocabulary-packs.mjs'
 
 const REVIEWED_AT = '2026-09-11T12:00:00.000Z'
 const REVIEWED_BY = 'editor@example.test'
@@ -567,4 +568,88 @@ test('reports partial publication and safely retries the immutable release', asy
   })
   assert.deepEqual(retry.completedPackIds, [FIRST_PACK_ID, SECOND_PACK_ID])
   assert.deepEqual(retry.failedPackIds, [])
+})
+
+test('verifies the exact published release through anonymous reads', async context => {
+  const root = await mkdtemp(path.join(tmpdir(), 'official-content-verify-'))
+  context.after(() => rm(root, { recursive: true, force: true }))
+  const { draftDir, index, manifest } = await prepareDraft(root)
+  const reviewLedgerPath = await prepareLedger(root, index, manifest)
+  const releaseDir = path.join(root, 'release')
+  await approveVocabularyPacks({
+    inputDir: draftDir,
+    outputDir: releaseDir,
+    reviewLedgerPath,
+    reviewedBy: REVIEWED_BY,
+    reviewedAt: REVIEWED_AT,
+  })
+  const release = await loadVerifiedArtifactSet(releaseDir, {
+    requiredStatus: 'approved',
+    aggregateField: 'releaseAggregateSha256',
+  })
+  const approved = release.packs[0]
+  const publishedAt = '2026-09-11T12:05:00.000Z'
+  const responses = [
+    [
+      {
+        pack_id: approved.manifest.pack_id,
+        slug: approved.manifest.pack_id,
+        title: approved.manifest.title,
+        description: approved.manifest.description,
+        cefr_level: approved.catalog.cefr_level,
+        entry_count: approved.catalog.entry_count,
+        display_order: approved.catalog.display_order,
+        current_version: approved.manifest.version,
+        published_at: publishedAt,
+      },
+    ],
+    [
+      {
+        pack_id: approved.manifest.pack_id,
+        version: approved.manifest.version,
+        title: approved.manifest.title,
+        description: approved.manifest.description,
+        cefr_level: approved.catalog.cefr_level,
+        entry_count: approved.catalog.entry_count,
+        display_order: approved.catalog.display_order,
+        manifest: approved.manifest,
+        content_sha256: approved.catalog.content_sha256,
+        review_status: 'published',
+        reviewed_at: approved.manifest.content_review.reviewed_at,
+        published_at: publishedAt,
+      },
+    ],
+  ]
+  let request = 0
+  const fetchImpl = async (_url, options) => {
+    assert.equal(options.headers.apikey, 'anon-key')
+    return {
+      ok: true,
+      json: async () => responses[request++],
+    }
+  }
+
+  const summary = await verifyPublishedVocabularyPacks({
+    releaseDir,
+    projectRef: 'synthetic',
+    supabaseUrl: SYNTHETIC_SUPABASE_URL,
+    anonKey: 'anon-key',
+    fetchImpl,
+  })
+  assert.equal(summary.packCount, 1)
+  assert.equal(summary.entryCount, 1)
+  assert.equal(summary.productionWrites, 0)
+
+  responses[0][0].current_version = '9.9.9'
+  request = 0
+  await assert.rejects(
+    verifyPublishedVocabularyPacks({
+      releaseDir,
+      projectRef: 'synthetic',
+      supabaseUrl: SYNTHETIC_SUPABASE_URL,
+      anonKey: 'anon-key',
+      fetchImpl,
+    }),
+    /Catalog metadata mismatch/
+  )
 })

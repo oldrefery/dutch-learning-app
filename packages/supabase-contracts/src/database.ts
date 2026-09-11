@@ -120,6 +120,12 @@ export type Database = Omit<GeneratedDatabase, 'public'> & {
         }
         Returns: undefined
       }
+      withdraw_official_content_pack: {
+        Args: {
+          p_pack_id: string
+        }
+        Returns: undefined
+      }
       publish_official_content_pack: {
         Args: {
           p_cefr_level: string
