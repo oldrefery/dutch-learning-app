@@ -462,12 +462,13 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: 17/83 balanced review batches inspected and saved incrementally.
+  - [ ] C2: 21/83 balanced review batches inspected and saved incrementally.
     - [x] Dutch A1: 5/5 batches and 122/122 entries inspected.
-    - [ ] Dutch A2: 12/20 batches and 300/500 entries inspected.
+    - [ ] Dutch A2: 16/20 batches and 400/500 entries inspected.
       - [x] `dutch-a2-01`: 4/4 batches and 100/100 entries inspected.
       - [x] `dutch-a2-02`: 4/4 batches and 100/100 entries inspected.
       - [x] `dutch-a2-03`: 4/4 batches and 100/100 entries inspected.
+      - [x] `dutch-a2-04`: 4/4 batches and 100/100 entries inspected.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [ ] C10: exact complete ledger approved into an immutable release.
@@ -597,7 +598,22 @@ homonym and level focusing, false lexical relations, malformed constructions,
 and Dutch, English, and Russian example repairs. No profile or production writes
 occurred.
 
-Next action: C2, inspect and persist `dutch-a2-04-batch-01`, retaining pack order.
+The four `dutch-a2-04` batches are complete: all 100 entries were inspected,
+26 were approved unchanged and 74 received explicit corrections. No additional
+entry was left unresolved. The reviewed batch SHA-256 values, in order, are
+`43b9c92b457b4a913484c4902b8c6a308609345a61b939a432708ea96e529dbf`,
+`7094dc0f8901cec048db49c3211052e1a9f3bd92f9d3e88540451e99357f0167`,
+`bd44412f8a130a6dd0e9a758ccaa39a74cafb097675ac49b0fe41faf8e6a6cb6`,
+and `65524407892550bf95950f2a5b4bab0c7011fdd9941f826410aa83d2500b7cf3`.
+The rebuilt ledger now contains 128 approved, 391 overridden, and 1540 unresolved
+decisions; its SHA-256 is
+`1cad0c3c9c983b093288f21e45e13c4d4ded2868dde7bab68035ba8717cac8e7`.
+Corrections include missing Russian examples, mass-noun plurals, reflexive and
+separable conjugations, register and sense focusing, false lexical relations,
+unsafe hygiene advice, and malformed Dutch, English, and Russian examples. No
+profile or production writes occurred.
+
+Next action: C2, inspect and persist `dutch-a2-05-batch-01`, retaining pack order.
 Do not approve the release until all 2059 decisions and every grammatical value
 have been reviewed.
 
