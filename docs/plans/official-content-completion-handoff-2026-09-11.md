@@ -462,7 +462,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: 29/83 balanced review batches inspected and saved incrementally.
+  - [ ] C2: 33/83 balanced review batches inspected and saved incrementally.
     - [x] Dutch A1: 5/5 batches and 122/122 entries inspected.
     - [x] Dutch A2: 20/20 batches and 500/500 entries inspected.
       - [x] `dutch-a2-01`: 4/4 batches and 100/100 entries inspected.
@@ -470,8 +470,9 @@ this plan. Harden tooling in B before treating current approval commands as fina
       - [x] `dutch-a2-03`: 4/4 batches and 100/100 entries inspected.
       - [x] `dutch-a2-04`: 4/4 batches and 100/100 entries inspected.
       - [x] `dutch-a2-05`: 4/4 batches and 100/100 entries inspected.
-    - [ ] Dutch B1: 4/36 batches and 99/884 entries inspected.
+    - [ ] Dutch B1: 8/36 batches and 198/884 entries inspected.
       - [x] `dutch-b1-01`: 4/4 batches and 99/99 entries inspected.
+      - [x] `dutch-b1-02`: 4/4 batches and 99/99 entries inspected.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [ ] C10: exact complete ledger approved into an immutable release.
@@ -649,7 +650,24 @@ and weak conjugations, invalid mass-noun plurals, duplicate semantic candidates,
 false lexical relations, and malformed Dutch, English, and Russian examples. No
 profile or production writes occurred.
 
-Next action: C2, inspect and persist `dutch-b1-02-batch-01`, retaining pack order.
+The four `dutch-b1-02` batches are complete: all 99 entries were inspected, 22
+were approved unchanged, 76 received explicit corrections, and one remains
+unresolved for C3–C8 because `hol` combines adjective and noun senses that require
+an explicit split-or-focus decision. The reviewed batch SHA-256 values, in order,
+are
+`ce90a3e0b26a9ae4bed23204b44a1466234199687e96dcfb749a26077df66200`,
+`bd96b4157c4942e528431daf14bb7cbbb166d1721946fde6b7dbc8f871531e58`,
+`77ac0cc487d5d66f8c48ab9da01bbae796362cf516e88e7734bee96a19c7f3a6`,
+and `61dcfda2b188325d7730fc46c10beaf77b15264286b4e445a36bd3e8c0befb66`.
+The rebuilt ledger now contains 189 approved, 625 overridden, and 1245 unresolved
+decisions; its SHA-256 is
+`8c4442ba73f790b626a43d5951305114332410f7c636520fac35f6b2616d9706`.
+Corrections include damaged reflexive paradigms, mixed verb and adjective senses,
+false or regional meanings, invalid plurals, missing Russian examples, Markdown
+leaking into learning text, and malformed Dutch, English, and Russian examples. No
+profile or production writes occurred.
+
+Next action: C2, inspect and persist `dutch-b1-03-batch-01`, retaining pack order.
 Do not approve the release until all 2059 decisions and every grammatical value
 have been reviewed.
 
