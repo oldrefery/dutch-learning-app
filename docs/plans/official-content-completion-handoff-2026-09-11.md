@@ -462,9 +462,10 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: 5/83 balanced review batches inspected and saved incrementally.
+  - [ ] C2: 9/83 balanced review batches inspected and saved incrementally.
     - [x] Dutch A1: 5/5 batches and 122/122 entries inspected.
-    - [ ] Dutch A2: 0/20 batches inspected.
+    - [ ] Dutch A2: 4/20 batches and 100/500 entries inspected.
+      - [x] `dutch-a2-01`: 4/4 batches and 100/100 entries inspected.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [ ] C10: exact complete ledger approved into an immutable release.
@@ -549,7 +550,22 @@ consulted for specialist senses including river `mond` and vessel `stuur`.
 Official-content tests pass 36/36, repository ESLint passes with `--quiet`, and
 `git diff --check` passes. No profile or production writes occurred.
 
-Next action: C2, inspect and persist `dutch-a2-01-batch-01`, retaining pack order.
+The four `dutch-a2-01` batches are also complete: all 100 entries were inspected,
+eight were approved unchanged and 92 received explicit corrections. No additional
+entry was left unresolved. The reviewed batch SHA-256 values, in order, are
+`6173ad8d30ea9ec38013aa3bcf15ceadcd01550e103f09e676cc44b9b72e6aa9`,
+`6b341491e1a616b9204d358c5699db7b2680fb01e2f1c0299beceaecd6041ea6`,
+`df76ee6b460be806809d34da3e36a64ca401f0a650a48ce751d2c8d79ebaf123`,
+and `25b8f717ea401a8331d3aa83acde3bcf06f8a801459f95c05cc16816efcc3a0d`.
+The rebuilt ledger now contains 69 approved, 150 overridden, and 1840 unresolved
+decisions; its SHA-256 is
+`8e352eb95944d89384b62b669ae880bc8a087e4ad6abb6200594b7294bb146e2`.
+Corrections include homonym and part-of-speech separation, A2 sense focusing,
+invalid plurals, false lexical relations, translated-English constructions, and
+examples that did not contain the reviewed lemma. No profile or production writes
+occurred.
+
+Next action: C2, inspect and persist `dutch-a2-02-batch-01`, retaining pack order.
 Do not approve the release until all 2059 decisions and every grammatical value
 have been reviewed.
 
