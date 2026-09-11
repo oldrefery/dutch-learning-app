@@ -62,6 +62,7 @@
     "starter-pack:generate": "node scripts/generate-starter-pack.js",
     "official-content:build": "node scripts/official-content/build-vocabulary-packs.mjs",
     "official-content:prepare-review": "node scripts/official-content/prepare-review-inventory.mjs",
+    "official-content:rebuild-review": "node scripts/official-content/rebuild-review-ledger.mjs",
     "official-content:test": "node --test scripts/official-content/*.test.mjs",
     "official-content:approve": "node scripts/official-content/approve-vocabulary-packs.mjs",
     "official-content:publish": "node scripts/official-content/publish-vocabulary-packs.mjs",

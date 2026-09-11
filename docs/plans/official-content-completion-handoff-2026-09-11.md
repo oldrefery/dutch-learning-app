@@ -462,7 +462,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: all 83 balanced review batches inspected and saved incrementally.
+  - [ ] C2: 1/83 balanced review batches inspected and saved incrementally.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [ ] C10: exact complete ledger approved into an immutable release.
@@ -529,9 +529,23 @@ rejects owner/timestamp mismatches, missing baseline cards, incomplete fields, a
 records current content for changed cards. Official-content tests pass 33/33 and
 ESLint plus `git diff --check` pass. No profile or production writes occurred.
 
-Next action: C2, review and persist all 83 complete batches, starting with
-`dutch-a1-01-batch-01` and retaining pack order. Do not approve the release until
-all 2059 decisions and every grammatical value have been reviewed.
+C2 now persists immutable per-batch records and deterministically rebuilds the
+aggregate private ledger. `dutch-a1-01-batch-01` is complete: 18 entries approved,
+6 corrected, and the regional/specialist `de haar` sense remains explicitly
+unresolved pending a move-or-exclude decision. The batch SHA-256 is
+`95e9d9b2324fd17c09d6e7f501bf1b9af9d689a194de0520d2588a719aab57df`;
+the rebuilt ledger SHA-256 is
+`c735877257db4ab2c7a80e96a3570d1639a3cac1452e73986a072512c1acc0fa`.
+The six corrections cover duplicated synonyms, a malformed `denken` example, a
+false `stad` antonym, unsupported `gezicht` senses/examples, the river-mouth
+wording for `mond`, and the ship example for `stuur`. ANW was consulted for the
+specialist `mond` and vessel `stuur` senses. Official-content tests pass 36/36,
+repository ESLint passes with `--quiet`, and `git diff --check` passes. No profile
+or production writes occurred.
+
+Next action: C2, inspect and persist `dutch-a1-01-batch-02`, retaining pack order.
+Do not approve the release until all 2059 decisions and every grammatical value
+have been reviewed.
 
 Stop only the dependent action when authority, a missing private input, or an
 unresolved editorial decision truly blocks it. Complete independent local work.
