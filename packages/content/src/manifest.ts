@@ -93,6 +93,36 @@ export type OfficialContentValidationResult =
 
 type UnknownRecord = Record<string, unknown>
 
+const canonicalizeJson = (value: unknown): string => {
+  if (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'boolean'
+  ) {
+    return JSON.stringify(value)
+  }
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) {
+      throw new Error('Official content contains a non-finite number.')
+    }
+    return JSON.stringify(value)
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(canonicalizeJson).join(',')}]`
+  }
+  if (typeof value === 'object' && value !== null) {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, item]) => item !== undefined)
+      .sort(([left], [right]) => (left === right ? 0 : left < right ? -1 : 1))
+      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalizeJson(item)}`)
+    return `{${entries.join(',')}}`
+  }
+  throw new Error('Official content contains an unsupported JSON value.')
+}
+
+export const canonicalizeOfficialContent = (manifest: unknown): string =>
+  canonicalizeJson(manifest)
+
 const MUST_BE_OBJECT = 'must be an object'
 const MUST_BE_NON_EMPTY_STRING = 'must be a non-empty string'
 const MUST_BE_NULLABLE_STRING = 'must be a non-empty string or null'
@@ -480,12 +510,15 @@ export const validateOfficialContentManifest = (
 }
 
 export class OfficialContentValidationError extends Error {
-  constructor(readonly issues: OfficialContentValidationIssue[]) {
+  readonly issues: OfficialContentValidationIssue[]
+
+  constructor(issues: OfficialContentValidationIssue[]) {
     super(
       `Official content validation failed: ${issues
         .map(issue => `${issue.path} ${issue.message}`)
         .join('; ')}`
     )
     this.name = 'OfficialContentValidationError'
+    this.issues = issues
   }
 }

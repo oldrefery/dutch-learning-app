@@ -26,7 +26,11 @@ bundle size. Keep the bundled Dutch A1 Essentials pack as an offline fallback.
   versions.
 - Client roles have no insert, update, or delete privileges.
 - Publishing creates an approved immutable version, then switches the catalog
-  pointer in one trusted transaction. Rollback switches the pointer back.
+  pointer in one trusted transaction per pack. The operation is idempotent, so
+  an interrupted multi-pack release can be resumed. Rollback switches the
+  pointer back.
+- Catalog metadata includes the validated manifest entry count, which web and
+  mobile show before download.
 
 ## Acceptance Criteria
 
@@ -46,3 +50,24 @@ bundle size. Keep the bundled Dutch A1 Essentials pack as an offline fallback.
 Schema, tests, client support, and export validation are safe repository changes.
 Uploading manifests or changing production catalog pointers is a separate
 production write and requires explicit approval.
+
+## Release Workflow
+
+The generated manifests stay under ignored `reports/`; they are never imported
+by application code and therefore never increase either bundle.
+
+1. `npm run official-content:build` deterministically regenerates 21 pending
+   manifests from the private snapshot and locked collection plan.
+2. Complete the editorial acceptance gate documented in the release index.
+3. `npm run official-content:approve -- --reviewed-by <reviewer> --reviewed-at <timestamp>`
+   creates a new immutable approved release directory. It refuses to overwrite
+   an existing release.
+4. `npm run official-content:publish` validates an approved release and performs
+   a read-only dry run.
+5. Only with explicit production authorization, load the service-role secret and
+   add `--apply --project-ref <ref>`. The script verifies that the confirmed
+   project reference matches `SUPABASE_URL`, then calls the trusted publication
+   RPC. Secrets are never printed or stored in release files.
+
+Future content corrections use a new semantic version. Published JSON cannot be
+edited or deleted; promotion and rollback only move `current_version`.

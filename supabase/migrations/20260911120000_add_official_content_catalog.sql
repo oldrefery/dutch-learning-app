@@ -7,6 +7,7 @@ CREATE TABLE public.official_content_packs (
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   cefr_level TEXT NOT NULL,
+  entry_count INTEGER NOT NULL,
   display_order INTEGER NOT NULL DEFAULT 0,
   current_version TEXT,
   published_at TIMESTAMPTZ,
@@ -23,6 +24,8 @@ CREATE TABLE public.official_content_packs (
     CHECK (BTRIM(description) <> ''),
   CONSTRAINT official_content_packs_cefr_level
     CHECK (cefr_level IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
+  CONSTRAINT official_content_packs_entry_count
+    CHECK (entry_count > 0),
   CONSTRAINT official_content_packs_display_order
     CHECK (display_order >= 0),
   CONSTRAINT official_content_packs_publication_fields
@@ -83,6 +86,37 @@ ALTER TABLE public.official_content_packs
   REFERENCES public.official_content_pack_versions(pack_id, version)
   ON DELETE RESTRICT;
 
+CREATE FUNCTION public.validate_official_content_pack_entry_count()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = ''
+AS $$
+DECLARE
+  manifest_entry_count INTEGER;
+BEGIN
+  IF NEW.current_version IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  SELECT JSONB_ARRAY_LENGTH(versions.manifest->'entries')
+  INTO manifest_entry_count
+  FROM public.official_content_pack_versions AS versions
+  WHERE versions.pack_id = NEW.pack_id
+    AND versions.version = NEW.current_version;
+
+  IF manifest_entry_count IS NOT NULL
+    AND manifest_entry_count IS DISTINCT FROM NEW.entry_count THEN
+    RAISE EXCEPTION 'Official content catalog entry count does not match the manifest';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER validate_official_content_pack_entry_count
+  BEFORE INSERT OR UPDATE ON public.official_content_packs
+  FOR EACH ROW
+  EXECUTE FUNCTION public.validate_official_content_pack_entry_count();
+
 CREATE INDEX official_content_packs_catalog_order_idx
   ON public.official_content_packs(cefr_level, display_order, pack_id)
   WHERE current_version IS NOT NULL;
@@ -130,10 +164,109 @@ CREATE TRIGGER protect_published_official_content_pack_version
   FOR EACH ROW
   EXECUTE FUNCTION public.protect_published_official_content_pack_version();
 
+CREATE FUNCTION public.publish_official_content_pack(
+  p_manifest JSONB,
+  p_content_sha256 TEXT,
+  p_cefr_level TEXT,
+  p_display_order INTEGER,
+  p_entry_count INTEGER,
+  p_reviewed_at TIMESTAMPTZ,
+  p_published_at TIMESTAMPTZ
+)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+  manifest_pack_id TEXT := p_manifest->>'pack_id';
+  manifest_version TEXT := p_manifest->>'version';
+  existing_version public.official_content_pack_versions%ROWTYPE;
+BEGIN
+  IF p_manifest->'content_review'->>'status' IS DISTINCT FROM 'approved'
+    OR NULLIF(BTRIM(p_manifest->'content_review'->>'reviewed_by'), '') IS NULL
+    OR NULLIF(BTRIM(p_manifest->'content_review'->>'reviewed_at'), '') IS NULL THEN
+    RAISE EXCEPTION 'Official content must complete editorial review before publication';
+  END IF;
+  IF JSONB_ARRAY_LENGTH(p_manifest->'entries') IS DISTINCT FROM p_entry_count THEN
+    RAISE EXCEPTION 'Official content publication entry count does not match the manifest';
+  END IF;
+
+  INSERT INTO public.official_content_packs (
+    pack_id,
+    slug,
+    title,
+    description,
+    cefr_level,
+    entry_count,
+    display_order
+  ) VALUES (
+    manifest_pack_id,
+    manifest_pack_id,
+    p_manifest->>'title',
+    p_manifest->>'description',
+    p_cefr_level,
+    p_entry_count,
+    p_display_order
+  )
+  ON CONFLICT (pack_id) DO UPDATE SET
+    title = EXCLUDED.title,
+    description = EXCLUDED.description,
+    cefr_level = EXCLUDED.cefr_level,
+    entry_count = EXCLUDED.entry_count,
+    display_order = EXCLUDED.display_order;
+
+  INSERT INTO public.official_content_pack_versions (
+    pack_id,
+    version,
+    manifest,
+    content_sha256,
+    review_status,
+    reviewed_at,
+    published_at
+  ) VALUES (
+    manifest_pack_id,
+    manifest_version,
+    p_manifest,
+    p_content_sha256,
+    'published',
+    p_reviewed_at,
+    p_published_at
+  )
+  ON CONFLICT (pack_id, version) DO NOTHING;
+
+  SELECT *
+  INTO existing_version
+  FROM public.official_content_pack_versions
+  WHERE pack_id = manifest_pack_id AND version = manifest_version;
+
+  IF existing_version.manifest IS DISTINCT FROM p_manifest
+    OR existing_version.content_sha256 IS DISTINCT FROM p_content_sha256
+    OR existing_version.review_status IS DISTINCT FROM 'published' THEN
+    RAISE EXCEPTION 'Official content version already exists with different content';
+  END IF;
+
+  UPDATE public.official_content_packs
+  SET current_version = manifest_version,
+      published_at = p_published_at
+  WHERE pack_id = manifest_pack_id;
+END;
+$$;
+
 REVOKE ALL ON FUNCTION public.protect_published_official_content_pack_version()
   FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.protect_published_official_content_pack_version()
   TO service_role;
+REVOKE ALL ON FUNCTION public.validate_official_content_pack_entry_count()
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.validate_official_content_pack_entry_count()
+  TO service_role;
+REVOKE ALL ON FUNCTION public.publish_official_content_pack(
+  JSONB, TEXT, TEXT, INTEGER, INTEGER, TIMESTAMPTZ, TIMESTAMPTZ
+) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.publish_official_content_pack(
+  JSONB, TEXT, TEXT, INTEGER, INTEGER, TIMESTAMPTZ, TIMESTAMPTZ
+) TO service_role;
 
 ALTER TABLE public.official_content_packs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.official_content_pack_versions ENABLE ROW LEVEL SECURITY;

@@ -53,6 +53,9 @@ const parseCatalog = (value: unknown): OfficialContentCatalogItem[] => {
       typeof item.cefr_level !== 'string' ||
       !CEFR_LEVELS.has(item.cefr_level) ||
       typeof item.display_order !== 'number' ||
+      typeof item.entry_count !== 'number' ||
+      !Number.isInteger(item.entry_count) ||
+      item.entry_count <= 0 ||
       typeof item.current_version !== 'string' ||
       typeof item.published_at !== 'string'
     ) {
@@ -65,6 +68,7 @@ const parseCatalog = (value: unknown): OfficialContentCatalogItem[] => {
       description: item.description,
       cefrLevel: item.cefr_level as OfficialContentCatalogItem['cefrLevel'],
       displayOrder: item.display_order,
+      entryCount: item.entry_count,
       version: item.current_version,
       publishedAt: item.published_at,
     }
@@ -120,7 +124,7 @@ const defaultGateway: CatalogGateway = {
     const { data, error } = await supabase
       .from('official_content_packs')
       .select(
-        'pack_id, slug, title, description, cefr_level, display_order, current_version, published_at'
+        'pack_id, slug, title, description, cefr_level, entry_count, display_order, current_version, published_at'
       )
       .order('cefr_level')
       .order('display_order')

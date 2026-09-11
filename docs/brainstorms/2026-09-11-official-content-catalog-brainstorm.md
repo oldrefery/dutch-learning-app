@@ -42,13 +42,13 @@ model while allowing catalog updates without an application release.
 - Record content review state and hash per immutable version. Draft versions are
   invisible to clients.
 
-## Open Questions
+## Remaining Release Gate
 
 - Final editorial validation of every exported public field remains an acceptance
   gate before the first catalog publication.
-- Catalog discovery UX and whether users may import several packs in one operation
-  will be decided during implementation planning; the initial safe default is one
-  pack at a time.
+- Both clients initially use one-pack-at-a-time import. Mobile exposes the catalog
+  from the import sheet and caches verified versions for offline reuse; web exposes
+  pack selection on the starter-pack page.
 
 ## Next Steps
 
@@ -56,5 +56,5 @@ model while allowing catalog updates without an application release.
 2. Generalize shared manifest validation without breaking Dutch A1 Essentials.
 3. Add catalog repositories, caching, loading/error states and pack selection to
    web and mobile.
-4. Build a private deterministic exporter and validate the 21 manifests.
+4. Complete editorial review and create the approved release artifact.
 5. Publish only after an explicit production-write authorization.

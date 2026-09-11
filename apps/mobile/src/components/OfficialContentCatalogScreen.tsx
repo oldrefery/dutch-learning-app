@@ -154,6 +154,9 @@ export function OfficialContentCatalogScreen() {
             <TextThemed style={styles.description}>
               {item.description}
             </TextThemed>
+            <TextThemed style={styles.entryCount}>
+              {item.entryCount} words
+            </TextThemed>
           </Pressable>
         )}
       />
@@ -183,6 +186,7 @@ const styles = StyleSheet.create({
   version: { fontSize: 12, opacity: 0.55 },
   title: { fontSize: 18, fontWeight: '700' },
   description: { fontSize: 14, lineHeight: 20, opacity: 0.7 },
+  entryCount: { fontSize: 12, fontWeight: '600', opacity: 0.55 },
   status: {
     alignItems: 'center',
     flexDirection: 'row',

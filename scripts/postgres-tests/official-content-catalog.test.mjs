@@ -4,6 +4,9 @@ import { createCluster } from './cluster.mjs'
 
 const digest = 'a'.repeat(64)
 const VERSION_1_0_0 = '1.0.0'
+const REVIEWED_AT = '2026-09-11T10:00:00Z'
+const PUBLISHED_AT = '2026-09-11T10:05:00Z'
+const REVIEWED_DESCRIPTION = 'Reviewed fixture description'
 const VISIBLE_PACK = 'official-visible'
 const DRAFT_PACK = 'official-draft'
 const ROLLOUT_PACK = 'official-rollout'
@@ -16,11 +19,26 @@ const manifest = (packId, version) =>
     entries: [{ entry_id: 'fixture-1' }],
   }).replaceAll("'", "''")
 
+const reviewedManifest = (packId, version) =>
+  JSON.stringify({
+    schema_version: 1,
+    pack_id: packId,
+    version,
+    title: 'Reviewed fixture',
+    description: REVIEWED_DESCRIPTION,
+    content_review: {
+      status: 'approved',
+      reviewed_by: 'test-reviewer',
+      reviewed_at: REVIEWED_AT,
+    },
+    entries: [{ entry_id: 'fixture-1' }],
+  }).replaceAll("'", "''")
+
 const insertPack = (packId, slug = packId) => `
   INSERT INTO official_content_packs (
-    pack_id, slug, title, description, cefr_level, display_order
+    pack_id, slug, title, description, cefr_level, entry_count, display_order
   ) VALUES (
-    '${packId}', '${slug}', 'Fixture pack', 'Fixture description', 'A1', 1
+    '${packId}', '${slug}', 'Fixture pack', 'Fixture description', 'A1', 1, 1
   );`
 
 const insertVersion = (packId, version, status = 'draft') => `
@@ -30,13 +48,13 @@ const insertVersion = (packId, version, status = 'draft') => `
   ) VALUES (
     '${packId}', '${version}', '${manifest(packId, version)}'::jsonb,
     '${digest}', '${status}',
-    ${status === 'draft' ? 'NULL' : "'2026-09-11T10:00:00Z'"},
-    ${status === 'draft' ? 'NULL' : "'2026-09-11T10:05:00Z'"}
+    ${status === 'draft' ? 'NULL' : `'${REVIEWED_AT}'`},
+    ${status === 'draft' ? 'NULL' : `'${PUBLISHED_AT}'`}
   );`
 
 const publishPack = (packId, version) => `
   UPDATE official_content_packs
-  SET current_version = '${version}', published_at = '2026-09-11T10:05:00Z'
+  SET current_version = '${version}', published_at = '${PUBLISHED_AT}'
   WHERE pack_id = '${packId}';`
 
 let db
@@ -166,6 +184,22 @@ test('current version must belong to the same pack and can be rolled back by a t
   )
 })
 
+test('catalog entry count must match the selected manifest', async () => {
+  await db.sql(`
+    ${insertPack('official-count')}
+    ${insertVersion('official-count', VERSION_1_0_0, 'published')}
+  `)
+
+  await assert.rejects(
+    db.sql(`UPDATE official_content_packs
+      SET entry_count = 2,
+          current_version = '${VERSION_1_0_0}',
+          published_at = '2026-09-11T10:05:00Z'
+      WHERE pack_id = 'official-count';`),
+    /Official content catalog entry count does not match the manifest/
+  )
+})
+
 test('retired and draft versions stay hidden while older published versions remain downloadable', async () => {
   await db.sql(`
     ${insertPack(HISTORY_PACK)}
@@ -181,4 +215,51 @@ test('retired and draft versions stay hidden while older published versions rema
       WHERE pack_id = 'official-history' ORDER BY version;`),
     '1.0.0'
   )
+})
+
+test('trusted publication is reviewed, atomic, idempotent, and client roles cannot call it', async () => {
+  const publish = (
+    manifestJson = reviewedManifest('official-rpc', '1.0.0')
+  ) => `
+    SELECT publish_official_content_pack(
+      '${manifestJson}'::jsonb,
+      '${digest}',
+      'A2',
+      2,
+      1,
+      '${REVIEWED_AT}',
+      '${PUBLISHED_AT}'
+    );`
+
+  await db.sql(publish())
+  await db.sql(publish())
+  assert.equal(
+    await db.sql(`SELECT pack_id || '@' || current_version || ':' || entry_count
+      FROM official_content_packs WHERE pack_id = 'official-rpc';`),
+    'official-rpc@1.0.0:1'
+  )
+
+  await assert.rejects(
+    db.sql(
+      publish(
+        reviewedManifest('official-rpc', '1.0.0').replace(
+          REVIEWED_DESCRIPTION,
+          'Changed description'
+        )
+      )
+    ),
+    /Official content version already exists with different content/
+  )
+  assert.equal(
+    await db.sql(`SELECT description FROM official_content_packs
+      WHERE pack_id = 'official-rpc';`),
+    REVIEWED_DESCRIPTION
+  )
+
+  for (const role of ['anon', 'authenticated']) {
+    await assert.rejects(
+      db.sql(`SET ROLE ${role}; ${publish()}`),
+      /42501.*permission denied for function publish_official_content_pack/s
+    )
+  }
 })

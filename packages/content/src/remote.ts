@@ -1,5 +1,6 @@
 import type { OfficialContentManifest } from './manifest'
 import {
+  canonicalizeOfficialContent,
   OfficialContentValidationError,
   validateOfficialContentManifest,
 } from './manifest'
@@ -8,6 +9,7 @@ export interface OfficialContentCatalogItem {
   cefrLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
   description: string
   displayOrder: number
+  entryCount: number
   packId: string
   publishedAt: string
   slug: string
@@ -24,35 +26,7 @@ export interface RemoteOfficialContentVersion {
 
 export type Sha256 = (canonicalJson: string) => Promise<string>
 
-const canonicalize = (value: unknown): string => {
-  if (
-    value === null ||
-    typeof value === 'string' ||
-    typeof value === 'boolean'
-  ) {
-    return JSON.stringify(value)
-  }
-  if (typeof value === 'number') {
-    if (!Number.isFinite(value)) {
-      throw new Error('Official content contains a non-finite number.')
-    }
-    return JSON.stringify(value)
-  }
-  if (Array.isArray(value)) {
-    return `[${value.map(canonicalize).join(',')}]`
-  }
-  if (typeof value === 'object' && value !== null) {
-    const entries = Object.entries(value as Record<string, unknown>)
-      .filter(([, item]) => item !== undefined)
-      .sort(([left], [right]) => (left === right ? 0 : left < right ? -1 : 1))
-      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalize(item)}`)
-    return `{${entries.join(',')}}`
-  }
-  throw new Error('Official content contains an unsupported JSON value.')
-}
-
-export const canonicalizeOfficialContent = (manifest: unknown): string =>
-  canonicalize(manifest)
+export { canonicalizeOfficialContent } from './manifest'
 
 export async function verifyRemoteOfficialContentVersion(
   remote: RemoteOfficialContentVersion,

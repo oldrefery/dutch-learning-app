@@ -83,7 +83,7 @@ export default async function StarterPackPage({
                 href={`/app/starter-pack?pack=${encodeURIComponent(item.packId)}`}
                 key={item.packId}
               >
-                {item.cefrLevel} · {item.title}
+                {item.cefrLevel} · {item.title} · {item.entryCount}
               </Link>
             ))}
           </div>

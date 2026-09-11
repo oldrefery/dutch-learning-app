@@ -11,6 +11,7 @@ type OfficialContentTables = {
       current_version: string | null
       description: string
       display_order: number
+      entry_count: number
       pack_id: string
       published_at: string | null
       slug: string
@@ -23,6 +24,7 @@ type OfficialContentTables = {
       current_version?: string | null
       description: string
       display_order?: number
+      entry_count: number
       pack_id: string
       published_at?: string | null
       slug: string
@@ -35,6 +37,7 @@ type OfficialContentTables = {
       current_version?: string | null
       description?: string
       display_order?: number
+      entry_count?: number
       pack_id?: string
       published_at?: string | null
       slug?: string
@@ -93,6 +96,18 @@ export type Database = Omit<GeneratedDatabase, 'public'> & {
   public: Omit<PublicSchema, 'Functions' | 'Tables'> & {
     Tables: PublicSchema['Tables'] & OfficialContentTables
     Functions: Omit<PublicSchema['Functions'], 'record_review_assessment'> & {
+      publish_official_content_pack: {
+        Args: {
+          p_cefr_level: string
+          p_content_sha256: string
+          p_display_order: number
+          p_entry_count: number
+          p_manifest: Json
+          p_published_at: string
+          p_reviewed_at: string
+        }
+        Returns: undefined
+      }
       record_review_assessment: Omit<ReviewFunction, 'Args'> & {
         Args: Omit<
           ReviewFunction['Args'],

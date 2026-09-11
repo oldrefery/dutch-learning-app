@@ -19,7 +19,7 @@ export async function getOfficialContentCatalog(): Promise<
   const { data, error } = await supabase
     .from('official_content_packs')
     .select(
-      'pack_id, slug, title, description, cefr_level, display_order, current_version, published_at'
+      'pack_id, slug, title, description, cefr_level, entry_count, display_order, current_version, published_at'
     )
     .order('cefr_level')
     .order('display_order')
@@ -46,6 +46,7 @@ export async function getOfficialContentCatalog(): Promise<
         slug: row.slug,
         title: row.title,
         description: row.description,
+        entryCount: row.entry_count,
         cefrLevel: row.cefr_level as OfficialContentCatalogItem['cefrLevel'],
         displayOrder: row.display_order,
         version: row.current_version,

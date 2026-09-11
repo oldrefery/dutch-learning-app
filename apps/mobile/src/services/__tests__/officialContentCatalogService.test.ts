@@ -14,6 +14,7 @@ const catalogRow = {
   description: 'High-frequency A2 vocabulary.',
   cefr_level: 'A2',
   display_order: 1,
+  entry_count: 100,
   current_version: '1.0.0',
   published_at: '2026-09-11T10:00:00Z',
 }
@@ -58,7 +59,11 @@ describe('officialContentCatalogService', () => {
     })
 
     await expect(service.getCatalog()).resolves.toEqual([
-      expect.objectContaining({ packId: catalogRow.pack_id, cefrLevel: 'A2' }),
+      expect.objectContaining({
+        packId: catalogRow.pack_id,
+        cefrLevel: 'A2',
+        entryCount: 100,
+      }),
     ])
     await expect(service.getCatalog()).resolves.toEqual([
       expect.objectContaining({ packId: catalogRow.pack_id, version: '1.0.0' }),
