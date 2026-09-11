@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { buildStableEntryId } from './build-vocabulary-packs.mjs'
 import { createReviewInventory } from './prepare-review-inventory.mjs'
+import { analyzeEditorialSnapshot } from './review-source-evidence.mjs'
 
 const REVIEW_TIMESTAMP = '2026-09-11T00:00:00.000Z'
 const SYNTHETIC_NOTE = 'Synthetic.'
@@ -211,5 +212,59 @@ test('balances a 101-entry pack without a one-entry final batch', () => {
   assert.deepEqual(
     inventory.packs[0].batches.map(batch => batch.entryCount),
     [26, 25, 25, 25]
+  )
+})
+
+test('uses editorial evidence for proposed entries and stale-source flags', () => {
+  const input = fixture()
+  const editorialSnapshot = {
+    ...input.snapshot,
+    capturedAt: '2026-09-12T00:00:00.000Z',
+    ownerId: 'synthetic-owner',
+    matchedAccounts: 1,
+    cards: [
+      {
+        ...sourceCard,
+        translations: { en: ['to study'] },
+        updated_at: '2026-09-12T00:00:00.000Z',
+        is_irregular: false,
+        conjugation: {
+          present: 'leer',
+          simple_past: 'leerde',
+          simple_past_plural: 'leerden',
+          past_participle: 'geleerd',
+        },
+        plural: null,
+        synonyms: ['studeren'],
+        antonyms: [],
+      },
+    ],
+  }
+  input.snapshot.ownerId = 'synthetic-owner'
+  input.snapshot.capturedAt = REVIEW_TIMESTAMP
+  input.snapshot.cards[0].updated_at = REVIEW_TIMESTAMP
+  const editorialSource = analyzeEditorialSnapshot({
+    baselineSnapshot: input.snapshot,
+    editorialSnapshot,
+    mappedWordIds: [sourceCard.word_id],
+  })
+
+  const { inventory, ledger } = createReviewInventory({
+    ...input,
+    editorialEvidenceByWordId: editorialSource.evidenceByWordId,
+    editorialSourceSummary: editorialSource.summary,
+  })
+  const reviewEntry = inventory.packs[0].batches[0].entries[0]
+
+  assert.equal(inventory.schemaVersion, 2)
+  assert.equal(reviewEntry.proposedEntry.is_irregular, false)
+  assert.deepEqual(reviewEntry.proposedEntry.synonyms, ['studeren'])
+  assert.deepEqual(reviewEntry.unresolvedLinguisticFields, [])
+  assert.ok(
+    reviewEntry.priorityFlags.includes('source-content-changed-after-baseline')
+  )
+  assert.equal(
+    ledger.decisions[0].sourceContentSha256,
+    reviewEntry.proposedContentSha256
   )
 })

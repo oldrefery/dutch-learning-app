@@ -17,6 +17,10 @@ import {
   parseSnapshotCsv,
   writeArtifactDirectory,
 } from './build-vocabulary-packs.mjs'
+import {
+  analyzeEditorialSnapshot,
+  enrichDraftEntry,
+} from './review-source-evidence.mjs'
 
 const DEFAULT_BATCH_SIZE = 25
 const BATCH_SIZE_OPTION = '--batch-size'
@@ -92,20 +96,29 @@ const buildInventoryEntry = ({
   essentialsKeys,
   batchSize,
   packEntryCount,
+  editorialEvidence,
 }) => {
   const semanticKey = getSemanticWordKey(
     entry.dutch_lemma,
     entry.part_of_speech,
     entry.article
   )
-  const unresolved = unresolvedLinguisticFields(entry)
+  const unresolved = editorialEvidence
+    ? editorialEvidence.unresolvedLinguisticFields
+    : unresolvedLinguisticFields(entry)
+  const proposedEntry = editorialEvidence
+    ? enrichDraftEntry(entry, editorialEvidence)
+    : entry
   const flags = priorityFlags({
-    entry,
+    entry: proposedEntry,
     sourceCard,
     classification,
     semanticKey,
     essentialsKeys,
   })
+  if (editorialEvidence?.contentChanged) {
+    flags.push('source-content-changed-after-baseline')
+  }
   return {
     packId: pack.manifest.pack_id,
     packVersion: pack.manifest.version,
@@ -117,6 +130,7 @@ const buildInventoryEntry = ({
     sourceWordId: sourceCard.word_id,
     sourceCardSha256: mapping.inputHash,
     sourceContentSha256: sha256(canonicalizeOfficialContent(entry)),
+    proposedContentSha256: sha256(canonicalizeOfficialContent(proposedEntry)),
     importSemanticKey: semanticKey,
     estimatedCefr: mapping.estimatedCefr,
     everydayUsefulness: mapping.everydayUsefulness,
@@ -129,6 +143,8 @@ const buildInventoryEntry = ({
     priorityFlags: flags,
     unresolvedLinguisticFields: unresolved,
     draftEntry: entry,
+    proposedEntry,
+    editorialEvidence: editorialEvidence ?? null,
     omittedSourceFields: {
       usage_notes: sourceCard.usage_notes ?? null,
       is_irregular: sourceCard.is_irregular ?? null,
@@ -160,6 +176,8 @@ export const createReviewInventory = ({
   classification,
   essentialsManifest,
   batchSize = DEFAULT_BATCH_SIZE,
+  editorialEvidenceByWordId = null,
+  editorialSourceSummary = null,
 }) => {
   if (!Number.isInteger(batchSize) || batchSize < 20 || batchSize > 30) {
     throw new Error('Review batch size must be between 20 and 30.')
@@ -223,8 +241,18 @@ export const createReviewInventory = ({
         essentialsKeys,
         batchSize,
         packEntryCount: pack.manifest.entries.length,
+        editorialEvidence: editorialEvidenceByWordId?.get(sourceCard.word_id),
       })
     })
+    const proposedValidation = validateOfficialContentManifest({
+      ...pack.manifest,
+      entries: entries.map(entry => entry.proposedEntry),
+    })
+    if (!proposedValidation.success) {
+      throw new Error(
+        `Proposed editorial entries are invalid for ${pack.manifest.pack_id}.`
+      )
+    }
     return {
       packId: pack.manifest.pack_id,
       version: pack.manifest.version,
@@ -248,7 +276,7 @@ export const createReviewInventory = ({
   }
   const unresolvedDecisionCount = allEntries.length
   const inventory = {
-    schemaVersion: 1,
+    schemaVersion: editorialEvidenceByWordId ? 2 : 1,
     generatedAt: snapshot.capturedAt,
     draftAggregateSha256: draftIndex.draftAggregateSha256,
     packCount: inventoryPacks.length,
@@ -261,6 +289,7 @@ export const createReviewInventory = ({
         needsReview: unresolvedDecisionCount,
       },
       priorityFlagCounts: countFlags(allEntries),
+      editorialSource: editorialSourceSummary,
     },
     packs: inventoryPacks,
   }
@@ -271,7 +300,7 @@ export const createReviewInventory = ({
     reviewedAt: null,
     decisions: allEntries.map(entry => ({
       entryId: entry.entryId,
-      sourceContentSha256: entry.sourceContentSha256,
+      sourceContentSha256: entry.proposedContentSha256,
       decision: 'needs-review',
       priorityFlags: entry.priorityFlags,
       unresolvedLinguisticFields: entry.unresolvedLinguisticFields,
@@ -288,6 +317,7 @@ export const prepareReviewInventory = async ({
   essentialsPath,
   outputDir,
   batchSize = DEFAULT_BATCH_SIZE,
+  editorialSnapshotPath = null,
 }) => {
   const [
     { index: draftIndex, packs },
@@ -309,6 +339,12 @@ export const prepareReviewInventory = async ({
   const plan = JSON.parse(planBytes)
   const classification = JSON.parse(classificationBytes)
   const essentialsManifest = JSON.parse(essentialsBytes)
+  const editorialSnapshotBytes = editorialSnapshotPath
+    ? await readFile(editorialSnapshotPath)
+    : null
+  const editorialSnapshot = editorialSnapshotBytes
+    ? parseSnapshotCsv(editorialSnapshotBytes.toString('utf8'))
+    : null
   assertSourceBoundInputs({
     snapshotBytes,
     planBytes,
@@ -322,6 +358,13 @@ export const prepareReviewInventory = async ({
   ) {
     throw new Error('Classification evidence is not the reviewed proposal.')
   }
+  const editorialSource = editorialSnapshot
+    ? analyzeEditorialSnapshot({
+        baselineSnapshot: snapshot,
+        editorialSnapshot,
+        mappedWordIds: plan.mappings.map(mapping => mapping.wordId),
+      })
+    : null
   const { inventory, ledger } = createReviewInventory({
     draftIndex,
     packs,
@@ -330,6 +373,13 @@ export const prepareReviewInventory = async ({
     classification,
     essentialsManifest,
     batchSize,
+    editorialEvidenceByWordId: editorialSource?.evidenceByWordId ?? null,
+    editorialSourceSummary: editorialSource
+      ? {
+          ...editorialSource.summary,
+          snapshotSha256: sha256(editorialSnapshotBytes),
+        }
+      : null,
   })
   const inventorySerialized = `${JSON.stringify(inventory, null, 2)}\n`
   const ledgerSerialized = `${JSON.stringify(ledger, null, 2)}\n`
@@ -350,6 +400,7 @@ export const prepareReviewInventory = async ({
           packCount: inventory.packCount,
           entryCount: inventory.entryCount,
           unresolvedDecisionCount: inventory.entryCount,
+          editorialSource: inventory.summary.editorialSource,
         },
         null,
         2
@@ -371,6 +422,7 @@ if (isMain) {
       '--plan',
       '--classification',
       '--essentials',
+      '--editorial-snapshot',
       '--out',
       BATCH_SIZE_OPTION,
     ],
@@ -415,8 +467,12 @@ if (isMain) {
       args.get('--out') ??
         path.join(
           root,
-          'reports/vocabulary-organization/official-content-review-v3-002-2026-09-11'
+          'reports/vocabulary-organization/official-content-review-v3-003-2026-09-11'
         )
+    ),
+    editorialSnapshotPath: path.resolve(
+      args.get('--editorial-snapshot') ??
+        path.join(root, 'reports/snapshot-editorial-2026-09-11.csv')
     ),
     batchSize,
   })

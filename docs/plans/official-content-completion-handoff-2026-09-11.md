@@ -461,6 +461,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [x] B: source-bound, atomic artifact preparation and release CLI tests complete.
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
+  - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
   - [ ] C2: all 83 balanced review batches inspected and saved incrementally.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
@@ -511,9 +512,26 @@ unresolved linguistic fields, 1400 analysis notes, 115 low-confidence CEFR recor
 spelling override. The generator and its evidence mismatch/balancing constraints
 pass as part of 28/28 official-content tests. No profile or production writes occurred.
 
-Next action: C2, review and persist the 87 complete batches, starting with the
-priority entries while retaining pack order. Do not approve the release until all
-2059 decisions and missing grammatical values have been reviewed.
+C2a used a read-only SQL transaction to produce the ignored editorial snapshot
+`reports/snapshot-editorial-2026-09-11.csv`, SHA-256
+`4a6321b366b2ccd58da4d3b811b9a66d60f4502db2e2a3eacb8013bfe523270a`.
+It matches the locked owner and retains all 2287 baseline cards; four newer cards
+are outside the existing plan. Five baseline cards have changed public source
+fields, four of them mapped, and are flagged for explicit review. The enriched
+ignored inventory is
+`official-content-review-v3-003-2026-09-11/`: inventory SHA-256
+`041a349098e3c2c8b4fe336dcf1cad8123311e6f476e70ed761d06a3a017d1b3`,
+initial ledger SHA-256
+`c15a667724d925c2e25d0ec880b1dff534005bc9b8bc38ebf1207c60c8d331d5`.
+Verified source values resolve the mechanical irregularity, conjugation, and plural
+omissions for all 2059 mapped cards; review decisions remain unresolved. The tooling
+rejects owner/timestamp mismatches, missing baseline cards, incomplete fields, and
+records current content for changed cards. Official-content tests pass 33/33 and
+ESLint plus `git diff --check` pass. No profile or production writes occurred.
+
+Next action: C2, review and persist all 83 complete batches, starting with
+`dutch-a1-01-batch-01` and retaining pack order. Do not approve the release until
+all 2059 decisions and every grammatical value have been reviewed.
 
 Stop only the dependent action when authority, a missing private input, or an
 unresolved editorial decision truly blocks it. Complete independent local work.
