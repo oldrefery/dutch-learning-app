@@ -84,7 +84,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --flag v10_config_lookup_from_file --fix",
+      "eslint --flag v10_config_lookup_from_file --no-warn-ignored --fix",
       "prettier --write"
     ],
     "*.{json,md}": [

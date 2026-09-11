@@ -14,6 +14,15 @@ import {
   parseGeminiResponse,
   normalizeUsageNotes,
 } from './geminiUtils.ts'
+import { API_CONFIG } from './constants.ts'
+
+Deno.test('Gemini configuration uses the stable production model', () => {
+  assertEquals(
+    API_CONFIG.GEMINI_API_URL,
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent'
+  )
+  assertEquals(API_CONFIG.GEMINI_THINKING_LEVEL, 'low')
+})
 
 // =========================================
 // validateWordInput

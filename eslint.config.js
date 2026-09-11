@@ -1,7 +1,19 @@
-const { defineConfig } = require('eslint/config')
+const { defineConfig, globalIgnores } = require('eslint/config')
 const expoConfig = require('eslint-config-expo/flat')
 
 module.exports = defineConfig([
+  globalIgnores([
+    'dist/*',
+    '**/.expo/**',
+    '**/.maestro/**',
+    '**/ios/**',
+    '**/android/**',
+    'supabase/functions/**',
+    '.tools/*',
+    'apps/web/**',
+    'design/**',
+    'packages/**',
+  ]),
   expoConfig,
   {
     settings: {
@@ -11,18 +23,6 @@ module.exports = defineConfig([
         },
       },
     },
-    ignores: [
-      'dist/*',
-      '**/.expo/**',
-      '**/.maestro/**',
-      '**/ios/**',
-      '**/android/**',
-      'supabase/functions/*',
-      '.tools/*',
-      'apps/web/**',
-      'design/**',
-      'packages/**',
-    ],
   },
   {
     // Cognitive Complexity Rules - Using recommended preset

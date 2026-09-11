@@ -24,7 +24,8 @@ export const SEARCH_CONFIG = {
 // API configuration
 export const API_CONFIG = {
   GEMINI_API_URL:
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent',
+  GEMINI_THINKING_LEVEL: 'low',
   UNSPLASH_API_URL: 'https://api.unsplash.com/search/photos',
   PICSUM_BASE_URL: 'https://picsum.photos',
   REQUEST_TIMEOUT: 30000, // 30 seconds

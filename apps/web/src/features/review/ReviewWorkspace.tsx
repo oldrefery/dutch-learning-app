@@ -90,6 +90,7 @@ function Completion({
 }
 
 function AccountReviewWorkspace({
+  canUseAi,
   data,
   initialCollectionId,
   initialScope,
@@ -317,6 +318,7 @@ function AccountReviewWorkspace({
         )}
         {session.detailsVisible ? (
           <ReviewDetails
+            canUseAi={canUseAi}
             key={`${userId}:${session.currentWord.id}:${session.detailRevision}`}
             userId={userId}
             wordId={session.currentWord.id}
@@ -353,6 +355,7 @@ function AccountReviewWorkspace({
 }
 
 interface ReviewWorkspaceProps {
+  canUseAi: boolean
   data: ReviewWorkspaceData
   initialCollectionId: string | null
   initialScope: ReviewScope

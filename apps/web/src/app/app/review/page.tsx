@@ -28,6 +28,7 @@ export default async function ReviewPage({
 
   return (
     <ReviewWorkspace
+      canUseAi={auth.accessLevel === 'full_access'}
       data={data}
       initialCollectionId={initialCollectionId}
       initialScope={getInitialScope(getQueryValue(query.scope))}
