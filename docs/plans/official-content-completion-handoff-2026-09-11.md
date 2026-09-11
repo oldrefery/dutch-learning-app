@@ -462,10 +462,11 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: 9/83 balanced review batches inspected and saved incrementally.
+  - [ ] C2: 13/83 balanced review batches inspected and saved incrementally.
     - [x] Dutch A1: 5/5 batches and 122/122 entries inspected.
-    - [ ] Dutch A2: 4/20 batches and 100/500 entries inspected.
+    - [ ] Dutch A2: 8/20 batches and 200/500 entries inspected.
       - [x] `dutch-a2-01`: 4/4 batches and 100/100 entries inspected.
+      - [x] `dutch-a2-02`: 4/4 batches and 100/100 entries inspected.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [ ] C10: exact complete ledger approved into an immutable release.
@@ -565,7 +566,22 @@ invalid plurals, false lexical relations, translated-English constructions, and
 examples that did not contain the reviewed lemma. No profile or production writes
 occurred.
 
-Next action: C2, inspect and persist `dutch-a2-02-batch-01`, retaining pack order.
+The four `dutch-a2-02` batches are complete: all 100 entries were inspected,
+12 were approved unchanged and 88 received explicit corrections. No additional
+entry was left unresolved. The reviewed batch SHA-256 values, in order, are
+`a1d5b04fbe275b34c19a3cbdc5302b419d8cb8cb74ba48cb92cd8d53b4e72a5e`,
+`f29656f87736d955505d819370eda24677c3829cf17614dd496a6f32a2c5226f`,
+`df8343a73a39855f2f91fcea28f552188e401fe46c5f064c10e909ccb481b08d`,
+and `42a87f9309bc32a3907b348e7f671441e5c0856d4b4168ca700d96a2c605cb03`.
+The rebuilt ledger now contains 81 approved, 238 overridden, and 1740 unresolved
+decisions; its SHA-256 is
+`d98f5ba5f59ada57c0918007b2df6432c0825ee5a0b8c38e0ce60253dcf340e6`.
+Corrections include separable and irregular conjugations, invalid plurals,
+homonym and level focusing, public-safe sense selection, false lexical relations,
+and malformed Dutch, English, and Russian examples. No profile or production
+writes occurred.
+
+Next action: C2, inspect and persist `dutch-a2-03-batch-01`, retaining pack order.
 Do not approve the release until all 2059 decisions and every grammatical value
 have been reviewed.
 
