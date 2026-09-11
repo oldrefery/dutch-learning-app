@@ -462,7 +462,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: 81/83 balanced review batches inspected and saved incrementally.
+  - [x] C2: 83/83 balanced review batches inspected and saved incrementally.
     - [x] Dutch A1: 5/5 batches and 122/122 entries inspected.
     - [x] Dutch A2: 20/20 batches and 500/500 entries inspected.
       - [x] `dutch-a2-01`: 4/4 batches and 100/100 entries inspected.
@@ -486,8 +486,8 @@ this plan. Harden tooling in B before treating current approval commands as fina
       - [x] `dutch-b2-03`: 4/4 batches and 101/101 entries inspected.
       - [x] `dutch-b2-04`: 4/4 batches and 101/101 entries inspected.
       - [x] `dutch-b2-05`: 4/4 batches and 100/100 entries inspected.
-    - [ ] Dutch C1: 0/2 batches and 0/47 entries inspected.
-      - [ ] `dutch-c1-01`: 0/2 batches and 0/47 entries inspected.
+    - [x] Dutch C1: 2/2 batches and 47/47 entries inspected.
+      - [x] `dutch-c1-01`: 2/2 batches and 47/47 entries inspected.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [ ] C10: exact complete ledger approved into an immutable release.
@@ -891,7 +891,22 @@ mass-noun plurals, register, false translations, malformed examples, and incorre
 parts of speech. All 504 Dutch B2 entries are now inspected. No profile or
 production writes occurred.
 
-Next action: C2, inspect and persist `dutch-c1-01-batch-01`, retaining pack order.
+The two `dutch-c1-01` batches complete the first-pass editorial review: all 47
+entries were inspected, 29 were approved unchanged, 13 received explicit
+corrections, and five remain unresolved for C3–C8 because they require lexical,
+homograph, legal-sense, or part-of-speech decisions. The reviewed batch SHA-256
+values, in order, are
+`ae9019e21dcc02ca6b9227badd7f8f8a3118c6ec9f362383ae4e478d5a213843`
+and `30eeaf0fef066308ab496f7e36c63b49bc3577efda3cedd09fe0a84350c0f34a`.
+All 83 balanced batches and 2059 entries are now inspected. The rebuilt ledger
+contains 779 approved, 1161 overridden, and 119 deliberately unresolved decisions;
+its SHA-256 is
+`512bcf40c581f4aecc4ff5463f2f257c24b08813a6fdcef31ef6f288d23def2b`.
+Corrections include legal-sense focusing, misspelled lemmas and compounds, invalid
+mass-noun plurals, and false translations. No profile or production writes occurred.
+
+Next action: C3–C8, resolve the 119 explicit language, sense, level, overlap,
+exclusion, and licensing findings before rebuilding final manifests.
 Do not approve the release until all 2059 decisions and every grammatical value
 have been reviewed.
 
