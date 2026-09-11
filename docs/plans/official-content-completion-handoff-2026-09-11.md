@@ -87,6 +87,9 @@ Completed commits:
 | `3841fbb` | SHA-256 verification, web repository, mobile cache/service                |
 | `138898e` | Mobile catalog screen and remote pack navigation/import loading           |
 | `ee06c37` | Draft generation, approval/publication tooling, entry counts, trusted RPC |
+| `16eac17` | Consistent pack version promotion, rollback, and immutable state changes  |
+| `010e5d5` | Web pack navigation reset and recoverable catalog/pack errors             |
+| `5ea1072` | Mobile requested identity, cache integrity, and route lifecycle handling  |
 
 Key files:
 
@@ -131,7 +134,10 @@ media, and some linguistic fields are absent.
 - Original cards: 2287.
 - Mapped personal cards: 2059.
 - Retained exclusions: 228 = 69 protected + 153 other expressions + 6 owner exclusions.
-- Current drafts: `official-content-drafts-2026-09-11/index.json` and 21 manifests.
+- Current immutable drafts: `official-content-drafts-v3-2026-09-11/index.json`
+  and 21 manifests. Aggregate SHA-256:
+  `964bc2aa394509c729fabadc1a6d91f11cd5fbbcacb3a7f8d1a3eb7c9e1725f2`.
+  Earlier v1/v2 directories are superseded pending drafts and are not release inputs.
 - A1: 1 × 122; A2: 5 × 100; B1: 4 × 99 + 5 × 98;
   B2: 4 × 101 + 1 × 100; C1: 1 × 47; no C2.
 - Frequency evidence for mapped cards: 1850 observed, 45 ordering proxies,
@@ -438,7 +444,7 @@ hooks run full mobile and web unit suites; allow them to finish and report failu
 Release tooling after review, with concrete paths and real reviewer metadata:
 
 ```bash
-npm run official-content:approve -- --input PATH_TO_DRAFTS --out NEW_RELEASE_DIRECTORY --reviewed-by REVIEWER --reviewed-at ISO_TIMESTAMP
+npm run official-content:approve -- --input PATH_TO_DRAFTS --out NEW_RELEASE_DIRECTORY --review-ledger PATH_TO_REVIEW_LEDGER --reviewed-by REVIEWER --reviewed-at ISO_TIMESTAMP
 npm run official-content:publish -- --release RELEASE_DIRECTORY
 ```
 
@@ -452,7 +458,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [x] A1: version promotion/rollback/count/state-transition regressions resolved.
 - [x] A2: web navigation state and unavailable catalog/pack recovery verified.
 - [x] A3: requested identity and mobile loading/cache/route lifecycle verified.
-- [ ] B: source-bound, atomic artifact preparation and release CLI tests complete.
+- [x] B: source-bound, atomic artifact preparation and release CLI tests complete.
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
 - [ ] D: cross-platform import scenarios verified with disposable data.
 - [ ] E: concrete production release prepared and outstanding authorization obtained.
@@ -471,8 +477,26 @@ route boundary plus stale-request cleanup keeps selection, collection target,
 success, loading, and errors scoped to the current pack; remote failures are
 retryable and bundled Essentials remains available offline.
 
-Next action: B step 1, lock snapshot bytes, owner identity, per-card evidence,
-mappings, target keys, exclusions, and counts before any artifact is written.
+Work package B now binds the exporter to exact source, owner, plan, per-card evidence,
+counts, targets, and exclusions. The validator uses strict nested allowlists; public
+IDs are stable across content edits; semantic uniqueness uses the import key; all
+public fields are scanned for excluded whole words; build/approval writes are atomic
+and immutable; approval requires a complete hash-bound private review ledger; and
+publication validates the release and exact HTTPS target before bounded requests.
+The current source audit records 709/709 verbs without irregularity/conjugation,
+984/984 nouns without plural, 2059 entries without snapshot synonyms/antonyms, and
+9 omitted usage-note objects. These omissions are explicit blockers for approval,
+not silently defaulted values. The v3 draft has 2059 unique semantic keys and zero
+collisions. Official-content tooling passes 24/24 synthetic regressions and the real
+build produces 21 packs / 2059 entries / zero production writes. Mobile build/test
+typechecks, web typecheck, ESLint, web ESLint, and `git diff --check` passed during B.
+The final wider gate passed mobile 132 suites / 1541 tests, web 58 suites / 544
+tests, and a Next.js production build.
+
+Next action: C step 1, generate the ignored private review inventory and a review
+ledger skeleton bound to v3 aggregate hash, with explicit unresolved linguistic
+fields and priority flags. Do not approve the release until all 2059 decisions and
+missing grammatical values have been reviewed.
 
 Stop only the dependent action when authority, a missing private input, or an
 unresolved editorial decision truly blocks it. Complete independent local work.

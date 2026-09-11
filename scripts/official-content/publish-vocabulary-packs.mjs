@@ -1,115 +1,49 @@
-import { createHash } from 'node:crypto'
-import { readFile } from 'node:fs/promises'
+import { pathToFileURL } from 'node:url'
 import path from 'node:path'
 import {
-  canonicalizeOfficialContent,
-  validateOfficialContentManifest,
-} from '../../packages/content/src/manifest.ts'
+  loadVerifiedArtifactSet,
+  parseCliArguments,
+} from './artifact-integrity.mjs'
 
-const sha256 = value => createHash('sha256').update(value).digest('hex')
+const DEFAULT_TIMEOUT_MS = 15_000
 
-const argument = name => {
-  const index = process.argv.indexOf(name)
-  return index < 0 ? undefined : process.argv[index + 1]
-}
-
-const releaseDir = path.resolve(
-  argument('--release') ??
-    path.join(
-      process.cwd(),
-      'reports/vocabulary-organization/official-content-release-2026-09-11'
+const publicationTarget = (projectRef, supabaseUrl, serviceRoleKey) => {
+  if (!projectRef || !supabaseUrl || !serviceRoleKey) {
+    throw new Error(
+      'Publication requires --project-ref, SUPABASE_URL, and SUPABASE_SERVICE_ROLE_KEY.'
     )
-)
-const release = JSON.parse(
-  await readFile(path.join(releaseDir, 'index.json'), 'utf8')
-)
-if (!release.approvedBy || !release.approvedAt) {
-  throw new Error('The official content release has not been approved.')
-}
-if (release.files.length !== release.catalog.length) {
-  throw new Error('The release index has inconsistent pack metadata.')
-}
-
-const packs = []
-for (const [index, file] of release.files.entries()) {
-  const serialized = await readFile(
-    path.join(releaseDir, file.filename),
-    'utf8'
-  )
-  if (sha256(serialized) !== file.fileSha256) {
-    throw new Error(`File integrity check failed for ${file.filename}.`)
   }
-  const manifest = JSON.parse(serialized)
-  const validation = validateOfficialContentManifest(manifest)
+  const url = new URL(supabaseUrl)
   if (
-    !validation.success ||
-    validation.data.content_review.status !== 'approved'
+    url.protocol !== 'https:' ||
+    url.hostname !== `${projectRef}.supabase.co` ||
+    url.username ||
+    url.password ||
+    url.pathname !== '/' ||
+    url.search ||
+    url.hash
   ) {
-    throw new Error(`Manifest ${file.filename} is not publication-ready.`)
-  }
-  if (
-    sha256(canonicalizeOfficialContent(validation.data)) !== file.contentSha256
-  ) {
-    throw new Error(`Content integrity check failed for ${file.filename}.`)
-  }
-  const catalog = release.catalog[index]
-  if (
-    catalog.pack_id !== validation.data.pack_id ||
-    catalog.version !== validation.data.version ||
-    catalog.entry_count !== validation.data.entries.length ||
-    catalog.content_sha256 !== file.contentSha256
-  ) {
-    throw new Error(`Catalog identity check failed for ${file.filename}.`)
-  }
-  packs.push({ catalog, manifest: validation.data })
-}
-
-const apply = process.argv.includes('--apply')
-if (!apply) {
-  console.log(
-    JSON.stringify(
-      {
-        mode: 'dry-run',
-        approvedBy: release.approvedBy,
-        approvedAt: release.approvedAt,
-        packCount: packs.length,
-        entryCount: packs.reduce(
-          (sum, pack) => sum + pack.manifest.entries.length,
-          0
-        ),
-        productionWrites: 0,
-      },
-      null,
-      2
+    throw new Error(
+      'The confirmed project reference must match an exact HTTPS Supabase URL.'
     )
-  )
-  process.exit(0)
+  }
+  return { projectRef, url, serviceRoleKey }
 }
 
-const projectRef = argument('--project-ref')
-const supabaseUrl = process.env.SUPABASE_URL
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-if (!projectRef || !supabaseUrl || !serviceRoleKey) {
-  throw new Error(
-    'Publication requires --project-ref, SUPABASE_URL, and SUPABASE_SERVICE_ROLE_KEY.'
-  )
-}
-const url = new URL(supabaseUrl)
-if (url.hostname !== `${projectRef}.supabase.co`) {
-  throw new Error(
-    'The confirmed project reference does not match SUPABASE_URL.'
-  )
-}
-
-const publishedAt = new Date().toISOString()
-for (const pack of packs) {
-  const response = await fetch(
-    `${url.origin}/rest/v1/rpc/publish_official_content_pack`,
+const publishPack = async ({
+  pack,
+  target,
+  publishedAt,
+  fetchImpl,
+  timeoutMs,
+}) => {
+  const response = await fetchImpl(
+    `${target.url.origin}/rest/v1/rpc/publish_official_content_pack`,
     {
       method: 'POST',
       headers: {
-        apikey: serviceRoleKey,
-        Authorization: `Bearer ${serviceRoleKey}`,
+        apikey: target.serviceRoleKey,
+        Authorization: `Bearer ${target.serviceRoleKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -121,25 +55,122 @@ for (const pack of packs) {
         p_reviewed_at: pack.manifest.content_review.reviewed_at,
         p_published_at: publishedAt,
       }),
+      signal: AbortSignal.timeout(timeoutMs),
     }
   )
   if (!response.ok) {
-    throw new Error(
-      `Publication failed for ${pack.catalog.pack_id}: ${response.status} ${await response.text()}`
-    )
+    throw new Error(`${response.status} ${await response.text()}`)
   }
 }
 
-console.log(
-  JSON.stringify(
-    {
-      mode: 'applied',
-      projectRef,
-      publishedAt,
-      packCount: packs.length,
-      entryCount: release.entryCount,
-    },
-    null,
-    2
+export class OfficialContentPublicationError extends Error {
+  constructor(summary) {
+    super(
+      `Publication failed for: ${summary.failedPackIds.join(', ')}. Completed: ${summary.completedPackIds.join(', ') || 'none'}. Rerun the same release safely to resume.`
+    )
+    this.name = 'OfficialContentPublicationError'
+    this.summary = summary
+  }
+}
+
+export const publishVocabularyPacks = async ({
+  releaseDir,
+  apply = false,
+  projectRef,
+  supabaseUrl,
+  serviceRoleKey,
+  fetchImpl = fetch,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
+  now = () => new Date().toISOString(),
+}) => {
+  const { index: release, packs } = await loadVerifiedArtifactSet(releaseDir, {
+    requiredStatus: 'approved',
+    aggregateField: 'releaseAggregateSha256',
+  })
+  if (
+    !release.approvedBy ||
+    Number.isNaN(Date.parse(release.approvedAt)) ||
+    typeof release.reviewLedgerSha256 !== 'string' ||
+    release.approvedFromDraftSha256 !== release.draftAggregateSha256
+  ) {
+    throw new Error(
+      'The official content release has invalid approval metadata.'
+    )
+  }
+  const baseSummary = {
+    mode: apply ? 'applied' : 'dry-run',
+    approvedBy: release.approvedBy,
+    approvedAt: release.approvedAt,
+    releaseAggregateSha256: release.releaseAggregateSha256,
+    packCount: packs.length,
+    entryCount: packs.reduce(
+      (sum, pack) => sum + pack.manifest.entries.length,
+      0
+    ),
+    productionWrites: 0,
+    completedPackIds: [],
+    failedPackIds: [],
+  }
+  if (!apply) return baseSummary
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 60_000) {
+    throw new Error('Publication timeout must be between 1 and 60000 ms.')
+  }
+
+  const target = publicationTarget(projectRef, supabaseUrl, serviceRoleKey)
+  const publishedAt = now()
+  const summary = {
+    ...baseSummary,
+    projectRef: target.projectRef,
+    publishedAt,
+  }
+  for (const pack of packs) {
+    try {
+      await publishPack({
+        pack,
+        target,
+        publishedAt,
+        fetchImpl,
+        timeoutMs,
+      })
+      summary.completedPackIds.push(pack.manifest.pack_id)
+    } catch {
+      summary.failedPackIds.push(pack.manifest.pack_id)
+    }
+  }
+  summary.productionWrites = summary.completedPackIds.length
+  if (summary.failedPackIds.length > 0) {
+    throw new OfficialContentPublicationError(summary)
+  }
+  return summary
+}
+
+const isMain =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href
+if (isMain) {
+  const args = parseCliArguments(process.argv.slice(2), {
+    valueOptions: ['--release', '--project-ref'],
+    booleanOptions: ['--apply'],
+  })
+  const releaseDir = path.resolve(
+    args.get('--release') ??
+      path.join(
+        process.cwd(),
+        'reports/vocabulary-organization/official-content-release-2026-09-11'
+      )
   )
-)
+  try {
+    const summary = await publishVocabularyPacks({
+      releaseDir,
+      apply: args.has('--apply'),
+      projectRef: args.get('--project-ref'),
+      supabaseUrl: process.env.SUPABASE_URL,
+      serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    })
+    console.log(JSON.stringify(summary, null, 2))
+  } catch (error) {
+    if (error instanceof OfficialContentPublicationError) {
+      console.error(JSON.stringify(error.summary, null, 2))
+    }
+    throw error
+  }
+}

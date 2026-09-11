@@ -111,6 +111,9 @@ jobs:
       - name: Validate Maestro flows
         run: npm run validate:maestro
 
+      - name: Test official content release tooling
+        run: npm run official-content:test
+
       - name: Run Jest tests
         run: npm run test:ci
 

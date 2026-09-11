@@ -154,6 +154,67 @@ const FORBIDDEN_ENTRY_FIELDS = [
   'review_history',
   'srs_state',
 ]
+const MANIFEST_FIELDS = new Set([
+  'schema_version',
+  'pack_id',
+  'version',
+  'title',
+  'description',
+  'source_language',
+  'translation_languages',
+  'created_at',
+  'license',
+  'provenance',
+  'content_review',
+  'entries',
+])
+const LICENSE_FIELDS = new Set(['name', 'url', 'notes'])
+const PROVENANCE_FIELDS = new Set([
+  'origin',
+  'source_snapshot_at',
+  'source_card_count',
+  'source_unique_semantic_count',
+  'selection_method',
+  'notes',
+  'excluded_sources',
+])
+const CONTENT_REVIEW_FIELDS = new Set([
+  'status',
+  'reviewed_by',
+  'reviewed_at',
+  'notes',
+])
+const ENTRY_FIELDS = new Set([
+  'entry_id',
+  'dutch_lemma',
+  'dutch_original',
+  'part_of_speech',
+  'translations',
+  'examples',
+  'is_irregular',
+  'is_reflexive',
+  'is_expression',
+  'expression_type',
+  'is_separable',
+  'prefix_part',
+  'root_verb',
+  'article',
+  'plural',
+  'register',
+  'synonyms',
+  'antonyms',
+  'conjugation',
+  'preposition',
+  'analysis_notes',
+])
+const TRANSLATION_FIELDS = new Set(['en', 'ru'])
+const EXAMPLE_FIELDS = new Set(['nl', 'en', 'ru'])
+const CONJUGATION_FIELDS = new Set([
+  'present',
+  'simple_past',
+  'simple_past_plural',
+  'past_participle',
+])
 
 const isRecord = (value: unknown): value is UnknownRecord =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -177,6 +238,23 @@ const addIssue = (
   issues.push({ path, message })
 }
 
+const validateAllowedKeys = (
+  value: UnknownRecord,
+  allowed: ReadonlySet<string>,
+  path: string,
+  issues: OfficialContentValidationIssue[]
+): void => {
+  Object.keys(value).forEach(field => {
+    if (!allowed.has(field)) {
+      addIssue(
+        issues,
+        path === '' ? field : `${path}.${field}`,
+        'is not an allowed official content field'
+      )
+    }
+  })
+}
+
 const validateTranslations = (
   value: unknown,
   path: string,
@@ -186,6 +264,7 @@ const validateTranslations = (
     addIssue(issues, path, MUST_BE_OBJECT)
     return
   }
+  validateAllowedKeys(value, TRANSLATION_FIELDS, path, issues)
   if (!isStringArray(value.en, false)) {
     addIssue(issues, `${path}.en`, 'must contain at least one translation')
   }
@@ -214,6 +293,7 @@ const validateExamples = (
       addIssue(issues, examplePath, MUST_BE_OBJECT)
       return
     }
+    validateAllowedKeys(example, EXAMPLE_FIELDS, examplePath, issues)
     if (!isNonEmptyString(example.nl)) {
       addIssue(issues, `${examplePath}.nl`, MUST_BE_NON_EMPTY_STRING)
     }
@@ -240,6 +320,7 @@ const validateConjugation = (
     addIssue(issues, path, `${MUST_BE_OBJECT} or null`)
     return
   }
+  validateAllowedKeys(value, CONJUGATION_FIELDS, path, issues)
   ;['present', 'simple_past', 'past_participle'].forEach(field => {
     if (!isNonEmptyString(value[field])) {
       addIssue(issues, `${path}.${field}`, MUST_BE_NON_EMPTY_STRING)
@@ -267,6 +348,7 @@ const validateEntry = (
     addIssue(issues, path, MUST_BE_OBJECT)
     return
   }
+  validateAllowedKeys(value, ENTRY_FIELDS, path, issues)
 
   ;['entry_id', 'dutch_lemma', 'part_of_speech'].forEach(field => {
     if (!isNonEmptyString(value[field])) {
@@ -392,6 +474,7 @@ const validatePolicyMetadata = (
   if (!isRecord(license)) {
     addIssue(issues, 'license', MUST_BE_OBJECT)
   } else {
+    validateAllowedKeys(license, LICENSE_FIELDS, 'license', issues)
     if (!isNonEmptyString(license.name)) {
       addIssue(issues, 'license.name', MUST_BE_NON_EMPTY_STRING)
     }
@@ -407,6 +490,7 @@ const validatePolicyMetadata = (
   if (!isRecord(provenance)) {
     addIssue(issues, 'provenance', MUST_BE_OBJECT)
   } else {
+    validateAllowedKeys(provenance, PROVENANCE_FIELDS, 'provenance', issues)
     if (
       provenance.origin !== 'original-project-content' &&
       provenance.origin !== 'existing-project-library'
@@ -450,6 +534,7 @@ const validateContentReview = (
     addIssue(issues, 'content_review', MUST_BE_OBJECT)
     return
   }
+  validateAllowedKeys(value, CONTENT_REVIEW_FIELDS, 'content_review', issues)
   if (value.status !== 'pending' && value.status !== 'approved') {
     addIssue(issues, 'content_review.status', 'must be pending or approved')
   }
@@ -486,6 +571,7 @@ export const validateOfficialContentManifest = (
   }
 
   const issues: OfficialContentValidationIssue[] = []
+  validateAllowedKeys(value, MANIFEST_FIELDS, '', issues)
   validateMetadata(value, issues)
   validatePolicyMetadata(value, issues)
   validateContentReview(value.content_review, issues)
