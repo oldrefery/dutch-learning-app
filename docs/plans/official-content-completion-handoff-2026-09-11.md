@@ -462,7 +462,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: 69/83 balanced review batches inspected and saved incrementally.
+  - [ ] C2: 73/83 balanced review batches inspected and saved incrementally.
     - [x] Dutch A1: 5/5 batches and 122/122 entries inspected.
     - [x] Dutch A2: 20/20 batches and 500/500 entries inspected.
       - [x] `dutch-a2-01`: 4/4 batches and 100/100 entries inspected.
@@ -480,10 +480,10 @@ this plan. Harden tooling in B before treating current approval commands as fina
       - [x] `dutch-b1-07`: 4/4 batches and 98/98 entries inspected.
       - [x] `dutch-b1-08`: 4/4 batches and 98/98 entries inspected.
       - [x] `dutch-b1-09`: 4/4 batches and 98/98 entries inspected.
-    - [ ] Dutch B2: 8/20 batches and 202/504 entries inspected.
+    - [ ] Dutch B2: 12/20 batches and 303/504 entries inspected.
       - [x] `dutch-b2-01`: 4/4 batches and 101/101 entries inspected.
       - [x] `dutch-b2-02`: 4/4 batches and 101/101 entries inspected.
-      - [ ] `dutch-b2-03`: 0/4 batches and 0/101 entries inspected.
+      - [x] `dutch-b2-03`: 4/4 batches and 101/101 entries inspected.
       - [ ] `dutch-b2-04`: 0/4 batches and 0/101 entries inspected.
       - [ ] `dutch-b2-05`: 0/4 batches and 0/100 entries inspected.
     - [ ] Dutch C1: 0/2 batches and 0/47 entries inspected.
@@ -842,7 +842,23 @@ Corrections include invalid mass-noun plurals, incomplete conjugations, register
 singular/plural translation agreement, corrupted metadata, and false lexical
 relations. No profile or production writes occurred.
 
-Next action: C2, inspect and persist `dutch-b2-03-batch-01`, retaining pack order.
+The four `dutch-b2-03` batches are complete: all 101 entries were inspected, 49
+were approved unchanged, 38 received explicit corrections, and 14 remain
+unresolved for C3–C8 because they combine homographs, unrelated senses, different
+usage frames, or adjective/adverb variants. The reviewed batch SHA-256 values, in
+order, are
+`3b517bc5e66d6c98fd7281ad96a8fa72fd4a25a5428d3aff05a1dc2d13017ac9`,
+`180601399161deb004a6aec88441012af65808a9ac2017df7ace8ebcfc59d396`,
+`5f8056573b3d6c89594deadef06634cb3db1715770a70d5b5683d43260404294`,
+and `5daad67efe1cad1d39b7cd345012c9e6f64b9f7066adbf9e2dde7ccc2e0a982d`.
+The rebuilt ledger now contains 620 approved, 1104 overridden, and 335 unresolved
+decisions; its SHA-256 is
+`0b0baed61073e3a1712afae7f22230e6366038b17d654e3515ace783d6b65f9e`.
+Corrections include misspelled morphology, separable and reflexive conjugations,
+invalid abstract-noun plurals, register, false translations and lexical relations,
+and duplicated glosses. No profile or production writes occurred.
+
+Next action: C2, inspect and persist `dutch-b2-04-batch-01`, retaining pack order.
 Do not approve the release until all 2059 decisions and every grammatical value
 have been reviewed.
 
