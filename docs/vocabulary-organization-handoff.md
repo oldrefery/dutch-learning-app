@@ -1,6 +1,6 @@
 # Vocabulary organization: resume here
 
-Updated: 2026-09-07.
+Updated: 2026-09-11.
 Plan: [approved approach](plans/vocabulary-organization-2026-09-07.md).
 Branch: `feature/vocabulary-organization` (from main `bf197d9`).
 
@@ -140,6 +140,17 @@ and expressions. No levels have been saved and no collection has been changed.
 - `reports/vocabulary-organization/classification-proposal-final-2026-09-07.json`:
   final private classification proposal joining CEFR, usefulness, SUBTLEX evidence,
   original collection and stable hashes for all 2,287 cards.
+- `reports/vocabulary-organization/frequency-enrichment-2026-09-07.json`:
+  45 explicit ordering-only enrichments: 44 reflexive base-verb proxies and one
+  orthographic variant. SHA-256:
+  `8e80e4aaa4f8c721af272a53eb06b7412dfa08fdf161a7baa405600761c5a1d1`.
+  The saved frequency remains missing and every proxy remains sense-unverified.
+- `reports/vocabulary-organization/collection-plan-proposal-002-2026-09-07.json`:
+  exact dry-run mapping for all 2,287 IDs. It maps 2,065 cards to 21 unshared
+  target collections and explicitly retains 69 protected plus 153 expression
+  cards in their original collections. SHA-256:
+  `b3f196fe459028f90cdba17667aadc8d8053d39021dfbab7a248a267e28e69bc`.
+  The earlier un-enriched collection-plan draft is superseded and must not be used.
 - [Read-only snapshot query](../scripts/vocabulary-analysis-snapshot.sql): reusable
   export query; replace its email placeholder only after checking task authority.
 
@@ -148,16 +159,16 @@ and source downloads. Never commit them to make a handoff portable.
 
 ## Immediate next steps
 
-1. Prepare the exact collection proposal from the final classification artifact.
-   Split each level into balanced groups of about 80–120 cards, ordered by observed
-   frequency first and usefulness second. Keep missing frequency explicit.
-2. Improve frequency evidence for reflexive/inflected entries using explicitly
-   justified lemma relationships; never silently substitute a base verb's sense
-   or sum duplicated lemma totals. Current matching is exact surface/POS only.
-3. Decide how active shared links should behave after moves, then present the exact
-   mapping for approval. Do not apply it yet.
-4. Build and test stale-plan validation, idempotent apply, verification and targeted
+1. Approve or revise the exact collection mapping and decide how the six affected
+   shared source collections should behave. The recommended default is to keep the
+   old collections and their current sharing flags, accept that their links will
+   retain only excluded expressions, and keep all 21 new collections unshared.
+2. Define and review the independent classification-storage contract for current
+   web/mobile clients. Do not move cards merely to persist CEFR metadata.
+3. Build and test stale-plan validation, idempotent apply, verification and targeted
    rollback before any production write.
+4. Immediately before an approved apply, refresh the complete recovery snapshot
+   and reject the operation if any card hash, membership, owner or exclusion changed.
 
 ## Completed analysis pass
 
@@ -190,6 +201,21 @@ numeric rows passed POS-count reconciliation and cached Zipf formula checks.
 These matches remain sense-unverified; ranking scores are null. No lemma totals
 were summed and no reflexive pronouns or accents were removed to force matches.
 
+The final collection proposal contains 21 stable, unshared targets: A1 has one
+122-card group; A2 has five groups of 100; B1 has seven groups of 99 and two of
+98; B2 has one group of 102 and four of 101; C1 has one group of 48; C2 has none.
+The 122-card A1 exception is preferable to two undersized groups of 61. Ordering
+uses observed Zipf or an explicitly labelled ordering proxy, then everyday
+usefulness and stable lemma/ID tie-breakers. Of 2,065 mapped cards, 1,855 have an
+observed surface frequency, 45 have an ordering-only proxy and 165 remain missing.
+All missing entries stay explicit and sort after numeric evidence within a level.
+
+Six shared source collections contain cards that would move. The protected shared
+collection is unaffected. Applying the plan without changing sharing settings
+would leave the excluded expressions in the old shared collections and therefore
+change what their existing links expose. No old collection is scheduled for
+deletion and no target collection is scheduled to be shared automatically.
+
 ## Source research
 
 - NT2Lex: <https://cental.uclouvain.be/cefrlex/nt2lex/>
@@ -210,7 +236,8 @@ Use locally with attribution; do not redistribute the corpus in the app/reposito
 The downloaded full file is <https://osf.io/3d8cx/files/2dcvs> (not the filtered
 minimum-two-films subset). Its wiki describes smoothed Zipf values; keep absent
 entries distinguishable rather than silently imputing them as observed counts.
-NT2Lex and exact-surface SUBTLEX matching are complete. Meaning-aware classification
-is still in progress; full eligibility, frequency ordering and collection mapping
-are not finalized.
+NT2Lex and exact-surface SUBTLEX matching, meaning-aware classification, explicit
+frequency enrichment and exact collection mapping are complete. The private plan
+has passed full-ID coverage, uniqueness, source/target count, ordering and exclusion
+checks. It remains a proposal and has not been approved for production writes.
 No profile data has been changed.

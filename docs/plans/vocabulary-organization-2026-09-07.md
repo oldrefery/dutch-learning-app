@@ -1,6 +1,7 @@
 # Vocabulary classification and collection organization
 
-Status: approved approach; read-only analysis in progress. No profile writes authorized yet.
+Status: approved approach; read-only analysis complete and exact collection proposal ready.
+No profile writes authorized yet.
 Branch: `feature/vocabulary-organization`.
 Resume with: [vocabulary organization handoff](../vocabulary-organization-handoff.md).
 
@@ -104,9 +105,9 @@ must not duplicate cards or collections.
 
 ## Acceptance gates
 
-- [ ] Complete inventory, exclusions and unassigned cards reconciled.
-- [ ] Frequency sources and permitted local use verified.
-- [ ] Every eligible card classified or explicitly marked unresolved.
+- [x] Complete inventory, exclusions and unassigned cards reconciled.
+- [x] Frequency sources and permitted local use verified.
+- [x] Every eligible card classified or explicitly marked unresolved.
 - [ ] Classification proposal approved before metadata writes.
 - [ ] Collection mapping and sharing behavior approved before moves.
 - [ ] Tested backup, stale-plan detection, idempotency and targeted rollback.
