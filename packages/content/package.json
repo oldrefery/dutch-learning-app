@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/dutch-a1.json",
-    "./manifest": "./src/manifest.ts"
+    "./manifest": "./src/manifest.ts",
+    "./remote": "./src/remote.ts"
   }
 }

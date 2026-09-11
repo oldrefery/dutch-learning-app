@@ -6,6 +6,7 @@ import { requireAuthContext } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import type { StarterPackImportState } from './form-state'
+import { loadRemoteOfficialStarterPack } from './official-content-repository'
 import {
   buildStarterPackImportPayload,
   getStarterPackSemanticKey,
@@ -24,12 +25,45 @@ const getSelectedEntryIds = (formData: FormData): string[] =>
     .getAll('entryIds')
     .flatMap(value => (typeof value === 'string' ? [value] : []))
 
+const BUNDLED_PACK_ID = 'official-dutch-a1-essentials'
+
+async function loadRequestedManifest(formData: FormData) {
+  const packId = formData.get('packId')
+  const version = formData.get('packVersion')
+  if (typeof packId !== 'string' || typeof version !== 'string') {
+    throw new Error('Official content identity is missing.')
+  }
+
+  if (packId === BUNDLED_PACK_ID) {
+    const bundled = loadOfficialStarterPack()
+    if (version !== bundled.version) {
+      throw new Error('The bundled official content version is unavailable.')
+    }
+    return bundled
+  }
+  if (
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(packId) ||
+    !/^[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?$/.test(version)
+  ) {
+    throw new Error('Official content identity is invalid.')
+  }
+  return loadRemoteOfficialStarterPack(packId, version)
+}
+
 export async function importStarterPack(
   _state: StarterPackImportState,
   formData: FormData
 ): Promise<StarterPackImportState> {
   const auth = await requireAuthContext()
-  const manifest = loadOfficialStarterPack()
+  let manifest
+  try {
+    manifest = await loadRequestedManifest(formData)
+  } catch {
+    return {
+      status: 'error',
+      message: 'This official content version is no longer available.',
+    }
+  }
   const selectedEntries = selectStarterPackEntries(
     manifest,
     getSelectedEntryIds(formData)

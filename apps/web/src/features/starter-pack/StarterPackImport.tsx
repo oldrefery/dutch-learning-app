@@ -14,14 +14,18 @@ interface StarterPackImportProps {
   canCreateCollection: boolean
   collections: StarterPackTargetCollection[]
   entries: StarterPackPreviewEntry[]
+  packId: string
   packTitle: string
+  packVersion: string
 }
 
 export function StarterPackImport({
   canCreateCollection,
   collections,
   entries,
+  packId,
   packTitle,
+  packVersion,
 }: StarterPackImportProps) {
   const availableEntryIds = useMemo(
     () =>
@@ -100,6 +104,8 @@ export function StarterPackImport({
 
   return (
     <form action={action}>
+      <input name="packId" type="hidden" value={packId} />
+      <input name="packVersion" type="hidden" value={packVersion} />
       <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
