@@ -1,5 +1,9 @@
 # Official Content Catalog Implementation Plan
 
+Continue with the [detailed completion plan](official-content-completion-handoff-2026-09-11.md),
+which records implementation status, known gaps, work packages, and release gates
+at baseline `ee06c37`.
+
 ## Goal
 
 Deliver centrally hosted, downloadable official vocabulary packs that can be

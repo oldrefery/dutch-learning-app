@@ -1,6 +1,10 @@
 # Vocabulary organization: resume here
 
 Updated: 2026-09-11.
+Primary continuation plan:
+[detailed implementation and release handoff](plans/official-content-completion-handoff-2026-09-11.md).
+It supersedes the immediate next steps below for official catalog implementation.
+The private inventory and source history in this file remain relevant.
 Plan: [approved approach](plans/vocabulary-organization-2026-09-07.md).
 Branch: `feature/vocabulary-organization` (from main `bf197d9`).
 
