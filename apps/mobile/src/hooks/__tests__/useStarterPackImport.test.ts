@@ -6,6 +6,7 @@ import {
   getStarterPackPreview,
   loadOfficialDutchA1Pack,
 } from '@/services/starterPackService'
+import { officialContentCatalogService } from '@/services/officialContentCatalogService'
 import type { Collection, Word } from '@/types/database'
 
 jest.mock('@/stores/useApplicationStore', () => ({
@@ -21,6 +22,11 @@ jest.mock('@/components/AppToast', () => ({
 jest.mock('@/lib/sentry', () => ({
   Sentry: {
     captureException: jest.fn(),
+  },
+}))
+jest.mock('@/services/officialContentCatalogService', () => ({
+  officialContentCatalogService: {
+    getPack: jest.fn(),
   },
 }))
 jest.mock('expo-router', () => ({
@@ -112,6 +118,34 @@ describe('useStarterPackImport', () => {
     expect(result.current.selectedCount).toBe(60)
     expect(storeState.createNewCollection).not.toHaveBeenCalled()
     expect(storeState.addWordsToCollection).not.toHaveBeenCalled()
+  })
+
+  it('downloads a selected remote pack before preparing its import', async () => {
+    const manifest = {
+      ...loadOfficialDutchA1Pack(),
+      pack_id: 'official-dutch-a2-frequency-1',
+      version: '1.0.0',
+      title: 'Dutch A2 · 1',
+    }
+    jest.mocked(officialContentCatalogService.getPack).mockResolvedValue({
+      manifest: manifest as never,
+      source: 'network',
+    })
+
+    const { result } = renderHook(() =>
+      useStarterPackImport({
+        packId: manifest.pack_id,
+        version: manifest.version,
+      })
+    )
+    await waitFor(() => expect(result.current.loading).toBe(false))
+
+    expect(officialContentCatalogService.getPack).toHaveBeenCalledWith(
+      manifest.pack_id,
+      manifest.version
+    )
+    expect(result.current.manifest?.title).toBe('Dutch A2 · 1')
+    expect(result.current.previewData?.words).toHaveLength(60)
   })
 
   it('imports only the selected entry after an explicit action', async () => {

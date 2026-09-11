@@ -8,6 +8,7 @@ import {
   starterPackService,
   StarterPackValidationError,
 } from '@/services/starterPackService'
+import { officialContentCatalogService } from '@/services/officialContentCatalogService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import type {
   ImportPreviewData,
@@ -34,6 +35,11 @@ export interface StarterPackImportSuccess {
   importedCount: number
 }
 
+interface RequestedOfficialPack {
+  packId?: string
+  version?: string
+}
+
 const loadStarterPack = (): StarterPackLoadResult => {
   try {
     const manifest = starterPackService.loadOfficialDutchA1Pack()
@@ -55,9 +61,30 @@ const loadStarterPack = (): StarterPackLoadResult => {
   }
 }
 
-export function useStarterPackImport() {
-  const pack = useMemo(() => loadStarterPack(), [])
-  const [loading, setLoading] = useState(Boolean(pack.previewData))
+export function useStarterPackImport(
+  requestedPack: RequestedOfficialPack = {}
+) {
+  const bundledPack = useMemo(() => loadStarterPack(), [])
+  const hasRemoteRequest = Boolean(
+    requestedPack.packId || requestedPack.version
+  )
+  const hasCompleteRemoteRequest = Boolean(
+    requestedPack.packId && requestedPack.version
+  )
+  const [pack, setPack] = useState<StarterPackLoadResult>(() =>
+    hasRemoteRequest
+      ? {
+          manifest: null,
+          previewData: null,
+          error: hasCompleteRemoteRequest
+            ? null
+            : 'The selected official pack link is incomplete.',
+        }
+      : bundledPack
+  )
+  const [loading, setLoading] = useState(
+    hasCompleteRemoteRequest || Boolean(bundledPack.previewData)
+  )
   const [wordSelections, setWordSelections] = useState<WordSelectionItem[]>([])
   const [collections, setCollections] = useState<ImportTargetCollection[]>([])
   const [targetCollectionId, setTargetCollectionId] = useState<string | null>(
@@ -66,6 +93,42 @@ export function useStarterPackImport() {
   const [importing, setImporting] = useState(false)
   const [hideDuplicates, setHideDuplicates] = useState(true)
   const [success, setSuccess] = useState<StarterPackImportSuccess | null>(null)
+
+  useEffect(() => {
+    if (!requestedPack.packId || !requestedPack.version) {
+      return
+    }
+
+    let active = true
+    void officialContentCatalogService
+      .getPack(requestedPack.packId, requestedPack.version)
+      .then(({ manifest }) => {
+        if (!active) return
+        const mobileManifest = manifest as unknown as StarterPackManifest
+        setPack({
+          manifest: mobileManifest,
+          previewData: starterPackService.getStarterPackPreview(mobileManifest),
+          error: null,
+        })
+      })
+      .catch(error => {
+        if (!active) return
+        Sentry.captureException(error, {
+          tags: { operation: 'loadRemoteOfficialPack' },
+        })
+        setPack({
+          manifest: null,
+          previewData: null,
+          error:
+            'This official pack could not be downloaded and is not cached on this device.',
+        })
+        setLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [requestedPack.packId, requestedPack.version])
 
   const loadCollectionsAndSelections = useCallback(async () => {
     const previewData = pack.previewData
