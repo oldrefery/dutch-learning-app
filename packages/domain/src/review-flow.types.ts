@@ -6,6 +6,7 @@ export type ReviewFlowMode =
 export interface ReviewFlowOption {
   readonly id: string
   readonly label: string
+  readonly secondaryLabel?: string | null
   readonly isCorrect: boolean
 }
 

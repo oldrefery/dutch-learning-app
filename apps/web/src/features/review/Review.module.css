@@ -290,6 +290,13 @@
   text-align: center;
 }
 
+.promptTranslation {
+  color: var(--text-meta);
+  font-size: clamp(18px, 3vw, 22px);
+  margin: 0;
+  text-align: center;
+}
+
 .wordMeta {
   align-items: center;
   display: flex;
@@ -338,6 +345,18 @@
 
 .option:hover {
   border-color: var(--accent);
+}
+
+.optionCopy {
+  display: grid;
+  gap: 3px;
+}
+
+.optionTranslation {
+  color: var(--text-meta);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.25;
 }
 
 .optionFaded {
@@ -396,6 +415,13 @@
   font-size: 26px;
   font-weight: 600;
   margin: 5px 0 0;
+}
+
+.revealedAnswer .revealedTranslation {
+  color: var(--text-meta);
+  font-size: 17px;
+  font-weight: 400;
+  margin-top: 4px;
 }
 
 .revealButton {

@@ -100,6 +100,36 @@ describe('review domain', () => {
     ])
   })
 
+  it('adds Russian translations beneath English recognition options', () => {
+    const currentWord = makeWord({
+      translations: { en: ['to walk'], ru: ['идти'] },
+    })
+    const options = buildRecognitionOptions(currentWord, [
+      currentWord,
+      makeWord({
+        id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+        translations: { en: ['to run'], ru: ['бежать'] },
+      }),
+      makeWord({
+        id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+        translations: { en: ['to read'], ru: ['читать'] },
+      }),
+    ])
+
+    expect(options).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'to walk',
+          secondaryLabel: 'идти',
+        }),
+        expect.objectContaining({
+          label: 'to run',
+          secondaryLabel: 'бежать',
+        }),
+      ])
+    )
+  })
+
   it('reveals translations for recall and Dutch for production', () => {
     const verb = makeWord()
     const noun = makeWord({

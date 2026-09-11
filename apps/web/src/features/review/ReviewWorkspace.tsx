@@ -337,6 +337,7 @@ function AccountReviewWorkspace({
             revealed={session.revealed}
             selectedOption={session.selectedOption}
             translation={session.translation}
+            russianTranslation={session.russianTranslation}
             word={session.currentWord}
           />
         )}

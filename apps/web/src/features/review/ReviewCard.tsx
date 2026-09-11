@@ -17,6 +17,7 @@ interface ReviewCardProps {
   revealed: boolean
   selectedOption: RecognitionOption | null
   translation: string | null
+  russianTranslation: string | null
   word: ReviewWord
 }
 
@@ -33,6 +34,7 @@ export function ReviewCard({
   revealed,
   selectedOption,
   translation,
+  russianTranslation,
   word,
 }: ReviewCardProps) {
   const prompt = mode === 'dutch-production' ? translation : word.dutchLemma
@@ -57,9 +59,14 @@ export function ReviewCard({
         </p>
 
         {mode === 'dutch-production' ? (
-          <h1 className={styles.productionPrompt}>
-            {prompt ?? 'Translation unavailable'}
-          </h1>
+          <div>
+            <h1 className={styles.productionPrompt}>
+              {prompt ?? 'Translation unavailable'}
+            </h1>
+            {russianTranslation && russianTranslation !== prompt && (
+              <p className={styles.promptTranslation}>{russianTranslation}</p>
+            )}
+          </div>
         ) : (
           <h1 className={styles.prompt}>{prompt}</h1>
         )}
@@ -103,7 +110,14 @@ export function ReviewCard({
                   type="button"
                 >
                   <span className={styles.key}>{index + 1}</span>
-                  <span>{option.label}</span>
+                  <span className={styles.optionCopy}>
+                    <span>{option.label}</span>
+                    {option.secondaryLabel && (
+                      <span className={styles.optionTranslation}>
+                        {option.secondaryLabel}
+                      </span>
+                    )}
+                  </span>
                   {revealed && option.isCorrect && (
                     <span className={styles.optionState}>✓ Correct</span>
                   )}
@@ -123,6 +137,13 @@ export function ReviewCard({
               {mode === 'dutch-production' ? 'Dutch' : 'Meaning'}
             </span>
             <p>{answer}</p>
+            {mode === 'meaning-recall' &&
+              russianTranslation &&
+              russianTranslation !== answer && (
+                <p className={styles.revealedTranslation}>
+                  {russianTranslation}
+                </p>
+              )}
           </div>
         )}
 
