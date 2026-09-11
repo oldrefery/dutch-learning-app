@@ -146,11 +146,20 @@ and expressions. No levels have been saved and no collection has been changed.
   `8e80e4aaa4f8c721af272a53eb06b7412dfa08fdf161a7baa405600761c5a1d1`.
   The saved frequency remains missing and every proxy remains sense-unverified.
 - `reports/vocabulary-organization/collection-plan-proposal-002-2026-09-07.json`:
-  exact dry-run mapping for all 2,287 IDs. It maps 2,065 cards to 21 unshared
-  target collections and explicitly retains 69 protected plus 153 expression
-  cards in their original collections. SHA-256:
+  superseded dry-run mapping for all 2,287 IDs. It mapped 2,065 cards to 21
+  unshared target collections and retained 69 protected plus 153 expression
+  cards. SHA-256:
   `b3f196fe459028f90cdba17667aadc8d8053d39021dfbab7a248a267e28e69bc`.
-  The earlier un-enriched collection-plan draft is superseded and must not be used.
+  It predates the owner's sensitive-content decision and must not be used.
+- `reports/vocabulary-organization/public-pack-content-decisions-2026-09-11.json`:
+  owner decisions for all 40 reviewed sensitive-content candidates. Six are
+  retained in their original private collections and the other 34 are allowed.
+  SHA-256: `46de39a0b1a957fcafa54d684ab27c0b4851ad7a57dc4192873f6e01f9c40c98`.
+- `reports/vocabulary-organization/collection-plan-proposal-003-2026-09-11.json`:
+  current exact dry-run mapping. It maps 2,059 cards to 21 targets and retains
+  228 cards: 69 protected, 153 expressions and six owner exclusions. SHA-256:
+  `1f1b5a14735aecd3d63ca7da293dddeebf86259accc632977d3863c76f895123`.
+  All prior collection-plan artifacts are superseded.
 - [Read-only snapshot query](../scripts/vocabulary-analysis-snapshot.sql): reusable
   export query; replace its email placeholder only after checking task authority.
 
@@ -159,10 +168,9 @@ and source downloads. Never commit them to make a handoff portable.
 
 ## Immediate next steps
 
-1. Approve or revise the exact collection mapping and decide how the six affected
-   shared source collections should behave. The recommended default is to keep the
-   old collections and their current sharing flags, accept that their links will
-   retain only excluded expressions, and keep all 21 new collections unshared.
+1. Define the official multi-pack manifest/catalog contract so the approved level
+   sets are publicly importable like Dutch A1 Essentials while the owner's 21 new
+   collections remain unshared. Do not expose personal IDs or learning progress.
 2. Define and review the independent classification-storage contract for current
    web/mobile clients. Do not move cards merely to persist CEFR metadata.
 3. Build and test stale-plan validation, idempotent apply, verification and targeted
@@ -201,20 +209,24 @@ numeric rows passed POS-count reconciliation and cached Zipf formula checks.
 These matches remain sense-unverified; ranking scores are null. No lemma totals
 were summed and no reflexive pronouns or accents were removed to force matches.
 
-The final collection proposal contains 21 stable, unshared targets: A1 has one
-122-card group; A2 has five groups of 100; B1 has seven groups of 99 and two of
-98; B2 has one group of 102 and four of 101; C1 has one group of 48; C2 has none.
+The final collection proposal contains 21 stable, unshared personal targets: A1
+has one 122-card group; A2 has five groups of 100; B1 has four groups of 99 and
+five of 98; B2 has four groups of 101 and one of 100; C1 has one group of 47;
+C2 has none.
 The 122-card A1 exception is preferable to two undersized groups of 61. Ordering
 uses observed Zipf or an explicitly labelled ordering proxy, then everyday
-usefulness and stable lemma/ID tie-breakers. Of 2,065 mapped cards, 1,855 have an
-observed surface frequency, 45 have an ordering-only proxy and 165 remain missing.
-All missing entries stay explicit and sort after numeric evidence within a level.
+usefulness and stable lemma/ID tie-breakers. The current proposal maps 2,059 cards;
+six owner-selected sensitive entries remain in their original private collections.
+Of the mapped cards, 1,850 have observed frequency, 45 have explicit ordering-only
+proxies and 164 remain missing. All missing entries stay explicit and sort after
+numeric evidence within a level.
 
 Six shared source collections contain cards that would move. The protected shared
-collection is unaffected. Applying the plan without changing sharing settings
-would leave the excluded expressions in the old shared collections and therefore
-change what their existing links expose. No old collection is scheduled for
-deletion and no target collection is scheduled to be shared automatically.
+collection is unaffected. The owner approved keeping the old collections and their
+sharing flags, accepting that their links will retain only excluded cards. No old
+collection is scheduled for deletion and no personal target is shared automatically.
+Public availability of the approved level sets will use official content manifests,
+like Dutch A1 Essentials, with no personal IDs, SRS data or account dependency.
 
 ## Source research
 

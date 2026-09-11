@@ -23,6 +23,9 @@ The process must be repeatable outside the application UI.
   Existing expression flags include ordinary lexical compounds. Such compounds
   remain classification candidates; the protected collection is always excluded.
 - Never delete, deduplicate, merge, rewrite meanings or recreate cards automatically.
+- Exclude the owner-confirmed sensitive entries `rukken`, `piemel`, `klit`,
+  `mongool`, `swaffelen` and `hottentot` from the prepared level collections.
+  Retain them unchanged in their original private collections.
 - Preserve IDs, content, translations, examples, media, usage notes, review history,
   knowledge ratings, SRS coefficients, intervals and scheduled review dates.
 - No production writes until the corresponding concrete plan is approved.
@@ -72,6 +75,8 @@ Retain provenance and manual overrides. Do not move cards in this phase.
   remainder rather than creating a tiny final group. Small levels may be smaller.
 - Never alter a level just to balance group sizes.
 - Prefer stable labels such as `B1 · 01`, `B1 · 02`; topics are secondary.
+- Publish approved level sets through versioned official content manifests, like
+  Dutch A1 Essentials, rather than making personal source collections public.
 - Produce an exact card-ID-to-target mapping, source/target counts and exclusions.
 - Discuss existing shared links and old collections before moving their content;
   moving cards out of a shared collection changes what that link exposes.
