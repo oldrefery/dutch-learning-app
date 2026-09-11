@@ -462,7 +462,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: 49/83 balanced review batches inspected and saved incrementally.
+  - [ ] C2: 53/83 balanced review batches inspected and saved incrementally.
     - [x] Dutch A1: 5/5 batches and 122/122 entries inspected.
     - [x] Dutch A2: 20/20 batches and 500/500 entries inspected.
       - [x] `dutch-a2-01`: 4/4 batches and 100/100 entries inspected.
@@ -470,13 +470,14 @@ this plan. Harden tooling in B before treating current approval commands as fina
       - [x] `dutch-a2-03`: 4/4 batches and 100/100 entries inspected.
       - [x] `dutch-a2-04`: 4/4 batches and 100/100 entries inspected.
       - [x] `dutch-a2-05`: 4/4 batches and 100/100 entries inspected.
-    - [ ] Dutch B1: 24/36 batches and 592/884 entries inspected.
+    - [ ] Dutch B1: 28/36 batches and 690/884 entries inspected.
       - [x] `dutch-b1-01`: 4/4 batches and 99/99 entries inspected.
       - [x] `dutch-b1-02`: 4/4 batches and 99/99 entries inspected.
       - [x] `dutch-b1-03`: 4/4 batches and 99/99 entries inspected.
       - [x] `dutch-b1-04`: 4/4 batches and 99/99 entries inspected.
       - [x] `dutch-b1-05`: 4/4 batches and 98/98 entries inspected.
       - [x] `dutch-b1-06`: 4/4 batches and 98/98 entries inspected.
+      - [x] `dutch-b1-07`: 4/4 batches and 98/98 entries inspected.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [ ] C10: exact complete ledger approved into an immutable release.
@@ -742,7 +743,25 @@ separable paradigms, register, unsupported or time-sensitive claims, missing
 Russian examples, false lexical relations, and malformed Dutch, English, and
 Russian learning text. No profile or production writes occurred.
 
-Next action: C2, inspect and persist `dutch-b1-07-batch-01`, retaining pack order.
+The four `dutch-b1-07` batches are complete: all 98 entries were inspected, 62
+were approved unchanged, 31 received explicit corrections, and five remain
+unresolved for C3–C8. `beleggen`, `kraam`, and `pens` combine unrelated senses;
+`ritselen` needs separate literal and informal treatment; and `toverwoord` merges
+four non-interchangeable figurative uses. The reviewed batch SHA-256 values, in
+order, are
+`657dfe35bd5095b372358f7a18fb02bdd4bba03febd5a029624f5bf658491ce1`,
+`80ef102d641667b95ff3d8fa5ef947602ea4517b75d91b23f616dcd4e341ec28`,
+`e3a16d7e3bb02aeeea217a29c4ef62c5424202e4e0b2d100d60b7965c83bf411`,
+and `e207402fff7b7b1fec77ed951cda8eb74ea21371c8e26d52941c3dc97e82733f`.
+The rebuilt ledger now contains 356 approved, 933 overridden, and 770 unresolved
+decisions; its SHA-256 is
+`b6dfc4ecddcd4a4d170ca558052228bd4b04ac639bd8944bfa24675570048e63`.
+Corrections include homograph and part-of-speech identification, reflexive and
+separable paradigms, register, invalid mass-noun plurals, false lexical relations,
+editorial annotations, and malformed Dutch, English, and Russian learning text.
+No profile or production writes occurred.
+
+Next action: C2, inspect and persist `dutch-b1-08-batch-01`, retaining pack order.
 Do not approve the release until all 2059 decisions and every grammatical value
 have been reviewed.
 
