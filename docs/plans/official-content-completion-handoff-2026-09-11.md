@@ -462,11 +462,12 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
   - [x] C1: private v3 review inventory and needs-review ledger skeleton generated.
   - [x] C2a: current read-only editorial fields reconciled with the locked baseline.
-  - [ ] C2: 13/83 balanced review batches inspected and saved incrementally.
+  - [ ] C2: 17/83 balanced review batches inspected and saved incrementally.
     - [x] Dutch A1: 5/5 batches and 122/122 entries inspected.
-    - [ ] Dutch A2: 8/20 batches and 200/500 entries inspected.
+    - [ ] Dutch A2: 12/20 batches and 300/500 entries inspected.
       - [x] `dutch-a2-01`: 4/4 batches and 100/100 entries inspected.
       - [x] `dutch-a2-02`: 4/4 batches and 100/100 entries inspected.
+      - [x] `dutch-a2-03`: 4/4 batches and 100/100 entries inspected.
   - [ ] C3–C8: language, sense, exclusions, Essentials overlap, and license findings resolved.
   - [ ] C9: final reviewed manifests rebuilt with reconciled public counts.
   - [ ] C10: exact complete ledger approved into an immutable release.
@@ -581,7 +582,22 @@ homonym and level focusing, public-safe sense selection, false lexical relations
 and malformed Dutch, English, and Russian examples. No profile or production
 writes occurred.
 
-Next action: C2, inspect and persist `dutch-a2-03-batch-01`, retaining pack order.
+The four `dutch-a2-03` batches are complete: all 100 entries were inspected,
+21 were approved unchanged and 79 received explicit corrections. No additional
+entry was left unresolved. The reviewed batch SHA-256 values, in order, are
+`db4a49dbfad88736bbc1f20e39d3a9706a65b42fdd7599317df9662c7a22b7d8`,
+`73ed60618f7dd69d2b924d42ecb93c22a8282a321444768164ecc417f16ffd02`,
+`0a80deafb3f694218e16996f7a672de5776cd06181224ce9241a6f273a53f140`,
+and `eb5ab5cbe657c1834fad6e634d1514d20828da22f6e00adbfad7684081a67cc5`.
+The rebuilt ledger now contains 102 approved, 317 overridden, and 1640 unresolved
+decisions; its SHA-256 is
+`972863909bfa6bb2d355ed2f564f8660d0f26fe97b7c211e25ecfaa5a9587479`.
+Corrections include invalid mass-noun plurals, separable and strong conjugations,
+homonym and level focusing, false lexical relations, malformed constructions,
+and Dutch, English, and Russian example repairs. No profile or production writes
+occurred.
+
+Next action: C2, inspect and persist `dutch-a2-04-batch-01`, retaining pack order.
 Do not approve the release until all 2059 decisions and every grammatical value
 have been reviewed.
 
