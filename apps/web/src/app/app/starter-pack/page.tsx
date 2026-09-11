@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import type { OfficialContentCatalogItem } from '@woordenaar/content/remote'
+import { OfficialPackPicker } from '@/features/starter-pack/OfficialPackPicker'
 import { StarterPackImport } from '@/features/starter-pack/StarterPackImport'
 import { getStarterPackContext } from '@/features/starter-pack/repository'
 import {
@@ -9,41 +11,130 @@ import {
   buildStarterPackPreview,
   loadOfficialStarterPack,
 } from '@/features/starter-pack/starter-pack-domain'
+import type { StarterPackManifest } from '@/features/starter-pack/starter-pack-domain'
 import { requireAuthContext } from '@/lib/auth/session'
 
 interface StarterPackPageProps {
   searchParams: Promise<{ pack?: string }>
 }
 
+interface CatalogResult {
+  catalog: OfficialContentCatalogItem[]
+  unavailable: boolean
+}
+
+const loadCatalog = async (): Promise<CatalogResult> => {
+  try {
+    return { catalog: await getOfficialContentCatalog(), unavailable: false }
+  } catch {
+    return { catalog: [], unavailable: true }
+  }
+}
+
+function CollectionBackLink() {
+  return (
+    <Link
+      className="text-sm text-neutral-600 hover:underline dark:text-neutral-400"
+      href="/app/collections"
+    >
+      ← All collections
+    </Link>
+  )
+}
+
+function UnavailablePack({
+  message,
+  retryHref,
+}: {
+  message: string
+  retryHref?: string
+}) {
+  return (
+    <section>
+      <CollectionBackLink />
+      <div className="dw-surface mt-5 max-w-3xl p-6">
+        <p className="dw-label">Official content</p>
+        <h1 className="dw-page-title mt-2">Official pack unavailable</h1>
+        <p className="dw-support mt-3">{message}</p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          {retryHref && (
+            <Link className="dw-button dw-button--primary" href={retryHref}>
+              Try again
+            </Link>
+          )}
+          <Link
+            className="dw-button dw-button--secondary"
+            href="/app/starter-pack"
+          >
+            Use A1 Essentials
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default async function StarterPackPage({
   searchParams,
 }: StarterPackPageProps) {
   const auth = await requireAuthContext()
-  const [{ pack: requestedPackId }, catalog, context] = await Promise.all([
-    searchParams,
-    getOfficialContentCatalog(),
-    getStarterPackContext(auth.userId),
-  ])
+  const [{ pack: requestedPackId }, catalogResult, context] = await Promise.all(
+    [searchParams, loadCatalog(), getStarterPackContext(auth.userId)]
+  )
+  const { catalog, unavailable: catalogUnavailable } = catalogResult
   const selectedCatalogItem = catalog.find(
     item => item.packId === requestedPackId
   )
-  const manifest = selectedCatalogItem
-    ? await loadRemoteOfficialStarterPack(
+
+  if (requestedPackId && catalogUnavailable) {
+    return (
+      <UnavailablePack
+        message="The online catalog could not be loaded. A1 Essentials is still available offline."
+        retryHref={`/app/starter-pack?pack=${encodeURIComponent(requestedPackId)}`}
+      />
+    )
+  }
+
+  if (requestedPackId && !selectedCatalogItem) {
+    return (
+      <UnavailablePack message="The requested official pack could not be found. Choose another pack from the catalog." />
+    )
+  }
+
+  let manifest: StarterPackManifest
+  if (selectedCatalogItem) {
+    try {
+      manifest = await loadRemoteOfficialStarterPack(
         selectedCatalogItem.packId,
         selectedCatalogItem.version
       )
-    : loadOfficialStarterPack()
+    } catch {
+      return (
+        <UnavailablePack
+          message="This official pack version is temporarily unavailable. Try again or continue with A1 Essentials."
+          retryHref={`/app/starter-pack?pack=${encodeURIComponent(selectedCatalogItem.packId)}`}
+        />
+      )
+    }
+  } else {
+    manifest = loadOfficialStarterPack()
+  }
   const entries = buildStarterPackPreview(manifest, context.existingWords)
   const availableCount = entries.filter(entry => !entry.isDuplicate).length
 
   return (
     <section>
-      <Link
-        className="text-sm text-neutral-600 hover:underline dark:text-neutral-400"
-        href="/app/collections"
-      >
-        ← All collections
-      </Link>
+      <CollectionBackLink />
+
+      {catalogUnavailable && (
+        <div
+          className="mt-5 border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200"
+          role="status"
+        >
+          The online catalog is temporarily unavailable. A1 Essentials remains
+          available offline.
+        </div>
+      )}
 
       <div className="mt-5 max-w-3xl">
         <p className="dw-label">
@@ -54,40 +145,10 @@ export default async function StarterPackPage({
       </div>
 
       {catalog.length > 0 && (
-        <nav aria-label="Official content packs" className="mt-6">
-          <p className="dw-label">Choose an official pack</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Link
-              aria-current={!selectedCatalogItem ? 'page' : undefined}
-              className={`rounded-xl border px-4 py-2 text-sm font-medium ${
-                !selectedCatalogItem
-                  ? 'border-blue-500 bg-blue-50 text-blue-800 dark:bg-blue-950/40 dark:text-blue-200'
-                  : 'border-neutral-300 dark:border-neutral-700'
-              }`}
-              href="/app/starter-pack"
-            >
-              A1 Essentials · Offline
-            </Link>
-            {catalog.map(item => (
-              <Link
-                aria-current={
-                  selectedCatalogItem?.packId === item.packId
-                    ? 'page'
-                    : undefined
-                }
-                className={`rounded-xl border px-4 py-2 text-sm font-medium ${
-                  selectedCatalogItem?.packId === item.packId
-                    ? 'border-blue-500 bg-blue-50 text-blue-800 dark:bg-blue-950/40 dark:text-blue-200'
-                    : 'border-neutral-300 dark:border-neutral-700'
-                }`}
-                href={`/app/starter-pack?pack=${encodeURIComponent(item.packId)}`}
-                key={item.packId}
-              >
-                {item.cefrLevel} · {item.title} · {item.entryCount}
-              </Link>
-            ))}
-          </div>
-        </nav>
+        <OfficialPackPicker
+          catalog={catalog}
+          selectedPackId={selectedCatalogItem?.packId}
+        />
       )}
 
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -123,6 +184,7 @@ export default async function StarterPackPage({
           canCreateCollection={auth.accessLevel === 'full_access'}
           collections={context.collections}
           entries={entries}
+          key={`${manifest.packId}@${manifest.version}`}
           packId={manifest.packId}
           packTitle={manifest.title}
           packVersion={manifest.version}

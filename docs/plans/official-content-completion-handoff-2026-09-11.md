@@ -450,7 +450,7 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [x] Baseline architecture, clients, shared validator and draft export implemented.
 - [x] 21 draft packs / 2059 entries generated locally; excluded words absent as lemmas.
 - [x] A1: version promotion/rollback/count/state-transition regressions resolved.
-- [ ] A2: web navigation state and unavailable catalog/pack recovery verified.
+- [x] A2: web navigation state and unavailable catalog/pack recovery verified.
 - [ ] A3: requested identity and mobile loading/cache/route lifecycle verified.
 - [ ] B: source-bound, atomic artifact preparation and release CLI tests complete.
 - [ ] C: full public editorial review ledger complete; stable approved release exists.
@@ -460,14 +460,15 @@ this plan. Harden tooling in B before treating current approval commands as fina
 - [ ] Personal classification/apply/rollback tooling prepared and tested.
 - [ ] Personal write proposal authorized, applied, and invariants verified.
 
-Latest verification: catalog DB 14/14, full DB 116/116, mobile and web
-typechecks, ESLint, and `git diff --check` passed after A1. Publication now stores
-version-specific metadata, serializes each pack with an advisory transaction lock,
-preserves exact-retry timestamps, and restores metadata on rollback. Canonical
-SHA-256 remains verified by the trusted publisher rather than recomputed in SQL.
+Latest verification: catalog DB 14/14 and full DB 116/116 passed after A1. After
+A2, web passed 57 suites / 542 tests, typecheck, ESLint, production build, and
+`git diff --check`. Pack/version identity now keys the import boundary; unknown or
+unavailable remote packs have explicit recovery; an unavailable catalog preserves
+bundled Essentials; and 21-pack navigation uses a compact mobile control with
+concise labels.
 
-Next action: A2, add the web regression for navigation between pack versions and
-reset the import state at the page boundary.
+Next action: A3, reject a response or cache entry whose pack ID/version differs
+from the requested mobile identity, then cover route and cache lifecycle failures.
 
 Stop only the dependent action when authority, a missing private input, or an
 unresolved editorial decision truly blocks it. Complete independent local work.
