@@ -48,33 +48,48 @@ type OfficialContentTables = {
   }
   official_content_pack_versions: {
     Row: {
+      cefr_level: string
       content_sha256: string
       created_at: string
+      description: string
+      display_order: number
+      entry_count: number
       manifest: Json
       pack_id: string
       published_at: string | null
       review_status: string
       reviewed_at: string | null
+      title: string
       version: string
     }
     Insert: {
+      cefr_level: string
       content_sha256: string
       created_at?: string
+      description: string
+      display_order: number
+      entry_count: number
       manifest: Json
       pack_id: string
       published_at?: string | null
       review_status?: string
       reviewed_at?: string | null
+      title: string
       version: string
     }
     Update: {
+      cefr_level?: string
       content_sha256?: string
       created_at?: string
+      description?: string
+      display_order?: number
+      entry_count?: number
       manifest?: Json
       pack_id?: string
       published_at?: string | null
       review_status?: string
       reviewed_at?: string | null
+      title?: string
       version?: string
     }
     Relationships: [
@@ -91,11 +106,20 @@ type OfficialContentTables = {
 
 // PostgreSQL RPC argument metadata does not describe accepted NULL values.
 // Recognition reviews may omit correctness/timing; keep this correction separate
-// from the generated schema. No undeployed protocol functions are added here.
+// from the generated schema. Official content tables and trusted release RPCs
+// remain temporary overlays until the migration is deployed and types regenerate.
 export type Database = Omit<GeneratedDatabase, 'public'> & {
   public: Omit<PublicSchema, 'Functions' | 'Tables'> & {
     Tables: PublicSchema['Tables'] & OfficialContentTables
     Functions: Omit<PublicSchema['Functions'], 'record_review_assessment'> & {
+      promote_official_content_pack_version: {
+        Args: {
+          p_pack_id: string
+          p_promoted_at: string
+          p_version: string
+        }
+        Returns: undefined
+      }
       publish_official_content_pack: {
         Args: {
           p_cefr_level: string

@@ -24,17 +24,22 @@ bundle size. Keep the bundled Dutch A1 Essentials pack as an offline fallback.
 
 - `official_content_packs` stores catalog metadata and the current-version
   pointer.
-- `official_content_pack_versions` stores immutable versioned JSON manifests and
-  their SHA-256 digests.
+- `official_content_pack_versions` stores immutable versioned JSON manifests,
+  their SHA-256 digests, and the exact catalog metadata for each version.
 - `anon` and `authenticated` may read only published catalog rows and published
   versions.
 - Client roles have no insert, update, or delete privileges.
-- Publishing creates an approved immutable version, then switches the catalog
-  pointer in one trusted transaction per pack. The operation is idempotent, so
-  an interrupted multi-pack release can be resumed. Rollback switches the
-  pointer back.
+- Publishing takes a transaction-scoped advisory lock per pack, creates an
+  approved immutable version, then switches the catalog pointer and all visible
+  metadata together. The operation is idempotent, so an interrupted multi-pack
+  release can be resumed without rewriting timestamps. Rollback switches the
+  pointer back and restores that version's title, description, CEFR level, entry
+  count, and display order.
 - Catalog metadata includes the validated manifest entry count, which web and
   mobile show before download.
+- The trusted publisher computes and verifies canonical SHA-256 before calling
+  the publication RPC. PostgreSQL validates the digest format and immutable
+  association but does not reimplement the canonical JSON hashing algorithm.
 
 ## Acceptance Criteria
 
