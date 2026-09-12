@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { AuthenticatedShell } from '@/components/app/AuthenticatedShell'
-import { listCollectionOverviews } from '@/features/collections/repository'
+import { AppNavigation } from '@/components/app/AppNavigation'
+import { ReviewDueCountNavigation } from '@/components/app/ReviewDueCountNavigation'
 import { requireAuthContext } from '@/lib/auth/session'
 
 export const metadata: Metadata = {
@@ -13,14 +15,23 @@ export default async function AppLayout({
   children: React.ReactNode
 }) {
   const auth = await requireAuthContext()
-  const collections = await listCollectionOverviews(auth.userId)
-  const dueCount = collections.reduce(
-    (total, collection) => total + collection.dueWords,
-    0
+  const userLabel = auth.email?.trim() || `User ${auth.userId.slice(0, 8)}`
+  const navigation = (
+    <Suspense
+      fallback={
+        <AppNavigation
+          accessLevel={auth.accessLevel}
+          dueCount={0}
+          userLabel={userLabel}
+        />
+      }
+    >
+      <ReviewDueCountNavigation auth={auth} />
+    </Suspense>
   )
 
   return (
-    <AuthenticatedShell auth={auth} dueCount={dueCount}>
+    <AuthenticatedShell auth={auth} navigation={navigation}>
       {children}
     </AuthenticatedShell>
   )
