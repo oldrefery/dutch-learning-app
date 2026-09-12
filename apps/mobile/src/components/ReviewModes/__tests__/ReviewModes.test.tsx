@@ -19,16 +19,20 @@ const mockUseNormalizedColorScheme =
     typeof useNormalizedColorScheme
   >
 
+const HOUSE_WORD_ID = 'word-house'
+const ENGLISH_HOUSE = 'house'
+const RUSSIAN_HOUSE = 'дом'
+
 const word = createMockWord({
-  word_id: 'word-house',
+  word_id: HOUSE_WORD_ID,
   dutch_lemma: 'huis',
   article: 'het',
   tts_url: null,
-  translations: { en: ['house'] },
+  translations: { en: [ENGLISH_HOUSE] },
 })
 
 const options: RecognitionOption[] = [
-  { id: 'word-house', label: 'house', isCorrect: true },
+  { id: HOUSE_WORD_ID, label: ENGLISH_HOUSE, isCorrect: true },
   { id: 'word-table', label: 'table', isCorrect: false },
   { id: 'word-chair', label: 'chair', isCorrect: false },
 ]
@@ -69,7 +73,7 @@ describe.each(['light', 'dark'] as const)('%s review mode snapshots', theme => {
   })
 
   it('renders Dutch Production', () => {
-    const tree = render(<DutchProductionCard prompt="house" />).toJSON()
+    const tree = render(<DutchProductionCard prompt={ENGLISH_HOUSE} />).toJSON()
 
     expect(tree).toMatchSnapshot()
   })
@@ -116,6 +120,44 @@ describe('RecognitionCard', () => {
     expect(
       getByTestId('recognition-option-1').props.accessibilityState
     ).toMatchObject({ selected: true, disabled: false })
+  })
+
+  it('shows and announces Russian translations below English options', () => {
+    const optionsWithRussian: RecognitionOption[] = [
+      {
+        id: HOUSE_WORD_ID,
+        label: ENGLISH_HOUSE,
+        secondaryLabel: RUSSIAN_HOUSE,
+        isCorrect: true,
+      },
+    ]
+    const { getByTestId, getByText } = render(
+      <RecognitionCard
+        word={word}
+        options={optionsWithRussian}
+        selectedOptionId={null}
+        isPlayingAudio={false}
+        onPlayPronunciation={noOp}
+        onSelectOption={noOp}
+      />
+    )
+
+    expect(getByText(RUSSIAN_HOUSE)).toBeTruthy()
+    expect(getByTestId(FIRST_OPTION_ID).props.accessibilityLabel).toBe(
+      `${ENGLISH_HOUSE}. ${RUSSIAN_HOUSE}`
+    )
+  })
+
+  it('shows the Russian translation below a Dutch production prompt', () => {
+    const { getByText } = render(
+      <DutchProductionCard
+        prompt={ENGLISH_HOUSE}
+        secondaryPrompt={RUSSIAN_HOUSE}
+      />
+    )
+
+    expect(getByText(ENGLISH_HOUSE)).toBeTruthy()
+    expect(getByText(RUSSIAN_HOUSE)).toBeTruthy()
   })
 
   it('prevents answers while showing read-only history', () => {

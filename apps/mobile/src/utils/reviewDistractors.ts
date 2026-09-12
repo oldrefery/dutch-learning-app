@@ -3,6 +3,7 @@ import type { Word } from '@/types/database'
 export interface RecognitionOption {
   id: string
   label: string
+  secondaryLabel?: string | null
   isCorrect: boolean
 }
 
@@ -33,6 +34,24 @@ export const getPreferredTranslation = (word: Word): string | null => {
     .find(Boolean)
 
   return translation ?? null
+}
+
+export const getRussianTranslation = (word: Word): string | null => {
+  const translation = word.translations.ru
+    ?.map(value => value.trim())
+    .find(Boolean)
+
+  return translation ?? null
+}
+
+const getRussianSecondaryTranslation = (
+  word: Word,
+  label: string
+): string | null => {
+  const translation = getRussianTranslation(word)
+  return translation && normalizeAnswer(translation) !== normalizeAnswer(label)
+    ? translation
+    : null
 }
 
 export const getDutchProductionAnswer = (word: Word): string => {
@@ -112,11 +131,19 @@ export const createRecognitionOptionBuilder = (vocabulary: Word[]) => {
       {
         id: currentWord.word_id,
         label: correctLabel,
+        secondaryLabel: getRussianSecondaryTranslation(
+          currentWord,
+          correctLabel
+        ),
         isCorrect: true,
       },
       ...selected.map(candidate => ({
         id: candidate.word.word_id,
         label: candidate.label,
+        secondaryLabel: getRussianSecondaryTranslation(
+          candidate.word,
+          candidate.label
+        ),
         isCorrect: false,
       })),
     ].sort((first, second) => {

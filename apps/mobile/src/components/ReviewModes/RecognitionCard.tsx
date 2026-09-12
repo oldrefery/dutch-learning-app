@@ -69,7 +69,11 @@ export function RecognitionCard({
               onPress={() => onSelectOption(option)}
               disabled={disabled}
               accessibilityRole="radio"
-              accessibilityLabel={option.label}
+              accessibilityLabel={
+                option.secondaryLabel
+                  ? `${option.label}. ${option.secondaryLabel}`
+                  : option.label
+              }
               accessibilityHint="Selects this translation as your answer"
               accessibilityState={{ selected: isSelected }}
               style={({ pressed }) => [
@@ -85,7 +89,24 @@ export function RecognitionCard({
                 },
               ]}
             >
-              <TextThemed style={styles.optionText}>{option.label}</TextThemed>
+              {option.secondaryLabel ? (
+                <View>
+                  <TextThemed style={styles.optionText}>
+                    {option.label}
+                  </TextThemed>
+                  <TextThemed
+                    style={styles.optionTranslation}
+                    lightColor={Colors.neutral[600]}
+                    darkColor={Colors.dark.textSecondary}
+                  >
+                    {option.secondaryLabel}
+                  </TextThemed>
+                </View>
+              ) : (
+                <TextThemed style={styles.optionText}>
+                  {option.label}
+                </TextThemed>
+              )}
             </Pressable>
           )
         })}
@@ -135,5 +156,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  optionTranslation: {
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.SMALL,
+    lineHeight: 20,
+    marginTop: 2,
+    textAlign: 'center',
   },
 })

@@ -4,6 +4,7 @@ import {
   createRecognitionOptionBuilder,
   getDutchProductionAnswer,
   getPreferredTranslation,
+  getRussianTranslation,
 } from '../reviewDistractors'
 
 describe('reviewDistractors', () => {
@@ -133,6 +134,20 @@ describe('reviewDistractors', () => {
     const word = createMockWord({ translations: { en: [], ru: ['  дом  '] } })
 
     expect(getPreferredTranslation(word)).toBe('дом')
+  })
+
+  it('keeps Russian translations paired with English recognition options', () => {
+    const options = buildRecognitionOptions(currentWord, vocabulary)
+
+    expect(options).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'house',
+          secondaryLabel: 'дом',
+        }),
+      ])
+    )
+    expect(getRussianTranslation(currentWord)).toBe('дом')
   })
 
   it('returns null when no usable translation exists', () => {
