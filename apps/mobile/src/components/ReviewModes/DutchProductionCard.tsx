@@ -6,15 +6,26 @@ import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
 
 interface DutchProductionCardProps {
   prompt: string
+  secondaryPrompt?: string | null
 }
 
-export function DutchProductionCard({ prompt }: DutchProductionCardProps) {
+export function DutchProductionCard({
+  prompt,
+  secondaryPrompt,
+}: DutchProductionCardProps) {
+  const visibleSecondaryPrompt =
+    secondaryPrompt?.trim() && secondaryPrompt !== prompt
+      ? secondaryPrompt
+      : null
+
   return (
     <ViewThemed
       style={styles.container}
       testID="dutch-production-card"
       accessible
-      accessibilityLabel={`Translate into Dutch: ${prompt}`}
+      accessibilityLabel={`Translate into Dutch: ${prompt}${
+        visibleSecondaryPrompt ? `. ${visibleSecondaryPrompt}` : ''
+      }`}
     >
       <TextThemed
         style={styles.eyebrow}
@@ -24,6 +35,15 @@ export function DutchProductionCard({ prompt }: DutchProductionCardProps) {
         Translate into Dutch
       </TextThemed>
       <TextThemed style={styles.prompt}>{prompt}</TextThemed>
+      {visibleSecondaryPrompt && (
+        <TextThemed
+          style={styles.secondaryPrompt}
+          lightColor={Colors.neutral[500]}
+          darkColor={Colors.dark.textSecondary}
+        >
+          {visibleSecondaryPrompt}
+        </TextThemed>
+      )}
       <TextThemed
         style={styles.hint}
         lightColor={Colors.neutral[500]}
@@ -52,6 +72,12 @@ const styles = StyleSheet.create({
     fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.XXLARGE,
     fontWeight: '700',
     lineHeight: 40,
+    textAlign: 'center',
+  },
+  secondaryPrompt: {
+    fontSize: REVIEW_SCREEN_CONSTANTS.FONT_SIZES.MEDIUM,
+    lineHeight: 24,
+    marginTop: REVIEW_SCREEN_CONSTANTS.SPACING.XS,
     textAlign: 'center',
   },
   hint: {

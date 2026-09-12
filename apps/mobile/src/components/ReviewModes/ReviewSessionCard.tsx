@@ -23,6 +23,7 @@ import type { RecognitionOption } from '@/utils/reviewDistractors'
 import {
   getDutchProductionAnswer,
   getPreferredTranslation,
+  getRussianTranslation,
 } from '@/utils/reviewDistractors'
 
 interface ReviewSessionCardProps {
@@ -86,7 +87,12 @@ function ReviewPrompt({
   }
 
   if (effectiveMode === REVIEW_MODE.DUTCH_PRODUCTION && preferredTranslation) {
-    return <DutchProductionCard prompt={preferredTranslation} />
+    return (
+      <DutchProductionCard
+        prompt={preferredTranslation}
+        secondaryPrompt={getRussianTranslation(word)}
+      />
+    )
   }
 
   return (
