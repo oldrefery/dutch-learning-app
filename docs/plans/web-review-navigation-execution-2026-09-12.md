@@ -10,7 +10,9 @@
 - Runtime: Node v24.9.0, npm 11.6.0.
 - N00 activation completed after user authorization. Both hosted migrations are applied and authenticated Review loads successfully.
 - N01 laboratory work is complete: isolated production browser harness, 160 desktop samples, 60 CPU-throttled samples, and disposable SQL plans. See `web-review-navigation-n01-results-2026-09-12.md` for exact results and limitations. No quantitative production improvement is claimed.
-- The current RPC path meets the provisional lab targets, but the user subsequently reported production tab navigation still exceeds two seconds while Start is fast. This supersedes the earlier reason to defer all further investigation. N02 was evaluated and rejected in its page-only form; N04–N07 remain conditional and N03 has no justified new index. See `web-review-navigation-n02-results-2026-09-12.md`.
+- The current RPC path meets the provisional lab targets, but the user subsequently reported production tab navigation still exceeds two seconds while Start is fast. N02 was evaluated and rejected in its page-only form. N03 has no justified new index; live traces now justify testing function/database placement before N04–N07. See the N02 and production reports.
+- Dedicated-account credentials are now configured. Under the user's earlier authorization, normal Starter Pack imports populated 2,105 words in 22 collections, with zero review events. Keep this dataset for repeat measurements. Fifteen live measurements reproduced slow setup and fast Start on production `3cfdebb`; exact Sentry traces confirm the snapshot path without new permissions.
+- N03 candidate: `apps/web/vercel.json` pins this web project's next deployment to `fra1`. It is not a production deployment; preview verification and separate release authorization remain required. No application source, auth policy, database schema or organization setting changes are included.
 
 ## N00 evidence
 
@@ -72,7 +74,16 @@ Rollback: retain the additive read-only functions. If the new read path has a de
 
 ## Next action
 
-PR #121 is open; CI for `f70384a` passed, including mutation tests. N02's 120-run experiment found faster client navigation but slower large-workspace direct entry, so the candidate was removed. Keep Astra / High; no model switch is needed. A project-scoped live trace is still needed before attributing the user's full delay or choosing a wider architecture change. Dedicated `WEB_E2E_EMAIL` / `WEB_E2E_PASSWORD` credentials are incomplete in the known local environment; the user was asked to configure them locally, not paste them into chat. Do not reapply migrations, request the same release authorization again, or modify organization access.
+PR #121 is open; CI for `2390b67` passed, including mutation tests. N02's 120-run experiment found faster client navigation but slower large-workspace direct entry, so the candidate stays removed. Keep Astra / High; no model switch is needed. Validate the N03 project-region candidate on the branch preview, then obtain release authorization before merging/promoting it. If preview protection blocks measurement, do not weaken protection or request organization access. Do not reapply migrations or repeat test-account imports.
+
+## Live baseline and N03 candidate
+
+- Production build remained `3cfdebb`, served by `woordenaar-l4finaqri-rustems-projects.vercel.app`. Dedicated-account measurements: five direct, five first-client and five repeat navigations. No assessments were submitted.
+- Usable setup medians: 1,738 / 1,604 / 1,563 ms; Start-to-card: 74 / 82 / 65 ms. All 15 queues retained 2,105 words, with zero observed browser errors or long tasks. HTTP cache was disabled by the safety route guard; framework prefetch/cache remained enabled. These are not the user's working-account timings or a production p95.
+- Correlated web trace `1b0f1e95749f40f0ae987620b24d4698`: server Review 937 ms, verified user 123 ms, access 119 ms, snapshot RPC 642 ms in sequential order. Exact trace/span lookups worked under existing permissions, superseding earlier generic-search limitations.
+- All measured Review response headers indicated `fra1::iad1::`; linked project pooler is `aws-1-eu-central-1.pooler.supabase.com`. Direct authenticated RPC from this machine had median 305 ms across five reads. Different execution environments do not provide a causal region A/B or an exact promised saving.
+- Added single-region `fra1` configuration at the documented Vercel project root, `apps/web`. No new index, SQL change, Start deferral, account-role change or organization mutation is justified or included.
+- Full methodology, ranges, payloads, trace links, limitations, verification gates and rollback: `web-review-navigation-production-2026-09-12.md`.
 
 ## Production feedback after N01
 
