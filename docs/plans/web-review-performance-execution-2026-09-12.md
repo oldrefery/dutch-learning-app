@@ -107,3 +107,9 @@ Complete W00 with an isolated build/browser harness and five-run artifacts; add 
 - `npm run test:db` passed against private disposable PostgreSQL clusters, including the new collection-overview and review-snapshot RPC contracts.
 - `npm run web:test`, `npm run web:lint`, `npm run web:typecheck`, and `npm run web:build` passed.
 - `npm run web:e2e:fixtures` passed 3/3 in the isolated offline browser configuration. Its first sandboxed Chromium launch was blocked by macOS Mach-port permissions; the same no-network fixture run passed when granted the required local browser permission.
+
+### W00 preparation baseline
+
+- Added `npm run web:performance`, which invokes the actual review preparation code with deterministic 2,500 and 5,000 word adaptive fixtures, five times each. Sanitized JSON/Markdown output is written to ignored `apps/web/output/performance/`.
+- On this host, synchronous preparation measured 187–211 ms for 2,500 words and 377–393 ms for 5,000 words. These are pure preparation measurements, not browser UX latency; every run exceeded the 50 ms long-task threshold, validating the need for W03's cooperative asynchronous path.
+- The fake-Supabase authenticated production-RSC fixture and browser long-task capture remain deferred. They require a dedicated local authenticated backend rather than unsafe interception of server-side calls, so no server request-count claim is made.
