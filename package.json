@@ -31,6 +31,8 @@
     "web:test:coverage": "npm run test:coverage --workspace @woordenaar/web",
     "web:mutation": "stryker run stryker.web.config.mjs",
     "web:performance": "PERFORMANCE_HARNESS=1 WEB_PERFORMANCE_OUTPUT=output/performance npm run test --workspace @woordenaar/web -- --runTestsByPath src/features/review/performance-harness.test.ts",
+    "web:performance:navigation": "node scripts/web-performance/run.mjs",
+    "web:performance:navigation:test": "node --test scripts/web-performance/*.test.mjs",
     "web:e2e": "npm run test:e2e --workspace @woordenaar/web",
     "web:e2e:smoke": "npm run test:e2e:smoke --workspace @woordenaar/web",
     "web:e2e:fixtures": "npm run test:e2e:fixtures --workspace @woordenaar/web --",
