@@ -256,13 +256,13 @@ test('completed session keeps read-only history and uses canonical SRS for the n
   await act(async () => result.current.submit('good'))
   expect(result.current.stage).toBe('complete')
   expect(result.current.dueCount).toBe(0)
-  expect(result.current.sessionWords[0]).toEqual(word)
+  expect(result.current.sessionTotal).toBe(1)
   act(() => result.current.goTo(-1))
   expect(result.current.stage).toBe('review')
   expect(result.current.historyEntry?.result).toMatchObject({
     assessment: 'good',
   })
-  expect(result.current.sessionWords[0].intervalDays).toBe(0)
+  expect(result.current.currentWord?.intervalDays).toBe(0)
   act(() => result.current.returnToCurrent())
   expect(result.current.stage).toBe('complete')
 })

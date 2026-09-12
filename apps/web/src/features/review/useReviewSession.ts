@@ -180,13 +180,9 @@ export function useReviewSession(
   const options =
     displayed?.question.options.map(option => ({ ...option })) ?? []
   const summary = flow ? summarizeReviewFlow(flow) : null
-  const sessionWords = flow
-    ? [
-        ...flow.history.map(entry => entry.question.question.payload.word),
-        ...(flow.active ? [flow.active.question.payload.word] : []),
-        ...flow.remaining.map(question => question.payload.word),
-      ]
-    : []
+  const sessionTotal = flow
+    ? flow.history.length + flow.remaining.length + Number(Boolean(flow.active))
+    : 0
   const status = flow?.active?.submission?.status
 
   useEffect(() => {
@@ -241,7 +237,7 @@ export function useReviewSession(
     revealed: historyEntry ? true : (displayed?.revealed ?? false),
     selectedOption:
       options.find(option => option.id === displayed?.selectedOptionId) ?? null,
-    sessionWords,
+    sessionTotal,
     stage: !flow
       ? 'setup'
       : summary?.finished && !historyEntry

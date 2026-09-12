@@ -230,7 +230,7 @@ export function AudioReviewWorkspace({
             Audio Review
           </p>
           <p className="mt-1 text-sm text-neutral-500">
-            {session.currentIndex + 1} / {session.sessionWords.length}
+            {session.currentIndex + 1} / {session.sessionTotal}
           </p>
         </div>
         <Link

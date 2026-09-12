@@ -14,6 +14,7 @@ import { ReviewCorrectionControls } from './ReviewCorrectionControls'
 import { ReviewSessionControls } from './ReviewSessionControls'
 import { ReviewSessionNavigation } from './ReviewSessionNavigation'
 import { useReviewKeyboard } from './useReviewKeyboard'
+import { useAudioReviewPlayback } from './useAudioReviewPlayback'
 import { useReviewSession } from './useReviewSession'
 import { ReviewDetailCache } from './review-detail-cache'
 import type {
@@ -104,6 +105,7 @@ function AccountReviewWorkspace({
     userId
   )
   const [detailCache] = useState(() => new ReviewDetailCache())
+  const { play: playAudio, stop: stopAudio } = useAudioReviewPlayback()
   const { isHydrated, settings, update } = useWebSettings(userId)
   const appliedPreferencesRef = useRef(false)
   const setSessionCollectionId = session.setCollectionId
@@ -115,22 +117,12 @@ function AccountReviewWorkspace({
   const playPronunciation = useCallback(() => {
     const word = session.currentWord
     if (!word) return
+    void playAudio(word)
+  }, [playAudio, session.currentWord])
 
-    const speakWithBrowser = () => {
-      if (!('speechSynthesis' in window)) return
-      window.speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(word.dutchLemma)
-      utterance.lang = 'nl-NL'
-      window.speechSynthesis.speak(utterance)
-    }
-
-    if (word.ttsUrl) {
-      void new Audio(word.ttsUrl).play().catch(speakWithBrowser)
-      return
-    }
-
-    speakWithBrowser()
-  }, [session.currentWord])
+  useEffect(() => {
+    stopAudio()
+  }, [session.currentWord?.id, session.detailsVisible, stopAudio])
 
   useEffect(() => {
     if (!isHydrated || appliedPreferencesRef.current) return
@@ -277,7 +269,7 @@ function AccountReviewWorkspace({
     0
   )
   const progress =
-    ((session.summary?.completed ?? 0) / session.sessionWords.length) * 100
+    ((session.summary?.completed ?? 0) / session.sessionTotal) * 100
   const modeLabel = MODE_LABELS[session.effectiveMode]
 
   return (
@@ -303,7 +295,7 @@ function AccountReviewWorkspace({
             <span style={{ width: `${progress}%` }} />
           </div>
           <span>
-            {session.currentIndex + 1} / {session.sessionWords.length}
+            {session.currentIndex + 1} / {session.sessionTotal}
           </span>
         </div>
         <div className={styles.sessionMeta}>
