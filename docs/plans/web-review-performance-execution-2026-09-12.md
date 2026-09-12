@@ -74,3 +74,30 @@ An initial focused Jest invocation used repository-root test paths and correctly
 ## Next action
 
 Complete W00 with an isolated build/browser harness and five-run artifacts; add W04 coordinator race/browser coverage, then complete W04 as one atomic freshness stage before progressing to W05.
+
+## Completion update
+
+### W04–W05 — Freshness and identity
+
+- Replaced routine review/correction route invalidation with an account-scoped boundary coordinator and authenticated layout refresh action.
+- Split identity verification from access-level reads; normal review mutations use identity only.
+
+### W06 — Collection overview and streamed chrome
+
+- Added `get_web_collection_overviews_v1(p_today date)` as a `SECURITY INVOKER` RPC with caller-derived ownership, active-word counters and least-privilege grants.
+- The authenticated shell streams the Review badge under Suspense instead of blocking on collection statistics. The legacy read path remains only for expected missing-RPC rollout errors.
+
+### W07 — Review snapshot
+
+- Added the `SECURITY INVOKER` `get_web_review_snapshot_v1()` JSON RPC. It returns ordered collections, all active words and the bounded effective event stream from one statement snapshot.
+- The server validates the versioned envelope and fails closed for malformed/permission failures; only expected missing-RPC errors use the old capability-aware paged path.
+
+### W08–W09 — Detail and long-session responsiveness
+
+- Added a private no-store detail route, shared server reader and account-mounted bounded detail cache. Requests are abortable; failures are evicted and AI reanalysis invalidates the affected entry.
+- Reused the generation-guarded pronunciation lifecycle in standard Review and replaced session-word array materialization used only for length with `sessionTotal`.
+
+### W10 assessment
+
+- Production web build, typechecking, focused UI tests and private PostgreSQL migration tests pass. The snapshot preserved full vocabulary and history semantics; no evidence justified a worker, framework upgrade, cache-components migration, global client query framework, durable outbox, or a hosted region/configuration change.
+- W00's controlled browser/performance harness and five-run benchmark remain unimplemented. No latency or long-task improvement is claimed without that artifact; these checks are therefore a release-readiness limitation rather than fabricated measurement.
