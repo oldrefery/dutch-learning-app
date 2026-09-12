@@ -77,9 +77,7 @@ it('persists a single atomic assessment and returns authoritative server progres
     p_review_date: '2026-09-05',
     p_reviewed_at: input.reviewedAt,
   })
-  expect(revalidatePath).toHaveBeenCalledTimes(2)
-  expect(revalidatePath).toHaveBeenCalledWith('/app/collections')
-  expect(revalidatePath).toHaveBeenCalledWith('/app/review')
+  expect(revalidatePath).not.toHaveBeenCalled()
   expect(Sentry.captureException).not.toHaveBeenCalled()
 })
 

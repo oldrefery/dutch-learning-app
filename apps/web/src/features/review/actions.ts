@@ -1,7 +1,6 @@
 'use server'
 
 import * as Sentry from '@sentry/nextjs'
-import { revalidatePath } from 'next/cache'
 import { requireAuthContext } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
 import {
@@ -74,9 +73,6 @@ export async function submitReviewAssessment(
       message: 'Could not save this review. Please try again.',
     }
   }
-
-  revalidatePath('/app/collections')
-  revalidatePath('/app/review')
 
   return {
     status: 'success',

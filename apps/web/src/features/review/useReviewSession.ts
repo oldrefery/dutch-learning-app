@@ -25,6 +25,7 @@ import {
 import { submitReviewAssessment } from './actions'
 import { submitReviewCorrection } from './correction-actions'
 import { loadReviewCorrectionState } from './correction-refresh'
+import { useReviewFreshness } from '@/components/app/ReviewFreshnessProvider'
 import { createReviewSessionController } from './session-controller'
 import {
   getPreferredTranslation,
@@ -46,11 +47,41 @@ export function useReviewSession(
   userId: string,
   initialMode: ReviewSessionMode = 'adaptive'
 ) {
+  const freshness = useReviewFreshness()
   const [controller] = useState(() =>
-    createReviewSessionController(userId, data, submitReviewAssessment, {
-      submit: submitReviewCorrection,
-      refresh: loadReviewCorrectionState,
-    })
+    createReviewSessionController(
+      userId,
+      data,
+      async input => {
+        freshness.beginAttempt()
+        try {
+          const result = await submitReviewAssessment(input)
+          freshness.settleAttempt(
+            result.status === 'success' ? 'confirmed' : 'unknown'
+          )
+          return result
+        } catch (error) {
+          freshness.settleAttempt('unknown')
+          throw error
+        }
+      },
+      {
+        submit: async input => {
+          freshness.beginAttempt()
+          try {
+            const result = await submitReviewCorrection(input)
+            freshness.settleAttempt(
+              result.status === 'success' ? 'confirmed' : 'unknown'
+            )
+            return result
+          } catch (error) {
+            freshness.settleAttempt('unknown')
+            throw error
+          }
+        },
+        refresh: loadReviewCorrectionState,
+      }
+    )
   )
   const {
     flow,
@@ -158,6 +189,10 @@ export function useReviewSession(
     : []
   const status = flow?.active?.submission?.status
 
+  useEffect(() => {
+    if (summary?.finished) freshness.flushAtBoundary()
+  }, [freshness, summary?.finished])
+
   return {
     correction,
     correctionsAvailable,
@@ -230,7 +265,7 @@ export function useReviewSession(
           : state
       ),
     changeMode: () => {
-      controller.exit()
+      if (controller.exit()) freshness.flushAtBoundary()
     },
     goTo: (direction: -1 | 1) =>
       controller.transition(state => {

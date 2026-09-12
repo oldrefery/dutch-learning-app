@@ -102,11 +102,7 @@ it('sends one replacement RPC with the original operation ID and returns canonic
     ],
   ])
   expect(from).not.toHaveBeenCalled()
-  expect(jest.mocked(revalidatePath).mock.calls).toEqual(
-    ['/app/review', '/app/history', '/app/insights', '/app/collections'].map(
-      path => [path]
-    )
-  )
+  expect(revalidatePath).not.toHaveBeenCalled()
   expect(Sentry.captureException).not.toHaveBeenCalled()
 })
 

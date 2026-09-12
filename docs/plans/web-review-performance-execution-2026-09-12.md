@@ -62,6 +62,15 @@ An initial focused Jest invocation used repository-root test paths and correctly
 - `apps/web/src/features/review/useReviewSession.ts`
 - `apps/web/src/features/review/useReviewSession.test.tsx`
 
+## In progress
+
+### W04 — Boundary freshness
+
+- Routine `revalidatePath` calls were removed from ordinary review and correction acknowledgements.
+- An account-scoped `ReviewFreshnessProvider` now records confirmed or uncertain mutation attempts and invokes a single authenticated layout invalidation only at a session boundary or after leaving Review.
+- `flushReviewFreshness` verifies the authenticated identity before invalidating `/app` as a layout.
+- Focused action/session tests pass, but W04 remains incomplete until coordinator race tests and the isolated production-build request-count fixture are added.
+
 ## Next action
 
-Complete W00 with an isolated build/browser harness and five-run artifacts, then implement W04a and W04b as one atomic freshness change before progressing to W05.
+Complete W00 with an isolated build/browser harness and five-run artifacts; add W04 coordinator race/browser coverage, then complete W04 as one atomic freshness stage before progressing to W05.
