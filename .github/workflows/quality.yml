@@ -41,6 +41,9 @@ jobs:
       - name: Test E2E fixture contracts without accounts or an app server
         run: npm run web:e2e:fixtures
 
+      - name: Test isolated navigation backend contracts
+        run: npm run web:performance:navigation:test
+
   database:
     runs-on: ubuntu-24.04
     timeout-minutes: 10

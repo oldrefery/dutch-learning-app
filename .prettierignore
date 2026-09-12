@@ -7,6 +7,7 @@ apps/web/next-env.d.ts
 apps/web/.playwright/
 apps/web/playwright-report/
 apps/web/test-results/
+apps/web/output/performance/
 apps/mobile/.expo/
 apps/mobile/ios/
 apps/mobile/android/
