@@ -25,6 +25,7 @@ import {
 import { submitReviewAssessment } from './actions'
 import { submitReviewCorrection } from './correction-actions'
 import { loadReviewCorrectionState } from './correction-refresh'
+import { useReviewFreshness } from '@/components/app/ReviewFreshnessProvider'
 import { createReviewSessionController } from './session-controller'
 import {
   getPreferredTranslation,
@@ -46,11 +47,41 @@ export function useReviewSession(
   userId: string,
   initialMode: ReviewSessionMode = 'adaptive'
 ) {
+  const freshness = useReviewFreshness()
   const [controller] = useState(() =>
-    createReviewSessionController(userId, data, submitReviewAssessment, {
-      submit: submitReviewCorrection,
-      refresh: loadReviewCorrectionState,
-    })
+    createReviewSessionController(
+      userId,
+      data,
+      async input => {
+        freshness.beginAttempt()
+        try {
+          const result = await submitReviewAssessment(input)
+          freshness.settleAttempt(
+            result.status === 'success' ? 'confirmed' : 'unknown'
+          )
+          return result
+        } catch (error) {
+          freshness.settleAttempt('unknown')
+          throw error
+        }
+      },
+      {
+        submit: async input => {
+          freshness.beginAttempt()
+          try {
+            const result = await submitReviewCorrection(input)
+            freshness.settleAttempt(
+              result.status === 'success' ? 'confirmed' : 'unknown'
+            )
+            return result
+          } catch (error) {
+            freshness.settleAttempt('unknown')
+            throw error
+          }
+        },
+        refresh: loadReviewCorrectionState,
+      }
+    )
   )
   const {
     flow,
@@ -60,6 +91,7 @@ export function useReviewSession(
     blockedCorrections,
     notice,
     noticeEventId,
+    preparation,
     detailRevision,
   } = useSyncExternalStore(
     controller.subscribe,
@@ -78,10 +110,12 @@ export function useReviewSession(
 
   useEffect(() => {
     controller.attach()
-    const visibility = () =>
+    const visibility = () => {
+      if (document.hidden) controller.cancelPreparation()
       controller.transition(state =>
         setReviewForeground(state, !document.hidden)
       )
+    }
     visibility()
     document.addEventListener('visibilitychange', visibility)
     const beforeUnload = (event: BeforeUnloadEvent) => {
@@ -122,15 +156,21 @@ export function useReviewSession(
     [controller]
   )
   const start = () => {
-    if (!controller.start(scope, collectionId, mode, manualRecognition)) {
-      if (!controller.exit()) return
-      setEmptyMessage('No words are due in this scope. Try another scope.')
-    } else {
-      controller.transition(state =>
-        setReviewForeground(state, !document.hidden)
-      )
-      setEmptyMessage(null)
-    }
+    void controller
+      .start(scope, collectionId, mode, manualRecognition)
+      .then(result => {
+        if (result === 'empty') {
+          if (!controller.exit()) return
+          setEmptyMessage('No words are due in this scope. Try another scope.')
+          return
+        }
+        if (result === 'started') {
+          controller.transition(state =>
+            setReviewForeground(state, !document.hidden)
+          )
+          setEmptyMessage(null)
+        }
+      })
   }
   const historyEntry =
     flow?.view.kind === 'history' ? flow.history[flow.view.index] : null
@@ -140,14 +180,14 @@ export function useReviewSession(
   const options =
     displayed?.question.options.map(option => ({ ...option })) ?? []
   const summary = flow ? summarizeReviewFlow(flow) : null
-  const sessionWords = flow
-    ? [
-        ...flow.history.map(entry => entry.question.question.payload.word),
-        ...(flow.active ? [flow.active.question.payload.word] : []),
-        ...flow.remaining.map(question => question.payload.word),
-      ]
-    : []
+  const sessionTotal = flow
+    ? flow.history.length + flow.remaining.length + Number(Boolean(flow.active))
+    : 0
   const status = flow?.active?.submission?.status
+
+  useEffect(() => {
+    if (summary?.finished) freshness.flushAtBoundary()
+  }, [freshness, summary?.finished])
 
   return {
     correction,
@@ -190,13 +230,14 @@ export function useReviewSession(
     error: flow?.active?.submission?.error ?? null,
     mode,
     pending: status === 'saving',
+    preparation,
     unsettled:
       Boolean(correction) || status === 'saving' || status === 'failed',
     recognitionOptions: options.length ? options : null,
     revealed: historyEntry ? true : (displayed?.revealed ?? false),
     selectedOption:
       options.find(option => option.id === displayed?.selectedOptionId) ?? null,
-    sessionWords,
+    sessionTotal,
     stage: !flow
       ? 'setup'
       : summary?.finished && !historyEntry
@@ -220,7 +261,7 @@ export function useReviewSession(
           : state
       ),
     changeMode: () => {
-      controller.exit()
+      if (controller.exit()) freshness.flushAtBoundary()
     },
     goTo: (direction: -1 | 1) =>
       controller.transition(state => {
@@ -236,6 +277,7 @@ export function useReviewSession(
     setMode,
     setScope,
     start,
+    cancelPreparation: controller.cancelPreparation,
     submit: controller.submit,
     scope,
     setRevealed: (value: boolean) => {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Check, Headphones, Volume2, X } from 'lucide-react'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { useWebSettings } from '@/features/settings/useWebSettings'
@@ -14,7 +14,9 @@ import { ReviewCorrectionControls } from './ReviewCorrectionControls'
 import { ReviewSessionControls } from './ReviewSessionControls'
 import { ReviewSessionNavigation } from './ReviewSessionNavigation'
 import { useReviewKeyboard } from './useReviewKeyboard'
+import { useAudioReviewPlayback } from './useAudioReviewPlayback'
 import { useReviewSession } from './useReviewSession'
+import { ReviewDetailCache } from './review-detail-cache'
 import type {
   ReviewAssessment,
   ReviewScope,
@@ -102,31 +104,25 @@ function AccountReviewWorkspace({
     initialCollectionId,
     userId
   )
+  const [detailCache] = useState(() => new ReviewDetailCache())
+  const { play: playAudio, stop: stopAudio } = useAudioReviewPlayback()
   const { isHydrated, settings, update } = useWebSettings(userId)
   const appliedPreferencesRef = useRef(false)
   const setSessionCollectionId = session.setCollectionId
   const setSessionMode = session.setMode
   const setManualRecognition = session.setManualRecognition
 
+  useEffect(() => () => detailCache.dispose(), [detailCache])
+
   const playPronunciation = useCallback(() => {
     const word = session.currentWord
     if (!word) return
+    void playAudio(word)
+  }, [playAudio, session.currentWord])
 
-    const speakWithBrowser = () => {
-      if (!('speechSynthesis' in window)) return
-      window.speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(word.dutchLemma)
-      utterance.lang = 'nl-NL'
-      window.speechSynthesis.speak(utterance)
-    }
-
-    if (word.ttsUrl) {
-      void new Audio(word.ttsUrl).play().catch(speakWithBrowser)
-      return
-    }
-
-    speakWithBrowser()
-  }, [session.currentWord])
+  useEffect(() => {
+    stopAudio()
+  }, [session.currentWord?.id, session.detailsVisible, stopAudio])
 
   useEffect(() => {
     if (!isHydrated || appliedPreferencesRef.current) return
@@ -185,6 +181,26 @@ function AccountReviewWorkspace({
   if (session.stage === 'setup') {
     return (
       <>
+        {session.preparation.status === 'preparing' && (
+          <section aria-live="polite" className={styles.preparing}>
+            <p>
+              Preparing {session.preparation.completed} of{' '}
+              {session.preparation.total} review cards…
+            </p>
+            <Button
+              onClick={session.cancelPreparation}
+              type="button"
+              variant="secondary"
+            >
+              Cancel preparation
+            </Button>
+          </section>
+        )}
+        {session.preparation.status === 'error' && (
+          <p className="dw-error" role="alert">
+            {session.preparation.message}
+          </p>
+        )}
         <label className={styles.manualPreference}>
           <input
             type="checkbox"
@@ -221,6 +237,7 @@ function AccountReviewWorkspace({
             }
           }}
           onStart={session.start}
+          preparing={session.preparation.status === 'preparing'}
           scope={session.scope}
         />
       </>
@@ -252,7 +269,7 @@ function AccountReviewWorkspace({
     0
   )
   const progress =
-    ((session.summary?.completed ?? 0) / session.sessionWords.length) * 100
+    ((session.summary?.completed ?? 0) / session.sessionTotal) * 100
   const modeLabel = MODE_LABELS[session.effectiveMode]
 
   return (
@@ -278,7 +295,7 @@ function AccountReviewWorkspace({
             <span style={{ width: `${progress}%` }} />
           </div>
           <span>
-            {session.currentIndex + 1} / {session.sessionWords.length}
+            {session.currentIndex + 1} / {session.sessionTotal}
           </span>
         </div>
         <div className={styles.sessionMeta}>
@@ -319,6 +336,8 @@ function AccountReviewWorkspace({
         {session.detailsVisible ? (
           <ReviewDetails
             canUseAi={canUseAi}
+            detailCache={detailCache}
+            detailRevision={session.detailRevision}
             key={`${userId}:${session.currentWord.id}:${session.detailRevision}`}
             userId={userId}
             wordId={session.currentWord.id}

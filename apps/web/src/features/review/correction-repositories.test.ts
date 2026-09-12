@@ -40,6 +40,16 @@ let responses: Record<
   { data: unknown[] | null; error: { message: string } | null }
 >
 
+const mockSnapshotMissing = (capability: { data: unknown; error: unknown }) => {
+  rpc.mockImplementation((functionName: string) =>
+    Promise.resolve(
+      functionName === 'get_web_review_snapshot_v1'
+        ? { data: null, error: { code: 'PGRST202' } }
+        : capability
+    )
+  )
+}
+
 beforeEach(() => {
   jest.resetAllMocks()
   queries.length = 0
@@ -49,7 +59,7 @@ beforeEach(() => {
     review_events: ok([original]),
     effective_review_events: ok([effective]),
   }
-  rpc.mockResolvedValue({ data: 1, error: null })
+  mockSnapshotMissing({ data: 1, error: null })
   from.mockImplementation((table: string) => {
     const query = {
       table,
@@ -115,10 +125,74 @@ it('feeds effective assessments to adaptive decisions and history without changi
     expect(query.eq).toHaveBeenCalledWith('user_id', userId)
 })
 
+it('uses one validated snapshot RPC when the migrated contract is available', async () => {
+  rpc.mockImplementation((functionName: string) =>
+    Promise.resolve(
+      functionName === 'get_web_review_snapshot_v1'
+        ? {
+            data: {
+              protocolVersion: 1,
+              correctionsAvailable: true,
+              collections: [{ collection_id: 'collection', name: 'QA' }],
+              words: [
+                {
+                  article: null,
+                  collection_id: 'collection',
+                  dutch_lemma: 'fiets',
+                  dutch_original: 'fiets',
+                  easiness_factor: 2.5,
+                  image_url: null,
+                  interval_days: 1,
+                  last_reviewed_at: null,
+                  next_review_date: '2026-09-12',
+                  part_of_speech: 'noun',
+                  repetition_count: 0,
+                  translations: ['bike'],
+                  tts_url: '',
+                  word_id: 'word',
+                },
+              ],
+              events: [effective],
+            },
+            error: null,
+          }
+        : { data: 1, error: null }
+    )
+  )
+
+  await expect(getReviewWorkspaceData(userId)).resolves.toMatchObject({
+    correctionsAvailable: true,
+    words: [
+      expect.objectContaining({
+        id: 'word',
+        ttsUrl: null,
+        translations: ['bike'],
+      }),
+    ],
+    events: [expect.objectContaining({ assessment: 'again' })],
+  })
+  expect(rpc).toHaveBeenCalledTimes(1)
+  expect(rpc).toHaveBeenCalledWith('get_web_review_snapshot_v1')
+  expect(from).not.toHaveBeenCalled()
+})
+
+it('fails closed for malformed or unauthorized snapshot responses', async () => {
+  rpc.mockResolvedValue({ data: { protocolVersion: 1 }, error: null })
+  await expect(getReviewWorkspaceData(userId)).rejects.toThrow(
+    'Could not load the review workspace'
+  )
+
+  rpc.mockResolvedValue({ data: null, error: { code: '42501' } })
+  await expect(getReviewWorkspaceData(userId)).rejects.toThrow(
+    'Could not load the review workspace'
+  )
+  expect(from).not.toHaveBeenCalled()
+})
+
 it.each(['PGRST202', '42883'])(
   'keeps the old server readable when the capability is missing: %s',
   async code => {
-    rpc.mockResolvedValue({ data: null, error: { code } })
+    mockSnapshotMissing({ data: null, error: { code } })
     const workspace = await getReviewWorkspaceData(userId)
     const history = await listRecentReviewEvents(userId)
     expect(workspace.correctionsAvailable).toBe(false)
@@ -129,14 +203,17 @@ it.each(['PGRST202', '42883'])(
 )
 
 it('fails closed on a capability network error instead of silently serving old ratings', async () => {
-  rpc.mockResolvedValue({ data: null, error: { code: 'NETWORK' } })
+  mockSnapshotMissing({ data: null, error: { code: 'NETWORK' } })
   await expect(getReviewWorkspaceData(userId)).rejects.toThrow(
     'verify review correction support'
   )
   await expect(listRecentReviewEvents(userId)).rejects.toThrow(
     'verify review correction support'
   )
-  expect(from).not.toHaveBeenCalled()
+  expect(from).toHaveBeenCalledWith('collections')
+  expect(from).toHaveBeenCalledWith('words')
+  expect(from).not.toHaveBeenCalledWith('review_events')
+  expect(from).not.toHaveBeenCalledWith('effective_review_events')
 })
 
 it('does not fall back to uncorrected events when the effective view fails', async () => {

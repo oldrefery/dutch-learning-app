@@ -3,6 +3,19 @@ import type { Database as GeneratedDatabase, Json } from './database.generated'
 type PublicSchema = GeneratedDatabase['public']
 type ReviewFunction = PublicSchema['Functions']['record_review_assessment']
 
+type WebCollectionOverviewRow = {
+  collection_id: string
+  name: string
+  is_shared: boolean | null
+  created_at: string
+  updated_at: string | null
+  total_words: number
+  mastered_words: number
+  due_words: number
+  difficult_words: number
+  new_words: number
+}
+
 type OfficialContentTables = {
   official_content_packs: {
     Row: {
@@ -146,6 +159,12 @@ export type Database = Omit<GeneratedDatabase, 'public'> & {
           p_answered_correctly: boolean | null
           p_response_time_ms: number | null
         }
+      }
+      get_web_collection_overviews_v1: {
+        Args: {
+          p_today: string
+        }
+        Returns: WebCollectionOverviewRow[]
       }
     }
   }

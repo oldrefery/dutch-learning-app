@@ -1,5 +1,5 @@
 /** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
-import { requireAuthContext } from '@/lib/auth/session'
+import { requireAuthenticatedIdentity } from '@/lib/auth/session'
 import {
   createCorrectionClient,
   readCorrectionCapability,
@@ -7,7 +7,9 @@ import {
 import { loadReviewCorrectionState } from './correction-refresh'
 import type { ReviewCorrectionRefreshInput } from './correction-contract'
 
-jest.mock('@/lib/auth/session', () => ({ requireAuthContext: jest.fn() }))
+jest.mock('@/lib/auth/session', () => ({
+  requireAuthenticatedIdentity: jest.fn(),
+}))
 jest.mock('./correction-client', () => ({
   createCorrectionClient: jest.fn(),
   readCorrectionCapability: jest.fn(),
@@ -29,10 +31,9 @@ const event = query()
 const from = jest.fn()
 beforeEach(() => {
   jest.clearAllMocks()
-  jest.mocked(requireAuthContext).mockResolvedValue({
+  jest.mocked(requireAuthenticatedIdentity).mockResolvedValue({
     userId: input.userId,
     email: 'synthetic@example.test',
-    accessLevel: 'full_access',
   })
   jest.mocked(readCorrectionCapability).mockResolvedValue(true)
   from.mockImplementation(table => (table === 'words' ? word : event))
@@ -114,7 +115,7 @@ test.each([
 
 test('auth redirect escapes the error boundary', async () => {
   const redirect = new Error('NEXT_REDIRECT')
-  jest.mocked(requireAuthContext).mockRejectedValueOnce(redirect)
+  jest.mocked(requireAuthenticatedIdentity).mockRejectedValueOnce(redirect)
   await expect(loadReviewCorrectionState(input)).rejects.toBe(redirect)
   expect(createCorrectionClient).not.toHaveBeenCalled()
 })

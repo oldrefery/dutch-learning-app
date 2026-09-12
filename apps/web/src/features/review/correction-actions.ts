@@ -1,8 +1,7 @@
 'use server'
 
 import * as Sentry from '@sentry/nextjs'
-import { revalidatePath } from 'next/cache'
-import { requireAuthContext } from '@/lib/auth/session'
+import { requireAuthenticatedIdentity } from '@/lib/auth/session'
 import {
   createCorrectionClient,
   readCorrectionCapability,
@@ -23,7 +22,7 @@ const RETRY_MESSAGE =
 export async function submitReviewCorrection(
   input: ReviewCorrectionInput
 ): Promise<ReviewCorrectionResult> {
-  const auth = await requireAuthContext()
+  const auth = await requireAuthenticatedIdentity()
   if (!isReviewCorrectionInput(input) || input.userId !== auth.userId) {
     return {
       status: 'invalid',
@@ -65,13 +64,6 @@ export async function submitReviewCorrection(
     if (data?.length !== 1 || !isReviewCorrectionAcknowledgement(row, input)) {
       throw new Error('Invalid review correction acknowledgement')
     }
-    for (const path of [
-      '/app/review',
-      '/app/history',
-      '/app/insights',
-      '/app/collections',
-    ])
-      revalidatePath(path)
     return {
       status: 'success',
       correctionId: row.correction_id,

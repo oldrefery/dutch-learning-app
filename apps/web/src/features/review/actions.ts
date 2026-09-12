@@ -1,8 +1,7 @@
 'use server'
 
 import * as Sentry from '@sentry/nextjs'
-import { revalidatePath } from 'next/cache'
-import { requireAuthContext } from '@/lib/auth/session'
+import { requireAuthenticatedIdentity } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
 import {
   isReviewAssessment,
@@ -31,7 +30,7 @@ const isValidSubmission = (input: ReviewSubmissionInput) =>
 export async function submitReviewAssessment(
   input: ReviewSubmissionInput
 ): Promise<ReviewSubmissionResult> {
-  await requireAuthContext()
+  await requireAuthenticatedIdentity()
 
   if (!isValidSubmission(input)) {
     return { status: 'error', message: 'The review result is invalid.' }
@@ -74,9 +73,6 @@ export async function submitReviewAssessment(
       message: 'Could not save this review. Please try again.',
     }
   }
-
-  revalidatePath('/app/collections')
-  revalidatePath('/app/review')
 
   return {
     status: 'success',

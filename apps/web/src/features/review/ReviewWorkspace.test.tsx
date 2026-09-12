@@ -37,8 +37,12 @@ const renderWorkspace = (data = makeData(), userId = 'test-user') =>
       initialCollectionId={null}
     />
   )
-const start = () =>
-  fireEvent.click(screen.getByRole('button', { name: /Start ·/ }))
+const start = async () => {
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: /Start ·/ }))
+    await jest.advanceTimersByTimeAsync(0)
+  })
+}
 const flush = async () => {
   await act(async () => {})
 }
@@ -100,7 +104,7 @@ afterEach(() => {
 
 async function openCorrectionHistory() {
   renderWorkspace({ ...makeData(), correctionsAvailable: true })
-  start()
+  await start()
   fireEvent.click(screen.getByRole('button', { name: /house/ }))
   await flush()
   tick(600)
@@ -234,7 +238,7 @@ test.each(['light', 'dark'])(
   async theme => {
     document.documentElement.dataset.theme = theme
     renderWorkspace()
-    start()
+    await start()
     expect(screen.getByRole('button', { name: 'Exit review' })).toHaveAttribute(
       'aria-label',
       'Exit review'
@@ -260,7 +264,7 @@ test.each(['light', 'dark'])(
   }
 )
 
-test('recognition choices show Russian translations below their English meanings', () => {
+test('recognition choices show Russian translations below their English meanings', async () => {
   renderWorkspace(
     makeData([
       makeWord('word-1', 'house', {
@@ -274,7 +278,7 @@ test('recognition choices show Russian translations below their English meanings
       }),
     ])
   )
-  start()
+  await start()
 
   expect(screen.getByRole('button', { name: /house.*дом/ })).toBeInTheDocument()
   expect(
@@ -282,7 +286,7 @@ test('recognition choices show Russian translations below their English meanings
   ).toBeInTheDocument()
 })
 
-test('meaning recall shows the Russian translation with its revealed answer', () => {
+test('meaning recall shows the Russian translation with its revealed answer', async () => {
   renderWorkspace(
     makeData([
       makeWord('word-1', 'house', {
@@ -290,7 +294,7 @@ test('meaning recall shows the Russian translation with its revealed answer', ()
       }),
     ])
   )
-  start()
+  await start()
   fireEvent.click(screen.getByRole('button', { name: /Reveal answer/ }))
 
   expect(screen.getByText('house')).toBeInTheDocument()
@@ -299,7 +303,7 @@ test('meaning recall shows the Russian translation with its revealed answer', ()
 
 test('wrong answer loads full details and Continue records only Again', async () => {
   renderWorkspace()
-  start()
+  await start()
   fireEvent.click(screen.getByRole('button', { name: /\btree\b/ }))
   await flush()
   expect(details).toHaveBeenCalledWith({
@@ -323,7 +327,7 @@ test('wrong answer loads full details and Continue records only Again', async ()
 
 test('D opens details before answering and Skip does not submit', async () => {
   renderWorkspace()
-  start()
+  await start()
   fireEvent.keyDown(document.body, { key: 'd' })
   await flush()
   expect(screen.getByText(/Answer viewed/)).toBeInTheDocument()
@@ -340,7 +344,7 @@ test('manual-rating switch persists and keyboard ratings work after correct choi
     screen.getByRole('checkbox', { name: /Rate correct recognition/ })
   )
   expect(update).toHaveBeenCalledWith({ manualRecognition: true })
-  start()
+  await start()
   fireEvent.click(screen.getByRole('button', { name: /house/ }))
   tick(1000)
   expect(persist).not.toHaveBeenCalled()
@@ -353,7 +357,7 @@ test('manual-rating switch persists and keyboard ratings work after correct choi
 
 test('history is still accessible after the final word', async () => {
   renderWorkspace(makeData([makeWord('word-1', 'house')]))
-  start()
+  await start()
   fireEvent.click(screen.getByRole('button', { name: /Reveal answer/ }))
   fireEvent.click(screen.getByRole('button', { name: /^Good/ }))
   await flush()
@@ -382,7 +386,7 @@ test('a new account remounts the session and late saves cannot restore old data'
   )
   const data = makeData()
   const view = renderWorkspace(data)
-  start()
+  await start()
   fireEvent.click(screen.getByRole('button', { name: /house/ }))
   view.rerender(
     <ReviewWorkspace
@@ -394,7 +398,7 @@ test('a new account remounts the session and late saves cannot restore old data'
     />
   )
   await act(async () => resolve(successfulResult('word-1')))
-  start()
+  await start()
   expect(
     screen.getByRole('heading', { name: 'woord-other' })
   ).toBeInTheDocument()
@@ -445,7 +449,7 @@ test('full details render the actual complete card without leaving the session',
   })
   details.mockResolvedValue({ status: 'success', word })
   renderWorkspace()
-  start()
+  await start()
   fireEvent.click(screen.getByRole('button', { name: 'Full details' }))
   await flush()
   expect(screen.getByText('huizen')).toBeInTheDocument()
@@ -465,7 +469,7 @@ test('reanalyzes an open review card and reloads fresh details without submittin
     })
 
   renderWorkspace()
-  start()
+  await start()
   fireEvent.click(screen.getByRole('button', { name: 'Full details' }))
   await flush()
   fireEvent.click(screen.getByRole('button', { name: 'Reanalyze with AI' }))
@@ -493,7 +497,7 @@ test('shows review reanalysis failures without replacing the open card', async (
   })
 
   renderWorkspace()
-  start()
+  await start()
   fireEvent.click(screen.getByRole('button', { name: 'Full details' }))
   await flush()
   fireEvent.click(screen.getByRole('button', { name: 'Reanalyze with AI' }))

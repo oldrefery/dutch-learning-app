@@ -46,7 +46,7 @@ async function setup(available = true) {
     { submit, refresh }
   )
   controller.attach()
-  controller.start('all-due', null, 'meaning-recall', false)
+  await controller.start('all-due', null, 'meaning-recall', false)
   controller.transition(state =>
     revealReviewAnswer(state, state.active!.question.id, Date.now())
   )
@@ -141,7 +141,9 @@ test('lost acknowledgement preserves the exact command and blocks new writes, re
   await controller.submit('easy')
   expect(persist).toHaveBeenCalledTimes(1)
   expect(controller.exit()).toBe(false)
-  expect(controller.start('all-due', null, 'recognition', false)).toBe(false)
+  await expect(
+    controller.start('all-due', null, 'recognition', false)
+  ).resolves.toBe('blocked')
   await controller.keepServerVersion()
   expect(refresh).not.toHaveBeenCalled()
   await controller.retryCorrection()

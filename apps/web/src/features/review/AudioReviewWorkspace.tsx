@@ -47,8 +47,20 @@ const toWordDetail = (
   usageNotes: null,
 })
 
-export function AudioReviewWorkspace({ data }: { data: ReviewWorkspaceData }) {
-  const session = useReviewSession(data, 'all-due', null, 'meaning-recall')
+export function AudioReviewWorkspace({
+  data,
+  userId,
+}: {
+  data: ReviewWorkspaceData
+  userId: string
+}) {
+  const session = useReviewSession(
+    data,
+    'all-due',
+    null,
+    userId,
+    'meaning-recall'
+  )
   const playback = useAudioReviewPlayback()
   const playedWordIdRef = useRef<string | null>(null)
   const translation = session.currentWord
@@ -56,12 +68,8 @@ export function AudioReviewWorkspace({ data }: { data: ReviewWorkspaceData }) {
     : null
 
   const start = useCallback(() => {
-    const firstWord = session.dueWords[0]
-    if (!firstWord) return
-    playedWordIdRef.current = firstWord.id
     session.start()
-    void playback.play(firstWord)
-  }, [playback, session])
+  }, [session])
 
   const reveal = useCallback(() => {
     if (!session.currentWord) return
@@ -129,14 +137,43 @@ export function AudioReviewWorkspace({ data }: { data: ReviewWorkspaceData }) {
           {session.dueCount} {session.dueCount === 1 ? 'word is' : 'words are'}{' '}
           due.
         </p>
+        {session.preparation.status === 'preparing' && (
+          <div
+            aria-live="polite"
+            className="mt-4 text-sm text-neutral-600 dark:text-neutral-400"
+          >
+            Preparing {session.preparation.completed} of{' '}
+            {session.preparation.total} review cards…{' '}
+            <button
+              className="underline"
+              onClick={session.cancelPreparation}
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+        {session.preparation.status === 'error' && (
+          <p
+            className="mt-4 text-sm text-rose-700 dark:text-rose-300"
+            role="alert"
+          >
+            {session.preparation.message}
+          </p>
+        )}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
             className="rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-950"
-            disabled={session.dueCount === 0}
+            disabled={
+              session.dueCount === 0 ||
+              session.preparation.status === 'preparing'
+            }
             onClick={start}
             type="button"
           >
-            Start Audio Review
+            {session.preparation.status === 'preparing'
+              ? 'Preparing…'
+              : 'Start Audio Review'}
           </button>
           <Link
             className="rounded-xl border border-neutral-300 px-5 py-2.5 text-sm font-medium dark:border-neutral-700"
@@ -193,7 +230,7 @@ export function AudioReviewWorkspace({ data }: { data: ReviewWorkspaceData }) {
             Audio Review
           </p>
           <p className="mt-1 text-sm text-neutral-500">
-            {session.currentIndex + 1} / {session.sessionWords.length}
+            {session.currentIndex + 1} / {session.sessionTotal}
           </p>
         </div>
         <Link

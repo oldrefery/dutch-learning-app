@@ -10,14 +10,22 @@ jest.mock('./correction-refresh', () => ({
   loadReviewCorrectionState: jest.fn(),
 }))
 const persist = jest.mocked(submitReviewAssessment)
-const setup = (mode: ReviewSessionMode = 'recognition', data = makeData()) => {
+const setup = async (
+  mode: ReviewSessionMode = 'recognition',
+  data = makeData()
+) => {
   const rendered = renderHook(() =>
     useReviewSession(data, 'all-due', null, 'test-user', mode)
   )
-  act(() => rendered.result.current.start())
+  await act(async () => {
+    rendered.result.current.start()
+    await jest.advanceTimersByTimeAsync(0)
+  })
   return rendered
 }
-const selectCorrect = (result: ReturnType<typeof setup>['result']) => {
+const selectCorrect = (result: {
+  current: ReturnType<typeof useReviewSession>
+}) => {
   const option = result.current.recognitionOptions?.find(
     candidate => candidate.isCorrect
   )
@@ -47,7 +55,7 @@ afterEach(() => {
 })
 
 test('fast correct recognition saves Good once and advances after 600ms', async () => {
-  const { result } = setup()
+  const { result } = await setup()
   act(() => {
     selectCorrect(result)
     selectCorrect(result)
@@ -75,7 +83,7 @@ test('slow acknowledgement cannot advance before save', async () => {
         resolve = done
       })
   )
-  const { result } = setup()
+  const { result } = await setup()
   act(() => selectCorrect(result))
   tick(5000)
   expect(result.current.currentIndex).toBe(0)
@@ -86,7 +94,7 @@ test('slow acknowledgement cannot advance before save', async () => {
 })
 
 test('wrong choice opens details and waits for explicit Again', async () => {
-  const { result } = setup()
+  const { result } = await setup()
   const option = result.current.recognitionOptions!.find(
     candidate => !candidate.isCorrect
   )!
@@ -104,7 +112,7 @@ test('wrong choice opens details and waits for explicit Again', async () => {
 })
 
 test('details during success feedback cancel auto-advance until Continue', async () => {
-  const { result } = setup()
+  const { result } = await setup()
   act(() => selectCorrect(result))
   await flush()
   act(() => result.current.openDetails())
@@ -118,7 +126,7 @@ test('details during success feedback cancel auto-advance until Continue', async
 })
 
 test('backgrounding pauses the timer and foregrounding does not resume it', async () => {
-  const { result } = setup()
+  const { result } = await setup()
   act(() => selectCorrect(result))
   await flush()
   Object.defineProperty(document, 'hidden', { configurable: true, value: true })
@@ -136,7 +144,7 @@ test('backgrounding pauses the timer and foregrounding does not resume it', asyn
 })
 
 test('history preserves the exact pending question and options without new writes', async () => {
-  const { result } = setup()
+  const { result } = await setup()
   act(() => selectCorrect(result))
   await flush()
   tick(600)
@@ -154,7 +162,7 @@ test('history preserves the exact pending question and options without new write
 })
 
 test('peek allows only Again or Skip even after closing details', async () => {
-  const { result } = setup()
+  const { result } = await setup()
   act(() => result.current.openDetails())
   act(() => result.current.closeDetails())
   act(() => selectCorrect(result))
@@ -172,7 +180,10 @@ test('manual recognition waits for a chosen rating', async () => {
     useReviewSession(data, 'all-due', null, 'test-user', 'recognition')
   )
   act(() => result.current.setManualRecognition(true))
-  act(() => result.current.start())
+  await act(async () => {
+    result.current.start()
+    await jest.advanceTimersByTimeAsync(0)
+  })
   act(() => selectCorrect(result))
   tick(5000)
   expect(persist).not.toHaveBeenCalled()
@@ -184,7 +195,7 @@ test('manual recognition waits for a chosen rating', async () => {
 })
 
 test('preference changes affect the next question, not an in-flight answer', async () => {
-  const { result } = setup()
+  const { result } = await setup()
   act(() => result.current.setManualRecognition(true))
   act(() => selectCorrect(result))
   await flush()
@@ -199,7 +210,7 @@ test('preference changes affect the next question, not an in-flight answer', asy
 
 test('uncertain submission locks its full retry payload and blocks exit/new rating', async () => {
   persist.mockRejectedValueOnce(new Error('Offline'))
-  const { result } = setup('meaning-recall')
+  const { result } = await setup('meaning-recall')
   act(() => result.current.setRevealed(true))
   await act(async () => result.current.submit('easy'))
   const input = persist.mock.calls[0][0]
@@ -224,7 +235,7 @@ test('explicit save cannot move the question after details were opened during I/
         resolve = done
       })
   )
-  const { result } = setup('meaning-recall')
+  const { result } = await setup('meaning-recall')
   act(() => result.current.setRevealed(true))
   act(() => {
     void result.current.submit('hard')
@@ -238,20 +249,20 @@ test('explicit save cannot move the question after details were opened during I/
 
 test('completed session keeps read-only history and uses canonical SRS for the next session', async () => {
   const word = makeWord('word-1', 'house')
-  const { result } = setup('meaning-recall', makeData([word]))
+  const { result } = await setup('meaning-recall', makeData([word]))
   await act(async () => result.current.submit('good'))
   expect(persist).not.toHaveBeenCalled()
   act(() => result.current.setRevealed(true))
   await act(async () => result.current.submit('good'))
   expect(result.current.stage).toBe('complete')
   expect(result.current.dueCount).toBe(0)
-  expect(result.current.sessionWords[0]).toEqual(word)
+  expect(result.current.sessionTotal).toBe(1)
   act(() => result.current.goTo(-1))
   expect(result.current.stage).toBe('review')
   expect(result.current.historyEntry?.result).toMatchObject({
     assessment: 'good',
   })
-  expect(result.current.sessionWords[0].intervalDays).toBe(0)
+  expect(result.current.currentWord?.intervalDays).toBe(0)
   act(() => result.current.returnToCurrent())
   expect(result.current.stage).toBe('complete')
 })
@@ -264,7 +275,7 @@ test('unmount cancels feedback and ignores late acknowledgements', async () => {
         resolve = done
       })
   )
-  const { result, unmount } = setup()
+  const { result, unmount } = await setup()
   act(() => selectCorrect(result))
   unmount()
   await act(async () => resolve(successfulResult('word-1')))
@@ -272,8 +283,8 @@ test('unmount cancels feedback and ignores late acknowledgements', async () => {
   expect(persist).toHaveBeenCalledTimes(1)
 })
 
-test('empty scope does not enter review', () => {
-  const { result } = setup(
+test('empty scope does not enter review', async () => {
+  const { result } = await setup(
     'adaptive',
     makeData([makeWord('future', 'house', { nextReviewDate: '2999-01-01' })])
   )
@@ -282,14 +293,17 @@ test('empty scope does not enter review', () => {
 })
 
 test('restart after completing all due words returns to setup with an explanation', async () => {
-  const { result } = setup(
+  const { result } = await setup(
     'meaning-recall',
     makeData([makeWord('word-1', 'house')])
   )
   act(() => result.current.setRevealed(true))
   await act(async () => result.current.submit('good'))
   expect(result.current.stage).toBe('complete')
-  act(() => result.current.start())
+  await act(async () => {
+    result.current.start()
+    await jest.advanceTimersByTimeAsync(0)
+  })
   expect(result.current.stage).toBe('setup')
   expect(result.current.emptyMessage).toContain('No words are due')
 })
@@ -301,7 +315,7 @@ test.each<ReviewSubmissionResult>([
   'a rejected or mismatched acknowledgement remains retryable',
   async response => {
     persist.mockResolvedValueOnce(response)
-    const { result } = setup('meaning-recall')
+    const { result } = await setup('meaning-recall')
     act(() => result.current.setRevealed(true))
     await act(async () => result.current.submit('good'))
     expect(result.current.currentIndex).toBe(0)

@@ -14,7 +14,7 @@ import {
   selectReviewWords,
 } from './review-domain'
 import {
-  prepareReviewQuestions,
+  prepareReviewQuestionsAsync,
   type ReviewQuestionPayload,
 } from './session-questions'
 import type {
@@ -32,6 +32,11 @@ import {
 } from './session-corrections'
 
 export type WebReviewFlow = ReviewFlowState<ReviewQuestionPayload>
+export type ReviewPreparationState =
+  | { status: 'idle' }
+  | { completed: number; status: 'preparing'; total: number }
+  | { message: string; status: 'error' }
+
 export interface WebReviewSnapshot {
   flow: WebReviewFlow | null
   words: ReviewWorkspaceData['words']
@@ -41,6 +46,7 @@ export interface WebReviewSnapshot {
   blockedCorrections: string[]
   notice: string | null
   noticeEventId: string | null
+  preparation: ReviewPreparationState
   detailRevision: number
 }
 
@@ -60,11 +66,14 @@ export function createReviewSessionController(
     blockedCorrections: [],
     notice: null,
     noticeEventId: null,
+    preparation: { status: 'idle' },
     detailRevision: 0,
   }
   const initial = snapshot
   const listeners = new Set<() => void>()
   let attached = false
+  let preparationAbort: AbortController | null = null
+  let preparationGeneration = 0
   let retry: ReviewSubmissionInput | null = null
   const emit = () => listeners.forEach(listener => listener())
   const transition = (change: (flow: WebReviewFlow) => WebReviewFlow) => {
@@ -79,6 +88,15 @@ export function createReviewSessionController(
     return (
       Boolean(snapshot.correction) || status === 'saving' || status === 'failed'
     )
+  }
+  const cancelPreparation = () => {
+    if (snapshot.preparation.status !== 'preparing') return false
+    preparationGeneration += 1
+    preparationAbort?.abort()
+    preparationAbort = null
+    snapshot = { ...snapshot, preparation: { status: 'idle' } }
+    emit()
+    return true
   }
   const submit = async (assessment: ReviewAssessment, advance = true) => {
     const before = snapshot.flow
@@ -189,6 +207,7 @@ export function createReviewSessionController(
     },
     detach: () => {
       attached = false
+      cancelPreparation()
       transition(flow => setReviewForeground(flow, false))
     },
     transition,
@@ -203,38 +222,96 @@ export function createReviewSessionController(
       if (snapshot.flow && getAutomaticReviewAssessment(snapshot.flow))
         void submit('good', false)
     },
-    start: (
+    start: async (
       scope: ReviewScope,
       collectionId: string | null,
       mode: ReviewSessionMode,
       manualRecognition: boolean
     ) => {
-      if (unsettled()) return false
+      if (unsettled() || snapshot.preparation.status === 'preparing')
+        return 'blocked' as const
       const selected = selectReviewWords(snapshot.words, scope, collectionId)
-      if (!selected.length) return false
+      if (!selected.length) return 'empty' as const
       retry = null
+      const generation = ++preparationGeneration
+      const abort = new AbortController()
+      preparationAbort = abort
       snapshot = {
         ...snapshot,
         blockedCorrections: [],
         notice: null,
         noticeEventId: null,
-        flow: createReviewFlow({
-          sessionId: crypto.randomUUID(),
-          userId,
-          now: Date.now(),
-          manualRecognition,
-          questions: prepareReviewQuestions(
-            selected,
-            snapshot.words,
-            snapshot.events,
-            mode
-          ),
-        }),
+        preparation: {
+          completed: 0,
+          status: 'preparing',
+          total: selected.length,
+        },
       }
       emit()
-      return true
+      try {
+        const questions = await prepareReviewQuestionsAsync(
+          selected,
+          snapshot.words,
+          snapshot.events,
+          mode,
+          {
+            signal: abort.signal,
+            onProgress: (completed, total) => {
+              if (
+                attached &&
+                generation === preparationGeneration &&
+                !abort.signal.aborted
+              ) {
+                snapshot = {
+                  ...snapshot,
+                  preparation: { completed, status: 'preparing', total },
+                }
+                emit()
+              }
+            },
+          }
+        )
+        if (
+          !attached ||
+          generation !== preparationGeneration ||
+          abort.signal.aborted
+        )
+          return 'cancelled' as const
+        snapshot = {
+          ...snapshot,
+          flow: createReviewFlow({
+            sessionId: crypto.randomUUID(),
+            userId,
+            now: Date.now(),
+            manualRecognition,
+            questions,
+          }),
+          preparation: { status: 'idle' },
+        }
+        preparationAbort = null
+        emit()
+        return 'started' as const
+      } catch (error) {
+        if (generation !== preparationGeneration || abort.signal.aborted)
+          return 'cancelled' as const
+        preparationAbort = null
+        snapshot = {
+          ...snapshot,
+          preparation: {
+            message:
+              error instanceof Error
+                ? error.message
+                : 'Could not prepare this review. Try again.',
+            status: 'error',
+          },
+        }
+        emit()
+        return 'error' as const
+      }
     },
+    cancelPreparation,
     exit: () => {
+      if (cancelPreparation()) return true
       if (unsettled()) return false
       snapshot = { ...snapshot, flow: null }
       retry = null
