@@ -28,6 +28,7 @@ import { loadReviewCorrectionState } from './correction-refresh'
 import { createReviewSessionController } from './session-controller'
 import {
   getPreferredTranslation,
+  getRussianTranslation,
   getReviewAnswer,
   selectReviewWords,
 } from './review-domain'
@@ -202,6 +203,7 @@ export function useReviewSession(
         ? 'complete'
         : 'review',
     translation: currentWord ? getPreferredTranslation(currentWord) : null,
+    russianTranslation: currentWord ? getRussianTranslation(currentWord) : null,
     allowedAssessments: flow ? getAllowedReviewAssessments(flow) : [],
     detailsVisible:
       flow?.view.kind === 'details' ||

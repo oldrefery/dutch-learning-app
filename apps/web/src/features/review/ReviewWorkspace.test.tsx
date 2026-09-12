@@ -260,6 +260,43 @@ test.each(['light', 'dark'])(
   }
 )
 
+test('recognition choices show Russian translations below their English meanings', () => {
+  renderWorkspace(
+    makeData([
+      makeWord('word-1', 'house', {
+        translations: { en: ['house'], ru: ['дом'] },
+      }),
+      makeWord('word-2', 'tree', {
+        translations: { en: ['tree'], ru: ['дерево'] },
+      }),
+      makeWord('word-3', 'street', {
+        translations: { en: ['street'], ru: ['улица'] },
+      }),
+    ])
+  )
+  start()
+
+  expect(screen.getByRole('button', { name: /house.*дом/ })).toBeInTheDocument()
+  expect(
+    screen.getByRole('button', { name: /tree.*дерево/ })
+  ).toBeInTheDocument()
+})
+
+test('meaning recall shows the Russian translation with its revealed answer', () => {
+  renderWorkspace(
+    makeData([
+      makeWord('word-1', 'house', {
+        translations: { en: ['house'], ru: ['дом'] },
+      }),
+    ])
+  )
+  start()
+  fireEvent.click(screen.getByRole('button', { name: /Reveal answer/ }))
+
+  expect(screen.getByText('house')).toBeInTheDocument()
+  expect(screen.getByText('дом')).toBeInTheDocument()
+})
+
 test('wrong answer loads full details and Continue records only Again', async () => {
   renderWorkspace()
   start()

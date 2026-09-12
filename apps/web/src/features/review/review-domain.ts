@@ -38,6 +38,19 @@ const getTranslationValues = (translations: Json): string[] => {
     .filter(Boolean)
 }
 
+const getTranslationValuesForLanguage = (
+  translations: Json,
+  language: 'en' | 'ru'
+): string[] => {
+  if (!isJsonRecord(translations)) return []
+
+  const values = translations[language]
+  return (Array.isArray(values) ? values : [])
+    .filter((value): value is string => typeof value === 'string')
+    .map(value => value.trim())
+    .filter(Boolean)
+}
+
 const normalizeAnswer = (answer: string) =>
   answer.trim().replace(/\s+/g, ' ').toLocaleLowerCase()
 
@@ -77,6 +90,16 @@ export const selectReviewWords = (
 
 export const getPreferredTranslation = (word: ReviewWord) =>
   getTranslationValues(word.translations)[0] ?? null
+
+export const getRussianTranslation = (word: ReviewWord) =>
+  getTranslationValuesForLanguage(word.translations, 'ru')[0] ?? null
+
+const getRussianSecondaryTranslation = (word: ReviewWord, label: string) => {
+  const translation = getRussianTranslation(word)
+  return translation && normalizeAnswer(translation) !== normalizeAnswer(label)
+    ? translation
+    : null
+}
 
 export const getDutchProductionAnswer = (word: ReviewWord) =>
   word.partOfSpeech === 'noun' && word.article
@@ -154,11 +177,20 @@ export const buildRecognitionOptions = (
   if (candidates.length < 2) return null
 
   return [
-    { id: currentWord.id, isCorrect: true, label: correctLabel },
+    {
+      id: currentWord.id,
+      isCorrect: true,
+      label: correctLabel,
+      secondaryLabel: getRussianSecondaryTranslation(currentWord, correctLabel),
+    },
     ...candidates.map(candidate => ({
       id: candidate.word.id,
       isCorrect: false,
       label: candidate.label,
+      secondaryLabel: getRussianSecondaryTranslation(
+        candidate.word,
+        candidate.label
+      ),
     })),
   ].sort(
     (left, right) =>

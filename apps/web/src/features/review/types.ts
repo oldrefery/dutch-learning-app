@@ -54,6 +54,7 @@ export interface RecognitionOption {
   id: string
   isCorrect: boolean
   label: string
+  secondaryLabel?: string | null
 }
 
 export interface ReviewProgressUpdate {
