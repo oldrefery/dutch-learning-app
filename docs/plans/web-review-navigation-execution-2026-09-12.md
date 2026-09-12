@@ -6,11 +6,11 @@
 - Model preference: Astra / High. Notify the user before recommending a switch; consider XHigh for N05/N06 if needed. No switch is currently needed.
 - Startup mode: handoff from the navigation plan. Guidance: root/web AGENTS.md, read-only .claude/CLAUDE.md and the navigation plan.
 - Branch: `feature/web-review-navigation`, created from updated main at `3cfdebbd2ca5da91313b8926db7f466a47391002`.
-- Existing untracked navigation plan was preserved. No application code was changed.
+- Existing untracked navigation plan was preserved. N01 changed no application code. N02's page-only scheduling candidate was tested and removed after a cold-entry regression; application source is unchanged.
 - Runtime: Node v24.9.0, npm 11.6.0.
 - N00 activation completed after user authorization. Both hosted migrations are applied and authenticated Review loads successfully.
 - N01 laboratory work is complete: isolated production browser harness, 160 desktop samples, 60 CPU-throttled samples, and disposable SQL plans. See `web-review-navigation-n01-results-2026-09-12.md` for exact results and limitations. No quantitative production improvement is claimed.
-- The current RPC path meets the provisional lab targets. N02 and N04–N07 implementation is deferred pending evidence of a remaining live bottleneck; N03 has no justified new index. These stages are not marked implemented.
+- The current RPC path meets the provisional lab targets, but the user subsequently reported production tab navigation still exceeds two seconds while Start is fast. This supersedes the earlier reason to defer all further investigation. N02 was evaluated and rejected in its page-only form; N04–N07 remain conditional and N03 has no justified new index. See `web-review-navigation-n02-results-2026-09-12.md`.
 
 ## N00 evidence
 
@@ -72,7 +72,14 @@ Rollback: retain the additive read-only functions. If the new read path has a de
 
 ## Next action
 
-Local checks are complete; open the benchmark/report PR and inspect its hosted checks. Keep Astra / High; no model switch is needed. If fresh production navigation still takes around three seconds after N00, capture a project-scoped live trace before choosing N02 or a wider change. Do not reapply migrations, request the same release authorization again, or modify organization access.
+PR #121 is open; CI for `f70384a` passed, including mutation tests. N02's 120-run experiment found faster client navigation but slower large-workspace direct entry, so the candidate was removed. Keep Astra / High; no model switch is needed. A project-scoped live trace is still needed before attributing the user's full delay or choosing a wider architecture change. Dedicated `WEB_E2E_EMAIL` / `WEB_E2E_PASSWORD` credentials are incomplete in the known local environment; the user was asked to configure them locally, not paste them into chat. Do not reapply migrations, request the same release authorization again, or modify organization access.
+
+## Production feedback after N01
+
+- The user reports little or no noticeable improvement in navigation to the Review tab (still over two seconds), but opening the actual review session is now fast. These are separate boundaries; Start must not become the new waiting point.
+- Whether repeated navigation has the same delay is not yet established. Do not treat the report as a cold-only or warm-only measurement.
+- Read-only Sentry diagnostics did not produce a reliable live timing baseline. Initially, sourcing the web env file overwrote the populated root token with an empty value. Retrying with only root env files and an explicit web-project target succeeded: project `4512005023596544`, one unresolved production issue (`DUTCH-LEARNING-APP-WEB-8`, seven missing-Server-Action events, last seen 2026-09-12 01:16:17 UTC, before the current deployment). No link to the present navigation delay was established. The connected service's span search was scoped to a different project and its issue search rejected the web filter; empty span results are not evidence of missing web telemetry. No permission or organization configuration was changed.
+- N02 tested the code-visible `identity -> access -> snapshot` dependency at a synthetic 200 ms/request delay. It saved approximately 201–208 ms on client navigation, but regressed large-workspace cold setup by approximately 64–88 ms and also regressed combined navigation-to-card. The candidate passed 26 focused tests, lint and typecheck, but was removed because it did not meet the performance gate. The source hashes, full ranges and attribution limits are in the N02 report.
 
 ## N00 activation result
 
