@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { prepareReviewQuestions } from './session-questions'
