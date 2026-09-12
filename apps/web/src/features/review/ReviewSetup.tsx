@@ -49,6 +49,7 @@ interface ReviewSetupProps {
   onModeChange: (value: ReviewSessionMode) => void
   onScopeChange: (value: ReviewScope) => void
   onStart: () => void
+  preparing?: boolean
   scope: ReviewScope
 }
 
@@ -63,6 +64,7 @@ export function ReviewSetup({
   onModeChange,
   onScopeChange,
   onStart,
+  preparing = false,
   scope,
 }: ReviewSetupProps) {
   const estimateMinutes = Math.max(1, Math.ceil(dueCount * 0.35))
@@ -181,9 +183,13 @@ export function ReviewSetup({
           <Link className={styles.audioLink} href="/app/review/audio">
             <Headphones aria-hidden="true" size={16} /> Audio review
           </Link>
-          <Button disabled={dueCount === 0} onClick={onStart} type="button">
+          <Button
+            disabled={dueCount === 0 || preparing}
+            onClick={onStart}
+            type="button"
+          >
             <Play aria-hidden="true" fill="currentColor" size={15} />
-            Start · {dueCount}
+            {preparing ? 'Preparing…' : `Start · ${dueCount}`}
             <span className="dw-key">Enter</span>
           </Button>
         </div>

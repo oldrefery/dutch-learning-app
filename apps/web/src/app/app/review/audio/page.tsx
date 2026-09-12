@@ -6,5 +6,7 @@ export default async function AudioReviewPage() {
   const auth = await requireAuthContext()
   const data = await getReviewWorkspaceData(auth.userId)
 
-  return <AudioReviewWorkspace data={data} />
+  return (
+    <AudioReviewWorkspace data={data} key={auth.userId} userId={auth.userId} />
+  )
 }

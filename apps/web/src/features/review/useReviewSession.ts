@@ -60,6 +60,7 @@ export function useReviewSession(
     blockedCorrections,
     notice,
     noticeEventId,
+    preparation,
     detailRevision,
   } = useSyncExternalStore(
     controller.subscribe,
@@ -78,10 +79,12 @@ export function useReviewSession(
 
   useEffect(() => {
     controller.attach()
-    const visibility = () =>
+    const visibility = () => {
+      if (document.hidden) controller.cancelPreparation()
       controller.transition(state =>
         setReviewForeground(state, !document.hidden)
       )
+    }
     visibility()
     document.addEventListener('visibilitychange', visibility)
     const beforeUnload = (event: BeforeUnloadEvent) => {
@@ -122,15 +125,21 @@ export function useReviewSession(
     [controller]
   )
   const start = () => {
-    if (!controller.start(scope, collectionId, mode, manualRecognition)) {
-      if (!controller.exit()) return
-      setEmptyMessage('No words are due in this scope. Try another scope.')
-    } else {
-      controller.transition(state =>
-        setReviewForeground(state, !document.hidden)
-      )
-      setEmptyMessage(null)
-    }
+    void controller
+      .start(scope, collectionId, mode, manualRecognition)
+      .then(result => {
+        if (result === 'empty') {
+          if (!controller.exit()) return
+          setEmptyMessage('No words are due in this scope. Try another scope.')
+          return
+        }
+        if (result === 'started') {
+          controller.transition(state =>
+            setReviewForeground(state, !document.hidden)
+          )
+          setEmptyMessage(null)
+        }
+      })
   }
   const historyEntry =
     flow?.view.kind === 'history' ? flow.history[flow.view.index] : null
@@ -190,6 +199,7 @@ export function useReviewSession(
     error: flow?.active?.submission?.error ?? null,
     mode,
     pending: status === 'saving',
+    preparation,
     unsettled:
       Boolean(correction) || status === 'saving' || status === 'failed',
     recognitionOptions: options.length ? options : null,
@@ -236,6 +246,7 @@ export function useReviewSession(
     setMode,
     setScope,
     start,
+    cancelPreparation: controller.cancelPreparation,
     submit: controller.submit,
     scope,
     setRevealed: (value: boolean) => {

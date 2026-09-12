@@ -185,6 +185,26 @@ function AccountReviewWorkspace({
   if (session.stage === 'setup') {
     return (
       <>
+        {session.preparation.status === 'preparing' && (
+          <section aria-live="polite" className={styles.preparing}>
+            <p>
+              Preparing {session.preparation.completed} of{' '}
+              {session.preparation.total} review cards…
+            </p>
+            <Button
+              onClick={session.cancelPreparation}
+              type="button"
+              variant="secondary"
+            >
+              Cancel preparation
+            </Button>
+          </section>
+        )}
+        {session.preparation.status === 'error' && (
+          <p className="dw-error" role="alert">
+            {session.preparation.message}
+          </p>
+        )}
         <label className={styles.manualPreference}>
           <input
             type="checkbox"
@@ -221,6 +241,7 @@ function AccountReviewWorkspace({
             }
           }}
           onStart={session.start}
+          preparing={session.preparation.status === 'preparing'}
           scope={session.scope}
         />
       </>

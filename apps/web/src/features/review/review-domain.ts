@@ -135,69 +135,105 @@ export const getReviewIntervalLabel = (
 const getTranslationKeys = (word: ReviewWord) =>
   new Set(getTranslationValues(word.translations).map(normalizeAnswer))
 
+interface RecognitionCandidate {
+  keys: Set<string>
+  label: string
+  rank: number
+  word: ReviewWord
+}
+
 export const buildRecognitionOptions = (
   currentWord: ReviewWord,
   vocabulary: readonly ReviewWord[],
   maximumOptions = 4
-): RecognitionOption[] | null => {
-  const correctLabel = getPreferredTranslation(currentWord)
-  if (!correctLabel || maximumOptions < 3) return null
+): RecognitionOption[] | null =>
+  createRecognitionOptionBuilder(vocabulary)(currentWord, maximumOptions)
 
-  const currentKeys = getTranslationKeys(currentWord)
-  const usedKeys = new Set(currentKeys)
-  const candidates = vocabulary
-    .filter(word => word.id !== currentWord.id)
-    .map(word => ({
-      word,
-      label: getPreferredTranslation(word),
-      keys: getTranslationKeys(word),
-    }))
+/** Normalizes and ranks the complete vocabulary once for one review session. */
+export const createRecognitionOptionBuilder = (
+  vocabulary: readonly ReviewWord[]
+) => {
+  const pool = vocabulary
+    .map(word => {
+      const label = getPreferredTranslation(word)
+      return label
+        ? {
+            word,
+            label,
+            keys: getTranslationKeys(word),
+            rank: stableHash(word.id),
+          }
+        : null
+    })
     .filter(
-      (candidate): candidate is typeof candidate & { label: string } =>
-        Boolean(candidate.label) &&
-        ![...candidate.keys].some(key => currentKeys.has(key))
+      (candidate): candidate is RecognitionCandidate => candidate !== null
     )
-    .sort((left, right) => {
-      const leftMatches = left.word.partOfSpeech === currentWord.partOfSpeech
-      const rightMatches = right.word.partOfSpeech === currentWord.partOfSpeech
-      if (leftMatches !== rightMatches) return leftMatches ? -1 : 1
-      return (
-        stableHash(`${currentWord.id}:${left.word.id}`) -
-          stableHash(`${currentWord.id}:${right.word.id}`) ||
-        left.word.id.localeCompare(right.word.id)
-      )
-    })
-    .filter(candidate => {
-      if ([...candidate.keys].some(key => usedKeys.has(key))) return false
-      candidate.keys.forEach(key => usedKeys.add(key))
-      return true
-    })
-    .slice(0, maximumOptions - 1)
+    .sort(
+      (left, right) =>
+        left.rank - right.rank || left.word.id.localeCompare(right.word.id)
+    )
+  const byPartOfSpeech = new Map<string | null, RecognitionCandidate[]>()
+  for (const candidate of pool) {
+    const group = byPartOfSpeech.get(candidate.word.partOfSpeech) ?? []
+    group.push(candidate)
+    byPartOfSpeech.set(candidate.word.partOfSpeech, group)
+  }
 
-  if (candidates.length < 2) return null
+  return (
+    currentWord: ReviewWord,
+    maximumOptions = 4
+  ): RecognitionOption[] | null => {
+    const correctLabel = getPreferredTranslation(currentWord)
+    if (!correctLabel || maximumOptions < 3) return null
 
-  return [
-    {
-      id: currentWord.id,
-      isCorrect: true,
-      label: correctLabel,
-      secondaryLabel: getRussianSecondaryTranslation(currentWord, correctLabel),
-    },
-    ...candidates.map(candidate => ({
-      id: candidate.word.id,
-      isCorrect: false,
-      label: candidate.label,
-      secondaryLabel: getRussianSecondaryTranslation(
-        candidate.word,
-        candidate.label
-      ),
-    })),
-  ].sort(
-    (left, right) =>
-      stableHash(`${currentWord.id}:option:${left.id}`) -
-        stableHash(`${currentWord.id}:option:${right.id}`) ||
-      left.id.localeCompare(right.id)
-  )
+    const currentKeys = getTranslationKeys(currentWord)
+    const usedKeys = new Set(currentKeys)
+    const candidates: RecognitionCandidate[] = []
+    const preferred = byPartOfSpeech.get(currentWord.partOfSpeech) ?? []
+    for (const group of [preferred, pool]) {
+      if (!group.length || candidates.length >= maximumOptions - 1) continue
+      const offset = stableHash(currentWord.id) % group.length
+      for (
+        let index = 0;
+        index < group.length && candidates.length < maximumOptions - 1;
+        index += 1
+      ) {
+        const candidate = group[(offset + index) % group.length]
+        if (candidate.word.id === currentWord.id) continue
+        if ([...candidate.keys].some(key => usedKeys.has(key))) continue
+        candidates.push(candidate)
+        candidate.keys.forEach(key => usedKeys.add(key))
+      }
+    }
+
+    if (candidates.length < 2) return null
+
+    return [
+      {
+        id: currentWord.id,
+        isCorrect: true,
+        label: correctLabel,
+        secondaryLabel: getRussianSecondaryTranslation(
+          currentWord,
+          correctLabel
+        ),
+      },
+      ...candidates.map(candidate => ({
+        id: candidate.word.id,
+        isCorrect: false,
+        label: candidate.label,
+        secondaryLabel: getRussianSecondaryTranslation(
+          candidate.word,
+          candidate.label
+        ),
+      })),
+    ].sort(
+      (left, right) =>
+        stableHash(`${currentWord.id}:option:${left.id}`) -
+          stableHash(`${currentWord.id}:option:${right.id}`) ||
+        left.id.localeCompare(right.id)
+    )
+  }
 }
 
 const isSuccessfulReview = (event: ReviewEventEvidence) =>

@@ -39,7 +39,7 @@ export async function makeCorrectionSession() {
     { submit, refresh }
   )
   controller.attach()
-  controller.start('all-due', null, 'meaning-recall', false)
+  await controller.start('all-due', null, 'meaning-recall', false)
   controller.transition(flow =>
     revealReviewAnswer(flow, flow.active!.question.id, Date.now())
   )
