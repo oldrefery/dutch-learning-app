@@ -6,20 +6,26 @@ import { WordDetailCard } from '@/features/words/WordDetailCard'
 import { reanalyzeWord } from '@/features/words/actions'
 import { INITIAL_WORD_ACTION_STATE } from '@/features/words/form-state'
 import { loadReviewWordDetails } from './details-action'
+import type {
+  ReviewDetailCache,
+  ReviewDetailResult,
+} from './review-detail-cache'
 
 /** Mounted with an account/word key; stale responses cannot replace another card. */
 export function ReviewDetails({
   canUseAi = false,
+  detailCache,
+  detailRevision = 0,
   userId,
   wordId,
 }: {
   canUseAi?: boolean
+  detailCache?: ReviewDetailCache
+  detailRevision?: number
   userId: string
   wordId: string
 }) {
-  const [result, setResult] = useState<Awaited<
-    ReturnType<typeof loadReviewWordDetails>
-  > | null>(null)
+  const [result, setResult] = useState<ReviewDetailResult | null>(null)
   const [attempt, setAttempt] = useState(0)
   const [reanalysisMessage, setReanalysisMessage] = useState<{
     status: 'success' | 'error'
@@ -28,22 +34,26 @@ export function ReviewDetails({
   const [isReanalyzing, startReanalysis] = useTransition()
 
   useEffect(() => {
-    let cancelled = false
-    void loadReviewWordDetails({ userId, wordId })
+    const controller = new AbortController()
+    const request =
+      detailCache && typeof fetch !== 'undefined'
+        ? detailCache.load(userId, wordId, detailRevision, controller.signal)
+        : loadReviewWordDetails({ userId, wordId })
+    void request
       .then(value => {
-        if (!cancelled) setResult(value)
+        if (!controller.signal.aborted) setResult(value)
       })
       .catch(() => {
-        if (!cancelled)
+        if (!controller.signal.aborted)
           setResult({
             status: 'error',
             message: 'Could not load the full card. Please try again.',
           })
       })
     return () => {
-      cancelled = true
+      controller.abort()
     }
-  }, [userId, wordId, attempt])
+  }, [attempt, detailCache, detailRevision, userId, wordId])
   if (!result) return <p role="status">Loading full card…</p>
   if (result.status === 'error')
     return (
@@ -85,6 +95,7 @@ export function ReviewDetails({
           status: 'success',
           text: state.message ?? 'Fresh analysis saved.',
         })
+        detailCache?.invalidate(userId, wordId)
         setResult(null)
         setAttempt(value => value + 1)
       } catch {

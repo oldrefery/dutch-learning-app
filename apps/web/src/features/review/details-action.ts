@@ -1,12 +1,8 @@
 'use server'
 
 import { requireAuthenticatedIdentity } from '@/lib/auth/session'
-import { createClient } from '@/lib/supabase/server'
-import {
-  buildWordDetail,
-  isUuid,
-  type WordDetail,
-} from '@/features/words/word-detail'
+import { isUuid, type WordDetail } from '@/features/words/word-detail'
+import { getOwnedReviewWordDetail } from './details-repository'
 
 export async function loadReviewWordDetails(input: {
   userId: string
@@ -19,6 +15,7 @@ export async function loadReviewWordDetails(input: {
     !input ||
     input.userId !== auth.userId ||
     typeof input.wordId !== 'string' ||
+    typeof input.wordId !== 'string' ||
     !isUuid(input.wordId)
   ) {
     return {
@@ -27,16 +24,9 @@ export async function loadReviewWordDetails(input: {
     }
   }
   try {
-    const client = await createClient()
-    const { data, error } = await client
-      .from('words')
-      .select('*')
-      .eq('user_id', auth.userId)
-      .eq('word_id', input.wordId)
-      .is('deleted_at', null)
-      .maybeSingle()
-    if (error || !data) throw new Error('Review word details unavailable')
-    return { status: 'success', word: buildWordDetail(data) }
+    const word = await getOwnedReviewWordDetail(auth.userId, input.wordId)
+    if (!word) throw new Error('Review word details unavailable')
+    return { status: 'success', word }
   } catch {
     return {
       status: 'error',

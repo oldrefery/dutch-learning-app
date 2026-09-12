@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Check, Headphones, Volume2, X } from 'lucide-react'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { useWebSettings } from '@/features/settings/useWebSettings'
@@ -15,6 +15,7 @@ import { ReviewSessionControls } from './ReviewSessionControls'
 import { ReviewSessionNavigation } from './ReviewSessionNavigation'
 import { useReviewKeyboard } from './useReviewKeyboard'
 import { useReviewSession } from './useReviewSession'
+import { ReviewDetailCache } from './review-detail-cache'
 import type {
   ReviewAssessment,
   ReviewScope,
@@ -102,11 +103,14 @@ function AccountReviewWorkspace({
     initialCollectionId,
     userId
   )
+  const [detailCache] = useState(() => new ReviewDetailCache())
   const { isHydrated, settings, update } = useWebSettings(userId)
   const appliedPreferencesRef = useRef(false)
   const setSessionCollectionId = session.setCollectionId
   const setSessionMode = session.setMode
   const setManualRecognition = session.setManualRecognition
+
+  useEffect(() => () => detailCache.dispose(), [detailCache])
 
   const playPronunciation = useCallback(() => {
     const word = session.currentWord
@@ -340,6 +344,8 @@ function AccountReviewWorkspace({
         {session.detailsVisible ? (
           <ReviewDetails
             canUseAi={canUseAi}
+            detailCache={detailCache}
+            detailRevision={session.detailRevision}
             key={`${userId}:${session.currentWord.id}:${session.detailRevision}`}
             userId={userId}
             wordId={session.currentWord.id}
