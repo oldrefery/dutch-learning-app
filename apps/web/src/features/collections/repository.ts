@@ -8,7 +8,45 @@ import type { CollectionDetail } from './collection-detail'
 import { buildCollectionOverviews } from './collection-overview'
 import type { CollectionOverview, WordSummaryRow } from './collection-overview'
 
-const queryCollectionOverviews = async (
+type WebCollectionOverviewRow = {
+  collection_id: string
+  name: string
+  is_shared: boolean | null
+  created_at: string
+  updated_at: string | null
+  total_words: number
+  mastered_words: number
+  due_words: number
+  difficult_words: number
+  new_words: number
+}
+
+export const mapCollectionOverviewRow = (
+  row: WebCollectionOverviewRow
+): CollectionOverview => ({
+  id: row.collection_id,
+  name: row.name,
+  isShared: row.is_shared ?? false,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+  totalWords: row.total_words,
+  masteredWords: row.mastered_words,
+  dueWords: row.due_words,
+  difficultWords: row.difficult_words,
+  newWords: row.new_words,
+  progressPercentage:
+    row.total_words === 0
+      ? 0
+      : Math.round((row.mastered_words / row.total_words) * 100),
+})
+
+export const isMissingCollectionOverviewsRpc = (
+  error: {
+    code?: string
+  } | null
+): boolean => error?.code === 'PGRST202' || error?.code === '42883'
+
+const queryCollectionOverviewsFallback = async (
   userId: string
 ): Promise<CollectionOverview[]> => {
   const supabase = await createClient()
@@ -42,6 +80,26 @@ const queryCollectionOverviews = async (
     collectionsResult.data ?? [],
     wordsResult.data ?? []
   )
+}
+
+const queryCollectionOverviews = async (
+  userId: string
+): Promise<CollectionOverview[]> => {
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc(
+    'get_web_collection_overviews_v1',
+    { p_today: toLocalDateKey(new Date()) }
+  )
+
+  if (!error) {
+    return (data ?? []).map(mapCollectionOverviewRow)
+  }
+
+  if (isMissingCollectionOverviewsRpc(error)) {
+    return queryCollectionOverviewsFallback(userId)
+  }
+
+  throw new Error('Could not load collections.')
 }
 
 export const listCollectionOverviews = cache(queryCollectionOverviews)
