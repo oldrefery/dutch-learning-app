@@ -5,13 +5,11 @@ import { asUser, owner, other, seedUsers, seedWord } from './fixtures.mjs'
 
 let db
 let newestCollection
-let oldestCollection
 
 before(async () => {
   db = await createCluster()
   await seedUsers(db)
-  oldestCollection =
-    await db.sql(`INSERT INTO public.collections(user_id, name, created_at)
+  await db.sql(`INSERT INTO public.collections(user_id, name, created_at)
     VALUES ('${owner}', 'Oldest', '2026-09-10T09:00:00Z') RETURNING collection_id;`)
   newestCollection =
     await db.sql(`INSERT INTO public.collections(user_id, name, is_shared, created_at)
