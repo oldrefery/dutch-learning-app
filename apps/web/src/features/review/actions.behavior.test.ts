@@ -1,14 +1,16 @@
 /** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import * as Sentry from '@sentry/nextjs'
 import { revalidatePath } from 'next/cache'
-import { requireAuthContext } from '@/lib/auth/session'
+import { requireAuthenticatedIdentity } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
 import { submitReviewAssessment } from './actions'
 import type { ReviewSubmissionInput } from './types'
 
 jest.mock('@sentry/nextjs', () => ({ captureException: jest.fn() }))
 jest.mock('next/cache', () => ({ revalidatePath: jest.fn() }))
-jest.mock('@/lib/auth/session', () => ({ requireAuthContext: jest.fn() }))
+jest.mock('@/lib/auth/session', () => ({
+  requireAuthenticatedIdentity: jest.fn(),
+}))
 jest.mock('@/lib/supabase/server', () => ({ createClient: jest.fn() }))
 
 const rpc = jest.fn()
@@ -32,10 +34,9 @@ const update = {
 }
 
 beforeEach(() => {
-  jest.mocked(requireAuthContext).mockResolvedValue({
+  jest.mocked(requireAuthenticatedIdentity).mockResolvedValue({
     userId: 'verified-user',
     email: null,
-    accessLevel: 'full_access',
   })
   jest
     .mocked(createClient)
@@ -47,7 +48,7 @@ beforeEach(() => {
 
 it('blocks all database access when the authenticated session is unavailable', async () => {
   const redirect = new Error('NEXT_REDIRECT')
-  jest.mocked(requireAuthContext).mockRejectedValueOnce(redirect)
+  jest.mocked(requireAuthenticatedIdentity).mockRejectedValueOnce(redirect)
   await expect(submitReviewAssessment(input)).rejects.toBe(redirect)
   expect(createClient).not.toHaveBeenCalled()
   expect(rpc).not.toHaveBeenCalled()

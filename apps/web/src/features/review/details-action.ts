@@ -1,6 +1,6 @@
 'use server'
 
-import { requireAuthContext } from '@/lib/auth/session'
+import { requireAuthenticatedIdentity } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
 import {
   buildWordDetail,
@@ -14,7 +14,7 @@ export async function loadReviewWordDetails(input: {
 }): Promise<
   { status: 'success'; word: WordDetail } | { status: 'error'; message: string }
 > {
-  const auth = await requireAuthContext()
+  const auth = await requireAuthenticatedIdentity()
   if (
     !input ||
     input.userId !== auth.userId ||

@@ -1,6 +1,6 @@
 'use server'
 
-import { requireAuthContext } from '@/lib/auth/session'
+import { requireAuthenticatedIdentity } from '@/lib/auth/session'
 import { isUuid } from '@/features/words/word-detail'
 import {
   createCorrectionClient,
@@ -16,7 +16,7 @@ import type {
 export async function loadReviewCorrectionState(
   input: ReviewCorrectionRefreshInput
 ): Promise<ReviewCorrectionRefreshResult> {
-  const auth = await requireAuthContext()
+  const auth = await requireAuthenticatedIdentity()
   if (
     !input ||
     input.userId !== auth.userId ||

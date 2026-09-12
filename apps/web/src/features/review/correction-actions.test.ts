@@ -1,7 +1,7 @@
 /** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import * as Sentry from '@sentry/nextjs'
 import { revalidatePath } from 'next/cache'
-import { requireAuthContext } from '@/lib/auth/session'
+import { requireAuthenticatedIdentity } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
 import { submitReviewCorrection } from './correction-actions'
 import { loadReviewWordDetails } from './details-action'
@@ -11,7 +11,9 @@ import type { ReviewCorrectionInput } from './correction-contract'
 jest.mock('server-only', () => ({}))
 jest.mock('@sentry/nextjs', () => ({ captureException: jest.fn() }))
 jest.mock('next/cache', () => ({ revalidatePath: jest.fn() }))
-jest.mock('@/lib/auth/session', () => ({ requireAuthContext: jest.fn() }))
+jest.mock('@/lib/auth/session', () => ({
+  requireAuthenticatedIdentity: jest.fn(),
+}))
 jest.mock('@/lib/supabase/server', () => ({ createClient: jest.fn() }))
 jest.mock('@/features/words/word-detail', () => ({
   ...jest.requireActual('@/features/words/word-detail'),
@@ -51,10 +53,9 @@ const ok = (data: unknown) => ({ data, error: null })
 
 beforeEach(() => {
   jest.resetAllMocks()
-  jest.mocked(requireAuthContext).mockResolvedValue({
+  jest.mocked(requireAuthenticatedIdentity).mockResolvedValue({
     userId: input.userId,
     email: null,
-    accessLevel: 'full_access',
   })
   jest
     .mocked(createClient)
@@ -128,7 +129,7 @@ it('returns a newer effective rating on a retry without presenting the old accep
 
 it('does not access the database when authentication redirects', async () => {
   const redirect = new Error('NEXT_REDIRECT')
-  jest.mocked(requireAuthContext).mockRejectedValue(redirect)
+  jest.mocked(requireAuthenticatedIdentity).mockRejectedValue(redirect)
   await expect(submitReviewCorrection(input)).rejects.toBe(redirect)
   await expect(loadReviewWordDetails(input)).rejects.toBe(redirect)
   expect(createClient).not.toHaveBeenCalled()

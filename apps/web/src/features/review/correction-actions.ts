@@ -1,7 +1,7 @@
 'use server'
 
 import * as Sentry from '@sentry/nextjs'
-import { requireAuthContext } from '@/lib/auth/session'
+import { requireAuthenticatedIdentity } from '@/lib/auth/session'
 import {
   createCorrectionClient,
   readCorrectionCapability,
@@ -22,7 +22,7 @@ const RETRY_MESSAGE =
 export async function submitReviewCorrection(
   input: ReviewCorrectionInput
 ): Promise<ReviewCorrectionResult> {
-  const auth = await requireAuthContext()
+  const auth = await requireAuthenticatedIdentity()
   if (!isReviewCorrectionInput(input) || input.userId !== auth.userId) {
     return {
       status: 'invalid',
