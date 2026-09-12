@@ -101,3 +101,9 @@ Complete W00 with an isolated build/browser harness and five-run artifacts; add 
 
 - Production web build, typechecking, focused UI tests and private PostgreSQL migration tests pass. The snapshot preserved full vocabulary and history semantics; no evidence justified a worker, framework upgrade, cache-components migration, global client query framework, durable outbox, or a hosted region/configuration change.
 - W00's controlled browser/performance harness and five-run benchmark remain unimplemented. No latency or long-task improvement is claimed without that artifact; these checks are therefore a release-readiness limitation rather than fabricated measurement.
+
+### W11 final validation
+
+- `npm run test:db` passed against private disposable PostgreSQL clusters, including the new collection-overview and review-snapshot RPC contracts.
+- `npm run web:test`, `npm run web:lint`, `npm run web:typecheck`, and `npm run web:build` passed.
+- `npm run web:e2e:fixtures` passed 3/3 in the isolated offline browser configuration. Its first sandboxed Chromium launch was blocked by macOS Mach-port permissions; the same no-network fixture run passed when granted the required local browser permission.
