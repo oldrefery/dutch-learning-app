@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-02",
+  "startingHead": "ee71f73",
+  "sourceCommit": "da41085",
+  "review": "PASS",
+  "desktopRealPages": {
+    "themes": 2,
+    "casesPerTheme": 4,
+    "result": "PASS"
+  },
+  "iosSafari": {
+    "themes": 2,
+    "casesPerTheme": 4,
+    "result": "PASS",
+    "lightRun": "ios-1790969096014",
+    "darkRun": "ios-1790969187016"
+  },
+  "sourceHashes": 143,
+  "preservation": {
+    "serverExact": true,
+    "nativeIosExact": true,
+    "serverCounts": {
+      "words": 28,
+      "collections": 9,
+      "user_access_levels": 4,
+      "review_events": 0,
+      "review_progress_checkpoints": 0,
+      "review_progress_heads": 0,
+      "review_assessment_corrections": 0,
+      "word_content_state": 22
+    },
+    "androidStarted": false,
+    "importOrPublication": false
+  },
+  "cleanup": {
+    "verifiedAt": "2026-10-02T19:28:27.943206+00:00",
+    "ios": "Shutdown",
+    "android": "absent",
+    "containers": "exited",
+    "runnerProxyWebBrowserPids": "absent",
+    "ports55331And55400": "closed",
+    "iosAppearance": "light",
+    "clipboard": "restored host; empty simulator"
+  },
+  "stage": "D10 done",
+  "next": "D11.1 GPT-6.1 Sol / High",
+  "productionOrCutover": false,
+  "pushPrMerge": false
+}

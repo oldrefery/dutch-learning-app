@@ -1,5 +1,39 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 COMPLETE.** Starting `ee71f73`, source
+`da41085`, existing `feature/shared-dictionary-schema`; user-confirmed Astra / High,
+AUTH-17/18/19. [Final closure](evidence/D10-final-closure-review-20261002.md),
+[summary](evidence/D10-final-closure-summary-20261002.json),
+[R4 re-review](evidence/D10-import-contrast-rereview-20261002.md).
+
+R4 review PASS; actual desktop and iOS Safari each pass four control/state checks
+in both themes. All 143 source fingerprints unchanged. No application edits or
+replay of closed imports. Eight server tables exactly preserved (28 words,
+22 content states, nine collections); captured iOS database projection exact,
+19 word/SRS projections and empty queues retained. Android never started.
+Safari primary authenticated; no saved password, pending auth restoration or write.
+Private setup failures documented in closure evidence; native Simulator paste
+resolved automation input. `.playwright-cli/` and ignored private artifacts retained.
+
+**All assigned QA resources OFF verified 19:28:27 UTC /21:28:27 Amsterdam**:
+iOS Shutdown, Android absent, four exact task containers exited, named browser
+closed, runner/proxy/web/browser PIDs absent, ports 55331/55400 closed. Original
+light appearance restored, host clipboard restored and simulator clipboard empty.
+No other session/device touched. Current private root
+`reports/shared-dictionary-cefr/d10-r4-review-20261002/`; native snapshots
+`woordenaar-d08-native.20261001/ios-state-d10-r4-{before,after}.json`.
+
+**Next: D11.1 on GPT-6.1 Sol / High.** Current-thread picker unavailable; request
+manual switch without claiming one. Read [D11](steps/D11.md), focused inputs and
+accepted permissions, then implement one checkpoint with fake-provider tests.
+Do not start D11 in this closure session or repeat D10 QA. Retain personal IDs,
+SRS/history and queues. Necessary local commits with normal hooks remain authorized;
+no production, schema cutover, publication/deployment, paid call or push/PR/merge.
+D11 schedule stays disabled; live quality/cost sample needs separate approval.
+D01 partial items and D13/D14 approval/observation gates remain open.
+
+The following checkpoints are historical and superseded by the closure above.
+
 Last checkpoint: **2026-10-02 — R4 action contrast repaired and source-rendered
 browser regression PASS.** Source commit `da41085`, starting `b745243`, existing
 `feature/shared-dictionary-schema`, user-confirmed Sol 6.1 / High, AUTH-17/18/19.
@@ -563,58 +597,41 @@ remained off during D09 and these D10 checkpoints. Final synthetic benchmark exi
 its temporary servers/browser/backend cleaned up. No pending build/test/QA job.
 Data, volumes, copies and reports retained. Other sessions/devices untouched.
 
-Task state: D02–D09 done; D10 in_progress; D11–D14 pending; D01 blocked/partial.
+Task state: D02–D10 done; D11–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, current implementation `c3f9baf`
-following base implementation `a59acad`; no push/PR. Default runtime dictionary flags remain off outside QA.
+Branch `feature/shared-dictionary-schema`, current implementation `da41085`; no push/PR. Default runtime dictionary flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume
 
-1. Read [D10 stage card](steps/D10.md), its focused inputs and permissions.
-   Continue D10.3 on GPT-6 Astra / High with
-   [R1/R2 repairs](evidence/D10-recovery-review-repairs-20261002.md).
-   Check manual model confirmation and re-review the guarded ordinary delivery
-   and complete deletion pending status before device acceptance. Do not repeat the completed architecture review,
-   D08/D09 acceptance or start all remaining stages.
-2. D03-D09 work and the preceding D10 review are preserved in `a59acad`;
-   durable D10.3 imports are in `dfdc7f0` and review repairs are in `5efd6ff`;
-   mobile document reimport is in `42c9bfd`; recovery design and executable
-   evidence are in `b92eba9`; server/domain recovery is in `1828f57` and SQLite v16
-   in `1748066`; mobile sync is `abc0b86`, resume coverage `a7315bb`, and recovery UI is
-   `b7f207c`; task docs are preserved in the following checkpoint.
-   The historical pre-commit
-   inventory is [dirty paths](evidence/D10-dirty-paths.txt). Current source hashes
-   are [D10 fingerprints](evidence/D10-source-sha256.json). Leave `.playwright-cli`
-   and ignored QA copies/reports uncommitted; do not delete them for a clean status.
-3. QA stays task-only. Reverify exact ownership before authorized restart:
-   iOS `DDEDCE4E-153B-48A4-A47C-B4ED0F499F1F`, Android AVD
-   `woordenaar_d08_qa_20260921` / `emulator-5584`, local Docker project
-   `woordenaar-d08-qa.ZFsE50`. Retained roots under
-   `reports/shared-dictionary-cefr/woordenaar-d08-native.20261001` and
-   `reports/shared-dictionary-cefr/woordenaar-d08-qa.ZFsE50`.
-4. Synthetic server fixture advanced during D09: zolder v14 private, huis v3
-   private, fiets v4 on a newer synthetic revision with the old private image
-   override intact. Native cursor/queues were not touched. Next native use must
-   reconcile delivery; do not assume D08's server head or reset/reseed devices.
-5. D10 owns official/shared imports, recipient visibility and export compatibility.
-   New default-off sharing uses the authorized content-only projection; flag-off
-   behavior remains legacy. The offline delivery review is complete. Finish the
-   remaining unavailable-target/pre-upgrade/background integration and recovery
-   cases before closing D10.3; preserve personal IDs, SRS and all pending queues. D10.4/D10.5 need final review/coverage despite local code.
-   New or ambiguous analyses remain private. No hosted operation is authorized.
+1. Read [D11 stage card](steps/D11.md), its focused inputs, accepted invariants and
+   permissions. Start D11.1 on user-confirmed GPT-6.1 Sol / High. D10 is closed;
+   do not repeat catalog/import/recovery/transfer/visual acceptance.
+2. Preserve the existing branch and 143-path [source inventory](evidence/D10-source-sha256.json).
+   Leave `.playwright-cli/` and ignored retained reports/data uncommitted; do not
+   reset/reseed or replay completed imports. In particular operation
+   `217420b8-7a2d-4537-b440-a48ea42133f8` already completed once.
+3. D11 local contract/job work uses fake providers, schedule disabled. No paid
+   provider call, hosted migration, publication, deployment, push/PR/merge or
+   schema cutover is authorized. Any live quality/cost sample is a separate gate.
+4. QA resources stay off unless needed and reverified as task-owned: iOS
+   `DDEDCE4E-153B-48A4-A47C-B4ED0F499F1F`, Android AVD
+   `woordenaar_d08_qa_20260921` / `emulator-5584`, four local Docker containers
+   `supabase_{db,auth,rest,kong}_woordenaar-d08-qa.ZFsE50`.
+   Retained roots `woordenaar-d08-native.20261001` and `woordenaar-d08-qa.ZFsE50`
+   remain under `reports/shared-dictionary-cefr/`. No other session resources.
+5. Latest retained data is documented by D10 closure, not old D08/D09 cursors.
+   Preserve all personal IDs, SRS/history, content and pending queues.
 
 ## Model and schedule authority
 
 AUTH-16 permits autonomous model/effort selection through supported controls:
 GPT-6.1 Sol / High for implementation, Astra / High for prescribed review or
-unresolved architecture/concurrency risk. The user confirmed GPT-6.1 Sol / High for these
-R1/R2 repairs. No independent agent was used. Next: Astra / High re-reviews the
-repaired concurrency/status behavior before task-only device acceptance. Direct
-current-thread picker control is unavailable, and computer use denied access to
-Codex during the preceding checkpoint. No automatic switch is claimed.
-Announce confirmed picker changes. Do not use GPT-5.6 Sol for future work.
+unresolved architecture/concurrency risk. User-confirmed Astra / High completed
+D10 final review. Next: GPT-6.1 Sol / High for D11.1. No independent agent was used.
+Direct current-thread picker control is unavailable; request manual switch and do
+not claim an automatic change. Do not use GPT-5.6 Sol for future work.
 
 The one-time 06:00 heartbeat `d09-06-00` ran once and is **PAUSED**, verified in
 its saved configuration. No further automatic continuation was scheduled.
@@ -626,22 +643,22 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 
 ## Stage ledger
 
-| Stage               | Status      | Evidence / next gate                                                |
-| ------------------- | ----------- | ------------------------------------------------------------------- |
-| [D01](steps/D01.md) | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                |
-| [D02](steps/D02.md) | done        | Accepted design, fixtures, compatibility and rollback               |
-| [D03](steps/D03.md) | done        | Astra/High review fixed; 145/145 DB tests pass                      |
-| [D04](steps/D04.md) | done        | Terra/High; shared contracts pass mobile/web/Edge                   |
-| [D05](steps/D05.md) | done        | 12/12 focused; 157/157 DB; dormant compatibility                    |
-| [D06](steps/D06.md) | done        | Final D06 16/16; preservation/delta/rollback rehearsal              |
-| [D07](steps/D07.md) | done        | SQLite v13; 136/136 mobile suites preserve queues                   |
-| [D08](steps/D08.md) | done        | Closure review/fix and final native smoke passed; resources stopped |
-| [D09](steps/D09.md) | done        | Web integration/performance verification                            |
-| [D10](steps/D10.md) | in_progress | Catalog/import/export compatibility                                 |
-| [D11](steps/D11.md) | pending     | CEFR worker safety; live-cost gate separate                         |
-| [D12](steps/D12.md) | pending     | Cross-platform integrated verification                              |
-| [D13](steps/D13.md) | pending     | Explicit release approval + observation                             |
-| [D14](steps/D14.md) | pending     | Adoption gate + compatibility retirement                            |
+| Stage               | Status  | Evidence / next gate                                                |
+| ------------------- | ------- | ------------------------------------------------------------------- |
+| [D01](steps/D01.md) | blocked | D01.1/D01.3/D01.4 done; device/build evidence needed                |
+| [D02](steps/D02.md) | done    | Accepted design, fixtures, compatibility and rollback               |
+| [D03](steps/D03.md) | done    | Astra/High review fixed; 145/145 DB tests pass                      |
+| [D04](steps/D04.md) | done    | Terra/High; shared contracts pass mobile/web/Edge                   |
+| [D05](steps/D05.md) | done    | 12/12 focused; 157/157 DB; dormant compatibility                    |
+| [D06](steps/D06.md) | done    | Final D06 16/16; preservation/delta/rollback rehearsal              |
+| [D07](steps/D07.md) | done    | SQLite v13; 136/136 mobile suites preserve queues                   |
+| [D08](steps/D08.md) | done    | Closure review/fix and final native smoke passed; resources stopped |
+| [D09](steps/D09.md) | done    | Web integration/performance verification                            |
+| [D10](steps/D10.md) | done    | Final review, real desktop/Safari visuals and preservation PASS     |
+| [D11](steps/D11.md) | pending | CEFR worker safety; live-cost gate separate                         |
+| [D12](steps/D12.md) | pending | Cross-platform integrated verification                              |
+| [D13](steps/D13.md) | pending | Explicit release approval + observation                             |
+| [D14](steps/D14.md) | pending | Adoption gate + compatibility retirement                            |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and
 policy acceptance are complete. No production operation is authorized. Do not

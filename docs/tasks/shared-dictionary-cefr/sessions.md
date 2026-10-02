@@ -1456,3 +1456,20 @@ Copy these fields into a dated entry at each session boundary:
 - Source/evidence commit `da41085` normal hooks PASS: mobile 156 suites /1796 tests /
   22 snapshots; web 86 suites /778 tests, one existing skip. Post-hook 143/143 hashes
   match. Only preexisting `.playwright-cli/` untracked; no pending QA process.
+
+## 2026-10-02 — D10 final review and closure
+
+- User-confirmed Astra / High, starting `ee71f73`, source `da41085`, AUTH-17/18/19.
+  [Final closure and limits](evidence/D10-final-closure-review-20261002.md).
+- R4 independent review PASS; 3 focused suites /13 tests. Actual desktop and iOS
+  Safari each pass four states in light/dark; eight Safari captures reviewed.
+  No source change, import/publication replay or Android start. 143 hashes match.
+- All eight server tables and captured iOS native projection exactly preserved.
+  Failed Safari setup attempts archived privately; exact native Simulator paste
+  completed login, password not saved, host clipboard restored/device cleared.
+- All task QA resources OFF verified 19:28:27 UTC /21:28:27 Amsterdam. Original
+  light appearance restored; no pending runtime job, uncertain write or auth fix.
+- D10.1–D10.5 done. Next D11.1 on GPT-6.1 Sol / High, manual picker switch needed.
+  No D11 work started. D01 partial items and D13/D14 gates remain open.
+- Necessary local commit authorized; no push/PR/merge, production/cutover,
+  publication/deployment or paid provider operation. Private artifacts retained.
