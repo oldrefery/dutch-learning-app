@@ -1,0 +1,22 @@
+appId: ${APP_ID}
+---
+- openLink: dutchlearning://collection/820e9bad-4fc8-40ea-bcd6-216b86f2007c
+- extendedWaitUntil:
+    visible: boek
+    timeout: 15000
+- assertVisible: anker
+- tapOn: Copy collection JSON export
+- openLink: dutchlearning://dictionary-import
+- tapOn: Collection JSON
+- longPressOn: Collection JSON
+- tapOn: Paste
+- setClipboard: ''
+- runFlow:
+    when:
+      visible: 'Preview (words|document)'
+    commands:
+      - tapOn: 'Preview (words|document)'
+- extendedWaitUntil:
+    visible: '0 of 6 words selected.*'
+    timeout: 15000
+- assertVisible: '.*Show 6 already added words.*'

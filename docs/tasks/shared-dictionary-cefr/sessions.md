@@ -1331,6 +1331,26 @@ a new session to read this entire history. Never log private vocabulary or secre
 - Preservation commit subject `docs: record dictionary web acceptance`; normal hook
   output retained in private acceptance root `commit.log`. Inspect git log for SHA.
 
+## 2026-10-02 — D10 assigned native cross-client acceptance
+
+- AUTH-19 grants assigned iOS/Android device handback; same Astra / High, starting
+  `6d3d355`, application `19d98eb`, native `c3f9baf`. Installed hashes match.
+- [Acceptance](evidence/D10-cross-client-acceptance-20261002.md): web recipient data
+  visible on iOS; native cross-owner export/reimport creates two selected copies,
+  IDs preserved through server/Android/web. Android duplicate previews 0/4 and 0/6.
+- All 17 prior server words/14 states/eight collections and native prior word/SRS/
+  learning/import acknowledgements unchanged. Both devices' queues empty. No app fix.
+- QA corrections: secure iOS password uses direct input after two failed paste
+  attempts; Android restores real auth before deep-link checks; transient toast
+  replaced by actual clipboard/preview evidence. No uncertain/replayed mutation.
+- All assigned resources OFF verified 14:24:04 UTC; primary restored on both devices.
+  Private artifacts retained, no reset/reseed/release/schema/paid operation.
+- 137 source fingerprints unchanged; scoped helper lint/format/diff verification.
+  Commit subject `test: verify cross-client dictionary transfer`, normal hooks logged
+  in private `d10-cross-client-20261002/commit.log`. No push/PR/merge.
+- D10.3–D10.5 remain open: official/shared local fixture matrix and mobile-browser
+  acceptance next on Astra / High. Do not repeat closed checks; D11 not started.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:

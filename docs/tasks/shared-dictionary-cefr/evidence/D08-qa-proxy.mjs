@@ -6,9 +6,10 @@ import { assertQaFixture } from './D08-qa-paths.mjs'
 
 const fixturePath = process.argv[2]
 if (fixturePath) assertQaFixture(fixturePath)
-const primary = fixturePath
-  ? JSON.parse(readFileSync(fixturePath, 'utf8')).primary
+const fixture = fixturePath
+  ? JSON.parse(readFileSync(fixturePath, 'utf8'))
   : null
+const primary = fixture?.primary
 
 // Disposable loopback-only transport. Never forwards to a hosted project/provider.
 const state = {
@@ -42,6 +43,8 @@ const checkAuthInput = (path, body) => {
       kind: 'auth-input-check',
       emailMatches: input.email === primary.email,
       passwordMatches: input.password === primary.password,
+      isolatedEmailMatches: input.email === fixture?.isolated?.email,
+      isolatedPasswordMatches: input.password === fixture?.isolated?.password,
     })
 }
 const shouldBlockRest = (isContent, isWordWrite) =>

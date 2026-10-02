@@ -1,5 +1,46 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 scoped cross-client transfer acceptance PASS**.
+Starting HEAD `6d3d355`, same Astra / High. Device handback granted in AUTH-19.
+[Evidence](evidence/D10-cross-client-acceptance-20261002.md),
+[summary](evidence/D10-cross-client-summary-20261002.json).
+Application unchanged: all 137 source hashes match; installed native hashes verified.
+
+Web-imported recipient content renders on iOS after account switch. Real native
+export (`boek/fiets/anker`) reimports into primary: two selected, existing fiets
+excluded. Both new iOS personal IDs arrive unchanged on server, Android and web.
+Android native export/paste previews 0/4, then 0/6 after peer sync. All prior server
+rows, native word/SRS/learning projections and import acknowledgements preserved.
+Both devices' queues/hydration empty, Up to date confirmed. No uncertain write.
+
+**Resources OFF verified 14:24:04 UTC / 16:24 Amsterdam**: assigned iOS Shutdown,
+Android absent, four exact containers exited, browser closed, runner PIDs absent,
+ports 55331/55400 closed. Apps/volumes/data retained. Primary restored on both.
+Private evidence root: `reports/shared-dictionary-cefr/d10-cross-client-20261002/`;
+native snapshots/clipboard remain under retained `.20261001`. Other sessions untouched.
+
+**Next: Astra / High, remaining official/shared runtime matrix and mobile-browser
+acceptance.** D10.3–D10.5 remain unchecked, D11 not started. Plan bounded synthetic
+fixtures for the empty local official/shared catalog; no publication of existing
+user data/production use. Do not repeat closed upgrades/recovery/transfer checks.
+AUTH-19 satisfies device handback; recheck availability before reuse if another
+session takes them. No additional permission implied beyond assigned resources.
+
+Retained primary collection now has six words, including new
+`bf5c7f11-30c7-40ce-a1b3-b0d7d202562c` (anker) and
+`ef62b1bb-5f5e-45fd-acd0-e8b8ccf656fa` (boek). Do not replay the two-word import.
+Isolated recipient's previous web copies remain. Server 19 words / 16 content states /
+eight collections; all 17/14/eight prior rows exactly unchanged. New cards use the
+accepted server SRS default. No reset/reseed/flag/schema/publication changes.
+
+Local commit subject `test: verify cross-client dictionary transfer`; inspect git log
+for SHA. Normal hook output: private runtime root `commit.log`. Only QA helpers,
+flows and sanitized docs changed; private reports/.playwright-cli remain untracked
+or ignored, root AGENTS excluded. Automation paused. No push/PR/merge, hosted/paid/
+production/cutover/deployment/publication operation.
+
+Historical checkpoint follows.
+
 Last checkpoint: **2026-10-02 — D10 web repair re-review and scoped browser acceptance PASS**.
 User-confirmed Astra / High, reviewed source `19d98eb`, starting HEAD `0d9e835`.
 [Runtime evidence](evidence/D10-web-acceptance-20261002.md),

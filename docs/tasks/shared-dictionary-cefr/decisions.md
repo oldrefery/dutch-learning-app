@@ -357,3 +357,12 @@ using a simulator/emulator: the user will first pause its use in another session
 Do not infer current device availability from earlier off-state evidence. No device
 operation until availability is explicitly handed back. This does not block local
 web implementation/tests or necessary local commits under AUTH-17/AUTH-18.
+
+### AUTH-19 — D10 assigned native devices handed back
+
+Granted 2026-10-02 after web acceptance `6d3d355`: user explicitly permits the iOS
+simulator and Android emulator. This satisfies the pending availability handback
+for iOS `DDEDCE4E-153B-48A4-A47C-B4ED0F499F1F` and Android AVD
+`woordenaar_d08_qa_20260921` / `emulator-5584` only. Existing local QA scope and
+AUTH-18 commits remain; no other sessions/devices, production, schema cutover,
+publication, deployment or paid operations. Preserve installed apps and all data.

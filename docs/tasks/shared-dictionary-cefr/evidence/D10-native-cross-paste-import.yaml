@@ -1,0 +1,22 @@
+appId: ${APP_ID}
+---
+# Device clipboard contains the captured native export, supplied by the QA operator.
+- openLink: dutchlearning://dictionary-import
+- extendedWaitUntil:
+    visible: Collection JSON
+    timeout: 15000
+- tapOn: Collection JSON
+- longPressOn: Collection JSON
+- tapOn: Paste
+- tapOn: Preview document
+- extendedWaitUntil:
+    visible: '2 of 3 words selected.*'
+    timeout: 15000
+- assertVisible: '.*Show 1 already added.*'
+- tapOn:
+    id: import-target-820e9bad-4fc8-40ea-bcd6-216b86f2007c
+- tapOn:
+    id: import-selected-words-button
+- extendedWaitUntil:
+    visible: 2 words saved. 0 duplicates skipped.
+    timeout: 15000
