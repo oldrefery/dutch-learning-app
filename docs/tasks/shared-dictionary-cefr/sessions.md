@@ -1433,3 +1433,22 @@ Copy these fields into a dated entry at each session boundary:
 - Runtime/evidence commit `55d533c` normal hooks PASS: mobile 156 suites /1796 tests /
   22 snapshots; web 86 suites /778 tests, one existing skip. Post-hook 140/140 source
   hashes match; only preexisting `.playwright-cli/` is untracked.
+
+## 2026-10-02 — D10 R4 semantic action contrast repair
+
+- User-confirmed Sol 6.1 / High, starting `b745243`, AUTH-17/18/19.
+  [Evidence](evidence/D10-import-contrast-repair-20261002.md).
+- Three D10 components use existing semantic action variants. Global reset/palette
+  and action, selection, disabled and navigation logic unchanged.
+- Pre-fix light primary labels 1:1; fixed source browser matrix 40 checks /16 states /
+  two themes PASS. Enabled minimum 5.34:1, inactive 1.93:1 with existing theme opacity.
+  Source DOM identical except classes; no import/sharing action executes in fixture.
+- Focused 3 suites /13 tests, test-inclusive TypeScript, strict scoped ESLint and
+  format/syntax/diff PASS. Incorrect initial test paths and npm forwarding corrected.
+  All 140 prior hashes retained; three component paths added (143 total).
+- Native/backend stayed off. Named browser and visual-only fixture stopped; all
+  assigned resources OFF verified 19:00:50 UTC /21:00:50 Amsterdam. No pending job,
+  uncertain write or other session/device changes. Private artifacts preserved.
+- Next Astra / High independent review, then affected actual page/Safari visuals.
+  D10.3–D10.5 open; no D11, import replay, production/cutover/publication/deployment,
+  paid call or push/PR/merge. Local commits with normal hooks authorized.

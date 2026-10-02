@@ -48,3 +48,11 @@ Private runtime evidence root:
 `button-dark-style.txt`. The Safari flow passed duplicate visibility and disabled
 action semantics after adding an explicit scroll to the last row; visual
 acceptance stays open until R4 is repaired.
+
+## Repair checkpoint
+
+Implemented from `b745243` on user-confirmed Sol 6.1 / High. Existing semantic
+button variants now override the reset on the three affected components;
+source-rendered actual browser regression passes both themes. Independent review
+and affected actual Safari/page acceptance remain open.
+[Repair/evidence](D10-import-contrast-repair-20261002.md).

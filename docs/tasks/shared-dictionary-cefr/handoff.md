@@ -1,5 +1,42 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — R4 action contrast repaired and source-rendered
+browser regression PASS.** Starting `b745243`, existing
+`feature/shared-dictionary-schema`, user-confirmed Sol 6.1 / High, AUTH-17/18/19.
+[Repair evidence](evidence/D10-import-contrast-repair-20261002.md),
+[summary](evidence/D10-import-contrast-repair-summary-20261002.json).
+
+Three D10 components now use existing semantic `dw-button` primary/secondary
+variants for import/sharing actions, selection controls and success links. CSS
+reset/global palette and all action/selection/disabled/navigation logic unchanged.
+Baseline primary labels fail 1:1 in light theme; repaired source-rendered browser
+matrix 40 checks /16 states /two themes PASS. Minimum enabled painted contrast 5.34:1;
+disabled 1.93:1 retains existing theme opacity. Actual React component markup equals
+baseline except class attributes. This fixture stubs action state and Link-as-anchor;
+it does not replace actual Safari/page acceptance or independent review.
+Three focused suites /13 tests, test-inclusive TypeScript and strict scoped
+ESLint/Prettier/syntax/diff PASS. All 140 prior hashes retained, three component paths
+added to current 143-path manifest. Normal commit hooks are pending; save their
+verified outcome before session end. Only preexisting `.playwright-cli/` is unrelated.
+
+**Next: GPT-6 Astra / High R4 independent review**, then only affected real-page /
+Safari visual checks, and reconcile D10.3–D10.5 exit evidence. Current-thread model
+picker unavailable: request manual switch without claiming one. Do not begin D11
+or repeat closed import/recovery/transfer checks. In particular do not replay
+operation `217420b8-7a2d-4537-b440-a48ea42133f8` / personal kompas
+`db455c40-fdb6-4eb8-9823-d0e50d4e6fd8`. R3 actual revoked-session navigation and
+cached official read_only/offline delivery were completed in the preceding checkpoint.
+
+**All assigned resources OFF verified 19:00:50 UTC /21:00:50 Amsterdam**: named
+contrast browser closed; fixture PID absent and port 55400 closed; assigned iOS
+Shutdown; Android absent; four retained task containers exited. Devices/backend
+were never started during R4 repair. No pending QA job or uncertain write.
+Private root `reports/shared-dictionary-cefr/d10-r4-repair-20261002/`; fixture/check
+commands and limits in repair evidence. No production/cutover, publication,
+deployment, paid call, push/PR/merge. Necessary local commits authorized.
+
+Previous retained-runtime checkpoint follows.
+
 Last checkpoint: **2026-10-02 — R3 re-review and retained runtime PASS;
 R4 light-theme import action contrast requires repair.** Starting HEAD `833835d`,
 source `976d1e7`, existing `feature/shared-dictionary-schema`; user-confirmed

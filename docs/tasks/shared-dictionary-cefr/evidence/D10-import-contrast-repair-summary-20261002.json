@@ -1,0 +1,36 @@
+{
+  "startingHead": "b745243",
+  "sourcePaths": [
+    "apps/web/src/features/starter-pack/StarterPackImport.tsx",
+    "apps/web/src/features/sharing/SharedCollectionImport.tsx",
+    "apps/web/src/features/sharing/CollectionSharingPanel.tsx"
+  ],
+  "baselineLightFailures": 14,
+  "repaired": {
+    "checks": 40,
+    "states": 16,
+    "themes": ["light", "dark"],
+    "allPassed": true,
+    "minimumEnabledPaintedContrast": 5.34,
+    "minimumDisabledPaintedContrast": 1.93,
+    "domUnchangedExceptClasses": true
+  },
+  "focusedSuites": 3,
+  "focusedTestsPassed": 13,
+  "typecheck": "PASS",
+  "strictScopedLint": "PASS",
+  "priorHashesPreserved": 140,
+  "currentSourceHashes": 143,
+  "shutdown": {
+    "checkedAt": "2026-10-02T19:00:50.968959+00:00",
+    "fixtureStopped": true,
+    "port55400Closed": true,
+    "namedBrowserClosed": true,
+    "ios": "Shutdown",
+    "android": "absent",
+    "fourRetainedContainers": "exited",
+    "nativeDevicesStarted": false,
+    "backendStarted": false
+  },
+  "next": "GPT-6 Astra / High independent R4 review; affected real-page/Safari visual acceptance remains open"
+}

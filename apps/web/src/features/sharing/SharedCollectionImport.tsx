@@ -52,13 +52,13 @@ export function SharedCollectionImport({
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link
-            className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-950"
+            className="dw-button dw-button--primary"
             href={`/app/review?scope=collection-due&collectionId=${state.collectionId}`}
           >
             Start review
           </Link>
           <Link
-            className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+            className="dw-button dw-button--secondary"
             href={`/app/collections/${state.collectionId}`}
           >
             Open {state.collectionName}
@@ -126,7 +126,7 @@ export function SharedCollectionImport({
             )}
           </div>
           <button
-            className="rounded-xl bg-neutral-900 px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60 dark:bg-neutral-100 dark:text-neutral-950"
+            className="dw-button dw-button--primary"
             disabled={
               !hasTargetCollection || selectedWordIds.size === 0 || pending
             }
@@ -155,7 +155,7 @@ export function SharedCollectionImport({
         </p>
         <div className="flex flex-wrap gap-3">
           <button
-            className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+            className="dw-button dw-button--secondary"
             onClick={toggleAllAvailable}
             type="button"
           >
@@ -163,7 +163,7 @@ export function SharedCollectionImport({
           </button>
           {duplicateCount > 0 && (
             <button
-              className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+              className="dw-button dw-button--secondary"
               onClick={() => setHideDuplicates(previous => !previous)}
               type="button"
             >

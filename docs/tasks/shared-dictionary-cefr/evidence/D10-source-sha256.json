@@ -138,5 +138,8 @@
   "apps/web/src/features/sharing/dictionary-transfer-origin.test.ts": "1cf5ff3339e623b14219c2f62b161d70d0164ce0aa0174b2014c6c9fd09057b9",
   "apps/web/src/lib/supabase/proxy.ts": "624ba81f04a6f225d9d64b03753225489f3bc6dc6224a3c51693bb1095ce3a2c",
   "apps/web/src/proxy.ts": "1df761c30729504f75a5c5bc97236741097b8bbd93cf1788275725dff7ff4e66",
-  "apps/web/src/lib/supabase/revoked-session.review.test.ts": "ea50b2c0b30be4acf8c6453f213ab156fbeaa23071797aec3d85a3b1a6aa5873"
+  "apps/web/src/lib/supabase/revoked-session.review.test.ts": "ea50b2c0b30be4acf8c6453f213ab156fbeaa23071797aec3d85a3b1a6aa5873",
+  "apps/web/src/features/starter-pack/StarterPackImport.tsx": "1fef5653396987e5f1eca97f4bd3fb988a5223f82621a88bbe0990c4a7b887b4",
+  "apps/web/src/features/sharing/SharedCollectionImport.tsx": "932ceeece731dd0ef254c0da65c96ea4907e6e74dde60ec242a136e41b35e41f",
+  "apps/web/src/features/sharing/CollectionSharingPanel.tsx": "11071c711a42d5aea2cf13fa5a7b1a1ba81b889470fe0511485d1ced598d550d"
 }
