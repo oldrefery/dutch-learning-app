@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261002110000_add_dictionary_import_intents.sql.
+// Generated from local migrations through 20261002120000_add_dictionary_import_recovery.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -1198,6 +1198,7 @@ export type Database = {
           repetition_count: number
         }[]
       }
+      cancel_dictionary_import_v1: { Args: { p_request: Json }; Returns: Json }
       consume_edge_function_quota: {
         Args: {
           p_capability: string
@@ -1534,6 +1535,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      read_dictionary_import_recovery_v1: {
+        Args: { p_intent: Json }
+        Returns: Json
+      }
       record_review_assessment: {
         Args: {
           p_answered_correctly: boolean
@@ -1554,6 +1559,7 @@ export type Database = {
           word_id: string
         }[]
       }
+      recover_dictionary_import_v1: { Args: { p_request: Json }; Returns: Json }
       reset_word_learning_progress: {
         Args: {
           p_collection_id?: string

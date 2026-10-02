@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "source": "disposable-local-postgres",
   "schemas": ["public"],
-  "migrationHead": "20261002110000_add_dictionary_import_intents.sql",
+  "migrationHead": "20261002120000_add_dictionary_import_recovery.sql",
   "postgresImage": "postgres@sha256:20edbde7749f822887a1a022ad526fde0a47d6b2be9a8364433605cf65099416",
   "generator": "supabase-postgres-meta",
   "generatorVersion": "0.99.0",

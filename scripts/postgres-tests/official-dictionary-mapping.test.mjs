@@ -1118,3 +1118,69 @@ test('account deletion removes its immutable import receipts without weakening o
     '0'
   )
 })
+
+test('recovery moves a proven official card after source retirement but rejects new insertion from that source', async () => {
+  const { f, intent, content, apply } = await intentFixture()
+  await db.sql(insert(f))
+  const official = {
+    ...intent,
+    source: {
+      kind: 'official-pack',
+      pack_id: f.pack,
+      version: '1.0.0',
+      pack_entry_id: f.entry.entry_id,
+      manifest_sha256: f.manifestHash,
+      reference: {
+        entry_id: f.reference.entry_id,
+        revision_id: f.reference.revision_id,
+      },
+      content,
+    },
+  }
+  await apply(official)
+  const target = await db.sql(
+    `INSERT INTO public.collections(user_id,name) VALUES ('${f.user}','Retirement recovery') RETURNING collection_id;`
+  )
+  await db.sql(
+    `UPDATE public.dictionary_entries SET state = 'retired' WHERE entry_id = '${f.reference.entry_id}';`
+  )
+  const request = {
+    protocol_version: 1,
+    operation_id: randomUUID(),
+    original_intent: official,
+    expected_recovery_version: 0,
+    expected_collection_id: official.collection_id,
+    target_collection_id: target,
+  }
+  assert.equal(
+    JSON.parse(
+      await db.sql(
+        asUser(
+          f.user,
+          `SELECT public.recover_dictionary_import_v1(${json(request)});`
+        )
+      )
+    ).outcome,
+    'applied'
+  )
+  const unseen = {
+    ...official,
+    operation_id: randomUUID(),
+    word_id: randomUUID(),
+  }
+  await assert.rejects(
+    db.sql(
+      asUser(
+        f.user,
+        `SELECT public.recover_dictionary_import_v1(${json({ ...request, operation_id: randomUUID(), original_intent: unseen })});`
+      )
+    ),
+    /invalid-import-reference/
+  )
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM private.dictionary_import_origins WHERE word_id = '${unseen.word_id}';`
+    ),
+    '0'
+  )
+})
