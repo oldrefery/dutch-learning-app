@@ -17,6 +17,7 @@ import {
   MIGRATION_V14_DICTIONARY_IMPORTS,
   MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS,
 } from '../dictionaryImportSchema'
+import { MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY } from '../dictionaryImportRecoverySchema'
 
 // Only the native Expo bridge is replaced; execute actual repository SQL.
 export const createTestDatabase = (
@@ -37,6 +38,7 @@ export const createTestDatabase = (
     database.exec(MIGRATION_V13_DICTIONARY_CONTENT)
     database.exec(MIGRATION_V14_DICTIONARY_IMPORTS)
     database.exec(MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS)
+    database.exec(MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY)
   }
   const runAsync = async (sql: string, ...values: SQLInputValue[]) =>
     database.prepare(sql).run(...values)

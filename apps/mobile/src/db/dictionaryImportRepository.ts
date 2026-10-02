@@ -32,6 +32,13 @@ export const dictionaryImportRepository = {
       JSON.stringify(intent),
       queuedAt
     )
+    await transaction.runAsync(
+      `INSERT INTO dictionary_import_delivery(word_id,user_id,original_intent_json,recovery_version)
+       VALUES (?, ?, ?, 0)`,
+      intent.word_id,
+      userId,
+      JSON.stringify(intent)
+    )
   },
 
   async getPending(userId: string): Promise<LocalDictionaryImport[]> {
@@ -70,7 +77,9 @@ export const dictionaryImportRepository = {
     await db.withExclusiveTransactionAsync(async transaction => {
       const row = await transaction.getFirstAsync<{ payload_json: string }>(
         `SELECT payload_json FROM dictionary_import_intents
-         WHERE user_id = ? AND operation_id = ? AND word_id = ?`,
+         WHERE user_id = ? AND operation_id = ? AND word_id = ?
+           AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r
+             WHERE r.word_id = dictionary_import_intents.word_id)`,
         [userId, intent.operation_id, intent.word_id]
       )
       if (
@@ -126,7 +135,9 @@ export const dictionaryImportRepository = {
     const db = await getDatabase()
     await db.runAsync(
       `UPDATE dictionary_import_intents SET status = 'error', last_error = ?
-       WHERE user_id = ? AND operation_id = ? AND status <> 'conflict'`,
+       WHERE user_id = ? AND operation_id = ? AND status <> 'conflict'
+         AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r
+           WHERE r.word_id = dictionary_import_intents.word_id)`,
       message,
       userId,
       operationId
@@ -148,7 +159,12 @@ export const dictionaryImportRepository = {
         `SELECT payload_json FROM dictionary_import_intents WHERE user_id = ?
          AND operation_id = ? AND word_id = ? AND status = 'conflict'
          AND EXISTS (SELECT 1 FROM words WHERE words.word_id = dictionary_import_intents.word_id
-           AND words.user_id = dictionary_import_intents.user_id AND words.deleted_at IS NULL)`,
+           AND words.user_id = dictionary_import_intents.user_id AND words.deleted_at IS NULL)
+         AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r
+           WHERE r.word_id = dictionary_import_intents.word_id)
+         AND NOT EXISTS (SELECT 1 FROM dictionary_import_delivery d
+           WHERE d.word_id = dictionary_import_intents.word_id
+             AND (d.cancelled = 1 OR d.recovery_version > 0))`,
         [userId, previous.operation_id, previous.word_id]
       )
       if (
@@ -159,6 +175,13 @@ export const dictionaryImportRepository = {
       ) {
         throw new Error('Import conflict changed. Reload the word.')
       }
+      await transaction.runAsync(
+        `UPDATE dictionary_import_delivery SET original_intent_json = ?
+         WHERE user_id = ? AND word_id = ?`,
+        JSON.stringify(next),
+        userId,
+        previous.word_id
+      )
       await transaction.runAsync(
         `UPDATE dictionary_import_intents SET operation_id = ?, payload_json = ?,
          status = 'pending', existing_word_id = NULL, last_error = NULL

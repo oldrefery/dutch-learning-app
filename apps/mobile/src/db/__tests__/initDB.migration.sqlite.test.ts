@@ -19,6 +19,7 @@ import {
   MIGRATION_V14_DICTIONARY_IMPORTS,
   MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS,
 } from '../dictionaryImportSchema'
+import { MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY } from '../dictionaryImportRecoverySchema'
 
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }))
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -28,6 +29,8 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }))
 jest.mock('@/lib/sentry')
 
+const IMPORT_RECOVERY_FAULT = 'import-recovery'
+const MIGRATION_INTERRUPTION = 'Injected migration interruption'
 const IMPORT_RECEIPTS_FAULT = 'import-receipts'
 const SELECT_IMPORTS = 'SELECT * FROM dictionary_import_intents'
 const CHECK_FOREIGN_KEYS = 'PRAGMA foreign_key_check'
@@ -42,6 +45,7 @@ type Fault =
   | 'recovery'
   | 'dictionary'
   | 'imports'
+  | typeof IMPORT_RECOVERY_FAULT
   | typeof IMPORT_RECEIPTS_FAULT
   | null
 
@@ -63,7 +67,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
   const words = () => db.prepare('SELECT * FROM words ORDER BY word_id').all()
   const interrupt = () => {
     fault = null
-    throw new Error('Injected migration interruption')
+    throw new Error(MIGRATION_INTERRUPTION)
   }
   const checkQueueTriggers = () => {
     const initial = commands()
@@ -108,7 +112,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       ['pending-b', 'qa-a'],
       ['pending-c', 'qa-b'],
     ])
-    expect(version).toBe('15')
+    expect(version).toBe('16')
     expect(
       db
         .prepare(
@@ -126,7 +130,9 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       'dictionary_change_cursors',
       'dictionary_content_commands',
       'dictionary_import_acknowledgements',
+      'dictionary_import_delivery',
       'dictionary_import_intents',
+      'dictionary_import_recovery_outbox',
       'dictionary_personal_refresh_queue',
       'dictionary_revision_cache',
     ])
@@ -203,6 +209,11 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
                   interrupt()
                 }
                 db.exec(sql)
+                if (
+                  sql === MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY &&
+                  fault === IMPORT_RECOVERY_FAULT
+                )
+                  interrupt()
                 if (
                   sql === MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS &&
                   fault === IMPORT_RECEIPTS_FAULT
@@ -297,13 +308,12 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     'dictionary',
     'imports',
     IMPORT_RECEIPTS_FAULT,
+    IMPORT_RECOVERY_FAULT,
   ] as const)(
     'retries after interruption at %s without losing or duplicating commands',
     async phase => {
       fault = phase
-      await expect(initializeDatabase()).rejects.toThrow(
-        'Injected migration interruption'
-      )
+      await expect(initializeDatabase()).rejects.toThrow(MIGRATION_INTERRUPTION)
       expect(version).toBe('8')
       expect(closeCount).toBe(1)
       await initializeDatabase()
@@ -341,7 +351,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     version = '10'
     await closeDatabase()
     await initializeDatabase()
-    expect(version).toBe('15')
+    expect(version).toBe('16')
     expect(words()).toEqual(wordsBefore)
     expect(events()).toEqual(history)
     expect(commands()).toEqual(queue)
@@ -384,7 +394,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
 
     await initializeDatabase()
 
-    expect(version).toBe('15')
+    expect(version).toBe('16')
     expect(words()).toEqual(wordSnapshot)
     expect(events()).toEqual(eventSnapshot)
     expect(commands()).toEqual(commandSnapshot)
@@ -422,7 +432,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     expect(version).toBe('14')
     fault = null
     await initializeDatabase()
-    expect(version).toBe('15')
+    expect(version).toBe('16')
     expect(words()).toEqual(beforeWords)
     expect(commands()).toEqual(beforeCommands)
     expect(db.prepare(SELECT_IMPORTS).all()).toEqual(beforeImports)
@@ -432,6 +442,57 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     expect(
       db.prepare('SELECT * FROM dictionary_import_acknowledgements').all()
     ).toEqual([])
+    expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
+  })
+
+  it('retries interrupted v15-to-v16 backfill without inventing provenance or placement delivery', async () => {
+    await initializeDatabase()
+    db.exec(`INSERT INTO dictionary_import_intents(operation_id,user_id,word_id,payload_json,queued_at)
+      VALUES ('pending-origin','qa-a','qa-a','{"word_id":"qa-a"}','2026-10-02');
+      INSERT INTO dictionary_import_acknowledgements(word_id,user_id) VALUES ('qa-b','qa-b');
+      DROP TABLE dictionary_import_recovery_outbox; DROP TABLE dictionary_import_delivery;`)
+    const beforeWords = words()
+    const beforeCommands = commands()
+    const beforeImports = db.prepare(SELECT_IMPORTS).all()
+    version = '15'
+    await closeDatabase()
+    fault = IMPORT_RECOVERY_FAULT
+    await expect(initializeDatabase()).rejects.toThrow(MIGRATION_INTERRUPTION)
+    expect(version).toBe('15')
+    const inspected = new DatabaseSync(join(directory, 'fixture.db'))
+    try {
+      expect(
+        inspected
+          .prepare(
+            "SELECT name FROM sqlite_master WHERE name = 'dictionary_import_delivery'"
+          )
+          .all()
+      ).toEqual([])
+    } finally {
+      inspected.close()
+    }
+    await initializeDatabase()
+    expect(version).toBe('16')
+    expect(words()).toEqual(beforeWords)
+    expect(commands()).toEqual(beforeCommands)
+    expect(db.prepare(SELECT_IMPORTS).all()).toEqual(beforeImports)
+    expect(
+      db
+        .prepare('SELECT * FROM dictionary_import_delivery WHERE word_id = ?')
+        .get('qa-a')
+    ).toMatchObject({
+      original_intent_json: '{"word_id":"qa-a"}',
+      acknowledged_placement_revision: null,
+    })
+    expect(
+      db
+        .prepare('SELECT * FROM dictionary_import_delivery WHERE word_id = ?')
+        .get('qa-b')
+    ).toMatchObject({
+      original_intent_json: null,
+      recovery_version: null,
+      acknowledged_placement_revision: null,
+    })
     expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
   })
 
@@ -453,7 +514,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     version = '13'
     await closeDatabase()
     await initializeDatabase()
-    expect(version).toBe('15')
+    expect(version).toBe('16')
     expect(words()).toEqual(oldWords)
     expect(commands()).toEqual(oldLearning)
     expect(db.prepare('SELECT * FROM dictionary_card_content').all()).toEqual(

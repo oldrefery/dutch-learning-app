@@ -24,10 +24,11 @@ import {
   MIGRATION_V14_DICTIONARY_IMPORTS,
   MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS,
 } from './dictionaryImportSchema'
+import { MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY } from './dictionaryImportRecoverySchema'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 15
+const SCHEMA_VERSION = 16
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -288,6 +289,11 @@ async function applyPendingMigrations(
   if (currentVersion < 15) {
     await db.withExclusiveTransactionAsync(async transaction => {
       await transaction.execAsync(MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS)
+    })
+  }
+  if (currentVersion < 16) {
+    await db.withExclusiveTransactionAsync(async transaction => {
+      await transaction.execAsync(MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY)
     })
   }
 }
