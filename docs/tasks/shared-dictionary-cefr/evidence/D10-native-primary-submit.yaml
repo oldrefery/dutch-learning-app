@@ -1,0 +1,9 @@
+appId: ${APP_ID}
+---
+- tapOn:
+    id: sign-in-button
+- extendedWaitUntil:
+    visible:
+      id: screen-collections
+    timeout: 30000
+- assertVisible: D08 Native QA

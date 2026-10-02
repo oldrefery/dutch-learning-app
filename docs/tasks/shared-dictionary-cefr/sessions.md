@@ -1366,3 +1366,22 @@ Copy these fields into a dated entry at each session boundary:
 - Blocker or pause reason:
 - Quota before/after and reset IDs/times, if measured:
 - Exact next action and recommended model/effort:
+
+## 2026-10-02 — D10 catalog runtime checkpoint and R3 review
+
+- Starting `6ca149f`, Astra / High, AUTH-17/18/19. No application changes;
+  137 source fingerprints unchanged. [Evidence](evidence/D10-catalog-runtime-20261002.md).
+- Fresh local synthetic pack/mappings/source only. Web official/shared, Android
+  shared, iOS preview, exact cross-client IDs, private override, revocation and
+  self-contained recipient export pass. All prior server/native/SRS rows retained.
+- [R3](evidence/D10-session-revocation-review-20261002.md): native global logout
+  leaves signed JWT accepted by web proxy but session rejected by page, causing
+  actual login/collections redirect loop. Counterexample + valid control added;
+  4 suites /38 focused tests, typecheck and strict scoped lint pass.
+- Safari route/login observed, full flow unverified; Android isolated typing timed
+  out before offline official import. Read_only row restored exactly, primary
+  restored on both, queues empty. Remaining two runtime checks explicitly retained.
+- All assigned resources OFF verified 15:15:36 UTC /17:15:36 Amsterdam. No pending
+  write/build/device job. Private artifacts retained, no other sessions touched.
+- Next Sol 6.1 / High R3 repair, then Astra review. D10.3–D10.5 open; no D11.
+  Normal-hook local commit authorized; no push/PR/production/cutover/deployment.

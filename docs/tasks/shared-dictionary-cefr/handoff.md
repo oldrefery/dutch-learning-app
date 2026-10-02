@@ -1,5 +1,57 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 official/shared runtime preservation PASS;
+R3 revoked-session redirect loop reproduced, repair required.** Starting HEAD
+`6ca149f`, user-selected Astra / High, AUTH-17/18/19. Application unchanged;
+137 fingerprints match. [Runtime evidence](evidence/D10-catalog-runtime-20261002.md),
+[summary](evidence/D10-catalog-runtime-summary-20261002.json),
+[R3 finding and repair contract](evidence/D10-session-revocation-review-20261002.md).
+
+Actual web official/shared and Android shared imports pass. iOS official preview
+passes. Four new primary IDs arrive unchanged on both clients; prior server rows,
+15 iOS/nine Android word rows and learning preserved exactly. Sharing revoked;
+HTTP denies further access and real web shows Link unavailable. Recipient export
+contains 10 self-contained content-only entries including the private shared note.
+All pending native import/content/recovery/refresh/hydration queues are empty;
+primary restored on both devices, Up to date confirmed.
+
+**Next: GPT-6.1 Sol / High for R3**, then Astra re-review. Valid signed but revoked
+JWT is accepted by proxy getClaims, rejected by page getUser: /login and
+/app/collections redirect to each other. Four focused suites /38 tests pass,
+including the passing review counterexample (not a fix); test-inclusive TypeScript
+and strict web lint pass. Convert that test to no-loop safety coverage. Preserve
+server authorization/cookie propagation; do not change mobile sign-out policy.
+Current-thread model picker unavailable: ask for manual switch, never claim one.
+
+D10.3–D10.5 remain open. Remaining runtime: cached official import under read_only /
+offline and full mobile Safari acceptance. Safari login/official route rendered,
+but input/overlay/zoom automation did not complete the acceptance flow. Android
+isolated login hit a Maestro typing timeout before import. No offline block used.
+Temporary isolated read_only access restored to its exact original row. Do not
+repeat passed recovery/upgrade/transfer/import checks or begin D11.
+
+**All resources OFF verified 15:15:36 UTC /17:15:36 Amsterdam**: exact assigned iOS
+Shutdown, Android absent, four task containers exited, named browser closed,
+runner PIDs 30260/30275/30276/30277 absent, ports 55331/55400 closed. No pending
+mutation/build/QA job. Apps, volumes and private reports preserved; other sessions
+untouched. AUTH-19 still applies unless another session reclaims devices.
+
+Private root `reports/shared-dictionary-cefr/d10-catalog-20261002/`; native snapshots
+remain under `.20261001`. Seed once only: local synthetic pack
+`d10-synthetic-navigation-20261002` v1.0.0 and three immutable mappings now exist.
+New source collection D10 Synthetic Shared is revoked; do not reset/reseed/publish.
+Final server 27 words /21 content states /nine collections. Primary D08 Native QA
+has ten words; new kompas/zeil/getij/duin IDs in summary. Isolated owner still has no
+kompas, suitable for the remaining bounded official import. No uncertain write.
+
+Preservation commit subject `test: capture catalog acceptance and revoked-session loop`;
+inspect git log for SHA. Normal hooks required; private `commit.log` records results.
+Only QA flows, review tests and sanitized task docs changed. Private reports and
+.playwright-cli remain excluded/untracked; root AGENTS excluded. Automation paused.
+No push/PR/merge, production, cutover, hosted publication/deployment or paid call.
+
+Historical checkpoint follows.
+
 Last checkpoint: **2026-10-02 — D10 scoped cross-client transfer acceptance PASS**.
 Starting HEAD `6d3d355`, same Astra / High. Device handback granted in AUTH-19.
 [Evidence](evidence/D10-cross-client-acceptance-20261002.md),
