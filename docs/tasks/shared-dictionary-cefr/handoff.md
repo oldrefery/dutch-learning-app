@@ -1,34 +1,36 @@
 # Shared dictionary and CEFR — current handoff
 
-Last checkpoint: **2026-10-02 — D10.3 recovery server/domain and SQLite v16 implemented.**
-User confirmed GPT-6.1 Sol / High. Source commits `1828f57` (server/domain) and
-`1748066` (SQLite), AUTH-17/AUTH-18, local only. Evidence:
-[server](evidence/D10-recovery-server-20261002.md) and
-[SQLite](evidence/D10-recovery-sqlite-20261002.md).
-Durable personal-ID origins, version/placement CAS, immutable receipts and terminal
-cancellation are supported by SQL. SQLite stores exact origin, complete recovery/
-cancellation outboxes and separate placement debt, preserving IDs/SRS/all queues.
-Conservative v14/v15 upgrade never invents provenance or delivered placement.
+Last checkpoint: **2026-10-02 — D10.3 mobile recovery sync integrated, checkpoint 4.**
+User-confirmed GPT-6.1 Sol / High. Application source `abc0b86`, following
+`1748066` SQLite and `1828f57` server/domain; AUTH-17/AUTH-18, local only.
+[Sync evidence](evidence/D10-recovery-sync-20261002.md). Cancellation precedes
+ordinary deletion; recovery precedes original/dependent delivery. Immutable replay,
+owner guards and placement revisions preserve IDs/SRS/content/learning queues.
+Batched current-placement hydration prevents old receipt/learning metadata echo.
+Explicit deletion barriers are atomic; remote cleanup never fabricates cancellation.
+Pending counts include recovery/cancellation and independent placement debt.
 
-Verification: complete PostgreSQL 213/213; parser tests 11/11; SQLite focus 4 suites /
-50 tests including 12 new recovery tests. Normal latest source hooks mobile
-151 suites / 1740 tests / 22 snapshots, web 75 suites / 642 tests, one existing
-skipped suite/test. Test-inclusive mobile/domain/target TypeScript, strict scoped
-lint, generated target determinism and format/diff pass. No gate bypass.
-No hosted migration or native/D08 QA restart. Synthetic SQL/codegen/SQLite
-resources cleaned up. Exact task devices/containers reverified off at 10:20 UTC.
+Verification: focus 10 suites / 166 tests; final resume hook suite 7/7. Normal source
+hooks mobile 154 suites / 1763 tests / 22 snapshots, web 75 suites / 642 tests,
+one existing skipped suite/test. Mobile test-inclusive TypeScript, strict scoped
+lint and format/diff pass. Final hook test and docs are in the following checkpoint.
+SQL/domain/target source is unchanged from its 213/213 SQL/determinism pass.
+Synthetic file fixtures cleaned up. Exact task devices/containers reverified off
+at 10:41 UTC; no native/D08 QA restart. No pending operation after final hooks.
 
-**Current continuation: GPT-6.1 Sol / High, accepted contract checkpoint 4 — sync integration.**
-Wire foreground/background delivery and typed errors; handle lost replies, pending
-counts/status, stale placement echo and cancellation before collection deletion.
-New persistence APIs are not yet connected to application move/delete/sync entrypoints;
-generic metadata sync does not yet consult placement debt. Client recovery/UI is
-not yet wired. Preserve exact origins, pending queues and v15 unknown state.
+**Current continuation: GPT-6.1 Sol / High, accepted contract checkpoint 5 — recovery UI/web.**
+Connect existing-target recovery, explicit current-state read and fresh proposal
+retry, visible semantic/retained debt; test themes and account changes. Finish safe
+pre-upgrade behavior and applicable web integration. Do not rotate a claimed original
+root or automatically rebase. Prepared recovery/cancel requests now sync, but recovery
+UI is not yet wired. Unknown v15 provenance/delivery remains unresolved and visible
+as debt when pending; no inferred root/placement or absent imported-ID recreation.
 [Accepted contract](evidence/D10-target-recovery-contract-20261002.md) checkpoints
-1–3 are implemented; 4–6 (sync, UI/web, Astra/device acceptance) remain open.
-Legacy direct-write coexistence remains a gate. D10.3–D10.5 unchecked;
+1–4 implemented; 5–6 (UI/web, Astra/device acceptance) remain open. AppState resume
+uses the same coordinator; no OS background worker exists or was added. Native
+OS/in-flight lifecycle and both-client acceptance remain checkpoint 6.
+Legacy direct-write coexistence is still a gate. D10.3–D10.5 unchecked;
 do not repeat D08/D09 or start D11. `.playwright-cli/` and ignored QA data stay private.
-No pending build/test/QA job after saving this checkpoint.
 
 Previous implementation `42c9bfd` completed default-off mobile clipboard JSON export
 and pasted-document reimport: fresh personal IDs/default SRS, owned targets,
@@ -64,7 +66,7 @@ Data, volumes, copies and reports retained. Other sessions/devices untouched.
 Task state: D02–D09 done; D10 in_progress; D11–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, current implementation `1748066`
+Branch `feature/shared-dictionary-schema`, current implementation `abc0b86`
 following base implementation `a59acad`; no push/PR. Default runtime dictionary flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
@@ -72,14 +74,15 @@ No production, schema cutover, publication, deployment or paid provider calls.
 
 1. Read [D10 stage card](steps/D10.md), its focused inputs and permissions.
    Continue D10.3 on GPT-6.1 Sol / High from the accepted recovery contract,
-   implementation checkpoint 4 (foreground/background sync, placement debt and
-   cancellation/deletion ordering). Do not repeat the completed architecture review,
+   implementation checkpoint 5 (existing-target UI, explicit state/retry, themes,
+   conservative pre-upgrade behavior and applicable web integration). Do not repeat the completed architecture review,
    D08/D09 acceptance or start all remaining stages.
 2. D03-D09 work and the preceding D10 review are preserved in `a59acad`;
    durable D10.3 imports are in `dfdc7f0` and review repairs are in `5efd6ff`;
    mobile document reimport is in `42c9bfd`; recovery design and executable
    evidence are in `b92eba9`; server/domain recovery is in `1828f57` and SQLite v16
-   in `1748066`, with task docs in the following checkpoint.
+   in `1748066`; mobile sync is `abc0b86`, with final hook coverage and task docs
+   in the following checkpoint.
    The historical pre-commit
    inventory is [dirty paths](evidence/D10-dirty-paths.txt). Current source hashes
    are [D10 fingerprints](evidence/D10-source-sha256.json). Leave `.playwright-cli`
@@ -151,7 +154,7 @@ infer live readiness from completed local stages.
 - Branch base/current starting HEAD: `c5dfb14` from synchronized `main`.
 - The earlier performance branch was not reused; its squash-merged work is present
   through current `main`.
-- Persistence: **committed locally, not pushed**. Latest implementation is `1748066`, following document reimport
+- Persistence: **committed locally, not pushed**. Latest implementation is `abc0b86`, following document reimport
   `42c9bfd`, following `5efd6ff`, `dfdc7f0` and `a59acad`; task docs are in the following documentation
   checkpoint. A new local session can
   resume. A remote clone still needs an explicitly authorized push or transfer.
@@ -168,7 +171,7 @@ infer live readiness from completed local stages.
   target contract, package scripts/README and CI check; D09 web/dictionary routes,
   tests, benchmark harness/helpers and evidence; D10 mapping/import/export contracts
   and review fixes. Verify git status on resume and preserve later user edits.
-- Latest SQLite recovery implementation: `1748066`; server implementation: `1828f57`; architecture review/tests: `b92eba9`; document implementation: `42c9bfd`; preservation review: `5efd6ff`; earlier D03-D10 review: `a59acad`.
+- Latest mobile sync implementation: `abc0b86`; SQLite recovery implementation: `1748066`; server implementation: `1828f57`; architecture review/tests: `b92eba9`; document implementation: `42c9bfd`; preservation review: `5efd6ff`; earlier D03-D10 review: `a59acad`.
   No PR or remote push. Dictionary deployments: none.
 
 ## Evidence and environment

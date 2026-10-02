@@ -1123,6 +1123,32 @@ a new session to read this entire history. Never log private vocabulary or secre
   no D11, push/PR/merge, production/cutover, deployment, publication or paid call.
 - No new quota sample. No new blocker; implementation continues from saved state.
 
+## 2026-10-02 — D10.3 mobile recovery sync checkpoint
+
+- User-confirmed GPT-6.1 Sol / High; AUTH-17/AUTH-18. Current-thread picker remains
+  unavailable; no automatic model switch or subagent. Task-device QA permission
+  reaffirmed; this checkpoint needed synthetic fixtures only.
+- App source `abc0b86`: recovery/cancel coordinator, atomic explicit deletion,
+  no metadata echo of delivered placement, owner-event/transaction guards and
+  independent pending status. [Evidence](evidence/D10-recovery-sync-20261002.md).
+- Focus 10 suites / 166 tests; source normal hooks 154 mobile suites / 1763 tests /
+  22 snapshots, 75 web suites / 642 tests, one existing skipped suite/test. Final
+  AppState resume hook suite 7/7, included in the following checkpoint. TypeScript,
+  strict scoped lint, format/diff pass; SQL/contracts unchanged from 213/213.
+- Initial fixture/mock/type/complexity fixes and one obsolete deletion expectation
+  in full mobile were repaired; final hooks passed all suites. No gate bypass.
+- Exact QA inventory 10:41 UTC: iOS Shutdown, task AVD process absent, four task
+  containers exited. No device/backend restart or other-session operation. Synthetic
+  SQLite files cleaned up; no pending job after final hooks. No OS-background-worker
+  or device acceptance claim; existing AppState resume uses the same coordinator.
+- Existing branch; local-only commits, no push/PR/merge. Private `.playwright-cli/`
+  and ignored QA data retained. Default runtime gates off; no production/cutover,
+  deployment, publication, paid provider or automation change. No new quota sample.
+- Next Sol 6.1 / High checkpoint 5: UI/current-state retry, retained/semantic debt,
+  themes/account changes, conservative pre-upgrade and applicable web integration.
+  Then Astra implementation review and assigned-device/both-client acceptance.
+  D10.3-D10.5 open; D11 not started. No new blocker.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:

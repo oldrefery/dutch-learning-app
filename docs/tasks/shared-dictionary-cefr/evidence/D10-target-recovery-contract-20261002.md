@@ -1,7 +1,7 @@
 # D10.3 — accepted unavailable-target recovery design
 
-Status: **architecture review complete; server/domain and SQLite checkpoints 1–3
-implemented; sync/UI and integrated acceptance pending**. Reviewed on 2026-10-02 after `795334c` / source `42c9bfd`, following the
+Status: **architecture review complete; server/domain, SQLite and mobile sync checkpoints 1–4
+implemented; UI and integrated acceptance pending**. Reviewed on 2026-10-02 after `795334c` / source `42c9bfd`, following the
 user's model-switch confirmation for GPT-6 Astra / High. AUTH-17/AUTH-18 cover this
 local technical checkpoint. This is not production, cutover or deployment approval.
 It supersedes the candidate in [review input](D10-target-recovery-review-input.md).
@@ -220,9 +220,10 @@ Backfill only provable provenance/placement, otherwise retain a visible recovery
 state requiring a current-state read and explicit decision. Tests must prove this
 instead of marking old pending moves delivered from a boolean acknowledgement.
 
-Current sources: server/domain `1828f57`, SQLite v16 `1748066`. See
+Current sources: server/domain `1828f57`, SQLite v16 `1748066`, mobile sync `abc0b86`. See
 [server evidence](D10-recovery-server-20261002.md) and
-[SQLite evidence](D10-recovery-sqlite-20261002.md). Next is checkpoint 4.
+[SQLite evidence](D10-recovery-sqlite-20261002.md),
+[sync evidence](D10-recovery-sync-20261002.md). Next is checkpoint 5.
 
 ## Implementation sequence and required evidence
 

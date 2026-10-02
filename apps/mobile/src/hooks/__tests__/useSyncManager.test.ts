@@ -148,3 +148,51 @@ describe('initial synchronization', () => {
     expect(syncManager.performSync).not.toHaveBeenCalled()
   })
 })
+
+describe('dictionary recovery delivery on foreground resume', () => {
+  it('pauses automatic work in background and resumes through the same sync coordinator', async () => {
+    const previousAppState = AppState.currentState
+    const userId = 'recovery-owner'
+    const listener = jest.spyOn(AppState, 'addEventListener')
+    AppState.currentState = 'active'
+    useApplicationStore.setState({ currentUserId: userId })
+    jest
+      .mocked(initializeDatabase)
+      .mockResolvedValue(
+        'initialized' as unknown as Awaited<
+          ReturnType<typeof initializeDatabase>
+        >
+      )
+    jest
+      .mocked(syncManager.performSync)
+      .mockClear()
+      .mockResolvedValue({ ...successfulSync, userId })
+    const { unmount } = renderHook(() =>
+      useSyncManager({
+        autoSyncOnMount: false,
+        autoSyncOnFocus: false,
+        autoSyncOnNetworkChange: false,
+        syncIntervalMs: 0,
+      })
+    )
+    try {
+      await waitFor(() => expect(listener).toHaveBeenCalled())
+      const onChange = listener.mock.calls[listener.mock.calls.length - 1][1]
+      await act(async () => {
+        AppState.currentState = 'background'
+        onChange('background')
+      })
+      expect(syncManager.performSync).not.toHaveBeenCalled()
+      await act(async () => {
+        AppState.currentState = 'active'
+        onChange('active')
+      })
+      expect(syncManager.performSync).toHaveBeenCalledTimes(1)
+      expect(syncManager.performSync).toHaveBeenCalledWith(userId)
+    } finally {
+      unmount()
+      listener.mockRestore()
+      AppState.currentState = previousAppState
+    }
+  })
+})
