@@ -1,0 +1,31 @@
+{
+  "checkpoint": "D11.1 contract review",
+  "review_date": "2026-10-02",
+  "model": "GPT-6 Astra / High (user confirmed)",
+  "starting_head": "9caea2f",
+  "reviewed_implementation": "a756680",
+  "verdict": "PASS for dormant contract",
+  "blocking_findings": 0,
+  "product_changes": false,
+  "new_review_tests": 3,
+  "focused_edge_tests": 48,
+  "scoped_lint_format_diff": "PASS",
+  "source_inventory": {
+    "path": "D11-review-source-sha256.json",
+    "count": 158,
+    "prior_hashes_unchanged": 156,
+    "changed": [
+      "supabase/functions/gemini-handler/cefr_test.ts",
+      "supabase/functions/gemini-handler/cefrHandler_test.ts"
+    ]
+  },
+  "retained_resources_off_verified_at_utc": "2026-10-02 20:08:28",
+  "pending_runtime_operations": [],
+  "feature_and_schedule_activated": false,
+  "next_model": "GPT-6.1 Sol / High",
+  "next_checkpoint": "D11.2 offline fixture/report validation and fail-closed decision policy",
+  "quality_calibration": "not qualified; real reviewed fixture and separately approved sample remain open",
+  "worker_implementation": "not started",
+  "private_log_root": "reports/shared-dictionary-cefr/d11-contract-review-20261002/",
+  "persistence": "local test/review commit with normal hooks; no push"
+}

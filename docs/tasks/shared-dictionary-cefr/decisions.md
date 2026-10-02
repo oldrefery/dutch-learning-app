@@ -376,3 +376,17 @@ branch. AUTH-18 necessary local commits remain authorized. Retained native QA
 resources remain off until needed; no other session devices/resources. No paid
 provider sample, schedule activation, hosted migration, production/cutover, public
 publication, deployment, push/PR/merge. DEC-06 budget/cadence remains open.
+
+### October 2 — D11.1 review and calibration/worker engineering contract
+
+Under AUTH-20/AUTH-18, user-confirmed Astra / High review passes the dormant D11.1
+contract (`a756680`). The [engineering contract](evidence/D11-calibration-worker-contract-20261002.md)
+selects offline fixture/report validation and fail-closed qualification, then
+published-meaning-only selection, lease/head CAS completion and conservative
+atomic attempt budgets. This is local engineering direction, not new user source,
+quality, spending, publication or runtime approval. No analysis-cache/client
+candidate may be cast into a dictionary assessment. Worker provenance may not
+self-approve or borrow unrelated approved sources. D11.2 stays partial until real
+reviewed evidence and an authorized sample qualify the method; synthetic labels
+prove test mechanics only. DEC-06 and all live gates remain open. Next Sol 6.1 /
+High for the offline checkpoint; devices/retained backend not needed.

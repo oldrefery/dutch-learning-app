@@ -1502,3 +1502,27 @@ Source/evidence commit `a756680` normal hooks PASS: mobile 156 suites /1796 test
 22 snapshots; web 86 suites /780 tests, one existing skipped suite/test. Post-hook
 158/158 source hashes match; only preexisting `.playwright-cli/` untracked.
 Private `commit.log` retained. Documentation receipt checkpoint follows; no push.
+
+## 2026-10-02 — D11.1 contract review and D11.2 implementation route
+
+- User-confirmed GPT-6 Astra / High, starting `9caea2f`, reviewed source `a756680`,
+  AUTH-20/18. No subagent. [Review](evidence/D11-analysis-contract-review-20261002.md)
+  PASS with no blocking implementation finding; dormant contract only.
+- Three added review tests cover actual persistence round-trips, disabled refresh
+  and 16 material input changes. 48 Edge tests PASS with fake HTTP/no allow-net;
+  scoped lint/format/diff PASS. Product/SQL unchanged. 156 hashes exact, two test
+  hashes updated in the 158-path review inventory. No repeated SQL/runtime QA.
+- [Engineering contract](evidence/D11-calibration-worker-contract-20261002.md)
+  preserves separate analysis/meaning authority, reviewed fixture qualification,
+  exact lease/head/provenance completion and atomic conservative budget limits.
+- Next manual GPT-6.1 Sol / High for D11.2 offline fixture/report validation and
+  fail-closed decision policy. Real reviewed quality/source/provider budget remain
+  open gates; no synthetic calibration claim. D11 in_progress, D11.2–D11.7 open.
+- Devices/retained backend not started; no data write, live/provider call, hosted
+  migration, activation, production/cutover, publication/deployment or push/PR/merge.
+  Necessary local test/docs commit with normal hooks authorized. Private artifacts
+  and preexisting `.playwright-cli/` preserved. No pending runtime operation.
+
+Assigned resources OFF verified 20:08:28 UTC /22:08:28 Amsterdam: exact iOS
+Shutdown, Android absent, four retained task containers exited, ports 55331/55400
+closed. No device/backend start or retained data mutation during this review.

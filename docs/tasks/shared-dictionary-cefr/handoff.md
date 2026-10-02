@@ -1,5 +1,43 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D11.1 Astra contract review PASS.**
+Starting `9caea2f`, reviewed implementation `a756680`, existing
+`feature/shared-dictionary-schema`, user-confirmed GPT-6 Astra / High, AUTH-20/18.
+[Review](evidence/D11-analysis-contract-review-20261002.md),
+[calibration/worker contract](evidence/D11-calibration-worker-contract-20261002.md),
+[review source inventory](evidence/D11-review-source-sha256.json).
+
+No blocking D11.1 finding; application/migration code unchanged. Three added
+review tests verify actual fresh-write/cache-read known and unknown estimates,
+default-off refresh/re-enable safety and 16 material input mutations. Focused
+48 Edge tests PASS with all HTTP in memory and no network permission; scoped
+lint/format/diff PASS. 156 prior hashes exact, only two test hashes updated (158
+paths total). Earlier SQL/types evidence remains valid; no unchanged DB QA replay.
+This validates the dormant contract, not provider quality or worker correctness.
+
+**Next: D11.2 on GPT-6.1 Sol / High.** Implement the offline fixture validator,
+calibration report and fail-closed decision policy from the accepted engineering
+contract. Distinguish synthetic mechanics from reviewed meaning-level evidence.
+No real reviewed fixture/provider sample is qualified; D11.2 quality remains open
+until its evidence and separate live approval exist. Then local fake-provider
+D11.3–D11.7 work may proceed within the contract; stage D11 remains in_progress.
+CEFR_ANALYSIS_ENABLED and schedule remain OFF. Current-thread picker unavailable;
+request manual switch without claiming one. No subagent used.
+
+Retained QA devices/backend were not started; the next checkpoint does not need
+them. No pending runtime job, paid/provider call, retained data write, hosted
+migration, production/cutover, publication/deployment or push/PR/merge. Necessary
+local test/evidence commits with ordinary hooks remain authorized. Preserve
+preexisting `.playwright-cli/` and all ignored reports/data. Private review logs:
+`reports/shared-dictionary-cefr/d11-contract-review-20261002/`.
+
+Assigned resources OFF verified 20:08:28 UTC /22:08:28 Amsterdam: exact iOS
+Shutdown, Android absent, four retained task containers exited, ports 55331/55400
+closed. No device/backend start or retained data mutation during this review.
+
+The following D11.1 implementation and earlier checkpoints are historical;
+the review and next action above supersede their model routing.
+
 Last checkpoint: **2026-10-02 — D11.1 implemented and local verification PASS.**
 Starting `44de0f5`, existing `feature/shared-dictionary-schema`, user-confirmed
 GPT-6.1 Sol / High, AUTH-20 and retained AUTH-18 local commit scope.
@@ -649,10 +687,12 @@ No production, schema cutover, publication, deployment or paid provider calls.
 ## Next resume
 
 1. Read [D11 stage card](steps/D11.md), its focused inputs, accepted invariants and
-   permissions. Review completed D11.1 on user-confirmed GPT-6 Astra / High before
-   D11.2 calibration/worker design. D10 is closed;
+   permissions and [reviewed engineering contract](evidence/D11-calibration-worker-contract-20261002.md).
+   Implement D11.2 offline validation/reporting and fail-closed policy on user-confirmed
+   GPT-6.1 Sol / High. Reviewed real calibration/live sample remain separate open
+   evidence gates; do not claim them from synthetic tests. D10 is closed;
    do not repeat catalog/import/recovery/transfer/visual acceptance.
-2. Preserve the existing branch and 158-path [source inventory](evidence/D11-source-sha256.json).
+2. Preserve the existing branch and 158-path [review source inventory](evidence/D11-review-source-sha256.json).
    Leave `.playwright-cli/` and ignored retained reports/data uncommitted; do not
    reset/reseed or replay completed imports. In particular operation
    `217420b8-7a2d-4537-b440-a48ea42133f8` already completed once.
@@ -672,9 +712,9 @@ No production, schema cutover, publication, deployment or paid provider calls.
 
 AUTH-16 permits autonomous model/effort selection through supported controls:
 GPT-6.1 Sol / High for implementation, Astra / High for prescribed review or
-unresolved architecture/concurrency risk. User-confirmed GPT-6.1 Sol / High implemented
-D11.1. Next: GPT-6 Astra / High contract review before D11.2. No independent agent
-was used.
+unresolved architecture/concurrency risk. User-confirmed GPT-6 Astra / High reviewed
+D11.1 and the calibration/worker contract. Next: GPT-6.1 Sol / High for D11.2 local
+offline implementation. No independent agent was used.
 Direct current-thread picker control is unavailable; request manual switch and do
 not claim an automatic change. Do not use GPT-5.6 Sol for future work.
 
@@ -688,22 +728,22 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 
 ## Stage ledger
 
-| Stage               | Status      | Evidence / next gate                                                 |
-| ------------------- | ----------- | -------------------------------------------------------------------- |
-| [D01](steps/D01.md) | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                 |
-| [D02](steps/D02.md) | done        | Accepted design, fixtures, compatibility and rollback                |
-| [D03](steps/D03.md) | done        | Astra/High review fixed; 145/145 DB tests pass                       |
-| [D04](steps/D04.md) | done        | Terra/High; shared contracts pass mobile/web/Edge                    |
-| [D05](steps/D05.md) | done        | 12/12 focused; 157/157 DB; dormant compatibility                     |
-| [D06](steps/D06.md) | done        | Final D06 16/16; preservation/delta/rollback rehearsal               |
-| [D07](steps/D07.md) | done        | SQLite v13; 136/136 mobile suites preserve queues                    |
-| [D08](steps/D08.md) | done        | Closure review/fix and final native smoke passed; resources stopped  |
-| [D09](steps/D09.md) | done        | Web integration/performance verification                             |
-| [D10](steps/D10.md) | done        | Final review, real desktop/Safari visuals and preservation PASS      |
-| [D11](steps/D11.md) | in_progress | D11.1 local PASS; Astra review, D11.2 calibration then worker safety |
-| [D12](steps/D12.md) | pending     | Cross-platform integrated verification                               |
-| [D13](steps/D13.md) | pending     | Explicit release approval + observation                              |
-| [D14](steps/D14.md) | pending     | Adoption gate + compatibility retirement                             |
+| Stage               | Status      | Evidence / next gate                                                |
+| ------------------- | ----------- | ------------------------------------------------------------------- |
+| [D01](steps/D01.md) | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                |
+| [D02](steps/D02.md) | done        | Accepted design, fixtures, compatibility and rollback               |
+| [D03](steps/D03.md) | done        | Astra/High review fixed; 145/145 DB tests pass                      |
+| [D04](steps/D04.md) | done        | Terra/High; shared contracts pass mobile/web/Edge                   |
+| [D05](steps/D05.md) | done        | 12/12 focused; 157/157 DB; dormant compatibility                    |
+| [D06](steps/D06.md) | done        | Final D06 16/16; preservation/delta/rollback rehearsal              |
+| [D07](steps/D07.md) | done        | SQLite v13; 136/136 mobile suites preserve queues                   |
+| [D08](steps/D08.md) | done        | Closure review/fix and final native smoke passed; resources stopped |
+| [D09](steps/D09.md) | done        | Web integration/performance verification                            |
+| [D10](steps/D10.md) | done        | Final review, real desktop/Safari visuals and preservation PASS     |
+| [D11](steps/D11.md) | in_progress | D11.1 review PASS; D11.2 offline policy/quality gate then worker    |
+| [D12](steps/D12.md) | pending     | Cross-platform integrated verification                              |
+| [D13](steps/D13.md) | pending     | Explicit release approval + observation                             |
+| [D14](steps/D14.md) | pending     | Adoption gate + compatibility retirement                            |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and
 policy acceptance are complete. No production operation is authorized. Do not

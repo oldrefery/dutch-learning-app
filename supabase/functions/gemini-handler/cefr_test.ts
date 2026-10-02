@@ -108,3 +108,37 @@ Deno.test(
     )
   }
 )
+
+Deno.test(
+  'material grammar and meaning changes cannot retain a cache estimate',
+  async () => {
+    const estimate = await createGeminiCefrEstimate(
+      { level: 'A1', confidence: 0.8 },
+      content
+    )
+    assertNotEquals(estimate, null)
+    for (const patch of [
+      { part_of_speech: 'verb' },
+      { article: 'de' },
+      { translations: { en: ['house'], ru: ['дом'] } },
+      { register: 'formal' },
+      { is_expression: true },
+      { expression_type: 'idiom' },
+      { is_irregular: true },
+      { is_reflexive: true },
+      { is_separable: true },
+      { prefix_part: 'uit' },
+      { root_verb: 'huizen' },
+      { plural: 'huizen' },
+      { conjugation: { present: 'huist' } },
+      { preposition: 'in' },
+      { synonyms: ['woning'] },
+      { antonyms: ['buiten'] },
+    ]) {
+      assertEquals(
+        await readAnalysisCefrEstimate(estimate, { ...content, ...patch }),
+        null
+      )
+    }
+  }
+)

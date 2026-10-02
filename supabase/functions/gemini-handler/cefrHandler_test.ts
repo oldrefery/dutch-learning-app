@@ -224,3 +224,72 @@ Deno.test(
     }
   }
 )
+
+Deno.test(
+  'fresh persisted known and unknown estimates survive a real handler cache round-trip',
+  async () => {
+    try {
+      for (const candidate of [
+        analysis.cefr,
+        { level: null, confidence: null },
+      ]) {
+        cached = []
+        duplicate = false
+        providerCefr = candidate
+        const fresh = await request(true)
+        assert(fresh.data.cefr)
+        assertEquals(fresh.data.cefr.level, candidate.level)
+        const write = calls.find(
+          x => x.path === '/rest/v1/word_analysis_cache' && x.method === 'POST'
+        )
+        assert(write)
+        assertEquals(write.body.cefr_estimate, fresh.data.cefr)
+        cached = [
+          { ...write.body, cache_id: '22222222-2222-4222-8222-222222222222' },
+        ]
+        const hit = await request(true)
+        assertEquals(hit.meta.cache_hit, true)
+        assertEquals(hit.data.cefr, fresh.data.cefr)
+        assertEquals(
+          calls.some(x => x.path.includes('/models/')),
+          false
+        )
+        const disabled = await request(false)
+        assertEquals(Object.hasOwn(disabled.data, 'cefr'), false)
+      }
+    } finally {
+      cached = []
+      providerCefr = analysis.cefr
+    }
+  }
+)
+
+Deno.test(
+  'default-off duplicate refresh omits CEFR and stale retained metadata is rejected on re-enable',
+  async () => {
+    const prior = await createGeminiCefrEstimate(analysis.cefr, {
+      ...analysis,
+      translations: { en: ['household'], ru: [] },
+    })
+    assert(prior)
+    cached = []
+    duplicate = true
+    try {
+      await request(false)
+      const write = calls.find(x => x.method === 'PATCH')
+      assert(write)
+      assertEquals(Object.hasOwn(write.body, 'cefr_estimate'), false)
+      cached = [{ ...analysis, ...write.body, cefr_estimate: prior }]
+      const hit = await request(true)
+      assertEquals(hit.meta.cache_hit, true)
+      assertEquals(hit.data.cefr, null)
+      assertEquals(
+        calls.some(x => x.path.includes('/models/')),
+        false
+      )
+    } finally {
+      cached = []
+      duplicate = false
+    }
+  }
+)
