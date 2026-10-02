@@ -1,0 +1,30 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: Add Word
+- extendedWaitUntil:
+    visible:
+      id: screen-add-word
+    timeout: 15000
+- tapOn:
+    id: word-input
+- eraseText: 100
+- inputText: ${D08_WORD}
+- tapOn:
+    id: analyze-button
+- extendedWaitUntil:
+    visible: ${D08_EXPECTED}
+    timeout: 30000
+- tapOn:
+    id: save-word-button
+- tapOn: Collections
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 15000
+- tapOn: D08 Native QA
+- extendedWaitUntil:
+    visible: ${D08_WORD}
+    timeout: 15000
+- tapOn: ${D08_WORD}
+- assertVisible: ${D08_EXPECTED}
+- assertVisible: CEFR level unknown

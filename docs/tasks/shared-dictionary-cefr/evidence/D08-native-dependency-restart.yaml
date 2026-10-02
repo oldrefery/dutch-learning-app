@@ -1,0 +1,5 @@
+appId: ${APP_ID}
+---
+- stopApp
+- launchApp
+- runFlow: D08-native-dependency-status-probe.yaml

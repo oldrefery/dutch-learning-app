@@ -1,0 +1,70 @@
+{
+  "sourceRevision": "e9628704d0b35c548b8fac324ac5f49510c4334f",
+  "version": "2.3.1 (84)",
+  "date": "2026-09-12",
+  "status": "complete",
+  "metric": "Process-cold launch command to populated collections, including automation overhead",
+  "offlineDefinition": "Loopback backend stopped; cached synthetic auth remains valid; host network unchanged",
+  "cells": [
+    {
+      "platform": "android",
+      "words": 500,
+      "connectivity": "online",
+      "samplesMs": [5378, 4686, 5366, 4889, 5021],
+      "medianMs": 5021
+    },
+    {
+      "platform": "ios",
+      "words": 500,
+      "connectivity": "online",
+      "samplesMs": [5149, 5053, 4913, 5022, 5085],
+      "medianMs": 5053
+    },
+    {
+      "platform": "android",
+      "words": 500,
+      "connectivity": "backend-offline",
+      "samplesMs": [4243, 3691, 3527, 3899, 3552],
+      "medianMs": 3691
+    },
+    {
+      "platform": "ios",
+      "words": 500,
+      "connectivity": "backend-offline",
+      "samplesMs": [5080, 5023, 4938, 4947, 4861],
+      "medianMs": 4947
+    },
+    {
+      "platform": "android",
+      "words": 2500,
+      "connectivity": "online",
+      "samplesMs": [4782, 5521, 4702, 5199, 4920],
+      "medianMs": 4920
+    },
+    {
+      "platform": "ios",
+      "words": 2500,
+      "connectivity": "online",
+      "samplesMs": [5182, 5068, 5213, 5310, 5291],
+      "medianMs": 5213
+    },
+    {
+      "platform": "android",
+      "words": 2500,
+      "connectivity": "backend-offline",
+      "samplesMs": [5246, 4629, 5237, 4559, 4758],
+      "medianMs": 4758
+    },
+    {
+      "platform": "ios",
+      "words": 2500,
+      "connectivity": "backend-offline",
+      "samplesMs": [5419, 5213, 5331, 5245, 5047],
+      "medianMs": 5245
+    }
+  ],
+  "exclusions": [
+    "Android first 500 online attempt aborted by task device ADB disconnect; no samples accepted",
+    "Builds, installations, sign-in and fixture synchronization are excluded warmup"
+  ]
+}

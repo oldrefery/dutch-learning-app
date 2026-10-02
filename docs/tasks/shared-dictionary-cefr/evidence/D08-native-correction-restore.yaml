@@ -1,0 +1,16 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: Review
+- extendedWaitUntil:
+    visible:
+      id: review-mode-selector
+    timeout: 20000
+- tapOn:
+    id: review-mode-meaning-recall
+- tapOn:
+    id: start-review-button
+- extendedWaitUntil:
+    visible: An unfinished assessment change was restored. Finish it before continuing.
+    timeout: 20000
+- assertVisible: Retry same correction

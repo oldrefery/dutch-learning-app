@@ -1,0 +1,21 @@
+appId: ${APP_ID}
+---
+- tapOn: zolder
+- extendedWaitUntil:
+    visible: CEFR level unknown
+    timeout: 20000
+- assertVisible: attic
+- tapOn:
+    id: modal-close-button
+- back
+- tapOn: Settings
+- scrollUntilVisible:
+    element:
+      id: force-sync-button
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: force-sync-button
+- extendedWaitUntil:
+    visible: Up to date
+    timeout: 30000

@@ -1,0 +1,7 @@
+appId: ${APP_ID}
+---
+- tapOn: Retry same correction
+- extendedWaitUntil:
+    visible: Assessment updated. No extra review was recorded.
+    timeout: 30000
+- assertNotVisible: Retry same correction

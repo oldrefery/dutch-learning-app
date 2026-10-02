@@ -1,0 +1,4 @@
+appId: ${APP_ID}
+---
+- runFlow: D08-native-conflict-compare.yaml
+- runFlow: D08-native-conflict-local.yaml

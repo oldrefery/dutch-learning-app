@@ -1,0 +1,18 @@
+appId: ${APP_ID}
+---
+- assertVisible:
+    id: modal-close-button
+- openLink: dutchlearning:///settings
+- tapOn:
+    text: Open
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: screen-settings
+    timeout: 15000
+- assertNotVisible: QA server version
+- runFlow: D08-native-account-switch.yaml
+- tapOn: D08 Native QA
+- tapOn: zolder
+- assertVisible: QA server version
+- assertVisible: CEFR level unknown

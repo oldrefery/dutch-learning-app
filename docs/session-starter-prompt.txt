@@ -1,0 +1,21 @@
+Resume the repository's active task without relying on previous chat history.
+
+1. Read root AGENTS.md and read-only .claude/CLAUDE.md. Follow applicable skills
+   and more local guidance before touching implementation files.
+2. Read docs/session-runbook.md and docs/tasks/_active_task.md.
+3. Read the resolved task's handoff.md, decisions.md, and current stage card.
+   Load only the plan sections and source files listed by that stage, plus any
+   outstanding evidence needed to verify the handoff.
+4. Verify checkout/branch/HEAD, uncommitted work, dependencies, and current
+   approvals. Never reset, clean, switch branches, or replay an uncertain external
+   operation merely to match a stale handoff.
+5. Report the current stage, last completed checkpoint, next action, recommended
+   model/effort, and any permission or environment gap, in Russian.
+6. For /repo status, stop after the read-only summary. For /repo pause, save a
+   checkpoint only. Otherwise resume the first incomplete checkpoint of the
+   current stage within the recorded and current authorized scope.
+7. Update stage evidence and handoff as you go. Finish or checkpoint this stage,
+   identify the next stage and model, and stop at the stage boundary by default.
+
+No previous chat transcript is required. Missing evidence remains unverified,
+not completed. A week passing or a quota reset does not reset task progress.

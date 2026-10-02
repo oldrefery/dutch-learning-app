@@ -1,0 +1,13 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: Collections
+- runFlow:
+    when:
+      visible: Back
+    commands:
+      - tapOn: Back
+- tapOn: D08 Native QA
+- tapOn: ${D08_WORD}
+- assertVisible: CEFR level unknown
+- runFlow: D08-native-content-action.yaml

@@ -1,0 +1,6 @@
+appId: ${APP_ID}
+---
+- tapOn: zolder
+- assertVisible:
+    id: modal-close-button
+- runFlow: D08-native-conflict-use-server.yaml

@@ -1,0 +1,20 @@
+appId: ${APP_ID}
+---
+- stopApp
+- launchApp
+- tapOn: Collections
+- runFlow:
+    when:
+      visible: Back
+    commands:
+      - tapOn: Back
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 15000
+- tapOn: D08 Native QA
+- extendedWaitUntil:
+    visible: ${D08_WORD}
+    timeout: 15000
+- tapOn: ${D08_WORD}
+- assertVisible: ${D08_EXPECTED}
+- assertVisible: CEFR level unknown

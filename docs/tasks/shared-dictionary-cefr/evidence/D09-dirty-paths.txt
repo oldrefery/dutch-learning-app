@@ -1,0 +1,255 @@
+ M .github/workflows/quality.yml
+ M apps/mobile/src/app/__tests__/settings-sync-status.test.tsx
+ M apps/mobile/src/components/ReviewCard/CardFront.tsx
+ M apps/mobile/src/components/ReviewCard/WordHeader.tsx
+ M apps/mobile/src/components/ReviewModes/__tests__/__snapshots__/ReviewModes.test.tsx.snap
+ M apps/mobile/src/components/UniversalWordCard/__tests__/__snapshots__/UsageNotesSection.test.tsx.snap
+ M apps/mobile/src/components/UniversalWordCard/sections/HeaderSection.tsx
+ M apps/mobile/src/components/WordDetailModal.tsx
+ M apps/mobile/src/components/WordItem.tsx
+ M apps/mobile/src/db/__tests__/initDB.migration.sqlite.test.ts
+ M apps/mobile/src/db/__tests__/initDB.test.ts
+ M apps/mobile/src/db/__tests__/officialPackImport.sqlite.test.ts
+ M apps/mobile/src/db/__tests__/sqlite.fixture.ts
+ M apps/mobile/src/db/__tests__/wordRepository.test.ts
+ M apps/mobile/src/db/initDB.ts
+ M apps/mobile/src/db/wordRepository.ts
+ M apps/mobile/src/features/review/__tests__/correctionTransport.test.ts
+ M apps/mobile/src/features/review/correctionTransport.ts
+ M apps/mobile/src/hooks/__tests__/useSyncManager.test.ts
+ M apps/mobile/src/hooks/useSyncManager.ts
+ M apps/mobile/src/services/__tests__/reviewCorrectionSync.test.ts
+ M apps/mobile/src/services/__tests__/syncManager.test.ts
+ M apps/mobile/src/services/__tests__/syncStatusService.test.ts
+ M apps/mobile/src/services/reviewCorrectionResolution.ts
+ M apps/mobile/src/services/reviewCorrectionSync.ts
+ M apps/mobile/src/services/syncManager.ts
+ M apps/mobile/src/services/syncStatusService.ts
+ M apps/mobile/src/stores/__tests__/wordActions.test.ts
+ M apps/mobile/src/stores/actions/__tests__/reviewActions.test.ts
+ M apps/mobile/src/stores/actions/reviewActions.ts
+ M apps/mobile/src/stores/actions/wordActions.ts
+ M apps/mobile/src/types/database.ts
+ M apps/web/src/app/app/collections/[collectionId]/error.tsx
+ M apps/web/src/app/app/collections/[collectionId]/words/[wordId]/error.tsx
+ M apps/web/src/app/app/collections/[collectionId]/words/[wordId]/page.tsx
+ M apps/web/src/app/app/layout.tsx
+ M apps/web/src/app/app/review/error.tsx
+ M apps/web/src/app/app/starter-pack/error.tsx
+ M apps/web/src/app/share/[shareToken]/error.tsx
+ M apps/web/src/features/collections/CollectionWordList.tsx
+ M apps/web/src/features/collections/collection-detail.ts
+ M apps/web/src/features/collections/repository.ts
+ M apps/web/src/features/review/ReviewCard.tsx
+ M apps/web/src/features/review/ReviewDetails.tsx
+ M apps/web/src/features/review/ReviewWorkspace.test.tsx
+ M apps/web/src/features/review/ReviewWorkspace.tsx
+ M apps/web/src/features/review/details-repository.ts
+ M apps/web/src/features/review/repository.ts
+ M apps/web/src/features/review/session-controller.ts
+ M apps/web/src/features/review/types.ts
+ M apps/web/src/features/review/useReviewSession.ts
+ M apps/web/src/features/search/repository.ts
+ M apps/web/src/features/sharing/repository.ts
+ M apps/web/src/features/starter-pack/repository.ts
+ M apps/web/src/features/words/WordDetailCard.tsx
+ M apps/web/src/features/words/WordImageManager.tsx
+ M apps/web/src/features/words/WordManagementForms.tsx
+ M apps/web/src/features/words/actions.ts
+ M apps/web/src/features/words/repository.ts
+ M apps/web/src/features/words/word-detail.ts
+ M package.json
+ M packages/domain/src/index.ts
+ M packages/supabase-contracts/README.md
+ M scripts/web-performance/fixture-backend.mjs
+ M scripts/web-performance/fixture-backend.test.mjs
+ M scripts/web-performance/run.mjs
+ M supabase/functions/gemini-handler/cacheUtils.ts
+ M supabase/functions/gemini-handler/index.ts
+?? .playwright-cli/console-2026-09-26T19-22-28-508Z.log
+?? .playwright-cli/console-2026-10-01T23-09-23-654Z.log
+?? .playwright-cli/console-2026-10-02T04-28-29-319Z.log
+?? .playwright-cli/console-2026-10-02T04-37-25-627Z.log
+?? .playwright-cli/console-2026-10-02T04-38-56-703Z.log
+?? .playwright-cli/console-2026-10-02T04-42-46-713Z.log
+?? .playwright-cli/console-2026-10-02T04-47-40-279Z.log
+?? .playwright-cli/console-2026-10-02T04-55-34-372Z.log
+?? .playwright-cli/page-2026-09-26T19-23-23-201Z.yml
+?? .playwright-cli/page-2026-09-26T19-24-20-786Z.yml
+?? .playwright-cli/page-2026-09-26T19-27-17-575Z.yml
+?? .playwright-cli/page-2026-10-02T04-28-55-236Z.yml
+?? .playwright-cli/page-2026-10-02T04-32-13-454Z.yml
+?? .playwright-cli/page-2026-10-02T04-32-48-822Z.yml
+?? .playwright-cli/page-2026-10-02T04-34-02-604Z.yml
+?? .playwright-cli/page-2026-10-02T04-34-45-517Z.yml
+?? .playwright-cli/page-2026-10-02T04-38-14-556Z.yml
+?? .playwright-cli/page-2026-10-02T04-38-58-733Z.yml
+?? .playwright-cli/page-2026-10-02T04-42-47-378Z.yml
+?? .playwright-cli/page-2026-10-02T04-47-42-803Z.yml
+?? .playwright-cli/page-2026-10-02T04-55-39-790Z.yml
+?? apps/mobile/src/components/CefrBadge.tsx
+?? apps/mobile/src/components/DictionaryConflictResolver.tsx
+?? apps/mobile/src/components/__tests__/CefrBadge.test.tsx
+?? apps/mobile/src/components/__tests__/DictionaryConflictResolver.test.tsx
+?? apps/mobile/src/components/__tests__/WordDetailModal.test.tsx
+?? apps/mobile/src/constants/dictionaryContent.ts
+?? apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts
+?? apps/mobile/src/db/__tests__/dictionaryContentRestart.sqlite.test.ts
+?? apps/mobile/src/db/__tests__/dictionaryWordMaterialization.test.ts
+?? apps/mobile/src/db/dictionaryContentMapping.ts
+?? apps/mobile/src/db/dictionaryContentRepository.ts
+?? apps/mobile/src/db/dictionaryContentSchema.ts
+?? apps/mobile/src/db/dictionaryWordMaterialization.ts
+?? apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts
+?? apps/mobile/src/services/dictionaryContentSync.ts
+?? apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts
+?? apps/web/src/features/analysis/shared-dictionary-contract.test.ts
+?? apps/web/src/features/dictionary/CefrBadge.test.tsx
+?? apps/web/src/features/dictionary/CefrBadge.tsx
+?? apps/web/src/features/dictionary/DictionaryFreshness.tsx
+?? apps/web/src/features/dictionary/DictionaryRevisionForm.tsx
+?? apps/web/src/features/dictionary/__fixtures__/cards.ts
+?? apps/web/src/features/dictionary/actions.ts
+?? apps/web/src/features/dictionary/adoption.test.ts
+?? apps/web/src/features/dictionary/commands.ts
+?? apps/web/src/features/dictionary/content.test.ts
+?? apps/web/src/features/dictionary/content.ts
+?? apps/web/src/features/dictionary/error-recovery.test.tsx
+?? apps/web/src/features/dictionary/repository.test.ts
+?? apps/web/src/features/dictionary/repository.ts
+?? apps/web/src/features/review/dictionary-session.test.ts
+?? apps/web/src/features/review/dictionary-snapshot.test.ts
+?? apps/web/src/features/words/dictionary-actions.test.ts
+?? docs/brainstorms/2026-09-12-shared-dictionary-brainstorm.md
+?? docs/dictionary-content-protocol.md
+?? docs/plans/shared-dictionary-cefr-2026-09-12.md
+?? docs/session-runbook.md
+?? docs/session-starter-prompt.txt
+?? docs/tasks/_active_task.md
+?? docs/tasks/shared-dictionary-cefr/D02-compatibility-contract.md
+?? docs/tasks/shared-dictionary-cefr/D02-design-proposal.md
+?? docs/tasks/shared-dictionary-cefr/D02-schema-blueprint.md
+?? docs/tasks/shared-dictionary-cefr/decisions.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-audit.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-cohort-census.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-cohort-census.sql
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-cohort-census.test.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-cohort-production.json
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-ios-owner-evidence.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native-baseline.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native-build.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native-collect.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native-fixture.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native-login.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native-mark-end.js
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native-mark-start.js
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native-samples.json
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native-warmup.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-native.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-observed-clients.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-owner-census.sql
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-owner-census.test.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-web-production.json
+?? docs/tasks/shared-dictionary-cefr/evidence/D01-web-synthetic.json
+?? docs/tasks/shared-dictionary-cefr/evidence/D03-review.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D04-contracts.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D05-server-compatibility.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D06-backfill-rehearsal.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D07-mobile-storage.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-closure-review.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-final-closure-review-20261002.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-mobile-integration.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-account-isolated-resume.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-account-open-confirmed.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-account-open-details.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-account-primary-return.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-account-switch.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-android-final-sync.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-android-system-ui-resume.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-build.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-compare.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-keep.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-local.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-open-server.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-server.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-stale-local-choice.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-stale-local.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-stale-visible-choice.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-stale.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-conflict-use-server.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-content-action.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-content-edit.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-content-qa-20261001.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-content-qa.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-content-restart.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-correction-offline.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-correction-prepare.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-correction-prime.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-correction-restore.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-correction-retry.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-deleted-details.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-dependency-restart.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-dependency-status-probe.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-fixture.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-foreground.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-image-open.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-image-select-ios.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-image-select.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-initial.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-maestro.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-offline-reset.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-primary-login-sync.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-private-add-restart.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-private-add.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-private-reanalysis.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-private-smoke.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-reset-restore.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-smoke.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-status-verification-20261001.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-native-sync.yaml
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-platform-qa.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-qa-assert-state.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-qa-native-state.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-qa-paths.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-qa-peer.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-qa-proxy.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-qa-setup.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-qa-web-login.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-review.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-sync-status-repair-20261001.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-task-shutdown-20261002.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D08-web-runner.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D09-dirty-paths.txt
+?? docs/tasks/shared-dictionary-cefr/evidence/D09-local-fixture.mjs
+?? docs/tasks/shared-dictionary-cefr/evidence/D09-performance-summary.json
+?? docs/tasks/shared-dictionary-cefr/evidence/D09-source-sha256.json
+?? docs/tasks/shared-dictionary-cefr/evidence/D09-web-integration-20261002.md
+?? docs/tasks/shared-dictionary-cefr/evidence/D09-web-local-runner.mjs
+?? docs/tasks/shared-dictionary-cefr/handoff.md
+?? docs/tasks/shared-dictionary-cefr/sessions.md
+?? docs/tasks/shared-dictionary-cefr/steps/D01.md
+?? docs/tasks/shared-dictionary-cefr/steps/D02.md
+?? docs/tasks/shared-dictionary-cefr/steps/D03.md
+?? docs/tasks/shared-dictionary-cefr/steps/D04.md
+?? docs/tasks/shared-dictionary-cefr/steps/D05.md
+?? docs/tasks/shared-dictionary-cefr/steps/D06.md
+?? docs/tasks/shared-dictionary-cefr/steps/D07.md
+?? docs/tasks/shared-dictionary-cefr/steps/D08.md
+?? docs/tasks/shared-dictionary-cefr/steps/D09.md
+?? docs/tasks/shared-dictionary-cefr/steps/D10.md
+?? docs/tasks/shared-dictionary-cefr/steps/D11.md
+?? docs/tasks/shared-dictionary-cefr/steps/D12.md
+?? docs/tasks/shared-dictionary-cefr/steps/D13.md
+?? docs/tasks/shared-dictionary-cefr/steps/D14.md
+?? packages/domain/src/shared-dictionary.ts
+?? packages/supabase-contracts/src/database.target.generated.ts
+?? packages/supabase-contracts/target-schema.json
+?? scripts/generate-supabase-target-types.mjs
+?? scripts/postgres-tests/dictionary-backfill.test.mjs
+?? scripts/postgres-tests/dictionary-content-protocol.test.mjs
+?? scripts/postgres-tests/shared-dictionary-schema.test.mjs
+?? scripts/shared-dictionary/README.md
+?? scripts/shared-dictionary/rehearsal.sql
+?? supabase/functions/_shared/sharedDictionaryContract_test.ts
+?? supabase/migrations/20260921103000_add_shared_dictionary_schema.sql
+?? supabase/migrations/20260921140000_add_dictionary_content_protocol.sql

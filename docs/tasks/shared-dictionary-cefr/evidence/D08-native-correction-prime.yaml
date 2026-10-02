@@ -1,0 +1,12 @@
+appId: ${APP_ID}
+---
+- scroll
+- scroll
+- extendedWaitUntil:
+    visible: Change to hard
+    timeout: 10000
+- tapOn: Change to hard
+- extendedWaitUntil:
+    visible: Assessment updated. No extra review was recorded.
+    timeout: 30000
+- assertVisible: 'Recorded: hard'

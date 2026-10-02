@@ -1,0 +1,42 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: Review
+- extendedWaitUntil:
+    visible:
+      id: review-mode-selector
+    timeout: 20000
+- tapOn:
+    id: review-mode-meaning-recall
+- runFlow:
+    when:
+      visible: Not Now
+    commands:
+      - tapOn: Not Now
+- scrollUntilVisible:
+    element:
+      id: start-review-button
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: start-review-button
+- extendedWaitUntil:
+    visible:
+      id: reveal-answer-button
+    timeout: 20000
+- tapOn:
+    id: reveal-answer-button
+- tapOn:
+    id: srs-good-button
+- runFlow:
+    when:
+      visible: Continue
+    commands:
+      - tapOn: Continue
+- extendedWaitUntil:
+    visible: Session Complete!
+    timeout: 20000
+- tapOn: Previous word
+- extendedWaitUntil:
+    visible: Change to hard
+    timeout: 10000

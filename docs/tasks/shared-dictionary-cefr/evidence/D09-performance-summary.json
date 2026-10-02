@@ -1,0 +1,251 @@
+{
+  "metadata": {
+    "commit": "c5dfb14d49b9a53521b53e13bdd19991999ede5d",
+    "browser": "149.0.7827.55",
+    "node": "v24.20.0",
+    "platform": "darwin-arm64",
+    "cpu": "Apple M1 Pro",
+    "createdAt": "2026-10-02T05:04:10.462Z",
+    "runs": 30,
+    "dictionary": true,
+    "profile": "full",
+    "cpuRate": 1,
+    "latencyMs": 40,
+    "caveats": [
+      "Synthetic loopback upstream; not production network, SQL or authentication performance.",
+      "Fresh browser context per sample; Next process is warm after production build/start.",
+      "Browser interception disables its HTTP cache; router cache remains enabled.",
+      "Auto-prefetch uses existing application behavior, not forced full-data prefetch.",
+      "Unrelated route prefetch is blocked; cold/client block Review prefetch too.",
+      "Setup includes real mode/scope interaction checks, then Start is pressed immediately.",
+      "No learning assessment is submitted. No real account, cookies or credentials are loaded.",
+      "Mapping, serialization and hydration are included in browser boundaries, not separately attributed."
+    ]
+  },
+  "summary": [
+    {
+      "scenario": "500/501/500/cold/snapshot",
+      "samples": 30,
+      "setupMs": {
+        "median": 552.2999992370605,
+        "min": 399.69999980926514,
+        "max": 604.5,
+        "p95": 578.3000001907349
+      },
+      "startToCardMs": {
+        "median": 29.5,
+        "min": 26.399999618530273,
+        "max": 33.39999961853027,
+        "p95": 31.300000190734863
+      },
+      "navigationToCardMs": {
+        "median": 582.3999996185303,
+        "min": 426.0999994277954,
+        "max": 632.9000005722046,
+        "p95": 608.6000003814697
+      },
+      "requests": {
+        "median": 5,
+        "min": 5,
+        "max": 5,
+        "p95": 5
+      }
+    },
+    {
+      "scenario": "500/501/500/cold/dictionary",
+      "samples": 30,
+      "setupMs": {
+        "median": 558,
+        "min": 515.8000001907349,
+        "max": 596,
+        "p95": 580.3999996185303
+      },
+      "startToCardMs": {
+        "median": 29.399999618530273,
+        "min": 26.40000057220459,
+        "max": 32.39999961853027,
+        "p95": 32.10000038146973
+      },
+      "navigationToCardMs": {
+        "median": 585.8000001907349,
+        "min": 548.1999998092651,
+        "max": 626.2000007629395,
+        "p95": 607.3000001907349
+      },
+      "requests": {
+        "median": 5,
+        "min": 5,
+        "max": 5,
+        "p95": 5
+      }
+    },
+    {
+      "scenario": "500/501/500/client/snapshot",
+      "samples": 30,
+      "setupMs": {
+        "median": 403.6000003814697,
+        "min": 394.3999996185303,
+        "max": 420.3999996185303,
+        "p95": 412.6000003814697
+      },
+      "startToCardMs": {
+        "median": 27,
+        "min": 22.5,
+        "max": 41.19999980926514,
+        "p95": 30.800000190734863
+      },
+      "navigationToCardMs": {
+        "median": 429.19999980926514,
+        "min": 421.20000076293945,
+        "max": 453,
+        "p95": 448.8999996185303
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4,
+        "p95": 4
+      }
+    },
+    {
+      "scenario": "500/501/500/client/dictionary",
+      "samples": 30,
+      "setupMs": {
+        "median": 403.9000005722046,
+        "min": 396.29999923706055,
+        "max": 412.69999980926514,
+        "p95": 411.20000076293945
+      },
+      "startToCardMs": {
+        "median": 27.59999942779541,
+        "min": 22.199999809265137,
+        "max": 31.700000762939453,
+        "p95": 30.5
+      },
+      "navigationToCardMs": {
+        "median": 431.69999980926514,
+        "min": 421.69999980926514,
+        "max": 440.29999923706055,
+        "p95": 436.30000019073486
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4,
+        "p95": 4
+      }
+    },
+    {
+      "scenario": "2500/501/2500/cold/snapshot",
+      "samples": 30,
+      "setupMs": {
+        "median": 544.3999996185303,
+        "min": 522.4000005722046,
+        "max": 580.6000003814697,
+        "p95": 577
+      },
+      "startToCardMs": {
+        "median": 64.40000057220459,
+        "min": 60.39999961853027,
+        "max": 71.79999923706055,
+        "p95": 71.69999980926514
+      },
+      "navigationToCardMs": {
+        "median": 610.0999994277954,
+        "min": 586.3000001907349,
+        "max": 645.4000005722046,
+        "p95": 640.1000003814697
+      },
+      "requests": {
+        "median": 5,
+        "min": 5,
+        "max": 5,
+        "p95": 5
+      }
+    },
+    {
+      "scenario": "2500/501/2500/cold/dictionary",
+      "samples": 30,
+      "setupMs": {
+        "median": 545,
+        "min": 492,
+        "max": 688.8000001907349,
+        "p95": 580.2000007629395
+      },
+      "startToCardMs": {
+        "median": 62.40000057220459,
+        "min": 58.5,
+        "max": 78.40000057220459,
+        "p95": 71
+      },
+      "navigationToCardMs": {
+        "median": 607.3000001907349,
+        "min": 552.6999998092651,
+        "max": 748.6999998092651,
+        "p95": 642.1000003814697
+      },
+      "requests": {
+        "median": 5,
+        "min": 5,
+        "max": 5,
+        "p95": 5
+      }
+    },
+    {
+      "scenario": "2500/501/2500/client/snapshot",
+      "samples": 30,
+      "setupMs": {
+        "median": 403.70000076293945,
+        "min": 394,
+        "max": 435.8999996185303,
+        "p95": 413.30000019073486
+      },
+      "startToCardMs": {
+        "median": 66.90000057220459,
+        "min": 60.90000057220459,
+        "max": 94.39999961853027,
+        "p95": 75.80000019073486
+      },
+      "navigationToCardMs": {
+        "median": 469,
+        "min": 460.8999996185303,
+        "max": 502.8999996185303,
+        "p95": 499.8999996185303
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4,
+        "p95": 4
+      }
+    },
+    {
+      "scenario": "2500/501/2500/client/dictionary",
+      "samples": 30,
+      "setupMs": {
+        "median": 402.9000005722046,
+        "min": 394,
+        "max": 414.8999996185303,
+        "p95": 413.79999923706055
+      },
+      "startToCardMs": {
+        "median": 67,
+        "min": 64.5,
+        "max": 72,
+        "p95": 71.19999980926514
+      },
+      "navigationToCardMs": {
+        "median": 470.3999996185303,
+        "min": 460.30000019073486,
+        "max": 482.0999994277954,
+        "p95": 478.69999980926514
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4,
+        "p95": 4
+      }
+    }
+  ]
+}

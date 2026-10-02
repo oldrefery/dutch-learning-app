@@ -1,0 +1,74 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: email-input
+    timeout: 30000
+- tapOn:
+    id: email-input
+- eraseText: 200
+- inputText: ${D08_EMAIL}
+- tapOn:
+    id: password-input
+- eraseText: 200
+- setClipboard: ${D08_PASSWORD}
+- pasteText
+- setClipboard: ''
+- hideKeyboard
+- tapOn:
+    id: sign-in-button
+- extendedWaitUntil:
+    visible:
+      id: screen-collections
+    timeout: 60000
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 60000
+- tapOn: D08 Native QA
+- extendedWaitUntil:
+    visible: fiets
+    timeout: 30000
+- assertVisible: huis
+- assertVisible: zolder
+- tapOn: fiets
+- extendedWaitUntil:
+    visible: CEFR A2 · estimated
+    timeout: 10000
+- assertVisible: bicycle
+- tapOn:
+    id: modal-close-button
+- tapOn: huis
+- extendedWaitUntil:
+    visible: CEFR B1
+    timeout: 10000
+- assertVisible: house
+- tapOn:
+    id: modal-close-button
+- tapOn: zolder
+- extendedWaitUntil:
+    visible: CEFR level unknown
+    timeout: 10000
+- assertVisible: attic
+- tapOn:
+    id: modal-close-button
+- tapOn:
+    text: Back
+    optional: true
+- back
+- tapOn: Settings
+- extendedWaitUntil:
+    visible:
+      id: screen-settings
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: force-sync-button
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: force-sync-button
+- extendedWaitUntil:
+    visible: Up to date
+    timeout: 30000

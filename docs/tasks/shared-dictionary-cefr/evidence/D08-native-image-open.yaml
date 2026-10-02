@@ -1,0 +1,20 @@
+appId: ${APP_ID}
+---
+- assertVisible:
+    id: modal-close-button
+- repeat:
+    while:
+      notVisible: .*[Cc]hange [Ii]mage.*
+    times: 8
+    commands:
+      - swipe:
+          start: 50%, 88%
+          end: 50%, 40%
+          duration: 600
+- tapOn: .*[Cc]hange [Ii]mage.*
+- extendedWaitUntil:
+    visible: Select a better image.*
+    timeout: 15000
+- extendedWaitUntil:
+    visible: Load More Images
+    timeout: 15000

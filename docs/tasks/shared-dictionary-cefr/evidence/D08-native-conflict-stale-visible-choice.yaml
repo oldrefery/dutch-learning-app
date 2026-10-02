@@ -1,0 +1,14 @@
+appId: ${APP_ID}
+---
+- assertVisible:
+    id: modal-close-button
+- assertVisible: Keep my version
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    text: Keep my version
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    visible: Private edits changed. Reload the conflict before resolving it.
+    timeout: 15000
+- assertVisible: Compare versions

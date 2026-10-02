@@ -1,0 +1,49 @@
+appId: ${APP_ID}
+---
+- assertVisible: anker
+- assertNotVisible: fiets
+- assertNotVisible: D08 Native QA
+- tapOn: Back
+- tapOn: Settings
+- scrollUntilVisible:
+    element:
+      text: Logout
+    direction: DOWN
+    timeout: 20000
+- tapOn: Logout
+- tapOn:
+    text: Logout
+    index: 1
+- extendedWaitUntil:
+    visible:
+      id: email-input
+    timeout: 30000
+- tapOn:
+    id: email-input
+- setClipboard: ${D08_PRIMARY_EMAIL}
+- pasteText
+- setClipboard: ''
+- tapOn:
+    id: password-input
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ${D08_PRIMARY_PASSWORD}
+- pasteText
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ''
+- hideKeyboard
+- tapOn:
+    id: sign-in-button
+- extendedWaitUntil:
+    visible:
+      id: screen-collections
+    timeout: 60000
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 30000
+- assertNotVisible: D08 Isolated Owner
+- tapOn: D08 Native QA
+- tapOn: zolder
+- assertVisible: QA server version
+- assertVisible: CEFR level unknown

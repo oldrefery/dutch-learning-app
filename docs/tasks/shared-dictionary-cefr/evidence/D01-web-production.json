@@ -1,0 +1,161 @@
+{
+  "metadata": {
+    "origin": "https://woordenaar.app",
+    "build": {
+      "Environment": "production",
+      "Framework": "Next.js 16.3.3",
+      "Host": "woordenaar-d4u3k6aak-rustems-projects.vercel.app",
+      "Git branch": "main",
+      "Build commit": "c5dfb14"
+    },
+    "selected": 2094,
+    "browser": "149.0.7827.55",
+    "createdAt": "2026-09-12T17:44:28.895Z",
+    "samplesPerScenario": 5,
+    "caveats": [
+      "Dedicated account; no assessments submitted.",
+      "Cookies and credentials remain in memory only; no HAR, trace, video or screenshots.",
+      "Browser routing guards mutations and disables HTTP cache; router prefetch/cache stay enabled.",
+      "Uses existing readiness probe including interaction verification frames.",
+      "Real unthrottled network, desktop viewport, no CPU slowdown. Initial read excluded; not a hosting cold-start experiment."
+    ],
+    "imports": []
+  },
+  "results": [
+    {
+      "navigation": "cold",
+      "pair": 0,
+      "setupMs": 1122.3,
+      "startToCardMs": 76.4,
+      "feedbackMs": 619.1,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "client",
+      "pair": 0,
+      "setupMs": 896.3,
+      "startToCardMs": 71.9,
+      "feedbackMs": 54.7,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "repeat",
+      "pair": 0,
+      "setupMs": 547.2,
+      "startToCardMs": 66.9,
+      "feedbackMs": 13.9,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "cold",
+      "pair": 1,
+      "setupMs": 814.2,
+      "startToCardMs": 67.7,
+      "feedbackMs": 468.2,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "client",
+      "pair": 1,
+      "setupMs": 554,
+      "startToCardMs": 73.2,
+      "feedbackMs": 54,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "repeat",
+      "pair": 1,
+      "setupMs": 544.3,
+      "startToCardMs": 56.2,
+      "feedbackMs": 12.2,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "cold",
+      "pair": 2,
+      "setupMs": 648.4,
+      "startToCardMs": 68.2,
+      "feedbackMs": 287.9,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "client",
+      "pair": 2,
+      "setupMs": 711.6,
+      "startToCardMs": 72.7,
+      "feedbackMs": 47.6,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "repeat",
+      "pair": 2,
+      "setupMs": 444.2,
+      "startToCardMs": 61.1,
+      "feedbackMs": 11.1,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "cold",
+      "pair": 3,
+      "setupMs": 624.1,
+      "startToCardMs": 76.4,
+      "feedbackMs": 273.9,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "client",
+      "pair": 3,
+      "setupMs": 596.4,
+      "startToCardMs": 70.2,
+      "feedbackMs": 48.1,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "repeat",
+      "pair": 3,
+      "setupMs": 496.8,
+      "startToCardMs": 66.8,
+      "feedbackMs": 13.7,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "cold",
+      "pair": 4,
+      "setupMs": 735.2,
+      "startToCardMs": 72.7,
+      "feedbackMs": 382.4,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "client",
+      "pair": 4,
+      "setupMs": 687.7,
+      "startToCardMs": 76.2,
+      "feedbackMs": 46.9,
+      "errorCount": 0,
+      "longTaskCount": 0
+    },
+    {
+      "navigation": "repeat",
+      "pair": 4,
+      "setupMs": 437.3,
+      "startToCardMs": 64.2,
+      "feedbackMs": 12.5,
+      "errorCount": 0,
+      "longTaskCount": 0
+    }
+  ]
+}

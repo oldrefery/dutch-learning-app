@@ -1,0 +1,92 @@
+appId: ${APP_ID}
+---
+- extendedWaitUntil:
+    visible:
+      id: screen-settings
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      text: Logout
+    direction: DOWN
+    timeout: 20000
+- tapOn: Logout
+- extendedWaitUntil:
+    visible: Are you sure you want to logout?
+    timeout: 5000
+- tapOn:
+    text: Logout
+    index: 1
+- extendedWaitUntil:
+    visible:
+      id: email-input
+    timeout: 30000
+- tapOn:
+    id: email-input
+- setClipboard: ${D08_ISOLATED_EMAIL}
+- pasteText
+- setClipboard: ''
+- tapOn:
+    id: password-input
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ${D08_ISOLATED_PASSWORD}
+- pasteText
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ''
+- hideKeyboard
+- tapOn:
+    id: sign-in-button
+- extendedWaitUntil:
+    visible:
+      id: screen-collections
+    timeout: 60000
+- extendedWaitUntil:
+    visible: D08 Isolated Owner
+    timeout: 30000
+- assertNotVisible: D08 Native QA
+- tapOn: D08 Isolated Owner
+- extendedWaitUntil:
+    visible: anker
+    timeout: 15000
+- assertNotVisible: fiets
+- tapOn: Back
+- tapOn: Settings
+- scrollUntilVisible:
+    element:
+      text: Logout
+    direction: DOWN
+    timeout: 20000
+- tapOn: Logout
+- tapOn:
+    text: Logout
+    index: 1
+- extendedWaitUntil:
+    visible:
+      id: email-input
+    timeout: 30000
+- tapOn:
+    id: email-input
+- setClipboard: ${D08_PRIMARY_EMAIL}
+- pasteText
+- setClipboard: ''
+- tapOn:
+    id: password-input
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ${D08_PRIMARY_PASSWORD}
+- pasteText
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ''
+- hideKeyboard
+- tapOn:
+    id: sign-in-button
+- extendedWaitUntil:
+    visible:
+      id: screen-collections
+    timeout: 60000
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 30000
+- assertNotVisible: D08 Isolated Owner

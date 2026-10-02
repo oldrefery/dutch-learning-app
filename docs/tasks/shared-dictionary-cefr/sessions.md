@@ -1,0 +1,997 @@
+# Session checkpoint log
+
+Append concise records. Keep current resume state in `handoff.md`; do not require
+a new session to read this entire history. Never log private vocabulary or secrets.
+
+## 2026-09-12 — Resume workflow setup
+
+- Scope: documents and instruction-level resume routing only.
+- Stage: D01 remains pending; next checkpoint D01.1.
+- Created: starter/runbook, active pointer, task handoff, decisions, 14 stage cards.
+- Updated: root resume instructions and plan continuation section.
+- Application code / production writes / paid calls: none.
+- Branch at setup: `feature/web-review-navigation`, HEAD `e962870`.
+- Persistence: local-only; no commit, push, PR or remote publication.
+- Validation: read-only Node assertions passed for 21 Markdown files, 126 local
+  links, 14 stage cards and 70 sequential checkpoints; all stage scopes match the
+  main plan after normalizing Markdown indentation. Starter/active/handoff routing
+  resolves to D01.1. Initial strict comparison flagged only formatter indentation;
+  the normalized content comparison passed without removing any scope requirements.
+- Formatting: scoped Prettier check passed; `git diff --check` passed. Application
+  tests were not run because no application code changed. Fresh-client slash-menu
+  invocation was not tested; the documented route is an instruction-level alias.
+- Portability check: root `AGENTS.md` is locally excluded by `.git/info/exclude`;
+  the explicit starter-file prompt is the fallback in another checkout. No ignore
+  rule was changed and nothing was force-added.
+- Current-session quota measurement: not taken; do not reuse historical percentages.
+- Next model: GPT-6 Astra / High.
+
+## 2026-09-12 — D01 read-only audit, first session
+
+- D01.1 complete; D01.2–D01.4 partial evidence; D01.5 start/end recorded for this
+  session, not the whole unfinished stage. First incomplete checkpoint: D01.2.
+- Model: GPT-6 Astra / High (session configuration reported by user; no switch).
+- Source map/risk register, production test-account/cache aggregate census,
+  native build/protocol matrix and performance evidence saved in `evidence/`.
+- Permission consumed: AUTH-02 read-only audit and local documentation. EAS owner
+  verified as `oldrefery`; no account switch, app/DB change, learning write, paid
+  enrichment, deployment, commit or push. D02 decisions remain unaccepted.
+- Code `e962870`, branch `feature/web-review-navigation`; only local task bundle
+  changes. No tracked application diff. These documents are not yet portable to
+  another checkout without authorized transfer/commit.
+- Web production: 15 samples at live `c5dfb14`, zero page errors/long tasks and
+  attempted learning writes. Client setup median 687.7 ms, Start-to-card 72.7 ms.
+- Synthetic web: `node scripts/web-performance/run.mjs`, Node 24.9.0; full 160
+  samples passed. Durable `evidence/D01-web-synthetic.json`; ignored raw output
+  `apps/web/output/performance/navigation/1789235156324-1x/`.
+- SQL: `node docs/tasks/shared-dictionary-cefr/evidence/D01-owner-census.test.mjs`
+  passed 12 assertions against disposable local PostgreSQL/current migrations.
+  The owner report has not run on production. No private rows/credentials saved.
+- Failed approaches: initial sandbox Expo/device inventory retried with read-only
+  approval; public store reads failed non-retryably; no bypass attempted. Android
+  version probe returned no fields. iOS simulator is old 1.13.0 (78), untouched.
+- Paused gaps: installed-client evidence, owner-run aggregate report, and current
+  isolated native fixtures. User version question unanswered at this checkpoint.
+- All audit processes complete; temporary browser/server/SQL fixtures closed.
+- Handoff validation passed: 111 local task Markdown links, 14 stage cards, one
+  completed checkpoint (D01.1), D01.2 resume pointer, 160 synthetic/15 production
+  samples. Scoped Prettier formatting and `git diff --check` passed. No application
+  test suite run: application source was not changed.
+- Weekly observations: 66% at 17:38:40 UTC -> 72% at 17:52:22 UTC, reset epochs
+  1789817169/1789817168. Six account-wide percentage points; rounded and possibly
+  contaminated by other usage, not a full-stage/project estimate.
+- Next: same checkout, `/repo continue`, D01.2; Astra / High. Read handoff/evidence,
+  close only the listed gaps; do not repeat the inventory or start D02/D03.
+
+## 2026-09-12 — D01 isolated native baseline session
+
+- D01.4 completed: 40/40 process-cold launch samples on 500/2500 synthetic words,
+  iOS/Android, online/backend-offline. Earlier web evidence remains unchanged.
+- Model: GPT-6 Astra / High as reported by the user; no model switch.
+- AUTH-09 exercised: new task-owned devices and local Release builds only.
+  Existing user devices/apps untouched. No production, account, cloud build,
+  release, purchase, app implementation, commit or push operation.
+- Source `e962870`, branch `feature/web-review-navigation`; untracked task bundle
+  only. Durable native samples, method, build/fixture/flow helpers in `evidence/`.
+  Persistence local-only; another worktree still requires authorized transfer.
+- Native app 2.3.1 (84), Expo 57.0.22/RN 0.86.3, ARM64 Release/Hermes, OTA off,
+  no real env loaded; local synthetic auth and backend. Preparation/build failures
+  and artifact hashes recorded in `evidence/D01-native.md`.
+- Commands: local Gradle Release and xcodebuild Release passed; Maestro baseline
+  with explicit QA device/APP_ID/WORD_PATTERN passed eight five-sample flows.
+  Metrics include automation overhead, not app-only TTI. No assessments performed.
+- iOS SQLite at 500/2500: exact expected counts, zero events/learning commands/
+  unsynced words. Android UI/count/read-request assertions passed; Android SQLite
+  queue not inspected. Non-empty pending queues and token expiry are untested.
+- Failed approaches: Pods UTF-8 env, Android QA network-resource lint, iOS secure
+  input automation; corrected locally. Initial Android ADB disconnect discarded
+  with no accepted samples. No global ADB restart or existing-device reset.
+- Both backend processes exited; new Android AVD and iOS simulator shut down.
+  QA data/artifacts retained at `/private/tmp/woordenaar-d01-native-0lR6oh` and
+  task-owned device stores. No cleanup deletion. Durable results need no temp state.
+- Validation: helpers syntax/format, eight-cell sample medians/40 samples,
+  local Markdown links and checkbox/handoff consistency checked before handoff.
+  Application test suite not run: no application source changed.
+- Weekly use: 74% at 17:56:46 -> 88% at 18:28:43 UTC, reset 1789817169.
+  Fourteen rounded account-wide points, potentially contaminated by other tasks;
+  not exact native or complete D01 consumption. No reset/credit purchase.
+- Pause: D01.2 actual installed-version/support evidence and D01.3 owner-run
+  aggregate report still missing. D01.5 remains a partial-stage measurement.
+- Next: `/repo continue`, Astra / High, close D01.2/D01.3 evidence only;
+  preserve D01.1/D01.4, do not auto-start D02 or dictionary implementation.
+
+## 2026-09-12 — D01 resume and observed-client evidence
+
+- Resumed D01.2 under AUTH-02; source/branch unchanged (`e962870`,
+  `feature/web-review-navigation`). D01.1 and D01.4 were preserved, not rerun.
+- Existing Sentry credentials used only for the scoped project's read-only
+  unresolved production issue query, 14d/limit 10, then up to three events for
+  each of the three returned issues. Three events returned and passed the local
+  environment/time filter: releases 2.3.0 (83), 2.2.1 (82), September 6.
+- Sanitized release/dist/time evidence saved in `evidence/D01-observed-clients.md`.
+  This is not a population census; D01.2 stays partial and D02 is not started.
+- Scoped environment key-name/tool preflight found Sentry access but no database
+  connector or configured DB/admin credential key. No secret values printed,
+  broader access requested, account changes or production writes performed.
+- Completed source map and 40 native/175 web samples left unchanged. No builds,
+  devices or fixture servers restarted; no application code, commit or push.
+- Validation: local evidence links, unchanged checkpoint gates, scoped formatting
+  and `git diff --check`. Application tests not rerun for documentation-only work.
+- Weekly observations: 90% at 18:32:55 -> 90% at 18:34:48 UTC, reset epochs
+  1789817168/1789817169 (one-second drift). Rounded account-wide values; unchanged
+  displayed percentage does not imply zero consumption. No credits/reset used.
+- Pause: owner input still needed for current installed version/support inventory
+  and the project-scoped aggregate SQL report. Local-only handoff updated.
+- Next model remains Astra / High; no switch. Next action: reconcile supplied
+  evidence into D01.2/D01.3, not repeat this bounded Sentry sample or D01.4.
+
+## 2026-09-12 — Priority cohort clarification
+
+- User identified two priority accounts; DEC-08 recorded using P1/P2 aliases.
+  Primary owner requires full preservation; secondary recent learner may consider
+  a restart only as a last resort. No reset/deletion approval inferred.
+- Exact user-provided mapping retained in ignored local
+  `reports/shared-dictionary-cefr/priority-accounts.json`; no DB identity lookup,
+  personal IDs or emails added to portable task docs. Never force-add this file.
+- Updated plan, decisions, D01 card and handoff. D01.2 now needs the two users'
+  active device/build/sync evidence, not full population adoption. D01.3 still
+  needs cohort-scoped aggregate/shared-cache evidence; SQL adaptation is pending.
+- Source/branch unchanged, documents local-only, no commit, app change, remote
+  operation or test rerun. Scoped formatting/ignore/privacy checks performed.
+- Next: obtain P1/P2 platforms/builds and prepare scoped report; Astra / High.
+  No new quota observation for this short documentation-only clarification.
+
+## 2026-09-12 — Final-only cutover constraint
+
+- User requires switching to the new schema only at the end after verification.
+  DEC-09 recorded; plan, D13/D14 cards and handoff aligned. No stage advanced.
+- Current production path remains authoritative during preparation; P1/P2 are
+  not early canaries. Final cutover needs completed implementation/verification,
+  preservation/delta/queue checks, backups, lossless rollback and explicit approval.
+- D14 remains post-observation cleanup; the old safety net is not removed before
+  cutover. No deployment, DB write, reset, feature activation or approval consumed.
+- Local documentation only, same branch/revision, no commit/push. Formatting and
+  diff checks run; application tests not applicable. No fresh quota measurement.
+- Resume remains D01.2; device/build and cohort aggregate evidence still pending.
+
+## 2026-09-12 — Priority user platforms
+
+- User confirmed P1 uses iOS/web; P2 Android and possibly web. Recorded in DEC-08,
+  D01 card, handoff and private mapping. Builds/pending sync remain unknown.
+- P2 email spelling changed in the latest message; retained the first address and
+  latest candidate in the ignored private mapping, marked ambiguous. Confirm
+  before account targeting; no remote lookup or silent identity replacement.
+- Documentation-only update, no production operations, code changes or commits.
+  JSON/format/ignore checks performed; no app tests or fresh quota observation.
+- Resume remains D01.2 with completed baselines preserved.
+
+## 2026-09-12 — Supabase priority identity verification
+
+- User confirmed P2 original email spelling and requested Supabase verification.
+  Existing Chrome session opened the specific Dutch Learning App production Auth
+  page; both requested exact email/UID pairs were present and verified.
+- P1/P2 IDs saved only to ignored `reports/shared-dictionary-cefr/priority-accounts.json`.
+  No unrelated user records persisted, account mutations, resets, new credentials
+  or grants. The default Auth list rendered other rows incidentally; no bulk
+  export or additional unrelated account inspection was performed.
+- Corrected the access blocker: no API/DB connector was found, but authenticated
+  Supabase dashboard access works. SQL UI execution remains untested; a later
+  audit should prepare/validate cohort SQL before using the existing session.
+- Context7 checked Supabase's documented Auth Users page; native browser UI used
+  for verification, no admin token extraction. Two task-created dashboard tabs
+  remain available; no background job or query running.
+- Updated decisions, handoff and D01 card; version/pending-sync and aggregate
+  evidence still missing. Source unchanged, local-only docs, no commit/push.
+- JSON/ignore/privacy and scoped formatting checks passed. No app tests or fresh
+  quota observation. No schema switch or implementation authority inferred.
+
+## 2026-09-12 18:43 UTC — Explicit repository pause
+
+- User invoked `/repo pause`; checkpoint only, no resumed audit or implementation.
+- State: paused at D01.2; D01.1/D01.4 complete, D01.2/D01.3/D01.5 open.
+  Both P1/P2 Auth identities verified; P2 original spelling reconfirmed by user.
+  Platforms: P1 iOS/web, P2 Android/possible web. Exact builds/sync state unknown.
+- DEC-08 preservation priorities and DEC-09 final-only cutover remain binding.
+  No reset or early production switch authorized. D02 not started.
+- Branch `feature/web-review-navigation`, HEAD `e9628704d0b35c548b8fac324ac5f49510c4334f`.
+  Git status still shows only the untracked task documentation bundle. Private
+  account mapping remains ignored; no commit, push, branch switch or file deletion.
+- Persistence: same-checkout local files; fresh clone/worktree needs authorized
+  task-bundle transfer and private identity mapping separately. No chat dependency.
+- No new tests, remote queries, builds, browser navigation, quota checks or jobs.
+  Only local checkpoint formatting/link/state validation; earlier results retained.
+- Last verified native devices/backend are shut down; two Supabase tabs left open
+  from read-only identity verification. No known running task-owned operation.
+- Resume: `/repo continue`, Astra / High, D01.2 and scoped D01.3 report preparation;
+  revalidate browser access, preserve completed checks. No automatic continuation.
+
+## 2026-09-21 09:53 UTC — D01 resumed, scoped census ready
+
+- Explicit continuation resumed D01 after pause; branch/HEAD still
+  `feature/web-review-navigation` / `e962870`. Existing task files preserved.
+- Used repository bootstrap, mandatory native-project guidance and Context7 for
+  PostgreSQL transaction behavior. Recommended model remains Astra / High; user
+  asked to report later switches, no switch performed or current picker inferred.
+- Added cohort SELECT template and local test, 23 assertions passed with a third
+  excluded synthetic owner, missing/duplicate owner checks, read-only enforcement
+  and unchanged snapshots. Details in `evidence/D01-cohort-census.md`.
+- First sandboxed PostgreSQL startup failed shared memory access; approved local
+  retry using Node 24 passed. Temporary synthetic clusters cleaned up by harness;
+  no existing database or personal data touched. Application suites not rerun.
+- Supabase SQL Editor shell later redirected to sign-in: cached initial UI was
+  not authenticated access. No production SQL was typed/executed. New sign-in
+  tab marked for user handoff; no grants, credentials extracted or settings changed.
+- User asked asynchronously for P1 iOS/P2 Android build and pending-sync evidence;
+  reply outstanding. Platform/identity facts preserved without re-asking spelling.
+- Local-only docs/test additions; no tracked app diff, commit, push, deploy, reset,
+  backfill, paid call or schema activation. D01.1/D01.4 not rerun; D02 not started.
+- Validation: 23 test assertions, JS syntax, scoped format, task links and
+  unchanged stage gates. No task-owned DB/server process remains running.
+- Weekly observation 3% -> 5%, 09:50:27–09:53:27 UTC, reset 1790440763;
+  rounded account-wide data. New window; no subtraction from September 12 usage.
+- Blocked on login and installed-build evidence. Next: restored project-scoped
+  access, run validated cohort report with private mapping, reconcile D01.2/D01.3.
+
+## 2026-09-21 09:58 UTC — D01 priority-cohort production census
+
+- User restored Supabase sign-in and requested continuation. Existing project
+  scope verified in Chrome: Dutch Learning App, production main, oldrefery.
+- Validated SELECT transaction ran once in a new empty editor. Result showed
+  read-only on, two distinct targets and two matched Auth owners. Explicit
+  ROLLBACK included; no schema/data writes, setting changes or explicit Save.
+  Normal SQL service query logging may retain the privately rendered query.
+- D01.3 completed. Aggregate JSON and interpretation saved in
+  `evidence/D01-cohort-production.json` and `evidence/D01-cohort-census.md`.
+  No emails, UUIDs, vocabulary or rendered SQL saved in portable task files.
+- P1/P2: 2,311/570 active cards, 1,491/94 review events. 231 cards without cache
+  key; 11 candidate keys with differing translations. No individual CEFR or
+  provenance columns found in the two inspected tables; verified coverage and
+  public/private content counts remain unknown, not zero or publication approval.
+- D01.2 still blocked on active phone versions/builds and local sync evidence;
+  current matrix recorded in `evidence/D01-observed-clients.md`. D01.1/D01.4 not
+  rerun; D02 not started. No implementation, reset, commit, push or deployment.
+- Branch/HEAD unchanged: `feature/web-review-navigation` / `e962870`; only the
+  existing local/untracked task bundle changed. Same-checkout resume available.
+- Validation: accepted live result guards; scoped Prettier, JSON consistency,
+  privacy and task-link checks. Application tests not rerun for evidence-only edits.
+- No running database job or uncertain mutation. Browser result extracted;
+  no live-tab handoff required after completion.
+- Quota: 6% at 09:57:05 -> 7% at 09:58:37 UTC, reset 1790440763; rounded
+  account-wide usage, not precise attribution. No credits redeemed or purchased.
+- Next: user supplies phone version/build and visible sync status; reconcile
+  D01.2 and close D01.5 at the stage exit. Recommendation remains Astra / High.
+  Current picker not inspected; no model change performed.
+
+## 2026-09-21 10:00 UTC — D01 device-evidence limitations
+
+- Resumed using repository bootstrap; branch `feature/web-review-navigation`,
+  HEAD `e962870`, task bundle local/untracked and preserved. No new remote query.
+- Read Settings, status service/hook and learning-queue consumers. The UI pending
+  total excludes separate review/reset/correction queues; `Up to date` does not
+  establish complete queue drainage. Displayed version uses app config rather
+  than native-binary metadata. Added exact screenshot guidance and caveats to
+  `evidence/D01-observed-clients.md` instead of claiming phone access.
+- D01.2 still blocked on device evidence. No automatic advancement to D02, no
+  code changes, new diagnostic, device extraction, sync/reset, commit or deploy.
+- Validation: scoped documentation format check; source references inspected.
+  Runtime tests not run because only evidence/hand-off documents changed.
+- Recommended model remains Astra / High; actual picker not inspected. No quota
+  estimate added and no running or uncertain external operation introduced.
+- Next: obtain Settings version/Sync Status screenshots, or obtain an explicit
+  workflow exception to prepare D02 with device checks left open and mandatory
+  before release. No such exception is currently approved.
+
+## 2026-09-21 10:05 UTC — P1 iOS evidence and D02 foundation draft
+
+- User provided two iOS Settings screenshots, confirmed primary mobile priority
+  and requested continuation after the offered design-only path. Recorded this
+  narrowly: local proposal preparation, no D01 completion or release-gate waiver.
+- App-reported 2.3.1 (84); visible sync pending 0/0/0, last sync 12:03 PM as
+  displayed; local 2,311 words/12 collections match earlier P1 server aggregates.
+  Update badge is not data sync; separate learning queues and exact OTA ID unknown.
+  P2 Android evidence remains open. No further phone screenshot of P1 requested.
+- Added sanitized evidence with original image hashes. Raw images/account email
+  not copied into portable task files. No device interaction or remote operation.
+- Used repository bootstrap and existing brainstorm to draft D02 responsibilities,
+  privacy, pinned revisions and CEFR policy. Compared existing protocol/rollout
+  boundaries. No proposed decision marked accepted; D02.1 remains open.
+- Branch/HEAD `feature/web-review-navigation` / `e962870`, local task docs only.
+  No code, migrations, queue operations, generated types, commits or deployment.
+- Validation: scoped Prettier and local task-link checks; no runtime tests for
+  documentation-only work. No running or uncertain task-owned operation.
+- Next: obtain user direction on proposed private/pinned-content policy, then
+  detail identity and stale legacy-write behavior. D01 gaps retained alongside
+  D02 preparation; D03 and final cutover remain gated. Astra / High unchanged.
+
+## 2026-09-21 10:10 UTC — Foundation accepted, compatibility specified
+
+- User confirmed the three presented foundation rules: shared meaning/CEFR with
+  personal IDs/learning intact, private edits/examples, explicit revision adoption.
+  Recorded DEC-01/DEC-02 policy acceptance without expanding implementation or
+  release authority. Existing D01 gaps and final-only cutover remain binding.
+- Added `D02-compatibility-contract.md`: identity cases, minimum UI, logical
+  constraints, versioned/idempotent content commands, legacy-client matrix,
+  generated-target provenance, rollback/retirement and 16 acceptance fixtures.
+- Source inspection verified semantic duplicate repair may replace mobile IDs,
+  personal server uniqueness remains legacy-key-based, and old metadata errors
+  can stall learning sync. Proposed transition limit and reject/reconcile policy
+  are explicit new product decisions, not quietly accepted by foundation approval.
+- Context7 checked official Supabase CLI local generation/target flags. No CLI,
+  database, remote project or paid provider operation ran. Pin/version-check the
+  actual tool before a future local type-generation implementation.
+- Used bootstrap and native architecture guidance; retained durable offline
+  content and learning queues, platform coverage and batch reads in the contract.
+- Only local docs changed on `feature/web-review-navigation` / `e962870`; no
+  application implementation, migration, generated artifact, commit or deployment.
+- Validation: documentation formatting, task links and privacy/stage assertions.
+  Acceptance scenarios are unexecuted specifications; no runtime pass is claimed.
+- Next: review proposed same-key-card and legacy-write restrictions, then finish
+  D02 acceptance. D03 remains gated. Astra / High retained; no model switch.
+
+## 2026-09-21 10:15 UTC — D02 specification ready, implementation handoff
+
+- User confirmed both transition restrictions. Recorded DEC-03/DEC-04 acceptance
+  within that scope; no repeat approval request for these rules.
+- Completed the six D02 specification outputs with `D02-schema-blueprint.md`:
+  concrete table/field layout, privacy/override authority, revision/assessment
+  integrity, operation receipts, publication and recovery boundaries.
+- Final self-review added F17–F20: receipt retry after tombstone, forged/direct
+  bypass attempts, cross-owner relations, commit-order-safe shared cursor.
+  Twenty cases are design fixtures, not executed database tests. No subagents used.
+- D02 checkboxes mean specified; formal advancement remains blocked on D01
+  dependency treatment and explicit local implementation authority (DEC-07).
+  Android/full local queues stay unverified; no source publication or retirement
+  date is assumed. Proposed next scope is local synthetic D03 only.
+- Branch/HEAD remain `feature/web-review-navigation` / `e962870`; task documents
+  local/untracked. No application edits, migrations, generated types, git mutation,
+  device interaction, deployment, paid calls or running task-owned operation.
+- Used repository bootstrap and native architecture guidance to preserve offline
+  state; OpenAI Docs verified Sol supports High. This corroborates the saved D03
+  recommendation, not an API-pricing-to-subscription quota estimate. Picker unchanged.
+- Validation: scoped Prettier, local links, 20 unique fixture IDs and stage/privacy
+  guards. Runtime suites not run for documentation-only output.
+- Next: user selects GPT-5.6 Sol / High and approves local D03 with the retained
+  D01 pre-release gate, or supplies outstanding D01 evidence first. Later schema/RLS
+  review returns to Astra / High. No automatic continuation or quota purchase.
+
+## 2026-09-21 10:55 UTC — D03 local implementation complete, review handoff
+
+- User granted AUTH-03, selected GPT-5.6 Sol / High and retained D01 Android/full
+  queue evidence as a mandatory pre-release gate. Created
+  `feature/shared-dictionary-schema` from synchronized `main` at `c5dfb14`.
+- Completed D03.1–D03.5 locally: additive shared entries/revisions/current heads,
+  CEFR history/heads, optional trusted card pins, owner-private content state,
+  private provenance/receipts, deletion/reference guards, RLS and an invoker read
+  view. Legacy fields, IDs, SRS/history and current application paths remain intact;
+  no live references, adapter, backfill, worker or feature capability was enabled.
+- Added fresh/upgrade/RLS regression coverage and reproducible pre-deployment
+  target types. The target manifest pins migration head, PostgreSQL image,
+  Supabase CLI 2.117.0 and Prettier 3.9.6. The deployed generated contract remains
+  unchanged and shipped clients do not import the target artifact.
+- Final verification on the uncommitted working tree: `npm run test:db` 133/133;
+  dedicated D03 suite 8/8; deterministic target generation/check; contracts
+  typecheck; `lint:ci`; and full format check all pass. Temporary Docker resources
+  were removed and an exact-name cleanup check found none remaining.
+- Reconciled the implementation with the accepted blueprint before handoff:
+  candidate lookup stays non-unique, private fallback is nullable, versions use
+  bigint, and content receipts remain in the private schema. Added a documented
+  trusted current-revision head; personal pins never move automatically.
+- Failed type-generation paths: do not retry host Unix sockets or Supabase CLI
+  2.75.0 container networking. The working generator uses a disposable pinned
+  Docker PostgreSQL, random password/port and pinned current toolchain.
+- Scope consumed: local implementation/testing only. No production/staging SQL,
+  source publication, paid provider call, schedule, account/device change,
+  commit, push, PR or deployment. All task/D03 changes remain local/uncommitted.
+- Next: user switches to GPT-6 Astra / High for independent migration/RLS/test
+  review. Fix findings and rerun affected/full gates; if clean, close D03 and
+  select D04 without starting it automatically. No running uncertain operation.
+
+## 2026-09-21 11:13 UTC — D03 independent review complete
+
+- Model: GPT-6 Astra / High, selected by the user. D03 only; no subagents.
+- Reproduced six regression failures before fixes; corrected CEFR successor/head
+  bypasses, reviewed-level protection, retired links, mutable shared identity,
+  receipt deletion cascades and inconsistent private fallback layout.
+- Added publication/provenance/head serialization, forged-flag/default-grant tests,
+  source approval checks and no-auto-adoption/CEFR-input regression coverage.
+- Isolated type generation on a private Docker network with pinned Postgres Meta;
+  removed the LAN-port dependency and anonymous-volume leak. No hosted access.
+- Final code gates: DB 145/145 (D03 20/20), deterministic target check, contracts
+  typecheck, lint pass. Handoff formatting was the only formatting issue and was
+  corrected at closure. [Evidence and fingerprints](evidence/D03-review.md).
+- Branch `feature/shared-dictionary-schema`, base `c5dfb14d49b9`; all implementation
+  and task documents local/uncommitted, no push/PR. No running/uncertain operation.
+- AUTH-03 used for review/fixes/tests only; no production/staging migration,
+  publication, paid calls, jobs, app/device changes or activation.
+- D03 done; D04.1 selected but not started. Next: GPT-5.6 Terra / High and explicit
+  local D04 scope. D01 Android/complete learning queues remain release gates.
+- Weekly usage observation approximately 11:11 UTC: 26% used, reset 1790440763;
+  no stage-start sample, so no exact review cost or cross-model quota inference.
+
+## 2026-09-21 — D04 shared contracts complete
+
+- Model: GPT-5.6 Terra / High. User explicitly authorized local D04; AUTH-10
+  exercised for contracts, fixtures, documentation and local checks only.
+- Added one dependency-free shared module for strict dictionary/revision/reference,
+  override, CEFR and versioned-content command contracts; canonical CEFR input and
+  effective-content/CEFR resolvers are exported through `@woordenaar/domain`.
+- Same source is proven on mobile (4 tests), web (1) and Edge/Deno (1 within full
+  Edge 74/74). No endpoint/RPC/runtime client import was added.
+- Domain/mobile/web typechecks, explicit new-file lint, repository lint and root
+  formatting passed. Evidence: [D04 contracts](evidence/D04-contracts.md).
+- Branch remains `feature/shared-dictionary-schema`, base `c5dfb14d49b9`; all
+  D03/D04 changes are local/uncommitted. No remote operation or uncertain job.
+- D04 done. Next D05: GPT-5.6 Sol / High plus new explicit local authorization.
+  D01 Android/full learning-queue evidence and all production cutover gates remain.
+
+## 2026-09-21 — D05 local server compatibility complete
+
+- Model: GPT-5.6 Sol / High. AUTH-11 was exercised for local D05 only.
+- Completed D05.1–D05.5: trusted idempotent canonical persistence, strict personal
+  content commands, cache-to-canonical mapping, bounded effective-content reads,
+  commit-order-safe delivery cursor, legacy projection/guard and v2 web snapshot.
+- All new runtime flags default off. The legacy application path and v1 snapshot
+  remain authoritative; no production/staging mutation, deployment, paid call,
+  schedule, activation, cutover, commit, push or PR occurred.
+- Final exact-tree verification: focused D05 12/12 and full PostgreSQL 157/157;
+  Edge 74/74; mobile/web shared contracts 4/4 and 7/7; relevant typechecks, lint,
+  formatting, target generation/check and diff checks pass. Durable detail and
+  hashes: [D05 evidence](evidence/D05-server-compatibility.md).
+- An ambient Node 20 run and a target check without Docker on PATH were invalid
+  preflights, not product failures. Correct Node 24/tool PATH runs passed. No
+  task-owned operation remains running or uncertain.
+- Branch `feature/shared-dictionary-schema`, base/current HEAD `c5dfb14d49b9`;
+  all D03–D05 changes remain local and uncommitted.
+- Next: separately authorize local D06 and remain on GPT-5.6 Sol / High. After its
+  implementation, use GPT-6 Astra / High for migration/backfill safety review.
+  D01 Android/full learning-queue evidence remains a mandatory release gate.
+
+## 2026-09-21 — D06 local backfill rehearsal complete
+
+- User continued after the D05/D06 handoff and reported a model switch; AUTH-12
+  covered local tooling, synthetic rehearsal, verification and documentation.
+  Model family: GPT-6; exact picker variant/effort unverified. Same-session review,
+  no separate reviewer or subagent claimed.
+- Completed D06.1–D06.5: reviewed official seeding, strict meaning-bound CEFR,
+  six-way dry-run mapping, immutable plans/receipts, bounded compare-and-set
+  batches, concurrent/retry handling, inventory delta reports and read rollback.
+- Administrator-only SQL lives outside automatic migrations. No real account,
+  hosted database, production manifest/private export or device was used.
+- Full PostgreSQL suite passed 172/172 before the last counter fix. Fault
+  injection reproduced a false applied count after receipt-lock rollback;
+  moving counters after receipt insertion fixed it. Final focused D06 16/16,
+  lint, formatting and diff checks passed. Tests preserve exact personal rows
+  and learning streams and prove post-link reviews survive read rollback.
+- [D06 evidence](evidence/D06-backfill-rehearsal.md) records the reviewed synthetic
+  report, commands, hashes and scope limits. All temporary test clusters closed;
+  no running or uncertain operation. No quota sample/cost estimate this session.
+- Branch `feature/shared-dictionary-schema`, HEAD `c5dfb14d49b9`; all D03–D06
+  work remains local/uncommitted. No commit, push, PR, hosted operation or activation.
+- D06 done locally. Next: D07 mobile SQLite storage, GPT-5.6 Sol / High. D01
+  Android/full learning queues and all D13 release/cutover gates remain open.
+
+## 2026-09-21 — D07 local mobile storage complete
+
+- Model: GPT-5.6 Sol / High. AUTH-13 was exercised for local D07 only.
+- Added the non-destructive SQLite v13 read model: immutable revision/CEFR caches,
+  owner-scoped card state, durable ordered content commands and monotonic change
+  cursors. Existing `words`, SRS, review/reset/correction queues and progress
+  authority remain unchanged; runtime paths are still dormant.
+- Added strict shared-contract parsing, canonical immutable storage, chunked bulk
+  materialization, missing-dependency state, exact retry after tombstone, owner
+  isolation and storage/reconciliation APIs. Only supplied dependencies are cached;
+  there is no full-dictionary download.
+- Real file-backed SQLite covers v8-to-v13 recovery and exact v12-to-v13 preservation.
+  Full mobile Jest passed 136/136 suites, 1,571/1,571 tests and 22/22 snapshots;
+  final focused storage 8/8; mobile build/test typechecks, full lint, formatting
+  and diff checks passed. Evidence: [D07 mobile storage](evidence/D07-mobile-storage.md).
+- The first focused run inherited shell Node 20 and could not load `node:sqlite`;
+  the repository Node 24 run passed. No product failure or workaround remains.
+- Context7/official Expo SQLite guidance confirmed that exclusive transaction
+  queries must use the transaction object; v13 and repository batches do so.
+- Branch `feature/shared-dictionary-schema`, HEAD/base `c5dfb14d49b9`; all D03–D07
+  code and documents remain local/uncommitted. No hosted mutation, production
+  access, device/app replacement, deployment, activation, commit, push or PR.
+- No running or uncertain operation. D08 requires a new explicit local-stage
+  authorization. Keep Sol / High for implementation, then switch to Astra / High
+  for D08 review. D01 Android/full learning queues remain release gates.
+
+## 2026-09-21 — D08 local implementation complete, Astra review handoff
+
+- Model: GPT-5.6 Sol / High. AUTH-14 was exercised for local D08 implementation
+  and synthetic verification only.
+- Completed D08.1–D08.3 and local D08.5: dependency-first dictionary hydration,
+  owner-scoped revision cursors, durable offline command chains, transactional
+  add/reanalysis/image edits, effective content materialization and CEFR state UI.
+- Existing learning protocol 2 remains authoritative and is checked before the
+  dictionary capability. All shared-dictionary runtime flags remain off.
+- File-backed restart/account tests preserve one owner's fallback, command and
+  cursor without cross-owner visibility. This is partial D08.4 evidence only;
+  real iOS, Android, web, two-device and returning-old-client verification remains.
+- Final mobile regression passed 140/140 suites, 1,591/1,591 tests and 22/22
+  snapshots. Mobile typecheck, repository lint, formatting and diff checks passed.
+  Evidence: [D08 mobile integration](evidence/D08-mobile-integration.md).
+- Invalid attempts: root Jest selected the wrong harness; Watchman is unavailable
+  in the sandbox; direct protocol-2 Node tests lacked their disposable local stack.
+  Use the exact corrected commands/prerequisites recorded in the evidence.
+- Branch `feature/shared-dictionary-schema`, HEAD `c5dfb14d49b9`; all D03–D08
+  work remains local/uncommitted. No hosted mutation, real-user sync, device/app
+  replacement, deployment, activation, paid call, commit, push or PR occurred.
+- No running or uncertain operation. Next: switch to GPT-6 Astra / High, review
+  D08 conflict/account/cursor/old-client safety, fix findings and rerun gates.
+  Physical D08.4 and D01 Android/full learning-queue evidence remain release gates.
+
+## 2026-09-21 — D08 Astra review completed; isolated QA gate
+
+- Model: GPT-6 Astra / High following the user's confirmed model switch. AUTH-14
+  exercised for local review/fixes and synthetic tests; no independent reviewer.
+- Fixed pending-edit overwrite (reproduced by a failing regression), non-atomic
+  acknowledgement, missing durable card refresh, linked whole-row writes,
+  incomplete private override replacement, hidden conflicts, learning blockage,
+  account races, assessment pagination/removal and old-client fallback staleness.
+  Added an explicit default-off mobile flag and conflict comparison/choice UI.
+- Final mobile: 141 suites, 1,614 tests, 22 snapshots passed. Full PostgreSQL:
+  174/174. Mobile build/test typechecks, lint and target contract check passed.
+  Formatting/diff checks passed at documentation closure. Evidence and artifact
+  fingerprints: [D08 review](evidence/D08-review.md).
+- Intermediate migration inventory/test typing/mock failures fixed. PostgreSQL
+  and Docker sandbox preflights required approved escalation; reruns passed.
+  No unresolved product test failure is carried forward.
+- Branch `feature/shared-dictionary-schema`, committed HEAD `c5dfb14d49b9`;
+  all D03–D08 code/docs remain local, uncommitted/unpushed. Changed surfaces include
+  mobile sync/repository/schema/UI/hooks/store/tests and the local D05 protocol
+  migration/regression. Earlier local work is preserved.
+- No hosted mutation, real-user synchronization, device/app installation,
+  deployment, activation, paid call, commit, push or PR. All test commands exited;
+  no new native/HTTP stack was started. No fresh quota sample or stage cost claim.
+- Next: D08.4 on isolated iOS (primary) and Android plus supported legacy web/client
+  interoperability; obtain disposable device/build/local synthetic stack scope
+  and execute the saved matrix. Recommended GPT-5.6 Sol / High. D08 stays
+  `in_progress`; D01 Android/full learning queues and final cutover remain gated.
+
+## 2026-09-21 — D08.4 isolated platform QA complete; Astra closure review next
+
+- Model: GPT-5.6 Sol / High. AUTH-15 was exercised only for task-owned local
+  Supabase, synthetic owners, disposable iOS/Android builds/devices and loopback
+  web verification.
+- iOS primary-platform QA passed CEFR/materialization, owner switching, durable
+  offline correction, cold-start restoration, exactly-once retry, offline reset,
+  restart and reconnect convergence. Android passed owner isolation, dormant-client
+  compatibility/upgrade, final full smoke and exact-tree smoke. Loopback web/mobile
+  content and reset state converged.
+- QA found and fixed two product defects: a confirmed correction capability was
+  not retained for offline enqueue, and a cold-start pending correction whose word
+  was no longer due could not recreate its controller. Regression tests cover both.
+  Metro caches are now isolated between enabled and dormant QA builds.
+- Final exact-tree gates: mobile Jest 141/141 suites, 1,620/1,620 tests and 22/22
+  snapshots; build/test typechecks; `lint:ci` with zero warnings; formatting,
+  native YAML formatting and diff checks; final iOS/Android Release builds and
+  exact-tree smoke all passed. Evidence: [D08.4 platform QA](evidence/D08-platform-qa.md).
+- Final enabled hashes: iOS JS bundle
+  `313ef52f89ea3599f9834c0d0411ac9656a29c7818e023cfcaf86d8e549e41f1`;
+  Android APK
+  `f2529798630c7aefc1bb9d378323a1c4947a7250b3a0ff2d9640c2fd4765f1aa`.
+- The local web server, Supabase stack and Android emulator were stopped. The iOS
+  task device shutdown command succeeded; a later read-only device-list check could
+  not reconnect to CoreSimulatorService while macOS was locked. Temp builds/device
+  data are retained, not erased. No product operation remains running.
+- Branch `feature/shared-dictionary-schema`, committed HEAD `c5dfb14d49b9`; all
+  D03–D08 code/docs remain local, uncommitted/unpushed. No hosted mutation,
+  production account, deployment, activation, paid call, commit, push or PR.
+- D08.4 execution is complete but its checkbox remains open until the planned
+  exact-diff closure review. Next: switch to GPT-6 Astra / High, review the current
+  D08 diff/evidence, rerun affected gates only if code changes, then mark D08 done
+  and select D09 (GPT-5.6 Terra / High) without starting it automatically.
+
+## 2026-09-21 — User-requested pause before D08 closure review
+
+- Stage/checkpoint: D08 is paused after completed D08.4 platform QA and exact-tree
+  gates; the final GPT-6 Astra / High closure review remains the first incomplete
+  checkpoint. No implementation or verification was started during this pause.
+- Branch/revision/persistence: `feature/shared-dictionary-schema` at
+  `c5dfb14d49b9a53521b53e13bdd19991999ede5d`; all D03–D08 work remains
+  local-only, uncommitted and unpushed. The dirty tree was preserved unchanged.
+- Operations: none running or uncertain. Runtime flags remain off. No hosted
+  mutation, activation, deployment, commit, push or PR was performed.
+- Resume: switch to **GPT-6 Astra / High**, then send `/repo continue`. Review the
+  exact D08 diff and saved QA evidence; rerun affected gates only if code changes.
+  If the closure review is clean, mark D08.4/D08 done and select D09 using
+  **GPT-5.6 Terra / High** without starting D09 automatically.
+
+## 2026-09-26 — D08 closure review fixes; native acceptance still open
+
+- Resumed the paused checkpoint with `/repo continue`. Branch/HEAD and all seven
+  recorded runtime hashes matched. The interrupted initial read made no edits or
+  started processes. Model family: GPT-6; recommended Astra / High, exact picker
+  variant/effort not independently observed. No independent review agent.
+- Reproduced six regression failures covering inaccessible repeated/new conflicts,
+  removed words, stale content after server choice and account-switch visibility.
+  Fixed resolver visibility to follow current owner-scoped state and details to
+  render the current stored word. Learning session snapshots remain unchanged.
+- Full mobile Jest passed 142/142 suites, 1,626/1,626 tests and 22/22 snapshots.
+  Both mobile typechecks passed. After test-only duplicate-string cleanup, strict
+  lint passed with zero warnings, focused verification passed 17/17 tests and
+  4/4 snapshots, and test typecheck passed again. Repository formatting and diff
+  checks passed. No schema/server/storage runtime was changed.
+- The September 21 report overstated D08.4 completion: its recorded native flows
+  cover CEFR/owner/learning recovery, but not the full planned dictionary-content
+  edit/conflict/retry matrix. D08.4 stays unchecked and D08 stays `in_progress`.
+  The revised UI also needs fresh native builds/smoke. D09 was not started.
+- Read-only local checks found Docker available with unrelated project containers,
+  no D08 container, and expired temporary config/migration/fixture files in the
+  retained D08 roots. No new native build, device operation or stack launch ran.
+  No hosted mutation, real-user sync, paid call, activation, commit, push or PR.
+- Persistence: `feature/shared-dictionary-schema`, HEAD
+  `c5dfb14d49b9a53521b53e13bdd19991999ede5d`, all D03–D08 work local/uncommitted.
+  This session changed conflict resolver/header, word details, their tests and
+  task documents. Prior dirty work was preserved. No operation remains running.
+- Fresh quota observation: 2% weekly used, reset 1791051321; a different window
+  from September 21, not an exact stage cost.
+- Next: **GPT-5.6 Sol / High**; restore isolated QA setup and run the explicit
+  remaining matrix in [D08 closure review](evidence/D08-closure-review.md).
+  Do not replay expired temporary paths or claim old artifacts verify revised UI.
+
+## 2026-09-26 — D08 isolated native QA resumed, then user-paused
+
+- Recreated local stack/config/migrations and two synthetic accounts using saved
+  setup helpers. Both revised iOS/Android Release builds passed; source/artifact
+  hashes and partial attempts saved in [native content QA](evidence/D08-native-content-qa.md).
+- Android verified linked A2/B1 and later private unknown CEFR, but no full flow
+  passed. Fixed a test-fixture translation shape mismatch; content-edit/offline/
+  conflict/retry scenarios remain unverified. Read-only SQLite baseline recorded.
+- iOS login typing corrupted the synthetic password (safe proxy boolean checks).
+  Clipboard-based retry was interrupted, not passed. Local web baseline passed.
+- User explicitly paused simulator/emulator work because it interfered with
+  another session. Stopped only the verified running native QA automation;
+  left devices untouched afterward. Do not resume native scope without explicit
+  user permission and coordination. Local stack/proxy/web/device state is listed
+  in the QA checkpoint; no broad shutdown or deletion was performed.
+- Current stage remains D08 in_progress/D08.4 unchecked. No D09, deployment,
+  production mutation, paid provider call, commit or push. All work stays local
+  on feature/shared-dictionary-schema, HEAD c5dfb14; prior dirty work preserved.
+- Recommended next model remains Sol / High for QA, Astra / High for established
+  concurrency/protocol findings. Exact current picker/effort not independently
+  observed; no fresh quota measurement was taken.
+
+## 2026-10-01 — D08 native QA resumed; sync-status defect reproduced
+
+- User explicitly resumed QA on the dedicated task devices. The September 26
+  pause is superseded only for the original AUTH-15 isolated scope. No unrelated
+  devices/apps, real accounts, hosted projects, EAS, paid providers, commit/push,
+  publication, activation or cutover were used.
+- Recovered the surviving local Docker stack into durable ignored report roots,
+  seeded two fresh synthetic users and verified recovered installed artifacts
+  match revised September 26 hashes. Runtime source did not change in this session.
+- Both native baselines passed. iOS reanalysis, pending intent cold restart,
+  conflict comparison, stale-server-choice rejection, Keep-my-version and server
+  choice passed. Repeated-modal controls returned but scrolling interrupted the
+  complete repeated-choice flow; do not claim that whole flow passed.
+- Android edit/restart and injected lost-acknowledgement retry passed: exact
+  operation ID/payload preserved, two deliveries but one server receipt, empty
+  reconciled queues. iOS and supported local legacy web received the Android
+  translation. Learning state and personal word identities were preserved.
+- Missing-revision response injection retained cursor 8 while server was at 9.
+  After a synthetic linked-card image override, iOS retained one durable refresh
+  item yet displayed Up to date. Two native probes fail; the new owner-scoped
+  hydration test also fails (expected pending 1, actual 0; two older tests pass).
+  No runtime fix has been made. The initial focused test command also triggered
+  irrelevant global coverage thresholds; rerunning with --coverage=false isolates
+  the single genuine regression.
+- Removed all proxy faults; recovery passed both native clients, cursors 9,
+  empty content/hydration queues, new CEFR assessment cached, identical word
+  content and unchanged SRS/learning queues/history. Peer image helper was
+  corrected after two rejected invalid-command attempts; this is not native
+  image-replacement UI acceptance.
+- Persistence: feature/shared-dictionary-schema, HEAD c5dfb14d49b9a53521b53e13bdd19991999ede5d;
+  all D03–D08 changes remain local/uncommitted. This session changed QA helpers,
+  Maestro flows, one regression test and task documents only. Raw credentials/
+  debug artifacts stay ignored; October 1 web artifacts moved to the ignored
+  native root, older September 26 raw files preserved.
+- Durable evidence and exact native run IDs:
+  [October 1 content QA](evidence/D08-native-content-qa-20261001.md).
+  Final strict helper/test lint, mobile test typecheck, focused formatting and
+  diff checks passed. The new regression remains red; no current full-suite
+  pass is claimed. Runtime hashes and branch/HEAD were reverified unchanged.
+  No Maestro automation remains active. Local stack, task devices, proxy
+  session 68080/PID 65646 and web session 22956/PID 63984 remain available;
+  Android emulator session 99185. Recheck exact processes/devices before reuse.
+- Model/effort actually selected: not independently observable. QA recommendation
+  was Sol / High. Next recommendation: **GPT-6 Astra / High** for the reproduced
+  status/dependency-debt defect, then Sol / High for remaining routine native QA.
+  No independent agent review or fresh quota sample; no stage-cost claim.
+- First incomplete checkpoint: D08.4. Fix owner-scoped/deduplicated hydration
+  accounting and assess durable change-page debt before pull. Add regressions,
+  rebuild affected clients, rerun dependency/status/recovery and remaining
+  private-add/native-image/stale-local/repeated-modal/deletion/account-switch
+  matrix. D09 has not started and D01 pre-release evidence remains required.
+
+## 2026-10-01 — D08.4 sync-status repair checkpoint
+
+- Resumed the saved regression on feature/shared-dictionary-schema, HEAD c5dfb14.
+  Fixed missing hydration counts and persisted change-page debt before pull.
+  No schema/server/learning-protocol change or runtime activation.
+- Before fix: 5 failing / 17 passing targeted tests. Full mobile after fix:
+  142 suites / 1,632 tests / 22 snapshots passed; final focused 53/53 after helper
+  refinement and two Settings theme tests. Typechecks and strict lint pass;
+  final formatting/diff validation recorded in the repair evidence.
+- Model/effort unknown; Astra / High recommended, no independent agent review.
+  No fresh quota reading or stage-cost claim. Local-only persistence; no commit,
+  push, PR, production access, device/service operation or hosted mutation.
+- Changed in this session: two runtime services, status/sync/restart/Settings
+  tests and task documents. All prior D03–D08 dirty work retained. Intermediate
+  harness/type/lint corrections are documented in the evidence.
+- Evidence: [sync-status repair](evidence/D08-sync-status-repair-20261001.md).
+  Previous native processes/builds were not reverified and contain no new fix.
+  No new persistent operation is running from this repair session.
+- Next: GPT-5.6 Sol / High; inspect only authorized task resources, refresh the
+  isolated source copy, rebuild iOS/Android and verify missing-dependency badge,
+  cursor/debt/restart/recovery. Finish the remaining native acceptance matrix.
+  D08.4 open; D09 not started; D01/D13 release gates unchanged.
+
+## 2026-10-02 — D08.4 repaired native acceptance checkpoint
+
+- Continued saved handoff on user-selected GPT-6.1 Sol; effort not observable.
+  No independent agent review or fresh quota reading; no stage-cost claim.
+- Status/dependency-debt repair verified on exact task iOS/Android through missing
+  revision, pending status, restart and recovery. Private add/image replacement,
+  pending restart and exactly-once receipts passed on both. Native QA found two
+  additional business-logic defects: blank analysis notes rejected canonical
+  parsing; reanalysis discarded derived conflict metadata until sync. Fixed
+  canonical blank-to-null mapping and owner-scoped materialized store publication,
+  with regressions including the new hydration await's owner boundary.
+- Final mobile checks: 142 suites / 1,639 tests / 22 snapshots pass; build/test
+  typechecks and strict lint pass. Focused actions/resolver/details 46/46 pass.
+  Both final Release artifacts built/installed on task devices preserving data;
+  exact source/artifact hashes and logs are in
+  [final native evidence](evidence/D08-native-status-verification-20261001.md).
+- Final iOS immediate stale-local rejection, both choices across repeated conflict
+  in the same modal, stale-server rejection, supported account switch/return and
+  remote deletion while details were open passed. Android final reanalysis/delivery
+  and deletion convergence passed. Native/legacy-web final state: four active
+  primary words, cursor 11, matching content/tombstone, empty queues, unchanged
+  word IDs/owners/SRS/learning. Web loopback HTTP image rendering is not claimed;
+  supported account navigation is not same-mounted owner race injection.
+  Older lost-reply/old-mobile/learning scenarios retain prior evidence and were
+  not all rerun on final artifacts; closure review must assess this explicitly.
+- QA-only corrections: iOS deep-link Open confirmation, clipboard/password waits,
+  visible iOS Back versus Android back action, and stable conflict tap after scroll.
+  Global synthetic-owner logout invalidated this task's web/Android sessions;
+  restored only those fixture sessions with no reset/reseed. Rejected/partial
+  attempts and successful continuation run IDs are preserved in evidence.
+- Persistence: feature/shared-dictionary-schema, HEAD c5dfb14d49b9a53521b53e13bdd19991999ede5d;
+  all D03–D08 work remains local/uncommitted. This continuation changed mapping/
+  mapping regressions, wordActions/action regressions, guarded task QA helpers,
+  flows and task docs; status services retain the prior repair. Preserve all dirty
+  files, including earlier migrations/contracts/storage/UI. No commit/push/PR.
+- Retained local DB/API stack woordenaar-d08-qa.ZFsE50, proxy 55331/PID 65646,
+  web 55400/PID 63984, iOS DDEDCE4E-153B-48A4-A47C-B4ED0F499F1F and Android
+  emulator-5584 / woordenaar_d08_qa_20260921. Dedicated d08-content-qa web session.
+  All faults disabled, both apps synthetic-primary, no build/Maestro job pending.
+  Raw state/fixture/logs/browser outputs remain ignored under
+  reports/shared-dictionary-cefr/woordenaar-d08-native.20261001; older browser
+  artifacts untouched. Reverify identities before further operation.
+- Final task helper lint, scoped Markdown/YAML/helper formatting, full repository
+  format:check and git diff --check pass. Logs under reports/shared-dictionary-cefr:
+  D08-final-checkpoint-helper-lint.log, D08-final-checkpoint-format-write.log and
+  D08-final-checkpoint-repository-format.log. No runtime change after final builds.
+- AUTH-14/AUTH-15 local scope only; user resumed only dedicated-device QA. No
+  other session/device, production/schema switch, deployment, provider, EAS,
+  hosted mutation or publication. Runtime activation remains QA-only.
+- First incomplete checkpoint: D08.4 closure review. **Next model/effort:
+  GPT-6 Astra / High**. Review all three repairs/regressions and final native matrix,
+  resolve any findings/acceptance gaps, then update the stage checkbox/handoff.
+  Do not start D09 automatically; D01 release evidence remains mandatory.
+
+## 2026-10-02 — User deadline and task-resource shutdown
+
+- User required completing current work and stopping emulators/simulators before
+  02:30 Europe/Amsterdam for another project's runner. Completed QA checkpoint
+  retained; no new implementation, review, build or test started. D08 paused;
+  D08.4 closure review remains the first incomplete checkpoint.
+- Around 01:20–01:21 local time, only exact task iOS/Android stopped. Verified iOS
+  Shutdown and Android absent. Only four woordenaar-d08-qa.ZFsE50 containers
+  stopped/exited; volumes intact. Verified task proxy/web PIDs terminated and
+  ports closed; named d08-content-qa browser closed. No global quit/kill-all,
+  unrelated session/device/project or production operation. No reset/deletion.
+- Evidence: [shutdown checkpoint](evidence/D08-task-shutdown-20261002.md).
+  Private state/builds/fixtures/volumes remain in the same ignored roots. No task
+  operation pending. Reverify before any later user-authorized resource restart.
+- Model: user-selected GPT-6.1 Sol; effort unobservable. No fresh quota reading.
+  feature/shared-dictionary-schema, HEAD c5dfb14; all work local/uncommitted.
+  This turn changed checkpoint/approval/evidence docs only; prior 1,639 passing
+  mobile tests unchanged. Scoped document formatting and git diff --check passed;
+  logs: reports/shared-dictionary-cefr/D08-shutdown-format-write.log and
+  reports/shared-dictionary-cefr/D08-shutdown-format-check.log.
+- Remaining: six stages D09–D14 (31 checkpoints), D08.4 closure review and D01
+  pre-release evidence/quota limitation. Next explicit resume: GPT-6 Astra / High
+  local closure review, without restarting QA resources. No D09 auto-start,
+  deployment/schema-switch or destructive retirement authorization.
+
+## 2026-10-02 — D08 closure review, repair, final native acceptance and shutdown
+
+- Explicit user continuation with hard 02:30 Europe/Amsterdam finish/save deadline.
+  Clock checked repeatedly from 01:23; QA cutoff 02:15. Final resource shutdown
+  verified at 01:38. Current stage only; D09 implementation not started.
+- Model switch signaled; exact picker/effort not independently observable;
+  Astra / High was recommended. No independent subagent or fresh quota sample.
+- Reviewed status/debt, blank-note mapping and reanalysis materialization plus
+  final/historical matrix. Reproduced a P2 same-word SRS/collection store rollback
+  during hydration (1 failed/36 passed); DB content update already preserved it.
+  Store now takes latest personal fields before publication. No new async boundary,
+  schema/learning transport or server change. New deterministic unit regression.
+- Final focused 7 suites/88 tests and full 142 suites/1,640 tests/22 snapshots pass;
+  build/test typechecks, full strict lint pass. Source formatted before QA copy.
+  Initial full formatting check flagged only two in-progress docs; final scoped
+  and repository formatting plus git diff --check passed. Logs:
+  reports/shared-dictionary-cefr/D08-closure-final-format-write.log and
+  D08-closure-final-format-check.log.
+- Rebuilt both Release apps locally, preserved installations/data, verified actual
+  installed bundle/APK hashes. iOS/Android reanalysis and one-receipt delivery
+  passed; final guarded state assertion proves four active primary words, private
+  balkon v5, cursor 11, no content/hydration debt, matching server content/tombstone,
+  original IDs/SRS/learning intact. Prior unaffected native matrix accepted by
+  matching source fingerprints and fresh regressions; limits explicitly recorded.
+- Android cold-boot System UI ANR initially blocked Settings. Observed screenshot,
+  selected Wait on only task emulator; continuation and later smoke passed.
+  No app reset, owner switch, auth manipulation or other-session operation.
+- Only task resources temporarily resumed under continuation and then stopped:
+  iOS DDEDCE4E-153B-48A4-A47C-B4ED0F499F1F verified Shutdown; emulator-5584 verified
+  absent/process exited; four woordenaar-d08-qa.ZFsE50 containers all exited;
+  proxy PID 25083 terminated, ports 55331/55400 closed. Web/named browser remained
+  closed. All faults disabled; no build/Maestro/test job pending. Data/volumes and
+  ignored artifacts retained, no scheduled restart.
+- Branch feature/shared-dictionary-schema, HEAD c5dfb14; all work local/uncommitted.
+  This continuation changed wordActions, its regression, one Android Wait flow and
+  task docs/model routing; all pre-existing D03–D08 dirty work preserved. No
+  production/cutover/provider/EAS/deployment/Git publication operation.
+- Evidence and exact paths/hashes/run IDs: [final closure review](evidence/D08-final-closure-review-20261002.md).
+  **D08.4 checked; D08 done. Next explicit resume: D09.1, GPT-6.1 Sol / High.**
+  Do not restart QA automatically for the other project's runner. D01 pre-release
+  evidence/quota limitation, D13 approval and D14 observation gates unchanged.
+
+## 2026-10-02 — Scheduled morning continuation and model routing
+
+- User authorized a one-time 06:00 Europe/Amsterdam continuation and autonomous
+  model/effort switching; future Sol assignments use GPT-6.1 Sol, not GPT-5.6 Sol.
+- Created and verified same-thread heartbeat `d09-06-00`, ACTIVE, one occurrence
+  at 06:00 on October 2; prompt resumes D09.1 and pauses the automation afterward.
+  Target thread: `01a0f96a-d69c-7a90-b480-c1bb56217915`.
+- Updated handoff, D09 notes, future stage cards and plan routing. Historical
+  actual model records preserved. No actual picker/effort switch claimed: the
+  heartbeat tool exposes no same-thread model override. Use supported controls
+  at a needed boundary and report any inability to switch.
+- No implementation, native/device/service restart or new tests. D08 remains done;
+  D09 remains pending until 06:00. All local dirty work remains on the same branch
+  and HEAD; all task QA resources retain the verified 01:38 stopped state.
+- Documentation-only validation: scoped Prettier and git diff --check. No new
+  production, deployment, schema-switch, paid-operation or Git publication scope.
+- Next: D09.1 on GPT-6.1 Sol / High at the authorized time; six stages D09-D14
+  remain, plus incomplete D01 pre-release evidence/quota requirements.
+
+## 2026-10-02 — D09 scheduled continuation and closure
+
+- 06:00 heartbeat consumed once; automation `d09-06-00` paused and saved PAUSED
+  configuration verified. Work stayed within D09; D10 not started.
+- D09.1–D09.4 complete at 07:11. Web bulk effective content, v2 review snapshot,
+  CEFR display, private versioned writes, explicit revision adoption and boundary
+  cache handling implemented behind default-off server flag.
+- Actual browser QA found/fixed rapid review restart staleness, server reset-only
+  retry and badge grid shift. Stale form prevents mock AI invocation; successful
+  private reanalysis/adoption retain IDs/SRS and image overrides. Active questions
+  freeze; next session reads fresh content. Error/retry and light/dark passed.
+- Full web: 71 suites / 617 tests pass, one pre-existing skipped suite/test.
+  Typecheck, strict web/harness lint, scoped formatting and diff gates pass.
+  Four performance fixture tests pass. Production benchmark builds succeeded.
+- Initial 80-sample benchmark passed; final-code 10/cell run had isolated p95
+  outliers. Expanded 240 measured samples (30/cell) on same review source showed
+  all median/p95 increases below 10%, maximum 2.6%, same request counts and one
+  v2 snapshot. All samples retained; evidence records synthetic/local limits and
+  short gate-process overlap in the first block. No production/native claim.
+- Failed attempts not to repeat: workspace-relative Jest paths and retained-copy
+  haste collisions; raw CLI run-code without callback; interpreting stale dev
+  cached error component as the new handler; exact translation text locator after
+  nesting badge in the translation cell; media emulation overriding saved theme.
+- At 06:59 exact task browser, runner/proxy/web and four containers were verified
+  stopped; native iOS Shutdown and task Android AVD absent. Expanded benchmark
+  later exited 0 and removed its own temporary source/server/backend/browser.
+  No pending operation. Retained synthetic fixture has newer content versions;
+  native queues/cursor not opened. Do not reseed on next resume.
+- Model recommendation GPT-6.1 Sol / High. Current-thread switch control was
+  unavailable; no confirmed model/effort switch or independent review claimed.
+  Account-wide quota observed 31% then 40%, reset 1791051321; not D09-only usage.
+- Existing branch `feature/shared-dictionary-schema`, HEAD `c5dfb14`. Local-only,
+  uncommitted; D03-D08 dirty files preserved. No commit/push/PR/merge, production,
+  schema switch, deployment, real publication or paid provider operation.
+- [Full D09 evidence](evidence/D09-web-integration-20261002.md),
+  [source hashes](evidence/D09-source-sha256.json),
+  [dirty paths](evidence/D09-dirty-paths.txt). Exact next action: D10.1 using
+  GPT-6.1 Sol / High. Five stages / 27 checkpoints plus remaining D01 evidence;
+  release and compatibility-retirement gates remain separately controlled.
+
+## 2026-10-02 — D10 local import/sharing/export checkpoint
+
+- D10.1/D10.2 complete; D10.3 current. D10.3-D10.5 local code/tests retained,
+  stage exit not claimed. One-stage scope maintained; D11 not started.
+- Separate immutable mapping receipts preserve published v1/bundled JSON. Server
+  uses explicit approved provenance; imports allocate new personal identities and
+  preserve existing duplicates/private content/SRS/collection. SQLite caches full
+  dependencies before atomic create-private/link queues.
+- Authorized shared projections and selected-source imports implemented in both
+  clients. Server/self-contained reimport works after source personal-row deletion;
+  mobile offline export preserves SRS/queues and rejects incomplete dependencies.
+- Final mobile 10 suites / 124 tests; new web 4 suites / 25 tests; D10 SQL 8/8 pass.
+  Earlier full web 74 suites / 640 tests plus one pre-existing skip. Build/test/
+  contract typechecks, strict scoped lint, formatting, diff and target generation/check pass.
+- Fixes: immutable fixture review/source data, full pin cache/fallback invariant,
+  duplicate collection preservation, pending local progress/private edits, account
+  change/foreign-owner rejection, legacy usage-notes normalization, test type/
+  access-level function argument, import helper complexity and duplicate literals.
+- Target types refreshed through `20261002100000_add_dictionary_import_protocol.sql`.
+  Two isolated codegen runs removed only their own random containers/networks;
+  Unix-socket synthetic SQL clusters cleaned up. Native/D08 stack never started.
+  Exact iOS Shutdown, task Android AVD process absent and four D08 containers exited.
+  No running/uncertain operation; other sessions/devices untouched.
+- Model recommendation GPT-6.1 Sol / High for implementation; no confirmed current
+  switch claimed. Astra / High requested for unresolved offline identity/access
+  architecture; supported current-thread control unavailable, picker confirmation
+  pending. No independent agent review used. No fresh quota measurement.
+- Branch `feature/shared-dictionary-schema`, HEAD `c5dfb14`, all local/uncommitted;
+  pre-existing D03-D09 work preserved. AUTH-17 local/synthetic scope only. No
+  production, cutover, publication/deploy, paid operation or commit/push/PR/merge.
+- [Checkpoint evidence](evidence/D10-import-contracts-20261002.md),
+  [source hashes](evidence/D10-source-sha256.json),
+  [dirty checkout](evidence/D10-dirty-paths.txt).
+- Exact next action: D10.3 review read-only offline import persistence and unknown
+  remote semantic duplicates without changing private cards or losing IDs/SRS/
+  history/review/reset/content queues; then affected regression/contract gates and
+  D10.4/D10.5 review/coverage. Do not repeat D08/D09 QA or start D11 automatically.
+
+## 2026-10-02 — D10 Astra review, preservation repairs and local commits
+
+- User confirmed GPT-6 Astra / High and authorized necessary local commits,
+  recorded as AUTH-18. D10.3 remains current; no D11 work or scope expansion.
+- Reproduced/fixed explicit-null collection reassignment, phantom server IDs in
+  the store, pull overwrite while dictionary commands remain pending, and opaque
+  personal-ID remapping failures. Enabled sync no longer acknowledges unresolved
+  semantic duplicates. These guards preserve local data; duplicate recovery is
+  still required, not claimed complete.
+- Reproduced/fixed shared preview/import exposure through foreign-owner words
+  attached to the shared collection. Source owner must match sharing owner.
+  Duplicate return now locks its row or reports a retryable disappeared conflict.
+  Lock-barrier regression verifies concurrent imports and concurrent deletion.
+- Architecture contract saved for durable import intents, stable personal IDs,
+  insert-only authenticated receipts, read-only targets, ordered delivery and
+  explicit non-destructive conflict recovery. Ordinary upsert or implicit SRS/
+  meaning merging is not an acceptable offline import repair.
+- Verification: initial 4 new mobile regressions failed, then focused 80/80 and
+  sync 72/72 passed; source-owner SQL regression failed, then full SQL 183/183
+  passed. Full pre-commit mobile 144 suites / 1658 tests / 22 snapshots and full
+  web pass. Test typecheck, scoped strict lint, target check and diff checks pass.
+- Ordinary Jest web config now ignores generated reports in its module map;
+  the hook no longer requires ad-hoc exclusion of retained QA copies. Context7
+  Jest 29.7 documentation consulted. Hooks were not bypassed.
+- Implementation commit `a59acad` preserves 142 task source/config/test files
+  from D03-D09 plus partial D10 and review repairs. Following docs checkpoint
+  preserves the task bundle and this handoff. No push/PR/merge/deployment.
+- Native/retained D08 QA remained off. Synthetic SQL/codegen resources cleaned
+  up; no pending operation. Browser dumps/ignored QA data remain uncommitted.
+- Exact next action: D10.3 implementation on GPT-6.1 Sol / High using
+  [review contract](evidence/D10-astra-review-20261002.md). Picker change requires
+  the user's available UI because direct current-thread control is unavailable.
+  No fresh quota observation; no new automation or paid operation.
+
+## Record template
+
+Copy these fields into a dated entry at each session boundary:
+
+- Stage / checkpoint completed / next checkpoint:
+- Model / reasoning actually used (or unknown):
+- Scope and outcomes:
+- Decisions or approved operations consumed:
+- Branch / code revision / dirty files / persistence level:
+- Tests: command, date, revision, pass/fail/unverified, durable evidence path:
+- Failed attempts and what not to repeat:
+- Running or uncertain operations and how to inspect them:
+- Blocker or pause reason:
+- Quota before/after and reset IDs/times, if measured:
+- Exact next action and recommended model/effort:

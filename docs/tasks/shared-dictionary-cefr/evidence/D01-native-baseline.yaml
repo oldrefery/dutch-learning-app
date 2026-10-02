@@ -1,0 +1,16 @@
+appId: ${APP_ID}
+---
+- repeat:
+    times: 5
+    commands:
+      - stopApp
+      - runScript: D01-native-mark-start.js
+      - launchApp:
+          clearState: false
+          stopApp: false
+      - extendedWaitUntil:
+          visible: ${WORD_PATTERN}
+          timeout: 30000
+      - assertVisible:
+          id: screen-collections
+      - runScript: D01-native-mark-end.js

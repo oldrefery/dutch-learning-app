@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+---
+- runFlow: D08-native-content-action.yaml
+- repeat:
+    while:
+      notVisible: Keep my version
+    times: 12
+    commands:
+      - swipe:
+          start: 50%, 80%
+          end: 50%, 60%
+          duration: 600
+- extendedWaitUntil:
+    visible: Keep my version
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    text: Keep my version
+    retryTapIfNoChange: true
+- repeat:
+    while:
+      notVisible: Private edits changed. Reload the conflict before resolving it.
+    times: 12
+    commands:
+      - swipe:
+          start: 50%, 45%
+          end: 50%, 49%
+          duration: 1000
+- extendedWaitUntil:
+    visible: Private edits changed. Reload the conflict before resolving it.
+    timeout: 15000
+- assertVisible: Compare versions

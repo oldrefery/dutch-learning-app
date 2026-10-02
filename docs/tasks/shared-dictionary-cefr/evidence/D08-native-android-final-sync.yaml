@@ -1,0 +1,8 @@
+appId: ${APP_ID}
+---
+# Continue after successful task Android login, from the visible collection.
+- assertVisible: QA changed version
+- assertVisible: QA server version
+- assertNotVisible: tuin
+- back
+- runFlow: D08-native-sync.yaml

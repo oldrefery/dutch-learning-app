@@ -1,0 +1,6 @@
+appId: ${APP_ID}
+---
+# The cold-boot task emulator showed a System UI ANR over the running app.
+- assertVisible: System UI isn't responding
+- tapOn: Wait
+- runFlow: D08-native-sync.yaml

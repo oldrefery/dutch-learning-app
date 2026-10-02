@@ -1,0 +1,22 @@
+appId: ${APP_ID}
+---
+- pressKey: Home
+- launchApp:
+    stopApp: false
+- assertVisible:
+    id: modal-close-button
+- repeat:
+    times: 12
+    commands:
+      - swipe:
+          start: 50%, 45%
+          end: 50%, 49%
+          duration: 1000
+- extendedWaitUntil:
+    visible: Keep my version
+    timeout: 30000
+- tapOn: Keep my version
+- extendedWaitUntil:
+    visible: Private edits changed. Reload the conflict before resolving it.
+    timeout: 15000
+- assertVisible: Compare versions

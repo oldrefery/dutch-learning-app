@@ -1,0 +1,135 @@
+ M .github/workflows/quality.yml
+ M apps/mobile/src/app/__tests__/settings-sync-status.test.tsx
+ M apps/mobile/src/components/ReviewCard/CardFront.tsx
+ M apps/mobile/src/components/ReviewCard/WordHeader.tsx
+ M apps/mobile/src/components/ReviewModes/__tests__/__snapshots__/ReviewModes.test.tsx.snap
+ M apps/mobile/src/components/UniversalWordCard/__tests__/__snapshots__/UsageNotesSection.test.tsx.snap
+ M apps/mobile/src/components/UniversalWordCard/sections/HeaderSection.tsx
+ M apps/mobile/src/components/WordDetailModal.tsx
+ M apps/mobile/src/components/WordItem.tsx
+ M apps/mobile/src/db/__tests__/initDB.migration.sqlite.test.ts
+ M apps/mobile/src/db/__tests__/initDB.test.ts
+ M apps/mobile/src/db/__tests__/officialPackImport.sqlite.test.ts
+ M apps/mobile/src/db/__tests__/sqlite.fixture.ts
+ M apps/mobile/src/db/__tests__/wordRepository.test.ts
+ M apps/mobile/src/db/initDB.ts
+ M apps/mobile/src/db/wordRepository.ts
+ M apps/mobile/src/features/review/__tests__/correctionTransport.test.ts
+ M apps/mobile/src/features/review/correctionTransport.ts
+ M apps/mobile/src/hooks/__tests__/useStarterPackImport.test.ts
+ M apps/mobile/src/hooks/__tests__/useSyncManager.test.ts
+ M apps/mobile/src/hooks/useImportSelection.ts
+ M apps/mobile/src/hooks/useStarterPackImport.ts
+ M apps/mobile/src/hooks/useSyncManager.ts
+ M apps/mobile/src/lib/supabase.ts
+ M apps/mobile/src/services/__tests__/officialContentCatalogService.test.ts
+ M apps/mobile/src/services/__tests__/reviewCorrectionSync.test.ts
+ M apps/mobile/src/services/__tests__/syncManager.test.ts
+ M apps/mobile/src/services/__tests__/syncStatusService.test.ts
+ M apps/mobile/src/services/collectionSharingService.ts
+ M apps/mobile/src/services/officialContentCatalogService.ts
+ M apps/mobile/src/services/reviewCorrectionResolution.ts
+ M apps/mobile/src/services/reviewCorrectionSync.ts
+ M apps/mobile/src/services/starterPackService.ts
+ M apps/mobile/src/services/syncManager.ts
+ M apps/mobile/src/services/syncStatusService.ts
+ M apps/mobile/src/stores/__tests__/wordActions.test.ts
+ M apps/mobile/src/stores/actions/__tests__/reviewActions.test.ts
+ M apps/mobile/src/stores/actions/reviewActions.ts
+ M apps/mobile/src/stores/actions/wordActions.ts
+ M apps/mobile/src/types/ApplicationStoreTypes.ts
+ M apps/mobile/src/types/ImportTypes.ts
+ M apps/mobile/src/types/database.ts
+ M apps/web/src/app/app/collections/[collectionId]/error.tsx
+ M apps/web/src/app/app/collections/[collectionId]/words/[wordId]/error.tsx
+ M apps/web/src/app/app/collections/[collectionId]/words/[wordId]/page.tsx
+ M apps/web/src/app/app/layout.tsx
+ M apps/web/src/app/app/review/error.tsx
+ M apps/web/src/app/app/starter-pack/error.tsx
+ M apps/web/src/app/share/[shareToken]/error.tsx
+ M apps/web/src/features/collections/CollectionWordList.tsx
+ M apps/web/src/features/collections/collection-detail.ts
+ M apps/web/src/features/collections/repository.ts
+ M apps/web/src/features/review/ReviewCard.tsx
+ M apps/web/src/features/review/ReviewDetails.tsx
+ M apps/web/src/features/review/ReviewWorkspace.test.tsx
+ M apps/web/src/features/review/ReviewWorkspace.tsx
+ M apps/web/src/features/review/details-repository.ts
+ M apps/web/src/features/review/repository.ts
+ M apps/web/src/features/review/session-controller.ts
+ M apps/web/src/features/review/types.ts
+ M apps/web/src/features/review/useReviewSession.ts
+ M apps/web/src/features/search/repository.ts
+ M apps/web/src/features/sharing/actions.ts
+ M apps/web/src/features/sharing/repository.ts
+ M apps/web/src/features/starter-pack/actions.ts
+ M apps/web/src/features/starter-pack/repository.ts
+ M apps/web/src/features/starter-pack/starter-pack-domain.ts
+ M apps/web/src/features/words/WordDetailCard.tsx
+ M apps/web/src/features/words/WordImageManager.tsx
+ M apps/web/src/features/words/WordManagementForms.tsx
+ M apps/web/src/features/words/actions.ts
+ M apps/web/src/features/words/repository.ts
+ M apps/web/src/features/words/word-detail.ts
+ M package.json
+ M packages/content/package.json
+ M packages/domain/src/index.ts
+ M packages/supabase-contracts/README.md
+ M scripts/web-performance/fixture-backend.mjs
+ M scripts/web-performance/fixture-backend.test.mjs
+ M scripts/web-performance/run.mjs
+ M supabase/functions/gemini-handler/cacheUtils.ts
+ M supabase/functions/gemini-handler/index.ts
+?? .playwright-cli/
+?? apps/mobile/src/components/CefrBadge.tsx
+?? apps/mobile/src/components/DictionaryConflictResolver.tsx
+?? apps/mobile/src/components/__tests__/CefrBadge.test.tsx
+?? apps/mobile/src/components/__tests__/DictionaryConflictResolver.test.tsx
+?? apps/mobile/src/components/__tests__/WordDetailModal.test.tsx
+?? apps/mobile/src/constants/dictionaryContent.ts
+?? apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts
+?? apps/mobile/src/db/__tests__/dictionaryContentRestart.sqlite.test.ts
+?? apps/mobile/src/db/__tests__/dictionaryWordMaterialization.test.ts
+?? apps/mobile/src/db/dictionaryContentMapping.ts
+?? apps/mobile/src/db/dictionaryContentRepository.ts
+?? apps/mobile/src/db/dictionaryContentSchema.ts
+?? apps/mobile/src/db/dictionaryWordMaterialization.ts
+?? apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts
+?? apps/mobile/src/services/__tests__/dictionarySharingService.test.ts
+?? apps/mobile/src/services/__tests__/dictionaryTransferService.sqlite.test.ts
+?? apps/mobile/src/services/dictionaryContentSync.ts
+?? apps/mobile/src/services/dictionaryTransferService.ts
+?? apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts
+?? apps/web/src/features/analysis/shared-dictionary-contract.test.ts
+?? apps/web/src/features/dictionary/
+?? apps/web/src/features/review/dictionary-session.test.ts
+?? apps/web/src/features/review/dictionary-snapshot.test.ts
+?? apps/web/src/features/sharing/dictionary-repository.test.ts
+?? apps/web/src/features/sharing/dictionary-transfer.test.ts
+?? apps/web/src/features/sharing/dictionary-transfer.ts
+?? apps/web/src/features/starter-pack/dictionary-import.test.ts
+?? apps/web/src/features/starter-pack/dictionary-import.ts
+?? apps/web/src/features/starter-pack/official-dictionary-mapping.test.ts
+?? apps/web/src/features/words/dictionary-actions.test.ts
+?? docs/brainstorms/2026-09-12-shared-dictionary-brainstorm.md
+?? docs/dictionary-content-protocol.md
+?? docs/plans/shared-dictionary-cefr-2026-09-12.md
+?? docs/session-runbook.md
+?? docs/session-starter-prompt.txt
+?? docs/tasks/
+?? packages/content/src/dictionary.ts
+?? packages/domain/src/dictionary-transfer.ts
+?? packages/domain/src/shared-dictionary.ts
+?? packages/supabase-contracts/src/database.target.generated.ts
+?? packages/supabase-contracts/target-schema.json
+?? scripts/generate-supabase-target-types.mjs
+?? scripts/postgres-tests/dictionary-backfill.test.mjs
+?? scripts/postgres-tests/dictionary-content-protocol.test.mjs
+?? scripts/postgres-tests/official-dictionary-mapping.test.mjs
+?? scripts/postgres-tests/shared-dictionary-schema.test.mjs
+?? scripts/shared-dictionary/
+?? supabase/functions/_shared/sharedDictionaryContract_test.ts
+?? supabase/migrations/20260921103000_add_shared_dictionary_schema.sql
+?? supabase/migrations/20260921140000_add_dictionary_content_protocol.sql
+?? supabase/migrations/20261002090000_add_official_dictionary_mappings.sql
+?? supabase/migrations/20261002100000_add_dictionary_import_protocol.sql

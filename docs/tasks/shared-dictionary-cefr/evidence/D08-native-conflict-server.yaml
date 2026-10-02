@@ -1,0 +1,22 @@
+appId: ${APP_ID}
+---
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    text: Use server version
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    notVisible: Compare versions
+    timeout: 30000
+- assertNotVisible: Keep my version
+- repeat:
+    while:
+      notVisible: QA server version
+    times: 8
+    commands:
+      - swipe:
+          start: 50%, 42%
+          end: 50%, 85%
+          duration: 600
+- assertVisible: QA server version
+- assertNotVisible: QA local version
