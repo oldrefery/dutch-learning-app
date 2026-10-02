@@ -20,9 +20,13 @@ jest.mock('@/features/sharing/dictionary-transfer-commands', () => ({
 }))
 
 const priorFlag = process.env.DICTIONARY_CONTENT_ENABLED
+const priorSite = process.env.NEXT_PUBLIC_SITE_URL
+const priorVercel = process.env.VERCEL_URL
 beforeEach(() => {
   jest.clearAllMocks()
   process.env.DICTIONARY_CONTENT_ENABLED = 'true'
+  delete process.env.NEXT_PUBLIC_SITE_URL
+  delete process.env.VERCEL_URL
   jest.mocked(createClient).mockResolvedValue({
     auth: {
       getUser: async () => ({ data: { user: { id: OWNER } }, error: null }),
@@ -33,9 +37,17 @@ beforeEach(() => {
 afterAll(() => {
   if (priorFlag === undefined) delete process.env.DICTIONARY_CONTENT_ENABLED
   else process.env.DICTIONARY_CONTENT_ENABLED = priorFlag
+  if (priorSite === undefined) delete process.env.NEXT_PUBLIC_SITE_URL
+  else process.env.NEXT_PUBLIC_SITE_URL = priorSite
+  if (priorVercel === undefined) delete process.env.VERCEL_URL
+  else process.env.VERCEL_URL = priorVercel
 })
 
-function adaptedRequest(internalOrigin: string, publicOrigin: string) {
+function adaptedRequest(
+  internalOrigin: string,
+  publicOrigin: string,
+  headers: Record<string, string> = {}
+) {
   const incoming = Object.assign(
     Readable.from([JSON.stringify(importCommand)]),
     {
@@ -46,6 +58,7 @@ function adaptedRequest(internalOrigin: string, publicOrigin: string) {
         host: new URL(publicOrigin).host,
         'x-forwarded-host': new URL(publicOrigin).host,
         'content-type': 'application/json',
+        ...headers,
       },
     }
   ) as unknown as IncomingMessage
@@ -62,8 +75,7 @@ function adaptedRequest(internalOrigin: string, publicOrigin: string) {
   )
 }
 
-// Review baseline for ab8d603: valid same-origin requests fail before auth.
-// Convert to acceptance assertions when repairing origin validation.
+// Safety regressions converted from the ab8d603 review counterexamples.
 it.each([
   ['http://0.0.0.0:55400', 'http://localhost:55400', 'http://0.0.0.0:55400'],
   [
@@ -77,23 +89,67 @@ it.each([
     'https://internal.invalid:55400',
   ],
 ])(
-  'reproduces rejection of a legitimate public origin: %s -> %s',
+  'accepts a legitimate public Host despite Next.js URL adaptation: %s -> %s',
   async (internalOrigin, publicOrigin, adaptedOrigin) => {
     const request = adaptedRequest(internalOrigin, publicOrigin)
     expect(new URL(request.url).origin).toBe(adaptedOrigin)
     expect(request.headers.get('host')).toBe(new URL(publicOrigin).host)
     const response = await POST(request)
-    expect(response.status).toBe(403)
-    expect(createClient).not.toHaveBeenCalled()
-    expect(executeDictionaryTransfer).not.toHaveBeenCalled()
-    await request.body?.cancel()
+    expect(response.status).toBe(200)
+    expect(createClient).toHaveBeenCalledTimes(1)
+    expect(executeDictionaryTransfer).toHaveBeenCalledWith(
+      expect.anything(),
+      OWNER,
+      importCommand
+    )
   }
 )
 
-it('accepts the control case only when public and internal origins are identical', async () => {
+it('keeps accepting the same-public/internal-localhost control case', async () => {
   const response = await POST(
     adaptedRequest('http://localhost:55400', 'http://localhost:55400')
   )
   expect(response.status).toBe(200)
   expect(executeDictionaryTransfer).toHaveBeenCalledTimes(1)
 })
+
+it.each([false, true])(
+  'authenticates a forwarded public origin only with explicit deployment configuration: %s',
+  async configured => {
+    if (configured)
+      process.env.NEXT_PUBLIC_SITE_URL = 'https://woordenaar.example'
+    const request = adaptedRequest(
+      'http://internal.invalid:55400',
+      'https://woordenaar.example',
+      {
+        host: 'internal.invalid:55400',
+        'x-forwarded-proto': 'https',
+      }
+    )
+    expect((await POST(request)).status).toBe(configured ? 200 : 403)
+    expect(createClient).toHaveBeenCalledTimes(configured ? 1 : 0)
+    expect(executeDictionaryTransfer).toHaveBeenCalledTimes(configured ? 1 : 0)
+    if (!configured) await request.body?.cancel()
+  }
+)
+
+it.each<Record<string, string>>([
+  { host: 'other.invalid' },
+  { origin: 'null' },
+  { 'x-forwarded-host': 'attacker.invalid' },
+  { 'x-forwarded-host': 'localhost:55400, attacker.invalid' },
+  { 'x-forwarded-proto': 'https,http' },
+])(
+  'rejects conflicting origin/host/proxy input before authentication',
+  async headers => {
+    const request = adaptedRequest(
+      'http://localhost:55400',
+      'http://localhost:55400',
+      headers
+    )
+    expect((await POST(request)).status).toBe(403)
+    expect(createClient).not.toHaveBeenCalled()
+    expect(executeDictionaryTransfer).not.toHaveBeenCalled()
+    await request.body?.cancel()
+  }
+)

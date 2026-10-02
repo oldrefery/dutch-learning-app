@@ -20,6 +20,9 @@ import { useTransferSession } from './useTransferSession'
 import styles from './DictionaryTransfer.module.css'
 
 type Saved = Extract<TransferReply, { status: 'saved' }>
+type Feedback =
+  | { message: string; uncertain: false }
+  | { message: string; uncertain: true; collectionId: string }
 
 function SavedImport({ result }: { result: Saved }) {
   return (
@@ -61,10 +64,7 @@ export function DictionaryDocumentImport({
   } | null>(null)
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [target, setTarget] = useState(collections[0]?.id ?? '')
-  const [feedback, setFeedback] = useState<{
-    message: string
-    uncertain: boolean
-  } | null>(null)
+  const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [saved, setSaved] = useState<Saved | null>(null)
 
   const prepare = () => {
@@ -112,13 +112,18 @@ export function DictionaryDocumentImport({
       })
       if (!session.isCurrent(ticket)) return
       if (result.status !== 'saved' || result.collectionId !== target) {
-        setFeedback({
-          uncertain: result.status !== 'error',
-          message:
-            result.status === 'error' || result.status === 'uncertain'
-              ? result.message
-              : 'The import could not be confirmed. Check the collection before retrying.',
-        })
+        setFeedback(
+          result.status === 'error'
+            ? { uncertain: false, message: result.message }
+            : {
+                uncertain: true,
+                collectionId: target,
+                message:
+                  result.status === 'uncertain'
+                    ? result.message
+                    : 'The import could not be confirmed. Check the collection before retrying.',
+              }
+        )
         return
       }
       setSaved(result)
@@ -131,6 +136,7 @@ export function DictionaryDocumentImport({
       if (session.isCurrent(ticket))
         setFeedback({
           uncertain: true,
+          collectionId: target,
           message:
             'The import could not be confirmed. Check the collection, then preview again before retrying.',
         })
@@ -175,8 +181,8 @@ export function DictionaryDocumentImport({
       </Button>
       {feedback && <p role="alert">{feedback.message}</p>}
       {feedback?.uncertain && (
-        <Link href={`/app/collections/${target}`}>
-          Check the selected collection
+        <Link href={`/app/collections/${feedback.collectionId}`}>
+          Check the attempted collection
         </Link>
       )}
       {preview && (

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { isDictionaryContentEnabled } from '@/features/dictionary/repository'
 import { executeDictionaryTransfer } from '@/features/sharing/dictionary-transfer-commands'
+import { hasSameTransferOrigin } from '@/features/sharing/dictionary-transfer-origin'
 import {
   MAX_TRANSFER_REQUEST_BYTES,
   parseTransferCommand,
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
       404
     )
   if (
-    request.headers.get('origin') !== new URL(request.url).origin ||
+    !hasSameTransferOrigin(request) ||
     request.headers.get('content-type')?.split(';')[0].trim() !==
       'application/json'
   )

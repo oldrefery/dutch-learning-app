@@ -82,7 +82,7 @@ it('requires a manual preview after an uncertain mutation and never replays auto
     screen.getByRole('button', { name: 'Import 1 selected word' })
   ).toBeDisabled()
   expect(
-    screen.getByRole('link', { name: 'Check the selected collection' })
+    screen.getByRole('link', { name: 'Check the attempted collection' })
   ).toHaveAttribute('href', `/app/collections/${TARGET}`)
   expect(requestDictionaryTransfer).toHaveBeenCalledTimes(1)
   fireEvent.click(screen.getByRole('button', { name: 'Preview words' }))

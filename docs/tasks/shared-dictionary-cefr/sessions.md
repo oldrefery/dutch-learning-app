@@ -1296,6 +1296,21 @@ a new session to read this entire history. Never log private vocabulary or secre
   test. 133 source and two review-test hashes match. No remote/release/paid operation,
   uncertain mutation or QA job; automation stays paused.
 
+## 2026-10-02 — D10 web transfer R1/R2 repairs
+
+- User-confirmed Sol 6.1 / High; starting `9150845`, application baseline `ab8d603`.
+  AUTH-17/AUTH-18, existing feature branch. [Repair evidence](evidence/D10-web-transfer-repairs-20261002.md).
+- R1 canonical Origin against raw Host; proxy/TLS override requires explicit existing
+  site/deployment origin and consistent single forwarded headers. R2 stores attempted
+  destination in uncertain feedback. No replays, schema/mobile/config/env changes.
+- Review counterexamples converted to safety regressions. Focus 11 web suites /
+  134 tests, TypeScript and scoped strict lint/format/diff pass. Current 137 hashes:
+  129 unchanged baseline, four updated web paths and four added paths.
+- No backend/browser/device operation. Explicit device availability handback remains
+  required. No pending mutation/build/QA job. Local preservation hooks next.
+- Next Astra / High re-review, then remaining integrated acceptance. D10.3–D10.5 open;
+  D11 not started. No remote/release/paid operations; automation paused.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:

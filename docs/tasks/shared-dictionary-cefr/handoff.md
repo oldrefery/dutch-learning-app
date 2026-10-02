@@ -1,5 +1,36 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 web R1/R2 repairs implemented**, starting
+HEAD `9150845`, application baseline `ab8d603`, existing feature branch.
+User confirmed the requested **GPT-6.1 Sol / High** switch. AUTH-17/AUTH-18.
+[Repair evidence and origin policy](evidence/D10-web-transfer-repairs-20261002.md).
+
+R1 now validates the canonical browser Origin against mandatory raw Host; URL scheme
+is retained. A different internal Host/TLS scheme requires the existing explicit
+site/deployment origin plus consistent single forwarded headers. Missing, malformed,
+conflicting and unconfigured overrides fail closed before auth. R2 uncertain feedback
+captures the attempted collection ID, preserving its check link when the next target
+changes. Both lost transport and uncertain receipt safety regressions pass; explicit
+re-preview remains required before another write. No automatic replay/retarget.
+
+Focused **11 web suites / 134 tests**, test-inclusive typecheck and strict scoped
+lint/format/diff pass. Four baseline web paths intentionally changed, 129 unchanged;
+four paths added to the current 137-file hash manifest. No mobile/SQL/RPC/dependency/
+config/env/feature-flag or published-content change. Normal local commit hooks are
+next. Historical counterexamples are in `46eb250`, now converted to safety assertions.
+
+**Next: GPT-6 Astra / High repair re-review**, then remaining browser/cross-owner/
+both-client acceptance. Inspect raw Host/scheme validation, trusted deployment-origin
+proxy boundary, negative headers and immutable uncertain destination. Current-thread
+picker unavailable; request manual Astra / High confirmation. D10.3–D10.5 stay
+unchecked. Do not start D11 or repeat completed native upgrades/mobile recovery checks.
+
+No backend/browser/device inspection or operation. Explicit device availability
+handback remains required before simulator/emulator use; another session may use
+those devices. No pending mutation, build or QA job. Private fixtures/.playwright-cli
+remain intact, root AGENTS excluded, automation paused. No push/PR/merge, production,
+cutover, publication, deployment or paid operation. Historical review follows.
+
 Last checkpoint: **2026-10-02 — D10 web transfer implementation review: changes required.**
 User confirmed the requested **GPT-6 Astra / High** switch. Reviewed source
 `ab8d603`, starting HEAD `5d95165`, existing branch `feature/shared-dictionary-schema`.

@@ -25,6 +25,7 @@ const request = (
     method: 'POST',
     body,
     headers: {
+      host: 'localhost:55400',
       origin: 'http://localhost:55400',
       'content-type': 'application/json',
       ...headers,
