@@ -8,6 +8,8 @@ import { DeleteCollectionForm } from '@/features/collections/DeleteCollectionFor
 import { RenameCollectionForm } from '@/features/collections/RenameCollectionForm'
 import { getOwnedCollectionDetail } from '@/features/collections/repository'
 import { CollectionSharingPanel } from '@/features/sharing/CollectionSharingPanel'
+import { DictionaryExportPanel } from '@/features/sharing/DictionaryExportPanel'
+import { isDictionaryContentEnabled } from '@/features/dictionary/repository'
 import { buildSharedCollectionUrl } from '@/features/sharing/shared-collection-domain'
 import { requireAuthContext } from '@/lib/auth/session'
 
@@ -87,6 +89,13 @@ export default async function CollectionDetailPage({
         <section className={styles.settings} id="collection-settings">
           <h2>Collection settings</h2>
           <div className={styles.settingsGrid}>
+            {isDictionaryContentEnabled() && (
+              <DictionaryExportPanel
+                key={auth.userId}
+                ownerId={auth.userId}
+                collectionId={collection.id}
+              />
+            )}
             <CollectionSharingPanel
               collectionId={collection.id}
               initialState={{

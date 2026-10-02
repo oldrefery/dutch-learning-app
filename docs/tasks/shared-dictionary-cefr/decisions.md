@@ -349,3 +349,11 @@ retained debt without a durable base requires explicit Saved imports recovery.
 Cancellation acknowledgement hands pending status to ordinary tombstone delivery.
 [Repair evidence](evidence/D10-recovery-review-repairs-20261002.md). No new schema
 or release authority. Astra re-review and integrated acceptance remain open.
+
+### October 2 — Device availability restriction for web implementation checkpoint
+
+Latest user continuation permits local D10 work but requires notification before
+using a simulator/emulator: the user will first pause its use in another session.
+Do not infer current device availability from earlier off-state evidence. No device
+operation until availability is explicitly handed back. This does not block local
+web implementation/tests or necessary local commits under AUTH-17/AUTH-18.

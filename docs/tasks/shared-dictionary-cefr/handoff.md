@@ -1,5 +1,40 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 web document transfer UI implemented**,
+starting `b302d71`, existing branch `feature/shared-dictionary-schema`.
+Model-switch event received after requested GPT-6.1 Sol / High; no automatic picker
+change claimed. AUTH-17/AUTH-18 remain applicable. [Implementation and verification](evidence/D10-web-transfer-ui-20261002.md).
+
+Default-off collection export and `/app/dictionary-import` now call the existing
+strict schema-v1 helpers through an authenticated same-origin bounded POST route.
+Explicit preview/selection, existing owned target and fresh hydrated global duplicate
+checks preserve readonly import and existing-card/SRS/placement policy. Prepare/copy
+are separate gestures with manual clipboard fallback. Auth epochs hide private state
+and suppress delayed replies after owner changes/ABA. Uncertain imports require a
+collection check and manual re-preview; no automatic replay/retarget. Saved success
+survives cache/synchronous router-refresh failures and malformed receipt counts.
+No dependency/config/SQL/RPC/mobile/feature-flag change.
+
+Focused **8 web suites / 80 tests**, test-inclusive web type generation/TypeScript,
+strict scoped lint, formatting and diff checks pass. All previous 113 application
+fingerprints match; 20 web paths added to the current 133-path manifest. Local
+preservation commit with normal hooks is next; no pending mutation/build/QA job.
+
+**Next: GPT-6 Astra / High implementation review**, then remaining D10.3 integrated
+acceptance. Review production route/page wiring, fresh auth/target/duplicates,
+content-only payload, reply/clipboard/account races, body limits and truthful saved/
+uncertain feedback. Current-thread picker control is unavailable; obtain a manual
+Astra / High confirmation, never claim an automatic switch. D10.3–D10.5 remain
+unchecked; do not begin D11 or repeat completed native upgrades/R1/R2 checks.
+
+No backend/device/browser inspection or operation in this checkpoint. The latest
+user instruction requires an explicit availability handback after pausing the other
+session before simulator/emulator QA. Do not assume the preceding OFF verification
+is current availability. Existing private QA fixtures and `.playwright-cli/` remain
+intact/untracked; root AGENTS remains excluded. Automation `d09-06-00` remains paused.
+No push/PR/merge, production, schema cutover, publication, deployment or paid operation.
+Historical completed checkpoint follows.
+
 Last checkpoint: **2026-10-02 — D10 Android v14/v15 native migration PASS;
 web transfer UI integration missing.** User-confirmed GPT-6 Astra / High.
 Application source `c3f9baf`; starting repository HEAD `559321a`, same branch
