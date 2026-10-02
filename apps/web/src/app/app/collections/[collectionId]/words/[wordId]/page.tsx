@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { DictionaryRevisionForm } from '@/features/dictionary/DictionaryRevisionForm'
 import { notFound } from 'next/navigation'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
 import { MarkAnalysisSaved } from '@/features/history/MarkAnalysisSaved'
@@ -51,6 +52,7 @@ export default async function WordDetailPage({
             <span className="dw-label">Image</span>
           </div>
           <WordImageManager
+            key={`${data.word.id}:${data.word.dictionary?.contentVersion ?? 'legacy'}`}
             collectionId={data.collection.id}
             word={data.word}
           />
@@ -62,7 +64,18 @@ export default async function WordDetailPage({
           <span className="dw-label">Word actions</span>
         </div>
         <div className={styles.managementStack}>
+          {auth.accessLevel === 'full_access' &&
+            data.word.dictionary?.availableRevision && (
+              <DictionaryRevisionForm
+                key={`${data.word.id}:${data.word.dictionary.contentVersion}`}
+                collectionId={data.collection.id}
+                wordId={data.word.id}
+                dictionary={data.word.dictionary}
+              />
+            )}
           <WordManagementForms
+            key={`${data.word.id}:${data.word.dictionary?.contentVersion ?? 'legacy'}`}
+            contentVersion={data.word.dictionary?.contentVersion}
             canUseAi={auth.accessLevel === 'full_access'}
             collectionId={data.collection.id}
             moveTargets={data.moveTargets}

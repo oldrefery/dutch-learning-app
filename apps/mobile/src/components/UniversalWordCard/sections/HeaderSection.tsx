@@ -6,7 +6,9 @@ import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { formatWordForCopying } from '@/utils/wordTextFormatter'
 import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import { styles } from '../styles'
-import type { WordSectionProps } from '../types'
+import { isWordFromDB, type WordSectionProps } from '../types'
+import { CefrBadge } from '@/components/CefrBadge'
+import { DictionaryConflictResolver } from '@/components/DictionaryConflictResolver'
 
 // Audio button component following HIG guidelines
 interface AudioButtonProps {
@@ -54,6 +56,9 @@ export function HeaderSection({
 
   return (
     <ViewThemed style={styles.headerSection}>
+      {isWordFromDB(word) && (
+        <DictionaryConflictResolver key={word.word_id} word={word} />
+      )}
       <ViewThemed style={styles.headerActionsRow}>
         <NonSwipeableArea style={styles.headerActions}>
           {/* Cache Status Badge */}
@@ -99,6 +104,9 @@ export function HeaderSection({
 
       {config.showGrammarInfo && (
         <ViewThemed style={styles.grammarInfo}>
+          {isWordFromDB(word) && (
+            <CefrBadge level={word.cefr_level} status={word.cefr_status} />
+          )}
           <ViewThemed style={styles.grammarTag}>
             <TextThemed style={styles.grammarTagText} selectable>
               {word.part_of_speech || 'unknown'}

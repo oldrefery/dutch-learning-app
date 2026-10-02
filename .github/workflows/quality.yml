@@ -66,6 +66,9 @@ jobs:
       - name: Test migrations, review transactions and RLS
         run: npm run test:db
 
+      - name: Verify local target schema contract
+        run: npm run supabase-contracts:target:check
+
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 30

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "source": "disposable-local-postgres",
+  "schemas": ["public"],
+  "migrationHead": "20261002100000_add_dictionary_import_protocol.sql",
+  "postgresImage": "postgres@sha256:20edbde7749f822887a1a022ad526fde0a47d6b2be9a8364433605cf65099416",
+  "generator": "supabase-postgres-meta",
+  "generatorVersion": "0.99.0",
+  "generatorImage": "public.ecr.aws/supabase/postgres-meta@sha256:9a079ac1c94d89629262822a4bd1902d5b1be4adb464e5a0a8fd078aaed72158",
+  "formatter": "prettier",
+  "formatterVersion": "3.9.6",
+  "artifact": "src/database.target.generated.ts"
+}

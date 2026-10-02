@@ -1,5 +1,15 @@
 import 'server-only'
 
+import {
+  applyEffectiveCards,
+  parseEffectiveCards,
+  type DictionaryCardMetadata,
+} from '@/features/dictionary/content'
+import {
+  isDictionaryContentEnabled,
+  type DictionaryDatabase,
+} from '@/features/dictionary/repository'
+
 import type { Database } from '@woordenaar/supabase-contracts'
 import {
   createCorrectionClient,
@@ -174,7 +184,7 @@ const mapSnapshotEvent = (value: unknown): ReviewEventEvidence | null => {
 export const mapReviewSnapshot = (value: unknown): ReviewWorkspaceData => {
   if (
     !isRecord(value) ||
-    value.protocolVersion !== 1 ||
+    (value.protocolVersion !== 1 && value.protocolVersion !== 2) ||
     typeof value.correctionsAvailable !== 'boolean' ||
     !Array.isArray(value.collections) ||
     !Array.isArray(value.words) ||
@@ -184,7 +194,39 @@ export const mapReviewSnapshot = (value: unknown): ReviewWorkspaceData => {
   }
 
   const collections = value.collections.map(mapSnapshotCollection)
-  const words = value.words.map(mapSnapshotWord)
+  let snapshotWords: unknown[] = value.words
+  const metadata = new Map<string, DictionaryCardMetadata>()
+  if (value.protocolVersion === 2) {
+    if (
+      value.dictionaryContentProtocol !== 1 ||
+      value.words.some(
+        word => !isRecord(word) || typeof word.word_id !== 'string'
+      )
+    ) {
+      throw new Error('Could not load the review workspace.')
+    }
+    const cards = parseEffectiveCards({
+      protocol_version: 1,
+      cards: value.effectiveContent,
+    })
+    for (const [id, card] of cards) {
+      metadata.set(id, {
+        contentVersion: card.contentVersion,
+        reference: card.reference,
+        source: card.source,
+        cefr: card.cefr,
+      })
+    }
+    snapshotWords = applyEffectiveCards(
+      value.words as { word_id: string }[],
+      cards
+    )
+  }
+  const words = snapshotWords.map(value => {
+    const word = mapSnapshotWord(value)
+    const dictionary = word ? metadata.get(word.id) : undefined
+    return word && dictionary ? { ...word, dictionary } : word
+  })
   const events = value.events.map(mapSnapshotEvent)
   if (
     collections.some(collection => collection === null) ||
@@ -196,6 +238,7 @@ export const mapReviewSnapshot = (value: unknown): ReviewWorkspaceData => {
 
   return {
     correctionsAvailable: value.correctionsAvailable,
+    ...(value.protocolVersion === 2 ? { dictionaryContentEnabled: true } : {}),
     collections: collections as ReviewCollection[],
     words: words as ReviewWord[],
     events: events as ReviewEventEvidence[],
@@ -265,6 +308,17 @@ export async function getReviewWorkspaceData(
   userId: string
 ): Promise<ReviewWorkspaceData> {
   const supabase = await createCorrectionClient()
+  if (isDictionaryContentEnabled()) {
+    const dictionaryClient =
+      supabase as unknown as SupabaseClient<DictionaryDatabase>
+    const { data, error } = await dictionaryClient.rpc(
+      'get_web_review_snapshot_v2'
+    )
+    if (error || !isRecord(data) || data.protocolVersion !== 2) {
+      throw new Error('Could not load the review workspace.')
+    }
+    return mapReviewSnapshot(data)
+  }
   const snapshotClient =
     supabase as unknown as SupabaseClient<ReviewSnapshotDatabase>
   const { data, error } = await snapshotClient.rpc('get_web_review_snapshot_v1')

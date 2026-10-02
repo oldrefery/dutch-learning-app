@@ -1,6 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import {
+  isDictionaryContentEnabled,
+  type DictionaryDatabase,
+} from '@/features/dictionary/repository'
 import { requireAuthContext } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
 import type {
@@ -153,10 +158,19 @@ export async function importSharedCollection(
   }
 
   const supabase = await createClient()
-  const { error } = await supabase.rpc('import_words_to_collection', {
-    p_collection_id: targetCollection.id,
-    p_words: buildSharedCollectionImportPayload(importWords),
-  })
+  const { error } = isDictionaryContentEnabled()
+    ? await (supabase as unknown as SupabaseClient<DictionaryDatabase>).rpc(
+        'import_shared_dictionary_collection_v1',
+        {
+          p_collection_id: targetCollection.id,
+          p_share_token: shareToken,
+          p_word_ids: importWords.map(word => word.word_id),
+        }
+      )
+    : await supabase.rpc('import_words_to_collection', {
+        p_collection_id: targetCollection.id,
+        p_words: buildSharedCollectionImportPayload(importWords),
+      })
   if (error) {
     return {
       status: 'error',

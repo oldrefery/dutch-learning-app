@@ -1,5 +1,7 @@
 import 'server-only'
 
+import { hydrateOwnedWords } from '@/features/dictionary/repository'
+
 import { cache } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
@@ -192,5 +194,8 @@ export async function getOwnedCollectionDetail(
     throw new Error('Could not load collection words.')
   }
 
-  return buildCollectionDetail(collection, words ?? [])
+  return buildCollectionDetail(
+    collection,
+    await hydrateOwnedWords(supabase, words ?? [])
+  )
 }

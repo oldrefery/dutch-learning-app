@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Check, Headphones, Volume2, X } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { useWebSettings } from '@/features/settings/useWebSettings'
@@ -34,11 +35,13 @@ function Completion({
   counts,
   onChangeMode,
   onRestart,
+  refreshing,
   total,
 }: {
   counts: Record<ReviewAssessment, number>
   onChangeMode: () => void
   onRestart: () => void
+  refreshing: boolean
   total: number
 }) {
   return (
@@ -74,7 +77,7 @@ function Completion({
       )}
 
       <div className={styles.completionActions}>
-        <Button onClick={onRestart} type="button">
+        <Button disabled={refreshing} onClick={onRestart} type="button">
           Review due words again
         </Button>
         <Button onClick={onChangeMode} type="button" variant="secondary">
@@ -98,11 +101,20 @@ function AccountReviewWorkspace({
   initialScope,
   userId,
 }: ReviewWorkspaceProps) {
+  const router = useRouter()
+  const [refreshingDictionary, startRefresh] = useTransition()
+  const refreshDictionary = useCallback(
+    () => startRefresh(() => router.refresh()),
+    [router]
+  )
   const session = useReviewSession(
     data,
     initialScope,
     initialCollectionId,
-    userId
+    userId,
+    'adaptive',
+    data.dictionaryContentEnabled ? refreshDictionary : undefined,
+    refreshingDictionary
   )
   const [detailCache] = useState(() => new ReviewDetailCache())
   const { play: playAudio, stop: stopAudio } = useAudioReviewPlayback()
@@ -181,6 +193,11 @@ function AccountReviewWorkspace({
   if (session.stage === 'setup') {
     return (
       <>
+        {refreshingDictionary && (
+          <p role="status" className="dw-support">
+            Updating review content…
+          </p>
+        )}
         {session.preparation.status === 'preparing' && (
           <section aria-live="polite" className={styles.preparing}>
             <p>
@@ -237,7 +254,9 @@ function AccountReviewWorkspace({
             }
           }}
           onStart={session.start}
-          preparing={session.preparation.status === 'preparing'}
+          preparing={
+            refreshingDictionary || session.preparation.status === 'preparing'
+          }
           scope={session.scope}
         />
       </>
@@ -253,6 +272,7 @@ function AccountReviewWorkspace({
           counts={session.assessmentCounts}
           onChangeMode={session.changeMode}
           onRestart={session.start}
+          refreshing={refreshingDictionary}
           total={session.summary?.assessed ?? 0}
         />
         {!!session.summary?.skipped && (

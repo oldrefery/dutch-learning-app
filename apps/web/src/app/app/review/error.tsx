@@ -4,10 +4,10 @@ import { useReportError } from '@/lib/observability/useReportError'
 
 export default function ReviewError({
   error,
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string }
-  reset: () => void
+  retry: () => void
 }) {
   useReportError(error)
 
@@ -17,7 +17,7 @@ export default function ReviewError({
       <p className="mt-2 text-sm opacity-80">Please try again.</p>
       <button
         className="mt-4 rounded-xl border border-current px-4 py-2 text-sm font-medium"
-        onClick={reset}
+        onClick={retry}
         type="button"
       >
         Retry

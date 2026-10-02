@@ -1,3 +1,4 @@
+import type { DictionaryCardMetadata } from '@/features/dictionary/content'
 import type { Json } from '@woordenaar/supabase-contracts'
 
 export type ReviewMode = 'recognition' | 'meaning-recall' | 'dutch-production'
@@ -7,6 +8,7 @@ export type ReviewScope = 'all-due' | 'collection-due' | 'difficult-due'
 export type ReviewAssessment = 'again' | 'hard' | 'good' | 'easy'
 
 export interface ReviewWord {
+  dictionary?: DictionaryCardMetadata
   article: string | null
   collectionId: string | null
   dutchLemma: string
@@ -38,6 +40,7 @@ export interface ReviewEventEvidence {
 }
 
 export interface ReviewWorkspaceData {
+  dictionaryContentEnabled?: boolean
   correctionsAvailable?: boolean
   collections: ReviewCollection[]
   events: ReviewEventEvidence[]

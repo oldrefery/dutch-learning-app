@@ -6,6 +6,7 @@ import { Colors } from '@/constants/Colors'
 import { WordStatusType } from '@/components/WordDetailModal/types'
 import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import type { Word } from '@/types/database'
+import { CefrBadge } from '@/components/CefrBadge'
 
 interface WordItemProps {
   word: Word
@@ -55,6 +56,11 @@ export default function WordItem({ word, onPress }: WordItemProps) {
                 : ''}
             </TextThemed>
           )}
+          <CefrBadge
+            level={word.cefr_level}
+            status={word.cefr_status}
+            compact
+          />
         </ViewThemed>
       </ViewThemed>
 

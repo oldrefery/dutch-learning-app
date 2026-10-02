@@ -14,6 +14,7 @@ import {
 } from '../schema'
 import { MIGRATION_V11_CORRECTION_RESOLUTION } from '../reviewCorrectionSchema'
 import { MIGRATION_V12_CORRECTION_RECOVERY } from '../reviewCorrectionRecoverySchema'
+import { MIGRATION_V13_DICTIONARY_CONTENT } from '../dictionaryContentSchema'
 
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }))
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -33,6 +34,7 @@ type Fault =
   | 'corrections'
   | 'resolution'
   | 'recovery'
+  | 'dictionary'
   | null
 
 // Execute the actual initializer and SQL on a disposable file, replacing only
@@ -98,7 +100,25 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       ['pending-b', 'qa-a'],
       ['pending-c', 'qa-b'],
     ])
-    expect(version).toBe('12')
+    expect(version).toBe('13')
+    expect(
+      db
+        .prepare(
+          `SELECT name FROM sqlite_master
+           WHERE type = 'table' AND name LIKE 'dictionary_%'
+           ORDER BY name`
+        )
+        .all()
+        .map(row => row.name)
+    ).toEqual([
+      'dictionary_card_content',
+      'dictionary_card_refresh_queue',
+      'dictionary_cefr_assessment_cache',
+      'dictionary_cefr_head_cache',
+      'dictionary_change_cursors',
+      'dictionary_content_commands',
+      'dictionary_revision_cache',
+    ])
     expect(db.prepare('PRAGMA foreign_keys').get()).toEqual({ foreign_keys: 1 })
     expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
   }
@@ -119,6 +139,13 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
         '2026-09-05', 7, 3, 2.35)`
       ).run(user, user, user)
     }
+    db.prepare(
+      `INSERT INTO words(word_id, user_id, dutch_lemma, translations,
+      next_review_date, created_at, updated_at, deleted_at, sync_status,
+      last_sync_attempt_at)
+      VALUES ('tombstone-a', 'qa-a', 'verwijderd', '{}', '2026-09-12',
+      '2026-09-05', '2026-09-06', '2026-09-06', 'deleted', '2026-09-06')`
+    ).run()
     for (const [id, user, status, at] of [
       ['pending-c', 'qa-b', 'pending', '2026-09-05T12:01:00Z'],
       ['pending-b', 'qa-a', 'pending', '2026-09-05T12:00:00Z'],
@@ -170,6 +197,20 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
                   fault === 'recovery'
                 )
                   interrupt()
+                if (
+                  sql === MIGRATION_V13_DICTIONARY_CONTENT &&
+                  fault === 'dictionary'
+                ) {
+                  db.exec(
+                    sql.slice(
+                      0,
+                      sql.indexOf(
+                        'CREATE TABLE IF NOT EXISTS dictionary_content_commands'
+                      )
+                    )
+                  )
+                  interrupt()
+                }
               },
             })
             db.exec('COMMIT')
@@ -232,6 +273,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     'corrections',
     'resolution',
     'recovery',
+    'dictionary',
   ] as const)(
     'retries after interruption at %s without losing or duplicating commands',
     async phase => {
@@ -276,13 +318,65 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     version = '10'
     await closeDatabase()
     await initializeDatabase()
-    expect(version).toBe('12')
+    expect(version).toBe('13')
     expect(words()).toEqual(wordsBefore)
     expect(events()).toEqual(history)
     expect(commands()).toEqual(queue)
     expect(db.prepare('SELECT * FROM review_corrections').all()).toEqual(
       corrections.map(row => ({ ...row, resolved_at: null }))
     )
+    expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
+  })
+
+  it('adds v13 without changing words, tombstones, learning commands or corrections', async () => {
+    await initializeDatabase()
+    db.exec(`INSERT INTO learning_commands(
+        operation_id, kind, user_id, word_id, reset_at, review_date
+      ) VALUES ('reset-keep', 'reset', 'qa-b', 'qa-b',
+        '2026-09-06T13:00:00Z', '2026-09-06');
+      INSERT INTO review_corrections(
+        correction_id, event_id, word_id, user_id, expected_revision,
+        assessment, queued_at, status
+      ) VALUES ('correction-keep', 'pending-a', 'qa-a', 'qa-a', 0,
+        'hard', '2026-09-06T14:00:00Z', 'pending');`)
+    const wordSnapshot = words()
+    const eventSnapshot = events()
+    const commandSnapshot = commands()
+    const correctionSnapshot = db
+      .prepare('SELECT * FROM review_corrections ORDER BY correction_id')
+      .all()
+    const recoverySnapshot = db
+      .prepare(
+        'SELECT * FROM review_correction_recovery ORDER BY correction_id'
+      )
+      .all()
+    db.exec(`DROP TABLE dictionary_change_cursors;
+      DROP TABLE dictionary_content_commands;
+      DROP TABLE dictionary_card_content;
+      DROP TABLE dictionary_cefr_head_cache;
+      DROP TABLE dictionary_cefr_assessment_cache;
+      DROP TABLE dictionary_revision_cache;`)
+    version = '12'
+    await closeDatabase()
+
+    await initializeDatabase()
+
+    expect(version).toBe('13')
+    expect(words()).toEqual(wordSnapshot)
+    expect(events()).toEqual(eventSnapshot)
+    expect(commands()).toEqual(commandSnapshot)
+    expect(
+      db
+        .prepare('SELECT * FROM review_corrections ORDER BY correction_id')
+        .all()
+    ).toEqual(correctionSnapshot)
+    expect(
+      db
+        .prepare(
+          'SELECT * FROM review_correction_recovery ORDER BY correction_id'
+        )
+        .all()
+    ).toEqual(recoverySnapshot)
     expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
   })
 })

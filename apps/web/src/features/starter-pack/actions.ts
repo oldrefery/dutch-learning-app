@@ -7,8 +7,8 @@ import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import type { StarterPackImportState } from './form-state'
 import { loadRemoteOfficialStarterPack } from './official-content-repository'
+import { importStarterPackEntries } from './dictionary-import'
 import {
-  buildStarterPackImportPayload,
   getStarterPackSemanticKey,
   loadOfficialStarterPack,
   NEW_STARTER_PACK_COLLECTION_ID,
@@ -310,12 +310,11 @@ export async function importStarterPack(
       .map(getWordRowSemanticKey)
   )
 
-  const { error: importError } = await supabase.rpc(
-    'import_words_to_collection',
-    {
-      p_collection_id: targetCollection.id,
-      p_words: buildStarterPackImportPayload(importEntries),
-    }
+  const { error: importError } = await importStarterPackEntries(
+    supabase,
+    targetCollection.id,
+    manifest,
+    importEntries
   )
 
   return verifyImportResult({

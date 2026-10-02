@@ -1,4 +1,14 @@
 import type { Collection, Word } from '@/types/database'
+import type { DictionaryReference } from '@woordenaar/domain'
+
+export interface SharedImportSource {
+  shareToken: string
+  wordIds: string[]
+}
+export interface DictionaryImportOptions {
+  dictionaryReferences?: readonly (DictionaryReference | null)[]
+  sharedSource?: SharedImportSource
+}
 
 export type ImportableWord = Omit<
   Word,

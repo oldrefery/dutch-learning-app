@@ -23,6 +23,10 @@ const DEFAULT_OPTIONS: UseSyncManagerOptions = {
 export const refreshApplicationStoreAfterSync = async (
   result: SyncResult
 ): Promise<void> => {
+  if (result.dictionaryConflict) {
+    await useApplicationStore.getState().fetchWords()
+    return
+  }
   if (!result.success) return
 
   const { fetchCollections, fetchWords, fetchUserAccessLevel } =

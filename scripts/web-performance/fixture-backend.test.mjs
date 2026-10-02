@@ -6,9 +6,29 @@ import {
   startFixtureBackend,
   createFixture,
   snapshot,
+  dictionarySnapshot,
   PUBLIC_KEY,
   USER_ID,
 } from './fixture-backend.mjs'
+
+test('dictionary fixture supplies the real v2 envelope in one owned snapshot', async t => {
+  const backend = await startFixtureBackend()
+  t.after(() => backend.close())
+  const fixture = createFixture({ words: 2500, events: 501 })
+  backend.configure(fixture, 'dictionary', 'dictionary-contract')
+  const client = createClient(backend.url, PUBLIC_KEY, {
+    auth: { persistSession: false },
+  })
+  const result = await client.rpc('get_web_review_snapshot_v2')
+  assert.equal(result.error, null)
+  assert.deepEqual(result.data, dictionarySnapshot(fixture))
+  assert.deepEqual(
+    result.data.effectiveContent.map(card => card.word_id),
+    result.data.words.map(word => word.word_id)
+  )
+  assert.equal(backend.requests.length, 1)
+  assert.equal(backend.errors.length, 0)
+})
 
 test('snapshot and actual paginated client reads have identical fixture data at boundaries', async t => {
   const backend = await startFixtureBackend()

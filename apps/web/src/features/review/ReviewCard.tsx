@@ -1,3 +1,4 @@
+import { CefrBadge } from '@/features/dictionary/CefrBadge'
 import { Volume2 } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -76,6 +77,7 @@ export function ReviewCard({
             <div className={styles.wordMeta}>
               {word.article && <Badge tone="accent">{word.article}</Badge>}
               {word.partOfSpeech && <Badge>{word.partOfSpeech}</Badge>}
+              <CefrBadge dictionary={word.dictionary} />
             </div>
             <div className={styles.audioCenter}>
               <button

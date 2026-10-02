@@ -12,6 +12,7 @@ import {
   MIGRATION_V9_LEARNING_COMMANDS,
   MIGRATION_V9_REVIEW_DATE,
 } from '../schema'
+import { MIGRATION_V13_DICTIONARY_CONTENT } from '../dictionaryContentSchema'
 
 // Only the native Expo bridge is replaced; execute actual repository SQL.
 export const createTestDatabase = (path = ':memory:', initialize = true) => {
@@ -25,14 +26,23 @@ export const createTestDatabase = (path = ':memory:', initialize = true) => {
     database.exec(MIGRATION_V10_REVIEW_CORRECTIONS)
     database.exec(MIGRATION_V11_CORRECTION_RESOLUTION)
     database.exec(MIGRATION_V12_CORRECTION_RECOVERY)
+    database.exec(MIGRATION_V13_DICTIONARY_CONTENT)
   }
   const runAsync = async (sql: string, ...values: SQLInputValue[]) =>
     database.prepare(sql).run(...values)
   const getFirstAsync = async (sql: string, values: SQLInputValue[]) =>
     database.prepare(sql).get(...values) ?? null
+  const normalizeValues = (
+    values: (SQLInputValue | SQLInputValue[])[]
+  ): SQLInputValue[] =>
+    values.length === 1 && Array.isArray(values[0])
+      ? values[0]
+      : (values as SQLInputValue[])
   const adapter = {
-    getAllAsync: async (sql: string, ...values: SQLInputValue[]) =>
-      database.prepare(sql).all(...values),
+    getAllAsync: async (
+      sql: string,
+      ...values: (SQLInputValue | SQLInputValue[])[]
+    ) => database.prepare(sql).all(...normalizeValues(values)),
     getFirstAsync,
     prepareAsync: async (sql: string) => {
       const statement = database.prepare(sql)

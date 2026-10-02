@@ -1,5 +1,7 @@
 'use client'
 
+import { CefrBadge } from '@/features/dictionary/CefrBadge'
+
 import Link from 'next/link'
 import { Ellipsis, Play, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -161,7 +163,14 @@ export function CollectionWordList({
                   )}
                   {word.dutchLemma}
                 </Link>
-                <span className={styles.translation}>{word.translation}</span>
+                <span className={styles.translation}>
+                  {word.translation}
+                  {word.dictionary && (
+                    <span className="mt-1 block">
+                      <CefrBadge dictionary={word.dictionary} />
+                    </span>
+                  )}
+                </span>
                 <span className={styles.meta}>
                   {word.partOfSpeech ?? 'Unknown'}
                 </span>

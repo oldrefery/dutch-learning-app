@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { reviewCorrectionRepository } from '@/db/reviewCorrectionRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
 import type {
@@ -10,6 +11,22 @@ import type { ReviewEvent } from '@/types/ReviewTypes'
 const PAGE_SIZE = 250
 const CONFLICT_MESSAGE =
   'Review correction needs attention. Refresh the word and resolve the conflicting edit.'
+const CAPABILITY_KEY_PREFIX = 'review_correction_protocol_v1'
+const capabilityKey = (userId: string) =>
+  `${CAPABILITY_KEY_PREFIX}:${encodeURIComponent(process.env.EXPO_PUBLIC_SUPABASE_URL ?? '')}:${userId}`
+
+async function rememberCapability(
+  userId: string,
+  available: boolean
+): Promise<void> {
+  try {
+    const key = capabilityKey(userId)
+    if (available) await AsyncStorage.setItem(key, 'supported')
+    else await AsyncStorage.removeItem(key)
+  } catch {
+    console.warn('[Sync] Could not persist review correction capability')
+  }
+}
 const uuid = (value: unknown): value is string =>
   typeof value === 'string' &&
   /^[\da-f]{8}(-[\da-f]{4}){3}-[\da-f]{12}$/i.test(value)
@@ -88,11 +105,25 @@ async function persistReceipts(
 }
 
 export const reviewCorrectionSync = {
-  async isAvailable(): Promise<boolean> {
+  async hasConfirmedCapability(userId: string): Promise<boolean> {
+    try {
+      return (await AsyncStorage.getItem(capabilityKey(userId))) === 'supported'
+    } catch {
+      console.warn('[Sync] Could not read review correction capability')
+      return false
+    }
+  },
+
+  async isAvailable(userId?: string): Promise<boolean> {
     const { data, error } = await supabase.rpc('review_correction_protocol')
-    if (error?.code === 'PGRST202' || error?.code === '42883') return false
+    if (error?.code === 'PGRST202' || error?.code === '42883') {
+      if (userId) await rememberCapability(userId, false)
+      return false
+    }
     if (error) throw error
-    return data === 1
+    const available = data === 1
+    if (userId) await rememberCapability(userId, available)
+    return available
   },
 
   async pull(userId: string): Promise<number> {

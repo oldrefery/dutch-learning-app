@@ -17,6 +17,7 @@ import {
 } from '@/constants/ReviewConstants'
 import type { Collection, Word } from '@/types/database'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
+import { reviewCorrectionRecoveryRepository } from '@/db/reviewCorrectionRecoveryRepository'
 import { toLocalDateKey } from '@/utils/dateUtils'
 
 jest.mock('@/lib/sentry')
@@ -24,6 +25,11 @@ jest.mock('@/utils/logger')
 jest.mock('@/db/reviewEventRepository', () => ({
   reviewEventRepository: {
     getRecentByWords: jest.fn().mockResolvedValue({}),
+  },
+}))
+jest.mock('@/db/reviewCorrectionRecoveryRepository', () => ({
+  reviewCorrectionRecoveryRepository: {
+    pending: jest.fn().mockResolvedValue([]),
   },
 }))
 
@@ -34,6 +40,8 @@ describe('reviewActions', () => {
 
   const USER_ID = generateId('user')
   const WORD_ID = generateId('word')
+  const ANOTHER_USER_ID = 'another-user'
+  const PENDING_CORRECTION_WORD_ID = 'pending-correction-word'
 
   // Helper to create mock words
   const createMockWord = (overrides: Partial<Word> = {}): Word => ({
@@ -110,6 +118,9 @@ describe('reviewActions', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    jest
+      .mocked(reviewCorrectionRecoveryRepository.pending)
+      .mockResolvedValue([])
 
     // Track state changes for assertions
     let currentState = {
@@ -141,6 +152,78 @@ describe('reviewActions', () => {
   })
 
   describe('startReviewSession', () => {
+    it('reopens a pending correction word even when it is not due', async () => {
+      const futureWord = createMockWord({
+        word_id: PENDING_CORRECTION_WORD_ID,
+        next_review_date: '2099-01-01',
+      })
+      jest
+        .mocked(reviewCorrectionRecoveryRepository.pending)
+        .mockResolvedValue([
+          {
+            correction_id: 'correction-1',
+            event_id: 'event-1',
+            word_id: futureWord.word_id,
+            user_id: USER_ID,
+            expected_revision: 0,
+            assessment: 'hard',
+            status: 'pending',
+            resolved_at: null,
+            error: null,
+          },
+        ])
+      mockGet.mockImplementation(() => ({
+        currentUserId: USER_ID,
+        words: [futureWord],
+        collections: [],
+        reviewSession: null,
+        currentWord: null,
+        error: null,
+      }))
+
+      await actions.startReviewSession()
+
+      expect(reviewCorrectionRecoveryRepository.pending).toHaveBeenCalledWith(
+        USER_ID
+      )
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewSession: expect.objectContaining({ words: [futureWord] }),
+          currentWord: futureWord,
+          reviewLoading: false,
+        })
+      )
+    })
+
+    it('does not restore a pending correction after an account change', async () => {
+      const futureWord = createMockWord({
+        word_id: PENDING_CORRECTION_WORD_ID,
+        next_review_date: '2099-01-01',
+      })
+      let finish!: (
+        value: Awaited<
+          ReturnType<typeof reviewCorrectionRecoveryRepository.pending>
+        >
+      ) => void
+      jest
+        .mocked(reviewCorrectionRecoveryRepository.pending)
+        .mockImplementationOnce(
+          () =>
+            new Promise(resolve => {
+              finish = resolve
+            })
+        )
+      mockSet({ words: [futureWord], collections: [] })
+
+      const pending = actions.startReviewSession()
+      mockSet({ currentUserId: ANOTHER_USER_ID, reviewLoading: false })
+      mockSet.mockClear()
+      finish([])
+      await pending
+
+      expect(mockSet).not.toHaveBeenCalled()
+    })
+
     it.each(['success', 'failure'])(
       'ignores late adaptive history %s after an account change',
       async outcome => {
@@ -165,7 +248,8 @@ describe('reviewActions', () => {
           mode: 'adaptive',
           scope: REVIEW_SCOPE.ALL_DUE,
         })
-        mockSet({ currentUserId: 'another-user', reviewLoading: false })
+        await new Promise(resolve => setTimeout(resolve, 0))
+        mockSet({ currentUserId: ANOTHER_USER_ID, reviewLoading: false })
         mockSet.mockClear()
         finish()
         await pending
@@ -534,7 +618,7 @@ describe('reviewActions', () => {
         })
         mockSet(
           replacement === 'account'
-            ? { currentUserId: 'another-user' }
+            ? { currentUserId: ANOTHER_USER_ID }
             : { reviewSession: { ...session } }
         )
         mockSet.mockClear()

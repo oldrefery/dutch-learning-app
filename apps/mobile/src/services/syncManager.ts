@@ -41,9 +41,16 @@ import {
 } from '@/db/learningResetRepository'
 import { reviewCorrectionRepository } from '@/db/reviewCorrectionRepository'
 import { reviewCorrectionSync } from './reviewCorrectionSync'
+import {
+  dictionaryContentSync,
+  DictionaryContentConflictError,
+} from './dictionaryContentSync'
+import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import type { PendingReviewCorrection } from '@/types/ReviewCorrection'
 
 export interface SyncResult {
+  dictionaryConflict?: boolean
   success: boolean
   wordsSynced: number
   progressSynced: number
@@ -87,12 +94,14 @@ function reviewsBeforeBoundary(
 type SyncErrorType = 'auth_expired' | 'rls' | 'other'
 type SyncStage =
   | 'check_protocol'
+  | 'pull_dictionary_content'
   | 'pull_review_corrections'
   | 'pull_collections'
   | 'pull_words'
   | 'pull_progress'
   | 'pull_review_events'
   | 'push_collections'
+  | 'push_dictionary_content'
   | 'push_words'
   | 'push_progress'
   | 'push_review_events'
@@ -261,6 +270,7 @@ const isReviewEventAfterCursor = (
 ): boolean => compareSyncCursors(toReviewEventSyncCursor(event), cursor) > 0
 
 export class SyncManager {
+  private dictionaryContentAvailable = false
   private health = new SyncHealthReporter()
   private isSyncing = false
   private syncListeners: ((result: SyncResult) => void)[] = []
@@ -310,6 +320,14 @@ export class SyncManager {
   private async performSyncPass(userId: string): Promise<SyncResult> {
     const startedAt = Date.now()
     let outcome: SyncOutcome = 'error'
+    let dictionaryError: unknown = null
+    const attemptDictionarySync = async (action: () => Promise<unknown>) => {
+      try {
+        await action()
+      } catch (error) {
+        dictionaryError = error
+      }
+    }
 
     try {
       console.log('[Sync] Stage 0: checking network')
@@ -351,8 +369,16 @@ export class SyncManager {
       const correctionsAvailable = await this.runSyncStageWithSessionRetry(
         'check_protocol',
         userId,
-        () => reviewCorrectionSync.isAvailable()
+        () => reviewCorrectionSync.isAvailable(userId)
       )
+      const dictionaryContentAvailable =
+        await this.runSyncStageWithSessionRetry('check_protocol', userId, () =>
+          dictionaryContentSync.isAvailable()
+        )
+      this.dictionaryContentAvailable = dictionaryContentAvailable
+      if (isDictionaryContentEnabled() && !dictionaryContentAvailable) {
+        throw new Error('Dictionary content protocol is unavailable')
+      }
 
       // Step 0: Pull collections from Supabase
       console.log('[Sync] Stage 1: pull collections')
@@ -373,6 +399,27 @@ export class SyncManager {
 
       // Clean up local orphan words after pull
       await this.cleanupOrphanWords(userId)
+
+      if (dictionaryContentAvailable) {
+        await wordRepository.preserveLegacyPendingContent(userId)
+        console.log('[Sync] Stage 2.5: pull dictionary content')
+        await attemptDictionarySync(async () => {
+          await this.runSyncStageWithSessionRetry(
+            'pull_dictionary_content',
+            userId,
+            () =>
+              dictionaryContentSync.pullRequired(
+                userId,
+                pulledWords.map(word => word.word_id)
+              )
+          )
+          await this.runSyncStageWithSessionRetry(
+            'pull_dictionary_content',
+            userId,
+            () => dictionaryContentSync.refreshChanges(userId)
+          )
+        })
+      }
 
       // Step 2: Pull progress after words so local foreign keys can resolve
       console.log('[Sync] Stage 3: pull progress')
@@ -415,6 +462,26 @@ export class SyncManager {
         async () => this.pushWordsToSupabase(userId)
       )
 
+      if (dictionaryContentAvailable) {
+        await attemptDictionarySync(() =>
+          this.runSyncStageWithSessionRetry(
+            'push_dictionary_content',
+            userId,
+            () => dictionaryContentSync.push(userId)
+          )
+        )
+      }
+
+      if (dictionaryContentAvailable && pushedWordsCount > 0) {
+        await attemptDictionarySync(() =>
+          this.runSyncStageWithSessionRetry(
+            'pull_dictionary_content',
+            userId,
+            () => dictionaryContentSync.pullRequired(userId)
+          )
+        )
+      }
+
       // Step 5: Push pending progress to Supabase
       console.log('[Sync] Stage 7: push progress')
       const pushedProgressCount = await this.runSyncStageWithSessionRetry(
@@ -431,36 +498,19 @@ export class SyncManager {
           this.pushReviewEventsToSupabase(userId, correctionsAvailable)
       )
 
-      // Upload acknowledgements confirm metadata/event receipt, not the local
-      // provisional SRS result. Re-read canonical progress before reporting success.
-      if (
+      const canonicalRefreshRequired =
         pushedWordsCount > 0 ||
         pushedReviewEventsCount > 0 ||
         pulledReviewEvents.length > 0 ||
         pulledCorrections > 0
-      ) {
-        await this.runSyncStageWithSessionRetry(
-          'pull_review_events',
-          userId,
-          () => this.pullReviewEventsFromSupabase(userId, reviewEventCursor)
-        )
-        if (correctionsAvailable) {
-          await this.runSyncStageWithSessionRetry(
-            'pull_review_corrections',
-            userId,
-            () => reviewCorrectionSync.pull(userId)
-          )
-        }
-        await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
-          this.pullWordsFromSupabase(userId, wordCursor)
-        )
-      }
-
-      if (correctionsAvailable) {
-        await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
-          recoverConfirmedReviewCorrections(userId)
-        )
-      }
+      await this.refreshCanonicalLearningState(
+        userId,
+        reviewEventCursor,
+        wordCursor,
+        correctionsAvailable,
+        canonicalRefreshRequired
+      )
+      if (dictionaryError) throw dictionaryError
       const timestamp = new Date().toISOString()
       // Status metadata must not turn an acknowledged data sync into a failure.
       await setLastSyncTimestamp(userId, timestamp).catch(() => {
@@ -487,38 +537,11 @@ export class SyncManager {
       const isNetworkErr = isNetworkError(errorMessage)
       outcome = this.getHealthOutcome(error, outcome)
 
-      // Don't report network errors - they're expected when offline
-      if (isNetworkErr) {
-        console.log(
-          '[Sync] Network error during sync (expected when offline):',
-          errorMessage
-        )
-      } else if (error instanceof ControlledSyncError) {
-        console.warn('[Sync] Controlled sync failure:', errorMessage)
-      } else if (__DEV__) {
-        console.error(
-          '[Sync] Error in development (not reported to Sentry):',
-          error
-        )
-      } else if (!this.isSentryHandledError(error)) {
-        const syncErrorType = this.categorizeSyncError(error)
-        console.error('[Sync] Error during sync:', error)
-        Sentry.captureException(this.toError(error), {
-          tags: {
-            module: 'syncManager',
-            operation: 'performSync',
-            sync_error_type: syncErrorType,
-          },
-          extra: {
-            userId,
-            errorMessage,
-          },
-          fingerprint: ['sync-manager', syncErrorType],
-        })
-      }
+      this.reportSyncFailure(error, userId, errorMessage, isNetworkErr)
 
       const result: SyncResult = {
         success: false,
+        dictionaryConflict: error instanceof DictionaryContentConflictError,
         wordsSynced: 0,
         progressSynced: 0,
         error: errorMessage,
@@ -534,6 +557,80 @@ export class SyncManager {
     } finally {
       await this.health.record(userId, outcome, startedAt)
     }
+  }
+
+  private async refreshCanonicalLearningState(
+    userId: string,
+    reviewEventCursor: SyncCursor | null,
+    wordCursor: SyncCursor | null,
+    correctionsAvailable: boolean,
+    refreshRequired: boolean
+  ): Promise<void> {
+    // Upload acknowledgements confirm metadata/event receipt, not the local
+    // provisional SRS result. Re-read canonical progress before reporting success.
+    if (refreshRequired) {
+      await this.runSyncStageWithSessionRetry(
+        'pull_review_events',
+        userId,
+        () => this.pullReviewEventsFromSupabase(userId, reviewEventCursor)
+      )
+      if (correctionsAvailable) {
+        await this.runSyncStageWithSessionRetry(
+          'pull_review_corrections',
+          userId,
+          () => reviewCorrectionSync.pull(userId)
+        )
+      }
+      await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
+        this.pullWordsFromSupabase(userId, wordCursor)
+      )
+    }
+    if (!correctionsAvailable) return
+    await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
+      recoverConfirmedReviewCorrections(userId)
+    )
+  }
+
+  private reportSyncFailure(
+    error: unknown,
+    userId: string,
+    errorMessage: string,
+    isNetworkErr: boolean
+  ): void {
+    // Network errors are expected while the device is offline.
+    if (isNetworkErr) {
+      console.log(
+        '[Sync] Network error during sync (expected when offline):',
+        errorMessage
+      )
+      return
+    }
+    if (error instanceof ControlledSyncError) {
+      console.warn('[Sync] Controlled sync failure:', errorMessage)
+      return
+    }
+    if (__DEV__) {
+      console.error(
+        '[Sync] Error in development (not reported to Sentry):',
+        error
+      )
+      return
+    }
+    if (this.isSentryHandledError(error)) return
+    const syncErrorType = this.categorizeSyncError(error)
+    console.error('[Sync] Error during sync:', error)
+    Sentry.captureException(this.toError(error), {
+      tags: {
+        module: 'syncManager',
+        operation: 'performSync',
+        sync_error_type: syncErrorType,
+      },
+      extra: {
+        userId,
+        errorMessage,
+      },
+      fingerprint: ['sync-manager', syncErrorType],
+    })
   }
 
   private getHealthOutcome(error: unknown, previous: SyncOutcome): SyncOutcome {
@@ -883,6 +980,14 @@ export class SyncManager {
 
     await wordRepository.saveRemoteWordTombstones(tombstones)
     await wordRepository.saveWords(activeWords, { preserveUnsynced: true })
+
+    if (this.dictionaryContentAvailable) {
+      // Persist the hydration obligation before advancing the legacy cursor.
+      await dictionaryContentRepository.requireCardRefresh(
+        userId,
+        activeWords.map(word => word.word_id)
+      )
+    }
 
     const newestWord = parsedWords[parsedWords.length - 1]
     await setSyncCursor(userId, 'words', toWordSyncCursor(newestWord))
@@ -1733,6 +1838,11 @@ export class SyncManager {
   }
 
   private async markDuplicateWordsSynced(words: Word[]): Promise<void> {
+    if (this.dictionaryContentAvailable && words.length > 0) {
+      throw new Error(
+        'Personal word identity conflict. Local content and learning queues are preserved.'
+      )
+    }
     const duplicateVersions = words
       .filter(word => Boolean(word.word_id))
       .map(word => ({
@@ -2020,6 +2130,9 @@ export class SyncManager {
     payloads: SupabaseWordsUpsertPayload[]
   ): Promise<WordsUpsertResult> {
     try {
+      if (this.dictionaryContentAvailable) {
+        return await this.executeDictionaryWordMetadataUpsert(payloads)
+      }
       const result = await supabase
         .from('words')
         .upsert(payloads, {
@@ -2041,6 +2154,53 @@ export class SyncManager {
         error: this.toSupabaseLikeError(upsertError),
       }
     }
+  }
+
+  private async executeDictionaryWordMetadataUpsert(
+    payloads: SupabaseWordsUpsertPayload[]
+  ): Promise<WordsUpsertResult> {
+    // Bootstrap absent legacy rows without rewriting existing canonical content.
+    // Content commands are applied only after all personal IDs exist remotely.
+    const inserted = await supabase
+      .from('words')
+      .upsert(payloads, {
+        onConflict: 'word_id',
+        ignoreDuplicates: true,
+      })
+      .select(WORD_ACKNOWLEDGEMENT_COLUMNS)
+    if (inserted.error) {
+      return { data: null, error: this.toSupabaseLikeError(inserted.error) }
+    }
+    const acknowledgements = this.parseWordAcknowledgements(inserted.data)
+    const insertedIds = new Set(acknowledgements.map(row => row.word_id))
+    const groups = new Map<string, SupabaseWordsUpsertPayload[]>()
+    for (const payload of payloads) {
+      if (insertedIds.has(payload.word_id)) continue
+      const key = JSON.stringify([payload.user_id, payload.collection_id])
+      const group = groups.get(key) ?? []
+      group.push(payload)
+      groups.set(key, group)
+    }
+    for (const group of groups.values()) {
+      for (let offset = 0; offset < group.length; offset += 400) {
+        const chunk = group.slice(offset, offset + 400)
+        const result = await supabase
+          .from('words')
+          .update({ collection_id: chunk[0].collection_id })
+          .eq('user_id', chunk[0].user_id)
+          .in(
+            'word_id',
+            chunk.map(row => row.word_id)
+          )
+          .is('deleted_at', null)
+          .select(WORD_ACKNOWLEDGEMENT_COLUMNS)
+        if (result.error) {
+          return { data: null, error: this.toSupabaseLikeError(result.error) }
+        }
+        acknowledgements.push(...this.parseWordAcknowledgements(result.data))
+      }
+    }
+    return { data: acknowledgements, error: null }
   }
 
   private toSupabaseLikeError(error: unknown): SupabaseLikeError {

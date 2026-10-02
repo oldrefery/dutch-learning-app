@@ -2,6 +2,8 @@ import { collectionRepository } from '@/db/collectionRepository'
 import { progressRepository } from '@/db/progressRepository'
 import { wordRepository } from '@/db/wordRepository'
 import { getLastSyncTimestamp, isNetworkAvailable } from '@/utils/network'
+import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 
 export interface SyncStatusSnapshot {
   totalLocalWords: number
@@ -37,7 +39,17 @@ export const syncStatusService = {
       isNetworkAvailable(),
     ])
 
-    const pendingWordCount = pendingWords.length
+    const [commands, missingCardWordIds] = isDictionaryContentEnabled()
+      ? await Promise.all([
+          dictionaryContentRepository.getPendingCommands(userId),
+          dictionaryContentRepository.getMissingCardWordIds(userId),
+        ])
+      : [[], []]
+    const pendingWordCount = new Set([
+      ...pendingWords.map(word => word.word_id),
+      ...commands.map(row => row.command.word_id),
+      ...missingCardWordIds,
+    ]).size
     const pendingCollectionCount = pendingCollections.length
     const pendingProgressCount = pendingProgress.length
 

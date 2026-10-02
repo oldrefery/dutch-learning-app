@@ -66,6 +66,15 @@ describe('refreshApplicationStoreAfterSync', () => {
     expect(fetchWords).not.toHaveBeenCalled()
     expect(fetchUserAccessLevel).not.toHaveBeenCalled()
   })
+
+  it('refreshes private conflict indicators without fetching account access remotely', async () => {
+    await refreshApplicationStoreAfterSync({
+      ...failedSync,
+      dictionaryConflict: true,
+    })
+    expect(fetchWords).toHaveBeenCalledTimes(1)
+    expect(fetchUserAccessLevel).not.toHaveBeenCalled()
+  })
 })
 
 describe('initial synchronization', () => {

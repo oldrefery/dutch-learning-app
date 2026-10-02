@@ -16,6 +16,15 @@ import { learningResetRepository } from '@/db/learningResetRepository'
 import { getLearningQueueHealth } from '@/db/learningQueueHealth'
 import { reviewCorrectionRepository } from '@/db/reviewCorrectionRepository'
 import { reviewCorrectionSync } from '../reviewCorrectionSync'
+import {
+  dictionaryContentSync,
+  DictionaryContentConflictError,
+} from '../dictionaryContentSync'
+jest.mock('@/db/dictionaryContentRepository', () => ({
+  dictionaryContentRepository: {
+    requireCardRefresh: jest.fn().mockResolvedValue(undefined),
+  },
+}))
 jest.mock('../reviewCorrectionRecovery', () => ({
   recoverConfirmedReviewCorrections: jest.fn(),
 }))
@@ -28,6 +37,16 @@ jest.mock('../reviewCorrectionSync', () => ({
     isAvailable: jest.fn().mockResolvedValue(false),
     pull: jest.fn().mockResolvedValue(0),
     push: jest.fn().mockResolvedValue(undefined),
+  },
+}))
+jest.mock('../dictionaryContentSync', () => ({
+  DictionaryContentConflictError: class extends Error {},
+  dictionaryContentSync: {
+    isAvailable: jest.fn().mockResolvedValue(false),
+    pull: jest.fn().mockResolvedValue(0),
+    pullRequired: jest.fn().mockResolvedValue(0),
+    push: jest.fn().mockResolvedValue(0),
+    refreshChanges: jest.fn().mockResolvedValue(0),
   },
 }))
 
@@ -53,6 +72,7 @@ jest.mock('@/utils/network')
 jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
     getWordsByUserId: jest.fn().mockResolvedValue([]),
+    preserveLegacyPendingContent: jest.fn().mockResolvedValue(undefined),
     saveWords: jest.fn().mockResolvedValue(undefined),
     saveRemoteWordTombstones: jest.fn().mockResolvedValue(undefined),
     getPendingSyncWords: jest.fn().mockResolvedValue([]),
@@ -286,6 +306,7 @@ describe('SyncManager', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     syncManager = new SyncManager()
+    jest.mocked(wordRepository.getPendingSyncWords).mockResolvedValue([])
     jest.mocked(supabase.rpc).mockResolvedValue({
       data: 2,
       error: null,
@@ -298,6 +319,11 @@ describe('SyncManager', () => {
     jest.mocked(reviewCorrectionSync.isAvailable).mockResolvedValue(false)
     jest.mocked(reviewCorrectionSync.pull).mockResolvedValue(0)
     jest.mocked(reviewCorrectionSync.push).mockResolvedValue(undefined)
+    jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(false)
+    jest.mocked(dictionaryContentSync.pull).mockResolvedValue(0)
+    jest.mocked(dictionaryContentSync.pullRequired).mockResolvedValue(0)
+    jest.mocked(dictionaryContentSync.push).mockResolvedValue(0)
+    jest.mocked(dictionaryContentSync.refreshChanges).mockResolvedValue(0)
     jest
       .mocked(learningResetRepository.acknowledge)
       .mockReset()
@@ -364,6 +390,100 @@ describe('SyncManager', () => {
   })
 
   describe('sync status subscriptions', () => {
+    it('keeps learning queues flowing but reports a retained content conflict', async () => {
+      jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
+      jest
+        .mocked(dictionaryContentSync.push)
+        .mockRejectedValue(
+          new DictionaryContentConflictError('Resolve the content conflict')
+        )
+      const result = await syncManager.performSync(userId)
+      expect(reviewEventRepository.getPendingSyncEvents).toHaveBeenCalledWith(
+        userId,
+        500
+      )
+      expect(result).toMatchObject({ success: false, dictionaryConflict: true })
+      expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+    })
+
+    it('bootstraps absent dictionary words but only writes collection metadata for existing cards', async () => {
+      jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
+      const word = createPendingWord({ word_id: 'existing-linked-word' })
+      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
+        word,
+      ])
+      ;(
+        collectionRepository.getCollectionsByIds as jest.Mock
+      ).mockResolvedValue([
+        {
+          collection_id: MAIN_COLLECTION_ID,
+          user_id: userId,
+          name: 'Main',
+          is_shared: false,
+          created_at: DEFAULT_TIMESTAMP,
+        },
+      ])
+      const upsert = createUpsertMock({ data: [] })
+      const query = {
+        eq: jest.fn(),
+        in: jest.fn(),
+        is: jest.fn(),
+        select: jest.fn().mockResolvedValue({
+          data: createServerAcknowledgements([word]),
+          error: null,
+        }),
+      }
+      query.eq.mockReturnValue(query)
+      query.in.mockReturnValue(query)
+      query.is.mockReturnValue(query)
+      const update = jest.fn().mockReturnValue(query)
+      mockSupabaseFrom(table => {
+        if (table === 'words')
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            upsert,
+            update,
+          }
+        if (table === 'user_progress') return createProgressTable()
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: createUpsertMock(),
+        }
+      })
+      const result = await syncManager.performSync(userId)
+      expect(result.success).toBe(true)
+      expect(upsert).toHaveBeenCalledWith(expect.any(Array), {
+        onConflict: 'word_id',
+        ignoreDuplicates: true,
+      })
+      expect(update).toHaveBeenCalledWith({ collection_id: MAIN_COLLECTION_ID })
+      expect(query.eq).toHaveBeenCalledWith('user_id', userId)
+      expect(query.is).toHaveBeenCalledWith('deleted_at', null)
+      expect(dictionaryContentSync.push).toHaveBeenCalledWith(userId)
+    })
+
+    it('hydrates dictionary content before draining dictionary commands', async () => {
+      jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(dictionaryContentSync.pullRequired).toHaveBeenCalledWith(
+        userId,
+        []
+      )
+      expect(dictionaryContentSync.refreshChanges).toHaveBeenCalledWith(userId)
+      expect(dictionaryContentSync.push).toHaveBeenCalledWith(userId)
+      expect(
+        jest.mocked(dictionaryContentSync.pullRequired).mock
+          .invocationCallOrder[0]
+      ).toBeLessThan(
+        jest.mocked(dictionaryContentSync.push).mock.invocationCallOrder[0]
+      )
+    })
+
     it('keeps local changes when the backend does not support command sync', async () => {
       jest.mocked(supabase.rpc).mockResolvedValueOnce({
         data: 1,
@@ -2732,85 +2852,99 @@ describe('SyncManager', () => {
       )
     })
 
-    it('should skip server semantic duplicates and sync only unique words', async () => {
-      const uniqueWordId = 'word-unique'
-      const duplicateWord = createPendingWord({
-        word_id: 'word-duplicate',
-        dutch_lemma: 'huis',
-      })
-      const uniqueWord = createPendingWord({
-        word_id: uniqueWordId,
-        dutch_lemma: 'fiets',
-      })
+    it.each([false, true])(
+      'handles remote duplicates without false acknowledgements (dictionary enabled: %s)',
+      async dictionaryEnabled => {
+        jest
+          .mocked(dictionaryContentSync.isAvailable)
+          .mockResolvedValue(dictionaryEnabled)
+        const uniqueWordId = 'word-unique'
+        const duplicateWord = createPendingWord({
+          word_id: 'word-duplicate',
+          dutch_lemma: 'huis',
+        })
+        const uniqueWord = createPendingWord({
+          word_id: uniqueWordId,
+          dutch_lemma: 'fiets',
+        })
 
-      ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
-        duplicateWord,
-        uniqueWord,
-      ])
-      ;(
-        collectionRepository.getCollectionsByIds as jest.Mock
-      ).mockResolvedValue([
-        {
-          collection_id: MAIN_COLLECTION_ID,
-          user_id: userId,
-          name: 'Main',
-          is_shared: false,
-          created_at: DEFAULT_TIMESTAMP,
-        },
-      ])
-      ;(wordService.checkWordExists as jest.Mock)
-        .mockResolvedValueOnce({ word_id: 'server-duplicate' })
-        .mockResolvedValueOnce(null)
+        ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
+          duplicateWord,
+          uniqueWord,
+        ])
+        ;(
+          collectionRepository.getCollectionsByIds as jest.Mock
+        ).mockResolvedValue([
+          {
+            collection_id: MAIN_COLLECTION_ID,
+            user_id: userId,
+            name: 'Main',
+            is_shared: false,
+            created_at: DEFAULT_TIMESTAMP,
+          },
+        ])
+        ;(wordService.checkWordExists as jest.Mock)
+          .mockResolvedValueOnce({ word_id: 'server-duplicate' })
+          .mockResolvedValueOnce(null)
 
-      const wordsUpsert = createUpsertMock()
-      mockSupabaseFrom((tableName: string) => {
-        if (tableName === 'collections') {
+        const wordsUpsert = createUpsertMock()
+        mockSupabaseFrom((tableName: string) => {
+          if (tableName === 'collections') {
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+              }),
+              upsert: createUpsertMock(),
+            }
+          }
+
+          if (tableName === 'words') {
+            return {
+              select: jest.fn().mockReturnValue(createWordsPullQuery()),
+              upsert: wordsUpsert,
+            }
+          }
+
+          if (tableName === 'user_progress') {
+            return createProgressTable()
+          }
+
           return {
-            select: jest.fn().mockReturnValue({
-              eq: jest.fn().mockResolvedValue({ data: [], error: null }),
-            }),
             upsert: createUpsertMock(),
           }
+        })
+
+        const result = await syncManager.performSync(userId)
+
+        if (dictionaryEnabled) {
+          expect(result.success).toBe(false)
+          expect(result.error).toContain('Personal word identity conflict')
+          expect(wordRepository.markWordsSynced).not.toHaveBeenCalled()
+          expect(dictionaryContentSync.push).not.toHaveBeenCalled()
+          expect(wordsUpsert).not.toHaveBeenCalled()
+          return
         }
-
-        if (tableName === 'words') {
-          return {
-            select: jest.fn().mockReturnValue(createWordsPullQuery()),
-            upsert: wordsUpsert,
-          }
-        }
-
-        if (tableName === 'user_progress') {
-          return createProgressTable()
-        }
-
-        return {
-          upsert: createUpsertMock(),
-        }
-      })
-
-      const result = await syncManager.performSync(userId)
-
-      expect(result.success).toBe(true)
-      expect(result.wordsSynced).toBe(2)
-      expect(wordsUpsert).toHaveBeenCalledTimes(1)
-      expect(wordRepository.markWordsSynced).toHaveBeenCalledWith([
-        {
-          word_id: 'word-duplicate',
-          updated_at: DEFAULT_TIMESTAMP,
-        },
-      ])
-      expect(wordRepository.reconcilePushedWords).toHaveBeenCalledWith(
-        [
+        expect(result.success).toBe(true)
+        expect(result.wordsSynced).toBe(2)
+        expect(wordsUpsert).toHaveBeenCalledTimes(1)
+        expect(wordRepository.markWordsSynced).toHaveBeenCalledWith([
           {
-            word_id: uniqueWordId,
-            updated_at: SERVER_TIMESTAMP,
-            deleted_at: null,
+            word_id: 'word-duplicate',
+            updated_at: DEFAULT_TIMESTAMP,
           },
-        ],
-        new Map([[uniqueWordId, DEFAULT_TIMESTAMP]])
-      )
-    })
+        ])
+        expect(wordRepository.reconcilePushedWords).toHaveBeenCalledWith(
+          [
+            {
+              word_id: uniqueWordId,
+              updated_at: SERVER_TIMESTAMP,
+              deleted_at: null,
+            },
+          ],
+          new Map([[uniqueWordId, DEFAULT_TIMESTAMP]])
+        )
+      }
+    )
 
     it('should reconcile 23505 semantic conflicts via per-word fallback', async () => {
       const firstWord = createPendingWord({

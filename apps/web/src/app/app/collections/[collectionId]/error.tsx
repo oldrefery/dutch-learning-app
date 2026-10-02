@@ -4,10 +4,10 @@ import { useReportError } from '@/lib/observability/useReportError'
 
 export default function CollectionDetailError({
   error,
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string }
-  reset: () => void
+  retry: () => void
 }) {
   useReportError(error)
 
@@ -19,7 +19,7 @@ export default function CollectionDetailError({
       </p>
       <button
         className="mt-5 rounded-xl bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-950"
-        onClick={reset}
+        onClick={retry}
         type="button"
       >
         Try again

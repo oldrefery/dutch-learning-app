@@ -10,6 +10,10 @@ import { ExpressionType } from '@/types/ExpressionTypes'
 
 jest.mock('../initDB')
 
+jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryContentEnabled: () => true,
+}))
+
 describe('WordRepository', () => {
   // Helper functions to generate random test data
   const generateId = (prefix: string) =>
@@ -29,12 +33,16 @@ describe('WordRepository', () => {
     getFirstAsync: jest.fn(),
     execAsync: jest.fn(),
     withTransactionAsync: jest.fn(),
+    withExclusiveTransactionAsync: jest.fn(),
     closeAsync: jest.fn(),
   }
 
   beforeEach(() => {
     jest.clearAllMocks()
     ;(initDB.getDatabase as jest.Mock).mockResolvedValue(mockDatabase)
+    mockDatabase.withExclusiveTransactionAsync.mockImplementation(
+      async callback => callback(mockDatabase)
+    )
   })
 
   const mockWord: Word = {
@@ -416,14 +424,15 @@ describe('WordRepository', () => {
         updated_at: '2026-08-28T12:00:00.000Z',
       }
       mockDatabase.runAsync.mockResolvedValue({ changes: 1 })
+      mockDatabase.getFirstAsync.mockResolvedValue(null)
 
       const result = await wordRepository.updateAnalyzedWord(analyzedWord)
 
       expect(result).toEqual(analyzedWord)
-      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(1)
-      expect(mockDatabase.runAsync).toHaveBeenCalledWith(
-        expect.stringContaining('UPDATE words SET'),
+      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(3)
+      expect(mockDatabase.runAsync.mock.calls[0]).toEqual(
         expect.arrayContaining([
+          expect.stringContaining('UPDATE words SET'),
           analyzedWord.dutch_lemma,
           JSON.stringify(analyzedWord.translations),
           analyzedWord.word_id,
@@ -444,19 +453,21 @@ describe('WordRepository', () => {
       }
       mockDatabase.runAsync
         .mockRejectedValueOnce(semanticConflict)
-        .mockResolvedValueOnce({ changes: 1 })
-      mockDatabase.getFirstAsync.mockResolvedValue({
-        ...mockWord,
-        translations: JSON.stringify(mockWord.translations),
-        examples: null,
-        synonyms: JSON.stringify(mockWord.synonyms),
-        antonyms: JSON.stringify(mockWord.antonyms),
-        conjugation: null,
-        dutch_lemma: 'huis',
-        part_of_speech: 'noun',
-        article: 'het',
-        sync_status: 'synced',
-      })
+        .mockResolvedValue({ changes: 1 })
+      mockDatabase.getFirstAsync
+        .mockResolvedValueOnce({
+          ...mockWord,
+          translations: JSON.stringify(mockWord.translations),
+          examples: null,
+          synonyms: JSON.stringify(mockWord.synonyms),
+          antonyms: JSON.stringify(mockWord.antonyms),
+          conjugation: null,
+          dutch_lemma: 'huis',
+          part_of_speech: 'noun',
+          article: 'het',
+          sync_status: 'synced',
+        })
+        .mockResolvedValueOnce(null)
 
       const result = await wordRepository.updateAnalyzedWord(analyzedWord)
 
@@ -467,7 +478,7 @@ describe('WordRepository', () => {
           article: 'het',
         })
       )
-      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(2)
+      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(4)
       expect(mockDatabase.getFirstAsync).toHaveBeenCalledWith(
         expect.stringContaining('word_id = ?'),
         [analyzedWord.word_id, analyzedWord.user_id]

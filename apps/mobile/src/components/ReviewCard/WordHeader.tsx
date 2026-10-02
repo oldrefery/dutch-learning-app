@@ -6,6 +6,7 @@ import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { Colors } from '@/constants/Colors'
 import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import type { ReviewCardProps } from './types'
+import { CefrBadge } from '@/components/CefrBadge'
 
 interface WordHeaderProps extends ReviewCardProps {
   isPlayingAudio: boolean
@@ -122,6 +123,11 @@ export function WordHeader({
         <TextThemed style={styles.metadataText}>
           {buildMetadataText()}
         </TextThemed>
+        <CefrBadge
+          level={currentWord.cefr_level}
+          status={currentWord.cefr_status}
+          compact
+        />
       </ViewThemed>
     </ViewThemed>
   )
@@ -144,6 +150,8 @@ const styles = StyleSheet.create({
   metadataRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 8,
   },
   metadataText: {
     fontSize: 14,

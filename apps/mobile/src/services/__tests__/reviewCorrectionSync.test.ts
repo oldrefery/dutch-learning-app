@@ -2,6 +2,7 @@ import { reviewCorrectionSync } from '../reviewCorrectionSync'
 import { supabase } from '@/lib/supabase'
 import { reviewCorrectionRepository } from '@/db/reviewCorrectionRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import type {
   PendingReviewCorrection,
   ReviewCorrectionReceipt,
@@ -59,6 +60,9 @@ const ok = (data: unknown) => ({ data, error: null })
 
 beforeEach(() => {
   jest.resetAllMocks()
+  jest.mocked(AsyncStorage.getItem).mockResolvedValue(null)
+  jest.mocked(AsyncStorage.setItem).mockResolvedValue(undefined)
+  jest.mocked(AsyncStorage.removeItem).mockResolvedValue(undefined)
   jest
     .mocked(supabase.auth.getUser)
     .mockResolvedValue(ok({ user: { id: userId } }) as never)
@@ -104,6 +108,40 @@ describe('review correction transport', () => {
       )
     }
   )
+
+  it('remembers supported capability per user and Supabase project', async () => {
+    jest.mocked(supabase.rpc).mockResolvedValueOnce(ok(1) as never)
+
+    await expect(reviewCorrectionSync.isAvailable(userId)).resolves.toBe(true)
+    const [key] = jest.mocked(AsyncStorage.setItem).mock.calls[0]
+    expect(key).toContain(encodeURIComponent('https://test.supabase.co'))
+    expect(key).toContain(userId)
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith(key, 'supported')
+
+    jest.mocked(AsyncStorage.getItem).mockResolvedValueOnce('supported')
+    await expect(
+      reviewCorrectionSync.hasConfirmedCapability(userId)
+    ).resolves.toBe(true)
+    expect(AsyncStorage.getItem).toHaveBeenCalledWith(key)
+  })
+
+  it('forgets cached support only when the backend explicitly lacks the protocol', async () => {
+    jest.mocked(supabase.rpc).mockResolvedValueOnce({
+      data: null,
+      error: { code: 'PGRST202' },
+    } as never)
+    await expect(reviewCorrectionSync.isAvailable(userId)).resolves.toBe(false)
+    expect(AsyncStorage.removeItem).toHaveBeenCalledTimes(1)
+
+    jest.mocked(supabase.rpc).mockResolvedValueOnce({
+      data: null,
+      error: { code: 'NETWORK' },
+    } as never)
+    await expect(reviewCorrectionSync.isAvailable(userId)).rejects.toEqual({
+      code: 'NETWORK',
+    })
+    expect(AsyncStorage.removeItem).toHaveBeenCalledTimes(1)
+  })
 
   it('rejects an account switch before sending any command or reading history', async () => {
     jest

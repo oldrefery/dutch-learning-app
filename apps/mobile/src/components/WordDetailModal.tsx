@@ -20,6 +20,7 @@ import { ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { useAudio } from '@/contexts/AudioContext'
 import type { Word } from '@/types/database'
+import { useApplicationStore } from '@/stores/useApplicationStore'
 import {
   UniversalWordCard,
   WordCardPresets,
@@ -42,12 +43,21 @@ const { height: screenHeight } = Dimensions.get('window')
 export default function WordDetailModal({
   visible,
   onClose,
-  word,
+  word: selectedWord,
   onChangeImage,
   onDeleteWord,
   onReanalyzeWord,
   isReanalyzing = false,
 }: WordDetailModalProps) {
+  const word = useApplicationStore(state =>
+    selectedWord && state.currentUserId === selectedWord.user_id
+      ? (state.words.find(
+          candidate =>
+            candidate.word_id === selectedWord.word_id &&
+            candidate.user_id === selectedWord.user_id
+        ) ?? null)
+      : null
+  )
   const translateY = useSharedValue(screenHeight)
   const backdropOpacity = useSharedValue(0)
   const scrollOffset = useSharedValue(0)

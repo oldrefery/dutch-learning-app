@@ -216,9 +216,11 @@ function DeleteWordForm({
 }
 
 function ReanalyzeWordForm({
+  contentVersion,
   collectionId,
   wordId,
 }: {
+  contentVersion?: number
   collectionId: string
   wordId: string
 }) {
@@ -233,10 +235,15 @@ function ReanalyzeWordForm({
       action={action}
       className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900"
     >
+      {contentVersion !== undefined && (
+        <input type="hidden" name="contentVersion" value={contentVersion} />
+      )}
       <h2 className="text-base font-semibold">Reanalyze with AI</h2>
       <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
         Request fresh linguistic data while preserving identifiers and all SRS
-        progress.
+        progress.{' '}
+        {contentVersion !== undefined &&
+          'This creates a private copy and removes inherited CEFR.'}
       </p>
       <button
         className="mt-4 rounded-xl border border-neutral-300 px-5 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-700"
@@ -251,11 +258,13 @@ function ReanalyzeWordForm({
 }
 
 export function WordManagementForms({
+  contentVersion,
   canUseAi,
   collectionId,
   moveTargets,
   wordId,
 }: {
+  contentVersion?: number
   canUseAi: boolean
   collectionId: string
   moveTargets: CollectionOption[]
@@ -264,7 +273,11 @@ export function WordManagementForms({
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {canUseAi && (
-        <ReanalyzeWordForm collectionId={collectionId} wordId={wordId} />
+        <ReanalyzeWordForm
+          contentVersion={contentVersion}
+          collectionId={collectionId}
+          wordId={wordId}
+        />
       )}
       <MoveWordForm
         collectionId={collectionId}

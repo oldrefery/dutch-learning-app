@@ -1,6 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Crypto from 'expo-crypto'
 import type { OfficialContentManifest } from '@woordenaar/content/manifest'
+import {
+  verifyOfficialDictionaryMapping,
+  type OfficialDictionaryMapping,
+} from '@woordenaar/content/dictionary'
 import type {
   OfficialContentCatalogItem,
   RemoteOfficialContentVersion,
@@ -21,6 +25,7 @@ type UnknownRecord = Record<string, unknown>
 interface CatalogGateway {
   fetchCatalog(): Promise<unknown>
   fetchVersion(packId: string, version: string): Promise<unknown>
+  fetchMapping?(packId: string, version: string): Promise<unknown>
 }
 
 interface CatalogStorage {
@@ -123,6 +128,17 @@ const writeCache = async (
 }
 
 const defaultGateway: CatalogGateway = {
+  async fetchMapping(packId, version) {
+    const { data, error } = await supabase.rpc(
+      'get_official_dictionary_mapping_v1',
+      {
+        p_pack_id: packId,
+        p_version: version,
+      }
+    )
+    if (error) throw error
+    return data
+  },
   async fetchCatalog() {
     const { data, error } = await supabase
       .from('official_content_packs')
@@ -156,6 +172,29 @@ export const createOfficialContentCatalogService = ({
   sha256,
   storage,
 }: OfficialContentCatalogDependencies) => ({
+  async getDictionaryMapping(
+    manifest: OfficialContentManifest
+  ): Promise<OfficialDictionaryMapping | null> {
+    if (!gateway.fetchMapping) return null
+    const key = `${packCacheKey(manifest.pack_id, manifest.version)}/dictionary/v1`
+    let response: unknown
+    try {
+      response = await gateway.fetchMapping(manifest.pack_id, manifest.version)
+    } catch {
+      const cached = await readCache(storage, key)
+      return cached
+        ? verifyOfficialDictionaryMapping(JSON.parse(cached), manifest, sha256)
+        : null
+    }
+    if (response === null) return null
+    const mapping = await verifyOfficialDictionaryMapping(
+      response,
+      manifest,
+      sha256
+    )
+    await writeCache(storage, key, mapping)
+    return mapping
+  },
   async getCatalog(): Promise<OfficialContentCatalogItem[]> {
     try {
       const response = await gateway.fetchCatalog()

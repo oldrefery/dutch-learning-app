@@ -16,6 +16,8 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 export interface CacheEntry {
   cache_id: string
+  dictionary_entry_id: string | null
+  dictionary_revision_id: string | null
   dutch_original: string
   dutch_lemma: string
   part_of_speech: string
@@ -44,6 +46,21 @@ export interface CacheEntry {
   created_at: string
   last_used_at: string
 }
+
+export interface CacheDictionaryReference {
+  entry_id: string
+  revision_id: string
+}
+
+export const getCacheDictionaryReference = (
+  entry: CacheEntry
+): CacheDictionaryReference | null =>
+  entry.dictionary_entry_id && entry.dictionary_revision_id
+    ? {
+        entry_id: entry.dictionary_entry_id,
+        revision_id: entry.dictionary_revision_id,
+      }
+    : null
 
 export interface WordAnalysisData {
   dutch_original: string

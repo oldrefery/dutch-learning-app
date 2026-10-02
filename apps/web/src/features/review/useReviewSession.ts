@@ -45,7 +45,9 @@ export function useReviewSession(
   initialScope: ReviewScope,
   initialCollectionId: string | null,
   userId: string,
-  initialMode: ReviewSessionMode = 'adaptive'
+  initialMode: ReviewSessionMode = 'adaptive',
+  refreshDictionary?: () => void,
+  refreshingDictionary = false
 ) {
   const freshness = useReviewFreshness()
   const [controller] = useState(() =>
@@ -99,6 +101,9 @@ export function useReviewSession(
     controller.getServerSnapshot
   )
   const [mode, setMode] = useState(initialMode)
+  useEffect(() => {
+    if (data.dictionaryContentEnabled) controller.refreshWorkspace(data)
+  }, [controller, data])
   const [scope, setScope] = useState(initialScope)
   const [collectionId, setCollectionId] = useState(initialCollectionId)
   const [manualRecognition, setManualPreference] = useState(false)
@@ -156,6 +161,10 @@ export function useReviewSession(
     [controller]
   )
   const start = () => {
+    if (refreshingDictionary) return
+    // A server snapshot received during the previous session was deliberately
+    // ignored. Apply the latest props before starting the next frozen session.
+    if (data.dictionaryContentEnabled) controller.refreshWorkspace(data)
     void controller
       .start(scope, collectionId, mode, manualRecognition)
       .then(result => {
@@ -186,8 +195,11 @@ export function useReviewSession(
   const status = flow?.active?.submission?.status
 
   useEffect(() => {
-    if (summary?.finished) freshness.flushAtBoundary()
-  }, [freshness, summary?.finished])
+    if (summary?.finished) {
+      freshness.flushAtBoundary()
+      refreshDictionary?.()
+    }
+  }, [freshness, refreshDictionary, summary?.finished])
 
   return {
     correction,
@@ -261,7 +273,10 @@ export function useReviewSession(
           : state
       ),
     changeMode: () => {
-      if (controller.exit()) freshness.flushAtBoundary()
+      if (controller.exit()) {
+        freshness.flushAtBoundary()
+        refreshDictionary?.()
+      }
     },
     goTo: (direction: -1 | 1) =>
       controller.transition(state => {

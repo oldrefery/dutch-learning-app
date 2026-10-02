@@ -1,4 +1,5 @@
 import { getDatabase } from './initDB'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import type {
   SQLiteBindValue,
   SQLiteDatabase,
@@ -7,8 +8,24 @@ import type {
 import { Word } from '@/types/database'
 import type { SyncStatus } from './schema'
 import { Sentry } from '@/lib/sentry'
-import { addLocalCalendarDays, toLocalDateKey } from '@woordenaar/domain'
+import {
+  addLocalCalendarDays,
+  DICTIONARY_CONTENT_PROTOCOL_VERSION,
+  parseDictionaryContentOverrides,
+  parseDictionaryReference,
+  parseDictionaryContent,
+  toLocalDateKey,
+  type DictionaryContentCommand,
+  type DictionaryReference,
+} from '@woordenaar/domain'
 import { randomUUID } from 'expo-crypto'
+import { wordToDictionaryContent } from './dictionaryContentMapping'
+
+const requireDictionaryOverrides = (value: unknown) => {
+  const result = parseDictionaryContentOverrides(value)
+  if (!result.success) throw new Error('Invalid local dictionary overrides')
+  return result.data
+}
 
 export interface LocalWord extends Word {
   sync_status: SyncStatus
@@ -24,6 +41,8 @@ interface ExistingWordCheck {
   updated_at: string
   deleted_at: string | null
   has_pending_learning?: number
+  has_pending_dictionary?: number
+  has_dictionary_content?: number
 }
 
 interface SaveWordsOptions {
@@ -41,6 +60,14 @@ interface MergedWord {
   dutch_lemma: string
   existing_id: string
   incoming_id: string
+}
+
+interface DictionaryCardVersion {
+  content_version: number
+}
+
+interface DictionaryCardEditState extends DictionaryCardVersion {
+  overrides_json: string
 }
 
 export interface RemoteWordTombstone extends Word {
@@ -67,7 +94,9 @@ const UNSYNCED_STATUSES = new Set<SyncStatus>([
 
 const CHECK_EXISTING_WORD_SQL = `
   SELECT word_id, sync_status, updated_at, deleted_at,
-    EXISTS(SELECT 1 FROM learning_commands WHERE learning_commands.word_id = words.word_id) AS has_pending_learning
+    EXISTS(SELECT 1 FROM learning_commands WHERE learning_commands.word_id = words.word_id) AS has_pending_learning,
+    EXISTS(SELECT 1 FROM dictionary_content_commands WHERE dictionary_content_commands.word_id = words.word_id) AS has_pending_dictionary,
+    EXISTS(SELECT 1 FROM dictionary_card_content WHERE dictionary_card_content.word_id = words.word_id) AS has_dictionary_content
   FROM words
   WHERE user_id = ?
     AND (
@@ -296,6 +325,15 @@ export class WordRepository {
       return null
     }
 
+    if (
+      existingWord.word_id !== word.word_id &&
+      existingWord.has_dictionary_content
+    ) {
+      throw new Error(
+        'Personal word identity conflict. Local content and learning queues are preserved.'
+      )
+    }
+
     await statements.update.executeAsync(
       ...this.getUpdateValues(word, existingWord.word_id, syncedAt)
     )
@@ -334,7 +372,8 @@ export class WordRepository {
     return Boolean(
       options.preserveUnsynced &&
       (UNSYNCED_STATUSES.has(existingWord.sync_status) ||
-        existingWord.has_pending_learning)
+        existingWord.has_pending_learning ||
+        existingWord.has_pending_dictionary)
     )
   }
 
@@ -800,8 +839,22 @@ export class WordRepository {
     await this.addWords([word])
   }
 
-  async addWords(words: Word[]): Promise<void> {
+  async addWords(
+    words: Word[],
+    references?: readonly (DictionaryReference | null)[]
+  ): Promise<void> {
     if (words.length === 0) return
+    if (
+      references &&
+      (references.length !== words.length ||
+        !isDictionaryContentEnabled() ||
+        references.some(
+          reference =>
+            reference !== null && !parseDictionaryReference(reference).success
+        ))
+    ) {
+      throw new Error('Invalid official import references')
+    }
 
     for (const word of words) {
       this.validateWordId(word)
@@ -809,10 +862,127 @@ export class WordRepository {
 
     const db = await getDatabase()
     await db.withExclusiveTransactionAsync(async transaction => {
-      for (const word of words) {
+      for (const [index, word] of words.entries()) {
         await transaction.runAsync(
           INSERT_WORD_SQL,
           ...this.getInsertValues(word, null, 'pending', null)
+        )
+        if (isDictionaryContentEnabled()) {
+          await this.initializePrivateDictionaryContent(transaction, word)
+          const reference = references?.[index]
+          if (reference)
+            await this.initializeOfficialDictionaryReference(
+              transaction,
+              word,
+              reference
+            )
+        }
+      }
+    })
+  }
+
+  private async initializeOfficialDictionaryReference(
+    transaction: SQLiteDatabase,
+    word: Word,
+    reference: DictionaryReference
+  ): Promise<void> {
+    const cached = await transaction.getFirstAsync<{ content_json: string }>(
+      `SELECT content_json FROM dictionary_revision_cache WHERE entry_id = ? AND revision_id = ?`,
+      [reference.entry_id, reference.revision_id]
+    )
+    if (!cached) throw new Error('Official import dependency is missing')
+    const content = parseDictionaryContent(
+      JSON.parse(cached.content_json) as unknown
+    )
+    if (
+      !content.success ||
+      JSON.stringify(content.data) !==
+        JSON.stringify(wordToDictionaryContent(word))
+    ) {
+      throw new Error('Official import dependency is invalid')
+    }
+    const command: DictionaryContentCommand = {
+      protocol_version: DICTIONARY_CONTENT_PROTOCOL_VERSION,
+      operation_id: randomUUID(),
+      word_id: word.word_id,
+      expected_content_version: 1,
+      kind: 'link',
+      reference,
+      overrides: {},
+    }
+    // The verified immutable dependency must already be cached for offline use.
+    await transaction.runAsync(
+      `UPDATE dictionary_card_content
+      SET content_version = 2, entry_id = ?, revision_id = ?, fallback_content_json = NULL
+      WHERE word_id = ? AND user_id = ?`,
+      reference.entry_id,
+      reference.revision_id,
+      word.word_id,
+      word.user_id
+    )
+    await transaction.runAsync(
+      `INSERT INTO dictionary_content_commands(
+      operation_id, user_id, word_id, kind, expected_content_version, payload_json, queued_at
+    ) VALUES (?, ?, ?, 'link', 1, ?, ?)`,
+      command.operation_id,
+      word.user_id,
+      word.word_id,
+      JSON.stringify(command),
+      word.updated_at
+    )
+  }
+
+  private async initializePrivateDictionaryContent(
+    transaction: SQLiteDatabase,
+    word: Word
+  ): Promise<void> {
+    const content = wordToDictionaryContent(word)
+    const command: DictionaryContentCommand = {
+      protocol_version: DICTIONARY_CONTENT_PROTOCOL_VERSION,
+      operation_id: randomUUID(),
+      word_id: word.word_id,
+      expected_content_version: 0,
+      kind: 'create-private',
+      content,
+    }
+    await transaction.runAsync(
+      `INSERT INTO dictionary_card_content(
+        word_id, user_id, content_version, entry_id, revision_id,
+        fallback_content_json, overrides_json, updated_at
+      ) VALUES (?, ?, 1, NULL, NULL, ?, '{}', ?)`,
+      word.word_id,
+      word.user_id,
+      JSON.stringify(content),
+      word.updated_at
+    )
+    await transaction.runAsync(
+      `INSERT INTO dictionary_content_commands(
+        operation_id, user_id, word_id, kind, expected_content_version,
+        payload_json, queued_at
+      ) VALUES (?, ?, ?, ?, 0, ?, ?)`,
+      command.operation_id,
+      word.user_id,
+      word.word_id,
+      command.kind,
+      JSON.stringify(command),
+      word.updated_at
+    )
+  }
+
+  async preserveLegacyPendingContent(userId: string): Promise<void> {
+    const db = await getDatabase()
+    await db.withExclusiveTransactionAsync(async transaction => {
+      const rows = await transaction.getAllAsync<Record<string, unknown>>(
+        `SELECT words.* FROM words
+         LEFT JOIN dictionary_card_content cards ON cards.word_id = words.word_id
+         WHERE words.user_id = ? AND words.deleted_at IS NULL
+           AND words.sync_status = 'pending' AND cards.word_id IS NULL`,
+        [userId]
+      )
+      for (const row of rows) {
+        await this.initializePrivateDictionaryContent(
+          transaction,
+          this.parseWordRow(row)
         )
       }
     })
@@ -874,14 +1044,79 @@ export class WordRepository {
     db: SQLiteDatabase,
     word: Word
   ): Promise<void> {
-    const result = await db.runAsync(
-      UPDATE_ANALYZED_WORD_SQL,
-      this.getAnalyzedWordUpdateValues(word)
-    )
+    await db.withExclusiveTransactionAsync(async transaction => {
+      const result = await transaction.runAsync(
+        UPDATE_ANALYZED_WORD_SQL,
+        ...this.getAnalyzedWordUpdateValues(word)
+      )
 
-    if (result.changes === 0) {
-      throw new Error(`Cannot update missing word: ${word.word_id}`)
+      if (result.changes === 0) {
+        throw new Error(`Cannot update missing word: ${word.word_id}`)
+      }
+      if (isDictionaryContentEnabled()) {
+        await this.queueDictionaryContentReplacement(transaction, word)
+      }
+    })
+  }
+
+  private async queueDictionaryContentReplacement(
+    transaction: SQLiteDatabase,
+    word: Word
+  ): Promise<void> {
+    const current = await transaction.getFirstAsync<DictionaryCardVersion>(
+      `SELECT content_version FROM dictionary_card_content
+       WHERE word_id = ? AND user_id = ?`,
+      [word.word_id, word.user_id]
+    )
+    const expectedVersion = current?.content_version ?? 0
+    const content = wordToDictionaryContent(word)
+    const command: DictionaryContentCommand = {
+      protocol_version: DICTIONARY_CONTENT_PROTOCOL_VERSION,
+      operation_id: randomUUID(),
+      word_id: word.word_id,
+      expected_content_version: expectedVersion,
+      kind: current === null ? 'create-private' : 'resolve-conflict',
+      content,
     }
+    await transaction.runAsync(
+      `INSERT INTO dictionary_card_content(
+        word_id, user_id, content_version, entry_id, revision_id,
+        fallback_content_json, overrides_json, updated_at
+      ) VALUES (?, ?, ?, NULL, NULL, ?, '{}', ?)
+      ON CONFLICT(word_id) DO UPDATE SET
+        content_version = excluded.content_version,
+        entry_id = NULL,
+        revision_id = NULL,
+        fallback_content_json = excluded.fallback_content_json,
+        overrides_json = '{}',
+        updated_at = excluded.updated_at`,
+      word.word_id,
+      word.user_id,
+      expectedVersion + 1,
+      JSON.stringify(content),
+      word.updated_at
+    )
+    await this.insertDictionaryCommand(transaction, word.user_id, command)
+  }
+
+  private async insertDictionaryCommand(
+    transaction: SQLiteDatabase,
+    userId: string,
+    command: DictionaryContentCommand
+  ): Promise<void> {
+    await transaction.runAsync(
+      `INSERT INTO dictionary_content_commands(
+        operation_id, user_id, word_id, kind, expected_content_version,
+        payload_json, queued_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      command.operation_id,
+      userId,
+      command.word_id,
+      command.kind,
+      command.expected_content_version,
+      JSON.stringify(command),
+      new Date().toISOString()
+    )
   }
 
   private getAnalyzedWordUpdateValues(word: Word): SQLiteBindValue[] {
@@ -927,22 +1162,74 @@ export class WordRepository {
     imageUrl: string
   ): Promise<void> {
     const db = await getDatabase()
-
-    const updateStatement = await db.prepareAsync(
-      'UPDATE words SET image_url = ?, updated_at = ?, sync_status = ? WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL'
-    )
-
-    try {
-      await updateStatement.executeAsync(
+    const updatedAt = new Date().toISOString()
+    await db.withExclusiveTransactionAsync(async transaction => {
+      const result = await transaction.runAsync(
+        `UPDATE words
+         SET image_url = ?, updated_at = ?, sync_status = 'pending',
+             last_sync_attempt_at = NULL, synced_at = NULL
+         WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL`,
         imageUrl,
-        new Date().toISOString(),
-        'pending',
+        updatedAt,
         wordId,
         userId
       )
-    } finally {
-      await updateStatement.finalizeAsync()
-    }
+      if (result.changes !== 1) {
+        throw new Error(`Cannot update missing word: ${wordId}`)
+      }
+      if (!isDictionaryContentEnabled()) return
+      const card = await transaction.getFirstAsync<DictionaryCardEditState>(
+        `SELECT content_version, overrides_json
+         FROM dictionary_card_content
+         WHERE word_id = ? AND user_id = ?`,
+        [wordId, userId]
+      )
+      if (card === null) {
+        const row = await transaction.getFirstAsync<Record<string, unknown>>(
+          `SELECT * FROM words WHERE word_id = ? AND user_id = ?`,
+          [wordId, userId]
+        )
+        if (row === null)
+          throw new Error(`Cannot update missing word: ${wordId}`)
+        await this.queueDictionaryContentReplacement(
+          transaction,
+          this.parseWordRow(row)
+        )
+        return
+      }
+      const parsedOverrides = JSON.parse(card.overrides_json) as unknown
+      if (
+        parsedOverrides === null ||
+        typeof parsedOverrides !== 'object' ||
+        Array.isArray(parsedOverrides)
+      ) {
+        throw new Error('Invalid local dictionary overrides')
+      }
+      const overrides = {
+        ...(parsedOverrides as Record<string, unknown>),
+        image_url: { op: 'set' as const, value: imageUrl },
+      }
+      const command: DictionaryContentCommand = {
+        protocol_version: DICTIONARY_CONTENT_PROTOCOL_VERSION,
+        operation_id: randomUUID(),
+        word_id: wordId,
+        expected_content_version: card.content_version,
+        kind: 'edit-private',
+        // edit-private replaces the complete override map on linked cards.
+        overrides: requireDictionaryOverrides(overrides),
+      }
+      await transaction.runAsync(
+        `UPDATE dictionary_card_content
+         SET content_version = ?, overrides_json = ?, updated_at = ?
+         WHERE word_id = ? AND user_id = ?`,
+        card.content_version + 1,
+        JSON.stringify(overrides),
+        updatedAt,
+        wordId,
+        userId
+      )
+      await this.insertDictionaryCommand(transaction, userId, command)
+    })
   }
 
   async moveWordToCollection(

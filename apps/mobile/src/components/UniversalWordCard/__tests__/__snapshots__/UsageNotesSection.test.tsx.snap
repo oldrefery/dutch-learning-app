@@ -94,6 +94,53 @@ exports[`dark Usage & Nuance rendering renders structured guidance in Word Detai
         }
       >
         <View
+          accessibilityLabel="CEFR level unknown"
+          accessible={true}
+          style={
+            [
+              {
+                "backgroundColor": "#1C1C1E",
+              },
+              [
+                {
+                  "alignSelf": "flex-start",
+                  "borderRadius": 10,
+                  "borderWidth": 1,
+                  "paddingHorizontal": 8,
+                  "paddingVertical": 3,
+                },
+                false,
+                {
+                  "backgroundColor": "rgba(255, 255, 255, 0.08)",
+                  "borderColor": "#4B5563",
+                },
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#E5E5E7",
+                },
+                [
+                  {
+                    "fontSize": 12,
+                    "fontWeight": "600",
+                  },
+                  false,
+                  {
+                    "color": "rgba(255, 255, 255, 0.6)",
+                  },
+                ],
+              ]
+            }
+          >
+            CEFR level unknown
+          </Text>
+        </View>
+        <View
           style={
             [
               {
@@ -967,6 +1014,53 @@ exports[`dark Usage & Nuance rendering renders structured guidance in review 1`]
             }
           >
             <View
+              accessibilityLabel="CEFR level unknown"
+              accessible={true}
+              style={
+                [
+                  {
+                    "backgroundColor": "#1C1C1E",
+                  },
+                  [
+                    {
+                      "alignSelf": "flex-start",
+                      "borderRadius": 10,
+                      "borderWidth": 1,
+                      "paddingHorizontal": 8,
+                      "paddingVertical": 3,
+                    },
+                    false,
+                    {
+                      "backgroundColor": "rgba(255, 255, 255, 0.08)",
+                      "borderColor": "#4B5563",
+                    },
+                  ],
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#E5E5E7",
+                    },
+                    [
+                      {
+                        "fontSize": 12,
+                        "fontWeight": "600",
+                      },
+                      false,
+                      {
+                        "color": "rgba(255, 255, 255, 0.6)",
+                      },
+                    ],
+                  ]
+                }
+              >
+                CEFR level unknown
+              </Text>
+            </View>
+            <View
               style={
                 [
                   {
@@ -1826,6 +1920,53 @@ exports[`light Usage & Nuance rendering renders structured guidance in Word Deta
           ]
         }
       >
+        <View
+          accessibilityLabel="CEFR level unknown"
+          accessible={true}
+          style={
+            [
+              {
+                "backgroundColor": "#F2F2F7",
+              },
+              [
+                {
+                  "alignSelf": "flex-start",
+                  "borderRadius": 10,
+                  "borderWidth": 1,
+                  "paddingHorizontal": 8,
+                  "paddingVertical": 3,
+                },
+                false,
+                {
+                  "backgroundColor": "#F3F4F6",
+                  "borderColor": "#D1D5DB",
+                },
+              ],
+            ]
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "color": "#111827",
+                },
+                [
+                  {
+                    "fontSize": 12,
+                    "fontWeight": "600",
+                  },
+                  false,
+                  {
+                    "color": "#4B5563",
+                  },
+                ],
+              ]
+            }
+          >
+            CEFR level unknown
+          </Text>
+        </View>
         <View
           style={
             [
@@ -2699,6 +2840,53 @@ exports[`light Usage & Nuance rendering renders structured guidance in review 1`
               ]
             }
           >
+            <View
+              accessibilityLabel="CEFR level unknown"
+              accessible={true}
+              style={
+                [
+                  {
+                    "backgroundColor": "#F2F2F7",
+                  },
+                  [
+                    {
+                      "alignSelf": "flex-start",
+                      "borderRadius": 10,
+                      "borderWidth": 1,
+                      "paddingHorizontal": 8,
+                      "paddingVertical": 3,
+                    },
+                    false,
+                    {
+                      "backgroundColor": "#F3F4F6",
+                      "borderColor": "#D1D5DB",
+                    },
+                  ],
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#111827",
+                    },
+                    [
+                      {
+                        "fontSize": 12,
+                        "fontWeight": "600",
+                      },
+                      false,
+                      {
+                        "color": "#4B5563",
+                      },
+                    ],
+                  ]
+                }
+              >
+                CEFR level unknown
+              </Text>
+            </View>
             <View
               style={
                 [

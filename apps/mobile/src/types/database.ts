@@ -3,6 +3,11 @@
 // SRS Assessment types
 import { SRSAssessmentType } from '@/constants/SRSConstants'
 import { ExpressionType } from './ExpressionTypes'
+import type {
+  CefrAssessmentStatus,
+  CefrLevel,
+  DictionaryContentSource,
+} from '@woordenaar/domain'
 
 export interface Collection {
   collection_id: string
@@ -82,6 +87,11 @@ export interface Word {
   last_reviewed_at: string | null
   analysis_notes: string | null
   usage_notes?: WordUsageNotes | null
+  cefr_level?: CefrLevel | null
+  cefr_status?: CefrAssessmentStatus
+  cefr_confidence?: number | null
+  dictionary_content_source?: DictionaryContentSource
+  dictionary_content_conflict?: boolean
   created_at: string
   updated_at: string
 }

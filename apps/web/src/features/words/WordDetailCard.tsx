@@ -1,3 +1,4 @@
+import { CefrBadge } from '@/features/dictionary/CefrBadge'
 import Image from 'next/image'
 import {
   getMasteryProgressPercentage,
@@ -272,6 +273,7 @@ export function WordDetailCard({
             )}
           </div>
 
+          <CefrBadge dictionary={word.dictionary} />
           {grammarBadges.length > 0 && (
             <div className={styles.badges}>
               {grammarBadges.map(badge => (

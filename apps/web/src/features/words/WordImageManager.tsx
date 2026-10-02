@@ -88,6 +88,13 @@ export function WordImageManager({
               {loading ? 'Loading…' : 'Load more'}
             </button>
             <form action={action}>
+              {word.dictionary && (
+                <input
+                  type="hidden"
+                  name="contentVersion"
+                  value={word.dictionary.contentVersion}
+                />
+              )}
               <input
                 name="imageUrl"
                 type="hidden"

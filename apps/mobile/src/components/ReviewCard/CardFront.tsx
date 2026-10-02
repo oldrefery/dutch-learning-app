@@ -8,6 +8,7 @@ import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { useSettingsStore } from '@/stores/useSettingsStore'
 import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import type { ReviewCardProps } from './types'
+import { CefrBadge } from '@/components/CefrBadge'
 
 interface CardFrontProps extends ReviewCardProps {
   isPlayingAudio: boolean
@@ -107,6 +108,11 @@ export function CardFront({
             </TextThemed>
           </ViewThemed>
         )}
+        <CefrBadge
+          level={currentWord.cefr_level}
+          status={currentWord.cefr_status}
+          compact
+        />
       </ViewThemed>
       <TextThemed
         style={styles.tapHint}

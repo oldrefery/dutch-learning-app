@@ -17,6 +17,7 @@ import { consumeRequestQuotaWithServiceRole } from '../_shared/requestQuota.ts'
 import {
   getCachedAnalysis,
   getCachedVariants,
+  getCacheDictionaryReference,
   saveToCache,
   normalizeWord,
 } from './cacheUtils.ts'
@@ -173,6 +174,7 @@ Deno.serve(async (req: Request) => {
               cached_at: cachedAnalysis.created_at,
               usage_count: cachedAnalysis.usage_count,
               cache_hit: true,
+              canonical_reference: getCacheDictionaryReference(cachedAnalysis),
             },
           }),
           {

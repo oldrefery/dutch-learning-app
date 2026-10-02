@@ -14,6 +14,7 @@ import type {
 } from './ReviewTypes'
 import type { AppError } from './ErrorTypes'
 import { ExpressionType } from './ExpressionTypes'
+import type { DictionaryImportOptions } from './ImportTypes'
 
 export type { AppError }
 
@@ -63,7 +64,8 @@ export interface ApplicationState {
   addWordsToCollection: (
     collectionId: string,
     words: Partial<Word>[],
-    isImportFromShared?: boolean
+    isImportFromShared?: boolean,
+    importOptions?: DictionaryImportOptions
   ) => Promise<boolean>
   reanalyzeWord: (wordId: string) => Promise<Word | null>
 

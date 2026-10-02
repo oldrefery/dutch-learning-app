@@ -1,6 +1,9 @@
 import { createHash } from 'node:crypto'
 import bundledPack from '@woordenaar/content'
 import { canonicalizeOfficialContent } from '@woordenaar/content/remote'
+import { officialEntryToDictionaryContent } from '@woordenaar/content/dictionary'
+import { validateOfficialContentManifest } from '@woordenaar/content/manifest'
+import { canonicalizeCefrInput } from '@woordenaar/domain'
 import { createOfficialContentCatalogService } from '@/services/officialContentCatalogService'
 
 const cloneBundledPack = () => JSON.parse(JSON.stringify(bundledPack))
@@ -46,6 +49,79 @@ const createRemoteVersion = async (
 }
 
 describe('officialContentCatalogService', () => {
+  it('validates a partial mapping against exact pack content and reuses it offline', async () => {
+    const result = validateOfficialContentManifest(bundledPack)
+    if (!result.success) throw new Error('Invalid bundled fixture')
+    const manifest = result.data
+    const mapping = {
+      schema_version: 1,
+      pack_id: manifest.pack_id,
+      version: manifest.version,
+      manifest_sha256: await sha256(canonicalizeOfficialContent(manifest)),
+      entries: [
+        {
+          pack_entry_id: manifest.entries[0].entry_id,
+          reference: {
+            entry_id: '10000000-0000-4000-8000-000000000001',
+            revision_id: '20000000-0000-4000-8000-000000000001',
+          },
+          revision_content_sha256: await sha256(
+            canonicalizeOfficialContent(
+              officialEntryToDictionaryContent(manifest.entries[0])
+            )
+          ),
+          revision: {
+            revision_no: 1,
+            schema_version: 1,
+            cefr_input_sha256: await sha256(
+              canonicalizeCefrInput(
+                officialEntryToDictionaryContent(manifest.entries[0])
+              )
+            ),
+          },
+          provenance: {
+            source_id: '30000000-0000-4000-8000-000000000001',
+            provenance_locator: 'fixture://reviewed',
+          },
+        },
+      ],
+    }
+    const gateway = {
+      fetchCatalog: jest.fn(),
+      fetchVersion: jest.fn(),
+      fetchMapping: jest
+        .fn()
+        .mockResolvedValueOnce(mapping)
+        .mockRejectedValueOnce(new Error('offline')),
+    }
+    const storage = createStorage()
+    const service = createOfficialContentCatalogService({
+      gateway,
+      storage,
+      sha256,
+    })
+    await expect(service.getDictionaryMapping(manifest)).resolves.toEqual(
+      mapping
+    )
+    await expect(service.getDictionaryMapping(manifest)).resolves.toEqual(
+      mapping
+    )
+    gateway.fetchMapping.mockResolvedValue({
+      ...mapping,
+      entries: [
+        { ...mapping.entries[0], revision_content_sha256: 'b'.repeat(64) },
+      ],
+    })
+    await expect(service.getDictionaryMapping(manifest)).rejects.toThrow(
+      'content does not match'
+    )
+    gateway.fetchMapping.mockRejectedValue(new Error('offline'))
+    const changed = { ...manifest, version: '9.0.0' }
+    await expect(service.getDictionaryMapping(changed)).resolves.toBeNull()
+    for (const key of storage.values.keys())
+      if (key.endsWith('/dictionary/v1')) storage.values.set(key, '{invalid')
+    await expect(service.getDictionaryMapping(manifest)).rejects.toThrow()
+  })
   it('falls back to the validated cached catalog while offline', async () => {
     const storage = createStorage()
     const gateway = {
