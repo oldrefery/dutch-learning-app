@@ -1,0 +1,35 @@
+appId: ${APP_ID}
+---
+- openLink: dutchlearning://settings
+- extendedWaitUntil:
+    visible:
+      id: screen-settings
+    timeout: 15000
+- openLink: dutchlearning://starter-pack?packId=d10-synthetic-navigation-20261002&version=1.0.0
+- extendedWaitUntil:
+    visible: '1 of 3 words selected.*'
+    timeout: 30000
+- tapOn:
+    id: import-target-4f59dcad-07f7-44c9-ac2e-a0ac3b3aaf78
+- tapOn:
+    id: import-selected-words-button
+- extendedWaitUntil:
+    visible:
+      id: starter-pack-import-success
+    timeout: 30000
+- assertVisible: '1 word is ready in.*D08 Isolated Owner.*'
+- tapOn:
+    id: starter-pack-back-to-collections
+- extendedWaitUntil:
+    visible: D08 Isolated Owner
+    timeout: 15000
+- stopApp
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: D08 Isolated Owner
+    timeout: 30000
+- openLink: dutchlearning://starter-pack?packId=d10-synthetic-navigation-20261002&version=1.0.0
+- extendedWaitUntil:
+    visible: '0 of 3 words selected.*'
+    timeout: 30000

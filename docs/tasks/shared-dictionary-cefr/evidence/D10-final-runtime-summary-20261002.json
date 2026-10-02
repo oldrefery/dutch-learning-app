@@ -1,0 +1,61 @@
+{
+  "startingHead": "833835d",
+  "reviewedSource": "976d1e7",
+  "applicationFilesChanged": false,
+  "sourceFingerprintsMatched": 140,
+  "r3Review": "PASS",
+  "r3RevokedSessionHttp": "PASS",
+  "safariDuplicateControls": "PASS",
+  "visualAcceptance": "R4 open",
+  "offlineOfficialReadOnly": {
+    "wordId": "db455c40-fdb6-4eb8-9823-d0e50d4e6fd8",
+    "operationId": "217420b8-7a2d-4537-b440-a48ea42133f8",
+    "sourceKind": "private-copy",
+    "cachedManifest": true,
+    "mappingUnavailable": true,
+    "serverUnchanged": true,
+    "priorNativeWordsPreserved": 23,
+    "learningPreserved": true,
+    "coldRestartDuplicatePreviewPassed": true
+  },
+  "preservation": {
+    "server": {
+      "words": 28,
+      "priorPreparedWordsPreserved": 27,
+      "unrelatedOriginalWordsPreserved": 24,
+      "syntheticFixtureCorrections": 3,
+      "priorContentStatesPreserved": 21,
+      "addedContentStates": 1,
+      "collectionsPreserved": 9,
+      "accessRestored": true,
+      "reviewTablesPreserved": true
+    },
+    "android": {
+      "initialWordsPreserved": 13,
+      "finalWords": 24,
+      "learningPreserved": true,
+      "queuesEmpty": true
+    },
+    "ios": {
+      "initialWordsPreserved": 19,
+      "finalWords": 19,
+      "learningPreserved": true,
+      "queuesEmpty": true
+    }
+  },
+  "shutdown": {
+    "checkedAt": "2026-10-02T18:44:48.774448+00:00",
+    "ios": "Shutdown",
+    "android": "absent",
+    "containers": {
+      "supabase_db_woordenaar-d08-qa.ZFsE50": "exited",
+      "supabase_auth_woordenaar-d08-qa.ZFsE50": "exited",
+      "supabase_rest_woordenaar-d08-qa.ZFsE50": "exited",
+      "supabase_kong_woordenaar-d08-qa.ZFsE50": "exited"
+    },
+    "runnerPidsAbsent": true,
+    "portsClosed": [55331, 55400],
+    "namedBrowser": "d08-content-qa closed"
+  },
+  "next": "GPT-6.1 Sol / High R4 bounded styling repair; then Astra / High re-review"
+}

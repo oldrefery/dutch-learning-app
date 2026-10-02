@@ -1,27 +1,52 @@
 # Shared dictionary and CEFR — current handoff
 
-Last checkpoint: **2026-10-02 — D10 R3 revoked-session redirect repair implemented.**
-Repair source `976d1e7` (starting `ad89c5e`), existing
-`feature/shared-dictionary-schema` branch;
-user confirmed the requested Sol 6.1 / High switch. [Repair evidence](evidence/D10-session-revocation-repair-20261002.md).
-The Proxy now server-validates only auth-entry routes before redirecting to
-collections; protected pages retain their server `getUser()` guard and Proxy
-keeps optimistic claims. Revoked signed sessions reach `/login`; valid sessions
-still redirect. Cookie rotation/deletion, errors and throw behavior have safety
-coverage. Four focused web suites /45 tests, test-inclusive TypeScript and strict
-scoped lint/format/diff checks pass. The prior 137 source fingerprints are intact;
-three changed paths are added to the current 140-path manifest.
-Normal hooks pass: mobile 156 suites /1796 tests /22 snapshots; web 86 suites /
-778 tests, one existing skipped suite/test. All 140 hashes match after hooks.
+Last checkpoint: **2026-10-02 — R3 re-review and retained runtime PASS;
+R4 light-theme import action contrast requires repair.** Starting HEAD `833835d`,
+source `976d1e7`, existing `feature/shared-dictionary-schema`; user-confirmed
+Astra / High. [Runtime evidence](evidence/D10-final-runtime-20261002.md),
+[R3 re-review](evidence/D10-session-revocation-rereview-20261002.md),
+[R4 finding/repair contract](evidence/D10-import-contrast-review-20261002.md).
 
-**Next: GPT-6 Astra / High R3 re-review**, then remaining D10 cached official
-read_only/offline runtime and complete mobile Safari acceptance. Current-thread
-model picker is unavailable; ask for manual switch and do not claim one. D10.3–
-D10.5 remain open; do not begin D11 or repeat closed checks. No live runtime QA
-for this repair. Assigned QA resources were left OFF; last exact verification and
-retained fixtures are below. No production, cutover, publication, deployment,
-push/PR/merge or paid operation. Local commit authorized by AUTH-18.
-`.playwright-cli/` remains untracked and preserved; no other dirty file.
+R3 actual revoked-session navigation passes. Android cached official import with
+read_only access and blocked task REST passes via the accepted private-copy
+fallback (manifest cached, mappings unavailable). Cold restart preserves one
+personal kompas ID; ordinary read_only sync delivers it once with the same ID.
+Operation `217420b8-7a2d-4537-b440-a48ea42133f8`, word
+`db455c40-fdb6-4eb8-9823-d0e50d4e6fd8`. **Do not replay the offline import flow.**
+Actual Safari duplicate visibility and disabled semantics pass; visual acceptance
+is open because import labels match the background in light theme. Desktop
+computed CSS confirms enabled and disabled cases. No application edits this turn;
+all 140 source fingerprints match. Four focused R3 suites /45 tests pass.
+
+Server final: 28 words/22 content states/nine collections. All 27 prepared words,
+21 preexisting states, original access rows, collections and review tables exact.
+Three old synthetic source fixtures needed ru=[] / valid hidden placement and a
+precise hidden-tombstone restoration; all 24 unrelated original words are exact.
+No schema/trigger definition changed. Hidden Android cache was aligned while the
+app was stopped; source share stays revoked. Details/receipts are in runtime evidence.
+Android primary restored, real Up to date confirmed; initial 13 words/SRS/learning
+preserved, pending queues empty. iOS primary restored and Up to date confirmed;
+all initial 19 word/SRS projections and learning rows exact, pending queues empty.
+
+**All assigned resources OFF verified 18:44:48 UTC /20:44:48 Amsterdam**: iOS
+Shutdown, Android absent, four task containers exited, named browser closed,
+runner/proxy/web PIDs absent and ports 55331/55400 closed. All proxy faults were
+false before shutdown; clipboard cleared. No pending QA job or uncertain write.
+[Sanitized summary](evidence/D10-final-runtime-summary-20261002.json).
+Private attempts retained under `attempted-flows`; no unfinished auth restoration.
+
+**Next: GPT-6.1 Sol / High for R4**, then Astra / High re-review and only affected
+visual acceptance. Current-thread model picker unavailable: request manual switch
+without claiming one. Use existing semantic button styles/scoped token rules for
+D10 import/sharing actions and success links; do not broadly rewrite the reset.
+Verify actual computed styles and visible labels in both themes and enabled /
+disabled states. Then reconcile D10.3–D10.5 exit evidence; do not begin D11 or
+repeat closed import/recovery/transfer checks. AUTH-17/18/19 continue to apply.
+No production, cutover, publication/deployment, push/PR/merge or paid operation.
+Local commits with normal hooks authorized. Preserve `.playwright-cli/` and ignored
+private artifacts. Current private root:
+`reports/shared-dictionary-cefr/d10-final-acceptance-20261002/`; native snapshots
+under `woordenaar-d08-native.20261001` (`d10-final-before` / `d10-final-restored`).
 
 Historical checkpoint follows.
 

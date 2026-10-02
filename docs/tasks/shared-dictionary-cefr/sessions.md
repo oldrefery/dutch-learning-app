@@ -1408,3 +1408,24 @@ Copy these fields into a dated entry at each session boundary:
   read_only/offline and mobile Safari acceptance. D10.3–D10.5 unchecked, no D11.
   Local commits authorized by AUTH-18. No push/PR,
   production/cutover/publication/deployment or paid operation.
+
+## 2026-10-02 — D10 R3 re-review, offline acceptance and R4 contrast finding
+
+- User-confirmed Astra / High; starting `833835d`, source `976d1e7`, AUTH-17/18/19.
+  [Runtime evidence](evidence/D10-final-runtime-20261002.md),
+  [summary](evidence/D10-final-runtime-summary-20261002.json).
+- R3 review and actual revoked-session HTTP PASS. Four focused suites /45 tests;
+  application unchanged, all 140 fingerprints match.
+- Cached official read_only/offline import, cold restart, same-ID delivery PASS
+  using private-copy fallback when mappings are unavailable. One new card/state.
+  Do not replay the completed import. Safari duplicate semantics PASS, but R4/P2
+  action-label contrast fails real light-theme rendering; bounded repair contract saved.
+- Three malformed synthetic source fixtures corrected, including precise hidden
+  tombstone/cache restoration. All 24 unrelated original server words exact; all
+  27 prepared words preserved. Original access/collections/review rows exact.
+  Initial 13 Android and 19 iOS words/SRS/learning preserved, pending queues empty.
+- Both primary native sessions restored; real Up to date on both. All assigned
+  resources OFF verified 18:44:48 UTC /20:44:48 Amsterdam, clipboard clear, no faults,
+  pending QA jobs or uncertain writes. No other devices/sessions touched.
+- Next Sol 6.1 / High R4 repair, then Astra review and affected visual acceptance.
+  D10.3–D10.5 open; no D11, deployment/cutover/publication/paid call or push/PR/merge.
