@@ -1268,6 +1268,10 @@ a new session to read this entire history. Never log private vocabulary or secre
   retained. Early boot-read/lsof/template-lint attempts corrected; no native failure.
 - Local preservation commit authorized, standard hooks required; log retained as
   private harness `commit.log`. No push/PR/hosted/paid operation. Automation paused.
+- QA/evidence commit `70f9eb9` succeeded with normal hooks: mobile 156 suites /
+  1796 tests / 22 snapshots; web 75 suites / 648 tests, one existing skip. Post-hook
+  113 source hashes and installed harness templates match. Only private browser
+  artifacts remain untracked; no pending operation.
 - Next manual confirmation of GPT-6.1 Sol / High (picker unavailable), implement
   web UI/actions, then Astra review and remaining both-client acceptance.
 

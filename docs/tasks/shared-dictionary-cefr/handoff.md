@@ -40,6 +40,10 @@ acceptance. D10.3–D10.5 remain unchecked; do not begin D11 or repeat closed ch
 AUTH-17/AUTH-18 allow local work and necessary commits. Preservation commit subject:
 `test: verify native dictionary upgrade preservation`; inspect git log for its SHA.
 Normal hooks are required, with output retained in the private harness `commit.log`.
+QA/evidence commit **`70f9eb9`** succeeded with normal hooks: mobile 156 suites /
+1796 tests / 22 snapshots; web 75 suites / 648 tests, one existing skipped
+suite/test. Post-hook fingerprints 113/113 and both installed harness templates
+match. No pending operation; only private `.playwright-cli/` remains untracked.
 Keep `.playwright-cli/` private/untracked and root AGENTS excluded. No push/PR/merge,
 production, cutover, publication, deployment or paid call. Automation stays paused.
 
