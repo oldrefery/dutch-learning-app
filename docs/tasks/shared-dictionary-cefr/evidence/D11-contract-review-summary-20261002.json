@@ -27,5 +27,16 @@
   "quality_calibration": "not qualified; real reviewed fixture and separately approved sample remain open",
   "worker_implementation": "not started",
   "private_log_root": "reports/shared-dictionary-cefr/d11-contract-review-20261002/",
-  "persistence": "local test/review commit with normal hooks; no push"
+  "persistence": "review tests and evidence locally committed with ordinary hooks; no push",
+  "review_commit": "bf68661",
+  "normal_hooks": {
+    "status": "PASS",
+    "mobile_suites": 156,
+    "mobile_tests": 1796,
+    "mobile_snapshots": 22,
+    "web_suites": 86,
+    "web_tests": 780,
+    "web_existing_skipped_suite_and_test": 1,
+    "source_inventory_after_hooks": "158/158 match"
+  }
 }

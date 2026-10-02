@@ -15,6 +15,11 @@ lint/format/diff PASS. 156 prior hashes exact, only two test hashes updated (158
 paths total). Earlier SQL/types evidence remains valid; no unchanged DB QA replay.
 This validates the dormant contract, not provider quality or worker correctness.
 
+Review/test commit **`bf68661`** normal hooks PASS: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /780 tests, one preexisting skipped suite/test.
+Post-hook source inventory 158/158 matches. Only preexisting `.playwright-cli/`
+untracked; private `commit.log` retained. Local-only, no push or pending QA job.
+
 **Next: D11.2 on GPT-6.1 Sol / High.** Implement the offline fixture validator,
 calibration report and fail-closed decision policy from the accepted engineering
 contract. Distinguish synthetic mechanics from reviewed meaning-level evidence.

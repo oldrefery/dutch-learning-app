@@ -1526,3 +1526,8 @@ Private `commit.log` retained. Documentation receipt checkpoint follows; no push
 Assigned resources OFF verified 20:08:28 UTC /22:08:28 Amsterdam: exact iOS
 Shutdown, Android absent, four retained task containers exited, ports 55331/55400
 closed. No device/backend start or retained data mutation during this review.
+
+Review/test commit **`bf68661`** normal hooks PASS: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /780 tests, one preexisting skipped suite/test.
+Post-hook source inventory 158/158 matches. Only preexisting `.playwright-cli/`
+untracked; private `commit.log` retained. Local-only, no push or pending QA job.
