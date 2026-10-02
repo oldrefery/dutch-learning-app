@@ -1250,6 +1250,27 @@ a new session to read this entire history. Never log private vocabulary or secre
   1796 tests / 22 snapshots, 75 web suites / 648 tests, one existing skipped
   suite/test. 113 source hashes match after hooks. No push/PR or hosted operation.
 
+## 2026-10-02 — D10 Android native historical upgrade and web integration gap
+
+- Astra / High; AUTH-17/AUTH-18; application `c3f9baf`, repository start `559321a`.
+- Actual historical v14/v15 initializer → current v16 native Expo SQLite/AsyncStorage
+  PASS on assigned Android, three processes. Preserved 10/11 tables, exact v14
+  origin, marker-only v15 unverified gate. No main-app DB/APK or application changes.
+- Separate package without INTERNET permission/deep links, same assigned AVD;
+  30 source copies verified, 113 application hashes unchanged. Native archived DB
+  integrity and FK checks pass; harness lint/format/diff pass. Scope/limits in
+  [native evidence](evidence/D10-native-upgrade-20261002.md).
+- Found missing web production callers for JSON transfer helpers; next bounded
+  implementation is recorded in [review](evidence/D10-web-transfer-integration-gap-20261002.md).
+  D10.3–D10.5 remain open, D11 not started.
+- Devices/backend/ports verified OFF at 12:43:07 UTC. No pending or uncertain
+  operation. New harness private root ends `.d10upgrade20261002`, existing data
+  retained. Early boot-read/lsof/template-lint attempts corrected; no native failure.
+- Local preservation commit authorized, standard hooks required; log retained as
+  private harness `commit.log`. No push/PR/hosted/paid operation. Automation paused.
+- Next manual confirmation of GPT-6.1 Sol / High (picker unavailable), implement
+  web UI/actions, then Astra review and remaining both-client acceptance.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:

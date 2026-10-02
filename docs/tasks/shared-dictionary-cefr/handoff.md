@@ -1,5 +1,50 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 Android v14/v15 native migration PASS;
+web transfer UI integration missing.** User-confirmed GPT-6 Astra / High.
+Application source `c3f9baf`; starting repository HEAD `559321a`, same branch
+`feature/shared-dictionary-schema`. No application changes in this checkpoint.
+[Native evidence](evidence/D10-native-upgrade-20261002.md),
+[sanitized result](evidence/D10-native-upgrade-summary-20261002.json),
+[web integration finding and implementation scope](evidence/D10-web-transfer-integration-gap-20261002.md).
+
+A separate network-disabled Android package ran actual historical initializers
+`dfdc7f0` (v14), `5efd6ff` (v15), then current v16 across three processes.
+Exact retained IDs/SRS/private data/history/ordered queues pass comparison (10/11
+tables); v14 exact origin/nonce retained, marker-only v15 stays unverified with
+unknown ACK/version and a closed exact-origin gate. Second cold reopen passes.
+This is native Expo SQLite/AsyncStorage evidence, not a full historical APK upgrade
+or an iOS v14/v15 claim. Main Android DB snapshot and APK remain unchanged.
+All 113 application source hashes match; strict harness lint/format/diff pass.
+
+**All assigned QA resources are OFF, verified 2026-10-02 12:43:07 UTC.** Exact
+Android AVD/process absent, iOS assigned UDID Shutdown, four retained task containers
+exited, ports 55331/55400 closed. Build and native runner exited 0. No uncertain
+mutation, pending QA job or device cleanup. Other sessions/devices untouched.
+Private harness root `reports/shared-dictionary-cefr/woordenaar-d08-native.d10upgrade20261002`
+retains source hashes, APK/manifest/hash evidence, three phase reports, closed native
+DBs and shutdown record. Separate package `com.oldrefery.dutchlearningapp.d10upgrade`
+is stopped and retained. Do not rerun prepare/seed or reset either app.
+The `.20261001` main QA root and all prior retained fixtures remain unchanged.
+
+**Next: GPT-6.1 Sol / High for missing web JSON transfer integration.** Web
+`dictionary-transfer.ts` helpers currently have only test callers; no production
+page/action exposes document export/reimport. Follow the linked bounded scope:
+default-off owned export without publication, validated pasted-document preview/
+selection, existing owned target, account safety and unchanged duplicate/SRS policy.
+No app repair has begun. Current-thread model switching is unavailable; ask for
+manual Sol 6.1 / High confirmation, never claim a switch without confirmation.
+Then Astra / High review and remaining official/shared/bundled/cross-owner/both-client
+acceptance. D10.3–D10.5 remain unchecked; do not begin D11 or repeat closed checks.
+
+AUTH-17/AUTH-18 allow local work and necessary commits. Preservation commit subject:
+`test: verify native dictionary upgrade preservation`; inspect git log for its SHA.
+Normal hooks are required, with output retained in the private harness `commit.log`.
+Keep `.playwright-cli/` private/untracked and root AGENTS excluded. No push/PR/merge,
+production, cutover, publication, deployment or paid call. Automation stays paused.
+
+Historical preceding checkpoint follows; routing above supersedes it.
+
 Last checkpoint: **2026-10-02 — D10 repair re-review and scoped native acceptance passed.**
 User-confirmed GPT-6 Astra / High reviewed application source `c3f9baf` (starting
 HEAD `785d9f9`). R1/R2 re-review passed; no application change in this checkpoint.

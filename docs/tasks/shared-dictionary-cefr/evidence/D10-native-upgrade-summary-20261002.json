@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-02",
+  "applicationSource": "c3f9baf",
+  "platform": "Android",
+  "device": "emulator-5584",
+  "avd": "woordenaar_d08_qa_20260921",
+  "applicationId": "com.oldrefery.dutchlearningapp.d10upgrade",
+  "apkSha256": "7ca30719fbf20d9d7f5c913f2a0a671f732fbfc734c025a0239b33c06be7d8ac",
+  "internetPermission": false,
+  "deepLinks": false,
+  "historicalInitializers": {
+    "14": "dfdc7f0",
+    "15": "5efd6ff"
+  },
+  "sourceCopyCount": 30,
+  "allowedInitializerChanges": [
+    "DB_NAME",
+    "SCHEMA_VERSION_KEY",
+    "Sentry import"
+  ],
+  "phases": [
+    {
+      "phase": "historical-seeded",
+      "pid": "4151"
+    },
+    {
+      "phase": "native-upgrade-passed",
+      "pid": "4235"
+    },
+    {
+      "phase": "cold-restart-passed",
+      "pid": "4302"
+    }
+  ],
+  "cases": [
+    {
+      "from": 14,
+      "to": 16,
+      "preservedTables": [
+        "collections",
+        "words",
+        "user_progress",
+        "review_events",
+        "review_corrections",
+        "learning_commands",
+        "dictionary_card_content",
+        "dictionary_content_commands",
+        "dictionary_import_intents",
+        "dictionary_personal_refresh_queue"
+      ],
+      "issue": "pending",
+      "exactProvenance": true,
+      "unknownAcknowledgement": true,
+      "recoveryOutboxEmpty": true,
+      "integrity": "ok",
+      "foreignKeyViolations": 0
+    },
+    {
+      "from": 15,
+      "to": 16,
+      "preservedTables": [
+        "collections",
+        "words",
+        "user_progress",
+        "review_events",
+        "review_corrections",
+        "learning_commands",
+        "dictionary_card_content",
+        "dictionary_content_commands",
+        "dictionary_import_intents",
+        "dictionary_personal_refresh_queue",
+        "dictionary_import_acknowledgements"
+      ],
+      "issue": "unverified",
+      "exactProvenance": false,
+      "unknownAcknowledgement": true,
+      "recoveryOutboxEmpty": true,
+      "integrity": "ok",
+      "foreignKeyViolations": 0
+    }
+  ],
+  "mainApplicationSnapshotUnchanged": true,
+  "mainApplicationApkUnchanged": true,
+  "limits": [
+    "Historical initializer/schema copies, not full historical APK installation",
+    "Android only; iOS v14/v15 upgrade not executed",
+    "No migration fault injection or backend delivery in this harness"
+  ]
+}
