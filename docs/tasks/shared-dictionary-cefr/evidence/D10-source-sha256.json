@@ -68,5 +68,8 @@
   "apps/mobile/src/components/glass/modals/ImportCollectionSheet.tsx": "5cc392263a514a9f67ca12d938dc6dd190b3593a263f321e4a13d08f4d7b0dc6",
   "apps/mobile/src/constants/Routes.ts": "251e71af1867826344f6814c467baec7f28508b1a71ea9fb69405cd1bdc126b6",
   "apps/mobile/src/hooks/useDictionaryDocumentImport.ts": "73e89ceaf3b6dc48c9b11499ad589414bbb9353289dbdc100ed5610ced4a7776",
-  "apps/mobile/src/services/__tests__/dictionaryDocumentImport.sqlite.test.ts": "df696ad2f59e26ae944d3d7e5827274a4f6be85509852a3ca5562141724b98f2"
+  "apps/mobile/src/services/__tests__/dictionaryDocumentImport.sqlite.test.ts": "df696ad2f59e26ae944d3d7e5827274a4f6be85509852a3ca5562141724b98f2",
+  "scripts/postgres-tests/dictionary-import-recovery-baseline.test.mjs": "3e19d57e91183cf30211ab172cb0fc7557381e3a92d9da6abf7d3df194b86d44",
+  "scripts/shared-dictionary/import-recovery-model.mjs": "9c3b974a4f71f1ba3e2779997df122f6b5287450664fddbdbec15b9211590ff9",
+  "scripts/shared-dictionary/import-recovery-model.test.mjs": "0d91d2952ce494932382fe0215b91139794021b2fe5a6f438138ee9a3f57e34f"
 }

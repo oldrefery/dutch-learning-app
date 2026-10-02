@@ -1065,6 +1065,35 @@ a new session to read this entire history. Never log private vocabulary or secre
 - No new quota sample. No push/PR/merge, production/cutover, deployment,
   publication, paid operation or new automation. Existing one-time heartbeat paused.
 
+## 2026-10-02 — D10.3 unavailable-target recovery architecture checkpoint
+
+- User confirmed the requested model switch for Astra / High. No subagent or
+  automatic picker change claimed; current-thread picker remains unavailable.
+- Accepted [recovery contract](evidence/D10-target-recovery-contract-20261002.md):
+  durable personal-ID origin, version/placement CAS, immutable receipts, cancellation
+  fence and separate placement debt. Found metadata echo after stale acknowledgement
+  in addition to nonce-based resurrection and late insertion after deletion.
+- Review/test commit `b92eba930e53fda019762d199902fb4f36799b13`, local only under
+  AUTH-17/AUTH-18. Application source remains `42c9bfd` / `5efd6ff`; no recovery
+  migration/UI implementation yet. Documentation checkpoint follows.
+- PostgreSQL historical baseline 3/3; abstract model 10/10 including 40,320 event
+  permutations. Model assumes atomic serial transactions and does not prove actual
+  SQL/SQLite/network integration. Strict scoped lint/format/diff pass. Initial two
+  lint warnings fixed by extracting a diagnostic constant and test helper.
+- Normal hooks: mobile 149 suites / 1715 tests / 22 snapshots; web 75 suites /
+  642 tests, one existing skipped suite/test. No gate bypass. Fresh private Unix-socket
+  PostgreSQL cluster cleaned up. Read-only assigned-resource inventory reverified
+  iOS Shutdown, AVD absent, four task containers exited by 09:31 UTC. No QA restart,
+  data removal, other-session device operation or running/uncertain job.
+- Next GPT-6.1 Sol / High: accepted contract checkpoint 1, strict domain contracts
+  and additive server registry/receipt/backfill preflight, then real concurrency
+  tests before SQLite/sync/UI. D10.3-D10.5 remain open; D11 not started.
+- One documentation commit attempt failed on an AudioContext Jest worker SIGSEGV
+  after 148 passing suites; the isolated test passed 1/1. Application source was
+  unchanged from green full hooks. Cause unverified; retry keeps normal hooks.
+- Preserve `.playwright-cli/` and ignored QA data. No push/PR/merge, production,
+  cutover, deployment, publication, paid call or new automation. No new quota sample.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:

@@ -1,6 +1,10 @@
 # D10.3 — unavailable import target: architectural review input
 
-Status: **draft / not implemented / not an accepted protocol decision**.
+Status: **historical draft, superseded by the accepted review contract**.
+See [October 2 recovery contract](D10-target-recovery-contract-20261002.md) and
+review/test commit `b92eba9`. The candidate below is preserved as review input;
+its unresolved lineage and missing cancellation/placement-debt details are resolved
+in that contract. Implementation remains pending.
 Prepared 2026-10-02 after source `42c9bfd`; next model GPT-6 Astra / High under the
 stage routing. The current-thread picker is unavailable; a manual switch must be
 confirmed before claiming that review model. Existing review repairs remain valid.
@@ -92,7 +96,7 @@ test a safe bounded rule before migrations or client queue changes are implement
 | Two recovery choices race or older recovery arrives late                  | Defined lineage result; no stale target overwrite                |
 | Read-only account and existing synced target                              | Preserve accepted import/move rules; no collection INSERT        |
 
-## Exact next checkpoint
+## Historical next checkpoint (completed; use the accepted contract now)
 
 Review the source import/receipt SQL and client transaction boundaries against this
 matrix on Astra / High; accept or replace the candidate and resolve repeated-recovery

@@ -269,6 +269,19 @@ was started. D11 remains outside this checkpoint.
   lint attempt found a repeated diagnostic literal and test-runner complexity;
   extracted a constant and transition assertion helper, then reran lint and the
   complete model suite successfully. No rule suppression or gate bypass.
+- Review/test source committed as `b92eba930e53fda019762d199902fb4f36799b13`.
+  Normal commit hooks passed: mobile 149 suites / 1715 tests / 22 snapshots;
+  web 75 suites / 642 tests, one existing skipped suite/test. These are regression
+  checks of unchanged application code, not acceptance of the planned recovery.
+  Exact assigned iOS Shutdown, AVD process absent and four task containers exited
+  reverified by 09:31 UTC. No other-session device was operated.
+- The first documentation checkpoint commit attempt stopped on a Jest worker
+  `SIGSEGV` while loading `AudioContext.test.tsx`; 148 suites / 1714 tests passed,
+  and web did not run in that attempt. No application source had changed since
+  the successful full hooks. The isolated AudioContext test then passed (1/1)
+  with `--runInBand --runTestsByPath src/contexts/__tests__/AudioContext.test.tsx`.
+  The OS-level cause is unverified. Normal commit hooks were retained for retry;
+  no test/config/environment gate bypass or speculative application fix.
 
 Commands (Node 24.20.0 on PATH):
 

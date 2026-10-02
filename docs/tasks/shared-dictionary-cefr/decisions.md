@@ -315,3 +315,16 @@ and sanitized task documentation. Do not include unrelated/private QA artifacts,
 credentials or the locally excluded root AGENTS.md. No push, PR, merge, production,
 schema cutover, deployment, publication or paid operation is authorized. Continue
 D10 review/fixes within the existing stage boundary and task-only QA constraints.
+
+### October 2 — D10.3 recovery technical review completed
+
+Within AUTH-17/AUTH-18, accepted the [recovery implementation contract](evidence/D10-target-recovery-contract-20261002.md)
+after the user's requested Astra model-switch confirmation. Durable personal-ID
+origin and version/placement CAS fence delayed imports/recovery; terminal
+cancellation precedes unsettled-import deletion; separate placement debt prevents
+stale receipt acknowledgement from echoing an older target through generic sync.
+This is an engineering decision under existing scope, not a new user policy or
+release approval. Pre-upgrade provenance and legacy direct-write coexistence remain
+explicit gates. SQL baseline 3/3 and model 10/10 (40,320 orderings) support the
+review's stated limits; production/SQLite recovery implementation is still pending.
+Review/test commit `b92eba9`; next GPT-6.1 Sol / High for contract checkpoint 1.
