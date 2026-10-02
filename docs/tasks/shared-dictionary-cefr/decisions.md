@@ -328,3 +328,14 @@ release approval. Pre-upgrade provenance and legacy direct-write coexistence rem
 explicit gates. SQL baseline 3/3 and model 10/10 (40,320 orderings) support the
 review's stated limits; production/SQLite recovery implementation is still pending.
 Review/test commit `b92eba9`; next GPT-6.1 Sol / High for contract checkpoint 1.
+
+### October 2 — Recovery server and SQLite implementation checkpoint
+
+Sources `1828f57` and `1748066` implement accepted-contract checkpoints 1–3 under
+AUTH-17/AUTH-18. This supersedes the preceding architecture note's implementation
+pending state. Exact v14 origins are retained; v15-only markers remain unknown,
+without reconstructing origin or acknowledging placement. New SQLite write paths
+use exclusive transaction handles and owner guards before/after mutations. This
+is local engineering progress, not new release authority. Next checkpoint 4 on
+user-confirmed GPT-6.1 Sol / High connects sync/deletion; entrypoints are not yet
+wired. Astra review and native/both-client acceptance remain open.

@@ -1094,6 +1094,35 @@ a new session to read this entire history. Never log private vocabulary or secre
 - Preserve `.playwright-cli/` and ignored QA data. No push/PR/merge, production,
   cutover, deployment, publication, paid call or new automation. No new quota sample.
 
+## 2026-10-02 — D10.3 server/domain and SQLite v16 recovery implementation
+
+- User confirmed GPT-6.1 Sol / High. Direct picker control remains unavailable;
+  no automatic switch or subagent used. Existing AUTH-17/AUTH-18 scope.
+- Source commits `1828f57` (server/domain checkpoints 1–2), `1748066` (SQLite
+  checkpoint 3), local only. Exact behavior/limits and commands in
+  [server evidence](evidence/D10-recovery-server-20261002.md) and
+  [SQLite evidence](evidence/D10-recovery-sqlite-20261002.md).
+- Complete PostgreSQL 213/213, strict parser tests 11/11, SQLite focus 4 suites /
+  50 tests including 12 new recovery tests. Final source hooks mobile 151 suites /
+  1740 tests / 22 snapshots, web 75 suites / 642 tests, existing skipped suite/test.
+  Typechecks, strict scoped lint, target generate/check and format/diff passed.
+- Repaired synthetic fixture keys/schema expectations/closed-handle inspection,
+  static test annotations/literals and snapshot array-coercion parser bug. No
+  application reset, lint suppression or hook bypass; all final checks pass.
+- Synthetic SQL/codegen/SQLite resources cleaned up. At 10:20 UTC read-only
+  exact task inventory: iOS Shutdown, task AVD process absent, four D08 containers
+  exited. Native/D08 QA not started; other-session devices not operated on.
+  Sandbox process/Docker reads retried with authorized read-only escalation.
+- Branch unchanged `feature/shared-dictionary-schema`; sanitized documentation
+  checkpoint follows. No running/uncertain job. Private `.playwright-cli/` and
+  ignored QA data retained/uncommitted. One-time heartbeat remains PAUSED.
+- Next Sol 6.1 / High, accepted contract checkpoint 4: foreground/background sync,
+  typed errors/counts, lost replies, stale placement echo, cancellation before
+  collection deletion. Entry points are not yet wired; UI/web, Astra/device
+  acceptance and legacy direct-write coexistence remain gates. D10.3-D10.5 open;
+  no D11, push/PR/merge, production/cutover, deployment, publication or paid call.
+- No new quota sample. No new blocker; implementation continues from saved state.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:
