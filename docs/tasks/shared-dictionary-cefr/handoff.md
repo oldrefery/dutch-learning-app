@@ -1,5 +1,27 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 R3 revoked-session redirect repair implemented.**
+Starting HEAD `ad89c5e`, existing `feature/shared-dictionary-schema` branch;
+user confirmed the requested Sol 6.1 / High switch. [Repair evidence](evidence/D10-session-revocation-repair-20261002.md).
+The Proxy now server-validates only auth-entry routes before redirecting to
+collections; protected pages retain their server `getUser()` guard and Proxy
+keeps optimistic claims. Revoked signed sessions reach `/login`; valid sessions
+still redirect. Cookie rotation/deletion, errors and throw behavior have safety
+coverage. Four focused web suites /45 tests, test-inclusive TypeScript and strict
+scoped lint/format/diff checks pass. The prior 137 source fingerprints are intact;
+three changed paths are added to the current 140-path manifest.
+
+**Next: GPT-6 Astra / High R3 re-review**, then remaining D10 cached official
+read_only/offline runtime and complete mobile Safari acceptance. Current-thread
+model picker is unavailable; ask for manual switch and do not claim one. D10.3–
+D10.5 remain open; do not begin D11 or repeat closed checks. No live runtime QA
+for this repair. Assigned QA resources were left OFF; last exact verification and
+retained fixtures are below. No production, cutover, publication, deployment,
+push/PR/merge or paid operation. Local commit authorized by AUTH-18; inspect git
+log for its final SHA. `.playwright-cli/` remains untracked and preserved.
+
+Historical checkpoint follows.
+
 Last checkpoint: **2026-10-02 — D10 official/shared runtime preservation PASS;
 R3 revoked-session redirect loop reproduced, repair required.** Starting HEAD
 `6ca149f`, user-selected Astra / High, AUTH-17/18/19. Application unchanged;

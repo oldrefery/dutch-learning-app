@@ -135,5 +135,8 @@
   "apps/web/src/app/api/dictionary-transfer/route.review.test.ts": "0d47c61a46ab179746332d28d6fdff8131081030615ecd506d86489df03dcdfa",
   "apps/web/src/features/sharing/DictionaryDocumentImport.review.test.tsx": "ec61e9b93ce29c0db703b08ed6e4b53cdaa98ea88cd14f365902e483d7cb45a3",
   "apps/web/src/features/sharing/dictionary-transfer-origin.ts": "52e31bb9c66772c1c4f5585155fd808a9df0276738be9106ca421024aeb72106",
-  "apps/web/src/features/sharing/dictionary-transfer-origin.test.ts": "1cf5ff3339e623b14219c2f62b161d70d0164ce0aa0174b2014c6c9fd09057b9"
+  "apps/web/src/features/sharing/dictionary-transfer-origin.test.ts": "1cf5ff3339e623b14219c2f62b161d70d0164ce0aa0174b2014c6c9fd09057b9",
+  "apps/web/src/lib/supabase/proxy.ts": "624ba81f04a6f225d9d64b03753225489f3bc6dc6224a3c51693bb1095ce3a2c",
+  "apps/web/src/proxy.ts": "1df761c30729504f75a5c5bc97236741097b8bbd93cf1788275725dff7ff4e66",
+  "apps/web/src/lib/supabase/revoked-session.review.test.ts": "ea50b2c0b30be4acf8c6453f213ab156fbeaa23071797aec3d85a3b1a6aa5873"
 }

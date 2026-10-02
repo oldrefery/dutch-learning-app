@@ -17,8 +17,10 @@ const redirectWithSessionCookies = (
 }
 
 export async function proxy(request: NextRequest) {
-  const { response, isAuthenticated } = await refreshSession(request)
   const { pathname } = request.nextUrl
+  const { response, isAuthenticated } = await refreshSession(request, {
+    verifyUser: AUTH_ROUTES.includes(pathname),
+  })
 
   if (
     (pathname.startsWith('/app') || pathname.startsWith('/share/')) &&

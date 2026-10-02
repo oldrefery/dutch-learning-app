@@ -1385,3 +1385,23 @@ Copy these fields into a dated entry at each session boundary:
   write/build/device job. Private artifacts retained, no other sessions touched.
 - Next Sol 6.1 / High R3 repair, then Astra review. D10.3–D10.5 open; no D11.
   Normal-hook local commit authorized; no push/PR/production/cutover/deployment.
+
+## 2026-10-02 — D10 R3 revoked-session redirect repair
+
+- User confirmed requested GPT-6.1 Sol / High switch; thread model picker not
+  independently verifiable. Started at `ad89c5e` on existing feature branch.
+  [Evidence](evidence/D10-session-revocation-repair-20261002.md).
+- Converted the passing redirect-loop counterexample into safety assertions. Auth
+  entry routes server-validate live users before redirecting; protected pages keep
+  their server guard. SDK cookie propagation and conservative failure behavior
+  remain covered. No mobile sign-out, schema, SQL, RPC, or deployment change.
+- Pre-fix safety failure reproduced. Post-fix four web suites / 45 tests pass;
+  test-inclusive TypeScript, scoped strict ESLint, Prettier and diff check pass.
+  Prior 137 fingerprints preserved; three changed paths added (140 total).
+- No backend/browser/device started. Assigned task QA remained off based on last
+  exact verification in handoff. Existing private reports and `.playwright-cli/`
+  preserved. No pending QA job or uncertain write.
+- Next Astra / High R3 re-review, then only remaining D10 cached official
+  read_only/offline and mobile Safari acceptance. D10.3–D10.5 unchecked, no D11.
+  Local commit authorized by AUTH-18; inspect git log for final SHA. No push/PR,
+  production/cutover/publication/deployment or paid operation.
