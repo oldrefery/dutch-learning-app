@@ -93,6 +93,12 @@ export const dictionaryImportRepository = {
           intent.operation_id
         )
       } else {
+        await transaction.runAsync(
+          `INSERT OR IGNORE INTO dictionary_import_acknowledgements(word_id, user_id)
+           VALUES (?, ?)`,
+          intent.word_id,
+          userId
+        )
         // Keep word metadata pending: learning and later moves/edits may have changed.
         await transaction.runAsync(
           `DELETE FROM dictionary_import_intents WHERE user_id = ? AND operation_id = ?`,
@@ -101,6 +107,15 @@ export const dictionaryImportRepository = {
         )
       }
     })
+  },
+
+  async getAcknowledgedWordIds(userId: string): Promise<string[]> {
+    const db = await getDatabase()
+    const rows = await db.getAllAsync<{ word_id: string }>(
+      `SELECT word_id FROM dictionary_import_acknowledgements WHERE user_id = ?`,
+      [userId]
+    )
+    return rows.map(row => row.word_id)
   },
 
   async markError(

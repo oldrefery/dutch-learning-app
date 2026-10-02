@@ -15,7 +15,10 @@ import {
 import { MIGRATION_V11_CORRECTION_RESOLUTION } from '../reviewCorrectionSchema'
 import { MIGRATION_V12_CORRECTION_RECOVERY } from '../reviewCorrectionRecoverySchema'
 import { MIGRATION_V13_DICTIONARY_CONTENT } from '../dictionaryContentSchema'
-import { MIGRATION_V14_DICTIONARY_IMPORTS } from '../dictionaryImportSchema'
+import {
+  MIGRATION_V14_DICTIONARY_IMPORTS,
+  MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS,
+} from '../dictionaryImportSchema'
 
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }))
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -25,6 +28,8 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }))
 jest.mock('@/lib/sentry')
 
+const IMPORT_RECEIPTS_FAULT = 'import-receipts'
+const SELECT_IMPORTS = 'SELECT * FROM dictionary_import_intents'
 const CHECK_FOREIGN_KEYS = 'PRAGMA foreign_key_check'
 
 type Fault =
@@ -37,6 +42,7 @@ type Fault =
   | 'recovery'
   | 'dictionary'
   | 'imports'
+  | typeof IMPORT_RECEIPTS_FAULT
   | null
 
 // Execute the actual initializer and SQL on a disposable file, replacing only
@@ -102,7 +108,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       ['pending-b', 'qa-a'],
       ['pending-c', 'qa-b'],
     ])
-    expect(version).toBe('14')
+    expect(version).toBe('15')
     expect(
       db
         .prepare(
@@ -119,6 +125,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       'dictionary_cefr_head_cache',
       'dictionary_change_cursors',
       'dictionary_content_commands',
+      'dictionary_import_acknowledgements',
       'dictionary_import_intents',
       'dictionary_personal_refresh_queue',
       'dictionary_revision_cache',
@@ -196,6 +203,11 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
                   interrupt()
                 }
                 db.exec(sql)
+                if (
+                  sql === MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS &&
+                  fault === IMPORT_RECEIPTS_FAULT
+                )
+                  interrupt()
                 if (
                   sql === MIGRATION_V14_DICTIONARY_IMPORTS &&
                   fault === 'imports'
@@ -284,6 +296,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     'recovery',
     'dictionary',
     'imports',
+    IMPORT_RECEIPTS_FAULT,
   ] as const)(
     'retries after interruption at %s without losing or duplicating commands',
     async phase => {
@@ -328,7 +341,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     version = '10'
     await closeDatabase()
     await initializeDatabase()
-    expect(version).toBe('14')
+    expect(version).toBe('15')
     expect(words()).toEqual(wordsBefore)
     expect(events()).toEqual(history)
     expect(commands()).toEqual(queue)
@@ -371,7 +384,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
 
     await initializeDatabase()
 
-    expect(version).toBe('14')
+    expect(version).toBe('15')
     expect(words()).toEqual(wordSnapshot)
     expect(events()).toEqual(eventSnapshot)
     expect(commands()).toEqual(commandSnapshot)
@@ -387,6 +400,38 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
         )
         .all()
     ).toEqual(recoverySnapshot)
+    expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
+  })
+
+  it('upgrades v14 receipt provenance without changing pending imports or prior queues', async () => {
+    await initializeDatabase()
+    db.exec(`INSERT INTO dictionary_import_intents(operation_id,user_id,word_id,payload_json,queued_at)
+      VALUES ('pending-import','qa-a','qa-a','{}','2026-10-02');
+      INSERT INTO dictionary_personal_refresh_queue(word_id,user_id) VALUES ('qa-a','qa-a');
+      DROP TABLE dictionary_import_acknowledgements;`)
+    const beforeWords = words()
+    const beforeCommands = commands()
+    const beforeImports = db.prepare(SELECT_IMPORTS).all()
+    const beforeRefresh = db
+      .prepare('SELECT * FROM dictionary_personal_refresh_queue')
+      .all()
+    version = '14'
+    await closeDatabase()
+    fault = IMPORT_RECEIPTS_FAULT
+    await expect(initializeDatabase()).rejects.toThrow()
+    expect(version).toBe('14')
+    fault = null
+    await initializeDatabase()
+    expect(version).toBe('15')
+    expect(words()).toEqual(beforeWords)
+    expect(commands()).toEqual(beforeCommands)
+    expect(db.prepare(SELECT_IMPORTS).all()).toEqual(beforeImports)
+    expect(
+      db.prepare('SELECT * FROM dictionary_personal_refresh_queue').all()
+    ).toEqual(beforeRefresh)
+    expect(
+      db.prepare('SELECT * FROM dictionary_import_acknowledgements').all()
+    ).toEqual([])
     expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
   })
 
@@ -408,7 +453,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     version = '13'
     await closeDatabase()
     await initializeDatabase()
-    expect(version).toBe('14')
+    expect(version).toBe('15')
     expect(words()).toEqual(oldWords)
     expect(commands()).toEqual(oldLearning)
     expect(db.prepare('SELECT * FROM dictionary_card_content').all()).toEqual(
@@ -417,9 +462,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     expect(
       db.prepare('SELECT * FROM dictionary_content_commands').all()
     ).toEqual(oldContent)
-    expect(db.prepare('SELECT * FROM dictionary_import_intents').all()).toEqual(
-      []
-    )
+    expect(db.prepare(SELECT_IMPORTS).all()).toEqual([])
     expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
   })
 })

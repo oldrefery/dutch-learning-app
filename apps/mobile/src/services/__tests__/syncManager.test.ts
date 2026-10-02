@@ -4,11 +4,16 @@
  */
 
 import { SyncManager } from '../syncManager'
+import {
+  createMockWord,
+  createMockCollection,
+} from '@/__tests__/helpers/factories'
 import { learningOperationQueue } from '../learningOperationQueue'
 import * as networkUtils from '@/utils/network'
 import { supabase, wordService } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
 import { dictionaryImportSync } from '../dictionaryImportSync'
+import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
 import { dictionaryPersonalRefreshRepository } from '@/db/dictionaryPersonalRefreshRepository'
 import { collectionRepository } from '@/db/collectionRepository'
 import { wordRepository } from '@/db/wordRepository'
@@ -29,7 +34,10 @@ jest.mock('@/db/dictionaryPersonalRefreshRepository', () => ({
   },
 }))
 jest.mock('@/db/dictionaryImportRepository', () => ({
-  dictionaryImportRepository: { getPending: jest.fn().mockResolvedValue([]) },
+  dictionaryImportRepository: {
+    getPending: jest.fn().mockResolvedValue([]),
+    getAcknowledgedWordIds: jest.fn().mockResolvedValue([]),
+  },
 }))
 jest.mock('../dictionaryImportSync', () => ({
   dictionaryImportSync: { push: jest.fn().mockResolvedValue(0) },
@@ -340,6 +348,9 @@ describe('SyncManager', () => {
     jest.mocked(reviewCorrectionSync.push).mockResolvedValue(undefined)
     jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(false)
     jest.mocked(dictionaryContentSync.pull).mockResolvedValue(0)
+    jest
+      .mocked(dictionaryImportRepository.getAcknowledgedWordIds)
+      .mockResolvedValue([])
     jest.mocked(dictionaryContentSync.pullRequired).mockResolvedValue(0)
     jest.mocked(dictionaryContentSync.push).mockResolvedValue(0)
     jest.mocked(dictionaryContentSync.refreshChanges).mockResolvedValue(0)
@@ -462,6 +473,7 @@ describe('SyncManager', () => {
           upsert: createUpsertMock(),
         }
       })
+      jest.mocked(dictionaryContentSync.pull).mockResolvedValueOnce(1)
       const result = await syncManager.performSync(userId)
       expect(result.success).toBe(true)
       expect(query.in).toHaveBeenCalledWith('word_id', [REMOTE_WORD_ID])
@@ -473,6 +485,15 @@ describe('SyncManager', () => {
           }),
         ],
         { preserveUnsynced: true }
+      )
+      expect(dictionaryContentSync.pull).toHaveBeenCalledWith(userId, [
+        REMOTE_WORD_ID,
+      ])
+      expect(
+        jest.mocked(dictionaryContentSync.pull).mock.invocationCallOrder[0]
+      ).toBeLessThan(
+        jest.mocked(dictionaryPersonalRefreshRepository.acknowledge).mock
+          .invocationCallOrder[0]
       )
       expect(
         dictionaryPersonalRefreshRepository.acknowledge
@@ -514,7 +535,7 @@ describe('SyncManager', () => {
     })
 
     it.each([false, true])(
-      'writes existing metadata without INSERT after an identity receipt (delivered: %s)',
+      'avoids collection INSERT for a delivered target while writing word metadata (word exists: %s)',
       async delivered => {
         jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
         const word = createPendingWord({
@@ -533,8 +554,15 @@ describe('SyncManager', () => {
             name: 'Main',
             is_shared: false,
             created_at: DEFAULT_TIMESTAMP,
+            sync_status: 'synced',
           },
         ])
+        const collectionUpsert = createUpsertMock({
+          error: {
+            code: '42501',
+            message: 'read-only collection INSERT denied',
+          },
+        })
         const upsert = createUpsertMock({ data: [] })
         const query = {
           eq: jest.fn(),
@@ -570,11 +598,12 @@ describe('SyncManager', () => {
             select: jest.fn().mockReturnValue({
               eq: jest.fn().mockResolvedValue({ data: [], error: null }),
             }),
-            upsert: createUpsertMock(),
+            upsert: collectionUpsert,
           }
         })
         const result = await syncManager.performSync(userId)
         expect(result.success).toBe(true)
+        expect(collectionUpsert).not.toHaveBeenCalled()
         if (delivered) expect(upsert).not.toHaveBeenCalled()
         else
           expect(upsert).toHaveBeenCalledWith(expect.any(Array), {
@@ -589,6 +618,62 @@ describe('SyncManager', () => {
         expect(dictionaryContentSync.push).toHaveBeenCalledWith(userId)
       }
     )
+
+    it('never bootstraps an acknowledged imported identity after its remote row disappears', async () => {
+      jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
+      const word = {
+        ...createMockWord({
+          word_id: 'deleted-import',
+          user_id: userId,
+          collection_id: MAIN_COLLECTION_ID,
+        }),
+        sync_status: 'pending' as const,
+        deleted_at: null,
+        synced_at: null,
+        last_sync_attempt_at: null,
+      }
+      jest.mocked(wordRepository.getPendingSyncWords).mockResolvedValue([word])
+      jest
+        .mocked(dictionaryImportRepository.getAcknowledgedWordIds)
+        .mockResolvedValue([word.word_id])
+      jest.mocked(collectionRepository.getCollectionsByIds).mockResolvedValue([
+        {
+          ...createMockCollection({
+            collection_id: MAIN_COLLECTION_ID,
+            user_id: userId,
+          }),
+          sync_status: 'synced',
+          synced_at: DEFAULT_TIMESTAMP,
+          last_sync_attempt_at: null,
+        },
+      ])
+      const upsert = createUpsertMock()
+      mockSupabaseFrom(table => {
+        if (table === 'words')
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            upsert,
+            update: createUpdateMock('word_id'),
+          }
+        if (table === 'user_progress') return createProgressTable()
+        return {
+          select: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+          upsert: createUpsertMock(),
+        }
+      })
+      const result = await syncManager.performSync(userId)
+      expect(upsert).not.toHaveBeenCalled()
+      expect(result).toMatchObject({
+        success: false,
+        error: expect.stringContaining(
+          'Imported personal identity is unavailable'
+        ),
+      })
+      expect(wordRepository.reconcilePushedWords).not.toHaveBeenCalled()
+      expect(dictionaryContentSync.push).not.toHaveBeenCalled()
+    })
 
     it('hydrates dictionary content before draining dictionary commands', async () => {
       jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
@@ -1465,7 +1550,8 @@ describe('SyncManager', () => {
       expect(result.success).toBe(true)
       expect(wordRepository.deleteWordsByCollection).toHaveBeenCalledWith(
         localCollection.collection_id,
-        userId
+        userId,
+        { preservePendingImports: true }
       )
       expect(collectionRepository.deleteCollection).toHaveBeenCalledWith(
         localCollection.collection_id

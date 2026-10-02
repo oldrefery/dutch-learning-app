@@ -798,6 +798,17 @@ test('durable read-only import keeps proposed identity, version zero and immutab
     WHERE user_id = '${f.user}';`),
     /rows are immutable/
   )
+  await assert.rejects(
+    db.sql(
+      asUser(
+        f.user,
+        `INSERT INTO public.collections(collection_id,user_id,name)
+      VALUES ('${intent.collection_id}','${f.user}','Existing target')
+      ON CONFLICT(collection_id) DO UPDATE SET name = excluded.name;`
+      )
+    ),
+    /row-level security/
+  )
   const snapshot = JSON.parse(
     await db.sql(
       `SELECT to_jsonb(w) FROM public.words w WHERE word_id = '${intent.word_id}';`
@@ -1061,5 +1072,49 @@ test('concurrent durable import requests serialize receipt replay and semantic c
       `SELECT count(*) FROM public.words WHERE user_id = '${race.f.user}';`
     ),
     '1'
+  )
+})
+
+test('conflict receipt stays immutable when its existing card is concurrently deleted', async () => {
+  const { f, intent, apply } = await intentFixture()
+  await apply()
+  const duplicate = {
+    ...intent,
+    operation_id: randomUUID(),
+    word_id: randomUUID(),
+  }
+  const removed = await overlap(
+    db,
+    asUser(f.user, intentRpc(duplicate)),
+    `RESET ROLE; DELETE FROM public.words WHERE word_id = '${intent.word_id}' RETURNING word_id;`
+  )
+  assert.equal(removed, intent.word_id)
+  const receipt = await apply(duplicate)
+  assert.equal(receipt.outcome, IDENTITY_CONFLICT)
+  assert.equal(receipt.existing_word_id, intent.word_id)
+  assert.equal(receipt.idempotent, true)
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM public.words WHERE user_id = '${f.user}';`
+    ),
+    '0'
+  )
+})
+
+test('account deletion removes its immutable import receipts without weakening ordinary deletion protection', async () => {
+  const { f, apply } = await intentFixture()
+  await apply()
+  await assert.rejects(
+    db.sql(
+      `DELETE FROM private.dictionary_import_receipts WHERE user_id = '${f.user}';`
+    ),
+    /rows are immutable/
+  )
+  await db.sql(`DELETE FROM auth.users WHERE id = '${f.user}';`)
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM private.dictionary_import_receipts WHERE user_id = '${f.user}';`
+    ),
+    '0'
   )
 })

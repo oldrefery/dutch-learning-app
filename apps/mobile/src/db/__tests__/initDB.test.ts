@@ -16,7 +16,10 @@ import { closeDatabase, initializeDatabase } from '../initDB'
 import { MIGRATION_V11_CORRECTION_RESOLUTION } from '../reviewCorrectionSchema'
 import { MIGRATION_V12_CORRECTION_RECOVERY } from '../reviewCorrectionRecoverySchema'
 import { MIGRATION_V13_DICTIONARY_CONTENT } from '../dictionaryContentSchema'
-import { MIGRATION_V14_DICTIONARY_IMPORTS } from '../dictionaryImportSchema'
+import {
+  MIGRATION_V14_DICTIONARY_IMPORTS,
+  MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS,
+} from '../dictionaryImportSchema'
 
 jest.mock('expo-sqlite', () => ({
   openDatabaseAsync: jest.fn(),
@@ -51,7 +54,7 @@ describe('initializeDatabase', () => {
       async callback => callback(mockDatabase)
     )
     ;(SQLite.openDatabaseAsync as jest.Mock).mockResolvedValue(mockDatabase)
-    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('14')
+    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('15')
     ;(AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined)
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
@@ -140,7 +143,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V13_DICTIONARY_CONTENT
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '14')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '15')
   })
 
   it('treats a malformed stored version as a fresh database', async () => {
@@ -154,7 +157,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V3_UNIQUE_INDEX
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '14')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '15')
   })
 
   it('continues when an idempotent column migration finds the column', async () => {
@@ -170,7 +173,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V5_TOMBSTONE_INDEXES
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '14')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '15')
   })
 
   it('discards a failed connection so initialization can retry', async () => {
@@ -188,7 +191,7 @@ describe('initializeDatabase', () => {
     await initializeDatabase()
 
     expect(SQLite.openDatabaseAsync).toHaveBeenCalledTimes(2)
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '14')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '15')
   })
 
   it.each([false, true])(
@@ -207,13 +210,14 @@ describe('initializeDatabase', () => {
         [MIGRATION_V12_CORRECTION_RECOVERY],
         [MIGRATION_V13_DICTIONARY_CONTENT],
         [MIGRATION_V14_DICTIONARY_IMPORTS],
+        [MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS],
       ])
       expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalledTimes(
-        3
+        4
       )
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         'db_schema_version',
-        '14'
+        '15'
       )
     }
   )
@@ -227,8 +231,9 @@ describe('initializeDatabase', () => {
       [ENABLE_FOREIGN_KEYS],
       [MIGRATION_V13_DICTIONARY_CONTENT],
       [MIGRATION_V14_DICTIONARY_IMPORTS],
+      [MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS],
     ])
-    expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalledTimes(2)
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '14')
+    expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalledTimes(3)
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '15')
   })
 })

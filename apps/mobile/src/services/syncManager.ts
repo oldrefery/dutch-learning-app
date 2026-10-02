@@ -592,6 +592,18 @@ export class SyncManager {
       )
       if (refreshed.length !== chunk.length)
         throw new Error('Imported personal learning state is unavailable')
+      const activeIds = refreshed
+        .filter(word => !word.deleted_at)
+        .map(word => word.word_id)
+      if (activeIds.length > 0) {
+        const hydrated = await this.runSyncStageWithSessionRetry(
+          'pull_dictionary_content',
+          userId,
+          () => dictionaryContentSync.pull(userId, activeIds)
+        )
+        if (hydrated !== activeIds.length)
+          throw new Error('Refreshed dictionary content is unavailable')
+      }
       await dictionaryPersonalRefreshRepository.acknowledge(userId, chunk)
     }
   }
@@ -922,7 +934,7 @@ export class SyncManager {
     userId: string,
     cursor: SyncCursor | null,
     wordIds?: readonly string[]
-  ): Promise<Word[]> {
+  ): Promise<SyncWord[]> {
     let data: SyncWord[] | null = null
     let error: SupabaseLikeError | null = null
 
@@ -2255,12 +2267,23 @@ export class SyncManager {
   private async executeDictionaryWordMetadataUpsert(
     payloads: SupabaseWordsUpsertPayload[]
   ): Promise<WordsUpsertResult> {
+    if (payloads.length === 0) return { data: [], error: null }
     // Bootstrap absent legacy rows without rewriting existing canonical content.
     // Content commands are applied only after all personal IDs exist remotely.
     const existingIds = await this.fetchExistingDictionaryWordIds(payloads)
     const newPayloads = payloads.filter(
       payload => !existingIds.has(payload.word_id)
     )
+    const importedIds = new Set(
+      await dictionaryImportRepository.getAcknowledgedWordIds(
+        payloads[0].user_id
+      )
+    )
+    if (newPayloads.some(payload => importedIds.has(payload.word_id))) {
+      throw new Error(
+        'Imported personal identity is unavailable. Local content and learning queues are preserved.'
+      )
+    }
     const acknowledgements: WordSyncAcknowledgement[] = []
     if (newPayloads.length > 0) {
       const inserted = await supabase
@@ -2408,10 +2431,17 @@ export class SyncManager {
 
     if (collectionIds.length === 0) return
 
-    const collections = await collectionRepository.getCollectionsByIds(
+    const localCollections = await collectionRepository.getCollectionsByIds(
       collectionIds,
       userId
     )
+    // Dictionary imports can belong to read-only accounts: an already delivered
+    // target must not require ordinary collection INSERT permission again.
+    const collections = this.dictionaryContentAvailable
+      ? localCollections.filter(
+          collection => collection.sync_status !== 'synced'
+        )
+      : localCollections
 
     if (collections.length === 0) return
 
@@ -2534,7 +2564,8 @@ export class SyncManager {
     for (const collection of deletedRemotely) {
       await wordRepository.deleteWordsByCollection(
         collection.collection_id,
-        userId
+        userId,
+        { preservePendingImports: true }
       )
       await collectionRepository.deleteCollection(collection.collection_id)
     }

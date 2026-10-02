@@ -12,7 +12,7 @@ export const dictionaryPersonalRefreshRepository = {
     const rows = await db.getAllAsync<{ word_id: string }>(
       `SELECT queue.word_id FROM dictionary_personal_refresh_queue queue
        JOIN words ON words.word_id = queue.word_id AND words.user_id = queue.user_id
-       WHERE queue.user_id = ? ${readyOnly ? `AND ${READY_WORD}` : ''}
+       WHERE queue.user_id = ? AND words.deleted_at IS NULL ${readyOnly ? `AND ${READY_WORD}` : ''}
        ORDER BY queue.word_id`,
       [userId]
     )

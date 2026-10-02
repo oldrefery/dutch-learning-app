@@ -99,11 +99,42 @@ describe('durable offline import identities in file-backed SQLite', () => {
       receipt
     )
     expect(await dictionaryImportRepository.getPending(USER)).toEqual([])
+    db.close()
+    db = createTestDatabase(path, false)
+    expect(
+      await dictionaryImportRepository.getAcknowledgedWordIds(USER)
+    ).toEqual([WORD])
+    expect(
+      await dictionaryImportRepository.getAcknowledgedWordIds(OTHER)
+    ).toEqual([])
     expect(db.prepare(WORD_SQL).get(WORD)).toEqual(currentWord)
     expect(db.prepare(COMMANDS_SQL).all()).toEqual(commands)
     expect(db.prepare('SELECT * FROM learning_commands').all()).toEqual(
       learning
     )
+  })
+
+  it('retains the intent and all queues if recording its acknowledgement fails', async () => {
+    await create()
+    const [pending] = await dictionaryImportRepository.getPending(USER)
+    const commands = db.prepare(COMMANDS_SQL).all()
+    db.exec(`CREATE TRIGGER fail_import_ack BEFORE INSERT ON dictionary_import_acknowledgements
+      BEGIN SELECT RAISE(ABORT, 'Injected acknowledgement failure'); END;`)
+    await expect(
+      dictionaryImportRepository.acceptReceipt(USER, pending.intent, {
+        protocol_version: 1,
+        operation_id: pending.intent.operation_id,
+        word_id: WORD,
+        outcome: 'inserted',
+        existing_word_id: null,
+        idempotent: true,
+      })
+    ).rejects.toThrow('Injected acknowledgement failure')
+    expect(await dictionaryImportRepository.getPending(USER)).toEqual([pending])
+    expect(db.prepare(COMMANDS_SQL).all()).toEqual(commands)
+    expect(
+      await dictionaryImportRepository.getAcknowledgedWordIds(USER)
+    ).toEqual([])
   })
 
   it('retains the card and every queue on a durable different-ID conflict and rejects another owner acknowledgement', async () => {
@@ -187,6 +218,19 @@ describe('durable offline import identities in file-backed SQLite', () => {
       db.prepare('SELECT * FROM dictionary_import_intents').all()
     ).toHaveLength(1)
     expect(db.prepare(WORD_SQL).get(WORD)?.sync_status).toBe('deleted')
+  })
+
+  it('keeps an offline import active when its target collection is unavailable during cleanup', async () => {
+    await create()
+    const before = db.prepare(WORD_SQL).get(WORD)
+    const commands = db.prepare(COMMANDS_SQL).all()
+    await wordRepository.deleteWordsByCollection(COLLECTION, USER, {
+      preservePendingImports: true,
+    })
+    await wordRepository.deleteOrphanWords(USER)
+    expect(db.prepare(WORD_SQL).get(WORD)).toEqual(before)
+    expect(db.prepare(COMMANDS_SQL).all()).toEqual(commands)
+    expect(await dictionaryImportRepository.getPending(USER)).toHaveLength(1)
   })
 
   it('rolls the whole offline creation back if intent persistence fails', async () => {
@@ -276,6 +320,56 @@ describe('durable offline import identities in file-backed SQLite', () => {
     expect(await dictionaryPersonalRefreshRepository.getWordIds(USER)).toEqual(
       []
     )
+  })
+
+  it('preserves learning queued between the hydration lookup and its UPDATE', async () => {
+    const input = await create()
+    db.exec(`DELETE FROM dictionary_import_intents; DELETE FROM dictionary_content_commands;
+      UPDATE words SET sync_status = 'synced';
+      INSERT INTO dictionary_personal_refresh_queue(word_id,user_id) VALUES ('${WORD}','${USER}');`)
+    db.close()
+    let queuedDuringHydration = false
+    db = createTestDatabase(path, false, sql => {
+      if (
+        !queuedDuringHydration &&
+        sql.includes('UPDATE words SET') &&
+        sql.includes('repetition_count = ?')
+      ) {
+        queuedDuringHydration = true
+        db.exec(`UPDATE words SET repetition_count = 21, sync_status = 'pending' WHERE word_id = '${WORD}';
+          INSERT INTO learning_commands(operation_id,kind,user_id,word_id,reset_at)
+          VALUES ('concurrent-reset','reset','${USER}','${WORD}','2026-10-02');`)
+      }
+    })
+    await wordRepository.saveWords([{ ...input, repetition_count: 14 }], {
+      preserveUnsynced: true,
+    })
+    expect(queuedDuringHydration).toBe(true)
+    expect(db.prepare(WORD_SQL).get(WORD)).toMatchObject({
+      repetition_count: 21,
+      sync_status: 'pending',
+    })
+    await dictionaryPersonalRefreshRepository.acknowledge(USER, [WORD])
+    expect(await dictionaryPersonalRefreshRepository.getWordIds(USER)).toEqual([
+      WORD,
+    ])
+    expect(
+      db.prepare('SELECT operation_id FROM learning_commands').all()
+    ).toEqual([{ operation_id: 'concurrent-reset' }])
+  })
+
+  it('does not count retained hydration debt after explicit local deletion', async () => {
+    await create()
+    db.exec(
+      `INSERT INTO dictionary_personal_refresh_queue(word_id,user_id) VALUES ('${WORD}','${USER}');`
+    )
+    await wordRepository.deleteWord(WORD, USER)
+    expect(await dictionaryPersonalRefreshRepository.getWordIds(USER)).toEqual(
+      []
+    )
+    expect(
+      db.prepare('SELECT * FROM dictionary_personal_refresh_queue').all()
+    ).toHaveLength(1)
   })
 
   it('rejects mismatched immutable content, SRS fields, and malformed receipts without clearing intent', async () => {

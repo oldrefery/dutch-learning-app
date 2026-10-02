@@ -156,6 +156,13 @@ const UPDATE_WORD_SQL = `
     last_sync_attempt_at = COALESCE(?, last_sync_attempt_at),
     synced_at = ?
   WHERE word_id = ? AND user_id = ?
+    AND deleted_at IS NULL AND sync_status <> 'deleted'
+    AND (? = 0 OR (
+      sync_status = 'synced'
+      AND NOT EXISTS (SELECT 1 FROM learning_commands l WHERE l.word_id = words.word_id)
+      AND NOT EXISTS (SELECT 1 FROM dictionary_content_commands c WHERE c.word_id = words.word_id)
+      AND NOT EXISTS (SELECT 1 FROM dictionary_import_intents i WHERE i.word_id = words.word_id)
+    ))
 `
 
 const INSERT_WORD_SQL = `
@@ -339,7 +346,8 @@ export class WordRepository {
     }
 
     await statements.update.executeAsync(
-      ...this.getUpdateValues(word, existingWord.word_id, syncedAt)
+      ...this.getUpdateValues(word, existingWord.word_id, syncedAt),
+      options.preserveUnsynced ? 1 : 0
     )
     return {
       dutch_lemma: word.dutch_lemma,
@@ -728,18 +736,29 @@ export class WordRepository {
 
   async deleteWordsByCollection(
     collectionId: string,
-    userId: string
+    userId: string,
+    options: { preservePendingImports?: boolean } = {}
   ): Promise<void> {
     const db = await getDatabase()
     const statement = await db.prepareAsync(
       `UPDATE words
        SET deleted_at = ?, updated_at = ?, sync_status = 'deleted'
-       WHERE collection_id = ? AND user_id = ? AND deleted_at IS NULL`
+       WHERE collection_id = ? AND user_id = ? AND deleted_at IS NULL
+         AND (? = 0 OR NOT EXISTS (
+           SELECT 1 FROM dictionary_import_intents imports
+           WHERE imports.word_id = words.word_id AND imports.user_id = words.user_id
+         ))`
     )
 
     try {
       const deletedAt = new Date().toISOString()
-      await statement.executeAsync(deletedAt, deletedAt, collectionId, userId)
+      await statement.executeAsync(
+        deletedAt,
+        deletedAt,
+        collectionId,
+        userId,
+        options.preservePendingImports ? 1 : 0
+      )
     } finally {
       await statement.finalizeAsync()
     }
@@ -818,6 +837,10 @@ export class WordRepository {
        SET deleted_at = ?, updated_at = ?, sync_status = 'deleted'
        WHERE user_id = ?
          AND deleted_at IS NULL
+         AND NOT EXISTS (
+           SELECT 1 FROM dictionary_import_intents imports
+           WHERE imports.word_id = words.word_id AND imports.user_id = words.user_id
+         )
          AND (
            collection_id IS NULL
            OR collection_id NOT IN (

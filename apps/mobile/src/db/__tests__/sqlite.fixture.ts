@@ -13,10 +13,17 @@ import {
   MIGRATION_V9_REVIEW_DATE,
 } from '../schema'
 import { MIGRATION_V13_DICTIONARY_CONTENT } from '../dictionaryContentSchema'
-import { MIGRATION_V14_DICTIONARY_IMPORTS } from '../dictionaryImportSchema'
+import {
+  MIGRATION_V14_DICTIONARY_IMPORTS,
+  MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS,
+} from '../dictionaryImportSchema'
 
 // Only the native Expo bridge is replaced; execute actual repository SQL.
-export const createTestDatabase = (path = ':memory:', initialize = true) => {
+export const createTestDatabase = (
+  path = ':memory:',
+  initialize = true,
+  beforeStatement?: (sql: string) => void
+) => {
   const database = new DatabaseSync(path)
   if (initialize) {
     database.exec(SQL_SCHEMA)
@@ -29,6 +36,7 @@ export const createTestDatabase = (path = ':memory:', initialize = true) => {
     database.exec(MIGRATION_V12_CORRECTION_RECOVERY)
     database.exec(MIGRATION_V13_DICTIONARY_CONTENT)
     database.exec(MIGRATION_V14_DICTIONARY_IMPORTS)
+    database.exec(MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS)
   }
   const runAsync = async (sql: string, ...values: SQLInputValue[]) =>
     database.prepare(sql).run(...values)
@@ -50,6 +58,7 @@ export const createTestDatabase = (path = ':memory:', initialize = true) => {
       const statement = database.prepare(sql)
       return {
         executeAsync: async (...values: SQLInputValue[]) => {
+          beforeStatement?.(sql)
           const rows = statement.all(...values)
           return {
             getFirstAsync: async () => rows[0] ?? null,

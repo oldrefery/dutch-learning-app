@@ -27,3 +27,20 @@ export const MIGRATION_V14_DICTIONARY_IMPORTS = `
     SELECT RAISE(ABORT, 'dictionary import owner mismatch');
   END;
 `
+
+// Acknowledged imports must never fall back to legacy INSERT after remote deletion.
+export const MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS = `
+  CREATE TABLE IF NOT EXISTS dictionary_import_acknowledgements (
+    word_id TEXT PRIMARY KEY REFERENCES words(word_id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_dictionary_import_ack_owner
+    ON dictionary_import_acknowledgements(user_id);
+  CREATE TRIGGER IF NOT EXISTS validate_dictionary_import_ack_owner
+  BEFORE INSERT ON dictionary_import_acknowledgements
+  WHEN NOT EXISTS (
+    SELECT 1 FROM words WHERE word_id = NEW.word_id AND user_id = NEW.user_id
+  ) BEGIN
+    SELECT RAISE(ABORT, 'dictionary import acknowledgement owner mismatch');
+  END;
+`

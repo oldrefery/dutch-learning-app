@@ -308,9 +308,10 @@ describe('WordRepository', () => {
         expect.stringContaining('article = ?')
       )
       const updateArguments = mockUpdateStatement.executeAsync.mock.calls[0]
-      expect(updateArguments.slice(-2)).toEqual([
+      expect(updateArguments.slice(-3)).toEqual([
         existingWord.word_id,
         mockWord.user_id,
+        0,
       ])
     })
 
