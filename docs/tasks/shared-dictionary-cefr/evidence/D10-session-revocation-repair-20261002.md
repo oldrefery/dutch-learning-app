@@ -33,6 +33,10 @@ flags are unchanged.
 - Test-inclusive web TypeScript, strict scoped ESLint, Prettier, and `git diff
 --check` pass. The 137 prior source fingerprints remain intact; three changed
   paths were added to [D10-source-sha256.json](D10-source-sha256.json) (140 total).
+- Source and evidence commit `976d1e7` passed normal hooks: 156 mobile suites /
+  1796 tests / 22 snapshots; 86 web suites / 778 tests, with one existing skipped
+  suite/test. All 140 fingerprints match after hook formatting. Private hook output:
+  `reports/shared-dictionary-cefr/d10-r3-repair-20261002/commit.log`.
 
 No backend, browser, simulator, emulator, or hosted resource was started for this
 repair. The last exact task-resource shutdown verification is recorded in the

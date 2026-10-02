@@ -1398,10 +1398,13 @@ Copy these fields into a dated entry at each session boundary:
 - Pre-fix safety failure reproduced. Post-fix four web suites / 45 tests pass;
   test-inclusive TypeScript, scoped strict ESLint, Prettier and diff check pass.
   Prior 137 fingerprints preserved; three changed paths added (140 total).
+- Source/evidence commit `976d1e7` normal hooks pass: 156 mobile suites / 1796
+  tests / 22 snapshots; 86 web suites / 778 tests, one existing skipped suite/test.
+  Post-hook all 140 hashes match. Private `d10-r3-repair-20261002/commit.log` retained.
 - No backend/browser/device started. Assigned task QA remained off based on last
   exact verification in handoff. Existing private reports and `.playwright-cli/`
   preserved. No pending QA job or uncertain write.
 - Next Astra / High R3 re-review, then only remaining D10 cached official
   read_only/offline and mobile Safari acceptance. D10.3–D10.5 unchecked, no D11.
-  Local commit authorized by AUTH-18; inspect git log for final SHA. No push/PR,
+  Local commits authorized by AUTH-18. No push/PR,
   production/cutover/publication/deployment or paid operation.
