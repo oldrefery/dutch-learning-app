@@ -2429,33 +2429,9 @@ export class SyncManager {
           chunk.map(row => row.word_id)
         )
         acknowledgements.push(...this.parseWordAcknowledgements(result.data))
-        await this.recordImportedMetadataAcknowledgements(
-          chunk,
-          deliveries,
-          assertOwner
-        )
       }
     }
     return { data: acknowledgements, error: null }
-  }
-
-  private async recordImportedMetadataAcknowledgements(
-    payloads: SupabaseWordsUpsertPayload[],
-    deliveries: ImportDelivery[],
-    assertOwner: () => void
-  ): Promise<void> {
-    for (const payload of payloads) {
-      const delivery = deliveries.find(row => row.word_id === payload.word_id)
-      if (delivery)
-        await dictionaryImportDeliveryRepository.acknowledgePlacement(
-          payload.user_id,
-          payload.word_id,
-          delivery.local_placement_revision,
-          payload.collection_id,
-          assertOwner
-        )
-      assertOwner()
-    }
   }
 
   private toSupabaseLikeError(error: unknown): SupabaseLikeError {

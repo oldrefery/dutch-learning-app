@@ -1,7 +1,11 @@
 import { dictionaryImportDeliveryRepository } from '@/db/dictionaryImportDeliveryRepository'
 import { dictionaryImportRecoveryRepository } from '@/db/dictionaryImportRecoveryRepository'
 import { wordRepository } from '@/db/wordRepository'
-import { createMockWord } from '@/__tests__/helpers/factories'
+import {
+  createMockWord,
+  createMockCollection,
+} from '@/__tests__/helpers/factories'
+import { collectionRepository } from '@/db/collectionRepository'
 import { syncStatusService } from '../syncStatusService'
 import { getLastSyncTimestamp } from '@/utils/network'
 import { dictionaryPersonalRefreshRepository } from '@/db/dictionaryPersonalRefreshRepository'
@@ -46,12 +50,14 @@ jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
     getWordsByUserId: jest.fn().mockResolvedValue([]),
     getPendingSyncWords: jest.fn().mockResolvedValue([]),
+    getDeletedWords: jest.fn().mockResolvedValue([]),
   },
 }))
 jest.mock('@/db/collectionRepository', () => ({
   collectionRepository: {
     getCollectionsByUserId: jest.fn().mockResolvedValue([]),
     getPendingSyncCollections: jest.fn().mockResolvedValue([]),
+    getDeletedCollections: jest.fn().mockResolvedValue([]),
   },
 }))
 jest.mock('@/db/progressRepository', () => ({
@@ -195,6 +201,34 @@ it('does not read dictionary queues while the runtime feature is dormant', async
   expect(
     dictionaryContentRepository.getMissingCardWordIds
   ).not.toHaveBeenCalled()
+})
+
+it('counts unsent word and collection deletion while dictionary content is dormant', async () => {
+  jest.mocked(wordRepository.getDeletedWords).mockResolvedValueOnce([
+    {
+      ...createMockWord({ word_id: SHARED_WORD_ID }),
+      sync_status: 'deleted',
+      deleted_at: '2026-10-02',
+      last_sync_attempt_at: null,
+      synced_at: null,
+    },
+  ])
+  jest
+    .mocked(collectionRepository.getDeletedCollections)
+    .mockResolvedValueOnce([
+      {
+        ...createMockCollection(),
+        sync_status: 'deleted',
+        last_sync_attempt_at: null,
+        synced_at: null,
+      },
+    ])
+  expect(await syncStatusService.getSnapshot('owner')).toMatchObject({
+    pendingWords: 1,
+    pendingCollections: 1,
+    totalPending: 2,
+  })
+  expect(dictionaryImportRecoveryRepository.getPending).not.toHaveBeenCalled()
 })
 
 it('keeps acknowledged-word import conflicts and deferred SRS hydration visible in pending status', async () => {

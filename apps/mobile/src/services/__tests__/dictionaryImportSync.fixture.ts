@@ -26,14 +26,21 @@ export const OUTBOX_SQL =
 
 export function openImportFixture() {
   const directory = mkdtempSync(join(tmpdir(), 'woordenaar-d10-sync-sqlite-'))
-  const db = createTestDatabase(join(directory, 'fixture.sqlite'))
+  const path = join(directory, 'fixture.sqlite')
+  let db = createTestDatabase(path)
   for (const id of [ORIGINAL, TARGET, NEXT])
     db.prepare(
       `INSERT INTO collections(collection_id,user_id,name,created_at,updated_at)
      VALUES (?,?,?,'2026-10-02','2026-10-02')`
     ).run(id, USER, id)
   return {
-    db,
+    get db() {
+      return db
+    },
+    reopen: () => {
+      db.close()
+      db = createTestDatabase(path, false)
+    },
     close: () => {
       db.close()
       rmSync(directory, { recursive: true, force: true })

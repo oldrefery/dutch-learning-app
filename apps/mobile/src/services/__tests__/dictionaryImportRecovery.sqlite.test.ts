@@ -170,7 +170,11 @@ it('rejects a later ordinary local move rather than overwrite it from an open di
     dictionaryImportRecovery.prepare(snapshot, TARGET, assertOwner)
   ).rejects.toThrow('changed')
   expect(fixture.db.prepare(WORD_SQL).get(WORD)?.collection_id).toBe(NEXT)
-  expect(fixture.db.prepare(OUTBOX_SQL).get(WORD)).toBeUndefined()
+  expect(fixture.db.prepare(OUTBOX_SQL).get(WORD)).toMatchObject({
+    kind: 'recovery',
+    status: 'pending',
+    placement_revision: 1,
+  })
 })
 
 it('does not publish a read if its local proposal changes while the RPC is in flight', async () => {

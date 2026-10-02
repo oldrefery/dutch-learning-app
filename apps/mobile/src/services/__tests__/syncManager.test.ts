@@ -33,7 +33,6 @@ jest.mock('@/db/dictionaryImportDeliveryRepository', () => ({
   dictionaryImportDeliveryRepository: {
     getAll: jest.fn().mockResolvedValue([]),
     hydrateDeliveredPlacement: jest.fn().mockResolvedValue(undefined),
-    acknowledgePlacement: jest.fn().mockResolvedValue(undefined),
   },
 }))
 jest.mock('@/db/dictionaryImportRecoveryRepository', () => ({

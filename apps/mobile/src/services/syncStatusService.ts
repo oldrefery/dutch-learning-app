@@ -30,6 +30,8 @@ export const syncStatusService = {
       pendingWords,
       pendingCollections,
       pendingProgress,
+      deletedWords,
+      deletedCollections,
       lastSyncAt,
       isOnline,
     ] = await Promise.all([
@@ -39,6 +41,8 @@ export const syncStatusService = {
       wordRepository.getPendingSyncWords(userId),
       collectionRepository.getPendingSyncCollections(userId),
       progressRepository.getPendingSyncProgress(userId),
+      wordRepository.getDeletedWords(userId),
+      collectionRepository.getDeletedCollections(userId),
       getLastSyncTimestamp(userId),
       isNetworkAvailable(),
     ])
@@ -62,6 +66,7 @@ export const syncStatusService = {
       : [[], [], [], [], [], []]
     const pendingWordCount = new Set([
       ...pendingWords.map(word => word.word_id),
+      ...deletedWords.map(word => word.word_id),
       ...commands.map(row => row.command.word_id),
       ...imports.map(row => row.intent.word_id),
       ...personalRefreshIds,
@@ -69,7 +74,10 @@ export const syncStatusService = {
       ...placementDebtIds,
       ...missingCardWordIds,
     ]).size
-    const pendingCollectionCount = pendingCollections.length
+    const pendingCollectionCount = new Set([
+      ...pendingCollections.map(collection => collection.collection_id),
+      ...deletedCollections.map(collection => collection.collection_id),
+    ]).size
     const pendingProgressCount = pendingProgress.length
 
     return {

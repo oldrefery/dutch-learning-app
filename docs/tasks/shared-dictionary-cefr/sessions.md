@@ -1198,6 +1198,26 @@ a new session to read this entire history. Never log private vocabulary or secre
   All 113 source fingerprints match. No pending job after hooks; next docs-only
   checkpoint records this result. Exact QA off verified at 11:26 UTC.
 
+## 2026-10-02 — D10 checkpoint 6 R1/R2 repairs
+
+- Actual model/effort: user-confirmed GPT-6.1 Sol / High; AUTH-17/AUTH-18, existing
+  branch and source starting at `fa286e4`. No picker operation or subagent.
+- Ordinary imported placement queues immutable existing recovery protocol; generic
+  metadata rejects tracked debt, old unbound debt remains visible. Word/collection
+  tombstones stay pending through cancellation ACK, failure and restart.
+  [Evidence](evidence/D10-recovery-review-repairs-20261002.md).
+- Focus mobile 8 suites / 139 tests; final regression/status 2 suites / 19 tests;
+  real SQL recovery 17/17; test-inclusive TypeScript and strict scoped lint pass.
+  Initial test async mock typing and duplicated literals repaired; no bypass.
+  Source/server contracts unchanged outside mobile paths; full historical SQL not
+  repeated. Ten safety tests replace two unsafe mobile baseline tests.
+- Synthetic PostgreSQL automatically cleaned up; SQLite files removed by fixtures.
+  Assigned devices/retained backend stayed off; no reset/reseed. Private artifacts
+  untouched. Necessary local commits only; no push/PR/merge, production/cutover,
+  deployment/publication, paid operation or automation change.
+- Next Astra / High re-review, then task-only native/both-client acceptance if green.
+  Manual model confirmation needed. D10.3–D10.5 open, D11 not started. No quota sample.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:

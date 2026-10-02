@@ -29,6 +29,7 @@ before(async () => {
 after(async () => db?.close())
 const PLACEMENT_CONFLICT = 'placement-conflict'
 const IDENTITY_CONFLICT = 'identity-conflict'
+const STATE_CONFLICT = 'state-conflict'
 const unavailable = /import-personal-id-unavailable/
 const settled = /import-original-settled/
 const cancelled = /import-cancelled/
@@ -135,7 +136,7 @@ test('repeated recovery uses CAS; ordinary movement and deleted-target NULL plac
   await f.recover(a)
   const stale = f.recovery({ target_collection_id: f.targets[2] })
   const conflict = await f.recover(stale)
-  assert.equal(conflict.outcome, 'state-conflict')
+  assert.equal(conflict.outcome, STATE_CONFLICT)
   assert.equal(conflict.state.recovery_version, 1)
   assert.equal(conflict.state.collection_id, f.targets[1])
   const b = f.recovery({
@@ -392,7 +393,7 @@ test('real overlap: same request replays once; different choices conflict at the
   const conflict = JSON.parse(
     await overlap(db, recoverRpc(g.recovery()), recoverRpc(b))
   )
-  assert.equal(conflict.outcome, 'state-conflict')
+  assert.equal(conflict.outcome, STATE_CONFLICT)
   assert.equal((await g.row()).collection_id, g.targets[1])
 })
 
@@ -499,4 +500,35 @@ test('real overlap: concurrent ordinary move or target deletion yields placement
   assert.equal(detached.outcome, PLACEMENT_CONFLICT)
   assert.equal(detached.state.collection_id, null)
   assert.equal((await f.origin()).recovery_version, 0)
+})
+
+test('guarded ordinary move races recovery in either order without overwriting the winner', async () => {
+  for (const ordinaryFirst of [false, true]) {
+    const f = await importFixture(db)
+    await f.apply()
+    // The repaired client persists this same immutable recovery request for an
+    // ordinary settled imported move before attempting any network delivery.
+    const ordinary = f.recovery({ target_collection_id: f.targets[1] })
+    const recovery = f.recovery({ target_collection_id: f.targets[2] })
+    const first = ordinaryFirst ? ordinary : recovery
+    const second = ordinaryFirst ? recovery : ordinary
+    const conflict = JSON.parse(
+      await overlap(db, recoverRpc(first), recoverRpc(second))
+    )
+    assert.equal(conflict.outcome, STATE_CONFLICT)
+    assert.equal((await f.row()).collection_id, first.target_collection_id)
+    assert.equal((await f.origin()).recovery_version, 1)
+    assert.equal((await f.recover(first)).idempotent, true)
+    // A later explicit move must not be undone by an old lost-reply replay.
+    await f.recover(
+      f.recovery({
+        expected_recovery_version: 1,
+        expected_collection_id: first.target_collection_id,
+        target_collection_id: second.target_collection_id,
+      })
+    )
+    assert.equal((await f.recover(first)).idempotent, true)
+    assert.equal((await f.row()).collection_id, second.target_collection_id)
+    assert.equal((await f.origin()).recovery_version, 2)
+  }
 })

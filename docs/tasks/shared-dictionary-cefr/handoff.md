@@ -1,5 +1,31 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 checkpoint 6 R1/R2 repairs implemented.**
+User-confirmed GPT-6.1 Sol / High, starting `fa286e4`. Ordinary settled imported moves
+now queue the existing immutable version/placement recovery request atomically;
+tracked unbound debt is gated in Saved imports and cannot use generic metadata
+UPDATE. Pending status includes unsent word/collection tombstones across cancel ACK,
+failed delivery and restart. Roots/IDs/SRS/private content/learning queues retained.
+[Repair evidence](evidence/D10-recovery-review-repairs-20261002.md).
+
+Focused mobile 8 suites / 139 tests, final regression/status 2 suites / 19 tests,
+isolated recovery SQL 17/17, test-inclusive TypeScript and strict scoped lint pass.
+Ten safety regressions replace the two old mobile counterexamples; pinned SQL
+baseline stays historical. No schema/RPC change or assigned QA resource start/reset.
+
+**Next: GPT-6 Astra / High for R1/R2 re-review**, then assigned-device/both-client
+acceptance only if it passes. Current-thread picker unavailable; require manual
+model confirmation. Inspect immutable ordinary move preparation, retained debt gate,
+lost replies, owner ABA, stale replacement and cancellation-to-tombstone counting.
+Native upgrade/OS lifecycle and both-client acceptance remain unverified. D10.3–D10.5
+open; do not repeat D08/D09 or begin D11. Private QA data/.playwright-cli retained.
+
+Next operation: authorized local repair commit with normal pre-commit mobile/web
+hooks. Inspect Git log/status before retrying an interrupted commit. No QA start
+is required; retain edits on hook failure. Results will be recorded after completion.
+
+Historical preceding review checkpoint follows:
+
 Last checkpoint: **2026-10-02 — D10 checkpoint 6 implementation review: changes required.**
 User-confirmed Astra / High reviewed application source `b7f207c`. Two defects are
 reproduced: **R1/P1** ordinary imported moves overwrite newer recovered placement;
@@ -103,10 +129,10 @@ No production, schema cutover, publication, deployment or paid provider calls.
 ## Next resume
 
 1. Read [D10 stage card](steps/D10.md), its focused inputs and permissions.
-   Continue D10.3 on GPT-6.1 Sol / High with R1/R2 from the
-   [implementation review](evidence/D10-recovery-implementation-review-20261002.md).
-   Check manual model confirmation, repair and convert counterexamples to safety
-   regressions, then request Astra / High review before device acceptance. Do not repeat the completed architecture review,
+   Continue D10.3 on GPT-6 Astra / High with
+   [R1/R2 repairs](evidence/D10-recovery-review-repairs-20261002.md).
+   Check manual model confirmation and re-review the guarded ordinary delivery
+   and complete deletion pending status before device acceptance. Do not repeat the completed architecture review,
    D08/D09 acceptance or start all remaining stages.
 2. D03-D09 work and the preceding D10 review are preserved in `a59acad`;
    durable D10.3 imports are in `dfdc7f0` and review repairs are in `5efd6ff`;
@@ -139,9 +165,9 @@ No production, schema cutover, publication, deployment or paid provider calls.
 
 AUTH-16 permits autonomous model/effort selection through supported controls:
 GPT-6.1 Sol / High for implementation, Astra / High for prescribed review or
-unresolved architecture/concurrency risk. The user confirmed Astra / High for this
-checkpoint 6 review. No independent agent was used. Next: GPT-6.1 Sol / High for
-R1/R2 repairs; Astra / High then reviews the repaired concurrency/status behavior. Direct
+unresolved architecture/concurrency risk. The user confirmed GPT-6.1 Sol / High for these
+R1/R2 repairs. No independent agent was used. Next: Astra / High re-reviews the
+repaired concurrency/status behavior before task-only device acceptance. Direct
 current-thread picker control is unavailable, and computer use denied access to
 Codex during the preceding checkpoint. No automatic switch is claimed.
 Announce confirmed picker changes. Do not use GPT-5.6 Sol for future work.

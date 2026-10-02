@@ -1432,8 +1432,10 @@ export class WordRepository {
     if (isDictionaryContentEnabled()) {
       await db.withExclusiveTransactionAsync(async transaction => {
         assertOwner()
-        const active = await transaction.getFirstAsync<{ word_id: string }>(
-          'SELECT word_id FROM words WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL',
+        const active = await transaction.getFirstAsync<{
+          collection_id: string | null
+        }>(
+          'SELECT collection_id FROM words WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL',
           [wordId, userId]
         )
         const target = await transaction.getFirstAsync<{
@@ -1444,7 +1446,14 @@ export class WordRepository {
         )
         if (!active || !target)
           throw new Error('Owned card or target is unavailable')
-        await recordExplicitImportMove(transaction, userId, wordId)
+        await recordExplicitImportMove(
+          transaction,
+          userId,
+          wordId,
+          active.collection_id,
+          newCollectionId,
+          randomUUID()
+        )
         await transaction.runAsync(
           `UPDATE words SET collection_id = ?,updated_at = ?,sync_status = 'pending'
           WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL`,

@@ -92,19 +92,20 @@ it('hydrates current owned placement after historical receipt without a metadata
   })
 })
 
-it('retains explicit placement debt and does not hydrate the server collection over a later move', async () => {
+it('gates retained placement debt with no durable base instead of sending an unguarded move', async () => {
   await acknowledgeOriginal()
-  await wordRepository.moveWordToCollection(WORD, USER, TARGET)
-  lookup([remote(NEXT)])
-  const result = await prepareImportMetadata(
-    payload(),
-    await delivery.getAll(USER),
-    assertOwner
+  fixture.db.exec(
+    'UPDATE dictionary_import_delivery SET local_placement_revision = 1'
   )
-  expect(result.skipIds.size).toBe(0)
+  fixture.db
+    .prepare("UPDATE words SET collection_id = ?,sync_status = 'pending'")
+    .run(TARGET)
+  lookup([remote(NEXT)])
+  await expect(
+    prepareImportMetadata(payload(), await delivery.getAll(USER), assertOwner)
+  ).rejects.toThrow('Saved imports')
   expect(fixture.db.prepare(WORD_SQL).get(WORD)?.collection_id).toBe(TARGET)
-  await delivery.acknowledgePlacement(USER, WORD, 1, TARGET, assertOwner)
-  expect(await delivery.getDebtWordIds(USER)).toEqual([])
+  expect(await delivery.getDebtWordIds(USER)).toEqual([WORD])
 })
 
 it('rejects an explicit move racing placement hydration and preserves its pending revision', async () => {

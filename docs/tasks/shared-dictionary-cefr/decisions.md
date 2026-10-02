@@ -339,3 +339,13 @@ use exclusive transaction handles and owner guards before/after mutations. This
 is local engineering progress, not new release authority. Next checkpoint 4 on
 user-confirmed GPT-6.1 Sol / High connects sync/deletion; entrypoints are not yet
 wired. Astra review and native/both-client acceptance remain open.
+
+### October 2 — R1/R2 review repair routing
+
+Under AUTH-17/AUTH-18, ordinary settled mobile import moves reuse the existing
+immutable recovery request/receipt protocol with persisted expected placement and
+version. This removes the current client's unguarded metadata delivery route;
+retained debt without a durable base requires explicit Saved imports recovery.
+Cancellation acknowledgement hands pending status to ordinary tombstone delivery.
+[Repair evidence](evidence/D10-recovery-review-repairs-20261002.md). No new schema
+or release authority. Astra re-review and integrated acceptance remain open.

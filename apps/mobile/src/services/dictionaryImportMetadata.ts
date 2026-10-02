@@ -90,7 +90,10 @@ export async function prepareImportMetadata(
           updated_at: remote.updated_at,
           deleted_at: null,
         })
-      }
+      } else
+        throw new Error(
+          'Open Saved imports to recover placement. Your card and learning history remain saved.'
+        )
     }
   }
   return { skipIds, acknowledgements }

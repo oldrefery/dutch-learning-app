@@ -1,5 +1,9 @@
 # D10 recovery implementation review — 2026-10-02
 
+Follow-up: [R1/R2 repair checkpoint](D10-recovery-review-repairs-20261002.md)
+implements the findings and converts the old mobile baseline to safety regressions.
+Astra re-review and integrated acceptance remain open. Historical review follows.
+
 Status: **changes required; checkpoint 6 acceptance blocked by two reproduced defects**.
 Reviewed application source `b7f207c` / documentation `16da8dc`, existing branch
 `feature/shared-dictionary-schema`. User confirmed Astra / High. AUTH-17/AUTH-18

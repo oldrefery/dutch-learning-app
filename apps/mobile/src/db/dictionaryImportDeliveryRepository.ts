@@ -21,34 +21,6 @@ export const dictionaryImportDeliveryRepository = {
     )
     return rows.map(row => row.word_id)
   },
-  async acknowledgePlacement(
-    userId: string,
-    wordId: string,
-    revision: number,
-    target: string | null,
-    assertOwner: () => void
-  ): Promise<void> {
-    const db = await getDatabase()
-    await db.withExclusiveTransactionAsync(async transaction => {
-      assertOwner()
-      const result = await transaction.runAsync(
-        `UPDATE dictionary_import_delivery SET acknowledged_placement_revision = ?
-      WHERE user_id = ? AND word_id = ? AND local_placement_revision = ? AND cancelled = 0
-      AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r WHERE r.word_id = dictionary_import_delivery.word_id)
-      AND EXISTS (SELECT 1 FROM words w WHERE w.word_id = dictionary_import_delivery.word_id
-        AND w.user_id = ? AND w.deleted_at IS NULL AND w.collection_id IS ?)`,
-        revision,
-        userId,
-        wordId,
-        revision,
-        userId,
-        target
-      )
-      if (result.changes !== 1)
-        throw new Error('Import placement changed before acknowledgement')
-      assertOwner()
-    })
-  },
   async hydrateDeliveredPlacement(
     userId: string,
     wordId: string,
