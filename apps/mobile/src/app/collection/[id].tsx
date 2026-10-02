@@ -17,6 +17,7 @@ import WordDetailModal from '@/components/WordDetailModal'
 import ImageSelector from '@/components/ImageSelector'
 import { MoveWordToCollectionSheet } from '@/components/glass/modals/MoveWordToCollectionSheet'
 import WordContextMenu from '@/components/WordContextMenu'
+import { DictionaryExportButton } from '@/components/DictionaryExportButton'
 
 export default function CollectionDetailScreen() {
   const { id, highlightWordId } = useLocalSearchParams<{
@@ -108,13 +109,16 @@ export default function CollectionDetailScreen() {
             fontSize: 18,
           },
           headerRight: () => (
-            <CollectionDetailHeader
-              collection={collection}
-              isSharing={isSharing}
-              onCopyCode={handleCopyCode}
-              onShare={handleShareCollection}
-              onStopSharing={handleStopSharing}
-            />
+            <ViewThemed style={styles.headerActions}>
+              <DictionaryExportButton collectionId={collection.collection_id} />
+              <CollectionDetailHeader
+                collection={collection}
+                isSharing={isSharing}
+                onCopyCode={handleCopyCode}
+                onShare={handleShareCollection}
+                onStopSharing={handleStopSharing}
+              />
+            </ViewThemed>
           ),
         }}
       />
@@ -230,6 +234,11 @@ export default function CollectionDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
   container: {
     flex: 1,
   },

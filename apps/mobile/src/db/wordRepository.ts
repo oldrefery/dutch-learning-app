@@ -867,6 +867,59 @@ export class WordRepository {
     await this.addWords([word])
   }
 
+  /** Copy document content atomically without moving or changing existing cards. */
+  async importPrivateCopies(
+    words: Word[],
+    userId: string,
+    collectionId: string,
+    assertOwner: () => void
+  ): Promise<Word[]> {
+    if (!isDictionaryContentEnabled())
+      throw new Error('Dictionary transfer is unavailable.')
+    for (const word of words) {
+      this.validateWordId(word)
+      if (word.user_id !== userId || word.collection_id !== collectionId)
+        throw new Error('Invalid dictionary import owner or target.')
+    }
+    const db = await getDatabase()
+    const inserted: Word[] = []
+    await db.withExclusiveTransactionAsync(async transaction => {
+      assertOwner()
+      const target = await transaction.getFirstAsync<{ collection_id: string }>(
+        `SELECT collection_id FROM collections WHERE collection_id = ? AND user_id = ?
+          AND COALESCE(sync_status, 'synced') <> 'deleted'`,
+        [collectionId, userId]
+      )
+      if (!target) throw new Error('Collection not found or access denied.')
+      for (const word of words) {
+        const duplicate = await transaction.getFirstAsync<{ word_id: string }>(
+          `SELECT word_id FROM words WHERE user_id = ? AND deleted_at IS NULL
+            AND LOWER(dutch_lemma) = LOWER(?)
+            AND COALESCE(part_of_speech, 'unknown') = ? AND COALESCE(article, '') = ?`,
+          [
+            userId,
+            word.dutch_lemma,
+            word.part_of_speech ?? 'unknown',
+            word.article ?? '',
+          ]
+        )
+        if (duplicate) continue
+        await transaction.runAsync(
+          INSERT_WORD_SQL,
+          ...this.getInsertValues(word, null, 'pending', null)
+        )
+        await this.initializePrivateDictionaryContent(transaction, word)
+        await this.initializeDictionaryImport(transaction, word, {
+          kind: 'private-copy',
+          content: wordToDictionaryContent(word),
+        })
+        inserted.push(word)
+      }
+      assertOwner()
+    })
+    return inserted
+  }
+
   async addWords(
     words: Word[],
     references?: readonly (DictionaryReference | null)[],

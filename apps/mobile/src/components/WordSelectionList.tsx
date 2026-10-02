@@ -10,10 +10,13 @@ interface WordSelectionListProps {
   onToggleWord: (wordId: string) => void
 }
 
-export function WordSelectionList({
-  wordSelections,
+export function WordSelectionRow({
+  item,
   onToggleWord,
-}: WordSelectionListProps) {
+}: {
+  item: WordSelectionItem
+  onToggleWord: (wordId: string) => void
+}) {
   const colorScheme = useColorScheme() ?? 'light'
 
   const getItemBackgroundColor = (item: WordSelectionItem) => {
@@ -62,76 +65,89 @@ export function WordSelectionList({
   }
 
   return (
+    <TouchableOpacity
+      key={item.word.word_id}
+      testID={`import-word-${item.word.word_id}`}
+      style={[
+        styles.wordItem,
+        {
+          backgroundColor: getItemBackgroundColor(item),
+          borderColor: getItemBorderColor(item),
+          opacity: item.isDuplicate ? 0.6 : 1,
+        },
+      ]}
+      onPress={() => onToggleWord(item.word.word_id)}
+      disabled={item.isDuplicate}
+    >
+      <ViewThemed style={styles.wordContent}>
+        <ViewThemed style={styles.wordInfo}>
+          <TextThemed
+            style={[
+              styles.wordDutch,
+              item.isDuplicate && {
+                color:
+                  colorScheme === 'dark'
+                    ? Colors.dark.textTertiary
+                    : Colors.neutral[400],
+              },
+            ]}
+          >
+            {item.word.dutch_lemma}
+          </TextThemed>
+          <TextThemed
+            style={[
+              styles.wordEnglish,
+              item.isDuplicate && {
+                color:
+                  colorScheme === 'dark'
+                    ? Colors.dark.textTertiary
+                    : Colors.neutral[400],
+              },
+            ]}
+            lightColor={
+              item.isDuplicate ? Colors.neutral[400] : Colors.neutral[600]
+            }
+            darkColor={
+              item.isDuplicate
+                ? Colors.dark.textTertiary
+                : Colors.dark.textSecondary
+            }
+          >
+            {item.word.translations.en[0] || 'No translation'}
+          </TextThemed>
+          {item.isDuplicate && (
+            <TextThemed
+              style={styles.duplicateLabel}
+              lightColor={Colors.neutral[500]}
+              darkColor={Colors.dark.textTertiary}
+            >
+              {`Already in ${item.existingInCollection}`}
+            </TextThemed>
+          )}
+        </ViewThemed>
+        <Ionicons
+          name={getIconName(item)}
+          size={24}
+          color={getIconColor(item)}
+        />
+      </ViewThemed>
+    </TouchableOpacity>
+  )
+}
+
+export function WordSelectionList({
+  wordSelections,
+  onToggleWord,
+}: WordSelectionListProps) {
+  return (
     <ViewThemed style={styles.wordsSection}>
       <TextThemed style={styles.sectionTitle}>Words</TextThemed>
       {wordSelections.map(item => (
-        <TouchableOpacity
+        <WordSelectionRow
           key={item.word.word_id}
-          testID={`import-word-${item.word.word_id}`}
-          style={[
-            styles.wordItem,
-            {
-              backgroundColor: getItemBackgroundColor(item),
-              borderColor: getItemBorderColor(item),
-              opacity: item.isDuplicate ? 0.6 : 1,
-            },
-          ]}
-          onPress={() => onToggleWord(item.word.word_id)}
-          disabled={item.isDuplicate}
-        >
-          <ViewThemed style={styles.wordContent}>
-            <ViewThemed style={styles.wordInfo}>
-              <TextThemed
-                style={[
-                  styles.wordDutch,
-                  item.isDuplicate && {
-                    color:
-                      colorScheme === 'dark'
-                        ? Colors.dark.textTertiary
-                        : Colors.neutral[400],
-                  },
-                ]}
-              >
-                {item.word.dutch_lemma}
-              </TextThemed>
-              <TextThemed
-                style={[
-                  styles.wordEnglish,
-                  item.isDuplicate && {
-                    color:
-                      colorScheme === 'dark'
-                        ? Colors.dark.textTertiary
-                        : Colors.neutral[400],
-                  },
-                ]}
-                lightColor={
-                  item.isDuplicate ? Colors.neutral[400] : Colors.neutral[600]
-                }
-                darkColor={
-                  item.isDuplicate
-                    ? Colors.dark.textTertiary
-                    : Colors.dark.textSecondary
-                }
-              >
-                {item.word.translations.en[0] || 'No translation'}
-              </TextThemed>
-              {item.isDuplicate && (
-                <TextThemed
-                  style={styles.duplicateLabel}
-                  lightColor={Colors.neutral[500]}
-                  darkColor={Colors.dark.textTertiary}
-                >
-                  {`Already in ${item.existingInCollection}`}
-                </TextThemed>
-              )}
-            </ViewThemed>
-            <Ionicons
-              name={getIconName(item)}
-              size={24}
-              color={getIconColor(item)}
-            />
-          </ViewThemed>
-        </TouchableOpacity>
+          item={item}
+          onToggleWord={onToggleWord}
+        />
       ))}
     </ViewThemed>
   )
