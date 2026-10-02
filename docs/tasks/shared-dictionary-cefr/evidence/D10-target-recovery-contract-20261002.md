@@ -1,7 +1,7 @@
 # D10.3 — accepted unavailable-target recovery design
 
 Status: **architecture review complete; server/domain, SQLite, mobile sync and UI checkpoints 1–5
-implemented; R1/R2 repairs implemented, Astra re-review and integrated acceptance pending**. Reviewed on 2026-10-02 after `795334c` / source `42c9bfd`, following the
+implemented; R1/R2 repairs and Astra re-review complete; scoped native acceptance passed, full acceptance pending**. Reviewed on 2026-10-02 after `795334c` / source `42c9bfd`, following the
 user's model-switch confirmation for GPT-6 Astra / High. AUTH-17/AUTH-18 cover this
 local technical checkpoint. This is not production, cutover or deployment approval.
 It supersedes the candidate in [review input](D10-target-recovery-review-input.md).

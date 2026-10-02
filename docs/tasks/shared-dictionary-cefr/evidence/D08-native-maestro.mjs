@@ -18,7 +18,7 @@ assert.ok(['balkon', 'tuin'].includes(targetWord))
 assertQaFixture(fixturePath)
 assert.match(
   flowPath,
-  /\/docs\/tasks\/shared-dictionary-cefr\/evidence\/D08-native-[A-Za-z0-9-]+\.yaml$/
+  /\/docs\/tasks\/shared-dictionary-cefr\/evidence\/D(?:08|10)-native-[A-Za-z0-9-]+\.yaml$/
 )
 assertQaRoot(outputRoot, 'native')
 assert.equal(outputRoot, dirname(fixturePath))

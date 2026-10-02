@@ -1,0 +1,16 @@
+appId: ${APP_ID}
+---
+- openLink: dutchlearning://dictionary-recovery
+- extendedWaitUntil:
+    visible: '.*d10android.*'
+    timeout: 15000
+- tapOn: Read current server state
+- extendedWaitUntil:
+    visible: 'This card has not been created on the server.'
+    timeout: 15000
+- tapOn: My Words
+- tapOn: Confirm recovery
+- extendedWaitUntil:
+    visible: Recovery saved on this device. Waiting for sync.
+    timeout: 15000
+- runFlow: D10-native-pending-sync.yaml

@@ -1,0 +1,15 @@
+appId: ${APP_ID}
+---
+- openLink: dutchlearning://dictionary-recovery
+- extendedWaitUntil:
+    visible: '.*d10android.*'
+    timeout: 15000
+- tapOn: Read current server state
+- extendedWaitUntil:
+    visible: 'Current server placement: D08 Native QA'
+    timeout: 15000
+- tapOn: My Words
+- tapOn: Confirm recovery
+- extendedWaitUntil:
+    visible: No saved imports need recovery.
+    timeout: 30000

@@ -51,7 +51,7 @@ const query = sql =>
             '-readonly',
             '-json',
             db,
-            `'${sql}'`,
+            `'${sql.replaceAll("'", "'\\''")}'`,
           ],
       {
         encoding: 'utf8',
@@ -64,7 +64,27 @@ assert.ok(
     [fixture.primary.userId, fixture.isolated.userId].includes(row.user_id)
   )
 )
+const tables = new Set(
+  query("SELECT name FROM sqlite_master WHERE type = 'table'").map(
+    row => row.name
+  )
+)
+const optionalTable = name =>
+  tables.has(name) ? query(`SELECT * FROM ${name}`) : []
 const snapshot = {
+  collections: query(
+    'SELECT collection_id,user_id,name,sync_status FROM collections ORDER BY collection_id'
+  ),
+  placement: query(
+    'SELECT word_id,collection_id,sync_status,deleted_at FROM words ORDER BY word_id'
+  ),
+  imports: {
+    intents: optionalTable('dictionary_import_intents'),
+    acknowledgements: optionalTable('dictionary_import_acknowledgements'),
+    delivery: optionalTable('dictionary_import_delivery'),
+    recovery: optionalTable('dictionary_import_recovery_outbox'),
+    personalRefresh: optionalTable('dictionary_personal_refresh_queue'),
+  },
   words: query(
     'SELECT word_id,user_id,dutch_lemma,translations,image_url,interval_days,repetition_count,easiness_factor,next_review_date,last_reviewed_at,deleted_at FROM words ORDER BY word_id'
   ),

@@ -1223,6 +1223,31 @@ a new session to read this entire history. Never log private vocabulary or secre
   All 113 source fingerprints match. Exact assigned QA off reverified 11:42 UTC.
   No pending operation; only private `.playwright-cli/` remains untracked.
 
+## 2026-10-02 — D10 scoped native acceptance after R1/R2 repair review
+
+- User-confirmed Astra / High; source `c3f9baf`, starting HEAD `785d9f9`.
+  Re-review passed without application changes. AUTH-17/AUTH-18 local only.
+- Both retained native release upgrades preserve prior IDs/SRS/learning/queues;
+  installed artifact hashes match builds. Four local migrations applied after
+  private pg_dump, retained personal data unchanged. No reset/reseed or flag change.
+- iOS offline/lost-reply/replay, guarded move with newer peer placement, stale receipt,
+  cancel ACK/tombstone/restart/final delivery pass. Android offline durability,
+  original-delivery/recovery race with typed conflict and explicit retry pass.
+  Native JSON clipboard export/duplicate preview visually verified on iOS.
+  [Evidence and exact limitations](evidence/D10-native-acceptance-20261002.md).
+- Corrected QA selectors, keyboard assumptions, expected collection count and
+  Android read-only SQL quoting. New-card interval follows server default 1 after
+  local 0; pre-existing SRS/complete learning history retained. No implementation
+  finding requiring a new Sol repair. 113 source hashes unchanged.
+- Brief approval-review quota failure caused no execution; user continued and the
+  same scoped command was accepted. No bypass. One-off automation remains paused.
+- Exact assigned resources verified OFF at 12:23 UTC: iOS Shutdown, emulator absent,
+  no task jobs, four containers exited, task ports closed; fault flags reset.
+  Data/volumes/private artifacts preserved; other sessions/devices untouched.
+- Next Astra / High: retained v14/v15 native upgrade evidence and remaining D10
+  cross-owner/both-client/official/shared/bundled acceptance. D10.3–D10.5 open;
+  D11 not started. Local checkpoint commit pending; no push/PR or hosted operation.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:

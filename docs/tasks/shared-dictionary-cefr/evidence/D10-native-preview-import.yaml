@@ -1,0 +1,10 @@
+appId: ${APP_ID}
+---
+- extendedWaitUntil:
+    visible: 'd10herstel.*'
+    timeout: 15000
+- tapOn:
+    id: import-selected-words-button
+- extendedWaitUntil:
+    visible: 1 word saved. 0 duplicates skipped.
+    timeout: 15000

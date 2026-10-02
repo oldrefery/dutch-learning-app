@@ -15,6 +15,8 @@ const state = {
   blockRest: false,
   blockContent: false,
   dropNextCommandReply: false,
+  dropNextImportReply: false,
+  blockWordWrites: false,
   hideRevisions: false,
   translation: 'QA local version',
 }
@@ -42,6 +44,11 @@ const checkAuthInput = (path, body) => {
       passwordMatches: input.password === primary.password,
     })
 }
+const shouldBlockRest = (isContent, isWordWrite) =>
+  state.blockRest ||
+  (state.blockContent && isContent) ||
+  (state.blockWordWrites && isWordWrite)
+
 const server = http.createServer(async (request, response) => {
   try {
     const url = new URL(request.url, 'http://127.0.0.1:55331')
@@ -98,7 +105,10 @@ const server = http.createServer(async (request, response) => {
       url.pathname.startsWith('/rest/v1/rpc/get_dictionary_') ||
       url.pathname.startsWith('/rest/v1/rpc/list_dictionary_') ||
       url.pathname === '/rest/v1/rpc/apply_dictionary_content_command_v1'
-    if (isRest && (state.blockRest || (state.blockContent && isContent))) {
+    const isWordWrite =
+      url.pathname === '/rest/v1/words' &&
+      !['GET', 'HEAD'].includes(request.method)
+    if (isRest && shouldBlockRest(isContent, isWordWrite)) {
       events.push({ kind: 'blocked', path: url.pathname })
       send(response, 503, { message: 'Injected local QA offline transport' })
       return
@@ -122,6 +132,20 @@ const server = http.createServer(async (request, response) => {
       remote => {
         const isCommand =
           url.pathname === '/rest/v1/rpc/apply_dictionary_content_command_v1'
+        const isImport = [
+          '/rest/v1/rpc/apply_dictionary_import_intent_v1',
+          '/rest/v1/rpc/recover_dictionary_import_v1',
+          '/rest/v1/rpc/cancel_dictionary_import_v1',
+        ].includes(url.pathname)
+        if (isImport) {
+          const input = JSON.parse(body.toString())
+          events.push({
+            kind: 'import-response',
+            path: url.pathname,
+            status: remote.statusCode,
+            operationId: (input.p_intent ?? input.p_request)?.operation_id,
+          })
+        }
         if (isCommand)
           events.push({
             kind: 'command-response',
@@ -129,11 +153,12 @@ const server = http.createServer(async (request, response) => {
             operationId: JSON.parse(body.toString()).p_command.operation_id,
           })
         if (
-          isCommand &&
-          state.dropNextCommandReply &&
+          ((isCommand && state.dropNextCommandReply) ||
+            (isImport && state.dropNextImportReply)) &&
           remote.statusCode === 200
         ) {
-          state.dropNextCommandReply = false
+          if (isCommand) state.dropNextCommandReply = false
+          if (isImport) state.dropNextImportReply = false
           state.blockRest = true
           remote.resume()
           remote.on('end', () => {

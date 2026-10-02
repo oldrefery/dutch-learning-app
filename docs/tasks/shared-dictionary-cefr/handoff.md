@@ -1,5 +1,53 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 repair re-review and scoped native acceptance passed.**
+User-confirmed GPT-6 Astra / High reviewed application source `c3f9baf` (starting
+HEAD `785d9f9`). R1/R2 re-review passed; no application change in this checkpoint.
+[Native acceptance evidence](evidence/D10-native-acceptance-20261002.md).
+
+Both retained iOS/Android release upgrades preserve pre-existing words/SRS/history/
+queues; installed artifacts match built hashes. iOS confirms offline import/cold
+restart, original lost reply/replay, ordinary guarded move, lost recovery reply
+plus newer peer placement/stale replay, and cancel ACK with blocked tombstone across
+restart/final delivery. Android confirms offline queue durability, explicit recovery,
+an original-delivery race causing safe placement-conflict, fresh explicit retry and
+Up to date only after queues clear. iOS native JSON export/paste/duplicate preview
+visually confirmed for the four active source words. Exact scope/failed harness
+attempts and new-card server-default interval 0→1 are documented in evidence.
+
+**All assigned QA resources are OFF, verified 2026-10-02 12:23 UTC.** iOS UDID
+`DDEDCE4E-153B-48A4-A47C-B4ED0F499F1F` Shutdown; emulator-5584 absent; no matching
+AVD/native/proxy/Maestro jobs; four retained `woordenaar-d08-qa.ZFsE50` containers
+exited; ports 55331/55400 closed. Proxy faults reset before shutdown. No pending or
+uncertain mutation/test/build. Other sessions/devices untouched; data retained.
+
+Private artifacts remain at `reports/shared-dictionary-cefr/woordenaar-d08-native.20261001`:
+pre-migration pg_dump, migration hashes, native snapshots, installed artifact hashes,
+Maestro logs/screenshots, final proxy log/server snapshots and shutdown verification.
+Four D10 migrations 20261002090000–20261002120000 applied to the retained local
+stack only, without reset/reseed or runtime flag changes. On next native startup,
+restore task-only Android reverse tcp:55331 mapping after emulator boot.
+
+Do not blindly rerun mutation flows: synthetic `d10herstel` is deliberately cancelled/
+tombstoned (server version 3), `d10android` is active in My Words (server version 1).
+Their exact IDs/roots are in evidence. Peer recovery request/receipt are one-off
+private artifacts; the helper refuses overwriting them. No duplicate/reseed needed.
+
+**Next: remain on GPT-6 Astra / High, D10.3 integrated acceptance.** First inventory
+retained v14-intent and marker-only v15 native upgrade evidence; use an isolated
+fixture/install strategy without resetting retained QA data. Then finish the
+remaining official/shared/bundled and cross-owner/both-client export/reimport
+matrix. Do not repeat closed R1/R2 checks or D08/D09. If an application repair is
+required, save a concrete reproducer and request GPT-6.1 Sol / High; current-thread
+model picker is unavailable. D10.3–D10.5 stay unchecked; do not begin D11.
+
+QA helpers/flows and task docs are awaiting the authorized local checkpoint commit;
+all 113 application/source fingerprints match. Scoped lint/format/diff checks pass.
+No push/PR/merge, production, schema cutover, publication, deployment or paid call.
+Automation `d09-06-00` stays paused. Private `.playwright-cli/` remains untracked.
+
+Historical preceding checkpoint follows; routing above supersedes it.
+
 Last checkpoint: **2026-10-02 — D10 checkpoint 6 R1/R2 repairs implemented.**
 User-confirmed GPT-6.1 Sol / High; source `c3f9baf`, starting `fa286e4`. Ordinary settled imported moves
 now queue the existing immutable version/placement recovery request atomically;
