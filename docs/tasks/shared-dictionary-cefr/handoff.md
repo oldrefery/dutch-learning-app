@@ -1,7 +1,7 @@
 # Shared dictionary and CEFR — current handoff
 
 Last checkpoint: **2026-10-02 — R4 action contrast repaired and source-rendered
-browser regression PASS.** Starting `b745243`, existing
+browser regression PASS.** Source commit `da41085`, starting `b745243`, existing
 `feature/shared-dictionary-schema`, user-confirmed Sol 6.1 / High, AUTH-17/18/19.
 [Repair evidence](evidence/D10-import-contrast-repair-20261002.md),
 [summary](evidence/D10-import-contrast-repair-summary-20261002.json).
@@ -16,8 +16,9 @@ baseline except class attributes. This fixture stubs action state and Link-as-an
 it does not replace actual Safari/page acceptance or independent review.
 Three focused suites /13 tests, test-inclusive TypeScript and strict scoped
 ESLint/Prettier/syntax/diff PASS. All 140 prior hashes retained, three component paths
-added to current 143-path manifest. Normal commit hooks are pending; save their
-verified outcome before session end. Only preexisting `.playwright-cli/` is unrelated.
+added to current 143-path manifest. Source commit `da41085` normal hooks PASS:
+mobile 156 suites /1796 tests /22 snapshots; web 86 suites /778 tests, one existing
+skipped suite/test. All 143 hashes match after hooks. Private `commit.log` retained. Only preexisting `.playwright-cli/` is unrelated.
 
 **Next: GPT-6 Astra / High R4 independent review**, then only affected real-page /
 Safari visual checks, and reconcile D10.3–D10.5 exit evidence. Current-thread model

@@ -72,7 +72,9 @@ Other verification:
 - Test-inclusive `tsc --project apps/web/tsconfig.json --noEmit` PASS.
 - Strict scoped ESLint (`--max-warnings=0`), Prettier, JS syntax and diff checks PASS.
   The npm forwarding form swallowed `--max-warnings`; direct ESLint rerun passes.
-- Full normal commit hooks remain required; results are recorded in the handoff.
+- Source/evidence commit `da41085` normal hooks PASS: mobile 156 suites /1796 tests /
+  22 snapshots; web 86 suites /778 tests, one existing skipped suite/test. All 143
+  source hashes still match after hooks; private `commit.log` retained.
 
 Private artifacts: `reports/shared-dictionary-cefr/d10-r4-repair-20261002/` contains
 baseline/repaired matrix JSON/logs, CSS/HTML, screenshots, structure equality,

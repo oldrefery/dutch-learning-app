@@ -1452,3 +1452,7 @@ Copy these fields into a dated entry at each session boundary:
 - Next Astra / High independent review, then affected actual page/Safari visuals.
   D10.3–D10.5 open; no D11, import replay, production/cutover/publication/deployment,
   paid call or push/PR/merge. Local commits with normal hooks authorized.
+
+- Source/evidence commit `da41085` normal hooks PASS: mobile 156 suites /1796 tests /
+  22 snapshots; web 86 suites /778 tests, one existing skip. Post-hook 143/143 hashes
+  match. Only preexisting `.playwright-cli/` untracked; no pending QA process.
