@@ -1,7 +1,8 @@
 # Shared dictionary and CEFR — current handoff
 
 Last checkpoint: **2026-10-02 — D10 web R1/R2 repairs implemented**, starting
-HEAD `9150845`, application baseline `ab8d603`, existing feature branch.
+source commit **`19d98eb`**, starting HEAD `9150845`, application baseline `ab8d603`,
+existing feature branch.
 User confirmed the requested **GPT-6.1 Sol / High** switch. AUTH-17/AUTH-18.
 [Repair evidence and origin policy](evidence/D10-web-transfer-repairs-20261002.md).
 
@@ -16,8 +17,11 @@ re-preview remains required before another write. No automatic replay/retarget.
 Focused **11 web suites / 134 tests**, test-inclusive typecheck and strict scoped
 lint/format/diff pass. Four baseline web paths intentionally changed, 129 unchanged;
 four paths added to the current 137-file hash manifest. No mobile/SQL/RPC/dependency/
-config/env/feature-flag or published-content change. Normal local commit hooks are
-next. Historical counterexamples are in `46eb250`, now converted to safety assertions.
+config/env/feature-flag or published-content change. Source `19d98eb` normal hooks
+pass: **156 mobile suites / 1796 tests / 22 snapshots; 85 web suites / 769 tests**,
+one existing skipped suite/test. Formatter adjusted one test; the manifest is
+refreshed and all 137 hashes match. No pending operation. Historical counterexamples
+are in `46eb250`, now converted to safety assertions.
 
 **Next: GPT-6 Astra / High repair re-review**, then remaining browser/cross-owner/
 both-client acceptance. Inspect raw Host/scheme validation, trusted deployment-origin

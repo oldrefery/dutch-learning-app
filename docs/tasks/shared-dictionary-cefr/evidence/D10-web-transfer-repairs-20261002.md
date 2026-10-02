@@ -2,6 +2,7 @@
 
 Date: 2026-10-02. Starting HEAD `9150845`, application baseline `ab8d603`, review
 tests `46eb250`; existing branch `feature/shared-dictionary-schema`.
+Repair source committed locally as **`19d98eb`**.
 User confirmed the requested GPT-6.1 Sol / High switch. AUTH-17/AUTH-18.
 
 ## R1 — Public origin validation
@@ -60,8 +61,13 @@ Historical counterexamples remain recoverable in `46eb250`.
 - Four of the prior 133 fingerprinted web files intentionally changed; 129
   baseline files remain exact. Four files are added to the current hash inventory:
   two converted review tests and the new origin helper/test. Current manifest: 137.
-- Normal local commit hooks are next. No dependency, SQL/RPC, mobile application,
-  runtime feature flag or published manifest change.
+- Source commit normal hooks PASS: mobile 156 suites / 1796 tests / 22 snapshots;
+  web 85 suites / 769 tests, one existing skipped suite/test. Formatter adjusted
+  one converted test after the earlier formatting check flagged it. Post-hook
+  Prettier passes; refreshed manifest verifies all 137 hashes. Private log:
+  `reports/shared-dictionary-cefr/d10-web-transfer-repairs-20261002/commit.log`.
+- No dependency, SQL/RPC, mobile application, runtime feature flag or published
+  manifest change.
 
 Next: GPT-6 Astra / High re-review of the repair commit before actual browser and
 cross-owner/mobile-web acceptance. D10.3–D10.5 remain open; D11 is not started.

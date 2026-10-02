@@ -20,5 +20,20 @@
     "total": 137
   },
   "deviceOrBackendOperation": false,
-  "next": "GPT-6 Astra / High re-review; D10.3-D10.5 remain open"
+  "next": "GPT-6 Astra / High re-review; D10.3-D10.5 remain open",
+  "sourceCommit": "19d98eb",
+  "normalHooks": {
+    "mobile": {
+      "suites": 156,
+      "tests": 1796,
+      "snapshots": 22
+    },
+    "web": {
+      "passedSuites": 85,
+      "passedTests": 769,
+      "skippedSuites": 1,
+      "skippedTests": 1
+    }
+  },
+  "postFormatterHashesMatched": 137
 }

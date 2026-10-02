@@ -1307,7 +1307,9 @@ a new session to read this entire history. Never log private vocabulary or secre
   134 tests, TypeScript and scoped strict lint/format/diff pass. Current 137 hashes:
   129 unchanged baseline, four updated web paths and four added paths.
 - No backend/browser/device operation. Explicit device availability handback remains
-  required. No pending mutation/build/QA job. Local preservation hooks next.
+  required. Source commit `19d98eb` normal hooks: 156 mobile suites / 1796 tests /
+  22 snapshots; 85 web suites / 769 tests, one existing skip. Post-formatter manifest
+  137/137 matches. No pending mutation/build/QA job.
 - Next Astra / High re-review, then remaining integrated acceptance. D10.3–D10.5 open;
   D11 not started. No remote/release/paid operations; automation paused.
 
