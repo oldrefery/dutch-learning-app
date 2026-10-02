@@ -1,5 +1,35 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 web transfer implementation review: changes required.**
+User confirmed the requested **GPT-6 Astra / High** switch. Reviewed source
+`ab8d603`, starting HEAD `5d95165`, existing branch `feature/shared-dictionary-schema`.
+[Review and repair contract](evidence/D10-web-transfer-review-20261002.md).
+
+Two reproduced findings: **R1/P1** the origin guard rejects legitimate requests
+when Next.js normalizes 127.0.0.1 to localhost or uses a wildcard/internal request
+URL; **R2/P2** an uncertain import's check link follows a subsequently changed
+collection selector instead of the attempted destination. Application unchanged.
+Two new review suites / five tests pass (four counterexamples plus a valid control);
+these demonstrate defects, not feature acceptance. Test-inclusive web TypeScript,
+strict scoped lint/format/diff pass; all 133 application fingerprints unchanged.
+Local evidence/test preservation commit with normal hooks is next.
+
+**Next: GPT-6.1 Sol / High for R1/R2 web repairs**, then Astra / High re-review.
+Use the exact repair contract and convert review counterexamples into safety
+regressions. Preserve strict origin/auth/document checks, readonly import, content-
+only payload, SRS/placement and uncertain-write no-replay policy. Current-thread
+picker is unavailable; request the manual switch, never claim an automatic switch.
+D10.3–D10.5 remain unchecked. Do not start D11 or repeat completed native upgrade /
+mobile recovery checks. Browser/both-client acceptance waits for the web review fix.
+
+No backend/device/browser inspection or operation in this checkpoint. Latest device
+constraint remains: notify the user and wait for explicit availability handback
+before simulator/emulator use, since another session may be using them. No pending
+mutation, build or QA operation. Existing private fixtures and `.playwright-cli/`
+remain intact; root AGENTS stays excluded. AUTH-17/AUTH-18 allow local commits.
+No push/PR/merge, production, schema cutover, publication, deployment or paid call.
+Automation `d09-06-00` remains paused. Historical completed checkpoint follows.
+
 Last checkpoint: **2026-10-02 — D10 web document transfer UI implemented**,
 source commit **`ab8d603`**, starting `b302d71`, existing branch
 `feature/shared-dictionary-schema`.

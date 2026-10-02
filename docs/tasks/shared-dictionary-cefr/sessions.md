@@ -1275,6 +1275,25 @@ a new session to read this entire history. Never log private vocabulary or secre
 - Next manual confirmation of GPT-6.1 Sol / High (picker unavailable), implement
   web UI/actions, then Astra review and remaining both-client acceptance.
 
+## 2026-10-02 — D10 web transfer implementation review
+
+- User-confirmed Astra / High; AUTH-17/AUTH-18. Application `ab8d603`, repository
+  start `5d95165`. Prior implementation added default-off web JSON transfer UI;
+  normal source hooks passed mobile 156/1796/22 and web 82/715 (one existing skip).
+- Reviewed production UI/route/helper integration. R1/P1 valid browser origins
+  fail after Next.js loopback/internal-host adaptation; R2/P2 lost-reply check link
+  changes from attempted collection A to unsubmitted B. [Review](evidence/D10-web-transfer-review-20261002.md).
+- Two new suites / five tests pass (four counterexamples and a valid control),
+  using the installed NextRequestAdapter and actual UI/POST. Type-inclusive web
+  checks, scoped lint/format/diff pass; original 133 source hashes unchanged.
+- Corrected an initial reproducer assumption: Next.js normalizes 127.0.0.1 to
+  localhost. No listener/backend/device/browser or private fixture operation.
+- Application repair pending. Next Sol 6.1 / High (manual picker), repair both
+  findings and convert counterexamples, then Astra re-review and integrated QA.
+  D10.3–D10.5 stay open. Before native QA, obtain device availability handback.
+- Local preservation commit authorized with normal hooks. No remote/release/paid
+  operation, no uncertain mutation or QA job; automation stays paused.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:
