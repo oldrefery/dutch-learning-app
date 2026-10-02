@@ -1007,6 +1007,35 @@ a new session to read this entire history. Never log private vocabulary or secre
   no confirmed switch or independent-agent review claimed. No fresh quota sample.
 - No production, cutover, deployment, publication, paid operation or new automation.
 
+## 2026-10-02 — D10.3 offline import review and six preservation repairs
+
+- User confirmed switching to Astra; High effort carries forward from the accepted
+  routing. No independent agent. D10.3 remains current; no D11 or release scope.
+- Reproduced/repaired six issues: remote-deleted import resurrection, read-only
+  target upsert, pending-import loss during remote-target cleanup, concurrent
+  learning overwrite, incomplete dictionary hydration and deleted-card refresh debt.
+- SQLite v15 stores owner/ID acknowledgements atomically and preserves v14 intents,
+  private content and all prior queues through interruption/restart. Server schema,
+  immutable manifests, generated contracts and runtime activation remain unchanged.
+- Implementation commit `5efd6ff093765672e74dc071996b5d866c62a7c6` on
+  `feature/shared-dictionary-schema`, AUTH-17/AUTH-18. Documentation checkpoint follows.
+  Private `.playwright-cli/` and ignored QA reports remain outside commits.
+- Final focused mobile 8 suites / 170 tests; D10 PostgreSQL 16/16; normal full hooks
+  mobile 147 suites / 1689 tests / 22 snapshots and web 75 suites / 642 tests,
+  one pre-existing skipped suite/test. Test-inclusive typecheck, strict zero-warning
+  changed-file lint, scoped formatting and diff pass. No hook/rule bypass.
+- [Review, failed regressions and limits](evidence/D10-offline-import-review-20261002.md)
+  and [source fingerprints](evidence/D10-source-sha256.json) are durable evidence.
+  The earlier 188-test full SQL result is historical at `dfdc7f0`; only the affected
+  SQL file was rerun because server code did not change.
+- No running/uncertain operation. Synthetic SQL clusters cleaned up; retained
+  native/D08 QA stayed off. Other projects/sessions/devices were not operated.
+- Next: GPT-6.1 Sol / High for remaining D10.3 recovery/integration, then D10.4/D10.5
+  both-client import/export/reimport and assigned-device verification. Model switch
+  unavailable through current-thread controls; no automatic change claimed.
+- No fresh quota observation. No push/PR/merge, production/cutover, deployment,
+  publication, paid operation or new automation. D10 remains in progress.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:
