@@ -1174,6 +1174,25 @@ a new session to read this entire history. Never log private vocabulary or secre
   remain. D10.3–D10.5 unchecked; D11 not started. No push/PR/production/cutover/
   publication/deployment/paid operation or automation change. No new quota sample.
 
+## 2026-10-02 — D10 checkpoint 6 implementation review
+
+- User-confirmed Astra / High, source `b7f207c`, AUTH-17/AUTH-18; no picker operation
+  or subagent. Review **requires changes**: R1/P1 unguarded ordinary imported moves
+  overwrite newer recovery; R2/P2 cancellation ACK hides unsent normal deletion.
+  [Evidence and exact repair contract](evidence/D10-recovery-implementation-review-20261002.md).
+- Mobile file-backed counterexamples 2/2, real concurrent PostgreSQL baseline 1/1;
+  test-inclusive TypeScript and strict scoped lint pass. Passing counterexamples
+  demonstrate defects; no new acceptance claim. Application/server source unchanged.
+- Synthetic SQL sandbox shared-memory denial resolved with scoped escalation;
+  isolated cluster automatically cleaned up. Test-only recursive mock typing fixed.
+  No assigned device/backend start/reset; private retained artifacts untouched.
+- Existing branch, authorized local commits only; no push/PR/merge, production,
+  cutover, publication, deployment, paid operation or automation change.
+- Next Sol 6.1 / High repairs R1/R2 and converts mobile counterexamples to safety
+  regressions; then Astra review before assigned-device/both-client acceptance.
+  Manual model confirmation needed because picker control is unavailable.
+  D10.3–D10.5 remain open, D11 not started. No new quota sample.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:

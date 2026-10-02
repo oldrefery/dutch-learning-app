@@ -1,7 +1,7 @@
 # D10.3 — accepted unavailable-target recovery design
 
 Status: **architecture review complete; server/domain, SQLite, mobile sync and UI checkpoints 1–5
-implemented; implementation review and integrated acceptance pending**. Reviewed on 2026-10-02 after `795334c` / source `42c9bfd`, following the
+implemented; implementation review requires R1/R2 repairs, integrated acceptance pending**. Reviewed on 2026-10-02 after `795334c` / source `42c9bfd`, following the
 user's model-switch confirmation for GPT-6 Astra / High. AUTH-17/AUTH-18 cover this
 local technical checkpoint. This is not production, cutover or deployment approval.
 It supersedes the candidate in [review input](D10-target-recovery-review-input.md).
@@ -224,8 +224,10 @@ Current sources: server/domain `1828f57`, SQLite v16 `1748066`, mobile sync `abc
 [server evidence](D10-recovery-server-20261002.md) and
 [SQLite evidence](D10-recovery-sqlite-20261002.md),
 [sync evidence](D10-recovery-sync-20261002.md), and
-[UI evidence](D10-recovery-ui-20261002.md), source `b7f207c`. Next is checkpoint 6
-on Astra / High; current-thread picker requires manual confirmation.
+[UI evidence](D10-recovery-ui-20261002.md), source `b7f207c`. Checkpoint 6
+[implementation review](D10-recovery-implementation-review-20261002.md) requires
+R1/R2 repairs on Sol 6.1 / High before Astra re-review and integrated acceptance.
+Current-thread picker requires manual confirmation.
 
 ## Implementation sequence and required evidence
 

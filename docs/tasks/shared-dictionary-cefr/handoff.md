@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 checkpoint 6 implementation review: changes required.**
+User-confirmed Astra / High reviewed application source `b7f207c`. Two defects are
+reproduced: **R1/P1** ordinary imported moves overwrite newer recovered placement;
+**R2/P2** cancellation ACK hides an unsent normal word tombstone from pending status.
+[Review evidence and repair contract](evidence/D10-recovery-implementation-review-20261002.md).
+Mobile file-backed counterexamples 2/2; real PostgreSQL reverse-order race 1/1;
+test-inclusive TypeScript and strict scoped lint pass. These passing counterexamples
+prove unsafe behavior, not acceptance. No application/server repair in this checkpoint.
+
+**Next: GPT-6.1 Sol / High for R1/R2 repairs**, followed by Astra / High review and
+assigned-device/both-client acceptance. Current-thread picker unavailable; request
+manual model confirmation. Convert mobile counterexamples to safety regressions;
+retain the pinned SQL baseline and add guarded delivery tests. Preserve existing
+placement debt and all roots/IDs/SRS/queues. Exact resources verified off at 11:26 UTC: assigned iOS Shutdown, task AVD absent,
+four task containers exited. No QA resource restart or reset occurred.
+D10.3–D10.5 remain unchecked. Do not repeat D08/D09 or begin D11.
+
+Historical preceding checkpoint follows:
+
 Last checkpoint: **2026-10-02 — D10.3 explicit recovery UI, accepted checkpoint 5.**
 User-confirmed GPT-6.1 Sol / High; source `b7f207c`, following sync `abc0b86` /
 resume coverage `a7315bb`, SQLite `1748066` and server `1828f57`. AUTH-17/AUTH-18,
@@ -19,7 +38,7 @@ from its 213/213 SQL/determinism verification; no new SQL run claimed. Synthetic
 file fixtures cleaned up. Exact assigned QA resources reverified off at 10:57 UTC;
 no device/backend restart, retained-data reset or pending operation after hooks.
 
-**Current continuation: GPT-6 Astra / High, accepted contract checkpoint 6 — implementation review.**
+**Historical checkpoint 5 continuation (superseded by the review above): Astra / High.**
 The agent cannot operate the current-thread model picker. Ask for a manual switch
 if Astra / High has not been confirmed; never claim an automatic switch. Review
 server/domain, SQLite and complete sync/UI, including private registry/root binding,
@@ -79,9 +98,10 @@ No production, schema cutover, publication, deployment or paid provider calls.
 ## Next resume
 
 1. Read [D10 stage card](steps/D10.md), its focused inputs and permissions.
-   Continue D10.3 on GPT-6 Astra / High from the accepted recovery contract,
-   checkpoint 6 implementation review of server/SQLite/sync/UI, then assigned-device
-   and both-client acceptance. Check manual model confirmation before review. Do not repeat the completed architecture review,
+   Continue D10.3 on GPT-6.1 Sol / High with R1/R2 from the
+   [implementation review](evidence/D10-recovery-implementation-review-20261002.md).
+   Check manual model confirmation, repair and convert counterexamples to safety
+   regressions, then request Astra / High review before device acceptance. Do not repeat the completed architecture review,
    D08/D09 acceptance or start all remaining stages.
 2. D03-D09 work and the preceding D10 review are preserved in `a59acad`;
    durable D10.3 imports are in `dfdc7f0` and review repairs are in `5efd6ff`;
@@ -114,10 +134,9 @@ No production, schema cutover, publication, deployment or paid provider calls.
 
 AUTH-16 permits autonomous model/effort selection through supported controls:
 GPT-6.1 Sol / High for implementation, Astra / High for prescribed review or
-unresolved architecture/concurrency risk. The user confirmed Astra / High for the completed architecture review and
-GPT-6.1 Sol / High for the current implementation checkpoint.
-No independent agent was used. Next: GPT-6.1 Sol / High implementation of the
-accepted recovery contract; Astra / High reviews its implemented concurrency. Direct
+unresolved architecture/concurrency risk. The user confirmed Astra / High for this
+checkpoint 6 review. No independent agent was used. Next: GPT-6.1 Sol / High for
+R1/R2 repairs; Astra / High then reviews the repaired concurrency/status behavior. Direct
 current-thread picker control is unavailable, and computer use denied access to
 Codex during the preceding checkpoint. No automatic switch is claimed.
 Announce confirmed picker changes. Do not use GPT-5.6 Sol for future work.
@@ -160,7 +179,7 @@ infer live readiness from completed local stages.
 - Branch base/current starting HEAD: `c5dfb14` from synchronized `main`.
 - The earlier performance branch was not reused; its squash-merged work is present
   through current `main`.
-- Persistence: **committed locally, not pushed**. Latest implementation is `abc0b86`, following document reimport
+- Persistence: **committed locally, not pushed**. Latest application implementation is `b7f207c` (recovery UI), following `abc0b86` sync and document reimport
   `42c9bfd`, following `5efd6ff`, `dfdc7f0` and `a59acad`; task docs are in the following documentation
   checkpoint. A new local session can
   resume. A remote clone still needs an explicitly authorized push or transfer.
@@ -177,7 +196,7 @@ infer live readiness from completed local stages.
   target contract, package scripts/README and CI check; D09 web/dictionary routes,
   tests, benchmark harness/helpers and evidence; D10 mapping/import/export contracts
   and review fixes. Verify git status on resume and preserve later user edits.
-- Latest mobile sync implementation: `abc0b86`; SQLite recovery implementation: `1748066`; server implementation: `1828f57`; architecture review/tests: `b92eba9`; document implementation: `42c9bfd`; preservation review: `5efd6ff`; earlier D03-D10 review: `a59acad`.
+- Latest mobile UI implementation: `b7f207c`; resume coverage: `a7315bb`. Latest mobile sync implementation: `abc0b86`; SQLite recovery implementation: `1748066`; server implementation: `1828f57`; architecture review/tests: `b92eba9`; document implementation: `42c9bfd`; preservation review: `5efd6ff`; earlier D03-D10 review: `a59acad`.
   No PR or remote push. Dictionary deployments: none.
 
 ## Evidence and environment

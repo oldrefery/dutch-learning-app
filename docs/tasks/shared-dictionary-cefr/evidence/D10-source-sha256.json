@@ -109,5 +109,7 @@
   "apps/mobile/src/services/__tests__/dictionaryImportRecovery.sqlite.test.ts": "59aa4f0307995aba7330cb5ae355a825d41952aad8d47ddbf6f7ac72715131b6",
   "apps/mobile/src/services/dictionaryImportRecovery.ts": "0c09c9f37b87b0e66d980df3bba14f78563a3ce4b48dfe111652e543ac506b11",
   "apps/mobile/src/styles/DictionaryImportRecovery.styles.ts": "48f021526c00d77cc2cc098b2dc5a5cf2e02e9f09c39efcc1d6bdc806cf810c2",
-  "apps/mobile/src/types/DictionaryImportRecovery.ts": "c09a5ac962c9c9783ca0fa6b00afc675d9d2c3be5509d5576fe90643b77951a1"
+  "apps/mobile/src/types/DictionaryImportRecovery.ts": "c09a5ac962c9c9783ca0fa6b00afc675d9d2c3be5509d5576fe90643b77951a1",
+  "apps/mobile/src/services/__tests__/dictionaryImportReviewBaseline.sqlite.test.ts": "0c236645eb08e45b19923802c1a00f0d63019f39ce419a539bcccee5028e7245",
+  "scripts/postgres-tests/dictionary-import-placement-review-baseline.test.mjs": "af260233858f1507080a2d03b8c323bd554a6260263558f7132c1dd1a53ce180"
 }
