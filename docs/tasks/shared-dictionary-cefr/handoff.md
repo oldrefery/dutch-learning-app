@@ -1,34 +1,44 @@
 # Shared dictionary and CEFR — current handoff
 
-Last checkpoint: **2026-10-02 — D10.3 offline import review and preservation repairs complete.**
-User confirmed Astra for this review; High effort follows the accepted routing.
-Source commit: `5efd6ff093765672e74dc071996b5d866c62a7c6`, following implementation
-`dfdc7f0` / documentation `18d48b7`. AUTH-18 local commits only; no push/PR/merge.
+Last checkpoint: **2026-10-02 — D10 mobile self-contained document reimport implemented and committed.**
+User confirmed GPT-6.1 Sol for implementation; High effort follows accepted routing.
+Source commit: `42c9bfd1813be0742d482f04c02e8de969bcb5cc`, following reviewed
+imports `5efd6ff` / docs `4aa80a4`. AUTH-18 local commits only; no push/PR/merge.
 The following documentation commit preserves this handoff and source fingerprints.
 
-Six reproduced issues were repaired: imported-ID resurrection after remote delete,
-read-only collection INSERT, pending-import loss during target cleanup, concurrent
-local-learning overwrite, incomplete dictionary hydration and deleted-card debt.
-SQLite v15 preserves v14 intents and earlier content/learning queues and records
-acknowledged import identities durably. Server schema and generated contracts did
-not change. [Review evidence](evidence/D10-offline-import-review-20261002.md).
+Default-off collection details copy full JSON content; the import sheet opens a
+pasted-JSON preview with selection and existing owned targets. Reimport assigns
+fresh personal IDs/default SRS and atomically persists private content, commands
+and immutable import intents. Active/intra-document duplicates are skipped without
+moves or edits; failures and detected owner changes before commit roll back the
+whole batch. Account changes clear stale previews; large lists are virtualized.
+No file picker or new native dependency. [Checkpoint evidence](evidence/D10-document-reimport-20261002.md).
 
-Verification: focused mobile 8 suites / 170 tests; D10 SQL 16/16; full ordinary
-commit hooks mobile 147 suites / 1689 tests / 22 snapshots and web 75 suites /
-642 tests (one pre-existing skipped suite/test). Test-inclusive typecheck, strict
-changed-file zero-warning lint, scoped formatting and diff checks pass. Full SQL
-188/188 and target generation/check are historical gates at `dfdc7f0`; server code
-is unchanged. No pending test/generator/QA job. Synthetic SQL resources cleaned up;
-retained native/D08 QA stayed off, other sessions/devices untouched.
+Verification: focused mobile 9 suites / 120 tests; normal commit hooks full mobile
+149 suites / 1715 tests / 22 snapshots and web 75 suites / 642 tests (one existing
+skipped suite/test). Test-inclusive typecheck, strict zero-warning scoped lint,
+formatting and diff pass. Server schema/generated contracts did not change; no
+fresh SQL or native acceptance is claimed. Exact iOS Shutdown, task AVD absent,
+four task containers exited at 09:03 UTC. No QA restart or pending operation.
 
-**Next: GPT-6.1 Sol / High, D10.3 remaining integration/recovery**, then D10.4/D10.5
-both-client import/export/reimport and assigned-device validation. Missing-target
-recovery and safely evidenced pre-upgrade import recovery remain open; mobile
-self-contained document reimport is incomplete. D10.3-D10.5 remain unchecked.
-Do not repeat D08/D09 acceptance or start D11. Private `.playwright-cli/` and ignored
-reports remain outside commits. No model switch or native QA claim is implied.
-Earlier evidence: [implementation](evidence/D10-offline-import-intents-20261002.md),
-[preceding contract review](evidence/D10-astra-review-20261002.md).
+**Next: GPT-6 Astra / High, D10.3 unavailable-target recovery architecture review.**
+The concrete [review input and race matrix](evidence/D10-target-recovery-review-input.md)
+are saved; this is a draft, not an implemented/accepted protocol. Resolve durable
+settlement and repeated-recovery lineage before changing SQL/SQLite queues. Then
+GPT-6.1 Sol / High implements the accepted contract. Current-thread picker switching
+is unavailable; do not claim a change without user confirmation.
+D10.3-D10.5 remain unchecked; safely evidenced pre-upgrade recovery and background/
+both-client integration plus assigned-device acceptance remain. Do not repeat
+D08/D09 closure or start D11. Private `.playwright-cli/` and ignored QA data remain
+outside commits. No hosted operation is authorized.
+
+Earlier Astra review repaired six reproduced races/preservation failures in
+`5efd6ff`: imported-ID resurrection, read-only target INSERT, pending-import loss
+on target cleanup, concurrent learning overwrite, incomplete dictionary hydration
+and deleted-card debt. SQLite v15 retains v14 intents/queues and durable import
+acknowledgements. [Review evidence](evidence/D10-offline-import-review-20261002.md).
+Earlier [implementation](evidence/D10-offline-import-intents-20261002.md) and
+[contract review](evidence/D10-astra-review-20261002.md) remain historical evidence.
 
 Default-off web effective-content integration is complete: owner bulk reads,
 one v2 review snapshot, versioned private edits, explicit revision adoption,
@@ -51,18 +61,20 @@ Data, volumes, copies and reports retained. Other sessions/devices untouched.
 Task state: D02–D09 done; D10 in_progress; D11–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, current implementation `5efd6ff`
+Branch `feature/shared-dictionary-schema`, current implementation `42c9bfd`
 following base implementation `a59acad`; no push/PR. Default runtime dictionary flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume
 
 1. Read [D10 stage card](steps/D10.md), its focused inputs and permissions.
-   Continue D10.3 remaining recovery/integration from the completed offline import
-   review; do not repeat closed D08/D09 acceptance or start all remaining stages.
+   Continue D10.3 unavailable-target recovery architectural review from the saved
+   draft/race matrix and completed mobile document reimport; do not repeat closed
+   D08/D09 acceptance or start all remaining stages.
 2. D03-D09 work and the preceding D10 review are preserved in `a59acad`;
-   durable D10.3 imports are in `dfdc7f0` and review repairs are in `5efd6ff`,
-   with task docs in the following documentation checkpoint. The historical pre-commit
+   durable D10.3 imports are in `dfdc7f0` and review repairs are in `5efd6ff`;
+   mobile document reimport is in `42c9bfd`, with task docs in the following checkpoint.
+   The historical pre-commit
    inventory is [dirty paths](evidence/D10-dirty-paths.txt). Current source hashes
    are [D10 fingerprints](evidence/D10-source-sha256.json). Leave `.playwright-cli`
    and ignored QA copies/reports uncommitted; do not delete them for a clean status.
@@ -87,9 +99,10 @@ No production, schema cutover, publication, deployment or paid provider calls.
 
 AUTH-16 permits autonomous model/effort selection through supported controls:
 GPT-6.1 Sol / High for implementation, Astra / High for prescribed review or
-unresolved architecture/concurrency risk. The user confirmed switching to Astra
-for this completed review; High effort carries forward from the accepted routing.
-No independent agent was used. Next implementation: GPT-6.1 Sol / High. Direct
+unresolved architecture/concurrency risk. The user confirmed GPT-6.1 Sol for the
+document reimport implementation; High effort
+carries forward from accepted routing. No independent agent was used. Next unresolved
+architecture checkpoint: Astra / High; then GPT-6.1 Sol / High implementation. Direct
 current-thread picker control is unavailable, and computer use denied access to
 Codex during the preceding checkpoint. No automatic switch is claimed.
 Announce confirmed picker changes. Do not use GPT-5.6 Sol for future work.
@@ -133,7 +146,7 @@ infer live readiness from completed local stages.
 - The earlier performance branch was not reused; its squash-merged work is present
   through current `main`.
 - Persistence: **committed locally, not pushed**. Latest implementation is
-  `5efd6ff`, following `dfdc7f0` and `a59acad`; task docs are in the following documentation
+  `42c9bfd`, following `5efd6ff`, `dfdc7f0` and `a59acad`; task docs are in the following documentation
   checkpoint. A new local session can
   resume. A remote clone still needs an explicitly authorized push or transfer.
 - Root `AGENTS.md` is excluded by `.git/info/exclude`; its local resume route was
@@ -149,7 +162,7 @@ infer live readiness from completed local stages.
   target contract, package scripts/README and CI check; D09 web/dictionary routes,
   tests, benchmark harness/helpers and evidence; D10 mapping/import/export contracts
   and review fixes. Verify git status on resume and preserve later user edits.
-- Latest implementation/review repair commit: `5efd6ff`; earlier D03-D10 review: `a59acad`.
+- Latest implementation commit: `42c9bfd`; preservation review: `5efd6ff`; earlier D03-D10 review: `a59acad`.
   No PR or remote push. Dictionary deployments: none.
 
 ## Evidence and environment

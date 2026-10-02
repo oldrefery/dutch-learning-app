@@ -1036,6 +1036,35 @@ a new session to read this entire history. Never log private vocabulary or secre
 - No fresh quota observation. No push/PR/merge, production/cutover, deployment,
   publication, paid operation or new automation. D10 remains in progress.
 
+## 2026-10-02 — D10 mobile self-contained document reimport checkpoint
+
+- User confirmed GPT-6.1 Sol; High effort follows accepted routing. No automatic
+  picker switch or independent agent. D10 active, D10.3-D10.5 unchecked; no D11.
+- Implemented default-off clipboard JSON export and pasted-JSON selection/reimport
+  into owned existing collections. Fresh personal IDs/default SRS, full private
+  content/media and atomic durable import/content queues; duplicate skips preserve
+  existing identities/collections/progress/queues. No new native dependency.
+- Source commit `42c9bfd1813be0742d482f04c02e8de969bcb5cc`, AUTH-17/AUTH-18,
+  `feature/shared-dictionary-schema`, local only; documentation checkpoint follows.
+  Private `.playwright-cli/` and ignored reports/data remain uncommitted.
+- Normal hooks mobile 149 suites / 1715 tests / 22 snapshots; web 75 suites /
+  642 tests, one existing skipped suite/test. Focused 9 suites / 120 tests,
+  test-inclusive typecheck, strict zero-warning scoped lint, format/diff pass.
+  SQL/schema/generated contracts unchanged; no fresh SQL/native acceptance claim.
+- [Evidence and repaired fixture/mock attempts](evidence/D10-document-reimport-20261002.md),
+  [source hashes](evidence/D10-source-sha256.json) and
+  [unavailable-target review draft/race matrix](evidence/D10-target-recovery-review-input.md)
+  are durable. The draft is not an accepted/implemented recovery protocol.
+- Scoped resource inventory required sandbox escalation, then confirmed exact
+  iOS Shutdown, task AVD process absent and four task containers exited at 09:03 UTC.
+  No resource restart/reset/removal; other sessions/devices untouched. All temporary
+  file-backed test directories cleaned up; no running/uncertain operation remains.
+- Next: Astra / High for unresolved unavailable-target settlement/lineage review;
+  save the accepted contract, then Sol 6.1 / High implementation. Current-thread
+  picker control is unavailable; request/record manual confirmation before claims.
+- No new quota sample. No push/PR/merge, production/cutover, deployment,
+  publication, paid operation or new automation. Existing one-time heartbeat paused.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:
