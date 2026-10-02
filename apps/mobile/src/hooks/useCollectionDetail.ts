@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { router } from 'expo-router'
+import { router, type Href } from 'expo-router'
 import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -242,8 +242,26 @@ export function useCollectionDetail(collectionId: string) {
   const handleSelectTargetCollection = async (targetCollection: Collection) => {
     if (!wordToMove) return
 
+    const word = useApplicationStore
+      .getState()
+      .words.find(candidate => candidate.word_id === wordToMove)
+    if (word?.dictionary_import_recovery || word?.dictionary_import_conflict) {
+      handleCloseMoveModal()
+      router.push(ROUTES.DICTIONARY_RECOVERY as Href)
+      return
+    }
+
     try {
-      await moveWordToCollection(wordToMove, targetCollection.collection_id)
+      const owner = useApplicationStore.getState().currentUserId
+      const moved = await moveWordToCollection(
+        wordToMove,
+        targetCollection.collection_id
+      )
+      if (useApplicationStore.getState().currentUserId !== owner) return
+      if (!moved)
+        throw new Error(
+          'The card was not moved. Open Saved imports if recovery is needed.'
+        )
       ToastService.show(
         `Word moved to "${targetCollection.name}"`,
         ToastType.SUCCESS

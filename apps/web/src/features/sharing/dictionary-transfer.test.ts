@@ -52,6 +52,8 @@ it('exports and reimports complete content without source IDs or learning state'
 it.each([
   { ...document, schema_version: 2 },
   { ...document, user_id: 'another-owner' },
+  { ...document, original_intent: { word_id: 'retained-mobile-card' } },
+  { ...document, recovery_version: 1 },
   { ...document, collection: { name: 'Source', collection_id: 'foreign' } },
   { ...document, entries: [{ content, reference: { entry_id: 'private' } }] },
   { ...document, entries: [{ content: { ...content, interval_days: 34 } }] },
@@ -104,3 +106,19 @@ it('fails closed on export errors and when the dormant feature is disabled', asy
   ).rejects.toThrow('unavailable')
   expect(rpc).toHaveBeenCalledTimes(1)
 })
+
+it.each(['target-collection-unavailable', 'Lost reply'])(
+  'returns uncertain import failure without retargeting, replaying or importing a retained mobile ID: %s',
+  async message => {
+    const error = { message }
+    rpc.mockResolvedValueOnce({ data: null, error })
+    await expect(
+      importDictionaryCollectionExport(client, 'existing-owned', document)
+    ).resolves.toEqual({ data: null, error })
+    expect(rpc).toHaveBeenCalledTimes(1)
+    expect(rpc).toHaveBeenCalledWith('import_dictionary_copies_v1', {
+      p_collection_id: 'existing-owned',
+      p_contents: [content],
+    })
+  }
+)

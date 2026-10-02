@@ -5,6 +5,7 @@ import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
+import { dictionaryImportRecoveryViewRepository } from '@/db/dictionaryImportRecoveryViewRepository'
 import { wordToDictionaryContent } from '@/db/dictionaryContentMapping'
 import { applyDictionaryMaterializations } from '@/db/dictionaryWordMaterialization'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
@@ -245,16 +246,27 @@ export const createWordActions = (
           .filter(row => row.status === 'conflict')
           .map(row => row.intent.word_id)
       )
+      const importIssues = new Map(
+        (isDictionaryContentEnabled()
+          ? await dictionaryImportRecoveryViewRepository.getIssues(userId)
+          : []
+        ).map(row => [row.word_id, row.issue])
+      )
 
       if (get().currentUserId !== userId) return
 
       // Empty word list is a valid state for new users
       set({
         words: applyDictionaryMaterializations(words, materializations).map(
-          word =>
-            importConflicts.has(word.word_id)
-              ? { ...word, dictionary_import_conflict: true }
-              : word
+          word => ({
+            ...word,
+            ...(importConflicts.has(word.word_id) && {
+              dictionary_import_conflict: true,
+            }),
+            ...(importIssues.has(word.word_id) && {
+              dictionary_import_recovery: importIssues.get(word.word_id),
+            }),
+          })
         ),
         wordsLoading: false,
       })

@@ -102,4 +102,40 @@ describe('useCollectionDetail', () => {
       ToastType.INFO
     )
   })
+
+  it('routes an unsettled import move to explicit current-state recovery without ordinary movement', async () => {
+    const moveWordToCollection = jest.fn()
+    const word = {
+      ...useApplicationStore.getState().words[0],
+      dictionary_import_recovery: 'pending' as const,
+    }
+    useApplicationStore.setState({ words: [word], moveWordToCollection })
+    const { result } = renderHook(() => useCollectionDetail(collectionId))
+    act(() => result.current.handleMoveToCollection(word.word_id))
+    await act(async () => {
+      await result.current.handleSelectTargetCollection(createMockCollection())
+    })
+    expect(moveWordToCollection).not.toHaveBeenCalled()
+    expect(router.push).toHaveBeenCalledWith(ROUTES.DICTIONARY_RECOVERY)
+  })
+
+  it('does not report a successful move when the store retains a blocked card', async () => {
+    const word = useApplicationStore.getState().words[0]
+    useApplicationStore.setState({
+      moveWordToCollection: jest.fn().mockResolvedValue(null),
+    })
+    const { result } = renderHook(() => useCollectionDetail(collectionId))
+    act(() => result.current.handleMoveToCollection(word.word_id))
+    await act(async () => {
+      await result.current.handleSelectTargetCollection(createMockCollection())
+    })
+    expect(ToastService.show).toHaveBeenCalledWith(
+      expect.stringContaining('not moved'),
+      ToastType.ERROR
+    )
+    expect(ToastService.show).not.toHaveBeenCalledWith(
+      expect.any(String),
+      ToastType.SUCCESS
+    )
+  })
 })

@@ -39,6 +39,11 @@ jest.mock('@/db/wordRepository', () => ({
 jest.mock('@/db/dictionaryImportRepository', () => ({
   dictionaryImportRepository: { getPending: jest.fn().mockResolvedValue([]) },
 }))
+jest.mock('@/db/dictionaryImportRecoveryViewRepository', () => ({
+  dictionaryImportRecoveryViewRepository: {
+    getIssues: jest.fn().mockResolvedValue([]),
+  },
+}))
 jest.mock('@/db/dictionaryContentRepository', () => ({
   dictionaryContentRepository: {
     getMaterializedContent: jest.fn(),

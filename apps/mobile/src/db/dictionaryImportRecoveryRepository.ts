@@ -32,7 +32,8 @@ export const dictionaryImportRecoveryRepository = {
     userId: string,
     value: DictionaryImportRecovery,
     previousOperationId: string | null,
-    assertOwner: () => void
+    assertOwner: () => void,
+    expectedLocalRevision?: number
   ): Promise<void> {
     const request = parseDictionaryImportRecovery(value)
     const wordId = request.original_intent.word_id
@@ -42,6 +43,11 @@ export const dictionaryImportRecoveryRepository = {
       const delivery = await loadDelivery(transaction, userId, wordId)
       requireBinding(delivery, request)
       if (delivery.cancelled) changed()
+      if (
+        expectedLocalRevision !== undefined &&
+        delivery.local_placement_revision !== expectedLocalRevision
+      )
+        changed()
       const previous = await loadOutbox(transaction, userId, wordId)
       if (
         (previous?.operation_id ?? null) !== previousOperationId ||

@@ -3,6 +3,7 @@
 // SRS Assessment types
 import { SRSAssessmentType } from '@/constants/SRSConstants'
 import { ExpressionType } from './ExpressionTypes'
+import type { ImportRecoveryIssue } from './DictionaryImportRecovery'
 import type {
   CefrAssessmentStatus,
   CefrLevel,
@@ -93,6 +94,7 @@ export interface Word {
   dictionary_content_source?: DictionaryContentSource
   dictionary_content_conflict?: boolean
   dictionary_import_conflict?: boolean
+  dictionary_import_recovery?: ImportRecoveryIssue
   created_at: string
   updated_at: string
 }

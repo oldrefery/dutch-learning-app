@@ -24,7 +24,7 @@ export async function recordExplicitImportMove(
     delivery.acknowledged_placement_revision === null
   )
     throw new Error(
-      'Import placement needs recovery. Your card and learning history remain saved.'
+      'Open Saved imports to recover placement. Your card and learning history remain saved.'
     )
   await transaction.runAsync(
     `UPDATE dictionary_import_delivery SET local_placement_revision = local_placement_revision + 1

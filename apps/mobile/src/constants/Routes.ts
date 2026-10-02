@@ -27,6 +27,7 @@ export const ROUTES = {
   COLLECTION_DETAIL: (id: string) => `/collection/${id}` as const,
   IMPORT_COLLECTION: (token: string) => `/import/${token}` as const,
   DICTIONARY_IMPORT: '/dictionary-import' as const,
+  DICTIONARY_RECOVERY: '/dictionary-recovery' as const,
   OFFICIAL_CONTENT: '/official-content' as const,
   STARTER_PACK: '/starter-pack' as const,
   BATCH_CAPTURE: '/batch-capture' as const,

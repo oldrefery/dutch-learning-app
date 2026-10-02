@@ -44,17 +44,20 @@ it('uses complete private copies for unhosted bundled Essentials only', async ()
     expect(content).not.toHaveProperty('interval_days')
   }
 })
-it.each(['unsupported-protocol', 'network error', 'invalid-import-reference'])(
-  'does not downgrade an uncertain canonical import: %s',
-  async message => {
-    const error = { message }
-    rpc.mockResolvedValue({ data: null, error })
-    await expect(
-      importStarterPackEntries(client, 'owned', manifest, entries)
-    ).resolves.toMatchObject({ error })
-    expect(rpc).toHaveBeenCalledTimes(1)
-  }
-)
+it.each([
+  'unsupported-protocol',
+  'network error',
+  'invalid-import-reference',
+  'target-collection-unavailable',
+  'dictionary-import-cancelled',
+])('does not downgrade an uncertain canonical import: %s', async message => {
+  const error = { message }
+  rpc.mockResolvedValue({ data: null, error })
+  await expect(
+    importStarterPackEntries(client, 'owned', manifest, entries)
+  ).resolves.toMatchObject({ error })
+  expect(rpc).toHaveBeenCalledTimes(1)
+})
 it('never falls back from an unavailable hosted pack to a client copy', async () => {
   rpc.mockResolvedValue({
     data: null,
