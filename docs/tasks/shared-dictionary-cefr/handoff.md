@@ -17,6 +17,11 @@ placement debt and all roots/IDs/SRS/queues. Exact resources verified off at 11:
 four task containers exited. No QA resource restart or reset occurred.
 D10.3–D10.5 remain unchecked. Do not repeat D08/D09 or begin D11.
 
+Review checkpoint committed locally as `4f7a6a6`. Normal hooks passed **156 mobile
+suites / 1787 tests / 22 snapshots** and **75 web suites / 648 tests**, with one
+existing skipped web suite/test. All 113 source fingerprints match. No pending
+operation remains after hooks; `.playwright-cli/` stays private and untracked.
+
 Historical preceding checkpoint follows:
 
 Last checkpoint: **2026-10-02 — D10.3 explicit recovery UI, accepted checkpoint 5.**

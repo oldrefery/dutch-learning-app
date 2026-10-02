@@ -1193,6 +1193,11 @@ a new session to read this entire history. Never log private vocabulary or secre
   Manual model confirmation needed because picker control is unavailable.
   D10.3–D10.5 remain open, D11 not started. No new quota sample.
 
+- Review checkpoint `4f7a6a6` normal hooks: 156 mobile suites / 1787 tests /
+  22 snapshots; 75 web suites / 648 tests, one existing skipped suite/test.
+  All 113 source fingerprints match. No pending job after hooks; next docs-only
+  checkpoint records this result. Exact QA off verified at 11:26 UTC.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:
