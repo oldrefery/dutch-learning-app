@@ -1246,7 +1246,9 @@ a new session to read this entire history. Never log private vocabulary or secre
   Data/volumes/private artifacts preserved; other sessions/devices untouched.
 - Next Astra / High: retained v14/v15 native upgrade evidence and remaining D10
   cross-owner/both-client/official/shared/bundled acceptance. D10.3–D10.5 open;
-  D11 not started. Local checkpoint commit pending; no push/PR or hosted operation.
+  D11 not started. Local checkpoint `4e9563f`; normal hooks: 156 mobile suites /
+  1796 tests / 22 snapshots, 75 web suites / 648 tests, one existing skipped
+  suite/test. 113 source hashes match after hooks. No push/PR or hosted operation.
 
 ## Record template
 

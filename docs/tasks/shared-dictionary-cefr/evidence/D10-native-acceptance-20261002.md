@@ -140,11 +140,14 @@ are not established by the evidence above. Do not mark D10 complete.
 
 All 113 application/source fingerprints match the reviewed source. Changes in this
 checkpoint are QA helpers, flows and documentation only. Scoped strict lint,
-format and diff checks are run before the authorized local commit; full hook results
-are recorded in handoff after the commit. No closed application suites were
+format and diff checks pass. Authorized local checkpoint `4e9563f` normal hooks:
+156 mobile suites / 1796 tests / 22 snapshots and 75 web suites / 648 tests,
+one existing skipped suite/test. Source fingerprints match after hooks. No closed application suites were
 manually rerun absent a source change.
 
 One elevated final-snapshot command was rejected because automatic approval review
 hit a usage limit; it did not execute. After the user's continue, the same scoped
 operation was accepted. There was no policy bypass. Final snapshots and proxy event
-log saved before cleanup; exact shutdown verification is recorded in handoff.
+log saved before cleanup; exact shutdown verification at 12:23 UTC confirms assigned iOS Shutdown, Android
+serial absent, no matching task processes, four containers exited and ports
+55331/55400 closed. Retained data/volumes were not removed.

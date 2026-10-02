@@ -41,8 +41,10 @@ matrix. Do not repeat closed R1/R2 checks or D08/D09. If an application repair i
 required, save a concrete reproducer and request GPT-6.1 Sol / High; current-thread
 model picker is unavailable. D10.3–D10.5 stay unchecked; do not begin D11.
 
-QA helpers/flows and task docs are awaiting the authorized local checkpoint commit;
-all 113 application/source fingerprints match. Scoped lint/format/diff checks pass.
+QA helpers/flows and task docs committed locally as `4e9563f`. Normal hooks pass:
+156 mobile suites / 1796 tests / 22 snapshots; 75 web suites / 648 tests, one
+existing skipped suite/test. All 113 application/source fingerprints still match
+after hooks. Scoped strict lint/format/diff checks pass. No pending operation.
 No push/PR/merge, production, schema cutover, publication, deployment or paid call.
 Automation `d09-06-00` stays paused. Private `.playwright-cli/` remains untracked.
 
