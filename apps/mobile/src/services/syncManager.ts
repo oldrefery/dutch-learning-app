@@ -46,6 +46,12 @@ import {
   DictionaryContentConflictError,
 } from './dictionaryContentSync'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
+import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
+import { dictionaryPersonalRefreshRepository } from '@/db/dictionaryPersonalRefreshRepository'
+import {
+  dictionaryImportSync,
+  DictionaryImportConflictError,
+} from './dictionaryImportSync'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import type { PendingReviewCorrection } from '@/types/ReviewCorrection'
 
@@ -102,6 +108,7 @@ type SyncStage =
   | 'pull_review_events'
   | 'push_collections'
   | 'push_dictionary_content'
+  | 'push_dictionary_imports'
   | 'push_words'
   | 'push_progress'
   | 'push_review_events'
@@ -455,6 +462,13 @@ export class SyncManager {
       )
 
       // Step 4: Push pending word updates to Supabase
+      if (dictionaryContentAvailable) {
+        await this.runSyncStageWithSessionRetry(
+          'push_dictionary_imports',
+          userId,
+          () => dictionaryImportSync.push(userId)
+        )
+      }
       console.log('[Sync] Stage 6: push words')
       const pushedWordsCount = await this.runSyncStageWithSessionRetry(
         'push_words',
@@ -510,6 +524,8 @@ export class SyncManager {
         correctionsAvailable,
         canonicalRefreshRequired
       )
+      await this.refreshDictionaryPersonalRows(userId)
+
       if (dictionaryError) throw dictionaryError
       const timestamp = new Date().toISOString()
       // Status metadata must not turn an acknowledged data sync into a failure.
@@ -541,7 +557,9 @@ export class SyncManager {
 
       const result: SyncResult = {
         success: false,
-        dictionaryConflict: error instanceof DictionaryContentConflictError,
+        dictionaryConflict:
+          error instanceof DictionaryContentConflictError ||
+          error instanceof DictionaryImportConflictError,
         wordsSynced: 0,
         progressSynced: 0,
         error: errorMessage,
@@ -556,6 +574,25 @@ export class SyncManager {
       return result
     } finally {
       await this.health.record(userId, outcome, startedAt)
+    }
+  }
+
+  private async refreshDictionaryPersonalRows(userId: string): Promise<void> {
+    if (!this.dictionaryContentAvailable) return
+    const refreshIds = await dictionaryPersonalRefreshRepository.getWordIds(
+      userId,
+      true
+    )
+    for (let offset = 0; offset < refreshIds.length; offset += 400) {
+      const chunk = refreshIds.slice(offset, offset + 400)
+      const refreshed = await this.runSyncStageWithSessionRetry(
+        'pull_words',
+        userId,
+        () => this.pullWordsFromSupabase(userId, null, chunk)
+      )
+      if (refreshed.length !== chunk.length)
+        throw new Error('Imported personal learning state is unavailable')
+      await dictionaryPersonalRefreshRepository.acknowledge(userId, chunk)
     }
   }
 
@@ -883,13 +920,19 @@ export class SyncManager {
 
   private async pullWordsFromSupabase(
     userId: string,
-    cursor: SyncCursor | null
+    cursor: SyncCursor | null,
+    wordIds?: readonly string[]
   ): Promise<Word[]> {
     let data: SyncWord[] | null = null
     let error: SupabaseLikeError | null = null
 
     try {
-      const initialResult = await this.fetchWordPages(userId, cursor, '*')
+      const initialResult = await this.fetchWordPages(
+        userId,
+        cursor,
+        '*',
+        wordIds
+      )
       data = initialResult.data
       error = initialResult.error
     } catch (queryError) {
@@ -908,7 +951,8 @@ export class SyncManager {
         const fallbackResult = await this.fetchWordPages(
           userId,
           cursor,
-          WORDS_SELECT_COLUMNS_WITHOUT_REGISTER
+          WORDS_SELECT_COLUMNS_WITHOUT_REGISTER,
+          wordIds
         )
         data = fallbackResult.data
         error = fallbackResult.error
@@ -924,6 +968,14 @@ export class SyncManager {
     if (!data || data.length === 0) {
       console.log('[Sync] No new words to pull from Supabase')
       return []
+    }
+    if (
+      wordIds &&
+      data.some(
+        word => !wordIds.includes(word.word_id) || word.user_id !== userId
+      )
+    ) {
+      throw new Error('Personal refresh contains an unrequested word')
     }
 
     // Parse JSON fields from Supabase and ensure required fields
@@ -990,7 +1042,8 @@ export class SyncManager {
     }
 
     const newestWord = parsedWords[parsedWords.length - 1]
-    await setSyncCursor(userId, 'words', toWordSyncCursor(newestWord))
+    if (!wordIds)
+      await setSyncCursor(userId, 'words', toWordSyncCursor(newestWord))
 
     console.log(`[Sync] Pulled ${parsedWords.length} words from Supabase`)
 
@@ -1000,7 +1053,8 @@ export class SyncManager {
   private async fetchWordPages(
     userId: string,
     cursor: SyncCursor | null,
-    selectColumns: string
+    selectColumns: string,
+    wordIds?: readonly string[]
   ): Promise<{
     data: SyncWord[] | null
     error: SupabaseLikeError | null
@@ -1017,6 +1071,7 @@ export class SyncManager {
       if (cursor) {
         query = query.gte('updated_at', cursor.updatedAt)
       }
+      if (wordIds) query = query.in('word_id', [...wordIds])
 
       const result = this.toWordsSelectResult(
         await query
@@ -1556,7 +1611,13 @@ export class SyncManager {
       return []
     }
 
-    const validWords = this.filterValidPendingWords(pendingWords)
+    const imports = this.dictionaryContentAvailable
+      ? await dictionaryImportRepository.getPending(userId)
+      : []
+    const importWordIds = new Set(imports.map(row => row.intent.word_id))
+    const validWords = this.filterValidPendingWords(
+      pendingWords.filter(word => !importWordIds.has(word.word_id))
+    )
     if (validWords.length === 0) {
       console.log('[Sync] No valid words to sync after filtering')
       return []
@@ -2156,22 +2217,64 @@ export class SyncManager {
     }
   }
 
+  private async fetchExistingDictionaryWordIds(
+    payloads: SupabaseWordsUpsertPayload[]
+  ): Promise<Set<string>> {
+    const ids = new Set<string>()
+    for (let offset = 0; offset < payloads.length; offset += 400) {
+      const chunk = payloads.slice(offset, offset + 400)
+      const { data, error } = await supabase
+        .from('words')
+        .select('word_id')
+        .eq('user_id', chunk[0].user_id)
+        .in(
+          'word_id',
+          chunk.map(row => row.word_id)
+        )
+        .is('deleted_at', null)
+        .range(0, chunk.length - 1)
+      if (error) throw error
+      if (!Array.isArray(data))
+        throw new Error('Personal identity lookup failed')
+      for (const row of data) {
+        if (
+          !this.isRecord(row) ||
+          typeof row.word_id !== 'string' ||
+          !chunk.some(payload => payload.word_id === row.word_id)
+        ) {
+          throw new Error(
+            'Personal identity lookup returned an unrequested word'
+          )
+        }
+        ids.add(row.word_id)
+      }
+    }
+    return ids
+  }
+
   private async executeDictionaryWordMetadataUpsert(
     payloads: SupabaseWordsUpsertPayload[]
   ): Promise<WordsUpsertResult> {
     // Bootstrap absent legacy rows without rewriting existing canonical content.
     // Content commands are applied only after all personal IDs exist remotely.
-    const inserted = await supabase
-      .from('words')
-      .upsert(payloads, {
-        onConflict: 'word_id',
-        ignoreDuplicates: true,
-      })
-      .select(WORD_ACKNOWLEDGEMENT_COLUMNS)
-    if (inserted.error) {
-      return { data: null, error: this.toSupabaseLikeError(inserted.error) }
+    const existingIds = await this.fetchExistingDictionaryWordIds(payloads)
+    const newPayloads = payloads.filter(
+      payload => !existingIds.has(payload.word_id)
+    )
+    const acknowledgements: WordSyncAcknowledgement[] = []
+    if (newPayloads.length > 0) {
+      const inserted = await supabase
+        .from('words')
+        .upsert(newPayloads, {
+          onConflict: 'word_id',
+          ignoreDuplicates: true,
+        })
+        .select(WORD_ACKNOWLEDGEMENT_COLUMNS)
+      if (inserted.error) {
+        return { data: null, error: this.toSupabaseLikeError(inserted.error) }
+      }
+      acknowledgements.push(...this.parseWordAcknowledgements(inserted.data))
     }
-    const acknowledgements = this.parseWordAcknowledgements(inserted.data)
     const insertedIds = new Set(acknowledgements.map(row => row.word_id))
     const groups = new Map<string, SupabaseWordsUpsertPayload[]>()
     for (const payload of payloads) {

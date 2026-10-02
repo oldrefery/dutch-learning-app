@@ -20,10 +20,11 @@ import {
   MIGRATION_V11_CORRECTION_RESOLUTION,
 } from './reviewCorrectionSchema'
 import { MIGRATION_V13_DICTIONARY_CONTENT } from './dictionaryContentSchema'
+import { MIGRATION_V14_DICTIONARY_IMPORTS } from './dictionaryImportSchema'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 13
+const SCHEMA_VERSION = 14
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -276,6 +277,11 @@ async function applyPendingMigrations(
       await transaction.execAsync(MIGRATION_V13_DICTIONARY_CONTENT)
     })
   }
+  if (currentVersion < 14) {
+    await db.withExclusiveTransactionAsync(async transaction => {
+      await transaction.execAsync(MIGRATION_V14_DICTIONARY_IMPORTS)
+    })
+  }
 }
 
 function parseSchemaVersion(storedVersion: string | null): number {
@@ -362,6 +368,8 @@ export async function resetDatabase(): Promise<void> {
   try {
     const db = await getDatabase()
     const statements = [
+      'DROP TABLE IF EXISTS dictionary_import_intents',
+      'DROP TABLE IF EXISTS dictionary_personal_refresh_queue',
       'DROP TABLE IF EXISTS dictionary_change_cursors',
       'DROP TABLE IF EXISTS dictionary_content_commands',
       'DROP TABLE IF EXISTS dictionary_card_content',

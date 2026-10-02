@@ -4,6 +4,8 @@ import { wordService } from '@/lib/supabase'
 import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
+import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
+import { wordToDictionaryContent } from '@/db/dictionaryContentMapping'
 import { applyDictionaryMaterializations } from '@/db/dictionaryWordMaterialization'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import * as Crypto from 'expo-crypto'
@@ -235,12 +237,25 @@ export const createWordActions = (
             words.map(word => word.word_id)
           )
         : new Map()
+      const imports = isDictionaryContentEnabled()
+        ? await dictionaryImportRepository.getPending(userId)
+        : []
+      const importConflicts = new Set(
+        imports
+          .filter(row => row.status === 'conflict')
+          .map(row => row.intent.word_id)
+      )
 
       if (get().currentUserId !== userId) return
 
       // Empty word list is a valid state for new users
       set({
-        words: applyDictionaryMaterializations(words, materializations),
+        words: applyDictionaryMaterializations(words, materializations).map(
+          word =>
+            importConflicts.has(word.word_id)
+              ? { ...word, dictionary_import_conflict: true }
+              : word
+        ),
         wordsLoading: false,
       })
     } catch (error) {
@@ -604,10 +619,17 @@ export const createWordActions = (
         updated_at: word.updated_at ?? now,
       }))
 
-      if (importOptions?.dictionaryReferences)
+      if (
+        importOptions?.dictionaryReferences ||
+        importOptions?.dictionaryImportSources
+      )
         await wordRepository.addWords(
           wordsWithIds,
-          importOptions.dictionaryReferences
+          importOptions.dictionaryReferences,
+          importOptions.dictionaryImportSources?.map((source, index) => ({
+            ...source,
+            content: wordToDictionaryContent(wordsWithIds[index]),
+          }))
         )
       else await wordRepository.addWords(wordsWithIds)
 

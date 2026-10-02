@@ -2,8 +2,19 @@ import { wordRepository } from '@/db/wordRepository'
 import { createMockWord } from '@/__tests__/helpers/factories'
 import { syncStatusService } from '../syncStatusService'
 import { getLastSyncTimestamp } from '@/utils/network'
+import { dictionaryPersonalRefreshRepository } from '@/db/dictionaryPersonalRefreshRepository'
+import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+
+jest.mock('@/db/dictionaryPersonalRefreshRepository', () => ({
+  dictionaryPersonalRefreshRepository: {
+    getWordIds: jest.fn().mockResolvedValue([]),
+  },
+}))
+jest.mock('@/db/dictionaryImportRepository', () => ({
+  dictionaryImportRepository: { getPending: jest.fn().mockResolvedValue([]) },
+}))
 
 jest.mock('@/constants/dictionaryContent', () => ({
   isDictionaryContentEnabled: jest.fn(() => false),
@@ -170,4 +181,20 @@ it('does not read dictionary queues while the runtime feature is dormant', async
   expect(
     dictionaryContentRepository.getMissingCardWordIds
   ).not.toHaveBeenCalled()
+})
+
+it('keeps acknowledged-word import conflicts and deferred SRS hydration visible in pending status', async () => {
+  jest.mocked(isDictionaryContentEnabled).mockReturnValue(true)
+  jest
+    .mocked(dictionaryImportRepository.getPending)
+    .mockResolvedValueOnce([
+      { intent: { word_id: 'import-conflict' }, status: 'conflict' },
+    ] as Awaited<ReturnType<typeof dictionaryImportRepository.getPending>>)
+  jest
+    .mocked(dictionaryPersonalRefreshRepository.getWordIds)
+    .mockResolvedValueOnce(['deferred-learning', 'import-conflict'])
+  expect(await syncStatusService.getSnapshot('owner')).toMatchObject({
+    pendingWords: 2,
+    totalPending: 2,
+  })
 })

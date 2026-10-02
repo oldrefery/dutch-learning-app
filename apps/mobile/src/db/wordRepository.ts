@@ -17,9 +17,11 @@ import {
   toLocalDateKey,
   type DictionaryContentCommand,
   type DictionaryReference,
+  type DictionaryImportSource,
 } from '@woordenaar/domain'
 import { randomUUID } from 'expo-crypto'
 import { wordToDictionaryContent } from './dictionaryContentMapping'
+import { dictionaryImportRepository } from './dictionaryImportRepository'
 
 const requireDictionaryOverrides = (value: unknown) => {
   const result = parseDictionaryContentOverrides(value)
@@ -42,6 +44,7 @@ interface ExistingWordCheck {
   deleted_at: string | null
   has_pending_learning?: number
   has_pending_dictionary?: number
+  has_pending_import?: number
   has_dictionary_content?: number
 }
 
@@ -96,6 +99,7 @@ const CHECK_EXISTING_WORD_SQL = `
   SELECT word_id, sync_status, updated_at, deleted_at,
     EXISTS(SELECT 1 FROM learning_commands WHERE learning_commands.word_id = words.word_id) AS has_pending_learning,
     EXISTS(SELECT 1 FROM dictionary_content_commands WHERE dictionary_content_commands.word_id = words.word_id) AS has_pending_dictionary,
+    EXISTS(SELECT 1 FROM dictionary_import_intents WHERE dictionary_import_intents.word_id = words.word_id) AS has_pending_import,
     EXISTS(SELECT 1 FROM dictionary_card_content WHERE dictionary_card_content.word_id = words.word_id) AS has_dictionary_content
   FROM words
   WHERE user_id = ?
@@ -373,7 +377,8 @@ export class WordRepository {
       options.preserveUnsynced &&
       (UNSYNCED_STATUSES.has(existingWord.sync_status) ||
         existingWord.has_pending_learning ||
-        existingWord.has_pending_dictionary)
+        existingWord.has_pending_dictionary ||
+        existingWord.has_pending_import)
     )
   }
 
@@ -841,7 +846,8 @@ export class WordRepository {
 
   async addWords(
     words: Word[],
-    references?: readonly (DictionaryReference | null)[]
+    references?: readonly (DictionaryReference | null)[],
+    importSources?: readonly DictionaryImportSource[]
   ): Promise<void> {
     if (words.length === 0) return
     if (
@@ -858,6 +864,12 @@ export class WordRepository {
 
     for (const word of words) {
       this.validateWordId(word)
+    }
+    if (
+      importSources &&
+      (importSources.length !== words.length || !isDictionaryContentEnabled())
+    ) {
+      throw new Error('Invalid dictionary import sources')
     }
 
     const db = await getDatabase()
@@ -876,9 +888,48 @@ export class WordRepository {
               word,
               reference
             )
+          const source = importSources?.[index]
+          if (source)
+            await this.initializeDictionaryImport(
+              transaction,
+              word,
+              source,
+              reference
+            )
         }
       }
     })
+  }
+
+  private async initializeDictionaryImport(
+    transaction: SQLiteDatabase,
+    word: Word,
+    source: DictionaryImportSource,
+    reference?: DictionaryReference | null
+  ): Promise<void> {
+    const expectedReference =
+      source.kind === 'official-pack' ? source.reference : null
+    if (
+      JSON.stringify(source.content) !==
+        JSON.stringify(wordToDictionaryContent(word)) ||
+      JSON.stringify(expectedReference) !== JSON.stringify(reference ?? null)
+    ) {
+      throw new Error('Dictionary import source does not match local content')
+    }
+    if (!word.collection_id)
+      throw new Error('Dictionary import target is missing')
+    await dictionaryImportRepository.enqueue(
+      transaction,
+      word.user_id,
+      {
+        protocol_version: 1,
+        operation_id: randomUUID(),
+        word_id: word.word_id,
+        collection_id: word.collection_id,
+        source,
+      },
+      word.created_at
+    )
   }
 
   private async initializeOfficialDictionaryReference(

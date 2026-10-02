@@ -5,6 +5,7 @@
 
 import { createWordActions } from '../actions/wordActions'
 import { wordRepository } from '@/db/wordRepository'
+import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { Sentry } from '@/lib/sentry'
@@ -34,6 +35,9 @@ jest.mock('@/db/wordRepository', () => ({
     moveWordToCollection: jest.fn(),
     resetWordProgress: jest.fn(),
   },
+}))
+jest.mock('@/db/dictionaryImportRepository', () => ({
+  dictionaryImportRepository: { getPending: jest.fn().mockResolvedValue([]) },
 }))
 jest.mock('@/db/dictionaryContentRepository', () => ({
   dictionaryContentRepository: {
@@ -231,6 +235,25 @@ describe('wordActions', () => {
       )
       expect(mockSet).toHaveBeenCalledWith({
         words: mockWords,
+        wordsLoading: false,
+      })
+    })
+
+    it('exposes an owner-scoped import conflict without manufacturing another personal card', async () => {
+      const word = createMockWord({ user_id: USER_ID })
+      jest
+        .mocked(wordRepository.getWordsByUserId)
+        .mockResolvedValue([word] as Awaited<
+          ReturnType<typeof wordRepository.getWordsByUserId>
+        >)
+      jest
+        .mocked(dictionaryImportRepository.getPending)
+        .mockResolvedValueOnce([
+          { intent: { word_id: word.word_id }, status: 'conflict' },
+        ] as Awaited<ReturnType<typeof dictionaryImportRepository.getPending>>)
+      await actions.fetchWords()
+      expect(mockSet).toHaveBeenCalledWith({
+        words: [{ ...word, dictionary_import_conflict: true }],
         wordsLoading: false,
       })
     })

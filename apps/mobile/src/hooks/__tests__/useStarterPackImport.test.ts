@@ -214,6 +214,17 @@ describe('useStarterPackImport', () => {
     expect(mode).toBe(false)
     expect(options?.dictionaryReferences).toHaveLength(59)
     expect(options?.dictionaryReferences?.[0]).toEqual(reference)
+    expect(options?.dictionaryImportSources?.[0]).toMatchObject({
+      kind: 'official-pack',
+      pack_entry_id: manifest.entries[1].entry_id,
+      manifest_sha256: mapping.manifest_sha256,
+      reference,
+    })
+    expect(
+      options?.dictionaryImportSources
+        ?.slice(1)
+        .every(source => source.kind === 'private-copy')
+    ).toBe(true)
     expect(
       options?.dictionaryReferences?.slice(1).every(item => item === null)
     ).toBe(true)

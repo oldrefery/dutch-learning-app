@@ -10,6 +10,7 @@ import { canonicalizeCefrInput } from '../../packages/domain/src/shared-dictiona
 const json = value => `${literal(JSON.stringify(value))}::jsonb`
 const sha256 = value => createHash('sha256').update(value).digest('hex')
 const exportedWording = 'owner-private exported wording'
+const IDENTITY_CONFLICT = 'identity-conflict'
 let db
 before(async () => {
   db = await createCluster()
@@ -731,5 +732,334 @@ test('owner exports are self-contained and reimport does not need the original p
       `SELECT count(*) FROM public.words WHERE collection_id = '${retryTarget}';`
     ),
     '0'
+  )
+})
+
+const intentRpc = intent =>
+  `SELECT public.apply_dictionary_import_intent_v1(${json(intent)});`
+async function intentFixture() {
+  const f = await fixture()
+  const target = await db.sql(`INSERT INTO public.collections(user_id, name)
+    VALUES ('${f.user}', 'Offline import target') RETURNING collection_id;`)
+  const content = JSON.parse(
+    await db.sql(
+      `SELECT private.official_dictionary_content_v1(${json(f.entry)});`
+    )
+  )
+  const intent = {
+    protocol_version: 1,
+    operation_id: randomUUID(),
+    word_id: randomUUID(),
+    collection_id: target,
+    source: { kind: 'private-copy', content },
+  }
+  const apply = value =>
+    db.sql(asUser(f.user, intentRpc(value ?? intent))).then(JSON.parse)
+  return { f, target, content, intent, apply }
+}
+
+test('durable read-only import keeps proposed identity, version zero and immutable replay without SRS input', async () => {
+  const { f, intent, apply } = await intentFixture()
+  const receipt = await apply()
+  assert.deepEqual(receipt, {
+    protocol_version: 1,
+    operation_id: intent.operation_id,
+    word_id: intent.word_id,
+    outcome: 'inserted',
+    existing_word_id: null,
+    idempotent: false,
+  })
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM public.word_content_state WHERE word_id = '${intent.word_id}';`
+    ),
+    '0'
+  )
+  await assert.rejects(
+    db.sql(
+      asUser(
+        f.user,
+        `INSERT INTO public.words(word_id,user_id,dutch_lemma,
+    translations,tts_url) VALUES('${intent.word_id}','${f.user}','fiets','{}','')
+    ON CONFLICT(word_id) DO NOTHING;`
+      )
+    ),
+    /row-level security/
+  )
+  await db.sql(
+    asUser(
+      f.user,
+      `UPDATE public.words SET collection_id = '${intent.collection_id}'
+    WHERE word_id = '${intent.word_id}' RETURNING word_id;`
+    )
+  )
+  await assert.rejects(
+    db.sql(`UPDATE private.dictionary_import_receipts SET intent_sha256 = repeat('0',64)
+    WHERE user_id = '${f.user}';`),
+    /rows are immutable/
+  )
+  const snapshot = JSON.parse(
+    await db.sql(
+      `SELECT to_jsonb(w) FROM public.words w WHERE word_id = '${intent.word_id}';`
+    )
+  )
+  assert.equal(snapshot.dictionary_entry_id, null)
+  assert.equal(snapshot.repetition_count, 0)
+  await db.sql(
+    `UPDATE public.words SET interval_days = 37, repetition_count = 8 WHERE word_id = '${intent.word_id}';`
+  )
+  assert.deepEqual(await apply(), { ...receipt, idempotent: true })
+  assert.equal(
+    await db.sql(
+      `SELECT repetition_count FROM public.words WHERE word_id = '${intent.word_id}';`
+    ),
+    '8'
+  )
+  await assert.rejects(
+    apply({ ...intent, interval_days: 900 }),
+    /invalid-import-intent/
+  )
+  await assert.rejects(
+    apply({
+      ...intent,
+      source: {
+        ...intent.source,
+        content: { ...intent.source.content, plural: 'mutated' },
+      },
+    }),
+    /import-operation-conflict/
+  )
+  await db.sql(
+    asUser(
+      f.user,
+      `SELECT public.apply_dictionary_content_command_v1(${json({
+        protocol_version: 1,
+        operation_id: randomUUID(),
+        word_id: intent.word_id,
+        expected_content_version: 0,
+        kind: 'create-private',
+        content: intent.source.content,
+      })});`
+    )
+  )
+  assert.equal(
+    await db.sql(
+      `SELECT content_version FROM public.word_content_state WHERE word_id = '${intent.word_id}';`
+    ),
+    '1'
+  )
+  await db.sql(`DELETE FROM public.words WHERE word_id = '${intent.word_id}';`)
+  assert.equal((await apply()).idempotent, true)
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM public.words WHERE word_id = '${intent.word_id}';`
+    ),
+    '0'
+  )
+})
+
+test('durable import records a different personal ID conflict without adopting or moving existing private content', async () => {
+  const { f, target, intent, apply } = await intentFixture()
+  const existing = randomUUID()
+  await db.sql(`INSERT INTO public.words(word_id,user_id,dutch_lemma,part_of_speech,article,translations,tts_url,
+    interval_days,repetition_count) VALUES ('${existing}','${f.user}','fiets','noun','de','{"en":["owner-private"]}','',29,7);`)
+  const before = await db.sql(
+    `SELECT to_jsonb(w) FROM public.words w WHERE word_id = '${existing}';`
+  )
+  const conflict = await apply()
+  assert.equal(conflict.outcome, IDENTITY_CONFLICT)
+  assert.equal(conflict.existing_word_id, existing)
+  assert.equal(
+    await db.sql(
+      `SELECT to_jsonb(w) FROM public.words w WHERE word_id = '${existing}';`
+    ),
+    before
+  )
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM public.words WHERE word_id = '${intent.word_id}';`
+    ),
+    '0'
+  )
+  await db.sql(`DELETE FROM public.words WHERE word_id = '${existing}';`)
+  assert.equal((await apply()).outcome, IDENTITY_CONFLICT)
+  const recovered = await apply({ ...intent, operation_id: randomUUID() })
+  assert.equal(recovered.outcome, 'inserted')
+  assert.equal(
+    await db.sql(
+      `SELECT collection_id FROM public.words WHERE word_id = '${intent.word_id}';`
+    ),
+    target
+  )
+})
+
+test('durable import enforces owner, target, read-only creation restrictions and default-off gate', async () => {
+  const { f, intent, apply } = await intentFixture()
+  const other = await fixture()
+  const foreign = await db.sql(`INSERT INTO public.collections(user_id,name)
+    VALUES ('${other.user}','Foreign target') RETURNING collection_id;`)
+  const collision =
+    await db.sql(`INSERT INTO public.words(user_id,dutch_lemma,translations,tts_url)
+    VALUES ('${other.user}','foreign-private','{}','') RETURNING word_id;`)
+  await assert.rejects(
+    apply({ ...intent, collection_id: foreign }),
+    /access denied/
+  )
+  await assert.rejects(
+    apply({ ...intent, word_id: collision }),
+    /import-personal-id-unavailable/
+  )
+  await assert.rejects(
+    apply({ ...intent, collection_id: randomUUID() }),
+    /access denied/
+  )
+  await assert.rejects(
+    db.sql(asUser(null, intentRpc(intent))),
+    /authentication-required/
+  )
+  await assert.rejects(
+    db.sql(`SET ROLE anon; ${intentRpc(intent)}`),
+    /permission denied/
+  )
+  await assert.rejects(
+    db.sql(
+      asUser(f.user, `SELECT count(*) FROM private.dictionary_import_receipts;`)
+    ),
+    /permission denied/
+  )
+  await assert.rejects(
+    db.sql(
+      asUser(
+        f.user,
+        `INSERT INTO public.collections(user_id,name) VALUES('${f.user}','Forbidden new target');`
+      )
+    ),
+    /row-level security/
+  )
+  await db.sql(
+    'UPDATE private.dictionary_content_runtime SET operations_enabled = false;'
+  )
+  await assert.rejects(apply(), /unsupported-protocol/)
+  await db.sql(
+    'UPDATE private.dictionary_content_runtime SET operations_enabled = true;'
+  )
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM private.dictionary_import_receipts WHERE user_id = '${f.user}';`
+    ),
+    '0'
+  )
+})
+
+test('durable official source validates exact manifest and mapping; create-private/link preserves version order', async () => {
+  const { f, intent, content, apply } = await intentFixture()
+  await db.sql(insert(f))
+  const official = {
+    ...intent,
+    source: {
+      kind: 'official-pack',
+      pack_id: f.pack,
+      version: '1.0.0',
+      pack_entry_id: f.entry.entry_id,
+      manifest_sha256: f.manifestHash,
+      reference: {
+        entry_id: f.reference.entry_id,
+        revision_id: f.reference.revision_id,
+      },
+      content,
+    },
+  }
+  await assert.rejects(
+    apply({
+      ...official,
+      source: { ...official.source, manifest_sha256: '0'.repeat(64) },
+    }),
+    /official-pack-unavailable/
+  )
+  await assert.rejects(
+    apply({ ...official, source: { ...official.source, reference: null } }),
+    /invalid-import-reference/
+  )
+  await assert.rejects(
+    apply({
+      ...official,
+      source: {
+        ...official.source,
+        content: { ...content, plural: 'client-forged' },
+      },
+    }),
+    /invalid-import-source/
+  )
+  assert.equal((await apply(official)).outcome, 'inserted')
+  const commands = [
+    { kind: 'create-private', expected_content_version: 0, content },
+    {
+      kind: 'link',
+      expected_content_version: 1,
+      reference: official.source.reference,
+      overrides: {},
+    },
+  ]
+  for (const command of commands)
+    await db.sql(
+      asUser(
+        f.user,
+        `SELECT public.apply_dictionary_content_command_v1(${json({
+          protocol_version: 1,
+          operation_id: randomUUID(),
+          word_id: intent.word_id,
+          ...command,
+        })});`
+      )
+    )
+  assert.equal(
+    await db.sql(
+      `SELECT content_version FROM public.word_content_state WHERE word_id = '${intent.word_id}';`
+    ),
+    '2'
+  )
+  assert.equal(
+    await db.sql(
+      `SELECT dictionary_entry_id FROM public.words WHERE word_id = '${intent.word_id}';`
+    ),
+    f.reference.entry_id
+  )
+  await db.sql(
+    `UPDATE public.dictionary_entries SET state = 'retired' WHERE entry_id = '${f.reference.entry_id}';`
+  )
+  const afterRetirement = {
+    ...official,
+    word_id: randomUUID(),
+    operation_id: randomUUID(),
+  }
+  await assert.rejects(apply(afterRetirement), /invalid-import-reference/)
+  assert.equal((await apply(official)).idempotent, true)
+})
+
+test('concurrent durable import requests serialize receipt replay and semantic conflicts', async () => {
+  const { f, intent } = await intentFixture()
+  const first = asUser(f.user, intentRpc(intent))
+  const replay = JSON.parse(await overlap(db, first, first))
+  assert.equal(replay.idempotent, true)
+  const race = await intentFixture()
+  const conflicting = {
+    ...race.intent,
+    operation_id: randomUUID(),
+    word_id: randomUUID(),
+  }
+  const duplicate = JSON.parse(
+    await overlap(
+      db,
+      asUser(race.f.user, intentRpc(race.intent)),
+      asUser(race.f.user, intentRpc(conflicting))
+    )
+  )
+  assert.equal(duplicate.outcome, IDENTITY_CONFLICT)
+  assert.equal(duplicate.existing_word_id, race.intent.word_id)
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM public.words WHERE user_id = '${race.f.user}';`
+    ),
+    '1'
   )
 })

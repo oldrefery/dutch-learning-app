@@ -377,6 +377,20 @@ export class DictionaryContentRepository {
     await db.withExclusiveTransactionAsync(async transaction => {
       if (resolution)
         await this.applyConflictResolution(transaction, parsed, resolution)
+      for (const state of parsed) {
+        if (
+          resolution ||
+          acknowledgedCommands.some(
+            command => command.word_id === state.word_id
+          )
+        ) {
+          await transaction.runAsync(
+            `INSERT OR IGNORE INTO dictionary_personal_refresh_queue(word_id, user_id) VALUES (?, ?)`,
+            state.word_id,
+            state.user_id
+          )
+        }
+      }
       for (const command of acknowledgedCommands) {
         const state = parsed.find(row => row.word_id === command.word_id)
         if (

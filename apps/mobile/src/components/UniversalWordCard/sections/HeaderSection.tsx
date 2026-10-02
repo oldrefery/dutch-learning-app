@@ -9,6 +9,7 @@ import { styles } from '../styles'
 import { isWordFromDB, type WordSectionProps } from '../types'
 import { CefrBadge } from '@/components/CefrBadge'
 import { DictionaryConflictResolver } from '@/components/DictionaryConflictResolver'
+import { DictionaryImportConflictResolver } from '@/components/DictionaryImportConflictResolver'
 
 // Audio button component following HIG guidelines
 interface AudioButtonProps {
@@ -59,6 +60,7 @@ export function HeaderSection({
       {isWordFromDB(word) && (
         <DictionaryConflictResolver key={word.word_id} word={word} />
       )}
+      {isWordFromDB(word) && <DictionaryImportConflictResolver word={word} />}
       <ViewThemed style={styles.headerActionsRow}>
         <NonSwipeableArea style={styles.headerActions}>
           {/* Cache Status Badge */}

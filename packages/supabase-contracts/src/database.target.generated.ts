@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261002100000_add_dictionary_import_protocol.sql.
+// Generated from local migrations through 20261002110000_add_dictionary_import_intents.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -1179,6 +1179,10 @@ export type Database = {
     Functions: {
       apply_dictionary_content_command_v1: {
         Args: { p_command: Json }
+        Returns: Json
+      }
+      apply_dictionary_import_intent_v1: {
+        Args: { p_intent: Json }
         Returns: Json
       }
       calculate_review_progress: {

@@ -339,12 +339,29 @@ export function useStarterPackImport(
             mapping
           )
         )
-      const imported = references
+      const imported = isDictionaryContentEnabled()
         ? await stateBeforeImport.addWordsToCollection(
             targetCollection.collection_id,
             importWords,
             false,
-            { dictionaryReferences: references }
+            {
+              dictionaryReferences: references ?? undefined,
+              dictionaryImportSources: pack.manifest.entries
+                .filter(entry => selectedEntryIds.includes(entry.entry_id))
+                .map((entry, index) => {
+                  const reference = references?.[index]
+                  return mapping && reference
+                    ? {
+                        kind: 'official-pack' as const,
+                        pack_id: mapping.pack_id,
+                        version: mapping.version,
+                        pack_entry_id: entry.entry_id,
+                        manifest_sha256: mapping.manifest_sha256,
+                        reference,
+                      }
+                    : { kind: 'private-copy' as const }
+                }),
+            }
           )
         : await stateBeforeImport.addWordsToCollection(
             targetCollection.collection_id,

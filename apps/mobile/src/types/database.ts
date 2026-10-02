@@ -92,6 +92,7 @@ export interface Word {
   cefr_confidence?: number | null
   dictionary_content_source?: DictionaryContentSource
   dictionary_content_conflict?: boolean
+  dictionary_import_conflict?: boolean
   created_at: string
   updated_at: string
 }
