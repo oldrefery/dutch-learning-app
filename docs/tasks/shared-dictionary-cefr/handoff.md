@@ -17,6 +17,10 @@ Actual Safari duplicate visibility and disabled semantics pass; visual acceptanc
 is open because import labels match the background in light theme. Desktop
 computed CSS confirms enabled and disabled cases. No application edits this turn;
 all 140 source fingerprints match. Four focused R3 suites /45 tests pass.
+Runtime/evidence commit `55d533c` normal hooks PASS: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /778 tests, one existing skipped suite/test. All 140
+hashes still match after hooks. Private `commit.log` retained in current QA root.
+Only preexisting `.playwright-cli/` is untracked.
 
 Server final: 28 words/22 content states/nine collections. All 27 prepared words,
 21 preexisting states, original access rows, collections and review tables exact.

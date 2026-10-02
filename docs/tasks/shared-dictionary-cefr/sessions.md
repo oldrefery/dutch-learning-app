@@ -1429,3 +1429,7 @@ Copy these fields into a dated entry at each session boundary:
   pending QA jobs or uncertain writes. No other devices/sessions touched.
 - Next Sol 6.1 / High R4 repair, then Astra review and affected visual acceptance.
   D10.3–D10.5 open; no D11, deployment/cutover/publication/paid call or push/PR/merge.
+
+- Runtime/evidence commit `55d533c` normal hooks PASS: mobile 156 suites /1796 tests /
+  22 snapshots; web 86 suites /778 tests, one existing skip. Post-hook 140/140 source
+  hashes match; only preexisting `.playwright-cli/` is untracked.
