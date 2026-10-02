@@ -120,3 +120,12 @@ Confirm how reviewed meaning fixtures and worker requests bind exact published
 meaning inputs; do not reuse aggregate analysis candidates as authoritative
 dictionary assessments. Continue local fake-provider work only. Current-thread
 model picker is unavailable; request a manual switch without claiming one.
+
+## Local commit receipt
+
+Source/evidence commit `a756680` completed with ordinary hooks: lint-staged,
+constants/complexity/length checks, mobile 156 suites /1796 tests /22 snapshots,
+web 86 suites /780 tests, one preexisting skipped suite/test. All required hooks
+PASS; no bypass. All 158 source hashes match after hooks. Only preexisting
+`.playwright-cli/` remains untracked. Private `commit.log` retained; no push.
+The next documentation-only commit records this receipt and the model handoff.

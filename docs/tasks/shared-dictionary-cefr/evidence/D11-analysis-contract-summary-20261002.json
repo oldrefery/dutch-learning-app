@@ -65,5 +65,16 @@
   "live_sample": "separate approval required",
   "private_log_root": "reports/shared-dictionary-cefr/d11-analysis-contract-20261002/",
   "pending_runtime_operations": [],
-  "persistence": "local commit with normal hooks pending; no push"
+  "persistence": "source and evidence locally committed with normal hooks; receipt documentation checkpoint pending; no push",
+  "source_commit": "a756680",
+  "normal_hooks": {
+    "mobile_suites": 156,
+    "mobile_tests": 1796,
+    "mobile_snapshots": 22,
+    "web_suites": 86,
+    "web_tests": 780,
+    "web_existing_skipped_suite_and_test": 1,
+    "status": "PASS",
+    "source_hashes_after_hooks": "158/158 match"
+  }
 }

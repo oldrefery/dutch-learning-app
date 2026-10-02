@@ -1497,3 +1497,8 @@ source hashes match after hooks. Private `commit.log` retained. Local-only; no p
 - Necessary local commits with normal hooks authorized; no push/PR/merge, paid
   call, hosted migration, production/cutover, publication/deployment or schedule
   activation. Preexisting `.playwright-cli/` and private reports preserved.
+
+Source/evidence commit `a756680` normal hooks PASS: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /780 tests, one existing skipped suite/test. Post-hook
+158/158 source hashes match; only preexisting `.playwright-cli/` untracked.
+Private `commit.log` retained. Documentation receipt checkpoint follows; no push.

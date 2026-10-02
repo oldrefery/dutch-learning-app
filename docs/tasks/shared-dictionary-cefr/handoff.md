@@ -15,6 +15,11 @@ SQL IS NULL with actual-handler regression coverage. 45 Edge, 24 SQL and 13 focu
 web tests PASS; types/lint and official target generation/check PASS. D11 in progress;
 D11.2–D11.7 not started, independent review and live quality/cost gate remain open.
 
+Source/evidence commit **`a756680`** normal hooks PASS: mobile 156 suites /1796
+tests /22 snapshots; web 86 suites /780 tests, one existing skipped suite/test.
+Post-hook 158/158 source hashes match. Only preexisting `.playwright-cli/` untracked.
+Private `commit.log` retained; local-only, no push. No pending QA/test operation.
+
 **Next: GPT-6 Astra / High contract review before D11.2.** Review model provenance,
 material input hashing, meaning/analysis namespace separation and fake transport
 coverage. Then define reviewed meaning fixture/calibration and exact worker input
@@ -638,7 +643,7 @@ Data, volumes, copies and reports retained. Other sessions/devices untouched.
 Task state: D02–D10 done; D11 in_progress (D11.1 locally implemented); D12–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, D11.1 local implementation based on `44de0f5`; no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
+Branch `feature/shared-dictionary-schema`, D11.1 implementation `a756680` (starting `44de0f5`); no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume
