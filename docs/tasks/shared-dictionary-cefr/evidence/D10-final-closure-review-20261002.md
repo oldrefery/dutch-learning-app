@@ -87,3 +87,7 @@ so the user must switch manually. Start with existing analysis/cache contracts a
 fake-provider-safe local work; schedule stays disabled. A live quality/cost sample,
 production/cutover, publication/deployment and push/PR/merge remain unauthorized.
 D01 partial gates and D13/D14 release/observation gates remain open.
+
+Closure/evidence commit `7a79223` normal hooks PASS: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /778 tests, one existing skipped suite/test. All 143
+source hashes match after hooks. Private `commit.log` retained. Local-only; no push.
