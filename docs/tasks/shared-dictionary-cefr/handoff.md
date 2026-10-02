@@ -1,7 +1,8 @@
 # Shared dictionary and CEFR — current handoff
 
 Last checkpoint: **2026-10-02 — D10 web document transfer UI implemented**,
-starting `b302d71`, existing branch `feature/shared-dictionary-schema`.
+source commit **`ab8d603`**, starting `b302d71`, existing branch
+`feature/shared-dictionary-schema`.
 Model-switch event received after requested GPT-6.1 Sol / High; no automatic picker
 change claimed. AUTH-17/AUTH-18 remain applicable. [Implementation and verification](evidence/D10-web-transfer-ui-20261002.md).
 
@@ -18,7 +19,9 @@ No dependency/config/SQL/RPC/mobile/feature-flag change.
 Focused **8 web suites / 80 tests**, test-inclusive web type generation/TypeScript,
 strict scoped lint, formatting and diff checks pass. All previous 113 application
 fingerprints match; 20 web paths added to the current 133-path manifest. Local
-preservation commit with normal hooks is next; no pending mutation/build/QA job.
+preservation commit `ab8d603` succeeded with normal hooks: **156 mobile suites /
+1796 tests / 22 snapshots; 82 web suites / 715 tests**, one existing skipped suite/
+test. All 133 hashes match after hooks. No pending mutation/build/QA job.
 
 **Next: GPT-6 Astra / High implementation review**, then remaining D10.3 integrated
 acceptance. Review production route/page wiring, fresh auth/target/duplicates,

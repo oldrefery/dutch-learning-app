@@ -1,7 +1,8 @@
 # D10 web document transfer implementation
 
 Date: 2026-10-02. Starting HEAD `b302d71`, branch
-`feature/shared-dictionary-schema`. AUTH-17/AUTH-18; implementation routing
+`feature/shared-dictionary-schema`. Implementation commit **`ab8d603`**.
+AUTH-17/AUTH-18; implementation routing
 GPT-6.1 Sol / High following the model-switch event. No picker operation claimed.
 
 ## Production integration
@@ -55,10 +56,14 @@ asynchronous browser/navigation-failure claim is made by these local tests.
   gates, production page callers, readonly access, clipboard fallback, pagination,
   double-click guards, stale result suppression, owner ABA and saved/uncertain feedback.
 - Web type generation and TypeScript PASS, including all new tests.
-- Strict scoped web ESLint and Prettier PASS; normal local commit hooks are next.
+- Strict scoped web ESLint, Prettier and diff checks PASS.
+- Normal source commit hooks PASS: mobile 156 suites / 1796 tests / 22 snapshots;
+  web 82 suites / 715 tests, one existing skipped suite/test.
+- All prior 113 fingerprints unchanged, 20 web files added; current 133/133 hashes
+  match after hooks. Private hook log: `reports/shared-dictionary-cefr/d10-web-transfer-20261002/commit.log`.
 - No new dependencies, Next config, SQL/RPC, mobile application changes or flag flip.
 
-Next: normal local preservation commit, GPT-6 Astra / High implementation review,
+Next: GPT-6 Astra / High implementation review of `ab8d603`,
 then actual task-only browser and cross-owner/mobile-web acceptance. D10.3–D10.5
 remain open. Helpers/UI tests do not substitute for native or browser acceptance.
 
