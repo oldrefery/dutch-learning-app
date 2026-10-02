@@ -366,3 +366,13 @@ for iOS `DDEDCE4E-153B-48A4-A47C-B4ED0F499F1F` and Android AVD
 `woordenaar_d08_qa_20260921` / `emulator-5584` only. Existing local QA scope and
 AUTH-18 commits remain; no other sessions/devices, production, schema cutover,
 publication, deployment or paid operations. Preserve installed apps and all data.
+
+### AUTH-20 — Local D11 continuation
+
+Granted 2026-10-02: user confirmed the requested GPT-6.1 Sol / High switch and
+continued after D10 closure. Scope: D11 local contract, persistence and bounded
+worker implementation with synthetic/fake-provider verification in the existing
+branch. AUTH-18 necessary local commits remain authorized. Retained native QA
+resources remain off until needed; no other session devices/resources. No paid
+provider sample, schedule activation, hosted migration, production/cutover, public
+publication, deployment, push/PR/merge. DEC-06 budget/cadence remains open.

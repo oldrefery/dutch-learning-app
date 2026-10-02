@@ -1477,3 +1477,23 @@ Copy these fields into a dated entry at each session boundary:
 Closure/evidence commit `7a79223` normal hooks PASS: mobile 156 suites /1796 tests /
 22 snapshots; web 86 suites /778 tests, one existing skipped suite/test. All 143
 source hashes match after hooks. Private `commit.log` retained. Local-only; no push.
+
+## 2026-10-02 — D11.1 optional analysis CEFR contract
+
+- User-confirmed GPT-6.1 Sol / High, starting `44de0f5`, AUTH-20 and retained
+  AUTH-18 local commit scope. Existing feature branch; no subagent.
+  [Evidence/limits](evidence/D11-analysis-contract-20261002.md).
+- Default-off model-only estimate/cache persistence, server input hash/version,
+  old cache/payload compatibility; pure domain parser and server crypto. Web
+  round-trip/mobile optional types only. Shared assessments/words/SRS unchanged.
+- 45 Edge, 24 SQL, two web suites /13 tests PASS; types, scoped lint and target
+  generation/check PASS. Article-free refresh NULL bug fixed with regression test.
+  140 unaffected D10 hashes preserved; 158-path D11 inventory saved.
+- Retained QA resources OFF verified 19:47:41 UTC; never started this turn. Local
+  isolated tests and generator cleaned up. No pending job/uncertain write.
+- D11.1 implementation/local verification done; D11 remains in_progress. Next
+  manual GPT-6 Astra / High review of provenance/input binding before D11.2
+  calibration/worker design. Feature stays OFF; live sample is a separate gate.
+- Necessary local commits with normal hooks authorized; no push/PR/merge, paid
+  call, hosted migration, production/cutover, publication/deployment or schedule
+  activation. Preexisting `.playwright-cli/` and private reports preserved.

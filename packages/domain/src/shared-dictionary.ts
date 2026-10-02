@@ -1153,7 +1153,7 @@ export const resolveInheritedCefr = (
   }
 }
 
-const canonicalizeJson = (value: unknown): string => {
+export const canonicalizeJson = (value: unknown): string => {
   if (
     value === null ||
     typeof value === 'string' ||

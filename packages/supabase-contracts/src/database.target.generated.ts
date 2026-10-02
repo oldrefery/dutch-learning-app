@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261002120000_add_dictionary_import_recovery.sql.
+// Generated from local migrations through 20261002130000_add_analysis_cefr_estimate.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -835,6 +835,7 @@ export type Database = {
           cache_id: string
           cache_ttl_hours: number
           cache_version: number
+          cefr_estimate: Json | null
           conjugation: Json | null
           created_at: string
           dictionary_entry_id: string | null
@@ -869,6 +870,7 @@ export type Database = {
           cache_id?: string
           cache_ttl_hours?: number
           cache_version?: number
+          cefr_estimate?: Json | null
           conjugation?: Json | null
           created_at?: string
           dictionary_entry_id?: string | null
@@ -903,6 +905,7 @@ export type Database = {
           cache_id?: string
           cache_ttl_hours?: number
           cache_version?: number
+          cefr_estimate?: Json | null
           conjugation?: Json | null
           created_at?: string
           dictionary_entry_id?: string | null

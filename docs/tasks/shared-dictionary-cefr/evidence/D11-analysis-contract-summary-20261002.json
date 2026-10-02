@@ -1,0 +1,69 @@
+{
+  "checkpoint": "D11.1",
+  "date": "2026-10-02",
+  "starting_head": "44de0f5",
+  "branch": "feature/shared-dictionary-schema",
+  "model": "GPT-6.1 Sol / High (user confirmed)",
+  "status": "implemented_and_locally_verified_review_pending",
+  "stage_status": "in_progress",
+  "feature_flag": {
+    "name": "CEFR_ANALYSIS_ENABLED",
+    "default": false,
+    "activated": false
+  },
+  "input_version": "word-analysis-cefr-v1",
+  "assessment_authority": "model-only analysis candidate; no dictionary publication",
+  "tests": {
+    "edge": 45,
+    "postgresql": 24,
+    "web_focused": 13,
+    "domain_types": "PASS",
+    "web_test_inclusive_types": "PASS",
+    "mobile_test_inclusive_types": "PASS",
+    "edge_types": "PASS",
+    "scoped_lint": "PASS",
+    "target_types_generate_and_check": "PASS"
+  },
+  "source_inventory": {
+    "path": "D11-source-sha256.json",
+    "count": 158,
+    "d10_unaffected_preserved": 140,
+    "d10_intentionally_changed": [
+      "packages/domain/src/index.ts",
+      "packages/supabase-contracts/target-schema.json",
+      "packages/supabase-contracts/src/database.target.generated.ts"
+    ],
+    "d11_paths_added": [
+      "apps/mobile/src/types/GeminiTypes.ts",
+      "apps/web/src/features/analysis/analysis-contract.test.ts",
+      "apps/web/src/features/analysis/analysis-contract.ts",
+      "packages/domain/src/shared-dictionary.ts",
+      "supabase/functions/deno.json",
+      "supabase/functions/gemini-handler/cacheUtils.ts",
+      "supabase/functions/gemini-handler/deno.json",
+      "supabase/functions/gemini-handler/index.ts",
+      "supabase/functions/gemini-handler/types.ts",
+      "packages/domain/src/analysis-cefr.ts",
+      "scripts/postgres-tests/analysis-cefr-cache.test.mjs",
+      "supabase/functions/gemini-handler/cefr.ts",
+      "supabase/functions/gemini-handler/cefrHandler_test.ts",
+      "supabase/functions/gemini-handler/cefr_test.ts",
+      "supabase/migrations/20261002130000_add_analysis_cefr_estimate.sql"
+    ]
+  },
+  "resource_state": {
+    "verified_at_utc": "2026-10-02 19:47:41",
+    "assigned_ios": "Shutdown",
+    "assigned_android": "absent",
+    "retained_task_containers": "all four exited",
+    "ports_55331_55400": "closed",
+    "disposable_test_resources": "cleaned up",
+    "retained_data_mutated": false
+  },
+  "next": "GPT-6 Astra / High review of D11.1 provenance/input binding before D11.2 calibration and worker design",
+  "open_checkpoints": ["D11.2", "D11.3", "D11.4", "D11.5", "D11.6", "D11.7"],
+  "live_sample": "separate approval required",
+  "private_log_root": "reports/shared-dictionary-cefr/d11-analysis-contract-20261002/",
+  "pending_runtime_operations": [],
+  "persistence": "local commit with normal hooks pending; no push"
+}

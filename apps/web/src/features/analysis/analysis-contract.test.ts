@@ -6,6 +6,7 @@ import {
   parseSerializedWordAnalysis,
   serializeWordAnalysis,
 } from './analysis-contract'
+import { buildWordAnalysisUpdate } from './word-persistence'
 
 const completeAnalysis = {
   dutch_original: 'Het huis',
@@ -30,6 +31,53 @@ const completeAnalysis = {
 }
 
 describe('analysis contract', () => {
+  const cefr = {
+    level: 'A1',
+    status: 'estimated',
+    source: 'model',
+    confidence: 0.8,
+    method: 'gemini',
+    method_version: 'fixture-v1',
+    input_version: 'word-analysis-cefr-v1',
+    input_sha256: 'a'.repeat(64),
+  }
+
+  it('round-trips optional CEFR without granting shared assessment authority', () => {
+    const analysis = parseAnalysisFunctionResponse({
+      success: true,
+      data: { ...completeAnalysis, cefr },
+    }).analysis
+    expect(analysis.cefr).toEqual(cefr)
+    expect(
+      parseSerializedWordAnalysis(serializeWordAnalysis(analysis))
+    ).toEqual(analysis)
+    expect(buildWordAnalysisUpdate(analysis)).not.toHaveProperty(
+      'cefr_estimate'
+    )
+    expect(buildWordAnalysisUpdate(analysis)).not.toHaveProperty('cefr_level')
+  })
+
+  it('drops forged or malformed optional CEFR while preserving old analysis', () => {
+    for (const patch of [
+      { source: 'editorial' },
+      { status: 'reviewed' },
+      { confidence: 2 },
+      { input_sha256: 'bad' },
+    ]) {
+      const analysis = parseAnalysisFunctionResponse({
+        success: true,
+        data: { ...completeAnalysis, cefr: { ...cefr, ...patch } },
+      }).analysis
+      expect(analysis.cefr).toBeNull()
+      expect(analysis.dutchLemma).toBe('huis')
+    }
+    const legacy = parseAnalysisFunctionResponse({
+      success: true,
+      data: completeAnalysis,
+    }).analysis
+    expect(legacy).not.toHaveProperty('cefr')
+    expect(JSON.parse(serializeWordAnalysis(legacy))).not.toHaveProperty('cefr')
+  })
   it('normalizes the mobile Dutch input contract', () => {
     expect(normalizeDutchInput('  Het   huis. ')).toEqual({
       value: 'Het huis',

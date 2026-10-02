@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import type { WordAnalysisResult } from './types.ts'
 import type { WordUsageNotes } from './types.ts'
+import type { AnalysisCefrEstimate } from '../../../packages/domain/src/analysis-cefr.ts'
 
 type WordTranslations = WordAnalysisResult['translations']
 type WordExample = WordAnalysisResult['examples'][number]
@@ -15,6 +16,7 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 export interface CacheEntry {
+  cefr_estimate?: unknown
   cache_id: string
   dictionary_entry_id: string | null
   dictionary_revision_id: string | null
@@ -63,6 +65,7 @@ export const getCacheDictionaryReference = (
     : null
 
 export interface WordAnalysisData {
+  cefr_estimate?: AnalysisCefrEstimate | null
   dutch_original: string
   dutch_lemma: string
   part_of_speech: string
@@ -216,6 +219,9 @@ export async function saveToCache(
     const { error: insertError } = await supabase
       .from('word_analysis_cache')
       .insert({
+        ...(Object.hasOwn(analysisData, 'cefr_estimate')
+          ? { cefr_estimate: analysisData.cefr_estimate }
+          : {}),
         dutch_lemma: analysisData.dutch_lemma,
         dutch_original: analysisData.dutch_original,
         part_of_speech: analysisData.part_of_speech,
@@ -252,9 +258,12 @@ export async function saveToCache(
       console.log(
         `📝 Record exists, updating with fresh data: ${analysisData.dutch_lemma}`
       )
-      const { error: updateError } = await supabase
+      const update = supabase
         .from('word_analysis_cache')
         .update({
+          ...(Object.hasOwn(analysisData, 'cefr_estimate')
+            ? { cefr_estimate: analysisData.cefr_estimate }
+            : {}),
           // Update ALL analysis fields with fresh data
           dutch_original: analysisData.dutch_original,
           register: analysisData.register || null,
@@ -282,7 +291,9 @@ export async function saveToCache(
         })
         .eq('dutch_lemma', analysisData.dutch_lemma)
         .eq('part_of_speech', analysisData.part_of_speech)
-        .eq('article', analysisData.article || null)
+      const { error: updateError } = await (analysisData.article
+        ? update.eq('article', analysisData.article)
+        : update.is('article', null))
 
       if (updateError) {
         console.error('❌ saveToCache update error:', updateError)

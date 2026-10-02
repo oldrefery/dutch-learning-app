@@ -11,6 +11,11 @@ import {
   normalizeUsageNotes,
 } from './geminiUtils.ts'
 import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
+import {
+  ANALYSIS_CEFR_PROMPT,
+  createGeminiCefrEstimate,
+  readAnalysisCefrEstimate,
+} from './cefr.ts'
 import { authorizeFullAccessRequest } from '../_shared/authorizeFullAccess.ts'
 import { EDGE_QUOTA_CONFIG } from '../_shared/constants.ts'
 import { consumeRequestQuotaWithServiceRole } from '../_shared/requestQuota.ts'
@@ -66,6 +71,7 @@ Deno.serve(async (req: Request) => {
     }
     const { word } = requestBody
     const forceRefresh = requestBody.forceRefresh === true
+    const cefrEnabled = Deno.env.get('CEFR_ANALYSIS_ENABLED') === 'true'
 
     // This function only analyzes strings - objects should use save-word endpoint
     if (typeof word !== 'string') {
@@ -162,6 +168,14 @@ Deno.serve(async (req: Request) => {
           preposition: cachedAnalysis.preposition,
           analysis_notes: cachedAnalysis.analysis_notes || '',
           usage_notes: cachedAnalysis.usage_notes || null,
+          ...(cefrEnabled
+            ? {
+                cefr: await readAnalysisCefrEstimate(
+                  cachedAnalysis.cefr_estimate,
+                  cachedAnalysis
+                ),
+              }
+            : {}),
         }
 
         return new Response(
@@ -211,7 +225,8 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    const prompt = formatWordAnalysisPrompt(word)
+    const prompt =
+      formatWordAnalysisPrompt(word) + (cefrEnabled ? ANALYSIS_CEFR_PROMPT : '')
     const geminiResponse = await callGeminiAPI(prompt)
     const analysis = parseGeminiResponse(geminiResponse)
 
@@ -260,9 +275,13 @@ Deno.serve(async (req: Request) => {
       analysis_notes: analysis.analysis_notes || '',
       usage_notes: usageNotes,
     }
+    const cefr = cefrEnabled
+      ? await createGeminiCefrEstimate(analysis.cefr, result)
+      : null
 
     // Save to cache for future use (async, don't wait for completion)
     const cacheData = {
+      ...(cefrEnabled ? { cefr_estimate: cefr } : {}),
       dutch_original: word,
       dutch_lemma: normalizedLemma, // Use parsed and normalized lemma as a cache key
       part_of_speech:
@@ -304,7 +323,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         success: true,
-        data: result,
+        data: { ...result, ...(cefrEnabled ? { cefr } : {}) },
         meta: {
           source: 'gemini',
           cache_hit: false,
