@@ -980,6 +980,33 @@ a new session to read this entire history. Never log private vocabulary or secre
   the user's available UI because direct current-thread control is unavailable.
   No fresh quota observation; no new automation or paid operation.
 
+## 2026-10-02 — D10.3 durable offline import implementation checkpoint
+
+- D10.1/D10.2 remain complete; D10.3 current, D10.3-D10.5 unchecked. No D11.
+- Immutable owner-scoped import intents and receipt ledger, server-default SRS,
+  read-only metadata UPDATE, explicit conflict retry and personal-row hydration
+  debt implemented. Local identities, private content and every pending learning/
+  dictionary queue remain intact on failures/conflicts. SQLite v14 preserves v13.
+- Commit `dfdc7f00f2ddb30dd5f2a55c255e8a9ff47f1bd3` on the existing
+  `feature/shared-dictionary-schema` under AUTH-18; documentation checkpoint follows.
+  No push/PR/merge. Private `.playwright-cli/` and ignored reports stay uncommitted.
+- Verification at `dfdc7f0`: focused mobile 9 suites / 181 tests; full PostgreSQL
+  188/188; normal commit hooks mobile 147 suites / 1682 tests / 22 snapshots and
+  web 75 suites / 642 tests, one pre-existing skipped suite/test. Typecheck,
+  strict changed-file zero-warning lint, scoped formatting/diff and deterministic
+  target contract generation/check passed without hook bypass or rule suppression.
+- [Durable implementation/test evidence](evidence/D10-offline-import-intents-20261002.md)
+  and [current source hashes](evidence/D10-source-sha256.json) preserve exact scope,
+  failure repairs and remaining integration limits. Earlier review counts are historical.
+- All new synthetic PostgreSQL/codegen resources cleaned up; retained task native/
+  D08 QA stayed off. No running/uncertain operation. Other sessions/devices untouched.
+- Implementation recommendation GPT-6.1 Sol / High; actual picker state not verified
+  through tools. Next: GPT-6 Astra / High review of insert/receipt/concurrency,
+  owner transitions, zero-version ordering, conflict retry and hydration debt,
+  then remaining both-client integration. Current-thread switching API unavailable;
+  no confirmed switch or independent-agent review claimed. No fresh quota sample.
+- No production, cutover, deployment, publication, paid operation or new automation.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:
