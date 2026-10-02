@@ -1531,3 +1531,20 @@ Review/test commit **`bf68661`** normal hooks PASS: mobile 156 suites /1796 test
 22 snapshots; web 86 suites /780 tests, one preexisting skipped suite/test.
 Post-hook source inventory 158/158 matches. Only preexisting `.playwright-cli/`
 untracked; private `commit.log` retained. Local-only, no push or pending QA job.
+
+## 2026-10-02 — Explicit repository pause
+
+- User requested `/repo pause`; no implementation or new QA was started.
+- HEAD `02cd51d`, branch `feature/shared-dictionary-schema`, D11.1 source `a756680`
+  and review `bf68661` retained. D11 status paused; D11.2–D11.7 remain open.
+- Next explicit resume: GPT-6.1 Sol / High for D11.2 offline fixture validation,
+  calibration reporting and fail-closed policy. Last confirmed model Astra / High;
+  do not claim Sol was selected. Real quality/source/budget gates remain open.
+- Assigned resources OFF reverified 20:14:35 UTC /22:14:35 Amsterdam: assigned iOS
+  Shutdown, Android absent, four retained containers exited, ports 55331/55400
+  closed. No pending runtime/test job, uncertain write or restoration. Automation
+  `d09-06-00` configuration remains PAUSED; no new schedule.
+- Only three pause documents changed. Preserve preexisting `.playwright-cli/`
+  and ignored reports/data. Necessary local documentation commit with normal hooks
+  remains authorized; no push, publication/deployment, hosted migration, paid call,
+  production/cutover or activation. Resume requires explicit user continuation.
