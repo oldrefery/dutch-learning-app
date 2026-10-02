@@ -1,36 +1,42 @@
 # Shared dictionary and CEFR — current handoff
 
-Last checkpoint: **2026-10-02 — D10.3 mobile recovery sync integrated, checkpoint 4.**
-User-confirmed GPT-6.1 Sol / High. Application source `abc0b86`, following
-`1748066` SQLite and `1828f57` server/domain; AUTH-17/AUTH-18, local only.
-[Sync evidence](evidence/D10-recovery-sync-20261002.md). Cancellation precedes
-ordinary deletion; recovery precedes original/dependent delivery. Immutable replay,
-owner guards and placement revisions preserve IDs/SRS/content/learning queues.
-Batched current-placement hydration prevents old receipt/learning metadata echo.
-Explicit deletion barriers are atomic; remote cleanup never fabricates cancellation.
-Pending counts include recovery/cancellation and independent placement debt.
+Last checkpoint: **2026-10-02 — D10.3 explicit recovery UI, accepted checkpoint 5.**
+User-confirmed GPT-6.1 Sol / High; source `b7f207c`, following sync `abc0b86` /
+resume coverage `a7315bb`, SQLite `1748066` and server `1828f57`. AUTH-17/AUTH-18,
+local only. [UI evidence](evidence/D10-recovery-ui-20261002.md). Existing-target
+recovery now reads current server state explicitly and persists a fresh proposal
+only after confirmation, preserving the original root/personal ID/SRS/queues.
+Captured local revision/outbox CAS prevents stale-dialog overwrite. Saved imports
+keeps pending/conflicting/unverified cards and missing-target placements reachable,
+including after the original collection disappears. Sign-out invalidates an open
+view even when the same owner returns. Blocked moves never report success.
 
-Verification: focus 10 suites / 166 tests; final resume hook suite 7/7. Normal source
-hooks mobile 154 suites / 1763 tests / 22 snapshots, web 75 suites / 642 tests,
-one existing skipped suite/test. Mobile test-inclusive TypeScript, strict scoped
-lint and format/diff pass. Final hook test and docs are in the following checkpoint.
-SQL/domain/target source is unchanged from its 213/213 SQL/determinism pass.
-Synthetic file fixtures cleaned up. Exact task devices/containers reverified off
-at 10:41 UTC; no native/D08 QA restart. No pending operation after final hooks.
+Verification: focused mobile 6 suites / 82 tests; web 2 suites / 22 tests. Normal
+source hooks passed **155 mobile suites / 1785 tests / 22 snapshots**, **75 web
+suites / 648 tests**, one existing skipped suite/test. Mobile test-inclusive
+TypeScript, strict scoped lint, format/diff pass. Server/migration source unchanged
+from its 213/213 SQL/determinism verification; no new SQL run claimed. Synthetic
+file fixtures cleaned up. Exact assigned QA resources reverified off at 10:57 UTC;
+no device/backend restart, retained-data reset or pending operation after hooks.
 
-**Current continuation: GPT-6.1 Sol / High, accepted contract checkpoint 5 — recovery UI/web.**
-Connect existing-target recovery, explicit current-state read and fresh proposal
-retry, visible semantic/retained debt; test themes and account changes. Finish safe
-pre-upgrade behavior and applicable web integration. Do not rotate a claimed original
-root or automatically rebase. Prepared recovery/cancel requests now sync, but recovery
-UI is not yet wired. Unknown v15 provenance/delivery remains unresolved and visible
-as debt when pending; no inferred root/placement or absent imported-ID recreation.
+**Current continuation: GPT-6 Astra / High, accepted contract checkpoint 6 — implementation review.**
+The agent cannot operate the current-thread model picker. Ask for a manual switch
+if Astra / High has not been confirmed; never claim an automatic switch. Review
+server/domain, SQLite and complete sync/UI, including private registry/root binding,
+CAS/replay/cancellation, account ABA, pending counts, current-placement hydration,
+retained v14 and marker-only v15 gates, ordinary move feedback and web applicability.
+Then perform assigned-device/both-client acceptance within existing QA authority;
+use Sol 6.1 / High for any required implementation repairs. Native upgrade,
+OS/in-flight lifecycle and both-client import/export/reimport remain unverified.
+No OS background worker exists or was added; AppState resumes the same coordinator.
+
 [Accepted contract](evidence/D10-target-recovery-contract-20261002.md) checkpoints
-1–4 implemented; 5–6 (UI/web, Astra/device acceptance) remain open. AppState resume
-uses the same coordinator; no OS background worker exists or was added. Native
-OS/in-flight lifecycle and both-client acceptance remain checkpoint 6.
-Legacy direct-write coexistence is still a gate. D10.3–D10.5 unchecked;
-do not repeat D08/D09 or start D11. `.playwright-cli/` and ignored QA data stay private.
+1–5 are implemented; checkpoint 6 remains open. Marker-only v15 exact provenance is
+an explicit safe gate, never reconstructed from spelling/ACK bits. Web's immediate
+content-copy imports do not retain mobile recovery roots; uncertain/target failures
+are tested without retargeting or downgrade. Legacy direct-write coexistence remains
+a release gate. D10.3–D10.5 unchecked; do not repeat D08/D09 or start D11.
+`.playwright-cli/` and ignored QA data stay private. Default flags remain off.
 
 Previous implementation `42c9bfd` completed default-off mobile clipboard JSON export
 and pasted-document reimport: fresh personal IDs/default SRS, owned targets,
@@ -57,32 +63,32 @@ below 10%, maximum increase 2.6%. Exact evidence and limits:
 [performance](evidence/D09-performance-summary.json),
 [source hashes](evidence/D09-source-sha256.json).
 
-**All task QA resources are off.** Named browser, web/proxy runner and four task
+**All task QA resources are off.** During D09, the named browser, web/proxy runner and four task
 containers stopped/verified at 06:59; ports 55331/55400 closed. Native devices
-were never started and remain off. Final synthetic benchmark exited 0 with
+remained off during D09 and these D10 checkpoints. Final synthetic benchmark exited 0 with
 its temporary servers/browser/backend cleaned up. No pending build/test/QA job.
 Data, volumes, copies and reports retained. Other sessions/devices untouched.
 
 Task state: D02–D09 done; D10 in_progress; D11–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, current implementation `abc0b86`
+Branch `feature/shared-dictionary-schema`, current implementation `b7f207c`
 following base implementation `a59acad`; no push/PR. Default runtime dictionary flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume
 
 1. Read [D10 stage card](steps/D10.md), its focused inputs and permissions.
-   Continue D10.3 on GPT-6.1 Sol / High from the accepted recovery contract,
-   implementation checkpoint 5 (existing-target UI, explicit state/retry, themes,
-   conservative pre-upgrade behavior and applicable web integration). Do not repeat the completed architecture review,
+   Continue D10.3 on GPT-6 Astra / High from the accepted recovery contract,
+   checkpoint 6 implementation review of server/SQLite/sync/UI, then assigned-device
+   and both-client acceptance. Check manual model confirmation before review. Do not repeat the completed architecture review,
    D08/D09 acceptance or start all remaining stages.
 2. D03-D09 work and the preceding D10 review are preserved in `a59acad`;
    durable D10.3 imports are in `dfdc7f0` and review repairs are in `5efd6ff`;
    mobile document reimport is in `42c9bfd`; recovery design and executable
    evidence are in `b92eba9`; server/domain recovery is in `1828f57` and SQLite v16
-   in `1748066`; mobile sync is `abc0b86`, with final hook coverage and task docs
-   in the following checkpoint.
+   in `1748066`; mobile sync is `abc0b86`, resume coverage `a7315bb`, and recovery UI is
+   `b7f207c`; task docs are preserved in the following checkpoint.
    The historical pre-commit
    inventory is [dirty paths](evidence/D10-dirty-paths.txt). Current source hashes
    are [D10 fingerprints](evidence/D10-source-sha256.json). Leave `.playwright-cli`

@@ -1149,6 +1149,31 @@ a new session to read this entire history. Never log private vocabulary or secre
   Then Astra implementation review and assigned-device/both-client acceptance.
   D10.3-D10.5 open; D11 not started. No new blocker.
 
+## 2026-10-02 — D10.3 explicit recovery UI checkpoint 5
+
+- Actual model/effort: user-confirmed GPT-6.1 Sol / High; no automatic picker change.
+- Source `b7f207c` on existing `feature/shared-dictionary-schema`; local only,
+  AUTH-17/AUTH-18. Checkpoints 1–5 implemented; 6 review/acceptance open.
+- Existing-target/current-state UI, unchanged root/ID/SRS/queues, captured local
+  revision/outbox guards, auth sign-out invalidation, visible semantic/unverified/
+  missing-target imports, orphan reachability and blocked-move feedback implemented.
+  Web's immediate content-copy failures and export privacy covered; no web/mobile
+  root reconstruction. [Evidence](evidence/D10-recovery-ui-20261002.md).
+- Focus mobile 6 suites / 82 tests, web 2 suites / 22 tests passed. Normal source
+  hooks mobile 155 suites / 1785 tests / 22 snapshots, web 75 suites / 648 tests,
+  one existing skipped suite/test. Test-inclusive typecheck, strict scoped lint and
+  format/diff pass. SQL/contracts unchanged from historical 213/213/determinism.
+- Intermediate component mock omitted Expo Color; corrected, then focused/full
+  hooks passed. Sandbox inventory unavailable; authorized scoped read succeeded.
+- Exact QA off at 10:57 UTC: assigned iOS Shutdown, task AVD absent, four containers
+  exited. No device/backend start/reset, other-session operation or pending job.
+  Synthetic files cleaned up. Private QA data/.playwright-cli retained.
+- Next Astra / High checkpoint 6 implementation review, then assigned-device/
+  both-client acceptance. Agent picker unavailable; user manual model confirmation
+  needed. Native upgrade/OS lifecycle and legacy direct-write coexistence gates
+  remain. D10.3–D10.5 unchecked; D11 not started. No push/PR/production/cutover/
+  publication/deployment/paid operation or automation change. No new quota sample.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:
