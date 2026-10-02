@@ -36,5 +36,19 @@
   },
   "applicationRepair": false,
   "deviceOrBackendOperation": false,
-  "next": "GPT-6.1 Sol / High repairs, then Astra / High re-review"
+  "next": "GPT-6.1 Sol / High repairs, then Astra / High re-review",
+  "reviewCommit": "46eb250",
+  "normalHooks": {
+    "mobile": {
+      "suites": 156,
+      "tests": 1796,
+      "snapshots": 22
+    },
+    "web": {
+      "passedSuites": 84,
+      "passedTests": 720,
+      "skippedSuites": 1,
+      "skippedTests": 1
+    }
+  }
 }

@@ -1,7 +1,8 @@
 # D10 web document transfer review — changes required
 
 Date: 2026-10-02. Reviewed application source `ab8d603`; starting HEAD `5d95165`,
-branch `feature/shared-dictionary-schema`. User confirmed the requested switch to
+branch `feature/shared-dictionary-schema`. Review/test checkpoint **`46eb250`**.
+User confirmed the requested switch to
 GPT-6 Astra / High. AUTH-17/AUTH-18. No application repair in this checkpoint.
 
 ## R1 / P1 — Valid browser origins are rejected after Next.js URL adaptation
@@ -82,6 +83,10 @@ Convert the counterexample to an original-destination safety assertion.
   payload, global duplicate handling, readonly access, no-replay uncertainty,
   successful-write cache handling, auth epochs and clipboard gesture separation.
   No further blocking finding established in those reviewed paths.
+- Normal checkpoint hooks PASS: mobile 156 suites / 1796 tests / 22 snapshots;
+  web 84 suites / 720 tests, one existing skipped suite/test. The new tests
+  intentionally reproduce unsafe behavior and must be converted during repair.
+  Private hook log: `reports/shared-dictionary-cefr/d10-web-transfer-review-20261002/commit.log`.
 - No simulator/emulator/browser/backend inspection or operation; no actual
   cross-owner or both-client acceptance claim. Devices still require explicit
   availability handback from the user before any use.

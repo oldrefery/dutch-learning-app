@@ -1291,8 +1291,10 @@ a new session to read this entire history. Never log private vocabulary or secre
 - Application repair pending. Next Sol 6.1 / High (manual picker), repair both
   findings and convert counterexamples, then Astra re-review and integrated QA.
   D10.3–D10.5 stay open. Before native QA, obtain device availability handback.
-- Local preservation commit authorized with normal hooks. No remote/release/paid
-  operation, no uncertain mutation or QA job; automation stays paused.
+- Local review/test checkpoint `46eb250` normal hooks pass: mobile 156 suites /
+  1796 tests / 22 snapshots; web 84 suites / 720 tests, one existing skipped suite/
+  test. 133 source and two review-test hashes match. No remote/release/paid operation,
+  uncertain mutation or QA job; automation stays paused.
 
 ## Record template
 

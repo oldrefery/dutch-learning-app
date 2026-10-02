@@ -12,7 +12,9 @@ collection selector instead of the attempted destination. Application unchanged.
 Two new review suites / five tests pass (four counterexamples plus a valid control);
 these demonstrate defects, not feature acceptance. Test-inclusive web TypeScript,
 strict scoped lint/format/diff pass; all 133 application fingerprints unchanged.
-Local evidence/test preservation commit with normal hooks is next.
+Review/test checkpoint **`46eb250`** committed with normal hooks: mobile 156 suites /
+1796 tests / 22 snapshots; web 84 suites / 720 tests, one existing skipped suite/test.
+All 133 source and two review-test hashes match after hooks; no pending operation.
 
 **Next: GPT-6.1 Sol / High for R1/R2 web repairs**, then Astra / High re-review.
 Use the exact repair contract and convert review counterexamples into safety
