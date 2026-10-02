@@ -1,5 +1,57 @@
 # Shared dictionary and CEFR — current handoff
 
+Last checkpoint: **2026-10-02 — D10 web repair re-review and scoped browser acceptance PASS**.
+User-confirmed Astra / High, reviewed source `19d98eb`, starting HEAD `0d9e835`.
+[Runtime evidence](evidence/D10-web-acceptance-20261002.md),
+[summary](evidence/D10-web-acceptance-summary-20261002.json).
+54 focused review tests pass; all 137 source fingerprints match, application unchanged.
+
+Actual web export/copy, source and cross-collection duplicate previews, cross-owner
+read_only private-copy import/re-export and bundled Essentials fallback pass.
+A real accepted import response was dropped once: uncertainty blocks retry and its
+check link stays on the attempted collection after target change. Manual check
+confirmed one saved word; no replay. Four document copies plus one bundled word
+added only to the isolated recipient. All 12 prior words, nine content states,
+eight collections and review/history tables unchanged; original access restored.
+
+**Next: remain on Astra / High for remaining D10 matrix.** D10.3–D10.5 unchecked;
+D11 not started. Device availability request pending; do not inspect/start/use
+simulators or emulators without explicit handback. Do not repeat closed web/native
+checks. The retained stack has no official packs/mappings/shared collections;
+remaining runtime coverage needs bounded local synthetic fixtures without publishing
+existing data or touching production. Native cross-client/mobile-web checks remain.
+
+**Web resources OFF verified 13:59:14 UTC**: named browser closed, runner exited 0,
+its three PIDs absent, ports 55331/55400 closed, four task containers exited. No
+pending mutation, build or QA operation. Devices untouched, availability unknown.
+Private evidence: `reports/shared-dictionary-cefr/d10-web-acceptance-20261002/`.
+Retained `.20261001` primary data unchanged; isolated owner now has four document
+copies (`fiets` in Isolated Owner; `huis/zolder/balkon` in My Words) and bundled
+`boek` in Isolated Owner. Do not blindly replay imports or reset/reseed.
+
+Preservation commit subject: `docs: record dictionary web acceptance` (inspect git log
+for final SHA). Normal hooks are required; their result is retained privately in
+`reports/shared-dictionary-cefr/d10-web-acceptance-20261002/commit.log`.
+Private reports/.playwright-cli preserved, root AGENTS excluded, automation paused.
+No push/PR/merge, production, cutover, publication, deployment or paid operation.
+
+Historical checkpoint follows.
+
+Last checkpoint: **2026-10-02 — D10 web R1/R2 re-review PASS**.
+User confirmed requested Astra / High; reviewed `19d98eb`, starting HEAD `0d9e835`.
+[Re-review evidence](evidence/D10-web-transfer-rereview-20261002.md).
+Three focused suites / 54 tests pass; 137/137 source fingerprints match.
+No new finding or application edit. Next: remaining D10 browser acceptance using
+retained local stack, then cross-owner/both-client matrix. D10.3–D10.5 stay open.
+
+QA intent: start only four assigned retained containers and existing isolated web
+runner (fresh source copy, ports 55331/55400); save pre-write database snapshot.
+Do not reseed/reset or repeat closed native checks. Device availability request is
+pending; do not inspect/start/use devices without explicit user handback.
+No production/cutover/deployment/publication/paid operation; local commits authorized.
+
+Historical checkpoint follows.
+
 Last checkpoint: **2026-10-02 — D10 web R1/R2 repairs implemented**, starting
 source commit **`19d98eb`**, starting HEAD `9150845`, application baseline `ab8d603`,
 existing feature branch.

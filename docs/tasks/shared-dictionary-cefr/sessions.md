@@ -1313,6 +1313,24 @@ a new session to read this entire history. Never log private vocabulary or secre
 - Next Astra / High re-review, then remaining integrated acceptance. D10.3–D10.5 open;
   D11 not started. No remote/release/paid operations; automation paused.
 
+## 2026-10-02 — D10 web re-review and scoped browser acceptance
+
+- User confirmed requested Astra / High, starting `0d9e835`, source `19d98eb`.
+  R1/R2 re-review PASS, 3 suites / 54 tests. All 137 source hashes unchanged.
+- [Runtime evidence](evidence/D10-web-acceptance-20261002.md): actual export/copy,
+  private cross-owner read_only import/re-export, global duplicates, one accepted
+  lost reply with immutable check link/no retry, bundled Essentials fallback PASS.
+- Five new isolated-recipient cards, all 12 prior words/nine content states/eight
+  collections and review tables unchanged. Access restored, no publication.
+- Browser/runner/four task containers OFF verified 13:59:14 UTC. Devices not
+  inspected or used; explicit availability handback pending. No uncertain mutation.
+- Private snapshots/dump/UI artifacts retained, `.playwright-cli/` untracked,
+  root AGENTS excluded. No app/SQL/config changes, no hosted/paid/release operation.
+- D10.3–D10.5 remain open: official/shared runtime fixtures absent, native cross-client
+  and mobile-web acceptance pending. Same Astra / High, D11 not started.
+- Preservation commit subject `docs: record dictionary web acceptance`; normal hook
+  output retained in private acceptance root `commit.log`. Inspect git log for SHA.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:
