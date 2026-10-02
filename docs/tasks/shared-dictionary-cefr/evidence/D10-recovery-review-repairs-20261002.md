@@ -82,6 +82,13 @@ Default runtime flags stay off outside QA. No production/cutover, hosted migrati
 push/PR/merge, deployment, publication, paid operation or automation change.
 Private `.playwright-cli/` and retained ignored QA artifacts remain untouched.
 
+Repair source committed locally as `c3f9baf`. Normal hooks passed **156 mobile
+suites / 1796 tests / 22 snapshots**, **75 web suites / 648 tests**, with one existing
+skipped web suite/test. All 113 source fingerprints match after hooks. Exact task
+QA resources reverified off at 11:42 UTC: assigned iOS Shutdown, task AVD process
+absent, four task containers exited. No pending test/build/QA job or uncertain
+operation remains. Only private `.playwright-cli/` is untracked; no push/PR.
+
 Next: user-confirmed **GPT-6 Astra / High** re-review of R1/R2 and their regressions,
 then task-only integrated acceptance if the review passes. Never infer an automatic
 model switch from this recommendation.

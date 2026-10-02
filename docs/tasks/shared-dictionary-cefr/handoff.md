@@ -1,7 +1,7 @@
 # Shared dictionary and CEFR — current handoff
 
 Last checkpoint: **2026-10-02 — D10 checkpoint 6 R1/R2 repairs implemented.**
-User-confirmed GPT-6.1 Sol / High, starting `fa286e4`. Ordinary settled imported moves
+User-confirmed GPT-6.1 Sol / High; source `c3f9baf`, starting `fa286e4`. Ordinary settled imported moves
 now queue the existing immutable version/placement recovery request atomically;
 tracked unbound debt is gated in Saved imports and cannot use generic metadata
 UPDATE. Pending status includes unsent word/collection tombstones across cancel ACK,
@@ -20,9 +20,12 @@ lost replies, owner ABA, stale replacement and cancellation-to-tombstone countin
 Native upgrade/OS lifecycle and both-client acceptance remain unverified. D10.3–D10.5
 open; do not repeat D08/D09 or begin D11. Private QA data/.playwright-cli retained.
 
-Next operation: authorized local repair commit with normal pre-commit mobile/web
-hooks. Inspect Git log/status before retrying an interrupted commit. No QA start
-is required; retain edits on hook failure. Results will be recorded after completion.
+Repair source committed locally as `c3f9baf`. Normal hooks passed **156 mobile
+suites / 1796 tests / 22 snapshots**, **75 web suites / 648 tests**, with one existing
+skipped web suite/test. All 113 source fingerprints match after hooks. Exact task
+QA resources reverified off at 11:42 UTC: assigned iOS Shutdown, task AVD process
+absent, four task containers exited. No pending test/build/QA job or uncertain
+operation remains. Only private `.playwright-cli/` is untracked; no push/PR.
 
 Historical preceding review checkpoint follows:
 
@@ -122,7 +125,7 @@ Data, volumes, copies and reports retained. Other sessions/devices untouched.
 Task state: D02–D09 done; D10 in_progress; D11–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, current implementation `b7f207c`
+Branch `feature/shared-dictionary-schema`, current implementation `c3f9baf`
 following base implementation `a59acad`; no push/PR. Default runtime dictionary flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
@@ -210,7 +213,7 @@ infer live readiness from completed local stages.
 - Branch base/current starting HEAD: `c5dfb14` from synchronized `main`.
 - The earlier performance branch was not reused; its squash-merged work is present
   through current `main`.
-- Persistence: **committed locally, not pushed**. Latest application implementation is `b7f207c` (recovery UI), following `abc0b86` sync and document reimport
+- Persistence: **committed locally, not pushed**. Latest application implementation is `c3f9baf` (R1/R2 repair), following `b7f207c` recovery UI and `abc0b86` sync and document reimport
   `42c9bfd`, following `5efd6ff`, `dfdc7f0` and `a59acad`; task docs are in the following documentation
   checkpoint. A new local session can
   resume. A remote clone still needs an explicitly authorized push or transfer.

@@ -1218,6 +1218,11 @@ a new session to read this entire history. Never log private vocabulary or secre
 - Next Astra / High re-review, then task-only native/both-client acceptance if green.
   Manual model confirmation needed. D10.3–D10.5 open, D11 not started. No quota sample.
 
+- Repair source `c3f9baf` normal hooks: 156 mobile suites / 1796 tests /
+  22 snapshots, 75 web suites / 648 tests, one existing skipped suite/test.
+  All 113 source fingerprints match. Exact assigned QA off reverified 11:42 UTC.
+  No pending operation; only private `.playwright-cli/` remains untracked.
+
 ## Record template
 
 Copy these fields into a dated entry at each session boundary:
