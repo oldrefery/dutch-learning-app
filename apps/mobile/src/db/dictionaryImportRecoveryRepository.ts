@@ -1,6 +1,7 @@
 import {
   parseDictionaryImportRecovery,
   type DictionaryImportRecovery,
+  type DictionaryImportCancellation,
 } from '@woordenaar/domain'
 import { getDatabase } from './initDB'
 import {
@@ -81,14 +82,19 @@ export const dictionaryImportRecoveryRepository = {
 
   async markError(
     userId: string,
-    request: DictionaryImportRecovery,
+    request: DictionaryImportRecovery | DictionaryImportCancellation,
     message: string,
     assertOwner: () => void
   ): Promise<void> {
     const db = await getDatabase()
     await db.withExclusiveTransactionAsync(async transaction => {
       assertOwner()
-      await requireQueued(transaction, userId, request, 'recovery')
+      await requireQueued(
+        transaction,
+        userId,
+        request,
+        'target_collection_id' in request ? 'recovery' : 'cancel'
+      )
       await transaction.runAsync(
         `UPDATE dictionary_import_recovery_outbox SET status = 'error',last_error = ?
          WHERE user_id = ? AND operation_id = ?`,

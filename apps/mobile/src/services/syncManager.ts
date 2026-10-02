@@ -46,6 +46,13 @@ import {
   DictionaryContentConflictError,
 } from './dictionaryContentSync'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
+import { dictionaryImportRecoveryRepository } from '@/db/dictionaryImportRecoveryRepository'
+import { withDictionaryImportOwner } from './dictionaryImportOwner'
+import { prepareImportMetadata } from './dictionaryImportMetadata'
+import type { ImportDelivery } from '@/db/dictionaryImportRecoveryStorage'
+import { dictionaryImportDeliveryRepository } from '@/db/dictionaryImportDeliveryRepository'
+import { dictionaryImportRecoverySync } from './dictionaryImportRecoverySync'
+import { dictionaryImportDeletionRepository } from '@/db/dictionaryImportDeletionRepository'
 import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
 import { dictionaryPersonalRefreshRepository } from '@/db/dictionaryPersonalRefreshRepository'
 import {
@@ -56,6 +63,7 @@ import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import type { PendingReviewCorrection } from '@/types/ReviewCorrection'
 
 export interface SyncResult {
+  userId?: string
   dictionaryConflict?: boolean
   success: boolean
   wordsSynced: number
@@ -316,9 +324,10 @@ export class SyncManager {
 
     this.isSyncing = true
     try {
-      return await learningOperationQueue.run(() =>
+      const result = await learningOperationQueue.run(() =>
         this.performSyncPass(userId)
       )
+      return { ...result, userId }
     } finally {
       this.isSyncing = false
     }
@@ -363,7 +372,7 @@ export class SyncManager {
           timestamp: new Date().toISOString(),
         }
 
-        this.notifySyncStatus(result)
+        this.notifySyncStatus({ ...result, userId })
         return result
       }
 
@@ -453,6 +462,13 @@ export class SyncManager {
           )
         : 0
 
+      if (dictionaryContentAvailable) {
+        await this.runSyncStageWithSessionRetry(
+          'push_dictionary_imports',
+          userId,
+          () => dictionaryImportRecoverySync.push(userId, true)
+        )
+      }
       // Step 3: Push pending collection updates to Supabase (needed for FK on words)
       console.log('[Sync] Stage 5: push collections')
       await this.runSyncStageWithSessionRetry(
@@ -545,7 +561,7 @@ export class SyncManager {
       console.log(
         `[Sync] Review events synchronized: ${pulledReviewEvents.length + pushedReviewEventsCount}`
       )
-      this.notifySyncStatus(result)
+      this.notifySyncStatus({ ...result, userId })
 
       return result
     } catch (error) {
@@ -568,7 +584,7 @@ export class SyncManager {
 
       // Only notify if it's not a network error
       if (!isNetworkErr) {
-        this.notifySyncStatus(result)
+        this.notifySyncStatus({ ...result, userId })
       }
 
       return result
@@ -1510,6 +1526,8 @@ export class SyncManager {
   ): Promise<number> {
     if (deletedWords.length === 0) return 0
 
+    if (this.dictionaryContentAvailable)
+      await dictionaryImportDeletionRepository.assertSettled(userId)
     const wordIds = deletedWords.map(word => word.word_id)
     const deletedAt = new Date().toISOString()
     const { data, error } = await supabase
@@ -1626,7 +1644,13 @@ export class SyncManager {
     const imports = this.dictionaryContentAvailable
       ? await dictionaryImportRepository.getPending(userId)
       : []
-    const importWordIds = new Set(imports.map(row => row.intent.word_id))
+    const recoveries = this.dictionaryContentAvailable
+      ? await dictionaryImportRecoveryRepository.getPending(userId)
+      : []
+    const importWordIds = new Set([
+      ...imports.map(row => row.intent.word_id),
+      ...recoveries.map(row => row.word_id),
+    ])
     const validWords = this.filterValidPendingWords(
       pendingWords.filter(word => !importWordIds.has(word.word_id))
     )
@@ -1635,17 +1659,56 @@ export class SyncManager {
       return []
     }
 
+    const deliveries = this.dictionaryContentAvailable
+      ? await dictionaryImportDeliveryRepository.getAll(userId)
+      : []
+    const settledIds = new Set(
+      deliveries
+        .filter(
+          row =>
+            row.original_intent_json !== null &&
+            row.cancelled === 0 &&
+            row.acknowledged_placement_revision !== null &&
+            row.local_placement_revision === row.acknowledged_placement_revision
+        )
+        .map(row => row.word_id)
+    )
+    const settledWords = validWords.filter(word => settledIds.has(word.word_id))
+    const needsPlacement = validWords.filter(
+      word => !settledIds.has(word.word_id)
+    )
+    if (
+      needsPlacement.some(word =>
+        deliveries.some(row => row.word_id === word.word_id)
+      )
+    ) {
+      const localTargets = await collectionRepository.getCollectionsByIds(
+        needsPlacement
+          .map(word => word.collection_id)
+          .filter((id): id is string => Boolean(id)),
+        userId
+      )
+      if (
+        needsPlacement.some(
+          word =>
+            deliveries.some(row => row.word_id === word.word_id) &&
+            !localTargets.some(
+              target =>
+                target.collection_id === word.collection_id &&
+                target.sync_status !== 'deleted'
+            )
+        )
+      )
+        throw new Error(
+          'Import placement target is unavailable. Local queues remain saved.'
+        )
+    }
     const wordsWithCollections = await this.filterWordsWithCollections(
       userId,
-      validWords
+      needsPlacement
     )
-    if (wordsWithCollections.length === 0) {
-      console.log('[Sync] No valid words to sync after collection checks')
-      return []
-    }
-
     await this.pushCollectionsForWords(userId, wordsWithCollections)
-    return wordsWithCollections
+    return [...settledWords, ...wordsWithCollections]
   }
 
   private filterValidPendingWords(pendingWords: Word[]): Word[] {
@@ -2268,10 +2331,45 @@ export class SyncManager {
     payloads: SupabaseWordsUpsertPayload[]
   ): Promise<WordsUpsertResult> {
     if (payloads.length === 0) return { data: [], error: null }
+    const deliveries = await dictionaryImportDeliveryRepository.getAll(
+      payloads[0].user_id
+    )
+    if (
+      !payloads.some(payload =>
+        deliveries.some(row => row.word_id === payload.word_id)
+      )
+    )
+      return this.executeDictionaryMetadata(payloads, [], () => {})
+    return withDictionaryImportOwner(payloads[0].user_id, async owner => {
+      const result = await this.executeDictionaryMetadata(
+        payloads,
+        deliveries,
+        owner.assert
+      )
+      await owner.check()
+      return result
+    })
+  }
+
+  private async executeDictionaryMetadata(
+    payloads: SupabaseWordsUpsertPayload[],
+    deliveries: ImportDelivery[],
+    assertOwner: () => void
+  ): Promise<WordsUpsertResult> {
+    const prepared = await prepareImportMetadata(
+      payloads,
+      deliveries,
+      assertOwner
+    )
+    const toWrite = payloads.filter(
+      payload => !prepared.skipIds.has(payload.word_id)
+    )
+    if (toWrite.length === 0)
+      return { data: prepared.acknowledgements, error: null }
     // Bootstrap absent legacy rows without rewriting existing canonical content.
     // Content commands are applied only after all personal IDs exist remotely.
-    const existingIds = await this.fetchExistingDictionaryWordIds(payloads)
-    const newPayloads = payloads.filter(
+    const existingIds = await this.fetchExistingDictionaryWordIds(toWrite)
+    const newPayloads = toWrite.filter(
       payload => !existingIds.has(payload.word_id)
     )
     const importedIds = new Set(
@@ -2284,7 +2382,9 @@ export class SyncManager {
         'Imported personal identity is unavailable. Local content and learning queues are preserved.'
       )
     }
-    const acknowledgements: WordSyncAcknowledgement[] = []
+    const acknowledgements: WordSyncAcknowledgement[] = [
+      ...prepared.acknowledgements,
+    ]
     if (newPayloads.length > 0) {
       const inserted = await supabase
         .from('words')
@@ -2300,7 +2400,7 @@ export class SyncManager {
     }
     const insertedIds = new Set(acknowledgements.map(row => row.word_id))
     const groups = new Map<string, SupabaseWordsUpsertPayload[]>()
-    for (const payload of payloads) {
+    for (const payload of toWrite) {
       if (insertedIds.has(payload.word_id)) continue
       const key = JSON.stringify([payload.user_id, payload.collection_id])
       const group = groups.get(key) ?? []
@@ -2320,13 +2420,42 @@ export class SyncManager {
           )
           .is('deleted_at', null)
           .select(WORD_ACKNOWLEDGEMENT_COLUMNS)
+        assertOwner()
         if (result.error) {
           return { data: null, error: this.toSupabaseLikeError(result.error) }
         }
+        this.requireWordAcknowledgements(
+          result.data,
+          chunk.map(row => row.word_id)
+        )
         acknowledgements.push(...this.parseWordAcknowledgements(result.data))
+        await this.recordImportedMetadataAcknowledgements(
+          chunk,
+          deliveries,
+          assertOwner
+        )
       }
     }
     return { data: acknowledgements, error: null }
+  }
+
+  private async recordImportedMetadataAcknowledgements(
+    payloads: SupabaseWordsUpsertPayload[],
+    deliveries: ImportDelivery[],
+    assertOwner: () => void
+  ): Promise<void> {
+    for (const payload of payloads) {
+      const delivery = deliveries.find(row => row.word_id === payload.word_id)
+      if (delivery)
+        await dictionaryImportDeliveryRepository.acknowledgePlacement(
+          payload.user_id,
+          payload.word_id,
+          delivery.local_placement_revision,
+          payload.collection_id,
+          assertOwner
+        )
+      assertOwner()
+    }
   }
 
   private toSupabaseLikeError(error: unknown): SupabaseLikeError {
@@ -2606,6 +2735,8 @@ export class SyncManager {
       console.log(
         `[Sync] Deleting collection ${collection.collection_id} in Supabase`
       )
+      if (this.dictionaryContentAvailable)
+        await dictionaryImportDeletionRepository.assertSettled(userId)
       await collectionService.deleteCollection(collection.collection_id, userId)
       await collectionRepository.deleteCollection(collection.collection_id)
     }

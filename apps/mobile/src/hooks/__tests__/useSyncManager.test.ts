@@ -51,6 +51,18 @@ describe('refreshApplicationStoreAfterSync', () => {
     })
   })
 
+  it('does not publish a completed old-owner sync into the current account', async () => {
+    useApplicationStore.setState({ currentUserId: 'current-owner' })
+    await refreshApplicationStoreAfterSync({
+      ...successfulSync,
+      userId: 'old-owner',
+      dictionaryConflict: true,
+    })
+    expect(fetchCollections).not.toHaveBeenCalled()
+    expect(fetchWords).not.toHaveBeenCalled()
+    expect(fetchUserAccessLevel).not.toHaveBeenCalled()
+  })
+
   it('rehydrates collections and words after a successful sync', async () => {
     await refreshApplicationStoreAfterSync(successfulSync)
 

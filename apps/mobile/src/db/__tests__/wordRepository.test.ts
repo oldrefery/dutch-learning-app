@@ -599,18 +599,11 @@ describe('WordRepository', () => {
 
   describe('delete tombstones', () => {
     it('should mark a word deleted instead of removing it', async () => {
-      const statement = {
-        executeAsync: jest.fn(),
-        finalizeAsync: jest.fn(),
-      }
-      mockDatabase.prepareAsync.mockResolvedValue(statement)
-
+      mockDatabase.getFirstAsync.mockResolvedValueOnce(null)
       await wordRepository.deleteWord(WORD_ID_1, USER_ID)
-
-      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
-        expect.stringContaining("sync_status = 'deleted'")
-      )
-      expect(statement.executeAsync).toHaveBeenCalledWith(
+      expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalled()
+      expect(mockDatabase.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining("sync_status = 'deleted'"),
         expect.any(String),
         expect.any(String),
         WORD_ID_1,

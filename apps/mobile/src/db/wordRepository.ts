@@ -21,6 +21,8 @@ import {
 } from '@woordenaar/domain'
 import { randomUUID } from 'expo-crypto'
 import { wordToDictionaryContent } from './dictionaryContentMapping'
+import { recordExplicitImportMove } from './dictionaryImportPlacementRepository'
+import { queueImportDeletion } from './dictionaryImportDeletionRepository'
 import { dictionaryImportRepository } from './dictionaryImportRepository'
 
 const requireDictionaryOverrides = (value: unknown) => {
@@ -99,7 +101,10 @@ const CHECK_EXISTING_WORD_SQL = `
   SELECT word_id, sync_status, updated_at, deleted_at,
     EXISTS(SELECT 1 FROM learning_commands WHERE learning_commands.word_id = words.word_id) AS has_pending_learning,
     EXISTS(SELECT 1 FROM dictionary_content_commands WHERE dictionary_content_commands.word_id = words.word_id) AS has_pending_dictionary,
-    EXISTS(SELECT 1 FROM dictionary_import_intents WHERE dictionary_import_intents.word_id = words.word_id) AS has_pending_import,
+    (EXISTS(SELECT 1 FROM dictionary_import_intents WHERE dictionary_import_intents.word_id = words.word_id)
+     OR EXISTS(SELECT 1 FROM dictionary_import_recovery_outbox WHERE dictionary_import_recovery_outbox.word_id = words.word_id)
+     OR EXISTS(SELECT 1 FROM dictionary_import_delivery d WHERE d.word_id = words.word_id
+       AND (d.acknowledged_placement_revision IS NULL OR d.local_placement_revision > d.acknowledged_placement_revision))) AS has_pending_import,
     EXISTS(SELECT 1 FROM dictionary_card_content WHERE dictionary_card_content.word_id = words.word_id) AS has_dictionary_content
   FROM words
   WHERE user_id = ?
@@ -162,6 +167,9 @@ const UPDATE_WORD_SQL = `
       AND NOT EXISTS (SELECT 1 FROM learning_commands l WHERE l.word_id = words.word_id)
       AND NOT EXISTS (SELECT 1 FROM dictionary_content_commands c WHERE c.word_id = words.word_id)
       AND NOT EXISTS (SELECT 1 FROM dictionary_import_intents i WHERE i.word_id = words.word_id)
+      AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r WHERE r.word_id = words.word_id)
+      AND NOT EXISTS (SELECT 1 FROM dictionary_import_delivery d WHERE d.word_id = words.word_id
+        AND (d.acknowledged_placement_revision IS NULL OR d.local_placement_revision > d.acknowledged_placement_revision))
     ))
 `
 
@@ -220,6 +228,11 @@ const UPSERT_WORD_TOMBSTONE_SQL = `
     deleted_at = excluded.deleted_at,
     updated_at = excluded.updated_at,
     sync_status = 'synced'
+  WHERE words.user_id = excluded.user_id
+    AND NOT EXISTS (SELECT 1 FROM dictionary_import_intents i WHERE i.word_id = words.word_id)
+    AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r WHERE r.word_id = words.word_id)
+    AND NOT EXISTS (SELECT 1 FROM dictionary_import_delivery d WHERE d.word_id = words.word_id
+      AND (d.acknowledged_placement_revision IS NULL OR d.local_placement_revision > d.acknowledged_placement_revision))
 `
 
 export class WordRepository {
@@ -615,7 +628,12 @@ export class WordRepository {
     const db = await getDatabase()
 
     const result = await db.getAllAsync<Record<string, unknown>>(
-      "SELECT * FROM words WHERE user_id = ? AND sync_status = 'pending' AND deleted_at IS NULL ORDER BY updated_at ASC",
+      isDictionaryContentEnabled()
+        ? `SELECT * FROM words WHERE user_id = ? AND deleted_at IS NULL AND (sync_status = 'pending'
+           OR EXISTS (SELECT 1 FROM dictionary_import_delivery d WHERE d.word_id = words.word_id
+             AND d.user_id = words.user_id AND d.local_placement_revision > d.acknowledged_placement_revision))
+           ORDER BY updated_at ASC`
+        : "SELECT * FROM words WHERE user_id = ? AND sync_status = 'pending' AND deleted_at IS NULL ORDER BY updated_at ASC",
       [userId]
     )
 
@@ -718,8 +736,29 @@ export class WordRepository {
     }
   }
 
-  async deleteWord(wordId: string, userId: string): Promise<void> {
+  async deleteWord(
+    wordId: string,
+    userId: string,
+    assertOwner: () => void = () => {}
+  ): Promise<void> {
     const db = await getDatabase()
+    if (isDictionaryContentEnabled()) {
+      await db.withExclusiveTransactionAsync(async transaction => {
+        assertOwner()
+        await queueImportDeletion(transaction, userId, wordId)
+        const now = new Date().toISOString()
+        await transaction.runAsync(
+          `UPDATE words SET deleted_at = ?,updated_at = ?,sync_status = 'deleted'
+          WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL`,
+          now,
+          now,
+          wordId,
+          userId
+        )
+        assertOwner()
+      })
+      return
+    }
     const statement = await db.prepareAsync(
       `UPDATE words
        SET deleted_at = ?, updated_at = ?, sync_status = 'deleted'
@@ -740,6 +779,26 @@ export class WordRepository {
     options: { preservePendingImports?: boolean } = {}
   ): Promise<void> {
     const db = await getDatabase()
+    if (isDictionaryContentEnabled() && !options.preservePendingImports) {
+      await db.withExclusiveTransactionAsync(async transaction => {
+        const words = await transaction.getAllAsync<{ word_id: string }>(
+          'SELECT word_id FROM words WHERE collection_id = ? AND user_id = ? AND deleted_at IS NULL',
+          [collectionId, userId]
+        )
+        for (const word of words)
+          await queueImportDeletion(transaction, userId, word.word_id)
+        const now = new Date().toISOString()
+        await transaction.runAsync(
+          `UPDATE words SET deleted_at = ?,updated_at = ?,sync_status = 'deleted'
+          WHERE collection_id = ? AND user_id = ? AND deleted_at IS NULL`,
+          now,
+          now,
+          collectionId,
+          userId
+        )
+      })
+      return
+    }
     const statement = await db.prepareAsync(
       `UPDATE words
        SET deleted_at = ?, updated_at = ?, sync_status = 'deleted'
@@ -747,7 +806,8 @@ export class WordRepository {
          AND (? = 0 OR NOT EXISTS (
            SELECT 1 FROM dictionary_import_intents imports
            WHERE imports.word_id = words.word_id AND imports.user_id = words.user_id
-         ))`
+         ) AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r WHERE r.word_id = words.word_id)
+         AND NOT EXISTS (SELECT 1 FROM dictionary_import_delivery d WHERE d.word_id = words.word_id))`
     )
 
     try {
@@ -841,6 +901,8 @@ export class WordRepository {
            SELECT 1 FROM dictionary_import_intents imports
            WHERE imports.word_id = words.word_id AND imports.user_id = words.user_id
          )
+      AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r WHERE r.word_id = words.word_id)
+      AND NOT EXISTS (SELECT 1 FROM dictionary_import_delivery d WHERE d.word_id = words.word_id)
          AND (
            collection_id IS NULL
            OR collection_id NOT IN (
@@ -1362,10 +1424,39 @@ export class WordRepository {
   async moveWordToCollection(
     wordId: string,
     userId: string,
-    newCollectionId: string
+    newCollectionId: string,
+    assertOwner: () => void = () => {}
   ): Promise<void> {
     const db = await getDatabase()
 
+    if (isDictionaryContentEnabled()) {
+      await db.withExclusiveTransactionAsync(async transaction => {
+        assertOwner()
+        const active = await transaction.getFirstAsync<{ word_id: string }>(
+          'SELECT word_id FROM words WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL',
+          [wordId, userId]
+        )
+        const target = await transaction.getFirstAsync<{
+          collection_id: string
+        }>(
+          `SELECT collection_id FROM collections WHERE collection_id = ? AND user_id = ? AND sync_status <> 'deleted'`,
+          [newCollectionId, userId]
+        )
+        if (!active || !target)
+          throw new Error('Owned card or target is unavailable')
+        await recordExplicitImportMove(transaction, userId, wordId)
+        await transaction.runAsync(
+          `UPDATE words SET collection_id = ?,updated_at = ?,sync_status = 'pending'
+          WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL`,
+          newCollectionId,
+          new Date().toISOString(),
+          wordId,
+          userId
+        )
+        assertOwner()
+      })
+      return
+    }
     const updateStatement = await db.prepareAsync(
       'UPDATE words SET collection_id = ?, updated_at = ?, sync_status = ? WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL'
     )

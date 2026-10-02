@@ -17,7 +17,7 @@ import {
   retireOutboxes,
 } from './dictionaryImportRecoveryStorage'
 
-async function prepareCancellation(
+export async function prepareDictionaryImportCancellation(
   transaction: SQLiteDatabase,
   userId: string,
   wordId: string,
@@ -76,7 +76,7 @@ export const dictionaryImportCancellationRepository = {
       assertOwner()
       for (const input of inputs) {
         requests.push(
-          await prepareCancellation(
+          await prepareDictionaryImportCancellation(
             transaction,
             userId,
             input.wordId,

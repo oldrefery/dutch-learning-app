@@ -717,7 +717,11 @@ describe('wordActions', () => {
 
       await actions.deleteWord(WORD_ID)
 
-      expect(wordRepository.deleteWord).toHaveBeenCalledWith(WORD_ID, USER_ID)
+      expect(wordRepository.deleteWord).toHaveBeenCalledWith(
+        WORD_ID,
+        USER_ID,
+        expect.any(Function)
+      )
       expect(mockSet).toHaveBeenCalledWith({
         words: expect.arrayContaining([
           expect.not.objectContaining({ word_id: WORD_ID }),
@@ -863,7 +867,8 @@ describe('wordActions', () => {
       expect(wordRepository.moveWordToCollection).toHaveBeenCalledWith(
         WORD_ID,
         USER_ID,
-        newCollectionId
+        newCollectionId,
+        expect.any(Function)
       )
       expect(mockSet).toHaveBeenCalledWith({
         words: expect.arrayContaining([

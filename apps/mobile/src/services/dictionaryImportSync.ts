@@ -4,7 +4,10 @@ import { parseDictionaryImportReceipt } from '@woordenaar/domain'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import { randomUUID } from 'expo-crypto'
 
-export class DictionaryImportConflictError extends Error {}
+import { dictionaryImportRecoverySync } from './dictionaryImportRecoverySync'
+import { withDictionaryImportOwner } from './dictionaryImportOwner'
+import { DictionaryImportConflictError } from './dictionaryImportErrors'
+export { DictionaryImportConflictError } from './dictionaryImportErrors'
 
 const ensureOwner = async (userId: string): Promise<void> => {
   const { data, error } = await supabase.auth.getUser()
@@ -45,43 +48,49 @@ export const dictionaryImportSync = {
   async push(userId: string): Promise<number> {
     if (!isDictionaryContentEnabled()) return 0
     await ensureOwner(userId)
+    const recovered = await dictionaryImportRecoverySync.push(userId)
     const pending = await dictionaryImportRepository.getPending(userId)
-    let count = 0
-    for (const row of pending) {
-      if (row.status === 'conflict') {
-        throw new DictionaryImportConflictError(
-          'Import conflicts need resolution. Your local cards, private edits and learning history are saved on this device.'
-        )
-      }
-      await ensureOwner(userId)
-      const { data, error } = await supabase.rpc(
-        'apply_dictionary_import_intent_v1',
-        {
-          p_intent: row.intent,
+    return withDictionaryImportOwner(userId, async owner => {
+      let count = recovered
+      for (const row of pending) {
+        if (row.status === 'conflict') {
+          throw new DictionaryImportConflictError(
+            'Import conflicts need resolution. Your local cards, private edits and learning history are saved on this device.'
+          )
         }
-      )
-      if (error) {
-        await dictionaryImportRepository.markError(
+        await owner.check()
+        const { data, error } = await supabase.rpc(
+          'apply_dictionary_import_intent_v1',
+          {
+            p_intent: row.intent,
+          }
+        )
+        await owner.check()
+        if (error) {
+          await dictionaryImportRepository.markError(
+            userId,
+            row.intent.operation_id,
+            error.message,
+            owner.assert
+          )
+          throw error
+        }
+        const receipt = parseDictionaryImportReceipt(data, row.intent)
+        await ensureOwner(userId)
+        await dictionaryImportRepository.acceptReceipt(
           userId,
-          row.intent.operation_id,
-          error.message
+          row.intent,
+          receipt,
+          owner.assert
         )
-        throw error
+        if (receipt.outcome === 'identity-conflict') {
+          throw new DictionaryImportConflictError(
+            'Import conflicts need resolution. Your local cards, private edits and learning history are saved on this device.'
+          )
+        }
+        count++
       }
-      const receipt = parseDictionaryImportReceipt(data, row.intent)
-      await ensureOwner(userId)
-      await dictionaryImportRepository.acceptReceipt(
-        userId,
-        row.intent,
-        receipt
-      )
-      if (receipt.outcome === 'identity-conflict') {
-        throw new DictionaryImportConflictError(
-          'Import conflicts need resolution. Your local cards, private edits and learning history are saved on this device.'
-        )
-      }
-      count++
-    }
-    return count
+      return count
+    })
   },
 }

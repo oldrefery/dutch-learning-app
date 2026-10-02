@@ -326,6 +326,7 @@ describe('durable offline import identities in file-backed SQLite', () => {
     const input = await create()
     db.exec(`DELETE FROM dictionary_import_intents; DELETE FROM dictionary_content_commands;
       UPDATE words SET sync_status = 'synced';
+      UPDATE dictionary_import_delivery SET acknowledged_placement_revision = 0;
       INSERT INTO dictionary_personal_refresh_queue(word_id,user_id) VALUES ('${WORD}','${USER}');`)
     db.close()
     let queuedDuringHydration = false

@@ -1,3 +1,5 @@
+import { dictionaryImportDeliveryRepository } from '@/db/dictionaryImportDeliveryRepository'
+import { dictionaryImportRecoveryRepository } from '@/db/dictionaryImportRecoveryRepository'
 import { wordRepository } from '@/db/wordRepository'
 import { createMockWord } from '@/__tests__/helpers/factories'
 import { syncStatusService } from '../syncStatusService'
@@ -6,6 +8,16 @@ import { dictionaryPersonalRefreshRepository } from '@/db/dictionaryPersonalRefr
 import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+jest.mock('@/db/dictionaryImportDeliveryRepository', () => ({
+  dictionaryImportDeliveryRepository: {
+    getDebtWordIds: jest.fn().mockResolvedValue([]),
+  },
+}))
+jest.mock('@/db/dictionaryImportRecoveryRepository', () => ({
+  dictionaryImportRecoveryRepository: {
+    getPending: jest.fn().mockResolvedValue([]),
+  },
+}))
 
 jest.mock('@/db/dictionaryPersonalRefreshRepository', () => ({
   dictionaryPersonalRefreshRepository: {
@@ -49,6 +61,8 @@ jest.mock('@/db/progressRepository', () => ({
   },
 }))
 
+const CANCELLED_LOCAL_ID = 'cancelled-local'
+const PENDING_OWNER = 'test-user'
 const SHARED_WORD_ID = 'shared-word'
 
 beforeEach(() => {
@@ -197,4 +211,41 @@ it('keeps acknowledged-word import conflicts and deferred SRS hydration visible 
     pendingWords: 2,
     totalPending: 2,
   })
+})
+
+it('counts cancellation and independent placement debt even when generic metadata appears synced', async () => {
+  jest.mocked(isDictionaryContentEnabled).mockReturnValue(true)
+  jest
+    .mocked(dictionaryImportDeliveryRepository.getDebtWordIds)
+    .mockResolvedValueOnce([CANCELLED_LOCAL_ID, 'placement-debt'])
+  jest
+    .mocked(dictionaryImportRecoveryRepository.getPending)
+    .mockResolvedValueOnce([
+      {
+        word_id: CANCELLED_LOCAL_ID,
+        user_id: PENDING_OWNER,
+        operation_id: 'pending-cancel',
+        kind: 'cancel',
+        payload_json: '{}',
+        placement_revision: null,
+        status: 'pending',
+        last_error: null,
+        request: {
+          protocol_version: 1,
+          operation_id: 'pending-cancel',
+          original_intent: {
+            protocol_version: 1,
+            operation_id: 'original',
+            word_id: CANCELLED_LOCAL_ID,
+            collection_id: 'target',
+            source: { kind: 'private-copy', content: {} },
+          },
+        },
+      },
+    ] as Awaited<
+      ReturnType<typeof dictionaryImportRecoveryRepository.getPending>
+    >)
+  const snapshot = await syncStatusService.getSnapshot(PENDING_OWNER)
+  expect(snapshot.pendingWords).toBe(2)
+  expect(snapshot.totalPending).toBe(2)
 })

@@ -372,8 +372,8 @@ export const createWordActions = (
   },
 
   deleteWord: async (wordId: string) => {
+    const userId = get().currentUserId
     try {
-      const userId = get().currentUserId
       if (!userId) {
         logError(
           USER_NOT_AUTHENTICATED_LOG,
@@ -392,11 +392,16 @@ export const createWordActions = (
       }
 
       // Offline-first: delete it from local SQLite
-      await wordRepository.deleteWord(wordId, userId)
+      await wordRepository.deleteWord(wordId, userId, () => {
+        if (get().currentUserId !== userId)
+          throw new Error('Word owner changed')
+      })
+      if (get().currentUserId !== userId) return
       const currentWords = get().words
       const updatedWords = currentWords.filter(w => w.word_id !== wordId)
       set({ words: updatedWords })
     } catch (error) {
+      if (get().currentUserId !== userId) return
       logError('Error deleting word', error, { wordId }, 'words', false)
       set({
         error: createStoreError(WORD_DELETE_FAILED, {
@@ -459,8 +464,8 @@ export const createWordActions = (
   },
 
   moveWordToCollection: async (wordId: string, newCollectionId: string) => {
+    const userId = get().currentUserId
     try {
-      const userId = get().currentUserId
       if (!userId) {
         logError(
           USER_NOT_AUTHENTICATED_LOG,
@@ -479,7 +484,16 @@ export const createWordActions = (
       }
 
       // Offline-first: move word in local SQLite
-      await wordRepository.moveWordToCollection(wordId, userId, newCollectionId)
+      await wordRepository.moveWordToCollection(
+        wordId,
+        userId,
+        newCollectionId,
+        () => {
+          if (get().currentUserId !== userId)
+            throw new Error('Word owner changed')
+        }
+      )
+      if (get().currentUserId !== userId) return null
 
       // Update local store
       const currentWords = get().words
@@ -497,6 +511,7 @@ export const createWordActions = (
       }
       return null
     } catch (error) {
+      if (get().currentUserId !== userId) return null
       logError(
         'Error moving word to collection',
         error,

@@ -11,6 +11,9 @@ import {
 } from '../dictionaryImportSync'
 
 jest.mock('@/lib/supabase')
+jest.mock('../dictionaryImportRecoverySync', () => ({
+  dictionaryImportRecoverySync: { push: jest.fn().mockResolvedValue(0) },
+}))
 jest.mock('@/constants/dictionaryContent', () => ({
   isDictionaryContentEnabled: () => true,
 }))
@@ -92,7 +95,8 @@ it('replays the immutable persisted input after a lost response', async () => {
   expect(dictionaryImportRepository.acceptReceipt).toHaveBeenCalledWith(
     USER,
     intent,
-    receipt
+    receipt,
+    expect.any(Function)
   )
 })
 
@@ -123,7 +127,8 @@ it('records a durable identity conflict and never acknowledges it as an import s
   expect(dictionaryImportRepository.acceptReceipt).toHaveBeenCalledWith(
     USER,
     intent,
-    conflict
+    conflict,
+    expect.any(Function)
   )
   jest.mocked(dictionaryImportRepository.getPending).mockResolvedValue([
     {
@@ -166,7 +171,8 @@ it('retains the intent when the receipt is malformed or the source/target is una
   expect(dictionaryImportRepository.markError).toHaveBeenCalledWith(
     USER,
     intent.operation_id,
-    UNAVAILABLE_SOURCE
+    UNAVAILABLE_SOURCE,
+    expect.any(Function)
   )
   expect(dictionaryImportRepository.acceptReceipt).not.toHaveBeenCalled()
 })

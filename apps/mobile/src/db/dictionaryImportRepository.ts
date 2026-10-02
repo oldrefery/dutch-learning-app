@@ -70,11 +70,13 @@ export const dictionaryImportRepository = {
   async acceptReceipt(
     userId: string,
     intent: DictionaryImportIntent,
-    value: DictionaryImportReceipt
+    value: DictionaryImportReceipt,
+    assertOwner: () => void = () => {}
   ): Promise<void> {
     const receipt = parseDictionaryImportReceipt(value, intent)
     const db = await getDatabase()
     await db.withExclusiveTransactionAsync(async transaction => {
+      assertOwner()
       const row = await transaction.getFirstAsync<{ payload_json: string }>(
         `SELECT payload_json FROM dictionary_import_intents
          WHERE user_id = ? AND operation_id = ? AND word_id = ?
@@ -108,6 +110,16 @@ export const dictionaryImportRepository = {
           intent.word_id,
           userId
         )
+        await transaction.runAsync(
+          `UPDATE dictionary_import_delivery SET acknowledged_placement_revision = 0
+          WHERE user_id = ? AND word_id = ? AND local_placement_revision = 0 AND cancelled = 0
+          AND EXISTS (SELECT 1 FROM words w WHERE w.word_id = dictionary_import_delivery.word_id
+            AND w.user_id = ? AND w.deleted_at IS NULL AND w.collection_id = ?)`,
+          userId,
+          intent.word_id,
+          userId,
+          intent.collection_id
+        )
         // Keep word metadata pending: learning and later moves/edits may have changed.
         await transaction.runAsync(
           `DELETE FROM dictionary_import_intents WHERE user_id = ? AND operation_id = ?`,
@@ -115,6 +127,7 @@ export const dictionaryImportRepository = {
           intent.operation_id
         )
       }
+      assertOwner()
     })
   },
 
@@ -130,18 +143,23 @@ export const dictionaryImportRepository = {
   async markError(
     userId: string,
     operationId: string,
-    message: string
+    message: string,
+    assertOwner: () => void = () => {}
   ): Promise<void> {
     const db = await getDatabase()
-    await db.runAsync(
-      `UPDATE dictionary_import_intents SET status = 'error', last_error = ?
+    await db.withExclusiveTransactionAsync(async transaction => {
+      assertOwner()
+      await transaction.runAsync(
+        `UPDATE dictionary_import_intents SET status = 'error', last_error = ?
        WHERE user_id = ? AND operation_id = ? AND status <> 'conflict'
          AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r
            WHERE r.word_id = dictionary_import_intents.word_id)`,
-      message,
-      userId,
-      operationId
-    )
+        message,
+        userId,
+        operationId
+      )
+      assertOwner()
+    })
   },
 
   async retryConflict(
