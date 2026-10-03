@@ -20,9 +20,11 @@ exact account/source/pricing/approval binding and dormant execution entrypoint.
 Preserve repaired receipt stops, body cancellation and dispatch guards. Complete
 reviewable local work before a final live spending request. Control endpoint billing
 and complete total cost remain unverified; no paid execution is authorized.
-A teacher is not required. D11 in_progress; D12 not started. Necessary local
-repair/review commit with ordinary hooks follows under AUTH-18. Preserve
-`.playwright-cli/` and ignored reports. No pending external write/restoration.
+A teacher is not required. D11 in_progress; D12 not started. Repair/review `f09971f`
+passed ordinary hooks: mobile 156 suites /1796 tests /22 snapshots; web 86 suites
+/780 tests, one existing skip. Post-hook inventory 210/210 exact. Local documentation
+receipt with ordinary hooks follows under AUTH-18. Preserve `.playwright-cli/` and
+ignored reports. No pending test, external write or restoration.
 
 The following preparation checkpoint is historical; its technical review is complete.
 
@@ -1038,7 +1040,7 @@ Data, volumes, copies and reports retained. Other sessions/devices untouched.
 Task state: D02–D10 done; D11 in_progress (REST/control review repaired and passed; live integration/quality open); D12–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, starting REST/control review `177eb96`; repair/review commit follows, no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
+Branch `feature/shared-dictionary-schema`, REST/control repair/review `f09971f` (ordinary hooks PASS); local receipt follows, no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume
