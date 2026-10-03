@@ -21,9 +21,11 @@ do not fabricate labels or run paid calls. D11 remains in_progress; local mechan
 and technical review pass, while full/live acceptance and model attribution stay
 explicitly limited. D12 has not started. Announce the model before the next step.
 
-Persistence: local repair/evidence commit with normal hooks under AUTH-18 follows;
-record actual commit/hook receipt after success. Only three implementation/test
-paths plus this review inventory/evidence, stage card, handoff and sessions changed.
+Persistence: repair/review commit `ab789e2` passed normal hooks: mobile 156 suites /
+1796 tests /22 snapshots; web 86 suites /780 tests, one existing skipped suite/test.
+Post-hook inventory 184/184 exact. Local documentation receipt follows under
+AUTH-18, with ordinary hooks; no push. Only preexisting `.playwright-cli/` was
+untracked before that receipt.
 Preserve `.playwright-cli/` and ignored private review logs. No pending test process,
 external operation or restoration; disposable harnesses finished and cleaned up.
 No retained device/backend operation, hosted apply, provider call, runtime/schedule

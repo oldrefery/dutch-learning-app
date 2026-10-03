@@ -1676,3 +1676,13 @@ ordinary hooks, no push, no pending runtime operation or restoration.
   separate live approval. D11 remains in_progress; D12 not started, defaults OFF.
   No paid calls, hosted migration, publication/deployment/activation or push/PR.
 - Necessary local repair/evidence commit uses normal hooks; receipt follows.
+
+## Persistence receipt
+
+Repair/review commit **`ab789e2`** passed normal hooks: mobile 156 suites /1796
+tests /22 snapshots; web 86 suites /780 tests, one preexisting skipped suite/test.
+Post-hook inventory **184/184 exact**; only preexisting `.playwright-cli/` untracked
+before the documentation receipt. Private `commit.log` retains hook results.
+The hook length/complexity checks found no matching TS/JS paths; changed MJS
+files passed the separate scoped ESLint check. No push or pending operation. Next remains Sol / High local calibration/sample proposal,
+with real evidence and separate live approvals still required.

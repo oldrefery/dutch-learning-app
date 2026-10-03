@@ -107,3 +107,13 @@ resolve missing real fixture/reviewer/provider inputs; do not call a paid provid
 or activate a scheduler before the separate scoped approval. Announce the model
 before beginning. Current review model attribution remains unverified, not a
 reason to replay unchanged QA. D12 has not started; D11 is not fully accepted.
+
+## Persistence receipt
+
+Repair/review commit **`ab789e2`** passed normal hooks: mobile 156 suites /1796
+tests /22 snapshots; web 86 suites /780 tests, one preexisting skipped suite/test.
+Post-hook inventory **184/184 exact**; only preexisting `.playwright-cli/` untracked
+before the documentation receipt. Private `commit.log` retains hook results.
+The hook length/complexity checks found no matching TS/JS paths; changed MJS
+files passed the separate scoped ESLint check. No push or pending operation. Next remains Sol / High local calibration/sample proposal,
+with real evidence and separate live approvals still required.
