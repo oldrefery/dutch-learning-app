@@ -1,8 +1,12 @@
 # Proposed Gemini Developer API control-billing inquiry (unsent)
 
 Date prepared: 2026-10-03. This is a local draft. It contains no account,
-project, credential, source meaning or user data. Sending it to Google support
-requires separate explicit authorization.
+project, credential, source meaning or user data. The user authorized one send
+from `oldrefery@gmail.com`; it has not been sent because the billing assistant
+requires choosing the linked personal billing account first. The read-only
+Billing-page navigation needed to verify that link was rejected by automatic
+approval review; an exact permission request is pending. Keep the message body
+below unchanged until submission.
 
 ## Subject
 
@@ -35,7 +39,8 @@ channel. No credentials or project identifiers are included in this inquiry.
 ## Routing
 
 Google's [Gemini troubleshooting guide](https://ai.google.dev/gemini-api/docs/troubleshooting)
-points billing questions to a billing support case. Do not submit this draft,
-post it to a public forum or add private account details without explicit user
-authorization. A support answer must identify both REST methods and the current
-paid Standard plan before it can satisfy the pilot's control-billing gate.
+points billing questions to a billing support case. Submit only after verifying
+the personal account and correct linked billing account. Do not post it to a
+public forum or add private account details. A support answer must identify both
+REST methods and the current paid Standard plan before it can satisfy the pilot's
+control-billing gate.

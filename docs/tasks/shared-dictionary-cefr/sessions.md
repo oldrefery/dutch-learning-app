@@ -1979,3 +1979,36 @@ suite/test. Prettier and `git diff --check` PASS. Two exact permission questions
 for Cloud Console metadata and sending the drafted support inquiry are pending.
 Only preexisting `.playwright-cli/` remains untracked; no external operation is
 in flight. Local receipt follows under AUTH-18 without push.
+
+## 2026-10-03 — D11 restricted personal-console/support authorization
+
+- Started `203ca83`, GPT-6.1 Sol / High announced. User authorized read-only
+  Google Cloud Console Credentials inspection and one send of the prepared
+  account-free billing inquiry, only while signed in as `oldrefery@gmail.com`.
+  Check identity before both actions; no key value, settings/payment change,
+  provider call or source transmission.
+- Intended support operation: submit the exact account-free inquiry to Google
+  Cloud Billing Support once. If completion is uncertain, inspect case history
+  before retry. No support case or external action has yet been verified.
+- D11 in_progress, D12 pending, qualification false; pilot disabled. Preserve
+  `.playwright-cli/` and private reports. Update this checkpoint with results.
+
+## 2026-10-03 — D11 personal Credentials inspection and billing scope gate
+
+- Started `203ca83`, GPT-6.1 Sol / High announced; picker attribution unverified.
+  Verified `oldrefery@gmail.com` in both personal Cloud Console projects. Read
+  Credentials metadata only: available Gemini API-restricted keys, no bound
+  service account shown, and one key without application restriction. Did not
+  reveal/copy a value or prove the app's exact secret-to-project binding.
+- User allowed small paid diagnostic use without another spending question and
+  retained the personal-account restriction. The proposed $2 API-use ceiling is
+  retained; control billing and executable registry remain unresolved. No paid
+  call, source transmission, key change or worker activation occurred.
+- Billing support assistant opened from the verified personal Console, but needs
+  a billing-account selection. Automatic approval review rejected opening the
+  private Cloud Billing product to establish the link, as outside the earlier
+  Credentials/support scope. Did not bypass or submit the inquiry. Requested
+  exact read-only Billing permission; awaiting answer. D11 in_progress, D12
+  pending, qualification false; runner disabled. Only task docs are modified;
+  preserve `.playwright-cli/` and ignored reports. Check formatting and commit
+  locally under AUTH-18 after the next evidence checkpoint; no push.

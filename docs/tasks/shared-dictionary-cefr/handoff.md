@@ -1,5 +1,42 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 personal Credentials inspected; billing link and inquiry
+pending.** Starting `203ca83`, GPT-6.1 Sol / High announced; picker attribution
+unverified. Cloud Console displayed `oldrefery@gmail.com` for both personal
+projects. Gemini API-restricted keys were available with no bound service account
+shown; one key had no application restriction. No key value was displayed, and
+the application's exact secret-to-key/project match remains unknown. The user
+allowed a small paid model diagnostic without another spending prompt, retaining
+the personal-account restriction. The frozen $2 API-use proposal is the local
+maximum, but direct REST control billing and exact key binding are unverified;
+the 24-input pilot remains disabled and qualification false. Google Cloud Billing
+Support opened under the personal account, but its assistant requires choosing a
+billing account before submitting the account-free draft. Automatic approval
+review rejected navigation to the private Cloud Billing product to establish the
+project/billing-account link as outside the prior read-only scope; no workaround
+or send occurred. Exact read-only billing-page permission has been requested and
+is pending. If granted, verify identity/link, then submit the one authorized
+inquiry and verify receipt; do not retry an uncertain send blindly. D11
+in_progress, D12 pending. Current documentation changes are uncommitted; preserve
+`.playwright-cli/` and ignored reports. No provider or paid call, source
+transmission, registry activation, purchase, settings change, push or PR.
+
+**2026-10-03 — D11 authorized personal-console/support checkpoint started.**
+Starting `203ca83`, GPT-6.1 Sol / High announced. The user authorized read-only
+Google Cloud Console Credentials inspection and one send of the prepared
+control-billing inquiry, restricted to `oldrefery@gmail.com`. Before either
+action, verify that exact signed-in identity. No key value, settings change,
+purchase, source transmission or paid Gemini call is authorized. Support target:
+Google Cloud Billing Support; payload: the account-free
+[draft](evidence/D11-gemini-control-billing-inquiry.proposed.md). If submission
+outcome is uncertain, inspect support case history before any retry. Exact result
+and case reference remain pending. D11 in_progress, D12 pending, qualification
+false; pilot and registry disabled. Preserve `.playwright-cli/` and ignored
+reports. No other external operation planned.
+
+The prior checkpoint below is historical; its two permission questions were
+answered with the account restriction above.
+
 **2026-10-03 — D11 read-only personal AI Studio check completed under explicit
 permission.** Starting `d671b7f`, GPT-6.1 Sol / High announced; model picker
 attribution unverified. The user explicitly authorized opening the signed-in

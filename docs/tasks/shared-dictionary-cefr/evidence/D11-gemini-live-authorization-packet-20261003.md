@@ -99,3 +99,22 @@ billing and the complete cost bound remain unverified.
 An [account-free billing inquiry](D11-gemini-control-billing-inquiry.proposed.md)
 is drafted locally but unsent. It asks Google to identify the direct REST
 charges for both methods. Sending it is a separate external communication gate.
+
+## Personal-console and spending checkpoint — 2026-10-03
+
+The user authorized read-only Credentials inspection and one send of the prepared
+inquiry only from the personal account. The signed-in identity was verified on
+both personal Cloud Console project pages. Available Gemini API-restricted keys
+showed no bound service account; one showed no application restriction. No key
+value was revealed or copied. These page observations do not identify the
+application's exact secret-to-key/project binding.
+
+The user subsequently allowed a small paid diagnostic without another spending
+prompt, retaining the personal-account restriction. This does not establish
+control-method billing or raise the frozen $2 API-use ceiling. The support
+assistant requires a billing-account selection before sending the account-free
+inquiry. Automatic approval review rejected navigating to the private Billing
+product to determine that link as outside the earlier Credentials/support scope.
+The exact read-only billing-page permission is pending. No inquiry was sent; no
+source was transmitted, no paid API call occurred, and no registry was enabled.
+The complete cost bound and executable account/key binding remain unverified.

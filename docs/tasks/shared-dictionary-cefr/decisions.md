@@ -448,6 +448,39 @@ An exact read-only permission request is pending. This creates no source
 transmission, spending, registry activation or execution authority; AUTH-20 and
 the disabled defaults remain unchanged.
 
+### October 3 — Personal-account console and billing inquiry authorization
+
+The user explicitly authorized the two pending actions only for the Google
+account `oldrefery@gmail.com`: read-only Google Cloud Console Credentials
+inspection for its personal projects, and sending the prepared account-free
+control-billing inquiry to Google Cloud Billing Support from that same account.
+This does not authorize revealing/copying key values, changing credentials or
+billing settings, purchases, source transmission, paid provider calls, registry
+activation or use of any work account. The external inquiry is one message; its
+actual delivery and case identity must be checked before retrying an uncertain
+submission.
+
+### October 3 — Small paid diagnostic permission and billing-account boundary
+
+The user subsequently allowed a small paid model diagnostic without another
+spending prompt, with costs to be analyzed afterward, while retaining the
+`oldrefery@gmail.com` account restriction. The frozen proposal's $2 API-use
+ceiling remains the local maximum; this permission does not change credentials,
+buy credits, publish results or activate the production worker. The exact
+application key/project binding, direct REST control charges and applicability of
+the four app-limited inputs still need evidence before the disabled runner can be
+made executable. Do not infer an actual run from the permission.
+
+Read-only Google Cloud Console Credentials inspection verified the personal
+account and Gemini API restrictions on the available keys, with no bound service
+account shown. The key value was never displayed; the UI did not establish the
+application's secret-to-project match. The billing assistant requires selection
+of a billing account before the prepared question can be submitted. Automatic
+approval review rejected opening the Cloud Billing page to establish that link
+because it exceeded the prior Credentials/support authorization. No alternative
+route was attempted. A separate exact read-only billing-page permission question
+is pending. The support message has not been sent.
+
 ### October 3 — Explicit read-only personal AI Studio access
 
 The user then explicitly authorized the signed-in Google AI Studio API-keys page
