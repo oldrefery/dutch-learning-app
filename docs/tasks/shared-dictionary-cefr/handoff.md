@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 alternate personal-account billing inspected read-only.**
+GPT-6.1 Sol / High announced; picker attribution unverified. The user separately
+authorized a billing check under `curysef@gmail.com`. AI Studio verified that
+identity and displayed two imported Gemini API projects, each with one masked
+key and Free tier. Its visible billing account had zero linked projects and
+required prepay setup. No key value was revealed, copied or used; no billing
+setting or provider request changed. This does not establish which account owns
+the application's deployed secret. The selected `oldrefery` personal project
+remains the only verified paid D11 candidate. The earlier one-run permission is
+scoped to its key and does not extend to `curysef`. The question about accepting
+an estimated rather than guaranteed $2 ceiling remains unanswered; no D11
+dispatch is authorized by this billing check. Support inquiry remains canceled.
+D11 in_progress, D12 pending, pilot/worker disabled and qualification false.
+**Next GPT-6.1 Sol / High:** resolve the pending cost-policy answer before
+building the selected execution mode or revealing a key again. Preserve
+`.playwright-cli/`; no push, PR or deployment. Local documentation receipt
+follows.
+
 **2026-10-03 — D11 exact source/key permissions granted; cost-policy decision
 pending.** GPT-6.1 Sol / High announced; picker attribution unverified. The user
 authorized transmission of the exact frozen 24 meaning inputs, including four

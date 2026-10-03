@@ -2081,3 +2081,17 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   snapshots; web 86 suites / 780 tests, one existing skip. Scoped Prettier and
   `git diff --check` passed. A local receipt follows; no provider call, push or
   PR.
+
+## 2026-10-03 — D11 alternate personal billing read-only checkpoint
+
+- Started `956c18a`, GPT-6.1 Sol / High announced; picker attribution unverified.
+  User authorized read-only billing inspection under `curysef@gmail.com`. AI
+  Studio confirmed that identity. Its two imported Gemini API projects each
+  showed one masked key and Free tier; the visible billing account had zero
+  linked projects and required prepay setup. No key value, settings change or
+  provider request occurred. Exact deployed-app key ownership remains unknown.
+- Previous one-run key permission remains scoped to `oldrefery`; the cost-policy
+  answer on an estimated rather than guaranteed $2 ceiling is still pending.
+  D11 in_progress, D12 pending, qualification false, runner/worker disabled.
+  Support inquiry canceled. Preserve `.playwright-cli/`; no push, PR or
+  deployment. Local documentation checkpoint under AUTH-18.

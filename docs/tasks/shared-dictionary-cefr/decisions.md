@@ -532,3 +532,15 @@ hard $2 ceiling cannot be asserted. A precise question on accepting an estimated
 instead of guaranteed ceiling for at most one generation per meaning is pending.
 The temporary key and draft copies were removed before the session boundary;
 no credential file remains from this checkpoint.
+
+### October 3 — Alternate personal-account billing inspection
+
+The user authorized read-only billing inspection of `curysef@gmail.com` to check
+whether the D11 key might belong to that account. AI Studio verified this
+identity and showed two imported Gemini API projects, each with a masked key on
+Free tier. The visible billing account had zero linked projects and requested
+prepay setup. No key was revealed, copied or used; no billing change or provider
+request occurred. The inspection cannot match the deployed app secret to an
+account. It does not extend the previous one-run `oldrefery` key permission to
+`curysef` or answer the pending estimated-cost policy question. Keep the
+provider runner disabled and the support inquiry canceled.
