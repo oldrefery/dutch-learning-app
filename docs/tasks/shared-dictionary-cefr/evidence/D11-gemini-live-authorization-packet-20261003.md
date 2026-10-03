@@ -55,10 +55,14 @@ change or an unbounded control charge requires a revised packet and approval.
 1. Obtain the user's authorization to inspect the intended **personal** Google
    account/project and the local secret key binding. Record the personal account
    identity, exact project identifier, paid plan/billing status, key-to-project
-   membership and billing evidence in private references. Do not copy the key or
-   account details into the repository. Check any linked billing account/currency
-   and whether the project has other concurrent use; the local $2 ledger only
-   bounds this pilot's reserved API requests.
+   membership, key type/restrictions and billing evidence in private references.
+   The [official key guide](https://ai.google.dev/gemini-api/docs/api-key) says
+   newer authorization keys bind to a service account and standard keys
+   associate requests with a Cloud project; unrestricted standard keys are
+   rejected. Do not copy the key or account details into the repository. Check
+   any linked billing account/currency and whether the project has other
+   concurrent use; the local $2 ledger only bounds this pilot's reserved API
+   requests.
 2. Obtain authoritative billing evidence for the direct REST `models.countTokens`
    and `models.get` methods under the intended plan, with finite per-request maxima
    satisfying the equation above. Recheck the model/tier tariff at approval time.

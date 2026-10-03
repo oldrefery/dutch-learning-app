@@ -436,3 +436,14 @@ run directory/UUID and UTC day; changing or deleting the journal must not reuse 
 approval. Current template is unapproved; zero real-provider calls. Next Astra /
 High technical review, announced before transition. Teacher availability stays
 resolved; independent gold quality and live acceptance remain open.
+
+### October 3 — Signed-in personal-account inspection permission still pending
+
+After the unapproved live-pilot packet, the user replied "Continue" to a question
+about read-only personal Google account/project/key-binding inspection. Automatic
+approval review rejected opening the signed-in AI Studio API-keys page because
+that reply was not explicit enough for private account/key metadata. No key,
+account, provider or paid operation was accessed, and no alternate route was used.
+An exact read-only permission request is pending. This creates no source
+transmission, spending, registry activation or execution authority; AUTH-20 and
+the disabled defaults remain unchanged.

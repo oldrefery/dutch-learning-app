@@ -1930,3 +1930,19 @@ Packet **`2ebacdf`** passed ordinary hooks: mobile 156 suites /1796 tests /
 and `git diff --check` PASS. Only preexisting `.playwright-cli/` untracked after
 commit. No provider/account/key calls or pending external operation. Local-only
 documentation receipt follows under AUTH-18; no push.
+
+## 2026-10-03 — D11 gated account-inspection attempt
+
+- Started `94864d5`, GPT-6.1 Sol / High announced; generic continuation after a
+  read-only account question was not accepted by automatic approval review for
+  opening the signed-in AI Studio API-keys page. No workaround, key/account read,
+  provider request or paid operation. Exact read-only permission question pending.
+- Additional public Google key docs identify standard versus service-account
+  authorization keys and restriction checks. The packet now requests those
+  metadata. Official public docs still do not conclusively price both direct REST
+  control methods; complete live maximum remains unknown.
+- D11 in_progress, D12 pending, qualification false; disabled registry and frozen
+  pilot unchanged. `.playwright-cli/` and ignored reports preserved. No pending
+  external operation. Next GPT-6.1 Sol / High after exact permission, otherwise
+  separately review a design/budget change. Documentation-only local commit under
+  AUTH-18 follows; no push.

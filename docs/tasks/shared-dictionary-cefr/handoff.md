@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 personal-account inspection stopped by automatic approval
+review.** Starting `94864d5`, GPT-6.1 Sol / High announced. The user's generic
+continuation followed a precise read-only inspection question, but automatic
+review rejected opening the signed-in AI Studio API-keys page as insufficiently
+explicit permission to inspect private account/key metadata. No workaround, local
+key read or account/provider call was attempted. A new explicit read-only question
+is pending. Public Google key documentation clarified that key type/restrictions
+and service-account binding also need checking; the unapproved packet was updated.
+The direct REST control price is still unverified after additional official-doc
+searches. Next GPT-6.1 Sol / High: if the user explicitly authorizes the exact
+signed-in page inspection, check account/project/key metadata read-only, then
+resolve control billing; keep source transmission and paid execution separate.
+Otherwise retain the disabled runner and request a revised plan. D11 in_progress,
+D12 pending, qualification false. Local documentation checkpoint follows under
+AUTH-18; preserve `.playwright-cli/` and ignored reports. No external operation.
+
+The authorization packet checkpoint below is historical; its account action is
+stopped as recorded above.
+
 **2026-10-03 — D11 live-pilot authorization packet prepared locally.**
 Starting `58bb193`, branch `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
 GPT-6.1 Sol / High announced; exact picker attribution unverified. No subagent.
@@ -1116,28 +1135,33 @@ remained off during D09 and these D10 checkpoints. Final synthetic benchmark exi
 its temporary servers/browser/backend cleaned up. No pending build/test/QA job.
 Data, volumes, copies and reports retained. Other sessions/devices untouched.
 
-Task state: D02–D10 done; D11 in_progress (REST/control review repaired and passed; live integration/quality open); D12–D14 pending; D01 blocked/partial.
+Task state: D02–D10 done; D11 in_progress (runner review passed, live account/
+control-cost/source/spending and independent quality gates open); D12–D14 pending;
+D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, REST/control repair/review `f09971f` (ordinary hooks PASS); local receipt follows, no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
+Branch `feature/shared-dictionary-schema`, latest packet receipt `94864d5` (ordinary
+hooks PASS); local gated-inspection checkpoint follows, no push/PR. Default runtime
+dictionary and CEFR analysis flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume
 
-Implement the local live runner on GPT-6.1 Sol / High, with injected fake HTTP.
-Read the REST/control review, unapproved live draft and 210-path inventory. Bind
-controls and generation into one durable ledger/report and enforce exact approval,
-account, source and cost scope before exposing real dispatch. Complete local work
-before the final live authorization request. A teacher is not required.
-Preserve the branch, private reports, personal data and `.playwright-cli/`. Retained
-QA devices/backend are unnecessary. No hosted migration, paid call, activation,
-publication, deployment or push/PR/merge authority follows from this checkpoint.
+On GPT-6.1 Sol / High, resume the gated personal-account check only after exact
+permission for the signed-in AI Studio API-keys page. Verify personal account,
+project/key membership, key type/restrictions and paid plan read-only. Resolve
+finite direct REST control charges or retain the runner disabled and revise the
+design/budget. Separate source transmission and paid execution approvals remain
+necessary. A teacher is not required. Preserve the branch, private reports,
+personal data and `.playwright-cli/`. QA devices/backend are unnecessary. No
+hosted migration, paid call, activation, publication, deployment or push/PR/merge
+authority follows from this checkpoint.
 
 ## Model and schedule authority
 
 AUTH-16 recommends GPT-6.1 Sol / High for implementation and GPT-6 Astra /
 High for prescribed review or architecture/concurrency risk. Next checkpoint uses
-GPT-6.1 Sol / High for local live-runner integration; announce it before starting. Current-thread picker attribution is
+GPT-6.1 Sol / High for gated account and cost evidence; announce it before starting. Current-thread picker attribution is
 unverified and no automatic model change is claimed. Do not use GPT-5.6 Sol.
 
 The one-time 06:00 heartbeat `d09-06-00` ran once and is **PAUSED**, verified in
@@ -1150,22 +1174,22 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 
 ## Stage ledger
 
-| Stage               | Status      | Evidence / next gate                                                  |
-| ------------------- | ----------- | --------------------------------------------------------------------- |
-| [D01](steps/D01.md) | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                  |
-| [D02](steps/D02.md) | done        | Accepted design, fixtures, compatibility and rollback                 |
-| [D03](steps/D03.md) | done        | Astra/High review fixed; 145/145 DB tests pass                        |
-| [D04](steps/D04.md) | done        | Terra/High; shared contracts pass mobile/web/Edge                     |
-| [D05](steps/D05.md) | done        | 12/12 focused; 157/157 DB; dormant compatibility                      |
-| [D06](steps/D06.md) | done        | Final D06 16/16; preservation/delta/rollback rehearsal                |
-| [D07](steps/D07.md) | done        | SQLite v13; 136/136 mobile suites preserve queues                     |
-| [D08](steps/D08.md) | done        | Closure review/fix and final native smoke passed; resources stopped   |
-| [D09](steps/D09.md) | done        | Web integration/performance verification                              |
-| [D10](steps/D10.md) | done        | Final review, real desktop/Safari visuals and preservation PASS       |
-| [D11](steps/D11.md) | in_progress | REST/control review PASS after repairs; live integration/quality open |
-| [D12](steps/D12.md) | pending     | Cross-platform integrated verification                                |
-| [D13](steps/D13.md) | pending     | Explicit release approval + observation                               |
-| [D14](steps/D14.md) | pending     | Adoption gate + compatibility retirement                              |
+| Stage               | Status      | Evidence / next gate                                                 |
+| ------------------- | ----------- | -------------------------------------------------------------------- |
+| [D01](steps/D01.md) | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                 |
+| [D02](steps/D02.md) | done        | Accepted design, fixtures, compatibility and rollback                |
+| [D03](steps/D03.md) | done        | Astra/High review fixed; 145/145 DB tests pass                       |
+| [D04](steps/D04.md) | done        | Terra/High; shared contracts pass mobile/web/Edge                    |
+| [D05](steps/D05.md) | done        | 12/12 focused; 157/157 DB; dormant compatibility                     |
+| [D06](steps/D06.md) | done        | Final D06 16/16; preservation/delta/rollback rehearsal               |
+| [D07](steps/D07.md) | done        | SQLite v13; 136/136 mobile suites preserve queues                    |
+| [D08](steps/D08.md) | done        | Closure review/fix and final native smoke passed; resources stopped  |
+| [D09](steps/D09.md) | done        | Web integration/performance verification                             |
+| [D10](steps/D10.md) | done        | Final review, real desktop/Safari visuals and preservation PASS      |
+| [D11](steps/D11.md) | in_progress | Runner review PASS; account/control-cost/approval/quality gates open |
+| [D12](steps/D12.md) | pending     | Cross-platform integrated verification                               |
+| [D13](steps/D13.md) | pending     | Explicit release approval + observation                              |
+| [D14](steps/D14.md) | pending     | Adoption gate + compatibility retirement                             |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and
 policy acceptance are complete. No production operation is authorized. Do not
