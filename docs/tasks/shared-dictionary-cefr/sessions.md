@@ -2053,3 +2053,8 @@ in flight. Local receipt follows under AUTH-18 without push.
   transmission permissions remain unanswered. D11 in_progress, D12 pending,
   qualification false, pilot/worker disabled. Preserve `.playwright-cli/` and
   ignored reports; local-only documentation checkpoint under AUTH-18.
+- Documentation commit `8ecafde` passed ordinary commit hooks on 2026-10-03:
+  mobile 156 suites / 1,796 tests / 22 snapshots; web 86 suites / 780 tests,
+  one existing skip. Scoped Prettier and `git diff --check` passed. Only the
+  preexisting `.playwright-cli/` remains untracked; no push or PR. A local
+  documentation receipt follows.

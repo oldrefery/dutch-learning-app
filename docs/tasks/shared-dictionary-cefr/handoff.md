@@ -16,8 +16,11 @@ does not grant them. Keep registry/pilot/worker disabled and qualification false
 **Next GPT-6.1 Sol / High:** if the narrow permissions arrive, verify personal
 key/project binding privately; resolve control billing with authoritative
 evidence or a reviewed cost-policy change before a live pilot. Do not send the
-canceled support inquiry. D11 in_progress, D12 pending. Preserve `.playwright-cli/`
-and ignored reports; no push or PR. Local documentation checkpoint follows.
+canceled support inquiry. D11 in_progress, D12 pending. Documentation commit
+`8ecafde` passed ordinary hooks: mobile 156 suites / 1,796 tests / 22 snapshots;
+web 86 suites / 780 tests, one existing skip. Scoped Prettier and `git diff
+--check` passed. Preserve `.playwright-cli/` and ignored reports; no push or PR.
+An ordinary local receipt follows.
 
 **2026-10-03 — D11 personal billing/limits inspection completed; support send
 canceled.** Starting `5c3f993`, GPT-6.1 Sol / High announced; picker attribution
