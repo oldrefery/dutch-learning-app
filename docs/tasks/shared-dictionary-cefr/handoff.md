@@ -20,8 +20,11 @@ day. Do not infer transmission/spending permission from account inspection.
 If authoritative control billing remains unavailable, retain the disabled runner
 and request a separately reviewed design/budget change. D11 in_progress;
 D12 not started. This is local documentation work under AUTH-18; ordinary commit
-and receipt follow. Preserve `.playwright-cli/` and private ignored reports.
-No pending external operation.
+`2ebacdf` passed ordinary hooks: mobile 156 suites /1796 tests /22 snapshots;
+web 86 suites /780 tests, one existing skip. Prettier and `git diff --check`
+passed. Only preexisting `.playwright-cli/` is untracked. A local-only receipt
+commit follows; no push. Preserve private ignored reports. No pending external
+operation.
 
 The reviewed runner checkpoint below is historical; its packet action is above.
 
