@@ -27,8 +27,11 @@ D11.3–D11.7 mechanics are locally implemented, acceptance/review remain open.
 D11.2 real reviewed quality, source and spending/sample approvals remain absent;
 D11 stays in_progress. All runtime/schedule defaults stay OFF.
 
-Persistence: local implementation/evidence commit with normal hooks under AUTH-18;
-receipt follows. Preserve preexisting `.playwright-cli/` and ignored private reports.
+Persistence: implementation/evidence committed locally as `2329f0b`. Normal
+hooks PASS: mobile 156 suites /1796 tests /22 snapshots; web 86 suites /780 tests,
+one preexisting skipped suite/test. Post-hook inventory 184/184 exact. Only
+preexisting `.playwright-cli/` is untracked before this documentation receipt.
+Receipt commit uses ordinary hooks under AUTH-18; no push. Preserve preexisting `.playwright-cli/` and ignored private reports.
 No paid/provider network call, hosted migration, retained data mutation, activation,
 publication/deployment or push/PR/merge. No pending restoration or uncertain write.
 
