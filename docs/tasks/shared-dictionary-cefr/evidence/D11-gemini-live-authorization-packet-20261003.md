@@ -95,3 +95,7 @@ The Billing page displayed an upcoming plan transition; recheck the active plan
 and credit availability before seeking live approval. No settings, purchase,
 credential, provider request or execution registry changed. Direct REST control
 billing and the complete cost bound remain unverified.
+
+An [account-free billing inquiry](D11-gemini-control-billing-inquiry.proposed.md)
+is drafted locally but unsent. It asks Google to identify the direct REST
+charges for both methods. Sending it is a separate external communication gate.

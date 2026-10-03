@@ -1965,7 +1965,9 @@ documentation receipt follows under AUTH-18, local-only and no push.
   provider request, source transmission or paid run. The previous auto-review
   permission gate is resolved only for this exact read-only inspection.
 - [Packet](evidence/D11-gemini-live-authorization-packet-20261003.md) updated
-  with sanitized observations. D11 in_progress, D12 pending, qualification
+  with sanitized observations. An account-free
+  [billing inquiry](evidence/D11-gemini-control-billing-inquiry.proposed.md)
+  was drafted locally but not sent. D11 in_progress, D12 pending, qualification
   false; runner remains disabled. Next GPT-6.1 Sol / High for separately scoped
   key binding and authoritative control-cost evidence before any source/spending
   request. `.playwright-cli/` and ignored reports preserved. Local documentation

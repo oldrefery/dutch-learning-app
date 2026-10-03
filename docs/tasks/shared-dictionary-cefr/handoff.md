@@ -11,12 +11,15 @@ transition, so recheck plan and credits before any later run. No settings,
 purchase, credential or provider call, source transmission, paid operation or
 execution registry activation. [Packet](evidence/D11-gemini-live-authorization-packet-20261003.md)
 updated with the sanitized inspection result.
+[Unsent billing inquiry](evidence/D11-gemini-control-billing-inquiry.proposed.md)
+prepared without account or source details; sending requires explicit authority.
 
 **Next GPT-6.1 Sol / High — resolve key binding and control-cost evidence.**
 Announce the model. Establish the exact intended personal key/project binding
 through a separately authorized private route and obtain an authoritative finite
-cost for direct REST `models.countTokens` and `models.get`. If those cannot be
-verified, keep the runner disabled and review a design/budget change. Exact
+cost for direct REST `models.countTokens` and `models.get`; the unsent billing
+inquiry is prepared for review. If those cannot be verified, keep the runner
+disabled and review a design/budget change. Exact
 24-input source transmission and one-day spending approval are still separate.
 D11 in_progress, D12 pending, qualification false. Documentation-only local
 commit/receipt follows under AUTH-18; only preexisting `.playwright-cli/`
