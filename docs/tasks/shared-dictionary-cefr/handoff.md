@@ -14,6 +14,12 @@ fixture. **Next GPT-6.1 Sol / High:** assemble the new local meaning pool
 and source dossier before seeking any new provider authorization. D11
 in_progress, D12 pending, quality unqualified, worker/schedule disabled;
 no support message, push, PR or deployment.
+Local source-audit commit `51e02a2` and protocol commit `30d8c60` each
+passed ordinary hooks: mobile 156 suites / 1,796 tests / 22 snapshots;
+web 86 suites / 780 tests, one existing skip. Branch
+`feature/shared-dictionary-schema`; no tracked dirty files after the protocol
+commit, only preexisting `.playwright-cli/` untracked. Private v3
+consumption/journal/report remain under the owner-only root; the key is gone.
 
 **2026-10-04 — D11 primary-source reference audit.** The
 [audit](evidence/D11-external-reference-audit-20261004.md) checked the
