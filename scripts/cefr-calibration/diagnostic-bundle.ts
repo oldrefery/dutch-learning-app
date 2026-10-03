@@ -152,6 +152,12 @@ export const loadDiagnosticBundle = (
   const referenceSha256 = sha(reference.raw)
   const proposalSha256 = sha(proposal.raw)
   const promptSha256 = sha(prompt)
+  const promptRevision =
+    profile.method_revision === 'd11-gemini35-pilot-v2'
+      ? `d11-pilot-v2:${promptSha256}`
+      : profile.method_revision === 'd11-gemini35-pilot-v3'
+        ? `d11-pilot-v3:${promptSha256}`
+        : null
   if (
     w.namespace !== 'dictionary-cefr-review-worklist-v1' ||
     w.gold_fixture !== false ||
@@ -169,7 +175,7 @@ export const loadDiagnosticBundle = (
     p.worklist_file_sha256 !== worklistSha256 ||
     p.profile_sha256 !== profileSha256 ||
     p.prompt_sha256 !== promptSha256 ||
-    profile.prompt_revision !== `d11-pilot-v2:${promptSha256}`
+    profile.prompt_revision !== promptRevision
   )
     return fail('artifact_binding')
   if (

@@ -1,5 +1,22 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 abstention-prompt revision prepared locally.** The first
+complete pilot's 0/2 ambiguity-probe abstention led to a versioned v3 prompt
+that requires sense consistency, abstains on unresolved polysemy or
+gloss/example conflict, and makes `ambiguous` agree with a null candidate.
+The original 24 meanings, hashes, provisional reference, model, token bounds
+and unqualified status are unchanged. New prompt/profile/proposal hashes form
+bundle `1248911a0b948e2c84ac1344731f2c7fd898a5ceaad9fd78be3f074199d5ae35`.
+Local bundle/request validation and 109/109 diagnostic tests plus scoped
+type/lint/format checks passed; no new provider call has occurred. [Revision
+evidence](evidence/D11-pilot-v3-abstention-revision-20261004.md) records the
+motivation and immutable bindings. **Next GPT-6.1 Sol / High:** create a
+distinct private registry/key binding for this v3 bundle, run zero-network
+`--check`, checkpoint its digests, then consider one dispatch as attempt 3 of 5. Three attempts remain before any such dispatch, with the combined $10
+figure approximate. D11 in_progress, D12 pending, qualification false,
+worker disabled; support inquiry canceled. No push, PR or deployment. Preserve
+`.playwright-cli/`.
+
 **2026-10-03 — D11 first complete personal Gemini pilot captured, quality
 still unqualified.** The new registry was executed exactly once and produced
 one metadata receipt, 24 token-count receipts and 24 distinct generation

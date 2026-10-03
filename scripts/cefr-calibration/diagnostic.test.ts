@@ -35,6 +35,12 @@ const paths: DiagnosticPaths = {
   prompt: `${evidence}D11-pilot-prompt.txt`,
   proposal: `${evidence}D11-pilot-proposal-summary.json`,
 }
+const v3Paths: DiagnosticPaths = {
+  ...paths,
+  profile: `${evidence}D11-pilot-profile-v3.proposed.json`,
+  prompt: `${evidence}D11-pilot-prompt-v3.txt`,
+  proposal: `${evidence}D11-pilot-proposal-summary-v3.json`,
+}
 const sha = (value: string): string =>
   createHash('sha256').update(value).digest('hex')
 const reply = (
@@ -87,6 +93,19 @@ const transport = (
   return { fake, counts: () => counts, calls: () => calls }
 }
 const temp = () => mkdtempSync(join(tmpdir(), 'd11-diagnostic-test-'))
+
+test('versioned abstention prompt keeps all 24 frozen meanings and separate binding', () => {
+  const previous = loadDiagnosticBundle(paths)
+  const revised = loadDiagnosticBundle(v3Paths)
+  assert.deepEqual(
+    revised.meanings.map(item => [item.id, item.inputHash]),
+    previous.meanings.map(item => [item.id, item.inputHash])
+  )
+  assert.notEqual(revised.bindingSha256, previous.bindingSha256)
+  assert.notEqual(revised.profileSha256, previous.profileSha256)
+  assert.equal(revised.profile.method_revision, 'd11-gemini35-pilot-v3')
+  assert.equal(revised.ceiling, previous.ceiling)
+})
 
 test('ambiguous flag and candidate must agree before a provider level is accepted', () => {
   const bundle = loadDiagnosticBundle(paths)

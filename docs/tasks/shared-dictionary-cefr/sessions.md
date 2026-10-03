@@ -2292,3 +2292,22 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   The completed private journal/report was not changed. Next: version the
   abstention prompt and test bindings locally before considering another
   provider attempt. No support message, push, PR or deployment.
+
+## 2026-10-04 — D11 abstention prompt v3 prepared locally
+
+- The complete v2 pilot showed 0/2 abstentions on intentionally ambiguous or
+  conflicting inputs. Prepared a general v3 decision rule that checks gloss,
+  examples and sense coherence before assigning a level. It explicitly pairs
+  `ambiguous: true` with a null candidate and abstains when specialized-topic
+  familiarity substitutes for CEFR evidence. No probe ID or expected band is
+  included in the prompt.
+- The original 24 canonical inputs, split, provisional reference and spending
+  parameters are unchanged. The distinct prompt/profile/proposal bind bundle
+  `1248911a0b948e2c84ac1344731f2c7fd898a5ceaad9fd78be3f074199d5ae35`.
+  Local bundle/request validation and Node 24 diagnostic tests 109/109,
+  scoped strict TypeScript, zero-warning ESLint, Prettier and diff check pass.
+  See [revision evidence](evidence/D11-pilot-v3-abstention-revision-20261004.md).
+- No new provider call or credential retrieval has occurred for v3. Next:
+  prepare a distinct private registry and zero-network check before considering
+  attempt 3 of 5. D11 in_progress, D12 pending, qualification false and worker
+  disabled; no support message, push, PR or deployment.
