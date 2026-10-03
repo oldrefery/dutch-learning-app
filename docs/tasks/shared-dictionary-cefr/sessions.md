@@ -2311,3 +2311,19 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   prepare a distinct private registry and zero-network check before considering
   attempt 3 of 5. D11 in_progress, D12 pending, qualification false and worker
   disabled; no support message, push, PR or deployment.
+
+## 2026-10-04 — D11 v3 full pilot ready without network
+
+- Prompt/artifact commit `06cc923` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing skip.
+  The personal `oldrefery@gmail.com` project, paid Tier 1 and selected key were
+  reconfirmed. A new owner-only private registry/key binding was prepared for
+  the v3 bundle; the key hash matched the earlier verified personal binding.
+- Node 24 `--check` reported ready and zero external calls. No v3 run
+  directory or consumption record exists. The private run ID/digests and
+  exact next command are in [preflight](evidence/D11-gemini-v3-live-preflight-20261004.md).
+- Next: exactly one `--execute`, then inspect durable journal/report and remove
+  the temporary key. It consumes attempt 3 of 5 even if partial; three
+  remain before dispatch under the approximate combined $10 figure. D11
+  in_progress, D12 pending, qualification false, worker disabled. No support
+  message, push, PR or deployment.

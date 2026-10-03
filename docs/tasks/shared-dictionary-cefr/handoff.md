@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 v3 personal pilot preflight ready, dispatch pending.**
+Prompt/artifact commit `06cc923` passed ordinary hooks (mobile 156 suites /
+1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing skip).
+The separate owner-only `/private/tmp/d11-gemini-v3-7zEmDZ` registry binds
+the unchanged 24 frozen meanings, v3 bundle
+`1248911a0b948e2c84ac1344731f2c7fd898a5ceaad9fd78be3f074199d5ae35`,
+implementation digest
+`ef06e2155746d0b5e7ccb3b42edb5b3c6d9f4715639079da6548ce50a3008e47`
+and the verified personal key. Node 24 `--check` returned `ready: true`,
+`external_calls: 0`; no run directory or consumption record exists.
+[Preflight evidence](evidence/D11-gemini-v3-live-preflight-20261004.md) records
+the immutable ID, private digests and exact next command. **Next GPT-6.1 Sol /
+High:** dispatch this registry's `--execute` once, inspect its durable
+journal/report and remove the key. It will consume attempt 3 of 5 even if
+partial; three remain before dispatch under the approximate $10 combined
+figure. D11 in_progress, D12 pending, qualification false, worker disabled;
+support inquiry canceled. No push, PR or deployment. Preserve `.playwright-cli/`.
+
 **2026-10-04 — D11 abstention-prompt revision prepared locally.** The first
 complete pilot's 0/2 ambiguity-probe abstention led to a versioned v3 prompt
 that requires sense consistency, abstains on unresolved polysemy or
