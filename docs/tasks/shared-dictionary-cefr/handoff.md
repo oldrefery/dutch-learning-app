@@ -1,5 +1,29 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11.2 local technical review and repairs PASS; model confirmation pending.**
+Starting `cf1ffaa`, existing feature branch, AUTH-20/AUTH-18. User continued the
+requested review; current Astra / High picker setting has not been confirmed.
+Do not claim model-specific review provenance. No subagent. [Review](evidence/D11-offline-review-20261003.md),
+[171-path inventory](evidence/D11-offline-review-source-sha256.json).
+
+Two P2 defects reproduced and fixed: returned policy shared the mutable global
+coverage list; unsupported/conflicting policy settings were silently omitted from
+digest binding. Three pre-fix failures, now 50 offline tests PASS; type/lint/format
+checks PASS. Preserve 168 old hashes; two repaired modules and one new test.
+No application/SQL/device/backend/provider work. Real reviewed quality, source,
+spending and worker checkpoints remain open; D11 is in_progress, not complete.
+
+Next: resolve the already requested Astra / High model confirmation. If confirmed
+for this review, record it and route to Sol / High for local D11.3–D11.5; otherwise
+retain the prescribed Astra review gate. No unchanged QA replay is needed merely
+to record model provenance. Current-thread picker control remains unavailable.
+Necessary local review/fix commit uses normal hooks; receipt follows. No push,
+external operation, retained data write, runtime activation or pending restoration.
+Preserve `.playwright-cli/` and private `d11-offline-review-20261003` reports.
+
+The following implementation checkpoint is historical; this review selects the
+current first incomplete checkpoint.
+
 **2026-10-03 — D11.2 offline mechanics implemented and verified; review next.**
 User-confirmed GPT-6.1 Sol / High; starting `2456246`, existing
 `feature/shared-dictionary-schema`, AUTH-20/AUTH-18. [Evidence](evidence/D11-offline-calibration-20261003.md),

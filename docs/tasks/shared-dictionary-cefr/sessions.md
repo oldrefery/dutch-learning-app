@@ -1581,3 +1581,18 @@ No network operation was performed. Updated inventory retains 169 hashes and
 changes only this test hash. Follow-up local test/receipt commit uses normal hooks.
 No pending runtime job, external operation or restoration. Private commit logs
 and all data retained; no push/PR/merge.
+
+## 2026-10-03 — D11.2 local review and repairs
+
+- Explicit user continuation after requested Astra review; current picker
+  confirmation pending. No model attribution or subagent. Starting `cf1ffaa`.
+- Two P2 defects reproduced/fixed: shared mutable coverage list and silently
+  ignored policy inputs. Three regressions fail before repair; 50 tests pass after
+  repair including supported-policy round-trip. Type/lint/format checks PASS.
+- [Review](evidence/D11-offline-review-20261003.md); 171-path inventory retains
+  168 hashes, changes two modules and adds one test. D11 remains in_progress;
+  model provenance, real reviewed quality and worker checkpoints remain open.
+- Next resolve pending model confirmation; then Sol / High worker work once the
+  prescribed review gate is satisfied. No device/backend/provider/SQL or external
+  operation. Preserve `.playwright-cli/` and private reports. AUTH-18 local commit
+  with ordinary hooks; receipt follows. No push/PR/merge or activation.

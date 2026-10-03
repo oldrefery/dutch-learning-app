@@ -17,7 +17,7 @@ import {
 } from './validation.ts'
 
 export const CALIBRATION_NAMESPACE = 'dictionary-cefr-calibration-v1'
-export const REQUIRED_SLICES = [
+export const REQUIRED_SLICES = Object.freeze([
   'sense-pairs',
   'inflections',
   'reflexive-verbs',
@@ -29,7 +29,7 @@ export const REQUIRED_SLICES = [
   'rare-missing',
   'ambiguous',
   'conflicting-examples',
-] as const
+] as const)
 
 export type Expectation =
   { kind: 'abstain' } | { kind: 'levels'; levels: CefrLevel[] }

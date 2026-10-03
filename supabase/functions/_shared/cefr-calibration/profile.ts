@@ -78,6 +78,36 @@ export interface AcceptancePolicy {
 // All thresholds are explicit reviewed inputs. There is no operational default.
 export const validatePolicy = (value: unknown): AcceptancePolicy => {
   const raw = record(value)
+  const fields = [
+    'revision',
+    'reviewer',
+    'approval_ref',
+    'confidence_threshold',
+    'confidence_bins',
+    'minimum_items_per_split',
+    'minimum_items_per_slice',
+    'minimum_scored_items',
+    'minimum_accepted_items',
+    'minimum_abstention_accuracy',
+    'minimum_coverage',
+    'minimum_exact',
+    'minimum_within_one',
+    'minimum_accepted_accuracy',
+    'maximum_severe_error_rate',
+    'required_slices',
+  ]
+  requireValid(
+    Object.keys(raw).every(field => fields.includes(field)),
+    'unsupported_policy_setting'
+  )
+  if (Object.hasOwn(raw, 'required_slices')) {
+    const slices = list(raw.required_slices)
+    requireValid(
+      slices.length === REQUIRED_SLICES.length &&
+        slices.every((slice, index) => slice === REQUIRED_SLICES[index]),
+      'unsupported_policy_slices'
+    )
+  }
   const bins = list(raw.confidence_bins).map(unit)
   requireValid(
     bins.length >= 2 &&
@@ -102,7 +132,7 @@ export const validatePolicy = (value: unknown): AcceptancePolicy => {
     minimum_within_one: unit(raw.minimum_within_one),
     minimum_accepted_accuracy: unit(raw.minimum_accepted_accuracy),
     maximum_severe_error_rate: unit(raw.maximum_severe_error_rate),
-    required_slices: REQUIRED_SLICES,
+    required_slices: [...REQUIRED_SLICES],
   }
 }
 
