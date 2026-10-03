@@ -1,5 +1,17 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 primary-source reference audit.** The
+[audit](evidence/D11-external-reference-audit-20261004.md) checked the
+Council of Europe vocabulary descriptors and the NT2Lex publisher/method
+paper. They offer a review framework and independent graded-text frequencies,
+but no adjudicated levels for the exact 24 app meanings. NT2Lex sense tags
+are automatic, C1 material is sparse, and the download is CC BY-NC-SA 4.0;
+no data was imported. D11.2 remains unqualified. **Next GPT-6.1 Sol / High:**
+design source-backed meaning-level review on a held-out set, then assess
+whether further provider testing is worth one of the two remaining attempts.
+Do not replay completed registries or use Gemini's own answers as reference.
+Worker/schedule disabled; no support message, push, PR or deployment.
+
 **2026-10-04 — D11 v3 personal pilot completed; quality still unqualified.**
 The pre-dispatch checkpoint `6e2e7ab` passed ordinary hooks (mobile 156
 suites / 1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing

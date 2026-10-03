@@ -2345,3 +2345,16 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   figure. A repeat on the same fixture is not justified. Next: independent
   CEFR reference evidence and local D11 worker gates. D11 in_progress, D12
   pending, worker/schedule disabled; no support message, push, PR or deployment.
+
+## 2026-10-04 — D11 external reference audit
+
+- Reviewed the Council of Europe vocabulary descriptors and NT2Lex publisher,
+  method paper and download terms. They provide a framework and graded-text
+  frequency evidence but no adjudicated level for each of the 24 exact app
+  meanings. NT2Lex senses are automatically tagged; its C1 source is sparse
+  and its download is CC BY-NC-SA 4.0. No dataset was copied.
+- The [source audit](evidence/D11-external-reference-audit-20261004.md) keeps
+  the pilot unqualified. Next: a source-backed meaning-level review protocol
+  and held-out set. Two paid attempts remain; do not repeat the same fixture
+  without a new evidence question. D11 in_progress, D12 pending, worker and
+  schedule disabled; no support message, push, PR or deployment.
