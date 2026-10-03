@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 v3 personal pilot completed; quality still unqualified.**
+The pre-dispatch checkpoint `6e2e7ab` passed ordinary hooks (mobile 156
+suites / 1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing
+skip). One `--execute` completed the distinct v3 registry with 25/25 control
+receipts and 24/24 unique generation captures; no retry, timeout, invalid
+capture or missing item. Both intentional ambiguity probes abstained (2/2
+versus 0/2 in v2), with one additional specialized abstention; 19/19
+provisional bands agreed exactly. This is not independent CEFR gold. The
+report remains `qualified: false`, `calibration_eligible: false`; worker and
+schedule stay disabled. Attempt 3 of 5 is consumed, two remain under the
+approximate $10 combined estimate. Generation usage was $0.0954735 for v3
+and $0.183747 across the two complete pilots, excluding unknown control
+charges. Temporary key/scripts removed. [Sanitized result](evidence/D11-gemini-v3-live-result-20261004.md)
+records immutable hashes and limits. **Next GPT-6.1 Sol / High:** seek
+independent CEFR reference evidence and continue local D11 worker safety
+gates; do not spend another attempt on the same fixture without a new
+question. No support message, push, PR or deployment. Preserve
+`.playwright-cli/`.
+
 **2026-10-04 — D11 v3 personal pilot preflight ready, dispatch pending.**
 Prompt/artifact commit `06cc923` passed ordinary hooks (mobile 156 suites /
 1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing skip).

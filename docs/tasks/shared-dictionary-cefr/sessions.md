@@ -2327,3 +2327,21 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   remain before dispatch under the approximate combined $10 figure. D11
   in_progress, D12 pending, qualification false, worker disabled. No support
   message, push, PR or deployment.
+
+## 2026-10-04 — D11 v3 personal pilot completed without qualification
+
+- Pre-dispatch checkpoint `6e2e7ab` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing skip.
+  One `--execute` completed the distinct v3 registry: 25/25 control receipts,
+  24/24 unique generation captures, no failures, retries, timeouts or missing
+  items. The temporary key and transfer/preparation scripts were removed.
+- Both intentional ambiguity probes abstained (2/2 versus v2's 0/2), and a
+  specialized item also abstained. The 19 provisional known bands agreed
+  exactly, but no independent gold exists. Observed generation usage was
+  $0.0954735 for v3, excluding unknown control charges. Report remains
+  `qualified: false`, `calibration_eligible: false`. See the
+  [sanitized result](evidence/D11-gemini-v3-live-result-20261004.md).
+- Attempt 3 of 5 is consumed; two remain under the approximate combined $10
+  figure. A repeat on the same fixture is not justified. Next: independent
+  CEFR reference evidence and local D11 worker gates. D11 in_progress, D12
+  pending, worker/schedule disabled; no support message, push, PR or deployment.

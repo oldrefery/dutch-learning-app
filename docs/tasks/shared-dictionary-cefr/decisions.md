@@ -631,3 +631,13 @@ attempt 2 of 5; three remain. The private report stays unqualified because
 the reference is not independent gold and both ambiguity probes received
 levels rather than abstentions. No completed registry may be replayed.
 The temporary key was removed; the combined $10 estimate remains approximate.
+
+The distinct v3 full pilot was dispatched once and completed all 49 allowed
+requests. It consumed attempt 3 of 5; two remain. The temporary key and
+transfer scripts were removed. Both intentional ambiguity probes abstained,
+compared with 0/2 under v2, and the same 19 provisional bands agreed exactly.
+The reference is still assistant-inferred rather than independent gold, so
+this is diagnostic improvement, not quality qualification. The worker and
+schedule remain disabled. No fourth attempt is justified on the unchanged
+fixture without a new evidence question. The combined $10 figure remains
+approximate; direct REST control charges are unknown.
