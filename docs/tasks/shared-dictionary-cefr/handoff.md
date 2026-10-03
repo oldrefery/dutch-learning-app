@@ -11,12 +11,23 @@ mode, then validate account/key/draft/registry without leaking credentials,
 and only then dispatch. A partial failure does not authorize a second run.
 The [estimated-mode evidence](evidence/D11-gemini-estimated-mode-20261003.md)
 records 103/103 Node diagnostic tests and scoped type/lint/format/diff PASS;
-the one-attempt execution path is implemented locally. Next create the private
-registry/key binding and run the no-HTTP `--check` before dispatch.
+the one-attempt execution path is implemented locally.
+Those private bindings are now in an owner-only temporary directory outside
+the repository. `--check` returned `ready: true`, `external_calls: 0`; no run
+directory or consumption record existed after it. The selected key matched
+the user-supplied five-character suffix without being printed or logged. The
+one authorized next external operation is `--execute` against the same private
+registry/run directory for at most 1 metadata read, 24 token counts and 24
+generations. Check its journal, consumption record and private report after
+the attempt. If the operation is interrupted or outcome uncertain, inspect
+these artifacts before any retry; the user has not authorized a new run.
 GPT-6.1 Sol / High announced; picker attribution unverified. D11 in_progress,
 D12 pending, worker disabled and qualification false. The support inquiry
 remains canceled. Starting HEAD `290285b`; only preexisting `.playwright-cli/`
-is untracked. No provider call from this checkpoint yet.
+is untracked. No provider call from this checkpoint yet. Implementation commit
+`cf44395` passed ordinary hooks: mobile 156 suites / 1,796 tests / 22
+snapshots; web 86 suites / 780 tests, one existing skip. Local pre-dispatch
+receipt follows.
 
 **2026-10-03 — D11 user-supplied key suffix matched the personal paid project.**
 GPT-6.1 Sol / High announced; picker attribution unverified. The user supplied

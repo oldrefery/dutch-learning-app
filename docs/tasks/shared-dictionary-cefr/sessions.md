@@ -2130,3 +2130,12 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   locally. Node 24 diagnostic tests 103/103 PASS; scoped TypeScript, ESLint
   zero-warning, Prettier and diff check PASS. Next bind private files and run
   no-HTTP `--check`, then dispatch the single authorized run if ready.
+- Implementation commit `cf44395` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing skip.
+  The owner-only private draft, registry and key were bound outside the repo;
+  key identity matched the user-supplied five-character suffix without output.
+  `--check` returned ready with zero external calls; run directory and
+  consumption record remain absent. Next one `--execute` against this exact
+  registry, then inspect its durable journal/report. If interrupted, inspect
+  state before any retry; no second run is authorized. Local pre-dispatch
+  receipt follows, with no push or PR.
