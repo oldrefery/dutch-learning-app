@@ -2223,3 +2223,28 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   remove the temporary key and record remaining attempts. D11 in_progress,
   D12 pending, worker disabled, qualification false. No support message,
   push, PR or deployment.
+
+## 2026-10-03 — D11 metadata probe result and local parser repair
+
+- Exactly one metadata-only personal-key `GET` returned HTTP 200. Its bounded
+  summary showed the intended model, generation/count methods, thinking flag
+  and sufficient limits; `baseModelId` was absent. No frozen input, token
+  control or generation was sent. The temporary key and transfer script were
+  removed; private consumed/result evidence remains outside the repository.
+  Attempt 1 of 5 is consumed; four remain. See [sanitized result](evidence/D11-gemini-metadata-probe-result-20261003.md).
+- Local parser now accepts an absent `baseModelId`, still rejects a present
+  wrong ID, and preserves absence in the normalized receipt. A fake control
+  sequence with the observed shape completes 25 controls. Node 24 diagnostic
+  tests 105/105, scoped strict TypeScript, zero-warning ESLint, Prettier and
+  `git diff --check` passed. The initial Node 20 test invocation could not
+  load `.ts` files; the correct Node 24 run passed. An initial TypeScript
+  command referenced a nonexistent scoped tsconfig; the explicit scoped
+  command passed.
+- A subsequent static audit against Google's GenerateContent and countTokens
+  references extended the exact Flash model-version pin to allow a dated
+  `MM-YYYY` revision while rejecting siblings and later changes. The full
+  Node 24 diagnostic suite then passed 106/106 with scoped type/lint/format.
+  No generation was sent as part of this audit.
+- Next: audit remaining live response assumptions before a distinct full
+  registry. D11 in_progress, D12 pending, worker disabled, qualification false.
+  No support message, push, PR or deployment.

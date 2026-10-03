@@ -513,6 +513,29 @@ test('metadata rejection and invalid bundles stop before any token counting', as
     assert.equal(calls, 1)
   }))
 
+test('metadata without optional baseModelId completes controls without inventing identity', async () =>
+  temporary(async runDir => {
+    let calls = 0
+    const client = adapter(async url => {
+      calls++
+      if (url === GEMINI_BASE) {
+        const { baseModelId: _omitted, ...providerMetadata } = metadata()
+        return json({ ...providerMetadata, version: '3.5-flash-05-2026' })
+      }
+      return json({ totalTokens: 100 })
+    })
+    const result = await probeGeminiControls({
+      runDir,
+      bundle,
+      adapter: client,
+    })
+    assert.equal(calls, 25)
+    assert.equal(result.metadata.name, `models/${GEMINI_MODEL}`)
+    assert.equal(result.metadata.version, '3.5-flash-05-2026')
+    assert.equal(Object.hasOwn(result.metadata, 'baseModelId'), false)
+    assert.equal(result.controlRequests, 25)
+  }))
+
 test('live draft binds the frozen pilot but has no approval or total cost claim', () => {
   const draft = JSON.parse(
     readFileSync(`${evidence}D11-gemini-live-request.proposed.json`, 'utf8')

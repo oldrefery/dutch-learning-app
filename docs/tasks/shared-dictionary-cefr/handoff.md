@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 metadata cause confirmed and repaired locally.** Exactly
+one new personal-key metadata `GET` returned HTTP 200. Its allowlisted summary
+showed the expected model name, thinking flag, generation/count methods and
+limits, but no `baseModelId` field. This explains the prior local metadata
+validation failure. Attempt 1 of the user's five further attempts is consumed;
+four remain under the approximate $10 combined estimate. The temporary key was
+removed. The parser now accepts absent `baseModelId` while rejecting a present
+mismatched value and does not invent an ID in its normalized receipt. Fake
+end-to-end controls and the full 106/106 diagnostic suite, scoped
+type/lint/format/diff checks passed. [Result evidence](evidence/D11-gemini-metadata-probe-result-20261003.md)
+records sanitized fields and private result digests. A static response audit
+also extended the exact-model version pin to the provider's dated revision
+pattern; no generation response has yet been seen. **Next GPT-6.1 Sol / High:**
+prepare a distinct full-run registry/key binding and no-network `--check`,
+then dispatch at most one 24-meaning run under the remaining approval; do not
+replay the earlier two. D11 in_progress, D12 pending, qualification false,
+worker disabled; support inquiry canceled. No push, PR or deployment. Preserve
+`.playwright-cli/`.
+
 **2026-10-03 — D11 metadata probe ready, dispatch pending.** The user
 authorized at most five further personal `oldrefery` Gemini attempts, with an
 approximate $10 combined figure rather than a guaranteed hard cap. No attempt

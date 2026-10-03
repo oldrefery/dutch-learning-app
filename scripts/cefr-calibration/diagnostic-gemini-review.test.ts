@@ -302,3 +302,22 @@ test('review: numeric model revisions can be pinned without accepting sibling mo
     /model_version_changed/
   )
 })
+
+test('review: dated Flash revision can be pinned without accepting a changed date', () => {
+  const raw = {
+    responseId: 'test',
+    modelVersion: `${GEMINI_MODEL}-05-2026`,
+    usageMetadata: {
+      promptTokenCount: 100,
+      totalTokenCount: 100,
+      serviceTier: 'standard',
+    },
+    candidates: [],
+  }
+  assert.equal(parseGeminiGeneration(raw, null).kind, 'response')
+  assert.equal(parseGeminiGeneration(raw, raw.modelVersion).kind, 'response')
+  assert.throws(
+    () => parseGeminiGeneration(raw, `${GEMINI_MODEL}-06-2026`),
+    /model_version_changed/
+  )
+})

@@ -126,7 +126,7 @@ export const parseGeminiGeneration = (
   const response_id = text(raw.responseId),
     model_version = text(raw.modelVersion)
   if (
-    !/^gemini-3\.5-flash(?:-\d{3})?$/.test(model_version) ||
+    !/^gemini-3\.5-flash(?:-\d{3}|-\d{2}-\d{4})?$/.test(model_version) ||
     (expectedVersion !== null && model_version !== expectedVersion)
   )
     return fail('model_version_changed')
@@ -182,7 +182,7 @@ export const parseGeminiGeneration = (
 
 export interface GeminiModelMetadata {
   name: string
-  baseModelId: string
+  baseModelId?: string
   thinking: true
   supportedGenerationMethods: string[]
   version: string
@@ -194,7 +194,7 @@ export const parseGeminiMetadata = (value: unknown): GeminiModelMetadata => {
   const methods = raw.supportedGenerationMethods
   if (
     raw.name !== `models/${GEMINI_MODEL}` ||
-    raw.baseModelId !== GEMINI_MODEL ||
+    (raw.baseModelId !== undefined && raw.baseModelId !== GEMINI_MODEL) ||
     raw.thinking !== true ||
     !Array.isArray(methods) ||
     !['generateContent', 'countTokens'].every(method =>
@@ -209,7 +209,7 @@ export const parseGeminiMetadata = (value: unknown): GeminiModelMetadata => {
   // models.get version is descriptive metadata, not response.modelVersion.
   return {
     name: raw.name,
-    baseModelId: GEMINI_MODEL,
+    ...(raw.baseModelId === GEMINI_MODEL ? { baseModelId: GEMINI_MODEL } : {}),
     thinking: true,
     supportedGenerationMethods: ['generateContent', 'countTokens'],
     version: text(raw.version),

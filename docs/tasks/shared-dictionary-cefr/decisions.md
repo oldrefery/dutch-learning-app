@@ -618,3 +618,9 @@ is uncertain; inspect the durable consumed/result files before any subsequent
 operation. Remaining attempts before this dispatch: five. The canceled
 support inquiry stays unsent. No production activation, publication, billing
 changes or deployment is authorized by this grant.
+
+The metadata-only probe was dispatched once and returned HTTP 200. It consumed
+attempt 1 of 5. Its sanitized result identified absent `baseModelId`; no
+meaning input, token count or generation was sent. Four attempts remain under
+the same approximate combined figure. The temporary personal key was removed.
+No earlier registry is eligible for replay.
