@@ -30,7 +30,7 @@
     "utc_day": null,
     "expires_at": null,
     "source_transmission_ref": null,
-    "review_ref": null
+    "review_ref": "D11-gemini-adapter-review-20261003.md"
   },
   "requests": {
     "count_tokens_max": 24,
@@ -198,7 +198,6 @@
     "reference_transmitted": false
   },
   "remaining_gates": [
-    "Astra technical review of REST preparation and control accounting",
     "Implement an explicitly authorized live runner and generation ledger binding",
     "Verify personal provider account/project/key and paid billing tier",
     "Verify control endpoint pricing and complete total API-use ceiling",

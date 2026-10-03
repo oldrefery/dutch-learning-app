@@ -1822,3 +1822,24 @@ inventory **207/207 exact**. Only preexisting `.playwright-cli/` untracked befor
 receipt. No pending tests, provider calls, external write or restoration. Next
 GPT-6 Astra / High REST/control review. Local AUTH-18 documentation receipt with
 ordinary hooks; no push.
+
+## 2026-10-03 — D11 Gemini REST/control review and repairs
+
+- Started from `177eb96`, AUTH-20/AUTH-18. GPT-6 Astra / High announced; a model-switch
+  event was present, exact picker attribution unverified. No subagent. Baseline
+  207/207 exact.
+- [Review](evidence/D11-gemini-adapter-review-20261003.md): twelve pre-fix failures
+  reproduced five P2 findings: response body lifecycle, envelope retry/MIME handling,
+  compatibility validation order, lease before dispatch and sibling model prefixes.
+  Repaired locally; 14 review +47 prior Node cases PASS (61/61), scoped types/strict
+  lint/format/diff PASS. Removed one unused test import before final lint.
+- 210-path inventory, 203 retained hashes. Wire request digest and frozen pilot
+  artifacts unchanged. Unapproved live draft now links the review. No account/key,
+  provider, native/backend, hosted migration, schedule, publication or deployment.
+  Logs `reports/shared-dictionary-cefr/d11-gemini-review-20261003/`; reports and
+  `.playwright-cli/` preserved.
+- Next GPT-6.1 Sol / High local live-runner integration and exact account/source/
+  pricing/approval binding with fake HTTP verification before final live request.
+  Teacher not required; no paid authorization. D11 in_progress, D12 not started.
+  Ordinary local repair/review commit and receipt under AUTH-18 follow. No pending
+  external write or restoration.

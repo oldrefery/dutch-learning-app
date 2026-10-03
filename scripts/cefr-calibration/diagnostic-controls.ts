@@ -48,6 +48,10 @@ export const probeGeminiControls = async (options: {
         value: string
       }
     ).value
+    // Validate every wire request before reserving or sending even model metadata.
+    const requests = bundle.meanings.map(meaning =>
+      prepareGeminiRequest(bundle, meaning.id, runId)
+    )
     const control = async <T>(
       key: ControlKey,
       dispatch: () => Promise<T>,
@@ -59,6 +63,7 @@ export const probeGeminiControls = async (options: {
       if (cached !== null) return validate(JSON.parse(cached) as unknown)
       onReserved?.(key.id)
       checkDay()
+      renewLease(db, owner)
       const result = validate(await dispatch())
       // Retain a verified receipt even if its response crossed midnight.
       captureControl(db, key, JSON.stringify(result), owner)
@@ -75,10 +80,13 @@ export const probeGeminiControls = async (options: {
       parseGeminiMetadata
     )
     const tokens: Record<string, number> = {}
-    for (const meaning of bundle.meanings) {
-      const request = prepareGeminiRequest(bundle, meaning.id, runId)
-      tokens[meaning.id] = await control<number>(
-        { id: meaning.id, kind: 'count_tokens', requestSha256: request.sha256 },
+    for (const request of requests) {
+      tokens[request.itemId] = await control<number>(
+        {
+          id: request.itemId,
+          kind: 'count_tokens',
+          requestSha256: request.sha256,
+        },
         () => countTokens(request),
         value => {
           if (

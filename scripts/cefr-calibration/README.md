@@ -158,8 +158,12 @@ reservations and response IDs, and reject any changed counted body.
 
 The adapter explicitly requests Standard service and disables request logging.
 It enforces a 5-second maximum timeout, abort, redirects disabled, JSON/UTF-8
-validation and a 16 KiB streaming envelope bound. Parsed receipts require exact
-model/version binding, Standard usage tier, disjoint prompt/answer/thinking counts,
+validation and a 16 KiB streaming envelope bound. Active body readers are cancelled
+on timeout; late responses and rejected headers release unread bodies. Invalid
+envelopes return a receipt stop, while network/read failures remain transport
+errors. Parsed receipts require the exact Flash alias or a three-digit numeric
+revision (never sibling model names), subsequent exact version binding, Standard
+usage tier, disjoint prompt/answer/thinking counts,
 their total and the combined 2048-token output cap. Missing zero-valued protobuf
 counters are accepted only with a consistent total. Cache/tool charges are rejected.
 Invalid candidates preserve verified receipts; invalid receipts are a separate
@@ -170,7 +174,9 @@ descriptive and never substitutes for `response.modelVersion`.
 meaning in the existing private fake-run journal before dispatch. Verified results
 are immutable and cached by the full request digest. A crash, timeout or rejected
 control response leaves its reservation unknown and prevents replay. Same-day
-resume and the single-owner lease apply. This probe never generates answers; its
+resume and the single-owner lease apply. All wire requests are validated before
+the metadata reservation, and the lease is rechecked immediately before each
+dispatch. This probe never generates answers; its
 output explicitly says billing unverified and live not ready.
 
 [The proposed live request](../../docs/tasks/shared-dictionary-cefr/evidence/D11-gemini-live-request.proposed.json)

@@ -3,9 +3,18 @@ import { canonicalizeJson } from '../../packages/domain/src/shared-dictionary.ts
 import { isPreparedBundle, type DiagnosticBundle } from './diagnostic-bundle.ts'
 import type { DiagnosticReply, DiagnosticRequest } from './diagnostic-types.ts'
 
-export const GEMINI_MODEL = 'gemini-3.5-flash'
-export const GEMINI_BASE = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}`
-const TEST_KEY = 'TEST-ONLY-NOT-A-CREDENTIAL'
+import {
+  GEMINI_MODEL,
+  createGeminiTestHttp,
+  GeminiEnvelopeFailure,
+  GeminiHttpFailure,
+  type TestHttp,
+} from './diagnostic-gemini-http.ts'
+export {
+  GEMINI_MODEL,
+  GEMINI_BASE,
+  type TestHttp,
+} from './diagnostic-gemini-http.ts'
 export const requestDigest = (body: string): string =>
   createHash('sha256').update(body).digest('hex')
 const fail = (code: string): never => {
@@ -116,10 +125,7 @@ export const parseGeminiGeneration = (
   const response_id = text(raw.responseId),
     model_version = text(raw.modelVersion)
   if (
-    !(
-      model_version === GEMINI_MODEL ||
-      model_version.startsWith(`${GEMINI_MODEL}-`)
-    ) ||
+    !/^gemini-3\.5-flash(?:-\d{3})?$/.test(model_version) ||
     (expectedVersion !== null && model_version !== expectedVersion)
   )
     return fail('model_version_changed')
@@ -211,36 +217,6 @@ export const parseGeminiMetadata = (value: unknown): GeminiModelMetadata => {
   }
 }
 
-export type TestHttp = (url: string, init: RequestInit) => Promise<Response>
-class HttpFailure extends Error {
-  readonly status: number
-  constructor(status: number) {
-    super('Gemini HTTP failure')
-    this.status = status
-  }
-}
-const readBounded = async (response: Response): Promise<unknown> => {
-  if (!response.body) return fail('empty_body')
-  const reader = response.body.getReader(),
-    chunks: Uint8Array[] = []
-  let size = 0
-  try {
-    while (true) {
-      const { value, done } = await reader.read()
-      if (done) break
-      size += value.byteLength
-      if (size > 16 * 1024) return fail('response_bytes')
-      chunks.push(value)
-    }
-    return JSON.parse(
-      new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks))
-    ) as unknown
-  } finally {
-    void reader.cancel().catch(() => {})
-    reader.releaseLock()
-  }
-}
-
 // Mandatory injected test HTTP and fixed dummy key: no global fetch/env/live mode.
 // This exercises the real REST wire contract without offering paid execution.
 export const createGeminiTestAdapter = (options: {
@@ -250,64 +226,7 @@ export const createGeminiTestAdapter = (options: {
 }) => {
   if (options.mode !== 'test-only' || typeof options.http !== 'function')
     return fail('test_http_required')
-  const http = options.http,
-    timeout = options.timeoutMs ?? 5000
-  if (!Number.isSafeInteger(timeout) || timeout < 1 || timeout > 5000)
-    return fail('timeout_bound')
-  const send = async (
-    method: string,
-    suffix: string,
-    body?: string
-  ): Promise<unknown> => {
-    const controller = new AbortController()
-    let timer: ReturnType<typeof setTimeout> | undefined
-    try {
-      return await Promise.race([
-        (async () => {
-          const response = await http(`${GEMINI_BASE}${suffix}`, {
-            method,
-            headers: {
-              'x-goog-api-key': TEST_KEY,
-              'Content-Type': 'application/json',
-            },
-            ...(body ? { body } : {}),
-            redirect: 'error',
-            signal: controller.signal,
-          })
-          if (
-            response.redirected ||
-            (response.url && response.url !== `${GEMINI_BASE}${suffix}`)
-          )
-            return fail('redirect_or_url_mismatch')
-          if (!response.ok) {
-            void response.body?.cancel().catch(() => {})
-            throw new HttpFailure(response.status)
-          }
-          if (
-            !response.headers
-              .get('content-type')
-              ?.toLowerCase()
-              .startsWith('application/json')
-          )
-            return fail('content_type')
-          return readBounded(response)
-        })(),
-        new Promise<never>((_, reject) => {
-          timer = setTimeout(() => {
-            controller.abort()
-            reject(new Error('Gemini request timed out'))
-          }, timeout)
-        }),
-      ])
-    } catch (error) {
-      controller.abort()
-      if (error instanceof HttpFailure) throw error
-      // Never propagate raw HTTP errors, headers, or provider body text.
-      throw new Error('Gemini transport or envelope rejected')
-    } finally {
-      clearTimeout(timer)
-    }
-  }
+  const send = createGeminiTestHttp(options.http, options.timeoutMs ?? 5000)
   const checked = (request: GeminiPreparedRequest) => {
     if (!preparedRequests.has(request)) fail('unprepared_request')
   }
@@ -335,8 +254,10 @@ export const createGeminiTestAdapter = (options: {
       try {
         raw = await send('POST', ':generateContent', request.body)
       } catch (error) {
-        return error instanceof HttpFailure
-          ? { kind: 'http_error' as const, status: error.status }
+        if (error instanceof GeminiHttpFailure)
+          return { kind: 'http_error' as const, status: error.status }
+        return error instanceof GeminiEnvelopeFailure
+          ? { kind: 'receipt_error' as const }
           : { kind: 'transport_error' as const }
       }
       // Invalid receipts must stop a future live run; they are never retriable answers.
