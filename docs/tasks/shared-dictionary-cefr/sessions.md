@@ -2034,4 +2034,7 @@ in flight. Local receipt follows under AUTH-18 without push.
   stale-target click were rejected by automatic review; neither was bypassed.
   Next private credential-binding permission and no-support cost design. D11
   in_progress, D12 pending. Preserve `.playwright-cli/` and ignored reports;
-  local docs commit/receipt follows under AUTH-18, no push.
+  documentation checkpoint `9e20f55` passed ordinary hooks: mobile 156 suites /
+  1796 tests /22 snapshots; web 86 suites /780 tests, one existing skip.
+  Prettier and `git diff --check` passed. Local receipt follows under AUTH-18,
+  no push.

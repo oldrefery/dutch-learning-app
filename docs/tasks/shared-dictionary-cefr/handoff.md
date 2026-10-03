@@ -16,8 +16,10 @@ unverified; the proposed $2 per-run ledger is the operative planned bound, not
 a Cloud budget. Next GPT-6.1 Sol / High: obtain narrowly scoped permission for
 private, read-only credential binding evidence, then resolve the no-support
 control-cost design before creating any executable registry. D11 in_progress,
-D12 pending, pilot/worker disabled and qualification false. Task docs are
-uncommitted; preserve `.playwright-cli/` and ignored reports, no push or PR.
+D12 pending, pilot/worker disabled and qualification false. Documentation
+checkpoint `9e20f55` passed ordinary hooks: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /780 tests, one existing skip. A local receipt
+follows. Preserve `.playwright-cli/` and ignored reports, no push or PR.
 
 **2026-10-03 — D11 personal Credentials inspected; billing link and inquiry
 pending.** Starting `203ca83`, GPT-6.1 Sol / High announced; picker attribution
