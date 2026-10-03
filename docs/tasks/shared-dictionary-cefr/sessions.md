@@ -2204,3 +2204,6 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   narrow metadata-only probe proposal; any provider call requires
   fresh user authority. D11 in_progress, D12 pending, qualification
   false.
+  Evidence commit `5b60654` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots and web 86 suites / 780 tests, one
+  existing skip. Only preexisting `.playwright-cli/` remains untracked.
