@@ -1,12 +1,10 @@
-# Proposed Gemini Developer API control-billing inquiry (unsent)
+# Proposed Gemini Developer API control-billing inquiry (canceled, unsent)
 
-Date prepared: 2026-10-03. This is a local draft. It contains no account,
-project, credential, source meaning or user data. The user authorized one send
-from `oldrefery@gmail.com`; it has not been sent because the billing assistant
-requires choosing the linked personal billing account first. The read-only
-Billing-page navigation needed to verify that link was rejected by automatic
-approval review; an exact permission request is pending. Keep the message body
-below unchanged until submission.
+Date prepared: 2026-10-03. This local draft contains no account, project,
+credential, source meaning or user data. The user originally authorized one send
+from `oldrefery@gmail.com`. It was not sent. The user then canceled the inquiry.
+Do not submit it on resume; retain the unchanged message below only as historical
+documentation of unresolved cost questions.
 
 ## Subject
 
@@ -39,8 +37,7 @@ channel. No credentials or project identifiers are included in this inquiry.
 ## Routing
 
 Google's [Gemini troubleshooting guide](https://ai.google.dev/gemini-api/docs/troubleshooting)
-points billing questions to a billing support case. Submit only after verifying
-the personal account and correct linked billing account. Do not post it to a
-public forum or add private account details. A support answer must identify both
-REST methods and the current paid Standard plan before it can satisfy the pilot's
-control-billing gate.
+points billing questions to a billing support case. The user directed that no
+question be sent; do not submit this draft or post it publicly. The unresolved
+control-method charges require a separate no-support design decision before the
+pilot can become executable.

@@ -2014,3 +2014,24 @@ in flight. Local receipt follows under AUTH-18 without push.
   web 86 suites /780 tests, one existing skip. Prettier and `git diff --check`
   passed. Only preexisting `.playwright-cli/` remains untracked; ignored reports
   preserved. Local receipt follows under AUTH-18; no push.
+
+## 2026-10-03 — D11 personal Billing and limits read-only checkpoint
+
+- Started `5c3f993`, GPT-6.1 Sol / High announced; picker attribution unverified.
+  User allowed read-only personal Billing/limits inspection and canceled the
+  previously authorized support inquiry. No message was sent.
+- Verified `oldrefery@gmail.com` in the personal project Cloud Console and AI
+  Studio. Project-linked paid billing account uses EUR. Active €10 monthly
+  billing-account budget has 50/90/100% alerts and no spend cap; an expired €5
+  project budget is not a current limit. Current month Cloud Billing cost was
+  €0.14 at inspection. AI Studio showed Tier 1, no project monthly spend cap,
+  Gemini 3.5 Flash 1,000 RPM / 2,000,000 input TPM / 10,000 RPD. Cost reporting
+  may lag and Postpay transitions to Prepay after October 12. No payment details,
+  key values or billing identifiers persisted.
+- Exact app key/project binding and direct REST control billing unresolved. Pilot
+  and worker disabled, qualification false; no provider call, source transmission,
+  settings or payment action. No support case. A broad browser inventory and one
+  stale-target click were rejected by automatic review; neither was bypassed.
+  Next private credential-binding permission and no-support cost design. D11
+  in_progress, D12 pending. Preserve `.playwright-cli/` and ignored reports;
+  local docs commit/receipt follows under AUTH-18, no push.

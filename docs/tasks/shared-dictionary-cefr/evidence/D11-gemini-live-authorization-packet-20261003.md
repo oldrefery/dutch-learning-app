@@ -118,3 +118,16 @@ product to determine that link as outside the earlier Credentials/support scope.
 The exact read-only billing-page permission is pending. No inquiry was sent; no
 source was transmitted, no paid API call occurred, and no registry was enabled.
 The complete cost bound and executable account/key binding remain unverified.
+
+## Personal billing/limits checkpoint — 2026-10-03
+
+After explicit read-only permission, the personal project's paid EUR billing
+account was verified in Cloud Console. Its active €10 monthly account budget is
+an alert budget (50/90/100%) without a spend cap; an earlier €5 project budget
+expired. AI Studio shows Tier 1 and no project monthly spend cap. Gemini 3.5
+Flash's displayed limits are 1,000 RPM, 2,000,000 input TPM and 10,000 RPD.
+Spend reporting can lag and the UI warns of automatic transition to Prepay after
+October 12. The proposed $2 run ledger cannot rely on either Cloud budget or
+delayed AI Studio reporting. Account identifiers and payment details are omitted
+here. The user canceled the support inquiry before submission. Its cost questions
+remain open; exact app-key binding is also open. No external write or API call.

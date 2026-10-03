@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 personal billing/limits inspection completed; support send
+canceled.** Starting `5c3f993`, GPT-6.1 Sol / High announced; picker attribution
+unverified. The user explicitly authorized read-only Billing and limits viewing
+under `oldrefery@gmail.com`, then canceled the support inquiry; do not send it.
+The personal Gemini API project was visibly linked to a paid EUR billing account.
+The active €10 monthly account budget sends 50/90/100% alerts and has no spend
+cap; an old €5 project budget is expired. AI Studio shows paid Tier 1 and no
+project monthly spend cap. Gemini 3.5 Flash rate limits shown are 1,000 RPM,
+2,000,000 input TPM and 10,000 RPD. Spend reporting can lag, and the UI warns
+of a Postpay-to-Prepay transition after October 12. No billing settings, payment
+details or credentials changed; no support message or provider call. The exact
+app secret-to-personal-key/project binding and direct REST control billing remain
+unverified; the proposed $2 per-run ledger is the operative planned bound, not
+a Cloud budget. Next GPT-6.1 Sol / High: obtain narrowly scoped permission for
+private, read-only credential binding evidence, then resolve the no-support
+control-cost design before creating any executable registry. D11 in_progress,
+D12 pending, pilot/worker disabled and qualification false. Task docs are
+uncommitted; preserve `.playwright-cli/` and ignored reports, no push or PR.
+
 **2026-10-03 — D11 personal Credentials inspected; billing link and inquiry
 pending.** Starting `203ca83`, GPT-6.1 Sol / High announced; picker attribution
 unverified. Cloud Console displayed `oldrefery@gmail.com` for both personal

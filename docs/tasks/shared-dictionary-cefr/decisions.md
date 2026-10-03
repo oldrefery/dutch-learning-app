@@ -481,6 +481,22 @@ because it exceeded the prior Credentials/support authorization. No alternative
 route was attempted. A separate exact read-only billing-page permission question
 is pending. The support message has not been sent.
 
+### October 3 — Personal billing/limits inspected; support inquiry canceled
+
+The user explicitly authorized read-only Billing and limits inspection under
+`oldrefery@gmail.com`, then directed that no question be sent to support. This
+revokes the earlier one-message authority; the draft remains unsent and must not
+be submitted on resume. The personal Gemini API project was visibly linked to a
+paid Cloud Billing account in EUR. Its active €10 monthly billing-account budget
+has alerts at 50%, 90% and 100% but no spend cap; the former €5 project budget
+is expired. Google AI Studio showed paid Tier 1, no configured project monthly
+spend cap, and Gemini 3.5 Flash limits of 1,000 RPM, 2,000,000 input TPM and
+10,000 RPD. AI Studio warns of delayed spend reporting and an automatic Postpay
+to Prepay transition after October 12. The local $2 pilot reservation, if ever
+executed, must remain the operative per-run control. No payment detail, billing
+identifier or key value was persisted in the repository. Exact application key
+binding and direct REST control-method cost remain unresolved.
+
 ### October 3 — Explicit read-only personal AI Studio access
 
 The user then explicitly authorized the signed-in Google AI Studio API-keys page
