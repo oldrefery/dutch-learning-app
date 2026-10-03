@@ -1,5 +1,28 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 dormant authorized Gemini runner implemented locally.**
+Starting `233e9bc`, branch `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
+GPT-6.1 Sol / High announced; actual picker attribution unverified. No subagent.
+[Evidence](evidence/D11-gemini-runner-20261003.md),
+[216-path inventory](evidence/D11-gemini-runner-source-sha256.json),
+[disabled registry template](evidence/D11-gemini-execution.unapproved.json).
+
+Unified control/generation reservations, persistent bounded retries, exact private
+approval/key/draft/runtime/source/account/pricing/run/day bindings and dormant
+check/execute CLI. 92/92 Node tests PASS (31 new +61 retained); scoped types/strict
+lint/format/diff PASS. Baseline 210/210 exact; 201 retained. Frozen pilot unchanged.
+No provider/account/key call or paid execution. Complete live cost remains unknown;
+committed draft/template unapproved, qualification false. Teacher not required.
+
+**Next GPT-6 Astra / High — local technical review of the runner.** Announce the
+model. Check approval trust/dependency binding, combined accounting, retry/restart,
+lease/window fences and CLI refusal before any final live source/account/spending
+request. D11 in_progress; D12 not started. Ordinary local implementation commit and
+hooks pending under AUTH-18. Preserve `.playwright-cli/` and ignored reports. No
+pending external operation or restoration.
+
+The preceding REST/control review below is historical; its Sol integration is done.
+
 **2026-10-03 — D11 Gemini REST/control review PASS after five P2 repairs.**
 Starting `177eb96`, branch `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
 GPT-6 Astra / High announced; model-switch event seen, exact picker attribution

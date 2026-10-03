@@ -8,6 +8,7 @@ import {
   createGeminiTestHttp,
   GeminiEnvelopeFailure,
   GeminiHttpFailure,
+  GeminiTimeoutFailure,
   type TestHttp,
 } from './diagnostic-gemini-http.ts'
 export {
@@ -254,8 +255,16 @@ export const createGeminiTestAdapter = (options: {
       try {
         raw = await send('POST', ':generateContent', request.body)
       } catch (error) {
+        if (error instanceof GeminiTimeoutFailure)
+          return { kind: 'transport_error' as const, timeout: true as const }
         if (error instanceof GeminiHttpFailure)
-          return { kind: 'http_error' as const, status: error.status }
+          return {
+            kind: 'http_error' as const,
+            status: error.status,
+            ...(error.retryAfterMs !== undefined
+              ? { retry_after_ms: error.retryAfterMs }
+              : {}),
+          }
         return error instanceof GeminiEnvelopeFailure
           ? { kind: 'receipt_error' as const }
           : { kind: 'transport_error' as const }

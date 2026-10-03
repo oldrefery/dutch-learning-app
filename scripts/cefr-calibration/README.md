@@ -131,9 +131,8 @@ coverage, split/slice counts, confidence-bin counts and agreement with provision
 bands. It displays unknown-reference and ambiguity probes separately. Its
 `qualified` and `calibration_eligible` fields are always false. Agreement is not
 accuracy. The existing reviewed-fixture report and operational qualification path
-are unchanged. Live provider token counting, billing, source transmission,
-authorization, and a real transport adapter require a separate implementation and
-exact approval; this command cannot make a paid call.
+are unchanged. The separate dormant live runner requires exact private source/account/spending
+authorization; this fake command cannot make a paid call.
 
 The executable checks use the same local Node runtime:
 
@@ -147,14 +146,14 @@ node --test scripts/cefr-calibration/diagnostic*.test.ts
 frozen pilot. `createGeminiTestAdapter` requires injected HTTP and uses a fixed
 dummy key. It has no default fetch, environment loader, real credentials, live mode
 or CLI. The existing fake collector rejects this adapter as a generation transport.
-This checkpoint exercises the wire contract; an authorized live runner is still
-required before any real call.
+This adapter exercises the wire contract. Only the separately authorized runner
+may bind its HTTP to a private operator key.
 
 The tokenizer receives `generateContentRequest` containing the complete generation
 body, including system instructions and configuration. A stable run/meaning
 identity permits the same counted body across attempts. No reference bands, split
-or slice metadata enter it. The future live runner must retain separate attempt
-reservations and response IDs, and reject any changed counted body.
+or slice metadata enter it. The runner retains separate attempt reservations and response IDs and rejects any
+changed counted body.
 
 The adapter explicitly requests Standard service and disables request logging.
 It enforces a 5-second maximum timeout, abort, redirects disabled, JSON/UTF-8
@@ -184,3 +183,68 @@ binds all frozen artifacts and 24 input hashes. Account/key, source transmission
 spending approval, control endpoint billing and the complete total cost bound remain
 unset. The $1.913472 generation reservation is not an established total including
 control calls. The draft cannot authorize execution or qualify CEFR accuracy.
+
+## Dormant authorized Gemini diagnostic runner
+
+`diagnostic-runner.ts` joins the repaired adapter and private SQLite ledger. Every
+control/generation reservation precedes HTTP; unknown outcomes retain their full
+allowance. The report separates controls and generations and combines reserved
+requests, tokens and microUSD under `reserved_all`. Actual control cost stays null
+when only an upper bound is verified. Reports always remain unqualified and cannot
+activate the operational worker or establish independent CEFR accuracy.
+
+Generation retries are limited to two attempts per meaning. HTTP 408/429/5xx,
+network failures and timeouts use persisted exponential backoff plus jitter; a
+`Retry-After` up to five seconds is honored. A longer delay stops the batch rather
+than shortening the provider's requested delay. Unknown generations after a crash
+also wait before retrying and consume a new reservation. Controls never retry an
+unknown outcome. Permanent errors and invalid receipts durably stop the entire
+batch. A valid receipt is captured even when approval expires during HTTP. Leases,
+day/expiry, implementation and approval/key digests are checked before dispatch.
+
+[The unapproved registry template](../../docs/tasks/shared-dictionary-cefr/evidence/D11-gemini-execution.unapproved.json)
+is documentation, with execution disabled. The live CLI has no environment loader,
+implicit credential path, default registry, scheduling or activation. The current
+checkpoint has performed zero provider calls. Technical review is still required.
+
+A future authorized operator must first establish the personal provider account,
+project/key membership, paid tier, pricing and control billing evidence outside the
+parser. The parser validates these exact attestations and their digest bindings;
+it cannot discover remote ownership or make an independent billing verification.
+A nonempty evidence reference alone is not evidence of human approval. Only after
+separate explicit human approval may the operator populate a private registry with
+source references for all 24 exact hashes, key digest, combined cost/token ceiling,
+current implementation digest, exact draft digest, absolute run directory, UUID,
+one UTC day, expiry and approval reference. Missing/unknown control prices are
+rejected; the committed draft's complete live cost remains unverified.
+
+Copy the reviewed draft and template to private files (owner-only mode 0600), keep
+the key in a separate owner-only file, and choose one owner-only run directory.
+Symlinked/public/foreign-owned registry, draft or key files are rejected. Editing
+or revoking the registry/key, changing implementation bytes, changing the bound
+run/day or rotating credentials stops the run. Approval is scoped to that single
+run directory; resume preserves its journal and does not refund uncertain spend.
+Do not erase/copy the journal to reuse an approval. Never commit an approved
+registry, key, account details or private captures.
+
+The explicit CLI, for a separately approved future run, is:
+
+```sh
+node scripts/cefr-calibration/diagnostic-live.ts --check \
+  WORKLIST REFERENCE PROFILE PROMPT PROPOSAL \
+  PRIVATE_DRAFT PRIVATE_AUTHORIZATION PRIVATE_KEY EXACT_RUN_DIR
+
+node scripts/cefr-calibration/diagnostic-live.ts --execute \
+  WORKLIST REFERENCE PROFILE PROMPT PROPOSAL \
+  PRIVATE_DRAFT PRIVATE_AUTHORIZATION PRIVATE_KEY EXACT_RUN_DIR
+```
+
+Use Node 24 with native TypeScript support. `--check` validates private bindings
+without HTTP or creating a journal; it does not verify account/billing evidence
+remotely. `--execute` is the only CLI mode that dispatches real HTTP, after all
+explicit private approvals pass. Errors are sanitized. `test-only` registries can
+only use injected HTTP and are rejected by both live CLI modes. Provider executions
+reject injected test hooks. No real credential or approved registry is supplied by
+the repository. Generation alone reserves up to $1.913472; full authorization must
+include 24 count controls and one metadata control within the proposed $2 API-use
+ceiling. These figures are bounds, not spending approval or a verified live bill.

@@ -16,6 +16,7 @@ import {
 import {
   createGeminiTestAdapter,
   prepareGeminiRequest,
+  requestDigest,
   parseGeminiGeneration,
   GEMINI_BASE,
   GEMINI_MODEL,
@@ -550,7 +551,19 @@ test('live draft binds the frozen pilot but has no approval or total cost claim'
   assert.equal(draft.budget.control_billing_verified, false)
   assert.equal(draft.provider.account_ref, null)
   assert.equal(draft.authorization.approval_ref, null)
-  assert.equal(draft.implementation.live_cli_available, false)
+  // CLI presence does not approve the draft or make the live pilot ready.
+  assert.equal(draft.implementation.live_cli_available, true)
+  const template = JSON.parse(
+    readFileSync(`${evidence}D11-gemini-execution.unapproved.json`, 'utf8')
+  ) as { approved: boolean; execution_enabled: boolean; draft_sha256: string }
+  assert.equal(template.approved, false)
+  assert.equal(template.execution_enabled, false)
+  assert.equal(
+    template.draft_sha256,
+    requestDigest(
+      readFileSync(`${evidence}D11-gemini-live-request.proposed.json`, 'utf8')
+    )
+  )
 })
 
 test('over-limit countTokens leaves an unknown control and stops before generation', async () =>

@@ -96,6 +96,16 @@ export const buildReport = (db: SqliteDatabase, bundle: DiagnosticBundle) => {
     body: string
   }[]
   const observed = captures.map(x => JSON.parse(x.body) as Captured)
+  const controls = db
+    .prepare(
+      'SELECT COUNT(*) AS requests, SUM(CASE WHEN receipt IS NOT NULL THEN 1 ELSE 0 END) AS receipts, COALESCE(SUM(reserved_microusd),0) AS cost, COALESCE(SUM(reserved_tokens),0) AS tokens FROM controls'
+    )
+    .get() as {
+    requests: number
+    receipts: number | null
+    cost: number
+    tokens: number
+  }
   const body = {
     namespace: 'dictionary-cefr-diagnostic-report-v1',
     interpretation: 'unqualified_model_reference_agreement',
@@ -108,11 +118,28 @@ export const buildReport = (db: SqliteDatabase, bundle: DiagnosticBundle) => {
     reference_sha256: bundle.referenceSha256,
     profile_sha256: bundle.profileSha256,
     prompt_sha256: bundle.promptSha256,
-    provenance: 'fake',
+    provenance: meta.get('transport_kind') ?? 'fake',
+    execution_sha256: meta.get('execution_sha256') ?? null,
+    implementation_sha256: meta.get('implementation_sha256') ?? null,
     reserved: {
       requests: totals.requests,
       tokens: totals.tokens,
       microusd: totals.cost,
+    },
+    controls: {
+      requests: controls.requests,
+      receipts: controls.receipts ?? 0,
+      unknown_outcomes: controls.requests - (controls.receipts ?? 0),
+      reserved_microusd: controls.cost,
+      reserved_tokens: controls.tokens,
+      billing_ref: meta.get('control_billing_ref') ?? null,
+      observed_microusd:
+        meta.has('execution_sha256') && controls.cost === 0 ? 0 : null,
+    },
+    reserved_all: {
+      requests: totals.requests + controls.requests,
+      tokens: totals.tokens + controls.tokens,
+      microusd: totals.cost + controls.cost,
     },
     observed: {
       verified_captures: observed.filter(x => x.observed_microusd !== null)

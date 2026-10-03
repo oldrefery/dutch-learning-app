@@ -1,6 +1,6 @@
 {
   "namespace": "dictionary-cefr-live-request-proposal-v1",
-  "revision": "d11-gemini-wire-v1",
+  "revision": "d11-gemini-runner-v1",
   "approved": false,
   "live_ready": false,
   "purpose": "unqualified_model_reference_agreement",
@@ -30,7 +30,8 @@
     "utc_day": null,
     "expires_at": null,
     "source_transmission_ref": null,
-    "review_ref": "D11-gemini-adapter-review-20261003.md"
+    "review_ref": null,
+    "previous_adapter_review_ref": "D11-gemini-adapter-review-20261003.md"
   },
   "requests": {
     "count_tokens_max": 24,
@@ -40,7 +41,7 @@
     "concurrency": 1,
     "timeout_ms": 5000,
     "control_retries": 0,
-    "generation_backoff_status": "not_connected",
+    "generation_backoff_status": "durable exponential backoff plus jitter; maximum two attempts; honor Retry-After up to 5000ms, otherwise stop",
     "identity": "stable_run_and_meaning; attempt_number_in_ledger_only",
     "count_tokens_body": "generateContentRequest containing the exact generation body",
     "no_tools": true,
@@ -66,7 +67,8 @@
     "total_cost_max_microusd": null,
     "pricing_url": "https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash",
     "price_checked_date": "2026-10-03",
-    "scope": "API usage only; account currency, tax and surcharge conditions not verified"
+    "scope": "API usage only; account currency, tax and surcharge conditions not verified",
+    "total_reserved_tokens_max": 340608
   },
   "inputs": [
     {
@@ -198,16 +200,17 @@
     "reference_transmitted": false
   },
   "remaining_gates": [
-    "Implement an explicitly authorized live runner and generation ledger binding",
-    "Verify personal provider account/project/key and paid billing tier",
+    "GPT-6 Astra / High technical review of the runner, private approval and restart/accounting boundary",
+    "Verify personal provider account/project/key membership and paid billing tier outside the local parser",
     "Verify control endpoint pricing and complete total API-use ceiling",
-    "Record exact source transmission and spending approval for one UTC day",
+    "Record exact source transmission and spending approval for one UTC day in a private registry",
     "Pin first verified response.modelVersion and stop any mismatch; models.get version is not that pin"
   ],
   "implementation": {
-    "available": "test-only REST adapter and durable control probe",
-    "live_cli_available": false,
+    "available": "dormant authorized runner with unified control/generation ledger",
+    "live_cli_available": true,
     "credentials_loaded": false,
-    "external_calls_performed": 0
+    "external_calls_performed": 0,
+    "implementation_sha256": "88af37476148858523748d4c6885de2005a507c91b99b66f4e3f5a8cec290ead"
   }
 }

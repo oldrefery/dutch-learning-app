@@ -1850,3 +1850,23 @@ inventory **210/210 exact**. Only preexisting `.playwright-cli/` untracked befor
 receipt. No pending tests, provider calls, external write or restoration. Next
 GPT-6.1 Sol / High local live-runner integration with fake HTTP. Ordinary AUTH-18
 local documentation receipt; no push.
+
+## 2026-10-03 — D11 dormant authorized runner integration
+
+- Started `233e9bc`, AUTH-20/AUTH-18. GPT-6.1 Sol / High announced; actual picker
+  attribution unverified. No subagent. Baseline 210/210 exact; nine changed paths,
+  201 retained hashes, 216-path inventory. Frozen pilot artifacts unchanged.
+- [Evidence](evidence/D11-gemini-runner-20261003.md): unified control/generation
+  reservations/report, durable bounded retries and private exact runtime/draft/
+  source/key/account/pricing/run/day approval. Dormant check/execute CLI; committed
+  template and draft unapproved. No real registry/key loaded or provider call.
+- 92/92 Node tests PASS (31 new +61 retained), scoped types/strict lint/format/diff
+  PASS. Initial authoring test expectations and timeout provenance fixed locally;
+  final earlier response-body cancellation tests retained. Logs under
+  `reports/shared-dictionary-cefr/d11-gemini-runner-20261003/`.
+- Next GPT-6 Astra / High technical review before any final live authorization.
+  Complete live control cost/account evidence remains unknown; reference model
+  origin and qualification false. No teacher required. D11 in_progress/D12 not
+  started. No external mutation, runtime activation, paid call or Git publication.
+  `.playwright-cli/` and private reports preserved. Ordinary local implementation
+  commit/hooks and receipt under AUTH-18 follow; no external operation pending.

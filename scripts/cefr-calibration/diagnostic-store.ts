@@ -1,9 +1,13 @@
 import { randomUUID } from 'node:crypto'
 import { closeSync, lstatSync, mkdirSync, openSync } from 'node:fs'
 import { createRequire } from 'node:module'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import type { DiagnosticBundle } from './diagnostic-bundle.ts'
 import type { Captured } from './diagnostic-types.ts'
+import {
+  isPreparedExecution,
+  type DiagnosticExecution,
+} from './diagnostic-execution.ts'
 
 const { DatabaseSync: SqliteDatabaseSync } = createRequire(import.meta.url)(
   'node:sqlite'
@@ -18,6 +22,7 @@ CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS attempts (
   item_id TEXT NOT NULL, attempt INTEGER NOT NULL,
   reserved_microusd INTEGER NOT NULL, reserved_tokens INTEGER NOT NULL,
+  reserved_at_ms INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY(item_id, attempt)
 );
 CREATE TABLE IF NOT EXISTS captures (
@@ -28,7 +33,9 @@ CREATE TABLE IF NOT EXISTS captures (
 );
 CREATE TABLE IF NOT EXISTS controls (
   control_id TEXT PRIMARY KEY, kind TEXT NOT NULL,
-  request_sha256 TEXT NOT NULL, receipt TEXT
+  request_sha256 TEXT NOT NULL, receipt TEXT,
+  reserved_microusd INTEGER NOT NULL DEFAULT 0,
+  reserved_tokens INTEGER NOT NULL DEFAULT 0
 );`
 const transaction = <T>(db: SqliteDatabase, work: () => T): T => {
   db.exec('BEGIN IMMEDIATE')
@@ -44,8 +51,17 @@ const transaction = <T>(db: SqliteDatabase, work: () => T): T => {
 export const openRun = (
   runDir: string,
   bundle: DiagnosticBundle,
-  now: Date
+  now: Date,
+  execution?: DiagnosticExecution
 ): SqliteDatabase => {
+  if (
+    execution &&
+    (!isPreparedExecution(execution) ||
+      execution.bundleSha256 !== bundle.bindingSha256 ||
+      execution.runDir !== resolve(runDir) ||
+      execution.utcDay !== now.toISOString().slice(0, 10))
+  )
+    return fail('unprepared_execution')
   try {
     mkdirSync(runDir, { mode: 0o700 })
   } catch (error) {
@@ -70,6 +86,21 @@ export const openRun = (
       'PRAGMA foreign_keys=ON; PRAGMA journal_mode=DELETE; PRAGMA synchronous=FULL;'
     )
     db.exec(SCHEMA)
+    const attemptColumns = db.prepare('PRAGMA table_info(attempts)').all() as {
+      name: string
+    }[]
+    if (!attemptColumns.some(column => column.name === 'reserved_at_ms'))
+      db.exec(
+        'ALTER TABLE attempts ADD COLUMN reserved_at_ms INTEGER NOT NULL DEFAULT 0'
+      )
+    const columns = db.prepare('PRAGMA table_info(controls)').all() as {
+      name: string
+    }[]
+    for (const name of ['reserved_microusd', 'reserved_tokens'])
+      if (!columns.some(column => column.name === name))
+        db.exec(
+          `ALTER TABLE controls ADD COLUMN ${name} INTEGER NOT NULL DEFAULT 0`
+        )
     transaction(db, () => {
       const rows = db.prepare('SELECT key,value FROM meta').all() as {
         key: string
@@ -82,16 +113,29 @@ export const openRun = (
         for (const [key, value] of Object.entries({
           binding_sha256: bundle.bindingSha256,
           utc_day: day,
-          run_id: randomUUID(),
-          transport_kind: 'fake',
+          run_id: execution?.runId ?? randomUUID(),
+          transport_kind: execution?.origin ?? 'fake',
           active_owner: '',
           active_until: '0',
+          ...(execution
+            ? {
+                execution_sha256: execution.sha256,
+                implementation_sha256: execution.implementationSha256,
+                count_cost: String(execution.countCost),
+                metadata_cost: String(execution.metadataCost),
+                account_ref: execution.accountRef,
+                approval_ref: execution.approvalRef,
+                control_billing_ref: execution.billingRef,
+              }
+            : {}),
         }))
           insert.run(key, value)
       } else if (
         meta.get('binding_sha256') !== bundle.bindingSha256 ||
         meta.get('utc_day') !== day ||
-        meta.get('transport_kind') !== 'fake'
+        meta.get('transport_kind') !== (execution?.origin ?? 'fake') ||
+        meta.get('execution_sha256') !== execution?.sha256 ||
+        (execution && meta.get('run_id') !== execution.runId)
       ) {
         return fail('resume_binding_or_day')
       }
@@ -171,7 +215,8 @@ export const reserve = (
   db: SqliteDatabase,
   bundle: DiagnosticBundle,
   id: string,
-  owner: string
+  owner: string,
+  nowMs = Date.now()
 ): number | null =>
   transaction(db, () => {
     assertLease(db, owner)
@@ -184,17 +229,37 @@ export const reserve = (
         'SELECT COUNT(*) AS requests, COALESCE(SUM(reserved_microusd),0) AS cost FROM attempts'
       )
       .get() as { requests: number; cost: number }
+    const controlCost = Number(
+      (
+        db
+          .prepare(
+            'SELECT COALESCE(SUM(reserved_microusd),0) AS total FROM controls'
+          )
+          .get() as { total: number }
+      ).total
+    )
     if (
       totals.requests >= bundle.maxRequests ||
-      totals.cost + bundle.costPerAttempt > bundle.ceiling
+      totals.cost + controlCost + bundle.costPerAttempt > bundle.ceiling
     )
       return null
     const attempt = prior + 1
     db.prepare(
-      'INSERT INTO attempts(item_id,attempt,reserved_microusd,reserved_tokens) VALUES (?,?,?,?)'
-    ).run(id, attempt, bundle.costPerAttempt, bundle.tokensPerAttempt)
+      'INSERT INTO attempts(item_id,attempt,reserved_microusd,reserved_tokens,reserved_at_ms) VALUES (?,?,?,?,?)'
+    ).run(id, attempt, bundle.costPerAttempt, bundle.tokensPerAttempt, nowMs)
     return attempt
   })
+export const retryNotBefore = (db: SqliteDatabase, id: string): number => {
+  const row = db
+    .prepare(
+      'SELECT a.reserved_at_ms,c.body FROM attempts a LEFT JOIN captures c USING(item_id,attempt) WHERE a.item_id=? ORDER BY a.attempt DESC LIMIT 1'
+    )
+    .get(id) as { reserved_at_ms: number; body: string | null } | undefined
+  if (!row) return 0
+  return row.body === null
+    ? row.reserved_at_ms + 1000
+    : ((JSON.parse(row.body) as Captured).retry_not_before ?? 0)
+}
 export const capture = (
   db: SqliteDatabase,
   id: string,
@@ -276,9 +341,34 @@ export const reserveControl = (
     )
     if (count >= (key.kind === 'model_metadata' ? 1 : bundle.meanings.length))
       fail('control_request_limit')
+    const costKey = key.kind === 'count_tokens' ? 'count_cost' : 'metadata_cost'
+    const cost = Number(
+      (
+        db.prepare('SELECT value FROM meta WHERE key=?').get(costKey) as
+          { value: string } | undefined
+      )?.value ?? 0
+    )
+    const total = Number(
+      (
+        db
+          .prepare(
+            'SELECT (SELECT COALESCE(SUM(reserved_microusd),0) FROM attempts) + (SELECT COALESCE(SUM(reserved_microusd),0) FROM controls) AS total'
+          )
+          .get() as { total: number }
+      ).total
+    )
+    if (total + cost > bundle.ceiling) fail('combined_cost_bound')
     db.prepare(
-      'INSERT INTO controls(control_id,kind,request_sha256) VALUES (?,?,?)'
-    ).run(key.id, key.kind, key.requestSha256)
+      'INSERT INTO controls(control_id,kind,request_sha256,reserved_microusd,reserved_tokens) VALUES (?,?,?,?,?)'
+    ).run(
+      key.id,
+      key.kind,
+      key.requestSha256,
+      cost,
+      costKey === 'count_cost' && leaseMeta(db, 'transport_kind') !== 'fake'
+        ? bundle.maxInputTokens
+        : 0
+    )
     return null
   })
 

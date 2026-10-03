@@ -24,8 +24,9 @@ export type DiagnosticReply =
       finish_reason: string
       usage?: DiagnosticUsage
     }
-  | { kind: 'http_error'; status: number }
-  | { kind: 'transport_error' }
+  | { kind: 'http_error'; status: number; retry_after_ms?: number }
+  | { kind: 'transport_error'; timeout?: true }
+  | { kind: 'receipt_error' }
 export interface FakeDiagnosticTransport {
   kind: 'fake'
   countTokens(request: DiagnosticRequest): Promise<number>
@@ -54,4 +55,5 @@ export interface Captured {
   usage: DiagnosticUsage | null
   observed_microusd: number | null
   elapsed_ms: number
+  retry_not_before?: number
 }

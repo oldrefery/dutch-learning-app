@@ -5,14 +5,21 @@ export type TestHttp = (url: string, init: RequestInit) => Promise<Response>
 
 export class GeminiHttpFailure extends Error {
   readonly status: number
-  constructor(status: number) {
+  readonly retryAfterMs: number | undefined
+  constructor(status: number, retryAfterMs?: number) {
     super('Gemini HTTP failure')
     this.status = status
+    this.retryAfterMs = retryAfterMs
   }
 }
 export class GeminiEnvelopeFailure extends Error {
   constructor() {
     super('Gemini transport or envelope rejected')
+  }
+}
+export class GeminiTimeoutFailure extends Error {
+  constructor() {
+    super('Gemini transport rejected: timeout')
   }
 }
 const rejectEnvelope = (): never => {
@@ -60,7 +67,20 @@ const readBounded = async (
 const validateResponse = (response: Response, url: string): void => {
   if (response.redirected || (response.url && response.url !== url))
     rejectEnvelope()
-  if (!response.ok) throw new GeminiHttpFailure(response.status)
+  if (!response.ok) {
+    const value = response.headers.get('retry-after')
+    const seconds = value && /^\d+$/.test(value) ? Number(value) : null
+    const delay =
+      seconds !== null
+        ? seconds * 1000
+        : value
+          ? Date.parse(value) - Date.now()
+          : NaN
+    throw new GeminiHttpFailure(
+      response.status,
+      Number.isFinite(delay) ? Math.max(0, delay) : undefined
+    )
+  }
   const mediaType = response.headers
     .get('content-type')
     ?.split(';', 1)[0]
@@ -107,12 +127,14 @@ export const createGeminiTestHttp = (http: TestHttp, timeout: number) => {
         receive(),
         new Promise<never>((_, reject) => {
           timer = setTimeout(() => {
-            controller.abort()
-            reject(new Error('Gemini request timed out'))
+            controller.abort(new GeminiTimeoutFailure())
+            reject(new GeminiTimeoutFailure())
           }, timeout)
         }),
       ])
     } catch (error) {
+      if (controller.signal.reason instanceof GeminiTimeoutFailure)
+        throw new GeminiTimeoutFailure()
       controller.abort()
       if (
         error instanceof GeminiHttpFailure ||

@@ -1,0 +1,160 @@
+{
+  "namespace": "dictionary-cefr-execution-v1",
+  "approved": false,
+  "execution_enabled": false,
+  "approval_kind": "human-approved",
+  "implementation_revision": "d11-gemini-runner-v1",
+  "implementation_sha256": "88af37476148858523748d4c6885de2005a507c91b99b66f4e3f5a8cec290ead",
+  "bundle_sha256": "154340a433175cdd542e06b2967ac6a66a649f4ee3ce752225e61ae6f092db4a",
+  "draft_sha256": "b366e6c18a46276779b603f48170f20431c009d3515d583acf32dab790201e75",
+  "credential_sha256": null,
+  "run_dir": null,
+  "run_id": null,
+  "utc_day": null,
+  "expires_at": null,
+  "approval_ref": null,
+  "account": {
+    "personal": null,
+    "paid_tier": null,
+    "account_ref": null,
+    "project_ref": null,
+    "verification_ref": null
+  },
+  "pricing": {
+    "model": "gemini-3.5-flash",
+    "service_tier": "standard",
+    "rates_microusd_per_token": {
+      "input": 1.5,
+      "output": 9,
+      "reasoning": 9
+    },
+    "api_use_ceiling_microusd": 2000000,
+    "pricing_ref": "https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash",
+    "count_request_max_microusd": null,
+    "metadata_request_max_microusd": null,
+    "control_billing_verification_ref": null,
+    "total_reserved_tokens": 340608
+  },
+  "sources": [
+    {
+      "item_id": "pilot-01",
+      "input_sha256": "2d87146c0a1cb7a47fe663772457e9bb2e59d70a2fae3a4a9064c864dc4115b7",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-02",
+      "input_sha256": "66cf8539cee6baab48f0dc711ed7b4a76d8c803c8f55cd39fb71e571fdb12c59",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-03",
+      "input_sha256": "0d1dce9e1839bd1f2acd87fa633e5da27145395deeb97541c5408b0eb3bcb732",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-04",
+      "input_sha256": "11d6332c0ac464f590113e8b0d79e2e5bb53a94fe508875fd6b60acab3f79503",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-05",
+      "input_sha256": "af2d5c91421983bdd7616a268749be80ed8bf79fb92cdd93a5dc1a3b4056deb5",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-06",
+      "input_sha256": "7f6e30318d057dd93b4cbe7403698a7d657d919bbe8e0bd2de2457a6b0828996",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-07",
+      "input_sha256": "0bf2c38663c97d751e0dff0259654e14e532daaabc6f44a0d899405672a46461",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-08",
+      "input_sha256": "1922001d65b598ed75af8ce0b329a656253b9495bbf08de22feb86813dddd93d",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-09",
+      "input_sha256": "60648bc7b6cd35585d52090c6b62d80bb4998e33db1a2c58be9d9d734c691c6b",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-10",
+      "input_sha256": "f9d8d40e4669a5a639b72c0e18e59935d24e8e374e3a832f04137a2d28af68ed",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-11",
+      "input_sha256": "e9f03c419627a372eab6b21d2a2c888e79fe5ab42568982a811794a53179edd1",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-12",
+      "input_sha256": "71018746d512f2999fd6e78eee4bdba47c42073bfb3f9a591585350f34ff3ae3",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-13",
+      "input_sha256": "95eb583a3a488f3c916113adb7a1edecdd8f16aa7260dc6b0803545b5ee428b2",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-14",
+      "input_sha256": "486ede3e54fd0e8ab8196685f29b6020a32b974b013d6a6a805d2771841dee60",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-15",
+      "input_sha256": "c81437c5138fa123a14e53608f4bd0a4f0b06274114c457951fc547e9a6bc49f",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-16",
+      "input_sha256": "467fad39f88a95bc506c03930155c7b17a7912d59a5f75fc56f6b967fad1a20c",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-17",
+      "input_sha256": "08b727f871866853a736ac31f5094b08b532ca7a1adfe5288ad7da8f9feb439b",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-18",
+      "input_sha256": "ae157f4ee6fdaf88f3b69b0025241681f513db176735890f141b94318228d01e",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-19",
+      "input_sha256": "f32643f4445d14893b3d7b8808dd77623c300aec5c6097d8789a645bdf6106da",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-20",
+      "input_sha256": "457a045756c2710e4f5f9a4c4d87378452eaeef8b1d8e049d8824af2a1715b92",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-21",
+      "input_sha256": "b1cce498dd1fcd29ef853c54fae4819dfe5338505ab1982399a3e5f5a2413dc5",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-22",
+      "input_sha256": "8693f15c3dd36c09636e8af2b36099be4416139470c02299af959673a1fa5a93",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-23",
+      "input_sha256": "fbdc9142f07b1687463bf072192dcabe27b6f485c50edbee850b96ee53f9da64",
+      "approval_ref": null
+    },
+    {
+      "item_id": "pilot-24",
+      "input_sha256": "0fc62251d978837da96dcf44dfe86038431787bf616abb0d2d2c2aefbc296106",
+      "approval_ref": null
+    }
+  ]
+}

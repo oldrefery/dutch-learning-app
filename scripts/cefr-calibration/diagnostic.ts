@@ -49,7 +49,7 @@ const validProvenance = (
     value => bytes(value) <= 200
   )
 
-const empty = (
+export const emptyCapture = (
   outcome: Captured['outcome'],
   reason: string,
   elapsed_ms: number
@@ -123,26 +123,34 @@ const responseCandidate = (
     }
   }
 }
-const parseReply = (
+export const parseDiagnosticReply = (
   reply: DiagnosticReply,
   request: DiagnosticRequest,
   bundle: DiagnosticBundle,
   elapsed_ms: number
 ): Captured => {
   if (bytes(JSON.stringify(reply)) > 16 * 1024)
-    return empty('invalid', 'oversized_envelope', elapsed_ms)
+    return emptyCapture('invalid', 'oversized_envelope', elapsed_ms)
+  if (reply.kind === 'receipt_error')
+    return emptyCapture('failed', 'receipt_error', elapsed_ms)
   if (reply.kind === 'transport_error')
-    return empty('retry', 'transport', elapsed_ms)
+    return emptyCapture(
+      'retry',
+      reply.timeout ? 'timeout' : 'transport',
+      elapsed_ms
+    )
   if (reply.kind === 'http_error')
-    return empty(
-      reply.status === 429 || (reply.status >= 500 && reply.status <= 599)
+    return emptyCapture(
+      reply.status === 408 ||
+        reply.status === 429 ||
+        (reply.status >= 500 && reply.status <= 599)
         ? 'retry'
         : 'failed',
       `http_${reply.status}`,
       elapsed_ms
     )
   if (!validProvenance(reply))
-    return empty('invalid', 'missing_provenance', elapsed_ms)
+    return emptyCapture('invalid', 'missing_provenance', elapsed_ms)
   const observed = reply.usage ? validateUsage(reply.usage, bundle) : null
   const { candidate, reason } = responseCandidate(reply, request)
   const outcome =
@@ -194,8 +202,8 @@ const invoke = async (
   }
   const elapsed_ms = Math.ceil(performance.now() - start)
   return reply === 'timeout'
-    ? empty('retry', 'timeout', elapsed_ms)
-    : parseReply(reply, request, bundle, elapsed_ms)
+    ? emptyCapture('retry', 'timeout', elapsed_ms)
+    : parseDiagnosticReply(reply, request, bundle, elapsed_ms)
 }
 const countTokensBounded = async (
   transport: FakeDiagnosticTransport,

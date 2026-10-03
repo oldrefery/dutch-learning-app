@@ -423,3 +423,16 @@ unchanged. AUTH-20/AUTH-18 local implementation/fake testing/necessary local com
 continue. Prepare the collector before requesting any exact live authorization.
 Next GPT-6.1 Sol / High, announced before the checkpoint. Actual model attribution
 for this review remains unverified; no external reviewer or subagent was used.
+
+### October 3 — Dormant live-runner integration boundary
+
+AUTH-20/AUTH-18 cover the resumed local runner, fake HTTP tests, disabled operator
+registry template and necessary ordinary local commits. Public draft/template,
+nonempty evidence references and local readiness checks do not create human
+account/source/spending approval. Account/project/key membership, paid tier and
+control billing need external verification and exact later authorization. A private
+registry binds that evidence to one immutable bundle/draft/runtime, key digest,
+run directory/UUID and UTC day; changing or deleting the journal must not reuse the
+approval. Current template is unapproved; zero real-provider calls. Next Astra /
+High technical review, announced before transition. Teacher availability stays
+resolved; independent gold quality and live acceptance remain open.
