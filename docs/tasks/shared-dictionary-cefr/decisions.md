@@ -544,3 +544,16 @@ request occurred. The inspection cannot match the deployed app secret to an
 account. It does not extend the previous one-run `oldrefery` key permission to
 `curysef` or answer the pending estimated-cost policy question. Keep the
 provider runner disabled and the support inquiry canceled.
+
+### October 3 — Partial key identifier comparison
+
+The user supplied a partial Gemini key identifier. On the verified
+`oldrefery@gmail.com` AI Studio API-keys page, its last four characters
+matched the masked `Generative Language API Key` in the paid `Gemini API`
+project. Neither of the two visible `curysef@gmail.com` keys matched. AI
+Studio masked the fifth character from the user-supplied suffix; the deployed
+Supabase secret was not read or compared. This is strong account/project
+evidence, not an exact app-secret binding. No full value was opened or copied,
+and no provider request, source transmission, key change or billing change
+occurred. Prior one-run key authority remains scoped to `oldrefery`. The
+cost-policy decision remains pending.

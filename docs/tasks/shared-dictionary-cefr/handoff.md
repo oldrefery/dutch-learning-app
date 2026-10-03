@@ -1,5 +1,21 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 user-supplied key suffix matched the personal paid project.**
+GPT-6.1 Sol / High announced; picker attribution unverified. The user supplied
+a partial key identifier. Read-only AI Studio inspection showed its last four
+characters on the masked `Generative Language API Key` in the paid `Gemini API`
+project under `oldrefery@gmail.com`. Neither of the two visible `curysef` keys
+shared that suffix. The UI did not show the user-supplied fifth suffix
+character, and no comparison against the deployed Supabase secret occurred;
+the exact app key binding remains unverified. No key detail was opened, value
+copied, provider call made or billing setting changed. The prior one-run
+`oldrefery` permission remains scoped as recorded. The estimated-versus-hard
+$2 cost-policy question is still pending; D11 in_progress, D12 pending,
+pilot/worker disabled and qualification false. **Next GPT-6.1 Sol / High:**
+resolve that decision before choosing the execution mode. Preserve
+`.playwright-cli/`, no push, PR or deployment. Local documentation receipt
+follows.
+
 **2026-10-03 — D11 alternate personal-account billing inspected read-only.**
 GPT-6.1 Sol / High announced; picker attribution unverified. The user separately
 authorized a billing check under `curysef@gmail.com`. AI Studio verified that

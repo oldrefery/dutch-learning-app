@@ -2098,3 +2098,18 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   suites / 1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing
   skip. Scoped Prettier and `git diff --check` passed. A local receipt follows
   under AUTH-18.
+
+## 2026-10-03 — D11 partial key identifier read-only comparison
+
+- Started `dc1c0fe`, GPT-6.1 Sol / High announced; picker attribution
+  unverified. User supplied a partial key identifier. AI Studio confirmed
+  `oldrefery@gmail.com`; the last four characters matched its masked
+  `Generative Language API Key` in the paid `Gemini API` project. The two
+  visible `curysef` key suffixes differed. The UI did not show the fifth
+  supplied suffix character. No deployed Supabase secret comparison, full
+  key reveal/copy, provider request or billing change occurred.
+- Exact app binding remains unverified. The one-run `oldrefery` key scope and
+  pending estimated-versus-hard $2 decision remain unchanged. D11
+  in_progress, D12 pending, qualification false, runner/worker disabled.
+  Support inquiry canceled. Preserve `.playwright-cli/`; no push, PR or
+  deployment. Local documentation checkpoint under AUTH-18.
