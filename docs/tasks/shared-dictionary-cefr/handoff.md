@@ -31,8 +31,10 @@ D11 remains in_progress; D12 not started. Independent quality/live acceptance re
 unproven. Proposed maximum 48 generations/$1.913472 within $2, not spending approval.
 No provider/account/key, device/backend, hosted migration, paid call, activation,
 publication/deployment or push/PR/merge. Default controls remain OFF. Private reports
-and preexisting `.playwright-cli/` preserved. Local commit uses ordinary hooks;
-receipt follows. No pending external operation or restoration.
+and preexisting `.playwright-cli/` preserved. Review commit `8b65af9` passed normal
+hooks: mobile 156 suites /1796 tests /22 snapshots; web 86 suites /780 tests, one
+existing skipped suite/test. Post-hook inventory 192/192 exact. Local documentation
+receipt follows under AUTH-18. No pending external operation or restoration.
 
 The following preparation is historical; its pending teacher clarification and
 human-review/report instructions are superseded by the autonomous review above.
