@@ -20,7 +20,9 @@ personal account/project/key evidence needed, and prepare one-day source/account
 spending authorization. Generic continuation permits local/public-document work,
 not real credential/account access or provider dispatch; obtain missing authority
 before those actions. Keep diagnostic qualification false. D11 in_progress;
-D12 not started. Ordinary local review/repair commit and hooks pending under AUTH-18.
+D12 not started. Review/repair `0893a2e` passed ordinary hooks: mobile 156 suites /
+1796 tests /22 snapshots; web 86 suites /780 tests, one existing skip. Post-hook
+inventory 221/221 exact. Ordinary AUTH-18 documentation receipt follows.
 Preserve `.playwright-cli/` and ignored reports. No pending external operation.
 
 The integration checkpoint below is historical; its technical review is complete.
