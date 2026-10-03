@@ -1630,3 +1630,23 @@ skipped suite/test. Post-hook inventory 177/177 exact; only preexisting
 `.playwright-cli/` untracked before this receipt. First incomplete checkpoint stays
 D11.6–D11.7 local authorization and budget work. No pending operation or restoration.
 Documentation receipt uses normal hooks, local-only; no push or runtime activation.
+
+## 2026-10-03 — D11.6–D11.7 local invocation and conservative budgets
+
+- Continued from `eb38631`, AUTH-20/AUTH-18. User requested model announcements
+  before each next checkpoint; Sol / High implementation recommendation retained.
+  No inferred picker change or Astra review attribution; no subagent.
+- Added immutable reviewed-budget registry, default-off global control, UTC-day
+  caps, atomic claim/reserve, one-use permits, conservative unknown usage and
+  once-only verified reconciliation, run metrics, credential-gated handler factory
+  and generated-contract RPC store with bounded cancellation/timeouts.
+- [Evidence](evidence/D11-budget-invocation-20261003.md): 27 budget SQL, 18 queue
+  regressions, 72 Deno tests PASS; official generation/check and scoped lint/types/
+  format PASS. Initial SQL fixture and Deno type/mock-alias errors corrected.
+- Inventory 184 paths, 173 prior hashes unchanged. Disposable local resources only;
+  retained QA/devices/backend/data untouched. `.playwright-cli/` and reports kept.
+- Next GPT-6 Astra / High concurrency/provenance/budget review. D11 acceptance and
+  real quality/source/pricing/bounds/spending gates stay open; all defaults OFF.
+  No real transport/bootstrap, provider network, hosted migration, schedule,
+  deployment, publication or push/PR/merge. Local commit with ordinary hooks;
+  actual persistence receipt follows. No uncertain external operation/restoration.

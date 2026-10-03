@@ -397,3 +397,13 @@ User explicitly resumed `/repo continue` and confirmed GPT-6.1 Sol / High.
 AUTH-20/AUTH-18 continue to cover local offline mechanics and necessary commits.
 This supersedes the October 2 pause without adding live source/provider, spending,
 runtime, deployment or Git publication authority. D11.2 real quality stays open.
+
+### October 3 — D11 invocation/budget continuation and model announcements
+
+User explicitly continued and requested the required model before each next
+checkpoint. Announce the saved recommendation at every transition; do not claim
+an automatic picker change. AUTH-20/AUTH-18 local implementation, fake-provider
+verification and necessary commits remain in force. This adds no live spending,
+source, deployment, scheduler or Git publication approval. Local D11.6–D11.7
+mechanics are implemented under the accepted engineering contract; next Astra /
+High review. Real pricing/bounds and DEC-06 remain open; control defaults OFF.

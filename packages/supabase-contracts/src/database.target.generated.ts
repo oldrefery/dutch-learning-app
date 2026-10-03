@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261003090000_add_dictionary_cefr_queue.sql.
+// Generated from local migrations through 20261003100000_add_dictionary_cefr_budget.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -1180,12 +1180,24 @@ export type Database = {
       }
     }
     Functions: {
+      account_dictionary_cefr_attempt_v1: {
+        Args: {
+          p_lease_token: string
+          p_reservation_id: string
+          p_usage?: Json
+        }
+        Returns: Json
+      }
       apply_dictionary_content_command_v1: {
         Args: { p_command: Json }
         Returns: Json
       }
       apply_dictionary_import_intent_v1: {
         Args: { p_intent: Json }
+        Returns: Json
+      }
+      authorize_dictionary_cefr_dispatch_v1: {
+        Args: { p_lease_token: string; p_reservation_id: string }
         Returns: Json
       }
       calculate_review_progress: {
@@ -1248,6 +1260,22 @@ export type Database = {
       }
       export_dictionary_collection_v1: {
         Args: { p_collection_id: string }
+        Returns: Json
+      }
+      finish_dictionary_cefr_attempt_v1: {
+        Args: {
+          p_confidence?: number
+          p_lease_token: string
+          p_level?: string
+          p_outcome: string
+          p_reservation_id: string
+          p_retry_after_seconds?: number
+          p_usage?: Json
+        }
+        Returns: Json
+      }
+      finish_dictionary_cefr_run_v1: {
+        Args: { p_run_id: string }
         Returns: Json
       }
       get_dictionary_content_changes_v1: {
@@ -1596,6 +1624,10 @@ export type Database = {
           p_qualification_sha256: string
           p_retry_after_seconds?: number
         }
+        Returns: Json
+      }
+      start_dictionary_cefr_run_v1: {
+        Args: { p_policy_id: string; p_run_id: string }
         Returns: Json
       }
       sync_user_access_levels: {

@@ -41,15 +41,24 @@ export type CefrProvider = (
   options: { signal: AbortSignal; maxResponseBytes: number }
 ) => CefrProviderReply | Promise<CefrProviderReply>
 
+// Must be supplied by a verified transport receipt, never model-generated JSON.
+export interface VerifiedCefrUsage {
+  provider_request_id: string
+  input_tokens: number
+  output_tokens: number
+  reasoning_tokens: number
+}
+
 export type CefrProviderReply =
-  | { kind: 'response'; body: string }
+  | { kind: 'response'; body: string; usage?: VerifiedCefrUsage }
   | { kind: 'http_error'; status: number; retryAfterSeconds?: number }
   | { kind: 'transport_error' }
 
-export type CefrAttemptResult =
+export type CefrAttemptResult = (
   | { outcome: 'estimated'; level: string; confidence: number }
   | { outcome: 'unknown' | 'failed'; reason: string }
   | { outcome: 'retry'; reason: string; retryAfterSeconds?: number }
+) & { usage?: VerifiedCefrUsage }
 
 export interface EvaluationOptions {
   enabled?: boolean
@@ -199,11 +208,14 @@ export const evaluateCefrLeases = async (
                 : undefined,
           }
         }
-        return await evaluateResponse(
+        const decision = await evaluateResponse(
           reply.body,
           request,
           settings.qualification
         )
+        return reply.usage
+          ? { ...decision, usage: structuredClone(reply.usage) }
+          : decision
       } catch {
         // Unexpected adapter errors have unknown billing; do not log raw errors.
         return { outcome: 'retry', reason: 'transport' }

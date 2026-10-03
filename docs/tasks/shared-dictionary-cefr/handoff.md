@@ -1,35 +1,36 @@
 # Shared dictionary and CEFR — current handoff
 
-**2026-10-03 — D11 queue/evaluation foundation verified locally.**
-Starting `9454552`, existing `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
-User-confirmed GPT-6.1 Sol / High; earlier Astra attribution remains unconfirmed.
-[Evidence](evidence/D11-queue-foundation-20261003.md),
-[177-path inventory](evidence/D11-queue-source-sha256.json); 168 prior hashes retained.
+**2026-10-03 — D11.6–D11.7 local invocation/accounting ready for review.**
+Starting `eb38631`, existing `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
+User continued and requested the required model announcement before each next
+checkpoint. Implementation recommendation Sol / High; last explicit confirmation
+retained, picker control unavailable. No subagent or inferred Astra attribution.
+[Evidence](evidence/D11-budget-invocation-20261003.md),
+[184-path inventory](evidence/D11-budget-source-sha256.json); 173 prior hashes retained.
 
-Private immutable method registry, eligible published-meaning queue, fenced leases,
-bounded retries and atomic completion are implemented. Pure evaluation checks
-qualification/profile/input, bounds and timeout; synthetic provider integration
-passes. No deployable HTTP worker or spending authorization exists yet.
+Implemented empty/immutable approved-budget registry, global kill switch OFF,
+atomic UTC-day request/token/cost reservation, one-use dispatch permits, conservative
+unknown/crash/timeout accounting, verified receipt reconciliation, run metrics,
+privileged HTTP handler factory and typed/cancellable RPC adapter. No real secret,
+provider adapter, price/bounds approval, runtime endpoint or schedule is activated.
 
-18 queue SQL tests, 17 existing content/cache SQL tests, 57 offline/evaluator tests,
-48 analysis regressions PASS. Schema suite: 19 PASS plus one IPC-blocked nested
-upgrade; the identical upgrade body passes separately with one disposable cluster.
-Type generation/check, scoped lint/types/format PASS. No test server remains.
+27 budget SQL tests and 18 queue regressions PASS. Deno calibration/evaluation/
+handler/store: 72 PASS. Generated types/reproducibility, scoped lint/types/format
+PASS. Initial test-fixture/type failures corrected and recorded in evidence.
+Socket-only PostgreSQL and target-generation containers are disposable; retained
+QA devices/backend untouched. No remaining test server or external operation.
 
-**Next: D11.6–D11.7 local auth/run ledger/atomic budget reservations on Sol / High**,
-then Astra / High concurrency/provenance/budget review. D11 remains in_progress;
-D11.2 real quality and D11.3–D11.7 integration/acceptance gates remain open.
-Keep all defaults/schedules OFF. Live source/quality/spending approval is absent.
+**Next: GPT-6 Astra / High review of concurrency/provenance/budget boundaries.**
+Announce this model before starting the next checkpoint, as requested by the user.
+Review exact changed sources and test evidence; do not replay unchanged QA.
+D11.3–D11.7 mechanics are locally implemented, acceptance/review remain open.
+D11.2 real reviewed quality, source and spending/sample approvals remain absent;
+D11 stays in_progress. All runtime/schedule defaults stay OFF.
 
-Checkpoint persistence: implementation/evidence committed locally as `aded98f`.
-Normal hooks PASS: mobile 156 suites /1796 tests /22 snapshots; web 86 suites /
-780 tests, one preexisting skipped suite/test. Post-hook inventory 177/177 exact.
-Only preexisting `.playwright-cli/` remains untracked before this docs receipt.
-Receipt commit uses normal hooks under AUTH-18; no push. Task changes include the migration, two SQL test
-files, three evaluator files, policy preflight, target manifest/generated types,
-and task docs/inventory. Preserve unrelated `.playwright-cli/` and private reports.
-Retained QA devices/backend untouched; no paid call, hosted migration, activation,
-publication/deployment or push/PR/merge. No pending external operation/restoration.
+Persistence: local implementation/evidence commit with normal hooks under AUTH-18;
+receipt follows. Preserve preexisting `.playwright-cli/` and ignored private reports.
+No paid/provider network call, hosted migration, retained data mutation, activation,
+publication/deployment or push/PR/merge. No pending restoration or uncertain write.
 
 The historical checkpoints below retain evidence and model-attribution limits.
 

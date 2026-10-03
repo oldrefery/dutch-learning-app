@@ -3,13 +3,20 @@ import { buildCalibrationReport } from '../cefr-calibration/report.ts'
 import {
   syntheticContent,
   syntheticInputs,
+  rebindSyntheticInputs,
 } from '../cefr-calibration/synthetic-fixtures.ts'
 import { sha256 } from '../cefr-calibration/validation.ts'
 import { canonicalizeCefrInput } from '../../../../packages/domain/src/shared-dictionary.ts'
 
 // Fictional reviewed-shaped mechanics data only, never operational quality evidence.
-export const syntheticWorker = async () => {
+export const syntheticWorker = async (
+  options: { methodRevision?: string } = {}
+) => {
   const inputs = await syntheticInputs(true)
+  if (options.methodRevision) {
+    inputs.profile.method_revision = options.methodRevision
+    await rebindSyntheticInputs(inputs)
+  }
   const report = await buildCalibrationReport(inputs)
   const approval = {
     fixture_sha256: report.fixture_sha256,
