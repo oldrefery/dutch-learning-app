@@ -18,7 +18,9 @@ Announce the model. Implement/test bounded provider token counting and control-r
 accounting, transport/usage validation and exact price/model/source/account binding.
 Prepare the concrete live request only after that work is reviewable. A teacher is
 not required. No paid execution is approved. D11 stays in_progress; D12 not started.
-Necessary local commit uses normal hooks under AUTH-18; receipt follows. Preserve
+Repair/review commit `d81b8e0` passed normal hooks: mobile 156 suites /1796 tests
+/22 snapshots; web 86 suites /780 tests, one existing skip. Post-hook inventory
+202/202 exact. Ordinary local documentation receipt follows under AUTH-18. Preserve
 `.playwright-cli/` and ignored reports. No pending external write or restoration.
 
 The following implementation checkpoint is historical; its review action is complete.
@@ -980,7 +982,7 @@ Data, volumes, copies and reports retained. Other sessions/devices untouched.
 Task state: D02–D10 done; D11 in_progress (fake diagnostic collector implemented; real quality/live acceptance open); D12–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, latest D11 collector implementation `59af814`; no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
+Branch `feature/shared-dictionary-schema`, latest D11 collector repair/review `d81b8e0`; no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume

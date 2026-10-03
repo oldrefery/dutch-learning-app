@@ -1784,3 +1784,15 @@ restoration. Next GPT-6 Astra / High technical collector review.
 - Next GPT-6.1 Sol / High real-adapter/control-request local preparation and exact
   source/account/spending proposal. Teacher question resolved; D11 in_progress,
   D12 not started. Private logs retained; ordinary local commit/receipt follows.
+
+Repair/review commit **`d81b8e0`** passed normal hooks: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /780 tests, one existing skipped suite/test. Post-hook
+inventory **202/202 exact**. Only preexisting `.playwright-cli/` untracked before
+the ordinary AUTH-18 documentation receipt. No pending external operation or test.
+Next GPT-6.1 Sol / High for local real-adapter preparation; no paid call or push.
+
+Documentation receipt's first hook run failed when one Jest worker exited with
+SIGSEGV before running `sharedDictionaryContract.test.ts`: 155 suites /1792 tests
+passed, one suite failed to start. An isolated in-band rerun of that suite passed
+4/4 tests. Logs `receipt-commit.log` and `jest-worker-recheck.log` preserve both
+outcomes. No source change or hook bypass; retry the ordinary receipt commit.
