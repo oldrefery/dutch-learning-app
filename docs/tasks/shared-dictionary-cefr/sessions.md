@@ -2038,3 +2038,18 @@ in flight. Local receipt follows under AUTH-18 without push.
   1796 tests /22 snapshots; web 86 suites /780 tests, one existing skip.
   Prettier and `git diff --check` passed. Local receipt follows under AUTH-18,
   no push.
+
+## 2026-10-03 — D11 no-support control-cost review
+
+- Started `6bb8b27`, GPT-6.1 Sol / High announced; picker attribution
+  unverified. Context7 returned the official direct REST token guide, billing
+  FAQ and pricing/model references. `GetTokens` naming and `models.get` price
+  remain unresolved. Locally prepared all 24 frozen requests with a dummy run ID;
+  body lengths were 2,266–2,480 bytes, 57,104 bytes total for one attempt each.
+- [Review](evidence/D11-gemini-no-support-cost-review-20261003.md) records why
+  removing the controls does not preserve the proposed hard $2 bound. No code,
+  credential, provider, source transmission or external state changed. User's
+  support-send cancellation remains in force; narrow personal-key and 24-input
+  transmission permissions remain unanswered. D11 in_progress, D12 pending,
+  qualification false, pilot/worker disabled. Preserve `.playwright-cli/` and
+  ignored reports; local-only documentation checkpoint under AUTH-18.

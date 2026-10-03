@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 no-support cost review completed locally.** GPT-6.1 Sol /
+High announced; picker attribution unverified. The frozen 24 REST generation
+bodies measured 2,266–2,480 UTF-8 bytes each (57,104 bytes total for one attempt
+per meaning); bytes do not prove billed tokens. Context7 returned the official
+`models.countTokens` REST guide, billing FAQ's unbilled `GetTokens` statement,
+and pricing/model references, but did not resolve their naming or `models.get`
+cost. Removing controls would weaken the current hard $2 bound. The
+[no-support review](evidence/D11-gemini-no-support-cost-review-20261003.md)
+records this conclusion and a possible, separately reviewed synthetic probe.
+No code, frozen inputs, credential, provider call or external state changed.
+The previously requested exact permissions for private personal-key binding and
+24-input transmission have not been answered explicitly; generic continuation
+does not grant them. Keep registry/pilot/worker disabled and qualification false.
+**Next GPT-6.1 Sol / High:** if the narrow permissions arrive, verify personal
+key/project binding privately; resolve control billing with authoritative
+evidence or a reviewed cost-policy change before a live pilot. Do not send the
+canceled support inquiry. D11 in_progress, D12 pending. Preserve `.playwright-cli/`
+and ignored reports; no push or PR. Local documentation checkpoint follows.
+
 **2026-10-03 — D11 personal billing/limits inspection completed; support send
 canceled.** Starting `5c3f993`, GPT-6.1 Sol / High announced; picker attribution
 unverified. The user explicitly authorized read-only Billing and limits viewing
