@@ -17,7 +17,9 @@ Next: resolve the already requested Astra / High model confirmation. If confirme
 for this review, record it and route to Sol / High for local D11.3–D11.5; otherwise
 retain the prescribed Astra review gate. No unchanged QA replay is needed merely
 to record model provenance. Current-thread picker control remains unavailable.
-Necessary local review/fix commit uses normal hooks; receipt follows. No push,
+Review/fix commit `039223a` normal hooks PASS: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /780 tests, one existing skip. All 171 hashes match.
+Local documentation receipt follows; no push,
 external operation, retained data write, runtime activation or pending restoration.
 Preserve `.playwright-cli/` and private `d11-offline-review-20261003` reports.
 

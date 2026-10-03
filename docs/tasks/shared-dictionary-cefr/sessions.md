@@ -1596,3 +1596,10 @@ and all data retained; no push/PR/merge.
   prescribed review gate is satisfied. No device/backend/provider/SQL or external
   operation. Preserve `.playwright-cli/` and private reports. AUTH-18 local commit
   with ordinary hooks; receipt follows. No push/PR/merge or activation.
+
+Review/fix commit **`039223a`** completed with normal hooks: mobile 156 suites /
+1796 tests /22 snapshots; web 86 suites /780 tests, one preexisting skipped
+suite/test. Post-hook source inventory 171/171 matches. Only preexisting
+`.playwright-cli/` is untracked before this receipt. Private `commit.log` retained.
+No pending runtime operation or external write. Local-only, no push. Current-model
+confirmation is still pending; do not infer Astra provenance from the commit.

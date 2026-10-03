@@ -96,3 +96,10 @@ Astra review gate as satisfied. If the picker was Astra / High, record that fact
 without rerunning unchanged checks; otherwise leave the prescribed review open.
 Then GPT-6.1 Sol / High for local D11.3–D11.5 queue/lease/head-CAS implementation
 under the accepted contract. Keep the real D11.2 source/quality/spending gates open.
+
+Review/fix commit **`039223a`** completed with normal hooks: mobile 156 suites /
+1796 tests /22 snapshots; web 86 suites /780 tests, one preexisting skipped
+suite/test. Post-hook source inventory 171/171 matches. Only preexisting
+`.playwright-cli/` is untracked before this receipt. Private `commit.log` retained.
+No pending runtime operation or external write. Local-only, no push. Current-model
+confirmation is still pending; do not infer Astra provenance from the commit.
