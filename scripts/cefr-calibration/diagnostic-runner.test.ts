@@ -17,7 +17,7 @@ import {
 import { runGeminiDiagnostic } from './diagnostic-runner.ts'
 import { buildReport } from './diagnostic-report.ts'
 import { openRun } from './diagnostic-store.ts'
-import { type TestHttp } from './diagnostic-gemini.ts'
+import { GEMINI_BASE, type TestHttp } from './diagnostic-gemini.ts'
 import {
   bundle,
   paths,
@@ -528,7 +528,46 @@ test('control failure preserves unknown reservation and cannot generate or repla
     const report = f.report(opts.execution)
     assert.equal(report.controls.requests, 2)
     assert.equal(report.controls.unknown_outcomes, 1)
+    assert.deepEqual(report.controls.failures, [
+      {
+        id: 'pilot-01',
+        kind: 'count_tokens',
+        failure_class: 'http',
+        http_status: 503,
+      },
+    ])
     assert.equal(report.reserved.requests, 0)
+  } finally {
+    f.cleanup()
+  }
+})
+
+test('metadata HTTP rejection records only status and blocks the whole run', async () => {
+  const f = fixture()
+  try {
+    const opts = f.runner(f.load(), async (url, init) => {
+      if (url === GEMINI_BASE) {
+        f.calls.push({ url, init })
+        return json({ private_provider_message: 'DO-NOT-PERSIST' }, 403)
+      }
+      return f.success(url, init)
+    })
+    await assert.rejects(runGeminiDiagnostic(opts), /Gemini HTTP failure/)
+    const report = f.report(opts.execution)
+    assert.equal(report.controls.requests, 1)
+    assert.equal(report.controls.unknown_outcomes, 1)
+    assert.equal(report.reserved.requests, 0)
+    assert.deepEqual(report.controls.failures, [
+      {
+        id: 'model_metadata',
+        kind: 'model_metadata',
+        failure_class: 'http',
+        http_status: 403,
+      },
+    ])
+    assert.equal(JSON.stringify(report).includes('DO-NOT-PERSIST'), false)
+    await assert.rejects(runGeminiDiagnostic(opts), /control_outcome_unknown/)
+    assert.equal(f.calls.length, 1)
   } finally {
     f.cleanup()
   }

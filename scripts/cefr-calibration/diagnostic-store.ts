@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS controls (
   control_id TEXT PRIMARY KEY, kind TEXT NOT NULL,
   request_sha256 TEXT NOT NULL, receipt TEXT,
   reserved_microusd INTEGER NOT NULL DEFAULT 0,
-  reserved_tokens INTEGER NOT NULL DEFAULT 0
+  reserved_tokens INTEGER NOT NULL DEFAULT 0,
+  failure_class TEXT, http_status INTEGER
 );`
 const transaction = <T>(db: SqliteDatabase, work: () => T): T => {
   db.exec('BEGIN IMMEDIATE')
@@ -107,6 +108,10 @@ export const openRun = (
         db.exec(
           `ALTER TABLE controls ADD COLUMN ${name} INTEGER NOT NULL DEFAULT 0`
         )
+    if (!columns.some(column => column.name === 'failure_class'))
+      db.exec('ALTER TABLE controls ADD COLUMN failure_class TEXT')
+    if (!columns.some(column => column.name === 'http_status'))
+      db.exec('ALTER TABLE controls ADD COLUMN http_status INTEGER')
     transaction(db, () => {
       const rows = db.prepare('SELECT key,value FROM meta').all() as {
         key: string
@@ -437,4 +442,30 @@ export const captureControl = (
       )
       .run(receipt, key.id, key.kind, key.requestSha256)
     if (result.changes !== 1) fail('control_capture_conflict')
+  })
+
+export const captureControlFailure = (
+  db: SqliteDatabase,
+  key: ControlKey,
+  failureClass: 'http' | 'timeout' | 'envelope' | 'validation' | 'transport',
+  httpStatus: number | null,
+  owner: string
+): void =>
+  transaction(db, () => {
+    assertLease(db, owner)
+    if (
+      (failureClass === 'http' &&
+        (!Number.isSafeInteger(httpStatus) ||
+          httpStatus === null ||
+          httpStatus < 100 ||
+          httpStatus > 599)) ||
+      (failureClass !== 'http' && httpStatus !== null)
+    )
+      fail('control_failure_status')
+    const result = db
+      .prepare(
+        'UPDATE controls SET failure_class=?,http_status=? WHERE control_id=? AND kind=? AND request_sha256=? AND receipt IS NULL AND failure_class IS NULL'
+      )
+      .run(failureClass, httpStatus, key.id, key.kind, key.requestSha256)
+    if (result.changes !== 1) fail('control_failure_conflict')
   })

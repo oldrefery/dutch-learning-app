@@ -106,6 +106,16 @@ export const buildReport = (db: SqliteDatabase, bundle: DiagnosticBundle) => {
     cost: number
     tokens: number
   }
+  const controlFailures = db
+    .prepare(
+      'SELECT control_id,kind,failure_class,http_status FROM controls WHERE failure_class IS NOT NULL ORDER BY control_id'
+    )
+    .all() as {
+    control_id: string
+    kind: string
+    failure_class: string
+    http_status: number | null
+  }[]
   const body = {
     namespace: 'dictionary-cefr-diagnostic-report-v1',
     interpretation: 'unqualified_model_reference_agreement',
@@ -147,6 +157,12 @@ export const buildReport = (db: SqliteDatabase, bundle: DiagnosticBundle) => {
       billing_ref: meta.get('control_billing_ref') || null,
       cost_max_known:
         meta.get('cost_policy') === 'verified_maximum' ? true : false,
+      failures: controlFailures.map(row => ({
+        id: row.control_id,
+        kind: row.kind,
+        failure_class: row.failure_class,
+        http_status: row.http_status,
+      })),
       observed_microusd:
         meta.get('cost_policy') === 'verified_maximum' && controls.cost === 0
           ? 0

@@ -19,9 +19,15 @@ import {
   type TestHttp,
 } from './diagnostic-gemini.ts'
 import {
+  GeminiEnvelopeFailure,
+  GeminiHttpFailure,
+  GeminiTimeoutFailure,
+} from './diagnostic-gemini-http.ts'
+import {
   assertNotRejected,
   capture,
   captureControl,
+  captureControlFailure,
   claimLease,
   countAttempts,
   lastCapture,
@@ -35,6 +41,21 @@ import {
   type SqliteDatabase,
 } from './diagnostic-store.ts'
 import type { Captured } from './diagnostic-types.ts'
+
+const controlFailure = (error: unknown) => {
+  if (error instanceof GeminiHttpFailure)
+    return { kind: 'http' as const, status: error.status }
+  if (error instanceof GeminiTimeoutFailure)
+    return { kind: 'timeout' as const, status: null }
+  if (error instanceof GeminiEnvelopeFailure)
+    return { kind: 'envelope' as const, status: null }
+  if (
+    error instanceof Error &&
+    error.message.startsWith('Invalid Gemini preparation:')
+  )
+    return { kind: 'validation' as const, status: null }
+  return { kind: 'transport' as const, status: null }
+}
 
 export interface DiagnosticRunnerOptions {
   bundle: DiagnosticBundle
@@ -145,7 +166,14 @@ export const runGeminiDiagnostic = async (
       if (cached !== null) return validate(JSON.parse(cached) as unknown)
       onReserved?.('control', key.id)
       guard()
-      const result = validate(await dispatch())
+      let result: T
+      try {
+        result = validate(await dispatch())
+      } catch (error) {
+        const failure = controlFailure(error)
+        captureControlFailure(db, key, failure.kind, failure.status, owner)
+        throw error
+      }
       captureControl(db, key, JSON.stringify(result), owner)
       guard()
       return result

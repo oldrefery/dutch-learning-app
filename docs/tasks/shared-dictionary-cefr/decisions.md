@@ -570,3 +570,16 @@ cost as a verified maximum or claim a hard $2 total. Preserve the private
 journal, immutable run binding and stop-on-unknown-control behavior. A failed
 or incomplete run is not authority to start another. No support inquiry,
 production worker activation, publication or deployment is authorized.
+
+### October 3 — First live attempt consumed the one-run approval
+
+One authorized `--execute` was issued after a successful private `--check`.
+The preserved private journal contains one model metadata control reservation
+with no receipt; no token count, generation attempt or source input was sent.
+The control outcome and possible charge are unknown. A private unqualified
+report was written and the temporary credential file deleted. Do not retry
+this registry or create another run from the same approval. The cause is not
+proved by public connectivity checks or the unavailable AI Studio Usage page.
+Local fake-only diagnostic improvements remain within existing implementation
+authority; any new provider request requires a new explicitly scoped user
+authorization. The canceled support inquiry stays unsent.

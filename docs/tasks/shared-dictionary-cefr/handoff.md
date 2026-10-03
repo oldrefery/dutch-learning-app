@@ -1,5 +1,30 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 first live attempt stopped at metadata control.**
+GPT-6.1 Sol / High announced; picker attribution unverified. One authorized
+`--execute` ran after the private `--check`. The private journal shows one
+`model_metadata` control reserved with no receipt, zero token counts, zero
+generations and zero captures. Its outcome and charge are unknown; no frozen
+meaning input was transmitted. A private unqualified report was written and
+the temporary key file removed. The report, journal and consumption record
+are preserved together in owner-only `/private/tmp/d11-gemini-a9ouRo` outside the repository. The
+[sanitized attempt evidence](evidence/D11-gemini-first-live-attempt-20261003.md)
+records the digest and exact counts. No retry or replacement run has occurred;
+the one-run approval is consumed. Public-doc connectivity worked, while AI
+Studio Usage and Cloud Console's Gemini API details failed to load. The Cloud
+dashboard's two aggregate requests cannot be attributed to this attempt.
+The control failure class was not stored,
+so its cause remains unverified. Local repair now records safe failure classes
+and numeric HTTP status in future journals without raw response data. 104/104
+diagnostic tests and scoped type/lint/format/diff checks passed. It cannot
+recover this attempt's missing failure class. **Next GPT-6.1 Sol / High:**
+obtain fresh scope for one new `oldrefery` run of the same 24 frozen inputs,
+estimated $2, maximum one generation per meaning. Rebind the private key to
+the new implementation, run a no-HTTP `--check`, then dispatch only if newly
+authorized. Do not replay the first registry. D11 in_progress, D12
+pending, worker disabled and qualification false. Support inquiry remains
+canceled; no push, PR or deployment. Preserve `.playwright-cli/`.
+
 **2026-10-03 — D11 one-run estimated cost policy accepted.** The user
 authorized the pending estimated rather than guaranteed $2 ceiling and asked
 to continue. Scope: one `oldrefery` key, exactly the previously authorized

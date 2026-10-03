@@ -192,6 +192,10 @@ allowance. The report separates controls and generations and combines reserved
 requests, tokens and microUSD under `reserved_all`. Actual control cost stays null
 when only an upper bound is verified. Reports always remain unqualified and cannot
 activate the operational worker or establish independent CEFR accuracy.
+Failed controls retain only a sanitized failure class and, for HTTP failures,
+the numeric status. The response body, key and raw error are never stored;
+the receipt remains unknown and cannot be replayed. Earlier journals cannot
+retroactively reveal a failure class they did not record.
 
 Generation retries are limited to two attempts per meaning. HTTP 408/429/5xx,
 network failures and timeouts use persisted exponential backoff plus jitter; a

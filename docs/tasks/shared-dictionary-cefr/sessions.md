@@ -2139,3 +2139,29 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   registry, then inspect its durable journal/report. If interrupted, inspect
   state before any retry; no second run is authorized. Local pre-dispatch
   receipt follows, with no push or PR.
+
+## 2026-10-03 — D11 first live attempt stopped at metadata control
+
+- Started from `c679bc7` after private `--check` returned ready with zero
+  external calls. One `--execute` exited 1. Read-only private journal
+  inspection found one model metadata control reserved with no receipt, zero
+  token counts, zero generations and zero captures. The control outcome and
+  charge are unknown. No frozen meaning input was transmitted.
+- A private unqualified report was written; its SHA-256 and aggregate counts
+  are in [sanitized evidence](evidence/D11-gemini-first-live-attempt-20261003.md).
+  The private journal, consumption record and report remain together outside
+  the repo; the temporary credential and transfer script were deleted.
+  Keyless public Google-doc connectivity returned HTTP 200, while AI Studio
+  Usage and Cloud Console's Gemini API detail page failed to load. The Cloud
+  dashboard's two aggregate requests cannot be attributed to this attempt.
+  Neither resolves the control failure. No replay,
+  support inquiry, production worker activation, push, PR or deployment.
+  One-run approval consumed; next local fake-only error-classification work
+  before any new provider proposal. D11 in_progress, D12 pending,
+  qualification false.
+- Local post-attempt repair stores only sanitized control failure class and
+  numeric HTTP status while preserving unknown receipt/no-replay semantics.
+  A fake HTTP 403 metadata test verifies no response body is persisted.
+  Node diagnostic tests 104/104 PASS; scoped types, zero-warning lint, format
+  and diff check PASS. No provider call or alteration of the first private
+  journal/report. New implementation digest is in the attempt evidence.
