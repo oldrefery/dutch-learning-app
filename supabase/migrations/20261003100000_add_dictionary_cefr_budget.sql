@@ -307,13 +307,13 @@ CREATE FUNCTION public.finish_dictionary_cefr_attempt_v1(
 ) RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE
   a private.dictionary_cefr_attempt_usage%ROWTYPE; m private.dictionary_cefr_methods%ROWTYPE;
-  account JSONB; result JSONB; result_hash TEXT; active BOOLEAN;
+  account JSONB; result JSONB; result_hash TEXT; active BOOLEAN; policy_deadline TIMESTAMPTZ;
 BEGIN
   IF p_outcome IS NULL OR p_outcome NOT IN ('estimated','unknown','retry','failed') THEN RAISE EXCEPTION 'Invalid CEFR attempt outcome'; END IF;
   -- Accounting has the same lock order as dispatch and retains uncertain charges.
   account := public.account_dictionary_cefr_attempt_v1(p_reservation_id,p_lease_token,p_usage);
   IF account->>'status' IN ('missing','stale') THEN RETURN account; END IF;
-  SELECT c.enabled AND c.policy_id=b.policy_id AND b.valid_until>clock_timestamp() INTO active
+  SELECT c.enabled AND c.policy_id=b.policy_id AND b.valid_until>clock_timestamp(), b.valid_until INTO active, policy_deadline
     FROM private.dictionary_cefr_worker_control c JOIN private.dictionary_cefr_budget_policies b ON b.policy_id=
       (SELECT policy_id FROM private.dictionary_cefr_attempt_usage WHERE reservation_id=p_reservation_id) WHERE c.singleton;
   SELECT * INTO a FROM private.dictionary_cefr_attempt_usage WHERE reservation_id=p_reservation_id FOR UPDATE;
@@ -325,15 +325,19 @@ BEGIN
     IF a.completion_sha256 <> result_hash THEN RAISE EXCEPTION 'CEFR attempt completion changed'; END IF;
     RETURN a.completion;
   END IF;
-  IF NOT active THEN
-    UPDATE private.dictionary_cefr_jobs SET state='obsolete',outcome_reason='worker_disabled',updated_at=clock_timestamp()
-      WHERE job_id=a.job_id AND state='leased' AND lease_token=a.lease_token AND attempt=a.attempt AND lease_expires_at>clock_timestamp();
-    result := jsonb_build_object('status',CASE WHEN FOUND THEN 'obsolete' ELSE 'stale' END);
-  ELSE
+  BEGIN
+    IF NOT active THEN RAISE SQLSTATE 'PCE02'; END IF;
     result := public.settle_dictionary_cefr_job_v1(a.job_id,a.lease_token,a.attempt,
       (SELECT input_sha256 FROM private.dictionary_cefr_jobs WHERE job_id=a.job_id),m.qualification_sha256,
       p_outcome,p_level,p_confidence,p_retry_after_seconds);
-  END IF;
+    -- Head/cursor locks can outlive the approval after the initial active check.
+    -- Roll back publication and its journal together, while retaining accounting.
+    IF policy_deadline <= clock_timestamp() THEN RAISE SQLSTATE 'PCE02'; END IF;
+  EXCEPTION WHEN SQLSTATE 'PCE02' THEN
+    UPDATE private.dictionary_cefr_jobs SET state='obsolete',outcome_reason='worker_disabled',updated_at=clock_timestamp()
+      WHERE job_id=a.job_id AND state='leased' AND lease_token=a.lease_token AND attempt=a.attempt AND lease_expires_at>clock_timestamp();
+    result := jsonb_build_object('status',CASE WHEN FOUND THEN 'obsolete' ELSE 'stale' END);
+  END;
   UPDATE private.dictionary_cefr_attempt_usage SET completion_sha256=result_hash,completion=result WHERE reservation_id=a.reservation_id;
   RETURN result;
 END;

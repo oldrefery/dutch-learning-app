@@ -1657,3 +1657,22 @@ Post-hook inventory 184/184 exact; only preexisting `.playwright-cli/` untracked
 before this receipt. Next checkpoint remains Astra / High review; it has been
 announced to the user and is not performed yet. Local documentation receipt with
 ordinary hooks, no push, no pending runtime operation or restoration.
+
+## 2026-10-03 — D11 worker review and policy deadline repair
+
+- Continued from `9a29b06` under AUTH-20/AUTH-18. Announced required Astra / High;
+  picker attribution unverified, no subagent. Local technical review completed.
+- One P2 reproduced in two lock-barrier tests: expired policy still published.
+  Nested settlement rollback now removes assessment/head/journal, retains verified
+  accounting and persists an idempotent obsolete outcome.
+- [Review](evidence/D11-worker-review-20261003.md): 2 pre-fix failures, final 47 SQL
+  PASS (29 budget +18 queue); target contracts unchanged/check PASS; lint/format/
+  diff PASS. 184-path inventory retains 181 prior hashes; three paths repaired.
+  Unchanged Deno sources retain previous 72-test evidence without replay.
+- Disposable local SQL/generator resources only, harnesses finished/cleaned up.
+  Retained backend/devices, private reports and `.playwright-cli/` preserved.
+- Next GPT-6.1 Sol / High local real-calibration/sample proposal; identify real
+  reviewed fixture/reviewer/provider inputs and concrete costs before requesting
+  separate live approval. D11 remains in_progress; D12 not started, defaults OFF.
+  No paid calls, hosted migration, publication/deployment/activation or push/PR.
+- Necessary local repair/evidence commit uses normal hooks; receipt follows.

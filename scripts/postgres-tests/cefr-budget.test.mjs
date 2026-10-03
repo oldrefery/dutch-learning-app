@@ -8,6 +8,7 @@ import {
   holdTransaction,
   call,
   until,
+  json,
 } from './cefr-queue-fixtures.mjs'
 import {
   budgetFixture,
@@ -60,6 +61,76 @@ const ready = async options => {
   assert.equal((await dispatch(db, run.jobs[0])).allowed, true)
   return { ...policy, entry, run, job: run.jobs[0] }
 }
+
+for (const lock of ['head', 'cursor'])
+  test(`policy expiry while completion waits for ${lock} cannot publish`, async () => {
+    const { id, entry, job, run } = await ready({ validSeconds: 7 })
+    const receipt = usage()
+    const held = await holdTransaction(
+      db,
+      lock === 'head'
+        ? `SELECT 1 FROM public.dictionary_entry_heads WHERE entry_id='${entry.entry}' FOR UPDATE;`
+        : 'SELECT 1 FROM private.dictionary_delivery_cursor FOR UPDATE;'
+    )
+    let pending
+    try {
+      const name = `cefr-policy-expiry-${randomUUID()}`
+      pending = call(
+        db,
+        `SET application_name='${name}';
+        SELECT public.finish_dictionary_cefr_attempt_v1('${job.reservation_id}','${job.lease_token}',
+          'estimated','A2',0.9,NULL,${json(receipt)});`
+      )
+      await until(
+        async () =>
+          (await db.sql(
+            `SELECT count(*) FROM pg_stat_activity WHERE application_name='${name}' AND wait_event_type='Lock'`
+          )) === '1'
+      )
+      await db.sql(`SELECT pg_sleep(greatest(0,extract(epoch FROM valid_until-clock_timestamp()))+0.05)
+        FROM private.dictionary_cefr_budget_policies WHERE policy_id='${id}'`)
+      await held.finish()
+      assert.equal((await pending).status, 'obsolete')
+      assert.equal(
+        await db.sql(
+          `SELECT count(*) FROM public.dictionary_cefr_assessments WHERE entry_id='${entry.entry}'`
+        ),
+        '0'
+      )
+      assert.equal(
+        await db.sql(
+          `SELECT count(*) FROM public.dictionary_cefr_heads WHERE entry_id='${entry.entry}'`
+        ),
+        '0'
+      )
+      assert.equal(
+        await db.sql(
+          `SELECT count(*) FROM private.dictionary_content_changes WHERE entry_id='${entry.entry}' AND change_kind='cefr-head'`
+        ),
+        '0'
+      )
+      assert.equal((await ledger(db)).charged_tokens, 15)
+      assert.equal((await ledger(db)).charged_cost_microusd, 35)
+      assert.equal((await summarize(db, run.run_id)).obsolete, 1)
+      assert.equal(
+        (
+          await finish(db, job, {
+            outcome: 'estimated',
+            level: 'A2',
+            confidence: 0.9,
+            usage: receipt,
+          })
+        ).status,
+        'obsolete'
+      )
+    } finally {
+      if (!held.session.child.stdin.writableEnded) {
+        held.session.child.stdin.end('ROLLBACK;\n')
+        await held.session.completed.catch(() => {})
+      }
+      await pending?.catch(() => {})
+    }
+  })
 
 test('client roles cannot read ledgers, change controls or invoke accounting', async () => {
   const policy = await budgetFixture(db, { active: false })

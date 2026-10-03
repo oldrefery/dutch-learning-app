@@ -23,6 +23,7 @@ export async function budgetFixture(db, options = {}) {
     outputRate: 3,
     reasoningRate: 4,
     maxOutput: 64,
+    validSeconds: 86400,
     ...options,
   }
   await db.sql(`INSERT INTO private.dictionary_cefr_budget_policies(policy_id,method_id,profile_sha256,qualification_sha256,
@@ -30,7 +31,7 @@ export async function budgetFixture(db, options = {}) {
     daily_requests,daily_tokens,daily_cost_microusd,max_input_tokens,max_output_tokens,max_reasoning_tokens,
     input_microusd_per_token,output_microusd_per_token,reasoning_microusd_per_token)
     VALUES('${id}','${method.id}','${hash(canonicalizeJson(method.profile))}','${method.qualification}',
-      'TEST-ONLY-spending','TEST-ONLY-pricing','TEST-ONLY-bounds','${owner}',now(),now()+interval '1 day',
+      'TEST-ONLY-spending','TEST-ONLY-pricing','TEST-ONLY-bounds','${owner}',now(),now()+make_interval(secs=>${p.validSeconds}),
       ${p.requests},${p.tokens},${p.cost},100,${p.maxOutput},10,${p.inputRate},${p.outputRate},${p.reasoningRate});
     UPDATE private.dictionary_cefr_worker_control SET enabled=${options.active ?? true},policy_id='${id}' WHERE singleton;`)
   return { id, method, worker }

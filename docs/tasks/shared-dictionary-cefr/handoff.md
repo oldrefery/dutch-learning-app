@@ -1,5 +1,37 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 local worker review and expiry-race repair PASS.**
+Starting `9a29b06`, existing feature branch, AUTH-20/AUTH-18. Required Astra / High
+review model announced; current picker attribution remains unverified. No subagent.
+[Review](evidence/D11-worker-review-20261003.md),
+[184-path inventory](evidence/D11-worker-review-source-sha256.json).
+
+One P2 reproduced twice: policy expiry while waiting for head/cursor locks could
+publish after the approval deadline. Fixed transactional rollback of assessment,
+head and journal while retaining verified accounting. 47 SQL tests PASS (29 budget,
+18 queue); target contract reproducibility and scoped lint/format/diff PASS.
+181 prior source hashes retained; three SQL/test paths changed. Existing 72 Deno
+results retained on unchanged hashes, without an unchanged QA replay.
+
+**Next checkpoint: GPT-6.1 Sol / High — local real-calibration/sample proposal.**
+Identify actual reviewed meaning evidence/reviewer and provider configuration,
+then prepare an exact bounded sample and spending proposal for separate approval.
+No real reviewed fixture, provider reuse/pricing/bounds or sample budget is approved;
+do not fabricate labels or run paid calls. D11 remains in_progress; local mechanics
+and technical review pass, while full/live acceptance and model attribution stay
+explicitly limited. D12 has not started. Announce the model before the next step.
+
+Persistence: local repair/evidence commit with normal hooks under AUTH-18 follows;
+record actual commit/hook receipt after success. Only three implementation/test
+paths plus this review inventory/evidence, stage card, handoff and sessions changed.
+Preserve `.playwright-cli/` and ignored private review logs. No pending test process,
+external operation or restoration; disposable harnesses finished and cleaned up.
+No retained device/backend operation, hosted apply, provider call, runtime/schedule
+activation, deployment, publication or push/PR/merge.
+
+The following invocation checkpoint is historical; this review supersedes its
+pending technical-review action.
+
 **2026-10-03 — D11.6–D11.7 local invocation/accounting ready for review.**
 Starting `eb38631`, existing `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
 User continued and requested the required model announcement before each next
