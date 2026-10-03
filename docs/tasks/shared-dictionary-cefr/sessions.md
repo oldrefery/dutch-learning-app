@@ -1744,3 +1744,23 @@ Post-hook source inventory **192/192 exact**. Only preexisting `.playwright-cli/
 was untracked before this documentation receipt. No pending test/external operation.
 Next remains GPT-6.1 Sol / High local diagnostic collector/report; teacher question
 resolved. AUTH-18 ordinary local receipt hooks; no push or paid call.
+
+## 2026-10-03 — D11 local fake diagnostic collector/report
+
+- Continued from `268dcae`, AUTH-20/AUTH-18. GPT-6.1 Sol / High recommended and
+  announced; actual picker/model attribution unverified. No subagent.
+- [Evidence](evidence/D11-diagnostic-collector-20261003.md): exact artifact and
+  canonical input binding, frozen worklist/reference, fake-only transport, private
+  SQLite reservation/capture ledger, single active collector and same-day resume.
+  Separate unqualified agreement report; no operational qualifier change.
+- Node 24 focused 12/12 PASS; scoped TypeScript, strict ESLint, Prettier and diff
+  checks PASS. Fake CLI completed 24 items, 24 reservations, no real cost. Logs
+  and report retained under ignored private
+  `reports/shared-dictionary-cefr/d11-diagnostic-collector-20261003/`.
+- Previous 192 source hashes retained; 200-path inventory. No provider
+  account/key/network, device/backend, hosted migration, activation or publication.
+- Next GPT-6 Astra / High review of durable accounting and authority boundary;
+  then Sol / High real adapter preparation and exact source/account/spending request.
+  Teacher question resolved. D11 in_progress, D12 not started. Ordinary local
+  commit under AUTH-18; receipt follows. Only preexisting `.playwright-cli/`
+  untracked aside from new scoped files. No pending external operation.

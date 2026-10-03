@@ -94,3 +94,45 @@ abstained output yields `unknown`. Successful decisions remain model `estimated`
 never editorial `reviewed`. This token does not authorize publication or spending.
 The future worker must independently enforce source/lease/input/head binding,
 authorization and budgets. No runtime caller or database write is wired here.
+
+## Local diagnostic collector (fake transport only)
+
+The 24-item D11 diagnostic worklist and provisional reference are model-origin
+preparation, not an independently reviewed calibration fixture. The separate
+collector accepts only its built-in fake transport. Run it with Node 24 using five
+explicit, committed inputs and a **new private run directory**:
+
+```sh
+node scripts/cefr-calibration/diagnostic-fake.ts \
+  docs/tasks/shared-dictionary-cefr/evidence/D11-pilot-review-worklist.json \
+  docs/tasks/shared-dictionary-cefr/evidence/D11-pilot-provisional-reference.json \
+  docs/tasks/shared-dictionary-cefr/evidence/D11-pilot-profile.proposed.json \
+  docs/tasks/shared-dictionary-cefr/evidence/D11-pilot-prompt.txt \
+  docs/tasks/shared-dictionary-cefr/evidence/D11-pilot-proposal-summary.json \
+  reports/shared-dictionary-cefr/my-new-private-diagnostic-run
+```
+
+The command has no network or credential loader. Fake token counts and A1/abstain
+answers are deterministic mechanics data. It creates a private SQLite journal and a
+new `diagnostic-report.json`; an existing report is never overwritten. The journal
+binds the worklist, provisional reference, profile, prompt and proposal digests. An
+attempt reserves its full request/token/cost maximum in a durable transaction before
+generation. A crash or unknown usage keeps that reservation; retries consume another
+attempt. An active collector holds a short database lease, and concurrent collectors
+cannot reserve against the same run. Resume requires identical inputs and the same
+UTC day. The reference never enters a provider request.
+
+The report records simulated reserved and observed usage, retries, timeouts, output
+coverage, split/slice counts, confidence-bin counts and agreement with provisional
+bands. It displays unknown-reference and ambiguity probes separately. Its
+`qualified` and `calibration_eligible` fields are always false. Agreement is not
+accuracy. The existing reviewed-fixture report and operational qualification path
+are unchanged. Live provider token counting, billing, source transmission,
+authorization, and a real transport adapter require a separate implementation and
+exact approval; this command cannot make a paid call.
+
+The executable checks use the same local Node runtime:
+
+```sh
+node --test scripts/cefr-calibration/diagnostic.test.ts
+```
