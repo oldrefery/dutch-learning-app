@@ -407,3 +407,19 @@ verification and necessary commits remain in force. This adds no live spending,
 source, deployment, scheduler or Git publication approval. Local D11.6–D11.7
 mechanics are implemented under the accepted engineering contract; next Astra /
 High review. Real pricing/bounds and DEC-06 remain open; control defaults OFF.
+
+### October 3 — Autonomous D11 meaning review without a teacher
+
+User explicitly continued and stated that no teacher is available and the assistant
+should do the work. This resolves the pending reviewer clarification and overrides
+the earlier teacher prerequisite for the local diagnostic pilot. The assistant may
+review meanings and produce clearly labeled provisional model bands using public
+lexical sources. This does not create an independent gold set, calibrated accuracy,
+provider transmission permission, spending or publication authority. Do not ask
+for a teacher again to continue this local path. Reference unknowns stay unknown.
+
+Use a separate diagnostic agreement report; the reviewed-fixture qualifier remains
+unchanged. AUTH-20/AUTH-18 local implementation/fake testing/necessary local commits
+continue. Prepare the collector before requesting any exact live authorization.
+Next GPT-6.1 Sol / High, announced before the checkpoint. Actual model attribution
+for this review remains unverified; no external reviewer or subagent was used.

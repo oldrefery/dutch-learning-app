@@ -1,17 +1,21 @@
-# D11 real calibration and bounded sample proposal
+# D11 autonomous diagnostic sample proposal
 
 2026-10-03, starting `abc2ea0`, existing `feature/shared-dictionary-schema`,
 AUTH-20/AUTH-18. Required preparation model GPT-6.1 Sol / High announced.
 Current picker control is unavailable; no automatic model change is claimed.
-This is a concrete local proposal, not a reviewed gold set or spending approval.
+Revised after the autonomous proposal review from `d51aac0`. The user has no
+teacher and explicitly requested that the assistant perform the review. This is
+a diagnostic proposal, not independent gold evidence or spending approval.
 
 ## Prepared review package
 
 - [24 exact meaning candidates](D11-pilot-review-worklist.json), with full validated
   dictionary content, canonical meaning input and SHA-256, source locator, proposed
-  family/split/slices and empty reviewer/expectation fields.
-- [Human review worksheet](D11-pilot-review-worksheet.md), listing all 24 meanings
-  and the review/adjudication procedure.
+  family/split/slices and explicit assistant review provenance. Gold expectation
+  fields remain null; three irregular-verb metadata values are corrected.
+- [Autonomous review worksheet](D11-pilot-review-worksheet.md) and
+  [frozen provisional reference](D11-pilot-provisional-reference.json): 19 model
+  level bands and five unknown cases, with reasons and lexical source links.
 - [Proposed prompt](D11-pilot-prompt.txt) and
   [immutable-profile draft](D11-pilot-profile.proposed.json); prompt digest binds
   the revision, and resolved model version is explicitly unknown until observed.
@@ -23,23 +27,31 @@ bundled project snapshot. Its license limits distribution to the app/repository;
 permission to send those four exact inputs to the provider is still required.
 Its content review is not an independent CEFR gold label. No private card export,
 account identifier, learning history or media is read/copied. The other 20 inputs
-are original unreviewed diagnostic drafts, with no assigned CEFR level.
+are original diagnostic drafts, now checked by the assistant. Their separate
+provisional bands are model estimates, not source-backed CEFR labels.
 
 The pooled list covers all eleven required slices: sense pairs, inflections,
 reflexive/separable verbs, compounds, idioms, ordinary/specialized uses, missing
 reviewed evidence, ambiguity and conflicting examples. Proposed splits contain
 12 calibration and 12 held-out items. Bank senses, arm homographs, kind inflections
-and opstaan senses stay in the same respective split. Family relations and meaning
-accuracy require editorial review. Some slices are absent from one pilot split;
+and opstaan senses stay in the same respective split. Family/sense separation has been checked by the assistant; this does not supply
+independent lexical or CEFR validation. Some slices are absent from one pilot split;
 this small probe is deliberately insufficient for operational qualification.
 
-A Dutch-as-a-second-language reviewer is not yet identified. A clarification has
-been sent to the user about an existing gold set or available teacher/editor;
-its answer remains pending. Before provider execution, record reviewer/evidence,
-acceptable level sets or abstention, ambiguity, adjudication and exact use
-permissions. Freeze reviewed labels before predictions and keep them out of the
-prompt. If new content/labels arrive, version and rehash the worklist and reviewed
-fixture. Do not mark an expected abstention merely to fill an unreviewed label.
+The user resolved the reviewer question: no teacher is available; perform the
+review autonomously. A teacher is no longer a prerequisite for this diagnostic
+pilot. The assistant checked all inputs and family assignments, corrected
+`opstaan` and `lopen` irregular-verb metadata, and prepared 19 tentative CEFR
+bands. Five cases remain unknown, including three specialized meanings and the
+two intentional ambiguity/conflict probes. No external reviewer is invented.
+
+Freeze the worklist and provisional reference by digest before predictions; do
+not include reference bands/rationales in provider prompts. Later changes require
+a new revision and hashes. Dictionary sources support meaning/morphology only;
+the bands are assistant inferences. Agreement with them measures consistency,
+not accuracy or calibrated confidence. The earlier human-review prerequisite is
+superseded for this diagnostic path; operational qualification remains separate.
+See the [review findings](D11-autonomous-proposal-review-20261003.md).
 
 ## Proposed provider and generation bounds
 
@@ -131,42 +143,52 @@ supply its constraints, not a permission to call it unqualified.
 Keep results in a new ignored private run directory, with restrictive access,
 new-file/no-overwrite writes, request/input/profile/prompt/response digests and
 per-attempt billing. No SQL assessment publication is part of this allowance.
-Collect validated responses into the existing offline report contract, using an
-explicitly unqualified policy (`null`) for the pilot. No application flag, schedule
+Use a separate diagnostic report contract that accepts model-origin references.
+The existing calibration report requires reviewed expectations; passing `null`
+policy does not turn assistant estimates into valid gold evidence. Never fabricate
+review metadata or weaken qualification to reuse that report. No application flag, schedule
 or deployed endpoint is enabled. Unknown answers and missing items remain visible.
 
-Report observed cost, latency/timeout/retry counts, coverage, exact/within-one
-agreement, severe mistakes, expected abstention and confidence bins, with every
-denominator. Compare against frozen reviewed meanings. A positive small pilot
-supports designing a larger reviewed fixture; it cannot qualify all slices or
-all A1–C2 levels. Operational policy sizes/thresholds, a separate provider reuse
-approval and exact fixture/report/profile/policy bindings still need review.
-No bulk enrichment or D11 closure follows automatically from a passing pilot.
+Report observed cost, latency/timeout/retry counts, output validity, coverage,
+agreement with provisional bands and distance from those bands, with every
+denominator. Show unknown-reference cases separately; they must not count as
+incorrect predictions or automatically expected abstentions. For the two
+intentional ambiguity/conflict probes, show observed abstention separately.
+Confidence bins may summarize outputs, but must not be called calibrated accuracy.
+No operational quality pass/fail may be derived from this report.
 
-## Missing decisions and next checkpoint
+## Review outcome and next checkpoint
 
-Real reviewer or existing reviewed meaning evidence, permission for provider reuse,
-and scoped sample spending approval remain absent. The concrete files above are
-ready for review; approval of the budget alone does not create reviewed labels.
-No request to approve immediate paid execution is made while the collector and
-reviewed fixture are missing.
+Local autonomous preparation is complete. **Next required model: GPT-6.1 Sol /
+High** for the diagnostic collector and report implementation with fake transport.
+A teacher is not required to proceed. Implement immutable input/reference/profile
+binding, no-overwrite private capture, durable reservations before dispatch and
+conservative accounting for uncertain outcomes. Verify rejection of reference
+leakage, changed inputs, resume/retry overspend and accidental qualification.
 
-**Next required model: GPT-6 Astra / High** to review this proposal's family/sense
-coverage, provider bounds/cost assumptions, circular qualification boundary and
-human review plan. Then Sol / High can prepare the approved-input collector with
-fake transport and durable reservations locally, before a final exact live
-permission request. Resolve the pending reviewer clarification when it arrives.
-D11 remains in_progress; D12 has not started.
+Only then prepare the concrete live request: exact inputs and account, request
+limits, current pricing, control-request billing, source transmission permission
+and $2 proposed allowance. The existing four bundled inputs have an app/repository
+license; do not infer external transmission permission. No immediate paid request
+is made while the collector is not yet executable. The user need not supply a
+teacher, labels or a gold set to continue local implementation.
+
+D11 remains in_progress; D12 has not started. This small model-reference diagnostic
+cannot satisfy the independent-quality gate or activate bulk enrichment. Future
+qualification needs a separately reviewed evidence/policy route; no such approval
+is implied by the autonomous-review instruction.
 
 ## Verification and persistence
 
 Prepared/validated locally with Node 24.20.0 and the existing domain parser and
 canonicalizer. All 24 inputs parse, hashes recompute, inputs are unique, and no
-family/exact-lemma crosses the proposed split. All reviewer and expectation
-fields remain pending/null. Proposed profile passes the existing profile validator;
+family/exact-lemma crosses the proposed split. Assistant review provenance is explicit; gold expectation fields remain null. Proposed profile passes the existing profile validator;
 the worklist has a separate namespace and is rejected by the gold-fixture validator.
 All eleven pooled slices are present; 12/12 split and budget arithmetic verified.
-The validation does not establish linguistic correctness or quality.
+The validation establishes structural integrity, not independent linguistic
+correctness or CEFR accuracy. Current review validation and persistence are
+recorded in the linked autonomous review; the following preparation receipt is
+historical.
 
 Private logs/helper: `reports/shared-dictionary-cefr/d11-calibration-proposal-20261003/`.
 An initial generation helper syntax error was corrected before artifacts were

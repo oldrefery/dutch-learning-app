@@ -1714,3 +1714,26 @@ suite/test. Post-hook inventory **190/190 exact**. Only preexisting `.playwright
 untracked before the documentation receipt. Next remains Astra / High proposal
 review, with reviewer/source/spending decisions open. Ordinary local receipt hooks;
 no provider call, external write, activation, push or pending restoration.
+
+## 2026-10-03 — D11 autonomous proposal review
+
+- Continued from `d51aac0`, AUTH-20/AUTH-18. User has no teacher and requested
+  autonomous work; pending clarification resolved, no further teacher gate.
+- Astra / High review recommendation announced; actual picker/model unverified.
+  No subagent. Public lexical sources and pricing read; no provider account/key.
+- [Review](evidence/D11-autonomous-proposal-review-20261003.md): corrected irregular
+  metadata in two opstaan senses and lopen; 21 other canonical hashes unchanged.
+  Prompt enum clarified and profile rebound. Completed all 24 input reviews and
+  separate model reference with 19 provisional bands/five unknowns, no gold labels.
+- Diagnostic comparison must use a new agreement report, not the existing gold
+  report with forged review metadata. Source-backed meaning checks do not provide
+  independent CEFR accuracy. No operational qualification changed.
+- Local audit PASS: inputs, bindings, 12/12 splits, 11 pooled slices, no family/lemma
+  overlap, budget arithmetic/profile, rejection as gold. All 184 implementation
+  hashes retained. Initial worksheet generator omitted the Dutch column; corrected
+  before final checks. Existing harmless Node module-type warning retained in log.
+- Next GPT-6.1 Sol / High local collector/report with fake transport and durable
+  reservations; no teacher required. Live source/account/spending request follows
+  only when implementation is concrete. D11 in_progress, no D12 or activation.
+- Necessary local commit uses ordinary hooks; receipt follows. No pending external
+  write/restoration. Preexisting `.playwright-cli/` and private reports preserved.

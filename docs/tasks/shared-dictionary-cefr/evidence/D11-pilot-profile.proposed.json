@@ -1,8 +1,8 @@
 {
   "namespace": "dictionary-cefr-method-v1",
   "input_schema_version": 1,
-  "method_revision": "d11-gemini35-pilot-v1",
-  "prompt_revision": "d11-pilot-v1:a777e46a0ae0e0653749c2f67bb4128e46def6ea863b936b9ce88a55530a93e9",
+  "method_revision": "d11-gemini35-pilot-v2",
+  "prompt_revision": "d11-pilot-v2:1f62eef66b3249cbbc368575a2069125fc71686b012283224c2dffc35d13d652",
   "provider": "google-gemini-developer-api",
   "requested_model": "gemini-3.5-flash",
   "resolved_model_version": null,

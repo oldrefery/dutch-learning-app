@@ -17,9 +17,9 @@
     "separable-verbs",
     "specialized"
   ],
-  "profile_sha256": "30fdffc9bde5c55917d4fb946da9ed13a8bbe40ce3a6cffea07e4876c492b7b8",
-  "prompt_sha256": "a777e46a0ae0e0653749c2f67bb4128e46def6ea863b936b9ce88a55530a93e9",
-  "worklist_file_sha256": "d5bd73e0f1b4950acca1216c4f38f12723c2d1d10f8f763b33b26f84d89b6b5a",
+  "profile_sha256": "7cc1eb0f6de569c5444d5973fe26bbeb2147d1dad49639486db945ec133ea1cd",
+  "prompt_sha256": "1f62eef66b3249cbbc368575a2069125fc71686b012283224c2dffc35d13d652",
+  "worklist_file_sha256": "9f9871355c205684b0ad2583ea8ed813fe80cd334e00dc17558fc99ad4da9310",
   "bundled_source_sha256": "80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca",
   "max_attempts_per_item": 2,
   "max_generation_requests": 48,
@@ -36,5 +36,8 @@
   "total_reserved_tokens": 292608,
   "total_reserved_microusd": 1913472,
   "proposed_spending_ceiling_microusd": 2000000,
-  "approved": false
+  "approved": false,
+  "mode": "autonomous-diagnostic",
+  "independent_gold": false,
+  "operational_qualification": false
 }

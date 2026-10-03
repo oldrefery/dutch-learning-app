@@ -1,5 +1,42 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 autonomous proposal review and reference complete locally.**
+Starting `d51aac0`, existing `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
+User has no teacher and explicitly requested autonomous work. The teacher question
+is resolved; do not ask for one again. Astra / High review recommendation announced;
+actual model picker attribution unverified. No subagent or external reviewer.
+[Review](evidence/D11-autonomous-proposal-review-20261003.md),
+[completed worksheet](evidence/D11-pilot-review-worksheet.md),
+[model-origin reference](evidence/D11-pilot-provisional-reference.json),
+[192-path inventory](evidence/D11-autonomous-review-source-sha256.json).
+
+All 24 meaning inputs checked. Corrected irregular-verb metadata for both opstaan
+senses and lopen, clarified the prompt enum and rebound input/prompt/profile hashes.
+19 provisional bands, five unknowns; lexical sources support meanings/morphology,
+not independent CEFR labels. No predictions collected. Local structural audit PASS:
+24 canonical inputs, 12/12 splits, all 11 pooled slices, no family/lemma leakage,
+reference bindings, profile and budget arithmetic; neither worklist nor model
+reference is accepted as a gold fixture. All prior 184 implementation hashes exact.
+
+**Next checkpoint: GPT-6.1 Sol / High — implement local diagnostic collector/report.**
+Announce the model before starting. Use fake transport, durable per-attempt spending
+reservations, immutable worklist/reference/profile binding, private no-overwrite
+capture and restart/retry/unknown-outcome checks. Keep reference judgments out of
+prompts. Emit a separate unqualified agreement report; do not fabricate reviewed
+fixture metadata or weaken operational qualification. Teacher availability is not
+a prerequisite. Source/account/spending authorization is needed only for a later
+concrete live request after local implementation and checks.
+
+D11 remains in_progress; D12 not started. Independent quality/live acceptance remain
+unproven. Proposed maximum 48 generations/$1.913472 within $2, not spending approval.
+No provider/account/key, device/backend, hosted migration, paid call, activation,
+publication/deployment or push/PR/merge. Default controls remain OFF. Private reports
+and preexisting `.playwright-cli/` preserved. Local commit uses ordinary hooks;
+receipt follows. No pending external operation or restoration.
+
+The following preparation is historical; its pending teacher clarification and
+human-review/report instructions are superseded by the autonomous review above.
+
 **2026-10-03 — D11 calibration/sample proposal prepared locally.**
 Starting `abc2ea0`, existing feature branch, AUTH-20/AUTH-18. Sol / High preparation
 model announced; no automatic picker change claimed. No subagent.
