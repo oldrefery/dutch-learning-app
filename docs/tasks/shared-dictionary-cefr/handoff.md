@@ -1,5 +1,22 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 second one-run approval validated, dispatch pending.**
+User authorized one new personal `oldrefery@gmail.com` Gemini run of the
+same 24 frozen meanings, at most one generation per meaning, with an
+estimated $2 figure that is not a hard combined bound. AI Studio confirmed
+the account, paid Tier 1 project and matching key identifier. A new
+owner-only registry and key binding were prepared outside the repository;
+the first run remains preserved and consumed. Node 24 `--check` returned
+`ready: true` and `external_calls: 0`; the new run directory and
+consumption record do not yet exist. The [preflight evidence](evidence/D11-gemini-second-live-preflight-20261003.md)
+records the separate private root, immutable run ID, implementation and
+execution digests. **Next GPT-6.1 Sol / High:** issue exactly one
+`--execute` using that registry, then inspect its durable journal/report
+before any other provider action. No retries or replacement run under this
+approval. D11 in_progress, D12 pending, worker disabled and qualification
+false. Support inquiry canceled; no push, PR or deployment. Preserve
+`.playwright-cli/`.
+
 **2026-10-03 — D11 first live attempt stopped at metadata control.**
 GPT-6.1 Sol / High announced; picker attribution unverified. One authorized
 `--execute` ran after the private `--check`. The private journal shows one

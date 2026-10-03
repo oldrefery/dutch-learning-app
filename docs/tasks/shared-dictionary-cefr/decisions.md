@@ -583,3 +583,14 @@ proved by public connectivity checks or the unavailable AI Studio Usage page.
 Local fake-only diagnostic improvements remain within existing implementation
 authority; any new provider request requires a new explicitly scoped user
 authorization. The canceled support inquiry stays unsent.
+
+### October 3 — One new personal Gemini run authorized
+
+The user separately authorized one new run with the same 24 frozen
+meanings through the personal `oldrefery@gmail.com` key, at most one
+generation per meaning, and an estimated $2 API-use figure without a
+guaranteed hard bound. This scope does not revive the consumed first
+registry. It permits one new immutable registry/run binding and one
+`--execute`; a partial or uncertain outcome consumes the new approval.
+The support inquiry, worker activation, publication and deployment
+remain excluded.

@@ -2170,3 +2170,19 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   skip. Only preexisting `.playwright-cli/` remains untracked. Next action:
   obtain fresh one-run authority before any replacement dispatch; the first
   registry and its private unqualified report remain preserved.
+
+## 2026-10-03 — D11 second live run ready for dispatch
+
+- The user gave a new one-run authorization for the same 24 frozen
+  meanings, personal `oldrefery@gmail.com` key, one generation each and
+  estimated $2 without a hard total bound. Signed-in AI Studio identity,
+  paid Tier 1 project and selected key suffix were checked.
+- A new owner-only private registry, key and run binding were made apart
+  from the preserved first run. Node 24 `--check` returned ready with
+  zero external calls; no new run directory or consumption record exists.
+  [Preflight evidence](evidence/D11-gemini-second-live-preflight-20261003.md)
+  records the root/digests and exact next command scope.
+- Next: exactly one provider `--execute`, then inspect private durable
+  state before any further action. D11 in_progress, D12 pending,
+  qualification false, worker disabled; no support message, push, PR or
+  deployment.
