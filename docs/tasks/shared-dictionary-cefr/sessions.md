@@ -2254,3 +2254,20 @@ false`; private key mode was 0600. Both private temporary key and draft copies
 - Next: audit remaining live response assumptions before a distinct full
   registry. D11 in_progress, D12 pending, worker disabled, qualification false.
   No support message, push, PR or deployment.
+
+## 2026-10-03 — D11 next full pilot prepared without network
+
+- Timing hardening commit `edb2627` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing skip.
+  The previous private draft/registry was invalidated and removed before any
+  provider dispatch; its key remained in an owner-only temporary file.
+- Rebound a fresh immutable run ID, draft and authorization to implementation
+  digest `6dbfb1b72ae6450b6e211eb684f5a5da70968b82c5991db74f2e15b55919c506`.
+  The personal key hash matched the earlier verified binding. The private
+  `--check` returned ready and zero external calls. Neither the new run
+  directory nor its consumption record exists. Exact digests and scope are
+  in [preflight](evidence/D11-gemini-third-live-preflight-20261003.md).
+- Next: one `--execute` for this new registry, then inspect its durable
+  journal/report and delete the temporary key. It consumes attempt 2 of 5;
+  four remain before dispatch, with the combined $10 figure approximate.
+  No support message, worker activation, push, PR or deployment.

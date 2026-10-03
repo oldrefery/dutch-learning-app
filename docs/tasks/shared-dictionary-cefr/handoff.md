@@ -1,5 +1,22 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 next full pilot preflight ready, dispatch pending.** After
+the metadata-only probe consumed attempt 1 of 5, a separate personal
+`oldrefery` registry for the same 24 frozen meanings was prepared at
+`/private/tmp/d11-gemini-third-1xWFRl`. It binds implementation digest
+`6dbfb1b72ae6450b6e211eb684f5a5da70968b82c5991db74f2e15b55919c506`
+and the existing personal key; a prior draft for the old timing revision was
+discarded without dispatch. Node 24 `--check` returned `ready: true` with zero
+external calls. This new run directory and consumption record do not exist.
+[Full-run preflight](evidence/D11-gemini-third-live-preflight-20261003.md) has
+the immutable ID/digests and exact dispatch scope. **Next GPT-6.1 Sol / High:**
+invoke this registry's `--execute` once, then inspect durable journal/report
+before any other provider action; delete the temporary key. It will count as
+attempt 2 of 5 even if partial or uncertain. Four remain before dispatch;
+combined $10 remains approximate. D11 in_progress, D12 pending, qualification
+false, worker disabled; support inquiry canceled. No push, PR or deployment.
+Preserve `.playwright-cli/`.
+
 **2026-10-03 — D11 metadata cause confirmed and repaired locally.** Exactly
 one new personal-key metadata `GET` returned HTTP 200. Its allowlisted summary
 showed the expected model name, thinking flag, generation/count methods and
