@@ -33,8 +33,11 @@ D11 remains in_progress, D12 not started. Local preparation complete, real revie
 quality/source/budget and live acceptance remain open. Default flags/control stay
 OFF. No device/backend/provider/migration operation, activation, publication,
 deployment or push/PR/merge. Reports and `.playwright-cli/` preserved. Persistence:
-necessary local proposal/checkpoint commit with normal hooks follows under AUTH-18;
-record its exact receipt after success. No pending test process or restoration.
+proposal/checkpoint commit `2731caf` passed normal hooks: mobile 156 suites /1796
+tests /22 snapshots; web 86 suites /780 tests, one existing skipped suite/test.
+Post-hook inventory 190/190 exact. Local documentation receipt with ordinary hooks
+under AUTH-18 follows. Only preexisting `.playwright-cli/` was untracked before the
+receipt; no pending test process or restoration.
 
 The following worker review is historical; this preparation supersedes its next
 proposal action without altering its repair evidence.

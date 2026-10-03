@@ -1707,3 +1707,10 @@ with real evidence and separate live approvals still required.
 - Local proposal/checkpoint commit uses ordinary hooks; receipt follows. No
   device/backend/migration/activation, paid call, publication/deployment/push/PR.
   Preserve reports and `.playwright-cli/`; no pending restoration/external write.
+
+Proposal/checkpoint commit **`2731caf`** passed normal hooks: mobile 156 suites /
+1796 tests /22 snapshots; web 86 suites /780 tests, one preexisting skipped
+suite/test. Post-hook inventory **190/190 exact**. Only preexisting `.playwright-cli/`
+untracked before the documentation receipt. Next remains Astra / High proposal
+review, with reviewer/source/spending decisions open. Ordinary local receipt hooks;
+no provider call, external write, activation, push or pending restoration.
