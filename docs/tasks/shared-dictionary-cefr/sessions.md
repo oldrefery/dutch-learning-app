@@ -2207,3 +2207,19 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   Evidence commit `5b60654` passed ordinary hooks: mobile 156 suites /
   1,796 tests / 22 snapshots and web 86 suites / 780 tests, one
   existing skip. Only preexisting `.playwright-cli/` remains untracked.
+
+## 2026-10-03 — D11 metadata-only probe preflight
+
+- New user grant: no more than five further personal `oldrefery` provider
+  attempts, approximately $10 across them, without a guaranteed hard cap.
+  Zero of five has been dispatched at this checkpoint.
+- Official model resource documentation and read-only AI Studio/Cloud logs
+  review did not reveal the exact rejected field. Prepared an owner-only
+  one-shot metadata `GET` probe with allowlisted summary only, no meaning
+  input, no generation and no retry. The personal project/key binding was
+  reconfirmed privately; self-test and `--check` passed with zero external
+  calls. See [preflight](evidence/D11-gemini-metadata-probe-preflight-20261003.md).
+- Next: execute this probe exactly once, inspect durable private state,
+  remove the temporary key and record remaining attempts. D11 in_progress,
+  D12 pending, worker disabled, qualification false. No support message,
+  push, PR or deployment.

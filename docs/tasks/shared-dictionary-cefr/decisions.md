@@ -605,3 +605,16 @@ and do not replay or replace this run under its consumed one-off
 permission. Investigating the exact metadata shape through one
 provider probe requires a new, separately scoped approval. The
 canceled support inquiry remains unsent.
+
+### October 3 — Up to five further personal Gemini attempts
+
+The user authorized at most five additional attempts under the personal
+`oldrefery@gmail.com` Gemini key and an approximate $10 total for all five.
+This is an estimate, not a guaranteed hard spending limit. Prior two one-run
+grants remain consumed and their registries must not be replayed. The first
+new attempt is limited to a metadata-only model `GET`, with no meaning input
+and no generation. Count it when `--execute` is invoked, even if the outcome
+is uncertain; inspect the durable consumed/result files before any subsequent
+operation. Remaining attempts before this dispatch: five. The canceled
+support inquiry stays unsent. No production activation, publication, billing
+changes or deployment is authorized by this grant.

@@ -1,5 +1,21 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 metadata probe ready, dispatch pending.** The user
+authorized at most five further personal `oldrefery` Gemini attempts, with an
+approximate $10 combined figure rather than a guaranteed hard cap. No attempt
+under this new grant has been dispatched. The first planned attempt is a
+metadata-only `GET` for `models/gemini-3.5-flash`; it carries no frozen meaning
+input and makes no generation request. Owner-only
+`/private/tmp/d11-gemini-metadata-ODNLhN` contains the one-shot probe and a
+temporary key whose SHA-256 matches the previously verified personal binding.
+The probe self-test and no-network `--check` passed; neither `consumed.json` nor
+`result.json` exists. [Preflight evidence](evidence/D11-gemini-metadata-probe-preflight-20261003.md)
+records the safe script digest and exact scope. **Next GPT-6.1 Sol / High:**
+invoke the probe `--execute` once, inspect its durable result before another
+provider action, remove the temporary key, and update the remaining-attempt
+count. D11 in_progress, D12 pending, qualification false, worker disabled;
+support inquiry canceled. No push, PR or deployment. Preserve `.playwright-cli/`.
+
 **2026-10-03 — D11 second live attempt stopped at metadata validation.**
 One authorized `--execute` followed the successful private `--check`.
 The distinct second journal records one model metadata control with no
