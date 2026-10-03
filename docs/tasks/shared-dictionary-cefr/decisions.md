@@ -594,3 +594,14 @@ registry. It permits one new immutable registry/run binding and one
 `--execute`; a partial or uncertain outcome consumes the new approval.
 The support inquiry, worker activation, publication and deployment
 remain excluded.
+
+### October 3 — Second live attempt consumed its separate approval
+
+The second `--execute` stopped after one model metadata control
+reservation and local `validation` failure. No frozen meaning input,
+token-count control or generation was sent. Preserve the second private
+journal/report/consumption record, treat the control charge as unknown,
+and do not replay or replace this run under its consumed one-off
+permission. Investigating the exact metadata shape through one
+provider probe requires a new, separately scoped approval. The
+canceled support inquiry remains unsent.

@@ -2186,3 +2186,21 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   state before any further action. D11 in_progress, D12 pending,
   qualification false, worker disabled; no support message, push, PR or
   deployment.
+
+## 2026-10-03 — D11 second live attempt stopped at metadata validation
+
+- Starting from pre-dispatch checkpoint `ee16806`, exactly one
+  `--execute` exited with the sanitized CLI error. Read-only private
+  inspection found one model metadata reservation with no receipt and
+  `validation` failure class, zero token controls, zero generations and
+  zero captures. No frozen meaning input was transmitted.
+- A private unqualified report was written in the second owner-only
+  root; the temporary key and local transfer script were deleted.
+  [Sanitized evidence](evidence/D11-gemini-second-live-attempt-20261003.md)
+  records both report hashes and the parser-path inference. No replay,
+  support message, worker activation, push, PR or deployment.
+- The second one-run approval is consumed. Exact rejected metadata
+  field and possible control charge remain unknown. Next: prepare a
+  narrow metadata-only probe proposal; any provider call requires
+  fresh user authority. D11 in_progress, D12 pending, qualification
+  false.

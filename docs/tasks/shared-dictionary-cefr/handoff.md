@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 second live attempt stopped at metadata validation.**
+One authorized `--execute` followed the successful private `--check`.
+The distinct second journal records one model metadata control with no
+receipt and `failure_class: validation`; zero token counts, generations
+and captures. No frozen meaning input was transmitted. The private
+unqualified report, journal and consumption record remain together in
+owner-only `/private/tmp/d11-gemini-second-CyodKn`, and the temporary key was removed. The
+[sanitized second-attempt evidence](evidence/D11-gemini-second-live-attempt-20261003.md)
+records the exact digests/counts and why the code path suggests local
+metadata validation after an accepted JSON envelope. The exact rejected
+field is unverified. The second one-run approval is consumed: no replay
+or replacement provider call. **Next GPT-6.1 Sol / High:** propose a
+separate metadata-only diagnostic probe with sanitized field summary and
+no meaning inputs, if further provider diagnosis is wanted. A new
+provider call requires new scoped authorization. D11 in_progress, D12
+pending, qualification false, worker disabled. Support inquiry remains
+canceled; no push, PR or deployment. Preserve `.playwright-cli/`.
+
 **2026-10-03 — D11 second one-run approval validated, dispatch pending.**
 User authorized one new personal `oldrefery@gmail.com` Gemini run of the
 same 24 frozen meanings, at most one generation per meaning, with an
