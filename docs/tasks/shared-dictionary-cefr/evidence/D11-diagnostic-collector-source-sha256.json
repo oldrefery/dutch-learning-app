@@ -198,5 +198,5 @@
   "scripts/cefr-calibration/diagnostic.ts": "3345a2f37924d2f9a633b416f44c982486faf2933899b10986b096662cf75049",
   "scripts/cefr-calibration/diagnostic.test.ts": "255c63aca03f93da19d536f5f0ebc8a4a6b448a3a50aa71bfa8dc06031ee2b25",
   "scripts/cefr-calibration/diagnostic-report.ts": "6c6777e3372015bf028feeabe3532e301d62b3ad16cbb8afdb56680ddc3bbc0f",
-  "docs/tasks/shared-dictionary-cefr/evidence/D11-diagnostic-collector-20261003.md": "cbc5f5b234c9e3ee827a366a83a6b16fb98f9aab92ebfbcb0a89103ab417d8ac"
+  "docs/tasks/shared-dictionary-cefr/evidence/D11-diagnostic-collector-20261003.md": "2c68dda54d8f1296f3ec4a98c54c607d71ec7f1bc98b6ca094df1ed2167963c2"
 }

@@ -25,8 +25,10 @@ Announce the model first. Check durable reservation/lease/restart invariants, so
 and reference leakage, qualification isolation and report denominator semantics.
 Then Sol / High may prepare a real adapter and exact source/account/spending request
 locally. A teacher is not required. No paid/provider call is authorized yet. D11
-remains in_progress; D12 has not started. Local commit uses normal hooks under
-AUTH-18; receipt follows. No pending external operation or restoration.
+remains in_progress; D12 has not started. Implementation commit `59af814` passed normal hooks: mobile 156 suites /1796 tests
+/22 snapshots; web 86 suites /780 tests, one existing skipped suite/test.
+Post-hook inventory 200/200 exact. Ordinary documentation receipt follows under
+AUTH-18. No pending external operation or restoration.
 
 The autonomous review below is historical; its next Sol implementation action is
 superseded by this collector checkpoint.
@@ -955,7 +957,7 @@ Data, volumes, copies and reports retained. Other sessions/devices untouched.
 Task state: D02–D10 done; D11 in_progress (fake diagnostic collector implemented; real quality/live acceptance open); D12–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, D11.1 implementation `a756680` (starting `44de0f5`); no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
+Branch `feature/shared-dictionary-schema`, latest D11 collector implementation `59af814`; no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume

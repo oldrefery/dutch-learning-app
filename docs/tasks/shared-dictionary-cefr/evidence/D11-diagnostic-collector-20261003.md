@@ -43,8 +43,10 @@ unchanged. The 19 provisional bands and five unknowns remain model-origin eviden
   simulated usage 9,720 micro-USD. These numbers are mechanical estimates, not
   actual charges or CEFR accuracy. Private report/log retained under
   `reports/shared-dictionary-cefr/d11-diagnostic-collector-20261003/`.
-- Previous 192 source hashes retained; new source inventory follows after final
-  formatting and ordinary commit hooks.
+- Previous 192 source hashes retained; [200-path source inventory](D11-diagnostic-collector-source-sha256.json)
+  remained exact after ordinary implementation commit `59af814`. Normal hooks
+  passed: mobile 156 suites /1796 tests /22 snapshots; web 86 suites /780 tests,
+  one existing skip. No push.
 
 ## Remaining D11 boundary
 
