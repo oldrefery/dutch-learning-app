@@ -22,8 +22,12 @@ inquiry is prepared for review. If those cannot be verified, keep the runner
 disabled and review a design/budget change. Exact
 24-input source transmission and one-day spending approval are still separate.
 D11 in_progress, D12 pending, qualification false. Documentation-only local
-commit/receipt follows under AUTH-18; only preexisting `.playwright-cli/`
-untracked, ignored reports preserved. No external operation pending.
+checkpoint `fa907ac` passed ordinary hooks: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /780 tests, one existing skip. Prettier and diff
+check passed. Only preexisting `.playwright-cli/` remains untracked; ignored
+reports preserved. Local receipt under AUTH-18 follows without push. Two exact
+permission questions for Cloud Console metadata and the support inquiry are
+pending; no external operation is in flight.
 
 The prior permission gate below is resolved for the exact read-only inspection;
 its historical rejection remains recorded.

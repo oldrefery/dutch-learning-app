@@ -1972,3 +1972,10 @@ documentation receipt follows under AUTH-18, local-only and no push.
   key binding and authoritative control-cost evidence before any source/spending
   request. `.playwright-cli/` and ignored reports preserved. Local documentation
   commit/receipt under AUTH-18 follows; no push or pending external operation.
+
+Documentation checkpoint **`fa907ac`** passed ordinary hooks: mobile 156 suites /
+1796 tests /22 snapshots; web 86 suites /780 tests, one existing skipped
+suite/test. Prettier and `git diff --check` PASS. Two exact permission questions
+for Cloud Console metadata and sending the drafted support inquiry are pending.
+Only preexisting `.playwright-cli/` remains untracked; no external operation is
+in flight. Local receipt follows under AUTH-18 without push.
