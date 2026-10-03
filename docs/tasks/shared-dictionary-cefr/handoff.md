@@ -6,8 +6,9 @@ authorized transmission of the exact frozen 24 meaning inputs, including four
 bundled entries, to Gemini Developer API and separately authorized one-run use of
 an existing personal `oldrefery` key. AI Studio confirmed
 `oldrefery@gmail.com`, paid Tier 1 Postpay and the selected key's personal
-project. The key is in a mode-0600 file inside an owner-only private temporary
-directory outside the repository; do not print or commit it. The details card
+project. A mode-0600 private key copy and private draft were prepared outside
+the repository, then both were removed while the cost-policy answer is pending.
+The details card
 unexpectedly exposed its value in the tool trace, and the user has been informed;
 recommend owner rotation after one-run use. The application Supabase secret's
 project remains unknown but is not needed for this separately selected personal
@@ -18,9 +19,13 @@ per meaning, rather than the former guaranteed-bound proposal. Until answered,
 do not run or populate assumed maxima. The canceled support inquiry stays unsent.
 D11 in_progress, D12 pending, pilot/worker disabled and qualification false.
 **Next GPT-6.1 Sol / High:** resolve the cost-policy answer, then prepare/test a
-truthful bounded execution mode and private registry before any dispatch. Preserve
-`.playwright-cli/` and ignored reports. No push, PR or deployment. Local
-documentation checkpoint follows.
+truthful bounded execution mode and private registry before any dispatch. Local
+validation matched all 24 draft IDs/hashes to the frozen bundle and confirmed
+the draft remained unapproved. Documentation commit `13a846c` passed ordinary
+hooks: mobile 156 suites / 1,796 tests / 22 snapshots; web 86 suites / 780
+tests, one existing skip. Scoped Prettier and `git diff --check` passed.
+Preserve `.playwright-cli/` and ignored reports. No push, PR or deployment. A
+local receipt follows.
 
 **2026-10-03 — D11 no-support cost review completed locally.** GPT-6.1 Sol /
 High announced; picker attribution unverified. The frozen 24 REST generation

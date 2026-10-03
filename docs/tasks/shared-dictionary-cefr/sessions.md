@@ -2074,3 +2074,10 @@ in flight. Local receipt follows under AUTH-18 without push.
   D11 in_progress, D12 pending, qualification false, registry/worker disabled;
   support send canceled. Preserve `.playwright-cli/` and ignored reports; local
   documentation checkpoint under AUTH-18, no push or PR.
+- Local validation found all 24 frozen draft IDs/hashes exact and `approved:
+false`; private key mode was 0600. Both private temporary key and draft copies
+  were removed while the cost-policy answer remains pending. Documentation
+  commit `13a846c` passed ordinary hooks: mobile 156 suites / 1,796 tests / 22
+  snapshots; web 86 suites / 780 tests, one existing skip. Scoped Prettier and
+  `git diff --check` passed. A local receipt follows; no provider call, push or
+  PR.

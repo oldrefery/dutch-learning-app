@@ -530,3 +530,5 @@ recommend owner rotation after this one-run use. No provider request has yet bee
 made. The direct REST control-cost maximum remains unverified, so the proposed
 hard $2 ceiling cannot be asserted. A precise question on accepting an estimated
 instead of guaranteed ceiling for at most one generation per meaning is pending.
+The temporary key and draft copies were removed before the session boundary;
+no credential file remains from this checkpoint.
