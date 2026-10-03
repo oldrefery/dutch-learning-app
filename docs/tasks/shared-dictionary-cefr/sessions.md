@@ -2358,3 +2358,19 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   and held-out set. Two paid attempts remain; do not repeat the same fixture
   without a new evidence question. D11 in_progress, D12 pending, worker and
   schedule disabled; no support message, push, PR or deployment.
+
+## 2026-10-04 — D11 next validation protocol defined
+
+- Source-audit checkpoint `51e02a2` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing skip.
+- The existing 24-item report has zero calibration cells for separable verbs
+  and conflicting examples and zero held-out cells for inflections and
+  ambiguity. The operational policy checks every required slice in both
+  splits, so the sample cannot qualify a method even if its tentative labels
+  were reviewed. The [protocol](evidence/D11-independent-validation-protocol-20261004.md)
+  defines a new source-backed, family-split fixture and honest review metadata.
+- Next: assemble a new local meaning pool and source dossier, then freeze a
+  reviewed policy before any authorized provider scoring. The two remaining
+  attempts cover only the original 24 meanings. D11 in_progress, D12 pending,
+  quality unqualified, worker/schedule disabled; no support message, push, PR
+  or deployment.

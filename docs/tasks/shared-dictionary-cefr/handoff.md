@@ -1,5 +1,20 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 new-reference protocol prepared.** The
+[protocol](evidence/D11-independent-validation-protocol-20261004.md) shows
+why the completed 24-item diagnostic cannot meet the operational gate:
+calibration lacks `separable-verbs` and `conflicting-examples`; held-out
+lacks `inflections` and `ambiguous`, besides the absence of independent
+meaning-level labels. The next work is a new source-backed, family-split
+fixture with all required slice/split cells and a policy fixed before
+provider scoring. The assistant can perform autonomous review but must
+identify it honestly; it cannot be called independent human gold. The
+remaining two paid attempts cover only the original 24 meanings, not a new
+fixture. **Next GPT-6.1 Sol / High:** assemble the new local meaning pool
+and source dossier before seeking any new provider authorization. D11
+in_progress, D12 pending, quality unqualified, worker/schedule disabled;
+no support message, push, PR or deployment.
+
 **2026-10-04 — D11 primary-source reference audit.** The
 [audit](evidence/D11-external-reference-audit-20261004.md) checked the
 Council of Europe vocabulary descriptors and the NT2Lex publisher/method
