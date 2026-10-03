@@ -15,8 +15,10 @@ dispatch is authorized by this billing check. Support inquiry remains canceled.
 D11 in_progress, D12 pending, pilot/worker disabled and qualification false.
 **Next GPT-6.1 Sol / High:** resolve the pending cost-policy answer before
 building the selected execution mode or revealing a key again. Preserve
-`.playwright-cli/`; no push, PR or deployment. Local documentation receipt
-follows.
+`.playwright-cli/`; no push, PR or deployment. Documentation checkpoint
+`fce0ad9` passed ordinary hooks: mobile 156 suites / 1,796 tests / 22
+snapshots; web 86 suites / 780 tests, one existing skip. Scoped Prettier and
+`git diff --check` passed. A local receipt follows.
 
 **2026-10-03 — D11 exact source/key permissions granted; cost-policy decision
 pending.** GPT-6.1 Sol / High announced; picker attribution unverified. The user
