@@ -2379,3 +2379,17 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   Branch `feature/shared-dictionary-schema`; no tracked dirty files after that
   commit, only preexisting `.playwright-cli/` untracked. Persistence is local
   commits only; no publication or deployment.
+
+## 2026-10-04 — D11 NT2Lex coverage screened locally
+
+- Downloaded the publisher's sense-enriched TSV to a temporary research file
+  outside the repository. Exact case-folded lemmas matched 11/20 distinct
+  pilot lemmas and 55/60 bundled A1 pack entries; 38 matched pack lemmas have
+  multiple rows. This does not identify exact senses or establish CEFR bands.
+  SHA, method and limits are in the updated
+  [source audit](evidence/D11-external-reference-audit-20261004.md).
+- Next: assemble a new local candidate pool with source dossiers and fill
+  every required slice in both splits. Keep the two remaining Gemini
+  attempts for the original 24 only. The one-time 02:30 pause and 06:00
+  continuation automations are active in this chat. D11 in_progress, D12
+  pending, worker/schedule disabled; no support message, push, PR or deployment.

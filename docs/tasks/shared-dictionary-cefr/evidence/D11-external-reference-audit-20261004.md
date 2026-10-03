@@ -42,3 +42,24 @@ needs a new source-backed meaning-level review protocol and a genuinely
 held-out set before operational thresholds can be selected. The user's
 remaining two paid attempts are reserved; another pass over the same 24
 inputs would not answer this evidence gap.
+
+## Read-only coverage check
+
+For research only, the publisher's sense-enriched
+[`NT2Lex-CGN+ODWN-v01.tsv`](https://cental.uclouvain.be/cefrlex/nt2lex/download/)
+was downloaded to `/private/tmp/d11-nt2lex-research.tsv` (4,350,941 bytes;
+SHA-256 `37dc6b6e208d271e07283c082b3bf78ca07e28cc005ca445f52e6cd4ee0bc5b5`).
+The file was not copied into the repository or application. An exact,
+case-folded lemma lookup, without morphology or phrase normalization,
+matched 11 of the pilot's 20 distinct lemmas. Several matched lemmas have
+multiple automatically assigned sense rows; a row cannot be chosen from
+the lemma alone. Nine lemmas had no exact match, including multiword and
+specialized items. This is an exact-string coverage observation, not a
+claim of absent senses after normalization or a CEFR evaluation.
+
+The bundled 60-entry A1 project pack has 55 exact lemma matches in this
+resource; 38 of those matches have multiple rows. This could seed a new
+research inventory, but pack membership and the corpus frequency columns
+still cannot supply reviewed meaning-level labels. Matching a candidate
+requires a separate sense check against its gloss/examples and source
+provenance before any CEFR judgment.

@@ -1,5 +1,20 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 NT2Lex coverage screened without publication.** The
+[source audit](evidence/D11-external-reference-audit-20261004.md) now has a
+read-only check of the publisher's sense-enriched TSV. Exact case-folded
+lemmas matched 11/20 distinct pilot lemmas and 55/60 bundled A1 entries;
+38 matched pack lemmas had multiple rows. These are string matches, not
+adjudicated senses or CEFR bands. The research TSV stays in `/private/tmp`,
+outside the repository. **Next GPT-6.1 Sol / High:** form a new local
+candidate pool with sense-level source dossiers and fill every required
+slice in both splits; keep labels unreviewed when evidence is insufficient.
+Two paid attempts remain, scoped only to the original 24 inputs. D11
+in_progress, quality unqualified, worker/schedule disabled. The one-time
+02:30 pause (`d11-02-30`) and 06:00 continuation (`d11-06-00`)
+automations are active for this chat, using Europe/Amsterdam time on
+2026-10-04. They should deactivate after their single runs.
+
 **2026-10-04 — D11 new-reference protocol prepared.** The
 [protocol](evidence/D11-independent-validation-protocol-20261004.md) shows
 why the completed 24-item diagnostic cannot meet the operational gate:
