@@ -21,9 +21,11 @@ unknown-outcome/lease/day handling and proposed cost/authority boundary. Then So
 High implements authorized live-runner integration, combined ledger/report,
 bounded generation backoff and exact account/source/control-billing binding before
 any final live authorization request. A teacher is not required. No paid call is
-approved. D11 in_progress; D12 not started. Ordinary local commit/hooks under
-AUTH-18 follow; preserve `.playwright-cli/` and ignored reports. No pending external
-write, restoration or runtime operation.
+approved. D11 in_progress; D12 not started. Implementation `cf27475` passed ordinary
+hooks: mobile 156 suites /1796 tests /22 snapshots; web 86 suites /780 tests, one
+existing skip. Post-hook inventory 207/207 exact. Local documentation receipt with
+ordinary hooks follows under AUTH-18. Preserve `.playwright-cli/` and ignored reports.
+No pending external write, restoration or runtime operation.
 
 The following collector review is historical; its Sol preparation action above
 is checkpointed, with live integration still outstanding.
@@ -1010,7 +1012,7 @@ Data, volumes, copies and reports retained. Other sessions/devices untouched.
 Task state: D02–D10 done; D11 in_progress (REST/control preparation implemented; technical review and live integration/quality open); D12–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
-Branch `feature/shared-dictionary-schema`, starting adapter checkpoint `88c58b7`; local implementation commit follows, no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
+Branch `feature/shared-dictionary-schema`, adapter implementation `cf27475` (ordinary hooks PASS); local receipt follows, no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
 No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume
