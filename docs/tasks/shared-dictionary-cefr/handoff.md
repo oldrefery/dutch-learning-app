@@ -1,5 +1,27 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 exact source/key permissions granted; cost-policy decision
+pending.** GPT-6.1 Sol / High announced; picker attribution unverified. The user
+authorized transmission of the exact frozen 24 meaning inputs, including four
+bundled entries, to Gemini Developer API and separately authorized one-run use of
+an existing personal `oldrefery` key. AI Studio confirmed
+`oldrefery@gmail.com`, paid Tier 1 Postpay and the selected key's personal
+project. The key is in a mode-0600 file inside an owner-only private temporary
+directory outside the repository; do not print or commit it. The details card
+unexpectedly exposed its value in the tool trace, and the user has been informed;
+recommend owner rotation after one-run use. The application Supabase secret's
+project remains unknown but is not needed for this separately selected personal
+key. No provider call has occurred. Official generation tariffs are unchanged,
+but direct REST control-method maxima are not verified. A precise question is
+pending on a single run with an **estimated** $2 ceiling, at most one generation
+per meaning, rather than the former guaranteed-bound proposal. Until answered,
+do not run or populate assumed maxima. The canceled support inquiry stays unsent.
+D11 in_progress, D12 pending, pilot/worker disabled and qualification false.
+**Next GPT-6.1 Sol / High:** resolve the cost-policy answer, then prepare/test a
+truthful bounded execution mode and private registry before any dispatch. Preserve
+`.playwright-cli/` and ignored reports. No push, PR or deployment. Local
+documentation checkpoint follows.
+
 **2026-10-03 — D11 no-support cost review completed locally.** GPT-6.1 Sol /
 High announced; picker attribution unverified. The frozen 24 REST generation
 bodies measured 2,266–2,480 UTF-8 bytes each (57,104 bytes total for one attempt

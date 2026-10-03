@@ -2058,3 +2058,19 @@ in flight. Local receipt follows under AUTH-18 without push.
   one existing skip. Scoped Prettier and `git diff --check` passed. Only the
   preexisting `.playwright-cli/` remains untracked; no push or PR. A local
   documentation receipt follows.
+
+## 2026-10-03 — D11 exact source/key permissions; cost-policy answer pending
+
+- Started `d096478`, GPT-6.1 Sol / High announced; picker attribution unverified.
+  User authorized transmission of all 24 frozen meaning inputs to Gemini
+  Developer API and one-run use of an existing key under `oldrefery@gmail.com`.
+  AI Studio confirmed the personal paid project. An owner-only private key file
+  was created outside the repository; no value or private path is logged here.
+- The AI Studio details card unexpectedly emitted the key value in the tool
+  trace. The user was informed; do not reproduce it, and recommend owner
+  rotation after one-run use. No provider call or source transmission yet.
+  Direct REST control-price maxima remain unverified. A precise question on an
+  estimated $2 ceiling with at most one generation per meaning is pending.
+  D11 in_progress, D12 pending, qualification false, registry/worker disabled;
+  support send canceled. Preserve `.playwright-cli/` and ignored reports; local
+  documentation checkpoint under AUTH-18, no push or PR.

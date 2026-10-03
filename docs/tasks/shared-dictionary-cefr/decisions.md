@@ -508,3 +508,25 @@ identifier was persisted in the repository, and no settings, purchase, provider
 request or paid pilot action occurred. This permission is consumed for the stated
 read-only inspection and does not authorize private credential retrieval, source
 transmission, paid requests, registry activation or billing-plan changes.
+
+### October 3 — Exact D11 source transmission and one-run key use
+
+After reviewing the destination and content, the user explicitly authorized
+transmitting the frozen 24 meaning inputs in
+`evidence/D11-gemini-live-request.proposed.json` to the Google Gemini Developer
+API. This includes the four bundled app entries. The prior small paid diagnostic
+permission and personal-account-only restriction remain in force. The user also
+explicitly authorized revealing an existing key from the personal `oldrefery`
+project and storing it in an owner-only local file for one D11 run; this does not
+authorize creating or rotating keys, using a work account, changing billing
+settings, deployment, publication or a support message.
+
+AI Studio visibly confirmed `oldrefery@gmail.com` and a key in its paid personal
+Gemini API project. The key was copied into an owner-only private temporary file
+outside the repository; no key value or local secret path is committed. Opening
+the details card unexpectedly exposed the key value in the tool's technical
+output, contrary to the intended no-trace handling. Do not reproduce the value;
+recommend owner rotation after this one-run use. No provider request has yet been
+made. The direct REST control-cost maximum remains unverified, so the proposed
+hard $2 ceiling cannot be asserted. A precise question on accepting an estimated
+instead of guaranteed ceiling for at most one generation per meaning is pending.
