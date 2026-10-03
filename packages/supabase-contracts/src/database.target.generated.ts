@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261002130000_add_analysis_cefr_estimate.sql.
+// Generated from local migrations through 20261003090000_add_dictionary_cefr_queue.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -1202,6 +1202,10 @@ export type Database = {
         }[]
       }
       cancel_dictionary_import_v1: { Args: { p_request: Json }; Returns: Json }
+      claim_dictionary_cefr_jobs_v1: {
+        Args: { p_method_id: string }
+        Returns: Json
+      }
       consume_edge_function_quota: {
         Args: {
           p_capability: string
@@ -1238,6 +1242,10 @@ export type Database = {
         }[]
       }
       dictionary_content_capability_v1: { Args: never; Returns: Json }
+      enqueue_dictionary_cefr_jobs_v1: {
+        Args: { p_method_id: string }
+        Returns: number
+      }
       export_dictionary_collection_v1: {
         Args: { p_collection_id: string }
         Returns: Json
@@ -1576,6 +1584,20 @@ export type Database = {
         }[]
       }
       review_correction_protocol: { Args: never; Returns: number }
+      settle_dictionary_cefr_job_v1: {
+        Args: {
+          p_attempt: number
+          p_confidence?: number
+          p_input_sha256: string
+          p_job_id: string
+          p_lease_token: string
+          p_level?: string
+          p_outcome: string
+          p_qualification_sha256: string
+          p_retry_after_seconds?: number
+        }
+        Returns: Json
+      }
       sync_user_access_levels: {
         Args: never
         Returns: {

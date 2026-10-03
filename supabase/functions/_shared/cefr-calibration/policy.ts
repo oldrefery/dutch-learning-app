@@ -190,3 +190,17 @@ export const decideCandidate = async (
     qualification_sha256: qualification!.qualification_sha256,
   }
 }
+
+// Preflight avoids provider work for fabricated, stale or mismatched qualification.
+export const isQualifiedProfile = async (
+  profile: unknown,
+  qualification: QualifiedMethod | null
+): Promise<boolean> => {
+  const method = qualification ? qualifiedMethods.get(qualification) : undefined
+  if (!method) return false
+  try {
+    return method.profile === (await profileDigest(profile))
+  } catch {
+    return false
+  }
+}

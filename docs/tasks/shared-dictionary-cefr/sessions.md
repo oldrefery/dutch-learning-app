@@ -1603,3 +1603,23 @@ suite/test. Post-hook source inventory 171/171 matches. Only preexisting
 `.playwright-cli/` is untracked before this receipt. Private `commit.log` retained.
 No pending runtime operation or external write. Local-only, no push. Current-model
 confirmation is still pending; do not infer Astra provenance from the commit.
+
+## 2026-10-03 — D11 private queue and fake-provider evaluation foundation
+
+- Continued locally from `9454552`, AUTH-20/AUTH-18, user-confirmed Sol / High.
+  Preserved earlier review attribution limit and final Astra review gate.
+- Added private immutable method registry, published-meaning queue, bounded leases/
+  retries and atomic estimated-only completion. Added pure qualified evaluation
+  with fake provider; no HTTP entrypoint, live transport, scheduler or budget yet.
+- [Evidence](evidence/D11-queue-foundation-20261003.md): 18 queue SQL, 17 content/
+  cache SQL, 57 offline/evaluator and 48 analysis tests PASS. Schema suite 19 PASS,
+  nested upgrade blocked by macOS IPC; identical isolated upgrade body PASS.
+  Initial sandbox IPC failure retained; no system settings or unrelated IPC touched.
+- Official types regenerated/checked; scoped lint/types/format PASS. Inventory
+  177 paths, retaining 168 old hashes. Own temporary clusters/containers cleaned;
+  retained QA/devices/data untouched, `.playwright-cli/` and reports preserved.
+- Next D11.6–D11.7 server authorization, run ledger and atomic conservative budget
+  reservations on Sol / High; then Astra review. D11 remains in_progress. Real
+  quality/source/spending/live gates remain open. No external operation/activation.
+- Local scoped implementation/evidence commit with ordinary hooks under AUTH-18;
+  receipt follows. No push/PR/merge, paid call, hosted migration or deployment.

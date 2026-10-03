@@ -1,5 +1,35 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 queue/evaluation foundation verified locally.**
+Starting `9454552`, existing `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
+User-confirmed GPT-6.1 Sol / High; earlier Astra attribution remains unconfirmed.
+[Evidence](evidence/D11-queue-foundation-20261003.md),
+[177-path inventory](evidence/D11-queue-source-sha256.json); 168 prior hashes retained.
+
+Private immutable method registry, eligible published-meaning queue, fenced leases,
+bounded retries and atomic completion are implemented. Pure evaluation checks
+qualification/profile/input, bounds and timeout; synthetic provider integration
+passes. No deployable HTTP worker or spending authorization exists yet.
+
+18 queue SQL tests, 17 existing content/cache SQL tests, 57 offline/evaluator tests,
+48 analysis regressions PASS. Schema suite: 19 PASS plus one IPC-blocked nested
+upgrade; the identical upgrade body passes separately with one disposable cluster.
+Type generation/check, scoped lint/types/format PASS. No test server remains.
+
+**Next: D11.6–D11.7 local auth/run ledger/atomic budget reservations on Sol / High**,
+then Astra / High concurrency/provenance/budget review. D11 remains in_progress;
+D11.2 real quality and D11.3–D11.7 integration/acceptance gates remain open.
+Keep all defaults/schedules OFF. Live source/quality/spending approval is absent.
+
+Checkpoint persistence: local implementation/evidence commit with normal hooks
+under AUTH-18; receipt follows. Task changes include the migration, two SQL test
+files, three evaluator files, policy preflight, target manifest/generated types,
+and task docs/inventory. Preserve unrelated `.playwright-cli/` and private reports.
+Retained QA devices/backend untouched; no paid call, hosted migration, activation,
+publication/deployment or push/PR/merge. No pending external operation/restoration.
+
+The historical checkpoints below retain evidence and model-attribution limits.
+
 **2026-10-03 — D11.2 local technical review and repairs PASS; model confirmation pending.**
 Starting `cf1ffaa`, existing feature branch, AUTH-20/AUTH-18. User continued the
 requested review; current Astra / High picker setting has not been confirmed.
