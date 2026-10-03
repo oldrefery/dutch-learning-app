@@ -1548,3 +1548,25 @@ untracked; private `commit.log` retained. Local-only, no push or pending QA job.
   and ignored reports/data. Necessary local documentation commit with normal hooks
   remains authorized; no push, publication/deployment, hosted migration, paid call,
   production/cutover or activation. Resume requires explicit user continuation.
+
+## 2026-10-03 — D11.2 offline mechanics
+
+- Explicit resume and user-confirmed GPT-6.1 Sol / High; starting `2456246`, existing
+  feature branch, AUTH-20/18. All 158 prior source hashes exact; no subagent.
+- Implemented fixture/partition/input validation, response provenance/binding,
+  reproducible calibration metrics, explicit policy and opaque in-process
+  qualification; standalone offline CLI refuses output overwrite. All test data
+  and review/approval references fictional. No actual quality qualification.
+- New offline 46 tests PASS; prior analysis regressions 48 PASS, no network
+  permission. Type/lint/format/diff and 22-item CLI/no-overwrite smoke PASS.
+  [Evidence and limitations](evidence/D11-offline-calibration-20261003.md).
+- D11 in_progress; D11.2 offline mechanics ready for Astra / High review before
+  worker use. D11.2 real reviewed/live quality and D11.3–D11.7 stay open. Next
+  review approval/digest binding, denominators, abstention and profile invalidation;
+  then Sol / High queue/lease work. Current-thread picker cannot be changed here.
+- No devices/backend started or operated; no private export, provider call,
+  database write, schedule/flag activation, hosted migration, deployment,
+  production/cutover or push/PR/merge. Prior resource OFF checks are historical.
+  Preserve `.playwright-cli/` and private reports under
+  `reports/shared-dictionary-cefr/d11-offline-calibration-20261003/`.
+- Necessary local commit with normal hooks under AUTH-18; receipt follows.

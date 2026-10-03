@@ -390,3 +390,10 @@ self-approve or borrow unrelated approved sources. D11.2 stays partial until rea
 reviewed evidence and an authorized sample qualify the method; synthetic labels
 prove test mechanics only. DEC-06 and all live gates remain open. Next Sol 6.1 /
 High for the offline checkpoint; devices/retained backend not needed.
+
+### October 3 — D11.2 offline continuation
+
+User explicitly resumed `/repo continue` and confirmed GPT-6.1 Sol / High.
+AUTH-20/AUTH-18 continue to cover local offline mechanics and necessary commits.
+This supersedes the October 2 pause without adding live source/provider, spending,
+runtime, deployment or Git publication authority. D11.2 real quality stays open.

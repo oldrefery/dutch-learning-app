@@ -1,5 +1,34 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11.2 offline mechanics implemented and verified; review next.**
+User-confirmed GPT-6.1 Sol / High; starting `2456246`, existing
+`feature/shared-dictionary-schema`, AUTH-20/AUTH-18. [Evidence](evidence/D11-offline-calibration-20261003.md),
+[170-path source inventory](evidence/D11-offline-source-sha256.json). All 158 previous
+reviewed source fingerprints remain exact. No subagent.
+
+Offline fixture/input/partition validation, captured-response binding, reproducible
+metrics, explicit policy and fail-closed qualification/decisions are implemented.
+New offline 46 tests and existing analysis 48 tests PASS; scoped types/lint/format
+and CLI new-file/no-overwrite smoke PASS. All fixtures and approval references are
+fictional mechanics data, including reviewed-shaped positive tests.
+**D11.2 quality remains open; D11 is in_progress, D11.3–D11.7 are not started.**
+
+**Next: GPT-6 Astra / High review of D11.2 evidence/qualification boundaries**,
+especially denominators, abstention, profile invalidation, independent approval
+and future privileged registry/source-policy integration. Then Sol / High for
+local fake-provider queue/lease/head-CAS work. Current-thread picker is unavailable;
+request the manual model switch without claiming it happened.
+
+Devices/retained backend were not needed, inspected or operated. No provider call,
+private export, database write, migration, runtime activation, schedule, deployment,
+production/cutover or push/PR/merge. Preserve `.playwright-cli/` and ignored reports
+under `reports/shared-dictionary-cefr/d11-offline-calibration-20261003/`. No pending
+external operation. Necessary local implementation/evidence commit uses normal
+hooks under AUTH-18; receipt follows. Existing runtime defaults remain OFF.
+
+The following pause and D11.1 records are historical; explicit October 3 resume
+and the checkpoint above supersede their pause/model/next-action state.
+
 **PAUSED by explicit `/repo pause`, 2026-10-02 20:14:35 UTC /22:14:35 Amsterdam.**
 Checkpoint HEAD `02cd51d`, existing `feature/shared-dictionary-schema`; D11.1
 implementation `a756680`, review `bf68661` PASS. No new implementation or QA run.
@@ -707,7 +736,7 @@ remained off during D09 and these D10 checkpoints. Final synthetic benchmark exi
 its temporary servers/browser/backend cleaned up. No pending build/test/QA job.
 Data, volumes, copies and reports retained. Other sessions/devices untouched.
 
-Task state: D02–D10 done; D11 paused by user (D11.1 implementation/review PASS); D12–D14 pending; D01 blocked/partial.
+Task state: D02–D10 done; D11 in_progress (D11.2 offline mechanics implemented; review/real quality open); D12–D14 pending; D01 blocked/partial.
 D01.2 device/learning-queue evidence and D01.5 quota limitation remain open;
 D13 approval and D14 observation/retirement gates are not waived.
 Branch `feature/shared-dictionary-schema`, D11.1 implementation `a756680` (starting `44de0f5`); no push/PR. Default runtime dictionary and CEFR analysis flags remain off outside QA.
@@ -715,15 +744,15 @@ No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume
 
-User-paused. Execute these steps only after explicit continuation.
+Resumed explicitly on 2026-10-03; execute the first incomplete checkpoint.
 
-1. Read [D11 stage card](steps/D11.md), its focused inputs, accepted invariants and
-   permissions and [reviewed engineering contract](evidence/D11-calibration-worker-contract-20261002.md).
-   Implement D11.2 offline validation/reporting and fail-closed policy on user-confirmed
-   GPT-6.1 Sol / High. Reviewed real calibration/live sample remain separate open
-   evidence gates; do not claim them from synthetic tests. D10 is closed;
-   do not repeat catalog/import/recovery/transfer/visual acceptance.
-2. Preserve the existing branch and 158-path [review source inventory](evidence/D11-review-source-sha256.json).
+1. Read [D11 stage card](steps/D11.md), [offline evidence](evidence/D11-offline-calibration-20261003.md)
+   and [reviewed engineering contract](evidence/D11-calibration-worker-contract-20261002.md).
+   Review D11.2 on GPT-6 Astra / High before worker integration. The current
+   implementation passed synthetic tests; real calibration/live sample remains
+   a separate open gate. After review, Sol / High continues D11.3–D11.5. Do not
+   repeat D10 or claim real qualification from TEST-ONLY metadata.
+2. Preserve the existing branch and 170-path [offline source inventory](evidence/D11-offline-source-sha256.json).
    Leave `.playwright-cli/` and ignored retained reports/data uncommitted; do not
    reset/reseed or replay completed imports. In particular operation
    `217420b8-7a2d-4537-b440-a48ea42133f8` already completed once.
@@ -744,8 +773,9 @@ User-paused. Execute these steps only after explicit continuation.
 AUTH-16 permits autonomous model/effort selection through supported controls:
 GPT-6.1 Sol / High for implementation, Astra / High for prescribed review or
 unresolved architecture/concurrency risk. User-confirmed GPT-6 Astra / High reviewed
-D11.1 and the calibration/worker contract. Next: GPT-6.1 Sol / High for D11.2 local
-offline implementation. No independent agent was used.
+D11.1 and the calibration/worker contract. User-confirmed Sol / High implemented
+D11.2 offline mechanics on October 3. Next: Astra / High review of the new
+evidence/qualification boundary, then Sol / High worker work. No agent was used.
 Direct current-thread picker control is unavailable; request manual switch and do
 not claim an automatic change. Do not use GPT-5.6 Sol for future work.
 
@@ -759,22 +789,22 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 
 ## Stage ledger
 
-| Stage               | Status  | Evidence / next gate                                                |
-| ------------------- | ------- | ------------------------------------------------------------------- |
-| [D01](steps/D01.md) | blocked | D01.1/D01.3/D01.4 done; device/build evidence needed                |
-| [D02](steps/D02.md) | done    | Accepted design, fixtures, compatibility and rollback               |
-| [D03](steps/D03.md) | done    | Astra/High review fixed; 145/145 DB tests pass                      |
-| [D04](steps/D04.md) | done    | Terra/High; shared contracts pass mobile/web/Edge                   |
-| [D05](steps/D05.md) | done    | 12/12 focused; 157/157 DB; dormant compatibility                    |
-| [D06](steps/D06.md) | done    | Final D06 16/16; preservation/delta/rollback rehearsal              |
-| [D07](steps/D07.md) | done    | SQLite v13; 136/136 mobile suites preserve queues                   |
-| [D08](steps/D08.md) | done    | Closure review/fix and final native smoke passed; resources stopped |
-| [D09](steps/D09.md) | done    | Web integration/performance verification                            |
-| [D10](steps/D10.md) | done    | Final review, real desktop/Safari visuals and preservation PASS     |
-| [D11](steps/D11.md) | paused  | D11.1 review PASS; D11.2 offline policy/quality gate then worker    |
-| [D12](steps/D12.md) | pending | Cross-platform integrated verification                              |
-| [D13](steps/D13.md) | pending | Explicit release approval + observation                             |
-| [D14](steps/D14.md) | pending | Adoption gate + compatibility retirement                            |
+| Stage               | Status      | Evidence / next gate                                                |
+| ------------------- | ----------- | ------------------------------------------------------------------- |
+| [D01](steps/D01.md) | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                |
+| [D02](steps/D02.md) | done        | Accepted design, fixtures, compatibility and rollback               |
+| [D03](steps/D03.md) | done        | Astra/High review fixed; 145/145 DB tests pass                      |
+| [D04](steps/D04.md) | done        | Terra/High; shared contracts pass mobile/web/Edge                   |
+| [D05](steps/D05.md) | done        | 12/12 focused; 157/157 DB; dormant compatibility                    |
+| [D06](steps/D06.md) | done        | Final D06 16/16; preservation/delta/rollback rehearsal              |
+| [D07](steps/D07.md) | done        | SQLite v13; 136/136 mobile suites preserve queues                   |
+| [D08](steps/D08.md) | done        | Closure review/fix and final native smoke passed; resources stopped |
+| [D09](steps/D09.md) | done        | Web integration/performance verification                            |
+| [D10](steps/D10.md) | done        | Final review, real desktop/Safari visuals and preservation PASS     |
+| [D11](steps/D11.md) | in_progress | D11.2 offline mechanics PASS; Astra review/real quality then worker |
+| [D12](steps/D12.md) | pending     | Cross-platform integrated verification                              |
+| [D13](steps/D13.md) | pending     | Explicit release approval + observation                             |
+| [D14](steps/D14.md) | pending     | Adoption gate + compatibility retirement                            |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and
 policy acceptance are complete. No production operation is authorized. Do not
