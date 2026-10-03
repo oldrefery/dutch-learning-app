@@ -158,7 +158,7 @@
   "supabase/functions/gemini-handler/cefr_test.ts": "0868beb728b6dd240fd6bdd6b4b3af9464e54a9dd80cafbfc959cc1a5c734873",
   "supabase/migrations/20261002130000_add_analysis_cefr_estimate.sql": "2bf4b5235c80de4dba546f946b1a9cae17ef2d4cc7c38c0e7eb69efddc63e9b6",
   "supabase/functions/_shared/cefr-calibration/fixture.ts": "9fa22d9595c8a614367941412e6f64c5b6d4a00ff5a61480a410d5db72f427d2",
-  "supabase/functions/_shared/cefr-calibration/fixture_test.ts": "e7b9f9ecb897c3f4da53669761e1b892fc3d3931a34d83c82aedbfdde7056fe3",
+  "supabase/functions/_shared/cefr-calibration/fixture_test.ts": "6e0b83c63de84bd8548dfd81ebadb43933db72b443e5847ee94b542c362397af",
   "supabase/functions/_shared/cefr-calibration/metrics.ts": "81d012aea3f957e77310ed6d2a9d3909a328940fd53c6c84e2522f790a1d57df",
   "supabase/functions/_shared/cefr-calibration/policy.ts": "ca3826f0187258e734a0f2af0262d989a115156153718ba3c37f4859d4e5450a",
   "supabase/functions/_shared/cefr-calibration/policy_test.ts": "2089d71ad70ed42dd5a8caad2f75c4327d3ce90d99e745e3a0e0d68c3bf9dac8",

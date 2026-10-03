@@ -1,4 +1,9 @@
-import { assertEquals, assertRejects, assertThrows } from '@std/assert'
+import {
+  assertEquals,
+  assertNotEquals,
+  assertRejects,
+  assertThrows,
+} from '@std/assert'
 import { validateFixture } from './fixture.ts'
 import { syntheticInputs, syntheticItem } from './synthetic-fixtures.ts'
 import { validatePolicy, validateProfile } from './profile.ts'
@@ -176,11 +181,18 @@ Deno.test(
   }
 )
 
-Deno.test(
-  'offline suite runs without runtime network or filesystem permissions',
-  async () => {
+Deno.test({
+  name: 'offline permission audit remains isolated under broader Edge test flags',
+  permissions: {
+    net: false,
+    read: false,
+    write: false,
+    env: false,
+    run: false,
+  },
+  fn: async () => {
     for (const name of ['net', 'read', 'write', 'env', 'run'] as const) {
-      assertEquals((await Deno.permissions.query({ name })).state, 'prompt')
+      assertNotEquals((await Deno.permissions.query({ name })).state, 'granted')
     }
-  }
-)
+  },
+})

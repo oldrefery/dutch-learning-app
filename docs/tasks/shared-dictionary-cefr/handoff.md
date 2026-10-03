@@ -24,7 +24,14 @@ private export, database write, migration, runtime activation, schedule, deploym
 production/cutover or push/PR/merge. Preserve `.playwright-cli/` and ignored reports
 under `reports/shared-dictionary-cefr/d11-offline-calibration-20261003/`. No pending
 external operation. Necessary local implementation/evidence commit uses normal
-hooks under AUTH-18; receipt follows. Existing runtime defaults remain OFF.
+hooks under AUTH-18. Existing runtime defaults remain OFF.
+
+Implementation commit `0cb494f` normal hooks PASS: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /780 tests, one existing skip. Final audit isolates the
+permission-check test from caller flags; 46 tests pass both permission modes, with
+no network operation. Inventory retains 169 hashes and updates that test only.
+Follow-up local test/receipt commit; no push. First incomplete checkpoint remains
+Astra / High review, then worker implementation; real quality stays open.
 
 The following pause and D11.1 records are historical; explicit October 3 resume
 and the checkpoint above supersede their pause/model/next-action state.

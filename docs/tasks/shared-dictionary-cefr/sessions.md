@@ -1570,3 +1570,14 @@ untracked; private `commit.log` retained. Local-only, no push or pending QA job.
   Preserve `.playwright-cli/` and private reports under
   `reports/shared-dictionary-cefr/d11-offline-calibration-20261003/`.
 - Necessary local commit with normal hooks under AUTH-18; receipt follows.
+
+Implementation commit `0cb494f` completed with normal hooks: mobile 156 suites /
+1796 tests /22 snapshots; web 86 suites /780 tests with one existing skipped
+suite/test. Post-commit audit adjusted only the permission-check test to deny its
+own permissions explicitly, so the repository's broader Edge flags do not produce
+a false failure. All 46 offline tests pass both with no runtime grants and with
+caller-level `--allow-env --allow-net`; the audit itself is denied access in both.
+No network operation was performed. Updated inventory retains 169 hashes and
+changes only this test hash. Follow-up local test/receipt commit uses normal hooks.
+No pending runtime job, external operation or restoration. Private commit logs
+and all data retained; no push/PR/merge.
