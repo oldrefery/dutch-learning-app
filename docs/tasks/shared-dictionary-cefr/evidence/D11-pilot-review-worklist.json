@@ -1,0 +1,1407 @@
+{
+  "namespace": "dictionary-cefr-review-worklist-v1",
+  "revision": "d11-pilot-candidates-20261003-v1",
+  "status": "proposal-unreviewed",
+  "gold_fixture": false,
+  "provider_approved": false,
+  "items": [
+    {
+      "id": "pilot-01",
+      "family": "huis",
+      "proposed_split": "calibration",
+      "proposed_slices": ["ordinary"],
+      "content": {
+        "dutch_lemma": "huis",
+        "dutch_original": "huis",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["house", "home"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "en": "This is my house.",
+            "nl": "Dit is mijn huis.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "huizen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"huis\",\"dutch_original\":\"huis\",\"examples\":[{\"en\":\"This is my house.\",\"nl\":\"Dit is mijn huis.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"huizen\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"house\",\"home\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "2d87146c0a1cb7a47fe663772457e9bb2e59d70a2fae3a4a9064c864dc4115b7",
+      "source": {
+        "kind": "bundled-project-content",
+        "path": "packages/content/src/dutch-a1.json",
+        "file_sha256": "80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca",
+        "pack_entry_id": "a1-001-huis",
+        "local_use_ref": "bundled-license-local-repository",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Pack title and content review do not supply an independent CEFR gold label.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-02",
+      "family": "boek",
+      "proposed_split": "calibration",
+      "proposed_slices": ["ordinary"],
+      "content": {
+        "dutch_lemma": "boek",
+        "dutch_original": "boek",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["book"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "en": "I am reading a book.",
+            "nl": "Ik lees een boek.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "boeken",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"boek\",\"dutch_original\":\"boek\",\"examples\":[{\"en\":\"I am reading a book.\",\"nl\":\"Ik lees een boek.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"boeken\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"book\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "66cf8539cee6baab48f0dc711ed7b4a76d8c803c8f55cd39fb71e571fdb12c59",
+      "source": {
+        "kind": "bundled-project-content",
+        "path": "packages/content/src/dutch-a1.json",
+        "file_sha256": "80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca",
+        "pack_entry_id": "a1-002-boek",
+        "local_use_ref": "bundled-license-local-repository",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Pack title and content review do not supply an independent CEFR gold label.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-03",
+      "family": "fiets",
+      "proposed_split": "held_out",
+      "proposed_slices": ["ordinary"],
+      "content": {
+        "dutch_lemma": "fiets",
+        "dutch_original": "fiets",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["bicycle", "bike"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "en": "My bicycle is new.",
+            "nl": "Mijn fiets is nieuw.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "fietsen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"fiets\",\"dutch_original\":\"fiets\",\"examples\":[{\"en\":\"My bicycle is new.\",\"nl\":\"Mijn fiets is nieuw.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"fietsen\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"bicycle\",\"bike\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "0d1dce9e1839bd1f2acd87fa633e5da27145395deeb97541c5408b0eb3bcb732",
+      "source": {
+        "kind": "bundled-project-content",
+        "path": "packages/content/src/dutch-a1.json",
+        "file_sha256": "80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca",
+        "pack_entry_id": "a1-006-fiets",
+        "local_use_ref": "bundled-license-local-repository",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Pack title and content review do not supply an independent CEFR gold label.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-04",
+      "family": "water",
+      "proposed_split": "held_out",
+      "proposed_slices": ["ordinary"],
+      "content": {
+        "dutch_lemma": "water",
+        "dutch_original": "water",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["water"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "en": "I drink a glass of water.",
+            "nl": "Ik drink een glas water.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"water\",\"dutch_original\":\"water\",\"examples\":[{\"en\":\"I drink a glass of water.\",\"nl\":\"Ik drink een glas water.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"water\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "11d6332c0ac464f590113e8b0d79e2e5bb53a94fe508875fd6b60acab3f79503",
+      "source": {
+        "kind": "bundled-project-content",
+        "path": "packages/content/src/dutch-a1.json",
+        "file_sha256": "80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca",
+        "pack_entry_id": "a1-019-water",
+        "local_use_ref": "bundled-license-local-repository",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Pack title and content review do not supply an independent CEFR gold label.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-05",
+      "family": "bank",
+      "proposed_split": "calibration",
+      "proposed_slices": ["sense-pairs", "ordinary"],
+      "content": {
+        "dutch_lemma": "bank",
+        "dutch_original": "bank",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["bench"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "We zitten op een bank in het park.",
+            "en": "We are sitting on a bench in the park.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "banken",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"bank\",\"dutch_original\":\"bank\",\"examples\":[{\"en\":\"We are sitting on a bench in the park.\",\"nl\":\"We zitten op een bank in het park.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"banken\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"bench\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "af2d5c91421983bdd7616a268749be80ed8bf79fb92cdd93a5dc1a3b4056deb5",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "bank-seat",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-06",
+      "family": "bank",
+      "proposed_split": "calibration",
+      "proposed_slices": ["sense-pairs"],
+      "content": {
+        "dutch_lemma": "bank",
+        "dutch_original": "bank",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["bank; financial institution"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De bank bewaart mijn spaargeld.",
+            "en": "The bank holds my savings.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "banken",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"bank\",\"dutch_original\":\"bank\",\"examples\":[{\"en\":\"The bank holds my savings.\",\"nl\":\"De bank bewaart mijn spaargeld.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"banken\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"bank; financial institution\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "7f6e30318d057dd93b4cbe7403698a7d657d919bbe8e0bd2de2457a6b0828996",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "bank-finance",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-07",
+      "family": "arm",
+      "proposed_split": "held_out",
+      "proposed_slices": ["sense-pairs", "ordinary"],
+      "content": {
+        "dutch_lemma": "arm",
+        "dutch_original": "arm",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["arm; body part"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Hij heeft pijn in zijn arm.",
+            "en": "His arm hurts.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "armen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"arm\",\"dutch_original\":\"arm\",\"examples\":[{\"en\":\"His arm hurts.\",\"nl\":\"Hij heeft pijn in zijn arm.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"armen\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"arm; body part\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "0bf2c38663c97d751e0dff0259654e14e532daaabc6f44a0d899405672a46461",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "arm-body",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-08",
+      "family": "arm",
+      "proposed_split": "held_out",
+      "proposed_slices": ["sense-pairs"],
+      "content": {
+        "dutch_lemma": "arm",
+        "dutch_original": "arm",
+        "part_of_speech": "adjective",
+        "article": null,
+        "translations": {
+          "en": ["poor; having little money"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Het gezin is arm.",
+            "en": "The family is poor.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"arm\",\"dutch_original\":\"arm\",\"examples\":[{\"en\":\"The family is poor.\",\"nl\":\"Het gezin is arm.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"adjective\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"poor; having little money\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "1922001d65b598ed75af8ce0b329a656253b9495bbf08de22feb86813dddd93d",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "arm-poor",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-09",
+      "family": "kind",
+      "proposed_split": "calibration",
+      "proposed_slices": ["inflections", "ordinary"],
+      "content": {
+        "dutch_lemma": "kind",
+        "dutch_original": "kind",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["child"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Het kind speelt buiten.",
+            "en": "The child is playing outside.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "kinderen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"kind\",\"dutch_original\":\"kind\",\"examples\":[{\"en\":\"The child is playing outside.\",\"nl\":\"Het kind speelt buiten.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"kinderen\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"child\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "60648bc7b6cd35585d52090c6b62d80bb4998e33db1a2c58be9d9d734c691c6b",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "kind-base",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-10",
+      "family": "kind",
+      "proposed_split": "calibration",
+      "proposed_slices": ["inflections"],
+      "content": {
+        "dutch_lemma": "kind",
+        "dutch_original": "kinderen",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["child"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De kinderen spelen buiten.",
+            "en": "The children are playing outside.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "kinderen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"kind\",\"dutch_original\":\"kinderen\",\"examples\":[{\"en\":\"The children are playing outside.\",\"nl\":\"De kinderen spelen buiten.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"kinderen\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"child\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "f9d8d40e4669a5a639b72c0e18e59935d24e8e374e3a832f04137a2d28af68ed",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "kind-plural",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-11",
+      "family": "vergissen",
+      "proposed_split": "calibration",
+      "proposed_slices": ["reflexive-verbs"],
+      "content": {
+        "dutch_lemma": "zich vergissen",
+        "dutch_original": "zich vergissen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to be mistaken"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Ik heb me vergist in de datum.",
+            "en": "I was mistaken about the date.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": true,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"zich vergissen\",\"dutch_original\":\"zich vergissen\",\"examples\":[{\"en\":\"I was mistaken about the date.\",\"nl\":\"Ik heb me vergist in de datum.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":true,\"is_separable\":false,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to be mistaken\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "e9f03c419627a372eab6b21d2a2c888e79fe5ab42568982a811794a53179edd1",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "vergissen",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-12",
+      "family": "herinneren",
+      "proposed_split": "held_out",
+      "proposed_slices": ["reflexive-verbs"],
+      "content": {
+        "dutch_lemma": "zich herinneren",
+        "dutch_original": "zich herinneren",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to remember"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Zij herinnert zich zijn naam.",
+            "en": "She remembers his name.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": true,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"zich herinneren\",\"dutch_original\":\"zich herinneren\",\"examples\":[{\"en\":\"She remembers his name.\",\"nl\":\"Zij herinnert zich zijn naam.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":true,\"is_separable\":false,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to remember\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "71018746d512f2999fd6e78eee4bdba47c42073bfb3f9a591585350f34ff3ae3",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "herinneren",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-13",
+      "family": "opstaan",
+      "proposed_split": "held_out",
+      "proposed_slices": ["separable-verbs", "sense-pairs"],
+      "content": {
+        "dutch_lemma": "opstaan",
+        "dutch_original": "opstaan",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to get out of bed"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Ik sta elke ochtend om zeven uur op.",
+            "en": "I get out of bed at seven every morning.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": true,
+        "prefix_part": "op",
+        "root_verb": "staan",
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"opstaan\",\"dutch_original\":\"opstaan\",\"examples\":[{\"en\":\"I get out of bed at seven every morning.\",\"nl\":\"Ik sta elke ochtend om zeven uur op.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":true,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":\"op\",\"preposition\":null,\"register\":\"neutral\",\"root_verb\":\"staan\",\"synonyms\":[],\"translations\":{\"en\":[\"to get out of bed\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "fb043dad10c7d33a608c54fbb9516e98c713629910af960fef8d2b73395c5f8c",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "opstaan-wake",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-14",
+      "family": "opstaan",
+      "proposed_split": "held_out",
+      "proposed_slices": ["separable-verbs", "sense-pairs"],
+      "content": {
+        "dutch_lemma": "opstaan",
+        "dutch_original": "opstaan",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to stand up from a seat"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Hij staat op uit zijn stoel.",
+            "en": "He stands up from his chair.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": true,
+        "prefix_part": "op",
+        "root_verb": "staan",
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"opstaan\",\"dutch_original\":\"opstaan\",\"examples\":[{\"en\":\"He stands up from his chair.\",\"nl\":\"Hij staat op uit zijn stoel.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":true,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":\"op\",\"preposition\":null,\"register\":\"neutral\",\"root_verb\":\"staan\",\"synonyms\":[],\"translations\":{\"en\":[\"to stand up from a seat\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "655e5c441aff5509dcb72eacbec124d34c190af27181367ba7249f6bfe840528",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "opstaan-rise",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-15",
+      "family": "ziekenhuis",
+      "proposed_split": "calibration",
+      "proposed_slices": ["compounds"],
+      "content": {
+        "dutch_lemma": "ziekenhuis",
+        "dutch_original": "ziekenhuis",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["hospital"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Mijn zus werkt in het ziekenhuis.",
+            "en": "My sister works at the hospital.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "ziekenhuizen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"ziekenhuis\",\"dutch_original\":\"ziekenhuis\",\"examples\":[{\"en\":\"My sister works at the hospital.\",\"nl\":\"Mijn zus werkt in het ziekenhuis.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"ziekenhuizen\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"hospital\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "c81437c5138fa123a14e53608f4bd0a4f0b06274114c457951fc547e9a6bc49f",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "ziekenhuis",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-16",
+      "family": "tuinhek",
+      "proposed_split": "held_out",
+      "proposed_slices": ["compounds"],
+      "content": {
+        "dutch_lemma": "tuinhek",
+        "dutch_original": "tuinhek",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["garden fence"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Wij schilderen het tuinhek.",
+            "en": "We are painting the garden fence.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "tuinhekken",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"tuinhek\",\"dutch_original\":\"tuinhek\",\"examples\":[{\"en\":\"We are painting the garden fence.\",\"nl\":\"Wij schilderen het tuinhek.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"tuinhekken\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"garden fence\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "467fad39f88a95bc506c03930155c7b17a7912d59a5f75fc56f6b967fad1a20c",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "tuinhek",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-17",
+      "family": "deur-idiom",
+      "proposed_split": "calibration",
+      "proposed_slices": ["idioms"],
+      "content": {
+        "dutch_lemma": "met de deur in huis vallen",
+        "dutch_original": "met de deur in huis vallen",
+        "part_of_speech": "expression",
+        "article": null,
+        "translations": {
+          "en": ["to get straight to the point"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Ik val meteen met de deur in huis: ik heb je hulp nodig.",
+            "en": "I will get straight to the point: I need your help.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": true,
+        "expression_type": "idiom",
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"met de deur in huis vallen\",\"dutch_original\":\"met de deur in huis vallen\",\"examples\":[{\"en\":\"I will get straight to the point: I need your help.\",\"nl\":\"Ik val meteen met de deur in huis: ik heb je hulp nodig.\",\"ru\":null}],\"expression_type\":\"idiom\",\"is_expression\":true,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"expression\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to get straight to the point\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "08b727f871866853a736ac31f5094b08b532ca7a1adfe5288ad7da8f9feb439b",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "deur-idiom",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-18",
+      "family": "knoop-idiom",
+      "proposed_split": "held_out",
+      "proposed_slices": ["idioms"],
+      "content": {
+        "dutch_lemma": "de knoop doorhakken",
+        "dutch_original": "de knoop doorhakken",
+        "part_of_speech": "expression",
+        "article": null,
+        "translations": {
+          "en": ["to make a final decision"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "We moeten vandaag de knoop doorhakken.",
+            "en": "We must make a final decision today.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": true,
+        "expression_type": "idiom",
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"de knoop doorhakken\",\"dutch_original\":\"de knoop doorhakken\",\"examples\":[{\"en\":\"We must make a final decision today.\",\"nl\":\"We moeten vandaag de knoop doorhakken.\",\"ru\":null}],\"expression_type\":\"idiom\",\"is_expression\":true,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"expression\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to make a final decision\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "ae157f4ee6fdaf88f3b69b0025241681f513db176735890f141b94318228d01e",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "knoop-idiom",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-19",
+      "family": "mitochondrium",
+      "proposed_split": "calibration",
+      "proposed_slices": ["specialized"],
+      "content": {
+        "dutch_lemma": "mitochondrium",
+        "dutch_original": "mitochondrium",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["mitochondrion"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Een mitochondrium maakt energie beschikbaar voor de cel.",
+            "en": "A mitochondrion makes energy available to the cell.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "mitochondriën",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"mitochondrium\",\"dutch_original\":\"mitochondrium\",\"examples\":[{\"en\":\"A mitochondrion makes energy available to the cell.\",\"nl\":\"Een mitochondrium maakt energie beschikbaar voor de cel.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"mitochondriën\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"mitochondrion\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "f32643f4445d14893b3d7b8808dd77623c300aec5c6097d8789a645bdf6106da",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "mitochondrium",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-20",
+      "family": "bewijslast",
+      "proposed_split": "held_out",
+      "proposed_slices": ["specialized"],
+      "content": {
+        "dutch_lemma": "bewijslast",
+        "dutch_original": "bewijslast",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["burden of proof"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De bewijslast ligt bij de eiser.",
+            "en": "The burden of proof lies with the claimant.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"bewijslast\",\"dutch_original\":\"bewijslast\",\"examples\":[{\"en\":\"The burden of proof lies with the claimant.\",\"nl\":\"De bewijslast ligt bij de eiser.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"burden of proof\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "457a045756c2710e4f5f9a4c4d87378452eaeef8b1d8e049d8824af2a1715b92",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "bewijslast",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-21",
+      "family": "kwispelen",
+      "proposed_split": "calibration",
+      "proposed_slices": ["rare-missing"],
+      "content": {
+        "dutch_lemma": "kwispelen",
+        "dutch_original": "kwispelen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to wag the tail"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De hond kwispelt als ik thuiskom.",
+            "en": "The dog wags its tail when I come home.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"kwispelen\",\"dutch_original\":\"kwispelen\",\"examples\":[{\"en\":\"The dog wags its tail when I come home.\",\"nl\":\"De hond kwispelt als ik thuiskom.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to wag the tail\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "b1cce498dd1fcd29ef853c54fae4819dfe5338505ab1982399a3e5f5a2413dc5",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "kwispelen",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-22",
+      "family": "poldergemaal",
+      "proposed_split": "held_out",
+      "proposed_slices": ["rare-missing", "compounds", "specialized"],
+      "content": {
+        "dutch_lemma": "poldergemaal",
+        "dutch_original": "poldergemaal",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["polder pumping station"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Het poldergemaal pompt water uit de polder.",
+            "en": "The polder pumping station pumps water out of the polder.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "poldergemalen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"poldergemaal\",\"dutch_original\":\"poldergemaal\",\"examples\":[{\"en\":\"The polder pumping station pumps water out of the polder.\",\"nl\":\"Het poldergemaal pompt water uit de polder.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"poldergemalen\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"polder pumping station\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "8693f15c3dd36c09636e8af2b36099be4416139470c02299af959673a1fa5a93",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "poldergemaal",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Original draft; verify meaning, grammar, family, slice and level before provider use.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-23",
+      "family": "licht",
+      "proposed_split": "calibration",
+      "proposed_slices": ["ambiguous"],
+      "content": {
+        "dutch_lemma": "licht",
+        "dutch_original": "licht",
+        "part_of_speech": "adjective",
+        "article": null,
+        "translations": {
+          "en": ["light"],
+          "ru": []
+        },
+        "examples": [],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"licht\",\"dutch_original\":\"licht\",\"examples\":[],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"adjective\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"light\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "fbdc9142f07b1687463bf072192dcabe27b6f485c50edbee850b96ee53f9da64",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "licht-ambiguous",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Underspecified English gloss and no example: reviewer decides whether the input supports a unique meaning or abstention.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    },
+    {
+      "id": "pilot-24",
+      "family": "lopen",
+      "proposed_split": "held_out",
+      "proposed_slices": ["conflicting-examples"],
+      "content": {
+        "dutch_lemma": "lopen",
+        "dutch_original": "lopen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to walk"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Het water loopt uit de kraan.",
+            "en": "Water is running from the tap.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"lopen\",\"dutch_original\":\"lopen\",\"examples\":[{\"en\":\"Water is running from the tap.\",\"nl\":\"Het water loopt uit de kraan.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to walk\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "ba6ac85dbe4563a79f8a100317f05de22daa990894292b167d4eb0bc623eb310",
+      "source": {
+        "kind": "original-unreviewed-draft",
+        "draft_id": "lopen-conflict",
+        "provider_permission_ref": null
+      },
+      "reviewer_note": "Gloss describes walking; example describes flowing water. Review the conflict before assigning any expectation.",
+      "expected_levels": null,
+      "expected_abstention": null,
+      "ambiguity": null,
+      "review": {
+        "state": "pending",
+        "reviewer": null,
+        "adjudication": null,
+        "evidence_ref": null,
+        "permission_ref": null
+      }
+    }
+  ]
+}

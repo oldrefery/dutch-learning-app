@@ -1686,3 +1686,24 @@ before the documentation receipt. Private `commit.log` retains hook results.
 The hook length/complexity checks found no matching TS/JS paths; changed MJS
 files passed the separate scoped ESLint check. No push or pending operation. Next remains Sol / High local calibration/sample proposal,
 with real evidence and separate live approvals still required.
+
+## 2026-10-03 — D11 concrete calibration/sample proposal
+
+- Continued from `abc2ea0` under AUTH-20/AUTH-18; Sol / High recommendation
+  announced, no automatic picker change or subagent.
+- [Proposal](evidence/D11-calibration-sample-proposal-20261003.md): 24 meaning
+  candidates, human review worksheet, prompt/profile and exact bounds. Four bundled
+  inputs/20 original unreviewed drafts; all label/reviewer/permission fields empty.
+- Local audit PASS: 24 parsed canonical unique inputs, 12/12 proposed split,
+  all 11 pooled slices, no family/lemma overlap, profile/digests and arithmetic;
+  worklist rejected as a gold fixture. All previous 184 source hashes unchanged;
+  six new prepared artifacts, 190-path inventory. No product/SQL/runtime edits.
+- Proposed Gemini 3.5 Flash Standard probe: at most 48 generation attempts,
+  conservative reserve $1.913472, proposed API-use ceiling $2; official pricing/
+  token semantics checked through Context7/web. No secret/account/provider call.
+- Reviewer/existing gold-set clarification pending. Next Astra / High proposal
+  review, then local fake-transport collector before exact live approval. D11
+  remains in_progress, D12 not started. No inferred reviewed labels or approval.
+- Local proposal/checkpoint commit uses ordinary hooks; receipt follows. No
+  device/backend/migration/activation, paid call, publication/deployment/push/PR.
+  Preserve reports and `.playwright-cli/`; no pending restoration/external write.

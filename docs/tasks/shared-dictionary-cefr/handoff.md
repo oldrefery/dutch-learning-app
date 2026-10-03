@@ -1,5 +1,44 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 calibration/sample proposal prepared locally.**
+Starting `abc2ea0`, existing feature branch, AUTH-20/AUTH-18. Sol / High preparation
+model announced; no automatic picker change claimed. No subagent.
+[Concrete proposal](evidence/D11-calibration-sample-proposal-20261003.md),
+[24-meaning worksheet](evidence/D11-pilot-review-worksheet.md),
+[190-path inventory](evidence/D11-calibration-proposal-source-sha256.json).
+
+24 exact input candidates (four bundled, 20 original unreviewed drafts), 12/12
+proposed splits and all eleven pooled slices, prompt/profile and conservative
+cost proposal. All labels/reviewers/permissions remain pending. Validation PASS:
+24 valid unique canonical inputs, no family/lemma split overlap, profile/digests,
+budget arithmetic and rejection of the worklist as a gold fixture. 184 previous
+source hashes exact; no application, SQL, dependency or runtime change.
+
+Proposed Gemini 3.5 Flash paid Standard probe: 24 meanings, at most 48 generations,
+2000 input +2048 output +2048 reasoning reservation per attempt, concurrency one,
+maximum reserved API usage $1.913472 within a proposed $2 allowance. Current prices
+and token semantics checked in official docs through Context7/web. No provider
+account/key was accessed, and this is not spending or reuse permission.
+
+**Next checkpoint: GPT-6 Astra / High — review the concrete calibration proposal.**
+Review coverage, family/meaning inputs, provider bounds/cost and the human-review/
+unqualified-collector plan. Announce the model before starting. A clarification
+about an existing reviewed fixture or teacher/editor is pending; incorporate the
+answer before assigning any label. Then Sol / High may implement the approved-input
+collector locally with fake transport/durable reservations, before a concrete
+live permission request. The operational worker cannot sample an unqualified
+method; do not seed synthetic approval as a shortcut.
+
+D11 remains in_progress, D12 not started. Local preparation complete, real reviewed
+quality/source/budget and live acceptance remain open. Default flags/control stay
+OFF. No device/backend/provider/migration operation, activation, publication,
+deployment or push/PR/merge. Reports and `.playwright-cli/` preserved. Persistence:
+necessary local proposal/checkpoint commit with normal hooks follows under AUTH-18;
+record its exact receipt after success. No pending test process or restoration.
+
+The following worker review is historical; this preparation supersedes its next
+proposal action without altering its repair evidence.
+
 **2026-10-03 — D11 local worker review and expiry-race repair PASS.**
 Starting `9a29b06`, existing feature branch, AUTH-20/AUTH-18. Required Astra / High
 review model announced; current picker attribution remains unverified. No subagent.

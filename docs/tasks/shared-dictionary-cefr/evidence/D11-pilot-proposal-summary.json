@@ -1,0 +1,40 @@
+{
+  "items": 24,
+  "split_counts": {
+    "calibration": 12,
+    "held_out": 12
+  },
+  "slices": [
+    "ambiguous",
+    "compounds",
+    "conflicting-examples",
+    "idioms",
+    "inflections",
+    "ordinary",
+    "rare-missing",
+    "reflexive-verbs",
+    "sense-pairs",
+    "separable-verbs",
+    "specialized"
+  ],
+  "profile_sha256": "30fdffc9bde5c55917d4fb946da9ed13a8bbe40ce3a6cffea07e4876c492b7b8",
+  "prompt_sha256": "a777e46a0ae0e0653749c2f67bb4128e46def6ea863b936b9ce88a55530a93e9",
+  "worklist_file_sha256": "d5bd73e0f1b4950acca1216c4f38f12723c2d1d10f8f763b33b26f84d89b6b5a",
+  "bundled_source_sha256": "80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca",
+  "max_attempts_per_item": 2,
+  "max_generation_requests": 48,
+  "max_input_tokens": 2000,
+  "max_output_tokens": 2048,
+  "max_reasoning_tokens": 2048,
+  "rates_microusd_per_token": {
+    "input": 1.5,
+    "output": 9,
+    "reasoning": 9
+  },
+  "per_attempt_reserved_tokens": 6096,
+  "per_attempt_reserved_microusd": 39864,
+  "total_reserved_tokens": 292608,
+  "total_reserved_microusd": 1913472,
+  "proposed_spending_ceiling_microusd": 2000000,
+  "approved": false
+}
