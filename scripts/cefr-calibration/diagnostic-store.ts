@@ -25,6 +25,10 @@ CREATE TABLE IF NOT EXISTS captures (
   response_id TEXT UNIQUE, model_version TEXT,
   PRIMARY KEY(item_id, attempt),
   FOREIGN KEY(item_id, attempt) REFERENCES attempts(item_id, attempt)
+);
+CREATE TABLE IF NOT EXISTS controls (
+  control_id TEXT PRIMARY KEY, kind TEXT NOT NULL,
+  request_sha256 TEXT NOT NULL, receipt TEXT
 );`
 const transaction = <T>(db: SqliteDatabase, work: () => T): T => {
   db.exec('BEGIN IMMEDIATE')
@@ -221,3 +225,76 @@ export const capture = (
     )
   })
 }
+
+export interface ControlKey {
+  id: string
+  kind: 'count_tokens' | 'model_metadata'
+  requestSha256: string
+}
+const assertControlDay = (db: SqliteDatabase, now: Date): void => {
+  if (leaseMeta(db, 'utc_day') !== now.toISOString().slice(0, 10))
+    fail('control_day_changed')
+}
+// Fake-only preparation namespace. It cannot authorize a provider dispatch.
+export const reserveControl = (
+  db: SqliteDatabase,
+  bundle: DiagnosticBundle,
+  key: ControlKey,
+  owner: string,
+  now: Date
+): string | null =>
+  transaction(db, () => {
+    assertLease(db, owner)
+    assertControlDay(db, now)
+    if (
+      !/^[a-f0-9]{64}$/.test(key.requestSha256) ||
+      (key.kind === 'model_metadata'
+        ? key.id !== 'model_metadata'
+        : key.kind !== 'count_tokens' ||
+          !bundle.meanings.some(meaning => meaning.id === key.id))
+    )
+      fail('invalid_control_key')
+    const row = db
+      .prepare(
+        'SELECT kind,request_sha256,receipt FROM controls WHERE control_id=?'
+      )
+      .get(key.id) as
+      | { kind: string; request_sha256: string; receipt: string | null }
+      | undefined
+    if (row) {
+      if (row.kind !== key.kind || row.request_sha256 !== key.requestSha256)
+        fail('control_request_changed')
+      if (row.receipt === null) fail('control_outcome_unknown')
+      return row.receipt
+    }
+    const count = Number(
+      (
+        db
+          .prepare('SELECT COUNT(*) AS total FROM controls WHERE kind=?')
+          .get(key.kind) as { total: number }
+      ).total
+    )
+    if (count >= (key.kind === 'model_metadata' ? 1 : bundle.meanings.length))
+      fail('control_request_limit')
+    db.prepare(
+      'INSERT INTO controls(control_id,kind,request_sha256) VALUES (?,?,?)'
+    ).run(key.id, key.kind, key.requestSha256)
+    return null
+  })
+
+export const captureControl = (
+  db: SqliteDatabase,
+  key: ControlKey,
+  receipt: string,
+  owner: string
+): void =>
+  transaction(db, () => {
+    assertLease(db, owner)
+    if (Buffer.byteLength(receipt, 'utf8') > 4096) fail('control_receipt_bound')
+    const result = db
+      .prepare(
+        'UPDATE controls SET receipt=? WHERE control_id=? AND kind=? AND request_sha256=? AND receipt IS NULL'
+      )
+      .run(receipt, key.id, key.kind, key.requestSha256)
+    if (result.changes !== 1) fail('control_capture_conflict')
+  })

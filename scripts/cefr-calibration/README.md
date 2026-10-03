@@ -140,3 +140,41 @@ The executable checks use the same local Node runtime:
 ```sh
 node --test scripts/cefr-calibration/diagnostic*.test.ts
 ```
+
+## Gemini REST preparation (injected test HTTP only)
+
+`diagnostic-gemini.ts` prepares the exact Gemini Developer API REST body for the
+frozen pilot. `createGeminiTestAdapter` requires injected HTTP and uses a fixed
+dummy key. It has no default fetch, environment loader, real credentials, live mode
+or CLI. The existing fake collector rejects this adapter as a generation transport.
+This checkpoint exercises the wire contract; an authorized live runner is still
+required before any real call.
+
+The tokenizer receives `generateContentRequest` containing the complete generation
+body, including system instructions and configuration. A stable run/meaning
+identity permits the same counted body across attempts. No reference bands, split
+or slice metadata enter it. The future live runner must retain separate attempt
+reservations and response IDs, and reject any changed counted body.
+
+The adapter explicitly requests Standard service and disables request logging.
+It enforces a 5-second maximum timeout, abort, redirects disabled, JSON/UTF-8
+validation and a 16 KiB streaming envelope bound. Parsed receipts require exact
+model/version binding, Standard usage tier, disjoint prompt/answer/thinking counts,
+their total and the combined 2048-token output cap. Missing zero-valued protobuf
+counters are accepted only with a consistent total. Cache/tool charges are rejected.
+Invalid candidates preserve verified receipts; invalid receipts are a separate
+stop condition. No HTTP retry is hidden in the adapter. `models.get.version` is
+descriptive and never substitutes for `response.modelVersion`.
+
+`probeGeminiControls` reserves one metadata read and at most one token count per
+meaning in the existing private fake-run journal before dispatch. Verified results
+are immutable and cached by the full request digest. A crash, timeout or rejected
+control response leaves its reservation unknown and prevents replay. Same-day
+resume and the single-owner lease apply. This probe never generates answers; its
+output explicitly says billing unverified and live not ready.
+
+[The proposed live request](../../docs/tasks/shared-dictionary-cefr/evidence/D11-gemini-live-request.proposed.json)
+binds all frozen artifacts and 24 input hashes. Account/key, source transmission,
+spending approval, control endpoint billing and the complete total cost bound remain
+unset. The $1.913472 generation reservation is not an established total including
+control calls. The draft cannot authorize execution or qualify CEFR accuracy.

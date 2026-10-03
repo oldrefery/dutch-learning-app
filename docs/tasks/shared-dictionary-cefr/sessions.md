@@ -1796,3 +1796,22 @@ SIGSEGV before running `sharedDictionaryContract.test.ts`: 155 suites /1792 test
 passed, one suite failed to start. An isolated in-band rerun of that suite passed
 4/4 tests. Logs `receipt-commit.log` and `jest-worker-recheck.log` preserve both
 outcomes. No source change or hook bypass; retry the ordinary receipt commit.
+
+## 2026-10-03 — D11 Gemini REST/control preparation
+
+- Resumed from `88c58b7`, AUTH-20/AUTH-18; Sol 6.1 / High announced, actual picker
+  unverified. No subagent. Baseline 202/202 exact; 200 retained, README/store changed.
+- [Evidence](evidence/D11-gemini-adapter-preparation-20261003.md): full request token
+  counting, stable identity, bounded injected test HTTP, model/tier/usage validation
+  and durable one metadata/24 token controls. No live runner or provider/account/key
+  call. Current generation reservation is not a verified total including controls.
+- 47/47 Node tests PASS (23 new +22 existing); scoped types/strict lint/format/diff
+  PASS. Initial authoring syntax/native-strip/lint issues repaired before final checks.
+  Logs `reports/shared-dictionary-cefr/d11-gemini-adapter-20261003/`; 207-path inventory.
+- [Unapproved draft](evidence/D11-gemini-live-request.proposed.json) binds all inputs;
+  account/source/day/approval/control billing remain unset. No qualifier/worker/client
+  or runtime change. No paid call, hosted migration, activation, publication,
+  deployment or Git publication. Reports and `.playwright-cli/` preserved.
+- Next GPT-6 Astra / High review; then Sol / High live integration and exact final
+  request after reviewable local work. Teacher not required. D11 in_progress,
+  D12 not started. Ordinary local commit and receipt under AUTH-18 follow.
