@@ -2009,6 +2009,8 @@ in flight. Local receipt follows under AUTH-18 without push.
   private Cloud Billing product to establish the link, as outside the earlier
   Credentials/support scope. Did not bypass or submit the inquiry. Requested
   exact read-only Billing permission; awaiting answer. D11 in_progress, D12
-  pending, qualification false; runner disabled. Only task docs are modified;
-  preserve `.playwright-cli/` and ignored reports. Check formatting and commit
-  locally under AUTH-18 after the next evidence checkpoint; no push.
+  pending, qualification false; runner disabled. Documentation checkpoint
+  `2b76805` passed ordinary hooks: mobile 156 suites /1796 tests /22 snapshots;
+  web 86 suites /780 tests, one existing skip. Prettier and `git diff --check`
+  passed. Only preexisting `.playwright-cli/` remains untracked; ignored reports
+  preserved. Local receipt follows under AUTH-18; no push.

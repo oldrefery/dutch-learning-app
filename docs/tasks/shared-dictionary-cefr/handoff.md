@@ -17,8 +17,10 @@ project/billing-account link as outside the prior read-only scope; no workaround
 or send occurred. Exact read-only billing-page permission has been requested and
 is pending. If granted, verify identity/link, then submit the one authorized
 inquiry and verify receipt; do not retry an uncertain send blindly. D11
-in_progress, D12 pending. Current documentation changes are uncommitted; preserve
-`.playwright-cli/` and ignored reports. No provider or paid call, source
+in_progress, D12 pending. Documentation checkpoint `2b76805` passed ordinary
+hooks: mobile 156 suites /1796 tests /22 snapshots; web 86 suites /780 tests,
+one existing skip. A local receipt follows. Preserve preexisting `.playwright-cli/`
+and ignored reports. No provider or paid call, source
 transmission, registry activation, purchase, settings change, push or PR.
 
 **2026-10-03 — D11 authorized personal-console/support checkpoint started.**
