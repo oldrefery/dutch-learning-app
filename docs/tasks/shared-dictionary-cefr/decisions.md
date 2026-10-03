@@ -624,3 +624,10 @@ attempt 1 of 5. Its sanitized result identified absent `baseModelId`; no
 meaning input, token count or generation was sent. Four attempts remain under
 the same approximate combined figure. The temporary personal key was removed.
 No earlier registry is eligible for replay.
+
+The next full pilot was dispatched once and completed all 49 allowed requests:
+one model metadata read, 24 token counts and 24 generations. It consumed
+attempt 2 of 5; three remain. The private report stays unqualified because
+the reference is not independent gold and both ambiguity probes received
+levels rather than abstentions. No completed registry may be replayed.
+The temporary key was removed; the combined $10 estimate remains approximate.

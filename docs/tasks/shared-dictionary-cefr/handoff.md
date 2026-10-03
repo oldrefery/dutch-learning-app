@@ -1,5 +1,27 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 first complete personal Gemini pilot captured, quality
+still unqualified.** The new registry was executed exactly once and produced
+one metadata receipt, 24 token-count receipts and 24 distinct generation
+captures without timeout, failure or missing item. Generation usage measured
+88,273.5 micro-USD ($0.0882735) at the published rates; control costs are
+unknown and the AI Studio spend display may lag. The report has 19/19 exact
+agreement against the assistant's provisional bands, but 0/2 intentional
+ambiguity-probe abstentions and no independent gold. All 24 candidates were
+known, with confidence at least 0.8. It remains `qualified: false` and cannot
+enable the worker. Attempt 2 of 5 is consumed; three remain under the
+approximate $10 combined figure. The temporary key and transfer scripts were
+removed. [Sanitized result](evidence/D11-gemini-third-live-result-20261003.md)
+records hashes and limits. Local review found that the parser had not enforced
+agreement between `ambiguous` and `candidate`; it now rejects contradictory
+responses, with 108/108 fake diagnostic tests and scoped checks passing. The
+completed private report is immutable and unaffected. **Next GPT-6.1 Sol /
+High:** develop a versioned, clearer abstention prompt and local artifact
+bindings, then decide whether one more full pilot would add useful evidence.
+Do not replay the completed registry. D11 in_progress, D12 pending,
+qualification false, worker disabled; support inquiry canceled. No push, PR or
+deployment. Preserve `.playwright-cli/`.
+
 **2026-10-03 — D11 next full pilot preflight ready, dispatch pending.** After
 the metadata-only probe consumed attempt 1 of 5, a separate personal
 `oldrefery` registry for the same 24 frozen meanings was prepared at

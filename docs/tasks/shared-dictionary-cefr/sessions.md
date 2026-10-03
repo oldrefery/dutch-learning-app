@@ -2271,3 +2271,24 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   journal/report and delete the temporary key. It consumes attempt 2 of 5;
   four remain before dispatch, with the combined $10 figure approximate.
   No support message, worker activation, push, PR or deployment.
+
+## 2026-10-03 — D11 full personal pilot completed, qualification still false
+
+- Pre-dispatch checkpoint `85a6557` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing skip.
+  The new private `--execute` was invoked exactly once and exited 0. Its
+  immutable journal has 25/25 control receipts and 24/24 distinct generation
+  captures. No timeout, failure or missing item. The temporary key and local
+  transfer/preparation scripts were removed.
+- The report records $0.0882735 in generation usage at published rates, with
+  unknown control charges; no hard combined cost claim. Exact agreement with
+  provisional assistant bands is 19/19, but ambiguity-probe abstention is 0/2.
+  The reference is not independent gold, so `qualified` remains false and the
+  worker stays disabled. Attempt 2 of 5 is consumed; three remain. See
+  [sanitized result](evidence/D11-gemini-third-live-result-20261003.md).
+- Local review found the parser accepted contradictory `ambiguous` flags with
+  level candidates. It now rejects such contradictions; fake diagnostics
+  108/108 and scoped strict TypeScript, zero-warning ESLint and Prettier pass.
+  The completed private journal/report was not changed. Next: version the
+  abstention prompt and test bindings locally before considering another
+  provider attempt. No support message, push, PR or deployment.

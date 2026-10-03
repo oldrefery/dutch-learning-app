@@ -87,13 +87,22 @@ const validateUsage = (
 const candidateForReply = (
   raw: Record<string, unknown>,
   request: DiagnosticRequest
-) =>
-  raw.job_id === request.job_id &&
-  raw.input_sha256 === request.input_sha256 &&
-  raw.profile_sha256 === request.profile_sha256 &&
-  typeof raw.ambiguous === 'boolean'
-    ? parseCandidate(raw.candidate)
-    : { kind: 'invalid' as const }
+) => {
+  if (
+    raw.job_id !== request.job_id ||
+    raw.input_sha256 !== request.input_sha256 ||
+    raw.profile_sha256 !== request.profile_sha256 ||
+    typeof raw.ambiguous !== 'boolean'
+  )
+    return { kind: 'invalid' as const }
+  const candidate = parseCandidate(raw.candidate)
+  if (
+    (raw.ambiguous && candidate.kind !== 'abstain') ||
+    (!raw.ambiguous && candidate.kind === 'abstain')
+  )
+    return { kind: 'invalid' as const }
+  return candidate
+}
 
 const responseCandidate = (
   reply: Extract<DiagnosticReply, { kind: 'response' }>,

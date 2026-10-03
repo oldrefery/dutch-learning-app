@@ -13,6 +13,7 @@ import { test } from 'node:test'
 import { createRequire } from 'node:module'
 import {
   loadDiagnosticBundle,
+  parseDiagnosticReply,
   runDiagnostic,
   writeNewDiagnosticReport,
   type DiagnosticPaths,
@@ -86,6 +87,38 @@ const transport = (
   return { fake, counts: () => counts, calls: () => calls }
 }
 const temp = () => mkdtempSync(join(tmpdir(), 'd11-diagnostic-test-'))
+
+test('ambiguous flag and candidate must agree before a provider level is accepted', () => {
+  const bundle = loadDiagnosticBundle(paths)
+  const request: DiagnosticRequest = {
+    job_id: 'fake:pilot-23',
+    input_sha256: 'a'.repeat(64),
+    profile_sha256: bundle.profileSha256,
+    canonical_input: '{}',
+    prompt: bundle.prompt,
+    profile: bundle.profile,
+  }
+  const known = reply(request)
+  const abstain = reply(request, null)
+  const withFlag = (source: DiagnosticReply, ambiguous: boolean) => {
+    assert.equal(source.kind, 'response')
+    const body = JSON.parse(source.body) as Record<string, unknown>
+    return { ...source, body: JSON.stringify({ ...body, ambiguous }) }
+  }
+  assert.equal(parseDiagnosticReply(known, request, bundle, 1).outcome, 'known')
+  assert.equal(
+    parseDiagnosticReply(abstain, request, bundle, 1).outcome,
+    'abstain'
+  )
+  assert.equal(
+    parseDiagnosticReply(withFlag(known, true), request, bundle, 1).outcome,
+    'invalid'
+  )
+  assert.equal(
+    parseDiagnosticReply(withFlag(abstain, false), request, bundle, 1).outcome,
+    'invalid'
+  )
+})
 
 test('bounded fake collection freezes bindings and writes a separate unqualified report', async () => {
   const root = temp()
