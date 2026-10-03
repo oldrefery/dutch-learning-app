@@ -352,7 +352,7 @@ test('duplicate provider response identity stops capture with reservation retain
     )
     await assert.rejects(
       () => runDiagnostic({ runDir, bundle, transport: fake.fake }),
-      /UNIQUE constraint failed/
+      /duplicate_response_identity/
     )
     const db = new DatabaseSync(join(runDir, DB_FILE))
     try {

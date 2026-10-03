@@ -111,6 +111,10 @@ export const buildReport = (db: SqliteDatabase, bundle: DiagnosticBundle) => {
     interpretation: 'unqualified_model_reference_agreement',
     qualified: false,
     calibration_eligible: false,
+    rejection_reason:
+      meta.get('rejection_reason') ??
+      observed.find(row => row.outcome === 'failed')?.reason ??
+      null,
     run_id: meta.get('run_id'),
     utc_day: meta.get('utc_day'),
     binding_sha256: bundle.bindingSha256,

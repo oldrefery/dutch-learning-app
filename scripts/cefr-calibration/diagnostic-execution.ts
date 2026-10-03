@@ -1,13 +1,12 @@
 import { createHash } from 'node:crypto'
-import {
-  constants,
-  closeSync,
-  fstatSync,
-  openSync,
-  readSync,
-  readFileSync,
-} from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { privateBytes } from './diagnostic-private-files.ts'
+import {
+  assertJournalBinding,
+  bindJournal,
+  validateJournalPath,
+} from './diagnostic-journal.ts'
 import { isPreparedBundle, type DiagnosticBundle } from './diagnostic-bundle.ts'
 import { GEMINI_BASE } from './diagnostic-gemini-http.ts'
 
@@ -21,6 +20,8 @@ const implementationPaths = [
   'diagnostic-gemini-http.ts',
   'diagnostic-gemini.ts',
   'diagnostic-live.ts',
+  'diagnostic-journal.ts',
+  'diagnostic-private-files.ts',
   'diagnostic-report.ts',
   'diagnostic-runner.ts',
   'diagnostic-store.ts',
@@ -71,33 +72,6 @@ const approvalWindow = (raw: Record<string, unknown>, now: Date) => {
     return fail('approval_window')
   return { utcDay, expiresAt }
 }
-const privateBytes = (path: string, max: number): Buffer => {
-  let fd: number | undefined
-  try {
-    fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW)
-    const stat = fstatSync(fd)
-    if (
-      !stat.isFile() ||
-      stat.mode & 0o077 ||
-      stat.size > max ||
-      (process.getuid && stat.uid !== process.getuid())
-    )
-      return fail('private_file_required')
-    const buffer = Buffer.alloc(max + 1)
-    let length = 0,
-      size = 0
-    do {
-      size = readSync(fd, buffer, length, buffer.length - length, null)
-      length += size
-    } while (size && length <= max)
-    if (length > max) return fail('file_bound')
-    return buffer.subarray(0, length)
-  } catch {
-    return fail('private_file_required')
-  } finally {
-    if (fd !== undefined) closeSync(fd)
-  }
-}
 
 export interface DiagnosticExecution {
   readonly origin: 'injected_http' | 'provider'
@@ -105,6 +79,7 @@ export interface DiagnosticExecution {
   readonly bundleSha256: string
   readonly draftSha256: string
   readonly implementationSha256: string
+  readonly journalBindingPath: string
   readonly runDir: string
   readonly runId: string
   readonly utcDay: string
@@ -121,6 +96,7 @@ interface PrivateExecution {
   authorizationSha: string
   credentialSha: string
   key: string
+  journalNonce?: string
 }
 const executions = new WeakMap<DiagnosticExecution, PrivateExecution>()
 export const isPreparedExecution = (execution: DiagnosticExecution): boolean =>
@@ -157,12 +133,13 @@ export const loadDiagnosticExecution = (options: {
     JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(draftBytes))
   )
   const bindings = object(draft.artifact_binding)
+  const implementationSha256 = diagnosticImplementationSha256()
   if (
     draft.namespace !== 'dictionary-cefr-live-request-proposal-v1' ||
     bindings.bundle_sha256 !== bundle.bindingSha256 ||
     raw.bundle_sha256 !== bundle.bindingSha256 ||
     raw.draft_sha256 !== sha(draftBytes) ||
-    raw.implementation_sha256 !== diagnosticImplementationSha256() ||
+    raw.implementation_sha256 !== implementationSha256 ||
     raw.implementation_revision !== 'd11-gemini-runner-v1'
   )
     return fail('artifact_binding')
@@ -175,6 +152,10 @@ export const loadDiagnosticExecution = (options: {
     )
   )
     return fail('run_binding')
+  const journalBindingPath = validateJournalPath(
+    reference(raw.journal_binding_path),
+    runDir
+  )
   const { utcDay, expiresAt } = approvalWindow(raw, now)
   const account = object(raw.account),
     pricing = object(raw.pricing)
@@ -259,7 +240,8 @@ export const loadDiagnosticExecution = (options: {
     sha256: sha(bytes),
     bundleSha256: bundle.bindingSha256,
     draftSha256: sha(draftBytes),
-    implementationSha256: diagnosticImplementationSha256(),
+    implementationSha256,
+    journalBindingPath,
     runDir,
     runId: raw.run_id,
     utcDay,
@@ -286,6 +268,7 @@ export const assertExecutionCurrent = (
 ): void => {
   const saved = executions.get(execution)
   if (!saved) return fail('unprepared_execution')
+  if (saved.journalNonce) assertJournalBinding(execution, saved.journalNonce)
   if (
     now.toISOString().slice(0, 10) !== execution.utcDay ||
     now.getTime() >= execution.expiresAt
@@ -328,4 +311,12 @@ export const bindExecutionHttp = (
       headers: { ...init.headers, 'x-goog-api-key': saved.key },
     })
   }
+}
+
+export const bindExecutionJournal = (execution: DiagnosticExecution) => {
+  const saved = executions.get(execution)
+  if (!saved) return fail('unprepared_execution')
+  const claim = bindJournal(execution)
+  saved.journalNonce = claim.nonce
+  return claim
 }

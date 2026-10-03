@@ -6,6 +6,7 @@ import type { DiagnosticBundle } from './diagnostic-bundle.ts'
 import type { Captured } from './diagnostic-types.ts'
 import {
   isPreparedExecution,
+  bindExecutionJournal,
   type DiagnosticExecution,
 } from './diagnostic-execution.ts'
 
@@ -48,20 +49,7 @@ const transaction = <T>(db: SqliteDatabase, work: () => T): T => {
     throw error
   }
 }
-export const openRun = (
-  runDir: string,
-  bundle: DiagnosticBundle,
-  now: Date,
-  execution?: DiagnosticExecution
-): SqliteDatabase => {
-  if (
-    execution &&
-    (!isPreparedExecution(execution) ||
-      execution.bundleSha256 !== bundle.bindingSha256 ||
-      execution.runDir !== resolve(runDir) ||
-      execution.utcDay !== now.toISOString().slice(0, 10))
-  )
-    return fail('unprepared_execution')
+const prepareJournalFile = (runDir: string): string => {
   try {
     mkdirSync(runDir, { mode: 0o700 })
   } catch (error) {
@@ -80,6 +68,24 @@ export const openRun = (
   const dbStat = lstatSync(path)
   if (!dbStat.isFile() || (dbStat.mode & 0o077) !== 0)
     return fail('database_permissions')
+  return path
+}
+export const openRun = (
+  runDir: string,
+  bundle: DiagnosticBundle,
+  now: Date,
+  execution?: DiagnosticExecution
+): SqliteDatabase => {
+  if (
+    execution &&
+    (!isPreparedExecution(execution) ||
+      execution.bundleSha256 !== bundle.bindingSha256 ||
+      execution.runDir !== resolve(runDir) ||
+      execution.utcDay !== now.toISOString().slice(0, 10))
+  )
+    return fail('unprepared_execution')
+  const path = prepareJournalFile(runDir)
+  const journalClaim = execution ? bindExecutionJournal(execution) : null
   const db = new SqliteDatabaseSync(path, { timeout: 0 })
   try {
     db.exec(
@@ -109,6 +115,8 @@ export const openRun = (
       const meta = new Map(rows.map(row => [row.key, row.value]))
       const day = now.toISOString().slice(0, 10)
       if (meta.size === 0) {
+        if (journalClaim && !journalClaim.created)
+          return fail('journal_initialization_incomplete')
         const insert = db.prepare('INSERT INTO meta(key,value) VALUES (?,?)')
         for (const [key, value] of Object.entries({
           binding_sha256: bundle.bindingSha256,
@@ -126,6 +134,7 @@ export const openRun = (
                 account_ref: execution.accountRef,
                 approval_ref: execution.approvalRef,
                 control_billing_ref: execution.billingRef,
+                journal_nonce: journalClaim?.nonce ?? fail('journal_binding'),
               }
             : {}),
         }))
@@ -135,6 +144,7 @@ export const openRun = (
         meta.get('utc_day') !== day ||
         meta.get('transport_kind') !== (execution?.origin ?? 'fake') ||
         meta.get('execution_sha256') !== execution?.sha256 ||
+        (journalClaim && meta.get('journal_nonce') !== journalClaim.nonce) ||
         (execution && meta.get('run_id') !== execution.runId)
       ) {
         return fail('resume_binding_or_day')
@@ -187,7 +197,7 @@ export const releaseLease = (db: SqliteDatabase, owner: string): void =>
 export const assertNotRejected = (db: SqliteDatabase): void => {
   const rejected = db
     .prepare(
-      "SELECT 1 FROM captures WHERE json_extract(body, '$.outcome')='failed' LIMIT 1"
+      "SELECT 1 FROM meta WHERE key='rejection_reason' UNION ALL SELECT 1 FROM captures WHERE json_extract(body, '$.outcome')='failed' LIMIT 1"
     )
     .get()
   if (rejected) fail('provider_rejected')
@@ -267,18 +277,31 @@ export const capture = (
   result: Captured,
   owner: string
 ): void => {
-  transaction(db, () => {
+  const rejection = transaction(db, () => {
     assertLease(db, owner)
     const prior = db
       .prepare(
         'SELECT DISTINCT model_version FROM captures WHERE model_version IS NOT NULL'
       )
       .all() as { model_version: string }[]
-    if (
-      result.model_version &&
-      prior.some(row => row.model_version !== result.model_version)
-    )
-      return fail('mixed_resolved_model_versions')
+    const duplicate =
+      result.response_id &&
+      db
+        .prepare('SELECT 1 FROM captures WHERE response_id=?')
+        .get(result.response_id)
+    const reason = duplicate
+      ? 'duplicate_response_identity'
+      : result.model_version &&
+          prior.some(row => row.model_version !== result.model_version)
+        ? 'mixed_resolved_model_versions'
+        : null
+    if (reason) {
+      db.prepare('INSERT OR REPLACE INTO meta(key,value) VALUES (?,?)').run(
+        'rejection_reason',
+        reason
+      )
+      return reason
+    }
     db.prepare(
       'INSERT INTO captures(item_id,attempt,body,response_id,model_version) VALUES (?,?,?,?,?)'
     ).run(
@@ -288,7 +311,9 @@ export const capture = (
       result.response_id,
       result.model_version
     )
+    return null
   })
+  if (rejection) fail(rejection)
 }
 
 export interface ControlKey {
@@ -300,7 +325,7 @@ const assertControlDay = (db: SqliteDatabase, now: Date): void => {
   if (leaseMeta(db, 'utc_day') !== now.toISOString().slice(0, 10))
     fail('control_day_changed')
 }
-// Fake-only preparation namespace. It cannot authorize a provider dispatch.
+// Reservations record accounting only; the runner separately gates dispatch.
 export const reserveControl = (
   db: SqliteDatabase,
   bundle: DiagnosticBundle,

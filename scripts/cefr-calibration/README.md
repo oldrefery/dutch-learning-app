@@ -199,13 +199,15 @@ network failures and timeouts use persisted exponential backoff plus jitter; a
 than shortening the provider's requested delay. Unknown generations after a crash
 also wait before retrying and consume a new reservation. Controls never retry an
 unknown outcome. Permanent errors and invalid receipts durably stop the entire
-batch. A valid receipt is captured even when approval expires during HTTP. Leases,
+batch. Duplicate response identities and mixed-model capture conflicts persist a
+run rejection before raising an error; reports expose `rejection_reason`. A valid receipt is captured even when approval expires during HTTP. Leases,
 day/expiry, implementation and approval/key digests are checked before dispatch.
 
 [The unapproved registry template](../../docs/tasks/shared-dictionary-cefr/evidence/D11-gemini-execution.unapproved.json)
 is documentation, with execution disabled. The live CLI has no environment loader,
 implicit credential path, default registry, scheduling or activation. The current
-checkpoint has performed zero provider calls. Technical review is still required.
+checkpoint has performed zero provider calls. Local runner technical review and
+repairs are recorded in the task evidence.
 
 A future authorized operator must first establish the personal provider account,
 project/key membership, paid tier, pricing and control billing evidence outside the
@@ -224,8 +226,19 @@ Symlinked/public/foreign-owned registry, draft or key files are rejected. Editin
 or revoking the registry/key, changing implementation bytes, changing the bound
 run/day or rotating credentials stops the run. Approval is scoped to that single
 run directory; resume preserves its journal and does not refund uncertain spend.
-Do not erase/copy the journal to reuse an approval. Never commit an approved
-registry, key, account details or private captures.
+The registry also pins an absolute `journal_binding_path` outside the run directory,
+in an existing owner-controlled directory without group/other write access. On
+first execution the runner exclusively creates and fsyncs a private consumption
+record there, binding the directory/database identity and a nonce stored in the
+journal. It rechecks this record before dispatch. A missing/replaced/truncated
+journal, lost record or incomplete initialization stops execution; moving the
+registry does not relocate its consumption record. Recovery requires review and
+new explicit authorization, never automatically recreating an allowance. The
+record remains private local state, not an adversarial tamper-proof spending
+service: a process with the operator's filesystem privileges can erase both copies
+or restore old snapshots. Preserve them together and never roll either back to
+reuse an approval. Never commit an approved registry, key, consumption record,
+account details or private captures.
 
 The explicit CLI, for a separately approved future run, is:
 

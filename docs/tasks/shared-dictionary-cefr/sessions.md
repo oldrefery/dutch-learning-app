@@ -1877,3 +1877,26 @@ inventory **216/216 exact**. Only preexisting `.playwright-cli/` untracked befor
 receipt. No pending tests, provider calls, external write or restoration. Next
 GPT-6 Astra / High local runner technical review. Ordinary AUTH-18 local
 documentation receipt; no push.
+
+## 2026-10-03 — D11 Gemini runner technical review and repairs
+
+- Started `00f6540`, AUTH-20/AUTH-18. GPT-6 Astra / High announced; model-switch
+  event present, exact picker attribution unverified. No subagent. Baseline
+  216/216 exact; eight updated paths, 208 retained, 221-path final inventory.
+- [Review](evidence/D11-gemini-runner-review-20261003.md): three pre-fix failures
+  reproduced two P2 findings: lost-journal allowance replay and duplicate-receipt
+  rejection lost across resume. Added external immutable journal identity/nonce
+  record and durable receipt-conflict rejection. Repaired locally; 102/102 final
+  Node tests PASS, scoped types/strict lint/format/diff PASS. Ordinary hooks follow.
+- Draft/template rebound to the reviewed 17-file runtime; frozen five pilot files
+  and wire body unchanged. No real key/account access or provider call, paid
+  execution, native/backend, deployment/publication, scheduler or Git publication.
+  Logs `reports/shared-dictionary-cefr/d11-gemini-runner-review-20261003/`; private
+  reports and `.playwright-cli/` preserved.
+- Next GPT-6.1 Sol / High final live-pilot request preparation: verify public
+  control billing/complete cost and identify missing exact personal account/key
+  evidence before requesting necessary access/source/spending authority. Generic
+  continuation cannot authorize real HTTP or populate an approved registry.
+  No teacher required; qualification false, D11 in_progress/D12 not started.
+  Ordinary AUTH-18 local review/repair commit and receipt follow. No external
+  operation pending.

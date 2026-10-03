@@ -30,7 +30,7 @@
     "utc_day": null,
     "expires_at": null,
     "source_transmission_ref": null,
-    "review_ref": null,
+    "review_ref": "D11-gemini-runner-review-20261003.md",
     "previous_adapter_review_ref": "D11-gemini-adapter-review-20261003.md"
   },
   "requests": {
@@ -49,7 +49,8 @@
     "store": false,
     "maximum_request_bytes": 32768,
     "maximum_response_envelope_bytes": 16384,
-    "maximum_candidate_bytes": 4096
+    "maximum_candidate_bytes": 4096,
+    "journal_consumption": "immutable external record binds physical journal and nonce; losing either cannot mint a new allowance"
   },
   "budget": {
     "input_tokens_max": 2000,
@@ -200,7 +201,6 @@
     "reference_transmitted": false
   },
   "remaining_gates": [
-    "GPT-6 Astra / High technical review of the runner, private approval and restart/accounting boundary",
     "Verify personal provider account/project/key membership and paid billing tier outside the local parser",
     "Verify control endpoint pricing and complete total API-use ceiling",
     "Record exact source transmission and spending approval for one UTC day in a private registry",
@@ -211,6 +211,6 @@
     "live_cli_available": true,
     "credentials_loaded": false,
     "external_calls_performed": 0,
-    "implementation_sha256": "88af37476148858523748d4c6885de2005a507c91b99b66f4e3f5a8cec290ead"
+    "implementation_sha256": "41c095393b3f832d6e6aa747ff66f0da1bf0b7edc7f8d9220143754ce17e8de6"
   }
 }
