@@ -2113,3 +2113,20 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   in_progress, D12 pending, qualification false, runner/worker disabled.
   Support inquiry canceled. Preserve `.playwright-cli/`; no push, PR or
   deployment. Local documentation checkpoint under AUTH-18.
+
+## 2026-10-03 — D11 estimated one-run cost policy accepted
+
+- Started `290285b`, GPT-6.1 Sol / High announced; picker attribution
+  unverified. User accepted an estimated, not guaranteed, $2 ceiling for one
+  run with at most one generation per each of the 24 approved inputs, 24
+  token controls and one metadata control. Published generation reservation
+  is $0.956736; control charges remain unknown. No support inquiry or extra
+  run authorization. First implement and fake-test the bounded execution
+  mode, then perform exact private readiness validation before dispatch.
+  D11 in_progress, D12 pending, worker disabled and qualification false.
+  Only preexisting `.playwright-cli/` untracked; no provider call yet.
+- [Estimated-mode evidence](evidence/D11-gemini-estimated-mode-20261003.md):
+  one-attempt execution and explicit unknown-control cost reporting implemented
+  locally. Node 24 diagnostic tests 103/103 PASS; scoped TypeScript, ESLint
+  zero-warning, Prettier and diff check PASS. Next bind private files and run
+  no-HTTP `--check`, then dispatch the single authorized run if ready.

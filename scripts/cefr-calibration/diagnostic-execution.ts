@@ -73,8 +73,92 @@ const approvalWindow = (raw: Record<string, unknown>, now: Date) => {
   return { utcDay, expiresAt }
 }
 
+const validateEstimatedPolicy = (
+  pricing: Record<string, unknown>,
+  draft: Record<string, unknown>,
+  bundle: DiagnosticBundle
+): void => {
+  const requests = object(draft.requests),
+    budget = object(draft.budget)
+  if (
+    pricing.generation_attempts_per_meaning_max !== 1 ||
+    pricing.unknown_control_costs_accepted !== true ||
+    pricing.count_request_max_microusd !== null ||
+    pricing.metadata_request_max_microusd !== null ||
+    pricing.control_billing_verification_ref !== null ||
+    requests.attempts_per_meaning_max !== 1 ||
+    requests.generation_attempts_max !== bundle.meanings.length ||
+    budget.generation_reservation_microusd !==
+      bundle.meanings.length * bundle.costPerAttempt ||
+    budget.control_billing_verified !== false ||
+    budget.total_cost_max_microusd !== null ||
+    budget.proposed_api_use_ceiling_microusd !== bundle.ceiling
+  )
+    fail('estimated_policy_binding')
+}
+
+const readPricing = (
+  pricing: Record<string, unknown>,
+  draft: Record<string, unknown>,
+  bundle: DiagnosticBundle,
+  origin: 'injected_http' | 'provider'
+) => {
+  const rates = object(pricing.rates_microusd_per_token)
+  if (
+    rates.input !== bundle.rates.input ||
+    rates.output !== bundle.rates.output ||
+    rates.reasoning !== bundle.rates.reasoning ||
+    pricing.model !== 'gemini-3.5-flash' ||
+    pricing.service_tier !== 'standard' ||
+    pricing.api_use_ceiling_microusd !== bundle.ceiling ||
+    pricing.pricing_ref !==
+      'https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash'
+  )
+    return fail('price_binding')
+  const costPolicy: 'verified_maximum' | 'estimated_unknown_controls' =
+    pricing.cost_policy === 'estimated_unknown_controls'
+      ? 'estimated_unknown_controls'
+      : 'verified_maximum'
+  if (
+    (origin === 'provider' && pricing.cost_policy === undefined) ||
+    (pricing.cost_policy !== undefined &&
+      !['verified_maximum', 'estimated_unknown_controls'].includes(
+        String(pricing.cost_policy)
+      ))
+  )
+    return fail('cost_policy')
+  const estimated = costPolicy === 'estimated_unknown_controls'
+  const maxAttempts = estimated ? 1 : bundle.maxAttempts
+  if (estimated) validateEstimatedPolicy(pricing, draft, bundle)
+  const countCost = estimated
+    ? 0
+    : integer(pricing.count_request_max_microusd, bundle.ceiling)
+  const metadataCost = estimated
+    ? 0
+    : integer(pricing.metadata_request_max_microusd, bundle.ceiling)
+  const billingRef = estimated
+    ? null
+    : reference(pricing.control_billing_verification_ref)
+  if (
+    bundle.meanings.length * maxAttempts * bundle.costPerAttempt +
+      bundle.meanings.length * countCost +
+      metadataCost >
+    bundle.ceiling
+  )
+    return fail('combined_cost_bound')
+  if (
+    pricing.total_reserved_tokens !==
+    bundle.meanings.length * maxAttempts * bundle.tokensPerAttempt +
+      bundle.meanings.length * bundle.maxInputTokens
+  )
+    return fail('combined_token_bound')
+  return { costPolicy, maxAttempts, countCost, metadataCost, billingRef }
+}
+
 export interface DiagnosticExecution {
   readonly origin: 'injected_http' | 'provider'
+  readonly costPolicy: 'verified_maximum' | 'estimated_unknown_controls'
+  readonly maxAttempts: number
   readonly sha256: string
   readonly bundleSha256: string
   readonly draftSha256: string
@@ -88,7 +172,7 @@ export interface DiagnosticExecution {
   readonly metadataCost: number
   readonly approvalRef: string
   readonly accountRef: string
-  readonly billingRef: string
+  readonly billingRef: string | null
 }
 interface PrivateExecution {
   authorizationPath: string
@@ -174,37 +258,8 @@ export const loadDiagnosticExecution = (options: {
     ].some(x => String(x).startsWith('TEST-ONLY'))
   )
     return fail('test_registry_cannot_authorize_provider')
-  const rates = object(pricing.rates_microusd_per_token)
-  if (
-    rates.input !== bundle.rates.input ||
-    rates.output !== bundle.rates.output ||
-    rates.reasoning !== bundle.rates.reasoning ||
-    pricing.model !== 'gemini-3.5-flash' ||
-    pricing.service_tier !== 'standard' ||
-    pricing.api_use_ceiling_microusd !== bundle.ceiling ||
-    pricing.pricing_ref !==
-      'https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash'
-  )
-    return fail('price_binding')
-  const countCost = integer(pricing.count_request_max_microusd, bundle.ceiling)
-  const metadataCost = integer(
-    pricing.metadata_request_max_microusd,
-    bundle.ceiling
-  )
-  const billingRef = reference(pricing.control_billing_verification_ref)
-  if (
-    bundle.maxRequests * bundle.costPerAttempt +
-      bundle.meanings.length * countCost +
-      metadataCost >
-    bundle.ceiling
-  )
-    return fail('combined_cost_bound')
-  if (
-    pricing.total_reserved_tokens !==
-    bundle.maxRequests * bundle.tokensPerAttempt +
-      bundle.meanings.length * bundle.maxInputTokens
-  )
-    return fail('combined_token_bound')
+  const { costPolicy, maxAttempts, countCost, metadataCost, billingRef } =
+    readPricing(pricing, draft, bundle, origin)
   if (
     !Array.isArray(raw.sources) ||
     raw.sources.length !== bundle.meanings.length
@@ -237,6 +292,8 @@ export const loadDiagnosticExecution = (options: {
     return fail('credential_binding')
   const execution = Object.freeze({
     origin,
+    costPolicy,
+    maxAttempts,
     sha256: sha(bytes),
     bundleSha256: bundle.bindingSha256,
     draftSha256: sha(draftBytes),

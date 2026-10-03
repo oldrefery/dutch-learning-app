@@ -261,3 +261,15 @@ reject injected test hooks. No real credential or approved registry is supplied 
 the repository. Generation alone reserves up to $1.913472; full authorization must
 include 24 count controls and one metadata control within the proposed $2 API-use
 ceiling. These figures are bounds, not spending approval or a verified live bill.
+
+For the separately accepted D11 one-run diagnostic, a private registry may set
+`pricing.cost_policy` to `estimated_unknown_controls` only when its bound private
+draft specifies 24 total generations and one attempt per meaning. The registry
+must explicitly acknowledge unknown control costs and leave their maximum and
+billing verification fields null. Its `total_reserved_tokens` is 194304. The
+journal reserves the $0.956736 maximum for the 24 generations and records zero
+as a placeholder for each control; those zeroes are **not** claims that Google
+charges nothing for controls. The report marks its cost scope as
+`generation_maximum_controls_unknown` and `hard_total_cost_bound: false`. The $2
+figure is an estimate, not an enforced total spending cap. An uncertain or failed
+call does not permit a second generation for that meaning or a replacement run.

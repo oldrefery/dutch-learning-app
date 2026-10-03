@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 one-run estimated cost policy accepted.** The user
+authorized the pending estimated rather than guaranteed $2 ceiling and asked
+to continue. Scope: one `oldrefery` key, exactly the previously authorized
+24 frozen inputs, at most one generation per meaning, 24 token controls and
+one metadata control. Generation reservation from published rates is
+$0.956736; direct REST control prices remain unknown, so do not label the
+combined $2 as a hard bound. First update and fake-test the private execution
+mode, then validate account/key/draft/registry without leaking credentials,
+and only then dispatch. A partial failure does not authorize a second run.
+The [estimated-mode evidence](evidence/D11-gemini-estimated-mode-20261003.md)
+records 103/103 Node diagnostic tests and scoped type/lint/format/diff PASS;
+the one-attempt execution path is implemented locally. Next create the private
+registry/key binding and run the no-HTTP `--check` before dispatch.
+GPT-6.1 Sol / High announced; picker attribution unverified. D11 in_progress,
+D12 pending, worker disabled and qualification false. The support inquiry
+remains canceled. Starting HEAD `290285b`; only preexisting `.playwright-cli/`
+is untracked. No provider call from this checkpoint yet.
+
 **2026-10-03 — D11 user-supplied key suffix matched the personal paid project.**
 GPT-6.1 Sol / High announced; picker attribution unverified. The user supplied
 a partial key identifier. Read-only AI Studio inspection showed its last four

@@ -163,7 +163,7 @@ export const runGeminiDiagnostic = async (
       // Terminal/completed meanings need no further control or generation calls.
       const prior = lastCapture(db, request.itemId)
       if (prior && prior.outcome !== 'retry') continue
-      if (countAttempts(db, request.itemId) >= bundle.maxAttempts) continue
+      if (countAttempts(db, request.itemId) >= execution.maxAttempts) continue
       await control(
         {
           id: request.itemId,
@@ -187,7 +187,7 @@ export const runGeminiDiagnostic = async (
     return buildReport(db, bundle)
 
     async function generateMeaning(request: GeminiPreparedRequest) {
-      while (countAttempts(db, request.itemId) < bundle.maxAttempts) {
+      while (countAttempts(db, request.itemId) < execution.maxAttempts) {
         const latest = lastCapture(db, request.itemId)
         if (latest && latest.outcome !== 'retry') break
         const retryAt = retryNotBefore(db, request.itemId)

@@ -123,6 +123,14 @@ export const buildReport = (db: SqliteDatabase, bundle: DiagnosticBundle) => {
     profile_sha256: bundle.profileSha256,
     prompt_sha256: bundle.promptSha256,
     provenance: meta.get('transport_kind') ?? 'fake',
+    cost_policy: meta.get('cost_policy') ?? 'unscoped_fake',
+    hard_total_cost_bound:
+      meta.get('cost_policy') === 'verified_maximum' ? true : false,
+    reported_cost_scope:
+      meta.get('cost_policy') === 'estimated_unknown_controls'
+        ? 'generation_maximum_controls_unknown'
+        : 'combined_reservation',
+    api_use_ceiling_microusd: bundle.ceiling,
     execution_sha256: meta.get('execution_sha256') ?? null,
     implementation_sha256: meta.get('implementation_sha256') ?? null,
     reserved: {
@@ -136,9 +144,13 @@ export const buildReport = (db: SqliteDatabase, bundle: DiagnosticBundle) => {
       unknown_outcomes: controls.requests - (controls.receipts ?? 0),
       reserved_microusd: controls.cost,
       reserved_tokens: controls.tokens,
-      billing_ref: meta.get('control_billing_ref') ?? null,
+      billing_ref: meta.get('control_billing_ref') || null,
+      cost_max_known:
+        meta.get('cost_policy') === 'verified_maximum' ? true : false,
       observed_microusd:
-        meta.has('execution_sha256') && controls.cost === 0 ? 0 : null,
+        meta.get('cost_policy') === 'verified_maximum' && controls.cost === 0
+          ? 0
+          : null,
     },
     reserved_all: {
       requests: totals.requests + controls.requests,

@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { chmodSync, existsSync, symlinkSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import {
+  chmodSync,
+  existsSync,
+  readFileSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs'
 import { join } from 'node:path'
 import { test } from 'node:test'
 import {
@@ -57,6 +64,70 @@ test('scoped runner combines controls and generations, caches exact bodies and r
         JSON.parse(String(f.calls[index + 1].init.body))
       )
     }
+    assert.equal(
+      (await runGeminiDiagnostic(f.runner(execution))).sha256,
+      report.sha256
+    )
+    assert.equal(f.calls.length, 49)
+  } finally {
+    f.cleanup()
+  }
+})
+
+test('estimated policy permits one attempt per meaning and reports unknown control cost', async () => {
+  const f = fixture()
+  try {
+    const draft = JSON.parse(readFileSync(f.options.draftPath, 'utf8')) as {
+      requests: {
+        attempts_per_meaning_max: number
+        generation_attempts_max: number
+      }
+      budget: {
+        generation_reservation_microusd: number
+        control_billing_verified: boolean
+        total_cost_max_microusd: number | null
+      }
+    }
+    draft.requests.attempts_per_meaning_max = 1
+    draft.requests.generation_attempts_max = 24
+    draft.budget.generation_reservation_microusd = 956736
+    const draftBytes = Buffer.from(JSON.stringify(draft))
+    writeFileSync(f.options.draftPath, draftBytes)
+    f.raw.draft_sha256 = createHash('sha256').update(draftBytes).digest('hex')
+    const pricing = f.raw.pricing as Record<string, unknown>
+    pricing.cost_policy = 'estimated_unknown_controls'
+    pricing.generation_attempts_per_meaning_max = 1
+    pricing.unknown_control_costs_accepted = true
+    pricing.count_request_max_microusd = null
+    pricing.metadata_request_max_microusd = null
+    pricing.control_billing_verification_ref = null
+    pricing.total_reserved_tokens = 194304
+    f.save()
+    const execution = f.load()
+    let failed = false
+    const report = await runGeminiDiagnostic(
+      f.runner(execution, async (url, init) => {
+        if (url.endsWith(generationSuffix) && !failed) {
+          failed = true
+          f.calls.push({ url, init })
+          return json({}, 503)
+        }
+        return f.success(url, init)
+      })
+    )
+    assert.equal(report.cost_policy, 'estimated_unknown_controls')
+    assert.equal(report.hard_total_cost_bound, false)
+    assert.equal(
+      report.reported_cost_scope,
+      'generation_maximum_controls_unknown'
+    )
+    assert.equal(report.controls.cost_max_known, false)
+    assert.equal(report.controls.observed_microusd, null)
+    assert.equal(report.controls.requests, 25)
+    assert.equal(report.reserved.requests, 24)
+    assert.equal(report.reserved_all.microusd, 956736)
+    assert.equal(report.observed.unknown_usage, 1)
+    assert.equal(f.calls.length, 49)
     assert.equal(
       (await runGeminiDiagnostic(f.runner(execution))).sha256,
       report.sha256

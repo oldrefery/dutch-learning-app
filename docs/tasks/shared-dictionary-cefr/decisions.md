@@ -557,3 +557,16 @@ evidence, not an exact app-secret binding. No full value was opened or copied,
 and no provider request, source transmission, key change or billing change
 occurred. Prior one-run key authority remains scoped to `oldrefery`. The
 cost-policy decision remains pending.
+
+### October 3 — One-run estimated Gemini cost policy accepted
+
+The user explicitly accepted an estimated, not guaranteed, $2 ceiling and
+instructed D11 to continue. Scope is one run of the previously authorized 24
+frozen inputs through the personal `oldrefery` Gemini key, with at most one
+generation attempt per meaning, 24 token counts and one model metadata request.
+The published generation reservation is $0.956736. The exact direct REST
+control-method charges remain unknown; no registry may label their assumed
+cost as a verified maximum or claim a hard $2 total. Preserve the private
+journal, immutable run binding and stop-on-unknown-control behavior. A failed
+or incomplete run is not authority to start another. No support inquiry,
+production worker activation, publication or deployment is authorized.

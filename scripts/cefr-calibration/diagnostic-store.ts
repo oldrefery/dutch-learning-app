@@ -131,9 +131,16 @@ export const openRun = (
                 implementation_sha256: execution.implementationSha256,
                 count_cost: String(execution.countCost),
                 metadata_cost: String(execution.metadataCost),
+                cost_policy: execution.costPolicy,
+                generation_attempts_per_meaning_max: String(
+                  execution.maxAttempts
+                ),
+                generation_request_limit: String(
+                  bundle.meanings.length * execution.maxAttempts
+                ),
                 account_ref: execution.accountRef,
                 approval_ref: execution.approvalRef,
-                control_billing_ref: execution.billingRef,
+                control_billing_ref: execution.billingRef ?? '',
                 journal_nonce: journalClaim?.nonce ?? fail('journal_binding'),
               }
             : {}),
@@ -231,7 +238,16 @@ export const reserve = (
   transaction(db, () => {
     assertLease(db, owner)
     const prior = countAttempts(db, id)
-    if (prior >= bundle.maxAttempts) return null
+    const attemptLimit = Number(
+      (
+        db
+          .prepare(
+            "SELECT value FROM meta WHERE key='generation_attempts_per_meaning_max'"
+          )
+          .get() as { value: string } | undefined
+      )?.value ?? bundle.maxAttempts
+    )
+    if (prior >= attemptLimit) return null
     const latest = lastCapture(db, id)
     if (latest && latest.outcome !== 'retry') return null
     const totals = db
@@ -249,7 +265,16 @@ export const reserve = (
       ).total
     )
     if (
-      totals.requests >= bundle.maxRequests ||
+      totals.requests >=
+        Number(
+          (
+            db
+              .prepare(
+                "SELECT value FROM meta WHERE key='generation_request_limit'"
+              )
+              .get() as { value: string } | undefined
+          )?.value ?? bundle.maxRequests
+        ) ||
       totals.cost + controlCost + bundle.costPerAttempt > bundle.ceiling
     )
       return null
