@@ -2165,3 +2165,8 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   Node diagnostic tests 104/104 PASS; scoped types, zero-warning lint, format
   and diff check PASS. No provider call or alteration of the first private
   journal/report. New implementation digest is in the attempt evidence.
+  Code/evidence commit `b81a8ab` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots and web 86 suites / 780 tests, one existing
+  skip. Only preexisting `.playwright-cli/` remains untracked. Next action:
+  obtain fresh one-run authority before any replacement dispatch; the first
+  registry and its private unqualified report remain preserved.
