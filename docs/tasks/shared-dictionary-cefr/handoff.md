@@ -17,9 +17,10 @@ committed draft/template unapproved, qualification false. Teacher not required.
 **Next GPT-6 Astra / High — local technical review of the runner.** Announce the
 model. Check approval trust/dependency binding, combined accounting, retry/restart,
 lease/window fences and CLI refusal before any final live source/account/spending
-request. D11 in_progress; D12 not started. Ordinary local implementation commit and
-hooks pending under AUTH-18. Preserve `.playwright-cli/` and ignored reports. No
-pending external operation or restoration.
+request. D11 in_progress; D12 not started. Implementation `a661fe1` passed ordinary
+hooks: mobile 156 suites /1796 tests /22 snapshots; web 86 suites /780 tests, one existing skip. Post-hook inventory
+216/216 exact. Ordinary local documentation receipt follows under AUTH-18. Preserve
+`.playwright-cli/` and ignored reports. No pending external operation or restoration.
 
 The preceding REST/control review below is historical; its Sol integration is done.
 
