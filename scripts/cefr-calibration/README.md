@@ -120,7 +120,11 @@ attempt reserves its full request/token/cost maximum in a durable transaction be
 generation. A crash or unknown usage keeps that reservation; retries consume another
 attempt. An active collector holds a short database lease, and concurrent collectors
 cannot reserve against the same run. Resume requires identical inputs and the same
-UTC day. The reference never enters a provider request.
+UTC day. The collector rechecks the day before each dispatch and stops across
+midnight while retaining existing charges. Permanent HTTP rejection stops the
+whole run, including later resumes. Invalid candidate JSON still retains its
+verified usage and response/model identities. The reference never enters a provider
+request.
 
 The report records simulated reserved and observed usage, retries, timeouts, output
 coverage, split/slice counts, confidence-bin counts and agreement with provisional
@@ -134,5 +138,5 @@ exact approval; this command cannot make a paid call.
 The executable checks use the same local Node runtime:
 
 ```sh
-node --test scripts/cefr-calibration/diagnostic.test.ts
+node --test scripts/cefr-calibration/diagnostic*.test.ts
 ```

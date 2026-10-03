@@ -61,37 +61,42 @@ export const openRun = (
   if (!dbStat.isFile() || (dbStat.mode & 0o077) !== 0)
     return fail('database_permissions')
   const db = new SqliteDatabaseSync(path, { timeout: 0 })
-  db.exec(
-    'PRAGMA foreign_keys=ON; PRAGMA journal_mode=DELETE; PRAGMA synchronous=FULL;'
-  )
-  db.exec(SCHEMA)
-  transaction(db, () => {
-    const rows = db.prepare('SELECT key,value FROM meta').all() as {
-      key: string
-      value: string
-    }[]
-    const meta = new Map(rows.map(row => [row.key, row.value]))
-    const day = now.toISOString().slice(0, 10)
-    if (meta.size === 0) {
-      const insert = db.prepare('INSERT INTO meta(key,value) VALUES (?,?)')
-      for (const [key, value] of Object.entries({
-        binding_sha256: bundle.bindingSha256,
-        utc_day: day,
-        run_id: randomUUID(),
-        transport_kind: 'fake',
-        active_owner: '',
-        active_until: '0',
-      }))
-        insert.run(key, value)
-    } else if (
-      meta.get('binding_sha256') !== bundle.bindingSha256 ||
-      meta.get('utc_day') !== day ||
-      meta.get('transport_kind') !== 'fake'
-    ) {
-      return fail('resume_binding_or_day')
-    }
-  })
-  return db
+  try {
+    db.exec(
+      'PRAGMA foreign_keys=ON; PRAGMA journal_mode=DELETE; PRAGMA synchronous=FULL;'
+    )
+    db.exec(SCHEMA)
+    transaction(db, () => {
+      const rows = db.prepare('SELECT key,value FROM meta').all() as {
+        key: string
+        value: string
+      }[]
+      const meta = new Map(rows.map(row => [row.key, row.value]))
+      const day = now.toISOString().slice(0, 10)
+      if (meta.size === 0) {
+        const insert = db.prepare('INSERT INTO meta(key,value) VALUES (?,?)')
+        for (const [key, value] of Object.entries({
+          binding_sha256: bundle.bindingSha256,
+          utc_day: day,
+          run_id: randomUUID(),
+          transport_kind: 'fake',
+          active_owner: '',
+          active_until: '0',
+        }))
+          insert.run(key, value)
+      } else if (
+        meta.get('binding_sha256') !== bundle.bindingSha256 ||
+        meta.get('utc_day') !== day ||
+        meta.get('transport_kind') !== 'fake'
+      ) {
+        return fail('resume_binding_or_day')
+      }
+    })
+    return db
+  } catch (error) {
+    db.close()
+    throw error
+  }
 }
 const leaseMeta = (db: SqliteDatabase, key: string): string =>
   (
@@ -131,6 +136,14 @@ export const releaseLease = (db: SqliteDatabase, owner: string): void =>
       db.prepare("UPDATE meta SET value='0' WHERE key='active_until'").run()
     }
   })
+export const assertNotRejected = (db: SqliteDatabase): void => {
+  const rejected = db
+    .prepare(
+      "SELECT 1 FROM captures WHERE json_extract(body, '$.outcome')='failed' LIMIT 1"
+    )
+    .get()
+  if (rejected) fail('provider_rejected')
+}
 export const countAttempts = (db: SqliteDatabase, id: string): number =>
   Number(
     (

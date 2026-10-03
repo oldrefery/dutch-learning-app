@@ -3,6 +3,7 @@ import { parseCandidate } from '../../supabase/functions/_shared/cefr-calibratio
 import { isPreparedBundle, type DiagnosticBundle } from './diagnostic-bundle.ts'
 import { buildReport } from './diagnostic-report.ts'
 import {
+  assertNotRejected,
   capture,
   claimLease,
   countAttempts,
@@ -94,6 +95,34 @@ const candidateForReply = (
     ? parseCandidate(raw.candidate)
     : { kind: 'invalid' as const }
 
+const responseCandidate = (
+  reply: Extract<DiagnosticReply, { kind: 'response' }>,
+  request: DiagnosticRequest
+) => {
+  if (bytes(reply.body) > 4096)
+    return {
+      candidate: { kind: 'invalid' as const },
+      reason: 'oversized_response',
+    }
+  if (reply.finish_reason !== 'STOP')
+    return {
+      candidate: { kind: 'invalid' as const },
+      reason: 'incomplete_response',
+    }
+  try {
+    const candidate = candidateForReply(object(JSON.parse(reply.body)), request)
+    return {
+      candidate,
+      reason:
+        candidate.kind === 'invalid' ? 'invalid_or_unbound_candidate' : null,
+    }
+  } catch {
+    return {
+      candidate: { kind: 'invalid' as const },
+      reason: 'malformed_response',
+    }
+  }
+}
 const parseReply = (
   reply: DiagnosticReply,
   request: DiagnosticRequest,
@@ -112,20 +141,10 @@ const parseReply = (
       `http_${reply.status}`,
       elapsed_ms
     )
-  if (bytes(reply.body) > 4096)
-    return empty('invalid', 'oversized_response', elapsed_ms)
   if (!validProvenance(reply))
     return empty('invalid', 'missing_provenance', elapsed_ms)
   const observed = reply.usage ? validateUsage(reply.usage, bundle) : null
-  if (reply.finish_reason !== 'STOP')
-    return empty('invalid', 'incomplete_response', elapsed_ms)
-  let raw: Record<string, unknown>
-  try {
-    raw = object(JSON.parse(reply.body))
-  } catch {
-    return empty('invalid', 'malformed_response', elapsed_ms)
-  }
-  const candidate = candidateForReply(raw, request)
+  const { candidate, reason } = responseCandidate(reply, request)
   const outcome =
     candidate.kind === 'known'
       ? 'known'
@@ -135,12 +154,12 @@ const parseReply = (
   return {
     outcome,
     candidate,
-    reason: outcome === 'invalid' ? 'invalid_or_unbound_candidate' : null,
+    reason,
     response_sha256: sha(reply.body),
     response_id: reply.response_id,
     model_version: reply.model_version,
     finish_reason: reply.finish_reason,
-    usage: reply.usage ?? null,
+    usage: reply.usage ? structuredClone(reply.usage) : null,
     observed_microusd: observed,
     elapsed_ms,
   }
@@ -212,13 +231,30 @@ const checkedTimeout = (options: DiagnosticRunOptions): number => {
   return timeout
 }
 
-export const runDiagnostic = async (options: DiagnosticRunOptions) => {
+export const runDiagnostic = async (configuration: DiagnosticRunOptions) => {
+  // Preserve validated references and callable identities before the first await.
+  const options = {
+    ...configuration,
+    transport: {
+      kind: configuration.transport.kind,
+      countTokens: configuration.transport.countTokens.bind(
+        configuration.transport
+      ),
+      generate: configuration.transport.generate.bind(configuration.transport),
+    },
+  }
   const timeoutMs = checkedTimeout(options)
-  const now = (options.now ?? (() => new Date()))()
+  const clock = options.now ?? (() => new Date())
+  const now = clock()
+  const day = now.toISOString().slice(0, 10)
+  const checkDay = () => {
+    if (clock().toISOString().slice(0, 10) !== day) fail('run_day_changed')
+  }
   const db = openRun(options.runDir, options.bundle, now)
   const owner = randomUUID()
   try {
     claimLease(db, owner)
+    assertNotRejected(db)
     const runId = (
       db.prepare("SELECT value FROM meta WHERE key='run_id'").get() as {
         value: string
@@ -238,6 +274,7 @@ export const runDiagnostic = async (options: DiagnosticRunOptions) => {
           profile: structuredClone(options.bundle.profile),
         }
         // Fake-only token preflight; a live collector needs its own billed control-request authorization.
+        checkDay()
         renewLease(db, owner)
         const tokenCount = await countTokensBounded(
           options.transport,
@@ -250,10 +287,12 @@ export const runDiagnostic = async (options: DiagnosticRunOptions) => {
           tokenCount > options.bundle.maxInputTokens
         )
           return fail('input_token_bound')
+        checkDay()
         renewLease(db, owner)
         const attempt = reserve(db, options.bundle, meaning.id, owner)
         if (attempt === null) break
         options.onReserved?.(meaning.id, attempt)
+        checkDay()
         const result = await invoke(
           request,
           options.transport,
@@ -261,6 +300,8 @@ export const runDiagnostic = async (options: DiagnosticRunOptions) => {
           timeoutMs
         )
         capture(db, meaning.id, attempt, result, owner)
+        assertNotRejected(db)
+        checkDay()
       }
     }
     return buildReport(db, options.bundle)

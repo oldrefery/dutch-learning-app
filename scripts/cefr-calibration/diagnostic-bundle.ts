@@ -238,7 +238,9 @@ export const loadDiagnosticBundle = (
   })
   if (
     referenceById.size !== ids.size ||
-    new Set(meanings.map(x => x.split)).size !== 2
+    meanings.filter(x => x.split === 'calibration').length !== 12 ||
+    meanings.filter(x => x.split === 'held_out').length !== 12 ||
+    REQUIRED_SLICES.some(slice => !slices.has(slice))
   )
     return fail('reference_or_split_coverage')
   const rates = object(p.rates_microusd_per_token)

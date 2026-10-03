@@ -1770,3 +1770,17 @@ Collector implementation commit **`59af814`** passed normal hooks: mobile 156 su
 Post-hook inventory **200/200 exact**. Only preexisting `.playwright-cli/`
 untracked before documentation receipt. No pending tests, external write or
 restoration. Next GPT-6 Astra / High technical collector review.
+
+## 2026-10-03 — D11 diagnostic collector review and repairs
+
+- Started from `6342502`, AUTH-20/AUTH-18; Astra / High announced, actual picker
+  attribution unverified. No subagent. Baseline inventory 200/200 exact.
+- [Review](evidence/D11-diagnostic-review-20261003.md): eight behavioral failures
+  reproduced five P2 findings. Fixed mutable settings, UTC rollover, dropped receipt
+  metadata, partial authorization stop and coverage validation. Also close SQLite
+  on failed initialization/resume. Initial test draft syntax repaired before repro.
+- 22/22 final Node tests PASS; scoped types/strict lint/format/diff PASS. No live
+  transport, account/key, device/backend, publication/activation or external write.
+- Next GPT-6.1 Sol / High real-adapter/control-request local preparation and exact
+  source/account/spending proposal. Teacher question resolved; D11 in_progress,
+  D12 not started. Private logs retained; ordinary local commit/receipt follows.
