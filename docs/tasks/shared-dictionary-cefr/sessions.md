@@ -1951,3 +1951,22 @@ Checkpoint **`7db972f`** passed ordinary hooks: mobile 156 suites /1796 tests /
 22 snapshots; web 86 suites /780 tests, one existing skipped suite/test. Prettier
 and `git diff --check` PASS. Only preexisting `.playwright-cli/` untracked;
 documentation receipt follows under AUTH-18, local-only and no push.
+
+## 2026-10-03 — D11 authorized read-only personal AI Studio check
+
+- Started `d671b7f`, GPT-6.1 Sol / High announced; user explicitly authorized the
+  signed-in API-keys page. Read API-keys, Projects and Billing views only. Two
+  imported projects displayed paid Tier 1 Postpay, masked keys and one billing
+  account. UI also warned of a forthcoming billing-plan transition; recheck plan
+  and credits before any run. Exact app key/project match, key type/restrictions
+  and direct REST control prices remain unknown.
+- No key value, account/project identifiers, private registry or source data
+  copied into the repository. No credential reveal, settings/payment change,
+  provider request, source transmission or paid run. The previous auto-review
+  permission gate is resolved only for this exact read-only inspection.
+- [Packet](evidence/D11-gemini-live-authorization-packet-20261003.md) updated
+  with sanitized observations. D11 in_progress, D12 pending, qualification
+  false; runner remains disabled. Next GPT-6.1 Sol / High for separately scoped
+  key binding and authoritative control-cost evidence before any source/spending
+  request. `.playwright-cli/` and ignored reports preserved. Local documentation
+  commit/receipt under AUTH-18 follows; no push or pending external operation.

@@ -447,3 +447,15 @@ account, provider or paid operation was accessed, and no alternate route was use
 An exact read-only permission request is pending. This creates no source
 transmission, spending, registry activation or execution authority; AUTH-20 and
 the disabled defaults remain unchanged.
+
+### October 3 — Explicit read-only personal AI Studio access
+
+The user then explicitly authorized the signed-in Google AI Studio API-keys page
+inspection and continued. This approval was used for read-only API-keys, Projects
+and Billing views in the personal profile. Two imported projects showed paid Tier
+1 Postpay and masked keys under one billing account. Neither the app's exact
+key/project match nor key type/restrictions was proven. No key value or account
+identifier was persisted in the repository, and no settings, purchase, provider
+request or paid pilot action occurred. This permission is consumed for the stated
+read-only inspection and does not authorize private credential retrieval, source
+transmission, paid requests, registry activation or billing-plan changes.

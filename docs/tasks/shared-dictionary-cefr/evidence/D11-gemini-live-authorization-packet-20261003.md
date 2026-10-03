@@ -82,3 +82,16 @@ The [disabled registry template](D11-gemini-execution.unapproved.json) and
 [review](D11-gemini-runner-review-20261003.md) describe the executable contract.
 The separate report must remain unqualified; provider agreement with an
 assistant-authored reference cannot establish independent CEFR accuracy.
+
+## Read-only account inspection checkpoint
+
+On 2026-10-03, after explicit user permission, the signed-in personal Google AI
+Studio API-keys, Projects and Billing pages were inspected read-only. Two imported
+projects displayed paid Tier 1 Postpay and masked keys under the same billing
+account. The page did not identify which key is used by this application, and did
+not expose key type or restrictions in the inspected table. No key value was
+revealed or copied, and no account/project/key identifiers are persisted here.
+The Billing page displayed an upcoming plan transition; recheck the active plan
+and credit availability before seeking live approval. No settings, purchase,
+credential, provider request or execution registry changed. Direct REST control
+billing and the complete cost bound remain unverified.
