@@ -2245,6 +2245,12 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   `MM-YYYY` revision while rejecting siblings and later changes. The full
   Node 24 diagnostic suite then passed 106/106 with scoped type/lint/format.
   No generation was sent as part of this audit.
+- A further pre-dispatch timing audit identified a five-second HTTP deadline
+  with a ten-second journal lease. Both were raised in step to 30 and 45
+  seconds. A fake check ensures the full deadline fits within the lease;
+  diagnostic tests 107/107, scoped type/lint/format/diff passed. The already
+  prepared private draft/registry was invalidated by the implementation
+  change before any provider dispatch and must be rebound.
 - Next: audit remaining live response assumptions before a distinct full
   registry. D11 in_progress, D12 pending, worker disabled, qualification false.
   No support message, push, PR or deployment.

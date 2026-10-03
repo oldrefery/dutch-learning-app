@@ -92,7 +92,7 @@ const validateResponse = (response: Response, url: string): void => {
 
 // An explicit injected HTTP function and dummy key are the only dispatch path.
 export const createGeminiTestHttp = (http: TestHttp, timeout: number) => {
-  if (!Number.isSafeInteger(timeout) || timeout < 1 || timeout > 5000)
+  if (!Number.isSafeInteger(timeout) || timeout < 1 || timeout > 30_000)
     throw new Error('Invalid Gemini preparation: timeout_bound')
   return async (
     method: string,

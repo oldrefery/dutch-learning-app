@@ -47,7 +47,14 @@ validator now accepts the exact Flash family with either a three-digit or
 tests reject sibling Flash-Lite/Image models and a changed date. This does
 not claim a generation response was observed.
 
-Node 24 diagnostic tests: 106 passed. Scoped strict TypeScript, zero-warning
+Before preparing another live run, a timing audit found the adapter's former
+five-second HTTP deadline could expire while a generation was still working;
+the single-owner journal lease was only ten seconds. The adapter's bound is now
+30 seconds and the lease is 45 seconds, with a fake lease/timeout check. The
+private full-run registry prepared under the earlier implementation digest
+was never dispatched and must be rebound to this change.
+
+Node 24 diagnostic tests: 107 passed. Scoped strict TypeScript, zero-warning
 ESLint, Prettier and `git diff --check` passed. The first test invocation used
 Node 20, which cannot load these `.ts` files directly; rerunning under the
 project's Node 24 succeeded. An initial type-check invocation referenced a

@@ -189,14 +189,14 @@ export const claimLease = (db: SqliteDatabase, owner: string): void =>
       fail('run_already_active')
     db.prepare("UPDATE meta SET value=? WHERE key='active_owner'").run(owner)
     db.prepare("UPDATE meta SET value=? WHERE key='active_until'").run(
-      String(Date.now() + 10_000)
+      String(Date.now() + 45_000)
     )
   })
 export const renewLease = (db: SqliteDatabase, owner: string): void =>
   transaction(db, () => {
     assertLease(db, owner)
     db.prepare("UPDATE meta SET value=? WHERE key='active_until'").run(
-      String(Date.now() + 10_000)
+      String(Date.now() + 45_000)
     )
   })
 export const releaseLease = (db: SqliteDatabase, owner: string): void =>

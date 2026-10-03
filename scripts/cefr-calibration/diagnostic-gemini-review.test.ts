@@ -13,7 +13,7 @@ import {
   parseGeminiGeneration,
   prepareGeminiRequest,
 } from './diagnostic-gemini.ts'
-import { openRun } from './diagnostic-store.ts'
+import { claimLease, openRun, releaseLease } from './diagnostic-store.ts'
 
 const evidence = 'docs/tasks/shared-dictionary-cefr/evidence/'
 const paths = {
@@ -59,6 +59,43 @@ const stalledBody = () => {
   })
   return { body, cancelled: () => cancelled }
 }
+
+test('review: provider timeout fits inside a renewable single-owner lease', async () => {
+  const client = createGeminiTestAdapter({
+    mode: 'test-only',
+    timeoutMs: 30_000,
+    http: async () => json(metadata()),
+  })
+  assert.equal(client.kind, 'test-only')
+  assert.throws(
+    () =>
+      createGeminiTestAdapter({
+        mode: 'test-only',
+        timeoutMs: 30_001,
+        http: async () => json(metadata()),
+      }),
+    /timeout_bound/
+  )
+  await temporary(async root => {
+    const db = openRun(join(root, 'run'), bundle, new Date())
+    try {
+      claimLease(db, 'owner')
+      const activeUntil = Number(
+        (
+          db
+            .prepare("SELECT value FROM meta WHERE key='active_until'")
+            .get() as {
+            value: string
+          }
+        ).value
+      )
+      assert.ok(activeUntil - Date.now() > 30_000)
+      releaseLease(db, 'owner')
+    } finally {
+      db.close()
+    }
+  })
+})
 
 test('review: timeout cancels an already received stalled response body', async () => {
   const stream = stalledBody()

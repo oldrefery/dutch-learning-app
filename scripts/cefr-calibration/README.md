@@ -156,12 +156,13 @@ or slice metadata enter it. The runner retains separate attempt reservations and
 changed counted body.
 
 The adapter explicitly requests Standard service and disables request logging.
-It enforces a 5-second maximum timeout, abort, redirects disabled, JSON/UTF-8
+It enforces a 30-second maximum timeout, abort, redirects disabled, JSON/UTF-8
 validation and a 16 KiB streaming envelope bound. Active body readers are cancelled
 on timeout; late responses and rejected headers release unread bodies. Invalid
 envelopes return a receipt stop, while network/read failures remain transport
-errors. Parsed receipts require the exact Flash alias or a three-digit numeric
-revision (never sibling model names), subsequent exact version binding, Standard
+errors. Parsed receipts require the exact Flash alias, a three-digit numeric
+revision or a dated `MM-YYYY` revision (never sibling model names), subsequent
+exact version binding, Standard
 usage tier, disjoint prompt/answer/thinking counts,
 their total and the combined 2048-token output cap. Missing zero-valued protobuf
 counters are accepted only with a consistent total. Cache/tool charges are rejected.

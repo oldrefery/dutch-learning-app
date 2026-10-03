@@ -8,12 +8,16 @@ validation failure. Attempt 1 of the user's five further attempts is consumed;
 four remain under the approximate $10 combined estimate. The temporary key was
 removed. The parser now accepts absent `baseModelId` while rejecting a present
 mismatched value and does not invent an ID in its normalized receipt. Fake
-end-to-end controls and the full 106/106 diagnostic suite, scoped
+end-to-end controls and the full diagnostic suite, scoped
 type/lint/format/diff checks passed. [Result evidence](evidence/D11-gemini-metadata-probe-result-20261003.md)
 records sanitized fields and private result digests. A static response audit
 also extended the exact-model version pin to the provider's dated revision
-pattern; no generation response has yet been seen. **Next GPT-6.1 Sol / High:**
-prepare a distinct full-run registry/key binding and no-network `--check`,
+pattern. A further pre-dispatch timing review found that the five-second HTTP
+deadline could expire before a generation response; it is now 30 seconds
+within a 45-second single-owner journal lease. The full 107/107 diagnostic
+suite and scoped checks passed. No generation response has yet been seen.
+**Next GPT-6.1 Sol / High:** rebind the distinct full-run registry/key to this
+timing revision, run no-network `--check`,
 then dispatch at most one 24-meaning run under the remaining approval; do not
 replay the earlier two. D11 in_progress, D12 pending, qualification false,
 worker disabled; support inquiry canceled. No push, PR or deployment. Preserve

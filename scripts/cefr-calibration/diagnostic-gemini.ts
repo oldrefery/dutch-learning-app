@@ -227,7 +227,7 @@ export const createGeminiTestAdapter = (options: {
 }) => {
   if (options.mode !== 'test-only' || typeof options.http !== 'function')
     return fail('test_http_required')
-  const send = createGeminiTestHttp(options.http, options.timeoutMs ?? 5000)
+  const send = createGeminiTestHttp(options.http, options.timeoutMs ?? 30_000)
   const checked = (request: GeminiPreparedRequest) => {
     if (!preparedRequests.has(request)) fail('unprepared_request')
   }
