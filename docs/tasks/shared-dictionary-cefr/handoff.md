@@ -21,8 +21,11 @@ then Astra / High concurrency/provenance/budget review. D11 remains in_progress;
 D11.2 real quality and D11.3–D11.7 integration/acceptance gates remain open.
 Keep all defaults/schedules OFF. Live source/quality/spending approval is absent.
 
-Checkpoint persistence: local implementation/evidence commit with normal hooks
-under AUTH-18; receipt follows. Task changes include the migration, two SQL test
+Checkpoint persistence: implementation/evidence committed locally as `aded98f`.
+Normal hooks PASS: mobile 156 suites /1796 tests /22 snapshots; web 86 suites /
+780 tests, one preexisting skipped suite/test. Post-hook inventory 177/177 exact.
+Only preexisting `.playwright-cli/` remains untracked before this docs receipt.
+Receipt commit uses normal hooks under AUTH-18; no push. Task changes include the migration, two SQL test
 files, three evaluator files, policy preflight, target manifest/generated types,
 and task docs/inventory. Preserve unrelated `.playwright-cli/` and private reports.
 Retained QA devices/backend untouched; no paid call, hosted migration, activation,

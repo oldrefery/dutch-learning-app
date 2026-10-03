@@ -103,3 +103,11 @@ Astra / High review of concurrency, provenance and budget boundaries. Real revie
 meaning-level quality/source evidence and a separately approved small live sample
 remain required. No hosted migration, paid call, activation, publication, deployment,
 push/PR/merge or retained data change occurred.
+
+## Persistence receipt
+
+Implementation/evidence commit `aded98f` passed ordinary pre-commit hooks: mobile
+156 suites /1796 tests /22 snapshots; web 86 suites /780 tests with one preexisting
+skipped suite/test. The advisory file-length check reported the comprehensive SQL
+test file; no lint rule was suppressed. Post-hook inventory 177/177 exact. Local
+documentation receipt follows; no push or external operation.
