@@ -1946,3 +1946,8 @@ documentation receipt follows under AUTH-18; no push.
   external operation. Next GPT-6.1 Sol / High after exact permission, otherwise
   separately review a design/budget change. Documentation-only local commit under
   AUTH-18 follows; no push.
+
+Checkpoint **`7db972f`** passed ordinary hooks: mobile 156 suites /1796 tests /
+22 snapshots; web 86 suites /780 tests, one existing skipped suite/test. Prettier
+and `git diff --check` PASS. Only preexisting `.playwright-cli/` untracked;
+documentation receipt follows under AUTH-18, local-only and no push.
