@@ -1,5 +1,30 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-03 — D11 live-pilot authorization packet prepared locally.**
+Starting `58bb193`, branch `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
+GPT-6.1 Sol / High announced; exact picker attribution unverified. No subagent.
+[Packet](evidence/D11-gemini-live-authorization-packet-20261003.md) binds the
+unchanged 24-input draft, 24 token controls, one metadata control, 48 generations,
+one UTC day and proposed $2 API-use ceiling. Official Gemini 3.5 Flash Standard
+generation rates were rechecked. Public sources do not conclusively establish
+direct REST `models.countTokens` and `models.get` charges. The $1.913472
+generation reservation leaves $0.086528 for controls, but a complete live maximum
+is **unverified**. Draft and registry remain unapproved and disabled; no account,
+key, provider or paid call. Diagnostic qualification remains false.
+
+**Next GPT-6.1 Sol / High — gated personal account and billing evidence.**
+Announce the model. Obtain explicit permission for read-only personal Google
+account/project/key-binding inspection; verify direct REST control billing and
+finite maxima, then prepare the exact source/spending approval for one chosen UTC
+day. Do not infer transmission/spending permission from account inspection.
+If authoritative control billing remains unavailable, retain the disabled runner
+and request a separately reviewed design/budget change. D11 in_progress;
+D12 not started. This is local documentation work under AUTH-18; ordinary commit
+and receipt follow. Preserve `.playwright-cli/` and private ignored reports.
+No pending external operation.
+
+The reviewed runner checkpoint below is historical; its packet action is above.
+
 **2026-10-03 — D11 Gemini runner technical review PASS after two P2 repairs.**
 Starting `00f6540`, branch `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
 GPT-6 Astra / High announced; model-switch event present, exact picker attribution

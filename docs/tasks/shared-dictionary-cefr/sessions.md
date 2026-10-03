@@ -1907,3 +1907,20 @@ inventory **221/221 exact**. Only preexisting `.playwright-cli/` untracked befor
 receipt. No pending tests, provider calls, external write or restoration. Next
 GPT-6.1 Sol / High final concrete live-pilot request preparation within local/public
 scope. Ordinary AUTH-18 local documentation receipt; no push or live approval.
+
+## 2026-10-03 — D11 public pricing and live authorization packet
+
+- Started `58bb193`, AUTH-20/AUTH-18, GPT-6.1 Sol / High announced; exact picker
+  attribution unverified. No subagent. Frozen pilot and reviewed runner unchanged.
+- [Packet](evidence/D11-gemini-live-authorization-packet-20261003.md): official
+  Standard generation rates rechecked. Published direct REST control billing is
+  inconclusive; $1.913472 generation reservation leaves $0.086528 under proposed
+  $2 combined API-use ceiling. Explicit personal account/key, verified finite
+  control costs and exact 24-source/one-day spending approval still required.
+- Documentation-only checkpoint; no key/account/provider access, paid operation,
+  source transmission, worker activation or Git publication. D11 in_progress,
+  D12 not started; diagnostic qualification false. Preexisting `.playwright-cli/`
+  and private ignored reports preserved. No pending external operation.
+- Next GPT-6.1 Sol / High gated read-only personal account/key-binding and control
+  billing verification after exact user permission. Ordinary local documentation
+  commit and receipt under AUTH-18 follow.
