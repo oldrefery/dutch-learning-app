@@ -36,6 +36,14 @@ fixture.
 
 ## Gate before calibration
 
+The [October 4 structural review](D11-structural-abstention-review-20261004.md)
+confirms provisional abstention for the four conflict/polysemy probes
+without promoting them to independent gold. It also checks a KU Leuven
+`meebrengen` task suggestion: the exact use is visible, but that page
+lists both 1.1 and 1.2 goals, while the separate learner worksheet was
+not inspectable. The `meebrengen` row therefore remains a mixed-level
+lead, not a graded observation. The twelve lexical/form gaps are unchanged.
+
 1. Review and freeze the four structural abstention rules, plus rules
    for inflected forms, unsupported specialist meanings and source-level
    disagreements. Keep unknown/pending distinct from a CEFR band.

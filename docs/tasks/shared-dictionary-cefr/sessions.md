@@ -2576,3 +2576,25 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   unqualified, worker/schedule disabled. Two Gemini attempts remain
   scoped to the original 24. No provider call, support inquiry, push,
   PR, migration, publication or deployment.
+
+## 2026-10-04 — D11 structural abstention review
+
+- Resumed from `a3ac4e8` on `feature/shared-dictionary-schema`;
+  only preexisting `.playwright-cli/` was untracked. GPT-6.1 Sol / High
+  was announced before D11.2 work.
+- The [review](evidence/D11-structural-abstention-review-20261004.md)
+  verifies two gloss/example contradictions and two context-free
+  polysemy cases against exact dossier content. All four retain
+  preliminary expected abstention without a CEFR level or independent
+  gold status. Modern dictionary entries support the lexical
+  distinction but not a learner level.
+- KU Leuven's first-party `meebrengen` task suggestion has an exact
+  bring-along use but lists both 1.1 and 1.2 goals. The separate learner
+  worksheet was not directly inspectable, so the graded ledger remains
+  fourteen observations for eleven inputs. Twelve lexical/form gaps
+  remain. Next GPT-6.1 Sol / High: inspect a single-level exact
+  `meebrengen` worksheet, then pursue the other lexical/form gaps and
+  define inflection, specialist and source-disagreement rules.
+  D11.2 remains in progress and unqualified; worker/schedule off.
+  Two Gemini attempts remain only for the original 24. No provider
+  call, support inquiry, push, PR, migration, publication or deployment.

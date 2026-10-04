@@ -1,5 +1,25 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 structural abstention review.** Branch
+`feature/shared-dictionary-schema`, starting HEAD `a3ac4e8`; only
+preexisting `.playwright-cli/` was untracked. The
+[review](evidence/D11-structural-abstention-review-20261004.md)
+rechecks four exact inputs and retains provisional abstention for two
+cross-field conflicts and two context-free polysemy cases. Modern
+dictionary senses support the ambiguity distinction, but no CEFR level
+or independent gold was assigned. A first-party KU Leuven
+`meebrengen` task suggestion contains an exact use but spans goals
+1.1 and 1.2; the learner worksheet could not be inspected directly,
+so the graded ledger remains at fourteen observations for eleven inputs.
+**Next GPT-6.1 Sol / High:** seek single-level exact contexts for the
+twelve lexical/form gaps, starting with the `meebrengen` worksheet,
+then define inflection, unsupported-specialist and source-disagreement
+rules. D11.2 in_progress, D12 pending, quality unqualified,
+worker/schedule off. Two Gemini attempts remain only for the original
+24; no new provider inputs or support inquiry. No push, PR, migration,
+publication or deployment. Local evidence only; `.playwright-cli/`
+remains preexisting.
+
 **2026-10-04 — D11 remaining-reference gap triage.** From evidence HEAD
 `b34ceae`, the [gap screen](evidence/D11-reference-gap-screen-20261004.md)
 classifies all 16 exact inputs still lacking admitted graded observations:
