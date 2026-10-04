@@ -3,7 +3,8 @@
 Starting revision `a15e721` on `feature/shared-dictionary-schema`.
 The owner selected the original full D11 quality gate and reported that
 their prior level judgments agree with a teacher's judgments. Teacher
-scope and timing are still unconfirmed. No new provider request or
+scope is now confirmed as **whole words**, not the exact meanings in
+the historical packet. Original record/timing remain unconfirmed. No new provider request or
 external reviewer contact occurred in this checkpoint.
 
 ## Two separate review packets
@@ -23,6 +24,12 @@ external reviewer contact occurred in this checkpoint.
    outputs, source-pack cues or split/slice assignments. The pool has
    20 families and 27 unreviewed inputs. It is a **review packet**, not
    a reviewed fixture and not approved for provider transmission.
+
+The [short review form](D11-blind-review-form-20261004.md) presents all
+27 new entries with a gloss, example and blank answer fields, without
+model answers or proposed levels. A future human reviewer may use it
+to respond by ID; the hash-bound JSON remains the authoritative exact
+input. No answer has been recorded in the form.
 
 Both packets were generated only from existing local dossiers. For all
 51 items, the SHA-256 of the stored canonical input was recomputed and
@@ -44,8 +51,9 @@ task documents. Distinguish `exact_sense`, `lemma_only` and
 
 An exact-sense original judgment made independently of the evaluated
 method can become an independent human reference **for that item**.
-A lemma-only or recalled judgment is corroboration, not an exact-input
-gold label. All previously viewed pilot items remain development/error
+The reported teacher judgments are word-level and therefore remain
+corroboration, not exact-input gold labels. All previously viewed pilot
+items remain development/error
 analysis even if a teacher's original label is later recovered. Neither
 the frozen assistant reference nor the v3 report is edited or rescored.
 The context-free `licht` and internally conflicting `lopen` inputs

@@ -3023,3 +3023,21 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   1796 tests/22 snapshots and web 86 suites/780 tests with one existing
   skip. Only preexisting `.playwright-cli/` remains untracked; no remote
   operation pending.
+
+## 2026-10-04 — Teacher clarified whole-word scope
+
+- Starting `e7fa897`, the owner clarified that the teacher assessed
+  whole words, not the exact senses/examples in the 24-item D11 pilot.
+  The [feedback](evidence/D11-owner-review-feedback-20261004.md) and
+  [intake](evidence/D11-full-quality-intake-20261004.md) now keep the
+  reported agreement as word-level corroboration only.
+- A blank [27-item form](evidence/D11-blind-review-form-20261004.md)
+  was prepared from the validated new packet without Gemini answers,
+  proposed levels or split assignments. The owner was asked whether
+  they can perform blind human review of those exact meanings. No
+  response, provider work, code change or runtime activation yet.
+- Next GPT-6.1 Sol / High: obtain exact-sense human reference,
+  expand/split the pool and prespecify policy before any new paid
+  sample. D11 in_progress, worker OFF; task documentation pending
+  scoped local commit. Only `.playwright-cli/` remains unrelated and
+  untracked; no external operation pending.

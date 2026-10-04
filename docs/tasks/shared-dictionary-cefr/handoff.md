@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — teacher scope clarified as whole words.** Starting
+`e7fa897` on `feature/shared-dictionary-schema`, with only preexisting
+`.playwright-cli/` untracked. The owner confirmed the teacher rated
+words in general, not the exact meanings/examples in D11. The
+[feedback record](evidence/D11-owner-review-feedback-20261004.md) now
+retains the reported agreement as word-level corroboration, not
+independent exact-sense gold. A blank
+[27-item human review form](evidence/D11-blind-review-form-20261004.md)
+has been prepared from the hash-bound packet without model answers.
+**First incomplete action:** obtain blind human judgments for exact
+new meanings, then expand the pool and approve a prospective policy
+before a separately authorized live sample. The owner has been asked
+whether they can review the 27 new meanings personally. Next model
+**GPT-6.1 Sol / High**. D11 `in_progress`, D12 pending, worker and
+schedule OFF; no new-input/provider permission, paid call, support
+inquiry, push, PR, hosted migration, publication or deployment. This
+turn's changes are local task documents only; scoped commit under
+AUTH-18 pending. No external operation is pending.
+
 **2026-10-04 — full-quality option selected; teacher corroboration
 reported.** Starting `a15e721` on `feature/shared-dictionary-schema`,
 with only preexisting `.playwright-cli/` untracked. The owner explicitly

@@ -677,9 +677,10 @@ earlier ratings coincide with a teacher's ratings. This corrects the
 earlier assumption that the feedback has no external corroboration,
 but the teacher's exact sense coverage and independent timing are
 still unknown; see the [feedback follow-up](evidence/D11-owner-review-feedback-20261004.md).
-Use any verifiable teacher judgments as seed development evidence
-without rewriting the frozen v3 pilot or counting its retrospective
-agreement as held-out accuracy. A new adequately covered prospective
+The owner subsequently clarified that the teacher rated words in
+general, not the exact 24 meanings/examples. Retain the ratings as
+word-level corroboration only; do not promote them into exact-sense
+gold or rewrite the frozen v3 pilot. A new adequately covered prospective
 pool, reviewed policy and separately approved new-input live sample
 remain required. This choice authorizes local preparation under
 AUTH-20/AUTH-18, not new provider transmission, worker activation or
