@@ -1,5 +1,26 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D13 private backup and isolated restore PASS.** Starting HEAD
+`872b2b7`, existing feature branch, GPT-6 Astra / High. Owner supplied the existing
+DB password under AUTH-21; no login role created. [Verification evidence](evidence/D13-backup-verification-20261004.md):
+57 catalog tables, 56 COPY blocks / 24,242 rows match exact original-column hashes,
+both sequences match, 43 migrations restored. Full schema/data snapshot and separate
+password-free role dump retained privately in `builds/d13-preflight-backup.cbabcezm`.
+Source PG17.4 restored in isolated PG17.6; local grantor-only adaptation documented.
+No hosted data/schema/access change. Temporary password file and verification
+container removed. Original runtime resources remain stopped; no pending operation.
+
+**First incomplete D13.1:** reconcile remaining release-readiness gates, beginning
+with D01 real installed builds/full pending queues and exact next environment-write
+scope. Phone availability is still unanswered; do not infer device access or repeat
+the September 21 screenshot request. Backup/restore itself is complete, not blocked
+on passwords; never repeat the capture or request login-role creation on resume.
+Refresh/delta only before a separately reviewed live operation; preserve new reviews.
+CEFR remains unqualified/OFF. D13 blocked on remaining evidence/approval, no release
+checkbox complete. This checkpoint is preserved by scoped AUTH-18 local commit;
+`.playwright-cli/` remains unrelated/unstaged. No push/PR, migration, paid call,
+publication, deployment or device action. Older headers are historical.
+
 **2026-10-04 — D13 backup approved; connection access blocked.** Starting HEAD
 `1ad4021`, branch `feature/shared-dictionary-schema`, GPT-6 Astra / High.
 AUTH-21 covers full private production DB backup and isolated local restore.

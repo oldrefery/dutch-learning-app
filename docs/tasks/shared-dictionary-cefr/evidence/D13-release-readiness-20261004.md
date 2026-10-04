@@ -103,10 +103,12 @@ Official [Expo runtime-version guidance](https://docs.expo.dev/eas-update/runtim
 confirms that native compatibility determines OTA eligibility and fingerprint
 policy detects changes that may affect that runtime. Consulted through Context7.
 
-## Concrete next operation: private backup and local restore
+## Private backup and local restore — completed
 
-Backup/local restore scope **approved under AUTH-21** on October 4. Capture is
-blocked on connection access; no database copy has been made:
+Backup/local restore scope **completed under AUTH-21** on October 4 using an
+owner-supplied existing password. See [verification](D13-backup-verification-20261004.md).
+The following scope was executed; later connection-blocker/proposal notes are
+historical and superseded, not instructions to create a role or repeat capture:
 
 - Source: only `Dutch Learning App` production project above, using an existing
   authorized database connection if available. No password reset, key creation,
@@ -157,7 +159,7 @@ Local native pg_dump is version 15, unsuitable for dumping server 17. An existin
 local Supabase PostgreSQL 17.6.1.075 image is available; no image was pulled or
 container started. Confirm actual server/client versions after access is available.
 
-### Exact additional access proposal — not yet authorized
+### Historical additional access proposal — superseded, do not execute
 
 Use existing authorized Supabase management authentication for this project only,
 after checking its availability without displaying it. Issue **one**

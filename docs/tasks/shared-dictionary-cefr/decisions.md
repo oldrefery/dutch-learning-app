@@ -744,3 +744,21 @@ State: approved, capture not started; blocked on missing existing DB password.
 CLI implicit writable-role creation is outside this scope. A separate, exact
 read-only login-role proposal is recorded in the D13 readiness packet; no approval
 for it is inferred. Inspect the D13 backup-operation receipt before resuming.
+
+### AUTH-21 connection update — existing password supplied
+
+On October 4 the owner supplied an existing database password for the approved
+backup. Use only for project josxavjbcjbcjgulwcyy, held in a protected temporary
+credential file outside the repository and deleted after capture. Never record
+the credential in task evidence, command arguments or logs. This resolves the
+existing-connection path; no login-role creation is requested or authorized.
+Read-only capture/local restore remain the sole operation scope.
+
+### AUTH-21 completion — private backup/restore verified
+
+Existing-password route succeeded October 4 around 18:14 UTC. One complete schema/
+data dump and separate password-free role dump retained locally; exact 24,242-row
+and two-sequence restore verification PASS. Temporary credential and isolated
+container removed. No new login role or hosted mutation. Requested operation is
+complete; no automatic repeat/refresh or release permission is inferred. See
+D13-backup-verification-20261004.md and protected operation receipt before resuming.

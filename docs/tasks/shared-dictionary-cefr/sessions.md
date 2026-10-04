@@ -3154,3 +3154,20 @@ only; operation phase blocked_existing_database_credential_unavailable. D13.1 re
 open, D01 device question unanswered. Local docs preserved by AUTH-18 scoped commit
 with ordinary hooks; unrelated .playwright-cli/ excluded. Resume from the new
 handoff header, not previous approval-pending backup wording. No external operation.
+
+## 2026-10-04 — D13 private backup and isolated restore completed
+
+From `872b2b7`, same branch, Astra / High. User supplied existing DB password;
+AUTH-21 capture/restore completed without new login-role creation. Explicit session
+pooler connection verified target PG17.4. Single schema/data pg_dump17.6 snapshot
+26,961,696 bytes plus separate roles without passwords retained in protected ignored
+builds/d13-preflight-backup.cbabcezm. First Docker attempt failed before connection
+on architecture mismatch; explicit arm64 succeeded. First isolated restore rolled
+back on original grantor provenance; local-only derivative omitted 19 grantor clauses,
+then restore passed. Exact hashes match 56 COPY blocks / 24,242 rows, remaining empty
+partition parent, both sequences and 43 migration records. Local PG17.6 container
+had no network/ports; removed after verification. Credential temp file deleted.
+Original snapshots, manifests and private logs retained. No production mutation or
+pending operation. D13 remains blocked on device/readiness/actual-release approval;
+backup access blocker resolved, do not repeat capture. Local docs saved by AUTH-18
+scoped commit with normal hooks; no source change, unrelated .playwright-cli/ excluded.
