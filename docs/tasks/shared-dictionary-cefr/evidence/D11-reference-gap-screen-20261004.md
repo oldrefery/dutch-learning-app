@@ -3,11 +3,11 @@
 ## Scope and decision
 
 The [graded-context ledger](D11-graded-context-ledger-20261004.json) has
-sixteen non-operational observations for thirteen of the 27 exact inputs.
-Fourteen inputs have no admitted graded observation. Four of those are
+seventeen non-operational observations for fourteen of the 27 exact inputs.
+Thirteen inputs have no admitted graded observation. Four of those are
 deliberate conflict or context-free ambiguity probes: their primary
 expectation is a reviewed **abstention rule**, not a positive CEFR level.
-The other ten need a sense-matched learning context or an explicit
+The other nine need a sense-matched learning context or an explicit
 unsupported disposition. The assistant has not assigned a word-sense
 CEFR label or qualified the provider.
 The [four-input structural draft](D11-structural-abstention-draft-20261004.json)
@@ -28,7 +28,6 @@ fixture.
 | `candidate-meebrengen-bring` | Separable verb         | [KU Leuven task suggestion](https://www.arts.kuleuven.be/cto/materialen/volwassenen/behoeftegericht-geintegreerd-nt2-onderwijs/school-en-ouders/materialenbank-school-en-ouders/watmoetjemeebrengen01.pdf) uses the exact sense but mixes 1.1/1.2 goals; the separate worksheet was not inspectable | Resolve the worksheet and its task-level provenance before a ledger row       |
 | `candidate-aankomen-weight`  | Contrasting sense      | [Boom preview](https://www.nt2.nl/media/48/inkijkexemplaar_klare_taal_plus.pdf) uses the weight-gain sense on PDF pages 6–7, but the [publisher level](https://www.boom.nl/nt2/100-17379_Klare-taal-plus) spans A2–B2 without a page-specific label                                                 | Seek a single-level sense-exact context; arrival evidence cannot transfer     |
 | `candidate-treinstation`     | Compound               | [Lingua.com index](https://lingua.com/nl/nederlands/lezen/) lists the exact story under A2, while the [PDF](https://lingua.com/pdf/nederlands-tekst-weg-vragen.pdf) labels it B1                                                                                                                    | Resolve the source-level discrepancy or keep it ungraded                      |
-| `candidate-cel-biological`   | Specialized sense pair | University biology context supports meaning, not a learner level                                                                                                                                                                                                                                    | Seek graded biology-cell context or leave unsupported                         |
 | `candidate-cel-prison`       | Contrasting sense      | Government prison context supports meaning, not a learner level                                                                                                                                                                                                                                     | Seek graded prison-cell context or leave unsupported                          |
 | `candidate-zygomatisch`      | Missing-corpus probe   | Medical sense has no exact NT2Lex row in the local screen                                                                                                                                                                                                                                           | Seek graded language evidence; otherwise expect abstention                    |
 
@@ -44,9 +43,10 @@ without promoting them to independent gold. It also checks a KU Leuven
 `meebrengen` task suggestion: the exact use is visible, but that page
 lists both 1.1 and 1.2 goals, while the separate learner worksheet was
 not inspectable. The `meebrengen` row therefore remains a mixed-level
-lead, not a graded observation. The plural `tafels` form now has a glossary-use observation; ten
-lexical/form gaps remain, excluding the newly observed singular plant-root
-glossary use in the [source screen](D11-plant-root-source-screen-20261004.md).
+lead, not a graded observation. The plural `tafels` form has a glossary-use
+observation. The [plant-root screen](D11-plant-root-source-screen-20261004.md)
+and [biological-cell screen](D11-biological-cell-source-screen-20261004.md)
+add one source-level use each; nine lexical/form gaps remain.
 
 1. Review and freeze the four structural abstention rules, plus rules
    for inflected forms, unsupported specialist meanings and source-level

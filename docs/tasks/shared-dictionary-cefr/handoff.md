@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 biological-cell source follow-up.** Starting from
+local commit `927fbda` on `feature/shared-dictionary-schema`, only
+preexisting `.playwright-cli/` was untracked. A directly inspected
+[LingVo.club B1 science reading](https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1)
+adds one singular biological `cel` contextual observation to the
+[ledger](evidence/D11-graded-context-ledger-20261004.json): seventeen
+preliminary observations for fourteen of 27 inputs across seven
+publishers. The [source screen](evidence/D11-biological-cell-source-screen-20261004.md)
+keeps plural-only Taalmenu corroboration outside the ledger and notes
+the self-graded text's weak quality status. Four structural probes and
+nine lexical/form gaps remain. **Next GPT-6.1 Sol / High:** seek
+single-level exact contexts for the nine gaps, especially prison-cell
+versus biological-cell, `meebrengen`, weight-gain `aankomen` and
+`treinstation`; then settle independent meaning-level review and
+denominators. D11.2 in_progress, D12 pending, quality unqualified,
+worker/schedule off. Two Gemini attempts remain only for the original
+24; no provider call, support inquiry, push, PR, migration, publication
+or deployment. Local-only evidence.
+
 **2026-10-04 — D11 plant-root source follow-up.** Starting from HEAD
 `8175147` on `feature/shared-dictionary-schema`, only the preexisting
 `.playwright-cli/` was untracked. The directly inspected

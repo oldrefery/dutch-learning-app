@@ -36,10 +36,35 @@
       "publisher": "DutchEnglish.com",
       "url": "https://dutchenglish.com/lessons/dutch-nature-vocabulary",
       "status": "all_rights_reserved_reference_only"
+    },
+    {
+      "publisher": "LingVo.club",
+      "url": "https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1",
+      "status": "publisher_copyright_reference_only"
     }
   ],
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
   "items": [
+    {
+      "input_id": "candidate-cel-biological",
+      "input_sha256": "ff142d8d04d077046acdc432c061e6c73ca9e7784b6ebea514e4285d2d2bec08",
+      "family": "cel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "LingVo.club",
+        "url": "https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1",
+        "section_heading": "Nieuwe ontdekking: hoe zenuwcellen pijn inschakelen",
+        "material_level": "B1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "singular biological cell as the source of an enzyme in a neuroscience reading",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
     {
       "input_id": "candidate-wortel-plant",
       "input_sha256": "3088ee3d6d586745cc43e7eee12f93f8291da9c22c91904412ab8b94fab65653",

@@ -2659,3 +2659,25 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   worker/schedule disabled. Two Gemini attempts remain for the
   original 24 only. No provider call, support inquiry, push, PR,
   migration, publication or deployment.
+
+## 2026-10-04 — D11 biological-cell source follow-up
+
+- Resumed from local checkpoint `927fbda` on
+  `feature/shared-dictionary-schema`; only preexisting
+  `.playwright-cli/` was untracked. GPT-6.1 Sol / High was announced
+  before the next D11.2 step.
+- Direct browser inspection of a LingVo.club B1 reading supports one
+  singular biological `cel` contextual use. The
+  [source screen](evidence/D11-biological-cell-source-screen-20261004.md)
+  distinguishes this self-graded text from independent gold and keeps
+  a plural-only Taalmenu B1 use as a note. The
+  [ledger](evidence/D11-graded-context-ledger-20261004.json) has
+  seventeen observations for fourteen exact inputs; four structural
+  probes and nine lexical/form gaps remain. No word-sense CEFR level
+  was assigned.
+- Next GPT-6.1 Sol / High: find exact, single-level contexts for the
+  nine gaps, then settle rights, independent meaning-level review and
+  per-slice denominators. D11.2 in progress, quality unqualified,
+  worker/schedule disabled. Two Gemini attempts remain for the
+  original 24 only. No provider call, support inquiry, push, PR,
+  migration, publication or deployment.

@@ -2,8 +2,8 @@
 
 ## Result
 
-The [bound ledger](D11-graded-context-ledger-20261004.json) records sixteen
-preliminary sense-matched observations for thirteen exact hashed D11 inputs.
+The [bound ledger](D11-graded-context-ledger-20261004.json) records seventeen
+preliminary sense-matched observations for fourteen exact hashed D11 inputs.
 Seven appear in materials that [Stichting Taalmenu identifies as A1](https://nt2taalmenu.nl/nt2-a1-menu/)
 or labels A2 in the document itself. Two corroborating observations come
 from KleurRijker's [TaalCompleet A1 publisher preview](https://www.nt2.nl/nl/alle-uitgaven/101-417_Taalcompleet/100-17261_TaalCompleet-A1),
@@ -13,13 +13,16 @@ with explicit A2/B1 exercise labels. A fifth publisher,
 [DISK / Boom Amsterdam](https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf),
 uses plural `tafels` in a definition in its A2 wordlist. The observations
 also include a directly inspected [DutchEnglish.com A2 nature lesson](https://dutchenglish.com/lessons/dutch-nature-vocabulary)
-that lists singular plant-root `de wortel` under plant vocabulary. They span
-eleven families and six publishers. They were screened by the assistant from the source pages
+that lists singular plant-root `de wortel` under plant vocabulary. A
+[LingVo.club B1 science reading](https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1)
+uses singular biological `cel`. They span twelve families and seven
+publishers. They were screened by the assistant from the source pages
 before any provider run on these inputs. They remain
 **source-level exposure signals**, not reviewed word-sense CEFR labels.
 
 | Input                       | Material and page                                                                                                                                                 | Meaning-match note                                                         | Strength                             |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------ |
+| `candidate-cel-biological`  | [LingVo.club B1 neuroscience reading](https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1)                       | Singular biological cell in the reading body                               | Contextual use; self-graded text     |
 | `candidate-wortel-plant`    | [DutchEnglish.com A2 nature lesson, “Basic Nature Words in Dutch”](https://dutchenglish.com/lessons/dutch-nature-vocabulary)                                      | Singular plant root among plant/tree vocabulary                            | Glossary use; short self-graded list |
 | `candidate-tafel-plural`    | [DISK / Boom A2 wordlist, PDF page 3](https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf)                                                         | Plural furniture tables in a restaurant definition                         | Glossary use; exact inflected form   |
 | `candidate-tafel`           | [A1 writing, PDF page 24](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                                | Physical table in a location exercise                                      | Contextual use                       |
@@ -40,13 +43,15 @@ before any provider run on these inputs. They remain
 The matched senses are the assistant's preliminary interpretation. The
 DutchEnglish.com list is a weak self-graded exposure signal; see the
 [plant-root source screen](D11-plant-root-source-screen-20261004.md).
+The LingVo.club text is also self-graded and needs independent quality
+review; see the [cell source screen](D11-biological-cell-source-screen-20261004.md).
 The DISK occurrence is part of a definition for another headword, not a
 graded entry for `tafels`; it confirms exposure to the plural form only.
 Each row in the JSON ledger carries its exact input SHA-256, source URL,
 one-based PDF page or stable HTML section, material level, evidence type and `null` adjudicated
 level. A1/A2/B1 describes the **material or exercise**, not the minimum
 level at which a learner knows the word. The Van Dale PDF is an answer
-key, not the original workbook exercise page. Six publishers' materials
+key, not the original workbook exercise page. Seven publishers' materials
 still do not establish independent human gold, per-slice denominators or
 accuracy thresholds.
 
@@ -80,14 +85,15 @@ accuracy thresholds.
   states all rights reserved; the Van Dale answer key carries its
   publisher's copyright notice. The DISK / Boom wordlist also carries a
   copyright notice. DutchEnglish.com's site footer states all rights
-  reserved. All six sources are reference-only:
+  reserved. LingVo.club's adapted article is likewise reference-only.
+  All seven sources are reference-only:
   only metadata, links, page numbers and original paraphrases are saved;
   no exercise text is imported, embedded in a fixture or approved for
   provider transmission.
 
 ## Next action
 
-Seek exact contexts for the remaining 14 inputs across independent graded
+Seek exact contexts for the remaining 13 inputs across independent graded
 sources, especially the contrasting weight-gain `aankomen` sense and the
 ambiguous/rare-missing slices. Resolve the Lingua.com `treinstation`
 level conflict from first-party metadata or keep it ungraded. Keep
