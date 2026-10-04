@@ -153,13 +153,14 @@
   },
   "remaining_gates": [
     "fresh_private_backup_and_isolated_restore",
-    "P1_P2_native_build_and_full_local_queue_evidence",
     "live_schema_drift_and_deployed_contract_comparison",
     "approved_source_publication_manifest_and_final_delta",
     "clean_release_checkout_and_hosted_CI",
     "new_native_build_signing_runtime_maps_and_artifact_approval",
     "explicit_environment_operation_and_final_cutover_approval",
-    "separate_CEFR_quality_cost_activation_gate"
+    "separate_CEFR_quality_cost_activation_gate",
+    "accepted_P2_device_evidence_gap_preservation_and_late_offline_write_compatibility",
+    "P1_web_and_release_runtime_evidence"
   ],
   "source_sha256": {
     "apps/mobile/app.base.json": "ee03a6e099e84dcc0f1001e58d87cd12f527c6fac70377591419612e15ca3340",
@@ -171,5 +172,14 @@
     "apps/web/src/features/dictionary/repository.ts": "b0832152d15848fbc6bfe803eab6f21d613a98c3f9521eba4366926907e39535",
     "scripts/shared-dictionary/rehearsal.sql": "802333e495ec3a2965393e4bcea1ec4834d01380fb21ce4645aeaad8dd8e16bd",
     "scripts/shared-dictionary/README.md": "7861aa363cbc3f92df7f27bb86a6e92e4dbee0cb80d0bcf47117772fbae7718e"
+  },
+  "device_evidence_update": {
+    "observed_at_utc": "2026-10-04T19:07:41Z",
+    "P1_native_build": "2.3.1 (84), USB verified",
+    "P1_sqlite_queues": "empty at protected snapshot time",
+    "P2_device": "unavailable; owner instructs continuation without physical evidence; build/local queues unknown",
+    "offline_legacy_compatibility": "required",
+    "local_real_snapshot_dormant_rehearsal": "passed; 24242 original rows and 14 old learning functions unchanged",
+    "hosted_execution_approval": "pending"
   }
 }

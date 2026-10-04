@@ -25,6 +25,12 @@ last-resort fallback, not authorization to discard data. Coordinate device/build
 verification with these two users instead of requiring a population-wide adoption
 survey. This reduces rollout coordination, not schema/privacy/offline safeguards.
 
+October 4 device-access exception: the owner directs continuation without P2's
+unavailable primary Android. Its native build and device-only queues remain
+unknown. Do not wait for that connection, waive preservation, or infer reset
+permission. Retain legacy/offline compatibility and record this evidence limit
+in the final release scope; operation and cutover approvals remain separate.
+
 Cutover constraint confirmed 2026-09-12 (DEC-09): current production reads/writes
 stay on the existing schema until all implementation and pre-release verification
 are complete. No early switch of P1/P2 through deployment, canary or backfill.

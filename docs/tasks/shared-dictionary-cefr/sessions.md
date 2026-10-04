@@ -3249,3 +3249,23 @@ P1 native/SQLite gaps resolved; P2 Android/web/OTA and release approvals remain.
 Owner asked whether actual P2 Android is available. Four existing QA services/
 proxy retained; no new runtime or external operation pending. Application source
 unchanged, private data excluded; scoped documentation checkpoint only, no push.
+
+## 2026-10-04 — P2 device omission accepted; real-snapshot migration rehearsal
+
+Owner explicitly says actual P2 Android is unavailable and directs continuation
+without it. Recorded evidence exception, not reset/cutover approval. No further
+phone-connection request. P1 checkpoint295806a ordinary hooks passed mobile1796
+and web780 tests (one existing web skip),22 mobile snapshots; private copies excluded.
+Reused existing server backup in new isolated network-none PG17.6 containers,
+no new export or hosted connection. First two attempts exposed local restore DB/
+public-schema ownership mismatch; third applied all nine migrations and preserved
+all rows but validator rejected a newly added function. Corrected signature-based
+comparison: final attempt4 PASS,24,242 rows/56 COPY hashes unchanged,14 old learning
+functions/ACLs/owners unchanged, all flags OFF, zero links/entries, no cron schema.
+All temporary containers removed; original backups retained. Production owner/ACL
+still requires fresh read-only verification. No migration/source changes needed.
+Prepared exact dormant-production operation for separate owner approval, including
+fresh private recovery baseline and nine hash-bound additive migrations with atomic
+ledger records. No activation, deployment, source publication, phone update or paid
+call included. Documentation preserved locally under AUTH-18; no push/PR. Existing
+four Android QA services/proxy retained; unrelated .playwright-cli/ untouched.

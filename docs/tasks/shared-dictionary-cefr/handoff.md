@@ -1,5 +1,36 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — Continue without P2 phone; dormant snapshot rehearsal PASS.**
+Owner explicitly says P2 primary Android unavailable and instructs continuation
+without it. Do not ask again for that connection. Build/local queues stay unknown;
+retain old-client/offline compatibility and never infer reset or data-loss consent.
+Application candidate13b97b0 unchanged; latest completed checkpoint commit295806a.
+GPT-6 Astra / High. [Rehearsal evidence](evidence/D13-dormant-snapshot-rehearsal-20261004.md).
+
+All nine exact candidate migrations applied to the preserved real server snapshot
+in a new network-none local PG17.6 container. All24,242 original rows in56 COPY
+blocks unchanged; all14 old learning-named RPC definitions/ACLs/owners unchanged.
+All new runtime flags/CEFR OFF, no linked words/cache, no entries/scheduler. Local
+DB-owner fixture adaptation and earlier validator false-positive documented.
+Final private receipt d13-dormant-rehearsal-20261004/attempt-4/receipt.json is
+verified/container_removed=true. No new hosted connection/backup or device action.
+
+**Next D13.1:** obtain approval for [exact dormant production preparation](evidence/D13-dormant-production-operation-20261004.md):
+read-only identity/role/ledger/schema preflight, newly approved fresh private backup
+and isolated restore, nine hash-bound additive migrations with flags OFF and atomic
+ledger records, then compatibility/preservation verification. That is a production
+schema write and is not yet authorized. Final cutover, source push/PR, publication,
+store/web/Edge deployment, phone changes and CEFR activation remain excluded.
+No need to repeat completed iPhone export or unchanged local rehearsal.
+
+P1 SQLite backup remains protected in builds/d13-primary-ios-snapshot.ghp8wb;
+all queues empty at capture,2,342 active SRS and1,650 review events match server
+snapshot;18 original word-field differences retained (one tombstoned SRS drift).
+Original server backup retained; P2 local queues not covered. Four earlier local
+Android QA services/proxy remain for testing; all rehearsal containers removed.
+Scoped AUTH-18 documentation commit preserves this update with ordinary hooks;
+.playwright-cli/ untouched. Older headers below are chronological history.
+
 **2026-10-04 — Primary iPhone SQLite preservation PASS; P2 evidence still open.**
 From c0ef5be, GPT-6 Astra / High. Native 2.3.1 (84) confirmed independently by USB
 Lookup and repaired Apple devicectl. After the initial export was rejected before

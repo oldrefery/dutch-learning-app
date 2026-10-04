@@ -193,6 +193,15 @@ does not restore the complete project configuration. Consulted through Context7.
 
 ## Device and release gates
 
+October 4 update: [P1 USB/SQLite verification](D13-primary-ios-preservation-20261004.md)
+confirms native2.3.1(84) and empty SQLite queues with a stable private snapshot.
+Exact OTA/AsyncStorage remain outside capture. Owner directs continuation without
+unavailable P2 Android; its build/queues remain unknown and legacy compatibility
+is mandatory. [Real-snapshot rehearsal](D13-dormant-snapshot-rehearsal-20261004.md)
+applies all nine migrations without changing original rows or existing learning
+functions. The [next exact operation](D13-dormant-production-operation-20261004.md)
+requires separate approval. Earlier device-access statements below are historical.
+
 Preserve September 21's P1 screenshot evidence; do not ask for it again as if absent.
 P1 iOS app-reported 2.3.1 (84), visible 0/0/0 counters and matching card totals are
 known, but exact binary/update identity and review/reset/correction queues are not.

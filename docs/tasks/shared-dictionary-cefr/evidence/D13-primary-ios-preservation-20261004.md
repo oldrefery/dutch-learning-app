@@ -90,8 +90,10 @@ AsyncStorage, media files, updater data or in-memory state. No phone restore tes
 Preserve this directory from builds cleanup. Local permissions are not encryption.
 
 P1 native-build and SQLite pending-queue gaps are now resolved at this instant.
-D01.2 still needs P2's actual Android and relevant web/OTA evidence. The disposable
-Huawei is not P2. D13 release remains blocked on these remaining gates and exact
+P2's actual Android remains unavailable; the owner subsequently directed
+continuation without it. Build/local queues remain unknown, with compatibility
+safeguards retained. Relevant web/OTA evidence remains. The disposable Huawei is
+not P2. D13 release remains blocked on these remaining gates and exact
 release approvals; no migration, publication, deployment, push or PR authorized.
 The stored field differences must be accounted for in the eventual preservation
 baseline/delta, not silently normalized by overwriting the phone. CEFR stays off.

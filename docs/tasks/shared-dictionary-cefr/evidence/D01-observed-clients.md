@@ -6,7 +6,7 @@
 | ------------- | ----------------------- | ---------------------------------------------------- | --------------------------------- |
 | P1            | iOS (primary)           | USB native metadata: 2.3.1 (84)                      | SQLite snapshot: all queues empty |
 | P1            | Web                     | Current deployed revision not rechecked this session | Unknown                           |
-| P2            | Android                 | Awaiting device evidence                             | Unknown                           |
+| P2            | Android                 | Unavailable; owner accepts omission                  | Unknown                           |
 | P2            | Possibly web            | Active use not confirmed                             | Unknown                           |
 
 P1 October 4 [SQLite preservation](D13-primary-ios-preservation-20261004.md)
@@ -15,8 +15,10 @@ Exact OTA/AsyncStorage remain unverified; future writes require a current delta.
 
 P1 previously supplied [iOS screenshots](D01-ios-owner-evidence.md) on September 21;
 2,311 local words and 12 collections agree with the earlier server aggregates.
-Do not re-request this evidence. P2 Android version/build and sync status remain
-outstanding. Ask for missing evidence only.
+Do not re-request this evidence. P2 Android version/build and sync status remain unknown. On October 4 the owner
+instructed continuation without that unavailable phone; do not ask again for its
+connection. Keep legacy/offline compatibility and device-only data explicitly
+unverified; server backup does not cover local queues.
 If the app does not expose queue state, retain that gap and arrange a scoped
 non-destructive diagnostic; do not treat a successful login or server word count
 as an empty local queue. Never reinstall, reset, log out or clear storage to

@@ -812,3 +812,15 @@ integrity and queue inventory verified. No device writes. Original states retain
 18 original word-field differences versus the existing server copy are recorded,
 including one tombstoned SRS discrepancy, with active SRS/history matching.
 Do not repeat capture automatically or infer app update/restore/release permission.
+
+### October 4 — Continue without P2's physical Android
+
+Owner states the primary Android for P2 is unavailable and directs continuation
+without it. This supersedes waiting for physical P2 access as a preparation
+dependency. Keep installed build, local queues and device-only data explicitly
+unknown; do not classify them as empty or backed up. No reset, overwrite or
+abandonment of P2 learning data is authorized. Preserve legacy/offline compatibility
+and assess late old-client writes before any eventual cutover. D13 preparation
+continues with available snapshots and isolated local rehearsal. Final hosted
+operation/release approvals remain separate under DEC-09; no global switch or
+automatic linking of P2 follows from the device-access exception.
