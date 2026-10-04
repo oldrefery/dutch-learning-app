@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 complete draft slice matrix, still unqualified.**
+From local commit `2e2eea7`, the latest
+[pack v3](evidence/D11-new-reference-pack-inputs-20261004-v3.json) and
+[authored v6](evidence/D11-authored-sense-inputs-20261004-v6.json)
+dossiers now hold 27 unreviewed inputs across 20 split-isolated families.
+All eleven required slices have at least one draft input in each split;
+Deno parsing, canonical SHA-256, unique IDs/hashes and family isolation
+pass. The updated
+[source screen](evidence/D11-sense-source-screen-20261004.md) records
+references and limits. **Next GPT-6.1 Sol / High:** review the exact drafts,
+then seek independent graded meaning-level evidence, establish adequate
+per-slice denominators and freeze the policy before any new scoring.
+Draft coverage alone is not calibration; no reviewed labels, provider
+approval or operational qualification. D11.2 in_progress, D12 pending,
+worker/schedule off. Two personal Gemini attempts remain solely for the
+original 24 pilot meanings. No support inquiry, new provider input, push,
+PR, migration, publication or deployment. Local-only persistence.
+
 **2026-10-04 — D11 expanded local source/input screen.** Branch
 `feature/shared-dictionary-schema`, starting HEAD `af70ebb`. The latest
 [pack v3](evidence/D11-new-reference-pack-inputs-20261004-v3.json) and

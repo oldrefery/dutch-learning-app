@@ -2478,3 +2478,22 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   support inquiry, push, PR, migration, publication or deployment.
   Two Gemini attempts remain only for the original 24 meanings. Local
   repository evidence; `.playwright-cli/` was preexisting and untouched.
+
+## 2026-10-04 — D11 draft slice matrix filled locally
+
+- Commit `2e2eea7` saved the earlier 21-input source screen. Its ordinary
+  hooks passed on retry: mobile 156 suites / 1,796 tests / 22 snapshots;
+  web 86 suites / 780 tests with one existing skip. The first hook run
+  hit a 15-second ESLint subprocess timeout in one unrelated test; the
+  isolated test and full retry passed without code changes.
+- Added local authored v5/v6 snapshots for `treinstation`, two `cel`
+  senses, context-free `slot` and `blad`, and `zygomatisch`. Together with
+  pack v3, all 27 inputs parse and match canonical hashes; IDs/hashes are
+  unique and all 20 families stay in one split. Every required slice has
+  at least one unreviewed draft in both splits.
+- Next GPT-6.1 Sol / High: review exact drafts and source rights, obtain
+  independently graded meaning-level evidence, set adequate per-slice
+  denominators and freeze policy. D11.2 remains open, quality unqualified,
+  worker/schedule disabled. No new provider call; two personal Gemini
+  attempts remain scoped to the original 24 meanings only. No support
+  inquiry, push, PR, migration, publication or deployment.

@@ -50,8 +50,8 @@ previously frozen 24 meanings. No expected level is assigned here.
 Every required slice has at least one **proposed** family per split (ordinary
 and inflections share a family in each split). The rows with `D` are research
 leads, not ready fixture items. The current
-[source screen](D11-sense-source-screen-20261004.md) binds 21 draft inputs
-across 15 families and identifies five slice/split cells without inputs.
+[source screen](D11-sense-source-screen-20261004.md) binds 27 draft inputs
+across all 20 families and covers every proposed slice/split cell.
 The `P` rows have canonical hashes but still need meaning-level graded
 evidence. No row has an adjudicated CEFR label.
 

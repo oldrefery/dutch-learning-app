@@ -11,9 +11,9 @@ corpus rows were copied into the app.
 
 The latest [pack dossier](D11-new-reference-pack-inputs-20261004-v3.json)
 contains ten inputs across six families. The latest
-[authored dossier](D11-authored-sense-inputs-20261004-v4.json) contains eleven
-inputs across nine families. Earlier dossier versions remain historical
-snapshots; use these two latest files together. All 21 `DictionaryContent`
+[authored dossier](D11-authored-sense-inputs-20261004-v6.json) contains seventeen
+inputs across fourteen families. Earlier dossier versions remain historical
+snapshots; use these two latest files together. All 27 `DictionaryContent`
 objects parse, match their canonical assessment inputs and SHA-256 hashes,
 have unique IDs/hashes, and keep each family in one split. Every item is
 `unreviewed`, has `expected_levels: null` and `provider_approved: false`.
@@ -39,10 +39,35 @@ These bindings establish exact input identity, not linguistic or CEFR quality.
 | `zich wassen` / calibration                  | Wash oneself                              | [Onze Taal reflexive grammar](https://onzetaal.nl/taalloket/wederkerend-werkwoord) and [ANW `wassen`](https://anw.ivdnt.org/article/wassen)                                                                                                              | Reflexive use is optional; wording needs review                                     |
 | `zich schamen` / held-out                    | Feel ashamed                              | [Onze Taal reflexive grammar](https://onzetaal.nl/taalloket/wederkerend-werkwoord), [ANW `schamen`](https://anw.ivdnt.org/article/schamen) and [WNT entry](https://gtb.ivdnt.org/iWDB/search?actie=article_content&id=M062241&lemmodern=schamen&wdb=WNT) | Obligatory reflexive use is supported; wording needs review                         |
 
+Five further source-backed families are in authored v6:
+
+- `treinstation` (calibration compound): the
+  [Rijksdienst heritage term](https://kennis.cultureelerfgoed.nl/index.php/Begrip%3AD8200f5e-545b-4692-b2f8-13cbe5fa38d0)
+  defines a train station; [ANW `station`](https://anw.ivdnt.org/article/station)
+  confirms the component and lists the compound. Its example is locally authored.
+- `cel` (calibration specialized/sense pair):
+  [university biology use](https://www.universiteitvannederland.nl/college/zo-maak-je-zaadcellen-in-een-lab),
+  [Dutch government prison use](https://www.rijksoverheid.nl/vraag-en-antwoord/straffen-en-maatregelen/welke-rechten-heeft-een-gedetineerde)
+  and [ANW grammar](https://anw.ivdnt.org/article/cel) corroborate two contexts;
+  both examples are locally authored.
+- `slot` (calibration ambiguous): an
+  [IVDNT-hosted historical dictionary](https://dagenta.ivdnt.org/wp-content/uploads/pdf/1897_koenen_verklarend-handwoordenboek-der-nederlandsche-taal.pdf)
+  lists lock and castle separately. Modern usage needs review. The draft lists
+  both glosses and omits an example.
+- `blad` (held-out ambiguous):
+  [Onze Taal](https://onzetaal.nl/taalloket/de-het-algemene-regels) names
+  leaf and paper senses; [ANW grammar](https://anw.ivdnt.org/article/blad)
+  confirms the noun. The draft lists both glosses and omits an example.
+- `zygomatisch` (held-out rare-missing):
+  [dental clinical use](https://www.parohaarlem.nl/nl/wat-is-een-zygomatisch-implantaat/)
+  and [professional association use](https://www.nvcg.nl/wp-content/uploads/2019/01/Cg-magazine-december-2018.pdf)
+  support the cheekbone-related adjective. Zero exact NT2Lex rows is a
+  missing-corpus probe, not proof of lexical rarity.
+
 The six base pack entries derive from `packages/content/src/dutch-a1.json`,
 SHA-256 `80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca`.
 Its A1 packaging establishes local provenance, not a meaning-level CEFR
-standard. Pack-linked plural and conflict examples, and all eleven authored
+standard. Pack-linked plural and conflict examples, and the authored
 sense examples, are original local drafts; lexical sources corroborate the
 target meaning or grammar without licensing the source's text for reuse.
 
@@ -52,35 +77,22 @@ provisional expectation for policy design, not an adjudicated output.
 
 ## Actual slice coverage and remaining work
 
-The 21 draft inputs cover both splits for ordinary, inflections,
-reflexive-verbs, sense-pairs, separable-verbs, idioms and
-conflicting-examples. Five proposed slice/split cells still have **no exact
-input**:
-
-| Split       | Missing slice | Proposed family still requiring an exact source/input |
-| ----------- | ------------- | ----------------------------------------------------- |
-| calibration | compounds     | `treinstation`                                        |
-| calibration | specialized   | `cel`                                                 |
-| calibration | ambiguous     | `slot`                                                |
-| held-out    | rare-missing  | `zygomatisch`                                         |
-| held-out    | ambiguous     | `blad`                                                |
-
-The five proposed families above have no verified exact sense dossier in
-this screen. [ANW `station`](https://anw.ivdnt.org/article/station) lists
-`treinstation` as a compound, but this indirect reference is not an exact
-entry. A failed lookup is not evidence that a Dutch meaning is absent.
-Replace unsupported candidates if reliable references cannot be found.
-Actual slice counts do not satisfy minimum denominators, and the 21 drafts
-have no reviewed levels, independent meaning-level graded evidence,
-approved provider scope or frozen policy. D11.2 remains unqualified.
+The 27 draft inputs cover all eleven required slices in both splits, with
+one to four inputs per cell. The two ambiguous drafts deliberately omit
+examples; each lists competing senses and has a provisional `abstain`
+expectation. `quotiënt` and `zygomatisch` probe missing exact NT2Lex rows,
+not established lexical rarity. Full **draft** coverage is not adequate
+calibration: most cells have only one item, no minimum denominator has been
+fixed, and no input has a reviewed level or independent meaning-level graded
+evidence. Source rights, editorial wording, provider scope and policy remain
+unreviewed. D11.2 remains unqualified.
 
 ## Next exact action
 
-Find precise references and author inputs for the five missing cells, or
-replace their families with defensible candidates while preserving split
-isolation. Revalidate canonical hashes and source rights. Then collect
-independently graded meaning-level evidence, record honest unresolved cases,
-review labels and freeze the policy/minimum denominators before any new
-provider scoring. The two remaining personal Gemini attempts apply only to
-the original 24 pilot meanings; these 21 drafts are not approved for
-transmission.
+Review all 27 exact inputs and their sources, paying special attention to
+the historical `slot` reference, adversarial conflicts and deliberately
+context-free ambiguous cases. Then collect independently graded meaning-level
+evidence, record honest unresolved cases, establish adequate per-slice
+denominators and freeze the review policy before any new provider scoring.
+The two remaining personal Gemini attempts apply only to the original 24
+pilot meanings; these 27 drafts are not approved for transmission.
