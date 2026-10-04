@@ -3,11 +3,11 @@
 ## Scope and decision
 
 The [graded-context ledger](D11-graded-context-ledger-20261004.json) has
-twenty non-operational observations for seventeen of the 27 exact inputs.
-Ten inputs have no admitted graded observation. Four of those are
+twenty-one non-operational observations for eighteen of the 27 exact inputs.
+Nine inputs have no admitted graded observation. Four of those are
 deliberate conflict or context-free ambiguity probes: their primary
 expectation is a reviewed **abstention rule**, not a positive CEFR level.
-The other six need a sense-matched learning context or an explicit
+The other five need a sense-matched learning context or an explicit
 unsupported disposition. The assistant has not assigned a word-sense
 CEFR label or qualified the provider.
 The [four-input structural draft](D11-structural-abstention-draft-20261004.json)
@@ -24,7 +24,6 @@ fixture.
 | `candidate-kat-boom`        | Idiom                  | [B1 plain-language advice](https://doorlotje.nl/blog/teksten-die-een-vertaaltool-begrijpt) recommends avoiding this idiom; this is not a graded learner use                                                                                         | Find an exact use in graded learning material or leave unsupported            |
 | `candidate-wortel-math`     | Specialized sense pair | No graded mathematical-root use verified; carrot string matches are wrong-sense                                                                                                                                                                     | Seek a sense-exact mathematics context with an explicit language level        |
 | `candidate-quotient`        | Missing-corpus probe   | Mathematical term has no exact NT2Lex row in the local screen                                                                                                                                                                                       | Seek language-level evidence; do not infer CEFR from school mathematics grade |
-| `candidate-oogje-zeil`      | Idiom                  | A [BVNT2 conference abstract](https://bvnt2.org/app/uploads/2026/06/Programma-conferentie-2026.pdf) cites the idiom and B1–C1 learners, but does not grade the idiom                                                                                | Find an exact graded teaching context or leave unsupported                    |
 | `candidate-aankomen-weight` | Contrasting sense      | [Boom preview](https://www.nt2.nl/media/48/inkijkexemplaar_klare_taal_plus.pdf) uses the weight-gain sense on PDF pages 6–7, but the [publisher level](https://www.boom.nl/nt2/100-17379_Klare-taal-plus) spans A2–B2 without a page-specific label | Seek a single-level sense-exact context; arrival evidence cannot transfer     |
 | `candidate-zygomatisch`     | Missing-corpus probe   | Medical sense has no exact NT2Lex row in the local screen                                                                                                                                                                                           | Seek graded language evidence; otherwise expect abstention                    |
 
@@ -53,8 +52,10 @@ add one each for `treinstation` and `meebrengen` respectively. The official A1
 `meebrengen` can-do example corroborates sense but is not a graded
 learner-material observation. The first-party
 [B2 prison-cell exercise](D11-prison-cell-source-screen-20261004.md)
-adds one exact-sense contextual observation for `cel`; six lexical/form
-gaps remain. The weight-gain `aankomen` example in a third-party Lest
+adds one exact-sense contextual observation for `cel`. A directly
+inspected [B2 reading exercise](D11-oogje-zeil-source-screen-20261004.md)
+adds one weak contextual observation for the watchful-supervision idiom;
+five lexical/form gaps remain. The weight-gain `aankomen` example in a third-party Lest
 Best guide copy remains unadmitted pending first-party verification.
 
 1. Review and freeze the four structural abstention rules, plus rules

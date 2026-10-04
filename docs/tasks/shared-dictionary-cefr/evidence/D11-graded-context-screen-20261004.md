@@ -2,8 +2,8 @@
 
 ## Result
 
-The [bound ledger](D11-graded-context-ledger-20261004.json) records twenty
-preliminary sense-matched observations for seventeen exact hashed D11 inputs.
+The [bound ledger](D11-graded-context-ledger-20261004.json) records twenty-one
+preliminary sense-matched observations for eighteen exact hashed D11 inputs.
 Eight come from Stichting Taalmenu: seven in materials it
 [identifies as A1](https://nt2taalmenu.nl/nt2-a1-menu/) or labels A2
 in the document itself, and one in its [B2 music exercise](https://nt2taalmenu.nl/wp-content/uploads/B2/muziek_oefeningenB2.pdf).
@@ -20,14 +20,17 @@ also include a directly inspected [DutchEnglish.com A2 nature lesson](https://du
 that lists singular plant-root `de wortel` under plant vocabulary. A
 [LingVo.club B1 science reading](https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1)
 uses singular biological `cel`. A second DutchEnglish.com travel lesson
-uses `treinstation` in a station-location question. They span thirteen
-families and seven
+uses `treinstation` in a station-location question. A directly inspected
+[Dutch Fluency NT2 B2 reading exercise](https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661)
+uses the watchful-supervision idiom in an inflected form. They span fifteen
+families and eight
 publishers. They were screened by the assistant from the source pages
 before any provider run on these inputs. They remain
 **source-level exposure signals**, not reviewed word-sense CEFR labels.
 
 | Input                        | Material and page                                                                                                                                                 | Meaning-match note                                                         | Strength                             |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------ |
+| `candidate-oogje-zeil`       | [Dutch Fluency NT2 B2 reading exercise 1661](https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661)                                                             | Lifeguards monitor an open-water swimming session                          | Contextual use; self-graded exercise |
 | `candidate-cel-prison`       | [Taalmenu B2 music exercise, PDF page 9](https://nt2taalmenu.nl/wp-content/uploads/B2/muziek_oefeningenB2.pdf)                                                    | Singular prison cell in a listening prompt about an arrested character     | Contextual use; exercise stem        |
 | `candidate-meebrengen-bring` | [KleurRijker TaalCompleet A2 Dutch–Somali wordlist, PDF page 14](https://kleurrijker.nl/TCwoordenlijsten/TC_NederlandsSomalisch.pdf)                              | Separable infinitive with a bring-along gloss                              | Glossary use; no learner sentence    |
 | `candidate-treinstation`     | [DutchEnglish.com A2 travel-phrases lesson, “Transportation”](https://dutchenglish.com/lessons/dutch-travel-phrases)                                              | Asking where the train station is                                          | Contextual use; self-graded lesson   |
@@ -63,13 +66,15 @@ ledger and distinguishes KleurRijker's weak glossary exposure.
 The [prison-cell screen](D11-prison-cell-source-screen-20261004.md)
 records the B2 exercise prompt and keeps an unverified third-party
 `aankomen` guide outside the ledger.
+The [idiom screen](D11-oogje-zeil-source-screen-20261004.md) records
+the Dutch Fluency exercise and excludes an ungraded idiom glossary.
 The DISK occurrence is part of a definition for another headword, not a
 graded entry for `tafels`; it confirms exposure to the plural form only.
 Each row in the JSON ledger carries its exact input SHA-256, source URL,
 one-based PDF page or stable HTML section, material level, evidence type and `null` adjudicated
 level. A1/A2/B1/B2 describes the **material or exercise**, not the minimum
 level at which a learner knows the word. The Van Dale PDF is an answer
-key, not the original workbook exercise page. Seven publishers' materials
+key, not the original workbook exercise page. Eight publishers' materials
 still do not establish independent human gold, per-slice denominators or
 accuracy thresholds.
 
@@ -105,14 +110,14 @@ accuracy thresholds.
   publisher's copyright notice. The DISK / Boom wordlist also carries a
   copyright notice. DutchEnglish.com's site footer states all rights
   reserved. LingVo.club's adapted article is likewise reference-only.
-  All seven sources are reference-only:
+  Dutch Fluency's exercise is also reference-only. All eight sources are reference-only:
   only metadata, links, page numbers and original paraphrases are saved;
   no exercise text is imported, embedded in a fixture or approved for
   provider transmission.
 
 ## Next action
 
-Seek exact contexts for the six remaining lexical/form gaps across
+Seek exact contexts for the five remaining lexical/form gaps across
 independent graded sources, especially the contrasting weight-gain
 `aankomen` sense and the rare-missing slices. Resolve the Lingua.com
 `treinstation` source conflict from first-party metadata or leave that

@@ -41,10 +41,35 @@
       "publisher": "LingVo.club",
       "url": "https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1",
       "status": "publisher_copyright_reference_only"
+    },
+    {
+      "publisher": "Dutch Fluency NT2",
+      "url": "https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661",
+      "status": "reference_only_no_republication_permission"
     }
   ],
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
   "items": [
+    {
+      "input_id": "candidate-oogje-zeil",
+      "input_sha256": "237f8a8427579b35e1bba5979bdb8ee69742aa07b4e14109c6215e6319d692e8",
+      "family": "een oogje in het zeil houden",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Dutch Fluency NT2",
+        "url": "https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661",
+        "section_heading": "Lezen oefening — Staatsexamen NT2 B2; exercise 1661",
+        "material_level": "B2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "inflected watchful-supervision idiom in a reading passage about lifeguards monitoring an open-water training session",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
     {
       "input_id": "candidate-cel-prison",
       "input_sha256": "bdd3b573bbc7f8557e880586d764cfa5ea29c939aa3346a698ff770266a783ff",

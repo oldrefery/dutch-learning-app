@@ -1,5 +1,25 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 watchful-supervision idiom source follow-up.**
+Starting from local HEAD `e765861` on `feature/shared-dictionary-schema`,
+only preexisting `.playwright-cli/` was untracked. The directly inspected
+[Dutch Fluency NT2 B2 reading exercise](https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661)
+adds a weak, exact-sense inflected idiom use to the
+[ledger](evidence/D11-graded-context-ledger-20261004.json): twenty-one
+preliminary observations for eighteen of 27 inputs across fifteen
+families and eight publishers. The [source screen](evidence/D11-oogje-zeil-source-screen-20261004.md)
+excludes an ungraded idiom glossary; weight-gain `aankomen` remains
+unverified in single-level first-party material. Four structural probes
+and five lexical/form gaps remain. **Next GPT-6.1 Sol / High:** pursue
+single-level exact contexts for weight-gain `aankomen`, `de kat uit de
+boom kijken`, mathematical `wortel`, `quotient` and `zygomatisch`; then
+resolve independent meaning-level review and denominators. D11.2
+in_progress, D12 pending, quality unqualified, worker/schedule off.
+Two Gemini attempts remain only for the original 24; no provider call,
+new input transmission, support inquiry, push, PR, migration,
+publication or deployment. Local-only evidence pending scoped commit;
+preexisting `.playwright-cli/` remains untouched.
+
 **2026-10-04 — D11 prison-cell source follow-up.** Starting from
 local HEAD `8347e2b` on `feature/shared-dictionary-schema`, only
 preexisting `.playwright-cli/` was untracked. The directly inspected

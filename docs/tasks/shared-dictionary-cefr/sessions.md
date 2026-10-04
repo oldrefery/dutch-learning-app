@@ -2747,3 +2747,25 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   worker/schedule disabled. Two Gemini attempts remain for the original
   24 only; no provider call, support inquiry, push, PR, migration,
   publication or deployment.
+
+## 2026-10-04 — D11 watchful-supervision idiom source follow-up
+
+- Resumed from `e765861` on `feature/shared-dictionary-schema`;
+  only preexisting `.playwright-cli/` was untracked. GPT-6.1 Sol /
+  High was announced before D11.2 work.
+- Directly inspected Dutch Fluency NT2 B2 reading exercise 1661, which
+  uses an inflected watchful-supervision idiom in a lifeguard passage.
+  The [source screen](evidence/D11-oogje-zeil-source-screen-20261004.md)
+  records its weak self-graded status and reference-only handling.
+  An ungraded Netherlandic idiom glossary corroborates the sense but
+  cannot enter the graded ledger.
+- The [ledger](evidence/D11-graded-context-ledger-20261004.json)
+  contains twenty-one preliminary observations for eighteen exact
+  inputs across eight publishers; four structural probes and five
+  lexical/form gaps remain. No word-sense CEFR level or independent
+  gold was assigned. Next GPT-6.1 Sol / High: pursue weight-gain
+  `aankomen` and the other four gaps, then independent meaning-level
+  review and denominator policy. D11.2 remains in progress, quality
+  unqualified, worker/schedule disabled. Two Gemini attempts remain
+  for the original 24 only; no provider call, new input transmission,
+  support inquiry, push, PR, migration, publication or deployment.
