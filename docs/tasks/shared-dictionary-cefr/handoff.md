@@ -1,5 +1,28 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — full D11 quality gate retained; independent reference
+unresolved.** Starting local HEAD `ed941f8` on
+`feature/shared-dictionary-schema`, only preexisting `.playwright-cli/`
+untracked. The owner requested complete D11 quality verification, selecting
+the original exit in the [scope decision](evidence/D11-stage-exit-choice-20261004.md).
+The [source and measurement audit](evidence/D11-independent-quality-options-20261004.md)
+screens NT2Lex, Conplext, graded material and contrastive tests. These
+can corroborate sense and robustness, but do not provide an independently
+adjudicated exact-meaning CEFR reference. The 27 draft inputs have only
+1–4 entries per slice/split cell, and the 24-input pilot is retrospective
+and assistant-referenced. No independently reviewed fixture, prospective
+policy, new-input provider approval or qualifying live sample exists.
+**First incomplete action:** obtain a rights-compatible independent
+meaning-level reference, then expand/freeze distinct-family splits and
+policy before presenting an exact new live manifest/cost for separate
+approval. Next model **GPT-6.1 Sol / High**. D11 `in_progress`, D12
+pending, `qualified: false`, worker/schedule OFF. Two remaining Gemini
+attempts cover only the original 24; do not resend them unchanged or send
+new inputs under that grant. No paid call, support inquiry, push, PR,
+hosted migration, publication or deployment. Current turn changed task
+documentation only; no new tests were needed for unchanged code. Scoped
+local commit under AUTH-18 is pending. No external operation is pending.
+
 **2026-10-04 — D11.3–D11.7 dormant local mechanics accepted; stage exit open.**
 Starting `62ca85d` on `feature/shared-dictionary-schema`, only preexisting
 `.playwright-cli/` untracked. The [criterion reconciliation](evidence/D11-local-checkpoint-acceptance-20261004.md)

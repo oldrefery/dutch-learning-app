@@ -655,3 +655,16 @@ separate D11 stage-exit and worker-activation prerequisite. This choice
 does not permit transmission of the separate 27-input candidate pool,
 repeat the 24-input pilot, spend the two remaining attempts, activate
 the worker, push, open a PR, migrate, publish or deploy.
+
+### October 4 — Full D11 stage exit retained
+
+After the dormant D11.3–D11.7 checkpoints were accepted locally, the owner
+asked how else quality could be verified and requested full completion of
+the item. This selects option 1 of the
+[stage-exit choice](evidence/D11-stage-exit-choice-20261004.md): retain
+the original independent meaning-level quality, adequate denominators,
+prospective policy and separately approved live-sample gate. The
+[source and measurement audit](evidence/D11-independent-quality-options-20261004.md)
+is preparatory evidence, not a reviewed gold set or authorization to send
+new inputs. The existing two Gemini attempts remain restricted to the
+original 24. Worker/schedule stay off; D11 remains in progress.

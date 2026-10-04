@@ -2974,3 +2974,23 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   two Gemini attempts remain scoped to original 24. No support inquiry,
   push, PR, migration, publication or deployment. Local docs pending
   scoped commit; no external operation is pending.
+
+## 2026-10-04 — Original D11 quality exit retained and independently audited
+
+- From `ed941f8` on `feature/shared-dictionary-schema`, the owner requested
+  full quality verification. Option 1 of the stage-exit decision is now
+  recorded; the original independent meaning-level/live-sample gate remains.
+- The [audit](evidence/D11-independent-quality-options-20261004.md)
+  examines primary NT2Lex and Conplext resources, rights, available graded
+  contexts, contrastive checks and the quantitative gap in the current
+  24/27-input pools. No source found in this bounded search supplies an
+  independently adjudicated CEFR key for the project's exact meanings.
+- No implementation changed, so existing 47 PostgreSQL, 73 Deno, 24 fake
+  diagnostic and normal mobile/web hook results remain the relevant local
+  mechanics evidence. No test or provider call was repeated. Next GPT-6.1
+  Sol / High: acquire a rights-compatible independent exact-meaning
+  reference; then freeze an adequate fixture/policy and seek separate
+  approval for the new live manifest. D11 remains in_progress; worker
+  and schedule OFF. Two Gemini attempts remain for original 24 only.
+  Task documentation is pending scoped local commit; `.playwright-cli/`
+  remains untouched. No remote operation is pending.

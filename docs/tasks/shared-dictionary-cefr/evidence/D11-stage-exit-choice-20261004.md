@@ -1,4 +1,4 @@
-# D11 stage-exit scope decision — pending owner choice
+# D11 stage-exit scope decision — original gate retained
 
 2026-10-04, starting `62ca85d`, `feature/shared-dictionary-schema`.
 
@@ -50,8 +50,15 @@ the original 24 and cannot repair the coverage/independence gap.
    release plan must identify this reduced feature scope before cutover.
    Nothing here permits worker activation or publication.
 
-No option has been selected for the full D11 stage. The October 4 owner
-approval narrowed D11.2 only. Do not infer a new exit criterion, mark
-D11 done, advance D12 acceptance or activate a worker from this draft.
-No support inquiry, push, PR, hosted migration, publication or deployment
-is implied by either option.
+## Owner resolution
+
+On October 4, after the dormant local checkpoints were reconciled, the
+owner asked to verify quality further and **fully finish D11**. Treat
+this as selection of option 1, retaining the original full-stage exit.
+The [independent quality audit](D11-independent-quality-options-20261004.md)
+records additional checks and why the presently available resources
+cannot yet provide the required meaning-level gold. Do not mark D11 done,
+advance D12 acceptance or activate the worker until the original gate
+passes. This choice does not expand the existing exact-input/spending
+authorization or permit a support inquiry, push, PR, hosted migration,
+publication or deployment.
