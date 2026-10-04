@@ -2725,3 +2725,25 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   unqualified, worker/schedule disabled. Two Gemini attempts remain
   for the original 24 only; no provider call, support inquiry, push,
   PR, migration, publication or deployment.
+
+## 2026-10-04 — D11 prison-cell source follow-up
+
+- Resumed from `8347e2b` on `feature/shared-dictionary-schema`;
+  only preexisting `.playwright-cli/` was untracked. GPT-6.1 Sol /
+  High was announced before D11.2 work.
+- Directly inspected first-party Taalmenu B2 music-exercise material
+  with exact singular prison-cell `cel` in a listening prompt. The
+  [source screen](evidence/D11-prison-cell-source-screen-20261004.md)
+  keeps a sense-exact weight-gain `aankomen` example from a third-party
+  Lest Best guide copy outside the ledger: its publisher-hosted preview
+  omits that page, so provenance is not reconciled.
+- The [ledger](evidence/D11-graded-context-ledger-20261004.json)
+  contains twenty preliminary observations for seventeen exact
+  inputs; four structural probes and six lexical/form gaps remain.
+  No word-sense CEFR level or independent gold was assigned. Next
+  GPT-6.1 Sol / High: pursue first-party weight-gain `aankomen` and
+  the other five gaps, then independent meaning-level review and
+  denominator policy. D11.2 remains in progress, quality unqualified,
+  worker/schedule disabled. Two Gemini attempts remain for the original
+  24 only; no provider call, support inquiry, push, PR, migration,
+  publication or deployment.

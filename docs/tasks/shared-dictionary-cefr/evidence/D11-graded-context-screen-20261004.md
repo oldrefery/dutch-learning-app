@@ -2,10 +2,12 @@
 
 ## Result
 
-The [bound ledger](D11-graded-context-ledger-20261004.json) records nineteen
-preliminary sense-matched observations for sixteen exact hashed D11 inputs.
-Seven appear in materials that [Stichting Taalmenu identifies as A1](https://nt2taalmenu.nl/nt2-a1-menu/)
-or labels A2 in the document itself. Two corroborating observations come
+The [bound ledger](D11-graded-context-ledger-20261004.json) records twenty
+preliminary sense-matched observations for seventeen exact hashed D11 inputs.
+Eight come from Stichting Taalmenu: seven in materials it
+[identifies as A1](https://nt2taalmenu.nl/nt2-a1-menu/) or labels A2
+in the document itself, and one in its [B2 music exercise](https://nt2taalmenu.nl/wp-content/uploads/B2/muziek_oefeningenB2.pdf).
+Two corroborating observations come
 from KleurRijker's [TaalCompleet A1 publisher preview](https://www.nt2.nl/nl/alle-uitgaven/101-417_Taalcompleet/100-17261_TaalCompleet-A1),
 whose course targets 0 to A1. Its [TaalCompleet A2 wordlist](https://kleurrijker.nl/TCwoordenlijsten/TC_NederlandsSomalisch.pdf)
 adds one weak `meebrengen` glossary observation. One comes from a
@@ -26,6 +28,7 @@ before any provider run on these inputs. They remain
 
 | Input                        | Material and page                                                                                                                                                 | Meaning-match note                                                         | Strength                             |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------ |
+| `candidate-cel-prison`       | [Taalmenu B2 music exercise, PDF page 9](https://nt2taalmenu.nl/wp-content/uploads/B2/muziek_oefeningenB2.pdf)                                                    | Singular prison cell in a listening prompt about an arrested character     | Contextual use; exercise stem        |
 | `candidate-meebrengen-bring` | [KleurRijker TaalCompleet A2 Dutch–Somali wordlist, PDF page 14](https://kleurrijker.nl/TCwoordenlijsten/TC_NederlandsSomalisch.pdf)                              | Separable infinitive with a bring-along gloss                              | Glossary use; no learner sentence    |
 | `candidate-treinstation`     | [DutchEnglish.com A2 travel-phrases lesson, “Transportation”](https://dutchenglish.com/lessons/dutch-travel-phrases)                                              | Asking where the train station is                                          | Contextual use; self-graded lesson   |
 | `candidate-cel-biological`   | [LingVo.club B1 neuroscience reading](https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1)                       | Singular biological cell in the reading body                               | Contextual use; self-graded text     |
@@ -57,11 +60,14 @@ outside the language-level ledger.
 The [bring-along screen](D11-bring-along-source-screen-20261004.md)
 keeps an official A1 can-do illustration outside the learner-material
 ledger and distinguishes KleurRijker's weak glossary exposure.
+The [prison-cell screen](D11-prison-cell-source-screen-20261004.md)
+records the B2 exercise prompt and keeps an unverified third-party
+`aankomen` guide outside the ledger.
 The DISK occurrence is part of a definition for another headword, not a
 graded entry for `tafels`; it confirms exposure to the plural form only.
 Each row in the JSON ledger carries its exact input SHA-256, source URL,
 one-based PDF page or stable HTML section, material level, evidence type and `null` adjudicated
-level. A1/A2/B1 describes the **material or exercise**, not the minimum
+level. A1/A2/B1/B2 describes the **material or exercise**, not the minimum
 level at which a learner knows the word. The Van Dale PDF is an answer
 key, not the original workbook exercise page. Seven publishers' materials
 still do not establish independent human gold, per-slice denominators or
@@ -106,7 +112,7 @@ accuracy thresholds.
 
 ## Next action
 
-Seek exact contexts for the seven remaining lexical/form gaps across
+Seek exact contexts for the six remaining lexical/form gaps across
 independent graded sources, especially the contrasting weight-gain
 `aankomen` sense and the rare-missing slices. Resolve the Lingua.com
 `treinstation` source conflict from first-party metadata or leave that

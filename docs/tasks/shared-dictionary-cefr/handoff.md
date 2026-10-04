@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 prison-cell source follow-up.** Starting from
+local HEAD `8347e2b` on `feature/shared-dictionary-schema`, only
+preexisting `.playwright-cli/` was untracked. The directly inspected
+[Stichting Taalmenu B2 listening exercise](https://nt2taalmenu.nl/wp-content/uploads/B2/muziek_oefeningenB2.pdf)
+adds one exact singular prison-cell contextual observation to the
+[ledger](evidence/D11-graded-context-ledger-20261004.json): twenty
+preliminary observations for seventeen of 27 inputs across seven
+publishers. The [source screen](evidence/D11-prison-cell-source-screen-20261004.md)
+keeps a third-party Lest Best weight-gain `aankomen` example unadmitted
+because the publisher-hosted preview does not expose that page. Four
+structural probes and six lexical/form gaps remain. **Next GPT-6.1
+Sol / High:** seek a directly inspectable single-level learner context
+for weight-gain `aankomen` and the five other gaps; then resolve
+independent meaning-level review and denominators. D11.2 in_progress,
+D12 pending, quality unqualified, worker/schedule off. Two Gemini
+attempts remain only for the original 24; no provider call, support
+inquiry, push, PR, migration, publication or deployment. Local-only
+evidence.
+
 **2026-10-04 — D11 bring-along source follow-up.** Starting from
 local HEAD `69c7fb9` on `feature/shared-dictionary-schema`, only
 preexisting `.playwright-cli/` was untracked. The directly inspected

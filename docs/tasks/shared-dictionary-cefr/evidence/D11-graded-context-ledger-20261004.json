@@ -46,6 +46,27 @@
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
   "items": [
     {
+      "input_id": "candidate-cel-prison",
+      "input_sha256": "bdd3b573bbc7f8557e880586d764cfa5ea29c939aa3346a698ff770266a783ff",
+      "family": "cel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/B2/muziek_oefeningenB2.pdf",
+        "pdf_page_one_based": 9,
+        "section_heading": "Jantjes Blues, listening exercise 3",
+        "material_level": "B2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "singular prison cell in a listening-exercise prompt about an arrested character, with prison synonyms nearby",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
       "input_id": "candidate-meebrengen-bring",
       "input_sha256": "c0569811f4251c81af49fc66a2897d374388460e79c373d9924d18448affcfdf",
       "family": "meebrengen",
