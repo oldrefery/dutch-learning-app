@@ -3043,3 +3043,21 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   mobile 156 suites/1796 tests/22 snapshots and web 86 suites/780
   tests with one existing skip. Only `.playwright-cli/` remains
   unrelated and untracked; no external operation pending.
+
+## 2026-10-04 — D11 reduced no-human completion
+
+- From `b354052`, the owner said they cannot provide blind meaning-level
+  review and requested the best no-human path. Selected the diagnostic
+  stage scope; kept independent quality/live approval in a separate
+  [blocking activation gate](evidence/D11-cefr-activation-gate.md).
+- The [safe-completion record](evidence/D11-no-human-safe-completion-20261004.md)
+  cites the 24-input unqualified pilot, teacher whole-word corroboration,
+  weak graded-text observations and local fail-closed evidence without
+  claiming exact-meaning CEFR accuracy. Cached Deno tests passed 73/73;
+  fake diagnostic Node tests passed 24/24 on unchanged source. The prior
+  47/47 PostgreSQL result still applies to unchanged SQL.
+- D11 done only for offline diagnostic and dormant mechanics. D12.1 is
+  next, recommended GPT-6 Astra / High. Worker/schedule OFF,
+  `qualified: false`; no provider call or external operation. Scoped
+  documentation is local until its commit; `.playwright-cli/` remains
+  unrelated and untracked.

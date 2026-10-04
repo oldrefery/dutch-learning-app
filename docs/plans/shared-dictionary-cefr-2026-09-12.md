@@ -326,9 +326,14 @@ manifest tests pass without resets or unintended publication.
   metrics, and kill switch. Schedule stays disabled until approved. Weekly cadence
   remains configurable if daily volume does not justify daily runs.
 
-Exit: fake-provider tests cover correctness, authorization, retries, races, limits
-and no-work behavior. A separately approved small live sample validates quality
-and cost before any bulk enrichment.
+Exit for the owner-selected reduced D11 scope: fake-provider tests cover
+correctness, authorization, retries, races, limits and no-work behavior;
+the offline pilot remains diagnostic and the worker/schedule stay disabled.
+Automatic CEFR estimates are deferred behind the separately tracked
+[activation gate](../tasks/shared-dictionary-cefr/evidence/D11-cefr-activation-gate.md):
+independent exact-meaning quality, a prospective policy, approved small live
+sample and cost review must pass before any bulk enrichment. D11 completion
+does not satisfy or waive that gate.
 
 ### D12 — Integrated verification
 
@@ -347,6 +352,8 @@ and cost before any bulk enrichment.
 - Compare identifiers, event/command counts and learning snapshots before/after.
   Include interrupted backfill, old-client return, content updates during review,
   and cache invalidation without a personal word update.
+- Verify the CEFR path fails closed with the worker and schedule disabled.
+  Do not interpret the diagnostic pilot as measured exact-meaning accuracy.
 
 Exit: no unresolved data-loss, privacy, authorization or learning-protocol defects;
 all required CI checks pass and the release/rollback runbook is rehearsed.
@@ -368,13 +375,17 @@ all required CI checks pass and the release/rollback runbook is rehearsed.
 - Only after D01-D12 and all pre-cutover checks pass, present the exact release,
   P1/P2 preservation evidence, backups and rollback results for final user approval.
   Then switch the active path as the final functional release step (DEC-09).
-  Separately enable bounded CEFR scheduling only after cost/quality approval.
+  Treat automatic CEFR enrichment as deferred under the separate
+  [activation gate](../tasks/shared-dictionary-cefr/evidence/D11-cefr-activation-gate.md).
+  Enable bounded scheduling only after that gate and separate approval.
   Observe at least 7 days including native offline return before any D14 removal;
   track sync failures, orphan references, CEFR failures, cost and review latency.
 
-Exit: current mobile and web production work on dictionary references, new analyses
-and imports reuse entries, CEFR enrichment is observable and bounded, and all
-unlinked private/ambiguous entries have explicit dispositions.
+Exit for the reduced release scope: current mobile and web production work on
+dictionary references, new analyses and imports reuse entries, the disabled
+CEFR path is observable and makes no provider calls, and all unlinked
+private/ambiguous entries have explicit dispositions. Automatic CEFR estimates
+require separate activation and are not a D13 release claim.
 
 ### D14 — Complete normalization after the adoption gate
 

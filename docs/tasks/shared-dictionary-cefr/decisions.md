@@ -685,3 +685,22 @@ pool, reviewed policy and separately approved new-input live sample
 remain required. This choice authorizes local preparation under
 AUTH-20/AUTH-18, not new provider transmission, worker activation or
 remote publication.
+
+### October 4 — No-human D11 stage completion; activation remains blocked
+
+The owner later confirmed they cannot provide exact-meaning review and
+instructed us to select the best approach without human participation.
+This supersedes the earlier option-1 **stage-exit** selection: accept
+option 2, a local diagnostic and dormant worker deliverable, and mark
+D11 done only for that reduced scope. The
+[completion evidence](evidence/D11-no-human-safe-completion-20261004.md)
+and [activation gate](evidence/D11-cefr-activation-gate.md) distinguish
+that status from a validated automatic CEFR feature. Independent
+meaning-level quality, a prospective policy, rights and cost review,
+separate new-input/provider authorization, server-only qualification
+and separate activation approval remain required before any automatic
+estimate or scheduled enrichment. The 24-input pilot remains unqualified;
+the teacher's corroboration is word-level only. D12 may verify a disabled
+CEFR path. No new paid call, transmission, support inquiry, push, PR,
+migration, publication or deployment follows from this decision. Two
+unused Gemini attempts remain limited to the original 24.

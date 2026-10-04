@@ -1,4 +1,4 @@
-# D11 stage-exit scope decision — original gate retained
+# D11 stage-exit scope decision — reduced diagnostic scope selected
 
 2026-10-04, starting `62ca85d`, `feature/shared-dictionary-schema`.
 
@@ -62,3 +62,15 @@ advance D12 acceptance or activate the worker until the original gate
 passes. This choice does not expand the existing exact-input/spending
 authorization or permit a support inquiry, push, PR, hosted migration,
 publication or deployment.
+
+## Superseding owner instruction — no human review available
+
+The owner subsequently confirmed that they cannot review the 27 exact
+meanings and asked for the best path without human participation. Select
+option 2 for the **D11 stage**, with the exact limit recorded in the
+[safe-completion evidence](D11-no-human-safe-completion-20261004.md).
+The [automatic CEFR activation gate](D11-cefr-activation-gate.md) retains
+the original independent-quality and live-sample requirements as a
+separate blocking condition. This supersedes the earlier option-1 stage
+choice; it does not turn the provisional 24-input pilot into a validated
+CEFR method or authorize any external operation.
