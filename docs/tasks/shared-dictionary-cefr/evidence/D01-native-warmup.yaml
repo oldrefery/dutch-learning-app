@@ -1,0 +1,9 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: ${WORD_PATTERN}
+    timeout: 60000
+- assertVisible:
+    id: screen-collections

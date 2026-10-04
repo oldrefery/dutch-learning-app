@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import { router } from 'expo-router'
 import { supabase } from '@/lib/supabaseClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
@@ -223,11 +224,14 @@ export function useImportSelection(token: string) {
     try {
       const { addWordsToCollection } = useApplicationStore.getState()
       const wordsBeforeImport = useApplicationStore.getState().words.length
-      const success = await addWordsToCollection(
-        targetCollectionId,
-        selectedWords,
-        true // isImportFromShared - use RPC to bypass RLS
-      )
+      const success = isDictionaryContentEnabled()
+        ? await addWordsToCollection(targetCollectionId, selectedWords, true, {
+            sharedSource: {
+              shareToken: token,
+              wordIds: selectedWords.map(word => word.word_id),
+            },
+          })
+        : await addWordsToCollection(targetCollectionId, selectedWords, true)
 
       if (success) {
         const wordsAfterImport = useApplicationStore.getState().words.length

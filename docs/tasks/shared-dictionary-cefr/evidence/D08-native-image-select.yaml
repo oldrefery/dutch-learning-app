@@ -1,0 +1,11 @@
+appId: ${APP_ID}
+---
+- assertVisible: Select a better image.*
+- assertVisible: Load More Images
+- tapOn:
+    point: 74%, 26%
+- extendedWaitUntil:
+    notVisible: Select a better image.*
+    timeout: 10000
+- assertVisible:
+    id: modal-close-button

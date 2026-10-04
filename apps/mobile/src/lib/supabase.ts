@@ -1,5 +1,7 @@
 import 'react-native-url-polyfill/auto'
 import { supabase } from './supabaseClient'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import type { SharedImportSource } from '@/types/ImportTypes'
 import { randomUUID } from 'expo-crypto'
 import { toLocalDateKey } from '@woordenaar/domain'
 import type { Word } from '@/types/database'
@@ -798,15 +800,24 @@ export const wordService = {
   // This allows read-only users to import words from shared collections
   async importWordsToCollection(
     collectionId: string,
-    words: Partial<Word>[]
+    words: Partial<Word>[],
+    sharedSource?: SharedImportSource
   ): Promise<Word[]> {
     let result: Word[] | null
     try {
       result = await withSessionRetry(async () => {
-        const { data, error } = await supabase.rpc(
-          'import_words_to_collection',
-          { p_collection_id: collectionId, p_words: words }
-        )
+        if (isDictionaryContentEnabled() && !sharedSource)
+          throw new Error('Shared import source is required')
+        const { data, error } = isDictionaryContentEnabled()
+          ? await supabase.rpc('import_shared_dictionary_collection_v1', {
+              p_collection_id: collectionId,
+              p_share_token: sharedSource?.shareToken,
+              p_word_ids: sharedSource?.wordIds,
+            })
+          : await supabase.rpc('import_words_to_collection', {
+              p_collection_id: collectionId,
+              p_words: words,
+            })
         if (error) throw error
         return data || []
       }, 'importWordsToCollection')

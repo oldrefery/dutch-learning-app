@@ -19,10 +19,16 @@ import {
   MIGRATION_V10_REVIEW_CORRECTIONS,
   MIGRATION_V11_CORRECTION_RESOLUTION,
 } from './reviewCorrectionSchema'
+import { MIGRATION_V13_DICTIONARY_CONTENT } from './dictionaryContentSchema'
+import {
+  MIGRATION_V14_DICTIONARY_IMPORTS,
+  MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS,
+} from './dictionaryImportSchema'
+import { MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY } from './dictionaryImportRecoverySchema'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 12
+const SCHEMA_VERSION = 16
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -270,6 +276,26 @@ async function applyPendingMigrations(
       await transaction.execAsync(MIGRATION_V12_CORRECTION_RECOVERY)
     })
   }
+  if (currentVersion < 13) {
+    await db.withExclusiveTransactionAsync(async transaction => {
+      await transaction.execAsync(MIGRATION_V13_DICTIONARY_CONTENT)
+    })
+  }
+  if (currentVersion < 14) {
+    await db.withExclusiveTransactionAsync(async transaction => {
+      await transaction.execAsync(MIGRATION_V14_DICTIONARY_IMPORTS)
+    })
+  }
+  if (currentVersion < 15) {
+    await db.withExclusiveTransactionAsync(async transaction => {
+      await transaction.execAsync(MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS)
+    })
+  }
+  if (currentVersion < 16) {
+    await db.withExclusiveTransactionAsync(async transaction => {
+      await transaction.execAsync(MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY)
+    })
+  }
 }
 
 function parseSchemaVersion(storedVersion: string | null): number {
@@ -356,6 +382,15 @@ export async function resetDatabase(): Promise<void> {
   try {
     const db = await getDatabase()
     const statements = [
+      'DROP TABLE IF EXISTS dictionary_import_acknowledgements',
+      'DROP TABLE IF EXISTS dictionary_import_intents',
+      'DROP TABLE IF EXISTS dictionary_personal_refresh_queue',
+      'DROP TABLE IF EXISTS dictionary_change_cursors',
+      'DROP TABLE IF EXISTS dictionary_content_commands',
+      'DROP TABLE IF EXISTS dictionary_card_content',
+      'DROP TABLE IF EXISTS dictionary_cefr_head_cache',
+      'DROP TABLE IF EXISTS dictionary_cefr_assessment_cache',
+      'DROP TABLE IF EXISTS dictionary_revision_cache',
       'DROP VIEW IF EXISTS effective_review_events',
       'DROP TABLE IF EXISTS review_correction_recovery',
       'DROP TABLE IF EXISTS review_corrections',

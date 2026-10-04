@@ -1,4 +1,8 @@
-import { PRODUCTION_ORIGIN } from '@woordenaar/domain'
+import {
+  PRODUCTION_ORIGIN,
+  parseSharedDictionaryCollection,
+} from '@woordenaar/domain'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import { supabase } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
 import type { Collection, Word } from '@/types/database'
@@ -253,6 +257,43 @@ class CollectionSharingService {
 
       if (!collectionResult.success) {
         return { success: false, error: collectionResult.error }
+      }
+
+      if (isDictionaryContentEnabled()) {
+        const { data, error } = await supabase.rpc(
+          'get_shared_dictionary_collection_v1',
+          { p_share_token: shareToken }
+        )
+        if (error) throw error
+        if (data === null)
+          return { success: false, error: CollectionSharingError.NOT_SHARED }
+        const shared = parseSharedDictionaryCollection(data)
+        if (
+          shared.collection.collection_id !==
+          collectionResult.data.collection_id
+        )
+          throw new Error('Shared collection identity changed')
+        return {
+          success: true,
+          data: {
+            collection: {
+              ...collectionResult.data,
+              word_count: shared.words.length,
+            },
+            words: this.normalizeSharedWords(
+              shared.words.map(
+                word =>
+                  ({
+                    ...word.content,
+                    word_id: word.word_id,
+                    collection_id: shared.collection.collection_id,
+                    created_at: word.created_at,
+                    updated_at: word.created_at,
+                  }) as unknown as SharedWordForImport
+              )
+            ),
+          },
+        }
       }
 
       const { data: words, error: wordsError } = await supabase

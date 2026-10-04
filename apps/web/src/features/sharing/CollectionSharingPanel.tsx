@@ -52,7 +52,7 @@ export function CollectionSharingPanel({
               value={state.shareUrl}
             />
             <button
-              className="rounded-xl border border-neutral-300 px-4 py-2 text-sm font-medium dark:border-neutral-700"
+              className="dw-button dw-button--secondary"
               onClick={() => void copyShareLink()}
               type="button"
             >
@@ -64,10 +64,8 @@ export function CollectionSharingPanel({
 
       <form action={formAction} className="mt-4">
         <button
-          className={`rounded-xl px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60 ${
-            state.isShared
-              ? 'border border-neutral-300 dark:border-neutral-700'
-              : 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-950'
+          className={`dw-button ${
+            state.isShared ? 'dw-button--secondary' : 'dw-button--primary'
           }`}
           disabled={pending}
           name="intent"

@@ -1,0 +1,36 @@
+appId: ${APP_ID}
+---
+# Restore only the synthetic primary session; preserve the installed app and DB.
+- assertVisible:
+    id: email-input
+- tapOn:
+    id: email-input
+- setClipboard: ${D08_PRIMARY_EMAIL}
+- pasteText
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ''
+- tapOn:
+    id: password-input
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ${D08_PRIMARY_PASSWORD}
+- pasteText
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ''
+- hideKeyboard
+- tapOn:
+    id: sign-in-button
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 60000
+- assertNotVisible: D08 Isolated Owner
+- tapOn: D08 Native QA
+- extendedWaitUntil:
+    visible: QA changed version
+    timeout: 30000
+- assertVisible: QA server version
+- assertNotVisible: tuin
+- back
+- runFlow: D08-native-sync.yaml

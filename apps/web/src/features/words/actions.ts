@@ -1,5 +1,12 @@
 'use server'
 
+import { randomUUID } from 'node:crypto'
+import { parseDictionaryContent } from '@woordenaar/domain'
+import {
+  applyDictionaryCommand,
+  readDictionaryWriteState,
+} from '@/features/dictionary/commands'
+import { isDictionaryContentEnabled } from '@/features/dictionary/repository'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireAuthContext } from '@/lib/auth/session'
@@ -231,6 +238,28 @@ export async function reanalyzeWord(
     return { status: 'error', message: 'The word could not be found.' }
   }
 
+  let contentState: Awaited<
+    ReturnType<typeof readDictionaryWriteState>
+  > | null = null
+  if (isDictionaryContentEnabled()) {
+    try {
+      contentState = await readDictionaryWriteState(
+        supabase,
+        auth.userId,
+        wordId,
+        formData
+      )
+    } catch (error) {
+      return {
+        status: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Could not verify the word content.',
+      }
+    }
+  }
+
   const { data: response, error: analysisError } =
     await supabase.functions.invoke<unknown>('gemini-handler', {
       body: { word: currentWord.dutch_lemma, forceRefresh: true },
@@ -263,6 +292,43 @@ export async function reanalyzeWord(
     ...analysis,
     dutchOriginal: currentWord.dutch_original ?? currentWord.dutch_lemma,
   }
+  if (contentState) {
+    const parsed = parseDictionaryContent({
+      ...buildWordAnalysisUpdate(analysisWithOriginal),
+      tts_url: analysisWithOriginal.ttsUrl,
+    })
+    if (!parsed.success)
+      return {
+        status: 'error',
+        message:
+          'The refreshed content is incomplete. Your word was not changed.',
+      }
+    try {
+      await applyDictionaryCommand(supabase, {
+        protocol_version: 1,
+        operation_id: randomUUID(),
+        word_id: wordId,
+        expected_content_version: contentState.version,
+        kind: 'detach',
+        content: parsed.data,
+      })
+    } catch (error) {
+      return {
+        status: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Could not save the refreshed analysis.',
+      }
+    }
+    revalidatePath('/app', 'layout')
+    return {
+      status: 'success',
+      message:
+        'Fresh analysis saved privately. Learning progress was preserved.',
+    }
+  }
+
   let { data: updatedWord, error: updateError } = await supabase
     .from('words')
     .update(buildWordAnalysisUpdate(analysisWithOriginal))
@@ -334,6 +400,45 @@ export async function updateWordImage(
   }
 
   const supabase = await createClient()
+  if (isDictionaryContentEnabled()) {
+    const owned = await supabase
+      .from('words')
+      .select('word_id')
+      .eq('word_id', wordId)
+      .eq('collection_id', collectionId)
+      .eq('user_id', auth.userId)
+      .is('deleted_at', null)
+      .maybeSingle()
+    if (owned.error || !owned.data)
+      return { status: 'error', message: 'The word could not be found.' }
+    try {
+      const contentState = await readDictionaryWriteState(
+        supabase,
+        auth.userId,
+        wordId,
+        formData
+      )
+      await applyDictionaryCommand(supabase, {
+        protocol_version: 1,
+        operation_id: randomUUID(),
+        word_id: wordId,
+        expected_content_version: contentState.version,
+        kind: 'edit-private',
+        overrides: {
+          ...contentState.overrides,
+          image_url: { op: 'set', value: imageValidation.value },
+        },
+      })
+    } catch (error) {
+      return {
+        status: 'error',
+        message:
+          error instanceof Error ? error.message : 'Could not save the image.',
+      }
+    }
+    revalidatePath('/app', 'layout')
+    return { status: 'success', message: 'Word image updated privately.' }
+  }
   const { data, error } = await supabase
     .from('words')
     .update({ image_url: imageValidation.value })

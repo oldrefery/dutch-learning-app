@@ -1,0 +1,19 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: Collections
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 30000
+- tapOn: D08 Native QA
+- extendedWaitUntil:
+    visible: huis
+    timeout: 15000
+- longPressOn: huis
+- extendedWaitUntil:
+    visible: Reset Progress
+    timeout: 5000
+- tapOn: Reset Progress
+- extendedWaitUntil:
+    visible: Word progress reset
+    timeout: 10000

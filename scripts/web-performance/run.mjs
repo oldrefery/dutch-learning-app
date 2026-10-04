@@ -23,15 +23,25 @@ import {
 import { installBrowserProbe, readBrowserMetrics } from './browser-probe.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
+const dictionary = process.argv.includes('--dictionary')
+const modes = dictionary ? ['snapshot', 'dictionary'] : ['legacy', 'snapshot']
 const smoke = process.argv.includes('--smoke')
 const core = process.argv.includes('--core')
 assert.ok(
-  process.argv.slice(2).every(arg => ['--smoke', '--core'].includes(arg)),
+  process.argv
+    .slice(2)
+    .every(arg => ['--smoke', '--core', '--dictionary'].includes(arg)),
   'Unknown benchmark option'
 )
 assert.ok(!(smoke && core), 'Choose smoke or core, not both')
 const AUTO_PREFETCH = 'auto-prefetch'
-const runs = smoke ? 1 : 5
+const runs = Number(
+  process.env.WEB_PERF_RUNS ?? (smoke ? 1 : dictionary ? 10 : 5)
+)
+assert.ok(
+  Number.isInteger(runs) && runs >= 1 && runs <= 50,
+  'Runs must be 1–50'
+)
 const latencyMs = Number(process.env.WEB_PERF_LATENCY_MS ?? 40)
 const cpuRate = Number(process.env.WEB_PERF_CPU_RATE ?? 1)
 assert.ok([1, 4].includes(cpuRate), 'CPU rate must be 1 or 4')
@@ -43,17 +53,23 @@ const allScenarios = smoke
       { words: 5000, events: 5000, selected: 5000 },
       { words: 5000, events: 5000, selected: 20 },
     ]
-const scenarios = core
-  ? allScenarios.filter(scenario => scenario.words >= 2500)
-  : allScenarios
+const scenarios =
+  dictionary && !smoke
+    ? [
+        { words: 500, events: 501, selected: 500 },
+        { words: 2500, events: 501, selected: 2500 },
+      ]
+    : core
+      ? allScenarios.filter(scenario => scenario.words >= 2500)
+      : allScenarios
 const navigationKinds =
-  smoke || core
+  smoke || core || dictionary
     ? ['cold', 'client']
     : ['cold', 'client', AUTO_PREFETCH, 'repeat']
 const output = join(
   root,
   'apps/web/output/performance/navigation',
-  `${Date.now()}-${cpuRate}x${smoke ? '-smoke' : ''}${core ? '-core' : ''}`
+  `${Date.now()}-${cpuRate}x${smoke ? '-smoke' : ''}${core ? '-core' : ''}${dictionary ? '-dictionary' : ''}`
 )
 await mkdir(output, { recursive: true })
 
@@ -250,6 +266,23 @@ async function measure(
     assert.equal(errors.length, 0, JSON.stringify(errors))
     assert.equal(unexpected.length, 0, 'Browser attempted a non-fixture origin')
     assert.equal(backend.errors.length, 0, JSON.stringify(backend.errors))
+    if (mode === 'dictionary') {
+      assert.equal(
+        backend.requests.filter(request =>
+          request.path.endsWith('/get_web_review_snapshot_v2')
+        ).length,
+        1
+      )
+      assert.equal(
+        backend.requests.filter(request =>
+          request.path.endsWith('/get_dictionary_effective_content_v1')
+        ).length,
+        0
+      )
+      assert.ok(
+        await page.getByText('A1 · reviewed', { exact: true }).isVisible()
+      )
+    }
     assert.ok(metrics.setupMs > 0 && metrics.startToCardMs > 0)
     const result = {
       id,
@@ -306,6 +339,7 @@ function summarize(results) {
       median: sorted[Math.floor(sorted.length / 2)],
       min: sorted[0],
       max: sorted.at(-1),
+      p95: sorted[Math.ceil(sorted.length * 0.95) - 1],
     }
   }
   return [...groups].map(([scenario, rows]) => ({
@@ -321,6 +355,7 @@ function summarize(results) {
 const directory = await mkdtemp(join(tmpdir(), 'review-navigation-'))
 let backend
 let server
+let dictionaryServer
 let browser
 try {
   backend = await startFixtureBackend({ latencyMs })
@@ -355,6 +390,25 @@ try {
     join(output, 'server.log')
   )
   await waitForServer(appUrl, server)
+  const dictionaryUrl = dictionary
+    ? `http://127.0.0.1:${await availablePort()}`
+    : appUrl
+  if (dictionary) {
+    dictionaryServer = startProcess(
+      [
+        next,
+        'start',
+        '--hostname',
+        '127.0.0.1',
+        '--port',
+        new URL(dictionaryUrl).port,
+      ],
+      app,
+      { ...env, DICTIONARY_CONTENT_ENABLED: 'true' },
+      join(output, 'dictionary-server.log')
+    )
+    await waitForServer(dictionaryUrl, dictionaryServer)
+  }
   browser = await chromium.launch()
   const metadata = {
     commit: execFileSync('git', ['rev-parse', 'HEAD'], {
@@ -367,6 +421,7 @@ try {
     cpu: cpus()[0].model,
     createdAt: new Date().toISOString(),
     runs,
+    dictionary,
     profile: smoke ? 'smoke' : core ? 'core' : 'full',
     cpuRate,
     latencyMs,
@@ -383,11 +438,11 @@ try {
   }
   const results = []
   if (!smoke) {
-    for (const mode of ['legacy', 'snapshot']) {
+    for (const mode of modes) {
       await measure(
         browser,
         backend,
-        appUrl,
+        mode === 'dictionary' ? dictionaryUrl : appUrl,
         scenarios[0],
         mode,
         'cold',
@@ -399,14 +454,12 @@ try {
     for (const navigation of navigationKinds) {
       for (let pair = 0; pair < runs; pair++) {
         // Alternate order to reduce consistent JIT/thermal/order bias.
-        for (const mode of pair % 2
-          ? ['snapshot', 'legacy']
-          : ['legacy', 'snapshot']) {
+        for (const mode of pair % 2 ? [...modes].reverse() : modes) {
           results.push(
             await measure(
               browser,
               backend,
-              appUrl,
+              mode === 'dictionary' ? dictionaryUrl : appUrl,
               scenario,
               mode,
               navigation,
@@ -424,6 +477,10 @@ try {
   console.log(`Results: ${output}`)
 } finally {
   await browser?.close()
+  if (dictionaryServer) {
+    dictionaryServer.child.kill('SIGTERM')
+    await dictionaryServer.finished
+  }
   if (server) {
     server.child.kill('SIGTERM')
     await server.finished

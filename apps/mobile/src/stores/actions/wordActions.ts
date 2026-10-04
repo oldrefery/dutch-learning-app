@@ -3,6 +3,12 @@ import { Sentry } from '@/lib/sentry'
 import { wordService } from '@/lib/supabase'
 import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
+import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
+import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
+import { dictionaryImportRecoveryViewRepository } from '@/db/dictionaryImportRecoveryViewRepository'
+import { wordToDictionaryContent } from '@/db/dictionaryContentMapping'
+import { applyDictionaryMaterializations } from '@/db/dictionaryWordMaterialization'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import * as Crypto from 'expo-crypto'
 import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
 import type {
@@ -12,6 +18,7 @@ import type {
   ApplicationState,
 } from '@/types/ApplicationStoreTypes'
 import type { GeminiWordAnalysis, Word } from '@/types/database'
+import type { SharedImportSource } from '@/types/ImportTypes'
 import { createLearningWordActions } from './learningWordActions'
 
 const USER_NOT_AUTHENTICATED_ERROR =
@@ -78,6 +85,70 @@ const mergeWordsById = (
 
   return mergedWords
 }
+
+const saveImportedWords = async (
+  importedWords: Word[],
+  userId: string,
+  collectionId: string,
+  get: StoreGetFunction,
+  set: StoreSetFunction
+): Promise<number> => {
+  if (get().currentUserId !== userId)
+    throw new Error('The active account changed during import')
+  const enabled = isDictionaryContentEnabled()
+  if (
+    enabled &&
+    importedWords.some(word => word.user_id !== userId || !word.word_id)
+  )
+    throw new Error('Invalid dictionary import identity')
+
+  const now = new Date().toISOString()
+  const normalized: Word[] = importedWords.map(word => ({
+    ...word,
+    word_id: word.word_id ?? Crypto.randomUUID(),
+    user_id: userId,
+    collection_id:
+      word.collection_id === undefined ? collectionId : word.collection_id,
+    interval_days: word.interval_days ?? 1,
+    repetition_count: word.repetition_count ?? 0,
+    easiness_factor: word.easiness_factor ?? 2.5,
+    next_review_date: word.next_review_date ?? now.split('T')[0],
+    created_at: word.created_at ?? now,
+    updated_at: word.updated_at ?? now,
+    synonyms: word.synonyms ?? [],
+    antonyms: word.antonyms ?? [],
+  }))
+  if (enabled)
+    await wordRepository.saveWords(normalized, { preserveUnsynced: true })
+  else await wordRepository.saveWords(normalized)
+
+  const storedWords = enabled
+    ? await wordRepository.getWordsByUserId(userId)
+    : normalized
+  const importedIds = new Set(normalized.map(word => word.word_id))
+
+  if (get().currentUserId !== userId)
+    throw new Error('The active account changed during import')
+  const currentWords = get().words
+  const existingById = new Map(currentWords.map(word => [word.word_id, word]))
+  const mergedWords = mergeWordsById(
+    currentWords,
+    storedWords
+      .filter(word => importedIds.has(word.word_id))
+      .map(word => existingById.get(word.word_id) ?? word)
+  )
+  set({ words: mergedWords })
+  return Math.max(mergedWords.length - currentWords.length, 0)
+}
+
+const requestSharedImport = (
+  collectionId: string,
+  words: Partial<Word>[],
+  source?: SharedImportSource
+) =>
+  source
+    ? wordService.importWordsToCollection(collectionId, words, source)
+    : wordService.importWordsToCollection(collectionId, words)
 
 const createWordFromAnalysis = (
   analysis: AnalyzedWord | GeminiWordAnalysis,
@@ -161,9 +232,44 @@ export const createWordActions = (
 
       // Offline-first: fetch from local SQLite
       const words = await wordRepository.getWordsByUserId(userId)
+      const materializations = isDictionaryContentEnabled()
+        ? await dictionaryContentRepository.getMaterializedContent(
+            userId,
+            words.map(word => word.word_id)
+          )
+        : new Map()
+      const imports = isDictionaryContentEnabled()
+        ? await dictionaryImportRepository.getPending(userId)
+        : []
+      const importConflicts = new Set(
+        imports
+          .filter(row => row.status === 'conflict')
+          .map(row => row.intent.word_id)
+      )
+      const importIssues = new Map(
+        (isDictionaryContentEnabled()
+          ? await dictionaryImportRecoveryViewRepository.getIssues(userId)
+          : []
+        ).map(row => [row.word_id, row.issue])
+      )
+
+      if (get().currentUserId !== userId) return
 
       // Empty word list is a valid state for new users
-      set({ words: words || [], wordsLoading: false })
+      set({
+        words: applyDictionaryMaterializations(words, materializations).map(
+          word => ({
+            ...word,
+            ...(importConflicts.has(word.word_id) && {
+              dictionary_import_conflict: true,
+            }),
+            ...(importIssues.has(word.word_id) && {
+              dictionary_import_recovery: importIssues.get(word.word_id),
+            }),
+          })
+        ),
+        wordsLoading: false,
+      })
     } catch (error) {
       Sentry.captureException(error, {
         tags: { operation: 'fetchWords' },
@@ -278,8 +384,8 @@ export const createWordActions = (
   },
 
   deleteWord: async (wordId: string) => {
+    const userId = get().currentUserId
     try {
-      const userId = get().currentUserId
       if (!userId) {
         logError(
           USER_NOT_AUTHENTICATED_LOG,
@@ -298,11 +404,16 @@ export const createWordActions = (
       }
 
       // Offline-first: delete it from local SQLite
-      await wordRepository.deleteWord(wordId, userId)
+      await wordRepository.deleteWord(wordId, userId, () => {
+        if (get().currentUserId !== userId)
+          throw new Error('Word owner changed')
+      })
+      if (get().currentUserId !== userId) return
       const currentWords = get().words
       const updatedWords = currentWords.filter(w => w.word_id !== wordId)
       set({ words: updatedWords })
     } catch (error) {
+      if (get().currentUserId !== userId) return
       logError('Error deleting word', error, { wordId }, 'words', false)
       set({
         error: createStoreError(WORD_DELETE_FAILED, {
@@ -365,8 +476,8 @@ export const createWordActions = (
   },
 
   moveWordToCollection: async (wordId: string, newCollectionId: string) => {
+    const userId = get().currentUserId
     try {
-      const userId = get().currentUserId
       if (!userId) {
         logError(
           USER_NOT_AUTHENTICATED_LOG,
@@ -385,7 +496,16 @@ export const createWordActions = (
       }
 
       // Offline-first: move word in local SQLite
-      await wordRepository.moveWordToCollection(wordId, userId, newCollectionId)
+      await wordRepository.moveWordToCollection(
+        wordId,
+        userId,
+        newCollectionId,
+        () => {
+          if (get().currentUserId !== userId)
+            throw new Error('Word owner changed')
+        }
+      )
+      if (get().currentUserId !== userId) return null
 
       // Update local store
       const currentWords = get().words
@@ -403,6 +523,7 @@ export const createWordActions = (
       }
       return null
     } catch (error) {
+      if (get().currentUserId !== userId) return null
       logError(
         'Error moving word to collection',
         error,
@@ -422,7 +543,8 @@ export const createWordActions = (
   addWordsToCollection: async (
     collectionId: string,
     words: Partial<import('@/types/database').Word>[],
-    isImportFromShared: boolean = false
+    isImportFromShared: boolean = false,
+    importOptions?: import('@/types/ImportTypes').DictionaryImportOptions
   ) => {
     try {
       const userId = get().currentUserId
@@ -440,56 +562,30 @@ export const createWordActions = (
       if (isImportFromShared) {
         try {
           // Use wordService to call RPC function with SECURITY DEFINER to bypass RLS
-          const importedWords = await wordService.importWordsToCollection(
+          const importedWords = await requestSharedImport(
             collectionId,
-            words
+            words,
+            importOptions?.sharedSource
           )
 
           if (!importedWords || importedWords.length === 0) {
             logInfo('No words were imported', { collectionId })
             return true
           }
-
-          const now = new Date().toISOString()
-          const defaultReviewDate = now.split('T')[0]
-          const normalizedImportedWords: Word[] = importedWords.map(word => ({
-            ...word,
-            word_id: word.word_id ?? Crypto.randomUUID(),
-            user_id: userId,
-            collection_id: collectionId,
-            interval_days: word.interval_days ?? 1,
-            repetition_count: word.repetition_count ?? 0,
-            easiness_factor: word.easiness_factor ?? 2.5,
-            next_review_date: word.next_review_date ?? defaultReviewDate,
-            created_at: word.created_at ?? now,
-            updated_at: word.updated_at ?? now,
-            synonyms: word.synonyms ?? [],
-            antonyms: word.antonyms ?? [],
-          }))
-
-          await wordRepository.saveWords(normalizedImportedWords)
-
-          // Merge imported words by word_id to avoid duplicates in the in-memory store.
-          const currentWords = get().words
-          const mergedWords = mergeWordsById(
-            currentWords as Word[],
-            normalizedImportedWords
+          const importedNewCount = await saveImportedWords(
+            importedWords,
+            userId,
+            collectionId,
+            get,
+            set
           )
-          const importedNewCount = Math.max(
-            mergedWords.length - currentWords.length,
-            0
-          )
-          set({ words: mergedWords })
 
-          logInfo(
-            `Shared import completed: ${importedNewCount} new word${importedNewCount !== 1 ? 's' : ''}`,
-            {
-              collectionId,
-              requestedWordCount: words.length,
-              returnedWordCount: importedWords.length,
-              importedNewCount,
-            }
-          )
+          logInfo(`Shared import completed; new words: ${importedNewCount}`, {
+            collectionId,
+            requestedWordCount: words.length,
+            returnedWordCount: importedWords.length,
+            importedNewCount,
+          })
 
           return true
         } catch (error) {
@@ -550,7 +646,19 @@ export const createWordActions = (
         updated_at: word.updated_at ?? now,
       }))
 
-      await wordRepository.addWords(wordsWithIds)
+      if (
+        importOptions?.dictionaryReferences ||
+        importOptions?.dictionaryImportSources
+      )
+        await wordRepository.addWords(
+          wordsWithIds,
+          importOptions.dictionaryReferences,
+          importOptions.dictionaryImportSources?.map((source, index) => ({
+            ...source,
+            content: wordToDictionaryContent(wordsWithIds[index]),
+          }))
+        )
+      else await wordRepository.addWords(wordsWithIds)
 
       // Update the store with new words (in offline-first, we just track the count)
       const currentWords = get().words
@@ -636,6 +744,7 @@ export const createWordActions = (
       }
 
       const analysis = response.data
+      if (get().currentUserId !== userId) return null
 
       // Prepare updated word data while preserving SRS progress and identifiers
       const now = new Date().toISOString()
@@ -683,12 +792,35 @@ export const createWordActions = (
       // analysis would collide with another active word.
       const persistedWord =
         await wordRepository.updateAnalyzedWord(updatedWordData)
+      const materializations = isDictionaryContentEnabled()
+        ? await dictionaryContentRepository.getMaterializedContent(userId, [
+            persistedWord.word_id,
+          ])
+        : new Map()
+      if (get().currentUserId !== userId) return null
+      const latestWords = get().words
+      const wordIndex = latestWords.findIndex(w => w.word_id === wordId)
+      const latestWord = latestWords[wordIndex] ?? persistedWord
+      const materializedWord = applyDictionaryMaterializations(
+        [
+          {
+            ...persistedWord,
+            // Reanalysis changes content, not personal state updated while awaiting it.
+            collection_id: latestWord.collection_id,
+            interval_days: latestWord.interval_days,
+            repetition_count: latestWord.repetition_count,
+            easiness_factor: latestWord.easiness_factor,
+            next_review_date: latestWord.next_review_date,
+            last_reviewed_at: latestWord.last_reviewed_at,
+          },
+        ],
+        materializations
+      )[0]
 
       // Update the store
-      const wordIndex = currentWords.findIndex(w => w.word_id === wordId)
       if (wordIndex !== -1) {
-        const updatedWords = [...currentWords]
-        updatedWords[wordIndex] = persistedWord
+        const updatedWords = [...latestWords]
+        updatedWords[wordIndex] = materializedWord
         set({ words: updatedWords })
       }
 
@@ -698,7 +830,7 @@ export const createWordActions = (
         'words'
       )
 
-      return persistedWord
+      return materializedWord
     } catch (error) {
       logError('Error re-analyzing word', error, { wordId }, 'words', false)
       Sentry.captureException(error, {

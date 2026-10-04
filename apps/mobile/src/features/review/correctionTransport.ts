@@ -64,9 +64,11 @@ export function createNativeCorrectionTransport(
         throw new Error('Foreign correction command')
       await learningOperationQueue.run(async () => {
         requireOwner()
-        await ensureCorrectionIdentity(userId)
-        if (!(await reviewCorrectionSync.isAvailable()))
-          throw new Error('Review corrections require an updated backend')
+        if (!(await reviewCorrectionSync.hasConfirmedCapability(userId))) {
+          await ensureCorrectionIdentity(userId)
+          if (!(await reviewCorrectionSync.isAvailable(userId)))
+            throw new Error('Review corrections require an updated backend')
+        }
         requireOwner()
         await corrections.enqueue(command)
       })

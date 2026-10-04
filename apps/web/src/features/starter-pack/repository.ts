@@ -1,5 +1,7 @@
 import 'server-only'
 
+import { hydrateOwnedWords } from '@/features/dictionary/repository'
+
 import type { Database } from '@woordenaar/supabase-contracts'
 import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
@@ -7,7 +9,7 @@ import type { ExistingStarterPackWord } from './starter-pack-domain'
 
 type WordRow = Pick<
   Database['public']['Tables']['words']['Row'],
-  'article' | 'collection_id' | 'dutch_lemma' | 'part_of_speech'
+  'article' | 'collection_id' | 'dutch_lemma' | 'part_of_speech' | 'word_id'
 >
 
 export interface StarterPackTargetCollection {
@@ -33,7 +35,7 @@ export async function getStarterPackContext(
     fetchAllRows<WordRow>((from, to) =>
       supabase
         .from('words')
-        .select('article, collection_id, dutch_lemma, part_of_speech')
+        .select('article, collection_id, dutch_lemma, part_of_speech, word_id')
         .eq('user_id', userId)
         .is('deleted_at', null)
         .order('word_id')
@@ -55,7 +57,9 @@ export async function getStarterPackContext(
 
   return {
     collections,
-    existingWords: (wordsResult.data ?? []).map(word => ({
+    existingWords: (
+      await hydrateOwnedWords(supabase, wordsResult.data ?? [])
+    ).map(word => ({
       dutchLemma: word.dutch_lemma,
       partOfSpeech: word.part_of_speech,
       article: word.article,

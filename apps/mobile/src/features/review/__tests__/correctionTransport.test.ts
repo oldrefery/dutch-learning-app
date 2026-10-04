@@ -55,6 +55,9 @@ const word = {
 beforeEach(() => {
   jest.resetAllMocks()
   useApplicationStore.setState({ currentUserId: userId, words: vocabulary })
+  jest
+    .mocked(reviewCorrectionSync.hasConfirmedCapability)
+    .mockResolvedValue(true)
   jest.mocked(reviewCorrectionSync.isAvailable).mockResolvedValue(true)
   jest.mocked(corrections.getById).mockResolvedValue(local)
   jest.mocked(recovery.pending).mockResolvedValue([])
@@ -78,13 +81,42 @@ it('persists intent before sync and only reports success after canonical reconci
   expect(useApplicationStore.getState().words[0].interval_days).toBe(8)
 })
 
-it('does not enqueue when the backend lacks correction support', async () => {
+it('does not enqueue when correction support was never confirmed and the backend lacks it', async () => {
+  jest
+    .mocked(reviewCorrectionSync.hasConfirmedCapability)
+    .mockResolvedValue(false)
   jest.mocked(reviewCorrectionSync.isAvailable).mockResolvedValue(false)
   await expect(
     createNativeCorrectionTransport(userId).apply(command)
   ).rejects.toThrow('updated backend')
   expect(corrections.enqueue).not.toHaveBeenCalled()
   expect(syncManager.performSync).not.toHaveBeenCalled()
+})
+
+it('persists a correction offline after protocol support was confirmed earlier', async () => {
+  jest
+    .mocked(syncManager.performSync)
+    .mockRejectedValueOnce(new Error('offline'))
+
+  await expect(
+    createNativeCorrectionTransport(userId).apply(command)
+  ).rejects.toThrow('offline')
+
+  expect(ensureCorrectionIdentity).not.toHaveBeenCalled()
+  expect(reviewCorrectionSync.isAvailable).not.toHaveBeenCalled()
+  expect(corrections.enqueue).toHaveBeenCalledWith(command)
+})
+
+it('probes and remembers correction support before the first durable edit', async () => {
+  jest
+    .mocked(reviewCorrectionSync.hasConfirmedCapability)
+    .mockResolvedValue(false)
+
+  await createNativeCorrectionTransport(userId).apply(command)
+
+  expect(ensureCorrectionIdentity).toHaveBeenCalledWith(userId)
+  expect(reviewCorrectionSync.isAvailable).toHaveBeenCalledWith(userId)
+  expect(corrections.enqueue).toHaveBeenCalledWith(command)
 })
 
 it('retains the operation when refresh fails after the receipt arrived', async () => {

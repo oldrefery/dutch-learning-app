@@ -4,6 +4,8 @@ import { AuthenticatedShell } from '@/components/app/AuthenticatedShell'
 import { AppNavigation } from '@/components/app/AppNavigation'
 import { ReviewDueCountNavigation } from '@/components/app/ReviewDueCountNavigation'
 import { requireAuthContext } from '@/lib/auth/session'
+import { isDictionaryContentEnabled } from '@/features/dictionary/repository'
+import { DictionaryFreshness } from '@/features/dictionary/DictionaryFreshness'
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -32,6 +34,7 @@ export default async function AppLayout({
 
   return (
     <AuthenticatedShell auth={auth} navigation={navigation}>
+      {isDictionaryContentEnabled() && <DictionaryFreshness />}
       {children}
     </AuthenticatedShell>
   )

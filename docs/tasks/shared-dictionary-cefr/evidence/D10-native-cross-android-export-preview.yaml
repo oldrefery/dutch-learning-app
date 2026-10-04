@@ -1,0 +1,16 @@
+appId: ${APP_ID}
+---
+- openLink: dutchlearning://dictionary-import
+- tapOn: Collection JSON
+- longPressOn: Collection JSON
+- tapOn: Paste
+- setClipboard: ''
+- runFlow:
+    when:
+      visible: 'Preview (words|document)'
+    commands:
+      - tapOn: 'Preview (words|document)'
+- extendedWaitUntil:
+    visible: '0 of 4 words selected.*'
+    timeout: 15000
+- assertVisible: '.*Show 4 already added words.*'

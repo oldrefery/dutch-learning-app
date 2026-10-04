@@ -8,6 +8,7 @@ import {
   listCollectionOverviews,
 } from '@/features/collections/repository'
 import { requireAuthContext } from '@/lib/auth/session'
+import { isDictionaryContentEnabled } from '@/features/dictionary/repository'
 import styles from './CollectionsPage.module.css'
 
 function Metric({
@@ -145,6 +146,14 @@ export default async function CollectionsPage() {
           </p>
         </div>
         <div className={styles.headerActions}>
+          {isDictionaryContentEnabled() && (
+            <Link
+              className="dw-button dw-button--secondary"
+              href="/app/dictionary-import"
+            >
+              Import JSON
+            </Link>
+          )}
           <Link
             className="dw-button dw-button--secondary"
             href="/app/starter-pack"

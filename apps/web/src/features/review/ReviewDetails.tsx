@@ -77,11 +77,18 @@ export function ReviewDetails({
     setReanalysisMessage(null)
     startReanalysis(async () => {
       try {
+        const formData = new FormData()
+        if (result.word.dictionary) {
+          formData.set(
+            'contentVersion',
+            String(result.word.dictionary.contentVersion)
+          )
+        }
         const state = await reanalyzeWord(
           collectionId,
           wordId,
           INITIAL_WORD_ACTION_STATE,
-          new FormData()
+          formData
         )
         if (state.status !== 'success') {
           setReanalysisMessage({
@@ -122,6 +129,8 @@ export function ReviewDetails({
           </Button>
           <span className="text-sm text-neutral-600 dark:text-neutral-400">
             Refresh linguistic data without changing learning progress.
+            {result.word.dictionary &&
+              ' Changes are private; current review questions stay unchanged.'}
           </span>
         </div>
       )}

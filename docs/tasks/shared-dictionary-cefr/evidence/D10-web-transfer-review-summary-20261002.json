@@ -1,0 +1,54 @@
+{
+  "reviewedSource": "ab8d603",
+  "startingHead": "5d95165",
+  "model": "GPT-6 Astra / High (user-confirmed switch)",
+  "verdict": "changes-required",
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P1",
+      "file": "apps/web/src/app/api/dictionary-transfer/route.ts",
+      "line": 51,
+      "counterexamples": 3,
+      "observed": "403 for legitimate loopback-IP, wildcard-bind and proxied browser origins before authentication"
+    },
+    {
+      "id": "R2",
+      "priority": "P2",
+      "file": "apps/web/src/features/sharing/DictionaryDocumentImport.tsx",
+      "line": 178,
+      "counterexamples": 1,
+      "observed": "Uncertain-operation check link points to unsubmitted collection after selection changes"
+    }
+  ],
+  "verification": {
+    "reviewSuites": 2,
+    "passedTests": 5,
+    "counterexamples": 4,
+    "validControls": 1,
+    "webTypecheck": "PASS",
+    "scopedLint": "PASS",
+    "baselineHashesUnchanged": 133
+  },
+  "reviewTestHashes": {
+    "apps/web/src/app/api/dictionary-transfer/route.review.test.ts": "6587bc31890b4616ca5a1a4b2f447492360e53db9a82b9a2d1a335f01df5c42f",
+    "apps/web/src/features/sharing/DictionaryDocumentImport.review.test.tsx": "6ffd132f7a4fae23dc6735f2418c4baae0b4c86ece10cd60d0216c62be621aad"
+  },
+  "applicationRepair": false,
+  "deviceOrBackendOperation": false,
+  "next": "GPT-6.1 Sol / High repairs, then Astra / High re-review",
+  "reviewCommit": "46eb250",
+  "normalHooks": {
+    "mobile": {
+      "suites": 156,
+      "tests": 1796,
+      "snapshots": 22
+    },
+    "web": {
+      "passedSuites": 84,
+      "passedTests": 720,
+      "skippedSuites": 1,
+      "skippedTests": 1
+    }
+  }
+}

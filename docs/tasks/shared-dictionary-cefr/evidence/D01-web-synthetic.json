@@ -1,0 +1,794 @@
+{
+  "metadata": {
+    "commit": "e9628704d0b35c548b8fac324ac5f49510c4334f",
+    "browser": "149.0.7827.55",
+    "node": "v24.9.0",
+    "platform": "darwin-arm64",
+    "cpu": "Apple M1 Pro",
+    "createdAt": "2026-09-12T17:46:22.505Z",
+    "runs": 5,
+    "profile": "full",
+    "cpuRate": 1,
+    "latencyMs": 40,
+    "caveats": [
+      "Synthetic loopback upstream; not production network, SQL or authentication performance.",
+      "Fresh browser context per sample; Next process is warm after production build/start.",
+      "Browser interception disables its HTTP cache; router cache remains enabled.",
+      "Auto-prefetch uses existing application behavior, not forced full-data prefetch.",
+      "Unrelated route prefetch is blocked; cold/client block Review prefetch too.",
+      "Setup includes real mode/scope interaction checks, then Start is pressed immediately.",
+      "No learning assessment is submitted. No real account, cookies or credentials are loaded.",
+      "Mapping, serialization and hydration are included in browser boundaries, not separately attributed."
+    ]
+  },
+  "summary": [
+    {
+      "scenario": "500/0/500/cold/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 531.5999999046326,
+        "min": 528.0999999046326,
+        "max": 538.8000001907349
+      },
+      "startToCardMs": {
+        "median": 23.5,
+        "min": 23.09999990463257,
+        "max": 24.09999990463257
+      },
+      "navigationToCardMs": {
+        "median": 554.6999998092651,
+        "min": 551.5999999046326,
+        "max": 562.6000003814697
+      },
+      "requests": {
+        "median": 13,
+        "min": 13,
+        "max": 13
+      }
+    },
+    {
+      "scenario": "500/0/500/cold/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 539.0999999046326,
+        "min": 537.0999999046326,
+        "max": 539.4000000953674
+      },
+      "startToCardMs": {
+        "median": 24.300000190734863,
+        "min": 24,
+        "max": 28.59999990463257
+      },
+      "navigationToCardMs": {
+        "median": 563.4000000953674,
+        "min": 561.0999999046326,
+        "max": 568
+      },
+      "requests": {
+        "median": 5,
+        "min": 5,
+        "max": 5
+      }
+    },
+    {
+      "scenario": "500/0/500/client/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 396.5,
+        "min": 396.09999990463257,
+        "max": 399.30000019073486
+      },
+      "startToCardMs": {
+        "median": 24.59999990463257,
+        "min": 22.300000190734863,
+        "max": 27.200000286102295
+      },
+      "navigationToCardMs": {
+        "median": 422.7999997138977,
+        "min": 419.2000002861023,
+        "max": 423.90000009536743
+      },
+      "requests": {
+        "median": 9,
+        "min": 9,
+        "max": 9
+      }
+    },
+    {
+      "scenario": "500/0/500/client/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 396.3999996185303,
+        "min": 396.19999980926514,
+        "max": 396.7000002861023
+      },
+      "startToCardMs": {
+        "median": 26.90000009536743,
+        "min": 26.5,
+        "max": 27.5
+      },
+      "navigationToCardMs": {
+        "median": 423.5,
+        "min": 422.69999980926514,
+        "max": 424
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "500/0/500/auto-prefetch/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 347.59999990463257,
+        "min": 347.2000002861023,
+        "max": 347.7999997138977
+      },
+      "startToCardMs": {
+        "median": 24.199999809265137,
+        "min": 22.199999809265137,
+        "max": 24.59999990463257
+      },
+      "navigationToCardMs": {
+        "median": 371.7999997138977,
+        "min": 369.40000009536743,
+        "max": 372.30000019073486
+      },
+      "requests": {
+        "median": 9,
+        "min": 9,
+        "max": 9
+      }
+    },
+    {
+      "scenario": "500/0/500/auto-prefetch/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 347.40000009536743,
+        "min": 347.2999997138977,
+        "max": 348
+      },
+      "startToCardMs": {
+        "median": 26.300000190734863,
+        "min": 22.59999990463257,
+        "max": 27.5
+      },
+      "navigationToCardMs": {
+        "median": 373.59999990463257,
+        "min": 370,
+        "max": 374.80000019073486
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "500/0/500/repeat/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 344.69999980926514,
+        "min": 344,
+        "max": 347.80000019073486
+      },
+      "startToCardMs": {
+        "median": 16.799999713897705,
+        "min": 13.299999713897705,
+        "max": 18.199999809265137
+      },
+      "navigationToCardMs": {
+        "median": 361.09999990463257,
+        "min": 358.2999997138977,
+        "max": 363.40000009536743
+      },
+      "requests": {
+        "median": 9,
+        "min": 9,
+        "max": 9
+      }
+    },
+    {
+      "scenario": "500/0/500/repeat/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 344.80000019073486,
+        "min": 344.5,
+        "max": 346.09999990463257
+      },
+      "startToCardMs": {
+        "median": 18.299999713897705,
+        "min": 15.300000190734863,
+        "max": 19.199999809265137
+      },
+      "navigationToCardMs": {
+        "median": 363.2999997138977,
+        "min": 360.1000003814697,
+        "max": 364.7000002861023
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "2500/501/2500/cold/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 827.2999997138977,
+        "min": 551.3000001907349,
+        "max": 849.5
+      },
+      "startToCardMs": {
+        "median": 63.90000009536743,
+        "min": 58.40000009536743,
+        "max": 64.7000002861023
+      },
+      "navigationToCardMs": {
+        "median": 891.7999997138977,
+        "min": 610.0999999046326,
+        "max": 914.2000002861023
+      },
+      "requests": {
+        "median": 22,
+        "min": 22,
+        "max": 22
+      }
+    },
+    {
+      "scenario": "2500/501/2500/cold/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 529.9000000953674,
+        "min": 519.3000001907349,
+        "max": 535.8999996185303
+      },
+      "startToCardMs": {
+        "median": 61.799999713897705,
+        "min": 61.09999990463257,
+        "max": 64.90000009536743
+      },
+      "navigationToCardMs": {
+        "median": 594.5,
+        "min": 580.4000000953674,
+        "max": 597.3999996185303
+      },
+      "requests": {
+        "median": 5,
+        "min": 5,
+        "max": 5
+      }
+    },
+    {
+      "scenario": "2500/501/2500/client/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 529.9000000953674,
+        "min": 520.5,
+        "max": 538.5999999046326
+      },
+      "startToCardMs": {
+        "median": 62,
+        "min": 59.5,
+        "max": 65.5
+      },
+      "navigationToCardMs": {
+        "median": 591.5,
+        "min": 584.8000001907349,
+        "max": 598.0999999046326
+      },
+      "requests": {
+        "median": 14,
+        "min": 14,
+        "max": 14
+      }
+    },
+    {
+      "scenario": "2500/501/2500/client/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 396.69999980926514,
+        "min": 395.69999980926514,
+        "max": 397.2000002861023
+      },
+      "startToCardMs": {
+        "median": 65.59999990463257,
+        "min": 62.19999980926514,
+        "max": 68.59999990463257
+      },
+      "navigationToCardMs": {
+        "median": 462.80000019073486,
+        "min": 458.59999990463257,
+        "max": 464.59999990463257
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "2500/501/2500/auto-prefetch/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 522.6999998092651,
+        "min": 513.9000000953674,
+        "max": 539.5
+      },
+      "startToCardMs": {
+        "median": 59.80000019073486,
+        "min": 59.30000019073486,
+        "max": 62.40000009536743
+      },
+      "navigationToCardMs": {
+        "median": 582.9000000953674,
+        "min": 573.7000002861023,
+        "max": 601.9000000953674
+      },
+      "requests": {
+        "median": 14,
+        "min": 14,
+        "max": 14
+      }
+    },
+    {
+      "scenario": "2500/501/2500/auto-prefetch/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 347.7999997138977,
+        "min": 347.59999990463257,
+        "max": 348.09999990463257
+      },
+      "startToCardMs": {
+        "median": 61.90000009536743,
+        "min": 61,
+        "max": 63.59999990463257
+      },
+      "navigationToCardMs": {
+        "median": 410,
+        "min": 408.7999997138977,
+        "max": 411.19999980926514
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "2500/501/2500/repeat/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 528.2000002861023,
+        "min": 522.3000001907349,
+        "max": 536.5
+      },
+      "startToCardMs": {
+        "median": 46.799999713897705,
+        "min": 45.09999990463257,
+        "max": 50
+      },
+      "navigationToCardMs": {
+        "median": 573.7000002861023,
+        "min": 569,
+        "max": 586.5
+      },
+      "requests": {
+        "median": 14,
+        "min": 14,
+        "max": 14
+      }
+    },
+    {
+      "scenario": "2500/501/2500/repeat/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 345.5,
+        "min": 344.6000003814697,
+        "max": 347.69999980926514
+      },
+      "startToCardMs": {
+        "median": 48.90000009536743,
+        "min": 45.30000019073486,
+        "max": 49.40000009536743
+      },
+      "navigationToCardMs": {
+        "median": 394.40000009536743,
+        "min": 392.5,
+        "max": 396
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "5000/5000/5000/cold/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 878.6000003814697,
+        "min": 862.1999998092651,
+        "max": 1008.0999999046326
+      },
+      "startToCardMs": {
+        "median": 110.5,
+        "min": 108.09999990463257,
+        "max": 113.5
+      },
+      "navigationToCardMs": {
+        "median": 989.6999998092651,
+        "min": 970.2999997138977,
+        "max": 1121.5999999046326
+      },
+      "requests": {
+        "median": 40,
+        "min": 40,
+        "max": 40
+      }
+    },
+    {
+      "scenario": "5000/5000/5000/cold/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 525.0999999046326,
+        "min": 503,
+        "max": 534
+      },
+      "startToCardMs": {
+        "median": 109.2999997138977,
+        "min": 104.09999990463257,
+        "max": 110.40000009536743
+      },
+      "navigationToCardMs": {
+        "median": 629.4000000953674,
+        "min": 612.2999997138977,
+        "max": 641.3000001907349
+      },
+      "requests": {
+        "median": 5,
+        "min": 5,
+        "max": 5
+      }
+    },
+    {
+      "scenario": "5000/5000/5000/client/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 812.8000001907349,
+        "min": 788.7000002861023,
+        "max": 830.0999999046326
+      },
+      "startToCardMs": {
+        "median": 107.80000019073486,
+        "min": 104.90000009536743,
+        "max": 109.19999980926514
+      },
+      "navigationToCardMs": {
+        "median": 922,
+        "min": 894.0999999046326,
+        "max": 939.2999997138977
+      },
+      "requests": {
+        "median": 27,
+        "min": 27,
+        "max": 27
+      }
+    },
+    {
+      "scenario": "5000/5000/5000/client/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 396.80000019073486,
+        "min": 395.30000019073486,
+        "max": 397
+      },
+      "startToCardMs": {
+        "median": 109.80000019073486,
+        "min": 107.2000002861023,
+        "max": 109.90000009536743
+      },
+      "navigationToCardMs": {
+        "median": 506.40000009536743,
+        "min": 503.90000009536743,
+        "max": 506.8999996185303
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "5000/5000/5000/auto-prefetch/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 814.3000001907349,
+        "min": 781,
+        "max": 822.6999998092651
+      },
+      "startToCardMs": {
+        "median": 107.69999980926514,
+        "min": 107,
+        "max": 117.69999980926514
+      },
+      "navigationToCardMs": {
+        "median": 921.3000001907349,
+        "min": 889.1999998092651,
+        "max": 932
+      },
+      "requests": {
+        "median": 27,
+        "min": 27,
+        "max": 27
+      }
+    },
+    {
+      "scenario": "5000/5000/5000/auto-prefetch/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 347.7000002861023,
+        "min": 339.5,
+        "max": 347.90000009536743
+      },
+      "startToCardMs": {
+        "median": 108.40000009536743,
+        "min": 107,
+        "max": 118.5
+      },
+      "navigationToCardMs": {
+        "median": 456,
+        "min": 446.5,
+        "max": 466.2000002861023
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "5000/5000/5000/repeat/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 820.7999997138977,
+        "min": 779.4000000953674,
+        "max": 827.9000000953674
+      },
+      "startToCardMs": {
+        "median": 98,
+        "min": 96.30000019073486,
+        "max": 102.59999990463257
+      },
+      "navigationToCardMs": {
+        "median": 917.0999999046326,
+        "min": 876.3000001907349,
+        "max": 928
+      },
+      "requests": {
+        "median": 27,
+        "min": 27,
+        "max": 27
+      }
+    },
+    {
+      "scenario": "5000/5000/5000/repeat/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 344.5,
+        "min": 336.90000009536743,
+        "max": 347.7000002861023
+      },
+      "startToCardMs": {
+        "median": 100.2999997138977,
+        "min": 98.30000019073486,
+        "max": 101.39999961853027
+      },
+      "navigationToCardMs": {
+        "median": 442.80000019073486,
+        "min": 437.59999990463257,
+        "max": 448
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "5000/5000/20/cold/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 1109.6999998092651,
+        "min": 871.0999999046326,
+        "max": 1138.6999998092651
+      },
+      "startToCardMs": {
+        "median": 21.5,
+        "min": 19.199999809265137,
+        "max": 22.40000009536743
+      },
+      "navigationToCardMs": {
+        "median": 1131.2999997138977,
+        "min": 890.6999998092651,
+        "max": 1161.0999999046326
+      },
+      "requests": {
+        "median": 40,
+        "min": 40,
+        "max": 40
+      }
+    },
+    {
+      "scenario": "5000/5000/20/cold/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 526.7999997138977,
+        "min": 510.3999996185303,
+        "max": 543.8000001907349
+      },
+      "startToCardMs": {
+        "median": 18.100000381469727,
+        "min": 17.59999990463257,
+        "max": 19
+      },
+      "navigationToCardMs": {
+        "median": 545.1999998092651,
+        "min": 528.5,
+        "max": 562.8000001907349
+      },
+      "requests": {
+        "median": 5,
+        "min": 5,
+        "max": 5
+      }
+    },
+    {
+      "scenario": "5000/5000/20/client/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 804,
+        "min": 786.7999997138977,
+        "max": 813.6000003814697
+      },
+      "startToCardMs": {
+        "median": 19.300000190734863,
+        "min": 18.699999809265137,
+        "max": 21.09999990463257
+      },
+      "navigationToCardMs": {
+        "median": 823.1999998092651,
+        "min": 806.0999999046326,
+        "max": 832.3000001907349
+      },
+      "requests": {
+        "median": 27,
+        "min": 27,
+        "max": 27
+      }
+    },
+    {
+      "scenario": "5000/5000/20/client/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 396.90000009536743,
+        "min": 396,
+        "max": 397.7000002861023
+      },
+      "startToCardMs": {
+        "median": 20.699999809265137,
+        "min": 20,
+        "max": 21.799999713897705
+      },
+      "navigationToCardMs": {
+        "median": 417.59999990463257,
+        "min": 416,
+        "max": 419.19999980926514
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "5000/5000/20/auto-prefetch/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 806.1999998092651,
+        "min": 789.1999998092651,
+        "max": 814.7000002861023
+      },
+      "startToCardMs": {
+        "median": 19,
+        "min": 18.799999713897705,
+        "max": 21.5
+      },
+      "navigationToCardMs": {
+        "median": 825.5999999046326,
+        "min": 808,
+        "max": 836
+      },
+      "requests": {
+        "median": 27,
+        "min": 27,
+        "max": 27
+      }
+    },
+    {
+      "scenario": "5000/5000/20/auto-prefetch/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 347.90000009536743,
+        "min": 339.6000003814697,
+        "max": 348
+      },
+      "startToCardMs": {
+        "median": 20.399999618530273,
+        "min": 19.59999990463257,
+        "max": 21.09999990463257
+      },
+      "navigationToCardMs": {
+        "median": 368.2999997138977,
+        "min": 359.30000019073486,
+        "max": 368.5
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    },
+    {
+      "scenario": "5000/5000/20/repeat/legacy",
+      "samples": 5,
+      "setupMs": {
+        "median": 822.5,
+        "min": 805.6999998092651,
+        "max": 830.2999997138977
+      },
+      "startToCardMs": {
+        "median": 15.699999809265137,
+        "min": 15.399999618530273,
+        "max": 17
+      },
+      "navigationToCardMs": {
+        "median": 837.8999996185303,
+        "min": 822.6999998092651,
+        "max": 846.2999997138977
+      },
+      "requests": {
+        "median": 27,
+        "min": 27,
+        "max": 27
+      }
+    },
+    {
+      "scenario": "5000/5000/20/repeat/snapshot",
+      "samples": 5,
+      "setupMs": {
+        "median": 338.80000019073486,
+        "min": 336.7000002861023,
+        "max": 347
+      },
+      "startToCardMs": {
+        "median": 16,
+        "min": 15.699999809265137,
+        "max": 16.699999809265137
+      },
+      "navigationToCardMs": {
+        "median": 355.40000009536743,
+        "min": 352.40000009536743,
+        "max": 363.19999980926514
+      },
+      "requests": {
+        "median": 4,
+        "min": 4,
+        "max": 4
+      }
+    }
+  ]
+}

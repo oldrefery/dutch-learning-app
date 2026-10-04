@@ -276,3 +276,22 @@ export const buildStarterPackImportPayload = (
     analysis_notes: entry.analysisNotes,
     usage_notes: null,
   }))
+
+/** Complete private copies also work when Essentials has no hosted version. */
+export const buildStarterPackDictionaryCopies = (
+  entries: StarterPackEntry[]
+): Json[] =>
+  buildStarterPackImportPayload(entries).map((value, index) => {
+    const entry = entries[index]
+    const conjugation = entry.conjugation
+    return {
+      ...(value as { [key: string]: Json | undefined }),
+      tts_url: null,
+      conjugation: isRecord(conjugation)
+        ? ({
+            ...conjugation,
+            simple_past_plural: conjugation.simple_past_plural ?? null,
+          } as Json)
+        : null,
+    }
+  })

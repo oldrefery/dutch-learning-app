@@ -1,5 +1,7 @@
 import 'server-only'
 
+import { hydrateOwnedWords } from '@/features/dictionary/repository'
+
 import { createClient } from '@/lib/supabase/server'
 import {
   buildWordDetail,
@@ -23,5 +25,7 @@ export async function getOwnedReviewWordDetail(
     .maybeSingle()
 
   if (error) throw new Error('Review word details unavailable')
-  return data ? buildWordDetail(data) : null
+  if (!data) return null
+  const [word] = await hydrateOwnedWords(client, [data])
+  return buildWordDetail(word)
 }

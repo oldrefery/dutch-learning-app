@@ -1,3 +1,4 @@
+import type { DictionaryCardMetadata } from '@/features/dictionary/content'
 import type { Database, Json } from '@woordenaar/supabase-contracts'
 import {
   DIFFICULT_EASINESS_FACTOR_THRESHOLD,
@@ -38,6 +39,7 @@ export type CollectionWordRow = Pick<
 >
 
 export interface CollectionWordListItem {
+  dictionary?: DictionaryCardMetadata
   article: string | null
   createdAt: string
   dutchLemma: string
@@ -90,7 +92,7 @@ const getFirstEnglishTranslation = (translations: Json) => {
 
 export const buildCollectionDetail = (
   collection: CollectionDetailRow,
-  words: CollectionWordRow[],
+  words: (CollectionWordRow & { dictionary?: DictionaryCardMetadata })[],
   now: Date = new Date()
 ): CollectionDetail => {
   const [overview] = buildCollectionOverviews([collection], words, now)
@@ -107,6 +109,7 @@ export const buildCollectionDetail = (
     shareToken: collection.share_token,
     sharedAt: collection.shared_at,
     words: words.map(word => ({
+      ...(word.dictionary ? { dictionary: word.dictionary } : {}),
       id: word.word_id,
       article: word.article,
       createdAt: word.created_at,

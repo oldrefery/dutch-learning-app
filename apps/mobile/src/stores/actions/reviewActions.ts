@@ -5,6 +5,7 @@ import {
   REVIEW_SESSION_MODE,
 } from '@/constants/ReviewConstants'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
+import { reviewCorrectionRecoveryRepository } from '@/db/reviewCorrectionRecoveryRepository'
 import { logInfo, logWarning, logError } from '@/utils/logger'
 import { selectReviewWords } from '@/utils/reviewSession'
 import {
@@ -12,6 +13,7 @@ import {
   resolveAdaptiveReviewMode,
 } from '@/utils/reviewModePolicy'
 import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
+import type { Word } from '@/types/database'
 import type {
   StoreSetFunction,
   StoreGetFunction,
@@ -21,6 +23,31 @@ import type {
 
 const USER_NOT_AUTHENTICATED_ERROR = 'User not authenticated'
 const INVALID_ASSESSMENT_ERROR = 'Invalid assessment object'
+
+const getPendingCorrectionWord = async (
+  userId: string,
+  words: readonly Word[]
+): Promise<Word | null> => {
+  const pendingCorrection = (
+    await reviewCorrectionRecoveryRepository.pending(userId)
+  )[0]
+  if (!pendingCorrection) return null
+  const word = words.find(
+    candidate =>
+      candidate.user_id === userId &&
+      candidate.word_id === pendingCorrection.word_id
+  )
+  if (!word) throw new Error('Pending review correction word is unavailable')
+  return word
+}
+
+const selectReviewStartWords = (
+  input: Parameters<typeof selectReviewWords>[0],
+  recoveryWord: Word | null
+) =>
+  recoveryWord
+    ? { success: true as const, words: [recoveryWord] }
+    : selectReviewWords(input)
 
 export const createReviewActions = (
   set: StoreSetFunction,
@@ -69,13 +96,17 @@ export const createReviewActions = (
       // Offline-first: Get review words from the local cache (SQLite)
       logInfo('Fetching review words from local cache', { userId }, 'review')
       const { words, collections } = get()
-      const selection = selectReviewWords({
-        words,
-        collections,
-        userId,
-        config,
-      })
+      const recoveryWord = await getPendingCorrectionWord(userId, words)
 
+      if (get().currentUserId !== userId) return
+
+      // A correction recovery lock blocks every new learning write. Reopen its
+      // word even when it is no longer due so the controller can restore the
+      // durable intent and let the learner retry or resolve it.
+      const selection = selectReviewStartWords(
+        { words, collections, userId, config },
+        recoveryWord
+      )
       if (!selection.success) {
         set({
           reviewSession: null,
@@ -98,7 +129,6 @@ export const createReviewActions = (
         })
         return
       }
-
       const reviewWords = selection.words
 
       if (reviewWords.length === 0) {

@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-02",
+  "startingHead": "6d3d355",
+  "applicationBaseline": "19d98eb",
+  "nativeBaseline": "c3f9baf",
+  "newPersonalIds": {
+    "boek": "ef62b1bb-5f5e-45fd-acd0-e8b8ccf656fa",
+    "anker": "bf5c7f11-30c7-40ce-a1b3-b0d7d202562c"
+  },
+  "words": {
+    "before": 17,
+    "after": 19,
+    "unchangedPriorRows": 17
+  },
+  "word_content_state": {
+    "before": 14,
+    "after": 16,
+    "unchangedPriorRows": 14
+  },
+  "collections": {
+    "before": 8,
+    "after": 8,
+    "unchangedPriorRows": 8
+  },
+  "ios": {
+    "priorWordFieldsPreserved": 8,
+    "learningPreserved": true,
+    "outboxesEmpty": true,
+    "newPersonalIdsMatchServer": true
+  },
+  "android": {
+    "priorWordFieldsPreserved": 7,
+    "learningPreserved": true,
+    "outboxesEmpty": true,
+    "newPersonalIdsMatchServer": true
+  },
+  "sourceFingerprintsMatched": 137,
+  "androidNativeExportPreview": {
+    "initialDuplicates": 4,
+    "afterPeerSyncDuplicates": 6
+  },
+  "webReceiverExactIdsVisible": true,
+  "contentsEqualNativeExport": true,
+  "officialSharedRuntimeMatrix": "pending",
+  "resources": {
+    "verifiedAt": "2026-10-02T14:24:04.630499+00:00",
+    "iosState": "Shutdown",
+    "androidSerialAbsent": true,
+    "containersExited": [
+      "supabase_kong_woordenaar-d08-qa.ZFsE50",
+      "supabase_auth_woordenaar-d08-qa.ZFsE50",
+      "supabase_rest_woordenaar-d08-qa.ZFsE50",
+      "supabase_db_woordenaar-d08-qa.ZFsE50"
+    ],
+    "portsClosed": [55331, 55400],
+    "runnerPidsAbsent": [24414, 24435, 24436],
+    "browserClosed": true,
+    "pendingMutation": false
+  }
+}

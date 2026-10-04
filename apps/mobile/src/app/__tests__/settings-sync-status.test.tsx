@@ -168,6 +168,39 @@ describe('Settings sync status integration', () => {
     }
   )
 
+  it.each(['light', 'dark'] as const)(
+    'shows pending hydration after a failed sync and recovery in %s mode',
+    async theme => {
+      jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue(theme)
+      jest
+        .mocked(syncStatusService.getSnapshot)
+        .mockResolvedValue(snapshot(completedAt))
+      const screen = render(<SettingsScreen />)
+      await screen.findByText(UP_TO_DATE_LABEL)
+      jest.mocked(syncStatusService.getSnapshot).mockResolvedValue({
+        ...snapshot(completedAt),
+        pendingWords: 1,
+        totalPending: 1,
+      })
+      await act(async () =>
+        listener({
+          ...successfulSync,
+          success: false,
+          error: 'Missing revision',
+        })
+      )
+      expect(screen.getByText('1 pending')).toBeTruthy()
+      expect(screen.queryByText(UP_TO_DATE_LABEL)).toBeNull()
+      expect(screen.queryByText('Never')).toBeNull()
+      jest
+        .mocked(syncStatusService.getSnapshot)
+        .mockResolvedValue(snapshot(completedAt))
+      await act(async () => listener(successfulSync))
+      expect(screen.getByText(UP_TO_DATE_LABEL)).toBeTruthy()
+      expect(screen.queryByText('1 pending')).toBeNull()
+    }
+  )
+
   it('refreshes after manual sync and keeps the previous success after a failed retry', async () => {
     const screen = render(<SettingsScreen />)
     await waitFor(() =>

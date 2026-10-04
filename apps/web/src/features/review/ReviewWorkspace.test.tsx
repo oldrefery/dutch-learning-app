@@ -12,6 +12,9 @@ import { reanalyzeWord } from '@/features/words/actions'
 import type { WordDetail } from '@/features/words/word-detail'
 import type { ReviewSubmissionResult } from './types'
 
+const router = { refresh: jest.fn() }
+jest.mock('next/navigation', () => ({ useRouter: () => router }))
+
 jest.mock('./actions', () => ({ submitReviewAssessment: jest.fn() }))
 jest.mock('./correction-actions', () => ({ submitReviewCorrection: jest.fn() }))
 jest.mock('./correction-refresh', () => ({
@@ -75,6 +78,7 @@ const makeWordDetail = (overrides: Partial<WordDetail> = {}): WordDetail => ({
 })
 
 beforeEach(() => {
+  router.refresh.mockReset()
   jest.useFakeTimers().setSystemTime(new Date('2026-09-06T12:00:00Z'))
   Object.defineProperty(document, 'hidden', {
     configurable: true,
@@ -97,6 +101,42 @@ beforeEach(() => {
     settings: DEFAULT_WEB_SETTINGS,
     update,
   })
+})
+
+it('waits for a boundary refresh and starts with content received during the previous session', async () => {
+  const data = { ...makeData(), dictionaryContentEnabled: true }
+  const view = renderWorkspace(data)
+  fireEvent.click(screen.getByRole('radio', { name: /Meaning recall/ }))
+  await start()
+  const original = screen.getByRole('heading', { level: 1 }).textContent
+  const updated = {
+    ...data,
+    words: data.words.map(word => ({ ...word, dutchLemma: 'updated content' })),
+  }
+  view.rerender(
+    <ReviewWorkspace
+      canUseAi
+      data={updated}
+      userId="test-user"
+      initialScope="all-due"
+      initialCollectionId={null}
+    />
+  )
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(original!)
+  let finishRefresh!: () => void
+  router.refresh.mockImplementationOnce(
+    () =>
+      new Promise<void>(resolve => {
+        finishRefresh = resolve
+      })
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Exit review' }))
+  expect(screen.getByRole('button', { name: /Preparing/ })).toBeDisabled()
+  await act(async () => finishRefresh())
+  await start()
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+    'updated content'
+  )
 })
 afterEach(() => {
   jest.useRealTimers()

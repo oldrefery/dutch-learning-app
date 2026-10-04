@@ -23,6 +23,15 @@ const DEFAULT_OPTIONS: UseSyncManagerOptions = {
 export const refreshApplicationStoreAfterSync = async (
   result: SyncResult
 ): Promise<void> => {
+  if (
+    result.userId &&
+    useApplicationStore.getState().currentUserId !== result.userId
+  )
+    return
+  if (result.dictionaryConflict) {
+    await useApplicationStore.getState().fetchWords()
+    return
+  }
   if (!result.success) return
 
   const { fetchCollections, fetchWords, fetchUserAccessLevel } =
@@ -70,8 +79,10 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
     setIsSyncing(true)
     try {
       const result = await syncManager.performSync(currentUserId)
-      setSyncResult(result)
+      if (useApplicationStore.getState().currentUserId === currentUserId)
+        setSyncResult(result)
     } catch (error) {
+      if (useApplicationStore.getState().currentUserId !== currentUserId) return
       console.error('[Sync] Error in performSync:', error)
       // Set error result so UI knows sync failed
       setSyncResult({
@@ -123,6 +134,11 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
   const setupSyncStatusListener = useCallback(() => {
     unsubscribeSyncRef.current = syncManager.subscribeSyncStatus(
       (result: SyncResult) => {
+        if (
+          result.userId &&
+          useApplicationStore.getState().currentUserId !== result.userId
+        )
+          return
         setSyncResult(result)
         void refreshApplicationStoreAfterSync(result).catch(error => {
           console.error(

@@ -1,0 +1,31 @@
+appId: ${APP_ID}
+---
+- openLink: dutchlearning://
+- runFlow:
+    when:
+      visible:
+        id: email-input
+    commands:
+      - tapOn:
+          id: email-input
+      - setClipboard: ${D08_PRIMARY_EMAIL}
+      - pasteText
+      - waitForAnimationToEnd:
+          timeout: 5000
+      - tapOn:
+          id: password-input
+      - setClipboard: ${D08_PRIMARY_PASSWORD}
+      - pasteText
+      - waitForAnimationToEnd:
+          timeout: 5000
+      - setClipboard: ''
+      - hideKeyboard
+      - tapOn:
+          id: sign-in-button
+- extendedWaitUntil:
+    visible:
+      id: screen-collections
+    timeout: 60000
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 60000

@@ -1,0 +1,26 @@
+appId: ${APP_ID}
+---
+- runFlow:
+    when:
+      visible: System UI isn't responding
+    commands:
+      - tapOn: Wait
+- stopApp
+- launchApp:
+    clearState: false
+- tapOn:
+    text: Collections
+    optional: true
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 60000
+- tapOn: D08 Native QA
+- scrollUntilVisible:
+    element: zolder
+    direction: DOWN
+    timeout: 30000
+- tapOn: zolder
+- extendedWaitUntil:
+    visible: QA local version
+    timeout: 15000
+- assertVisible: CEFR level unknown

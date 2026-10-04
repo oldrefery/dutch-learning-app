@@ -3,7 +3,10 @@ import type { Database } from '@woordenaar/supabase-contracts'
 import { NextResponse, type NextRequest } from 'next/server'
 import { getSupabasePublicConfig } from '@/lib/env'
 
-export const refreshSession = async (request: NextRequest) => {
+export const refreshSession = async (
+  request: NextRequest,
+  { verifyUser = false }: { verifyUser?: boolean } = {}
+) => {
   let response = NextResponse.next({ request })
   const { url, publishableKey } = getSupabasePublicConfig()
   const supabase = createServerClient<Database>(url, publishableKey, {
@@ -20,6 +23,19 @@ export const refreshSession = async (request: NextRequest) => {
       },
     },
   })
+
+  if (verifyUser) {
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser()
+
+      return { response, isAuthenticated: !error && Boolean(user) }
+    } catch {
+      return { response, isAuthenticated: false }
+    }
+  }
 
   const { data, error } = await supabase.auth.getClaims()
 

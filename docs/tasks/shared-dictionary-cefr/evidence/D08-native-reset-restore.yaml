@@ -1,0 +1,12 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: Collections
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 15000
+- tapOn: D08 Native QA
+- extendedWaitUntil:
+    visible: huis
+    timeout: 15000
+- assertVisible: New

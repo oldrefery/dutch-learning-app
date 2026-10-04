@@ -163,6 +163,58 @@ exports[`dark review mode snapshots renders Meaning Recall 1`] = `
       >
         noun
       </Text>
+      <View
+        accessibilityLabel="CEFR —"
+        accessible={true}
+        style={
+          [
+            {
+              "backgroundColor": "#1C1C1E",
+            },
+            [
+              {
+                "alignSelf": "flex-start",
+                "borderRadius": 10,
+                "borderWidth": 1,
+                "paddingHorizontal": 8,
+                "paddingVertical": 3,
+              },
+              {
+                "paddingHorizontal": 6,
+                "paddingVertical": 2,
+              },
+              {
+                "backgroundColor": "rgba(255, 255, 255, 0.08)",
+                "borderColor": "#4B5563",
+              },
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#E5E5E7",
+              },
+              [
+                {
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                },
+                {
+                  "fontSize": 11,
+                },
+                {
+                  "color": "rgba(255, 255, 255, 0.6)",
+                },
+              ],
+            ]
+          }
+        >
+          CEFR —
+        </Text>
+      </View>
     </View>
     <Text
       style={
@@ -630,6 +682,58 @@ exports[`light review mode snapshots renders Meaning Recall 1`] = `
       >
         noun
       </Text>
+      <View
+        accessibilityLabel="CEFR —"
+        accessible={true}
+        style={
+          [
+            {
+              "backgroundColor": "#F2F2F7",
+            },
+            [
+              {
+                "alignSelf": "flex-start",
+                "borderRadius": 10,
+                "borderWidth": 1,
+                "paddingHorizontal": 8,
+                "paddingVertical": 3,
+              },
+              {
+                "paddingHorizontal": 6,
+                "paddingVertical": 2,
+              },
+              {
+                "backgroundColor": "#F3F4F6",
+                "borderColor": "#D1D5DB",
+              },
+            ],
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#111827",
+              },
+              [
+                {
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                },
+                {
+                  "fontSize": 11,
+                },
+                {
+                  "color": "#4B5563",
+                },
+              ],
+            ]
+          }
+        >
+          CEFR —
+        </Text>
+      </View>
     </View>
     <Text
       style={

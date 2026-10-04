@@ -1,4 +1,8 @@
 import type { Json } from '@woordenaar/supabase-contracts'
+import {
+  parseAnalysisCefrEstimate,
+  type AnalysisCefrEstimate,
+} from '@woordenaar/domain'
 
 export interface AnalysisExample {
   en: string
@@ -25,6 +29,7 @@ export interface AnalysisUsageNotes {
 }
 
 export interface WordAnalysis {
+  cefr?: AnalysisCefrEstimate | null
   analysisNotes: string | null
   antonyms: string[]
   article: 'de' | 'het' | null
@@ -251,6 +256,9 @@ export const parseWordAnalysis = (value: unknown): WordAnalysis => {
 
   return {
     dutchLemma: dutchLemma.toLocaleLowerCase('nl-NL'),
+    ...(Object.hasOwn(value, 'cefr')
+      ? { cefr: parseAnalysisCefrEstimate(value.cefr) }
+      : {}),
     dutchOriginal,
     partOfSpeech:
       toText(value.part_of_speech, 80) ?? (isSeparable ? 'verb' : 'unknown'),
@@ -345,6 +353,7 @@ export const parseSerializedWordAnalysis = (
 }
 
 export const toAnalysisJson = (analysis: WordAnalysis): Json => ({
+  ...(analysis.cefr ? { cefr: { ...analysis.cefr } } : {}),
   dutch_lemma: analysis.dutchLemma,
   dutch_original: analysis.dutchOriginal,
   part_of_speech: analysis.partOfSpeech,

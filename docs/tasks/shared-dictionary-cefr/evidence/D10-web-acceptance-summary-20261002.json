@@ -1,0 +1,57 @@
+{
+  "words": {
+    "before": 12,
+    "after": 17,
+    "unchangedPriorRows": 12
+  },
+  "word_content_state": {
+    "before": 9,
+    "after": 14,
+    "unchangedPriorRows": 9
+  },
+  "collections": {
+    "before": 8,
+    "after": 8,
+    "unchangedPriorRows": 8
+  },
+  "date": "2026-10-02",
+  "sourceCommit": "19d98eb",
+  "reviewTests": 54,
+  "reviewSuites": 3,
+  "documentImports": 4,
+  "bundledImports": 1,
+  "crossOwnerContentsExact": true,
+  "priorLearningAndHistoryUnchanged": true,
+  "accessLevelsRestored": true,
+  "privateReferencesCopied": false,
+  "collectionsPublished": 0,
+  "lostReplyConfirmedSaved": 1,
+  "lostReplyAutoReplay": false,
+  "changedFutureTargetKeptAttemptedLink": true,
+  "finalDuplicatePreview": {
+    "available": 0,
+    "alreadyAdded": 4,
+    "selected": 0
+  },
+  "devicesInspectedOrUsed": false,
+  "officialAndSharedRuntimeAcceptance": "pending; no existing fixtures",
+  "nativeCrossClientAcceptance": "pending device availability handback",
+  "sourceFingerprintsMatched": 137,
+  "cleanup": {
+    "verifiedAt": "2026-10-02T13:59:14Z",
+    "browserSession": "d10-transfer-qa",
+    "browserClosed": true,
+    "runnerExited": true,
+    "runnerPidsAbsent": [10609, 10626, 10627],
+    "closedPorts": [55331, 55400],
+    "containersExited": [
+      "supabase_kong_woordenaar-d08-qa.ZFsE50",
+      "supabase_auth_woordenaar-d08-qa.ZFsE50",
+      "supabase_rest_woordenaar-d08-qa.ZFsE50",
+      "supabase_db_woordenaar-d08-qa.ZFsE50"
+    ],
+    "devicesInspected": false,
+    "accessLevelsRestored": true,
+    "uncertainMutations": 0
+  }
+}

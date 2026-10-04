@@ -1,0 +1,20 @@
+appId: ${APP_ID}
+---
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    text: Keep my version
+    retryTapIfNoChange: true
+- repeat:
+    while:
+      notVisible: Compare versions
+    times: 20
+    commands:
+      - swipe:
+          start: 50%, 42%
+          end: 50%, 46%
+          duration: 1000
+- extendedWaitUntil:
+    visible: Compare versions
+    timeout: 30000
+- assertVisible: Server content changed. Reload the conflict.

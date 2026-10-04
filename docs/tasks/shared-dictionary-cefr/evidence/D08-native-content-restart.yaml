@@ -1,0 +1,14 @@
+appId: ${APP_ID}
+---
+- stopApp
+- launchApp
+- tapOn: Collections
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 30000
+- tapOn: D08 Native QA
+- tapOn: zolder
+- extendedWaitUntil:
+    visible: ${D08_EXPECTED}
+    timeout: 10000
+- assertVisible: CEFR level unknown

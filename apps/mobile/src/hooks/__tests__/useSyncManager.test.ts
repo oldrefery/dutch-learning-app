@@ -51,6 +51,18 @@ describe('refreshApplicationStoreAfterSync', () => {
     })
   })
 
+  it('does not publish a completed old-owner sync into the current account', async () => {
+    useApplicationStore.setState({ currentUserId: 'current-owner' })
+    await refreshApplicationStoreAfterSync({
+      ...successfulSync,
+      userId: 'old-owner',
+      dictionaryConflict: true,
+    })
+    expect(fetchCollections).not.toHaveBeenCalled()
+    expect(fetchWords).not.toHaveBeenCalled()
+    expect(fetchUserAccessLevel).not.toHaveBeenCalled()
+  })
+
   it('rehydrates collections and words after a successful sync', async () => {
     await refreshApplicationStoreAfterSync(successfulSync)
 
@@ -64,6 +76,15 @@ describe('refreshApplicationStoreAfterSync', () => {
 
     expect(fetchCollections).not.toHaveBeenCalled()
     expect(fetchWords).not.toHaveBeenCalled()
+    expect(fetchUserAccessLevel).not.toHaveBeenCalled()
+  })
+
+  it('refreshes private conflict indicators without fetching account access remotely', async () => {
+    await refreshApplicationStoreAfterSync({
+      ...failedSync,
+      dictionaryConflict: true,
+    })
+    expect(fetchWords).toHaveBeenCalledTimes(1)
     expect(fetchUserAccessLevel).not.toHaveBeenCalled()
   })
 })
@@ -125,5 +146,53 @@ describe('initial synchronization', () => {
       finishInitialization()
     })
     expect(syncManager.performSync).not.toHaveBeenCalled()
+  })
+})
+
+describe('dictionary recovery delivery on foreground resume', () => {
+  it('pauses automatic work in background and resumes through the same sync coordinator', async () => {
+    const previousAppState = AppState.currentState
+    const userId = 'recovery-owner'
+    const listener = jest.spyOn(AppState, 'addEventListener')
+    AppState.currentState = 'active'
+    useApplicationStore.setState({ currentUserId: userId })
+    jest
+      .mocked(initializeDatabase)
+      .mockResolvedValue(
+        'initialized' as unknown as Awaited<
+          ReturnType<typeof initializeDatabase>
+        >
+      )
+    jest
+      .mocked(syncManager.performSync)
+      .mockClear()
+      .mockResolvedValue({ ...successfulSync, userId })
+    const { unmount } = renderHook(() =>
+      useSyncManager({
+        autoSyncOnMount: false,
+        autoSyncOnFocus: false,
+        autoSyncOnNetworkChange: false,
+        syncIntervalMs: 0,
+      })
+    )
+    try {
+      await waitFor(() => expect(listener).toHaveBeenCalled())
+      const onChange = listener.mock.calls[listener.mock.calls.length - 1][1]
+      await act(async () => {
+        AppState.currentState = 'background'
+        onChange('background')
+      })
+      expect(syncManager.performSync).not.toHaveBeenCalled()
+      await act(async () => {
+        AppState.currentState = 'active'
+        onChange('active')
+      })
+      expect(syncManager.performSync).toHaveBeenCalledTimes(1)
+      expect(syncManager.performSync).toHaveBeenCalledWith(userId)
+    } finally {
+      unmount()
+      listener.mockRestore()
+      AppState.currentState = previousAppState
+    }
   })
 })

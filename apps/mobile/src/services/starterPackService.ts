@@ -10,6 +10,7 @@ import type {
   StarterPackValidationResult,
 } from '@/types/StarterPackTypes'
 import type { ImportPreviewData, ImportableWord } from '@/types/ImportTypes'
+import type { OfficialDictionaryMapping } from '@woordenaar/content/dictionary'
 
 const OFFICIAL_PACK_MIN_ENTRIES = 50
 const OFFICIAL_PACK_MAX_ENTRIES = 100
@@ -129,11 +130,27 @@ export const createStarterPackImportWords = (
     })
 }
 
+export const getImportReferences = (
+  manifest: StarterPackManifest,
+  selectedEntryIds: string[],
+  mapping: OfficialDictionaryMapping | null
+) => {
+  if (!mapping) return undefined
+  const selected = new Set(selectedEntryIds)
+  const byEntry = new Map(
+    mapping.entries.map(entry => [entry.pack_entry_id, entry.reference])
+  )
+  return manifest.entries
+    .filter(entry => selected.has(entry.entry_id))
+    .map(entry => byEntry.get(entry.entry_id) ?? null)
+}
+
 export const isStarterPackReleaseReady = (
   manifest: StarterPackManifest
 ): boolean => manifest.content_review.status === 'approved'
 
 export const starterPackService = {
+  getImportReferences,
   loadOfficialDutchA1Pack,
   getStarterPackPreview,
   createStarterPackImportWords,

@@ -1,0 +1,60 @@
+appId: ${APP_ID}
+---
+# Read the retained web recipient after a real account switch; do not reset data.
+- openLink: dutchlearning://settings
+- extendedWaitUntil:
+    visible:
+      id: screen-settings
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      text: Logout
+    direction: DOWN
+    timeout: 20000
+- tapOn: Logout
+- tapOn:
+    text: Logout
+    index: 1
+- extendedWaitUntil:
+    visible:
+      id: email-input
+    timeout: 30000
+- tapOn:
+    id: email-input
+- setClipboard: ${D08_ISOLATED_EMAIL}
+- pasteText
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    id: password-input
+- inputText: ${D08_ISOLATED_PASSWORD}
+- waitForAnimationToEnd:
+    timeout: 5000
+- setClipboard: ''
+- hideKeyboard
+- tapOn:
+    id: sign-in-button
+- extendedWaitUntil:
+    visible: D08 Isolated Owner
+    timeout: 60000
+- assertNotVisible: D08 Native QA
+- openLink: dutchlearning://collection/f47345d5-2510-40f0-8db4-3ec385a7e6d9
+- extendedWaitUntil:
+    visible: zolder
+    timeout: 30000
+- assertVisible: huis
+- assertVisible: balkon
+- assertVisible: QA D09 boundary fixed
+- assertVisible: QA local version
+- assertVisible: QA changed version
+- openLink: dutchlearning://collection/4f59dcad-07f7-44c9-ac2e-a0ac3b3aaf78
+- extendedWaitUntil:
+    visible: boek
+    timeout: 30000
+- assertVisible: anker
+- assertVisible: fiets
+- assertVisible: D09 updated bicycle
+- tapOn: Copy collection JSON export
+- extendedWaitUntil:
+    visible: Full collection JSON copied.
+    timeout: 10000

@@ -1,0 +1,12 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- openLink: dutchlearning://starter-pack?packId=d10-synthetic-navigation-20261002&version=1.0.0
+- extendedWaitUntil:
+    visible: D10 Synthetic Navigation
+    timeout: 30000
+- assertVisible: '.*kompas.*'
+- assertVisible: '.*zeil.*'
+- assertVisible: '.*Show 1 already added.*'
+- assertVisible: '2 of 3 words selected.*'

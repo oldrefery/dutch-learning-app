@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-04",
+  "starting_head": "9a47b16",
+  "scope": "Qualification boundary review and ambiguity repair; no live quality qualification",
+  "sha256": {
+    "scripts/cefr-calibration/diagnostic-bundle.ts": "8a39c5edcde2699f9b7121d286c57d2894ce194b902fcb13c1cd405f54c50cbc",
+    "scripts/cefr-calibration/diagnostic-report.ts": "c7e6a8745d84ec19cb8be9d2dc58fd37bd920879cd18e9906c015c8a958725f4",
+    "scripts/postgres-tests/cefr-budget.test.mjs": "bf27eb4362f75e43a1c251bb30c43044bf795d73e1f1af2f181d69813795a49e",
+    "scripts/postgres-tests/cefr-queue.test.mjs": "53645b796110aaca3f0311c8b8d6f582c63fc80b721e50e91aefc98cc3ed5357",
+    "supabase/functions/_shared/cefr-calibration/fixture.ts": "e631b54a924398091f9162e1890d7606a30272f63196ea25e57a607823097633",
+    "supabase/functions/_shared/cefr-calibration/fixture_test.ts": "6e0b83c63de84bd8548dfd81ebadb43933db72b443e5847ee94b542c362397af",
+    "supabase/functions/_shared/cefr-calibration/metrics.ts": "81d012aea3f957e77310ed6d2a9d3909a328940fd53c6c84e2522f790a1d57df",
+    "supabase/functions/_shared/cefr-calibration/policy.ts": "bae3fd64a99fa6614d673065f2a2331350d4d346b3cef726e8366958bf444999",
+    "supabase/functions/_shared/cefr-calibration/policy_test.ts": "2089d71ad70ed42dd5a8caad2f75c4327d3ce90d99e745e3a0e0d68c3bf9dac8",
+    "supabase/functions/_shared/cefr-calibration/profile.ts": "ba708978fce4cde87babac766b3a0aab89769c13dd38668c0306fedb7246952a",
+    "supabase/functions/_shared/cefr-calibration/report.ts": "bea73f491e9aa1e9f3b8a61effb482ac8eec00f2ab4c042eb4295a49b4d4069b",
+    "supabase/functions/_shared/cefr-calibration/report_test.ts": "7f11cc8bc760b2978a594f2d08c22d08ca1b59ec62e0f17ef4b3c6774a47ba76",
+    "supabase/functions/_shared/cefr-calibration/review_test.ts": "e67ecb5b7be146909a0dec3affd794acc85d258096e29a9285a9cf4bf9d02046",
+    "supabase/functions/_shared/cefr-calibration/synthetic-fixtures.ts": "d59d2d26b6b9f6e6c8d8b8410ea92b5f01715e8a05ed825fa97067fb512ae57f",
+    "supabase/functions/_shared/cefr-calibration/validation.ts": "e66b975216d85b388ed8912b194337d4fda2a61abb4a9fd9d8ecb16fa4c46de0",
+    "supabase/functions/_shared/cefr-worker/evaluate.ts": "0c76bd96bedc1fe15c7ef27316656ea733a152256262853cf26bec1f3b4f8fb6",
+    "supabase/functions/_shared/cefr-worker/evaluate_test.ts": "a2c5f22bbf0baf8d1e9ee566775cd002fd4d5a29a72d97f762b8d5bc36b02c95",
+    "supabase/functions/_shared/cefr-worker/handler.ts": "b3b16eacdc4a25f48ebb6449d7fda1caa834dd6b37cb2dd572d920c2b4990d17",
+    "supabase/functions/_shared/cefr-worker/handler_test.ts": "ed56e60a3cc08159f1e60809cee2ac223dedfd7f2c9794b89d9a4474a456caac",
+    "supabase/functions/_shared/cefr-worker/store.ts": "cf080c3418860c1546a072344453d68c4ca3d5fe28304cd9d9b1abbc1906d5a3",
+    "supabase/functions/_shared/cefr-worker/store_test.ts": "a1f1a8019ce225191867559a0acc6c86efbffdccf15da34165b5cabf9916b7d8",
+    "supabase/functions/_shared/cefr-worker/synthetic-fixtures.ts": "72d5b29450c6ba1cdfec3163e36b9ca475ea09bea12dbb79d3cd049c1b0050ea"
+  }
+}

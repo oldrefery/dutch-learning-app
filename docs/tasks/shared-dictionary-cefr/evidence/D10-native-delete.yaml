@@ -1,0 +1,15 @@
+appId: ${APP_ID}
+---
+- openLink: dutchlearning://collection/820e9bad-4fc8-40ea-bcd6-216b86f2007c
+- extendedWaitUntil:
+    visible: d10herstel
+    timeout: 15000
+- longPressOn: d10herstel
+- extendedWaitUntil:
+    visible: Delete Word
+    timeout: 5000
+- tapOn: Delete Word
+- extendedWaitUntil:
+    visible: Word deleted
+    timeout: 10000
+- runFlow: D10-native-pending-sync.yaml

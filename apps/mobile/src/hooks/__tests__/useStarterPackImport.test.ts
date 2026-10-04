@@ -9,6 +9,17 @@ import {
 import { officialContentCatalogService } from '@/services/officialContentCatalogService'
 import { Sentry } from '@/lib/sentry'
 import type { Collection, Word } from '@/types/database'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
+import type { OfficialDictionaryMapping } from '@woordenaar/content/dictionary'
+import type { DictionaryImportOptions } from '@/types/ImportTypes'
+
+jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryContentEnabled: jest.fn(() => false),
+}))
+jest.mock('@/db/dictionaryContentRepository', () => ({
+  dictionaryContentRepository: { cacheDependencies: jest.fn() },
+}))
 
 jest.mock('@/stores/useApplicationStore', () => ({
   useApplicationStore: {
@@ -28,6 +39,7 @@ jest.mock('@/lib/sentry', () => ({
 jest.mock('@/services/officialContentCatalogService', () => ({
   officialContentCatalogService: {
     getPack: jest.fn(),
+    getDictionaryMapping: jest.fn(),
   },
 }))
 jest.mock('expo-router', () => ({
@@ -46,7 +58,10 @@ interface MockStoreState {
   fetchCollections: jest.Mock<Promise<void>, []>
   createNewCollection: jest.Mock<Promise<Collection | null>, [string]>
   deleteCollection: jest.Mock<Promise<void>, [string]>
-  addWordsToCollection: jest.Mock<Promise<boolean>, [string, Partial<Word>[]]>
+  addWordsToCollection: jest.Mock<
+    Promise<boolean>,
+    [string, Partial<Word>[], boolean?, DictionaryImportOptions?]
+  >
 }
 
 const STARTER_COLLECTION_ID = 'starter-collection-id'
@@ -98,6 +113,7 @@ describe('useStarterPackImport', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.mocked(isDictionaryContentEnabled).mockReturnValue(false)
     const collection = createCollection()
     storeState = {
       currentUserId: 'user-id',
@@ -141,6 +157,77 @@ describe('useStarterPackImport', () => {
     expect(result.current.selectedCount).toBe(60)
     expect(storeState.createNewCollection).not.toHaveBeenCalled()
     expect(storeState.addWordsToCollection).not.toHaveBeenCalled()
+  })
+
+  it('caches the complete pin and aligns references only with selected nonduplicate entries', async () => {
+    const manifest = loadOfficialDutchA1Pack()
+    const reference = {
+      entry_id: '10000000-0000-4000-8000-000000000001',
+      revision_id: '20000000-0000-4000-8000-000000000001',
+    }
+    const mapping: OfficialDictionaryMapping = {
+      schema_version: 1,
+      pack_id: manifest.pack_id,
+      version: manifest.version,
+      manifest_sha256: 'a'.repeat(64),
+      entries: [
+        {
+          pack_entry_id: manifest.entries[1].entry_id,
+          reference,
+          revision_content_sha256: 'b'.repeat(64),
+          revision: {
+            revision_no: 1,
+            schema_version: 1,
+            cefr_input_sha256: 'c'.repeat(64),
+          },
+          provenance: {
+            source_id: '30000000-0000-4000-8000-000000000001',
+            provenance_locator: 'fixture://approved',
+          },
+        },
+      ],
+    }
+    storeState.words = [createExistingWord()]
+    jest.mocked(isDictionaryContentEnabled).mockReturnValue(true)
+    jest
+      .mocked(officialContentCatalogService.getDictionaryMapping)
+      .mockResolvedValue(mapping)
+    const { result } = await renderAndWait()
+    await act(async () => {
+      await result.current.handleImport()
+    })
+    expect(dictionaryContentRepository.cacheDependencies).toHaveBeenCalledWith([
+      expect.objectContaining({
+        revision: expect.objectContaining({
+          ...reference,
+          content: expect.objectContaining({
+            dutch_lemma: manifest.entries[1].dutch_lemma,
+          }),
+        }),
+      }),
+    ])
+    const [, words, mode, options] =
+      storeState.addWordsToCollection.mock.calls[0]
+    expect(words).toHaveLength(59)
+    expect(words[0].dutch_lemma).toBe(manifest.entries[1].dutch_lemma)
+    expect(words.every(word => word.word_id === undefined)).toBe(true)
+    expect(mode).toBe(false)
+    expect(options?.dictionaryReferences).toHaveLength(59)
+    expect(options?.dictionaryReferences?.[0]).toEqual(reference)
+    expect(options?.dictionaryImportSources?.[0]).toMatchObject({
+      kind: 'official-pack',
+      pack_entry_id: manifest.entries[1].entry_id,
+      manifest_sha256: mapping.manifest_sha256,
+      reference,
+    })
+    expect(
+      options?.dictionaryImportSources
+        ?.slice(1)
+        .every(source => source.kind === 'private-copy')
+    ).toBe(true)
+    expect(
+      options?.dictionaryReferences?.slice(1).every(item => item === null)
+    ).toBe(true)
   })
 
   it('downloads a selected remote pack before preparing its import', async () => {

@@ -1,10 +1,16 @@
 {
   "imports": {
-    "@supabase/supabase-js": "npm:@supabase/supabase-js@2"
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2",
+    "../../../packages/domain/src/shared-dictionary": "../../../packages/domain/src/shared-dictionary.ts",
+    "@std/assert": "https://deno.land/std@0.224.0/assert/mod.ts"
   },
   "compilerOptions": {
     "allowJs": true,
     "lib": ["deno.window"],
     "strict": true
+  },
+  "lock": {
+    "path": "../deno.lock",
+    "frozen": true
   }
 }

@@ -42,7 +42,7 @@ const config = {
     },
   },
   displayName: 'web',
-  modulePathIgnorePatterns: ['<rootDir>/.stryker-tmp/'],
+  modulePathIgnorePatterns: ['<rootDir>/.stryker-tmp/', '<rootDir>/reports/'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/apps/web/src/$1',
     '^@woordenaar/content$': '<rootDir>/packages/content/src/dutch-a1.json',

@@ -1,5 +1,10 @@
 import 'server-only'
 
+import {
+  hydrateOwnedWords,
+  getAvailableRevision,
+} from '@/features/dictionary/repository'
+
 import { createClient } from '@/lib/supabase/server'
 import { buildWordDetail, isUuid } from './word-detail'
 import type { WordDetail } from './word-detail'
@@ -55,6 +60,14 @@ export async function getOwnedWordPageData(
 
   if (!collectionResult.data || !wordResult.data) return null
 
+  const [word] = await hydrateOwnedWords(supabase, [wordResult.data])
+  if (word.dictionary?.reference) {
+    word.dictionary.availableRevision = await getAvailableRevision(
+      supabase,
+      word.dictionary.reference
+    )
+  }
+
   return {
     collection: {
       id: collectionResult.data.collection_id,
@@ -66,6 +79,6 @@ export async function getOwnedWordPageData(
         id: collection.collection_id,
         name: collection.name,
       })),
-    word: buildWordDetail(wordResult.data),
+    word: buildWordDetail(word),
   }
 }

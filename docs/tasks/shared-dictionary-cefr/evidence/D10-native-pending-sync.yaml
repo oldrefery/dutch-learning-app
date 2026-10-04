@@ -1,0 +1,18 @@
+appId: ${APP_ID}
+---
+- openLink: dutchlearning://settings
+- extendedWaitUntil:
+    visible:
+      id: screen-settings
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      id: force-sync-button
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: force-sync-button
+- extendedWaitUntil:
+    visible: '.*[0-9]+ pending.*'
+    timeout: 15000
+- assertNotVisible: Up to date

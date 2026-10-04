@@ -1,0 +1,47 @@
+{
+  "scope": "Two verified priority owners; shared cache counted separately",
+  "per_owner": [
+    {
+      "alias": "P1",
+      "tombstones": 2,
+      "collections": 12,
+      "active_cards": 2311,
+      "progress_rows": 0,
+      "review_events": 1491,
+      "identity_exists": true
+    },
+    {
+      "alias": "P2",
+      "tombstones": 0,
+      "collections": 2,
+      "active_cards": 570,
+      "progress_rows": 0,
+      "review_events": 94,
+      "identity_exists": true
+    }
+  ],
+  "tombstones": 2,
+  "captured_at": "2026-09-21T09:57:34.185491+00:00",
+  "limitations": [
+    "Require two distinct target owners and two matched Auth owners before accepting results.",
+    "Semantic keys and equal translations are not proof of equal meanings or public provenance.",
+    "NULL means unknown, not zero; pack CEFR is not per-word CEFR.",
+    "Server counts do not establish device-local pending operations or installed builds.",
+    "No word text, owner IDs, emails or word IDs are emitted."
+  ],
+  "schema_evidence": [],
+  "shared_cache_rows": 2870,
+  "matched_auth_owners": 2,
+  "active_personal_cards": 2881,
+  "transaction_read_only": "on",
+  "distinct_target_owners": 2,
+  "cards_without_cache_key": 231,
+  "eligible_shared_cache_rows": 65,
+  "cards_with_eligible_cache_key": 57,
+  "unique_sql_semantic_candidates": 2364,
+  "candidates_with_multiple_copies": 517,
+  "verified_individual_cefr_coverage": null,
+  "cards_with_exact_cache_translations": 2344,
+  "candidates_with_translation_disagreement": 11,
+  "verified_private_or_public_content_counts": null
+}

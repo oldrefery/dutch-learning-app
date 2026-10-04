@@ -94,6 +94,50 @@ export function snapshot(fixture) {
   }
 }
 
+export function dictionarySnapshot(fixture) {
+  return {
+    ...snapshot(fixture),
+    protocolVersion: 2,
+    dictionaryContentProtocol: 1,
+    effectiveContent: fixture.words.map(word => ({
+      word_id: word.word_id,
+      content_version: 1,
+      reference: {
+        entry_id: '30000000-0000-4000-8000-000000000001',
+        revision_id: '40000000-0000-4000-8000-000000000001',
+      },
+      source: 'pinned',
+      removed_fields: [],
+      cefr: { level: 'A1', status: 'reviewed', confidence: 1 },
+      content: {
+        dutch_lemma: word.dutch_lemma,
+        dutch_original: word.dutch_original,
+        part_of_speech: word.part_of_speech,
+        article: word.article,
+        translations: word.translations,
+        examples: [],
+        is_irregular: false,
+        is_reflexive: false,
+        is_expression: false,
+        expression_type: null,
+        is_separable: false,
+        prefix_part: null,
+        root_verb: null,
+        plural: null,
+        register: null,
+        synonyms: [],
+        antonyms: [],
+        conjugation: null,
+        preposition: null,
+        analysis_notes: null,
+        usage_notes: null,
+        image_url: word.image_url,
+        tts_url: word.tts_url,
+      },
+    })),
+  }
+}
+
 function token() {
   const encode = value =>
     Buffer.from(JSON.stringify(value)).toString('base64url')
@@ -144,6 +188,7 @@ function readRpc(path, fixture, mode) {
     return { status: 200, body: 1 }
   const known = [
     '/get_web_review_snapshot_v1',
+    '/get_web_review_snapshot_v2',
     '/get_web_collection_overviews_v1',
   ]
   assert.ok(
@@ -158,6 +203,8 @@ function readRpc(path, fixture, mode) {
   }
   if (path.endsWith('/get_web_review_snapshot_v1'))
     return { status: 200, body: snapshot(fixture) }
+  if (path.endsWith('/get_web_review_snapshot_v2'))
+    return { status: 200, body: dictionarySnapshot(fixture) }
   return {
     status: 200,
     body: fixture.collections.map(collection => ({
@@ -263,7 +310,7 @@ export async function startFixtureBackend({ latencyMs = 0 } = {}) {
     },
     configure(nextFixture, nextMode, nextId) {
       assert.equal(active, 0, 'Previous run still has upstream requests')
-      assert.ok(['legacy', 'snapshot'].includes(nextMode))
+      assert.ok(['legacy', 'snapshot', 'dictionary'].includes(nextMode))
       fixture = nextFixture
       mode = nextMode
       runId = nextId

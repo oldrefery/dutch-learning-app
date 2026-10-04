@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/dutch-a1.json",
     "./manifest": "./src/manifest.ts",
-    "./remote": "./src/remote.ts"
+    "./remote": "./src/remote.ts",
+    "./dictionary": "./src/dictionary.ts"
   }
 }

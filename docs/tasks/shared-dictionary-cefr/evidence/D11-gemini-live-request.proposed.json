@@ -1,0 +1,216 @@
+{
+  "namespace": "dictionary-cefr-live-request-proposal-v1",
+  "revision": "d11-gemini-runner-v1",
+  "approved": false,
+  "live_ready": false,
+  "purpose": "unqualified_model_reference_agreement",
+  "qualification_eligible": false,
+  "artifact_binding": {
+    "bundle_sha256": "154340a433175cdd542e06b2967ac6a66a649f4ee3ce752225e61ae6f092db4a",
+    "worklist_sha256": "9f9871355c205684b0ad2583ea8ed813fe80cd334e00dc17558fc99ad4da9310",
+    "reference_sha256": "a2e9a25d5abf07882b482e201367de5d172a8eedc893b66f8e20c1a2920adc58",
+    "profile_sha256": "7cc1eb0f6de569c5444d5973fe26bbeb2147d1dad49639486db945ec133ea1cd",
+    "prompt_sha256": "1f62eef66b3249cbbc368575a2069125fc71686b012283224c2dffc35d13d652",
+    "proposal_sha256": "3e335dda4cf3ccc1f14ae01f17598c61d9026957f6d278cd97a67881549b59c8"
+  },
+  "provider": {
+    "name": "google-gemini-developer-api",
+    "base_url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash",
+    "requested_model": "gemini-3.5-flash",
+    "resolved_model_version": null,
+    "service_tier": "standard",
+    "paid_tier_required": true,
+    "account_ref": null,
+    "project_ref": null,
+    "credential_binding_ref": null,
+    "billing_verification_ref": null
+  },
+  "authorization": {
+    "approval_ref": null,
+    "utc_day": null,
+    "expires_at": null,
+    "source_transmission_ref": null,
+    "review_ref": "D11-gemini-runner-review-20261003.md",
+    "previous_adapter_review_ref": "D11-gemini-adapter-review-20261003.md"
+  },
+  "requests": {
+    "count_tokens_max": 24,
+    "model_metadata_max": 1,
+    "generation_attempts_max": 48,
+    "attempts_per_meaning_max": 2,
+    "concurrency": 1,
+    "timeout_ms": 5000,
+    "control_retries": 0,
+    "generation_backoff_status": "durable exponential backoff plus jitter; maximum two attempts; honor Retry-After up to 5000ms, otherwise stop",
+    "identity": "stable_run_and_meaning; attempt_number_in_ledger_only",
+    "count_tokens_body": "generateContentRequest containing the exact generation body",
+    "no_tools": true,
+    "no_explicit_cache": true,
+    "store": false,
+    "maximum_request_bytes": 32768,
+    "maximum_response_envelope_bytes": 16384,
+    "maximum_candidate_bytes": 4096,
+    "journal_consumption": "immutable external record binds physical journal and nonce; losing either cannot mint a new allowance"
+  },
+  "budget": {
+    "input_tokens_max": 2000,
+    "answer_tokens_max": 2048,
+    "reasoning_tokens_reserved": 2048,
+    "combined_output_tokens_cap": 2048,
+    "input_microusd_per_token": 1.5,
+    "answer_microusd_per_token": 9,
+    "reasoning_microusd_per_token": 9,
+    "reservation_microusd_per_attempt": 39864,
+    "generation_reservation_microusd": 1913472,
+    "proposed_api_use_ceiling_microusd": 2000000,
+    "control_billing_verified": false,
+    "control_cost_max_microusd": null,
+    "total_cost_max_microusd": null,
+    "pricing_url": "https://ai.google.dev/gemini-api/docs/pricing#gemini-3.5-flash",
+    "price_checked_date": "2026-10-03",
+    "scope": "API usage only; account currency, tax and surcharge conditions not verified",
+    "total_reserved_tokens_max": 340608
+  },
+  "inputs": [
+    {
+      "item_id": "pilot-01",
+      "input_sha256": "2d87146c0a1cb7a47fe663772457e9bb2e59d70a2fae3a4a9064c864dc4115b7",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-02",
+      "input_sha256": "66cf8539cee6baab48f0dc711ed7b4a76d8c803c8f55cd39fb71e571fdb12c59",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-03",
+      "input_sha256": "0d1dce9e1839bd1f2acd87fa633e5da27145395deeb97541c5408b0eb3bcb732",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-04",
+      "input_sha256": "11d6332c0ac464f590113e8b0d79e2e5bb53a94fe508875fd6b60acab3f79503",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-05",
+      "input_sha256": "af2d5c91421983bdd7616a268749be80ed8bf79fb92cdd93a5dc1a3b4056deb5",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-06",
+      "input_sha256": "7f6e30318d057dd93b4cbe7403698a7d657d919bbe8e0bd2de2457a6b0828996",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-07",
+      "input_sha256": "0bf2c38663c97d751e0dff0259654e14e532daaabc6f44a0d899405672a46461",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-08",
+      "input_sha256": "1922001d65b598ed75af8ce0b329a656253b9495bbf08de22feb86813dddd93d",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-09",
+      "input_sha256": "60648bc7b6cd35585d52090c6b62d80bb4998e33db1a2c58be9d9d734c691c6b",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-10",
+      "input_sha256": "f9d8d40e4669a5a639b72c0e18e59935d24e8e374e3a832f04137a2d28af68ed",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-11",
+      "input_sha256": "e9f03c419627a372eab6b21d2a2c888e79fe5ab42568982a811794a53179edd1",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-12",
+      "input_sha256": "71018746d512f2999fd6e78eee4bdba47c42073bfb3f9a591585350f34ff3ae3",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-13",
+      "input_sha256": "95eb583a3a488f3c916113adb7a1edecdd8f16aa7260dc6b0803545b5ee428b2",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-14",
+      "input_sha256": "486ede3e54fd0e8ab8196685f29b6020a32b974b013d6a6a805d2771841dee60",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-15",
+      "input_sha256": "c81437c5138fa123a14e53608f4bd0a4f0b06274114c457951fc547e9a6bc49f",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-16",
+      "input_sha256": "467fad39f88a95bc506c03930155c7b17a7912d59a5f75fc56f6b967fad1a20c",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-17",
+      "input_sha256": "08b727f871866853a736ac31f5094b08b532ca7a1adfe5288ad7da8f9feb439b",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-18",
+      "input_sha256": "ae157f4ee6fdaf88f3b69b0025241681f513db176735890f141b94318228d01e",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-19",
+      "input_sha256": "f32643f4445d14893b3d7b8808dd77623c300aec5c6097d8789a645bdf6106da",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-20",
+      "input_sha256": "457a045756c2710e4f5f9a4c4d87378452eaeef8b1d8e049d8824af2a1715b92",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-21",
+      "input_sha256": "b1cce498dd1fcd29ef853c54fae4819dfe5338505ab1982399a3e5f5a2413dc5",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-22",
+      "input_sha256": "8693f15c3dd36c09636e8af2b36099be4416139470c02299af959673a1fa5a93",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-23",
+      "input_sha256": "fbdc9142f07b1687463bf072192dcabe27b6f485c50edbee850b96ee53f9da64",
+      "transmission_approved": false
+    },
+    {
+      "item_id": "pilot-24",
+      "input_sha256": "0fc62251d978837da96dcf44dfe86038431787bf616abb0d2d2c2aefbc296106",
+      "transmission_approved": false
+    }
+  ],
+  "wire_template": {
+    "example_run_id": "11111111-1111-4111-8111-111111111111",
+    "example_item_id": "pilot-01",
+    "example_body_sha256": "e5068390529bb2c4f0264864860b75b65cd2c552402f5dd0a5da5f709857c78e",
+    "metadata_request_sha256": "dbd5956645d1dfe81a2f761073eb65594944bd1f08d3fb8bc8dd0bdcbc7c1357",
+    "reference_transmitted": false
+  },
+  "remaining_gates": [
+    "Verify personal provider account/project/key membership and paid billing tier outside the local parser",
+    "Verify control endpoint pricing and complete total API-use ceiling",
+    "Record exact source transmission and spending approval for one UTC day in a private registry",
+    "Pin first verified response.modelVersion and stop any mismatch; models.get version is not that pin"
+  ],
+  "implementation": {
+    "available": "dormant authorized runner with unified control/generation ledger",
+    "live_cli_available": true,
+    "credentials_loaded": false,
+    "external_calls_performed": 0,
+    "implementation_sha256": "41c095393b3f832d6e6aa747ff66f0da1bf0b7edc7f8d9220143754ce17e8de6"
+  }
+}

@@ -1,3 +1,5 @@
+import type { AnalysisCefrEstimate } from '../../../packages/domain/src/analysis-cefr.ts'
+
 export interface WordAnalysisRequest {
   word: string
   collectionId?: string
@@ -28,6 +30,7 @@ export interface WordAnalysisResponse {
 }
 
 export interface WordAnalysisResult {
+  cefr?: AnalysisCefrEstimate | null
   dutch_original: string
   dutch_lemma: string
   part_of_speech: string

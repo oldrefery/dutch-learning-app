@@ -1,0 +1,24 @@
+appId: ${APP_ID}
+---
+- openLink: dutchlearning://dictionary-import
+- extendedWaitUntil:
+    visible: Collection JSON
+    timeout: 15000
+- tapOn: Collection JSON
+- setClipboard: '{"schema_version":1,"collection":{"name":"D10 synthetic transfer"},"entries":[{"content":{"plural":null,"article":"het","tts_url":null,"antonyms":[],"examples":[],"register":"neutral","synonyms":[],"image_url":null,"root_verb":null,"conjugation":null,"dutch_lemma":"d10android","prefix_part":null,"preposition":null,"usage_notes":null,"is_irregular":false,"is_reflexive":false,"is_separable":false,"translations":{"en":["D10 recovery fixture"],"ru":[]},"is_expression":false,"analysis_notes":null,"dutch_original":"d10android","part_of_speech":"noun","expression_type":null}}]}'
+- pasteText
+- setClipboard: ''
+- hideKeyboard
+- runFlow:
+    when:
+      visible: 'Preview (words|document)'
+    commands:
+      - tapOn: 'Preview (words|document)'
+- extendedWaitUntil:
+    visible: 'd10android.*'
+    timeout: 15000
+- tapOn:
+    id: import-selected-words-button
+- extendedWaitUntil:
+    visible: 1 word saved. 0 duplicates skipped.
+    timeout: 15000

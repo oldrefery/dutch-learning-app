@@ -17,6 +17,7 @@ import { OFFICIAL_DUTCH_A1_PACK_SIZE } from '@/services/starterPackService'
 import { collectionSharingService } from '@/services/collectionSharingService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { Sentry } from '@/lib/sentry'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 
 export type ImportCollectionSheetProps = {
   visible: boolean
@@ -202,6 +203,21 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
           />
         </TouchableOpacity>
 
+        {isDictionaryContentEnabled() && (
+          <TouchableOpacity
+            style={styles.documentButton}
+            accessibilityRole="button"
+            accessibilityLabel="Import collection JSON"
+            disabled={isSubmitting}
+            onPress={() => {
+              onClose()
+              router.push(ROUTES.DICTIONARY_IMPORT as Href)
+            }}
+          >
+            <TextThemed>Import a JSON export</TextThemed>
+          </TouchableOpacity>
+        )}
+
         <View style={styles.dividerRow}>
           <View style={styles.divider} />
           <TextThemed
@@ -291,6 +307,11 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
 }
 
 const styles = StyleSheet.create({
+  documentButton: {
+    padding: 14,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   starterPackCard: {
     minHeight: 78,
     flexDirection: 'row',

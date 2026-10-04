@@ -1,0 +1,112 @@
+{
+  "startingHead": "6ca149f",
+  "sourceHashesUnchanged": 137,
+  "stage": "D10.3-D10.5 remain open",
+  "oldServerRowsExactlyPreserved": true,
+  "serverCountsBefore": {
+    "words": 19,
+    "collections": 8,
+    "user_access_levels": 4,
+    "review_events": 0,
+    "review_progress_checkpoints": 0,
+    "review_progress_heads": 0,
+    "review_assessment_corrections": 0,
+    "word_content_state": 16
+  },
+  "serverCountsAfter": {
+    "words": 27,
+    "collections": 9,
+    "user_access_levels": 4,
+    "review_events": 0,
+    "review_progress_checkpoints": 0,
+    "review_progress_heads": 0,
+    "review_assessment_corrections": 0,
+    "word_content_state": 21
+  },
+  "primaryImports": [
+    {
+      "lemma": "kompas",
+      "wordId": "dbea03d9-b9bd-4b8c-b492-0439374f09fe",
+      "revisionId": "6f6689f5-259c-44a3-a1a8-df0678e95495"
+    },
+    {
+      "lemma": "getij",
+      "wordId": "782f30b1-1dff-4fbf-b9a5-1e47875e13a9",
+      "revisionId": null
+    },
+    {
+      "lemma": "zeil",
+      "wordId": "52379cf7-5a81-4503-862c-4cdf19094407",
+      "revisionId": "94c71132-d1ba-4160-b984-4b89552516f6"
+    },
+    {
+      "lemma": "duin",
+      "wordId": "ab06b118-f0b7-4b3d-81f8-a63282d05097",
+      "revisionId": null
+    }
+  ],
+  "native": {
+    "ios": {
+      "previousWords": 15,
+      "finalWords": 19,
+      "previousWordsExactlyPreserved": true,
+      "learningExactlyPreserved": true,
+      "allFourPeerIdsExact": true,
+      "pendingImports": 0,
+      "pendingContentCommands": 0,
+      "pendingRecovery": 0,
+      "pendingPersonalRefresh": 0,
+      "hydration": 0
+    },
+    "android": {
+      "previousWords": 9,
+      "finalWords": 13,
+      "previousWordsExactlyPreserved": true,
+      "learningExactlyPreserved": true,
+      "allFourPeerIdsExact": true,
+      "pendingImports": 0,
+      "pendingContentCommands": 0,
+      "pendingRecovery": 0,
+      "pendingPersonalRefresh": 0,
+      "hydration": 0
+    }
+  },
+  "sharingRevoked": true,
+  "accessRowRestoredExactly": true,
+  "postRevocationExport": {
+    "entries": 10,
+    "selfContained": true,
+    "sourceOwnerSrsExcluded": true
+  },
+  "sessionReview": {
+    "claimsAccepted": true,
+    "claimsExpiryInFuture": true,
+    "userAccepted": false,
+    "userError": {
+      "status": 400,
+      "message": "Auth session missing!"
+    },
+    "redirectEdges": [
+      {
+        "path": "/app/collections",
+        "status": 307,
+        "location": "/login"
+      },
+      {
+        "path": "/login",
+        "status": 307,
+        "location": "/app/collections"
+      }
+    ]
+  },
+  "focusedTests": {
+    "suites": 4,
+    "tests": 38,
+    "result": "PASS; includes reproduced counterexample, not repair acceptance"
+  },
+  "remaining": [
+    "Repair revoked-session redirect loop and re-review",
+    "Cached official import while read_only/offline runtime",
+    "Full mobile Safari acceptance"
+  ]
+}

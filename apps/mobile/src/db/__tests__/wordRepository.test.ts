@@ -10,6 +10,10 @@ import { ExpressionType } from '@/types/ExpressionTypes'
 
 jest.mock('../initDB')
 
+jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryContentEnabled: () => true,
+}))
+
 describe('WordRepository', () => {
   // Helper functions to generate random test data
   const generateId = (prefix: string) =>
@@ -29,12 +33,16 @@ describe('WordRepository', () => {
     getFirstAsync: jest.fn(),
     execAsync: jest.fn(),
     withTransactionAsync: jest.fn(),
+    withExclusiveTransactionAsync: jest.fn(),
     closeAsync: jest.fn(),
   }
 
   beforeEach(() => {
     jest.clearAllMocks()
     ;(initDB.getDatabase as jest.Mock).mockResolvedValue(mockDatabase)
+    mockDatabase.withExclusiveTransactionAsync.mockImplementation(
+      async callback => callback(mockDatabase)
+    )
   })
 
   const mockWord: Word = {
@@ -300,9 +308,10 @@ describe('WordRepository', () => {
         expect.stringContaining('article = ?')
       )
       const updateArguments = mockUpdateStatement.executeAsync.mock.calls[0]
-      expect(updateArguments.slice(-2)).toEqual([
+      expect(updateArguments.slice(-3)).toEqual([
         existingWord.word_id,
         mockWord.user_id,
+        0,
       ])
     })
 
@@ -416,14 +425,15 @@ describe('WordRepository', () => {
         updated_at: '2026-08-28T12:00:00.000Z',
       }
       mockDatabase.runAsync.mockResolvedValue({ changes: 1 })
+      mockDatabase.getFirstAsync.mockResolvedValue(null)
 
       const result = await wordRepository.updateAnalyzedWord(analyzedWord)
 
       expect(result).toEqual(analyzedWord)
-      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(1)
-      expect(mockDatabase.runAsync).toHaveBeenCalledWith(
-        expect.stringContaining('UPDATE words SET'),
+      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(3)
+      expect(mockDatabase.runAsync.mock.calls[0]).toEqual(
         expect.arrayContaining([
+          expect.stringContaining('UPDATE words SET'),
           analyzedWord.dutch_lemma,
           JSON.stringify(analyzedWord.translations),
           analyzedWord.word_id,
@@ -444,19 +454,21 @@ describe('WordRepository', () => {
       }
       mockDatabase.runAsync
         .mockRejectedValueOnce(semanticConflict)
-        .mockResolvedValueOnce({ changes: 1 })
-      mockDatabase.getFirstAsync.mockResolvedValue({
-        ...mockWord,
-        translations: JSON.stringify(mockWord.translations),
-        examples: null,
-        synonyms: JSON.stringify(mockWord.synonyms),
-        antonyms: JSON.stringify(mockWord.antonyms),
-        conjugation: null,
-        dutch_lemma: 'huis',
-        part_of_speech: 'noun',
-        article: 'het',
-        sync_status: 'synced',
-      })
+        .mockResolvedValue({ changes: 1 })
+      mockDatabase.getFirstAsync
+        .mockResolvedValueOnce({
+          ...mockWord,
+          translations: JSON.stringify(mockWord.translations),
+          examples: null,
+          synonyms: JSON.stringify(mockWord.synonyms),
+          antonyms: JSON.stringify(mockWord.antonyms),
+          conjugation: null,
+          dutch_lemma: 'huis',
+          part_of_speech: 'noun',
+          article: 'het',
+          sync_status: 'synced',
+        })
+        .mockResolvedValueOnce(null)
 
       const result = await wordRepository.updateAnalyzedWord(analyzedWord)
 
@@ -467,7 +479,7 @@ describe('WordRepository', () => {
           article: 'het',
         })
       )
-      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(2)
+      expect(mockDatabase.runAsync).toHaveBeenCalledTimes(4)
       expect(mockDatabase.getFirstAsync).toHaveBeenCalledWith(
         expect.stringContaining('word_id = ?'),
         [analyzedWord.word_id, analyzedWord.user_id]
@@ -587,18 +599,11 @@ describe('WordRepository', () => {
 
   describe('delete tombstones', () => {
     it('should mark a word deleted instead of removing it', async () => {
-      const statement = {
-        executeAsync: jest.fn(),
-        finalizeAsync: jest.fn(),
-      }
-      mockDatabase.prepareAsync.mockResolvedValue(statement)
-
+      mockDatabase.getFirstAsync.mockResolvedValueOnce(null)
       await wordRepository.deleteWord(WORD_ID_1, USER_ID)
-
-      expect(mockDatabase.prepareAsync).toHaveBeenCalledWith(
-        expect.stringContaining("sync_status = 'deleted'")
-      )
-      expect(statement.executeAsync).toHaveBeenCalledWith(
+      expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalled()
+      expect(mockDatabase.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining("sync_status = 'deleted'"),
         expect.any(String),
         expect.any(String),
         WORD_ID_1,

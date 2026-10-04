@@ -1,0 +1,25 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible:
+      id: email-input
+    timeout: 30000
+- tapOn:
+    id: email-input
+- inputText: d01@example.invalid
+- tapOn:
+    id: password-input-toggle
+- tapOn:
+    id: password-input
+- eraseText: 30
+- inputText: fixture-only-password
+- hideKeyboard
+- assertVisible: fixture-only-password
+- tapOn:
+    id: sign-in-button
+- extendedWaitUntil:
+    visible:
+      id: screen-collections
+    timeout: 45000

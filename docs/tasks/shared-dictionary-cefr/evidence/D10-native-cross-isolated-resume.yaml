@@ -1,0 +1,40 @@
+appId: ${APP_ID}
+---
+- assertVisible:
+    id: email-input
+- tapOn:
+    id: password-input
+- eraseText: 100
+- waitForAnimationToEnd:
+    timeout: 5000
+- inputText: ${D08_ISOLATED_PASSWORD}
+- waitForAnimationToEnd:
+    timeout: 5000
+- hideKeyboard
+- tapOn:
+    id: sign-in-button
+- setClipboard: ''
+- extendedWaitUntil:
+    visible: D08 Isolated Owner
+    timeout: 60000
+- assertNotVisible: D08 Native QA
+- openLink: dutchlearning://collection/f47345d5-2510-40f0-8db4-3ec385a7e6d9
+- extendedWaitUntil:
+    visible: zolder
+    timeout: 30000
+- assertVisible: huis
+- assertVisible: balkon
+- assertVisible: QA D09 boundary fixed
+- assertVisible: QA local version
+- assertVisible: QA changed version
+- openLink: dutchlearning://collection/4f59dcad-07f7-44c9-ac2e-a0ac3b3aaf78
+- extendedWaitUntil:
+    visible: boek
+    timeout: 30000
+- assertVisible: anker
+- assertVisible: fiets
+- assertVisible: D09 updated bicycle
+- tapOn: Copy collection JSON export
+- extendedWaitUntil:
+    visible: Full collection JSON copied.
+    timeout: 10000

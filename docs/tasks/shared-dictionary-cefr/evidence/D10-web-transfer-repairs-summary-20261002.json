@@ -1,0 +1,39 @@
+{
+  "startingHead": "9150845",
+  "baselineApplication": "ab8d603",
+  "historicalCounterexamples": "46eb250",
+  "model": "GPT-6.1 Sol / High (user-confirmed switch)",
+  "repairs": [
+    "R1: mandatory raw Host; explicit configured origin for proxy/TLS overrides; strict headers",
+    "R2: immutable attempted destination for lost transport and uncertain receipts"
+  ],
+  "focusedTests": {
+    "suites": 11,
+    "tests": 134
+  },
+  "typecheck": "PASS",
+  "scopedLint": "PASS",
+  "hashInventory": {
+    "unchangedBaseline": 129,
+    "changedBaseline": 4,
+    "added": 4,
+    "total": 137
+  },
+  "deviceOrBackendOperation": false,
+  "next": "GPT-6 Astra / High re-review; D10.3-D10.5 remain open",
+  "sourceCommit": "19d98eb",
+  "normalHooks": {
+    "mobile": {
+      "suites": 156,
+      "tests": 1796,
+      "snapshots": 22
+    },
+    "web": {
+      "passedSuites": 85,
+      "passedTests": 769,
+      "skippedSuites": 1,
+      "skippedTests": 1
+    }
+  },
+  "postFormatterHashesMatched": 137
+}

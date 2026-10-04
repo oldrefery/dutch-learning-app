@@ -6,6 +6,7 @@ import {
   selectReviewOption,
   setReviewForeground,
   settleReviewSubmission,
+  summarizeReviewFlow,
   type ReviewFlowState,
 } from '@woordenaar/domain'
 import {
@@ -212,6 +213,25 @@ export function createReviewSessionController(
     },
     transition,
     submit,
+    refreshWorkspace: (next: ReviewWorkspaceData) => {
+      // An in-flight session owns its questions, content and learning snapshot.
+      // Accept fresh server data only before a session or after completion.
+      if (
+        unsettled() ||
+        snapshot.preparation.status === 'preparing' ||
+        (snapshot.flow && !summarizeReviewFlow(snapshot.flow).finished)
+      )
+        return false
+      snapshot = {
+        ...snapshot,
+        words: next.words,
+        events: next.events,
+        correctionsAvailable: next.correctionsAvailable === true,
+        detailRevision: snapshot.detailRevision + 1,
+      }
+      emit()
+      return true
+    },
     selectOption: (optionId: string) => {
       if (snapshot.correction) return
       const active = snapshot.flow?.active

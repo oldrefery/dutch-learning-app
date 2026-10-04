@@ -3,6 +3,7 @@ import { router } from 'expo-router'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import { Sentry } from '@/lib/sentry'
 import {
   starterPackService,
@@ -16,6 +17,9 @@ import type {
   WordSelectionItem,
 } from '@/types/ImportTypes'
 import type { StarterPackManifest } from '@/types/StarterPackTypes'
+import type { OfficialContentManifest } from '@woordenaar/content/manifest'
+import { officialDictionaryDependencies } from '@woordenaar/content/dictionary'
+import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import {
   buildImportWordSelections,
   getImportSuccessMessage,
@@ -318,10 +322,51 @@ export function useStarterPackImport(
         selectedEntryIds,
         new Date().toISOString().split('T')[0]
       )
-      const imported = await stateBeforeImport.addWordsToCollection(
-        targetCollection.collection_id,
-        importWords
+      const mapping = isDictionaryContentEnabled()
+        ? await officialContentCatalogService.getDictionaryMapping(
+            pack.manifest as unknown as OfficialContentManifest
+          )
+        : null
+      const references = starterPackService.getImportReferences(
+        pack.manifest,
+        selectedEntryIds,
+        mapping
       )
+      if (mapping)
+        await dictionaryContentRepository.cacheDependencies(
+          officialDictionaryDependencies(
+            pack.manifest as unknown as OfficialContentManifest,
+            mapping
+          )
+        )
+      const imported = isDictionaryContentEnabled()
+        ? await stateBeforeImport.addWordsToCollection(
+            targetCollection.collection_id,
+            importWords,
+            false,
+            {
+              dictionaryReferences: references ?? undefined,
+              dictionaryImportSources: pack.manifest.entries
+                .filter(entry => selectedEntryIds.includes(entry.entry_id))
+                .map((entry, index) => {
+                  const reference = references?.[index]
+                  return mapping && reference
+                    ? {
+                        kind: 'official-pack' as const,
+                        pack_id: mapping.pack_id,
+                        version: mapping.version,
+                        pack_entry_id: entry.entry_id,
+                        manifest_sha256: mapping.manifest_sha256,
+                        reference,
+                      }
+                    : { kind: 'private-copy' as const }
+                }),
+            }
+          )
+        : await stateBeforeImport.addWordsToCollection(
+            targetCollection.collection_id,
+            importWords
+          )
       if (!imported) {
         await removeFailedNewCollection(targetCollection)
         targetCollection = null

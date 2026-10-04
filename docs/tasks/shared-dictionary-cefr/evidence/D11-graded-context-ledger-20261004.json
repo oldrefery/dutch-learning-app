@@ -1,0 +1,551 @@
+{
+  "namespace": "d11-graded-context-ledger-20261004",
+  "status": "preliminary_reference_only",
+  "basis": [
+    "D11-new-reference-pack-inputs-20261004-v3.json",
+    "D11-authored-sense-inputs-20261004-v6.json"
+  ],
+  "source_level_policy": "A material-level occurrence is supporting evidence, not an adjudicated level for the exact word sense.",
+  "rights": [
+    {
+      "publisher": "Stichting Taalmenu",
+      "url": "https://nt2taalmenu.nl/disclaimer/",
+      "status": "reference_only_no_republication_permission"
+    },
+    {
+      "publisher": "KleurRijker B.V.",
+      "url": "https://www.nt2.nl/documenten/inkijkexemplaren_pdf/0_titels_andere_uitgeverijen/taalcompleet_a1_9789490807221.pdf",
+      "status": "reference_only_no_republication_permission"
+    },
+    {
+      "publisher": "Lingua.com",
+      "url": "https://lingua.com/nl/nederlands/lezen/school/",
+      "status": "all_rights_reserved_reference_only"
+    },
+    {
+      "publisher": "Van Dale Uitgevers",
+      "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+      "status": "copyright_notice_reference_only"
+    },
+    {
+      "publisher": "DISK / Boom Amsterdam",
+      "url": "https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf",
+      "status": "copyright_notice_reference_only"
+    },
+    {
+      "publisher": "DutchEnglish.com",
+      "url": "https://dutchenglish.com/lessons/dutch-nature-vocabulary",
+      "status": "all_rights_reserved_reference_only"
+    },
+    {
+      "publisher": "LingVo.club",
+      "url": "https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1",
+      "status": "publisher_copyright_reference_only"
+    },
+    {
+      "publisher": "Dutch Fluency NT2",
+      "url": "https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661",
+      "status": "reference_only_no_republication_permission"
+    },
+    {
+      "publisher": "coLanguage",
+      "url": "https://app.colanguage.com/nl/nederlands/dialogen/zorgen-over-het-uiterlijk",
+      "status": "copyright_notice_reference_only"
+    },
+    {
+      "publisher": "nl-learn.nl",
+      "url": "https://nl-learn.nl/vocabulary/b1/uitdrukkingen-en-gezegdes/",
+      "status": "reference_only_no_republication_permission"
+    },
+    {
+      "publisher": "Talkpal",
+      "url": "https://talkpal.ai/sv/vocabulary/hollandska-ord-att-veta-for-b2-niva/",
+      "status": "all_rights_reserved_reference_only"
+    }
+  ],
+  "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
+  "items": [
+    {
+      "input_id": "candidate-kat-boom",
+      "input_sha256": "0484a6614115a9625c6024f5bf022b46146a6c779fd58d8bd03782f383235538",
+      "family": "de kat uit de boom kijken",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "nl-learn.nl",
+        "url": "https://nl-learn.nl/vocabulary/b1/uitdrukkingen-en-gezegdes/",
+        "section_heading": "Idioms and sayings; section 4 and In context",
+        "material_level": "B1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "waiting to observe a new workplace before acting, with the idiom also listed and glossed in the lesson vocabulary",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-kat-boom",
+      "input_sha256": "0484a6614115a9625c6024f5bf022b46146a6c779fd58d8bd03782f383235538",
+      "family": "de kat uit de boom kijken",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Talkpal",
+        "url": "https://talkpal.ai/sv/vocabulary/hollandska-ord-att-veta-for-b2-niva/",
+        "section_heading": "Förståelse av idiom och talesätt",
+        "material_level": "B2_article",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "idiom listed with a wait-and-see gloss and an example of observing before making a decision",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-aankomen-weight",
+      "input_sha256": "1139616de3dd001ed26950a2fffad23b92fbf31cb68ed8a7cbd9301f3c7993ea",
+      "family": "aankomen",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "coLanguage",
+        "url": "https://app.colanguage.com/nl/nederlands/dialogen/zorgen-over-het-uiterlijk",
+        "section_heading": "A1.23 Uiterlijk; Zorgen over het uiterlijk; exercise 1 introduction",
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "infinitive in a lesson introduction explaining why some people remain slim while others gain weight, repeated in the exercise's target-word table",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-oogje-zeil",
+      "input_sha256": "237f8a8427579b35e1bba5979bdb8ee69742aa07b4e14109c6215e6319d692e8",
+      "family": "een oogje in het zeil houden",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Dutch Fluency NT2",
+        "url": "https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661",
+        "section_heading": "Lezen oefening — Staatsexamen NT2 B2; exercise 1661",
+        "material_level": "B2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "inflected watchful-supervision idiom in a reading passage about lifeguards monitoring an open-water training session",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-cel-prison",
+      "input_sha256": "bdd3b573bbc7f8557e880586d764cfa5ea29c939aa3346a698ff770266a783ff",
+      "family": "cel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/B2/muziek_oefeningenB2.pdf",
+        "pdf_page_one_based": 9,
+        "section_heading": "Jantjes Blues, listening exercise 3",
+        "material_level": "B2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "singular prison cell in a listening-exercise prompt about an arrested character, with prison synonyms nearby",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-meebrengen-bring",
+      "input_sha256": "c0569811f4251c81af49fc66a2897d374388460e79c373d9924d18448affcfdf",
+      "family": "meebrengen",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "KleurRijker B.V.",
+        "url": "https://kleurrijker.nl/TCwoordenlijsten/TC_NederlandsSomalisch.pdf",
+        "pdf_page_one_based": 14,
+        "section_heading": "5.7 Ik leg dit uit.",
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "separable infinitive in an A2 course glossary with past forms and a Somali bring-along gloss",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-treinstation",
+      "input_sha256": "a4f3f207ec6abcddfa96e10ebe09907aee2335b7f551cb3370c6c7a14dfc919b",
+      "family": "treinstation",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "DutchEnglish.com",
+        "url": "https://dutchenglish.com/lessons/dutch-travel-phrases",
+        "section_heading": "Transportation",
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "asking for the location of a train station in a travel phrase exercise",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-cel-biological",
+      "input_sha256": "ff142d8d04d077046acdc432c061e6c73ca9e7784b6ebea514e4285d2d2bec08",
+      "family": "cel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "LingVo.club",
+        "url": "https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1",
+        "section_heading": "Nieuwe ontdekking: hoe zenuwcellen pijn inschakelen",
+        "material_level": "B1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "singular biological cell as the source of an enzyme in a neuroscience reading",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-wortel-plant",
+      "input_sha256": "3088ee3d6d586745cc43e7eee12f93f8291da9c22c91904412ab8b94fab65653",
+      "family": "wortel",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "DutchEnglish.com",
+        "url": "https://dutchenglish.com/lessons/dutch-nature-vocabulary",
+        "section_heading": "Basic Nature Words in Dutch",
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "singular plant root in a nature vocabulary list among plant and tree terms",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-tafel-plural",
+      "input_sha256": "c1c535bb3fe9494589b7f3056b41dfd699117206bbabbf0f380f715577d58823",
+      "family": "tafel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "DISK / Boom Amsterdam",
+        "url": "https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf",
+        "pdf_page_one_based": 3,
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "plural furniture tables in the explanation of a restaurant",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-tafel",
+      "input_sha256": "174e1a545fa8bb385fb3060e3d8f3cb6aa664bd254926b219e240f738ceab2a1",
+      "family": "tafel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf",
+        "pdf_page_one_based": 24,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "furniture table in a preposition exercise",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-stad",
+      "input_sha256": "1cff8978993c31157e6f70f38012ae2ee94b3ddf9f27635eef27416672d182be",
+      "family": "stad",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf",
+        "pdf_page_one_based": 120,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "city as a residence or birthplace",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-straat",
+      "input_sha256": "3c0e2ec275e350166806773697a1691cd19fec58d38f06833220faab3019555f",
+      "family": "straat",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf",
+        "pdf_page_one_based": 120,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "street as part of a home address",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-winkel",
+      "input_sha256": "01c348c66d1ad3075e8a797e852e97e8efcd868c84be0e49bbb6053b2c2c8199",
+      "family": "winkel",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-spreken/boekje_spreken_A1.pdf",
+        "pdf_page_one_based": 26,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "retail shop in a return-purchase scenario",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-werk",
+      "input_sha256": "2fc6c984f33a82c327bbcc77c88a581d4b685fb4bd375880023d664c81224a9b",
+      "family": "werk",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-jekanmewat/module10.pdf",
+        "pdf_page_one_based": 17,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "going to work or the workplace in a tram story",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-goed",
+      "input_sha256": "ce499e1218b29e40004f9562683768a7d8338ea3535a3a7ebcf11e80609e89d9",
+      "family": "goed",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/A1-muziek/oefeningenA1.pdf",
+        "pdf_page_one_based": 29,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "positive evaluation of a film, but only in a distractor option",
+      "evidence_type": "distractor_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-zich-wassen",
+      "input_sha256": "c775d894b294de6d0d73182e6973ac89ea835d95ea9fc82b32e8cc28c4524546",
+      "family": "zich wassen",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a2-lezen/NT2_teksten_lezen_A2.pdf",
+        "pdf_page_one_based": 32,
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "washing oneself in a hygiene glossary explanation",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-tafel",
+      "input_sha256": "174e1a545fa8bb385fb3060e3d8f3cb6aa664bd254926b219e240f738ceab2a1",
+      "family": "tafel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "KleurRijker B.V.",
+        "url": "https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf",
+        "pdf_page_one_based": 4,
+        "material_level": "0_to_A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "table as a piece of home furniture in a reading passage",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-werk",
+      "input_sha256": "2fc6c984f33a82c327bbcc77c88a581d4b685fb4bd375880023d664c81224a9b",
+      "family": "werk",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "KleurRijker B.V.",
+        "url": "https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf",
+        "pdf_page_one_based": 6,
+        "material_level": "0_to_A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "going to work as the destination in a clothing exercise prompt",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-schoolplein",
+      "input_sha256": "253b533700172e642b1a71f6047396191d334fc006ad7ff13ba9d9b77d3bf723",
+      "family": "schoolplein",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Lingua.com",
+        "url": "https://lingua.com/pdf/nederlands-tekst-school.pdf",
+        "pdf_page_one_based": 1,
+        "material_level": "A2_text",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "schoolyard where a pupil draws trees during recess",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-stad-plural",
+      "input_sha256": "9922c40ac75c05725ecee2319ce1239a1e2fce585bdf0ccca8306adfef658a71",
+      "family": "stad",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Van Dale Uitgevers",
+        "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+        "pdf_page_one_based": 38,
+        "material_level": "B1_exercise",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "plural cities naming places in the Randstad",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-aankomen-arrive",
+      "input_sha256": "e5f07e2478c89fae821107ab150cf0378ed85cfde35bf8a86a0186c9c570ea2b",
+      "family": "aankomen",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Van Dale Uitgevers",
+        "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+        "pdf_page_one_based": 48,
+        "material_level": "B1_exercise",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "an aircraft has already arrived after a landing-time question",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-zich-wassen",
+      "input_sha256": "c775d894b294de6d0d73182e6973ac89ea835d95ea9fc82b32e8cc28c4524546",
+      "family": "zich wassen",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Van Dale Uitgevers",
+        "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+        "pdf_page_one_based": 24,
+        "material_level": "A2_exercise",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "a speaker washes themself with warm water",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-zich-schamen",
+      "input_sha256": "b829a17066d68b3f2a73c64c28a6da7605479bef85355b3c24db5b73bb8911ae",
+      "family": "zich schamen",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Van Dale Uitgevers",
+        "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+        "pdf_page_one_based": 24,
+        "material_level": "B1_exercise",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "a manager asks whether a worker feels ashamed about arriving late",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    }
+  ]
+}

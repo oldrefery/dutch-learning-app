@@ -1,0 +1,24 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: false
+- runFlow:
+    when:
+      visible:
+        id: email-input
+    commands:
+      - tapOn:
+          id: email-input
+      - setClipboard: ${D08_PRIMARY_EMAIL}
+      - pasteText
+      - tapOn:
+          id: password-input
+      - setClipboard: ${D08_PRIMARY_PASSWORD}
+      - pasteText
+      - setClipboard: ''
+      - hideKeyboard
+      - tapOn:
+          id: sign-in-button
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 60000

@@ -1,0 +1,23 @@
+appId: ${APP_ID}
+---
+- runFlow:
+    when:
+      visible: Session Complete!
+    commands:
+      - tapOn: Previous word
+- scroll
+- scroll
+- extendedWaitUntil:
+    visible: Change to good
+    timeout: 10000
+- tapOn: Change to good
+- extendedWaitUntil:
+    visible: Correction not confirmed. Retry the same change.
+    timeout: 30000
+- assertVisible: Retry same correction
+- assertVisible: Cancel if not saved
+- tapOn: Cancel if not saved
+- extendedWaitUntil:
+    visible: This change is already saved locally. Retry to finish synchronizing it.
+    timeout: 10000
+- assertVisible: Retry same correction

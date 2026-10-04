@@ -1,5 +1,7 @@
 import 'server-only'
 
+import { hydrateOwnedWords } from '@/features/dictionary/repository'
+
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import { createClient } from '@/lib/supabase/server'
 import { buildWordSearchResults, normalizeWordSearchQuery } from './word-search'
@@ -44,7 +46,7 @@ export async function searchOwnedWords(
   }
 
   return buildWordSearchResults(
-    wordsResult.data ?? [],
+    await hydrateOwnedWords(supabase, wordsResult.data ?? []),
     (collectionsResult.data ?? []) as WordSearchCollectionRow[],
     normalizedQuery
   )

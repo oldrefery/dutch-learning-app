@@ -1,0 +1,17 @@
+{
+  "namespace": "dictionary-cefr-method-v1",
+  "input_schema_version": 1,
+  "method_revision": "d11-gemini35-pilot-v3",
+  "prompt_revision": "d11-pilot-v3:492dea06c525d01d843e7429319b2fee43e25a0eecdadf2b01d3a25a73b9d5b5",
+  "provider": "google-gemini-developer-api",
+  "requested_model": "gemini-3.5-flash",
+  "resolved_model_version": null,
+  "generation_config": {
+    "max_output_tokens": 2048,
+    "temperature": 0,
+    "thinking_level": "low",
+    "include_thoughts": false,
+    "candidate_count": 1,
+    "response_mime_type": "application/json"
+  }
+}

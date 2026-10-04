@@ -1,3 +1,5 @@
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import { dictionaryImportDeletionRepository } from '@/db/dictionaryImportDeletionRepository'
 import {
   collectionSharingService,
   CollectionSharingError,
@@ -137,11 +139,11 @@ export const createCollectionActions = (
   },
 
   deleteCollection: async (collectionId: string) => {
+    const userId = get().currentUserId
     try {
       console.log('[Collections] Deleting collection (local tombstone)', {
         collectionId,
       })
-      const userId = get().currentUserId
       const userAccessLevel = get().userAccessLevel
       const currentCollections = get().collections
       const currentWords = get().words
@@ -190,13 +192,25 @@ export const createCollectionActions = (
       }
 
       // Mark it deleted locally so sync can remove it remotely
-      await collectionRepository.markCollectionDeleted(collectionId)
-      console.log('[Collections] Marked collection deleted locally', {
-        collectionId,
-      })
+      if (isDictionaryContentEnabled()) {
+        await dictionaryImportDeletionRepository.deleteCollection(
+          userId,
+          collectionId,
+          () => {
+            if (get().currentUserId !== userId)
+              throw new Error('Collection owner changed')
+          }
+        )
+      } else {
+        await collectionRepository.markCollectionDeleted(collectionId)
+        console.log('[Collections] Marked collection deleted locally', {
+          collectionId,
+        })
 
-      // Remove words tied to this collection locally
-      await wordRepository.deleteWordsByCollection(collectionId, userId)
+        // Remove words tied to this collection locally
+        await wordRepository.deleteWordsByCollection(collectionId, userId)
+      }
+      if (get().currentUserId !== userId) return
 
       const updatedCollections = currentCollections.filter(
         collection => collection.collection_id !== collectionId
@@ -206,6 +220,7 @@ export const createCollectionActions = (
       )
       set({ collections: updatedCollections, words: updatedWords })
     } catch (error) {
+      if (get().currentUserId !== userId) return
       logError('Error deleting collection', error, {}, 'collections', false)
       set({
         error: createStoreError(

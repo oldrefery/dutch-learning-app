@@ -5,6 +5,8 @@
 
 import { createWordActions } from '../actions/wordActions'
 import { wordRepository } from '@/db/wordRepository'
+import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
+import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import { reviewEventRepository } from '@/db/reviewEventRepository'
 import { Sentry } from '@/lib/sentry'
 import { wordService } from '@/lib/supabase'
@@ -34,6 +36,19 @@ jest.mock('@/db/wordRepository', () => ({
     resetWordProgress: jest.fn(),
   },
 }))
+jest.mock('@/db/dictionaryImportRepository', () => ({
+  dictionaryImportRepository: { getPending: jest.fn().mockResolvedValue([]) },
+}))
+jest.mock('@/db/dictionaryImportRecoveryViewRepository', () => ({
+  dictionaryImportRecoveryViewRepository: {
+    getIssues: jest.fn().mockResolvedValue([]),
+  },
+}))
+jest.mock('@/db/dictionaryContentRepository', () => ({
+  dictionaryContentRepository: {
+    getMaterializedContent: jest.fn(),
+  },
+}))
 jest.mock('@/db/reviewEventRepository', () => ({
   reviewEventRepository: {
     recordAssessment: jest.fn(),
@@ -59,6 +74,10 @@ jest.mock('@/lib/supabase', () => ({
   },
 }))
 jest.mock('@/lib/supabaseClient')
+
+jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryContentEnabled: () => true,
+}))
 
 describe('wordActions', () => {
   // Helper functions to generate random test data
@@ -177,11 +196,29 @@ describe('wordActions', () => {
 
     // Mock getWordBySemanticKey to return null by default (no duplicate)
     ;(wordRepository.getWordBySemanticKey as jest.Mock).mockResolvedValue(null)
+    jest
+      .mocked(dictionaryContentRepository.getMaterializedContent)
+      .mockResolvedValue(new Map())
 
     actions = createWordActions(mockSet, mockGet)
   })
 
   describe('fetchWords', () => {
+    it('does not publish materialized words after the active account changes', async () => {
+      jest
+        .mocked(dictionaryContentRepository.getMaterializedContent)
+        .mockImplementationOnce(async () => {
+          mockGet.mockReturnValue({
+            ...mockGet(),
+            currentUserId: 'other-owner',
+          })
+          return new Map()
+        })
+      jest.mocked(wordRepository.getWordsByUserId).mockResolvedValue([])
+      await actions.fetchWords()
+      expect(mockSet).toHaveBeenCalledTimes(1)
+      expect(mockSet).toHaveBeenCalledWith({ wordsLoading: true })
+    })
     it('should fetch words from local repository', async () => {
       const mockWords = [
         createMockWord({ word_id: generateId('word') }),
@@ -195,8 +232,33 @@ describe('wordActions', () => {
 
       expect(mockSet).toHaveBeenCalledWith({ wordsLoading: true })
       expect(wordRepository.getWordsByUserId).toHaveBeenCalledWith(USER_ID)
+      expect(
+        dictionaryContentRepository.getMaterializedContent
+      ).toHaveBeenCalledWith(
+        USER_ID,
+        mockWords.map(word => word.word_id)
+      )
       expect(mockSet).toHaveBeenCalledWith({
         words: mockWords,
+        wordsLoading: false,
+      })
+    })
+
+    it('exposes an owner-scoped import conflict without manufacturing another personal card', async () => {
+      const word = createMockWord({ user_id: USER_ID })
+      jest
+        .mocked(wordRepository.getWordsByUserId)
+        .mockResolvedValue([word] as Awaited<
+          ReturnType<typeof wordRepository.getWordsByUserId>
+        >)
+      jest
+        .mocked(dictionaryImportRepository.getPending)
+        .mockResolvedValueOnce([
+          { intent: { word_id: word.word_id }, status: 'conflict' },
+        ] as Awaited<ReturnType<typeof dictionaryImportRepository.getPending>>)
+      await actions.fetchWords()
+      expect(mockSet).toHaveBeenCalledWith({
+        words: [{ ...word, dictionary_import_conflict: true }],
         wordsLoading: false,
       })
     })
@@ -660,7 +722,11 @@ describe('wordActions', () => {
 
       await actions.deleteWord(WORD_ID)
 
-      expect(wordRepository.deleteWord).toHaveBeenCalledWith(WORD_ID, USER_ID)
+      expect(wordRepository.deleteWord).toHaveBeenCalledWith(
+        WORD_ID,
+        USER_ID,
+        expect.any(Function)
+      )
       expect(mockSet).toHaveBeenCalledWith({
         words: expect.arrayContaining([
           expect.not.objectContaining({ word_id: WORD_ID }),
@@ -806,7 +872,8 @@ describe('wordActions', () => {
       expect(wordRepository.moveWordToCollection).toHaveBeenCalledWith(
         WORD_ID,
         USER_ID,
-        newCollectionId
+        newCollectionId,
+        expect.any(Function)
       )
       expect(mockSet).toHaveBeenCalledWith({
         words: expect.arrayContaining([
@@ -901,10 +968,10 @@ describe('wordActions', () => {
       expect(result).toBe(true)
     })
 
-    it('should normalize imported shared words with current user and target collection', async () => {
+    it('preserves the server collection for an imported duplicate without forcing a move', async () => {
       const importedWord = createMockWord({
         word_id: 'shared-word-id',
-        user_id: 'different-user',
+        user_id: USER_ID,
         collection_id: 'different-collection',
         dutch_lemma: 'delen',
       })
@@ -918,6 +985,10 @@ describe('wordActions', () => {
         importedWord,
       ])
       ;(wordRepository.saveWords as jest.Mock).mockResolvedValue(undefined)
+
+      ;(wordRepository.getWordsByUserId as jest.Mock).mockResolvedValue([
+        importedWord,
+      ])
 
       const result = await actions.addWordsToCollection(
         COLLECTION_ID,
@@ -935,10 +1006,133 @@ describe('wordActions', () => {
           expect.objectContaining({
             word_id: 'shared-word-id',
             user_id: USER_ID,
-            collection_id: COLLECTION_ID,
+            collection_id: 'different-collection',
           }),
-        ])
+        ]),
+        { preserveUnsynced: true }
       )
+    })
+
+    it('preserves an unassigned server duplicate instead of assigning the target collection', async () => {
+      const existing = createMockWord({ collection_id: null })
+      ;(wordService.importWordsToCollection as jest.Mock).mockResolvedValue([
+        existing,
+      ])
+      ;(wordRepository.getWordsByUserId as jest.Mock).mockResolvedValue([
+        existing,
+      ])
+      expect(
+        await actions.addWordsToCollection(
+          COLLECTION_ID,
+          [{ dutch_lemma: existing.dutch_lemma }],
+          true
+        )
+      ).toBe(true)
+      expect(wordRepository.saveWords).toHaveBeenCalledWith(
+        [expect.objectContaining({ collection_id: null })],
+        { preserveUnsynced: true }
+      )
+    })
+
+    it('does not add a phantom server duplicate when SQLite preserves a different local identity', async () => {
+      const local = createMockWord({ word_id: 'local-offline-id' })
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [local],
+        error: null,
+      })
+      ;(wordService.importWordsToCollection as jest.Mock).mockResolvedValue([
+        { ...local, word_id: 'other-device-id' },
+      ])
+      ;(wordRepository.getWordsByUserId as jest.Mock).mockResolvedValue([local])
+      expect(
+        await actions.addWordsToCollection(
+          COLLECTION_ID,
+          [{ dutch_lemma: local.dutch_lemma }],
+          true
+        )
+      ).toBe(true)
+      expect(mockSet).toHaveBeenCalledWith({ words: [local] })
+    })
+
+    it('keeps local progress and pending edits when import returns an existing personal card', async () => {
+      const local = createMockWord({
+        word_id: 'existing-personal-card',
+        collection_id: 'original-collection',
+        repetition_count: 12,
+        interval_days: 45,
+        translations: { en: ['pending private edit'] },
+      })
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [local],
+        error: null,
+      })
+      ;(wordRepository.getWordsByUserId as jest.Mock).mockResolvedValue([local])
+      ;(wordService.importWordsToCollection as jest.Mock).mockResolvedValue([
+        {
+          ...local,
+          repetition_count: 0,
+          interval_days: 1,
+          translations: { en: ['server copy'] },
+        },
+      ])
+
+      expect(
+        await actions.addWordsToCollection(
+          COLLECTION_ID,
+          [{ dutch_lemma: 'lopen' }],
+          true
+        )
+      ).toBe(true)
+      expect(wordRepository.saveWords).toHaveBeenCalledWith(expect.any(Array), {
+        preserveUnsynced: true,
+      })
+      expect(mockSet).toHaveBeenCalledWith({ words: [local] })
+    })
+
+    it('rejects a foreign import identity before writing local cards', async () => {
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [],
+        error: null,
+      })
+      ;(wordService.importWordsToCollection as jest.Mock).mockResolvedValue([
+        createMockWord({ user_id: 'another-owner' }),
+      ])
+
+      expect(
+        await actions.addWordsToCollection(
+          COLLECTION_ID,
+          [{ dutch_lemma: 'lopen' }],
+          true
+        )
+      ).toBe(false)
+      expect(wordRepository.saveWords).not.toHaveBeenCalled()
+      expectStoreError()
+    })
+
+    it('rejects an account switch while the import RPC is pending', async () => {
+      mockGet
+        .mockReturnValueOnce({ currentUserId: USER_ID, words: [], error: null })
+        .mockReturnValue({
+          currentUserId: 'another-owner',
+          words: [],
+          error: null,
+        })
+      ;(wordService.importWordsToCollection as jest.Mock).mockResolvedValue([
+        createMockWord(),
+      ])
+
+      expect(
+        await actions.addWordsToCollection(
+          COLLECTION_ID,
+          [{ dutch_lemma: 'lopen' }],
+          true
+        )
+      ).toBe(false)
+      expect(wordRepository.saveWords).not.toHaveBeenCalled()
+      expectStoreError()
     })
 
     it('should prefer user-safe import message when shared import fails', async () => {
@@ -1009,6 +1203,142 @@ describe('wordActions', () => {
   })
 
   describe('reanalyzeWord', () => {
+    it('preserves learning and collection changes made while content hydration is pending', async () => {
+      const currentWord = createMockWord({ word_id: WORD_ID })
+      const latestWord = {
+        ...currentWord,
+        collection_id: 'moved-collection',
+        interval_days: 30,
+        repetition_count: 5,
+        easiness_factor: 2.9,
+        next_review_date: '2026-11-01',
+        last_reviewed_at: '2026-10-02T00:00:00.000Z',
+      }
+      const otherWord = createMockWord({ word_id: 'concurrently-added-word' })
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [currentWord],
+        error: null,
+      })
+      jest.mocked(wordService.analyzeWord).mockResolvedValue({
+        data: { ...currentWord, translations: { en: ['refreshed content'] } },
+      })
+      jest
+        .mocked(wordRepository.updateAnalyzedWord)
+        .mockImplementation(async word => word)
+      jest
+        .mocked(dictionaryContentRepository.getMaterializedContent)
+        .mockImplementationOnce(async () => {
+          mockGet.mockReturnValue({
+            currentUserId: USER_ID,
+            words: [latestWord, otherWord],
+            error: null,
+          })
+          return new Map()
+        })
+
+      const result = await actions.reanalyzeWord(WORD_ID)
+
+      expect(result).toMatchObject({
+        collection_id: latestWord.collection_id,
+        interval_days: latestWord.interval_days,
+        repetition_count: latestWord.repetition_count,
+        easiness_factor: latestWord.easiness_factor,
+        next_review_date: latestWord.next_review_date,
+        last_reviewed_at: latestWord.last_reviewed_at,
+        translations: { en: ['refreshed content'] },
+      })
+      expect(mockSet).toHaveBeenCalledWith({ words: [result, otherWord] })
+    })
+
+    it('keeps conflict controls available immediately after another local analysis', async () => {
+      const currentWord = createMockWord({
+        word_id: WORD_ID,
+        dictionary_content_conflict: true,
+        interval_days: 14,
+      })
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [currentWord],
+        error: null,
+      })
+      jest.mocked(wordService.analyzeWord).mockResolvedValue({
+        data: { ...currentWord, translations: { en: ['new private intent'] } },
+      })
+      jest
+        .mocked(wordRepository.updateAnalyzedWord)
+        .mockImplementation(async word => word)
+      jest
+        .mocked(dictionaryContentRepository.getMaterializedContent)
+        .mockResolvedValue(
+          new Map([
+            [
+              WORD_ID,
+              {
+                word_id: WORD_ID,
+                content_version: 7,
+                reference: null,
+                dependency_status: 'ready',
+                effective: {
+                  content: null,
+                  source: 'fallback',
+                  removed_fields: [],
+                },
+                cefr: {
+                  level: null,
+                  status: 'unknown',
+                  reason: 'unlinked-or-missing-revision',
+                },
+                has_conflict: true,
+              },
+            ],
+          ])
+        )
+
+      const result = await actions.reanalyzeWord(WORD_ID)
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          dictionary_content_conflict: true,
+          cefr_status: 'unknown',
+          translations: { en: ['new private intent'] },
+          interval_days: 14,
+        })
+      )
+      expect(mockSet).toHaveBeenCalledWith({ words: [result] })
+      expect(
+        dictionaryContentRepository.getMaterializedContent
+      ).toHaveBeenCalledWith(USER_ID, [WORD_ID])
+    })
+
+    it('does not publish reanalyzed content when the owner changes during hydration', async () => {
+      const currentWord = createMockWord({ word_id: WORD_ID })
+      mockGet.mockReturnValue({
+        currentUserId: USER_ID,
+        words: [currentWord],
+        error: null,
+      })
+      jest
+        .mocked(wordService.analyzeWord)
+        .mockResolvedValue({ data: currentWord })
+      jest
+        .mocked(wordRepository.updateAnalyzedWord)
+        .mockImplementation(async word => word)
+      jest
+        .mocked(dictionaryContentRepository.getMaterializedContent)
+        .mockImplementationOnce(async () => {
+          mockGet.mockReturnValue({
+            currentUserId: 'other-owner',
+            words: [],
+            error: null,
+          })
+          return new Map()
+        })
+
+      expect(await actions.reanalyzeWord(WORD_ID)).toBeNull()
+      expect(mockSet).not.toHaveBeenCalled()
+    })
+
     it('should update the existing local word and preserve its progress', async () => {
       const currentWord = createMockWord({
         word_id: WORD_ID,

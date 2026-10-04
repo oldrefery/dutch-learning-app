@@ -34,6 +34,7 @@ import { GlassHeaderDefaults } from '@/constants/GlassConstants'
 import { CreateCollectionSheet } from '@/components/glass/modals/CreateCollectionSheet'
 import { RenameCollectionSheet } from '@/components/glass/modals/RenameCollectionSheet'
 import { ImportCollectionSheet } from '@/components/glass/modals/ImportCollectionSheet'
+import { DictionaryImportRecoveryLink } from '@/components/DictionaryImportRecoveryLink'
 
 export default function CollectionsScreen() {
   const insets = useSafeAreaInsets()
@@ -300,6 +301,7 @@ export default function CollectionsScreen() {
         onOpenInsights={handleOpenInsights}
       />
 
+      <DictionaryImportRecoveryLink />
       <ViewThemed style={styles.collectionsSection}>
         {collectionsLoading ? (
           <ViewThemed style={styles.loadingContainer}>

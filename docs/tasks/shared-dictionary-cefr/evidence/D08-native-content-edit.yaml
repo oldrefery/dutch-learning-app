@@ -1,0 +1,11 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: Collections
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 30000
+- tapOn: D08 Native QA
+- tapOn: zolder
+- assertVisible: CEFR level unknown
+- runFlow: D08-native-content-action.yaml

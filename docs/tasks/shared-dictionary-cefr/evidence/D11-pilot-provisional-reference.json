@@ -1,0 +1,377 @@
+{
+  "namespace": "dictionary-cefr-provisional-reference-v1",
+  "revision": "d11-autonomous-reference-20261003-v1",
+  "reference_origin": "assistant_inference",
+  "independent_gold": false,
+  "calibration_eligible": false,
+  "publication_authorized": false,
+  "assessor": {
+    "kind": "model",
+    "requested_review_model": "GPT-6 Astra",
+    "requested_effort": "high",
+    "actual_model_verified": false
+  },
+  "meaning_input_revision": "d11-pilot-candidates-20261003-v2",
+  "worklist_sha256": "9f9871355c205684b0ad2583ea8ed813fe80cd334e00dc17558fc99ad4da9310",
+  "source_access_date": "2026-10-03",
+  "sources": {
+    "rubric": {
+      "url": "https://erk-nederlands.taalunie.org/terminologie/",
+      "supports": "CEFR describes communicative proficiency; not individual word labels."
+    },
+    "nt2lex": {
+      "url": "https://cental.uclouvain.be/cefrlex/nt2lex/",
+      "supports": "Corpus frequency distributions; no imported per-meaning gold labels."
+    },
+    "bank": {
+      "url": "https://www.woorden.org/woord/bank",
+      "supports": "Distinct seating and financial senses; no CEFR label."
+    },
+    "arm": {
+      "url": "https://www.woorden.org/woord/arm",
+      "supports": "Body-part noun and poverty adjective distinction; no CEFR label."
+    },
+    "opstaan": {
+      "url": "https://www.woorden.org/woord/opstaan",
+      "supports": "Standing/rising and leaving bed senses; irregular past forms; no CEFR label."
+    },
+    "door": {
+      "url": "https://onzetaal.nl/taalloket/werkwoordelijke-uitdrukking",
+      "supports": "Idiomatic expression denotes a direct opening; no CEFR label."
+    },
+    "knot": {
+      "url": "https://onzetaal.nl/schatkamer/lezen/uitdrukkingen/de-knoop-doorhakken",
+      "supports": "Idiomatic expression denotes decisive action; no CEFR label."
+    },
+    "proof": {
+      "url": "https://www.woorden.org/woord/bewijslast",
+      "supports": "Legal proof obligation meaning; no CEFR label."
+    },
+    "wag": {
+      "url": "https://www.woorden.org/woord/kwispelen",
+      "supports": "Tail movement meaning; not evidence of rarity or CEFR difficulty."
+    },
+    "light": {
+      "url": "https://www.woorden.org/woord/licht",
+      "supports": "Multiple possible senses; a bare English gloss does not select one."
+    },
+    "walk": {
+      "url": "https://www.woorden.org/woord/lopen",
+      "supports": "Irregular past and multiple movement senses; no CEFR label."
+    }
+  },
+  "items": [
+    {
+      "id": "pilot-01",
+      "input_sha256": "2d87146c0a1cb7a47fe663772457e9bb2e59d70a2fae3a4a9064c864dc4115b7",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Concrete home vocabulary in a short possession sentence; own beginner-level inference, not the pack title.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-02",
+      "input_sha256": "66cf8539cee6baab48f0dc711ed7b4a76d8c803c8f55cd39fb71e571fdb12c59",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Concrete everyday object with a short reading example; own beginner-level inference.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-03",
+      "input_sha256": "0d1dce9e1839bd1f2acd87fa633e5da27145395deeb97541c5408b0eb3bcb732",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Everyday transport meaning; own beginner-level inference.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-04",
+      "input_sha256": "11d6332c0ac464f590113e8b0d79e2e5bb53a94fe508875fd6b60acab3f79503",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Basic substance/drink meaning; own beginner-level inference.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-05",
+      "input_sha256": "af2d5c91421983bdd7616a268749be80ed8bf79fb92cdd93a5dc1a3b4056deb5",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1", "A2"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Concrete outdoor seating sense, distinct from financial bank.",
+      "meaning_source_refs": ["bank"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-06",
+      "input_sha256": "7f6e30318d057dd93b4cbe7403698a7d657d919bbe8e0bd2de2457a6b0828996",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1", "A2"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Routine financial institution sense; savings example may be harder than the headword.",
+      "meaning_source_refs": ["bank"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-07",
+      "input_sha256": "0bf2c38663c97d751e0dff0259654e14e532daaabc6f44a0d899405672a46461",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Common body part; noun and article separate it from the poverty adjective.",
+      "meaning_source_refs": ["arm"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-08",
+      "input_sha256": "1922001d65b598ed75af8ce0b329a656253b9495bbf08de22feb86813dddd93d",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1", "A2"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Basic economic condition adjective in a short family sentence.",
+      "meaning_source_refs": ["arm"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-09",
+      "input_sha256": "60648bc7b6cd35585d52090c6b62d80bb4998e33db1a2c58be9d9d734c691c6b",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Everyday child meaning; irregular plural belongs to the same family.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-10",
+      "input_sha256": "f9d8d40e4669a5a639b72c0e18e59935d24e8e374e3a832f04137a2d28af68ed",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Same meaning as pilot-09; observed plural alone does not raise lexical CEFR.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-11",
+      "input_sha256": "e9f03c419627a372eab6b21d2a2c888e79fe5ab42568982a811794a53179edd1",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A2", "B1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Reflexive construction describing a mistake; plausible range, not measured learner knowledge.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-12",
+      "input_sha256": "71018746d512f2999fd6e78eee4bdba47c42073bfb3f9a591585350f34ff3ae3",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A2", "B1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Reflexive memory construction; plausible range, not independently validated.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-13",
+      "input_sha256": "95eb583a3a488f3c916113adb7a1edecdd8f16aa7260dc6b0803545b5ee428b2",
+      "linguistic_review": "metadata_corrected",
+      "provisional_level_band": ["A1", "A2"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Daily waking routine; separability/irregular morphology are explicit.",
+      "meaning_source_refs": ["opstaan"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-14",
+      "input_sha256": "486ede3e54fd0e8ab8196685f29b6020a32b974b013d6a6a805d2771841dee60",
+      "linguistic_review": "metadata_corrected",
+      "provisional_level_band": ["A1", "A2"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Physical rising from a seat; separate meaning but same family/split.",
+      "meaning_source_refs": ["opstaan"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-15",
+      "input_sha256": "c81437c5138fa123a14e53608f4bd0a4f0b06274114c457951fc547e9a6bc49f",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A1", "A2"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Common health institution; compound status alone does not make it advanced.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-16",
+      "input_sha256": "467fad39f88a95bc506c03930155c7b17a7912d59a5f75fc56f6b967fad1a20c",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A2", "B1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Concrete compound understandable through garden/fence constituents; exposure-dependent.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-17",
+      "input_sha256": "08b727f871866853a736ac31f5094b08b532ca7a1adfe5288ad7da8f9feb439b",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["B1", "B2"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Figurative conversational expression; a tentative teaching range.",
+      "meaning_source_refs": ["door"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-18",
+      "input_sha256": "ae157f4ee6fdaf88f3b69b0025241681f513db176735890f141b94318228d01e",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["B1", "B2"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Figurative decision expression; a tentative teaching range.",
+      "meaning_source_refs": ["knot"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-19",
+      "input_sha256": "f32643f4445d14893b3d7b8808dd77623c300aec5c6097d8789a645bdf6106da",
+      "linguistic_review": "checked",
+      "provisional_level_band": null,
+      "status": "unknown",
+      "confidence": null,
+      "rationale": "Domain familiarity dominates this biology term; no reliable general CEFR band established.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-20",
+      "input_sha256": "457a045756c2710e4f5f9a4c4d87378452eaeef8b1d8e049d8824af2a1715b92",
+      "linguistic_review": "checked",
+      "provisional_level_band": null,
+      "status": "unknown",
+      "confidence": null,
+      "rationale": "Legal-domain term; meaning is supported but a general CEFR level is not.",
+      "meaning_source_refs": ["proof"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-21",
+      "input_sha256": "b1cce498dd1fcd29ef853c54fae4819dfe5338505ab1982399a3e5f5a2413dc5",
+      "linguistic_review": "checked",
+      "provisional_level_band": ["A2", "B1"],
+      "status": "model_estimated",
+      "confidence": null,
+      "rationale": "Concrete pet action; no claim that it is rare or that a school list equals CEFR.",
+      "meaning_source_refs": ["wag"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-22",
+      "input_sha256": "8693f15c3dd36c09636e8af2b36099be4416139470c02299af959673a1fa5a93",
+      "linguistic_review": "checked",
+      "provisional_level_band": null,
+      "status": "unknown",
+      "confidence": null,
+      "rationale": "Productive but domain-specific compound; domain knowledge and transparency prevent a justified level.",
+      "meaning_source_refs": [],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": false,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-23",
+      "input_sha256": "fbdc9142f07b1687463bf072192dcabe27b6f485c50edbee850b96ee53f9da64",
+      "linguistic_review": "intentional_diagnostic",
+      "provisional_level_band": null,
+      "status": "unknown",
+      "confidence": null,
+      "rationale": "Bare adjective licht/light without examples leaves the intended sense underdetermined.",
+      "meaning_source_refs": ["light"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": true,
+      "calibration_eligible": false
+    },
+    {
+      "id": "pilot-24",
+      "input_sha256": "0fc62251d978837da96dcf44dfe86038431787bf616abb0d2d2c2aefbc296106",
+      "linguistic_review": "metadata_corrected",
+      "provisional_level_band": null,
+      "status": "unknown",
+      "confidence": null,
+      "rationale": "Walking gloss conflicts with the example about water flow; abstain on this input.",
+      "meaning_source_refs": ["walk"],
+      "level_evidence": "assistant inference only; no source supplies a CEFR gold label",
+      "ambiguity_or_conflict": true,
+      "calibration_eligible": false
+    }
+  ]
+}

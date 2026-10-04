@@ -1,0 +1,590 @@
+{
+  "namespace": "dictionary-cefr-authored-input-dossiers-v1",
+  "revision": "d11-authored-sense-inputs-20261004-v4",
+  "status": "unreviewed-local-inputs",
+  "fixture": false,
+  "provider_approved": false,
+  "items": [
+    {
+      "id": "candidate-schoolplein",
+      "family": "schoolplein",
+      "proposed_split": "held_out",
+      "proposed_slices": ["compounds"],
+      "source": {
+        "kind": "anw-sense-reference-and-locally-authored-draft",
+        "url": "https://anw.ivdnt.org/article/schoolplein",
+        "sense_id": "1.0",
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "schoolplein",
+        "dutch_original": "schoolplein",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["schoolyard"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De kinderen spelen op het schoolplein.",
+            "en": "The children play in the schoolyard.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "schoolpleinen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"schoolplein\",\"dutch_original\":\"schoolplein\",\"examples\":[{\"en\":\"The children play in the schoolyard.\",\"nl\":\"De kinderen spelen op het schoolplein.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"schoolpleinen\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"schoolyard\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "253b533700172e642b1a71f6047396191d334fc006ad7ff13ba9d9b77d3bf723",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-kat-boom",
+      "family": "de kat uit de boom kijken",
+      "proposed_split": "held_out",
+      "proposed_slices": ["idioms"],
+      "source": {
+        "kind": "anw-sense-reference-and-locally-authored-draft",
+        "url": "https://anw.ivdnt.org/article/de%20kat%20uit%20de%20boom%20kijken",
+        "sense_id": "1.0",
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "de kat uit de boom kijken",
+        "dutch_original": "de kat uit de boom kijken",
+        "part_of_speech": "expression",
+        "article": null,
+        "translations": {
+          "en": ["to wait and see before getting involved"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Ze keek eerst de kat uit de boom voordat ze meedeed.",
+            "en": "She waited to see how things went before joining in.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": true,
+        "expression_type": "idiom",
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"de kat uit de boom kijken\",\"dutch_original\":\"de kat uit de boom kijken\",\"examples\":[{\"en\":\"She waited to see how things went before joining in.\",\"nl\":\"Ze keek eerst de kat uit de boom voordat ze meedeed.\",\"ru\":null}],\"expression_type\":\"idiom\",\"is_expression\":true,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"expression\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to wait and see before getting involved\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "0484a6614115a9625c6024f5bf022b46146a6c779fd58d8bd03782f383235538",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-wortel-math",
+      "family": "wortel",
+      "proposed_split": "held_out",
+      "proposed_slices": ["specialized", "sense-pairs"],
+      "source": {
+        "kind": "anw-sense-reference-and-locally-authored-draft",
+        "url": "https://anw.ivdnt.org/article/wortel",
+        "sense_id": "6.0",
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "wortel",
+        "dutch_original": "wortel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["mathematical root"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De wortel van negen is drie.",
+            "en": "The square root of nine is three.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "wortels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"wortel\",\"dutch_original\":\"wortel\",\"examples\":[{\"en\":\"The square root of nine is three.\",\"nl\":\"De wortel van negen is drie.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"wortels\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"mathematical root\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "060f9716579e4f74a23be60ec68f9c7d1bf9ac7def266851a24b31963a1a03b5",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-quotient",
+      "family": "quotiënt",
+      "proposed_split": "calibration",
+      "proposed_slices": ["rare-missing"],
+      "source": {
+        "kind": "anw-sense-reference-and-locally-authored-draft",
+        "url": "https://anw.ivdnt.org/article/quoti%C3%ABnt",
+        "sense_id": "1.0",
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "quotiënt",
+        "dutch_original": "quotiënt",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["quotient"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Het quotiënt van acht en twee is vier.",
+            "en": "The quotient of eight and two is four.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "quotiënten",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"quotiënt\",\"dutch_original\":\"quotiënt\",\"examples\":[{\"en\":\"The quotient of eight and two is four.\",\"nl\":\"Het quotiënt van acht en twee is vier.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"quotiënten\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"quotient\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "a1ad352759aa2095b67d09b459f1ab6137808109b374ed1381300e4a46d565b0",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-oogje-zeil",
+      "family": "een oogje in het zeil houden",
+      "proposed_split": "calibration",
+      "proposed_slices": ["idioms"],
+      "source": {
+        "kind": "publisher-lexical-reference-and-locally-authored-draft",
+        "urls": ["https://onzetaal.nl/taalloket/werkwoordelijke-uitdrukking"],
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "een oogje in het zeil houden",
+        "dutch_original": "een oogje in het zeil houden",
+        "part_of_speech": "expression",
+        "article": null,
+        "translations": {
+          "en": ["to keep an eye on someone or something"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De oppas hield een oogje in het zeil terwijl de kinderen speelden.",
+            "en": "The babysitter kept an eye on things while the children played.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": true,
+        "expression_type": "idiom",
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"een oogje in het zeil houden\",\"dutch_original\":\"een oogje in het zeil houden\",\"examples\":[{\"en\":\"The babysitter kept an eye on things while the children played.\",\"nl\":\"De oppas hield een oogje in het zeil terwijl de kinderen speelden.\",\"ru\":null}],\"expression_type\":\"idiom\",\"is_expression\":true,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"expression\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to keep an eye on someone or something\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "237f8a8427579b35e1bba5979bdb8ee69742aa07b4e14109c6215e6319d692e8",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-aankomen-arrive",
+      "family": "aankomen",
+      "proposed_split": "calibration",
+      "proposed_slices": ["separable-verbs", "sense-pairs"],
+      "source": {
+        "kind": "publisher-lexical-reference-and-locally-authored-draft",
+        "urls": [
+          "https://anw.ivdnt.org/article/aankomen",
+          "https://taaladvies.net/toekomen-of-aankomen/"
+        ],
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "aankomen",
+        "dutch_original": "aankomen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to arrive at a destination"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De trein komt om acht uur aan.",
+            "en": "The train arrives at eight o’clock.",
+            "ru": null
+          }
+        ],
+        "is_irregular": true,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": true,
+        "prefix_part": "aan",
+        "root_verb": "komen",
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"aankomen\",\"dutch_original\":\"aankomen\",\"examples\":[{\"en\":\"The train arrives at eight o’clock.\",\"nl\":\"De trein komt om acht uur aan.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":true,\"is_reflexive\":false,\"is_separable\":true,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":\"aan\",\"preposition\":null,\"register\":\"neutral\",\"root_verb\":\"komen\",\"synonyms\":[],\"translations\":{\"en\":[\"to arrive at a destination\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "e5f07e2478c89fae821107ab150cf0378ed85cfde35bf8a86a0186c9c570ea2b",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-meebrengen-bring",
+      "family": "meebrengen",
+      "proposed_split": "held_out",
+      "proposed_slices": ["separable-verbs"],
+      "source": {
+        "kind": "publisher-lexical-reference-and-locally-authored-draft",
+        "urls": [
+          "https://www.vandale.nl/blogs/taaladvies/meenemen-of-meebrengen",
+          "https://onzetaal.nl/taalloket/koekjes-meegenomen-meegebracht"
+        ],
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "meebrengen",
+        "dutch_original": "meebrengen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to bring along to a destination"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Zij brengt een boek voor haar vriend mee.",
+            "en": "She brings a book for her friend.",
+            "ru": null
+          }
+        ],
+        "is_irregular": true,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": true,
+        "prefix_part": "mee",
+        "root_verb": "brengen",
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"meebrengen\",\"dutch_original\":\"meebrengen\",\"examples\":[{\"en\":\"She brings a book for her friend.\",\"nl\":\"Zij brengt een boek voor haar vriend mee.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":true,\"is_reflexive\":false,\"is_separable\":true,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":\"mee\",\"preposition\":null,\"register\":\"neutral\",\"root_verb\":\"brengen\",\"synonyms\":[],\"translations\":{\"en\":[\"to bring along to a destination\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "c0569811f4251c81af49fc66a2897d374388460e79c373d9924d18448affcfdf",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-aankomen-weight",
+      "family": "aankomen",
+      "proposed_split": "calibration",
+      "proposed_slices": ["sense-pairs", "separable-verbs"],
+      "source": {
+        "kind": "publisher-lexical-reference-and-locally-authored-draft",
+        "urls": ["https://taaladvies.net/bijkomen-of-verdikken-of-aankomen/"],
+        "sense": "weight gain",
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "aankomen",
+        "dutch_original": "aankomen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to gain weight"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Na de vakantie kwam hij twee kilo aan.",
+            "en": "After the holiday, he gained two kilos.",
+            "ru": null
+          }
+        ],
+        "is_irregular": true,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": true,
+        "prefix_part": "aan",
+        "root_verb": "komen",
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"aankomen\",\"dutch_original\":\"aankomen\",\"examples\":[{\"en\":\"After the holiday, he gained two kilos.\",\"nl\":\"Na de vakantie kwam hij twee kilo aan.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":true,\"is_reflexive\":false,\"is_separable\":true,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":\"aan\",\"preposition\":null,\"register\":\"neutral\",\"root_verb\":\"komen\",\"synonyms\":[],\"translations\":{\"en\":[\"to gain weight\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "1139616de3dd001ed26950a2fffad23b92fbf31cb68ed8a7cbd9301f3c7993ea",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-wortel-plant",
+      "family": "wortel",
+      "proposed_split": "held_out",
+      "proposed_slices": ["sense-pairs", "ordinary"],
+      "source": {
+        "kind": "publisher-lexical-reference-and-locally-authored-draft",
+        "urls": ["https://anw.ivdnt.org/article/wortel"],
+        "sense": "1.0",
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "wortel",
+        "dutch_original": "wortel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["plant root"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De wortel van de boom groeit diep in de grond.",
+            "en": "The root of the tree grows deep in the ground.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "wortels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"wortel\",\"dutch_original\":\"wortel\",\"examples\":[{\"en\":\"The root of the tree grows deep in the ground.\",\"nl\":\"De wortel van de boom groeit diep in de grond.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"wortels\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"plant root\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "3088ee3d6d586745cc43e7eee12f93f8291da9c22c91904412ab8b94fab65653",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-zich-wassen",
+      "family": "zich wassen",
+      "proposed_split": "calibration",
+      "proposed_slices": ["reflexive-verbs"],
+      "source": {
+        "kind": "grammar-and-lexical-reference-with-locally-authored-draft",
+        "urls": [
+          "https://onzetaal.nl/taalloket/wederkerend-werkwoord",
+          "https://anw.ivdnt.org/article/wassen"
+        ],
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "zich wassen",
+        "dutch_original": "zich wassen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to wash oneself"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Ik was me elke ochtend.",
+            "en": "I wash myself every morning.",
+            "ru": null
+          }
+        ],
+        "is_irregular": true,
+        "is_reflexive": true,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"zich wassen\",\"dutch_original\":\"zich wassen\",\"examples\":[{\"en\":\"I wash myself every morning.\",\"nl\":\"Ik was me elke ochtend.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":true,\"is_reflexive\":true,\"is_separable\":false,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to wash oneself\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "c775d894b294de6d0d73182e6973ac89ea835d95ea9fc82b32e8cc28c4524546",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-zich-schamen",
+      "family": "zich schamen",
+      "proposed_split": "held_out",
+      "proposed_slices": ["reflexive-verbs"],
+      "source": {
+        "kind": "grammar-and-lexical-reference-with-locally-authored-draft",
+        "urls": [
+          "https://onzetaal.nl/taalloket/wederkerend-werkwoord",
+          "https://anw.ivdnt.org/article/schamen",
+          "https://gtb.ivdnt.org/iWDB/search?actie=article_content&id=M062241&lemmodern=schamen&wdb=WNT"
+        ],
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "zich schamen",
+        "dutch_original": "zich schamen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to feel ashamed"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Zij schaamt zich voor haar fout.",
+            "en": "She feels ashamed of her mistake.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": true,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"zich schamen\",\"dutch_original\":\"zich schamen\",\"examples\":[{\"en\":\"She feels ashamed of her mistake.\",\"nl\":\"Zij schaamt zich voor haar fout.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":true,\"is_separable\":false,\"part_of_speech\":\"verb\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"to feel ashamed\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "b829a17066d68b3f2a73c64c28a6da7605479bef85355b3c24db5b73bb8911ae",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    }
+  ],
+  "supersedes": "d11-authored-sense-inputs-20261004-v3"
+}

@@ -1,0 +1,11 @@
+appId: ${APP_ID}
+---
+# The modal must be recorded open before the peer tombstone is applied.
+- pressKey: Home
+- launchApp:
+    stopApp: false
+- extendedWaitUntil:
+    notVisible:
+      id: modal-close-button
+    timeout: 30000
+- assertNotVisible: tuin

@@ -70,7 +70,7 @@ async function resolveConflict(
     throw new Error('Only a confirmed conflict can be resolved')
   }
   await ensureCorrectionIdentity(userId)
-  if (!(await reviewCorrectionSync.isAvailable())) {
+  if (!(await reviewCorrectionSync.isAvailable(userId))) {
     throw new Error('Review corrections require an updated backend')
   }
   // Reconcile receipts before releasing a rejected intent. A previously accepted

@@ -1,0 +1,21 @@
+appId: ${APP_ID}
+---
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    text: Keep my version
+    retryTapIfNoChange: true
+- extendedWaitUntil:
+    notVisible: Compare versions
+    timeout: 30000
+- assertNotVisible: Use server version
+- repeat:
+    while:
+      notVisible: ${D08_EXPECTED}
+    times: 8
+    commands:
+      - swipe:
+          start: 50%, 42%
+          end: 50%, 85%
+          duration: 600
+- assertVisible: ${D08_EXPECTED}

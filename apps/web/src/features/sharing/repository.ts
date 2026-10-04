@@ -1,5 +1,13 @@
 import 'server-only'
 
+import {
+  hydrateOwnedWords,
+  isDictionaryContentEnabled,
+  type DictionaryDatabase,
+} from '@/features/dictionary/repository'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import { parseSharedDictionaryCollection } from '@woordenaar/domain'
+
 import type { Database } from '@woordenaar/supabase-contracts'
 import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
@@ -16,7 +24,7 @@ type CollectionRow = Database['public']['Tables']['collections']['Row']
 type SharedCollectionRow = Pick<CollectionRow, 'collection_id' | 'name'>
 type ExistingWordRow = Pick<
   Database['public']['Tables']['words']['Row'],
-  'article' | 'collection_id' | 'dutch_lemma' | 'part_of_speech'
+  'article' | 'collection_id' | 'dutch_lemma' | 'part_of_speech' | 'word_id'
 >
 
 export interface SharedTargetCollection {
@@ -44,6 +52,27 @@ export async function loadSharedCollectionRows(
   if (!isSharedResourceId(shareToken)) return null
 
   const supabase = await createClient()
+  if (isDictionaryContentEnabled()) {
+    const target = supabase as unknown as SupabaseClient<DictionaryDatabase>
+    const { data, error } = await target.rpc(
+      'get_shared_dictionary_collection_v1',
+      { p_share_token: shareToken }
+    )
+    if (error) throw new Error('Could not load the shared collection words.')
+    if (data === null) return null
+    const shared = parseSharedDictionaryCollection(data)
+    return {
+      collection: shared.collection,
+      words: shared.words.map(
+        word =>
+          ({
+            ...word.content,
+            word_id: word.word_id,
+            created_at: word.created_at,
+          }) as unknown as SharedCollectionWord
+      ),
+    }
+  }
   const { data: collection, error: collectionError } = await supabase
     .from('collections')
     .select('collection_id, name')
@@ -92,7 +121,7 @@ export async function getOwnedImportContext(userId: string): Promise<{
     fetchAllRows<ExistingWordRow>((from, to) =>
       supabase
         .from('words')
-        .select('article, collection_id, dutch_lemma, part_of_speech')
+        .select('article, collection_id, dutch_lemma, part_of_speech, word_id')
         .eq('user_id', userId)
         .is('deleted_at', null)
         .order('word_id')
@@ -114,7 +143,9 @@ export async function getOwnedImportContext(userId: string): Promise<{
 
   return {
     collections,
-    existingWords: (wordsResult.data ?? []).map(word => ({
+    existingWords: (
+      await hydrateOwnedWords(supabase, wordsResult.data ?? [])
+    ).map(word => ({
       dutchLemma: word.dutch_lemma,
       partOfSpeech: word.part_of_speech,
       article: word.article,

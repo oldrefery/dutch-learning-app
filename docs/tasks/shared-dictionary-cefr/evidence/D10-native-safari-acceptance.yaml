@@ -1,0 +1,27 @@
+appId: com.apple.mobilesafari
+---
+- openLink: http://127.0.0.1:55400/app/starter-pack?pack=d10-synthetic-navigation-20261002
+- extendedWaitUntil:
+    visible: D10 Synthetic Navigation
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      text: Show duplicates
+    direction: DOWN
+    timeout: 20000
+- tapOn: Show duplicates
+- assertVisible: '.*kompas.*'
+- assertVisible: '.*fiets.*'
+- scrollUntilVisible:
+    element:
+      text: '.*zeil.*'
+    direction: DOWN
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      text: Import 0 words
+    direction: DOWN
+    timeout: 20000
+- assertVisible:
+    text: Import 0 words
+    enabled: false

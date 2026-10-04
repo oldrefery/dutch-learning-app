@@ -1,0 +1,33 @@
+{
+  "stage": "D10",
+  "sourceCommit": "ab8d603",
+  "startingHead": "b302d71",
+  "focusedWeb": {
+    "suites": 8,
+    "tests": 80
+  },
+  "normalHooks": {
+    "mobile": {
+      "suites": 156,
+      "tests": 1796,
+      "snapshots": 22
+    },
+    "web": {
+      "passedSuites": 82,
+      "passedTests": 715,
+      "skippedSuites": 1,
+      "skippedTests": 1
+    }
+  },
+  "sourceHashes": {
+    "previousUnchanged": 113,
+    "newWebPaths": 20,
+    "totalMatched": 133
+  },
+  "typecheck": "PASS",
+  "scopedLint": "PASS",
+  "formatAndDiff": "PASS",
+  "backendOrDeviceOperation": false,
+  "browserAcceptance": false,
+  "next": "GPT-6 Astra / High implementation review; D10.3-D10.5 remain open"
+}

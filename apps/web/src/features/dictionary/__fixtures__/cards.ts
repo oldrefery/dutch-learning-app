@@ -1,0 +1,81 @@
+import type { WordRow } from '@/features/words/word-detail'
+
+export const createWordRow = (overrides: Partial<WordRow> = {}): WordRow => ({
+  analysis_notes: null,
+  antonyms: [],
+  article: 'het',
+  collection_id: '18efc3c3-058d-47e3-9bba-868755678c87',
+  conjugation: null,
+  created_at: '2026-08-01T12:00:00.000Z',
+  deleted_at: null,
+  dutch_lemma: 'huis',
+  dutch_original: null,
+  easiness_factor: 2.5,
+  examples: null,
+  expression_type: null,
+  image_url: null,
+  interval_days: 1,
+  is_expression: false,
+  is_irregular: false,
+  is_reflexive: false,
+  is_separable: false,
+  last_reviewed_at: null,
+  next_review_date: '2026-08-31',
+  part_of_speech: 'noun',
+  plural: 'huizen',
+  prefix_part: null,
+  preposition: null,
+  register: 'neutral',
+  repetition_count: 0,
+  root_verb: null,
+  synonyms: [],
+  translations: { en: ['house'], ru: ['дом'] },
+  tts_url: 'https://translate.google.com/translate_tts?q=huis',
+  updated_at: null,
+  usage_notes: null,
+  user_id: 'user-1',
+  word_id: '98f0828c-8f15-4f72-8f55-38566973ee86',
+  ...overrides,
+})
+
+export const effectiveCard = (wordId = createWordRow().word_id) => {
+  const {
+    word_id,
+    user_id,
+    collection_id,
+    created_at,
+    updated_at,
+    deleted_at,
+    easiness_factor,
+    interval_days,
+    repetition_count,
+    next_review_date,
+    last_reviewed_at,
+    ...content
+  } = createWordRow()
+  void [
+    word_id,
+    user_id,
+    collection_id,
+    created_at,
+    updated_at,
+    deleted_at,
+    easiness_factor,
+    interval_days,
+    repetition_count,
+    next_review_date,
+    last_reviewed_at,
+  ]
+  return {
+    word_id: wordId,
+    content_version: 3,
+    reference: {
+      entry_id: '11111111-1111-4111-8111-111111111111',
+      revision_id: '22222222-2222-4222-8222-222222222222',
+    },
+    source: 'pinned',
+    content: { ...content, translations: { en: ['dwelling'], ru: [] } },
+    removed_fields: [],
+    cefr: { level: 'A1', status: 'reviewed', confidence: 0.95 },
+  }
+}

@@ -1,6 +1,7 @@
 // Types for Gemini AI word analysis
 import { ExpressionType } from './ExpressionTypes'
 import { WordRegister, WordUsageNotes } from './database'
+import type { AnalysisCefrEstimate } from '@woordenaar/domain'
 
 export interface WordAnalysisRequest {
   word: string
@@ -8,6 +9,7 @@ export interface WordAnalysisRequest {
 }
 
 export interface WordAnalysisResponse {
+  cefr?: AnalysisCefrEstimate | null
   // Basic word information
   dutch_lemma: string
   part_of_speech: string
@@ -60,6 +62,7 @@ export interface WordAnalysisResponse {
 }
 
 export interface GeminiAnalysisResult {
+  cefr?: AnalysisCefrEstimate | null
   dutch_lemma: string
   part_of_speech: string
   translations: {

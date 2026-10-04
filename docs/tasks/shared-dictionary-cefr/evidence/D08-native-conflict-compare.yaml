@@ -1,0 +1,31 @@
+appId: ${APP_ID}
+---
+- pressKey: Home
+- launchApp:
+    stopApp: false
+- assertVisible:
+    id: modal-close-button
+- repeat:
+    times: 10
+    commands:
+      - swipe:
+          start: 50%, 45%
+          end: 50%, 49%
+          duration: 1000
+- extendedWaitUntil:
+    visible: Compare versions
+    timeout: 60000
+- tapOn: Compare versions
+- assertVisible: Your version
+- assertVisible: Server version
+- repeat:
+    while:
+      notVisible: Keep my version
+    times: 8
+    commands:
+      - swipe:
+          start: 50%, 88%
+          end: 50%, 40%
+          duration: 600
+- assertVisible: Keep my version
+- assertVisible: Use server version

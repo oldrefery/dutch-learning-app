@@ -1,0 +1,68 @@
+.panel {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.panel h2,
+.panel h3,
+.panel p {
+  margin: 0;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.document {
+  font-family: var(--font-plex-mono), monospace;
+  min-height: 160px;
+  resize: vertical;
+}
+
+.actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.words {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.word {
+  align-items: start;
+  border-bottom: 1px solid var(--divider);
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.word input {
+  flex: none;
+  margin-top: 5px;
+}
+
+.word label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pagination {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.page {
+  display: grid;
+  gap: 24px;
+}

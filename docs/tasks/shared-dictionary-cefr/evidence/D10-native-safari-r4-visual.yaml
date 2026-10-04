@@ -1,0 +1,56 @@
+appId: com.apple.mobilesafari
+---
+- openLink: http://127.0.0.1:55400/app/starter-pack?pack=d10-synthetic-navigation-20261002
+- extendedWaitUntil:
+    visible: D10 Synthetic Navigation
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      text: Import 0 words
+    direction: DOWN
+    timeout: 20000
+- assertVisible:
+    text: Import 0 words
+    enabled: false
+- takeScreenshot: /Users/devrush/code/pet/DutchLearningApp/reports/shared-dictionary-cefr/d10-r4-review-20261002/safari-official
+- openLink: http://127.0.0.1:55400/app/starter-pack
+- extendedWaitUntil:
+    visible: Dutch A1 Essentials
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      text: Import 57 words
+    direction: DOWN
+    timeout: 30000
+- assertVisible:
+    text: Import 57 words
+    enabled: true
+- takeScreenshot: /Users/devrush/code/pet/DutchLearningApp/reports/shared-dictionary-cefr/d10-r4-review-20261002/safari-bundled
+- scrollUntilVisible:
+    element:
+      text: Clear selection
+    direction: UP
+    timeout: 30000
+- tapOn: Clear selection
+- scrollUntilVisible:
+    element:
+      text: Import 0 words
+    direction: DOWN
+    timeout: 30000
+- assertVisible:
+    text: Import 0 words
+    enabled: false
+- takeScreenshot: /Users/devrush/code/pet/DutchLearningApp/reports/shared-dictionary-cefr/d10-r4-review-20261002/safari-bundled-disabled
+- openLink: http://127.0.0.1:55400/app/collections/820e9bad-4fc8-40ea-bcd6-216b86f2007c
+- extendedWaitUntil:
+    visible: D08 Native QA
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      text: Publish collection
+    direction: DOWN
+    timeout: 30000
+- assertVisible:
+    text: Publish collection
+    enabled: true
+- takeScreenshot: /Users/devrush/code/pet/DutchLearningApp/reports/shared-dictionary-cefr/d10-r4-review-20261002/safari-sharing

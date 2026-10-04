@@ -1,0 +1,7 @@
+appId: ${APP_ID}
+---
+- tapOn: Preview document
+- extendedWaitUntil:
+    visible: '0 of 4 words selected.*'
+    timeout: 15000
+- assertVisible: '.*Show 4 already added words.*'

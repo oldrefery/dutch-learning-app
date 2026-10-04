@@ -1,0 +1,1022 @@
+{
+  "namespace": "dictionary-cefr-blind-review-packet-v1",
+  "revision": "d11-blind-review-packet-20261004",
+  "status": "unreviewed",
+  "purpose": "exact-meaning independent review before new provider scoring",
+  "items": [
+    {
+      "id": "candidate-tafel",
+      "input_sha256": "174e1a545fa8bb385fb3060e3d8f3cb6aa664bd254926b219e240f738ceab2a1",
+      "content": {
+        "dutch_lemma": "tafel",
+        "dutch_original": "tafel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["table"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Het boek ligt op de tafel.",
+            "en": "The book is on the table.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "tafels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-stad",
+      "input_sha256": "1cff8978993c31157e6f70f38012ae2ee94b3ddf9f27635eef27416672d182be",
+      "content": {
+        "dutch_lemma": "stad",
+        "dutch_original": "stad",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["city", "town"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Amsterdam is een grote stad.",
+            "en": "Amsterdam is a large city.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "steden",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-straat",
+      "input_sha256": "3c0e2ec275e350166806773697a1691cd19fec58d38f06833220faab3019555f",
+      "content": {
+        "dutch_lemma": "straat",
+        "dutch_original": "straat",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["street"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Wij wonen in deze straat.",
+            "en": "We live on this street.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "straten",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-winkel",
+      "input_sha256": "01c348c66d1ad3075e8a797e852e97e8efcd868c84be0e49bbb6053b2c2c8199",
+      "content": {
+        "dutch_lemma": "winkel",
+        "dutch_original": "winkel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["shop", "store"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De winkel is vandaag open.",
+            "en": "The shop is open today.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "winkels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-werk",
+      "input_sha256": "2fc6c984f33a82c327bbcc77c88a581d4b685fb4bd375880023d664c81224a9b",
+      "content": {
+        "dutch_lemma": "werk",
+        "dutch_original": "werk",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["work"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Ik ga naar mijn werk.",
+            "en": "I am going to work.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-goed",
+      "input_sha256": "ce499e1218b29e40004f9562683768a7d8338ea3535a3a7ebcf11e80609e89d9",
+      "content": {
+        "dutch_lemma": "goed",
+        "dutch_original": "goed",
+        "part_of_speech": "adjective",
+        "article": null,
+        "translations": {
+          "en": ["good"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Dit is een goed boek.",
+            "en": "This is a good book.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-tafel-plural",
+      "input_sha256": "c1c535bb3fe9494589b7f3056b41dfd699117206bbabbf0f380f715577d58823",
+      "content": {
+        "dutch_lemma": "tafel",
+        "dutch_original": "tafels",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["tables"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De tafels staan bij het raam.",
+            "en": "The tables are by the window.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "tafels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-stad-plural",
+      "input_sha256": "9922c40ac75c05725ecee2319ce1239a1e2fce585bdf0ccca8306adfef658a71",
+      "content": {
+        "dutch_lemma": "stad",
+        "dutch_original": "steden",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["cities"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Deze steden liggen aan het water.",
+            "en": "These cities are near the water.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "steden",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-straat-conflict",
+      "input_sha256": "2b031de45e9bef0c0dd9ecd01dca686665dd2d0fc04038512d1d97786e1c303a",
+      "content": {
+        "dutch_lemma": "straat",
+        "dutch_original": "straat",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["street"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De klok hangt aan de muur.",
+            "en": "The clock hangs on the wall.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "straten",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-winkel-conflict",
+      "input_sha256": "3dc1b8fb4ace4857d5aaaca4192f419b9aacb9f3fa0bb1da9ed532565e079316",
+      "content": {
+        "dutch_lemma": "winkel",
+        "dutch_original": "winkel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["shop", "store"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Het weer is vandaag koud.",
+            "en": "The weather is cold today.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "winkels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-schoolplein",
+      "input_sha256": "253b533700172e642b1a71f6047396191d334fc006ad7ff13ba9d9b77d3bf723",
+      "content": {
+        "dutch_lemma": "schoolplein",
+        "dutch_original": "schoolplein",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["schoolyard"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De kinderen spelen op het schoolplein.",
+            "en": "The children play in the schoolyard.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "schoolpleinen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-kat-boom",
+      "input_sha256": "0484a6614115a9625c6024f5bf022b46146a6c779fd58d8bd03782f383235538",
+      "content": {
+        "dutch_lemma": "de kat uit de boom kijken",
+        "dutch_original": "de kat uit de boom kijken",
+        "part_of_speech": "expression",
+        "article": null,
+        "translations": {
+          "en": ["to wait and see before getting involved"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Ze keek eerst de kat uit de boom voordat ze meedeed.",
+            "en": "She waited to see how things went before joining in.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": true,
+        "expression_type": "idiom",
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-wortel-math",
+      "input_sha256": "060f9716579e4f74a23be60ec68f9c7d1bf9ac7def266851a24b31963a1a03b5",
+      "content": {
+        "dutch_lemma": "wortel",
+        "dutch_original": "wortel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["mathematical root"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De wortel van negen is drie.",
+            "en": "The square root of nine is three.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "wortels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-quotient",
+      "input_sha256": "a1ad352759aa2095b67d09b459f1ab6137808109b374ed1381300e4a46d565b0",
+      "content": {
+        "dutch_lemma": "quotiënt",
+        "dutch_original": "quotiënt",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["quotient"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Het quotiënt van acht en twee is vier.",
+            "en": "The quotient of eight and two is four.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "quotiënten",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-oogje-zeil",
+      "input_sha256": "237f8a8427579b35e1bba5979bdb8ee69742aa07b4e14109c6215e6319d692e8",
+      "content": {
+        "dutch_lemma": "een oogje in het zeil houden",
+        "dutch_original": "een oogje in het zeil houden",
+        "part_of_speech": "expression",
+        "article": null,
+        "translations": {
+          "en": ["to keep an eye on someone or something"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De oppas hield een oogje in het zeil terwijl de kinderen speelden.",
+            "en": "The babysitter kept an eye on things while the children played.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": true,
+        "expression_type": "idiom",
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-aankomen-arrive",
+      "input_sha256": "e5f07e2478c89fae821107ab150cf0378ed85cfde35bf8a86a0186c9c570ea2b",
+      "content": {
+        "dutch_lemma": "aankomen",
+        "dutch_original": "aankomen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to arrive at a destination"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De trein komt om acht uur aan.",
+            "en": "The train arrives at eight o’clock.",
+            "ru": null
+          }
+        ],
+        "is_irregular": true,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": true,
+        "prefix_part": "aan",
+        "root_verb": "komen",
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-meebrengen-bring",
+      "input_sha256": "c0569811f4251c81af49fc66a2897d374388460e79c373d9924d18448affcfdf",
+      "content": {
+        "dutch_lemma": "meebrengen",
+        "dutch_original": "meebrengen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to bring along to a destination"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Zij brengt een boek voor haar vriend mee.",
+            "en": "She brings a book for her friend.",
+            "ru": null
+          }
+        ],
+        "is_irregular": true,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": true,
+        "prefix_part": "mee",
+        "root_verb": "brengen",
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-aankomen-weight",
+      "input_sha256": "1139616de3dd001ed26950a2fffad23b92fbf31cb68ed8a7cbd9301f3c7993ea",
+      "content": {
+        "dutch_lemma": "aankomen",
+        "dutch_original": "aankomen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to gain weight"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Na de vakantie kwam hij twee kilo aan.",
+            "en": "After the holiday, he gained two kilos.",
+            "ru": null
+          }
+        ],
+        "is_irregular": true,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": true,
+        "prefix_part": "aan",
+        "root_verb": "komen",
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-wortel-plant",
+      "input_sha256": "3088ee3d6d586745cc43e7eee12f93f8291da9c22c91904412ab8b94fab65653",
+      "content": {
+        "dutch_lemma": "wortel",
+        "dutch_original": "wortel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["plant root"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De wortel van de boom groeit diep in de grond.",
+            "en": "The root of the tree grows deep in the ground.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "wortels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-zich-wassen",
+      "input_sha256": "c775d894b294de6d0d73182e6973ac89ea835d95ea9fc82b32e8cc28c4524546",
+      "content": {
+        "dutch_lemma": "zich wassen",
+        "dutch_original": "zich wassen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to wash oneself"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Ik was me elke ochtend.",
+            "en": "I wash myself every morning.",
+            "ru": null
+          }
+        ],
+        "is_irregular": true,
+        "is_reflexive": true,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-zich-schamen",
+      "input_sha256": "b829a17066d68b3f2a73c64c28a6da7605479bef85355b3c24db5b73bb8911ae",
+      "content": {
+        "dutch_lemma": "zich schamen",
+        "dutch_original": "zich schamen",
+        "part_of_speech": "verb",
+        "article": null,
+        "translations": {
+          "en": ["to feel ashamed"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Zij schaamt zich voor haar fout.",
+            "en": "She feels ashamed of her mistake.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": true,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-treinstation",
+      "input_sha256": "a4f3f207ec6abcddfa96e10ebe09907aee2335b7f551cb3370c6c7a14dfc919b",
+      "content": {
+        "dutch_lemma": "treinstation",
+        "dutch_original": "treinstation",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["train station"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "We wachten bij het treinstation op de trein.",
+            "en": "We wait at the train station for the train.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-cel-biological",
+      "input_sha256": "ff142d8d04d077046acdc432c061e6c73ca9e7784b6ebea514e4285d2d2bec08",
+      "content": {
+        "dutch_lemma": "cel",
+        "dutch_original": "cel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["biological cell"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Onder de microscoop zie je een cel.",
+            "en": "You can see a cell under the microscope.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "cellen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-cel-prison",
+      "input_sha256": "bdd3b573bbc7f8557e880586d764cfa5ea29c939aa3346a698ff770266a783ff",
+      "content": {
+        "dutch_lemma": "cel",
+        "dutch_original": "cel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["prison cell"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De gevangene zit in een cel.",
+            "en": "The prisoner is in a cell.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "cellen",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-slot-ambiguous",
+      "input_sha256": "44f85b10a50882351516580a65f8ed8eca45d12cbc6397512eb1761f77320998",
+      "content": {
+        "dutch_lemma": "slot",
+        "dutch_original": "slot",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["lock", "castle"],
+          "ru": []
+        },
+        "examples": [],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-blad-ambiguous",
+      "input_sha256": "f29d0c4a13a52e614fa8151420ad807232cef35fb1645324f037e66f3ad78c94",
+      "content": {
+        "dutch_lemma": "blad",
+        "dutch_original": "blad",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["leaf", "sheet of paper"],
+          "ru": []
+        },
+        "examples": [],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    },
+    {
+      "id": "candidate-zygomatisch",
+      "input_sha256": "5ac4ab17e95cd51d6c2587c9b5b2db89d98b697548c89e5a8f260f526597bc50",
+      "content": {
+        "dutch_lemma": "zygomatisch",
+        "dutch_original": "zygomatisch",
+        "part_of_speech": "adjective",
+        "article": null,
+        "translations": {
+          "en": ["related to the cheekbone"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De arts bespreekt het zygomatische implantaat.",
+            "en": "The doctor discusses the zygomatic implant.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      }
+    }
+  ]
+}
