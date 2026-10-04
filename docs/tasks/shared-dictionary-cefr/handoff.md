@@ -1,5 +1,58 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — Physical test Android reinstall and local QA login complete.**
+Owner confirmed this is an old test phone, not P2 (AUTH-22). Reconnection showed
+package absent; resumed install only, no second uninstall. Verified D12 APK now
+installed as 2.3.1 (84); cold launch and local synthetic login PASS. Collections
+show11 words / 8 due. [Device evidence](evidence/D13-android-usb-inspection-20261004.md).
+No review/reset/import or real-account/production operation was performed.
+
+**Live QA left for owner testing:** physical Huawei remains signed in; USB reverse
+55331 active, four recorded retained services running, loopback proxy PID90449.
+Exact IDs/hash/status are in private d13-android-device-20261004/reinstall-intent.json.
+Inspect before reuse; do not replay uninstall/install. Mac/USB required for local
+network use. Later cleanup stops only recorded proxy/current services, preserving
+volumes and stopped original backups; no physical-phone shutdown. No paid/provider
+call, support message, hosted migration, publication, push, PR or deployment.
+
+**Next D13:** actual P2/P1 device preservation evidence and remaining exact release
+approvals; test phone does not satisfy P2 gate. Server backup complete, do not repeat.
+D13 remains blocked for release, CEFR unqualified/OFF. GPT-6 Astra / High. Source
+HEAD94424ba, this checkpoint preserved by scoped AUTH-18 local documentation commit
+with ordinary hooks. Unrelated .playwright-cli/ remains untouched. Older headers
+are chronological; their USB-disconnect and stopped-service instructions superseded.
+
+**2026-10-04 — Test Android reinstall interrupted by USB disconnect.** Owner
+confirmed connected Huawei is an old disposable test phone, **not P2**, and
+explicitly authorized uninstall/reinstall (AUTH-22). Old app uninstall succeeded.
+Verified D12 arm64 QA APK 2.3.1 (84) installation exited 1; immediate ADB checks
+say device not found. **Installation outcome unverified**, not a completed install.
+
+**Next:** owner reconnects/unlocks the same phone; inspect its installed package
+first, then retry authorized install only if absent. Never repeat the consumed
+uninstall automatically. Private reinstall-intent.json under d13-android-device-20261004
+records target, artifact hash and phase. Follow with launch/local QA verification;
+no personal account or hosted environment. Four retained QA services remain stopped;
+no proxy started, no installer process pending. D01 P2 still unknown; backup complete.
+GPT-6 Astra / High. Source HEAD94424ba; current metadata/evidence/permission/session
+updates are local-only and uncommitted. Unrelated .playwright-cli/ untouched.
+
+**2026-10-04 — Android USB metadata verified; device assignment pending.** Owner
+connected a Huawei CLT-L29 / Android10. Installed package is **1.6.0 (44)**, not
+our current QA/release candidate. [Inspection evidence](evidence/D13-android-usb-inspection-20261004.md)
+records package manager plus APK confirmation. run-as unavailable (not debuggable);
+installed backup XML includes only shared preferences and excludes SQLite domains.
+No private data extraction, app launch, backup, install or device mutation occurred.
+
+**Next:** await the owner's answer whether this is P2's actively used Android or
+another/old phone; do not assign P2 from USB presence. Then choose the available
+non-destructive diagnostic/preservation route. Full queues remain unknown, iPhone
+availability unknown. D13 remains blocked on these evidence/release gates; the
+AUTH-21 server backup is complete and must not be repeated. GPT-6 Astra / High.
+Source HEAD 94424ba; this metadata evidence plus D01/D13/handoff/sessions are local-only,
+uncommitted. No tests needed for metadata notes; formatting/diff checked. Unrelated
+.playwright-cli/ untouched. No external operation pending or new release authority.
+
 **2026-10-04 — D13 private backup and isolated restore PASS.** Starting HEAD
 `872b2b7`, existing feature branch, GPT-6 Astra / High. Owner supplied the existing
 DB password under AUTH-21; no login role created. [Verification evidence](evidence/D13-backup-verification-20261004.md):
@@ -12,14 +65,17 @@ container removed. Original runtime resources remain stopped; no pending operati
 
 **First incomplete D13.1:** reconcile remaining release-readiness gates, beginning
 with D01 real installed builds/full pending queues and exact next environment-write
-scope. Phone availability is still unanswered; do not infer device access or repeat
-the September 21 screenshot request. Backup/restore itself is complete, not blocked
+scope. Owner offered an Android USB connection; adb devices -l currently lists no
+device. Await cable connection, USB debugging and on-device RSA authorization.
+iPhone availability remains unknown. Do not infer private app-data extraction
+or repeat the September 21 screenshot request. Backup/restore itself is complete, not blocked
 on passwords; never repeat the capture or request login-role creation on resume.
 Refresh/delta only before a separately reviewed live operation; preserve new reviews.
 CEFR remains unqualified/OFF. D13 blocked on remaining evidence/approval, no release
 checkbox complete. This checkpoint is preserved by scoped AUTH-18 local commit;
 `.playwright-cli/` remains unrelated/unstaged. No push/PR, migration, paid call,
-publication, deployment or device action. Older headers are historical.
+publication, deployment or device action. Android availability follow-up is local-only in handoff/stage/sessions; source
+HEAD is 94424ba. Older headers are historical.
 
 **2026-10-04 — D13 backup approved; connection access blocked.** Starting HEAD
 `1ad4021`, branch `feature/shared-dictionary-schema`, GPT-6 Astra / High.

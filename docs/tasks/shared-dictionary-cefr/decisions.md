@@ -762,3 +762,22 @@ and two-sequence restore verification PASS. Temporary credential and isolated
 container removed. No new login role or hosted mutation. Requested operation is
 complete; no automatic repeat/refresh or release permission is inferred. See
 D13-backup-verification-20261004.md and protected operation receipt before resuming.
+
+### AUTH-22 — Disposable physical Android reinstall
+
+On October 4 the owner clarified that the connected Huawei CLT-L29 is an old
+test phone, not P2, and explicitly allowed uninstalling and reinstalling the app.
+Scope: only com.oldrefery.dutchlearningapp on this connected test phone; removal
+of its old 1.6.0 (44) app-local data is authorized. Install the already verified
+D12 local QA 2.3.1 (84) arm64 APK, perform launch/connectivity verification against
+the retained synthetic local QA backend only. No real account, production write,
+other-device reset, hosted release, paid provider or CEFR activation is authorized.
+P2's actual installed build/queues remain unknown. Inspect reinstall-intent.json
+and actual package before retrying any uninstall/install.
+
+AUTH-22 completion: reconnection showed package absent; non-streaming installation
+of the same verified D12 APK succeeded without another uninstall. Version84 and
+launch confirmed, existing synthetic local QA login successful. Four retained
+local services/proxy and USB reverse left running for owner testing. No repeated
+uninstall authority or real account/production release follows. Private receipt
+records completed phase and exact cleanup targets.

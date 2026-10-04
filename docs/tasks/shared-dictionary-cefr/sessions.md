@@ -3171,3 +3171,51 @@ Original snapshots, manifests and private logs retained. No production mutation 
 pending operation. D13 remains blocked on device/readiness/actual-release approval;
 backup access blocker resolved, do not repeat capture. Local docs saved by AUTH-18
 scoped commit with normal hooks; no source change, unrelated .playwright-cli/ excluded.
+
+## 2026-10-04 — Android USB availability offered
+
+From 94424ba, Astra / High. Owner can connect an Android by cable. Local adb exists;
+read-only adb devices -l reports no devices. Await cable/USB-debugging/RSA approval
+on the device, then inspect only the selected target's installed package metadata
+and available non-destructive diagnostic path. No app launched, private data read,
+installation, sync, reset or setting change executed. iPhone availability unknown.
+Backup operation remains complete; no replay. This small availability checkpoint is
+local-only in handoff, D13 and sessions; no source change or tests needed.
+
+## 2026-10-04 — Connected Android installed artifact inspected
+
+Owner confirmed USB connection. Read-only package inspection and copied installed
+APK confirm Huawei CLT-L29 Android10 with 1.6.0 (44); OTA updater disabled. run-as
+id rejected because package is not debuggable. Backup rules include only shared
+preferences, exclude SecureStore and omit SQLite domains; no backup attempted.
+Question pending: is this the active P2 device or another/old phone? No assignment
+inferred. No app launch, private-data read, install, sync, reset or setting change.
+Protected metadata/APK saved; sanitized evidence and D01/D13/handoff notes local-only
+uncommitted from 94424ba, formatting/diff checks. D13 remains blocked, full queues
+unknown, server backup complete; no repeated capture or pending external operation.
+
+## 2026-10-04 — Test phone clarified; authorized reinstall lost USB
+
+Owner identifies connected Huawei as old test phone and authorizes removal/reinstall
+(AUTH-22). Verified retained D12 QA APK hash, version84/minSdk24/arm64 compatibility.
+Old app uninstall Success; streamed QA installation exited1 without detailed error.
+Both immediate package queries say device not found. Installation outcome unknown;
+owner asked to reconnect/unlock. Resume by inspecting package, not repeating uninstall.
+No app launch or production access. Four exact retained QA services inspected, still
+stopped; proxy not started. P2 actual device still unknown. Local-only checkpoint
+under source94424ba; private reinstall receipt binds artifact/action status.
+
+## 2026-10-04 — Physical test Android reinstall/login complete
+
+Owner reconnected Huawei; package absent. Same verified APK installed successfully
+with --no-streaming; no second uninstall. Version2.3.1 (84), cold Activity launch
+Status ok and visible login confirmed. Started four exact retained local QA
+services/proxy, USB reverse55331, health200. Existing synthetic primary login via
+UI succeeded; collection screen shows11 words/8 due. No review/reset/import or
+production account. First input validation rejected punctuation before input, then
+proper quoting succeeded. Phone left signed in and QA services/proxy running for
+owner testing. Private receipt binds IDs/proxyPID90449; resume by inspecting state,
+never replaying uninstall. Later targeted cleanup preserves volumes/backups/phone.
+D13 still blocked on actual P2/P1 evidence and release approvals, server backup done.
+Metadata/evidence/permissions persisted by AUTH-18 local commit with ordinary hooks;
+private artifacts excluded; unrelated .playwright-cli/ untouched. No source change.
