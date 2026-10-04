@@ -2883,3 +2883,21 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   formatting, Markdown links and `git diff --check` passed. Post-commit
   worktree contains only preexisting untracked `.playwright-cli/`;
   persistence is local-only.
+
+## 2026-10-04 — owner review of ten D11 pilot inputs
+
+- Resumed from `ddb6453` on `feature/shared-dictionary-schema` with
+  only preexisting `.playwright-cli/` untracked. The owner agreed with
+  IDs 05–08, suggested B2 for 19–22, and A1 for 23–24.
+- The [feedback record](evidence/D11-owner-review-feedback-20261004.md)
+  binds all ten statements to the exact pilot hashes. The owner had
+  seen assistant bands and aggregate v3 results, but no item-level
+  Gemini responses were shown. A1 applicability to the existing
+  context-free/conflicting inputs is awaiting clarification. Frozen
+  reference v1 and the v3 report remain unchanged; no post-run
+  accuracy claim was made.
+- Human feedback is useful but does not fill four empty slice/split
+  cells, add adequate denominators or qualify the method. D11.2 stays
+  closed diagnostically; D11.3 remains next, worker/schedule off.
+  No provider call, support inquiry, push, PR, migration, publication
+  or deployment.

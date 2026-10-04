@@ -1,5 +1,25 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — owner feedback on D11 pilot labels.** Starting from
+local HEAD `ddb6453` on `feature/shared-dictionary-schema`, only
+preexisting `.playwright-cli/` was untracked. The owner agrees with
+assistant bands for `pilot-05`–`pilot-08`, proposes B2 for
+`pilot-19`–`pilot-22`, and proposes A1 for `pilot-23`–`pilot-24`.
+The [exact-hash feedback record](evidence/D11-owner-review-feedback-20261004.md)
+preserves all ten judgments without changing frozen reference v1 or
+rescoring the already completed v3 report. A clarification is pending
+on whether A1 concerns the current ambiguous/conflicting inputs or
+repaired sense-specific versions. This post-run, assistant-informed
+human feedback improves review but does not satisfy the independent
+quality gate or four empty slice/split cells. D11.2 remains done in
+the approved diagnostic scope; D11.3 first incomplete. **Next model:
+GPT-6 Astra / High** for qualification-boundary review, then GPT-6.1
+Sol / High for D11.3. `qualified: false`, worker/schedule disabled,
+two Gemini attempts still restricted to the original 24; no provider
+call, new transmission, support inquiry, push, PR, migration,
+publication or deployment. Local feedback evidence pending scoped
+commit; `.playwright-cli/` untouched.
+
 **2026-10-04 — D11.2 offline diagnostic closed under owner-approved
 narrow scope.** Starting from local HEAD `81e8799` on
 `feature/shared-dictionary-schema`, only preexisting `.playwright-cli/`
