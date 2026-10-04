@@ -17,8 +17,11 @@ resolve independent meaning-level review and denominators. D11.2
 in_progress, D12 pending, quality unqualified, worker/schedule off.
 Two Gemini attempts remain only for the original 24; no provider call,
 new input transmission, support inquiry, push, PR, migration,
-publication or deployment. Local-only evidence pending scoped commit;
-preexisting `.playwright-cli/` remains untouched.
+publication or deployment. Source/evidence commit `32dbf9b` passed
+normal hooks: mobile 156 suites / 1796 tests / 22 snapshots; web 86
+suites / 780 tests, one existing skip. JSON binding, 27-input
+partition, formatting and local links passed. Local-only commit, no
+push; preexisting `.playwright-cli/` remains untouched.
 
 **2026-10-04 — D11 prison-cell source follow-up.** Starting from
 local HEAD `8347e2b` on `feature/shared-dictionary-schema`, only

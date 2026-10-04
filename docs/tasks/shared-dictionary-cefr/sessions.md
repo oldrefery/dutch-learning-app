@@ -2769,3 +2769,9 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   unqualified, worker/schedule disabled. Two Gemini attempts remain
   for the original 24 only; no provider call, new input transmission,
   support inquiry, push, PR, migration, publication or deployment.
+- Source/evidence commit `32dbf9b` passed normal hooks: mobile 156
+  suites / 1796 tests / 22 snapshots and web 86 suites / 780 tests
+  with one existing skip. Canonical hash binding, 27-input partition,
+  source counts, local links, scoped formatting and `git diff --check`
+  passed. Post-commit worktree contains only preexisting untracked
+  `.playwright-cli/`; persistence is local-only.
