@@ -16,8 +16,10 @@ D11.3 first incomplete. **Next model: GPT-6 Astra / High** for the
 qualification-boundary review, then GPT-6.1 Sol / High for D11.3.
 Quality unqualified, worker/schedule off, two Gemini attempts limited
 to the original 24; no provider call, new transmission, support
-inquiry, push, PR, migration, publication or deployment. Local
-clarification pending scoped commit; `.playwright-cli/` untouched.
+inquiry, push, PR, migration, publication or deployment. Clarification
+was saved in local commit `02fd564`; normal mobile/web hooks passed.
+Post-commit worktree contains only preexisting untracked
+`.playwright-cli/`.
 
 **2026-10-04 — owner feedback on D11 pilot labels.** Starting from
 local HEAD `ddb6453` on `feature/shared-dictionary-schema`, only

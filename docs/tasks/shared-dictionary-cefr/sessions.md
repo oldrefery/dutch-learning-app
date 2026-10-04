@@ -2919,3 +2919,7 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   No new provider call, source transmission, worker activation,
   support inquiry, push, PR, migration, publication or deployment.
   D11.2 is still done only diagnostically; D11.3 is next.
+- Clarification commit `02fd564` passed normal mobile/web hooks.
+  Exact-hash feedback, scoped formatting, local links and
+  `git diff --check` passed. Post-commit worktree contains only
+  preexisting untracked `.playwright-cli/`; persistence is local-only.
