@@ -2905,3 +2905,17 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   binding for all ten judgments, local links, scoped formatting and
   `git diff --check` passed. Post-commit worktree contains only
   preexisting untracked `.playwright-cli/`; persistence is local-only.
+
+## 2026-10-04 — owner learning-level clarification
+
+- Resumed from `52a5838` on `feature/shared-dictionary-schema`, with
+  only preexisting `.playwright-cli/` untracked. The owner clarified
+  that their levels describe when they personally learned and used
+  the words, and revised `licht` from A1 to A1–A2.
+- Updated the [feedback record](evidence/D11-owner-review-feedback-20261004.md)
+  accordingly. `pilot-23` remains unsensed and `pilot-24` retains its
+  gloss/example conflict, so their exact hashes keep preliminary
+  abstention. Frozen v1 reference and v3 report remain unchanged.
+  No new provider call, source transmission, worker activation,
+  support inquiry, push, PR, migration, publication or deployment.
+  D11.2 is still done only diagnostically; D11.3 is next.

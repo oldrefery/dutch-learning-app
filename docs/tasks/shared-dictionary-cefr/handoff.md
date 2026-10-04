@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — owner learning-level clarification.** Starting from
+local HEAD `52a5838` on `feature/shared-dictionary-schema`, only
+preexisting `.playwright-cli/` was untracked. The owner clarified that
+their A1/B2 judgments describe when they personally learned and used
+the words, not a formal level for each exact assessment input, and
+revised `licht` to A1–A2. The
+[feedback record](evidence/D11-owner-review-feedback-20261004.md)
+now distinguishes this personal exposure from CEFR gold. `pilot-23`
+still lacks a selected sense; `pilot-24` still has a walking gloss
+against a water-flow example. Both exact inputs retain preliminary
+abstention, while the owner's word-level experience remains recorded.
+No reference/report was rescored. D11.2 stays done diagnostically;
+D11.3 first incomplete. **Next model: GPT-6 Astra / High** for the
+qualification-boundary review, then GPT-6.1 Sol / High for D11.3.
+Quality unqualified, worker/schedule off, two Gemini attempts limited
+to the original 24; no provider call, new transmission, support
+inquiry, push, PR, migration, publication or deployment. Local
+clarification pending scoped commit; `.playwright-cli/` untouched.
+
 **2026-10-04 — owner feedback on D11 pilot labels.** Starting from
 local HEAD `ddb6453` on `feature/shared-dictionary-schema`, only
 preexisting `.playwright-cli/` was untracked. The owner agrees with
