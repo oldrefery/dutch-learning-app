@@ -2901,3 +2901,7 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   closed diagnostically; D11.3 remains next, worker/schedule off.
   No provider call, support inquiry, push, PR, migration, publication
   or deployment.
+- Feedback commit `bff4861` passed normal mobile/web hooks. Exact-hash
+  binding for all ten judgments, local links, scoped formatting and
+  `git diff --check` passed. Post-commit worktree contains only
+  preexisting untracked `.playwright-cli/`; persistence is local-only.

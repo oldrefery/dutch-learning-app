@@ -17,8 +17,9 @@ GPT-6 Astra / High** for qualification-boundary review, then GPT-6.1
 Sol / High for D11.3. `qualified: false`, worker/schedule disabled,
 two Gemini attempts still restricted to the original 24; no provider
 call, new transmission, support inquiry, push, PR, migration,
-publication or deployment. Local feedback evidence pending scoped
-commit; `.playwright-cli/` untouched.
+publication or deployment. Feedback was saved in local commit
+`bff4861`; normal mobile/web hooks passed. Post-commit worktree
+contains only preexisting untracked `.playwright-cli/`.
 
 **2026-10-04 — D11.2 offline diagnostic closed under owner-approved
 narrow scope.** Starting from local HEAD `81e8799` on
