@@ -16,6 +16,16 @@
       "publisher": "KleurRijker B.V.",
       "url": "https://www.nt2.nl/documenten/inkijkexemplaren_pdf/0_titels_andere_uitgeverijen/taalcompleet_a1_9789490807221.pdf",
       "status": "reference_only_no_republication_permission"
+    },
+    {
+      "publisher": "Lingua.com",
+      "url": "https://lingua.com/nl/nederlands/lezen/school/",
+      "status": "all_rights_reserved_reference_only"
+    },
+    {
+      "publisher": "Van Dale Uitgevers",
+      "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+      "status": "copyright_notice_reference_only"
     }
   ],
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
@@ -193,6 +203,106 @@
         "accessed_on": "2026-10-04"
       },
       "context_summary": "going to work as the destination in a clothing exercise prompt",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-schoolplein",
+      "input_sha256": "253b533700172e642b1a71f6047396191d334fc006ad7ff13ba9d9b77d3bf723",
+      "family": "schoolplein",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Lingua.com",
+        "url": "https://lingua.com/pdf/nederlands-tekst-school.pdf",
+        "pdf_page_one_based": 1,
+        "material_level": "A2_text",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "schoolyard where a pupil draws trees during recess",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-stad-plural",
+      "input_sha256": "9922c40ac75c05725ecee2319ce1239a1e2fce585bdf0ccca8306adfef658a71",
+      "family": "stad",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Van Dale Uitgevers",
+        "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+        "pdf_page_one_based": 38,
+        "material_level": "B1_exercise",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "plural cities naming places in the Randstad",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-aankomen-arrive",
+      "input_sha256": "e5f07e2478c89fae821107ab150cf0378ed85cfde35bf8a86a0186c9c570ea2b",
+      "family": "aankomen",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Van Dale Uitgevers",
+        "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+        "pdf_page_one_based": 48,
+        "material_level": "B1_exercise",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "an aircraft has already arrived after a landing-time question",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-zich-wassen",
+      "input_sha256": "c775d894b294de6d0d73182e6973ac89ea835d95ea9fc82b32e8cc28c4524546",
+      "family": "zich wassen",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Van Dale Uitgevers",
+        "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+        "pdf_page_one_based": 24,
+        "material_level": "A2_exercise",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "a speaker washes themself with warm water",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-zich-schamen",
+      "input_sha256": "b829a17066d68b3f2a73c64c28a6da7605479bef85355b3c24db5b73bb8911ae",
+      "family": "zich schamen",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Van Dale Uitgevers",
+        "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
+        "pdf_page_one_based": 24,
+        "material_level": "B1_exercise",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "a manager asks whether a worker feels ashamed about arriving late",
       "evidence_type": "contextual_use",
       "meaning_match": "plausible_exact_sense",
       "adjudicated_cefr_level": null,

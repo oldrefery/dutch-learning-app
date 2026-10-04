@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 expanded graded-context screen.** Branch
+`feature/shared-dictionary-schema`, evidence base `fc2ebf7`; only the
+preexisting `.playwright-cli/` was untracked. The updated
+[ledger](evidence/D11-graded-context-ledger-20261004.json) now binds
+fourteen preliminary observations for eleven exact input hashes across
+Stichting Taalmenu, KleurRijker, Lingua.com and Van Dale. The
+[screen](evidence/D11-graded-context-screen-20261004.md) records five
+new rows and the unresolved Lingua.com `treinstation` A2 index/B1 PDF
+conflict; no level was inferred from that source. All publisher material
+remains reference-only. **Next GPT-6.1 Sol / High:** seek graded exact
+contexts for the 16 remaining inputs, prioritizing contrasting senses,
+and resolve source-level conflicts before considering review policy or
+minimum denominators. No word-sense CEFR labels are assigned. D11.2
+in_progress, D12 pending, quality unqualified, worker/schedule off.
+Two Gemini attempts remain only for the original 24; no new provider
+inputs or support inquiry. No push, PR, migration, publication or
+deployment. Local-only evidence.
+
 **2026-10-04 — D11 independent graded-context screen.** Branch
 `feature/shared-dictionary-schema`, starting HEAD `31ab6ca`; only the
 preexisting `.playwright-cli/` was untracked. The

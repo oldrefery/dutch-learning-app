@@ -2534,3 +2534,22 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   remains open, quality unqualified, worker/schedule disabled. Two
   personal Gemini attempts remain only for the original 24; no provider
   call, support inquiry, push, PR, migration, publication or deployment.
+
+## 2026-10-04 — D11 expanded graded-context screen
+
+- Resumed at `fc2ebf7` on `feature/shared-dictionary-schema`; only the
+  preexisting `.playwright-cli/` was untracked. GPT-6.1 Sol / High was
+  announced before D11.2 work.
+- Added five preliminary exact-hash observations from Lingua.com and
+  Van Dale for `schoolplein`, plural `stad`, arrival `aankomen`,
+  `zich wassen` and `zich schamen`. The ledger now holds fourteen
+  observations for eleven inputs across four publishers. The
+  [screen](evidence/D11-graded-context-screen-20261004.md) records the
+  Lingua.com `treinstation` A2 index/B1 PDF conflict and excludes it
+  from graded evidence. No word-sense CEFR label or provider approval.
+- Next GPT-6.1 Sol / High: seek graded exact contexts for the remaining
+  16 inputs, particularly contrasting senses, and resolve provenance
+  conflicts before reviewing policy/denominators. D11.2 open, quality
+  unqualified, worker/schedule disabled. Two personal Gemini attempts
+  remain only for the original 24; no provider call, support inquiry,
+  push, PR, migration, publication or deployment.

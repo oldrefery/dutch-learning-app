@@ -2,34 +2,43 @@
 
 ## Result
 
-The [bound ledger](D11-graded-context-ledger-20261004.json) records nine
-preliminary sense-matched observations for seven exact hashed D11 inputs.
+The [bound ledger](D11-graded-context-ledger-20261004.json) records fourteen
+preliminary sense-matched observations for eleven exact hashed D11 inputs.
 Seven appear in materials that [Stichting Taalmenu identifies as A1](https://nt2taalmenu.nl/nt2-a1-menu/)
 or labels A2 in the document itself. Two corroborating observations come
 from KleurRijker's [TaalCompleet A1 publisher preview](https://www.nt2.nl/nl/alle-uitgaven/101-417_Taalcompleet/100-17261_TaalCompleet-A1),
-whose course targets 0 to A1. The observations span seven families and
-two publishers. They were screened by the assistant from the source pages
+whose course targets 0 to A1. One comes from a [Lingua.com A2 reading PDF](https://lingua.com/pdf/nederlands-tekst-school.pdf),
+and four from the [Van Dale grammar workbook answer key](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf)
+with explicit A2/B1 exercise labels. The observations span ten families and
+four publishers. They were screened by the assistant from the source pages
 before any provider run on these inputs. They remain
 **source-level exposure signals**, not reviewed word-sense CEFR labels.
 
-| Input                   | Material and page                                                                                               | Meaning-match note                                                         | Strength                         |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------- |
-| `candidate-tafel`       | [A1 writing, PDF page 24](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)              | Physical table in a location exercise                                      | Contextual use                   |
-| `candidate-stad`        | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)             | City as birthplace/residence                                               | Contextual use                   |
-| `candidate-straat`      | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)             | Street in a home address                                                   | Contextual use                   |
-| `candidate-winkel`      | [A1 speaking, PDF page 26](https://nt2taalmenu.nl/wp-content/uploads/a1-spreken/boekje_spreken_A1.pdf)          | Retail shop in a purchase-return scenario                                  | Contextual use                   |
-| `candidate-werk`        | [A1 Je Kan Me Wat module 10, PDF page 17](https://nt2taalmenu.nl/wp-content/uploads/a1-jekanmewat/module10.pdf) | Going to work/workplace in a commuting story                               | Contextual use                   |
-| `candidate-goed`        | [A1 music exercise, PDF page 29](https://nt2taalmenu.nl/wp-content/uploads/A1-muziek/oefeningenA1.pdf)          | Positive quality adjective applied to a film; appears only as a distractor | Weak exposure                    |
-| `candidate-zich-wassen` | [A2 reading, PDF page 32](https://nt2taalmenu.nl/wp-content/uploads/a2-lezen/NT2_teksten_lezen_A2.pdf)          | Washing oneself in a hygiene glossary explanation                          | Glossary use                     |
-| `candidate-tafel`       | [TaalCompleet A1 preview, PDF page 4](https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf)          | Table as home furniture in a reading passage                               | Contextual use; second publisher |
-| `candidate-werk`        | [TaalCompleet A1 preview, PDF page 6](https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf)          | Work as the destination in a clothing exercise prompt                      | Contextual use; second publisher |
+| Input                       | Material and page                                                                                                                                                 | Meaning-match note                                                         | Strength                           |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------- |
+| `candidate-tafel`           | [A1 writing, PDF page 24](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                                | Physical table in a location exercise                                      | Contextual use                     |
+| `candidate-stad`            | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                               | City as birthplace/residence                                               | Contextual use                     |
+| `candidate-straat`          | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                               | Street in a home address                                                   | Contextual use                     |
+| `candidate-winkel`          | [A1 speaking, PDF page 26](https://nt2taalmenu.nl/wp-content/uploads/a1-spreken/boekje_spreken_A1.pdf)                                                            | Retail shop in a purchase-return scenario                                  | Contextual use                     |
+| `candidate-werk`            | [A1 Je Kan Me Wat module 10, PDF page 17](https://nt2taalmenu.nl/wp-content/uploads/a1-jekanmewat/module10.pdf)                                                   | Going to work/workplace in a commuting story                               | Contextual use                     |
+| `candidate-goed`            | [A1 music exercise, PDF page 29](https://nt2taalmenu.nl/wp-content/uploads/A1-muziek/oefeningenA1.pdf)                                                            | Positive quality adjective applied to a film; appears only as a distractor | Weak exposure                      |
+| `candidate-zich-wassen`     | [A2 reading, PDF page 32](https://nt2taalmenu.nl/wp-content/uploads/a2-lezen/NT2_teksten_lezen_A2.pdf)                                                            | Washing oneself in a hygiene glossary explanation                          | Glossary use                       |
+| `candidate-tafel`           | [TaalCompleet A1 preview, PDF page 4](https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf)                                                            | Table as home furniture in a reading passage                               | Contextual use; second publisher   |
+| `candidate-werk`            | [TaalCompleet A1 preview, PDF page 6](https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf)                                                            | Work as the destination in a clothing exercise prompt                      | Contextual use; second publisher   |
+| `candidate-schoolplein`     | [Lingua.com A2 reading, PDF page 1](https://lingua.com/pdf/nederlands-tekst-school.pdf)                                                                           | Schoolyard where a pupil draws trees during recess                         | Contextual use                     |
+| `candidate-stad-plural`     | [Van Dale B1 exercise 7, PDF page 38](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Plural cities named in a Randstad passage                                  | Contextual use; inflected form     |
+| `candidate-aankomen-arrive` | [Van Dale B1 exercise 1, PDF page 48](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Arrival of an aircraft after a landing-time question                       | Contextual use; arrival sense only |
+| `candidate-zich-wassen`     | [Van Dale A2 exercise 2, PDF page 24](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Washing oneself with warm water                                            | Contextual use; second publisher   |
+| `candidate-zich-schamen`    | [Van Dale B1 exercise 4, PDF page 24](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Feeling ashamed about arriving late to work                                | Contextual use                     |
 
 The matched senses are the assistant's preliminary interpretation. Each
 row in the JSON ledger carries its exact input SHA-256, source URL,
 one-based PDF page, material level, evidence type and `null` adjudicated
-level. A1/A2 describes the **material**, not the minimum level at which
-a learner knows the word. Two publishers' examples still do not establish
-independent human gold, per-slice denominators or accuracy thresholds.
+level. A1/A2/B1 describes the **material or exercise**, not the minimum
+level at which a learner knows the word. The Van Dale PDF is an answer
+key, not the original workbook exercise page. Four publishers' examples
+still do not establish independent human gold, per-slice denominators or
+accuracy thresholds.
 
 ## Exclusions and source rights
 
@@ -43,19 +52,33 @@ independent human gold, per-slice denominators or accuracy thresholds.
 - A [B1 grammar sheet](https://nt2taalmenu.nl/wp-content/uploads/b1-grammatica/theoriegrammaticaenspelling2.pdf)
   lists the forms of `meebrengen` but gives no exact bring-along context;
   it supports grammar only, not a meaning-level observation.
+- Lingua.com's [reading index](https://lingua.com/nl/nederlands/lezen/)
+  lists _De weg naar het treinstation_ under A2, but its
+  [downloaded PDF](https://lingua.com/pdf/nederlands-tekst-weg-vragen.pdf)
+  labels the same text B1. The use of `treinstation` is exact, but the
+  material-level conflict prevents a graded ledger row until resolved.
+- The Van Dale answer key also lists `steden` in an A2 plural-form answer,
+  but that isolated form has no city context. The ledger uses the B1
+  Randstad passage instead. Its arrival example supports only the
+  `aankomen` destination sense, not the weight-gain contrast.
 - The publisher's [disclaimer](https://nt2taalmenu.nl/disclaimer/)
   reserves rights and disallows copying/distribution absent written
   permission or a legal exception. KleurRijker's
   [copyright page](https://www.nt2.nl/documenten/inkijkexemplaren_pdf/0_titels_andere_uitgeverijen/taalcompleet_a1_9789490807221.pdf)
   also reserves rights and requires prior written permission for
-  reproduction. Only metadata, links, page numbers and original
-  paraphrases are saved; no exercise text is imported, embedded in a
-  fixture or approved for provider transmission.
+  reproduction. Lingua.com's [reading page](https://lingua.com/nl/nederlands/lezen/school/)
+  states all rights reserved; the Van Dale answer key carries its
+  publisher's copyright notice. All four sources are reference-only:
+  only metadata, links, page numbers and original paraphrases are saved;
+  no exercise text is imported, embedded in a fixture or approved for
+  provider transmission.
 
 ## Next action
 
-Seek exact contexts for the remaining 20 inputs across independent graded
-sources, especially contrasting senses and underrepresented slices. Keep
+Seek exact contexts for the remaining 16 inputs across independent graded
+sources, especially the contrasting weight-gain `aankomen` sense and the
+ambiguous/rare-missing slices. Resolve the Lingua.com `treinstation`
+level conflict from first-party metadata or keep it ungraded. Keep
 nonmatches and missing evidence explicit. After source rights and meaning
 match are reviewed, decide which inputs can receive an acceptable level
 set or abstention expectation and set sufficient slice denominators.
