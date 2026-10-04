@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 bring-along source follow-up.** Starting from
+local HEAD `69c7fb9` on `feature/shared-dictionary-schema`, only
+preexisting `.playwright-cli/` was untracked. The directly inspected
+[KleurRijker TaalCompleet A2 wordlist](https://kleurrijker.nl/TCwoordenlijsten/TC_NederlandsSomalisch.pdf)
+adds one weak, exact-form `meebrengen` glossary observation to the
+[ledger](evidence/D11-graded-context-ledger-20261004.json): nineteen
+preliminary observations for sixteen of 27 inputs across seven
+publishers. The [source screen](evidence/D11-bring-along-source-screen-20261004.md)
+keeps an official A1 can-do example outside the graded learner-material
+ledger and the KU Leuven mixed-level activity unresolved. Four
+structural probes and seven lexical/form gaps remain. **Next GPT-6.1
+Sol / High:** seek single-level exact language contexts for weight-gain
+`aankomen`, prison-cell `cel` and the five other gaps; then resolve
+independent meaning-level review and denominators. D11.2 in_progress,
+D12 pending, quality unqualified, worker/schedule off. Two Gemini
+attempts remain only for the original 24; no provider call, support
+inquiry, push, PR, migration, publication or deployment. Local-only
+evidence.
+
 **2026-10-04 — D11 train-station source follow-up.** Starting from
 local HEAD `094a129` on `feature/shared-dictionary-schema`, only
 preexisting `.playwright-cli/` was untracked. The directly inspected

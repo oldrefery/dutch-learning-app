@@ -2703,3 +2703,25 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   progress, quality unqualified, worker/schedule disabled. Two Gemini
   attempts remain for the original 24 only; no provider call,
   support inquiry, push, PR, migration, publication or deployment.
+
+## 2026-10-04 — D11 bring-along source follow-up
+
+- Resumed from `69c7fb9` on `feature/shared-dictionary-schema`;
+  only preexisting `.playwright-cli/` was untracked. GPT-6.1 Sol /
+  High was announced before D11.2 work.
+- Directly inspected KleurRijker's TaalCompleet A2 Dutch–Somali
+  wordlist, which lists exact `meebrengen` with a bring-along gloss on
+  PDF page 14. The [source screen](evidence/D11-bring-along-source-screen-20261004.md)
+  distinguishes this weak glossary use from an official A1 can-do
+  illustration, which is not learner-material exposure. KU Leuven's
+  mixed 1.1/1.2 task remains unresolved.
+- The [ledger](evidence/D11-graded-context-ledger-20261004.json)
+  contains nineteen preliminary observations for sixteen exact
+  inputs; four structural probes and seven lexical/form gaps remain.
+  No word-sense CEFR level or independent gold was assigned. Next
+  GPT-6.1 Sol / High: pursue weight-gain `aankomen`, prison-cell
+  `cel`, and the other five gaps, then independent meaning-level
+  review and denominator policy. D11.2 remains in progress, quality
+  unqualified, worker/schedule disabled. Two Gemini attempts remain
+  for the original 24 only; no provider call, support inquiry, push,
+  PR, migration, publication or deployment.

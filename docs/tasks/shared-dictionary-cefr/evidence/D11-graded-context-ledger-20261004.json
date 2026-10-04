@@ -46,6 +46,27 @@
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
   "items": [
     {
+      "input_id": "candidate-meebrengen-bring",
+      "input_sha256": "c0569811f4251c81af49fc66a2897d374388460e79c373d9924d18448affcfdf",
+      "family": "meebrengen",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "KleurRijker B.V.",
+        "url": "https://kleurrijker.nl/TCwoordenlijsten/TC_NederlandsSomalisch.pdf",
+        "pdf_page_one_based": 14,
+        "section_heading": "5.7 Ik leg dit uit.",
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "separable infinitive in an A2 course glossary with past forms and a Somali bring-along gloss",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
       "input_id": "candidate-treinstation",
       "input_sha256": "a4f3f207ec6abcddfa96e10ebe09907aee2335b7f551cb3370c6c7a14dfc919b",
       "family": "treinstation",
