@@ -781,3 +781,34 @@ launch confirmed, existing synthetic local QA login successful. Four retained
 local services/proxy and USB reverse left running for owner testing. No repeated
 uninstall authority or real account/production release follows. Private receipt
 records completed phase and exact cleanup targets.
+
+### Primary iPhone preservation boundary — October 4
+
+Owner explicitly identified the connected iPhone as their primary learning phone
+and required preservation of all data. Connection permits the announced read-only
+device/app metadata inspection. AUTH-22 uninstall/reinstall applies exclusively
+to the disposable Huawei, never this iPhone. Do not launch/update/reinstall/delete
+the personal app, log out, clear storage, force sync or change learning data.
+Server backup does not cover unsynchronized phone-only data. Any further private
+app-data backup or diagnostic access must have a concrete reviewed scope; no
+whole-phone export or permission change is inferred from the USB connection.
+
+### AUTH-23 — Primary iPhone private SQLite export
+
+On October 4 the owner explicitly authorized exporting the entire private app
+SQLite database to this Mac after automatic approval review rejected the initial
+export for lack of specific payload/destination consent. That rejected operation
+did not execute. This new authorization resolves that boundary.
+Scope: com.oldrefery.dutch-learning-app, /Documents/SQLite/dutch_learning.db and
+its WAL/SHM/rollback-journal companions if present; read-only USB file handles,
+two bounded captures to verify stable bytes, protected ignored local directory
+builds/d13-primary-ios-snapshot.<unique> (directory0700/files0600). Analyze only a
+local working copy, retaining raw originals and hashes. No external upload,
+unrelated phone data, app launch/stop/update/reinstall, sync, device data mutation,
+production operation or release permission. Stop on unstable/incomplete capture.
+
+AUTH-23 completion: two stable byte-identical captures saved privately; SQLite
+integrity and queue inventory verified. No device writes. Original states retained;
+18 original word-field differences versus the existing server copy are recorded,
+including one tombstoned SRS discrepancy, with active SRS/history matching.
+Do not repeat capture automatically or infer app update/restore/release permission.

@@ -102,3 +102,20 @@ AUTH-22's reinstall/setup is complete. Actual P2 build/queues and iPhone availab
 remain unknown; D13 release gates remain open. Server backup must not be repeated.
 Checkpoint metadata/permissions and evidence are saved by scoped AUTH-18 local
 commit with normal hooks; private APK/screenshots/logs excluded from Git.
+
+## Physical offline cold-start follow-up
+
+On owner continuation, disconnected only this device's reverse55331 mapping,
+confirmed no mappings, force-stopped and cold-started without clearing data.
+Offline UI retained 11 words/8 due, D08 Native QA10 words and cached anker with
+translation anchor, example and CEFR level unknown. XML/screenshot evidence is
+private alongside offline-smoke.json. No learning assessment/reset/import/edit.
+Restored the same reverse mapping and removed the device-only temporary UI XML;
+returned to collection navigation. This verifies visible cached data, not a full
+SQLite/queue-content equality proof. No implementation change or broad test rerun.
+
+Owner offered to connect an actual primary phone instead; instructed to connect
+the primary iPhone after this Android check. Await physical connection and trust
+confirmation, inspect metadata first. Test-phone wipe authority never applies to
+a personal iPhone. Existing September21 iOS evidence remains valid partial evidence.
+This follow-up is local-only pending the next scoped checkpoint commit.

@@ -1,15 +1,19 @@
 # D01 observed production clients
 
-## Current priority-device matrix — 2026-09-21
+## Current priority-device matrix — 2026-10-04
 
 | Account alias | User-confirmed platform | Installed version/build                              | Device-local pending sync         |
 | ------------- | ----------------------- | ---------------------------------------------------- | --------------------------------- |
-| P1            | iOS (primary)           | User screenshot: 2.3.1 (84), app-reported            | UI 0/0/0; learning queues unknown |
+| P1            | iOS (primary)           | USB native metadata: 2.3.1 (84)                      | SQLite snapshot: all queues empty |
 | P1            | Web                     | Current deployed revision not rechecked this session | Unknown                           |
 | P2            | Android                 | Awaiting device evidence                             | Unknown                           |
 | P2            | Possibly web            | Active use not confirmed                             | Unknown                           |
 
-P1 supplied [iOS screenshots](D01-ios-owner-evidence.md) on September 21;
+P1 October 4 [SQLite preservation](D13-primary-ios-preservation-20261004.md)
+confirms native build and all stored queues without launching or changing the app.
+Exact OTA/AsyncStorage remain unverified; future writes require a current delta.
+
+P1 previously supplied [iOS screenshots](D01-ios-owner-evidence.md) on September 21;
 2,311 local words and 12 collections agree with the earlier server aggregates.
 Do not re-request this evidence. P2 Android version/build and sync status remain
 outstanding. Ask for missing evidence only.

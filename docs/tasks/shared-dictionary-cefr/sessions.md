@@ -3219,3 +3219,33 @@ never replaying uninstall. Later targeted cleanup preserves volumes/backups/phon
 D13 still blocked on actual P2/P1 evidence and release approvals, server backup done.
 Metadata/evidence/permissions persisted by AUTH-18 local commit with ordinary hooks;
 private artifacts excluded; unrelated .playwright-cli/ untouched. No source change.
+
+## 2026-10-04 — Physical QA offline check; primary phone offered
+
+From c0ef5be. Device-only reverse55331 removed; cold restart without clear retains
+11 words/8 due and cached10-word collection, anker/anchor/CEFR unknown. Restored
+reverse and deleted temporary UI XML; no learning/edit action. Visible UI evidence
+only, not exact queue equality. Owner offered primary phone connection; instructed
+to connect primary iPhone after finishing Android. Await connection/trust; no
+personal-phone data mutation authority. Existing QA resources remain running.
+Local-only checkpoint; formatting/diff checked, no source tests needed.
+
+## 2026-10-04 — Primary iPhone metadata and authorized SQLite preservation
+
+From c0ef5be, recommended GPT-6 Astra / High. Owner designated primary iPhone and
+required data preservation. USB Lookup confirmed TestFlight2.3.1 (84); devicectl
+initially crashed for missing Mercury, then succeeded after owner installed library.
+Initial SQLite export rejected by automatic approval before execution for missing
+payload/destination consent. Owner explicitly authorized entire private app SQLite
+export to Mac; AUTH-23 recorded before executing a new reviewed read-only command.
+Two captures at18:54UTC match SHA256;10,579,968-byte DB, WAL/SHM/journal absent.
+No phone launch/stop/sync/device writes. Private0700/0600 snapshots retained in
+builds/d13-primary-ios-snapshot.ghp8wb; completed receipt prevents replay.
+Local integrity ok, no FK violations; every SQLite queue empty.2,342 active words,
+2 tombstones,12 collections,1,650 events,1 synced correction. Existing server
+backup ID sets and history/active SRS match.18 original word rows differ in fields,
+including one tombstoned SRS drift; preserved both states, no repair or overwrite.
+P1 native/SQLite gaps resolved; P2 Android/web/OTA and release approvals remain.
+Owner asked whether actual P2 Android is available. Four existing QA services/
+proxy retained; no new runtime or external operation pending. Application source
+unchanged, private data excluded; scoped documentation checkpoint only, no push.

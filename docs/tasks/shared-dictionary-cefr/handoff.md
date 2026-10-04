@@ -1,5 +1,47 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — Primary iPhone SQLite preservation PASS; P2 evidence still open.**
+From c0ef5be, GPT-6 Astra / High. Native 2.3.1 (84) confirmed independently by USB
+Lookup and repaired Apple devicectl. After the initial export was rejected before
+execution, owner explicitly authorized full app SQLite export (AUTH-23). Two
+read-only captures match exactly; no journal sidecars, integrity ok, zero FK errors.
+[Preservation evidence](evidence/D13-primary-ios-preservation-20261004.md).
+
+**Completed:** private originals in builds/d13-primary-ios-snapshot.ghp8wb;
+receipt reports/shared-dictionary-cefr/d13-primary-ios-20261004/sqlite-capture-receipt.json
+is stable-capture-complete. All SQLite queues empty: 2,342 active words + two
+tombstones, 12 collections, 1,650 reviews, one correction. IDs match the existing
+server backup; active-word SRS and all event/correction shared fields match.
+18 word rows have original-field differences (17 missing local dutch_original,
+one missing local analysis_notes, one tombstoned SRS discrepancy); preserve both
+snapshots, do not overwrite. Exact OTA/AsyncStorage remain outside this export.
+No phone launch/stop, sync, install/delete, logout or data mutation occurred.
+
+**Next D13.1:** await actual P2 Android availability, requested from owner; test
+Huawei does not qualify. Then establish non-destructive metadata/queue access with
+its own scope. Relevant web/OTA evidence and exact release permissions also remain
+open. No automatic repeat of completed iPhone/server exports. No release/hosted
+migration/provider/support/push/PR/deployment. CEFR remains unqualified/OFF.
+All capture operations finished. Existing four Android QA services/proxy retained
+for testing; do not disturb their volumes or the primary iPhone. Documentation
+checkpoint is preserved by its scoped AUTH-18 local commit; .playwright-cli/ untouched.
+Older headers below are chronological history, not current execution instructions.
+
+**2026-10-04 — Physical Android offline UI PASS; awaiting primary iPhone.**
+From c0ef5be. Removed only test-phone USB reverse55331, cold-restarted without
+data clear. Cached home11 words/8 due, collection10 words and anker detail/anchor/
+unknown CEFR rendered offline. Reverse restored; temporary device XML removed.
+No learning/data-edit action. Evidence/receipt in D13 Android inspection; visible
+UI preservation only, not full queue equality. Four QA services/proxy remain running.
+
+**Next:** owner offered another primary phone; instructed to connect/unlock the
+primary iPhone and approve computer trust. Await connection, inspect installed
+metadata first; never transfer AUTH-22 wipe/reinstall to a personal device.
+Do not repeat September21 screenshot requests or completed backups/installation.
+D13 release remains gated on actual P1/P2 evidence and scoped release approval.
+GPT-6 Astra / High. This small follow-up is local-only/uncommitted in evidence,
+handoff, stage and sessions. No source change; .playwright-cli/ untouched.
+
 **2026-10-04 — Physical test Android reinstall and local QA login complete.**
 Owner confirmed this is an old test phone, not P2 (AUTH-22). Reconnection showed
 package absent; resumed install only, no second uninstall. Verified D12 APK now
