@@ -144,7 +144,7 @@
     "current_local_build": 84,
     "runtime_policy": "fingerprint",
     "release_route": "new_native_binaries_required",
-    "next_version_and_unused_build": "selected_2.4.0_85_after_store_inventory; recheck_before_upload; version_files_unchanged",
+    "next_version_and_unused_build": "prepared_locally_2.4.0_85; recheck_before_upload; no_native_build_or_upload",
     "qa_artifacts_distributable": false,
     "inventory_evidence": "D13-release-inventory-20261004.json",
     "client_release_plan": "D13-client-release-plan-20261004.md"
@@ -208,5 +208,39 @@
     "source_backup": "builds/d13-preparation-backup.2ebz4aqm",
     "backup_restore": "56 COPY blocks / 24242 rows matched",
     "replay_allowed": false
+  },
+  "native_release_source": {
+    "source_commit": "aacd96419ab15134b1934e221fa58db25a9eeeeb",
+    "version": "2.4.0",
+    "build": 85,
+    "git_archive_sha256": "5309bf7937f0951db89f0a9978374a14402a6b3e4d04fc45ce2ba08204aa294c",
+    "archive_bytes": 12093440,
+    "archive_type": "local git tree, not yet EAS upload archive",
+    "version_control_sha256": {
+      "apps/mobile/app.base.json": "978fefc7fc98b3bb9d0ad108b310e92707974c732dd06b30bb2a6036be16a0d7",
+      "apps/mobile/app.config.js": "4d330ac4a4b49e4c6a3da39801a5f771cced1e3460054f3e0e130c883564c9c4",
+      "apps/mobile/eas.json": "543defd1ee6920f677a1f2cb4ffd7526f057935353f64e35efe2515cdcf9559e",
+      "apps/mobile/package.json": "4747d5d31a49a4347d976986d3397920f5fa62800aabf14f80157ba3c72b8e5c",
+      "package.json": "c7fc887bfb1649d7b942bdab1aee47836346d963388bfdeea543655c3b7dc50c",
+      "package-lock.json": "dfaffa9dc47032f6256b2c4630476668d2da602c348ea5a6d8b3c7301404e9be"
+    },
+    "git_commit_hooks": {
+      "mobile_suites": 156,
+      "mobile_tests": 1796,
+      "mobile_snapshots": 22,
+      "web_suites": 86,
+      "web_tests": 780,
+      "web_skipped_tests": 1
+    },
+    "historical_source_binding": "Top-level source_commit/source_sha256 remain the original AUTH-24 migration candidate; native version changes are bound separately."
+  },
+  "mapping_rehearsal": {
+    "evidence": "D13-real-snapshot-mapping-20261004.md",
+    "snapshot_bound": true,
+    "real_cards": 2914,
+    "safe_matches": 0,
+    "personal_reference_writes": 0,
+    "synthetic_apply_and_post_review_rollback": "passed",
+    "final_delta_required": true
   }
 }

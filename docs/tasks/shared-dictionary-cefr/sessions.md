@@ -3326,3 +3326,16 @@ Next D13.5 exact manifest and protected real-snapshot mapping/rollback rehearsal
 No build, source push/PR, store submission, production write or phone operation.
 AUTH-18 documentation checkpoint from79653e1; previous hooks156/1796 mobile and
 86/780 web passed. All private backups/QA resources preserved, .playwright-cli/ untouched.
+
+### 2026-10-04 — Source release preparation and real-snapshot mapping
+
+Prepared2.4.0(85) in local commit aacd964 with normal mobile/web hooks passing;
+clean managed worktree and private Git archive retained. GitHub owner login fixed;
+oldrefery verified. Real-snapshot attempt3 validated2053 official mappings, found
+zero safe matches and exposed a harness assumption. Attempt4 verified all2914
+personal rows unchanged, empty apply, field-difference counts and a separate
+synthetic linked-card/post-review read rollback; container removed. No hosted or
+phone data changed. AUTH-25 now authorizes push/PR/conditional merge after checks.
+Vercel Git integration inspected, dictionary/CEFR env absent. Next hosted CI/PR;
+functional release/native distribution still separately gated. D13 in_progress,
+GPT-6 Astra / High. Local documentation commit; unrelated.playwright-cli retained.

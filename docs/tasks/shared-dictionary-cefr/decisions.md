@@ -846,3 +846,17 @@ hashes verified. Fresh backup/isolated restore passed, all new flags/worker OFF,
 legacy authenticated protocols2/1 unchanged. Temporary credential and local
 verification container removed. No replay/reapproval of completed work; no final
 release/client deployment/cutover/publication authority inferred.
+
+### AUTH-25 — Source PR and conditional merge
+
+On October 4 the owner explicitly requested merging the current feature branch
+into the main branch through a PR if all checks are complete and the branch is
+ready. Authorizes pushing this task branch, creating its PR to main, inspecting
+hosted CI/review results, necessary fixes and merging only after the exact final
+head passes applicable checks. Ordinary Git integration effects must be inspected:
+Vercel currently deploys production from main and may deploy PR previews. Confirm
+the dormant dictionary/CEFR boundaries before merge. No permission to enable the
+functional dictionary path, publish shared sources, link personal cards, run paid
+providers, distribute native apps or change phones is inferred. AUTH-24 is complete.
+Current preparation: local candidate aacd964; GitHub identity oldrefery verified,
+remote main c5dfb14d49b9a53521b53e13bdd19991999ede5d; task remote branch/PR absent.

@@ -1,5 +1,32 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — Local mapping rehearsal passed; AUTH-25 PR/merge authorized.**
+D13 in_progress; GPT-6 Astra / High. Native source aacd964 prepares2.4.0(85);
+normal hooks passed mobile156 suites/1796 tests/22 snapshots and web86/780,1 skip.
+Clean managed release worktree dictionary-release-2-4 holds that exact commit;
+local Git archive hashed/scanned, no EAS upload archive or native build yet.
+
+Real-snapshot mapping:2914 cards, zero safe matches, zero personal reference writes.
+P1:2003 possible/322 missing/17 private/2 excluded; P2:462/107/1/0. All original
+protected personal/learning fields unchanged. Synthetic positive control confirms
+one linked card's new authenticated review survives read rollback. Attempts1–3
+harness/timeout limitations documented; attempt4 verified and container removed.
+[Evidence](evidence/D13-real-snapshot-mapping-20261004.md). Retain all existing
+cards unlinked; do not relax matching. Final live delta/publication/cutover pending.
+
+Owner now authorizes source push, PR to main and merge only after checks (AUTH-25).
+GitHub oldrefery/ADMIN verified; remote main c5dfb14d49b9a53521b53e13bdd19991999ede5d
+matches cached origin/main; no task branch/PR existed at preflight. Vercel linked
+personal projectwoordenaar-web deploys main, apps/web root, Node24; no dictionary
+or CEFR env keys in any target. Source flags default OFF. Merge may deploy dormant
+web; no native distribution/functional activation follows. Next: commit evidence,
+privacy-check outgoing changes, push task branch, create PR, inspect exact-head CI,
+fix failures and merge only if green; attach PR and save resulting state.
+
+AUTH-24 complete; never repeat migrations. All backups and primary-phone boundaries
+remain. P2 device gap accepted. Unrelated.playwright-cli untouched. No provider,
+phone write or uncertain external operation. Older headers are historical.
+
 **2026-10-04 — Apple inventory complete; planning target2.4.0(85).**
 Owner completed Apple login. De Woordenaar6752469146 latest iOS version/build is
 2.3.1(84); All Statuses Build Uploads shows84 Complete as newest, then83/82/81/80.
