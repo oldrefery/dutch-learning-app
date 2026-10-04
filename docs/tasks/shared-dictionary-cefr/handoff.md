@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 remaining-reference gap triage.** From evidence HEAD
+`b34ceae`, the [gap screen](evidence/D11-reference-gap-screen-20261004.md)
+classifies all 16 exact inputs still lacking admitted graded observations:
+four deliberate conflict/context-free probes need reviewed abstention
+rules, while twelve lexical/form inputs need exact graded contexts or
+an explicit unsupported disposition. The
+[structural draft](evidence/D11-structural-abstention-draft-20261004.json)
+binds four preliminary expected abstentions to exact hashes, but is not
+independent gold or an operational fixture. KU Leuven's `meebrengen` task is
+not yet a stable exact-level ledger row; Lingua.com's `treinstation`
+index/PDF level conflict remains unresolved. **Next GPT-6.1 Sol / High:**
+review the structural abstention rules, then pursue the twelve
+remaining context gaps without assigning CEFR from ambiguous sources.
+D11.2 in_progress, D12 pending, quality unqualified, worker/schedule off.
+Two Gemini attempts remain only for the original 24; no new provider
+inputs or support inquiry. No push, PR, migration, publication or
+deployment. Local-only evidence; `.playwright-cli/` remains preexisting.
+
 **2026-10-04 — D11 expanded graded-context screen.** Branch
 `feature/shared-dictionary-schema`, evidence base `fc2ebf7`; only the
 preexisting `.playwright-cli/` was untracked. The updated

@@ -2553,3 +2553,26 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   unqualified, worker/schedule disabled. Two personal Gemini attempts
   remain only for the original 24; no provider call, support inquiry,
   push, PR, migration, publication or deployment.
+
+## 2026-10-04 — D11 remaining-reference gap triage
+
+- Evidence commit `b34ceae` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing
+  skip. Git remained clean except preexisting `.playwright-cli/`.
+- The [gap screen](evidence/D11-reference-gap-screen-20261004.md)
+  accounts for all 16 inputs without graded observations: four are
+  structural abstention probes and twelve require exact graded contexts
+  or explicit unsupported dispositions. KU Leuven's `meebrengen`
+  task is a candidate with mixed-level/index scope; the Lingua.com
+  `treinstation` conflict remains unresolved. No new source row or
+  CEFR label was admitted. The
+  [structural draft](evidence/D11-structural-abstention-draft-20261004.json)
+  binds four assistant-preliminary expected abstentions to exact hashes;
+  it is not an independent quality fixture. A hash typo caught during
+  validation was corrected before commit; the final 27-input partition
+  check passed (11 observed, four structural, twelve other gaps).
+- Next GPT-6.1 Sol / High: review structural abstention rules,
+  then seek the twelve remaining exact contexts. D11.2 open, quality
+  unqualified, worker/schedule disabled. Two Gemini attempts remain
+  scoped to the original 24. No provider call, support inquiry, push,
+  PR, migration, publication or deployment.

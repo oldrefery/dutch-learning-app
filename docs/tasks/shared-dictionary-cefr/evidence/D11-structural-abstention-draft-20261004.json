@@ -1,0 +1,57 @@
+{
+  "namespace": "d11-structural-abstention-draft-20261004",
+  "status": "assistant_preliminary_diagnostic_only",
+  "basis": [
+    "D11-new-reference-pack-inputs-20261004-v3.json",
+    "D11-authored-sense-inputs-20261004-v6.json"
+  ],
+  "policy": "An unresolved gloss/example contradiction or multiple plausible senses without disambiguating context requires abstention; do not force a CEFR band.",
+  "operational_reference": false,
+  "provider_approved": false,
+  "items": [
+    {
+      "input_id": "candidate-straat-conflict",
+      "input_sha256": "2b031de45e9bef0c0dd9ecd01dca686665dd2d0fc04038512d1d97786e1c303a",
+      "family": "straat",
+      "proposed_split": "calibration",
+      "case_type": "gloss_example_conflict",
+      "trigger_summary": "The example describes a wall clock; the lemma and gloss denote a street.",
+      "expected_behavior": "abstain",
+      "expected_levels": null,
+      "review_state": "assistant_preliminary"
+    },
+    {
+      "input_id": "candidate-winkel-conflict",
+      "input_sha256": "3dc1b8fb4ace4857d5aaaca4192f419b9aacb9f3fa0bb1da9ed532565e079316",
+      "family": "winkel",
+      "proposed_split": "held_out",
+      "case_type": "gloss_example_conflict",
+      "trigger_summary": "The example describes cold weather; the lemma and gloss denote a shop.",
+      "expected_behavior": "abstain",
+      "expected_levels": null,
+      "review_state": "assistant_preliminary"
+    },
+    {
+      "input_id": "candidate-slot-ambiguous",
+      "input_sha256": "44f85b10a50882351516580a65f8ed8eca45d12cbc6397512eb1761f77320998",
+      "family": "slot",
+      "proposed_split": "calibration",
+      "case_type": "context_free_polysemy",
+      "trigger_summary": "Lock and castle are both supplied without a disambiguating example.",
+      "expected_behavior": "abstain",
+      "expected_levels": null,
+      "review_state": "assistant_preliminary"
+    },
+    {
+      "input_id": "candidate-blad-ambiguous",
+      "input_sha256": "f29d0c4a13a52e614fa8151420ad807232cef35fb1645324f037e66f3ad78c94",
+      "family": "blad",
+      "proposed_split": "held_out",
+      "case_type": "context_free_polysemy",
+      "trigger_summary": "Leaf and sheet of paper are both supplied without a disambiguating example.",
+      "expected_behavior": "abstain",
+      "expected_levels": null,
+      "review_state": "assistant_preliminary"
+    }
+  ]
+}
