@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 plant-root source follow-up.** Starting from HEAD
+`8175147` on `feature/shared-dictionary-schema`, only the preexisting
+`.playwright-cli/` was untracked. The directly inspected
+[DutchEnglish.com A2 nature lesson](https://dutchenglish.com/lessons/dutch-nature-vocabulary)
+adds one weak, reference-only singular plant-root glossary observation
+to the [ledger](evidence/D11-graded-context-ledger-20261004.json):
+sixteen observations for thirteen of 27 inputs across six publishers.
+The [source screen](evidence/D11-plant-root-source-screen-20261004.md)
+excludes a figurative B1 song use and an unopenable Boom PDF. Four
+structural abstention probes and ten lexical/form gaps remain.
+**Next GPT-6.1 Sol / High:** seek single-level, exact-sense contexts for
+the ten gaps, prioritizing `meebrengen`, weight-gain `aankomen` and
+`treinstation`; then resolve independent meaning-level review and
+denominator policy. D11.2 in_progress, D12 pending, quality unqualified,
+worker/schedule off. Two Gemini attempts remain only for the original
+24; no provider call, new input transmission or support inquiry. No
+push, PR, migration, publication or deployment. Local-only evidence.
+
 **2026-10-04 — D11 source-admission review.** Starting from HEAD
 `732bb5e` on `feature/shared-dictionary-schema`, only the preexisting
 `.playwright-cli/` was untracked. The

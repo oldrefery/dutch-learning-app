@@ -2638,3 +2638,24 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   off. Two Gemini attempts remain for the original 24 only; no
   provider call, support inquiry, push, PR, migration, publication or
   deployment.
+
+## 2026-10-04 — D11 plant-root source follow-up
+
+- Resumed from `8175147` on `feature/shared-dictionary-schema`;
+  only preexisting `.playwright-cli/` was untracked. GPT-6.1 Sol /
+  High was announced before D11.2 work.
+- Direct browser inspection of a self-labelled A2 DutchEnglish.com
+  nature lesson supports one weak singular plant-root glossary use.
+  The [source screen](evidence/D11-plant-root-source-screen-20261004.md)
+  explains why a Taalmenu B1 song's figurative use and an inaccessible
+  Boom PDF did not create additional rows. The
+  [ledger](evidence/D11-graded-context-ledger-20261004.json) has
+  sixteen preliminary observations for thirteen exact inputs; four
+  structural probes and ten lexical/form gaps remain. No word-sense
+  CEFR level or independent gold was assigned.
+- Next GPT-6.1 Sol / High: find single-level exact contexts for the
+  ten gaps, then settle rights, meaning-level review and per-slice
+  denominators. D11.2 remains in progress, quality unqualified,
+  worker/schedule disabled. Two Gemini attempts remain for the
+  original 24 only. No provider call, support inquiry, push, PR,
+  migration, publication or deployment.

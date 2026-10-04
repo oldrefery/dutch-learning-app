@@ -2,8 +2,8 @@
 
 ## Result
 
-The [bound ledger](D11-graded-context-ledger-20261004.json) records fifteen
-preliminary sense-matched observations for twelve exact hashed D11 inputs.
+The [bound ledger](D11-graded-context-ledger-20261004.json) records sixteen
+preliminary sense-matched observations for thirteen exact hashed D11 inputs.
 Seven appear in materials that [Stichting Taalmenu identifies as A1](https://nt2taalmenu.nl/nt2-a1-menu/)
 or labels A2 in the document itself. Two corroborating observations come
 from KleurRijker's [TaalCompleet A1 publisher preview](https://www.nt2.nl/nl/alle-uitgaven/101-417_Taalcompleet/100-17261_TaalCompleet-A1),
@@ -12,37 +12,41 @@ and four from the [Van Dale grammar workbook answer key](https://www.vandale.nl/
 with explicit A2/B1 exercise labels. A fifth publisher,
 [DISK / Boom Amsterdam](https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf),
 uses plural `tafels` in a definition in its A2 wordlist. The observations
-span ten families and five publishers. They were screened by the assistant from the source pages
+also include a directly inspected [DutchEnglish.com A2 nature lesson](https://dutchenglish.com/lessons/dutch-nature-vocabulary)
+that lists singular plant-root `de wortel` under plant vocabulary. They span
+eleven families and six publishers. They were screened by the assistant from the source pages
 before any provider run on these inputs. They remain
 **source-level exposure signals**, not reviewed word-sense CEFR labels.
 
-| Input                       | Material and page                                                                                                                                                 | Meaning-match note                                                         | Strength                           |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------- |
-| `candidate-tafel-plural`    | [DISK / Boom A2 wordlist, PDF page 3](https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf)                                                         | Plural furniture tables in a restaurant definition                         | Glossary use; exact inflected form |
-| `candidate-tafel`           | [A1 writing, PDF page 24](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                                | Physical table in a location exercise                                      | Contextual use                     |
-| `candidate-stad`            | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                               | City as birthplace/residence                                               | Contextual use                     |
-| `candidate-straat`          | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                               | Street in a home address                                                   | Contextual use                     |
-| `candidate-winkel`          | [A1 speaking, PDF page 26](https://nt2taalmenu.nl/wp-content/uploads/a1-spreken/boekje_spreken_A1.pdf)                                                            | Retail shop in a purchase-return scenario                                  | Contextual use                     |
-| `candidate-werk`            | [A1 Je Kan Me Wat module 10, PDF page 17](https://nt2taalmenu.nl/wp-content/uploads/a1-jekanmewat/module10.pdf)                                                   | Going to work/workplace in a commuting story                               | Contextual use                     |
-| `candidate-goed`            | [A1 music exercise, PDF page 29](https://nt2taalmenu.nl/wp-content/uploads/A1-muziek/oefeningenA1.pdf)                                                            | Positive quality adjective applied to a film; appears only as a distractor | Weak exposure                      |
-| `candidate-zich-wassen`     | [A2 reading, PDF page 32](https://nt2taalmenu.nl/wp-content/uploads/a2-lezen/NT2_teksten_lezen_A2.pdf)                                                            | Washing oneself in a hygiene glossary explanation                          | Glossary use                       |
-| `candidate-tafel`           | [TaalCompleet A1 preview, PDF page 4](https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf)                                                            | Table as home furniture in a reading passage                               | Contextual use; second publisher   |
-| `candidate-werk`            | [TaalCompleet A1 preview, PDF page 6](https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf)                                                            | Work as the destination in a clothing exercise prompt                      | Contextual use; second publisher   |
-| `candidate-schoolplein`     | [Lingua.com A2 reading, PDF page 1](https://lingua.com/pdf/nederlands-tekst-school.pdf)                                                                           | Schoolyard where a pupil draws trees during recess                         | Contextual use                     |
-| `candidate-stad-plural`     | [Van Dale B1 exercise 7, PDF page 38](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Plural cities named in a Randstad passage                                  | Contextual use; inflected form     |
-| `candidate-aankomen-arrive` | [Van Dale B1 exercise 1, PDF page 48](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Arrival of an aircraft after a landing-time question                       | Contextual use; arrival sense only |
-| `candidate-zich-wassen`     | [Van Dale A2 exercise 2, PDF page 24](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Washing oneself with warm water                                            | Contextual use; second publisher   |
-| `candidate-zich-schamen`    | [Van Dale B1 exercise 4, PDF page 24](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Feeling ashamed about arriving late to work                                | Contextual use                     |
+| Input                       | Material and page                                                                                                                                                 | Meaning-match note                                                         | Strength                             |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------ |
+| `candidate-wortel-plant`    | [DutchEnglish.com A2 nature lesson, “Basic Nature Words in Dutch”](https://dutchenglish.com/lessons/dutch-nature-vocabulary)                                      | Singular plant root among plant/tree vocabulary                            | Glossary use; short self-graded list |
+| `candidate-tafel-plural`    | [DISK / Boom A2 wordlist, PDF page 3](https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf)                                                         | Plural furniture tables in a restaurant definition                         | Glossary use; exact inflected form   |
+| `candidate-tafel`           | [A1 writing, PDF page 24](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                                | Physical table in a location exercise                                      | Contextual use                       |
+| `candidate-stad`            | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                               | City as birthplace/residence                                               | Contextual use                       |
+| `candidate-straat`          | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                               | Street in a home address                                                   | Contextual use                       |
+| `candidate-winkel`          | [A1 speaking, PDF page 26](https://nt2taalmenu.nl/wp-content/uploads/a1-spreken/boekje_spreken_A1.pdf)                                                            | Retail shop in a purchase-return scenario                                  | Contextual use                       |
+| `candidate-werk`            | [A1 Je Kan Me Wat module 10, PDF page 17](https://nt2taalmenu.nl/wp-content/uploads/a1-jekanmewat/module10.pdf)                                                   | Going to work/workplace in a commuting story                               | Contextual use                       |
+| `candidate-goed`            | [A1 music exercise, PDF page 29](https://nt2taalmenu.nl/wp-content/uploads/A1-muziek/oefeningenA1.pdf)                                                            | Positive quality adjective applied to a film; appears only as a distractor | Weak exposure                        |
+| `candidate-zich-wassen`     | [A2 reading, PDF page 32](https://nt2taalmenu.nl/wp-content/uploads/a2-lezen/NT2_teksten_lezen_A2.pdf)                                                            | Washing oneself in a hygiene glossary explanation                          | Glossary use                         |
+| `candidate-tafel`           | [TaalCompleet A1 preview, PDF page 4](https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf)                                                            | Table as home furniture in a reading passage                               | Contextual use; second publisher     |
+| `candidate-werk`            | [TaalCompleet A1 preview, PDF page 6](https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf)                                                            | Work as the destination in a clothing exercise prompt                      | Contextual use; second publisher     |
+| `candidate-schoolplein`     | [Lingua.com A2 reading, PDF page 1](https://lingua.com/pdf/nederlands-tekst-school.pdf)                                                                           | Schoolyard where a pupil draws trees during recess                         | Contextual use                       |
+| `candidate-stad-plural`     | [Van Dale B1 exercise 7, PDF page 38](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Plural cities named in a Randstad passage                                  | Contextual use; inflected form       |
+| `candidate-aankomen-arrive` | [Van Dale B1 exercise 1, PDF page 48](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Arrival of an aircraft after a landing-time question                       | Contextual use; arrival sense only   |
+| `candidate-zich-wassen`     | [Van Dale A2 exercise 2, PDF page 24](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Washing oneself with warm water                                            | Contextual use; second publisher     |
+| `candidate-zich-schamen`    | [Van Dale B1 exercise 4, PDF page 24](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Feeling ashamed about arriving late to work                                | Contextual use                       |
 
 The matched senses are the assistant's preliminary interpretation. The
-DISK occurrence is part of a definition for another headword, not a
+DutchEnglish.com list is a weak self-graded exposure signal; see the
+[plant-root source screen](D11-plant-root-source-screen-20261004.md).
+The DISK occurrence is part of a definition for another headword, not a
 graded entry for `tafels`; it confirms exposure to the plural form only.
-Each
-row in the JSON ledger carries its exact input SHA-256, source URL,
-one-based PDF page, material level, evidence type and `null` adjudicated
+Each row in the JSON ledger carries its exact input SHA-256, source URL,
+one-based PDF page or stable HTML section, material level, evidence type and `null` adjudicated
 level. A1/A2/B1 describes the **material or exercise**, not the minimum
 level at which a learner knows the word. The Van Dale PDF is an answer
-key, not the original workbook exercise page. Five publishers' materials
+key, not the original workbook exercise page. Six publishers' materials
 still do not establish independent human gold, per-slice denominators or
 accuracy thresholds.
 
@@ -75,14 +79,15 @@ accuracy thresholds.
   reproduction. Lingua.com's [reading page](https://lingua.com/nl/nederlands/lezen/school/)
   states all rights reserved; the Van Dale answer key carries its
   publisher's copyright notice. The DISK / Boom wordlist also carries a
-  copyright notice. All five sources are reference-only:
+  copyright notice. DutchEnglish.com's site footer states all rights
+  reserved. All six sources are reference-only:
   only metadata, links, page numbers and original paraphrases are saved;
   no exercise text is imported, embedded in a fixture or approved for
   provider transmission.
 
 ## Next action
 
-Seek exact contexts for the remaining 15 inputs across independent graded
+Seek exact contexts for the remaining 14 inputs across independent graded
 sources, especially the contrasting weight-gain `aankomen` sense and the
 ambiguous/rare-missing slices. Resolve the Lingua.com `treinstation`
 level conflict from first-party metadata or keep it ungraded. Keep

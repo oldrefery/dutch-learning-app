@@ -31,10 +31,35 @@
       "publisher": "DISK / Boom Amsterdam",
       "url": "https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf",
       "status": "copyright_notice_reference_only"
+    },
+    {
+      "publisher": "DutchEnglish.com",
+      "url": "https://dutchenglish.com/lessons/dutch-nature-vocabulary",
+      "status": "all_rights_reserved_reference_only"
     }
   ],
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
   "items": [
+    {
+      "input_id": "candidate-wortel-plant",
+      "input_sha256": "3088ee3d6d586745cc43e7eee12f93f8291da9c22c91904412ab8b94fab65653",
+      "family": "wortel",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "DutchEnglish.com",
+        "url": "https://dutchenglish.com/lessons/dutch-nature-vocabulary",
+        "section_heading": "Basic Nature Words in Dutch",
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "singular plant root in a nature vocabulary list among plant and tree terms",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
     {
       "input_id": "candidate-tafel-plural",
       "input_sha256": "c1c535bb3fe9494589b7f3056b41dfd699117206bbabbf0f380f715577d58823",
