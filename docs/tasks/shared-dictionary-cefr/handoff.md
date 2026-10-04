@@ -1,5 +1,30 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — full-quality option selected; teacher corroboration
+reported.** Starting `a15e721` on `feature/shared-dictionary-schema`,
+with only preexisting `.playwright-cli/` untracked. The owner explicitly
+selected option 1 and reported that their previously recorded ratings
+agree with a teacher's ratings. The
+[feedback follow-up](evidence/D11-owner-review-feedback-20261004.md)
+records this as owner-reported corroboration while the teacher's exact
+sense/example coverage, dates and independent timing are clarified.
+The [intake](evidence/D11-full-quality-intake-20261004.md) now supplies
+hash-checked neutral packets for all 24 historical and 27 new inputs;
+the latter hides proposed levels, model outputs and split assignments.
+It also records the 22-cell distribution and 78 missing memberships
+even for a five-per-cell screening floor. No teacher response has
+been received for these packets.
+The frozen v3 pilot is still retrospective and has four empty cells;
+the separate 27 local candidates cover all 22 cells with only 1–4
+per cell. **Next action:** determine which teacher judgments can be
+bound to exact meanings; use them as seed evidence, then construct a
+new blind, family-separated reference and prospective policy. Next
+model **GPT-6.1 Sol / High**. D11 `in_progress`, D12 pending, worker
+OFF, no provider input approved beyond the original 24. No paid call,
+support inquiry, push, PR, migration, publication or deployment.
+Current changes are task documentation only; scoped local commit under
+AUTH-18 pending. No external operation is pending.
+
 **2026-10-04 — full D11 quality gate retained; independent reference
 unresolved.** Starting local HEAD `ed941f8` on
 `feature/shared-dictionary-schema`, only preexisting `.playwright-cli/`

@@ -51,3 +51,23 @@ test against labels changed after seeing its aggregate result. The
 four empty slice/split cells and small denominators remain even if
 all owner judgments are adopted. `qualified: false`, worker and
 schedule disabled; no provider call or new transmission occurred.
+
+## Subsequent teacher-corroboration report — provenance pending
+
+Later on October 4, after selecting the original full D11 quality gate,
+the owner stated that their ratings coincide with a teacher's ratings.
+This is new owner-reported external corroboration. The teacher's exact
+item scope, sense/example context, dates, original level records and
+independence from assistant or Gemini suggestions have not yet been
+provided. The owner was asked whether the teacher assessed the exact
+24-item meanings or words in general. Until answered, do not assert
+that all ten rows above were independently adjudicated by the teacher,
+or that the teacher reviewed the other fourteen items.
+
+If original teacher judgments can be bound to exact meanings, record
+them in a new provenance-preserving reference revision without altering
+the frozen assistant reference or retrospective v3 report. Because the
+v3 pilot and assistant worksheet were already visible to the owner,
+these ten rows remain development/corroboration evidence rather than
+a fresh held-out estimate. Structural gaps in the original 24 and the
+need for a prospective, separate validation pool remain.

@@ -2996,3 +2996,27 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   ordinary hooks passed mobile 156 suites/1796 tests/22 snapshots and
   web 86 suites/780 tests with one existing skip. `.playwright-cli/`
   remains untouched. No remote operation is pending.
+
+## 2026-10-04 — Full-quality route and teacher corroboration
+
+- Starting `a15e721`, the owner selected option 1, the original full D11
+  quality gate, and reported that their earlier ratings coincide with a
+  teacher's ratings. The [feedback follow-up](evidence/D11-owner-review-feedback-20261004.md)
+  preserves this as owner-reported external corroboration, with teacher
+  item/sense scope and independent timing still to be clarified.
+- The prior ten owner rows can seed the new review if their teacher
+  provenance is bound to exact meanings. They cannot make the already
+  viewed v3 pilot a prospective held-out test or fill its four empty
+  split/slice cells. A new blind reference/policy/live sample remains.
+- The [intake](evidence/D11-full-quality-intake-20261004.md) now binds
+  neutral 24-item historical and 27-item new-review packets. All 51
+  source canonical hashes and packet uniqueness checks pass; reviewer
+  suggestions, outputs and split labels are absent from the packets.
+  Current 27-input distribution leaves 78 slice memberships to reach
+  a five-per-cell screening floor, before exclusions.
+- No source code, provider operation or runtime setting changed. Next
+  GPT-6.1 Sol / High: resolve teacher provenance, expand and freeze an
+  adequately sampled family-separated fixture, then seek separate
+  exact-input authorization. D11 in_progress, D12 pending, worker OFF.
+  Task documentation pending scoped local commit; only preexisting
+  `.playwright-cli/` untracked. No remote operation pending.

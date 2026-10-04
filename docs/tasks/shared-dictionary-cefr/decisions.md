@@ -668,3 +668,19 @@ prospective policy and separately approved live-sample gate. The
 is preparatory evidence, not a reviewed gold set or authorization to send
 new inputs. The existing two Gemini attempts remain restricted to the
 original 24. Worker/schedule stay off; D11 remains in progress.
+
+### October 4 — Full-quality route selected; teacher corroboration reported
+
+The owner explicitly selected option 1 of the proposed D11 resolution:
+retain the full original quality gate. They also reported that their
+earlier ratings coincide with a teacher's ratings. This corrects the
+earlier assumption that the feedback has no external corroboration,
+but the teacher's exact sense coverage and independent timing are
+still unknown; see the [feedback follow-up](evidence/D11-owner-review-feedback-20261004.md).
+Use any verifiable teacher judgments as seed development evidence
+without rewriting the frozen v3 pilot or counting its retrospective
+agreement as held-out accuracy. A new adequately covered prospective
+pool, reviewed policy and separately approved new-input live sample
+remain required. This choice authorizes local preparation under
+AUTH-20/AUTH-18, not new provider transmission, worker activation or
+remote publication.
