@@ -3291,3 +3291,22 @@ retained privately, certificate tab closed, no uncertain operation. Existing fou
 QA services/proxy remain. Next: exact client/release artifacts and scoped approvals;
 never replay AUTH-24. Application source unchanged; scoped AUTH-18 documentation
 checkpoint with ordinary hooks. Unrelated .playwright-cli/ untouched.
+
+## 2026-10-04 — D13 client artifact plan and read-only release inventory
+
+Resumed bb3d323, same feature branch, GPT-6 Astra / High. Ten control/source and
+nine migration hashes unchanged from13b97b0. EAS CLI24.7.0 read-only account/project
+checks confirmed oldrefery and expected project; latest50 build records show
+2.3.1(84) for iOS/Android. Exact IDs/runtimes and raw-response hash saved. Personal
+Google Play all-bundles inventory37 versions, latest84; search85 no results.
+App Store Connect6752469146 redirected to login. Owner asked to log in personally,
+new handoff tab retained; no credentials/login attempt. First shell guard sourced
+in zsh failed BASH_SOURCE path and waiting npx was interrupted; explicit Bash and
+cachedCLI completed later read-only calls. No external writes or uncertain job.
+Proposed2.4.0(85) dry-run PASS; Apple availability still unverified. No version
+mutation. Exact artifact/source/flag/CI/map plan saved; new binaries required,
+no enabled client distribution against dormant server. D13.3/4 evidence recorded.
+Current stage in_progress, next Apple inventory and publication/mapping packet.
+All backups and existing QA services preserved; no phone, provider, migration,
+source push/PR, build, submission or deployment operation. AUTH-18 scoped local
+documentation commit; unrelated.playwright-cli/ untouched.

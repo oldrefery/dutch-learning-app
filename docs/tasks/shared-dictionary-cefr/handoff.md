@@ -1,5 +1,29 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D13 release inventory and client artifact plan saved.**
+Resumed bb3d323; application candidate13b97b0 unchanged, ten control/source and
+nine migration hashes match. EAS effective account/linked project verified as
+oldrefery; latest iOS/Android builds2.3.1(84), exact runtimes recorded. Personal
+Google Play shows newest84 and no versionCode85. Apple app6752469146 requires
+owner login; a browser handoff tab remains open, no credentials entered.
+[Client release plan](evidence/D13-client-release-plan-20261004.md) and
+[sanitized inventory](evidence/D13-release-inventory-20261004.json).
+
+Proposed2.4.0(85) is provisional pending Apple inventory; dry-run passed, no
+version files changed. D13.3 identity evidence and D13.4 new-native route recorded.
+No OTA to84; no distribution of enabled clients against a dormant backend.
+Complete publication/mapping/preservation plan before approving one coordinated
+functional artifact set; an interim disabled binary adds no activation capability.
+No source push/PR, build, submission, deployment, activation or phone operation.
+AUTH-24 complete and never replayed. Production defaults/worker remain OFF.
+
+Next: after owner logs into App Store Connect, inspect only app6752469146's
+uploaded builds, finalize version/build and continue exact publication/mapping
+packet. If login remains pending, local planning can continue. User help is needed
+for Apple login, not for P2 connection. All previous backups/QA services retained.
+D13 in_progress; GPT-6 Astra / High. AUTH-18 local documentation checkpoint only;
+unrelated .playwright-cli/ untouched. Older headers below are historical.
+
 **2026-10-04 — AUTH-24 dormant production preparation COMPLETE.**
 All nine candidate migrations committed19:21:26–19:21:48UTC to personal project
 josxavjbcjbcjgulwcyy; ledger now52 and each original source SHA256 verified.

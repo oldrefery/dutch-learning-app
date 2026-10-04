@@ -1,0 +1,51 @@
+{
+  "observed_at_utc": "2026-10-04T19:30:50Z",
+  "source_commit": "bb3d3233207e3163f0b23adddde49e4694eefd72",
+  "eas_cli_version": "24.7.0",
+  "effective_account": "oldrefery",
+  "linked_project": "@oldrefery/dutch-learning-app",
+  "project_id": "d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
+  "records_returned": 50,
+  "pagination": "latest 50; older history not fetched",
+  "raw_sha256": "2241b284715b347d17637781a440ff60a028b0daad427b655001f45cf35bb832",
+  "latest_builds": [
+    {
+      "id": "df49f4ca-0cf6-4609-86ed-b8c2fbbada7b",
+      "platform": "IOS",
+      "status": "FINISHED",
+      "appVersion": "2.3.1",
+      "appBuildVersion": "84",
+      "gitCommitHash": "16b7015af242270f304070e3a3ee96f9209b9830",
+      "createdAt": "2026-09-11T19:24:07.804Z",
+      "runtime": "f9fa8a5f7f094e4d4b4606eb5deb4f0c80ab544d"
+    },
+    {
+      "id": "8b0ea9d7-cdac-4079-8ea2-56ade98f96b1",
+      "platform": "ANDROID",
+      "status": "FINISHED",
+      "appVersion": "2.3.1",
+      "appBuildVersion": "84",
+      "gitCommitHash": "16b7015af242270f304070e3a3ee96f9209b9830",
+      "createdAt": "2026-09-11T19:23:51.533Z",
+      "runtime": "2ee8484c4e828d17d4f7bd09ae78a5ece9a4baa0"
+    }
+  ],
+  "google_play": {
+    "account": "oldrefery",
+    "package": "com.oldrefery.dutchlearningapp",
+    "app_versions_count": 37,
+    "latest_version": "2.3.1",
+    "latest_build": 84,
+    "build_85_search": "0 app versions / No results"
+  },
+  "app_store_connect": {
+    "app_id": "6752469146",
+    "status": "login required; store history not yet verified"
+  },
+  "proposal": {
+    "version": "2.4.0",
+    "build": 85,
+    "status": "provisional; no version files changed"
+  },
+  "mutations": "none; read-only remote inventory; no build, upload, submission or device action"
+}

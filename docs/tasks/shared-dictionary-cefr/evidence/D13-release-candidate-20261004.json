@@ -144,8 +144,10 @@
     "current_local_build": 84,
     "runtime_policy": "fingerprint",
     "release_route": "new_native_binaries_required",
-    "next_version_and_unused_build": "unselected_pending_store_inventory",
-    "qa_artifacts_distributable": false
+    "next_version_and_unused_build": "proposed_2.4.0_85_pending_Apple_inventory; Google_Play_85_absent",
+    "qa_artifacts_distributable": false,
+    "inventory_evidence": "D13-release-inventory-20261004.json",
+    "client_release_plan": "D13-client-release-plan-20261004.md"
   },
   "backfill": {
     "prepare": "plan/delta report only; zero personal reference writes",
