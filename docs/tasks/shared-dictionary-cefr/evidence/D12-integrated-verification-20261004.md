@@ -36,10 +36,11 @@ independent requirements.
 | Mutation                                | `npm run web:mutation`, required threshold 90          | PASS after Jest environment correction: 96.59% / threshold 90%                                     |
 | Web build                               | Placeholder public config, no Sentry upload credential | PASS: local production build, placeholder public config, no upload                                 |
 | Expo health                             | Workflow-equivalent dependency/config checks           | PASS after compatible patch update: 21/21 checks                                                   |
-| Native/cross-client/rollback            | D12.3–D12.5 reconciliation and missing runtime checks  | Open: fresh native artifacts required after Expo patches; D12.3–D12.5 not claimed                  |
+| Native/cross-client/rollback            | D12.3–D12.5 reconciliation and missing runtime checks  | PASS: fresh iOS/Android retained updates, offline queue, real browser and rollback reconciliation  |
 
-D12 remains in progress. Check logs and running processes before restarting an
-interrupted operation; do not replay uncertain writes.
+D12 local verification and runtime acceptance pass; cleanup is verified.
+See [runtime acceptance](D12-runtime-acceptance-20261004.md) for exact scope.
+Hosted CI and production release are not claimed.
 
 ## Repairs and unsuccessful setup attempts
 
@@ -88,8 +89,8 @@ the matrix use root workspace wrappers. Preserve safe runner copies and hashes
 with the private results before session end.
 
 No paid/provider call, support message, hosted mutation, publication, push, PR,
-deployment or CEFR activation. Native devices have only been inspected read-only;
-assigned Android is absent and iOS availability will be rechecked before use.
+deployment or CEFR activation. Assigned native devices subsequently completed local retained-update QA; see the
+runtime acceptance record for exact artifacts and preservation results.
 
 ### Mid-run checkpoint
 

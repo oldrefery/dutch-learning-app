@@ -1,39 +1,33 @@
 # Shared dictionary and CEFR — current handoff
 
-**2026-10-04 — D12.1/D12.2 local matrix PASS; native acceptance next.**
-Starting `3c3d16c`, branch `feature/shared-dictionary-schema`. Local matrix
-passes after Jest mutation-environment, integration timeout and Expo patch
-repairs: database aggregate 266 cases, HTTP 10/10, Edge 158, mobile 1796,
-web 780, mutation 96.59%, Expo Doctor 21/21, types/build/lint/format pass.
-See [integrated evidence](evidence/D12-integrated-verification-20261004.md)
-for exact revisions, retries and limits. Hosted CI not triggered.
+**2026-10-04 — D12 local integrated verification complete.** Branch
+`feature/shared-dictionary-schema`, matrix fixes `e09f5ca`, runtime checkpoint
+`a72f143`. D12.1–D12.5 done: local workflow matrix, fresh iOS/Android retained
+upgrade/offline restart, actual browser review/reload/themes, owner isolation,
+exact learning convergence and executable backfill/read rollback rehearsal PASS.
+19 iOS/24 Android words preserved; one old-app pending review survived update
+and delivered once. Server/both clients have exactly three expected events and
+zero pending learning. Other words/private content/imports/collections unchanged.
+See [runtime closure](evidence/D12-runtime-acceptance-20261004.md) and
+[integrated matrix](evidence/D12-integrated-verification-20261004.md), including
+aggregate DB and incremental mutation limits. Hosted CI has not run.
 
-**First incomplete: D12.3**, on **GPT-6 Astra / High**. Build current native
-artifacts, capture retained state before/after update/offline restart, then
-actual browser and release/rollback acceptance. Native source copy refreshed;
-installed apps unchanged. Retained DB/Kong are replaced with loopback-only
-containers preserving the exact volume and original stopped backups; private
-`d12-verification-20261004/retained-loopback.json` records IDs and phases.
-The four exact task services run on loopback; three D11 migrations applied
-atomically to this synthetic database, eight table snapshots identical, CEFR OFF.
-Private `local-migration-receipt.json` binds the operation; do not replay it.
-HTTP/PG disposable containers are removed. Native builds run in the private
-source copy; iOS booted with pre-update snapshot saved, Android boot in progress.
-Android APK built and installed; 24-word full projection unchanged. First
-Android cold-start hit System UI ANR; identical data preserved; retry running
-with conditional Wait and restored 55331 reverse mapping. iOS old app saved
-one offline Good (event/command `bacdf0c6-95e6-440c-a043-b58bc5afd470`), then
-stopped with a coherent backup; new iOS build still running. Do not repeat
-the old-app rating. Proxy REST remains blocked for preservation testing.
-Web UI review/reload/two-theme visuals and same-shared-entry owner isolation
-pass; exactly two expected server events. Browser `d12-local-qa` is closed.
-Exact runner/proxy/web PIDs are in `web-runtime.json`, builds in `native-runtime.json`.
-Matrix fixes/evidence are committed locally as `e09f5ca` (normal hooks pass).
-New runtime evidence is still uncommitted; unrelated `.playwright-cli/` must
-stay unstaged. AUTH-18 permits scoped checkpoints.
-D11 done only for diagnostics/dormant mechanics; CEFR activation blocked/OFF.
-No paid/provider call, support inquiry, hosted migration, push, PR, publication,
-deployment or release authority. D01 real-device/queue gates remain open.
+**Next stage D13, recommended GPT-6 Astra / High; not started.** First action is
+release-readiness reconciliation: resolve D01 real installed-build/pending-queue
+evidence and prepare an exact operation plan before requesting any environment
+write/release approval. D01 remains blocked; local verification does not waive
+those gates. CEFR stays unqualified/OFF under its separate activation gate.
+Do not request repeated word labeling or replay old provider inputs.
+
+All four task containers and two original DB/Kong backups are stopped; assigned
+iOS/Android off; browser closed; runner/proxy/web gone and ports closed. Retained
+data/volumes/backups remain. Private `cleanup-receipt.json`, `native-runtime.json`,
+migration and assessment receipts under `d12-verification-20261004` prevent
+replays. Exactly three intentional QA learning events persist; do not restore an
+old snapshot over them. No running or uncertain operation remains.
+Closure documents are preserved by their scoped AUTH-18 local commit; `.playwright-cli/`
+stays unrelated/unstaged. No provider call, support inquiry, hosted migration,
+push, PR, publication, deployment or release permission is inferred.
 
 **2026-10-04 — D11 done in reduced no-human scope; D12 next.** Starting
 `b354052` on `feature/shared-dictionary-schema`; only unrelated,
@@ -2356,22 +2350,22 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 
 ## Stage ledger
 
-| Stage               | Status      | Evidence / next gate                                                |
-| ------------------- | ----------- | ------------------------------------------------------------------- |
-| [D01](steps/D01.md) | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                |
-| [D02](steps/D02.md) | done        | Accepted design, fixtures, compatibility and rollback               |
-| [D03](steps/D03.md) | done        | Astra/High review fixed; 145/145 DB tests pass                      |
-| [D04](steps/D04.md) | done        | Terra/High; shared contracts pass mobile/web/Edge                   |
-| [D05](steps/D05.md) | done        | 12/12 focused; 157/157 DB; dormant compatibility                    |
-| [D06](steps/D06.md) | done        | Final D06 16/16; preservation/delta/rollback rehearsal              |
-| [D07](steps/D07.md) | done        | SQLite v13; 136/136 mobile suites preserve queues                   |
-| [D08](steps/D08.md) | done        | Closure review/fix and final native smoke passed; resources stopped |
-| [D09](steps/D09.md) | done        | Web integration/performance verification                            |
-| [D10](steps/D10.md) | done        | Final review, real desktop/Safari visuals and preservation PASS     |
-| [D11](steps/D11.md) | done        | Reduced diagnostic/dormant scope; CEFR activation gate blocked      |
-| [D12](steps/D12.md) | in_progress | Local integrated verification; disabled CEFR path                   |
-| [D13](steps/D13.md) | pending     | Explicit release approval + observation                             |
-| [D14](steps/D14.md) | pending     | Adoption gate + compatibility retirement                            |
+| Stage               | Status  | Evidence / next gate                                                |
+| ------------------- | ------- | ------------------------------------------------------------------- |
+| [D01](steps/D01.md) | blocked | D01.1/D01.3/D01.4 done; device/build evidence needed                |
+| [D02](steps/D02.md) | done    | Accepted design, fixtures, compatibility and rollback               |
+| [D03](steps/D03.md) | done    | Astra/High review fixed; 145/145 DB tests pass                      |
+| [D04](steps/D04.md) | done    | Terra/High; shared contracts pass mobile/web/Edge                   |
+| [D05](steps/D05.md) | done    | 12/12 focused; 157/157 DB; dormant compatibility                    |
+| [D06](steps/D06.md) | done    | Final D06 16/16; preservation/delta/rollback rehearsal              |
+| [D07](steps/D07.md) | done    | SQLite v13; 136/136 mobile suites preserve queues                   |
+| [D08](steps/D08.md) | done    | Closure review/fix and final native smoke passed; resources stopped |
+| [D09](steps/D09.md) | done    | Web integration/performance verification                            |
+| [D10](steps/D10.md) | done    | Final review, real desktop/Safari visuals and preservation PASS     |
+| [D11](steps/D11.md) | done    | Reduced diagnostic/dormant scope; CEFR activation gate blocked      |
+| [D12](steps/D12.md) | done    | Local matrix/native/web/rollback PASS; CEFR disabled                |
+| [D13](steps/D13.md) | pending | Explicit release approval + observation                             |
+| [D14](steps/D14.md) | pending | Adoption gate + compatibility retirement                            |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and
 policy acceptance are complete. No production operation is authorized. Do not

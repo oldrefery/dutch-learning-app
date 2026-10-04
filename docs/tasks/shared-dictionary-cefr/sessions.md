@@ -3099,3 +3099,23 @@ New iOS build remains running. Proxy REST is blocked until upgrade/restart check
 complete. Inspect `native-runtime.json`, current build logs, native intent receipt
 and flow logs under private D12 root before any retry. First incomplete D12.3;
 recommended Astra / High. No hosted operation, paid/provider call or activation.
+
+## 2026-10-04 — D12 native convergence and local closure
+
+From runtime checkpoint `a72f143`, recommended Astra / High. Android corrected
+cold flow passes and full 24-word projection equals its pre-update snapshot.
+iOS fresh build passes; retained install and offline cold restart preserve all
+19 words plus exact old-app pending event/command. Restored local REST, then iOS
+and Android settled sync PASS. Exact three expected events on server and both
+clients, zero pending learning; canonical SRS equal; other words/private content,
+collections, placement and import receipts unchanged. Final server snapshot after
+Android sync equals the post-iOS snapshot. Browser real-app review/reload/themes
+and owner-isolation results reconciled with the full current role/content/backfill
+regressions. D12.1–D12.5 complete for local verification, hosted CI not run.
+All assigned devices/services/processes stopped; six current/backup containers
+retained, four ports closed, private data/backups intact. No uncertain operation.
+No paid/provider, support, hosted migration, push, PR or deployment. D01 release
+build/queue evidence and separate CEFR qualification gate remain open.
+Next D13 readiness reconciliation, Astra / High, not started. This record and
+closure docs are preserved by their scoped AUTH-18 local commit with ordinary
+hooks; `.playwright-cli/` stays unstaged.

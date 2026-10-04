@@ -15,8 +15,9 @@ appId: ${APP_ID}
     visible: D08 Native QA
     timeout: 60000
 - tapOn: D08 Native QA
-- extendedWaitUntil:
-    visible: zolder
+- scrollUntilVisible:
+    element: zolder
+    direction: DOWN
     timeout: 30000
 - tapOn: zolder
 - extendedWaitUntil:

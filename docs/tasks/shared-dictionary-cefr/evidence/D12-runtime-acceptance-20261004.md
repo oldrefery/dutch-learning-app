@@ -6,15 +6,15 @@ Private evidence: `reports/shared-dictionary-cefr/d12-verification-20261004/`.
 
 ## Runtime matrix
 
-| Case                                                 | Required observation                                                      | Status                                                                             |
-| ---------------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Retained local database upgrade                      | Identical existing personal/content/learning rows; CEFR disabled          | PASS: three D11 migrations, eight identical table projections                      |
-| Native build and retained install                    | Current SDK57 patch versions, QA bundle, no data clear                    | Android built/installed with full projection equality; iOS build running           |
-| Both native cold restarts with transport outage      | Exact IDs/SRS/content and queue identities survive                        | Pending                                                                            |
-| Nonempty learning and independent owners             | Owned progress changes only; other owner's rows/history remain isolated   | Shared zeil same-entry test PASS over real Auth/REST; native pending               |
-| Content changes during review and cache invalidation | Captured review content stable, new head refresh does not reset SRS       | Current DB/mobile/web regression suites pass; runtime reconciliation pending       |
-| Web actual app                                       | Read/edit/review/navigation on current source and migrated local database | Login/collections/review PASS so far; one Easy event and reload under verification |
-| Read-path rollback and backfill interruption         | Subsequent learning retained, exact receipts on resume                    | Current PostgreSQL regression suite passes; runbook reconciliation pending         |
+| Case                                                 | Required observation                                                      | Status                                                                     |
+| ---------------------------------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Retained local database upgrade                      | Identical existing personal/content/learning rows; CEFR disabled          | PASS: three D11 migrations, eight identical table projections              |
+| Native build and retained install                    | Current SDK57 patch versions, QA bundle, no data clear                    | PASS: both current artifacts built/installed; complete projections equal   |
+| Both native cold restarts with transport outage      | Exact IDs/SRS/content and queue identities survive                        | PASS: both offline cold flows; complete projections equal                  |
+| Nonempty learning and independent owners             | Owned progress changes only; other owner's rows/history remain isolated   | PASS: shared zeil owner isolation; native pending event delivered once     |
+| Content changes during review and cache invalidation | Captured review content stable, new head refresh does not reset SRS       | PASS: current contract suites; native private content unchanged after sync |
+| Web actual app                                       | Read/edit/review/navigation on current source and migrated local database | PASS: login, collections, one Easy, reload and light/dark visuals          |
+| Read-path rollback and backfill interruption         | Subsequent learning retained, exact receipts on resume                    | PASS: current backfill and lossless rollback executable rehearsal          |
 
 ## Safety and retention
 
@@ -65,8 +65,8 @@ The final local matrix reruns these current contracts (no provider required):
   review snapshots, content invalidation and import/recovery persistence; web
   86-suite run covers the equivalent owner/session/transfer boundaries.
 
-These passing contracts support D12.4/D12.5 but do not replace the pending
-native runtime observations above. Tests do not claim real P1/P2 preservation,
+These passing contracts support D12.4/D12.5 alongside the completed
+native runtime observations below. Tests do not claim real P1/P2 preservation,
 independent CEFR gold or a reviewed live rollout manifest.
 
 ## Current live observations
@@ -100,7 +100,7 @@ manifest confirms original QA package identity, OTA disabled, and compiled bundl
 contains only the configured local QA backend for this app. `adb install -r`
 PASS with no uninstall/data clear. Complete before/after SQLite helper projections
 are equal: 24 words, SRS/content/import/recovery state, empty learning/content queues.
-App has not yet launched on the new APK. Android startup initially delayed storage
+The new APK later passed the offline cold flow below. Android startup initially delayed storage
 availability; after `sys.boot_completed=1`, the original database path was readable.
 A system Bluetooth crash was observed during startup; no app crash is inferred.
 
@@ -110,7 +110,7 @@ read-only source connection. `native-installed-before.json` records original
 artifacts. No original application data was edited to manufacture a pass.
 
 Local REST is now blocked through the QA fault proxy for native preservation.
-The old iOS app is running a one-Good UI flow to produce a real pending learning
+The old iOS app completed a one-Good UI flow, producing a real pending learning
 command before upgrade. Inspect `native-pending-review-intent.json`, flow log and
 SQLite before retrying any assessment. Restore the proxy after preservation tests.
 
@@ -123,7 +123,7 @@ command; the previous snapshot had neither. Exact event/operation/word/user IDs
 are bound in private `native-pending-review-intent.json`. This consumed the
 one-off assessment: do not rerun the flow to recover a missing screenshot.
 The old app is stopped and `ios-pending-before-update.sqlite` saves a coherent
-backup before installing the new app. iOS compilation is still running.
+backup before installing the new app. iOS compilation subsequently passed.
 
 Web reload accepted the beforeunload prompt and displayed 8 due in the collection
 and 9 overall, down from 10 and 11 after the two intentional assessments. Exactly
@@ -144,3 +144,79 @@ full data projection still matches the pre-update snapshot. The task-only revers
 mapping tcp:55331 had also been absent after emulator boot; restored it. The flow
 now conditionally taps Wait on the observed system dialog before the same cold
 start/assertions. Retry is in progress, no app reset or extra learning assessment.
+
+Second Android attempt reached the cached 10-word collection successfully; its
+zolder assertion failed because the word was below the viewport. Screenshot
+inspection shows normal collection content, not a missing word or crash. The
+flow now scrolls to zolder before the same detail assertions; final retry running.
+These setup failures are retained separately from acceptance results.
+
+### Android offline cold start PASS
+
+Final corrected flow `android-1791135753113` PASS in 46 seconds. Updated app
+cold-started with REST unavailable, opened retained D08 Native QA, scrolled to
+zolder, and showed the exact private translation `QA local version` plus
+`CEFR level unknown`. No provider call or new assessment. Earlier failed setup
+attempts remain documented; no app-source repair was needed for them.
+
+### Fresh iOS artifact and install preservation
+
+Release simulator build PASS after the SDK57 patch changes. Compiled bundle SHA-256
+`d7955b537cd10f673a1b708aadaf917c433a65d0d6603dd776855b38a23f8255`;
+original app identity retained, OTA disabled, loopback QA backend embedded and no
+hosted Supabase endpoint found. `simctl install` preserved all 19 words and the
+complete old-app pending projection, including the exact single event/command.
+`verify-ios-installed.json` records full equality. Offline cold flow later passed.
+Android post-cold snapshot also equals its full pre-update projection (24 words,
+zero pending learning); `verify-android-cold.json` records the comparison.
+
+## Final convergence and criterion reconciliation
+
+- iOS offline cold flow `ios-1791136041878` PASS (31 seconds). All 19 words,
+  content/import/recovery state and exact old-app pending event/command survived
+  install and cold restart byte-for-byte in the captured projections.
+- Restored local REST after both offline checks. A control-response assertion
+  initially looked for `blockRest` at the wrong nesting level; the POST had
+  succeeded. A read-only GET confirmed `state.blockRest: false`; no assessment
+  or request was replayed to repair the receipt.
+- iOS settled sync `ios-1791136117971` PASS (26 seconds); Android
+  `android-1791136176941` PASS (20 seconds). Both show Up to date.
+- Server and both clients contain exactly the three intended event IDs: web
+  huis, Auth/REST zeil and old-iOS duin. Each client has zero pending learning
+  commands and identical canonical SRS for the three words. Personal ID sets
+  remain 19/24, all other local words are unchanged, and all collections,
+  placement, import receipts, private content, revisions and CEFR heads equal
+  their pre-update projections. Content/hydration/import/recovery queues are empty.
+- Server final snapshot equals its post-iOS snapshot even after Android sync:
+  28 words, 3 events, 3 checkpoints, 3 heads, no corrections. All 25 unassessed
+  words and all collections/access/content rows remain unchanged. Receipts:
+  `verify-convergence.json`, `native-content-preservation.json`,
+  `server-preservation.json`, `server-final.json`.
+
+D12.3 is satisfied for the retained synthetic iOS/Android installations and actual
+web application on current source/dependencies. The native test updates the
+previous QA build; it does not claim a historical production APK/iOS upgrade.
+D12.4 combines real two-owner Auth/REST isolation and unchanged private content
+with the current complete role/RLS and client-session suites listed above.
+D12.5 combines exact before/after identifiers, nonempty queue preservation and
+cross-client learning with the rerun interrupted-backfill/receipt-resume and
+post-link-review rollback tests. The operator procedure in
+`scripts/shared-dictionary/README.md` retains references, learning authority and
+new review writes while disabling the read path; the 16-case backfill rehearsal
+and content-protocol rollback case pass in the current PG16 run. No old snapshot
+was restored over learning writes. Review-content freezing and content-only
+invalidation pass in current mobile content-sync/restart and web dictionary-session
+regressions; those cases are automated contract evidence, not new UI mutations.
+
+No unresolved local data-loss, privacy, authorization or learning-protocol defect
+was found. Local workflow-equivalent checks pass; hosted CI is not run. D01
+real-device/queue and D13 operation approvals remain release prerequisites.
+
+## Cleanup
+
+Verified complete: four current task containers and two original DB/Kong backups
+are stopped; both assigned devices are off; runner/proxy/web PIDs are absent;
+ports 55321, 55322, 55331 and 55400 are closed. All fault flags were false before
+proxy shutdown. `cleanup-receipt.json` records exact IDs and verification time.
+Retained device databases, Docker volumes, original containers and private backups
+remain intact. No uncertain operation remains.

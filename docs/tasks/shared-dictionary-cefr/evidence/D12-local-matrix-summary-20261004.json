@@ -1,7 +1,7 @@
 {
   "starting_head": "3c3d16c",
   "date": "2026-10-04",
-  "status": "local_matrix_pass_runtime_pending",
+  "status": "local_verification_complete",
   "postgresql": {
     "full_run_passed": 265,
     "full_run_total": 266,
@@ -50,5 +50,36 @@
     "package-lock.json": "b185cef621faba3971f461226573cfbf0b55b76edc984e5211623ce338af1135",
     "scripts/postgres-tests/cefr-budget.test.mjs": "db67ee8f9b2a05cbf06b537b06f9c2164d62575071741380896510de61cf9c36"
   },
-  "raw_evidence_root": "reports/shared-dictionary-cefr/d12-verification-20261004"
+  "raw_evidence_root": "reports/shared-dictionary-cefr/d12-verification-20261004",
+  "implementation_commit": "e09f5ca",
+  "hosted_ci": "not_run",
+  "runtime": {
+    "ios": {
+      "retained_words": 19,
+      "install_full_projection_equal": true,
+      "offline_cold_full_projection_equal": true,
+      "old_pending_event_preserved": true,
+      "final_events": 3,
+      "pending_learning": 0
+    },
+    "android": {
+      "retained_words": 24,
+      "install_full_projection_equal": true,
+      "offline_cold_full_projection_equal": true,
+      "final_events": 3,
+      "pending_learning": 0
+    },
+    "server": {
+      "words": 28,
+      "events": 3,
+      "checkpoints": 3,
+      "heads": 3,
+      "other_words_unchanged": 25,
+      "post_android_snapshot_equal": true
+    },
+    "web": "actual_ui_review_reload_light_dark_pass",
+    "shared_entry_owner_isolation": "pass",
+    "cefr": "disabled_unqualified",
+    "cleanup": "verified_stopped_data_retained"
+  }
 }
