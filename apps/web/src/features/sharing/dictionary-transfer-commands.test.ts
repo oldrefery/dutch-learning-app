@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import { revalidatePath } from 'next/cache'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import { hydrateOwnedWords } from '@/features/dictionary/repository'

@@ -3063,3 +3063,20 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   ordinary hooks passed mobile 156 suites/1796 tests/22 snapshots and
   web 86 suites/780 tests with one existing skip. No application
   source changed; `.playwright-cli/` remains unrelated and untracked.
+
+## 2026-10-04 — D12 local integrated matrix
+
+Starting `3c3d16c`, existing feature branch, recommended Astra / High. D12.1/2
+local matrix passes: PostgreSQL 266 cases in aggregate (full 265/266 plus final
+affected 29/29), HTTP 10/10 with actual JWT expiry and cleanup, Edge 158, mobile
+1796/22 snapshots, web 780/one existing skip, mutation 96.59%, Expo Doctor 21/21,
+types/build/lint/format. Fixed 12 Stryker environment annotations, real-psql test
+timeouts and eight direct SDK57 patches. See integrated evidence and matrix JSON.
+D12.3 next: current native rebuild/retained upgrade/offline restart/browser QA.
+Task retained DB/Kong recreated loopback-only with original stopped backups and
+identical volume; full private SQL backup captured. Four task services running;
+assigned devices still off, installed apps unchanged. Prebuilds begun in retained
+QA source copy; inspect timestamped build logs before repeating. Private runner
+copies and runtime receipts under `d12-verification-20261004`. AUTH-18 local
+checkpoint only; no push/PR/hosted mutation/provider call/CEFR activation.
+D01 release gates and D12 runtime exit remain open. `.playwright-cli/` unrelated.

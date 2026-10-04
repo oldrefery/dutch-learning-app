@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import { createClient } from '@/lib/supabase/server'
 import { executeDictionaryTransfer } from '@/features/sharing/dictionary-transfer-commands'
 import { MAX_TRANSFER_REQUEST_BYTES } from '@/features/sharing/dictionary-transfer-contract'

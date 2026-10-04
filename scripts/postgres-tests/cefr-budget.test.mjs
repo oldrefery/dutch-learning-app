@@ -425,7 +425,8 @@ test('authorized request handler integrates reservation, fake provider, receipt 
       policyId: p.id,
       profile: p.worker.inputs.profile,
       qualification: p.worker.qualified,
-      timeoutMs: 100,
+      // Authorization uses a real psql subprocess; this tests completion, not latency.
+      timeoutMs: 5000,
     },
     {
       store: storeFor(db),
@@ -515,7 +516,9 @@ for (const [name, reply, expected] of [
         policyId: p.id,
         profile: p.worker.inputs.profile,
         qualification: p.worker.qualified,
-        timeoutMs: 200,
+        // Include real database authorization before the fake provider is called.
+        // The unresolved promise still exercises the actual timeout outcome.
+        timeoutMs: 5000,
       },
       {
         store: storeFor(db),

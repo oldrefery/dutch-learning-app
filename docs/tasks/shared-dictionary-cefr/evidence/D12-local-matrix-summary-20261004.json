@@ -1,0 +1,54 @@
+{
+  "starting_head": "3c3d16c",
+  "date": "2026-10-04",
+  "status": "local_matrix_pass_runtime_pending",
+  "postgresql": {
+    "full_run_passed": 265,
+    "full_run_total": 266,
+    "affected_final_passed": 29,
+    "affected_final_total": 29,
+    "aggregate_all_cases_pass": true
+  },
+  "http": {
+    "passed": 10,
+    "cleanup": "completed"
+  },
+  "edge_passed": 158,
+  "mobile": {
+    "suites": 156,
+    "tests": 1796,
+    "snapshots": 22
+  },
+  "web": {
+    "suites": 86,
+    "tests": 780,
+    "preexisting_skip": 1
+  },
+  "mutation": {
+    "score": 96.59,
+    "threshold": 90,
+    "incremental_reuse": 1265
+  },
+  "expo_doctor": {
+    "passed": 21,
+    "total": 21
+  },
+  "source_sha256": {
+    "apps/mobile/package.json": "1ea5cfc25fd48c0ae1e00de9b1b7f3bef0413e0730a9f111aaa9c69a9f26c70a",
+    "apps/web/src/app/api/dictionary-transfer/route.review.test.ts": "12fbc32996c772a8458f4f27b27a3bf73e000c2a9f20c6cce50bdbfc4c09f232",
+    "apps/web/src/app/api/dictionary-transfer/route.test.ts": "53ba861cfe44a64185b34bb07d368bcca5e8ab51aeac9a26e9a89a82be72384c",
+    "apps/web/src/features/dictionary/adoption.test.ts": "24d861a211419562a56df989454087d382bf47f2c9dc189b3af13f3f14a0efab",
+    "apps/web/src/features/dictionary/repository.test.ts": "e7060e7abfd765827990924281ca787d790f05a60cec33030eba57a7b7cea9e2",
+    "apps/web/src/features/review/dictionary-snapshot.test.ts": "76a133fdfaa4d4c456ffbe2f2cc5cf808f9f9ad52da3fea647a6ce114222634e",
+    "apps/web/src/features/sharing/dictionary-repository.test.ts": "5053b1490da28f306b89412a3a98ce710f52f3349db237794095712b51d9dbbd",
+    "apps/web/src/features/sharing/dictionary-transfer-commands.test.ts": "16ef4818d764c1403cf523e20ac488c966b453d936ad1c3a2ab2f3fbbc910bc1",
+    "apps/web/src/features/sharing/dictionary-transfer-contract.test.ts": "ba278e88331db6c034503b315c202e0f93919ebe3d148d39ebe700cc6542bc94",
+    "apps/web/src/features/sharing/dictionary-transfer-origin.test.ts": "7af229ba9951cb8b165b443fcabbdda66cbc822a9a1e9eb8a61d569285c1c646",
+    "apps/web/src/features/sharing/dictionary-transfer.test.ts": "8c0e56657b71e9ce9d06e7bbe97f7c3af2935e57527fce9f7d352e88876b7689",
+    "apps/web/src/features/starter-pack/dictionary-import.test.ts": "852b397a7409f6f9f4f2b07e09d8da487e792b148b1aa043a89992923ba6a402",
+    "apps/web/src/features/words/dictionary-actions.test.ts": "fefd6d35b735e9828728f475232da130717542e489325a97ffd55a6b1468403c",
+    "package-lock.json": "b185cef621faba3971f461226573cfbf0b55b76edc984e5211623ce338af1135",
+    "scripts/postgres-tests/cefr-budget.test.mjs": "db67ee8f9b2a05cbf06b537b06f9c2164d62575071741380896510de61cf9c36"
+  },
+  "raw_evidence_root": "reports/shared-dictionary-cefr/d12-verification-20261004"
+}

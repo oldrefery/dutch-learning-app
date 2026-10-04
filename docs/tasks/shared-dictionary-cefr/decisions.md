@@ -704,3 +704,13 @@ the teacher's corroboration is word-level only. D12 may verify a disabled
 CEFR path. No new paid call, transmission, support inquiry, push, PR,
 migration, publication or deployment follows from this decision. Two
 unused Gemini attempts remain limited to the original 24.
+
+### October 4 — Local D12 continuation
+
+The owner continued after the D11 reduced-scope closure and D12 model
+recommendation. Proceed with local D12 integrated verification, necessary
+local fixes and AUTH-18 checkpoint commits. Existing task-only synthetic
+QA boundaries remain; inspect availability before operating the assigned
+devices. No human CEFR labeling is requested. This continuation does not
+authorize real provider calls, hosted mutation, support inquiries, push,
+PR, publication, deployment or CEFR worker/schedule activation.

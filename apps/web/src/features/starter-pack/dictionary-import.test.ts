@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@woordenaar/supabase-contracts'
 import { parseDictionaryContent } from '@woordenaar/domain'

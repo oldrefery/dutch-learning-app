@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import { revalidatePath } from 'next/cache'
 import { reanalyzeWord, updateWordImage } from './actions'
 import { INITIAL_WORD_ACTION_STATE as initial } from './form-state'

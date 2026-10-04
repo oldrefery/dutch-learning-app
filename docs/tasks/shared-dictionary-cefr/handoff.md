@@ -1,5 +1,27 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D12.1/D12.2 local matrix PASS; native acceptance next.**
+Starting `3c3d16c`, branch `feature/shared-dictionary-schema`. Local matrix
+passes after Jest mutation-environment, integration timeout and Expo patch
+repairs: database aggregate 266 cases, HTTP 10/10, Edge 158, mobile 1796,
+web 780, mutation 96.59%, Expo Doctor 21/21, types/build/lint/format pass.
+See [integrated evidence](evidence/D12-integrated-verification-20261004.md)
+for exact revisions, retries and limits. Hosted CI not triggered.
+
+**First incomplete: D12.3**, on **GPT-6 Astra / High**. Build current native
+artifacts, capture retained state before/after update/offline restart, then
+actual browser and release/rollback acceptance. Native source copy refreshed;
+installed apps unchanged. Retained DB/Kong are replaced with loopback-only
+containers preserving the exact volume and original stopped backups; private
+`d12-verification-20261004/retained-loopback.json` records IDs and phases.
+The four exact task services are being started; inspect state before retries.
+HTTP/PG disposable test containers are removed; assigned devices remain off.
+Test/dependency/document changes are local and not yet committed; unrelated
+`.playwright-cli/` must stay unstaged. AUTH-18 permits scoped checkpoints.
+D11 done only for diagnostics/dormant mechanics; CEFR activation blocked/OFF.
+No paid/provider call, support inquiry, hosted migration, push, PR, publication,
+deployment or release authority. D01 real-device/queue gates remain open.
+
 **2026-10-04 — D11 done in reduced no-human scope; D12 next.** Starting
 `b354052` on `feature/shared-dictionary-schema`; only unrelated,
 preexisting `.playwright-cli/` is untracked. The owner cannot perform
@@ -2321,22 +2343,22 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 
 ## Stage ledger
 
-| Stage               | Status  | Evidence / next gate                                                |
-| ------------------- | ------- | ------------------------------------------------------------------- |
-| [D01](steps/D01.md) | blocked | D01.1/D01.3/D01.4 done; device/build evidence needed                |
-| [D02](steps/D02.md) | done    | Accepted design, fixtures, compatibility and rollback               |
-| [D03](steps/D03.md) | done    | Astra/High review fixed; 145/145 DB tests pass                      |
-| [D04](steps/D04.md) | done    | Terra/High; shared contracts pass mobile/web/Edge                   |
-| [D05](steps/D05.md) | done    | 12/12 focused; 157/157 DB; dormant compatibility                    |
-| [D06](steps/D06.md) | done    | Final D06 16/16; preservation/delta/rollback rehearsal              |
-| [D07](steps/D07.md) | done    | SQLite v13; 136/136 mobile suites preserve queues                   |
-| [D08](steps/D08.md) | done    | Closure review/fix and final native smoke passed; resources stopped |
-| [D09](steps/D09.md) | done    | Web integration/performance verification                            |
-| [D10](steps/D10.md) | done    | Final review, real desktop/Safari visuals and preservation PASS     |
-| [D11](steps/D11.md) | done    | Reduced diagnostic/dormant scope; CEFR activation gate blocked      |
-| [D12](steps/D12.md) | pending | Verify integration and disabled CEFR path                           |
-| [D13](steps/D13.md) | pending | Explicit release approval + observation                             |
-| [D14](steps/D14.md) | pending | Adoption gate + compatibility retirement                            |
+| Stage               | Status      | Evidence / next gate                                                |
+| ------------------- | ----------- | ------------------------------------------------------------------- |
+| [D01](steps/D01.md) | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                |
+| [D02](steps/D02.md) | done        | Accepted design, fixtures, compatibility and rollback               |
+| [D03](steps/D03.md) | done        | Astra/High review fixed; 145/145 DB tests pass                      |
+| [D04](steps/D04.md) | done        | Terra/High; shared contracts pass mobile/web/Edge                   |
+| [D05](steps/D05.md) | done        | 12/12 focused; 157/157 DB; dormant compatibility                    |
+| [D06](steps/D06.md) | done        | Final D06 16/16; preservation/delta/rollback rehearsal              |
+| [D07](steps/D07.md) | done        | SQLite v13; 136/136 mobile suites preserve queues                   |
+| [D08](steps/D08.md) | done        | Closure review/fix and final native smoke passed; resources stopped |
+| [D09](steps/D09.md) | done        | Web integration/performance verification                            |
+| [D10](steps/D10.md) | done        | Final review, real desktop/Safari visuals and preservation PASS     |
+| [D11](steps/D11.md) | done        | Reduced diagnostic/dormant scope; CEFR activation gate blocked      |
+| [D12](steps/D12.md) | in_progress | Local integrated verification; disabled CEFR path                   |
+| [D13](steps/D13.md) | pending     | Explicit release approval + observation                             |
+| [D14](steps/D14.md) | pending     | Adoption gate + compatibility retirement                            |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and
 policy acceptance are complete. No production operation is authorized. Do not

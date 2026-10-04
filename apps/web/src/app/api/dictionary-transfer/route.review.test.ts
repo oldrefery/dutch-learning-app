@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import type { IncomingMessage } from 'node:http'
 import { Readable } from 'node:stream'
 import { NodeNextRequest } from 'next/dist/server/base-http/node'

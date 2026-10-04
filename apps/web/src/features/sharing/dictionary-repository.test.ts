@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import { loadSharedCollectionRows } from './repository'
 import { createClient } from '@/lib/supabase/server'
 import { officialEntryToDictionaryContent } from '@woordenaar/content/dictionary'

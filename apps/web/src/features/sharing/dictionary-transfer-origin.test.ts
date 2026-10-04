@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import { hasSameTransferOrigin } from './dictionary-transfer-origin'
 
 jest.mock('server-only', () => ({}))
