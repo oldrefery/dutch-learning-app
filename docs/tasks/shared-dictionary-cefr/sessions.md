@@ -2460,3 +2460,21 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   for the original 24 meanings. Worker/schedule disabled; no support
   inquiry, push, PR, migration, publication or deployment. Persistence:
   local repository checkpoint.
+
+## 2026-10-04 — D11 expanded source-backed local inputs
+
+- Starting HEAD `af70ebb` on `feature/shared-dictionary-schema`. Corrected
+  unsupported `werk`/`goed` sense-pair proposals and used source-backed
+  `aankomen`/`wortel` contrasts instead.
+- Saved versioned pack v3 and authored v4 dossiers with 21 unreviewed
+  local drafts in 15 split-isolated families. Deno verified parsing,
+  canonical SHA-256, unique IDs/hashes and no cross-split leakage. The
+  [source screen](evidence/D11-sense-source-screen-20261004.md) lists
+  exact lexical references and five still-empty slice/split cells.
+- Next GPT-6.1 Sol / High: source and draft those five cells or replace
+  weak candidates, then obtain independently graded meaning evidence,
+  review labels and freeze policy/minimum denominators. D11.2 remains
+  open; quality unqualified and worker/schedule off. No provider call,
+  support inquiry, push, PR, migration, publication or deployment.
+  Two Gemini attempts remain only for the original 24 meanings. Local
+  repository evidence; `.playwright-cli/` was preexisting and untouched.

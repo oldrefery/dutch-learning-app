@@ -1,0 +1,396 @@
+{
+  "namespace": "dictionary-cefr-pack-input-dossiers-v1",
+  "revision": "d11-new-reference-pack-inputs-20261004-v2",
+  "status": "unreviewed-local-inputs",
+  "fixture": false,
+  "provider_approved": false,
+  "source": {
+    "path": "packages/content/src/dutch-a1.json",
+    "sha256": "80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca",
+    "pack_id": "official-dutch-a1-essentials",
+    "version": "0.2.0"
+  },
+  "items": [
+    {
+      "id": "candidate-tafel",
+      "family": "tafel",
+      "proposed_split": "calibration",
+      "source_entry_id": "a1-003-tafel",
+      "content": {
+        "dutch_lemma": "tafel",
+        "dutch_original": "tafel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["table"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Het boek ligt op de tafel.",
+            "en": "The book is on the table.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "tafels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"tafel\",\"dutch_original\":\"tafel\",\"examples\":[{\"en\":\"The book is on the table.\",\"nl\":\"Het boek ligt op de tafel.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"tafels\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"table\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "174e1a545fa8bb385fb3060e3d8f3cb6aa664bd254926b219e240f738ceab2a1",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false,
+      "proposed_slices": ["ordinary"]
+    },
+    {
+      "id": "candidate-stad",
+      "family": "stad",
+      "proposed_split": "held_out",
+      "source_entry_id": "a1-009-stad",
+      "content": {
+        "dutch_lemma": "stad",
+        "dutch_original": "stad",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["city", "town"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Amsterdam is een grote stad.",
+            "en": "Amsterdam is a large city.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "steden",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"stad\",\"dutch_original\":\"stad\",\"examples\":[{\"en\":\"Amsterdam is a large city.\",\"nl\":\"Amsterdam is een grote stad.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"steden\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"city\",\"town\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "1cff8978993c31157e6f70f38012ae2ee94b3ddf9f27635eef27416672d182be",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false,
+      "proposed_slices": ["ordinary"]
+    },
+    {
+      "id": "candidate-straat",
+      "family": "straat",
+      "proposed_split": "calibration",
+      "source_entry_id": "a1-010-straat",
+      "content": {
+        "dutch_lemma": "straat",
+        "dutch_original": "straat",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["street"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Wij wonen in deze straat.",
+            "en": "We live on this street.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "straten",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"straat\",\"dutch_original\":\"straat\",\"examples\":[{\"en\":\"We live on this street.\",\"nl\":\"Wij wonen in deze straat.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"straten\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"street\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "3c0e2ec275e350166806773697a1691cd19fec58d38f06833220faab3019555f",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false,
+      "proposed_slices": ["ordinary"]
+    },
+    {
+      "id": "candidate-winkel",
+      "family": "winkel",
+      "proposed_split": "held_out",
+      "source_entry_id": "a1-011-winkel",
+      "content": {
+        "dutch_lemma": "winkel",
+        "dutch_original": "winkel",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["shop", "store"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De winkel is vandaag open.",
+            "en": "The shop is open today.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "winkels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"winkel\",\"dutch_original\":\"winkel\",\"examples\":[{\"en\":\"The shop is open today.\",\"nl\":\"De winkel is vandaag open.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"winkels\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"shop\",\"store\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "01c348c66d1ad3075e8a797e852e97e8efcd868c84be0e49bbb6053b2c2c8199",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false,
+      "proposed_slices": ["ordinary"]
+    },
+    {
+      "id": "candidate-werk",
+      "family": "werk",
+      "proposed_split": "calibration",
+      "source_entry_id": "a1-013-werk",
+      "content": {
+        "dutch_lemma": "werk",
+        "dutch_original": "werk",
+        "part_of_speech": "noun",
+        "article": "het",
+        "translations": {
+          "en": ["work"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Ik ga naar mijn werk.",
+            "en": "I am going to work.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"het\",\"conjugation\":null,\"dutch_lemma\":\"werk\",\"dutch_original\":\"werk\",\"examples\":[{\"en\":\"I am going to work.\",\"nl\":\"Ik ga naar mijn werk.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"work\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "2fc6c984f33a82c327bbcc77c88a581d4b685fb4bd375880023d664c81224a9b",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false,
+      "proposed_slices": ["ordinary"]
+    },
+    {
+      "id": "candidate-goed",
+      "family": "goed",
+      "proposed_split": "held_out",
+      "source_entry_id": "a1-039-goed",
+      "content": {
+        "dutch_lemma": "goed",
+        "dutch_original": "goed",
+        "part_of_speech": "adjective",
+        "article": null,
+        "translations": {
+          "en": ["good"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Dit is een goed boek.",
+            "en": "This is a good book.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": null,
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":null,\"conjugation\":null,\"dutch_lemma\":\"goed\",\"dutch_original\":\"goed\",\"examples\":[{\"en\":\"This is a good book.\",\"nl\":\"Dit is een goed boek.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"adjective\",\"plural\":null,\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"good\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "ce499e1218b29e40004f9562683768a7d8338ea3535a3a7ebcf11e80609e89d9",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false,
+      "proposed_slices": ["ordinary"]
+    },
+    {
+      "id": "candidate-tafel-plural",
+      "family": "tafel",
+      "proposed_split": "calibration",
+      "proposed_slices": ["inflections"],
+      "source_entry_id": "a1-003-tafel",
+      "source": {
+        "kind": "pack-lemma-and-ANW-morphology-with-locally-authored-example",
+        "url": "https://anw.ivdnt.org/article/tafel",
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "tafel",
+        "dutch_original": "tafels",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["tables"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "De tafels staan bij het raam.",
+            "en": "The tables are by the window.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "tafels",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"tafel\",\"dutch_original\":\"tafels\",\"examples\":[{\"en\":\"The tables are by the window.\",\"nl\":\"De tafels staan bij het raam.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"tafels\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"tables\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "c1c535bb3fe9494589b7f3056b41dfd699117206bbabbf0f380f715577d58823",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    },
+    {
+      "id": "candidate-stad-plural",
+      "family": "stad",
+      "proposed_split": "held_out",
+      "proposed_slices": ["inflections"],
+      "source_entry_id": "a1-009-stad",
+      "source": {
+        "kind": "pack-lemma-and-ANW-morphology-with-locally-authored-example",
+        "url": "https://anw.ivdnt.org/article/stad",
+        "accessed_on": "2026-10-04",
+        "example_origin": "locally-authored-draft"
+      },
+      "content": {
+        "dutch_lemma": "stad",
+        "dutch_original": "steden",
+        "part_of_speech": "noun",
+        "article": "de",
+        "translations": {
+          "en": ["cities"],
+          "ru": []
+        },
+        "examples": [
+          {
+            "nl": "Deze steden liggen aan het water.",
+            "en": "These cities are near the water.",
+            "ru": null
+          }
+        ],
+        "is_irregular": false,
+        "is_reflexive": false,
+        "is_expression": false,
+        "expression_type": null,
+        "is_separable": false,
+        "prefix_part": null,
+        "root_verb": null,
+        "plural": "steden",
+        "register": "neutral",
+        "synonyms": [],
+        "antonyms": [],
+        "conjugation": null,
+        "preposition": null,
+        "analysis_notes": null,
+        "usage_notes": null,
+        "image_url": null,
+        "tts_url": null
+      },
+      "canonical_input": "{\"assessment_schema_version\":1,\"content\":{\"analysis_notes\":null,\"antonyms\":[],\"article\":\"de\",\"conjugation\":null,\"dutch_lemma\":\"stad\",\"dutch_original\":\"steden\",\"examples\":[{\"en\":\"These cities are near the water.\",\"nl\":\"Deze steden liggen aan het water.\",\"ru\":null}],\"expression_type\":null,\"is_expression\":false,\"is_irregular\":false,\"is_reflexive\":false,\"is_separable\":false,\"part_of_speech\":\"noun\",\"plural\":\"steden\",\"prefix_part\":null,\"preposition\":null,\"register\":\"neutral\",\"root_verb\":null,\"synonyms\":[],\"translations\":{\"en\":[\"cities\"],\"ru\":[]},\"usage_notes\":null}}",
+      "input_sha256": "9922c40ac75c05725ecee2319ce1239a1e2fce585bdf0ccca8306adfef658a71",
+      "review_state": "unreviewed",
+      "expected_levels": null,
+      "provider_approved": false
+    }
+  ],
+  "supersedes": "d11-new-reference-pack-inputs-20261004"
+}

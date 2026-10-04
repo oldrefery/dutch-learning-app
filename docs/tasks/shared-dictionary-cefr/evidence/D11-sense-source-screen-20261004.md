@@ -1,107 +1,86 @@
 # D11 sense/source screen — 2026-10-04
 
-## Scope and result
+## Scope and current result
 
-This is a read-only, pre-provider screen of the
+This is a local, pre-provider screen of the
 [20-family candidate pool](D11-new-reference-candidate-pool-20261004.md).
-It does not assign CEFR levels, approve new provider transmission or create an
-operational fixture. The existing v2/v3 Gemini outputs were not used as
-references. Source access was checked on 2026-10-04; dictionary links may
-change. No external dictionary text or corpus rows were copied into the app.
+It neither assigns CEFR levels nor creates an operational fixture. The prior
+Gemini pilot was not used as a reference. Lexical pages were checked on
+2026-10-04; links and page content may change. No external dictionary text or
+corpus rows were copied into the app.
 
-Six exact owner-controlled pack entries now have locally validated full
-`DictionaryContent`, canonical assessment inputs and SHA-256 bindings in
-[the unreviewed input dossier](D11-new-reference-pack-inputs-20261004.json).
-They were produced from the pack entry with the same neutral defaults as the
-prior diagnostic, parsed by `parseDictionaryContent`, canonicalized by
-`canonicalizeCefrInput`, then independently re-parsed and hash-checked.
-This binds the _base pack meanings only_. It does not create plural-form,
-second-sense or deliberately conflicting variants.
+The latest [pack dossier](D11-new-reference-pack-inputs-20261004-v3.json)
+contains ten inputs across six families. The latest
+[authored dossier](D11-authored-sense-inputs-20261004-v4.json) contains eleven
+inputs across nine families. Earlier dossier versions remain historical
+snapshots; use these two latest files together. All 21 `DictionaryContent`
+objects parse, match their canonical assessment inputs and SHA-256 hashes,
+have unique IDs/hashes, and keep each family in one split. Every item is
+`unreviewed`, has `expected_levels: null` and `provider_approved: false`.
+These bindings establish exact input identity, not linguistic or CEFR quality.
 
-| Split       | Pack meaning      | Exact entry     | Input SHA-256                                                      | Status     |
-| ----------- | ----------------- | --------------- | ------------------------------------------------------------------ | ---------- |
-| calibration | `tafel` / table   | `a1-003-tafel`  | `174e1a545fa8bb385fb3060e3d8f3cb6aa664bd254926b219e240f738ceab2a1` | Unreviewed |
-| held_out    | `stad` / city     | `a1-009-stad`   | `1cff8978993c31157e6f70f38012ae2ee94b3ddf9f27635eef27416672d182be` | Unreviewed |
-| calibration | `werk` / work     | `a1-013-werk`   | `2fc6c984f33a82c327bbcc77c88a581d4b685fb4bd375880023d664c81224a9b` | Unreviewed |
-| held_out    | `goed` / good     | `a1-039-goed`   | `ce499e1218b29e40004f9562683768a7d8338ea3535a3a7ebcf11e80609e89d9` | Unreviewed |
-| calibration | `straat` / street | `a1-010-straat` | `3c0e2ec275e350166806773697a1691cd19fec58d38f06833220faab3019555f` | Unreviewed |
-| held_out    | `winkel` / shop   | `a1-011-winkel` | `01c348c66d1ad3075e8a797e852e97e8efcd868c84be0e49bbb6053b2c2c8199` | Unreviewed |
+## Source-backed draft families
 
-The pack file SHA-256 is
-`80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca`.
-Its A1 packaging and editorial review establish ownership and utility, not a
-meaning-level CEFR standard. The JSON dossier explicitly has no levels and
-`provider_approved: false`.
+| Family / split                               | Local input(s)                            | Lexical or grammatical support                                                                                                                                                                                                                           | Limit                                                                               |
+| -------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `tafel` / calibration                        | Pack table; authored plural example       | [ANW `tafel`](https://anw.ivdnt.org/article/tafel) confirms `tafels`                                                                                                                                                                                     | Pack A1 placement and morphology do not label the exact meaning                     |
+| `stad` / held-out                            | Pack city; authored plural example        | [ANW `stad`](https://anw.ivdnt.org/article/stad) confirms `steden`                                                                                                                                                                                       | Same limit                                                                          |
+| `straat` / calibration                       | Pack street; authored conflicting example | Pack `a1-010-straat`; [ANW `straat`](https://anw.ivdnt.org/article/straat) corroborates noun grammar                                                                                                                                                     | Conflict is an adversarial, locally authored draft, not a naturally occurring sense |
+| `winkel` / held-out                          | Pack shop; authored conflicting example   | Pack `a1-011-winkel`                                                                                                                                                                                                                                     | Direct ANW page was not reliably retrieved; conflict needs editorial review         |
+| `werk` / calibration                         | Pack work only                            | Pack `a1-013-werk`                                                                                                                                                                                                                                       | Proposed second sense withdrawn because no exact source was verified                |
+| `goed` / held-out                            | Pack good only                            | Pack `a1-039-goed`; [ANW `goed`](https://anw.ivdnt.org/article/goed) distinguishes grammatical uses                                                                                                                                                      | Proposed second sense withdrawn because a precise contrast was not supported        |
+| `schoolplein` / held-out                     | Schoolyard                                | [ANW sense 1.0](https://anw.ivdnt.org/article/schoolplein)                                                                                                                                                                                               | No independently graded context                                                     |
+| `de kat uit de boom kijken` / held-out       | Idiomatic waiting                         | [ANW sense 1.0](https://anw.ivdnt.org/article/de%20kat%20uit%20de%20boom%20kijken)                                                                                                                                                                       | Locally authored wording needs review                                               |
+| `een oogje in het zeil houden` / calibration | Watchful idiom                            | [Onze Taal](https://onzetaal.nl/taalloket/werkwoordelijke-uitdrukking) lists the idiom and meaning                                                                                                                                                       | Locally authored wording needs review                                               |
+| `aankomen` / calibration                     | Arrival; weight gain                      | [ANW grammar](https://anw.ivdnt.org/article/aankomen), [arrival usage](https://taaladvies.net/toekomen-of-aankomen/) and [weight-gain usage](https://taaladvies.net/bijkomen-of-verdikken-of-aankomen/)                                                  | Two contrasted drafts, not independent graded labels                                |
+| `meebrengen` / held-out                      | Bring along                               | [Van Dale usage](https://www.vandale.nl/blogs/taaladvies/meenemen-of-meebrengen) and [Onze Taal usage](https://onzetaal.nl/taalloket/koekjes-meegenomen-meegebracht)                                                                                     | Example and separable construction need editorial review                            |
+| `wortel` / held-out                          | Plant root; mathematical root             | [ANW senses 1.0 and 6.0](https://anw.ivdnt.org/article/wortel)                                                                                                                                                                                           | Two contrasted drafts, not independent graded labels                                |
+| `quotiënt` / calibration                     | Mathematical quotient                     | [ANW sense 1.0](https://anw.ivdnt.org/article/quoti%C3%ABnt)                                                                                                                                                                                             | Zero exact NT2Lex rows is only a missing-corpus probe, not proof of rarity          |
+| `zich wassen` / calibration                  | Wash oneself                              | [Onze Taal reflexive grammar](https://onzetaal.nl/taalloket/wederkerend-werkwoord) and [ANW `wassen`](https://anw.ivdnt.org/article/wassen)                                                                                                              | Reflexive use is optional; wording needs review                                     |
+| `zich schamen` / held-out                    | Feel ashamed                              | [Onze Taal reflexive grammar](https://onzetaal.nl/taalloket/wederkerend-werkwoord), [ANW `schamen`](https://anw.ivdnt.org/article/schamen) and [WNT entry](https://gtb.ivdnt.org/iWDB/search?actie=article_content&id=M062241&lemmodern=schamen&wdb=WNT) | Obligatory reflexive use is supported; wording needs review                         |
 
-## Independent lexical checks
+The six base pack entries derive from `packages/content/src/dutch-a1.json`,
+SHA-256 `80e416942dc3718f6f5d169b2966d0fd7f7b8825c4527b3f13c8caab002339ca`.
+Its A1 packaging establishes local provenance, not a meaning-level CEFR
+standard. Pack-linked plural and conflict examples, and all eleven authored
+sense examples, are original local drafts; lexical sources corroborate the
+target meaning or grammar without licensing the source's text for reuse.
 
-The [ANW article for `tafel`](https://anw.ivdnt.org/article/tafel) confirms
-the noun and plural `tafels`, and [the `stad` article](https://anw.ivdnt.org/article/stad)
-confirms plural `steden`. Both articles currently expose grammar without a
-meaning profile; they corroborate morphology, not CEFR or a new inflection
-input. [The `werk` article](https://anw.ivdnt.org/article/werk) also lacks a
-meaning profile, so the proposed second sense is unsupported there.
-[The `goed` article](https://anw.ivdnt.org/article/goed) distinguishes
-adjectival from nominal use, but has no meaning profile; the pool was
-corrected from an adjectival/adverbial to an adjectival/nominal proposal.
-[The `straat` article](https://anw.ivdnt.org/article/straat) confirms the
-noun and plural but no meaning profile. The exact `winkel` ANW page was not
-reliably retrievable in this screen; the pack entry remains the local source.
+The conflict examples pair Dutch and English sentences that agree with each
+other but do not illustrate their linked lemma/gloss. `abstain` is a
+provisional expectation for policy design, not an adjudicated output.
 
-Four proposed authored families have an ANW sense anchor:
+## Actual slice coverage and remaining work
 
-| Candidate                   | ANW evidence                                                                   | What it establishes                                         | Still missing                                                           |
-| --------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `schoolplein`               | [sense 1.0](https://anw.ivdnt.org/article/schoolplein)                         | School-adjacent outdoor area, compound structure and plural | Draft review and independent graded context                             |
-| `de kat uit de boom kijken` | [sense 1.0](https://anw.ivdnt.org/article/de%20kat%20uit%20de%20boom%20kijken) | Idiomatic waiting/observing use                             | Draft review, usage rights and graded context                           |
-| `wortel`                    | [sense 6.0](https://anw.ivdnt.org/article/wortel)                              | Mathematical root distinct from plant/carrot senses         | Draft review and independent graded context                             |
-| `quotiënt`                  | [sense 1.0](https://anw.ivdnt.org/article/quoti%C3%ABnt)                       | Mathematical quotient; confirms the word is documented      | Draft review and graded context; zero NT2Lex rows does not prove rarity |
+The 21 draft inputs cover both splits for ordinary, inflections,
+reflexive-verbs, sense-pairs, separable-verbs, idioms and
+conflicting-examples. Five proposed slice/split cells still have **no exact
+input**:
 
-[ANW `schamen`](https://anw.ivdnt.org/article/schamen) marks the verb
-reflexive, and [ANW `aankomen`](https://anw.ivdnt.org/article/aankomen)
-shows separated forms such as `komt aan`. Neither page supplies a meaning
-profile for the exact proposed sense. [ANW `wassen`](https://anw.ivdnt.org/article/wassen)
-distinguishes the cleaning verb from other homographs but does not by itself
-verify the proposed `zich wassen` construction. All three therefore remain
-grammar-supported leads, not reviewed sense inputs.
+| Split       | Missing slice | Proposed family still requiring an exact source/input |
+| ----------- | ------------- | ----------------------------------------------------- |
+| calibration | compounds     | `treinstation`                                        |
+| calibration | specialized   | `cel`                                                 |
+| calibration | ambiguous     | `slot`                                                |
+| held-out    | rare-missing  | `zygomatisch`                                         |
+| held-out    | ambiguous     | `blad`                                                |
 
-The other authored leads (`meebrengen`, `treinstation`, the first idiom,
-`cel`, `zygomatisch`, `slot` and `blad`) remain without a verified exact
-sense dossier in this screen. A failed or redirected lookup is not evidence
-that a Dutch meaning is absent. `quotiënt` now has a lexical sense reference
-despite its zero exact NT2Lex rows: its `rare-missing` proposal can at most
-test missing _corpus_ evidence, subject to a prespecified slice definition.
-
-## Locally authored draft inputs
-
-Four entries with ANW sense anchors now have original, locally authored
-gloss/example drafts in
-[the separate authored dossier](D11-authored-sense-inputs-20261004.json).
-The exact content parses under `DictionaryContent`; canonical inputs and
-SHA-256 were regenerated and rechecked together with the six pack bindings.
-The ANW pages support the lexical sense, not the CEFR level or the English
-wording of these drafts. None of these entries is editorially reviewed,
-licensed for external transfer, or approved for the provider.
-
-| Split       | Authored candidate          | ANW sense | Input SHA-256                                                      |
-| ----------- | --------------------------- | --------- | ------------------------------------------------------------------ |
-| held_out    | `schoolplein`               | 1.0       | `253b533700172e642b1a71f6047396191d334fc006ad7ff13ba9d9b77d3bf723` |
-| held_out    | `de kat uit de boom kijken` | 1.0       | `0484a6614115a9625c6024f5bf022b46146a6c779fd58d8bd03782f383235538` |
-| held_out    | `wortel` (mathematics)      | 6.0       | `060f9716579e4f74a23be60ec68f9c7d1bf9ac7def266851a24b31963a1a03b5` |
-| calibration | `quotiënt`                  | 1.0       | `a1ad352759aa2095b67d09b459f1ab6137808109b374ed1381300e4a46d565b0` |
-
-Across both dossiers, 10 distinct draft inputs have valid canonical
-bindings, unique IDs/hashes and no cross-split family leakage. The other
-candidate families and all designed variants remain open; full slice
-coverage has only been proposed in the inventory, not realized in the
-input dossiers.
+The five proposed families above have no verified exact sense dossier in
+this screen. [ANW `station`](https://anw.ivdnt.org/article/station) lists
+`treinstation` as a compound, but this indirect reference is not an exact
+entry. A failed lookup is not evidence that a Dutch meaning is absent.
+Replace unsupported candidates if reliable references cannot be found.
+Actual slice counts do not satisfy minimum denominators, and the 21 drafts
+have no reviewed levels, independent meaning-level graded evidence,
+approved provider scope or frozen policy. D11.2 remains unqualified.
 
 ## Next exact action
 
-Define owner-authored, sense-distinguishing inputs for the remaining viable
-`D` rows;
-replace candidates whose senses cannot be verified. Keep related variants
-in one family/split. Re-run canonical validation and bind each input to its
-source. Obtain independently graded learning evidence where possible and
-record unresolved cases honestly. Only after this source work can the
-reviewed policy, minimum denominators and held-out fixture be frozen.
+Find precise references and author inputs for the five missing cells, or
+replace their families with defensible candidates while preserving split
+isolation. Revalidate canonical hashes and source rights. Then collect
+independently graded meaning-level evidence, record honest unresolved cases,
+review labels and freeze the policy/minimum denominators before any new
+provider scoring. The two remaining personal Gemini attempts apply only to
+the original 24 pilot meanings; these 21 drafts are not approved for
+transmission.

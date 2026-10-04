@@ -1,5 +1,25 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 expanded local source/input screen.** Branch
+`feature/shared-dictionary-schema`, starting HEAD `af70ebb`. The latest
+[pack v3](evidence/D11-new-reference-pack-inputs-20261004-v3.json) and
+[authored v4](evidence/D11-authored-sense-inputs-20261004-v4.json)
+dossiers contain 21 unreviewed, provider-unapproved draft inputs in 15
+family-separated groups. Deno verified parsing, canonical strings, SHA-256,
+unique IDs/hashes and split isolation. The updated
+[source screen](evidence/D11-sense-source-screen-20261004.md) records the
+primary lexical references, corrected sense-pair families (`aankomen` and
+`wortel`), and five empty slice/split cells: calibration compounds,
+specialized and ambiguous; held-out rare-missing and ambiguous. Earlier
+dossier versions are historical snapshots. **Next GPT-6.1 Sol / High:**
+source and draft exact inputs for those five cells or replace unsupported
+families, then obtain independent graded meaning evidence, review labels
+and freeze policy/minimum denominators. No new value was sent to Gemini.
+D11 in_progress, D12 pending, quality unqualified, worker/schedule off.
+Two personal Gemini attempts remain only for the original 24 meanings;
+no new provider inputs are authorized. No support inquiry, push, PR,
+migration, publication or deployment. Local evidence only.
+
 **2026-10-04 — D11 four authored sense drafts bound locally.**
 From base HEAD `5d0c297`, added
 [four source-anchored draft inputs](evidence/D11-authored-sense-inputs-20261004.json)
