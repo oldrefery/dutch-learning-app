@@ -19,8 +19,11 @@ any new provider sample needs separate exact-input/cost approval.
 **Next model: GPT-6.1 Sol / High.** D12 pending, worker/schedule off.
 Two Gemini attempts remain for the original 24 only; no provider call,
 new input transmission, support inquiry, push, PR, migration,
-publication or deployment. Local evidence pending scoped commit;
-preexisting `.playwright-cli/` remains untouched.
+publication or deployment. Evidence was saved in local commit
+`b019e82`; normal hooks passed mobile 156 suites / 1796 tests / 22
+snapshots and web 86 suites / 780 tests with one existing skip.
+Post-commit worktree contains only preexisting untracked
+`.playwright-cli/`.
 
 **2026-10-04 — D11 watch-and-wait idiom source follow-up.** Starting
 from local HEAD `8394505` on `feature/shared-dictionary-schema`, only

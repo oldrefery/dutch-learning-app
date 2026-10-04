@@ -2852,3 +2852,8 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   diagnostic. Qualification and worker/schedule stay off; D12 pending.
   Two Gemini attempts remain for the original 24 only. No support
   inquiry, push, PR, migration, publication or deployment.
+- Evidence commit `b019e82` passed normal hooks: mobile 156 suites /
+  1796 tests / 22 snapshots and web 86 suites / 780 tests with one
+  existing skip. Scoped formatting, Markdown links and `git diff
+--check` passed. Post-commit worktree contains only preexisting
+  untracked `.playwright-cli/`; persistence is local-only.
