@@ -2616,3 +2616,25 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   remains open and unqualified; worker/schedule disabled. Two Gemini
   attempts remain scoped to the original 24. No provider call,
   support inquiry, push, PR, migration, publication or deployment.
+
+## 2026-10-04 — D11 source-admission review
+
+- Resumed from `732bb5e` on `feature/shared-dictionary-schema`;
+  preexisting `.playwright-cli/` was the only untracked path. GPT-6.1
+  Sol / High was announced. The [screening rules](evidence/D11-source-admission-rules-20261004.md)
+  require inspected single-level source material, exact form/sense,
+  stable locator and reference-only rights treatment for a preliminary
+  graded-context row.
+- KU Leuven's `meebrengen` task was confirmed to span A1/A2 indexes
+  and 1.1/1.2 goals; its separate worksheet remained inaccessible to
+  direct inspection. Boom's first-party `Klare taal plus` preview
+  contains the weight-gain `aankomen` sense, but its book-level grade
+  spans A2–B2. Lingua.com's `treinstation` A2/B1 conflict remains.
+  These are leads, not new graded rows or CEFR labels.
+- Next GPT-6.1 Sol / High: seek single-level exact contexts for the
+  three reviewed leads and other eight lexical/form gaps, then
+  review source rights and independent meaning-level reference
+  quality. D11.2 in progress, quality unqualified, worker/schedule
+  off. Two Gemini attempts remain for the original 24 only; no
+  provider call, support inquiry, push, PR, migration, publication or
+  deployment.

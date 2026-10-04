@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 source-admission review.** Starting from HEAD
+`732bb5e` on `feature/shared-dictionary-schema`, only the preexisting
+`.playwright-cli/` was untracked. The
+[screening rules](evidence/D11-source-admission-rules-20261004.md)
+require directly inspected, single-level source material and exact
+meaning/form before a preliminary ledger observation. A KU Leuven
+`meebrengen` activity spans 1.1/1.2 and its separate worksheet remains
+uninspected. A first-party Boom preview demonstrates weight-gain
+`aankomen`, but the publisher grades the book across A2–B2 without a
+page-specific level. Lingua.com's `treinstation` index/PDF grades
+conflict. None enters the graded ledger; it remains fifteen observations
+for twelve of 27 inputs, with four structural probes and eleven other
+gaps. **Next GPT-6.1 Sol / High:** seek single-level exact contexts
+for these three and the other eight gaps, then resolve source rights
+and meaning-level reference quality. D11.2 in_progress, D12 pending,
+quality unqualified, worker/schedule off. Two Gemini attempts remain
+only for the original 24; no provider call or support inquiry. No
+push, PR, migration, publication or deployment. Local evidence only.
+
 **2026-10-04 — D11 plural-form source follow-up.** Starting from
 `c115ba0`, the [graded ledger](evidence/D11-graded-context-ledger-20261004.json)
 now adds the exact plural `tafels` in a first-party DISK / Boom A2
