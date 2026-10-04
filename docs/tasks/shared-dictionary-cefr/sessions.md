@@ -2833,3 +2833,22 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   source counts, local links, scoped formatting and `git diff --check`
   passed. Post-commit worktree contains only preexisting untracked
   `.playwright-cli/`; persistence is local-only.
+
+## 2026-10-04 — D11.2 specialist disposition and gate decision
+
+- Resumed from `28d6439` on `feature/shared-dictionary-schema` with
+  only preexisting `.playwright-cli/` untracked. GPT-6.1 Sol / High
+  was announced before work.
+- Checked first-party ANW mathematical senses, Dutch mathematics
+  teaching and dental domain use against CEFR-language source rules.
+  The [specialist screen](evidence/D11-specialist-gap-disposition-20261004.md)
+  leaves three exact inputs unsupported for positive levels. No new
+  graded-context row or provider call was made.
+- The [quality-gate decision](evidence/D11-quality-gate-decision-20261004.md)
+  records 27 unreviewed candidates with one to four per required
+  slice/split cell, no independent meaning-level gold and no permission
+  to transmit new inputs. D11.2 remains unchecked and is blocked on
+  the owner's choice of the original gate or a narrower offline
+  diagnostic. Qualification and worker/schedule stay off; D12 pending.
+  Two Gemini attempts remain for the original 24 only. No support
+  inquiry, push, PR, migration, publication or deployment.

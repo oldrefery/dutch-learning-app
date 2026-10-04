@@ -1,5 +1,27 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11.2 specialist disposition and quality-gate decision.**
+Starting from local HEAD `28d6439` on `feature/shared-dictionary-schema`,
+only preexisting `.playwright-cli/` was untracked. The
+[specialist screen](evidence/D11-specialist-gap-disposition-20261004.md)
+checked exact mathematical `wortel`, `quotiënt` and medical
+`zygomatisch` senses but found no admissible CEFR-graded Dutch learner
+context; all three remain unsupported for positive labels. The ledger
+stays at 24 observations / 20 of 27 inputs. The
+[quality-gate decision](evidence/D11-quality-gate-decision-20261004.md)
+reconciles the one-to-four items per slice/split cell, lack of
+independent meaning-level gold, and narrow provider authorization.
+**D11.2 blocked pending owner choice:** retain its independent-quality
+gate or explicitly narrow it to assistant-reviewed offline diagnostics
+with `qualified: false`. If the narrower path is chosen, prepare a
+source-bound provisional fixture and prespecified diagnostic policy;
+any new provider sample needs separate exact-input/cost approval.
+**Next model: GPT-6.1 Sol / High.** D12 pending, worker/schedule off.
+Two Gemini attempts remain for the original 24 only; no provider call,
+new input transmission, support inquiry, push, PR, migration,
+publication or deployment. Local evidence pending scoped commit;
+preexisting `.playwright-cli/` remains untouched.
+
 **2026-10-04 — D11 watch-and-wait idiom source follow-up.** Starting
 from local HEAD `8394505` on `feature/shared-dictionary-schema`, only
 preexisting `.playwright-cli/` was untracked. A directly inspected

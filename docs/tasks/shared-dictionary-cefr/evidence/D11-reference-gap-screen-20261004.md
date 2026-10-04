@@ -10,6 +10,10 @@ expectation is a reviewed **abstention rule**, not a positive CEFR level.
 The other three need a sense-matched learning context or an explicit
 unsupported disposition. The assistant has not assigned a word-sense
 CEFR label or qualified the provider.
+The [specialist gap disposition](D11-specialist-gap-disposition-20261004.md)
+now records the bounded search and leaves all three unsupported for
+positive levels without converting source absence into an expected CEFR
+abstention label.
 The [four-input structural draft](D11-structural-abstention-draft-20261004.json)
 binds these preliminary abstention expectations to exact input hashes.
 It is assistant-screened, not independent quality gold or an operational
@@ -73,4 +77,6 @@ Lest Best guide copy remains unadmitted pending first-party verification.
 4. Obtain meaning-level review independent of the model under test.
    The user's no-teacher instruction permits assistant screening, but
    assistant screening is not independent quality gold. Until that gate
-   is met, D11.2 remains in progress and the worker stays disabled.
+   is met, D11.2 remains blocked and the worker stays disabled.
+   The [quality-gate decision](D11-quality-gate-decision-20261004.md)
+   records the owner choice now needed for any narrower offline outcome.
