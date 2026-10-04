@@ -46,6 +46,26 @@
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
   "items": [
     {
+      "input_id": "candidate-treinstation",
+      "input_sha256": "a4f3f207ec6abcddfa96e10ebe09907aee2335b7f551cb3370c6c7a14dfc919b",
+      "family": "treinstation",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "DutchEnglish.com",
+        "url": "https://dutchenglish.com/lessons/dutch-travel-phrases",
+        "section_heading": "Transportation",
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "asking for the location of a train station in a travel phrase exercise",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
       "input_id": "candidate-cel-biological",
       "input_sha256": "ff142d8d04d077046acdc432c061e6c73ca9e7784b6ebea514e4285d2d2bec08",
       "family": "cel",

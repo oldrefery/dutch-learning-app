@@ -12,12 +12,20 @@ their independent-review and operational gates.
 
 An observation may enter the preliminary ledger only when the source is
 directly inspectable, the publisher and stable document/page locator are
-known, the material or exercise has one unambiguous stated level, and
+known, the material or exercise has one unambiguous stated **language-learning**
+level on a CEFR-compatible scale, and
 the exact canonical input's sense and relevant form occur in that
 source. Record whether the occurrence is a contextual use, glossary
 use, distractor or other weak exposure; these types have different
 strength. Record source rights as reference-only unless reviewed reuse
 permission exists. Store only links, locators and original paraphrases.
+
+Before treating an A1/A2/B1/B2 mark as a language level, verify what
+the publisher's scale measures. Matching CEFR letters alone are not
+enough: [CED-Groep Nieuwsrekenen](https://www.nieuwsbegrip.nl/nieuwsrekenen-stappenplan)
+uses these marks for school mathematics problem levels. Its
+[A2 context sheet](https://www.nieuwsbegrip.nl/sites/default/files/download-files/contextkraker%20niveau%20A2.pdf)
+contains `treinstation`, but no CEFR-language observation follows.
 
 Do not choose one level from a range, a mixed-goal activity, conflicting
 HTML/PDF labels or an unverified search excerpt. Mark those cases as
@@ -58,7 +66,10 @@ produce an acceptable level set.
 | `candidate-aankomen-weight`  | [Boom's `Klare taal plus` preview](https://www.nt2.nl/media/48/inkijkexemplaar_klare_taal_plus.pdf), PDF pages 6–7, contrasts arriving with gaining weight and has a weight-change exercise.                                                                                                                                                                                                                                                                                                              | The [publisher's product page](https://www.boom.nl/nt2/100-17379_Klare-taal-plus) spans A2–B1 and B1 onward, with a B2 exit level; the inspected pages have no individual CEFR label. |
 | `candidate-treinstation`     | Lingua.com's [reading index](https://lingua.com/nl/nederlands/lezen/) and [story PDF](https://lingua.com/pdf/nederlands-tekst-weg-vragen.pdf) refer to the same exact-use story.                                                                                                                                                                                                                                                                                                                          | The index categorizes it as A2, while the PDF labels it B1. Neither label is chosen by precedence without publisher reconciliation.                                                   |
 
-The three inputs remain in the lexical/form gap set. The independent
+The `meebrengen` and weight-gain `aankomen` inputs remain in the
+lexical/form gap set. The Lingua.com observation remains excluded,
+although a separate [A2 language-lesson observation](D11-train-station-source-screen-20261004.md)
+now exists for `treinstation`. The independent
 meaning-level review, adequate slice denominators, prespecified
 thresholds, rights check and separately approved provider sample are
 still missing. D11.2 remains unqualified and the worker/schedule stay

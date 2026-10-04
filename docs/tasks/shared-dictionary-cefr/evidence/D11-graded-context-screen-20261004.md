@@ -2,8 +2,8 @@
 
 ## Result
 
-The [bound ledger](D11-graded-context-ledger-20261004.json) records seventeen
-preliminary sense-matched observations for fourteen exact hashed D11 inputs.
+The [bound ledger](D11-graded-context-ledger-20261004.json) records eighteen
+preliminary sense-matched observations for fifteen exact hashed D11 inputs.
 Seven appear in materials that [Stichting Taalmenu identifies as A1](https://nt2taalmenu.nl/nt2-a1-menu/)
 or labels A2 in the document itself. Two corroborating observations come
 from KleurRijker's [TaalCompleet A1 publisher preview](https://www.nt2.nl/nl/alle-uitgaven/101-417_Taalcompleet/100-17261_TaalCompleet-A1),
@@ -15,13 +15,16 @@ uses plural `tafels` in a definition in its A2 wordlist. The observations
 also include a directly inspected [DutchEnglish.com A2 nature lesson](https://dutchenglish.com/lessons/dutch-nature-vocabulary)
 that lists singular plant-root `de wortel` under plant vocabulary. A
 [LingVo.club B1 science reading](https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1)
-uses singular biological `cel`. They span twelve families and seven
+uses singular biological `cel`. A second DutchEnglish.com travel lesson
+uses `treinstation` in a station-location question. They span thirteen
+families and seven
 publishers. They were screened by the assistant from the source pages
 before any provider run on these inputs. They remain
 **source-level exposure signals**, not reviewed word-sense CEFR labels.
 
 | Input                       | Material and page                                                                                                                                                 | Meaning-match note                                                         | Strength                             |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------ |
+| `candidate-treinstation`    | [DutchEnglish.com A2 travel-phrases lesson, “Transportation”](https://dutchenglish.com/lessons/dutch-travel-phrases)                                              | Asking where the train station is                                          | Contextual use; self-graded lesson   |
 | `candidate-cel-biological`  | [LingVo.club B1 neuroscience reading](https://lingvo.club/nl/articles/nieuwe-ontdekking-hoe-zenuwcellen-pijn-inschakelen-82738916?level=b1)                       | Singular biological cell in the reading body                               | Contextual use; self-graded text     |
 | `candidate-wortel-plant`    | [DutchEnglish.com A2 nature lesson, “Basic Nature Words in Dutch”](https://dutchenglish.com/lessons/dutch-nature-vocabulary)                                      | Singular plant root among plant/tree vocabulary                            | Glossary use; short self-graded list |
 | `candidate-tafel-plural`    | [DISK / Boom A2 wordlist, PDF page 3](https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf)                                                         | Plural furniture tables in a restaurant definition                         | Glossary use; exact inflected form   |
@@ -45,6 +48,9 @@ DutchEnglish.com list is a weak self-graded exposure signal; see the
 [plant-root source screen](D11-plant-root-source-screen-20261004.md).
 The LingVo.club text is also self-graded and needs independent quality
 review; see the [cell source screen](D11-biological-cell-source-screen-20261004.md).
+The [train-station source screen](D11-train-station-source-screen-20261004.md)
+keeps contradictory Lingua.com grades and a school mathematics A2 mark
+outside the language-level ledger.
 The DISK occurrence is part of a definition for another headword, not a
 graded entry for `tafels`; it confirms exposure to the plural form only.
 Each row in the JSON ledger carries its exact input SHA-256, source URL,
@@ -71,7 +77,8 @@ accuracy thresholds.
   lists _De weg naar het treinstation_ under A2, but its
   [downloaded PDF](https://lingua.com/pdf/nederlands-tekst-weg-vragen.pdf)
   labels the same text B1. The use of `treinstation` is exact, but the
-  material-level conflict prevents a graded ledger row until resolved.
+  material-level conflict prevents a row from that source until resolved;
+  the separate DutchEnglish.com row does not settle it.
 - The Van Dale answer key also lists `steden` in an A2 plural-form answer,
   but that isolated form has no city context. The ledger uses the B1
   Randstad passage instead. Its arrival example supports only the
@@ -93,10 +100,11 @@ accuracy thresholds.
 
 ## Next action
 
-Seek exact contexts for the remaining 13 inputs across independent graded
-sources, especially the contrasting weight-gain `aankomen` sense and the
-ambiguous/rare-missing slices. Resolve the Lingua.com `treinstation`
-level conflict from first-party metadata or keep it ungraded. Keep
+Seek exact contexts for the eight remaining lexical/form gaps across
+independent graded sources, especially the contrasting weight-gain
+`aankomen` sense and the rare-missing slices. Resolve the Lingua.com
+`treinstation` source conflict from first-party metadata or leave that
+source excluded. Keep
 nonmatches and missing evidence explicit. After source rights and meaning
 match are reviewed, decide which inputs can receive an acceptable level
 set or abstention expectation and set sufficient slice denominators.

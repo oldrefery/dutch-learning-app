@@ -2681,3 +2681,25 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   worker/schedule disabled. Two Gemini attempts remain for the
   original 24 only. No provider call, support inquiry, push, PR,
   migration, publication or deployment.
+
+## 2026-10-04 — D11 train-station source follow-up
+
+- Resumed from `094a129` on `feature/shared-dictionary-schema`;
+  only preexisting `.playwright-cli/` was untracked. GPT-6.1 Sol /
+  High was announced before D11.2 work.
+- Directly inspected a DutchEnglish.com A2 travel lesson using exact
+  `treinstation` in a location question. The
+  [source screen](evidence/D11-train-station-source-screen-20261004.md)
+  records why Lingua.com's A2/B1 contradiction remains excluded and
+  why a Nieuwsrekenen school-mathematics “A2” is not a CEFR level.
+  The [admission rules](evidence/D11-source-admission-rules-20261004.md)
+  now require verifying the publisher's level taxonomy.
+- The [ledger](evidence/D11-graded-context-ledger-20261004.json)
+  contains eighteen preliminary observations for fifteen exact
+  inputs; four structural probes and eight lexical/form gaps remain.
+  No word-sense CEFR level or independent gold was assigned.
+  Next GPT-6.1 Sol / High: pursue the eight gaps and independent
+  meaning-level review and denominator policy. D11.2 remains in
+  progress, quality unqualified, worker/schedule disabled. Two Gemini
+  attempts remain for the original 24 only; no provider call,
+  support inquiry, push, PR, migration, publication or deployment.

@@ -1,5 +1,26 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 train-station source follow-up.** Starting from
+local HEAD `094a129` on `feature/shared-dictionary-schema`, only
+preexisting `.playwright-cli/` was untracked. The directly inspected
+[DutchEnglish.com A2 travel lesson](https://dutchenglish.com/lessons/dutch-travel-phrases)
+adds one weak exact-form `treinstation` contextual observation to the
+[ledger](evidence/D11-graded-context-ledger-20261004.json): eighteen
+preliminary observations for fifteen of 27 inputs across seven
+publishers. The [source screen](evidence/D11-train-station-source-screen-20261004.md)
+keeps Lingua.com's A2/B1 conflict excluded and rejects an unrelated
+school mathematics “A2” mark as non-CEFR. The
+[admission rules](evidence/D11-source-admission-rules-20261004.md)
+now require verifying the level taxonomy. Four structural probes and
+eight lexical/form gaps remain. **Next GPT-6.1 Sol / High:** seek
+single-level exact language contexts for the eight gaps, prioritizing
+`meebrengen`, weight-gain `aankomen` and prison-cell `cel`; then
+resolve independent meaning-level review and denominators. D11.2
+in_progress, D12 pending, quality unqualified, worker/schedule off.
+Two Gemini attempts remain only for the original 24; no provider call,
+support inquiry, push, PR, migration, publication or deployment.
+Local-only evidence.
+
 **2026-10-04 — D11 biological-cell source follow-up.** Starting from
 local commit `927fbda` on `feature/shared-dictionary-schema`, only
 preexisting `.playwright-cli/` was untracked. A directly inspected
