@@ -15,6 +15,7 @@ const response = (
     job_id: request.job_id,
     input_sha256: request.input_sha256,
     profile_sha256: request.profile_sha256,
+    ambiguous: false,
     candidate,
   }),
 })
@@ -99,6 +100,42 @@ Deno.test(
     assertEquals(await evaluateCefrLeases([job], options), [
       { outcome: 'estimated', level: 'A2', confidence: 0.9 },
     ])
+  }
+)
+
+Deno.test(
+  'missing or malformed ambiguity cannot authorize an estimate or discard usage',
+  async () => {
+    const { job, options } = await setup()
+    const usage = {
+      provider_request_id: 'synthetic-ambiguity-receipt',
+      input_tokens: 10,
+      output_tokens: 5,
+      reasoning_tokens: 0,
+    }
+    const results = []
+    for (const ambiguous of [undefined, null, 'true', 'false', 0, {}, true]) {
+      const [result] = await evaluateCefrLeases([job], {
+        ...options,
+        provider: request => ({
+          kind: 'response',
+          body: JSON.stringify({
+            ...JSON.parse(response(request).body),
+            ambiguous,
+          }),
+          usage,
+        }),
+      })
+      results.push(result)
+    }
+    assertEquals(
+      results,
+      Array.from({ length: 7 }, () => ({
+        outcome: 'unknown',
+        reason: 'ambiguous_input',
+        usage,
+      }))
+    )
   }
 )
 

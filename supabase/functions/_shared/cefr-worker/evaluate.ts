@@ -134,7 +134,7 @@ const evaluateResponse = async (
     return { outcome: 'unknown', reason: 'response_binding_mismatch' }
   const decision = await decideCandidate(
     raw.candidate,
-    { profile: request.profile, ambiguous: raw.ambiguous === true },
+    { profile: request.profile, ambiguous: raw.ambiguous !== false },
     qualification
   )
   return decision.status === 'estimated'

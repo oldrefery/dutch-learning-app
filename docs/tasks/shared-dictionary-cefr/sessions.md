@@ -2923,3 +2923,27 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   Exact-hash feedback, scoped formatting, local links and
   `git diff --check` passed. Post-commit worktree contains only
   preexisting untracked `.playwright-cli/`; persistence is local-only.
+
+## 2026-10-04 — qualification boundary review and ambiguity repair
+
+- Resumed from `9a47b16`, `feature/shared-dictionary-schema`, with only
+  preexisting `.playwright-cli/` untracked. Recommended Astra / High was
+  announced; no independently verified picker attribution or subagent.
+- The [review](evidence/D11-qualification-boundary-review-20261004.md)
+  reproduced six incorrect estimates when ambiguity was missing/malformed,
+  then required explicit false. Regression also verifies retained usage.
+  Positive fake worker/SQL fixtures now supply the explicit flag.
+- Passed 73 cached Deno, 24 fake diagnostic and 47 PostgreSQL tests;
+  scoped Deno lint, MJS ESLint, Prettier and diff checks passed. Initial
+  Node 20 and shared-memory startup failures were resolved with Node
+  24.20.0 and removal of only the current failed startup's unattached
+  segment. Other segments, retained databases and host settings unchanged.
+- Local worker mechanics were already implemented/reviewed on October 3.
+  Next GPT-6.1 Sol / High: reconcile D11.3 acceptance against that code;
+  do not restart implementation. D11.2 remains diagnostically closed,
+  quality unqualified, D11 in_progress and D12 pending. No paid call,
+  new transmission, support inquiry, worker activation or remote write.
+- Scoped local checkpoint uses AUTH-18 and normal commit hooks. Exact
+  commands, result counts and source hashes are durable in the review.
+  Preexisting `.playwright-cli/` remains untouched; no external operation
+  is pending. No push, PR, hosted migration, publication or deployment.

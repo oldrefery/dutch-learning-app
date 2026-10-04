@@ -462,6 +462,7 @@ test('fake provider integrates qualified selection, bounded retries and fenced c
           job_id: request.job_id,
           input_sha256: request.input_sha256,
           profile_sha256: request.profile_sha256,
+          ambiguous: false,
           candidate: { level: 'A2', confidence: 0.9 },
         }),
       }

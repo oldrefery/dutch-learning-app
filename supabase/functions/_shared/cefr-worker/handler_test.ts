@@ -60,6 +60,7 @@ const setup = async () => {
         job_id: r.job_id,
         input_sha256: r.input_sha256,
         profile_sha256: r.profile_sha256,
+        ambiguous: false,
         candidate: { level: 'A2', confidence: 0.9 },
       }),
     }
@@ -326,6 +327,7 @@ Deno.test(
         job_id: r.job_id,
         input_sha256: r.input_sha256,
         profile_sha256: r.profile_sha256,
+        ambiguous: false,
         candidate: { level: 'A2', confidence: 0.9 },
         usage: { input_tokens: 0 },
       }),

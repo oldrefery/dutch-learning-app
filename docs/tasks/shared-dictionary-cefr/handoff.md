@@ -1,5 +1,30 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — qualification boundary reviewed; ambiguity repair verified.**
+Starting `9a47b16`, `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
+The [review](evidence/D11-qualification-boundary-review-20261004.md)
+reproduced and fixed a P2: missing/nonboolean ambiguity in a bound
+worker reply could become an estimate. Only explicit `ambiguous: false`
+now permits that decision; verified usage survives unknown results.
+Checks passed: 73 Deno, 24 fake diagnostic and 47 PostgreSQL tests,
+plus scoped lint/format/diff checks. SQL startup initially hit the host
+shared-memory limit; removal of only the unattached segment from this
+attempt restored the disposable test environment. No retained database
+or host configuration changed. Source hashes are recorded in the review.
+
+**Next model: GPT-6.1 Sol / High.** Resume D11.3 by reconciling its
+acceptance criteria against the already implemented queue/worker and
+October 3 budget/concurrency review. Do not rebuild completed mechanics.
+D11.3 remains the first unchecked acceptance checkpoint; D11.2 stays
+closed diagnostically, independent quality remains open, D12 pending.
+The stale fresh-implementation instruction in earlier handoffs is
+superseded. Worker/schedule remain off; two Gemini attempts remain for
+the original 24 only. No provider call, new transmission, support inquiry,
+push, PR, hosted migration, publication or deployment. Local checkpoint
+includes the review, source inventory, five scoped code/test files and
+stage/session records; ordinary commit hooks apply. Preexisting untracked
+`.playwright-cli/` remains untouched. No external operation is pending.
+
 **2026-10-04 — owner learning-level clarification.** Starting from
 local HEAD `52a5838` on `feature/shared-dictionary-schema`, only
 preexisting `.playwright-cli/` was untracked. The owner clarified that
