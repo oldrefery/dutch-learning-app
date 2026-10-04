@@ -3080,3 +3080,22 @@ QA source copy; inspect timestamped build logs before repeating. Private runner
 copies and runtime receipts under `d12-verification-20261004`. AUTH-18 local
 checkpoint only; no push/PR/hosted mutation/provider call/CEFR activation.
 D01 release gates and D12 runtime exit remain open. `.playwright-cli/` unrelated.
+
+## 2026-10-04 — D12 runtime upgrade and preservation in progress
+
+Matrix commit `e09f5ca`, normal hooks pass. Retained synthetic database upgraded
+with three D11 migrations in one transaction; all eight prior table projections
+identical, CEFR disabled/no jobs/methods/usage. Web UI Easy on huis, reload and
+two themes pass. Two authenticated owners sharing zeil retain separate progress;
+foreign review denied, owner retry idempotent, foreign history hidden. Exactly
+two expected server events. Browser closed; local proxy/web and four task services
+remain running. Source SHA-256 matches 561 files in the private native copy.
+Android new APK built/installed without clearing data; 24-word complete projection
+unchanged. First cold flow failed on System UI ANR; snapshot equal; retry running
+after conditional Wait and task reverse port restoration. iOS old app UI created
+one pending Good on duin, event/command `bacdf0c6-95e6-440c-a043-b58bc5afd470`;
+coherent pending DB backup saved and old app stopped. Do not repeat that flow.
+New iOS build remains running. Proxy REST is blocked until upgrade/restart checks
+complete. Inspect `native-runtime.json`, current build logs, native intent receipt
+and flow logs under private D12 root before any retry. First incomplete D12.3;
+recommended Astra / High. No hosted operation, paid/provider call or activation.

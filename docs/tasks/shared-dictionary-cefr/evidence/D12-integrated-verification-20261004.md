@@ -125,3 +125,23 @@ snapshots contain local QA configuration and must remain private. No database
 migration, content reset or data copy was performed. Next: start exact four task
 services, capture baseline, rebuild both native apps, then verify retained state
 through update/offline restart before runtime acceptance.
+
+### Retained QA database upgrade
+
+Local commit `e09f5ca` preserves the matrix fixes; normal hooks passed mobile
+1796 tests/22 snapshots and web 780 tests/one existing skip. Four retained QA
+services are now running on verified loopback bindings. Full private backup
+`retained-before.sql` captured before applying the three previously missing D11
+migrations in one transaction, including migration ledger entries. Receipt
+`local-migration-receipt.json` records exact original SQL hashes and commit.
+All eight captured table projections compare identically afterward (28 words,
+22 content states, nine collections, four access rows and empty review tables).
+CEFR control is disabled with null policy and zero methods/jobs/usage; no schedule
+or worker was started. This is local synthetic upgrade evidence only.
+
+Both platform prebuilds and CocoaPods completed in the private QA copy. Android
+and iOS Release builds are running; installed apps remain unchanged. Browser
+first navigation/snapshot timed out during concurrent native compilation, then
+the login page rendered with zero console errors. No successful runtime acceptance
+is claimed from those setup attempts. Private `web-runtime.json` records exact
+runner/proxy/web PIDs and source copy; new named browser session `d12-local-qa`.

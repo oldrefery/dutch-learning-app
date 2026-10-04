@@ -14,10 +14,23 @@ actual browser and release/rollback acceptance. Native source copy refreshed;
 installed apps unchanged. Retained DB/Kong are replaced with loopback-only
 containers preserving the exact volume and original stopped backups; private
 `d12-verification-20261004/retained-loopback.json` records IDs and phases.
-The four exact task services are being started; inspect state before retries.
-HTTP/PG disposable test containers are removed; assigned devices remain off.
-Test/dependency/document changes are local and not yet committed; unrelated
-`.playwright-cli/` must stay unstaged. AUTH-18 permits scoped checkpoints.
+The four exact task services run on loopback; three D11 migrations applied
+atomically to this synthetic database, eight table snapshots identical, CEFR OFF.
+Private `local-migration-receipt.json` binds the operation; do not replay it.
+HTTP/PG disposable containers are removed. Native builds run in the private
+source copy; iOS booted with pre-update snapshot saved, Android boot in progress.
+Android APK built and installed; 24-word full projection unchanged. First
+Android cold-start hit System UI ANR; identical data preserved; retry running
+with conditional Wait and restored 55331 reverse mapping. iOS old app saved
+one offline Good (event/command `bacdf0c6-95e6-440c-a043-b58bc5afd470`), then
+stopped with a coherent backup; new iOS build still running. Do not repeat
+the old-app rating. Proxy REST remains blocked for preservation testing.
+Web UI review/reload/two-theme visuals and same-shared-entry owner isolation
+pass; exactly two expected server events. Browser `d12-local-qa` is closed.
+Exact runner/proxy/web PIDs are in `web-runtime.json`, builds in `native-runtime.json`.
+Matrix fixes/evidence are committed locally as `e09f5ca` (normal hooks pass).
+New runtime evidence is still uncommitted; unrelated `.playwright-cli/` must
+stay unstaged. AUTH-18 permits scoped checkpoints.
 D11 done only for diagnostics/dormant mechanics; CEFR activation blocked/OFF.
 No paid/provider call, support inquiry, hosted migration, push, PR, publication,
 deployment or release authority. D01 real-device/queue gates remain open.
