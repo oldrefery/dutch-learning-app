@@ -52,8 +52,9 @@ server approval, `qualifyMethod` returns no qualification, and
    preparing candidate evidence, but cannot honestly certify its own
    labels as independent gold. Provider and worker stay off.
 2. **Narrow D11.2 to an experimental offline deliverable.** The owner
-   explicitly accepts assistant-reviewed, source-backed labels as a
+   explicitly accepts assistant-reviewed labels as a
    _provisional diagnostic reference_, with clear provenance and
+   lexical sources where available, and
    `qualified: false`. This can close a revised offline checkpoint but
    does not satisfy the existing production quality gate or authorize
    the worker. A new provider sample on the 27 inputs would still
@@ -61,5 +62,13 @@ server approval, `qualifyMethod` returns no qualification, and
 
 Neither path converts absent specialist evidence into a CEFR band.
 Neither authorizes push, PR, migrations, publication or deployment.
-The user must choose whether the stage definition may be narrowed;
-the assistant should not silently redefine “reviewed fixture”.
+The owner had to choose whether the stage definition could be narrowed;
+the assistant could not silently redefine “reviewed fixture”.
+
+## Owner resolution
+
+On October 4 the owner chose option 2. The implemented closure uses the
+already frozen [24-input assistant reference and v3 pilot](D11-offline-diagnostic-closure-20261004.md)
+as a retrospective, unqualified diagnostic. It does not promote any of
+the separate 27 candidates or claim source-adjudicated CEFR bands for
+the 24 pilot items. The original production quality gate remains open.

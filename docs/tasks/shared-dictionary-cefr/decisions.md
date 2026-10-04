@@ -641,3 +641,17 @@ this is diagnostic improvement, not quality qualification. The worker and
 schedule remain disabled. No fourth attempt is justified on the unchanged
 fixture without a new evidence question. The combined $10 figure remains
 approximate; direct REST control charges are unknown.
+
+### October 4 — D11.2 offline diagnostic scope accepted
+
+After reviewing the [quality-gate decision](evidence/D11-quality-gate-decision-20261004.md),
+the owner chose the recommended narrower D11.2 outcome: finish the local
+diagnostic using assistant-provisional labeling while keeping operational
+qualification false. The [closure record](evidence/D11-offline-diagnostic-closure-20261004.md)
+binds the already completed 24-input v3 pilot and its frozen reference;
+it does not create independent CEFR gold or a prospective production
+policy. The original independent meaning-level quality gate remains a
+separate D11 stage-exit and worker-activation prerequisite. This choice
+does not permit transmission of the separate 27-input candidate pool,
+repeat the 24-input pilot, spend the two remaining attempts, activate
+the worker, push, open a PR, migrate, publish or deploy.

@@ -58,3 +58,8 @@ assessments unchanged. The current diagnostic results can guide prompt
 design and error analysis only. NT2Lex can be cited as an independent
 graded-frequency signal, subject to its usage terms, but its automatic
 sense tags and frequency columns are not a reviewed fixture.
+
+On October 4 the owner accepted a narrower
+[offline D11.2 diagnostic closure](D11-offline-diagnostic-closure-20261004.md)
+without independent gold. This does not waive any qualification or
+worker-activation condition in this protocol.

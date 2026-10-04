@@ -2857,3 +2857,24 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   existing skip. Scoped formatting, Markdown links and `git diff
 --check` passed. Post-commit worktree contains only preexisting
   untracked `.playwright-cli/`; persistence is local-only.
+
+## 2026-10-04 — D11.2 offline diagnostic closure
+
+- Resumed from `81e8799` on `feature/shared-dictionary-schema`, with
+  only preexisting `.playwright-cli/` untracked. The owner selected the
+  recommended narrower diagnostic criterion; no teacher, independent
+  gold or operational qualification is claimed.
+- Read-only verified the frozen 24-input worklist, provisional reference
+  and private v3 report bindings. The
+  [closure record](evidence/D11-offline-diagnostic-closure-20261004.md)
+  reports 19/19 provisional agreement, 2/2 probe abstentions, 21/24
+  known responses and four empty slice/split cells. This is
+  retrospective diagnostic evidence, not CEFR accuracy.
+- Ran `deno test --cached-only --config supabase/functions/deno.json
+supabase/functions/_shared/cefr-calibration/`: 50 passed, zero
+  failed; no network permission or provider request. No code changes.
+  D11.2 is done under the approved narrow scope; D11.3 is next.
+  Independent quality evidence remains a D11 exit/activation gate;
+  method, worker and schedule remain unqualified/off. Two Gemini
+  attempts remain for the original 24 only; no support inquiry,
+  push, PR, migration, publication or deployment.

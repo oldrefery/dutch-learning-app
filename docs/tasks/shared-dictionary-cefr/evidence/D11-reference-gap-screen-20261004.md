@@ -77,6 +77,7 @@ Lest Best guide copy remains unadmitted pending first-party verification.
 4. Obtain meaning-level review independent of the model under test.
    The user's no-teacher instruction permits assistant screening, but
    assistant screening is not independent quality gold. Until that gate
-   is met, D11.2 remains blocked and the worker stays disabled.
-   The [quality-gate decision](D11-quality-gate-decision-20261004.md)
-   records the owner choice now needed for any narrower offline outcome.
+   is met, production quality remains unqualified and the worker stays
+   disabled. The owner subsequently selected the narrower
+   [offline diagnostic closure](D11-offline-diagnostic-closure-20261004.md);
+   it does not turn these gaps into positive CEFR labels.

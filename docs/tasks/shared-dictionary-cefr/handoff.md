@@ -1,5 +1,29 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11.2 offline diagnostic closed under owner-approved
+narrow scope.** Starting from local HEAD `81e8799` on
+`feature/shared-dictionary-schema`, only preexisting `.playwright-cli/`
+was untracked. The owner accepted assistant-provisional diagnostic
+review with `qualified: false`. The
+[closure record](evidence/D11-offline-diagnostic-closure-20261004.md)
+binds the frozen 24-input worklist, assistant reference and already
+completed v3 report: 19/19 agreement with provisional bands, 2/2
+intentional probe abstentions, 21/24 known responses and four empty
+slice/split cells. Local hash/profile/prompt checks and the cached
+offline calibration suite (50/50 tests) passed. This is not measured
+CEFR accuracy. The separate 27-input pool remains unreviewed and
+unscored; the independent meaning-level quality gate remains open as
+a D11 stage-exit and worker-activation requirement. **D11.2 done
+diagnostically; D11.3 first incomplete; D11 in_progress, D12 pending.**
+**Next GPT-6 Astra / High:** review the offline qualification boundary
+already requested in [the mechanics evidence](evidence/D11-offline-calibration-20261003.md),
+then GPT-6.1 Sol / High for D11.3 local worker design. No worker or
+schedule activation; no qualified method. Two Gemini attempts remain
+for the original 24 only; no new-input transmission, repeat pilot,
+support inquiry, push, PR, migration, publication or deployment.
+Local closure evidence pending scoped commit; `.playwright-cli/`
+remains untouched.
+
 **2026-10-04 — D11.2 specialist disposition and quality-gate decision.**
 Starting from local HEAD `28d6439` on `feature/shared-dictionary-schema`,
 only preexisting `.playwright-cli/` was untracked. The
