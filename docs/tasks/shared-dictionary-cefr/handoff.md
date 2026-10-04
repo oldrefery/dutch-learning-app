@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 06:00 Europe/Amsterdam — D11 resumed, local inventory saved.**
+Verified branch `feature/shared-dictionary-schema` at resume HEAD `1f6eacf`;
+only preexisting `.playwright-cli/` was untracked. The 02:30 pause had no
+unfinished external call. D11 is **in_progress**, D12 pending, quality
+unqualified and worker/schedule disabled. The
+[candidate pool](evidence/D11-new-reference-candidate-pool-20261004.md)
+proposes 20 family-separated rows spanning every required slice in both
+splits, with exact bundled-entry references where available. It is an
+unreviewed local inventory, not a fixture or CEFR gold. An exact NT2Lex
+string screen found rows for 14/20 proposed strings, without matching
+senses or assigning levels. **Next GPT-6.1 Sol / High:** complete exact
+sense/source dossiers and canonical input hashes for viable families;
+replace unsupported leads, then define and review a policy before provider
+scoring. Two of five additional personal Gemini attempts remain, scoped
+only to the original 24 meanings; no new transmission is approved. No
+support inquiry, push, PR, migration, publication, worker or deployment.
+The one-time 06:00 continuation automation is to be paused after this
+checkpoint.
+
 **2026-10-04 02:30 Europe/Amsterdam — D11 paused by user schedule.**
 Branch `feature/shared-dictionary-schema`, HEAD `92b9aa5`; no tracked dirty
 files at pause start, only preexisting `.playwright-cli/` untracked. No

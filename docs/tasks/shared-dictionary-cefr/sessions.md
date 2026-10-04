@@ -2408,3 +2408,19 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   source dossiers for both family-separated splits. No new provider inputs
   are approved. No support message, push, PR, migration, publication or
   deployment. The one-time `d11-06-00` continuation remains scheduled.
+
+## 2026-10-04 06:00 Europe/Amsterdam — scheduled D11 resume
+
+- Resumed D11 on `feature/shared-dictionary-schema` from HEAD `1f6eacf`;
+  only preexisting `.playwright-cli/` was untracked. No pending external
+  operation or key file was replayed. GPT-6.1 Sol / High was announced.
+- Saved an unreviewed, local 20-family candidate inventory covering both
+  proposed split/slice matrices. Exact project-pack references and a read-only
+  NT2Lex string screen are recorded in
+  [the pool](evidence/D11-new-reference-candidate-pool-20261004.md). It is
+  not a reviewed fixture, independent CEFR gold or provider-approved input.
+- D11 is in_progress; exact sense dossiers, canonical hashes, reviewed labels
+  and policy remain. Two personal Gemini attempts remain for the original 24
+  meanings only. Quality unqualified, worker/schedule disabled; no support
+  inquiry, push, PR, migration, publication or deployment. Persistence is
+  local repository only.
