@@ -1,5 +1,21 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 preliminary editorial screen.** Branch
+`feature/shared-dictionary-schema`, evidence HEAD `9c0ef02`; only
+preexisting `.playwright-cli/` is untracked. Both local evidence commits
+passed normal hooks (mobile 156 suites / 1,796 tests / 22 snapshots;
+web 86 suites / 780 tests, one existing skip). The
+[assistant screen](evidence/D11-draft-editorial-screen-20261004.md)
+checked all 27 draft inputs and retained `unreviewed`/no CEFR labels.
+It identifies the form-probe, conflict, ambiguous, historical-source and
+missing-corpus questions to resolve before adjudication. **Next GPT-6.1
+Sol / High:** seek independently graded exact-meaning contexts and record
+source/license, meaning match and reviewer uncertainty in an evidence
+ledger; then review labels and set policy/minimum denominators. D11.2
+remains in_progress, D12 pending, quality unqualified and worker/schedule
+off. Two Gemini attempts remain only for the original 24; no new inputs
+or support inquiry. No push, PR, migration, publication or deployment.
+
 **2026-10-04 — D11 complete draft slice matrix, still unqualified.**
 From local commit `2e2eea7`, the latest
 [pack v3](evidence/D11-new-reference-pack-inputs-20261004-v3.json) and

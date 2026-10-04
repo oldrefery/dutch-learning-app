@@ -2497,3 +2497,19 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   worker/schedule disabled. No new provider call; two personal Gemini
   attempts remain scoped to the original 24 meanings only. No support
   inquiry, push, PR, migration, publication or deployment.
+
+## 2026-10-04 — D11 preliminary editorial screen
+
+- Evidence commit `9c0ef02` passed ordinary hooks: mobile 156 suites /
+  1,796 tests / 22 snapshots; web 86 suites / 780 tests, one existing
+  skip. Git was clean except preexisting `.playwright-cli/`.
+- The [assistant screen](evidence/D11-draft-editorial-screen-20261004.md)
+  examined all 27 exact drafts and source scope. It leaves every item
+  unreviewed, records unresolved form/conflict/ambiguity/source issues,
+  and does not assign a CEFR level or claim independent human gold.
+- Next GPT-6.1 Sol / High: collect independently graded exact-meaning
+  learning contexts in a licensed evidence ledger, then adjudicate and
+  freeze policy/minimum denominators before any new provider scoring.
+  D11.2 open, quality unqualified, worker/schedule off. Two personal
+  Gemini attempts remain only for the original 24; no new provider
+  input, support inquiry, push, PR, migration, publication or deployment.
