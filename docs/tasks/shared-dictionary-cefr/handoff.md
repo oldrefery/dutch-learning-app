@@ -19,8 +19,10 @@ meaning-level review and denominators. D11.2 in_progress, D12
 pending, quality unqualified, worker/schedule off. Two Gemini
 attempts remain only for the original 24; no provider call, new input
 transmission, support inquiry, push, PR, migration, publication or
-deployment. Local-only evidence pending scoped commit; preexisting
-`.playwright-cli/` remains untouched.
+deployment. Evidence was saved in local commit `7adbf2b`; normal hooks
+passed mobile 156 suites / 1796 tests / 22 snapshots and web 86
+suites / 780 tests with one existing skip. Post-commit worktree
+contains only preexisting untracked `.playwright-cli/`.
 
 **2026-10-04 — D11 weight-gain source follow-up.** Starting from
 local HEAD `77bf70a` on `feature/shared-dictionary-schema`, only
