@@ -2,8 +2,8 @@
 
 ## Result
 
-The [bound ledger](D11-graded-context-ledger-20261004.json) records twenty-two
-preliminary sense-matched observations for nineteen exact hashed D11 inputs.
+The [bound ledger](D11-graded-context-ledger-20261004.json) records twenty-four
+preliminary sense-matched observations for twenty exact hashed D11 inputs.
 Eight come from Stichting Taalmenu: seven in materials it
 [identifies as A1](https://nt2taalmenu.nl/nt2-a1-menu/) or labels A2
 in the document itself, and one in its [B2 music exercise](https://nt2taalmenu.nl/wp-content/uploads/B2/muziek_oefeningenB2.pdf).
@@ -24,14 +24,19 @@ uses `treinstation` in a station-location question. A directly inspected
 [Dutch Fluency NT2 B2 reading exercise](https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661)
 uses the watchful-supervision idiom in an inflected form. A
 [coLanguage A1 appearance lesson](https://app.colanguage.com/nl/nederlands/dialogen/zorgen-over-het-uiterlijk)
-uses weight-gain `aankomen` in its exercise introduction. They span fifteen
-families and nine
-publishers. They were screened by the assistant from the source pages
+uses weight-gain `aankomen` in its exercise introduction. A
+[nl-learn.nl B1 idiom lesson](https://nl-learn.nl/vocabulary/b1/uitdrukkingen-en-gezegdes/)
+and a [Talkpal B2 Dutch-vocabulary article](https://talkpal.ai/sv/vocabulary/hollandska-ord-att-veta-for-b2-niva/)
+both use `de kat uit de boom kijken` in the wait-and-see sense. Together,
+the observations span sixteen families and eleven publishers. They were
+screened by the assistant from the source pages
 before any provider run on these inputs. They remain
 **source-level exposure signals**, not reviewed word-sense CEFR labels.
 
 | Input                        | Material and page                                                                                                                                                 | Meaning-match note                                                         | Strength                             |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------ |
+| `candidate-kat-boom`         | [nl-learn.nl B1 idiom lesson, “In context”](https://nl-learn.nl/vocabulary/b1/uitdrukkingen-en-gezegdes/)                                                         | Observing a new workplace before acting                                    | Contextual use; self-graded lesson   |
+| `candidate-kat-boom`         | [Talkpal B2 Dutch-vocabulary article, idioms section](https://talkpal.ai/sv/vocabulary/hollandska-ord-att-veta-for-b2-niva/)                                      | Waiting before a decision                                                  | Glossary use; broad self-graded list |
 | `candidate-aankomen-weight`  | [coLanguage A1.23 appearance lesson, exercise 1](https://app.colanguage.com/nl/nederlands/dialogen/zorgen-over-het-uiterlijk)                                     | People gaining weight in the exercise introduction                         | Contextual use; self-graded lesson   |
 | `candidate-oogje-zeil`       | [Dutch Fluency NT2 B2 reading exercise 1661](https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661)                                                             | Lifeguards monitor an open-water swimming session                          | Contextual use; self-graded exercise |
 | `candidate-cel-prison`       | [Taalmenu B2 music exercise, PDF page 9](https://nt2taalmenu.nl/wp-content/uploads/B2/muziek_oefeningenB2.pdf)                                                    | Singular prison cell in a listening prompt about an arrested character     | Contextual use; exercise stem        |
@@ -73,13 +78,15 @@ The [idiom screen](D11-oogje-zeil-source-screen-20261004.md) records
 the Dutch Fluency exercise and excludes an ungraded idiom glossary.
 The [weight-gain screen](D11-weight-gain-source-screen-20261004.md)
 records the coLanguage lesson and keeps the mixed-level Boom source excluded.
+The [watch-and-wait idiom screen](D11-kat-boom-source-screen-20261004.md)
+records both publisher contexts and their weaker editorial status.
 The DISK occurrence is part of a definition for another headword, not a
 graded entry for `tafels`; it confirms exposure to the plural form only.
 Each row in the JSON ledger carries its exact input SHA-256, source URL,
 one-based PDF page or stable HTML section, material level, evidence type and `null` adjudicated
 level. A1/A2/B1/B2 describes the **material or exercise**, not the minimum
 level at which a learner knows the word. The Van Dale PDF is an answer
-key, not the original workbook exercise page. Nine publishers' materials
+key, not the original workbook exercise page. Eleven publishers' materials
 still do not establish independent human gold, per-slice denominators or
 accuracy thresholds.
 
@@ -116,16 +123,17 @@ accuracy thresholds.
   copyright notice. DutchEnglish.com's site footer states all rights
   reserved. LingVo.club's adapted article is likewise reference-only.
   Dutch Fluency's exercise and coLanguage's copyrighted lesson are also
-  reference-only. All nine sources are reference-only:
+  reference-only. The nl-learn.nl and Talkpal materials are likewise
+  reference-only. All eleven sources are reference-only:
   only metadata, links, page numbers and original paraphrases are saved;
   no exercise text is imported, embedded in a fixture or approved for
   provider transmission.
 
 ## Next action
 
-Seek exact contexts for the four remaining lexical/form gaps across
-independent graded sources, especially the idiom, mathematical and
-rare-missing slices. Resolve the Lingua.com
+Seek exact contexts for the three remaining lexical/form gaps across
+independent graded sources, especially mathematical and rare-missing
+slices. Resolve the Lingua.com
 `treinstation` source conflict from first-party metadata or leave that
 source excluded. Keep
 nonmatches and missing evidence explicit. After source rights and meaning

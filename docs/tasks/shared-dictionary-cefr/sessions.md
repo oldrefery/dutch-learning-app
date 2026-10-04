@@ -2804,3 +2804,26 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   source counts, local links, scoped formatting and `git diff --check`
   passed. Post-commit worktree contains only preexisting untracked
   `.playwright-cli/`; persistence is local-only.
+
+## 2026-10-04 — D11 watch-and-wait idiom source follow-up
+
+- Resumed from `8394505` on `feature/shared-dictionary-schema`;
+  only preexisting `.playwright-cli/` was untracked. GPT-6.1 Sol /
+  High was announced before D11.2 work.
+- Directly inspected the nl-learn.nl B1 idiom lesson and its CEFR-method
+  about page, plus Talkpal's broad B2 Dutch-vocabulary article. The
+  [source screen](evidence/D11-kat-boom-source-screen-20261004.md)
+  records two exact-sense but weak, reference-only observations, with
+  no word-level label or independent quality claim. nl-learn.nl's
+  lessons are AI-assisted and owner-checked; Talkpal discloses no
+  article-specific grading method.
+- The [ledger](evidence/D11-graded-context-ledger-20261004.json)
+  contains twenty-four preliminary observations for twenty exact
+  inputs across eleven publishers; four structural probes and three
+  lexical/form gaps remain. Next GPT-6.1 Sol / High: pursue the three
+  specialist gaps and unsupported dispositions, then independent
+  meaning-level review and denominator policy. D11.2 remains in
+  progress, quality unqualified, worker/schedule disabled. Two Gemini
+  attempts remain for the original 24 only; no provider call, new
+  input transmission, support inquiry, push, PR, migration,
+  publication or deployment.

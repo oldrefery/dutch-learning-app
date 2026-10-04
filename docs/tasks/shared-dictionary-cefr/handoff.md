@@ -1,5 +1,27 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 watch-and-wait idiom source follow-up.** Starting
+from local HEAD `8394505` on `feature/shared-dictionary-schema`, only
+preexisting `.playwright-cli/` was untracked. A directly inspected
+[nl-learn.nl B1 idiom lesson](https://nl-learn.nl/vocabulary/b1/uitdrukkingen-en-gezegdes/)
+and [Talkpal B2 vocabulary article](https://talkpal.ai/sv/vocabulary/hollandska-ord-att-veta-for-b2-niva/)
+add two weak, exact-sense observations for `de kat uit de boom kijken`
+to the [ledger](evidence/D11-graded-context-ledger-20261004.json):
+twenty-four preliminary observations for twenty of 27 inputs across
+sixteen families and eleven publishers. The
+[source screen](evidence/D11-kat-boom-source-screen-20261004.md)
+distinguishes a B1 teaching example from a broad B2 glossary list;
+neither creates a word-level CEFR label. Four structural probes and
+three lexical/form gaps remain. **Next GPT-6.1 Sol / High:** pursue
+single-level exact contexts for mathematical `wortel`, `quotient` and
+`zygomatisch`, then resolve unsupported dispositions, independent
+meaning-level review and denominators. D11.2 in_progress, D12
+pending, quality unqualified, worker/schedule off. Two Gemini
+attempts remain only for the original 24; no provider call, new input
+transmission, support inquiry, push, PR, migration, publication or
+deployment. Local-only evidence pending scoped commit; preexisting
+`.playwright-cli/` remains untouched.
+
 **2026-10-04 — D11 weight-gain source follow-up.** Starting from
 local HEAD `77bf70a` on `feature/shared-dictionary-schema`, only
 preexisting `.playwright-cli/` was untracked. The directly inspected

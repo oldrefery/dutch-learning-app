@@ -51,10 +51,60 @@
       "publisher": "coLanguage",
       "url": "https://app.colanguage.com/nl/nederlands/dialogen/zorgen-over-het-uiterlijk",
       "status": "copyright_notice_reference_only"
+    },
+    {
+      "publisher": "nl-learn.nl",
+      "url": "https://nl-learn.nl/vocabulary/b1/uitdrukkingen-en-gezegdes/",
+      "status": "reference_only_no_republication_permission"
+    },
+    {
+      "publisher": "Talkpal",
+      "url": "https://talkpal.ai/sv/vocabulary/hollandska-ord-att-veta-for-b2-niva/",
+      "status": "all_rights_reserved_reference_only"
     }
   ],
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
   "items": [
+    {
+      "input_id": "candidate-kat-boom",
+      "input_sha256": "0484a6614115a9625c6024f5bf022b46146a6c779fd58d8bd03782f383235538",
+      "family": "de kat uit de boom kijken",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "nl-learn.nl",
+        "url": "https://nl-learn.nl/vocabulary/b1/uitdrukkingen-en-gezegdes/",
+        "section_heading": "Idioms and sayings; section 4 and In context",
+        "material_level": "B1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "waiting to observe a new workplace before acting, with the idiom also listed and glossed in the lesson vocabulary",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-kat-boom",
+      "input_sha256": "0484a6614115a9625c6024f5bf022b46146a6c779fd58d8bd03782f383235538",
+      "family": "de kat uit de boom kijken",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Talkpal",
+        "url": "https://talkpal.ai/sv/vocabulary/hollandska-ord-att-veta-for-b2-niva/",
+        "section_heading": "Förståelse av idiom och talesätt",
+        "material_level": "B2_article",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "idiom listed with a wait-and-see gloss and an example of observing before making a decision",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
     {
       "input_id": "candidate-aankomen-weight",
       "input_sha256": "1139616de3dd001ed26950a2fffad23b92fbf31cb68ed8a7cbd9301f3c7993ea",

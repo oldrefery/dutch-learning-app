@@ -3,11 +3,11 @@
 ## Scope and decision
 
 The [graded-context ledger](D11-graded-context-ledger-20261004.json) has
-twenty-two non-operational observations for nineteen of the 27 exact inputs.
-Eight inputs have no admitted graded observation. Four of those are
+twenty-four non-operational observations for twenty of the 27 exact inputs.
+Seven inputs have no admitted graded observation. Four of those are
 deliberate conflict or context-free ambiguity probes: their primary
 expectation is a reviewed **abstention rule**, not a positive CEFR level.
-The other four need a sense-matched learning context or an explicit
+The other three need a sense-matched learning context or an explicit
 unsupported disposition. The assistant has not assigned a word-sense
 CEFR label or qualified the provider.
 The [four-input structural draft](D11-structural-abstention-draft-20261004.json)
@@ -15,16 +15,15 @@ binds these preliminary abstention expectations to exact input hashes.
 It is assistant-screened, not independent quality gold or an operational
 fixture.
 
-| Exact input                 | Probe type             | Current finding                                                                                                                                             | Next evidence action                                                          |
-| --------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `candidate-straat-conflict` | Example/gloss conflict | Dutch example concerns a wall clock, not a street                                                                                                           | Retain reviewed preliminary abstention; preserve family isolation             |
-| `candidate-winkel-conflict` | Example/gloss conflict | Dutch example concerns cold weather, not a shop                                                                                                             | Retain reviewed preliminary abstention; preserve family isolation             |
-| `candidate-slot-ambiguous`  | Context-free polysemy  | `lock` and `castle` remain plausible without an example                                                                                                     | Retain reviewed preliminary abstention; do not choose a sense                 |
-| `candidate-blad-ambiguous`  | Context-free polysemy  | `leaf` and `sheet of paper` remain plausible without an example                                                                                             | Retain reviewed preliminary abstention; do not choose a sense                 |
-| `candidate-kat-boom`        | Idiom                  | [B1 plain-language advice](https://doorlotje.nl/blog/teksten-die-een-vertaaltool-begrijpt) recommends avoiding this idiom; this is not a graded learner use | Find an exact use in graded learning material or leave unsupported            |
-| `candidate-wortel-math`     | Specialized sense pair | No graded mathematical-root use verified; carrot string matches are wrong-sense                                                                             | Seek a sense-exact mathematics context with an explicit language level        |
-| `candidate-quotient`        | Missing-corpus probe   | Mathematical term has no exact NT2Lex row in the local screen                                                                                               | Seek language-level evidence; do not infer CEFR from school mathematics grade |
-| `candidate-zygomatisch`     | Missing-corpus probe   | Medical sense has no exact NT2Lex row in the local screen                                                                                                   | Seek graded language evidence; otherwise expect abstention                    |
+| Exact input                 | Probe type             | Current finding                                                                 | Next evidence action                                                          |
+| --------------------------- | ---------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `candidate-straat-conflict` | Example/gloss conflict | Dutch example concerns a wall clock, not a street                               | Retain reviewed preliminary abstention; preserve family isolation             |
+| `candidate-winkel-conflict` | Example/gloss conflict | Dutch example concerns cold weather, not a shop                                 | Retain reviewed preliminary abstention; preserve family isolation             |
+| `candidate-slot-ambiguous`  | Context-free polysemy  | `lock` and `castle` remain plausible without an example                         | Retain reviewed preliminary abstention; do not choose a sense                 |
+| `candidate-blad-ambiguous`  | Context-free polysemy  | `leaf` and `sheet of paper` remain plausible without an example                 | Retain reviewed preliminary abstention; do not choose a sense                 |
+| `candidate-wortel-math`     | Specialized sense pair | No graded mathematical-root use verified; carrot string matches are wrong-sense | Seek a sense-exact mathematics context with an explicit language level        |
+| `candidate-quotient`        | Missing-corpus probe   | Mathematical term has no exact NT2Lex row in the local screen                   | Seek language-level evidence; do not infer CEFR from school mathematics grade |
+| `candidate-zygomatisch`     | Missing-corpus probe   | Medical sense has no exact NT2Lex row in the local screen                       | Seek graded language evidence; otherwise expect abstention                    |
 
 ## Gate before calibration
 
@@ -57,8 +56,11 @@ adds one weak contextual observation for the watchful-supervision idiom;
 five lexical/form gaps remained at that checkpoint. A directly opened
 [coLanguage A1 lesson](D11-weight-gain-source-screen-20261004.md)
 now adds one weak weight-gain `aankomen` use; four lexical/form gaps
-remain. The weight-gain example in a third-party Lest Best guide copy
-remains unadmitted pending first-party verification.
+remained at that checkpoint. A directly inspected
+[B1 idiom lesson and B2 glossary article](D11-kat-boom-source-screen-20261004.md)
+add two weak observations for `de kat uit de boom kijken`; three
+lexical/form gaps remain. The weight-gain example in a third-party
+Lest Best guide copy remains unadmitted pending first-party verification.
 
 1. Review and freeze the four structural abstention rules, plus rules
    for inflected forms, unsupported specialist meanings and source-level
