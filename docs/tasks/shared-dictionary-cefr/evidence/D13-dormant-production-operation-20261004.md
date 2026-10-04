@@ -1,10 +1,13 @@
 # D13 proposed dormant production preparation
 
-**Proposed; no execution approval yet.** October 4, 2026. Recommended GPT-6 Astra /
+**Approved as AUTH-24 and completed.** October 4, 2026. Recommended GPT-6 Astra /
 High. This is the next concrete operation after
 [successful snapshot rehearsal](D13-dormant-snapshot-rehearsal-20261004.md).
 
-## Exact scope to approve
+See [completed execution and verification](D13-dormant-production-completion-20261004.md).
+Do not replay; the scope below is the historical approved operation.
+
+## Approved scope
 
 Only Dutch Learning App production, project josxavjbcjbcjgulwcyy, oldrefery's
 personal project. Apply exactly the nine ordered migrations and hashes in

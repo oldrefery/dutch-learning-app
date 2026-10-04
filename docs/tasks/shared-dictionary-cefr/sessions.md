@@ -3269,3 +3269,25 @@ fresh private recovery baseline and nine hash-bound additive migrations with ato
 ledger records. No activation, deployment, source publication, phone update or paid
 call included. Documentation preserved locally under AUTH-18; no push/PR. Existing
 four Android QA services/proxy retained; unrelated .playwright-cli/ untouched.
+
+## 2026-10-04 — AUTH-24 dormant production preparation complete
+
+Owner explicitly approved the proposed nine-migration operation. Resumed at
+1e5218d, existing feature branch, GPT-6 Astra / High. Exact source hashes unchanged.
+TLS system-root verification initially failed before SQL; downloaded public CA from
+confirmed personal Supabase dashboard and retained verify-full/hostname validation.
+Read-only role/ownership/CREATE/43-version ledger checks passed without access changes.
+Fresh protected backup builds/d13-preparation-backup.2ebz4aqm;810 schema sections
+unchanged. Isolated exact restore56 COPY blocks/24,242 rows passed, as did atomic
+migration+ledger rollback and all nine wrapped artifacts on the new copy.
+Production commits19:21:26–19:21:48UTC, no migration retries;52 versions and nine
+original SHA256s verified. All55 original non-ledger tables checked in each
+REPEATABLE READ transaction;14 existing learning functions/ACLs/owners unchanged.
+Final authenticated protocols2/1, dictionary0; all runtime/worker OFF, no links,
+entries/methods/jobs/runs/policies or cron. No learning writes, client release,
+source push/PR, publication, provider call, phone change or functional cutover.
+Temporary credential and verification container removed; all backups/receipts
+retained privately, certificate tab closed, no uncertain operation. Existing four
+QA services/proxy remain. Next: exact client/release artifacts and scoped approvals;
+never replay AUTH-24. Application source unchanged; scoped AUTH-18 documentation
+checkpoint with ordinary hooks. Unrelated .playwright-cli/ untouched.

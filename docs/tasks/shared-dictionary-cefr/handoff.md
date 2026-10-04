@@ -1,5 +1,50 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — AUTH-24 dormant production preparation COMPLETE.**
+All nine candidate migrations committed19:21:26–19:21:48UTC to personal project
+josxavjbcjbcjgulwcyy; ledger now52 and each original source SHA256 verified.
+[Completion evidence](evidence/D13-dormant-production-completion-20261004.md).
+All55 original non-ledger tables checked inside each transaction; existing14
+learning/review/progress function definitions/ACLs/owners unchanged. Runtime
+operations/reads/legacy guard OFF, worker OFF/policy null, no linked words/cache,
+entries/methods/jobs/runs/policies or scheduler. Authenticated protocols2/1 and
+new dictionary capability0. No client release or functional cutover occurred.
+
+Fresh protected backup builds/d13-preparation-backup.2ebz4aqm restored exactly:
+56 COPY blocks/24,242 rows.810 schema sections unchanged before migration. Exact
+wrapped migration+ledger atomic rollback tested locally. Final private receipt
+reports/shared-dictionary-cefr/d13-production-preparation-20261004/operation.json
+is complete-dormant-production-preparation, nine commits confirmed. Temporary
+credential directory and verification container removed; original backups retained.
+No uncertain operation. Do not replay migrations/backup or ask AUTH-24 again.
+
+**Next D13.2–D13.4:** prepare exact production client/artifact/release plan from
+candidate13b97b0. Before any remote EAS inspection, verify identity/linked owner
+oldrefery; no account switch. New native binaries/unused build numbers/runtime/maps,
+web/Edge artifacts, source provenance/publication and final current preservation
+deltas remain; actual builds/deployments/publication/push/PR and final DEC-09
+cutover need their own exact approval. Client flags remain OFF. CEFR unqualified/OFF.
+No release scope is inferred from completed backend preparation.
+
+P1 private SQLite snapshot retained, all stored queues empty at capture; active
+SRS/history match server baseline,18 original field differences documented. P2
+phone unavailable and owner accepts continuation without it; retain unknown queues
+and late offline compatibility, never request connection again as a blocker.
+Four existing Android QA services/proxy remain for testing; no phone operation.
+GPT-6 Astra / High; application source unchanged, prior HEAD1e5218d. Scoped AUTH-18
+local documentation commit preserves this checkpoint; .playwright-cli/ untouched.
+Older headers below are chronological history, not current execution authority.
+
+**2026-10-04 — AUTH-24 approved; authorized dormant migrations next.**
+Owner explicitly approved the exact dormant production operation. Fresh protected
+backup captured;810 schema definitions unchanged;24,242 rows restored exactly;
+all nine wrapped migration+ledger artifacts verified locally, including intentional
+failure rolling back both schema and ledger. Ready for live writes, all flags OFF.
+Before any resume inspect reports/shared-dictionary-cefr/d13-production-preparation-20261004/operation.json;
+never replay an intent/commit without checking actual ledger. Existing temporary
+credential is protected outside repository for this operation only; remove after
+completion. D13 in_progress, GPT-6 Astra / High. No client release/cutover approved.
+
 **2026-10-04 — Continue without P2 phone; dormant snapshot rehearsal PASS.**
 Owner explicitly says P2 primary Android unavailable and instructs continuation
 without it. Do not ask again for that connection. Build/local queues stay unknown;
@@ -2549,22 +2594,22 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 
 ## Stage ledger
 
-| Stage               | Status  | Evidence / next gate                                                |
-| ------------------- | ------- | ------------------------------------------------------------------- |
-| [D01](steps/D01.md) | blocked | D01.1/D01.3/D01.4 done; device/build evidence needed                |
-| [D02](steps/D02.md) | done    | Accepted design, fixtures, compatibility and rollback               |
-| [D03](steps/D03.md) | done    | Astra/High review fixed; 145/145 DB tests pass                      |
-| [D04](steps/D04.md) | done    | Terra/High; shared contracts pass mobile/web/Edge                   |
-| [D05](steps/D05.md) | done    | 12/12 focused; 157/157 DB; dormant compatibility                    |
-| [D06](steps/D06.md) | done    | Final D06 16/16; preservation/delta/rollback rehearsal              |
-| [D07](steps/D07.md) | done    | SQLite v13; 136/136 mobile suites preserve queues                   |
-| [D08](steps/D08.md) | done    | Closure review/fix and final native smoke passed; resources stopped |
-| [D09](steps/D09.md) | done    | Web integration/performance verification                            |
-| [D10](steps/D10.md) | done    | Final review, real desktop/Safari visuals and preservation PASS     |
-| [D11](steps/D11.md) | done    | Reduced diagnostic/dormant scope; CEFR activation gate blocked      |
-| [D12](steps/D12.md) | done    | Local matrix/native/web/rollback PASS; CEFR disabled                |
-| [D13](steps/D13.md) | blocked | Readiness packet done; backup/device evidence and approvals open    |
-| [D14](steps/D14.md) | pending | Adoption gate + compatibility retirement                            |
+| Stage               | Status      | Evidence / next gate                                                |
+| ------------------- | ----------- | ------------------------------------------------------------------- |
+| [D01](steps/D01.md) | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                |
+| [D02](steps/D02.md) | done        | Accepted design, fixtures, compatibility and rollback               |
+| [D03](steps/D03.md) | done        | Astra/High review fixed; 145/145 DB tests pass                      |
+| [D04](steps/D04.md) | done        | Terra/High; shared contracts pass mobile/web/Edge                   |
+| [D05](steps/D05.md) | done        | 12/12 focused; 157/157 DB; dormant compatibility                    |
+| [D06](steps/D06.md) | done        | Final D06 16/16; preservation/delta/rollback rehearsal              |
+| [D07](steps/D07.md) | done        | SQLite v13; 136/136 mobile suites preserve queues                   |
+| [D08](steps/D08.md) | done        | Closure review/fix and final native smoke passed; resources stopped |
+| [D09](steps/D09.md) | done        | Web integration/performance verification                            |
+| [D10](steps/D10.md) | done        | Final review, real desktop/Safari visuals and preservation PASS     |
+| [D11](steps/D11.md) | done        | Reduced diagnostic/dormant scope; CEFR activation gate blocked      |
+| [D12](steps/D12.md) | done        | Local matrix/native/web/rollback PASS; CEFR disabled                |
+| [D13](steps/D13.md) | in_progress | Dormant backend applied; client artifacts and final release pending |
+| [D14](steps/D14.md) | pending     | Adoption gate + compatibility retirement                            |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and
 policy acceptance are complete. No production operation is authorized. Do not

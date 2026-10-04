@@ -1,11 +1,16 @@
 # D13 release-readiness packet — 2026-10-04
 
-Status: **preparation complete; execution blocked**. Recommended GPT-6 Astra /
+Status: **dormant backend preparation complete; functional release pending**. Recommended GPT-6 Astra /
 High. Candidate source `13b97b0def2ea82449fadd7a676b7048397d29ad` on
 `feature/shared-dictionary-schema`. This packet is not an approval or deploy
 command. D12 local verification passed; production readiness is a separate gate.
 The [machine manifest](D13-release-candidate-20261004.json) records exact migration
 and control-source SHA-256 values. Recompute it after any source/version change.
+
+October4 AUTH-24 update: [nine migrations applied and verified](D13-dormant-production-completion-20261004.md),
+ledger52, all new paths OFF, no personal linking or release. Fresh protected backup
+and isolated restore complete. Historical43-version observations below are retained
+as the pre-operation baseline; do not use them to replay completed migrations.
 
 ## Read-only target inspection
 

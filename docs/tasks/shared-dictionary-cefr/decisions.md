@@ -824,3 +824,25 @@ and assess late old-client writes before any eventual cutover. D13 preparation
 continues with available snapshots and isolated local rehearsal. Final hosted
 operation/release approvals remain separate under DEC-09; no global switch or
 automatic linking of P2 follows from the device-access exception.
+
+### AUTH-24 — Dormant production preparation
+
+Granted October 4: owner approved the exact operation in
+evidence/D13-dormant-production-operation-20261004.md after reviewing the request.
+Target only personal Dutch Learning App production josxavjbcjbcjgulwcyy, candidate
+13b97b0 and the nine SHA-256-bound migration files in the release manifest.
+Includes read-only identity/role/ledger/schema preflight, a fresh protected local
+logical backup with isolated restore, additive migrations with atomic ledger
+records and all runtime/CEFR paths OFF, and preservation/compatibility checks.
+Use an existing authorized credential privately for this operation, then remove
+the temporary credential. No reset/access widening, login-role creation, source
+push/PR, publication, client/Edge/store deployment, device changes, linking,
+functional cutover or paid/provider operation. Stop on unexplained drift or failed
+preconditions. Inspect the operation receipt before any interrupted-write retry.
+
+AUTH-24 completed October4,19:21:26–19:21:48UTC: all nine migrations committed
+with atomic ledger and per-transaction original-data checks;52 versions and source
+hashes verified. Fresh backup/isolated restore passed, all new flags/worker OFF,
+legacy authenticated protocols2/1 unchanged. Temporary credential and local
+verification container removed. No replay/reapproval of completed work; no final
+release/client deployment/cutover/publication authority inferred.

@@ -1,7 +1,7 @@
 {
   "source_commit": "13b97b0def2ea82449fadd7a676b7048397d29ad",
   "date": "2026-10-04",
-  "status": "preparation_only_not_authorized_to_execute",
+  "status": "dormant_backend_applied_functional_release_not_authorized",
   "target": {
     "project_ref": "josxavjbcjbcjgulwcyy",
     "project_name": "Dutch Learning App",
@@ -66,63 +66,63 @@
       "version": "20260921103000",
       "sha256": "bf60654c9ea4fb0e3032237f144990f7c8a22a506bb473f18f94fbea4ce090dc",
       "bytes": 33924,
-      "target_ledger": "not_recorded"
+      "target_ledger": "applied_hash_verified_AUTH-24"
     },
     {
       "path": "supabase/migrations/20260921140000_add_dictionary_content_protocol.sql",
       "version": "20260921140000",
       "sha256": "a7a65c027559fe5089989004a243d8e4520bb9e3bbb8e12988c1c6fc35096326",
       "bytes": 44356,
-      "target_ledger": "not_recorded"
+      "target_ledger": "applied_hash_verified_AUTH-24"
     },
     {
       "path": "supabase/migrations/20261002090000_add_official_dictionary_mappings.sql",
       "version": "20261002090000",
       "sha256": "80f820665ccdccc03932523c6ef501ce6147b57e7371c0c480abd0ad0b141cce",
       "bytes": 9064,
-      "target_ledger": "not_recorded"
+      "target_ledger": "applied_hash_verified_AUTH-24"
     },
     {
       "path": "supabase/migrations/20261002100000_add_dictionary_import_protocol.sql",
       "version": "20261002100000",
       "sha256": "0e685eebd99f08955c18e845c6eb3d5fb4015117ebb116bb34451eea5daa6525",
       "bytes": 15643,
-      "target_ledger": "not_recorded"
+      "target_ledger": "applied_hash_verified_AUTH-24"
     },
     {
       "path": "supabase/migrations/20261002110000_add_dictionary_import_intents.sql",
       "version": "20261002110000",
       "sha256": "b54fef02305a85e7fdaa07ba41123cb582af2c322454a447c080809c84c130db",
       "bytes": 9058,
-      "target_ledger": "not_recorded"
+      "target_ledger": "applied_hash_verified_AUTH-24"
     },
     {
       "path": "supabase/migrations/20261002120000_add_dictionary_import_recovery.sql",
       "version": "20261002120000",
       "sha256": "03f2c4c658ffa62658b32aa93b7e694f31e212c7c993f841f68ba55b44c95458",
       "bytes": 26329,
-      "target_ledger": "not_recorded"
+      "target_ledger": "applied_hash_verified_AUTH-24"
     },
     {
       "path": "supabase/migrations/20261002130000_add_analysis_cefr_estimate.sql",
       "version": "20261002130000",
       "sha256": "2bf4b5235c80de4dba546f946b1a9cae17ef2d4cc7c38c0e7eb69efddc63e9b6",
       "bytes": 1629,
-      "target_ledger": "not_recorded"
+      "target_ledger": "applied_hash_verified_AUTH-24"
     },
     {
       "path": "supabase/migrations/20261003090000_add_dictionary_cefr_queue.sql",
       "version": "20261003090000",
       "sha256": "2f8efe297067cf0a24eeb7a244193dc5a5c1a485b7165802f1da3f8463c051a0",
       "bytes": 18270,
-      "target_ledger": "not_recorded"
+      "target_ledger": "applied_hash_verified_AUTH-24"
     },
     {
       "path": "supabase/migrations/20261003100000_add_dictionary_cefr_budget.sql",
       "version": "20261003100000",
       "sha256": "0bf25a90b083ce71ec7714552d2810337facd32cd2d25b7b6fe59c767bb3b2b1",
       "bytes": 29494,
-      "target_ledger": "not_recorded"
+      "target_ledger": "applied_hash_verified_AUTH-24"
     }
   ],
   "candidate_controls": {
@@ -152,15 +152,14 @@
     "apply": "requires final cutover approval and all three runtime guards; never preparation-time"
   },
   "remaining_gates": [
-    "fresh_private_backup_and_isolated_restore",
-    "live_schema_drift_and_deployed_contract_comparison",
     "approved_source_publication_manifest_and_final_delta",
     "clean_release_checkout_and_hosted_CI",
     "new_native_build_signing_runtime_maps_and_artifact_approval",
     "explicit_environment_operation_and_final_cutover_approval",
     "separate_CEFR_quality_cost_activation_gate",
     "accepted_P2_device_evidence_gap_preservation_and_late_offline_write_compatibility",
-    "P1_web_and_release_runtime_evidence"
+    "P1_web_and_release_runtime_evidence",
+    "fresh_preservation_delta_and_recovery_baseline_before_final_cutover"
   ],
   "source_sha256": {
     "apps/mobile/app.base.json": "ee03a6e099e84dcc0f1001e58d87cd12f527c6fac70377591419612e15ca3340",
@@ -180,6 +179,32 @@
     "P2_device": "unavailable; owner instructs continuation without physical evidence; build/local queues unknown",
     "offline_legacy_compatibility": "required",
     "local_real_snapshot_dormant_rehearsal": "passed; 24242 original rows and 14 old learning functions unchanged",
-    "hosted_execution_approval": "pending"
+    "hosted_execution_approval": "AUTH-24 dormant backend preparation completed; final release excluded"
+  },
+  "production_preparation": {
+    "authorization": "AUTH-24",
+    "completed_at_utc": "2026-10-04T19:21:51Z",
+    "ledger_count": 52,
+    "versions_applied": [
+      "20260921103000",
+      "20260921140000",
+      "20261002090000",
+      "20261002100000",
+      "20261002110000",
+      "20261002120000",
+      "20261002130000",
+      "20261003090000",
+      "20261003100000"
+    ],
+    "all_original_file_hashes_verified": true,
+    "old_learning_functions_unchanged": 14,
+    "data_checks": "55 original non-ledger tables within every migration transaction",
+    "runtime_flags": "all off",
+    "worker": "off; policy null",
+    "linked_words": 0,
+    "linked_cache": 0,
+    "source_backup": "builds/d13-preparation-backup.2ebz4aqm",
+    "backup_restore": "56 COPY blocks / 24242 rows matched",
+    "replay_allowed": false
   }
 }
