@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 independent graded-context screen.** Branch
+`feature/shared-dictionary-schema`, starting HEAD `31ab6ca`; only the
+preexisting `.playwright-cli/` was untracked. The
+[graded-context ledger](evidence/D11-graded-context-ledger-20261004.json)
+binds nine source-level observations from Stichting Taalmenu A1/A2 and
+KleurRijker TaalCompleet A1 materials to seven exact D11 input hashes.
+The [screen](evidence/D11-graded-context-screen-20261004.md) distinguishes
+seven contextual uses, one distractor and one glossary use; unrelated
+string matches were excluded. Both publishers reserve reproduction
+rights, so only links, pages and original paraphrases are stored.
+**Next GPT-6.1 Sol / High:** find exact contexts for the remaining 20
+inputs, especially contrasting senses, then adjudicate source/meaning
+rights and fix adequate per-slice policy.
+No word-sense CEFR levels have been assigned. D11.2 in_progress, D12
+pending, quality unqualified, worker/schedule off. Two Gemini attempts
+remain only for the original 24; no new provider inputs or support inquiry.
+No push, PR, migration, publication or deployment. Local-only evidence.
+
 **2026-10-04 — D11 preliminary editorial screen.** Branch
 `feature/shared-dictionary-schema`, evidence HEAD `9c0ef02`; only
 preexisting `.playwright-cli/` is untracked. Both local evidence commits

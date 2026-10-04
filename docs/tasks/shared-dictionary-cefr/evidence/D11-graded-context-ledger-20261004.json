@@ -1,0 +1,204 @@
+{
+  "namespace": "d11-graded-context-ledger-20261004",
+  "status": "preliminary_reference_only",
+  "basis": [
+    "D11-new-reference-pack-inputs-20261004-v3.json",
+    "D11-authored-sense-inputs-20261004-v6.json"
+  ],
+  "source_level_policy": "A material-level occurrence is supporting evidence, not an adjudicated level for the exact word sense.",
+  "rights": [
+    {
+      "publisher": "Stichting Taalmenu",
+      "url": "https://nt2taalmenu.nl/disclaimer/",
+      "status": "reference_only_no_republication_permission"
+    },
+    {
+      "publisher": "KleurRijker B.V.",
+      "url": "https://www.nt2.nl/documenten/inkijkexemplaren_pdf/0_titels_andere_uitgeverijen/taalcompleet_a1_9789490807221.pdf",
+      "status": "reference_only_no_republication_permission"
+    }
+  ],
+  "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
+  "items": [
+    {
+      "input_id": "candidate-tafel",
+      "input_sha256": "174e1a545fa8bb385fb3060e3d8f3cb6aa664bd254926b219e240f738ceab2a1",
+      "family": "tafel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf",
+        "pdf_page_one_based": 24,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "furniture table in a preposition exercise",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-stad",
+      "input_sha256": "1cff8978993c31157e6f70f38012ae2ee94b3ddf9f27635eef27416672d182be",
+      "family": "stad",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf",
+        "pdf_page_one_based": 120,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "city as a residence or birthplace",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-straat",
+      "input_sha256": "3c0e2ec275e350166806773697a1691cd19fec58d38f06833220faab3019555f",
+      "family": "straat",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf",
+        "pdf_page_one_based": 120,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "street as part of a home address",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-winkel",
+      "input_sha256": "01c348c66d1ad3075e8a797e852e97e8efcd868c84be0e49bbb6053b2c2c8199",
+      "family": "winkel",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-spreken/boekje_spreken_A1.pdf",
+        "pdf_page_one_based": 26,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "retail shop in a return-purchase scenario",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-werk",
+      "input_sha256": "2fc6c984f33a82c327bbcc77c88a581d4b685fb4bd375880023d664c81224a9b",
+      "family": "werk",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a1-jekanmewat/module10.pdf",
+        "pdf_page_one_based": 17,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "going to work or the workplace in a tram story",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-goed",
+      "input_sha256": "ce499e1218b29e40004f9562683768a7d8338ea3535a3a7ebcf11e80609e89d9",
+      "family": "goed",
+      "proposed_split": "held_out",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/A1-muziek/oefeningenA1.pdf",
+        "pdf_page_one_based": 29,
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "positive evaluation of a film, but only in a distractor option",
+      "evidence_type": "distractor_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-zich-wassen",
+      "input_sha256": "c775d894b294de6d0d73182e6973ac89ea835d95ea9fc82b32e8cc28c4524546",
+      "family": "zich wassen",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "Stichting Taalmenu",
+        "url": "https://nt2taalmenu.nl/wp-content/uploads/a2-lezen/NT2_teksten_lezen_A2.pdf",
+        "pdf_page_one_based": 32,
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "washing oneself in a hygiene glossary explanation",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-tafel",
+      "input_sha256": "174e1a545fa8bb385fb3060e3d8f3cb6aa664bd254926b219e240f738ceab2a1",
+      "family": "tafel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "KleurRijker B.V.",
+        "url": "https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf",
+        "pdf_page_one_based": 4,
+        "material_level": "0_to_A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "table as a piece of home furniture in a reading passage",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
+    {
+      "input_id": "candidate-werk",
+      "input_sha256": "2fc6c984f33a82c327bbcc77c88a581d4b685fb4bd375880023d664c81224a9b",
+      "family": "werk",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "KleurRijker B.V.",
+        "url": "https://www.nt2.nl/media/49/inkijkexemplaar-taalcompleet-a1.pdf",
+        "pdf_page_one_based": 6,
+        "material_level": "0_to_A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "going to work as the destination in a clothing exercise prompt",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    }
+  ]
+}

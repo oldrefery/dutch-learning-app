@@ -2513,3 +2513,24 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   D11.2 open, quality unqualified, worker/schedule off. Two personal
   Gemini attempts remain only for the original 24; no new provider
   input, support inquiry, push, PR, migration, publication or deployment.
+
+## 2026-10-04 — D11 independent graded-context screen
+
+- Resumed from HEAD `31ab6ca` on `feature/shared-dictionary-schema`;
+  only preexisting `.playwright-cli/` was untracked. D11.2 remains the
+  first incomplete checkpoint; GPT-6.1 Sol / High was announced.
+- Screened first-party Stichting Taalmenu A1/A2 teaching PDFs. The
+  [ledger](evidence/D11-graded-context-ledger-20261004.json) binds seven
+  preliminary observations to exact D11 input hashes. Two more exact-use
+  observations from independent publisher KleurRijker's A1 preview
+  corroborate `tafel` and `werk`. The nine rows record source level,
+  page, evidence type and assistant judgment; no adjudicated CEFR level
+  was inferred. The
+  [screen](evidence/D11-graded-context-screen-20261004.md) records
+  exclusions and both publishers' no-copying rights.
+- Next GPT-6.1 Sol / High: seek exact graded contexts for the remaining
+  20 inputs, especially contrasting senses, then adjudicate with
+  explicit uncertainty and freeze adequate denominators/policy. D11.2
+  remains open, quality unqualified, worker/schedule disabled. Two
+  personal Gemini attempts remain only for the original 24; no provider
+  call, support inquiry, push, PR, migration, publication or deployment.
