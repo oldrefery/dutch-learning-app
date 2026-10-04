@@ -3038,6 +3038,8 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   response, provider work, code change or runtime activation yet.
 - Next GPT-6.1 Sol / High: obtain exact-sense human reference,
   expand/split the pool and prespecify policy before any new paid
-  sample. D11 in_progress, worker OFF; task documentation pending
-  scoped local commit. Only `.playwright-cli/` remains unrelated and
-  untracked; no external operation pending.
+  sample. D11 in_progress, worker OFF. Clarification and form were
+  committed locally as `e4594fa` under AUTH-18; ordinary hooks passed
+  mobile 156 suites/1796 tests/22 snapshots and web 86 suites/780
+  tests with one existing skip. Only `.playwright-cli/` remains
+  unrelated and untracked; no external operation pending.
