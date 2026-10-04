@@ -43,7 +43,7 @@ worksheet appears in search results with a 1.2 attribution, but the
 worksheet itself was not retrievable for page-level inspection during
 this review. Consequently, this is a **mixed-level contextual lead**, not
 an admissible single-level observation in the graded ledger. The input
-remains among the twelve lexical/form gaps. Inspect the learner worksheet
+remains among the eleven lexical/form gaps after the plural `tafels` observation. Inspect the learner worksheet
 and its provenance before adding any graded row; do not infer a word-sense
 CEFR level from either task level.
 

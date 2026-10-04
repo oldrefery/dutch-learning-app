@@ -2,20 +2,23 @@
 
 ## Result
 
-The [bound ledger](D11-graded-context-ledger-20261004.json) records fourteen
-preliminary sense-matched observations for eleven exact hashed D11 inputs.
+The [bound ledger](D11-graded-context-ledger-20261004.json) records fifteen
+preliminary sense-matched observations for twelve exact hashed D11 inputs.
 Seven appear in materials that [Stichting Taalmenu identifies as A1](https://nt2taalmenu.nl/nt2-a1-menu/)
 or labels A2 in the document itself. Two corroborating observations come
 from KleurRijker's [TaalCompleet A1 publisher preview](https://www.nt2.nl/nl/alle-uitgaven/101-417_Taalcompleet/100-17261_TaalCompleet-A1),
 whose course targets 0 to A1. One comes from a [Lingua.com A2 reading PDF](https://lingua.com/pdf/nederlands-tekst-school.pdf),
 and four from the [Van Dale grammar workbook answer key](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf)
-with explicit A2/B1 exercise labels. The observations span ten families and
-four publishers. They were screened by the assistant from the source pages
+with explicit A2/B1 exercise labels. A fifth publisher,
+[DISK / Boom Amsterdam](https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf),
+uses plural `tafels` in a definition in its A2 wordlist. The observations
+span ten families and five publishers. They were screened by the assistant from the source pages
 before any provider run on these inputs. They remain
 **source-level exposure signals**, not reviewed word-sense CEFR labels.
 
 | Input                       | Material and page                                                                                                                                                 | Meaning-match note                                                         | Strength                           |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------- |
+| `candidate-tafel-plural`    | [DISK / Boom A2 wordlist, PDF page 3](https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf)                                                         | Plural furniture tables in a restaurant definition                         | Glossary use; exact inflected form |
 | `candidate-tafel`           | [A1 writing, PDF page 24](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                                | Physical table in a location exercise                                      | Contextual use                     |
 | `candidate-stad`            | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                               | City as birthplace/residence                                               | Contextual use                     |
 | `candidate-straat`          | [A1 writing, PDF page 120](https://nt2taalmenu.nl/wp-content/uploads/a1-schrijven/schrijven_A1.pdf)                                                               | Street in a home address                                                   | Contextual use                     |
@@ -31,12 +34,15 @@ before any provider run on these inputs. They remain
 | `candidate-zich-wassen`     | [Van Dale A2 exercise 2, PDF page 24](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Washing oneself with warm water                                            | Contextual use; second publisher   |
 | `candidate-zich-schamen`    | [Van Dale B1 exercise 4, PDF page 24](https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf) | Feeling ashamed about arriving late to work                                | Contextual use                     |
 
-The matched senses are the assistant's preliminary interpretation. Each
+The matched senses are the assistant's preliminary interpretation. The
+DISK occurrence is part of a definition for another headword, not a
+graded entry for `tafels`; it confirms exposure to the plural form only.
+Each
 row in the JSON ledger carries its exact input SHA-256, source URL,
 one-based PDF page, material level, evidence type and `null` adjudicated
 level. A1/A2/B1 describes the **material or exercise**, not the minimum
 level at which a learner knows the word. The Van Dale PDF is an answer
-key, not the original workbook exercise page. Four publishers' examples
+key, not the original workbook exercise page. Five publishers' materials
 still do not establish independent human gold, per-slice denominators or
 accuracy thresholds.
 
@@ -68,14 +74,15 @@ accuracy thresholds.
   also reserves rights and requires prior written permission for
   reproduction. Lingua.com's [reading page](https://lingua.com/nl/nederlands/lezen/school/)
   states all rights reserved; the Van Dale answer key carries its
-  publisher's copyright notice. All four sources are reference-only:
+  publisher's copyright notice. The DISK / Boom wordlist also carries a
+  copyright notice. All five sources are reference-only:
   only metadata, links, page numbers and original paraphrases are saved;
   no exercise text is imported, embedded in a fixture or approved for
   provider transmission.
 
 ## Next action
 
-Seek exact contexts for the remaining 16 inputs across independent graded
+Seek exact contexts for the remaining 15 inputs across independent graded
 sources, especially the contrasting weight-gain `aankomen` sense and the
 ambiguous/rare-missing slices. Resolve the Lingua.com `treinstation`
 level conflict from first-party metadata or keep it ungraded. Keep

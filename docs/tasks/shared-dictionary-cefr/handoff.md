@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 plural-form source follow-up.** Starting from
+`c115ba0`, the [graded ledger](evidence/D11-graded-context-ledger-20261004.json)
+now adds the exact plural `tafels` in a first-party DISK / Boom A2
+wordlist definition, PDF page 3. Fifteen preliminary observations now
+cover twelve of 27 exact inputs across five publishers; the
+[gap screen](evidence/D11-reference-gap-screen-20261004.md)
+has four structural abstention probes and eleven lexical/form gaps.
+The new source is reference-only, a glossary use rather than a graded
+headword. No word-sense CEFR level, independent gold or operational
+qualification was assigned. **Next GPT-6.1 Sol / High:** inspect a
+single-level `meebrengen` learner worksheet, pursue the other ten
+lexical/form gaps, then define inflection, specialist and source-level
+disagreement rules. D11.2 in_progress, D12 pending, worker/schedule
+off. Two Gemini attempts remain only for the original 24; no provider
+call or support inquiry. No push, PR, migration, publication or
+deployment. Local-only evidence; preexisting `.playwright-cli/`
+untouched.
+
 **2026-10-04 — D11 structural abstention review.** Branch
 `feature/shared-dictionary-schema`, starting HEAD `a3ac4e8`; only
 preexisting `.playwright-cli/` was untracked. The

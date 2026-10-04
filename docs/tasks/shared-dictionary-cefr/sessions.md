@@ -2598,3 +2598,21 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   D11.2 remains in progress and unqualified; worker/schedule off.
   Two Gemini attempts remain only for the original 24. No provider
   call, support inquiry, push, PR, migration, publication or deployment.
+
+## 2026-10-04 — D11 plural-form source follow-up
+
+- From local checkpoint `c115ba0`, inspected first-party DISK / Boom
+  Amsterdam A2 wordlist PDF page 3. Its definition of a restaurant uses
+  plural `tafels` for physical tables. The
+  [ledger](evidence/D11-graded-context-ledger-20261004.json) now binds
+  this glossary use to the exact plural input hash. It has fifteen
+  preliminary observations for twelve inputs from five publishers.
+  No word-sense level, independent gold, publication rights or provider
+  approval was inferred.
+- The [gap screen](evidence/D11-reference-gap-screen-20261004.md)
+  now has four structural probes and eleven lexical/form gaps. Next
+  GPT-6.1 Sol / High: inspect single-level exact `meebrengen` material,
+  then pursue the other ten gaps and fix source/form policy. D11.2
+  remains open and unqualified; worker/schedule disabled. Two Gemini
+  attempts remain scoped to the original 24. No provider call,
+  support inquiry, push, PR, migration, publication or deployment.

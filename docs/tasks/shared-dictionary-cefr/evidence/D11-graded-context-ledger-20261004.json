@@ -26,10 +26,35 @@
       "publisher": "Van Dale Uitgevers",
       "url": "https://www.vandale.nl/sites/default/files/images/antwoorden_bij_het_van_dale_oefenboek_grammatica_nederlands_versie_1.pdf",
       "status": "copyright_notice_reference_only"
+    },
+    {
+      "publisher": "DISK / Boom Amsterdam",
+      "url": "https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf",
+      "status": "copyright_notice_reference_only"
     }
   ],
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
   "items": [
+    {
+      "input_id": "candidate-tafel-plural",
+      "input_sha256": "c1c535bb3fe9494589b7f3056b41dfd699117206bbabbf0f380f715577d58823",
+      "family": "tafel",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "DISK / Boom Amsterdam",
+        "url": "https://www.nt2.nl/downloads/disk/woordenlijsten/disk_wl_t6_a2.pdf",
+        "pdf_page_one_based": 3,
+        "material_level": "A2",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "plural furniture tables in the explanation of a restaurant",
+      "evidence_type": "glossary_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
     {
       "input_id": "candidate-tafel",
       "input_sha256": "174e1a545fa8bb385fb3060e3d8f3cb6aa664bd254926b219e240f738ceab2a1",
