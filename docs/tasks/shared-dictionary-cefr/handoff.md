@@ -17,8 +17,12 @@ the ledger. Four structural probes and four lexical/form gaps remain.
 denominators. D11.2 in_progress, D12 pending, quality unqualified,
 worker/schedule off. Two Gemini attempts remain only for the original
 24; no provider call, new input transmission, support inquiry, push,
-PR, migration, publication or deployment. Local-only evidence pending
-scoped commit; preexisting `.playwright-cli/` remains untouched.
+PR, migration, publication or deployment. Source/evidence commit
+`6ff28a0` passed normal hooks: mobile 156 suites / 1796 tests / 22
+snapshots; web 86 suites / 780 tests, one existing skip. JSON hash
+binding, 27-input partition, formatting and local links passed.
+Local-only commit, no push; preexisting `.playwright-cli/` remains
+untouched.
 
 **2026-10-04 — D11 watchful-supervision idiom source follow-up.**
 Starting from local HEAD `e765861` on `feature/shared-dictionary-schema`,
