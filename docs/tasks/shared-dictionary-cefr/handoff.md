@@ -1,5 +1,28 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D13 backup approved; connection access blocked.** Starting HEAD
+`1ad4021`, branch `feature/shared-dictionary-schema`, GPT-6 Astra / High.
+AUTH-21 covers full private production DB backup and isolated local restore.
+Preflight found a placeholder pooler password; targeted project Keychain lookup
+and standard PostgreSQL credential files yielded no existing DB password.
+No database connection, role creation, export or restore occurred. Private
+`builds/d13-preflight-backup.cbabcezm` holds only its protected operation receipt.
+
+**First incomplete D13.1:** obtain permission for the exact additional read-only
+login-role creation described in the [packet](evidence/D13-release-readiness-20261004.md),
+or receive an existing DB credential through a private local mechanism. Do not
+ask again for backup approval. Never use default CLI linked dump without an
+explicit credential: CLI 2.75.0 would create a writable role and may unban IPs.
+Proposed API call is one project-specific create-login-role with read_only=true;
+credential expires per returned TTL, role deletion is not promised. Full backup
+privileges still require verification. No broad login-role cleanup is permitted.
+
+D13 blocked; no release checkbox complete. D01 device availability/queues remain
+unanswered. CEFR stays unqualified/OFF. No pending external operation; original
+runtime resources remain stopped. Checkpoint saved by scoped AUTH-18 local commit;
+`.playwright-cli/` remains unrelated/unstaged. No push/PR, hosted migration, paid
+call, publication, deployment or device action. Older headers are historical.
+
 **2026-10-04 — D13 readiness prepared; execution blocked.** Candidate source
 `13b97b0`, branch `feature/shared-dictionary-schema`, recommended **GPT-6 Astra /
 High**. [Readiness packet](evidence/D13-release-readiness-20261004.md) and

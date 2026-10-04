@@ -105,7 +105,8 @@ policy detects changes that may affect that runtime. Consulted through Context7.
 
 ## Concrete next operation: private backup and local restore
 
-Proposed scope, **awaiting separate authorization**:
+Backup/local restore scope **approved under AUTH-21** on October 4. Capture is
+blocked on connection access; no database copy has been made:
 
 - Source: only `Dutch Learning App` production project above, using an existing
   authorized database connection if available. No password reset, key creation,
@@ -132,11 +133,57 @@ Proposed scope, **awaiting separate authorization**:
   the baseline/delta immediately before approved writes. Never restore an older
   snapshot over later accepted learning commands.
 
-Scoped environment-name inspection found only public Supabase client URL/keys,
-no `DATABASE_URL`, database password or management token in the inspected process
-and repository env files. Existing CLI authentication/connection availability was
-not tested and no secret store was searched. Missing connection access remains a
-possible blocker after approval; do not request a credential in chat or reset it.
+### Approved backup connection preflight
+
+Starting HEAD `1ad4021`; installed Supabase CLI 2.75.0. Linked project ref matches
+`josxavjbcjbcjgulwcyy`. Cached server version is 17.4.1.075, not a fresh probe.
+The cached pooler URL contains a password placeholder, not a usable password.
+Inspected environment names contain no database password/management token.
+Targeted Keychain lookup for service `Supabase CLI`, account equal to this project
+ref returned not found (exit 44); no secret value was printed. `~/.pgpass` and
+`~/.pg_service.conf` are absent. No broad secret-store search was performed.
+
+Do not run `supabase db dump --linked` without a supplied existing password.
+The [installed-version connection source](https://raw.githubusercontent.com/supabase/cli/v2.75.0/internal/utils/flags/db_url.go)
+creates a login role with `ReadOnly: false` when no password is supplied; pooler
+retries can also delete network bans. Even dry-run connection initialization is
+not a safe substitute for authorization. Neither dump nor remote DB connection
+was executed. No hosted role, key, password, network rule or data was changed.
+
+Private directory `builds/d13-preflight-backup.cbabcezm` is mode 0700 and currently
+contains only its mode-0600 operation receipt, no data or credentials. Resume
+receipt: `reports/shared-dictionary-cefr/d13-preparation-20261004/backup-operation.json`.
+Local native pg_dump is version 15, unsuitable for dumping server 17. An existing
+local Supabase PostgreSQL 17.6.1.075 image is available; no image was pulled or
+container started. Confirm actual server/client versions after access is available.
+
+### Exact additional access proposal — not yet authorized
+
+Use existing authorized Supabase management authentication for this project only,
+after checking its availability without displaying it. Issue **one**
+`POST /v1/projects/josxavjbcjbcjgulwcyy/cli/login-role` with
+`{"read_only": true}`. This creates a database login role, an access-configuration
+write beyond AUTH-21's existing-connection scope. The official
+[create-login-role API](https://supabase.com/docs/reference/api/v1-create-login-role)
+returns a temporary password and `ttl_seconds`; record the actual expiry privately.
+The endpoint is beta. Do not infer role deletion from password expiry.
+
+Keep the returned credential in memory or a mode-0600 private temporary file,
+never command arguments/logs/Git. Connect with that explicit credential using
+PostgreSQL tools, with read-only session settings and bounded timeouts. Verify
+actual privileges before capture; if full Auth/schema/role visibility is missing,
+stop without widening grants or calling a partial export a full backup. Complete
+the already approved local export/isolated restore only if coverage is sufficient.
+Do not automatically repeat role creation after an uncertain response or expiry.
+Remove the local temporary credential after use, preserving backup artifacts.
+
+No password reset, writable login, network unban, API key creation, paid plan or
+production migration is included. The documented
+[delete-login-roles endpoint](https://supabase.com/docs/reference/api/v1-delete-login-roles)
+has no single-role selector and may affect other CLI access; do not call it as
+cleanup. Permission for this narrowly scoped read-only login creation is pending.
+Alternatively, an existing DB password can be supplied through a private local
+credential mechanism, never in chat; that route needs no new login role.
 
 Official [Supabase backup guidance](https://supabase.com/docs/guides/platform/backups)
 confirms database backups exclude Storage objects and that logical restore alone

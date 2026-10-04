@@ -728,3 +728,19 @@ QA boundaries remain; inspect availability before operating the assigned
 devices. No human CEFR labeling is requested. This continuation does not
 authorize real provider calls, hosted mutation, support inquiries, push,
 PR, publication, deployment or CEFR worker/schedule activation.
+
+### AUTH-21 — D13 private production backup and isolated restore
+
+Granted 2026-10-04: user explicitly approved the proposed full private database
+copy for Dutch Learning App on this Mac, including user/Auth records, and its
+restore verification in an isolated local database. Target only project
+`josxavjbcjbcjgulwcyy`; existing authorized connection, ignored private backup
+folder with restrictive permissions, no row/credential logging, no external
+upload. This covers backup capture and necessary bounded read-only retries plus
+local restore/reconciliation of that copy. Preserve original backup artifacts.
+No hosted SQL mutation/migration/restore, password reset, key creation, paid plan,
+source publication, app/device operation, deployment, push or PR is granted.
+State: approved, capture not started; blocked on missing existing DB password.
+CLI implicit writable-role creation is outside this scope. A separate, exact
+read-only login-role proposal is recorded in the D13 readiness packet; no approval
+for it is inferred. Inspect the D13 backup-operation receipt before resuming.

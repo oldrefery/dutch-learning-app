@@ -3138,3 +3138,19 @@ limits are in D13-readiness evidence. Local docs saved by this AUTH-18 scoped
 commit, ordinary hooks; `.playwright-cli/` excluded. No paid/provider, support,
 hosted migration, push, PR, deployment, publication or device operation.
 Weekly account usage observed 64%, reset 1791606895; not task-specific consumption.
+
+## 2026-10-04 — D13 backup authorized, connection preflight blocked
+
+From `1ad4021`, same branch, Astra / High. Recorded AUTH-21 for full private DB
+copy and isolated restore. Verified linked project and cached PG17 version;
+pooler password is a placeholder. Targeted project Keychain lookup not found;
+standard pgpass/service files absent. No secret printed or broad store search.
+Official CLI 2.75.0 source shows implicit writable login-role creation and possible
+network unban; default linked dump was not executed. Prepared narrow proposal for
+one project-specific read_only=true login with temporary password, actual TTL and
+privilege checks; creation approval pending. No production mutation, DB connection,
+export, restore or image pull occurred. Protected backup directory contains receipt
+only; operation phase blocked_existing_database_credential_unavailable. D13.1 remains
+open, D01 device question unanswered. Local docs preserved by AUTH-18 scoped commit
+with ordinary hooks; unrelated .playwright-cli/ excluded. Resume from the new
+handoff header, not previous approval-pending backup wording. No external operation.
