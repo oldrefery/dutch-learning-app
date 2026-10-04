@@ -1,5 +1,22 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 02:30 Europe/Amsterdam — D11 paused by user schedule.**
+Branch `feature/shared-dictionary-schema`, HEAD `92b9aa5`; no tracked dirty
+files at pause start, only preexisting `.playwright-cli/` untracked. No
+known ongoing provider request or local test/commit session. The v3
+consumption record and report remain under the owner-only private root;
+the temporary key is absent. Attempt 3 of 5 was consumed; **two remain**
+for the original 24 meanings under the approximate $10 combined figure.
+The separate research TSV is at `/private/tmp/d11-nt2lex-research.tsv`
+and was not added to the repository. Stage D11 is **paused**, D12 pending,
+quality unqualified, worker/schedule disabled. **At 06:00, next GPT-6.1
+Sol / High:** verify Git and the current stage state, then build a new
+local candidate pool and sense-level source dossiers covering every
+required slice in both family-separated splits. New inputs have no
+provider-transmission approval. Do not replay a consumed registry or send
+the canceled support inquiry. The `d11-06-00` continuation remains
+scheduled. No push, PR, migration, publication or deployment.
+
 **2026-10-04 — D11 NT2Lex coverage screened without publication.** The
 [source audit](evidence/D11-external-reference-audit-20261004.md) now has a
 read-only check of the publisher's sense-enriched TSV. Exact case-folded
