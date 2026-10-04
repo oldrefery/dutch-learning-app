@@ -1,0 +1,175 @@
+{
+  "source_commit": "13b97b0def2ea82449fadd7a676b7048397d29ad",
+  "date": "2026-10-04",
+  "status": "preparation_only_not_authorized_to_execute",
+  "target": {
+    "project_ref": "josxavjbcjbcjgulwcyy",
+    "project_name": "Dutch Learning App",
+    "organization": "oldrefery",
+    "branch": "main",
+    "environment": "Production",
+    "observed_via": "existing authenticated browser, read-only dashboard",
+    "latest_recorded_migration": "20260912110000",
+    "recorded_versions": [
+      "20260912110000",
+      "20260912100000",
+      "20260911120000",
+      "20260906160000",
+      "20260906110000",
+      "20260905210000",
+      "20260905200000",
+      "20260905180000",
+      "20260830110000",
+      "20260830102000",
+      "20260830101000",
+      "20260830100000",
+      "20260829120000",
+      "20260829110000",
+      "20260829100000",
+      "20260725180000",
+      "20260725170000",
+      "20260725150000",
+      "20260426100000",
+      "20260408100000",
+      "20260402100000",
+      "20260225224011",
+      "20260223193000",
+      "20251005",
+      "20251002142334",
+      "20251002140601",
+      "20251002134053",
+      "20251002133549",
+      "20251002122646",
+      "20251002122144",
+      "20251002111946",
+      "20251002102613",
+      "20250929",
+      "20250926144829",
+      "20250925153300",
+      "20250925083651",
+      "20250922195348",
+      "20250918102456",
+      "20250914183543",
+      "20250908082122",
+      "004",
+      "003",
+      "001"
+    ],
+    "scheduled_backups": "Free Plan does not include project backups",
+    "pitr": "unavailable on current Free Plan; dashboard offers Pro add-on",
+    "live_schema_definition_comparison": "not_performed",
+    "observed_at_utc": "2026-10-04T17:57:00Z"
+  },
+  "candidate_migrations": [
+    {
+      "path": "supabase/migrations/20260921103000_add_shared_dictionary_schema.sql",
+      "version": "20260921103000",
+      "sha256": "bf60654c9ea4fb0e3032237f144990f7c8a22a506bb473f18f94fbea4ce090dc",
+      "bytes": 33924,
+      "target_ledger": "not_recorded"
+    },
+    {
+      "path": "supabase/migrations/20260921140000_add_dictionary_content_protocol.sql",
+      "version": "20260921140000",
+      "sha256": "a7a65c027559fe5089989004a243d8e4520bb9e3bbb8e12988c1c6fc35096326",
+      "bytes": 44356,
+      "target_ledger": "not_recorded"
+    },
+    {
+      "path": "supabase/migrations/20261002090000_add_official_dictionary_mappings.sql",
+      "version": "20261002090000",
+      "sha256": "80f820665ccdccc03932523c6ef501ce6147b57e7371c0c480abd0ad0b141cce",
+      "bytes": 9064,
+      "target_ledger": "not_recorded"
+    },
+    {
+      "path": "supabase/migrations/20261002100000_add_dictionary_import_protocol.sql",
+      "version": "20261002100000",
+      "sha256": "0e685eebd99f08955c18e845c6eb3d5fb4015117ebb116bb34451eea5daa6525",
+      "bytes": 15643,
+      "target_ledger": "not_recorded"
+    },
+    {
+      "path": "supabase/migrations/20261002110000_add_dictionary_import_intents.sql",
+      "version": "20261002110000",
+      "sha256": "b54fef02305a85e7fdaa07ba41123cb582af2c322454a447c080809c84c130db",
+      "bytes": 9058,
+      "target_ledger": "not_recorded"
+    },
+    {
+      "path": "supabase/migrations/20261002120000_add_dictionary_import_recovery.sql",
+      "version": "20261002120000",
+      "sha256": "03f2c4c658ffa62658b32aa93b7e694f31e212c7c993f841f68ba55b44c95458",
+      "bytes": 26329,
+      "target_ledger": "not_recorded"
+    },
+    {
+      "path": "supabase/migrations/20261002130000_add_analysis_cefr_estimate.sql",
+      "version": "20261002130000",
+      "sha256": "2bf4b5235c80de4dba546f946b1a9cae17ef2d4cc7c38c0e7eb69efddc63e9b6",
+      "bytes": 1629,
+      "target_ledger": "not_recorded"
+    },
+    {
+      "path": "supabase/migrations/20261003090000_add_dictionary_cefr_queue.sql",
+      "version": "20261003090000",
+      "sha256": "2f8efe297067cf0a24eeb7a244193dc5a5c1a485b7165802f1da3f8463c051a0",
+      "bytes": 18270,
+      "target_ledger": "not_recorded"
+    },
+    {
+      "path": "supabase/migrations/20261003100000_add_dictionary_cefr_budget.sql",
+      "version": "20261003100000",
+      "sha256": "0bf25a90b083ce71ec7714552d2810337facd32cd2d25b7b6fe59c767bb3b2b1",
+      "bytes": 29494,
+      "target_ledger": "not_recorded"
+    }
+  ],
+  "candidate_controls": {
+    "private.dictionary_content_runtime": {
+      "operations_enabled": false,
+      "reads_enabled": false,
+      "legacy_guard_enabled": false
+    },
+    "private.dictionary_cefr_worker_control": {
+      "enabled": false,
+      "policy_id": null
+    },
+    "EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED": false,
+    "DICTIONARY_CONTENT_ENABLED": false,
+    "cefr_schedule": "absent"
+  },
+  "native": {
+    "current_local_version": "2.3.1",
+    "current_local_build": 84,
+    "runtime_policy": "fingerprint",
+    "release_route": "new_native_binaries_required",
+    "next_version_and_unused_build": "unselected_pending_store_inventory",
+    "qa_artifacts_distributable": false
+  },
+  "backfill": {
+    "prepare": "plan/delta report only; zero personal reference writes",
+    "apply": "requires final cutover approval and all three runtime guards; never preparation-time"
+  },
+  "remaining_gates": [
+    "fresh_private_backup_and_isolated_restore",
+    "P1_P2_native_build_and_full_local_queue_evidence",
+    "live_schema_drift_and_deployed_contract_comparison",
+    "approved_source_publication_manifest_and_final_delta",
+    "clean_release_checkout_and_hosted_CI",
+    "new_native_build_signing_runtime_maps_and_artifact_approval",
+    "explicit_environment_operation_and_final_cutover_approval",
+    "separate_CEFR_quality_cost_activation_gate"
+  ],
+  "source_sha256": {
+    "apps/mobile/app.base.json": "ee03a6e099e84dcc0f1001e58d87cd12f527c6fac70377591419612e15ca3340",
+    "apps/mobile/app.config.js": "4d330ac4a4b49e4c6a3da39801a5f771cced1e3460054f3e0e130c883564c9c4",
+    "apps/mobile/eas.json": "543defd1ee6920f677a1f2cb4ffd7526f057935353f64e35efe2515cdcf9559e",
+    "apps/mobile/package.json": "1ea5cfc25fd48c0ae1e00de9b1b7f3bef0413e0730a9f111aaa9c69a9f26c70a",
+    "package-lock.json": "b185cef621faba3971f461226573cfbf0b55b76edc984e5211623ce338af1135",
+    "apps/mobile/src/constants/dictionaryContent.ts": "f5d9a09df8f13484d427f5155c648ad6dff7c3004f13fca6882508c70e6b9579",
+    "apps/web/src/features/dictionary/repository.ts": "b0832152d15848fbc6bfe803eab6f21d613a98c3f9521eba4366926907e39535",
+    "scripts/shared-dictionary/rehearsal.sql": "802333e495ec3a2965393e4bcea1ec4834d01380fb21ce4645aeaad8dd8e16bd",
+    "scripts/shared-dictionary/README.md": "7861aa363cbc3f92df7f27bb86a6e92e4dbee0cb80d0bcf47117772fbae7718e"
+  }
+}

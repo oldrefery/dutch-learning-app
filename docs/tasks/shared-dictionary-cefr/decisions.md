@@ -121,6 +121,20 @@ the unresolved D02 identity/privacy contracts.
 Record accepted decisions with date, exact scope, rationale and affected stages.
 A proposed default is not silently accepted by a later resume command.
 
+### October 4 — D13 preparation boundary reconciled
+
+User requested continuation after D12 local closure. Prepared local readiness and
+candidate hashes; inspected the existing personal Supabase project UI read-only
+under the standing audit scope. No new execution permission was inferred.
+D13.5's former "dormant mapping batches" wording is clarified to planning/delta
+reports only: the already reviewed SQL requires all cutover guards before linking
+personal rows. This preserves DEC-09 and does not introduce a new implementation
+or early activation. Real apply remains inside the final approved cutover.
+Fresh private full-project backup/export and isolated restore are proposed in the
+[D13 packet](evidence/D13-release-readiness-20261004.md), awaiting separate scoped
+authorization; real-device diagnostic access is not yet granted. Public-source
+publication, hosted changes, paid builds/providers and release remain separate.
+
 ## Authorization ledger
 
 ### AUTH-09 — Isolated native QA baseline

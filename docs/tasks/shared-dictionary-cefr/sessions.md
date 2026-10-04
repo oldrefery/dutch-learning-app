@@ -3119,3 +3119,22 @@ build/queue evidence and separate CEFR qualification gate remain open.
 Next D13 readiness reconciliation, Astra / High, not started. This record and
 closure docs are preserved by their scoped AUTH-18 local commit with ordinary
 hooks; `.playwright-cli/` stays unstaged.
+
+## 2026-10-04 — D13 readiness and production metadata preflight
+
+From `13b97b0`, same feature branch, recommended Astra / High. Prepared exact
+nine-migration/source hash manifest, staged release/rollback packet, private
+backup/restore scope and device evidence gaps. Current authenticated personal
+Supabase UI read-only: 43 registered migrations through 20260912110000, no candidate
+versions recorded, Free Plan has no scheduled backups/PITR. No SQL executed,
+private rows exported, secret revealed or settings changed; inspection tab closed.
+Version alignment check PASS 2.3.1 (84); current native dependencies require new
+binaries, build numbers unselected. Reconciled D13.5 wording with existing guarded
+apply: zero personal references during preparation, actual linking only after
+final cutover approval. No source guard changed or product tests added.
+D13 blocked on fresh private backup/restore authorization and D01 device evidence;
+asked phone availability only. Exact next operation and credential availability
+limits are in D13-readiness evidence. Local docs saved by this AUTH-18 scoped
+commit, ordinary hooks; `.playwright-cli/` excluded. No paid/provider, support,
+hosted migration, push, PR, deployment, publication or device operation.
+Weekly account usage observed 64%, reset 1791606895; not task-specific consumption.

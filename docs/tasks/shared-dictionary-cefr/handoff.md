@@ -1,5 +1,31 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D13 readiness prepared; execution blocked.** Candidate source
+`13b97b0`, branch `feature/shared-dictionary-schema`, recommended **GPT-6 Astra /
+High**. [Readiness packet](evidence/D13-release-readiness-20261004.md) and
+[hash-bound manifest](evidence/D13-release-candidate-20261004.json) saved.
+Read-only authenticated Supabase UI shows personal `Dutch Learning App` production:
+43 migration IDs recorded, nine candidate additions absent; Free Plan has no
+scheduled backups/PITR. No SQL executed, secret revealed or private data exported.
+Local version check passes 2.3.1 (84); new native binaries required, future unused
+build numbers remain unverified. Existing QA binaries are not release artifacts.
+Corrected D13.5 to planning/deltas only: existing `apply_batch` rejects dormant
+flags, so real linking belongs in separately approved final cutover, not preparation.
+
+**First incomplete D13.1:** obtain approval for the exact private backup/local
+restore scope in the packet, then establish an existing authorized DB connection.
+No direct database/management credential was found in the inspected env names;
+CLI connection not tested, secret stores not searched. No credential reset or
+plan upgrade permission. D01 P1/P2 exact builds/full queues also remain open;
+phone availability was asked, no response/access inferred. Do not request the
+already supplied September 21 iOS screenshots again. CEFR stays unqualified/OFF.
+
+This preparation is preserved by its scoped AUTH-18 local commit; no push/PR,
+store build, hosted migration, publication, deployment or cutover authorized.
+Temporary browser tab closed; task devices/containers remain stopped; no pending
+operation. `.playwright-cli/` remains unrelated/untracked. Resume from this header;
+older instructions below are chronological evidence, not current execution grants.
+
 **2026-10-04 — D12 local integrated verification complete.** Branch
 `feature/shared-dictionary-schema`, matrix fixes `e09f5ca`, runtime checkpoint
 `a72f143`. D12.1–D12.5 done: local workflow matrix, fresh iOS/Android retained
@@ -2364,7 +2390,7 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 | [D10](steps/D10.md) | done    | Final review, real desktop/Safari visuals and preservation PASS     |
 | [D11](steps/D11.md) | done    | Reduced diagnostic/dormant scope; CEFR activation gate blocked      |
 | [D12](steps/D12.md) | done    | Local matrix/native/web/rollback PASS; CEFR disabled                |
-| [D13](steps/D13.md) | pending | Explicit release approval + observation                             |
+| [D13](steps/D13.md) | blocked | Readiness packet done; backup/device evidence and approvals open    |
 | [D14](steps/D14.md) | pending | Adoption gate + compatibility retirement                            |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and

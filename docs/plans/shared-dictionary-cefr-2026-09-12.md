@@ -369,12 +369,14 @@ all required CI checks pass and the release/rollback runbook is rehearsed.
   exactly `oldrefery`. Never switch to or use `guardia`.
 - Decide OTA versus store build from runtime compatibility and installed builds;
   do not promise that a SQLite change alone makes any release OTA-safe.
-- Run approved dormant mapping batches and verify invariants without redirecting
-  live reads/writes. Reconcile changes accumulated during preparation and pending
-  operations; rehearse rollback that retains subsequent learning writes.
+- Prepare reviewed mapping plans and delta reports without writing live personal
+  references or redirecting reads/writes. Rehearse apply/rollback on an isolated
+  copy, retaining subsequent learning writes. Actual mapping apply requires the
+  final approved cutover; never enable guards early to bypass this boundary.
 - Only after D01-D12 and all pre-cutover checks pass, present the exact release,
   P1/P2 preservation evidence, backups and rollback results for final user approval.
-  Then switch the active path as the final functional release step (DEC-09).
+  Then switch the active path and apply reviewed bounded mapping batches as the
+  final functional release sequence (DEC-09).
   Treat automatic CEFR enrichment as deferred under the separate
   [activation gate](../tasks/shared-dictionary-cefr/evidence/D11-cefr-activation-gate.md).
   Enable bounded scheduling only after that gate and separate approval.
