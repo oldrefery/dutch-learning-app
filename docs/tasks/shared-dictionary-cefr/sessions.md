@@ -2424,3 +2424,21 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   meanings only. Quality unqualified, worker/schedule disabled; no support
   inquiry, push, PR, migration, publication or deployment. Persistence is
   local repository only.
+
+## 2026-10-04 — D11 source screen and exact pack bindings
+
+- From local HEAD `bffb0ca`, revised the candidate pool to avoid a prior
+  pilot-word overlap and corrected `goed`'s proposed contrasting use.
+  Screened ANW lexical references without assigning CEFR bands.
+- Generated six exact owner-controlled pack inputs and canonical SHA-256
+  bindings; Deno re-parse/hash verification passed. Four other proposed
+  families have a precise ANW sense anchor. The
+  [screen](evidence/D11-sense-source-screen-20261004.md) and
+  [input dossier](evidence/D11-new-reference-pack-inputs-20261004.json)
+  remain unreviewed and provider-unapproved. No new input was transmitted.
+- Next: author and review exact inputs for viable remaining families,
+  replace unsupported leads, then obtain graded evidence and freeze the
+  policy/fixture. D11 in_progress, D12 pending; quality unqualified,
+  worker/schedule disabled. Two personal Gemini attempts remain scoped to
+  the original 24 meanings; no support inquiry, push, PR, migration,
+  publication or deployment. Persistence: local repository checkpoint.

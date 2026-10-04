@@ -29,7 +29,7 @@ previously frozen 24 meanings. No expected level is assigned here.
 | calibration | `tafel`                        | ordinary; inflections | P `a1-003-tafel`                         | Exact plural meaning/input and independent level evidence              |
 | held_out    | `stad`                         | ordinary; inflections | P `a1-009-stad`                          | Exact plural meaning/input and independent level evidence              |
 | calibration | `werk`                         | sense-pairs           | P `a1-013-werk`; D second sense          | Source for each distinct noun/verb sense; no cross-split variants      |
-| held_out    | `goed`                         | sense-pairs           | P `a1-039-goed`; D second sense          | Source for adjectival/adverbial senses and contexts                    |
+| held_out    | `goed`                         | sense-pairs           | P `a1-039-goed`; D second sense          | Source for adjectival/nominal senses and contexts                      |
 | calibration | `zich wassen`                  | reflexive-verbs       | D                                        | Licensed exact sense, grammar and example                              |
 | held_out    | `zich schamen`                 | reflexive-verbs       | D                                        | Licensed exact sense, grammar and example                              |
 | calibration | `aankomen`                     | separable-verbs       | D                                        | Licensed exact sense, separability and example                         |
@@ -44,7 +44,7 @@ previously frozen 24 meanings. No expected level is assigned here.
 | held_out    | `zygomatisch`                  | rare-missing          | D                                        | Check source absence or scarcity; do not assume rarity from intuition  |
 | calibration | `slot`                         | ambiguous             | D                                        | Two documented competing senses and intentionally insufficient context |
 | held_out    | `blad`                         | ambiguous             | D                                        | Two documented competing senses and intentionally insufficient context |
-| calibration | `deur`                         | conflicting-examples  | P `a1-005-deur`; D conflicting variant   | Exact authored conflict, expected abstention rationale                 |
+| calibration | `straat`                       | conflicting-examples  | P `a1-010-straat`; D conflicting variant | Exact authored conflict, expected abstention rationale                 |
 | held_out    | `winkel`                       | conflicting-examples  | P `a1-011-winkel`; D conflicting variant | Exact authored conflict, expected abstention rationale                 |
 
 Every required slice has at least one **proposed** family per split (ordinary
@@ -56,7 +56,7 @@ An exact case-folded `word` check against the separately held NT2Lex TSV
 (SHA-256 `37dc6b6e208d271e07283c082b3bf78ca07e28cc005ca445f52e6cd4ee0bc5b7`)
 found rows for 14 of these 20 strings: `tafel` 1, `stad` 1, `werk` 5,
 `goed` 5, `aankomen` 6, `meebrengen` 1, `treinstation` 1,
-`schoolplein` 1, `cel` 4, `wortel` 3, `slot` 5, `blad` 3, `deur` 1 and
+`schoolplein` 1, `cel` 4, `wortel` 3, `slot` 5, `blad` 3, `straat` 3 and
 `winkel` 1. The other six strings had zero exact rows. Multirow counts do
 not establish a particular sense; zero exact rows do not establish rarity
 or absence in Dutch. No TSV rows are copied into this document.

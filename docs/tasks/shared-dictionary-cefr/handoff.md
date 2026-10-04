@@ -1,5 +1,23 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 exact-source screen and pack input bindings.**
+Branch `feature/shared-dictionary-schema`, base HEAD `bffb0ca`; only
+preexisting `.playwright-cli/` was untracked at start. The
+[sense/source screen](evidence/D11-sense-source-screen-20261004.md) and
+[unreviewed input dossier](evidence/D11-new-reference-pack-inputs-20261004.json)
+bind six owner-controlled pack meanings to validated canonical inputs and
+SHA-256 hashes. Four authored candidates have ANW sense anchors; others
+remain grammar-supported or unverified. The candidate pool now uses
+`straat` instead of the pilot-overlapping `deur`, and proposes nominal
+rather than adverbial `goed` as the contrasting use. **Next GPT-6.1 Sol /
+High:** author exact sense-distinguishing inputs for viable `D` families,
+replace unsupported leads, then gather independently graded evidence and
+freeze a reviewed policy/held-out fixture. No CEFR labels or provider
+approval were assigned. D11 in_progress, D12 pending, quality unqualified,
+worker/schedule disabled. Two Gemini attempts remain for only the original
+24 meanings. Both one-time night automations are paused. No support
+inquiry, push, PR, migration, publication or deployment.
+
 **2026-10-04 06:00 Europe/Amsterdam — D11 resumed, local inventory saved.**
 Verified branch `feature/shared-dictionary-schema` at resume HEAD `1f6eacf`;
 only preexisting `.playwright-cli/` was untracked. The 02:30 pause had no
@@ -16,7 +34,7 @@ replace unsupported leads, then define and review a policy before provider
 scoring. Two of five additional personal Gemini attempts remain, scoped
 only to the original 24 meanings; no new transmission is approved. No
 support inquiry, push, PR, migration, publication, worker or deployment.
-The one-time 06:00 continuation automation is to be paused after this
+The one-time 06:00 continuation automation was paused after that
 checkpoint.
 
 **2026-10-04 02:30 Europe/Amsterdam — D11 paused by user schedule.**
