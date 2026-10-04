@@ -2775,3 +2775,26 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   source counts, local links, scoped formatting and `git diff --check`
   passed. Post-commit worktree contains only preexisting untracked
   `.playwright-cli/`; persistence is local-only.
+
+## 2026-10-04 — D11 weight-gain source follow-up
+
+- Resumed from `77bf70a` on `feature/shared-dictionary-schema`;
+  only preexisting `.playwright-cli/` was untracked. GPT-6.1 Sol /
+  High was announced before D11.2 work.
+- Directly opened the coLanguage Dutch A1.23 appearance lesson. Its
+  exercise introduction uses `aankomen` for weight gain, while its
+  target-word table repeats the lemma. The
+  [source screen](evidence/D11-weight-gain-source-screen-20261004.md)
+  keeps this weak, reference-only, and distinguishes the publisher's
+  arrival-sense verb list. A search-indexed PDF required login when
+  opened and was not used as direct evidence.
+- The [ledger](evidence/D11-graded-context-ledger-20261004.json)
+  contains twenty-two preliminary observations for nineteen exact
+  inputs across nine publishers; four structural probes and four
+  lexical/form gaps remain. No word-sense CEFR level or independent
+  gold was assigned. Next GPT-6.1 Sol / High: pursue the four gaps,
+  then independent meaning-level review and denominator policy.
+  D11.2 remains in progress, quality unqualified, worker/schedule
+  disabled. Two Gemini attempts remain for the original 24 only; no
+  provider call, new input transmission, support inquiry, push, PR,
+  migration, publication or deployment.

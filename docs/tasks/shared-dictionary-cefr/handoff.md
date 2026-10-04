@@ -1,5 +1,25 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 weight-gain source follow-up.** Starting from
+local HEAD `77bf70a` on `feature/shared-dictionary-schema`, only
+preexisting `.playwright-cli/` was untracked. The directly inspected
+[coLanguage A1.23 appearance lesson](https://app.colanguage.com/nl/nederlands/dialogen/zorgen-over-het-uiterlijk)
+adds a weak, exact-sense weight-gain `aankomen` contextual observation
+to the [ledger](evidence/D11-graded-context-ledger-20261004.json):
+twenty-two preliminary observations for nineteen of 27 inputs across
+fifteen families and nine publishers. The
+[source screen](evidence/D11-weight-gain-source-screen-20261004.md)
+keeps the Boom A2–B2 preview and an uninspectable publisher PDF outside
+the ledger. Four structural probes and four lexical/form gaps remain.
+**Next GPT-6.1 Sol / High:** pursue single-level exact contexts for
+`de kat uit de boom kijken`, mathematical `wortel`, `quotient` and
+`zygomatisch`; then resolve independent meaning-level review and
+denominators. D11.2 in_progress, D12 pending, quality unqualified,
+worker/schedule off. Two Gemini attempts remain only for the original
+24; no provider call, new input transmission, support inquiry, push,
+PR, migration, publication or deployment. Local-only evidence pending
+scoped commit; preexisting `.playwright-cli/` remains untouched.
+
 **2026-10-04 — D11 watchful-supervision idiom source follow-up.**
 Starting from local HEAD `e765861` on `feature/shared-dictionary-schema`,
 only preexisting `.playwright-cli/` was untracked. The directly inspected

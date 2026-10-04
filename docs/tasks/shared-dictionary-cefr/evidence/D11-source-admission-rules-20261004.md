@@ -75,7 +75,9 @@ after that example.
 | `candidate-aankomen-weight`  | [Boom's `Klare taal plus` preview](https://www.nt2.nl/media/48/inkijkexemplaar_klare_taal_plus.pdf), PDF pages 6–7, contrasts arriving with gaining weight and has a weight-change exercise.                                                                                                                                                                                                                                                                                                              | The [publisher's product page](https://www.boom.nl/nt2/100-17379_Klare-taal-plus) spans A2–B1 and B1 onward, with a B2 exit level; the inspected pages have no individual CEFR label.                                                                                                             |
 | `candidate-treinstation`     | Lingua.com's [reading index](https://lingua.com/nl/nederlands/lezen/) and [story PDF](https://lingua.com/pdf/nederlands-tekst-weg-vragen.pdf) refer to the same exact-use story.                                                                                                                                                                                                                                                                                                                          | The index categorizes it as A2, while the PDF labels it B1. Neither label is chosen by precedence without publisher reconciliation.                                                                                                                                                               |
 
-The weight-gain `aankomen` input remains in the lexical/form gap set.
+The weight-gain `aankomen` input now has a separate weak
+[coLanguage A1 lesson observation](D11-weight-gain-source-screen-20261004.md);
+the mixed-level Boom source remains excluded.
 The Lingua.com observation remains excluded,
 although a separate [A2 language-lesson observation](D11-train-station-source-screen-20261004.md)
 now exists for `treinstation`. The `meebrengen` glossary observation is

@@ -46,10 +46,35 @@
       "publisher": "Dutch Fluency NT2",
       "url": "https://nt2.dutchfluency.com/nt2-b2/lezen/oefening/1661",
       "status": "reference_only_no_republication_permission"
+    },
+    {
+      "publisher": "coLanguage",
+      "url": "https://app.colanguage.com/nl/nederlands/dialogen/zorgen-over-het-uiterlijk",
+      "status": "copyright_notice_reference_only"
     }
   ],
   "rights_handling": "Store links, page numbers, and original paraphrases only; no source excerpts or copied exercises.",
   "items": [
+    {
+      "input_id": "candidate-aankomen-weight",
+      "input_sha256": "1139616de3dd001ed26950a2fffad23b92fbf31cb68ed8a7cbd9301f3c7993ea",
+      "family": "aankomen",
+      "proposed_split": "calibration",
+      "source": {
+        "publisher": "coLanguage",
+        "url": "https://app.colanguage.com/nl/nederlands/dialogen/zorgen-over-het-uiterlijk",
+        "section_heading": "A1.23 Uiterlijk; Zorgen over het uiterlijk; exercise 1 introduction",
+        "material_level": "A1",
+        "accessed_on": "2026-10-04"
+      },
+      "context_summary": "infinitive in a lesson introduction explaining why some people remain slim while others gain weight, repeated in the exercise's target-word table",
+      "evidence_type": "contextual_use",
+      "meaning_match": "plausible_exact_sense",
+      "adjudicated_cefr_level": null,
+      "reviewer": "assistant_preliminary_screen",
+      "operational_reference": false,
+      "provider_approved": false
+    },
     {
       "input_id": "candidate-oogje-zeil",
       "input_sha256": "237f8a8427579b35e1bba5979bdb8ee69742aa07b4e14109c6215e6319d692e8",
