@@ -2442,3 +2442,21 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   worker/schedule disabled. Two personal Gemini attempts remain scoped to
   the original 24 meanings; no support inquiry, push, PR, migration,
   publication or deployment. Persistence: local repository checkpoint.
+
+## 2026-10-04 — D11 four locally authored sense drafts
+
+- From HEAD `5d0c297`, used four precise ANW sense anchors to author
+  original local gloss/example drafts. Their
+  [input dossier](evidence/D11-authored-sense-inputs-20261004.json) is
+  unreviewed and provider-unapproved; no CEFR level was assigned.
+- Deno re-parsed all 10 pack/authored inputs and verified canonical SHA-256,
+  unique IDs/hashes and no family leakage. The
+  [source screen](evidence/D11-sense-source-screen-20261004.md) records
+  exact references, limits and the remaining source work. No provider
+  call or account operation occurred.
+- D11 remains in_progress and unqualified; next action is to verify and
+  author remaining family/variant inputs, then gather independent graded
+  evidence and freeze the review policy. Two Gemini attempts remain only
+  for the original 24 meanings. Worker/schedule disabled; no support
+  inquiry, push, PR, migration, publication or deployment. Persistence:
+  local repository checkpoint.

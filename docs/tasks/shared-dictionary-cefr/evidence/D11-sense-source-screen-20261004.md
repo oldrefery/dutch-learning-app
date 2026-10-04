@@ -50,12 +50,12 @@ reliably retrievable in this screen; the pack entry remains the local source.
 
 Four proposed authored families have an ANW sense anchor:
 
-| Candidate                   | ANW evidence                                                                   | What it establishes                                         | Still missing                                                                |
-| --------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `schoolplein`               | [sense 1.0](https://anw.ivdnt.org/article/schoolplein)                         | School-adjacent outdoor area, compound structure and plural | Owner-authored assessment input and independent graded context               |
-| `de kat uit de boom kijken` | [sense 1.0](https://anw.ivdnt.org/article/de%20kat%20uit%20de%20boom%20kijken) | Idiomatic waiting/observing use                             | Owner-authored example, usage rights and graded context                      |
-| `wortel`                    | [sense 6.0](https://anw.ivdnt.org/article/wortel)                              | Mathematical root distinct from plant/carrot senses         | Exact math input and independent graded context                              |
-| `quotiënt`                  | [sense 1.0](https://anw.ivdnt.org/article/quoti%C3%ABnt)                       | Mathematical quotient; confirms the word is documented      | Exact input and graded context; zero NT2Lex exact rows does not prove rarity |
+| Candidate                   | ANW evidence                                                                   | What it establishes                                         | Still missing                                                           |
+| --------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `schoolplein`               | [sense 1.0](https://anw.ivdnt.org/article/schoolplein)                         | School-adjacent outdoor area, compound structure and plural | Draft review and independent graded context                             |
+| `de kat uit de boom kijken` | [sense 1.0](https://anw.ivdnt.org/article/de%20kat%20uit%20de%20boom%20kijken) | Idiomatic waiting/observing use                             | Draft review, usage rights and graded context                           |
+| `wortel`                    | [sense 6.0](https://anw.ivdnt.org/article/wortel)                              | Mathematical root distinct from plant/carrot senses         | Draft review and independent graded context                             |
+| `quotiënt`                  | [sense 1.0](https://anw.ivdnt.org/article/quoti%C3%ABnt)                       | Mathematical quotient; confirms the word is documented      | Draft review and graded context; zero NT2Lex rows does not prove rarity |
 
 [ANW `schamen`](https://anw.ivdnt.org/article/schamen) marks the verb
 reflexive, and [ANW `aankomen`](https://anw.ivdnt.org/article/aankomen)
@@ -72,9 +72,34 @@ that a Dutch meaning is absent. `quotiënt` now has a lexical sense reference
 despite its zero exact NT2Lex rows: its `rare-missing` proposal can at most
 test missing _corpus_ evidence, subject to a prespecified slice definition.
 
+## Locally authored draft inputs
+
+Four entries with ANW sense anchors now have original, locally authored
+gloss/example drafts in
+[the separate authored dossier](D11-authored-sense-inputs-20261004.json).
+The exact content parses under `DictionaryContent`; canonical inputs and
+SHA-256 were regenerated and rechecked together with the six pack bindings.
+The ANW pages support the lexical sense, not the CEFR level or the English
+wording of these drafts. None of these entries is editorially reviewed,
+licensed for external transfer, or approved for the provider.
+
+| Split       | Authored candidate          | ANW sense | Input SHA-256                                                      |
+| ----------- | --------------------------- | --------- | ------------------------------------------------------------------ |
+| held_out    | `schoolplein`               | 1.0       | `253b533700172e642b1a71f6047396191d334fc006ad7ff13ba9d9b77d3bf723` |
+| held_out    | `de kat uit de boom kijken` | 1.0       | `0484a6614115a9625c6024f5bf022b46146a6c779fd58d8bd03782f383235538` |
+| held_out    | `wortel` (mathematics)      | 6.0       | `060f9716579e4f74a23be60ec68f9c7d1bf9ac7def266851a24b31963a1a03b5` |
+| calibration | `quotiënt`                  | 1.0       | `a1ad352759aa2095b67d09b459f1ab6137808109b374ed1381300e4a46d565b0` |
+
+Across both dossiers, 10 distinct draft inputs have valid canonical
+bindings, unique IDs/hashes and no cross-split family leakage. The other
+candidate families and all designed variants remain open; full slice
+coverage has only been proposed in the inventory, not realized in the
+input dossiers.
+
 ## Next exact action
 
-Define owner-authored, sense-distinguishing inputs for viable `D` rows;
+Define owner-authored, sense-distinguishing inputs for the remaining viable
+`D` rows;
 replace candidates whose senses cannot be verified. Keep related variants
 in one family/split. Re-run canonical validation and bind each input to its
 source. Obtain independently graded learning evidence where possible and

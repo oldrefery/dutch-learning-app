@@ -1,5 +1,21 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11 four authored sense drafts bound locally.**
+From base HEAD `5d0c297`, added
+[four source-anchored draft inputs](evidence/D11-authored-sense-inputs-20261004.json)
+for `schoolplein`, the idiom `de kat uit de boom kijken`, mathematical
+`wortel` and `quotiënt`. Together with the six pack bindings, 10 unique
+inputs re-parse and match their canonical SHA-256; family partitions do
+not leak. The [source screen](evidence/D11-sense-source-screen-20261004.md)
+records precise ANW sense references and remaining limits. All 10 are
+unreviewed, lack CEFR labels and are not provider-approved. **Next GPT-6.1
+Sol / High:** verify sources and author exact remaining family/variant
+inputs; replace unsupported leads, then gather independently graded
+evidence and freeze policy/fixture before any provider scoring. D11
+in_progress, D12 pending, quality unqualified, worker/schedule disabled.
+Two personal Gemini attempts remain solely for the original 24 meanings.
+No support inquiry, push, PR, migration, publication or deployment.
+
 **2026-10-04 — D11 exact-source screen and pack input bindings.**
 Branch `feature/shared-dictionary-schema`, base HEAD `bffb0ca`; only
 preexisting `.playwright-cli/` was untracked at start. The
