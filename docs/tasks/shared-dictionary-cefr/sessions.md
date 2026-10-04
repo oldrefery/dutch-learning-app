@@ -2992,5 +2992,7 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   reference; then freeze an adequate fixture/policy and seek separate
   approval for the new live manifest. D11 remains in_progress; worker
   and schedule OFF. Two Gemini attempts remain for original 24 only.
-  Task documentation is pending scoped local commit; `.playwright-cli/`
+  Audit documentation was committed locally as `dae0c98` under AUTH-18;
+  ordinary hooks passed mobile 156 suites/1796 tests/22 snapshots and
+  web 86 suites/780 tests with one existing skip. `.playwright-cli/`
   remains untouched. No remote operation is pending.
