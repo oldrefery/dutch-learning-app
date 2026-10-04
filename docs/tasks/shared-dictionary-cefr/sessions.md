@@ -2947,3 +2947,30 @@ false`; private key mode was 0600. Both private temporary key and draft copies
   commands, result counts and source hashes are durable in the review.
   Preexisting `.playwright-cli/` remains untouched; no external operation
   is pending. No push, PR, hosted migration, publication or deployment.
+
+## 2026-10-04 — D11.3–D11.7 dormant local acceptance reconciliation
+
+- Resumed from `62ca85d` on `feature/shared-dictionary-schema`, with
+  only preexisting `.playwright-cli/` untracked. GPT-6.1 Sol / High
+  was recommended before the checkpoints; actual picker attribution
+  remains unverified. No subagent, source implementation edit or new
+  provider/network operation.
+- The [criterion mapping](evidence/D11-local-checkpoint-acceptance-20261004.md)
+  verifies bounded published-meaning selection (including approved
+  imports without analysis), personal fallback isolation, leases,
+  retry/terminal/idempotent settlement, reviewer/input protection,
+  server-only authorization, UTC budget ledger and disabled control.
+  D11.3–D11.7 are checked for local dormant mechanics only.
+- No tests were repeated for unchanged code. Current October 4 evidence
+  remains 47 PostgreSQL, 73 Deno and 24 fake diagnostic passes; normal
+  `62ca85d` hooks passed mobile 156 suites/1796 tests/22 snapshots
+  and web 86 suites/780 tests with one existing skip. Six older
+  SQL/import/fixture hashes and all 22 October 4 paths matched in a
+  read-only check. Formatting, links and diff are checked before commit.
+- The [full-stage decision](evidence/D11-stage-exit-choice-20261004.md)
+  is pending owner answer. The earlier D11.2 decision does not waive
+  independent meaning-level quality, prospective policy, live sample
+  or worker-activation gates. D11 remains `in_progress`, D12 pending;
+  two Gemini attempts remain scoped to original 24. No support inquiry,
+  push, PR, migration, publication or deployment. Local docs pending
+  scoped commit; no external operation is pending.

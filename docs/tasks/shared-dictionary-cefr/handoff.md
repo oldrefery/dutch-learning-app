@@ -1,5 +1,75 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — D11.3–D11.7 dormant local mechanics accepted; stage exit open.**
+Starting `62ca85d` on `feature/shared-dictionary-schema`, only preexisting
+`.playwright-cli/` untracked. The [criterion reconciliation](evidence/D11-local-checkpoint-acceptance-20261004.md)
+checks all five existing local worker steps without source changes or
+repeating passed tests. Six prior SQL/import/fixture hashes and all
+22 October 4 reviewed paths still match. Current evidence: 47
+PostgreSQL, 73 Deno and 24 fake diagnostic passes, plus normal hooks
+for `62ca85d` (mobile 156 suites/1796 tests/22 snapshots; web
+86 suites/780 tests with one existing skip). D11.3–D11.7 now checked
+for **dormant local mechanics only**. D11.2 remains diagnostic-only.
+
+**First unmet D11 gate:** independent meaning-level reference,
+adequate denominators, prospective policy and a separately authorized
+live quality/cost sample. The [stage-exit choice](evidence/D11-stage-exit-choice-20261004.md)
+is prepared for the owner: retain the original full gate (recommended
+for the original product scope), or explicitly accept a reduced
+D11 diagnostic deliverable with a separate blocking activation gate.
+No choice is inferred from the D11.2 approval. D11 stays `in_progress`,
+D12 pending, worker/schedule OFF. Recommended model for D11 remains
+GPT-6.1 Sol / High; any later review/model change is announced before
+its checkpoint. Two Gemini attempts remain only for the original 24;
+no new input, repeat pilot or paid call. No support inquiry, push, PR,
+hosted migration, publication or deployment. Local docs pending scoped
+commit; no external operation is pending.
+
+**2026-10-04 — D11.6 local acceptance reconciled.** The
+[criterion mapping](evidence/D11-local-checkpoint-acceptance-20261004.md)
+confirms separate server secret validation before privileged calls,
+server-owned method/provider configuration, service-only RPC execution
+and private table access. No runtime endpoint or real secret is configured.
+D11.6 is checked as dormant local mechanics; **D11.7 first incomplete**.
+**Next GPT-6.1 Sol / High** for caps, ledger, metrics, kill switch and
+cadence. Existing tests still apply to unchanged source. D11 quality/live
+gates remain open; no external operation. Local docs pending scoped commit.
+
+**2026-10-04 — D11.5 local acceptance reconciled.** The
+[criterion mapping](evidence/D11-local-checkpoint-acceptance-20261004.md)
+now confirms reviewed/manual head priority, changed linguistic-input
+rejection, media-only continuity and zero-provider no-work behavior.
+Current 47 SQL and 73 Deno passes still cover unchanged source. D11.5 is
+checked as dormant local mechanics; **D11.6 first incomplete**. **Next
+GPT-6.1 Sol / High** for server-only invocation and secret handling.
+No new tests, source edits, paid requests or external operations; D11
+quality/live gates remain open. Local docs pending scoped commit.
+
+**2026-10-04 — D11.4 local acceptance reconciled.** The
+[criterion mapping](evidence/D11-local-checkpoint-acceptance-20261004.md)
+now binds existing durable leases, bounded retries/timeouts, terminal
+review states and idempotent compare-and-set to the 47 PostgreSQL and
+73 Deno passes from `62ca85d`. No source changed or tests repeated.
+D11.4 is checked as dormant local mechanics; **D11.5 first incomplete**.
+**Next model GPT-6.1 Sol / High** for reviewed-head, changed-input and
+no-work reconciliation. D11 quality/live activation gates remain open.
+No external operation or additional Gemini attempt; local docs pending
+scoped commit.
+
+**2026-10-04 — D11.3 local acceptance reconciled.** Starting `62ca85d`
+on `feature/shared-dictionary-schema`, with only preexisting
+`.playwright-cli/` untracked. The [criterion mapping](evidence/D11-local-checkpoint-acceptance-20261004.md)
+confirms the existing bounded daily selector/handler, approved published
+shared meaning inputs, official import reference reuse without analysis,
+private fallback isolation and zero-provider no-work path. No code changed
+for this checkpoint; October 4's 47 PostgreSQL, 73 Deno and 24 diagnostic
+passes apply to the unchanged implementation. D11.3 is checked as local
+dormant mechanics; **D11.4 first incomplete**. **Next model GPT-6.1 Sol /
+High** for lease/retry/idempotence acceptance reconciliation. D11 stage
+exit and worker activation remain gated by independent quality and live
+approval. No paid call, new input transmission, support inquiry, push,
+PR, migration, publication or deployment. Local docs pending scoped commit.
+
 **2026-10-04 — qualification boundary reviewed; ambiguity repair verified.**
 Starting `9a47b16`, `feature/shared-dictionary-schema`, AUTH-20/AUTH-18.
 The [review](evidence/D11-qualification-boundary-review-20261004.md)
