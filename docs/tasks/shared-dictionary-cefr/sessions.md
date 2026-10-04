@@ -3059,5 +3059,7 @@ false`; private key mode was 0600. Both private temporary key and draft copies
 - D11 done only for offline diagnostic and dormant mechanics. D12.1 is
   next, recommended GPT-6 Astra / High. Worker/schedule OFF,
   `qualified: false`; no provider call or external operation. Scoped
-  documentation is local until its commit; `.playwright-cli/` remains
-  unrelated and untracked.
+  documentation was committed locally as `42243f2` under AUTH-18;
+  ordinary hooks passed mobile 156 suites/1796 tests/22 snapshots and
+  web 86 suites/780 tests with one existing skip. No application
+  source changed; `.playwright-cli/` remains unrelated and untracked.

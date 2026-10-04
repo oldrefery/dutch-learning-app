@@ -18,8 +18,11 @@ inquiry, push, PR, hosted migration, publication or deployment.
 **First incomplete checkpoint: D12.1.** Start by reviewing D12 inputs
 and repository test scripts, then verify the shared dictionary and
 disabled CEFR path. Recommended next model **GPT-6 Astra / High**;
-actual picker attribution is unverified. This checkpoint is local-only
-until the scoped documentation commit; no external operation is pending.
+actual picker attribution is unverified. Documentation was committed
+locally as `42243f2` under AUTH-18; ordinary hooks passed mobile 156
+suites/1796 tests/22 snapshots and web 86 suites/780 tests with one
+existing skip. No application source changed; only preexisting
+`.playwright-cli/` remains untracked. No external operation is pending.
 
 **2026-10-04 — teacher scope clarified as whole words.** Starting
 `e7fa897` on `feature/shared-dictionary-schema`, with only preexisting
