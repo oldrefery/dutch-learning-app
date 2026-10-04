@@ -40,12 +40,22 @@
   },
   "app_store_connect": {
     "app_id": "6752469146",
-    "status": "login required; store history not yet verified"
+    "status": "verified after owner login",
+    "observed_at_utc": "2026-10-04T19:43:24.061167+00:00",
+    "latest_version": "2.3.1",
+    "latest_build": 84,
+    "latest_upload_status": "Complete",
+    "latest_upload_date_displayed": "Sep 11, 2026 10:01 PM",
+    "build_id": "3382cc76-e2e4-4917-a85a-158ba5f8eac1",
+    "inventory": "iOS versions and All Statuses Build Uploads sorted newest first; no newer upload observed",
+    "group_name": "Team (Expo)",
+    "build_distribution_label": "Automatic for Xcode Builds",
+    "device_automatic_update_setting": "not inspected"
   },
   "proposal": {
     "version": "2.4.0",
     "build": 85,
-    "status": "provisional; no version files changed"
+    "status": "selected planning target after EAS/Google Play/Apple inventory; recheck before upload; no version files changed"
   },
   "mutations": "none; read-only remote inventory; no build, upload, submission or device action"
 }

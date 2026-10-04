@@ -3310,3 +3310,19 @@ Current stage in_progress, next Apple inventory and publication/mapping packet.
 All backups and existing QA services preserved; no phone, provider, migration,
 source push/PR, build, submission or deployment operation. AUTH-18 scoped local
 documentation commit; unrelated.playwright-cli/ untouched.
+
+## 2026-10-04 — Apple inventory completed and automatic-update boundary clarified
+
+Owner completed browser login. Read-only Apple app6752469146 iOS versions and
+All Statuses upload history confirm latest2.3.1(84), Complete, then83/82/81/80.
+Select planning target2.4.0(85), unreserved and requiring pre-upload recheck.
+User noted automatic updates. Apple guidance confirms optional device TestFlight
+auto-install; group settings display Automatic for Xcode Builds. No device setting
+or group membership changed; do not equate internal submission with inert storage.
+Historical approved official source offline validator passed21 packs/2053 entries,
+exact aggregate unchanged, zero writes, throwing network stub. New shared source
+conversion/publication/mapping and meaning-level evidence still require preparation.
+Next D13.5 exact manifest and protected real-snapshot mapping/rollback rehearsal.
+No build, source push/PR, store submission, production write or phone operation.
+AUTH-18 documentation checkpoint from79653e1; previous hooks156/1796 mobile and
+86/780 web passed. All private backups/QA resources preserved, .playwright-cli/ untouched.

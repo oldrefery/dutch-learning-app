@@ -1,5 +1,24 @@
 # Shared dictionary and CEFR — current handoff
 
+**2026-10-04 — Apple inventory complete; planning target2.4.0(85).**
+Owner completed Apple login. De Woordenaar6752469146 latest iOS version/build is
+2.3.1(84); All Statuses Build Uploads shows84 Complete as newest, then83/82/81/80.
+Combined with EAS/Google Play evidence, select2.4.0(85) for planning; recheck before
+upload, no version file changed and no number reserved. Team (Expo) distribution
+label: Automatic for Xcode Builds. Device automatic updates unknown; treat any
+internal submission as possible delivery to P1, requiring release/cutover authority.
+No build, submission, device action or remote write. No Apple login blocker remains.
+
+Historical official release integrity passed offline:21 packs/2053 entries, exact
+approved aggregate unchanged, zero writes and network forbidden. Next D13.5:
+prepare exact D04 seed/source/official-mapping manifest and licensing attribution,
+then protected real-snapshot mapping/delta and rollback rehearsal. Existing pack
+approval does not itself approve new shared publication or per-meaning CEFR.
+[Updated client plan](evidence/D13-client-release-plan-20261004.md).
+D13 in_progress; GPT-6 Astra / High; AUTH-18 local checkpoint. All backup/device/
+P2 preservation boundaries remain; completed AUTH-24 must never be replayed.
+Older headers below are historical; previous Apple-login requests are resolved.
+
 **2026-10-04 — D13 release inventory and client artifact plan saved.**
 Resumed bb3d323; application candidate13b97b0 unchanged, ten control/source and
 nine migration hashes match. EAS effective account/linked project verified as

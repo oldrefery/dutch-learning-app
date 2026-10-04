@@ -1,7 +1,7 @@
 # D13 client artifact plan — October 4, 2026
 
-Status: local planning complete; Apple inventory and external operation approvals
-pending. This is not build, upload, submission, environment-write or cutover
+Status: store inventory complete; exact publication/mapping preparation and
+external operation approvals pending. This is not build, upload, submission, environment-write or cutover
 authority. Recommended model: GPT-6 Astra / High.
 
 ## Verified inventory
@@ -28,10 +28,16 @@ The authenticated personal Google Play Console independently showed 37 app
 versions for `com.oldrefery.dutchlearningapp`, newest 84 / 2.3.1. Searching 85
 returned zero app versions / No results. No upload/release change was made.
 
-App Store Connect app 6752469146 redirected to login. The owner was asked to sign
-in personally; no password, code, passkey action or account switch was attempted.
-The new Apple tab is retained for login. Native build84 on P1 remains separately
-verified; it does not prove that Apple has no later uploaded build.
+After the owner completed login, App Store Connect app6752469146 showed latest
+version2.3.1/build84. All Statuses Build Uploads, newest first, showed84 Complete,
+then83/82/81/80; no newer upload. Build84 ID is
+3382cc76-e2e4-4917-a85a-158ba5f8eac1. No credentials or settings were changed.
+Team (Expo) settings display Build Distribution: Automatic for Xcode Builds.
+Do not infer the exact EAS submission behavior or the device auto-update setting
+from that label. Treat an internal submission as potentially user-visible delivery,
+not a harmless storage upload; it requires release authority. TestFlight can
+install available builds automatically when device automatic updates are enabled.
+See [Apple TestFlight guidance](https://beta.itunes.apple.com/).
 
 [Sanitized inventory](D13-release-inventory-20261004.json) records exact IDs and
 the private raw-response hash. Raw output remains in ignored, protected
@@ -39,10 +45,10 @@ the private raw-response hash. Raw output remains in ignored, protected
 
 ## Proposed version and artifacts
 
-Recommend **2.4.0 (85)** for this feature release, provisional until Apple's
-uploaded-build inventory is checked and both stores are rechecked before upload.
+Select **2.4.0 (85)** as the planning target after both store inventories.
+Recheck both stores immediately before upload; this observation reserves nothing.
 `prepare-release.js --version 2.4.0 --build 85` passed in dry-run mode; no version
-source changed. Do not pass 85 as a confirmed unused number yet.
+source changed. No build or submission has been started.
 
 | Artifact                           | Exact target/configuration                                                                                             | Required evidence before use                                                                                                             |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
@@ -82,7 +88,7 @@ and new platform fingerprints. CEFR remains OFF and unscheduled throughout.
 
 ## Source and build preflight
 
-1. Complete Apple inventory and finalize version/build. Use an isolated clean
+1. Store inventory is complete; recheck before upload. Use an isolated clean
    release checkout of the chosen revision; do not clean the current user's
    untracked directory or copy private backups/QA reports into that checkout.
 2. Apply the four-file version update there, review/commit it, recompute source
@@ -116,10 +122,15 @@ D13.3 identity check and D13.4 native-route decision have evidence. Identity che
 must still recur before later EAS operations. No build/upload/deployment has begun,
 no primary phone was operated, and completed AUTH-24 migrations were not replayed.
 
-Next: once the owner finishes Apple login, inspect only this app's uploaded builds,
-finalize the provisional number and continue the exact source/publication/mapping
-packet. If login is not yet available, local mapping/publication planning can
-continue; do not infer approval for source uploads, builds, stores or cutover.
+Next: continue the exact source/publication/mapping packet. Local offline
+verification of the historical approved official pack release passed:21 packs,
+2053 entries, aggregate5e02d4e1e02c1d56222ced6dca23f720a479e991f16c0af13bc124de707ac90b,
+zero production writes, network function replaced with a throwing stub. This
+confirms file integrity only: transformed D04 content hashes, meaning identities,
+license/attribution propagation and exact source approval for the new shared
+publication must still be prepared. Pack-level CEFR does not authorize meaning
+assessments. No private personal card becomes public by matching this catalog.
+The historical release/ledger must remain immutable; no republishing is authorized.
 
 Documentation: [EAS CLI reference](https://github.com/expo/eas-cli#readme), retrieved
 through Context7 for identity/build inventory and archive inspection. The first
