@@ -6745,3 +6745,43 @@ no extra main file changes need integration. Proceed within authorized local sco
 Build slots: iOS unstarted, Android unstarted. Exact execution/logs go under
 reports/shared-dictionary-cefr/d13a84-local-builds-20261023. D13A.8 stays 3/6;
 3 fixed steps and 7 broad milestones including current remain. Astra / High.
+
+**2026-10-23 — AUTH-43 commit and both signed local builds completed.**
+
+Commit df08a60fd6337cce06e1706a07538185d27b3a15 contains version86 source and review
+preparation (18 files). Normal hooks pass 2732 mobile tests / 200 suites / 22 snapshots
+and 1252 web tests / 118 suites, with one existing skipped web suite/test. No push.
+1513 source pins match the committed 2146-file archive and remained unchanged in builds.
+
+Both local dictionary-release 2.5.0(86) builds succeeded and artifact audits pass:
+builds/app-2.5.0-86.ipa and builds/app-2.5.0-86.aab. IPA system signature/App Store
+profile/team/version/runtime pass; AAB bundletool/JAR signature/package/version/runtime
+pass and signer matches retained build80. Exact hashes/fingerprints are in
+[evidence/D13A.8.4-local-build-review-20261023.json](evidence/D13A.8.4-local-build-review-20261023.json).
+No certificate change, app installation/launch, store submission or debug upload.
+
+Expo Doctor reports 20/21: 12 available patch updates, retained as an open CI/release
+finding. Frozen dependencies were not upgraded during builds. Native artifacts are
+not device-tested or authorized for publication. AUTH-43's two build slots are used.
+No paid provider call, migration, runtime enablement or real linking; CEFR remains OFF.
+
+PR/merge assessment: no open PR; CI runs on PR without merge. Vercel history includes
+feature Preview and main Production deployments, so preserve no-push/no-publication
+until that behavior and PR scope are agreed. Main tree matches common base f97a733.
+Next D13A.8.4: resolve Doctor/PR checks, web/function/rollback artifact and fresh
+backup/delta/operator gates. D13A.8 remains 3/6, with 3 fixed steps and 7 broad milestones
+including current (6 excluding). Final build review/task notes are local documentation
+above committed df08a60; origin remains 0e706ee. No builds remain running. Astra / High.
+
+## 2026-10-23 — PR preparation authorized and dependencies repaired
+
+AUTH-44 permits feature push/PR/merge and associated Vercel web publication. Aligned
+SDK57 patches: Expo Doctor21/21. Updated vulnerable web Next/eslint-config-next to
+16.4.3 and Sentry to10.75.2, plus compatible transitive fixes; native df08a60 IPA/AAB
+remain historical and need rebuilding for any changed-source release. Local web
+production build and mobile application/test typing pass. Web lint first scanned
+584 generated performance capture files; excluded output/performance artifacts
+without suppressing source rules or deleting evidence. Final lint/check/hook and
+hosted CI outcomes will be recorded separately. Private logs: reports/shared-
+dictionary-cefr/d13a84-pr-20261023. No store upload/migration/server activation or
+provider call. D13A.8.4 remains in progress,3/6 complete,3 fixed steps remain.

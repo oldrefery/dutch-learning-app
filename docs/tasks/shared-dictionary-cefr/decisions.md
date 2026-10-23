@@ -2137,3 +2137,30 @@ This authorization is for one local artifact per platform, not unbounded retries
 credential changes, paid model calls, production migrations, flags or real linking.
 At this checkpoint both build slots are unstarted. Record exact outcomes and retain
 all logs/artifacts; inspect uncertain outcomes before retrying.
+
+**AUTH-43 outcome:** commit df08a60 created with normal hooks passing 2732 mobile and
+1252 web tests (one existing web skip). One iOS IPA and one Android AAB successfully
+built locally from that exact clean source; both signatures/version/runtime verified.
+Existing credentials used without creation/replacement; no push, merge, upload/store
+submission, debug upload or deployment. No new signed artifact was device-tested.
+Both build slots are fulfilled, not reusable approval for additional native builds.
+Expo Doctor reported 12 patch updates (20/21), retained as a required review/CI finding.
+PR/merge question resolved as recommendation: PR/CI before release; coordinate Vercel
+Preview/Production effects before any push/merge. No new remote authority inferred.
+D13A.8 remains 3/6 with 3 fixed steps and 7 broad milestones including current left.
+
+## AUTH-44 — Feature PR, merge and associated web publication
+
+The owner accepts the previously explained Vercel publication effect of merging the
+shared-dictionary feature into main. Authorize committing the remaining review
+records and necessary CI fixes, pushing feature/shared-dictionary-schema, opening
+its PR to main, and merging after successful checks and review. Vercel Preview
+and Production deployments resulting from this Git workflow are within scope.
+No native store upload/submission, additional signed native builds, certificate
+change, database migration, provider spending, server enablement, CEFR activation
+or real-card linking is authorized. Existing df08a60 native artifacts remain bound
+to that revision; dependency changes require new artifact qualification.
+
+Current checkpoint: no open PR; origin feature 0e706ee, main 44141e0. Resolve the
+Expo Doctor patch-version finding before merge and preserve exact CI/deployment
+receipts. D13A.8.4 remains in progress; this scope does not close its other gates.
