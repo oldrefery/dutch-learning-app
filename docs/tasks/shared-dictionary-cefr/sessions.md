@@ -6798,3 +6798,9 @@ pass locally. Vercel Preview succeeded; new exact-head CI remains required.
 Read-only API confirms new dictionary rollout flags are absent in Vercel; no
 settings changed. D13A.8 remains 3/6 with 3 fixed steps and 7 broad milestones
 including current. No native upload, migration, server activation or paid call.
+
+The original web-fixtures job hit its 10-minute limit while apt downloaded browser
+system dependencies from the Ubuntu mirror; no browser tests had started. Extend
+only that job to 20 minutes, retaining all installation and test steps. The two
+code/environment repairs are committed as a556edd; their complete hooks pass
+2732 mobile and 1252 web tests with 22 snapshots and one existing web skip.
