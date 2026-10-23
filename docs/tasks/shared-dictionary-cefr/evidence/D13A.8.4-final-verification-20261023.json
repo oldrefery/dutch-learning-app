@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "stage": "D13A.8.4",
+  "status": "requested_final_local_review_prepared",
+  "prepared_at": "2026-10-23T20:54:29.735334+00:00",
+  "source_commit": "4bc707372cf9359fc8324d45d5df1965fc044f81",
+  "packet": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-final-packet-20261023.json",
+  "packet_sha256": "3b3bc7262a9a71b1a8b9c8324c01985862d776b0cd41696eaec343ae26472be6",
+  "verifier_sha256": "4c3a7b516a113f4f05f5e5926ecbdb97ae6c60e8c2d78c6305dae9bc0b151046",
+  "verification": {
+    "status": "passed",
+    "checks": 26,
+    "passed": 26,
+    "results": [
+      {
+        "case": "valid preparation",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "passed": true,
+        "output": "{\"status\": \"preparation_verified\", \"source_files\": 1513, \"archive_files\": 2137, \"migrations\": 14, \"execution_holds\": 12, \"execution_authorized\": false}"
+      },
+      {
+        "case": "execution always refused",
+        "expected_exit": 2,
+        "actual_exit": 2,
+        "passed": true,
+        "output": "{\"status\": \"execution_refused\", \"reason\": \"AUTH-41 permits local commit and review only\", \"open_holds\": [\"R01\", \"R02\", \"R03\", \"R04\", \"R05\", \"R06\", \"R07\", \"R08\", \"R09\", \"R10\", \"R11\", \"R12\"]}"
+      },
+      {
+        "case": "wrong authority",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Wrong preparation authority"
+      },
+      {
+        "case": "production authority",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Production authority is absent"
+      },
+      {
+        "case": "paid request",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Paid or linking scope exceeds authority"
+      },
+      {
+        "case": "real link",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Paid or linking scope exceeds authority"
+      },
+      {
+        "case": "ready execution",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Preparation cannot be execution-ready"
+      },
+      {
+        "case": "execution command",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Execution commands are forbidden"
+      },
+      {
+        "case": "wrong Expo account",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Wrong Expo account"
+      },
+      {
+        "case": "wrong backend",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Wrong backend"
+      },
+      {
+        "case": "wrong source",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Source candidate changed"
+      },
+      {
+        "case": "archive digest",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Source archive digest mismatch"
+      },
+      {
+        "case": "source pin",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Source digest mismatch: .gitignore"
+      },
+      {
+        "case": "unverified IPA",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Unverified production artifact claim"
+      },
+      {
+        "case": "all functions",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: All-functions deployment is forbidden"
+      },
+      {
+        "case": "extra function",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Wrong function allowlist"
+      },
+      {
+        "case": "web promotion",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Web promotion is not authorized"
+      },
+      {
+        "case": "redispatch unknown",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Unknown outcomes cannot redispatch"
+      },
+      {
+        "case": "release held budget",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Historical unknown liabilities changed"
+      },
+      {
+        "case": "reserve build",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Version proposal or reservation claim changed"
+      },
+      {
+        "case": "occupied build",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Build86 is not unused in the reviewed inventory"
+      },
+      {
+        "case": "remove agreement",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Apple agreement notice removed"
+      },
+      {
+        "case": "push permission",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Push is not authorized"
+      },
+      {
+        "case": "false CI claim",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Qualification scope changed"
+      },
+      {
+        "case": "remove hold",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Execution holds were removed or changed"
+      },
+      {
+        "case": "preparation digest",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "passed": true,
+        "output": "Packet rejected: Preparation evidence mismatch: docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-final-inventory-20261023.json"
+      }
+    ],
+    "packet_sha256": "3b3bc7262a9a71b1a8b9c8324c01985862d776b0cd41696eaec343ae26472be6",
+    "verifier_sha256": "4c3a7b516a113f4f05f5e5926ecbdb97ae6c60e8c2d78c6305dae9bc0b151046",
+    "scope": "Offline integrity and refusal tests; no independent code review, hosted CI, deployment or paid/native requalification.",
+    "execution_authorized": false
+  },
+  "archive_files": 2137,
+  "source_files": 1513,
+  "source_pins_match_committed_archive": true,
+  "historical_packet_unchanged": true,
+  "migrations": 14,
+  "execution_holds": 12,
+  "bundle": {
+    "path": "reports/shared-dictionary-cefr/d13a84-final-review-20261023/D13A.8.4-review-4bc7073.tar.gz",
+    "sha256": "77e5982b745923414299a0e7e4b61694a2ea1f31666b4ee33dac31d77eaeb1f3",
+    "bytes": 14090686,
+    "files": 22,
+    "member_hashes_verified": true,
+    "high_confidence_source_secret_scan_matches": 0,
+    "raw_eas_responses_included": false
+  },
+  "git": {
+    "committed_files": 25,
+    "commit_created": true,
+    "push": false,
+    "post_commit_work": "final review and task documentation only"
+  },
+  "local_checks": {
+    "mobile_passed": 2731,
+    "web_passed": 1252,
+    "web_skipped": 1,
+    "remote_ci_verified": false
+  },
+  "execution_authorized": false,
+  "production_operations": 0,
+  "paid_requests": 0,
+  "real_links": 0,
+  "remaining": {
+    "stage_steps": 3,
+    "broad_including_current": 7,
+    "broad_excluding_current": 6
+  }
+}

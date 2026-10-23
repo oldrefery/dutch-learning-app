@@ -6674,3 +6674,74 @@ requalification is claimed. R01/R02 local defects are repaired; final artifact b
 unused versions, fresh backup/delta/queues, policy/spending/operator readiness and exact
 execution authority remain open. D13A.8 is3/6 complete,3 fixed steps remain;7 broad
 milestones including current,6 excluding it. Next remains D13A.8.4, GPT-6 Astra / High.
+
+**2026-10-23 — D13A.8.4 final local review package prepared (AUTH-41).**
+
+Committed the completed runtime/configuration/tests and earlier preparation as
+`4bc707372cf9359fc8324d45d5df1965fc044f81` (25 files), with normal hooks passing
+2731 mobile and 1252 web tests; one existing web test remains skipped. No push.
+Browser artifacts are now excluded portably by .gitignore. All ignored reports,
+QA data, builds and signing material are preserved; no forced add or deletion.
+
+Fresh personal EAS/Apple/Google inventory observed latest 2.4.0(85); no build 86
+was found. Planning candidate 2.5.0(86) passes a dry run, but actual source stays
+2.4.0(85). No reservation: recheck before upload and freeze new source after applying
+versions. Apple shows an updated Paid Applications Schedule notice; owner action
+is needed before affected operations. Google public production access is inactive;
+internal testing is available. No agreement or store metadata was changed.
+
+Review evidence/D13A.8.4-final-review-20261023.md and its final-packet, inventory and
+verification receipts. Exact committed archive: 2137 files; current source pins: 1513;
+14 candidate additive migrations; 12 explicit execution holds. Offline verification
+and rejection checks are recorded in the final verification receipt. No build,
+publication, migration, enablement, paid call, real linking or D13A.9 start occurred.
+
+Current HEAD is one local commit ahead of origin. Final-review documents and this
+checkpoint are subsequent uncommitted documentation only. Main account/devices
+untouched; QA stack stays stopped. D13A.8 remains 3/6 complete: 3 fixed steps remain;
+7 broad milestones including current, 6 excluding it. Next is still D13A.8.4 on
+GPT-6 Astra / High, with exact artifact/backup/operator/authority gates open.
+
+**2026-10-23 — D13A.8.4 agreement verified and version 86 applied (AUTH-42).**
+
+Read-only personal App Store Connect Business shows both Free Apps Agreement and
+Paid Apps Agreement Active, effective October 23, 2026–September 10, 2027. R11 closed
+for this observation; no account, agreement, banking or tax mutation performed.
+
+Applied 2.5.0(86) in four version sources via the existing prepare-release.js script
+in an isolated clean copy of 4bc7073. Transferred only the verified version files and
+updated one config regression test. Actual dictionary-release config resolves the
+personal owner/project/bundles, production OTA, fingerprint policy, QA OFF and four
+features ON. Explicit old build 85 rejection remains covered by a separate fixture.
+35 focused tests, complete mobile test TypeScript, scoped lint and formatting pass.
+First launcher failed before tests due to incompatible worker flags; corrected run
+passed and both logs remain preserved. No full-suite rerun is claimed for this delta.
+
+Review evidence/D13A.8.4-version86-review-20261023.md, version86 packet and verification.
+12 integrity/refusal checks pass, 1513 full source pins, five-file source delta and
+2137-file source archive. Previous final-review packet/bundle remain immutable and
+correctly reject this changed checkout. New native fingerprints and signed artifacts
+are still absent; no build/upload/submission/publication/paid operation occurred.
+
+HEAD remains local 4bc7073, one ahead of origin; five source files plus review/task
+files are uncommitted. Numbers are applied locally but not reserved. Next: exact
+source commit/review and scoped local iOS/Android build approval, then final artifact,
+backup/delta/queue and operator readiness. No push or builds are authorized by AUTH-42.
+Main account/devices untouched; QA stack stays stopped. D13A.8 is 3/6 complete:
+3 fixed steps, 7 broad milestones including current, 6 excluding it. Astra / High.
+
+**2026-10-23 — D13A.8.4 authorized local build checkpoint started (AUTH-43).**
+
+Owner authorizes commit plus two local signed 2.5.0(86) builds, iOS IPA and Android
+AAB, with existing credentials only. No push, store submission, certificate change,
+publication, provider call, migration or real-card operation. Commit the five verified
+source changes and review/task documentation, then bind the exact resulting source.
+Use dictionary-release, frozen credentials and disabled Sentry auto-upload.
+
+PR/merge question checked read-only: no open PR; Quality runs on PR/main/develop.
+Vercel previously created Preview on feature push and Production on main merge.
+Do not treat push/merge as publication-free. Main tree equals common base f97a733;
+no extra main file changes need integration. Proceed within authorized local scope.
+Build slots: iOS unstarted, Android unstarted. Exact execution/logs go under
+reports/shared-dictionary-cefr/d13a84-local-builds-20261023. D13A.8 stays 3/6;
+3 fixed steps and 7 broad milestones including current remain. Astra / High.

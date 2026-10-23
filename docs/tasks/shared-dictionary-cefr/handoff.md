@@ -1,11 +1,73 @@
-**2026-10-23 — AUTH-41 commit and final-review inventory checkpoint started.**
+**2026-10-23 — D13A.8.4 authorized local build checkpoint started (AUTH-43).**
 
-Owner requests a local commit of completed preparation first, then fresh store/build
-number inventory and final review packaging. Commit is being prepared on the current
-feature branch; inspect actual HEAD/result before retrying. Generated browser outputs
-are excluded through repository .gitignore; private reports/builds/keys remain ignored
-and preserved. No push or release operation. Current fixed stage remains3/6 complete,
-3 steps and7 broad milestones including current remain.
+Owner authorizes commit plus two local signed 2.5.0(86) builds, iOS IPA and Android
+AAB, with existing credentials only. No push, store submission, certificate change,
+publication, provider call, migration or real-card operation. Commit the five verified
+source changes and review/task documentation, then bind the exact resulting source.
+Use dictionary-release, frozen credentials and disabled Sentry auto-upload.
+
+PR/merge question checked read-only: no open PR; Quality runs on PR/main/develop.
+Vercel previously created Preview on feature push and Production on main merge.
+Do not treat push/merge as publication-free. Main tree equals common base f97a733;
+no extra main file changes need integration. Proceed within authorized local scope.
+Build slots: iOS unstarted, Android unstarted. Exact execution/logs go under
+reports/shared-dictionary-cefr/d13a84-local-builds-20261023. D13A.8 stays 3/6;
+3 fixed steps and 7 broad milestones including current remain. Astra / High.
+
+**2026-10-23 — D13A.8.4 agreement verified and version 86 applied (AUTH-42).**
+
+Read-only personal App Store Connect Business shows both Free Apps Agreement and
+Paid Apps Agreement Active, effective October 23, 2026–September 10, 2027. R11 closed
+for this observation; no account, agreement, banking or tax mutation performed.
+
+Applied 2.5.0(86) in four version sources via the existing prepare-release.js script
+in an isolated clean copy of 4bc7073. Transferred only the verified version files and
+updated one config regression test. Actual dictionary-release config resolves the
+personal owner/project/bundles, production OTA, fingerprint policy, QA OFF and four
+features ON. Explicit old build 85 rejection remains covered by a separate fixture.
+35 focused tests, complete mobile test TypeScript, scoped lint and formatting pass.
+First launcher failed before tests due to incompatible worker flags; corrected run
+passed and both logs remain preserved. No full-suite rerun is claimed for this delta.
+
+Review evidence/D13A.8.4-version86-review-20261023.md, version86 packet and verification.
+12 integrity/refusal checks pass, 1513 full source pins, five-file source delta and
+2137-file source archive. Previous final-review packet/bundle remain immutable and
+correctly reject this changed checkout. New native fingerprints and signed artifacts
+are still absent; no build/upload/submission/publication/paid operation occurred.
+
+HEAD remains local 4bc7073, one ahead of origin; five source files plus review/task
+files are uncommitted. Numbers are applied locally but not reserved. Next: exact
+source commit/review and scoped local iOS/Android build approval, then final artifact,
+backup/delta/queue and operator readiness. No push or builds are authorized by AUTH-42.
+Main account/devices untouched; QA stack stays stopped. D13A.8 is 3/6 complete:
+3 fixed steps, 7 broad milestones including current, 6 excluding it. Astra / High.
+
+**2026-10-23 — D13A.8.4 final local review package prepared (AUTH-41).**
+
+Committed the completed runtime/configuration/tests and earlier preparation as
+`4bc707372cf9359fc8324d45d5df1965fc044f81` (25 files), with normal hooks passing
+2731 mobile and 1252 web tests; one existing web test remains skipped. No push.
+Browser artifacts are now excluded portably by .gitignore. All ignored reports,
+QA data, builds and signing material are preserved; no forced add or deletion.
+
+Fresh personal EAS/Apple/Google inventory observed latest 2.4.0(85); no build 86
+was found. Planning candidate 2.5.0(86) passes a dry run, but actual source stays
+2.4.0(85). No reservation: recheck before upload and freeze new source after applying
+versions. Apple shows an updated Paid Applications Schedule notice; owner action
+is needed before affected operations. Google public production access is inactive;
+internal testing is available. No agreement or store metadata was changed.
+
+Review evidence/D13A.8.4-final-review-20261023.md and its final-packet, inventory and
+verification receipts. Exact committed archive: 2137 files; current source pins: 1513;
+14 candidate additive migrations; 12 explicit execution holds. Offline verification
+and rejection checks are recorded in the final verification receipt. No build,
+publication, migration, enablement, paid call, real linking or D13A.9 start occurred.
+
+Current HEAD is one local commit ahead of origin. Final-review documents and this
+checkpoint are subsequent uncommitted documentation only. Main account/devices
+untouched; QA stack stays stopped. D13A.8 remains 3/6 complete: 3 fixed steps remain;
+7 broad milestones including current, 6 excluding it. Next is still D13A.8.4 on
+GPT-6 Astra / High, with exact artifact/backup/operator/authority gates open.
 
 **2026-10-23 — D13A.8.4 requested runtime/configuration repairs complete locally.**
 
@@ -7741,40 +7803,38 @@ No production, schema cutover, publication, deployment or paid provider calls.
 
 ## Next resume
 
-D13A.8 is in_progress,3/6 complete. AUTH-40's requested creation startup and native
-configuration repairs are complete locally. Read the October23 D13A.8.4 runtime/build
-addendum and its JSON receipt first. The original0e706ee release packet is immutable
-historical evidence; its current-source verifier correctly rejects this repaired checkout.
+D13A.8 is in_progress, 3/6 complete. Start with the current version 86 addendum:
+[evidence/D13A.8.4-version86-review-20261023.md](evidence/D13A.8.4-version86-review-20261023.md)
+and its packet/verifier/verification receipt. Current candidate is 4bc7073 plus five
+uncommitted source changes. Actual source versions now align at 2.5.0(86); the resolved
+dictionary-release config passes. Prior final-review packet is immutable base evidence
+and must reject the changed checkout. Do not rewrite old manifest hashes to hide drift.
 
-Next within D13A.8.4: obtain fresh store allocation, choose unused native versions,
-freeze the final source and prepare exact native/web/function/rollback artifacts and
-live operator delivery. Complete fresh protected backup/restore/delta/device queues,
-review actual production profiles and spending controls, then obtain exact scoped
-build/release authority. No production build/submission/update/merge/deployment/migration/
-flag/policy/role/linking/rollback or paid request is currently authorized. Paid and
-real-link ceilings remain0. Do not reuse consumed pilots. Keep CEFR OFF and existing
-v1/learning delivery semantics. D13A.9 starts only after actual verified activation.
+Apple Free/Paid Apps Agreements are Active; R11 closed. Google public production
+eligibility remains conditional; internal testing is available. Number 86 was not
+observed in the prior fresh inventory but is not reserved; check before upload.
 
-Creation index/bootstrap now exists and defaults disabled; the function-local dependency
-configuration is pinned. Native flags are explicit and dictionary-release rejects85,
-invalid/mismatched versions and missing flags/test isolation. Actual version sources
-remain2.4.0(85);86 is only a test fixture, not a reservation. The generic build-release.sh
-selects production and is not the dictionary-profile build path. Final upload sets,
-signed artifacts and embedded flags remain unverified. Do not silently substitute QA
-packages or local ignored native directories for release artifacts.
+Next: commit/review the exact current source and obtain scoped local build authority
+for iOS IPA and Android AAB using dictionary-release, frozen credentials and Sentry
+auto-upload disabled. Do not run generic build-release.sh (it selects production).
+No push/build/submission/update/deployment/migration/flag/role/linking/paid operation
+is currently authorized. Missing signing credentials require a separate decision.
 
-HEAD remains pushed0e706ee. Eleven source/config/test/template delta files and new
-preparation documents are uncommitted. Source-delta archive, complete source index and
-verification logs are preserved under reports/shared-dictionary-cefr/d13a84-runtime-build-20261023.
-Main account/devices untouched; QA stack remains stopped. No test/listener remains
-running. Seven broad milestones remain including D13A.8; six excluding it.
+Final actual artifacts/rollback compatibility, fresh protected backup/restore/delta/
+queues, live operator delivery and production profile/spending controls remain open.
+Paid and real-link ceilings stay 0; unknown USD 0.56 remains held. Keep CEFR OFF and
+existing v1/learning semantics. D13A.9 starts only after verified activation.
+Main account/devices untouched; QA stack remains stopped. No tests/builds running.
+Three fixed steps remain; seven broad milestones including current, six excluding it.
 
 ## Model and schedule authority
 
 AUTH-16 gives the ordinary implementation/review recommendations. The stop after D13A.7
 was honored. The later AUTH-39 explicitly starts D13A.8 preparation only,and the owner
 confirmed GPT-6 Astra / High for this checkpoint. AUTH-40 additionally permits the local
-runtime/configuration repair, now fulfilled. No picker inspection or model switch
+runtime/configuration repair, now fulfilled. AUTH-41 permits the completed local commit
+and read-only final packaging, also fulfilled. AUTH-42 continues local version
+preparation and read-only agreement verification; both are complete. No picker inspection or model switch
 is claimed. Publication and production execution remain outside current scope. Historical
 CNR-1/budget work is complete;do not repeat it or use GPT-5.6 Sol.
 
@@ -7803,7 +7863,7 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 | [D11](steps/D11.md)   | done        | Reduced diagnostic/dormant scope; CEFR activation gate blocked                               |
 | [D12](steps/D12.md)   | done        | Local matrix/native/web/rollback PASS; CEFR disabled                                         |
 | [D13](steps/D13.md)   | in_progress | AUTH-27/28/29 delivered; remaining observation/adoption acceptance open; CEFR OFF            |
-| [D13A](steps/D13A.md) | in_progress | D13A.7 done;D13A.8 preparation3/6;8.4 local repairs done;execution unapproved;7 broad remain |
+| [D13A](steps/D13A.md) | in_progress | D13A.7 done;D13A.8 preparation3/6;8.4 version86 prepared;execution unapproved;7 broad remain |
 | [D14](steps/D14.md)   | pending     | Adoption gate + compatibility retirement                                                     |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and
@@ -7814,21 +7874,21 @@ infer live readiness from completed local stages.
 
 - Checkout: `/Users/devrush/code/pet/DutchLearningApp`.
 - Current branch: `feature/shared-dictionary-schema`.
-- Current HEAD: `0e706eead0c2e7c3a8aecc31883cc3d27061fd3b`,pushed to the current
-  origin feature branch. Server implementation a0f7480 and client implementation1e60bcb
-  are preserved. The physical qualification used the dirty f97a733 checkout with pinned
-  final sources; only one existing test received whitespace formatting before commit.
-- The earlier performance branch was not reused; its squash-merged work is present
-  through current `main`.
-- Current persistence: server a0f7480,clients1e60bcb and documentation0e706ee are pushed
-  to origin/feature/shared-dictionary-schema,verified at this preparation entry. New
-  D13A.8 packet/plans/checker, task notes and AUTH-40 source/config/test delta are
-  local-only/uncommitted. No new commit/push is authorized by AUTH-39 or AUTH-40. Private reports,device artifacts and browser logs are
-  retained outside Git; browser artifacts use the local info/exclude rule.
-- Preparation artifacts: reports/shared-dictionary-cefr/d13a8-release-prepare-20261023/;
-  source archive SHA256 and review-bundle SHA256 are recorded in the new preparation
-  receipt. That initial preparation changed no runtime source. The later AUTH-40
-  delta is pinned separately under d13a84-runtime-build-20261023; no new remote checks occurred.
+- Current HEAD: `4bc707372cf9359fc8324d45d5df1965fc044f81`, local only, one commit
+  ahead of origin. The previous server a0f7480, client 1e60bcb and documentation
+  0e706ee commits remain pushed to origin/feature/shared-dictionary-schema.
+- Current persistence: completed AUTH-40 implementation and earlier D13A.8 preparation
+  committed in 4bc7073 under AUTH-41. Five current source changes (app.base.json, root/mobile package.json, package-lock.json
+  and appConfigOta.test.ts), both final/version86 review packets and task checkpoints
+  remain uncommitted.
+  No push is authorized. Reports/builds/signing material stay ignored and preserved;
+  browser artifacts use both the portable .gitignore and local info/exclude rule.
+- Current version artifacts: reports/shared-dictionary-cefr/d13a84-version86-20261023/.
+  Its source snapshot is base 4bc7073 plus the five pinned changes; no signed artifact.
+- Prior final preparation artifacts: reports/shared-dictionary-cefr/d13a84-final-review-20261023/.
+  Exact source archive and sanitized review bundle are pinned in the final manifest
+  and verification receipt. Earlier d13a8-release-prepare-20261023 and
+  d13a84-runtime-build-20261023 evidence is retained unchanged.
 - Historical persistence: **committed locally, not pushed**. Latest application implementation is `c3f9baf` (R1/R2 repair), following `b7f207c` recovery UI and `abc0b86` sync and document reimport
   `42c9bfd`, following `5efd6ff`, `dfdc7f0` and `a59acad`; task docs are in the following documentation
   checkpoint. A new local session can

@@ -120,13 +120,21 @@ describe('mobile OTA build configuration', () => {
     }
   )
 
-  it('rejects the used build85 in the dictionary release profile', () => {
+  it('resolves the actual dictionary release version with production OTA', () => {
     const result = readConfig({
       ...easJson.build[DICTIONARY_RELEASE_PROFILE].env,
       EAS_BUILD_PROFILE: DICTIONARY_RELEASE_PROFILE,
     })
-    expect(result.status).toBe(1)
-    expect(result.stderr).toContain('new build numbers greater than 85')
+    expect(result.status).toBe(0)
+    expect(result.stderr).toBe('')
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      version: appJson.expo.version,
+      iosBuild: appJson.expo.ios.buildNumber,
+      androidBuild: appJson.expo.android.versionCode,
+      qaBuild: false,
+      iosEnabled: true,
+      androidEnabled: 'true',
+    })
   })
 
   describe('new dictionary build configuration', () => {
@@ -139,7 +147,10 @@ describe('mobile OTA build configuration', () => {
       )
       writeFileSync(
         path.join(fixture, 'package.json'),
-        JSON.stringify({ name: 'config-fixture', version: '2.4.0' })
+        JSON.stringify({
+          name: 'config-fixture',
+          version: appJson.expo.version,
+        })
       )
       symlinkSync(
         path.resolve(mobileRoot, '../../node_modules'),
@@ -178,7 +189,7 @@ describe('mobile OTA build configuration', () => {
         iosEnabled: true,
         androidEnabled: 'true',
         runtimeVersion: { policy: 'fingerprint' },
-        version: '2.4.0',
+        version: appJson.expo.version,
         iosBuild: '86',
         androidBuild: 86,
         owner: 'oldrefery',
@@ -207,6 +218,7 @@ describe('mobile OTA build configuration', () => {
       }
     })
     it.each([
+      [85, '85'],
       [85, '86'],
       [86, '87'],
       [86.5, '86.5'],

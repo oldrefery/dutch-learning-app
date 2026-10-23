@@ -2084,3 +2084,56 @@ Read-only personal store/EAS inventory and local review packaging are authorized
 No push, remote build, upload/submission, publication, migration, live enablement,
 real-card operation or paid call is authorized. Existing budget liabilities remain
 held. Any free-number finding is time-bound, not a store reservation.
+
+**AUTH-41 outcome:** completed local commit 4bc7073 (25 files); hooks pass 2731 mobile
+and 1252 web tests, with one existing web skip. No push. Portable browser exclusion
+added; all ignored data retained. Personal EAS/Apple/Google inventory observed latest
+85 and no 86; candidate 2.5.0(86) passes dry run, remains unapplied/unreserved.
+Final local review packet and selective rollback/backup plans prepared. Apple Paid
+Applications Schedule notice and conditional Google public-production eligibility
+are explicit holds. No agreement acceptance or release/build/paid/live operation.
+Final review documents remain local. D13A.8 stays 3/6; 3 fixed steps and 7 broad
+milestones including current remain. No further execution authority is inferred.
+
+## AUTH-42 — Continue local release preparation after owner agreement acceptance
+
+October 23 owner reports that the Apple agreement has been accepted and requests
+continuation. Continue read-only agreement verification and local D13A.8.4 work:
+apply proposed 2.5.0(86), check resolved dictionary profile and preserve a new exact
+source/evidence snapshot. This does not repeat agreement acceptance or authorize
+push, remote/native production builds, uploads, submission, deployment, migrations,
+paid provider requests or real-card operations. Existing no-publication instruction
+remains in effect. Record observed agreement status separately from owner report.
+
+**AUTH-42 outcome:** Apple Free/Paid Apps Agreements verified Active; R11 closed.
+Applied 2.5.0(86) locally with aligned four version files and one updated config test.
+35 focused tests, test typing, lint and formatting pass; 12 packet/refusal checks pass.
+No builds, uploads, account/device operations or paid requests. Current candidate is
+uncommitted five-file delta over 4bc7073, with exact archived sources and review packet.
+Next source commit and local signed artifact builds require scoped authority under
+the session runbook; no release execution is inferred from agreement acceptance.
+D13A.8 remains 3/6, with 3 fixed steps and 7 broad milestones including current left.
+
+## AUTH-43 — Commit and two local signed native builds
+
+October 23 owner explicitly authorizes a commit and two local signed builds: iOS IPA
+and Android AAB. No push, store submission, publication or certificate changes.
+Target: prepared dictionary-release 2.5.0(86), personal oldrefery Expo project,
+iOS bundle com.oldrefery.dutch-learning-app / Apple team 7FQ395U52U, Android package
+com.oldrefery.dutchlearningapp. Freeze and verify the resulting commit/source before
+building. Use installed tooling, existing signing credentials, --freeze-credentials
+and SENTRY_DISABLE_AUTO_UPLOAD=true; no auto-submit or remote build execution.
+Missing credentials stop the affected build; no automatic creation/replacement.
+
+Owner also asks whether PR/merge should precede building. Read-only GitHub inspection
+shows no open PR for this branch; Quality runs on PR/main/develop, not feature push.
+Vercel deployment history shows feature 0e706ee produced Preview and main 44141e0
+produced Production. Push/merge are therefore not assumed to be publication-free.
+Continue the explicitly authorized local commit/build scope; PR/merge remain excluded
+until the owner resolves their publication effects. Main tree matches the common
+base f97a733; current feature source is not missing additional main file changes.
+
+This authorization is for one local artifact per platform, not unbounded retries,
+credential changes, paid model calls, production migrations, flags or real linking.
+At this checkpoint both build slots are unstarted. Record exact outcomes and retain
+all logs/artifacts; inspect uncertain outcomes before retrying.
