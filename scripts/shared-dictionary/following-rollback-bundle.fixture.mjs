@@ -5,10 +5,12 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
-const output = join(
-  root,
-  'reports/shared-dictionary-cefr/d13a6-following-rollback-20261011/transpiled'
-)
+const output = process.argv[2]
+  ? resolve(process.argv[2])
+  : join(
+      root,
+      'reports/shared-dictionary-cefr/d13a6-following-rollback-20261011/transpiled'
+    )
 mkdirSync(output, { recursive: true })
 writeFileSync(join(output, 'package.json'), '{"type":"commonjs"}\n')
 const seen = new Set()

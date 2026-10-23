@@ -6785,3 +6785,16 @@ without suppressing source rules or deleting evidence. Final lint/check/hook and
 hosted CI outcomes will be recorded separately. Private logs: reports/shared-
 dictionary-cefr/d13a84-pr-20261023. No store upload/migration/server activation or
 provider call. D13A.8.4 remains in progress,3/6 complete,3 fixed steps remain.
+
+## 2026-10-23 — PR 123 and clean-checkout CI repairs
+
+Pushed 6e837da, opened PR 123 and synchronized main with 97a097f without changing
+the tree. Local complete hooks pass 2732 mobile tests, 1252 web tests and 22
+snapshots; one web test remains skipped. Hosted CI found two environment defects:
+a rollback test depended on ignored historical reports, and the database job
+lacked npm dependencies for the analysis endpoint. Prepared isolated per-run
+fixture compilation and added npm ci to that job. Both focused 21-test suites
+pass locally. Vercel Preview succeeded; new exact-head CI remains required.
+Read-only API confirms new dictionary rollout flags are absent in Vercel; no
+settings changed. D13A.8 remains 3/6 with 3 fixed steps and 7 broad milestones
+including current. No native upload, migration, server activation or paid call.

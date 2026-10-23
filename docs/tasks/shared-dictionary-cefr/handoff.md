@@ -1,3 +1,46 @@
+**2026-10-23 — PR 123 clean-checkout CI repairs prepared.**
+
+Hosted Quality on 97a097f exposed a nonportable SQLite fixture: the test depended
+on a historical compiled file under ignored reports/. It now compiles the current
+operator into a unique temporary directory and removes only that owned fixture.
+All 21 rollback/concurrency/crash-recovery tests pass locally with this change.
+The database job passed 638 tests but failed to import Supabase in one endpoint
+test file because the workflow never installed npm dependencies. Added npm ci;
+all 21 tests in that endpoint file pass on an isolated temporary local cluster.
+No production database, provider or application state was touched.
+
+Vercel Preview for 97a097f succeeded. The remaining hosted browser-fixture job is
+still installing Chromium. Commit and push the reviewed test/workflow fixes, then
+require fresh exact-head CI and Preview before merge. D13A.8 remains 3/6 complete:
+3 fixed steps and 7 broad milestones including current (6 after). Astra / High.
+
+**2026-10-23 — AUTH-44 PR123 opened; hosted verification in progress.**
+
+Pushed 6e837da7ab7d01e739e3178c8a5da5119a39f459 (dependency fixes and signed-build
+review), then synchronized main with merge97a097f1e2de6976bd4a789ad90149aa1a5bcb64.
+Both commits have identical tree a15c0d6e912027fb320c87a24a3f33ae31336c68. PR:
+https://github.com/oldrefery/dutch-learning-app/pull/123. Required checks are quality,
+database, web-fixtures and lint-e2e-tests; do not merge until exact-head results pass.
+The first commit attempt failed on a15-second ESLint subprocess timeout; isolated
+recheck passed, then normal complete hooks passed2732mobile/1252web/22snapshots,
+with one existing web skip. Local typing, lint and web build pass; Doctor21/21.
+No remaining critical npm advisories;11moderate/high dependency-chain warnings
+remain, with major/downgrade suggestions deliberately not applied.
+
+Read-only Vercel API confirms oldrefery, woordenaar-web, apps/web, GitHub main.
+Only existing DICTIONARY_CONTENT_ENABLED is configured in production; following,
+shared analysis and following imports are absent/default OFF. No environment
+values changed or secret values decrypted. Previous READY production rollback
+target: dpl_74ZRdMpdPQpbjQADbdRpFxniUKdr. Exact Preview is pending. Browser login
+is no longer required for these checks. Private receipts/logs:
+reports/shared-dictionary-cefr/d13a84-pr-20261023.
+
+Next: inspect exact-head CI/Preview, repair any failure, review final delta, merge
+through the protected PR and verify Production if all gates pass. Native df08a60
+binaries are historical after dependency changes; no additional native build,
+store upload, migration, paid call, server activation or real linking authorized.
+D13A.8 remains3/6:3fixed steps;7broad milestones including current,6after. Astra/High.
+
 **2026-10-23 — AUTH-44 PR/merge and associated Vercel web publication authorized.**
 
 Continue D13A.8.4 on feature/shared-dictionary-schema. Owner accepts the explained

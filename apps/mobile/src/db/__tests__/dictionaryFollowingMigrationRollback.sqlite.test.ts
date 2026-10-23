@@ -1,4 +1,4 @@
-import { fork, type ChildProcess } from 'node:child_process'
+import { execFileSync, fork, type ChildProcess } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { existsSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -35,9 +35,10 @@ jest.mock('@/constants/dictionaryContent', () => ({
 }))
 jest.setTimeout(20000)
 const ROOT = resolve(__dirname, '../../../../..')
+const BUNDLE = mkdtempSync(join(tmpdir(), 'following-rollback-engine-'))
 const ENGINE = join(
-  ROOT,
-  'reports/shared-dictionary-cefr/d13a6-following-rollback-20261011/transpiled/scripts/shared-dictionary/following-rollback.sqlite.js'
+  BUNDLE,
+  'scripts/shared-dictionary/following-rollback.sqlite.js'
 )
 const WORKER = join(
   ROOT,
@@ -56,7 +57,21 @@ const guard = () => {}
 describe('receipt-owned following compensation on file-backed native SQLite', () => {
   let db: DatabaseSync, directory: string, path: string, run: string
   beforeAll(() => {
+    execFileSync(
+      process.execPath,
+      [
+        join(
+          ROOT,
+          'scripts/shared-dictionary/following-rollback-bundle.fixture.mjs'
+        ),
+        BUNDLE,
+      ],
+      { cwd: ROOT, encoding: 'utf8', timeout: 15000 }
+    )
     expect(existsSync(ENGINE)).toBe(true)
+  })
+  afterAll(() => {
+    rmSync(BUNDLE, { recursive: true, force: true })
   })
   beforeEach(() => {
     directory = mkdtempSync(join(tmpdir(), 'following-migration-rollback-'))
