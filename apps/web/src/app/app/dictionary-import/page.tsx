@@ -2,7 +2,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { requireAuthContext } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
-import { isDictionaryContentEnabled } from '@/features/dictionary/repository'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingEnabled,
+} from '@/features/dictionary/repository'
 import { getTransferContext } from '@/features/sharing/dictionary-transfer-commands'
 import { DictionaryDocumentImport } from '@/features/sharing/DictionaryDocumentImport'
 import styles from '@/features/sharing/DictionaryTransfer.module.css'
@@ -20,6 +23,7 @@ export default async function DictionaryImportPage() {
       <DictionaryDocumentImport
         key={auth.userId}
         ownerId={auth.userId}
+        followingEnabled={isDictionaryFollowingEnabled()}
         {...context}
       />
     </section>

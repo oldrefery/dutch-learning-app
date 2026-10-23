@@ -1,13 +1,26 @@
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import { wordRepository } from '@/db/wordRepository'
 import { supabase } from '@/lib/supabase'
-import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingEnabled,
+} from '@/constants/dictionaryContent'
+import { dictionaryFollowingSync } from './dictionaryFollowingSync'
+import {
+  dictionaryModeReconciliation,
+  type DictionaryModeConflictSnapshot,
+} from './dictionaryModeReconciliation'
+import {
+  withDictionaryOwner,
+  type DictionaryOwnerGuard,
+} from './dictionaryImportOwner'
 import { randomUUID } from 'expo-crypto'
 import type { LocalDictionaryCardState } from '@/db/dictionaryContentRepository'
 import {
   DICTIONARY_CONTENT_PROTOCOL_VERSION,
   parseDictionaryCefrAssessment,
   parseDictionaryContent,
+  parsePrivateDictionaryContent,
   parseDictionaryContentCapability,
   parseDictionaryReference,
   parseDictionaryRevision,
@@ -20,6 +33,9 @@ import {
 } from '@woordenaar/domain'
 
 const CARD_CHUNK_SIZE = 500
+const SERVER_CHANGED = 'Server content changed. Reload the conflict.'
+const MODE_RECONCILIATION_REQUIRED =
+  'Shared content requires reviewed mode reconciliation. Your saved edits are retained.'
 
 export interface DictionaryConflictSnapshot {
   userId: string
@@ -141,7 +157,9 @@ const parseEffectiveCard = (value: unknown): EffectiveCard => {
           'effective dictionary reference'
         )
   const content = requireParsed(
-    parseDictionaryContent(value.content),
+    reference === null
+      ? parsePrivateDictionaryContent(value.content)
+      : parseDictionaryContent(value.content),
     'effective dictionary content'
   )
   if (
@@ -229,7 +247,7 @@ const parseContentState = (value: unknown, userId: string): ContentStateRow => {
     value.fallback_content === null
       ? null
       : requireParsed(
-          parseDictionaryContent(value.fallback_content),
+          parsePrivateDictionaryContent(value.fallback_content),
           'dictionary fallback content'
         )
   if (!isRecord(value.overrides)) {
@@ -357,6 +375,15 @@ const ensureDictionaryIdentity = async (userId: string): Promise<void> => {
   }
 }
 
+const checkLegacyPushOwner = async (
+  owner?: DictionaryOwnerGuard
+): Promise<void> => {
+  if (!owner) return
+  await owner.check()
+  if (!isDictionaryFollowingEnabled())
+    throw new Error('Dictionary following is disabled')
+}
+
 const isCommandConflict = (error: {
   code?: string
   message?: string
@@ -367,9 +394,24 @@ const isCommandConflict = (error: {
 export const dictionaryContentSync = {
   async readConflict(
     userId: string,
-    wordId: string
-  ): Promise<DictionaryConflictSnapshot> {
+    wordId: string,
+    assertCurrent: () => void = () => {}
+  ): Promise<DictionaryConflictSnapshot | DictionaryModeConflictSnapshot> {
+    assertCurrent()
+    if (isDictionaryFollowingEnabled()) {
+      const preview = await dictionaryModeReconciliation.read(
+        userId,
+        wordId,
+        assertCurrent
+      )
+      if (
+        preview.remote.card.mode === 'follow' ||
+        preview.local.cachedState?.mode === 'follow'
+      )
+        return preview
+    }
     await ensureDictionaryIdentity(userId)
+    await wordRepository.assertPrivateContentEditable(userId, wordId)
     const commands = (
       await dictionaryContentRepository.getPendingCommands(userId)
     ).filter(row => row.command.word_id === wordId)
@@ -379,7 +421,9 @@ export const dictionaryContentSync = {
       await dictionaryContentRepository.getMaterializedContent(userId, [wordId])
     ).get(wordId)
     const localContent = requireParsed(
-      parseDictionaryContent(local?.effective.content),
+      local?.reference === null
+        ? parsePrivateDictionaryContent(local.effective.content)
+        : parseDictionaryContent(local?.effective.content),
       'local conflict content'
     )
     const { data, error } = await supabase.rpc(
@@ -397,11 +441,12 @@ export const dictionaryContentSync = {
       (!state && card.content_version > 0) ||
       (state && state.content_version !== card.content_version)
     ) {
-      throw new Error('Server content changed. Reload the conflict.')
+      throw new Error(SERVER_CHANGED)
     }
     // Validate and cache dependencies without replacing the pending local edit.
-    await this.pull(userId, [wordId])
+    await this.pullLegacy(userId, [wordId])
     await ensureDictionaryIdentity(userId)
+    assertCurrent()
     return {
       userId,
       wordId,
@@ -423,10 +468,35 @@ export const dictionaryContentSync = {
   },
 
   async resolveConflict(
-    snapshot: DictionaryConflictSnapshot,
-    choice: 'local' | 'server'
+    snapshot: DictionaryConflictSnapshot | DictionaryModeConflictSnapshot,
+    choice: 'local' | 'server',
+    assertCurrent: () => void = () => {}
   ): Promise<void> {
+    assertCurrent()
+    if (!('remoteState' in snapshot))
+      throw new DictionaryContentConflictError(MODE_RECONCILIATION_REQUIRED)
+    if (isDictionaryFollowingEnabled()) {
+      const current = await dictionaryModeReconciliation.read(
+        snapshot.userId,
+        snapshot.wordId,
+        assertCurrent
+      )
+      if (
+        current.remote.card.mode === 'follow' ||
+        current.local.cachedState?.mode === 'follow'
+      )
+        throw new DictionaryContentConflictError(MODE_RECONCILIATION_REQUIRED)
+      if (
+        current.remote.card.content_version !==
+        String(snapshot.remoteState.content_version)
+      )
+        throw new Error(SERVER_CHANGED)
+    }
     await ensureDictionaryIdentity(snapshot.userId)
+    await wordRepository.assertPrivateContentEditable(
+      snapshot.userId,
+      snapshot.wordId
+    )
     const { data, error } = await supabase.rpc(
       'get_dictionary_effective_content_v1',
       { p_word_ids: [snapshot.wordId] }
@@ -436,9 +506,13 @@ export const dictionaryContentSync = {
     if (
       cards.length !== 1 ||
       cards[0].word_id !== snapshot.wordId ||
-      cards[0].content_version !== snapshot.remoteState.content_version
+      cards[0].content_version !== snapshot.remoteState.content_version ||
+      JSON.stringify(cards[0].reference) !==
+        JSON.stringify(snapshot.remoteState.reference) ||
+      JSON.stringify(cards[0].content) !==
+        JSON.stringify(snapshot.remoteContent)
     ) {
-      throw new Error('Server content changed. Reload the conflict.')
+      throw new Error(SERVER_CHANGED)
     }
     const replacement: DictionaryContentCommand | null =
       choice === 'local'
@@ -462,16 +536,23 @@ export const dictionaryContentSync = {
         }
       : snapshot.remoteState
     await ensureDictionaryIdentity(snapshot.userId)
+    assertCurrent()
     await dictionaryContentRepository.saveCardStates([state], [], {
       userId: snapshot.userId,
       wordId: snapshot.wordId,
       operationIds: snapshot.operationIds,
       replacement,
+      assertCurrent,
     })
   },
 
-  async isAvailable(): Promise<boolean> {
+  async isAvailable(userId?: string): Promise<boolean> {
     if (!isDictionaryContentEnabled()) return false
+    if (isDictionaryFollowingEnabled()) {
+      if (!userId)
+        throw new Error('Dictionary following requires a captured owner')
+      return dictionaryFollowingSync.isAvailable(userId)
+    }
     const { data, error } = await supabase.rpc(
       'dictionary_content_capability_v1'
     )
@@ -481,6 +562,25 @@ export const dictionaryContentSync = {
   },
 
   async pull(
+    userId: string,
+    requestedWordIds?: readonly string[],
+    acknowledgedCommands: readonly DictionaryContentCommand[] = []
+  ): Promise<number> {
+    if (!isDictionaryFollowingEnabled())
+      return this.pullLegacy(userId, requestedWordIds, acknowledgedCommands)
+    const ids =
+      requestedWordIds === undefined
+        ? (await wordRepository.getWordsByUserId(userId)).map(
+            word => word.word_id
+          )
+        : [...new Set(requestedWordIds)]
+    await dictionaryFollowingSync.pull(userId, ids, acknowledgedCommands)
+    // Callers check coverage for their own requested IDs. The v2 adapter may
+    // hydrate extra siblings; complete-group validation still happens before commit.
+    return ids.length
+  },
+
+  async pullLegacy(
     userId: string,
     requestedWordIds?: readonly string[],
     acknowledgedCommands: readonly DictionaryContentCommand[] = []
@@ -569,6 +669,8 @@ export const dictionaryContentSync = {
     userId: string,
     candidateWordIds: readonly string[] = []
   ): Promise<number> {
+    if (isDictionaryFollowingEnabled())
+      return dictionaryFollowingSync.pullRequired(userId, candidateWordIds)
     const missingWordIds =
       await dictionaryContentRepository.getMissingCardWordIds(userId)
     const wordIds = [...new Set([...candidateWordIds, ...missingWordIds])]
@@ -576,6 +678,8 @@ export const dictionaryContentSync = {
   },
 
   async refreshChanges(userId: string): Promise<number> {
+    if (isDictionaryFollowingEnabled())
+      return dictionaryFollowingSync.refreshChanges(userId)
     await ensureDictionaryIdentity(userId)
     let after = await dictionaryContentRepository.getChangeCursor(userId)
     let refreshedChanges = 0
@@ -721,6 +825,17 @@ export const dictionaryContentSync = {
   },
 
   async push(userId: string): Promise<number> {
+    return isDictionaryFollowingEnabled()
+      ? withDictionaryOwner(userId, owner =>
+          this.pushLegacyCommands(userId, owner)
+        )
+      : this.pushLegacyCommands(userId)
+  },
+
+  async pushLegacyCommands(
+    userId: string,
+    owner?: DictionaryOwnerGuard
+  ): Promise<number> {
     await ensureDictionaryIdentity(userId)
     const commands =
       await dictionaryContentRepository.getPendingCommands(userId)
@@ -736,11 +851,13 @@ export const dictionaryContentSync = {
         continue
       }
       if (blockedWords.has(command.word_id)) continue
+      owner?.assert()
       await ensureDictionaryIdentity(userId)
       const { data, error } = await supabase.rpc(
         'apply_dictionary_content_command_v1',
         { p_command: command }
       )
+      await checkLegacyPushOwner(owner)
       if (error) {
         const message = error.message ?? 'Dictionary command failed'
         if (isCommandConflict(error)) {
@@ -775,10 +892,12 @@ export const dictionaryContentSync = {
       applied.map(item => item.command)
     )
     if (wordIds.length > 0) {
+      owner?.assert()
       const hydrated = await this.pull(userId, wordIds, appliedCommands)
       if (hydrated !== wordIds.length) {
         throw new Error('Dictionary command result was not hydrated')
       }
+      owner?.assert()
     }
     if (blockedWords.size > 0) {
       throw new DictionaryContentConflictError(

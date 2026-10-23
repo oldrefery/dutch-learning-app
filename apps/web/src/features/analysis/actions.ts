@@ -1,5 +1,6 @@
 'use server'
 
+import { isDictionaryFollowingEnabled } from '@/features/dictionary/repository'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { isUuid } from '@/features/words/word-detail'
@@ -9,6 +10,14 @@ import type { WordAnalysis } from './analysis-contract'
 import { getOwnedSemanticDuplicate } from './duplicate-repository'
 import type { AddWordActionState, DuplicateWordResult } from './form-state'
 import { persistAnalyzedWord } from './persistence-repository'
+
+export async function requireLegacyWordAnalysis(): Promise<void> {
+  if (isDictionaryFollowingEnabled())
+    throw new Error('Use published shared meanings to add a word.')
+  const auth = await requireAuthContext()
+  if (auth.accessLevel !== 'full_access')
+    throw new Error('Full access is required to analyze words.')
+}
 
 export async function findOwnedSemanticDuplicate(
   serializedAnalysis: string
@@ -23,6 +32,11 @@ export async function saveAnalyzedWord(
   formData: FormData
 ): Promise<AddWordActionState> {
   void previousState
+  if (isDictionaryFollowingEnabled())
+    return {
+      status: 'error',
+      message: 'Use published shared meanings to add a word.',
+    }
 
   const auth = await requireAuthContext()
   if (auth.accessLevel !== 'full_access') {

@@ -5,6 +5,7 @@ import { GlassCapsuleButton } from '@/components/glass/buttons'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { styles } from '../styles'
 import type { WordSectionProps } from '../types'
+import { isWordFromDB } from '../types'
 
 // Change the image button component following HIG guidelines
 interface ChangeImageButtonProps {
@@ -34,7 +35,10 @@ export function ImageSection({
   if (!config.showImage) return null
 
   const imageUrl = word.image_url
-  if (!imageUrl && !config.enableImageChange) return null
+  const canChangeImage =
+    config.enableImageChange &&
+    !(isWordFromDB(word) && word.dictionary_content_state?.mode === 'follow')
+  if (!imageUrl && !canChangeImage) return null
 
   return (
     <ViewThemed
@@ -62,7 +66,7 @@ export function ImageSection({
           />
         )}
 
-        {config.enableImageChange && onChangeImage && (
+        {canChangeImage && onChangeImage && (
           <NonSwipeableArea>
             <ChangeImageButton imageUrl={imageUrl} onPress={onChangeImage} />
           </NonSwipeableArea>

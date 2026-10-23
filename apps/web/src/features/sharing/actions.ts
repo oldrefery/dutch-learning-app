@@ -19,7 +19,11 @@ import {
   removeExistingSharedWords,
   selectSharedCollectionWords,
 } from './shared-collection-domain'
-import { getOwnedImportContext, loadSharedCollectionRows } from './repository'
+import {
+  getOwnedImportContext,
+  loadSharedCollectionRows,
+  isFollowingSharedImportEnabled,
+} from './repository'
 
 const getStringValues = (formData: FormData, name: string): string[] =>
   formData
@@ -104,6 +108,11 @@ export async function importSharedCollection(
   _previousState: SharedCollectionImportState,
   formData: FormData
 ): Promise<SharedCollectionImportState> {
+  if (isFollowingSharedImportEnabled())
+    return {
+      status: 'error',
+      message: 'Use the explicit shared following import.',
+    }
   const auth = await requireAuthContext()
   const targetCollectionId = formData.get('targetCollectionId')
   if (

@@ -1,0 +1,193 @@
+{
+  "checked_at": "2026-10-12T04:02:16.849175+00:00",
+  "decision": "remain_paused",
+  "reason": [
+    "Fresh iOS worker job failed",
+    "Guardia Android E2E worker and descendants are active",
+    "All required jobs and final reports are not complete"
+  ],
+  "required_jobs": ["sanity", "ios", "android", "real-iqvia"],
+  "workflow_sha256": "2a4a3546b0d5f0f4d62993bd149d76e7cacf0ae4c0b525e028f0400daee41e6c",
+  "workers": [
+    {
+      "file": "/Users/devrush/actions-runner/_diag/Worker_20261012-012054-utc.log",
+      "snapshot_sha256": "ccdc3dfe823aba5321335e09493598f0b192d8e33037cb919d1256ee41b2090d",
+      "job": ["sanity"],
+      "results": [["2026-10-12 01:25:22Z INFO JobRunner", "Succeeded"]],
+      "completed": ["2026-10-12 01:25:25Z INFO Worker"]
+    },
+    {
+      "file": "/Users/devrush/actions-runner/_diag/Worker_20261012-012529-utc.log",
+      "snapshot_sha256": "58cfc86824ae4429d06e3d9e69f89736fbbe5024f4da55ab405a8d56f2bb9ad4",
+      "job": ["ios"],
+      "results": [["2026-10-12 03:04:30Z INFO JobRunner", "Failed"]],
+      "completed": ["2026-10-12 03:04:33Z INFO Worker"]
+    },
+    {
+      "file": "/Users/devrush/actions-runner/_diag/Worker_20261012-030436-utc.log",
+      "snapshot_sha256": "9b99c2ddb90bfc5248b82d186f36c7677133bf0f9548df2687ed8d721c98f5ef",
+      "job": ["android"],
+      "results": [],
+      "completed": []
+    }
+  ],
+  "reports": [
+    {
+      "path": "e2e-artifacts/ios",
+      "exists": false
+    },
+    {
+      "path": "e2e-artifacts/android",
+      "exists": false
+    },
+    {
+      "path": "e2e-artifacts/real-iqvia",
+      "exists": false
+    },
+    {
+      "path": "apps/mobile/.maestro/reports",
+      "exists": true,
+      "junit": [
+        {
+          "file": "junit/account-deletion.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:16:02.086434+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/appointment-reschedule.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:19:49.013344+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/auth-navigation.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:20:39.597134+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/auth-validation-errors.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:22:33.379986+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/booking-appointment.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:26:36.311481+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/cold-start.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:27:11.798487+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/deep-link-routing.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:28:26.668172+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/doctor-clinic-search.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:31:16.159567+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/forgot-password.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:35:05.289182+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/intro-screen.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:35:54.868095+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/medical-records-hub.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:37:17.115789+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/medical-records-list.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:41:54.992777+00:00",
+          "failures": 1,
+          "errors": 0
+        },
+        {
+          "file": "junit/medical-records-list.attempt-2.xml",
+          "mtime_utc": "2026-10-12T03:45:27.743315+00:00",
+          "failures": 1,
+          "errors": 0
+        },
+        {
+          "file": "junit/medical-records-prescriptions.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:49:03.328318+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/notifications-empty-linked.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:52:22.141944+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/notifications-screen.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:53:35.405016+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/otp-invalid-code.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:55:05.359939+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/otp-resend-cooldown.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:56:30.765836+00:00",
+          "failures": 0,
+          "errors": 0
+        },
+        {
+          "file": "junit/otp-use-different-email.attempt-1.xml",
+          "mtime_utc": "2026-10-12T03:57:59.038051+00:00",
+          "failures": 0,
+          "errors": 0
+        }
+      ]
+    }
+  ],
+  "run_identity": "Fresh sequential logs identify sanity, ios and android; exact shared workflow run_id was not confirmed. No successful-run inference.",
+  "active_process_snapshot": {
+    "runner_worker_pid": 86888,
+    "android_command_pid": 88640,
+    "emulator_pid": 88700,
+    "maestro_java_pid": 99076,
+    "relationship": "Android command and emulator/Java are descendants of the Guardia Runner.Worker"
+  },
+  "mutations_to_guardia": false,
+  "project_resources_restarted": false,
+  "automation": {
+    "id": "dutchlearningapp-02-30",
+    "status": "PAUSED",
+    "new_wakeups": false
+  },
+  "progress": {
+    "complete": 5,
+    "total": 6,
+    "remaining": 1,
+    "broad_remaining": 8
+  },
+  "git": {
+    "head": "f97a733407a4d2b37e8f9ca030ad9574de85a794",
+    "branch": "feature/shared-dictionary-schema"
+  }
+}

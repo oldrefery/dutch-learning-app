@@ -1,5 +1,6 @@
 import {
   parseDictionaryCollectionExport,
+  parseDictionaryCollectionExportV2,
   toLocalDateKey,
   type DictionaryContent,
 } from '@woordenaar/domain'
@@ -7,8 +8,7 @@ import { randomUUID } from 'expo-crypto'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import { collectionRepository } from '@/db/collectionRepository'
 import { wordRepository } from '@/db/wordRepository'
-import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
-import { applyDictionaryMaterializations } from '@/db/dictionaryWordMaterialization'
+import { getDictionaryWordMaterializations } from '@/db/dictionaryWordReads'
 import { wordToDictionaryContent } from '@/db/dictionaryContentMapping'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { isValidExpressionType } from '@/types/ExpressionTypes'
@@ -21,14 +21,27 @@ export function parseDictionaryTransferText(text: string) {
   if (text.length > MAX_DICTIONARY_TRANSFER_TEXT_LENGTH)
     throw new Error('This dictionary document is too large.')
   try {
-    return parseDictionaryCollectionExport(JSON.parse(text) as unknown)
+    const value: unknown = JSON.parse(text)
+    return value &&
+      typeof value === 'object' &&
+      'schema_version' in value &&
+      value.schema_version === 2
+      ? parseDictionaryCollectionExportV2(value)
+      : parseDictionaryCollectionExport(value)
   } catch {
     throw new Error('Invalid dictionary collection document.')
   }
 }
 
 export function serializeDictionaryTransfer(value: unknown): string {
-  const text = JSON.stringify(parseDictionaryCollectionExport(value))
+  const text = JSON.stringify(
+    value &&
+      typeof value === 'object' &&
+      'schema_version' in value &&
+      value.schema_version === 2
+      ? parseDictionaryCollectionExportV2(value)
+      : parseDictionaryCollectionExport(value)
+  )
   if (text.length > MAX_DICTIONARY_TRANSFER_TEXT_LENGTH)
     throw new Error('This dictionary document is too large.')
   return text
@@ -126,6 +139,10 @@ export async function importOfflineDictionaryCollection(
   }
   assertOwner()
   const document = parseDictionaryTransferText(text)
+  if (document.schema_version === 2)
+    throw new Error(
+      'This document requires shared-reference import review. Keep the original document until review is complete.'
+    )
   const selected = new Set(selectedEntryIds)
   if (
     !selected.size ||
@@ -173,12 +190,10 @@ export async function exportOfflineDictionaryCollection(collectionId: string) {
   const words = (await wordRepository.getWordsByUserId(userId)).filter(
     word => word.collection_id === collectionId
   )
-  const materializations = isDictionaryContentEnabled()
-    ? await dictionaryContentRepository.getMaterializedContent(
-        userId,
-        words.map(word => word.word_id)
-      )
-    : new Map()
+  const materializations = await getDictionaryWordMaterializations(
+    userId,
+    words.map(word => word.word_id)
+  )
   if (
     isDictionaryContentEnabled() &&
     words.some(word => {
@@ -186,7 +201,7 @@ export async function exportOfflineDictionaryCollection(collectionId: string) {
       return (
         !card ||
         card.dependency_status !== 'ready' ||
-        card.effective.content === null
+        (!('card' in card) && card.effective.content === null)
       )
     })
   )
@@ -196,8 +211,19 @@ export async function exportOfflineDictionaryCollection(collectionId: string) {
   return parseDictionaryCollectionExport({
     schema_version: 1,
     collection: { name: collection.name },
-    entries: applyDictionaryMaterializations(words, materializations).map(
-      word => ({ content: wordToDictionaryContent(word) })
-    ),
+    // Validate raw content, never a lossy display projection. Export remains a
+    // self-contained v1 document until the v2 transfer workflow is integrated.
+    entries: words.map(word => {
+      const item = materializations.get(word.word_id)
+      if (!item) return { content: wordToDictionaryContent(word) }
+      if ('card' in item)
+        return {
+          content:
+            item.card.mode === 'follow'
+              ? item.revision?.content
+              : item.card.legacy_content,
+        }
+      return { content: item.effective.content }
+    }),
   })
 }

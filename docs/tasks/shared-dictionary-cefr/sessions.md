@@ -1,3 +1,325 @@
+**2026-10-23 — D13A.8 release/rollback preparation complete; no execution.**
+
+Current checkpoint D13A.8.1–3 complete,3/6;3 steps remain. Seven broad milestones remain
+including current D13A.8,six excluding it. GPT-6 Astra / High owner-confirmed. AUTH-39
+permits preparation only. Source remains pushed0e706ee; new packet/docs are local-only.
+No new commit/push,production build/deployment/publication/migration/flag/role change,
+real linking,device mutation or paid call. Main account protected; QA stack stays stopped.
+
+Review [release plan](evidence/D13A.8-release-plan-20261023.md),
+[rollback plan](evidence/D13A.8-rollback-plan-20261023.md),
+[fresh backup/delta checklist](evidence/D13A.8-backup-delta-20261023.md),
+[packet](evidence/D13A.8-release-packet-20261023.json) and
+[verification receipt](evidence/D13A.8-preparation-review-20261023.json).
+Exact source archive2122files;1506production/test/tool pins;14 candidate additive
+migrations. Local review bundle and sanitized receipts are under
+reports/shared-dictionary-cefr/d13a8-release-prepare-20261023; raw EAS responses stay private.
+
+Read-only current EAS identity/project are oldrefery/@oldrefery/dutch-learning-app.
+Latest10build records still show existing2.4.0(85),not a store-number reservation. Parser
+source carry passes58902comparisons over5886inputs; original qualification packets stay
+unchanged and no new provider qualification is claimed. All16 packet/tamper checks pass;
+execution mode rejects. Ten execution holds remain explicit,including missing creation
+serve bootstrap,unbound native following flags,used85,missing final signed/rollback
+artifacts,fresh production backup/delta/queues,zero approved real links and no paid/
+production authority. Complete offline preparation does not close those release gates.
+
+Next D13A.8.4: resolve exact final source/artifact and operator readiness,then fresh
+backup/delta/cohort evidence and scoped operation approval. No execution is authorized
+by this handoff. Do not start D13A.9's observation clock before actual verified activation.
+
+**2026-10-23 — D13A.8 started: release and rollback preparation only (AUTH-39).**
+
+Orchestrated resume on clean feature/shared-dictionary-schema, pushed HEAD0e706ee.
+D13A.7 remains complete. Current scope is a local release packet, read-only inventories
+and rollback plan; no publication or production mutation. Recommended/owner-confirmed
+GPT-6 Astra / High. Six fixed D13A.8 checkpoints are now defined below; source/scope
+preparation is in progress. Seven broad milestones remain including current D13A.8.
+
+Initial holds: mobile profile lacks explicit following/import/shared-analysis bindings;
+dictionary-creation has an endpoint factory but no serve entrypoint; version/build85
+are already used. These must not be described as a deployable final artifact set.
+Historical2914-card inventory has0 approved links; keep real apply ceiling0 until new
+reviewed decisions and fresh queue/delta evidence. Read-only EAS identity is oldrefery;
+linked project inspection is in progress. See reports/shared-dictionary-cefr/
+d13a8-release-prepare-20261023. No production action or new source implementation.
+
+**2026-10-23 — Qualification changes committed locally.**
+
+The owner authorized local commits. Server/contracts/tools are committed in a0f7480;
+mobile/web integration and native loading repairs are committed in 1e60bcb. All production
+runtime content is unchanged from qualification. Hooks only reformatted two expressions
+in an existing test; token content is identical and the full suites pass:200 mobile
+suites/2719 tests,118 web suites/1252 tests,one existing skipped web test. Documentation
+formatting and persistence notes are recorded in the following documentation commit.
+Private QA reports and98 local browser artifacts are excluded; preserved snapshots and
+hook logs are under d13a7-commits-20261023. No push,release,hosted change or paid operation.
+D13A.7 remains complete6/6;0 current steps and7 broad milestones remain. D13A.8 has not
+started; the requested stop boundary is retained.
+
+**2026-10-23 — D13A.7 complete; stopped at the owner-requested boundary.**
+
+All six fixed acceptance checkpoints are complete; D13A.7.6 is accepted. Final evidence:
+[evidence/D13A-final-native-acceptance-20261023.md](evidence/D13A-final-native-acceptance-20261023.md)
+and its JSON companion. No D13A.8 work started. Remaining: **0 steps in D13A.7; 7 broad
+milestones** (D13.6,D13A.8,D13A.9,D14.1–4). Wait for a new owner request.
+
+NPR-3 full matrix:48 pairs,96 successful XCTest runs,160 measured observations plus32
+excluded warmups. All680 source hashes and113 timing-package files verified. One failed
+post-test CoreDevice export was recovered by copying the same stored samples; no measured
+run was repeated. Full5000 warm load+review median improves2439→1876ms;5000/20 improves
+1503→1023ms versus NPR-2. Review median increase against personal control is at most3.3%.
+Additional cache-load cost280–484ms at5000 and one308ms short-review outlier remain explicit;
+combined totals do not satisfy a blanket10% bound. See the recorded investigation/decision.
+
+426 tests/18 suites pass. Two post-matrix test-only typing repairs pass10 affected tests,
+full test TypeScript,lint/format; no runtime delta after measurement. Archived build85/
+AUTH28/AUTH29 isolated instruction-preserving clients pass6 physical online/offline tests;
+this is parser/native SQLite qualification,not original store signature/OTA activation.
+Physical Android5000 scroll/search,owner return and offline restart pass.
+
+Normal iPhone QA JS c48a0b6e... is installed without timing instrumentation; final offline
+XCTest1/1 passes. Restored SQLite is byte-identical to the saved26word/7collection/7event
+backup;7serverevents unchanged,0commands/benchmarktables. Main app/account untouched.
+QA applications,proxy and4exclusiveQAcontainers stopped; data/volumes/logs preserved.
+No paid/hosted/EAS/publication/migration/commit/push operation. Existing dirty work remains
+local on feature/shared-dictionary-schema at f97a733407a4d2b37e8f9ca030ad9574de85a794.
+
+**2026-10-23 — CoreDevice copy interruption recovered without repeating a measurement.**
+
+After 45 pairs, pair7 baseline XCTest passed (actual exit0,1/0/0), but CoreDevice
+SQLite export failed with connection interrupted. Original failed pair/progress/log
+and copy receipt are preserved in native-performance/npr3-pair7-copy-interruption.
+A read-only copy retrieved the same already-recorded two samples; labels, data/SRS/
+event parity, no-assessment checks and all680 root hashes pass. No app launch, seed,
+measured sample or test was repeated. Pair7 is validated with explicit recovery metadata.
+
+46/48 pairs are now validated. Only unrun pairs8/9 continue in session50659 via
+resume-npr3-last-two.py; root/QA/phone remain frozen. After completion run full summary
+and audit-npr3-final.py before prepared test repairs/plain build/restore. Fixed5/6,
+1 checkpoint left;8 broad milestones. Main account untouched;stop beforeD13A.8.
+
+**2026-10-23 — NPR-3 full 5000-word series completed; final short-selection case remains.**
+
+36/48 pairs validated. All ten full-5000 measured pairs pass: following load+review
+medians 1798/1876 ms cold/warm versus personal 1478/1571 ms; review-only +2.8%/+1.9%.
+Additional strict following-cache load is 288/280 ms. This exceeds the borrowed 10%
+investigation trigger for combined time and must remain explicit in the final review.
+The prior warm allocation stall is absent in this series; no blanket SLA claim.
+
+Runner session37924 is at its separate synthetic-auth renewal boundary before the
+5000-word/20-selected case. Inspect npr3-auth-boundary-receipt.json and matrix progress;
+no manual phone/source/relay operation during the run. Root and QA sources stay frozen.
+Prepared audit-npr3-final.py checks all 680 sources, five instrumentation paths, 113
+archive files and 96 actual XCTest results before post-matrix edits. Final test-only
+repairs and ordinary QA build/restore scripts are prepared but not executed.
+D13A.7 remains 5/6 complete, 1 checkpoint left; 8 broad milestones. Stop before D13A.8.
+
+**2026-10-23 — NPR-3 smaller cases complete; 5000-word matrix started.**
+
+Final matrix: 25/48 pairs validated, including both complete 500/2500 cases. At 2500,
+review medians are +2.6% cold/warm; load medians add 125/161 ms, total +17.6%/+21.3%.
+These are not final acceptance. Full 5000 and 5000/20 cases remain. Runtime/source
+review and changed-file format check pass; two prepared test typing repairs remain
+unapplied until frozen-source verification. Do not operate the phone or edit frozen
+root/QA source while session37924 runs. Android and archived compatibility are done.
+Final plain iPhone QA rebuild/functional restore is still required. D13A.7: 5/6 complete,
+1 checkpoint left; 8 broad milestones remain. Stop before D13A.8; main account protected.
+
+**2026-10-23 — Android5000 regression passes; iPhone final matrix continues.**
+
+Plain Android NPR-3 APK9f7eb806...matches680 frozen root sources, same QA signer/local
+endpoint/disabled OTA. Physical5000-word scrolling12times reaches135–143 with consecutive
+nonempty settled viewports; exactsearch4999returns1of5000. Screenshots inspected. Third
+synthetic owner then logs out; original primary12words/collections and followinghead2
+return; offline process restart passes. Exact7serverevents unchanged. QAAndroidprocess
+and only itsUSB55331route stopped;data retained. Native glassheader source unchanged.
+See D13A-android-list-regression-20261023.md and android-npr3/final-functional-review.json.
+
+FinaliPhoneNPR3matrix session37924 continues; first500-word case completed,review medians
++3.3%/-0.4%,total+9.1%/+7.7%. 2500/full5000/5000-with20cases remain. Do not touch root/QA
+sources or phone/relay during run. After36pairs runner renews onlysyntheticAuth once.
+426tests pass; additionaltestTypeScript found two test-only typing errors. Exact twofile
+fixes are PREPARED in native-performance/post-matrix-test-type-repairs.json,notapplied.
+Apply only AFTER full matrix/sourcehashverification, then rerun affected tests,testtypes,
+format/lint. These repairs change test annotation/validatedfixture only; no app runtime.
+
+Archived nativecompatibility6/6passes. Remaining:finish/review fullmatrix,apply testtype
+repairs,rebuild plainiPhoneQA,restore functional26word/7eventDB,smokecheck/stopQA. Main
+account untouched; noD13A.8/paid/hosted/Git. Fixed5/6complete,1left;8broadremain.
+
+**2026-10-23 — Archived native compatibility passes; final NPR-3 matrix running.**
+
+Build85/AUTH28/AUTH29 instruction-preserving isolated derivatives each pass online and
+offline physical XCTest (6/6,actualexit0,zero skipped). Freshv1cache/current revision/
+empty overrides and26words/7collections/7events preservation checked; only synced_at
+changes. Ten native binary instruction/data sections and original JS instructions
+remain exact; only backend literal/checksum and isolated packaging/config differ.
+This qualifies parser/native SQLite compatibility, not original store signature or OTA
+activation. New evidence D13A-archived-native-compatibility-20261023.md and runtime-review.json.
+
+NPR-3 bounded projection retained provisionally:following5kfull preflight1835/1863ms
+versus1496/1570baseline;5k/20 is751/892 versus473/570. Review segments nowwithin5% or
+faster; remaining~300ms load cost is investigated separately.426tests/18suites pass.
+NPR-3 signed timing artifact JS2dbb00fd...,680sourcefiles. Final48-pair matrix running
+session37924; run-npr3-matrix.py. Synthetic auth refreshed18:42:36Z. After36pairs the
+runner performs one explicitly separate auth-only renewal and closes its relay before
+lastcase; no measuredpairretry. Root/QA code and iPhone remain frozen until completion.
+
+TestHuawei reconnected. Current plain Android QA APK9f7eb806...verified same signer,
+local endpoint,qaBuild/OTA isolation;installed in-place over exact6652c5a5...priorAPK.
+Dedicated third synthetic local account/5000privatewords prepared for scroll/search;
+initialSQL type/required-field failures rolled back,corrected fixture ready,7events
+unchanged. Android driver waiting for first collection sync;inspect login-scroll.log.
+No main account,paid/hosted/Git operation. D13A.7 remains5/6,1left;8broad remain.
+Stop beforeD13A.8. Final plain iPhone build/functionalDB restore still required.
+
+**2026-10-23 — NPR-2 full matrix completed; bounded projection experiment in progress.**
+
+All48 pairs validated without retries;40 measured pairs/160 observations plus8 excluded
+warmup pairs. All679 frozen root hashes matched after completion. Following5000 total
+cold/warm medians1888/2439ms versus1467/1606ms baseline;5000/20 is995/1503 versus457/584.
+Full receipts/summary retained. Material regression remains; performance gate stays open.
+
+NPR-3 experiment projects validated cache rows within the existing400-row transaction
+loop, releasing raw revisions between chunks. Existing raw API and strict parsing remain.
+Read ordering, selection/pending/required conflicts, duplicate input learning fields and
+owner filters are preserved. Snapshot npr3-stream-before allows exact reversal.89 real
+SQLite/runtime/reconciliation tests pass,73 previous repository/store tests pass, mobile
+types pass. Newfixture corrections and initial lint hook-name warning are retained inlogs.
+Local signed QA build running session3697; after it finishes sync renamed predicate
+shouldSelectCachedCard to QA and rebuild before verification/installation. No experimental
+package installed yet. Current phone still NPR-2 benchmark fixture; relay55341 stopped.
+
+Next: verify/measure NPR-3 benefit before retention, old isolated native compatibility,
+plain functional QA rebuild and saved database restore. No main app/account touched.
+D13A.7 remains5/6complete,1left;8 broad milestones. D13A.8 excluded.
+
+**2026-10-23 — Owner offers main iPhone for isolated QA; unlock pending.**
+
+Owner permits main iPhone use and app uninstall/reinstall,with a hard prohibition on
+actions in the main application account. No separate test iPhone exists. This narrow
+authority supersedes earlier metadata-only restrictions;no paid/hosted/release authority.
+iPhone16Pro is paired/available,but exact app metadata query fails at DDI mount with
+DeviceLocked(0xe80000e2). Unlock requested;no app launch,account action or installation.
+Archived85 is App Store signed;two local development identities and a development
+profile for the main bundle including this device exist. No separate-QA-bundle profile
+found. Do not uninstall until the replacement and isolated session/backend are concrete.
+Next:after unlock inspect installed build,choose safe QA provisioning and account
+isolation;continue Android representative performance independently. Current cached
+following cards survive flag withdrawal,so a flag toggle is not a valid baseline.
+Native performance still unmeasured;Activity start is diagnostic only.
+Receipt:reports/shared-dictionary-cefr/d13a7-native-resume-20261023/iphone-readiness-check.json.
+Fixed5/6 complete,1 remains(D13A.7.6);8 broad milestones remain. Astra/High;stop beforeD13A.8.
+All work local/uncommitted;no new build/test running. Existing QA backend/proxy preserved.
+
+**2026-10-11 local — D13A.7.5 AUTH-32 reviewed direct-analysis pilot completed.**
+
+Owner's AUTH-32 permits reviewed AUTH-30/AUTH-31-type Gemini calls today without
+repeated payment questions, aggregate USD15 including earlier calls, until Amsterdam
+midnight2026-10-11T22:00:00Z. Authority remains active with remaining budget; AUTH-30/31
+stay consumed. Ledger: reports/shared-dictionary-cefr/d13a7-semantic-day-pilot-20261011/daily-budget-ledger.json.
+No automatic retries or renewal; unchanged reviewed scope and daily aggregate guards
+apply to any later run. No activation/publication/deployment authority.
+
+Exact packet e833fbc991f9e2ed066a09c3f79213362836a4c4f996024ac6b104c5832c76de:
+48 real calls (40 fixed judges,4 generators,4 contingent judges),48 returned,0 failed,
+unknown or retries; runner exit0 and locks removed. Observed model gemini-3.8-flash,
+standard tier, complete usage; no null content. Fixed scores14/14 positive accepts,
+14/14 negative rejects,12/12 uncertain abstentions; invalid0,false accepts0.
+All4 generations pass guards and their independent judges return same-meaning.
+This measured direct-analysis result meets the packet thresholds; final scoped
+qualification review remains pending. Proposed synthetic corpus does not establish
+population accuracy. Creation/publication/devices/activation remain excluded.
+
+Calculated new standard token cost USD0.2918025 (input45380,output including thinking
+68738),new maximum consumed reservations13.44. Day accounting: previous returned
+USD0.242451 + old AUTH-31 retained reserve0.28 + new returned0.2918025 =0.8142535;
+remaining USD14.1857465. Billing invoice not verified. Full run reserved before launch
+at aggregate13.962451,within15; reservation released to verified reported-token pricing
+on known termination.98 new journal files sealed; prior94+3 files immutable. Sources,
+prompt,policy,corpus,thresholds and exact packet unchanged. Credential value not retained.
+
+Next **GPT-6 Astra / High**: review all results, generated content, model/usage/cost,
+daily-authority guard and evidence bindings; no paid calls needed for this review.
+The direct pilot track has1 remaining substep: final scoped review/decision.
+D13A.7 fixed4/6,2 numbered checkpoints remain;8 broad milestones. Inside checkpoint5
+two broader packages still require final qualification evidence: compatible creation
+profile/grant/transport measurement remains unmeasured, then final scope decisions.
+Direct-analysis measurement is now complete; local preparation/re-review is complete.
+No additional numbered milestones invented.655 local-only/uncommitted paths;653 entry
+paths preserved. No pending runner/external operation. Flags OFF outside QA,
+shared_analysis FALSE/CEFR OFF;real inventory2914,eligible links0,approved/applied0.
+
+See [daily pilot evidence](evidence/D13A-semantic-day-pilot-20261011.md).
+
+**2026-10-11 local — D13A.7.5 provider repair re-review passed.**
+
+SEM-PROVIDER-01 and SEM-PROVIDER-02 are closed after source/test/packet review.
+No new actionable finding. APPLICATION_JSON matches the saved Discovery20261010
+wire contract for all44 fixed and4 contingent requests. Diagnostics contain only
+bounded allowlisted statuses/fields and synthesized messages. Original evidence hash,
+uncertainty classification, request limits and no-retry semantics remain intact.
+Fresh cached Deno170/170 with typecheck passes. Seven additional mocked review cases
+cover missing/broken/oversized bodies and durable400/408/503 failure/resume; all pass.
+Five scope-tampering probes reject before transport/credentials. Exact packet and17
+sources match; no runtime/test/corpus/policy/packet changes in this review.
+
+Reviewed packet: `e833fbc991f9e2ed066a09c3f79213362836a4c4f996024ac6b104c5832c76de`.
+42 cases,48 requests/USD15 ceilings,USD13.44 maximum reservation,0 automatic retries,
+expiry2026-10-18T00:00:00Z. Ready to propose a separately authorized direct-analysis
+pilot; not authorized for execution and not qualified. Creation/publication/devices/
+activation excluded. AUTH-30/31 consumed; no paid call or key access in this review.
+Historical rejection cause remains unproven.94 old provider files and3 AUTH-31 journal
+files are immutable;46-response offline replay carried with verified hashes.
+
+D13A.7 fixed4/6 complete,2 remain;8 broad milestones. Inside checkpoint5 two existing
+packages remain: exact scoped measured qualification, then final failure/evidence
+review and scoped decision. Local preparation and prescribed re-review are complete;
+passing this direct pilot alone does not qualify excluded workflows. Next **GPT-6.1
+Sol / High** for one exact pilot only after fresh explicit authority, then **GPT-6
+Astra / High** to review its result. No paid approval has been inferred from continue.
+653 local-only/uncommitted paths;651 entry paths preserved. No pending runner/external
+operation. Flags OFF outside QA/shared_analysis FALSE/CEFR OFF;real inventory2914,
+eligible links0, approved/applied0.
+
+See [provider re-review evidence](evidence/D13A-semantic-provider-rereview-20261011.md).
+
+**2026-10-11 local — D13A.7.5 provider P1/P2 repaired and locally verified.**
+
+SEM-PROVIDER-01 now uses APPLICATION_JSON in the direct REST responseFormat enum;
+HTTP Content-Type remains application/json. A saved Discovery20261010 fixture
+independently checks all44 fixed and4 contingent requests. SEM-PROVIDER-02 retains
+bounded operator diagnostics: HTTP status, allowlisted Google status, synthesized safe
+message and up to8 known field paths. Raw provider prose/descriptions/headers/private
+input are never retained. Original failure hash and4xx/408/5xx/network classification
+remain unchanged; durable failure resume refuses redispatch. Ordinary client/store
+receipts do not receive diagnostics. New diagnostics source is bound by the packet.
+
+Both regression probes failed before fixes; fresh cached Deno170/170 with typecheck,
+scoped lint/format and48 wire audits pass.17 source hashes and5 scope-tampering guards
+verified. Old46-response replay agrees except the intentionally changed candidate
+policy hash; all94 old provider files and3 AUTH-31 journal files remain immutable.
+New provider calls0; credentials not accessed. Historical failure cause remains unknown.
+
+New immutable packet SHA256: `e833fbc991f9e2ed066a09c3f79213362836a4c4f996024ac6b104c5832c76de`.
+Policy SHA256: `ef5164c9c51781f44e19a2cc3424d4d5a01e8c10232d3c27d7139f59010d40b6`.42 cases,48 calls/USD15 ceilings,USD13.44
+maximum reservation; corpus/labels/thresholds/limits/scope unchanged. Direct analysis
+probes only; creation/publication/devices/activation excluded. New packet is unapproved
+and unqualified. AUTH-30/31 consumed; no further paid run authorized.
+
+Next **GPT-6 Astra / High**: re-review P1/P2 implementation, privacy/no-retry regressions,
+independent contract fixture and exact new packet without paid calls. D13A.7 remains
+fixed4/6 complete,2 remain: measured semantic qualification and actual-device/old-client/
+offline/performance checks.8 broad milestones remain. Inside checkpoint5 two existing
+packages remain: exact measurement with local re-review prerequisites, then final
+failure/evidence review and scoped qualification decision. Repairs do not add numbered
+milestones.651 local-only/uncommitted paths;646 entry paths preserved. No pending runner
+or external operation. Flags OFF outside QA/shared_analysis FALSE/CEFR OFF;
+real2914 eligible/approved/applied0.
+
+See [provider repair evidence](evidence/D13A-semantic-provider-repair-20261011.md).
+
 # Session checkpoint log
 
 Append concise records. Keep current resume state in `handoff.md`; do not require
@@ -3339,3 +3661,3193 @@ phone data changed. AUTH-25 now authorizes push/PR/conditional merge after check
 Vercel Git integration inspected, dictionary/CEFR env absent. Next hosted CI/PR;
 functional release/native distribution still separately gated. D13 in_progress,
 GPT-6 Astra / High. Local documentation commit; unrelated.playwright-cli retained.
+
+### 2026-10-04 — AUTH-25 PR122 merged after all hosted checks
+
+Pushedf97a733 and created PR122; attached it to this task. Four mandatory GitHub
+checks and Vercel preview passed. Fresh CI mutation96.58% (threshold90%), mobile
+1796 tests, web780 (1 skip), Expo Doctor21/21. Merged20:30:38UTC as44141e0 without
+admin bypass. Fetched origin/main and verified identical tree to the tested head.
+Vercel production for44141e0 READY and target matched20:33:27UTC; public
+site HTTP200/login. Post-merge GitHub push CI is separate from passed PR CI.
+No phone/learning writes, linking, shared publication, worker/provider calls or
+native distribution. D13 functional release still separately gated. These final
+post-merge docs are local-only and intentionally do not trigger another source PR.
+
+### 2026-10-04 — AUTH-26 native build preflight
+
+Owner changed immediate submission to build/inspect first, distribute after agreement;
+later destinations TestFlight + Google Play internal confirmed. Clean managed source
+branch created from44141e0, candidate0a3bae1. EAS dictionary-release profile enables
+dictionary, disables QA/E2E and overrides legacy dev-user vars with nonworking values.
+EAS schema rejected empty values; corrected before any build. Resolved profiles and
+1639-file upload source scan passed; normal hooks mobile1798/web780,1skip. Initial
+archive scanner rejected expected EAS shallow Git metadata; verified depth1/exact
+commit/local config, retained normal archive behavior. No server/phone/store write.
+Next build two held artifacts; inspect cloud operation receipt before retry.
+
+### 2026-10-04 — AUTH-26 native artifacts inspected; distribution held
+
+Both cloud jobs finished: iOS 5d37d6fa-fc60-4137-b694-3b0909071ee9 at 21:08:26 UTC,
+Android 84beddfc-9c76-4128-9b8f-d7975c3dd082 at 21:17:51 UTC. Version 2.4.0 (85),
+source 0a3bae137d3e58c406215114cbccadd773f71098, clean managed release worktree;
+configuration commit local-only. Normal hooks: mobile 156/1798/22 snapshots,
+web 86/780/1 skip; focused configuration 12/12.
+
+Original artifact SHA-256, identifiers, runtime/update configuration, production
+backend and compiled dictionary=true verified. iOS strict/deep signing/profile
+passed; Android bundletool/JAR signature and 54 ARM64/x86-64 ELF alignment checks
+passed. Original Sentry bundle/map uploads verified in cloud logs and debug IDs
+matched actual bundles; server processing not independently checked. iOS download
+403 resolved with User-Agent; macOS trust checks passed outside sandbox. No rebuild.
+[Report](evidence/D13-native-inspection-20261004.md) and JSON retain evidence.
+
+No store submission, device installation, production activation or paid provider
+call. AUTH-26 build/inspection complete; TestFlight/internal distribution awaits
+agreement with the exact activation packet. D13 in_progress, GPT-6 Astra / High.
+Next: owner's release/cutover agreement, then fresh hosted delta/backup before
+any approved writes. Preserve personal cards/history, zero automatic links, CEFR
+OFF; do not repeat AUTH-24 or successful builds. Root checkpoint docs local-only;
+unrelated .playwright-cli, protected backups and existing QA services retained.
+
+### 2026-10-04 — AUTH-27 preflight passed; Supabase CLI login required
+
+Owner authorized the exact activation and beta-distribution packet. Fresh production
+snapshot 9880ab9f5caf5fe07b2344b3a671eb0ad92d06f490e594e9f4fbe19075ed4443 saved
+in builds/d13-activation-backup.87qvcan2; isolated restore verified 79 tables/24,259
+rows. One new word/cache retained, no old words modified/deleted, reviews unchanged.
+All nine migration hashes and 14 learning contracts match. Exact 83 publication
+transactions passed on a separate network-none restored copy: 2053 entries/mappings,
+zero personal links and assessments. Both new containers and temporary credential
+removed. Vercel personal project/current dormant production target verified read-only.
+
+Supabase CLI lacks an access token; asked owner to run supabase login for personal
+account and reply ready, without sending tokens. No production writes, publication,
+activation, Edge/web deployment or store submission. AUTH-27 persists; no reapproval
+needed. D13 blocked on CLI access, GPT-6 Astra / High. Next: verify access and current
+preconditions, then approved source publication/cutover/exact beta submissions.
+[Report](evidence/D13-activation-preflight-20261004.md). Checkpoint docs local-only;
+all existing backups/QA/primary phones and clean native candidate worktree preserved.
+
+### 2026-10-05 — AUTH-27 source publication verified
+
+83/83 production commits and 2053/2053 independent original-content parity passed.
+Personal data unchanged; no links or CEFR activity. Initial Edge API bundle failed
+before activation, old v131 remains active; inspected Docker packaging retry running.
+Runtime/web OFF, submissions absent. Protected backup/credential retained for cutover.
+Next: Edge verification, runtime/web activation and exact beta distribution. Local-only.
+
+### 2026-10-05 — AUTH-27 dictionary activation and beta distribution completed
+
+2053 licensed entries/21 packs independently verified;83 committed transactions.
+Edge132/JWTtrue deployed unchanged source through local Docker after old API packager
+omitted a transitive file. Runtime flags ON;14 personal tables unchanged; P1/P2
+legacy snapshot parity, authenticated packs and cross-owner reads verified. Web
+exact44141e0 READY/HTTP200 with dictionary flagtrue;CEFR entirely OFF. Exact native
+2.4.0(85) submissions both FINISHED, TestFlight Team(Expo) Testing and Play internal
+Available to internal testers confirmed. No rebuild/migration replay/primary-phone
+mutation. Operation-only DB credentials removed; backups and QA retained. No pending
+or uncertain operation. Local-only docs; rootf97a733 dirty task files/unrelated
+.playwright-cli preserved, candidate0a3bae1 clean/local-only, main44141e0 merged.
+Next D13: seven-day observation plus native offline return before any D14 removal;
+CEFR quality/cost gate separate. GPT-6 Astra / High. Execution evidence20261005.
+
+### 2026-10-05T00:45:05+02:00 — Owner-requested repository pause
+
+D13 paused via `/repo pause`; AUTH-27 remains complete. Local receipt confirms both
+submissions FINISHED, no pending operation, temporary DB credential removed. Root
+f97a733 task docs/evidence remain uncommitted; release0a3bae1 verified clean. Preserve
+backups, QA and unrelated.playwright-cli. No external operation/product change/commit/push.
+Next explicit resume: inspect release health/adoption, collect seven-day observation
+and native offline-return evidence; no D14 removal before acceptance, CEFR OFF.
+Recommended GPT-6 Astra / High. Pause checkpoint is local-only.
+
+### 2026-10-09 — D13 health triage and local private-content compatibility repair
+
+Resumed paused D13 on rootf97a733 with existing dirty task docs. Read-only Sentry
+production/14d found current build85 iOS4C and stalled-sync49; owner confirms same
+visible error. Web exact44141e0/production READY, web/Edge200. Old private card shapes
+fail canonical parser. Conjugation-only SQL candidate was experimentally rejected
+and removed; simple runtime rollback also cannot serve enabled85 clients safely.
+
+Implemented private read parser and mobile sync/SQLite/mapping integration while
+keeping canonical authoring strict. Final no-network saved-snapshot rehearsal:
+5858/5858 active cards parse, P1 2343/P2 570, all79 tables unchanged. All new containers
+removed; no existing service/backup touched. Focused42 tests, mobile156/1802/22
+snapshots across full run plus cwd-only configuration retry, web86/780/1skip;
+mobile/test/domain/web typechecks and lint:ci pass. Initial host PostgreSQL sandbox
+and IPC failures, ARM64 container selection and rejected SQL fixture failures are
+recorded; no unresolved local process remains. Exact source hashes/evidence in
+D13-observation-20261009.md/json; private artifacts in ignored reports directory.
+
+Seven source/test files and checkpoint docs remain local-only/uncommitted. No
+production writes/deployments/EAS calls/provider/device/commit/push or automation.
+Next D13: exact native delivery packet and scoped authority, then real sync/offline
+return/health observation. Installed85 still affected; D14 pending, earliest original
+boundary October12 not acceptance. CEFR OFF, separate activation gate. GPT-6 Astra /
+High recommended; picker unverified. Existing.playwright-cli and dirty docs retained.
+
+### 2026-10-09 — D13 runtime-qualified OTA delivery packet prepared
+
+Owner confirms GPT-6 Astra / High and resumes. Personal EAS account/projectoldrefery
+verified before every read. Original85 buildsFINISHED/source0a3bae1, production
+channel mapping verified, no existing OTA for either85 runtime. EAS env read
+privately; account shared env absent. Isolated archive plus exactly seven reviewed
+files, dependency clones, explicit original profile overrides. Baseline/repaired/
+publication-env fingerprints all equal signed85 for iOS and Android.
+
+Native Hermes export succeeds; original bundle/maps debug IDs agree, compiled
+opt-in true, four changed runtime sources hash-match, old dev credentials absent.
+Staged42 tests pass with Watchman disabled after sandbox socket denial. Local
+preflight verifies sealed1622 source files and61 export files. Other setup/checker
+retries are recorded in delivery evidence; no unresolved failure or active job.
+Exact packet D13-ota-candidate-20261009.md/json and private reports retained.
+
+Rootf97a733 remains dirty with seven source/test files and task records, local-only;
+original release0a3bae1 clean, no commit/push/merge/publish/map upload/build/submit/
+backend/provider/phone operation or automation. Next: explicit artifact-bound OTA
+and Sentry delivery approval, fresh preflight, publication and actual sync/offline
+return/health. AUTH-27 consumed; D13in_progress, D14pending, CEFR OFF. Preserve all
+backups/QA/unrelated.playwright-cli. October12 time boundary alone is not acceptance.
+
+### 2026-10-10 — AUTH-28 exact OTA publication and verification completed
+
+Owner explicitly authorized prepared iOS/Android85 OTA and Sentry maps. Fresh
+oldrefery account/project, environment/channel, sealed hashes and runtime checks
+passed. One skip-bundler publication at2026-10-09T21:59:12.190Z created iOS
+groupd5e5379d-2ca5-4d76-86de-02638cac6041 and Android
+groupefcee60d-d833-4f52-b91c-86c3177bf983. Both original Sentry map pairs fully
+processed with matching debug IDs; originals unchanged. Independent group reads and
+actual production manifests/downloads200 verify exact runtime/bundle/all asset hashes.
+Initial diagnostic CDN403 resolved by honoring multipart assetRequestHeaders, no
+release/account mutation. No uncertain operation or pending upload remains.
+
+Initial EAS0 downloads/users/failures before probes; Sentry no issues for new IDs or
+post-publication dist85, historical4C/49 predate publication. Early metrics are not
+adoption/health acceptance; later probes may affect download counts. Owner asked to
+open online20–30seconds and fully close/reopen to check sync; no result/offline-return
+evidence yet. D13in_progress, D14pending, CEFR OFF, GPT-6 Astra / High. AUTH-28 consumed.
+Next actual repaired-client sync/offline/preservation and fresh observation; no
+republish/reupload or replay prior approvals. Delivery evidence20261010.md/json.
+Rootf97a733 seven source/test files plus task records remain uncommitted/local-only;
+OTA/maps delivered remotely, original0a3bae1 clean. No source commit/push/merge,
+native build/store submission/backend/phone/provider operation or automation.
+Backups, QA and unrelated.playwright-cli retained.
+
+### 2026-10-10 — Owner confirms online sync after OTA
+
+The owner answered the post-OTA online/reopen verification question: synchronization
+completed without the previous error. Recorded at2026-10-09T22:07:40Z (October10
+Amsterdam). This is owner-reported online sync success; the reply does not separately
+identify platform or exact device update ID. Updated D13 card, handoff and delivery
+evidence. Native offline study/return with card/review preservation and remaining
+observation are still open; D13in_progress, D14pending, CEFR OFF. No new external
+operation, publication, source change or additional authority. Checkpoint local-only.
+
+### 2026-10-10 — iOS offline return confirmed; second repair packet prepared
+
+Owner requested continuation. Fresh guarded read-only EAS/Sentry checks found one
+handled SQLite lock in loadSyncStatus on the exact iOS OTA; the latest parser error
+was embedded. iOS1 download/user,0 failed installs; Android0. No clean error-window
+claim. Owner subsequently confirms offline reviews, offline restart and reconnect
+preserve cards and results, explicitly on iOS. No new Android acceptance inferred.
+
+Bounded read-only status retry and three new regressions plus a real two-connection
+SQLite test are validated. Full mobile157 suites/1806 tests/22 snapshots; focused
+4/32; both mobile typechecks and lint:ci pass. Initial cross-realm Error mismatch
+in the SQLite test was fixed using structural message validation. All processes ended.
+
+Isolated second export sealed: source archive493fcb2557373577625ef05b785afbd3cf3b47a2544cc19047666113f40f3d30,
+manifestfb8b5e715c3465ef939fabc4dfbb335b19ea3ae7a1205de04f3956fc497e6b2c.
+Both runtime fingerprints match original build85; source/maps/bytecode/config checks
+pass. Original AUTH-28 artifacts untouched. New packet and current observation in
+evidence/D13-status-ota-candidate-20261010 and D13-post-ota-observation-20261010.
+Private artifacts under reports/shared-dictionary-cefr/d13-status-ota-20261010/.
+
+Next exact second OTA/Sentry publication approval, then fresh preflight and one
+verified delivery. AUTH-28 consumed; no new external write in this continuation.
+Rootf97a733 has ten source/test files and task docs local-only/uncommitted; original
+release0a3bae1 clean, main44141e0 unchanged. No active/uncertain operation, source
+commit/push/merge, native build/store/backend/provider/phone write or automation.
+D13in_progress, D14pending, CEFR OFF; GPT-6 Astra / High. Preserve backups/QA and
+unrelated.playwright-cli. Remaining observation gate stays open.
+
+Final checkpoint verification: second-packet sealed preflight and git diff check pass;
+new evidence files formatted. Original release checkout has no tracked changes,
+but one zero-byte untracked `.watchman-cookie-devs-MacBook-Pro.local-80198-5381`
+is present and preserved. No cleanup or source mutation there was performed.
+
+### 2026-10-10 — AUTH-29 second OTA publication and verification completed
+
+Owner explicitly approved exact new prepared iOS/Android85 production OTA, original
+Sentry maps and verification. Fresh oldrefery identity/linked owner, unchanged cloud
+environment/channel and both runtime fingerprints passed. One skip-bundler release
+at22:28:25UTC created iOS e46de173-daaf-4713-8a23-ac60d65ac70d and Android
+34cfafa2-e672-4bd1-a0c0-649dbeed8f5e. Original source/export hashes unchanged.
+
+Independent group reads and actual production serving200 verify exact update IDs,
+runtimes, launch-bundle hashes and all45/49 asset hashes. Both Sentry artifacts fully
+processed with original matching debug IDs. Initial production/14d Sentry queries
+return zero events for exact new IDs and post-release dist85; historical4E/4C/49
+unchanged. Both EAS metrics zero, too early for health/adoption acceptance.
+
+AUTH-29 consumed; all processes completed, no uncertain operation/pending upload.
+Delivery receipt D13-status-ota-delivery-20261010.md/json and private operation
+receipts under reports/shared-dictionary-cefr/d13-status-ota-20261010/. Owner asked
+to reopen online and check sync/status. Response pending; previous successful iOS
+offline-return evidence is AUTH-28. Remaining observation open, D13in_progress,
+D14pending, CEFR OFF. No background monitor. GPT-6 Astra / High retained.
+
+Rootf97a733 ten source/test files plus task records local-only/uncommitted; remote
+OTA/maps delivered. No source commit/push/merge, native build/store/backend/phone/
+provider mutation. Original release0a3bae1 no tracked changes, Watchman cookie
+preserved; backups/QA/unrelated.playwright-cli and original AUTH-28 artifacts retained.
+
+### 2026-10-10 — Owner confirms AUTH-29 iOS sync and status
+
+Owner answered the post-publication iOS online/reopen check: synchronization and
+status display are without errors. Recorded2026-10-09T22:42:38Z (October10 local).
+Accept as owner-reported device success; exact update ID not independently captured.
+Prior offline preservation evidence remains AUTH-28; no new Android/offline result
+is inferred. Delivery evidence, current handoff and D13 card updated locally.
+D13in_progress for remaining observation, D14pending, CEFR OFF. No new external call,
+release, source change, commit/push or automation. AUTH-29 remains consumed.
+
+### 2026-10-10 — D13 post-confirmation health observation
+
+Explicit continuation; rootfeature/shared-dictionary-schema f97a733 and dirty task
+state preserved. Guarded EAS/Sentry reads at22:44UTC find no events for AUTH-29 IDs
+or post-release dist85,4C/4E unchanged. New iOS OTA1 download/user,0 failures;
+Android0, channel embedded Android4. Aggregate downloads may include diagnostics;
+iOS group user sums may double-count one person. Warning48 recent offline network
+events are previous AUTH-28 iOS getUserAccessLevel, consistent with offline QA.
+No repair or manual Sentry resolution needed from this observation.
+
+Evidence D13-status-ota-observation-20261010.md/json and private
+reports/shared-dictionary-cefr/d13-observe-20261010-0044/. All reads completed.
+No source change/tests/external mutation/commit/push/monitor. Existing artifacts,
+backups/QA/unrelated.playwright-cli preserved. D13in_progress pending remaining
+observation and adoption/sync/orphan/CEFR-disabled/cost/latency evidence; D14pending,
+CEFR OFF. October12 alone is not acceptance. Model recommendation Astra / High.
+
+### 2026-10-10 — Shared-only automatic-update plan accepted and clarified
+
+Owner requested option3 and an updated plan accounting for delivered work/old-card
+transition, with a model and effort per next checkpoint. Subsequent clarifications
+settled the target: personal records are common-entry references plus collection/
+learning state; no personal analysis overrides or private reanalysis. Both users
+with full_access and administrators may invoke validated shared reanalysis that
+updates the common version for everyone after sync. Read_only cannot invoke it.
+No new notes feature. Preserve old differences until explicit reviewed disposition.
+
+Updated plan data invariants/contract, D13A.1–9 execution/model matrix, D14.1–4
+model/dependency gates, DEC-10 and DEC-01/02 target status, current handoff, D13 card,
+new D13A card, accepted design and historical D02/design supersession notices.
+Completed D01-D12/D13 deliveries remain intact; old snapshot zero-safe-match result
+is preserved. Protected originals and exact learning state survive approved content
+deltas; unresolved rows stay safe and are not falsely called migrated.
+
+Next D13A.1 technical contract/acceptance fixtures/estimate — GPT-6 Astra / High.
+D13A pending implementation; D13 observation in_progress; D14pending; CEFR OFF.
+No need to wait for observation before local design/development. Source/ten repair
+files unchanged and rootf97a733 retained; docs local-only/uncommitted. No source
+commit/push, runtime/schema/data change, provider call, release or automation.
+AUTH-27/28/29 consumed; original artifacts/backups/QA/unrelated.playwright-cli retained.
+Model choices use project routing and current official guide, not measured costs;
+no model switch or independent agent review claimed.
+
+Plan verification passed: all9 D13A and4 D14 checkpoints specify model/effort;
+new plan/card local links resolve; changed planning documents formatted and git
+diff --check passes. All10 AUTH-29 source/test file hashes still match the sealed
+source manifest. No application tests rerun for this documentation-only change.
+Both product clarification questions are answered; no user-choice question remains
+pending at this checkpoint. Exact technical contract decisions remain D13A.1 work.
+
+### 2026-10-10 — D13A.1 technical contract completed
+
+Owner asked to start; checkpoint recommendation GPT-6 Astra / High. Mapped current
+schema/head event log, domain/private commands, mobile replacement/hydration,
+web batched/snapshot reads, Edge full_access/quota/cache behavior and D06/import paths.
+Context7 Supabase documentation checked for privileged functions and ownership/RLS.
+No runtime code, remote state or sealed OTA artifact was edited.
+
+Saved D13A-technical-contract.md, D13A-acceptance-fixtures.json (26 declarative cases)
+and evidence/D13A-contract-baseline-20261010.json (30 source hashes and10 delivered
+repair hash matches). Key deltas: follow mode/versioned reads, shared operation
+receipts/fencing/unknown provider outcome, trusted admin membership, meaning and
+provenance validation, compatible old-client queues, approved-diff mappings and
+learning-preserving rollback. No duplicate publication log or per-card fanout.
+
+Estimate13–24 active engineering days for remaining extension, plus manual corpus
+review/device/approval delays and at least7 calendar days observation. Fixtures are
+a specification, not executed tests or production proof. Local JSON/link/hash checks,
+Prettier and git diff --check pass. No application tests rerun for documentation.
+
+D13A.1 complete; D13A in_progress; next D13A.2 — GPT-6.1 Sol / High. Reconcile exact
+AUTH-28/29 source against rootf97a733/main44141e0/release0a3bae1 before new runtime
+work. Ten source/test repairs unchanged, docs uncommitted; no commit/push/merge,
+migration, paid call, release, administrator grant or automation. D13 observation
+continues separately; D14pending; CEFR OFF. No new approval or pending operation.
+
+### 2026-10-10 — Paused after D13A.1 at owner request
+
+`/repo pause`: saved checkpoint only. D13A status paused; completed D13A.1 retained.
+Next explicit resume: D13A.2 — GPT-6.1 Sol / High, local reconciliation of rootf97a733
+plus delivered repairs against main44141e0/build85 release0a3bae1. Branch/HEAD and
+dirty files inspected; ten source/test repairs, task docs and untracked evidence
+preserved locally without commit/push. Unrelated.playwright-cli untouched.
+No implementation, remote check, paid call, deployment or monitor started; no pending
+operation. Previous documentation checks remain evidence, not runtime acceptance.
+Handoff, D13A card and session log updated; pause formatting/diff checks passed.
+D13 observation incomplete, D14pending, CEFR OFF; consumed approvals unchanged.
+
+### 2026-10-10 — D13A.2 source reconciliation completed
+
+Explicit resume; owner confirmed GPT-6.1 Sol / High. Rootf97a733/main44141e0 trees
+identical; integrated exact three build85 config/test files, retaining ten AUTH-29
+repair hashes. Saved13-file portable patch and integration/PR packet. Patch applied
+and reversed against isolated main archive; all1210 non-document sealed source
+files match. AUTH-28/29 archives, candidate sources and61 export files each verified.
+
+Node24.20.0/npm11.19.0: mobile157 suites/1808 tests/22 snapshots and coverage gates,
+web86 suites/780 tests (1skipped), mobile build/test and domain types, lint and source
+formatting PASS. System Node20 not used. One helper extraction failed before apply
+because system Python lacks filter keyword; validated archive members and reran PASS.
+Evidence: evidence/D13A-source-integration-20261010.md/json/patch; private raw logs
+reports/shared-dictionary-cefr/d13a2-integration-20261010. No runtime source fix added
+beyond exact build85 configuration; new DEC-10 behavior not implemented yet.
+
+D13A.2 done; next D13A.3 — GPT-6.1 Sol / High. Branch/HEAD unchanged;13 source/test
+files and task docs local-only/uncommitted. Preserve original artifacts/backups/QA,
+private reports and unrelated.playwright-cli. No commit/push/PR/merge, remote refresh,
+release, migration, device/provider operation or automation. No pending operation.
+D13 observation open, D14pending, CEFR OFF; consumed approvals remain consumed.
+
+### 2026-10-10 — D13A.3 storage/read checkpoint
+
+Explicit resume, GPT-6.1 Sol / High using prior owner confirmation. Local additive
+legacy/follow storage and default-off flag; protocol2 deduplicated owner batch,
+review3, decimal sequences and v1 adapter/guard support. Existing log and learning
+retained; no personal fanout. Domain parsers and target schema types added.
+
+PostgreSQL87/87 (read16, legacy34, mapping/schema37), mobile158 suites/1829 tests/22 snapshots and coverage, final
+domain2/28, web86/780 (1existing skipped), mobile/domain/contracts/web types, lint
+and generated target check PASS. Existing DB regressions plus formatting/cleanup
+receipts are in evidence/D13A-following-reads-20261010.md/json; private raw logs and
+Docker adapter in reports/shared-dictionary-cefr/d13a3-reads-20261010/.
+Host PostgreSQL15 shared-memory limit blocked init; no host shared-memory/process
+cleanup. Pinned local PostgreSQL16.13 Docker without network used. Helper readiness,
+argument quoting, relocated import path and one invalid domain assertion corrected;
+failed logs retained. Test bodies/migrations unchanged by Docker adapter.
+
+D13A.3 still in_progress. Next: trusted admin/meaning anchors, durable operation
+receipts/quota/dispatch/fencing/provenance, import/cache contracts and final stage
+checks — GPT-6.1 Sol / High. Shared analysis provider workflow/client hydration and
+exact old-device compatibility remain later gates. Branch/rootf97a733 unchanged;
+new source/types/tests and13 prior repairs/task bundle local-only/uncommitted.
+No commit/push/PR/merge, hosted migration/grant, paid provider, release/device action
+or automation. D13 observation open, D14pending, CEFR OFF; sealed OTA/backups/QA and
+unrelated.playwright-cli preserved; previous approvals remain consumed.
+
+## 2026-10-10 — D13A.3 trusted authority and durable operation journal
+
+Explicit continue; GPT-6.1 Sol / High retained from owner confirmation. Local
+additive20261010100000 migration and domain contracts add trusted admin membership,
+immutable reviewed meaning anchors, actor-scoped receipts, same-key request conflicts,
+atomic existing10/60 quota + fencing, one-time dispatch payload, private immutable
+results/unknown quarantine and bounded owner/admin history. No client-supplied actor
+or private provider input. Service-only worker RPCs recheck current permission/head/
+anchor; late/unknown results cannot publish. Auth deletion preserves privacy and
+entry fence reuse. New flag OFF, shared_analysis capability false; source approval
+constraints/history intact. Target public contracts regenerated and exactly checked.
+
+106 unique PG checks pass (operation19, legacy83, official import4); mobile159/1854/
+22 with coverage; focused contracts3/53; domain/contracts/mobile build+test/web types,
+lint zero warnings, source formatting and diff check pass. Combined102-test run
+retained one fixture quote failure; its83 legacy checks passed and corrected full
+operation suite19/19 passed. Trigger ACL, NULL fixture decoder, Jest flags and lint
+repairs recorded in evidence; no failed result relabeled. Same pinned isolated
+PG16.13 adapter, unchanged test bodies except new operation tests. No host IPC
+cleanup. Task test/type containers/networks verified zero; all tool sessions ended.
+
+Saved operation evidence MD/JSON with source/log hashes and dirty inventory. All13
+repair/config hashes and four sealed archive/manifest hashes unchanged. Source/task
+bundle remains local/uncommitted on feature/shared-dictionary-schema atf97a733.
+D13A.3 remains in_progress. Next: automated validator provenance, explicit journaled
+late-result reconciliation, safe human/machine sources, guarded atomic publish/
+no-change and replay, then import/cache contracts and final stage validation —
+GPT-6.1 Sol / High. Provider workflow/client/device/corpus gates remain later.
+No hosted apply/grant, provider call, commit/push/PR/merge, release/device action or
+automation. D13 observation open, D14pending, CEFR OFF; prior approvals consumed;
+backups/QA/unrelated.playwright-cli preserved. No pending external operation.
+
+## 2026-10-10 — D13A.3 validation/provenance/publication checkpoint
+
+Explicit resume, GPT-6.1 Sol / High owner-confirmed. Added dormant migration
+20261010110000, empty qualified validator policies, immutable validation evidence/
+transaction permits, protected input/result/anchor and canonical content/CEFR hash
+binding, strict schema/UTF-16/identity/public-media guards, explicit late-result
+reconciliation and guarded atomic publication/no-change receipts. Current authority,
+fence, exact revision+sequence/ABA and policy checked again before commit. Separate
+machine provenance does not fabricate human review. Auth deletion redacts actor
+evidence and retains shared history; public provenance respects retired entry pins.
+Domain parsers and public target types updated. No semantic/provider workflow.
+
+128 unique PG checks pass (publication22 + compatibility106), mobile160/1874/22 with
+coverage, focused4/73, all domain/contracts/mobile build+test/web types, root lint,
+source format/generated check/diff check pass. Failed duplicate canonical helper
+migration/type generation and invalid retired-pin fixture preserved; final22/22
+passes after reusing the existing helper and correcting retirement visibility/setup.
+Existing106 compatibility run preceded isolated provenance filter repair; final22
+and schema check cover final migration. No fresh full web unit/device acceptance
+claim. Same pinned isolated PG16.13 adapter; host shared-memory issue untouched.
+Cleanup verified zero task containers/networks; no outstanding tool/external job.
+
+Saved publication evidence MD/JSON, exact source/test/log hashes and dirty inventory.
+Prior21 source hashes and four sealed archive/manifest hashes unchanged; eight SQL
+mirrors identical. Same feature/shared-dictionary-schema/rootf97a733, local-only/
+uncommitted. D13A.3 still in_progress; next import/cache/legacy queued-command contracts
+and final stage validation, GPT-6.1 Sol / High. D13A.4 not started; all26 declarative
+fixtures remain unexecuted end-to-end. Both flags default off, live policies/grants
+unseeded and capability2 unavailable; CEFR OFF. No provider/paid call, hosted apply/
+publication/grant, commit/push/PR/merge, release/device operation or automation.
+Backups/QA/sealed exports and unrelated.playwright-cli preserved; D13 observation
+open, D14pending, AUTH-27/28/29 consumed. No usage/quota measurement claimed.
+
+## 2026-10-10 — D13A.3 import/cache/recovery and local stage completion
+
+GPT-6.1 Sol / High, owner-confirmed. Implemented default-off protocol2 verified
+published follow imports, official/shared evidence, portable/cache contracts and
+legacy current-head adapters without reinterpreting version1 queued/domain contracts.
+Shared root/nonce ledgers, CAS/cancellation/late-original fences, no resurrection,
+Auth cleanup and learning-preserving recovery moves verified. Cache media regression
+repaired by preserving v1 mapping and rejecting mismatch in v2. Raw Node import,
+mirror cwd/Watchman/Jest option and duplicate literal failures recorded and repaired.
+
+Final158 unique PG tests (19imports,11recovery,128unchanged), mobile161/1891/22 with
+coverage, focused5/90, web86/780 (one existing skipped before recovery-only additions),
+all final types/lint/format/generated target check/diff PASS. Evidence MD/JSON stores
+exact source/test/log hashes, commands, failures, cleanup and dirty inventory. Prior25
+source hashes, four sealed hashes, four legacy modules preserved; ten SQL mirrors
+identical. Pinned isolated PG16.13 adapter unchanged; host IPC issue untouched.
+Read-only cleanup: zero task containers/networks; all sessions ended, no external job.
+
+D13A.3 done locally; outerD13A in_progress. Next D13A.4 semantic evaluator/provider
+workflow, diff/history and administrator rollback, GPT-6.1 Sol / High. Local source/
+task bundle uncommitted on feature/shared-dictionary-schema, HEADf97a733 unchanged.
+All flags default OFF, policies/grants unseeded, capability2 shared analysis unavailable,
+CEFR OFF. No hosted migration/grant/link/publication, provider/paid call, commit/push/
+PR/merge, release/device or automation. No26-fixture end-to-end/build85/device acceptance
+inferred. D13 observation open, D14pending; AUTH-27/28/29 consumed. Backups/QA/sealed
+exports and unrelated.playwright-cli preserved. No usage/quota measurement claimed.
+
+## 2026-10-10 — D13A.4 history/diff/admin rollback checkpoint complete locally
+
+GPT-6.1 Sol / High, owner-confirmed. Added default-off audited administrator rollback,
+bounded redacted head-event history/full nested/media diff and separate admin audit
+pagination. Immutable nonce replay, exact head/sequence ABA conflicts, new rollback
+events, failed-audit transaction rollback, role revocation/Auth actor redaction and
+real publication/rollback races preserve learning/adoption/IDs and quota. Retired/
+draft targets stay held; provider disablement does not block emergency rollback.
+
+Final74 selected PG checks (17 new +57 unchanged relevant suites), mobile162/1906/22
+with coverage, focused6/105, all domain/contracts/mobile build+test/web types,
+lint zero warnings/format/generated check/diff PASS. First13/16 fixture errors fixed;
+initial event.kind inference and web1n syntax fixed without suppressions. Final types/
+mobile/contracts repeated after BigInt(1) change. Exact MD/JSON evidence saved.
+Prior32 source/ten SQL bodies/four sealed hashes preserved; eleven mirrors identical,
+original support/adapter unchanged. Cleanup zero task containers/networks; no jobs.
+
+D13A.4 remains in_progress; next protected semantic evaluator/provider workflow,
+qualified policy/positive-negative fixtures, durable result/unknown retries,
+GPT-6.1 Sol / High. Seven source/type/test files plus task notes/evidence local-only/
+uncommitted on feature/shared-dictionary-schema/HEADf97a733 unchanged. No fresh full
+web units, complete prior158 SQL suite,26-fixture or exact build85/device acceptance
+claim. New flags OFF, real memberships/policies unseeded, capability unavailable,
+CEFR OFF. No paid/provider call, hosted apply/grant/link/publication, commit/push/PR/
+merge, release/device or automation. Backups/QA/sealed exports/.playwright-cli retained.
+D13 observation open, D14pending, AUTH-27/28/29 consumed; no quota measurement claimed.
+
+## 2026-10-10 — D13A.4 protected provider worker checkpoint
+
+GPT-6.1 Sol / High owner-confirmed; same branch/HEADf97a733. Added service-only work
+read migration140000, strict protected input/hash and single bounded Gemini transport,
+durable worker/result/validation retry, verified actor handler/SDK factories. Edge34,
+new PG6 and unchanged compatibility58 PASS (first combined63/64 wrong existing ACL
+assertion corrected; aggregate64 unique). Focused6/105/all types/Edge+root lint/target/
+format/diff PASS. Unsupported Deno flag/lint/fixture repairs retained. No fresh full
+client units/device acceptance. Prior54/four sealed hashes,35 SQL mirrors/pinned
+adapter/legacy helpers/lock preserved; zero task containers/networks/pending runners.
+Twelve source/type/test/config files plus notes/evidence local-only/uncommitted.
+No actual semantic evaluator/qualification or Deno.serve entrypoint; next same D4
+semantic policy/positive-negative fixtures then dormant endpoint/final gates, Sol/High.
+No provider keys/calls, hosted writes/roles/policies/publication, Git/release/device or
+automation; default OFF/CEFR OFF/capability unavailable; D13 open/D14pending/AUTH27–29
+consumed. Evidence: evidence/D13A-provider-worker-20261010.md/json.
+
+## 2026-10-10 — D13A.4 independent semantic evaluator checkpoint
+
+GPT-6.1 Sol / High owner-confirmed, same branch/HEADf97a733. Owner selected independent
+Gemini judge (DEC-11); local implementation only. Added default-OFF semantic journal,
+separate existing-quota charge, policy model/prompt binding, strict pre-judge guards,
+grounded six-dimension prompt/parser, evaluator/store and verified actor/pending worker
+support. Unknown/lost/late replies remain quarantined, no automatic redispatch. Accepted
+validation under new policy requires exact charged returned child evidence in SQL.
+
+Final Edge67/67, PG74/74 one green run, focused mobile6/105, all types/root+Edge lint/
+target/source format/diff PASS. Actor arguments/literal/async fixture repairs preserved;
+no suppression. Prior65 hashes/four sealed artifacts,36 SQL mirrors/pinned adapter,
+legacy helpers/lock unchanged. Zero task containers/networks, all runners exited; no
+pending external operation. Eleven source/type/test files plus notes/evidence local-only/
+uncommitted. No fresh full client/device/build85/26-fixture acceptance or quota cost claim.
+Candidate policy gemini-fixture-model qualified:false; injected verdicts do not measure
+model accuracy. Evidence: evidence/D13A-semantic-evaluator-20261010.md/json.
+
+D13A.4 remains in_progress; next dormant concrete endpoint/factory, readiness/policy
+preflight before first generation dispatch and final workflow gates, Sol / High. D7
+measured exact real-model/prompt/source qualification and D8 enablement remain separate.
+Flags OFF, policies/memberships unseeded, shared_analysis unavailable, CEFR OFF. No paid/
+provider call, hosted apply/grant/link/publication, Git commit/push/PR/merge, release/device
+or automation. D13 open/D14pending/AUTH27–29 consumed. QA/backups/services retained.
+
+## 2026-10-10 — D13A.4 endpoint/final workflow complete locally
+
+GPT-6.1 Sol / High owner-confirmed; same branch/HEADf97a733. Added atomic independent
+profile/readiness acceptance before quota, immutable operation policy/generation
+binding, repeated generation dispatch gates, concrete dormant SDK/runtime/CORS/Deno
+entrypoint and full protected generation/judge/validation/publication orchestration.
+Terminal receipts replay after database-flag/authority/policy revocation; lost/unknown replies never redispatch.
+No real Auth/Gemini/hosted request, endpoint credential sourcing or policy/member seed.
+
+Final Edge76, PG90 in one green run, focused6/105, full mobile162/1906/22 with coverage,
+web86/780 (one existing skipped), all types/root+Edge lint/target/source format/diff PASS.
+Node parameter-property/extension loader issues and ACL signature/null/cleanup/literal
+fixture errors retained. Removed exactly the leftover task container after failed
+cleanup; final zero task containers/type networks/runners. Eleven source/type/test
+files plus notes/evidence/runbook communication preferences local-only/uncommitted.
+Prior73 hashes/four sealed artifacts,37 SQL mirrors/pinned adapter/helpers/lock unchanged.
+Deno cached SDK2.110.8 and Node installed SDK2.98.0 checks documented separately.
+Evidence: evidence/D13A-endpoint-workflow-20261010.md/json.
+
+D13A.4 done locally; outerD13A in_progress. Next D13A.5 client hydration, shared-only
+Analyze again/following cache, offline/account recovery and stable review sessions,
+GPT-6.1 Sol / High. High recommended for cross-client synchronization/recovery invariants.
+D7 real-model/source/prompt qualification/dedicated device/26-fixture acceptance and D8
+live enablement/release remain separate. Flags OFF/policies/memberships unseeded,
+shared_analysis unavailable, CEFR OFF. No hosted/Git/provider/release/device/automation
+operation; D13 open/D14pending/AUTH27–29 consumed. QA/backups/services preserved.
+Owner communication preferences saved in runbook: every checkpoint names next work,
+model/effort; every proposed choice names recommendation/reason and option pros/cons.
+
+## 2026-10-10 — D13A.5 first dormant web reads/review checkpoint complete locally
+
+GPT-6.1 Sol / High owner-confirmed, same feature/shared-dictionary-schema/HEADf97a733.
+Protocol2 batch hydration and one-RPC review snapshot3, decimal metadata, dependency/
+mixed-head validation, monotonic session-boundary refresh, copied revision/CEFR metadata
+and following private-action guards before provider calls. Legacy read-only whitelist
+preserves raw removals/private JSON; canonical publication/command parsers remain strict.
+One local Deno import alias; frozen lock unchanged. Twenty-two source/test/config files
+plus notes/evidence local-only/uncommitted. Prior80 hashes/37 mirrors/sealed exports
+preserved; four declared parser/index/test/config extensions.
+
+Final web92/820 with opt-in performance harness, zero skipped; mobile162/1907/22 with
+coverage; affected four types/root+web+domain lint/Edge76/check/format/diff PASS. Initial
+fixture/discriminant/window/coverage-subset/benchmark timeout/import-map failures repaired
+and recorded. Final quiet Node timings178–192/358–373ms for2500/5000 words, not browser/
+native latency acceptance. No new PostgreSQL/device/hosted/provider/Git/release/automation
+operation; all runners exited. Evidence: evidence/D13A-web-reads-20261010.md/json.
+
+D13A.5 remains in_progress. Next mobile SQLite following/head schema, exact decimal cursor,
+atomic dependency/reference/watermark and durable owner/account-return refresh debt;
+then shared-only Analyze again and web recovery/following performance. Recommended
+GPT-6.1 Sol / High for transaction/queue/session recovery consistency. No card conversion,
+new flag enablement, private detachment, learning mutation or reuse of AUTH27–29.
+D13 observation remains open; D14pending; D7/8 acceptance/qualification/release gates remain.
+
+## 2026-10-10 — D13A.5 mobile SQLite storage checkpoint complete locally
+
+GPT-6.1 Sol / High owner-confirmed; same feature/shared-dictionary-schema/HEADf97a733.
+Schema17, owner-scoped v2 effective/head cache, decimal cursors, persistent refresh
+fences, atomic dependencies/references/debt/page cursor and one-snapshot cached reads.
+File-backed restart/fault/rollback/CEFR/owner/tombstone/pending-queue checks plus405-card
+batching pass; v1 originals/cursors/payloads and learning preserved. Nine source/test
+files and notes/evidence local-only/uncommitted. Prior102 hashes/37 mirrors unchanged.
+Final mobile163/1933/22 with coverage, focused3/53, production/test types, root lint
+zero warnings, source/report formatting/diff PASS. Initial fixture/type/count/lint
+failures retained/repaired. Evidence: evidence/D13A-mobile-storage-20261010.md/json.
+No native connection/device/real-model acceptance; no runtime v2 serving yet. All
+runners exited; disposable databases removed; no external operation pending. New
+flags OFF, roles/policies unseeded, CEFR OFF; no provider/paid/hosted/Git/release/EAS/
+card conversion or automation. AUTH27–29 consumed, D13 observation open, D14pending.
+Next D13A.5 native capability/read v2 sync/materialization/status and immutable sessions,
+recommended GPT-6.1 Sol / High for Auth/queue/cursor/session invariants. Preserve legacy
+push/receipts/private payloads; explicit mode restoration. Shared actions and web
+recovery/performance follow; D7/8 acceptance/qualification/release remain separate.
+
+## 2026-10-10 — D13A.5 mobile v2 sync adapter checkpoint complete locally
+
+GPT-6.1 Sol / High owner-confirmed; same feature/shared-dictionary-schema/HEADf97a733.
+Prepared dormant capability2/effective2/change2 adapter with default-OFF dual opt-in,
+pre-request durable debt,1000/10000 card bounds, complete entry expansion and atomic
+page commits;50-page/three-pass limits fail with retry. General owner guard preserves
+import API and protects preparation/commit; offline/restart/late/A-to-B-to-A/rollback
+checks pass using file-backed SQLite and synthetic HTTP. No runtime facade serving yet.
+Final mobile164/1972/22 with coverage/zero skipped, focused3/70, both types, root lint
+zero warnings and source/report format/diff PASS. Initial mock/type/assertion/literal
+failures repaired and retained. Prior111 hashes verified;110 unchanged plus one explicit
+repository guard extension;37 mirrors/sealed artifacts intact. Five source/test files
+plus notes/evidence local-only/uncommitted. Evidence: evidence/D13A-mobile-sync-20261010.md/json.
+All runners exited; disposable files removed; no external operation pending. Existing
+web820/Edge76/PG90 carried only. New flags OFF, CEFR OFF, roles/policies unseeded; no
+provider/paid/hosted/conversion/Git/release/EAS/device/automation. AUTH27–29 consumed.
+Next D13A.5 coordinated facade/materialization/metadata/status/private-action guards
+and frozen active/preparing review sessions, recommended GPT-6.1 Sol / High for coupled
+Auth/queue/cursor/action/session invariants. Preserve v1 push/verified receipts/payloads
+and independent learning delivery; explicit restoration. Shared actions/web recovery/
+following performance and D7/8 qualification/device/release remain. D13 open/D14pending.
+
+## 2026-10-10 — D13A.5 coordinated mobile runtime checkpoint
+
+- Model GPT-6.1 Sol / High owner-confirmed; checkpoint complete locally, stage in_progress.
+- Dual opt-in v2 facade/common materialization/CEFR/exact metadata/status, atomic verified
+  v1 receipt acknowledgement with full v2 hydration, old-to-v2 generation debt handoff,
+  pre-provider/private-write guards and frozen preparing/native review integrated.
+- Dictionary capability failure defers word writes and still delivers acknowledged
+  learning events; schema1 offline export uses raw validated common content.
+- Final mobile166/2015/22 with coverage/zero skipped, focused10/271, production/test types,
+  root lint zero warnings/scoped format/diff PASS;43 added cases. Failed fixtures/types/
+  lint/matcher attempts preserved. Node SQLite/synthetic network, no native/device/latency
+  or real-provider semantic acceptance. Web820/Edge76/PG90 carried only.
+- Prior184 paths/115 sources verified,108 unchanged plus7 explicit extensions;149 union.
+  All37 rehearsal mirrors/47 sealed artifacts unchanged. Forty-one source/test files plus
+  notes/evidence local-only/uncommitted, feature/shared-dictionary-schema/HEADf97a733.
+- Report/hash packet: evidence/D13A-mobile-runtime-20261010.md/json. Preserve dirty
+  bundle/reports/QA/backups/services/.playwright-cli. No reset/switch/rebase or external,
+  paid/provider, hosted apply/publication, real conversion, Git, EAS/release/device/automation.
+- New flags OFF, roles/policies unseeded, shared_analysis unavailable, CEFR OFF. D13 open,
+  D14pending, AUTH27–29 consumed. All runners exited; no task database/external operation.
+- Next D13A.5 shared-only Analyze again and durable operation receipt/recovery on mobile/
+  web, GPT-6.1 Sol / High for Auth/permission/paid retry/receipt/cache invariants. Following
+  new-word/import/transfer2/reconciliation, web recovery and review performance/parity remain;
+  D7/8 real-model/device/review/release separate. Choices need recommendation/reason/pros/cons.
+
+## 2026-10-10 — D13A.5 shared analysis client journal foundation
+
+- GPT-6.1 Sol / High owner-confirmed; checkpoint complete locally, stage in_progress.
+- Shared exact owner/nonce/entry/head/fence/hash receipts; terminal immutability and
+  semantic unknown quarantine/recovery. Dormant SDK-compatible transport ports; mobile
+  additive schema18 and browser metadata with required exclusive Web Locks. Claims
+  persist before one endpoint call; submitted intent only reads its actor receipt.
+- No token/content/role/key storage or private/SRS/learning writes. No UI/production SDK/
+  cache adapter or new-attempt/clear/archive/history/quarantine resolution API connected.
+- Full mobile167/2045/22 with coverage, focused3/59; full web93/835 with benchmark,
+  focused1/15; zero skipped/todo. Four types/root+web+domain lint zero warnings/scoped
+  format/diff PASS. Thirty mobile and15 web cases added. Initial path/mock/Lock-promise/
+  duplicated literal/wrapper warning attempts retained/repaired. Node SQLite/synthetic
+  edges/locks/storage; no native/browser retention/FK/latency or real semantic acceptance.
+- Baseline231 paths/149 sources verified;144 unchanged,5 extensions/8 newfiles,157 union.
+  All37 mirrors/47 sealed artifacts unchanged. Thirteen source/test files plus notes/
+  evidence local-only/uncommitted, feature/shared-dictionary-schema/HEADf97a733.
+- Report/hash packet: evidence/D13A-analysis-client-20261010.md/json. No task runners/DB/
+  server/external job; Edge76/PG90 carried only. Flags OFF, shared_analysis unavailable,
+  roles/policies unseeded, CEFR OFF; D13 open/D14pending, AUTH27–29 consumed. Preserve dirty
+  bundle/reports/QA/backups/services/.playwright-cli; no reset/switch/rebase. No external,
+  paid/provider, hosted/real conversion, Git/EAS/release/device or automation operation.
+- Next D13A.5 platform SDK/Auth binding, trusted server actor eligibility (OFF), shared-
+  only Analyze again/read-only recovery UI, explicit new attempts/history/quarantine
+  reconciliation and publication cache hydration, recommended GPT-6.1 Sol / High for
+  Auth/authorization/paid retry/receipt/cache invariants. Following adoption/transition,
+  broader web recovery/performance and D7/8 qualification/device/release remain.
+
+## 2026-10-10 — D13A.5 actor / SDK / publication adapters
+
+**2026-10-10 — D13A.5 actor/SDK/publication adapter checkpoint complete locally; stage in_progress.**
+GPT-6.1 Sol / High, owner-confirmed. See [adapter report](evidence/D13A-analysis-sdk-20261010.md)
+and [exact source/test/log hashes](evidence/D13A-analysis-sdk-20261010.json).
+
+Additive authenticated self-only actor RPC uses existing full_access/private administrator
+predicate without readiness/grants/quota. Generated target contracts bind actual mobile/
+web SDK/Auth actions to the common owner latch and durable one-shot journal; authority
+rechecks before dispatch. Mobile exact analysis URL bypasses global automatic retries.
+Publication refresh validates entry/head/revision, preserves debt on failure, hydrates
+complete mobile shared siblings atomically without private/learning/SRS writes, and
+returns validated web snapshots in memory. Default-OFF gates; no UI/new-attempt/archive/
+operation-list/quarantine resolution connected. Web snapshot application/UI cache remains.
+
+Final mobile168/2070/22 with configured coverage; web94/851 including opt-in benchmark
+with invocation testTimeout30000; zero skipped/todo. Focused mobile4/105 before final
+two cases; focused web2/31. PG95/95 across seven selected modules through the new
+migration, independent actor6/6; actual disposable SQL/synthetic providers. Target
+generate/check, mobile production/test, web test-inclusive, domain/contracts types,
+root/web/domain lint zero warnings, scoped format/diff PASS. Initial native initdb SysV
+limit failure resolved using task-owned network=none read-only-root/tmpfs Docker fixture;
+no system/other-resource changes. Initial test fixtures/SDK export/paths/missing script/
+literals/manifest formatting and default web benchmark timeout repaired or rerun; logs
+preserved. Benchmark long tasks leave device/review performance qualification open.
+All runners exited, disposable cleanup complete; no task/external operation pending.
+
+Entry246 paths/157 sources verified;149 preserved plus8 declared extensions and12
+additional paths,169 union;37 mirrors/47 sealed artifacts unchanged. Twenty source/test
+files plus notes/evidence local-only, same feature/shared-dictionary-schema/HEADf97a733.
+Preserve entire dirty bundle/reports/QA/backups/services/.playwright-cli. No reset/switch/
+clean/rebase. New flags OFF, roles/policies unseeded, shared_analysis unavailable, CEFR
+OFF; D13 observation open/D14pending; AUTH27–29 consumed. No provider/paid/hosted/real
+conversion/Git/EAS/release/device/automation operation authorized, started or pending.
+
+Next **D13A.5 — recommended GPT-6.1 Sol / High**: shared-only Analyze again and
+read-only recovery/status UI on mobile/web; apply validated web snapshots and invalidate
+visible shared cache. Add explicit fresh-attempt/history/quarantine reconciliation
+without replacing unresolved submitted IDs or automatic paid retries. Read analysis
+service/client/journals, mobile wordActions/word detail and web WordManagementForms/
+commands; fetch current SDK/UI documentation where relevant. Check repeated presses,
+page/account return, A-to-B-to-A, flag/permission withdrawal, offline/restart, pending
+private content and unchanged SRS. High is recommended because Auth/UI lifetimes,
+durable nonces, paid uncertainty and publication/cache ordering are coupled. Following
+new-word/import/transfer2 adoption, preserved private/mode reconciliation, broader web
+recovery and review performance/parity remain; D7/8 qualification/device/release separate.
+State exact next work/model/effort after each checkpoint; choices include recommendation,
+reason and every option's pros/cons. Historical entries below do not supersede this scope.
+
+## 2026-10-10 — D13A.5 shared action / status UI
+
+**2026-10-10 — D13A.5 shared action/status UI checkpoint complete locally; stage in_progress.**
+GPT-6.1 Sol / High, owner-confirmed. See [UI report](evidence/D13A-analysis-ui-20261010.md)
+and [exact source/test/log hashes](evidence/D13A-analysis-ui-20261010.json).
+
+Mobile following details and web following-word pages expose explicit shared analysis
+and read-only saved status through validated adapters. Mount loads local metadata;
+submitted intents bypass eligibility and never POST again. Rapid presses, unmount,
+Auth A-to-B-to-A and controller recreation after props/head changes are fenced until
+reopen. Validated mobile shared sibling projections preserve current personal progress,
+mode and newer heads; web snapshots project current props and refresh the current route.
+No private/SRS/learning database write or per-user linguistic override. Terminal journal
+slots still offer only status checking; fresh attempts/history/quarantine remain next.
+
+Final mobile171/2111/22 with configured coverage; web96/865 including opt-in benchmark
+with testTimeout30000; zero skipped/todo. Focused mobile4/57, display SQLite1/6, web3/30;
+all included in final full runs. Mobile production/test, web route/test-inclusive,
+domain/contracts types, root/web/domain lint zero warnings, scoped format/diff PASS.
+Initial web fixture typing and unused resolver lint repaired; failed logs retained.
+Final extra regression includes props/head updates after account ABA. Benchmark long
+tasks remain; native/browser/review performance qualification is still open. Edge76 and
+PG95 carried only; no backend/schema change. All runners exited; no task operation pending.
+
+Entry274 paths/169 source hashes verified;165 preserved,4 declared extensions and11
+additions,180 source union. Fifteen source/test files plus notes/evidence local-only;
+37 mirrors/47 sealed artifacts unchanged, protected baseline paths rechecked. Same
+feature/shared-dictionary-schema/HEADf97a733; preserve complete dirty checkout/reports/
+QA/backups/services/.playwright-cli. No reset/clean/switch/rebase/commit/push/PR. New gates
+OFF, shared_analysis FALSE, roles/policies unseeded, CEFR OFF; D13 observation open,
+D14pending, AUTH27–29 consumed. No provider/paid/hosted/real conversion/Git publication/
+EAS/release/device/automation operation started or pending.
+
+Next **D13A.5 — recommended GPT-6.1 Sol / High**: explicit fresh-attempt/archive/history/
+quarantine reconciliation. Read analysis client/journal/owner/operation contracts; define
+safe transitions from authoritative finished receipts while reserving unresolved IDs
+and uncertain provider outcomes. Atomically archive/claim new nonce under owner/word
+lock only on an explicit permitted new attempt. Never silently clear or retry paid
+POSTs. Verify cross-tab contention, restart/offline, terminal history, account ABA,
+flag/permission withdrawal and unchanged SRS. High is recommended because owner/storage,
+durable nonces and uncertain paid outcomes are coupled. Following adoption/import/
+transfer2, preserved private/mode transition, broader web recovery and review parity/
+performance remain; D7/8 qualification/device/release separate. After every checkpoint,
+state exact next work/model/effort; choices include recommendation/reason/pros/cons.
+
+## 2026-10-10 — D13A.5 explicit attempts / archive / local history
+
+**2026-10-10 — D13A.5 explicit attempts/archive/history checkpoint complete locally; stage in_progress.**
+GPT-6.1 Sol / High, owner-confirmed. See [attempt report](evidence/D13A-analysis-attempts-20261010.md)
+and [exact source/test/log hashes](evidence/D13A-analysis-attempts-20261010.json).
+
+Explicit next attempt requires a fresh authoritative finished receipt, immutable request/
+fence/result, current owner/permission and same word/entry/head. Candidate cannot predate
+a confirmed publication or change its revision at equal sequence. Atomic archive/new
+unsubmitted intent precedes one-shot new-nonce dispatch. Submitted unknown/null/busy/
+quarantined IDs stay reserved; only explicit same-ID reads can observe server resolution.
+No automatic paid retry or client privileged reconciliation. Local owner/word history
+and mobile/web controls preserve personal progress, queues, mode and newer heads.
+Native additive schema19 preserves v18 slots and adds reserved-ID triggers; browser legacy
+arrays remain readable, first archive uses one exact v3 envelope under the existing lock.
+Old array-only browser readers fail closed after archive. Mobile history100/owner; browser
+100 total/owner and256000 UTF-16 code units including history; no eviction or clear API.
+Cross-device/server-list import and lost-local-storage reconciliation are still separate.
+
+Final mobile171/2132/22 with coverage; web96/873 including opt-in benchmark testTimeout30000;
+zero skipped/todo. Added21 mobile/8 web cases. Repaired focused mobile5/107 and web2/30;
+actual migration1/23 rerun after test filename constant. All final full runs include
+publication-boundary guards. Mobile production/test, web route/test-inclusive,
+domain/contracts types, root/web/domain lint zero warnings, scoped format/diff PASS.
+Initial closed fixture inspection, mock journal persistence/subscription count and
+literal/fault-harness lint failures repaired; logs retained. Node long tasks remain;
+no device/browser/review performance acceptance. Edge76/PG95/target check carried only;
+backend/generated contracts unchanged. All runners exited; no task operation pending.
+
+Entry278 paths/180 sources verified;161 preserved,19 declared extensions and1 additional
+module,181 union. Twenty source/test files plus notes/evidence local-only;37 mirrors/47
+sealed artifacts unchanged,255 protected baseline paths rechecked. Same feature/shared-
+dictionary-schema/HEADf97a733. Preserve complete dirty bundle/reports/QA/backups/services/
+.playwright-cli; no reset/clean/switch/rebase/commit/push/PR. New gates OFF, shared_analysis
+FALSE, roles/policies unseeded, CEFR OFF; D13 observation open/D14pending, AUTH27–29 consumed.
+No provider/paid/hosted/real conversion/Git publication/EAS/release/device/automation
+operation authorized, started or pending.
+
+Next **D13A.5 — recommended GPT-6.1 Sol / High**: following new-word/import/transfer2
+client adoption and recovery. Read following import/transfer2 contracts, owner intent
+journals, mobile import/transfer services and web forms/commands. Wire protocol2 behind
+OFF gates, preserve private differences and legacy pending commands; verify restart/
+offline, capability withdrawal, two owners and exact personal IDs/SRS/queues. No actual
+conversion or private publication. High is recommended for coupled owner/intent/reference/
+cache and mixed-protocol preservation. Broader web/server history recovery, private/mode
+reconciliation and review performance/parity remain; D7/8 model/device/review/release
+acceptance separate. State exact next work/model/effort after every checkpoint; choices
+include recommendation/reason/pros/cons. Historical entries do not supersede this scope.
+
+## 2026-10-10 — D13A.5 following import client journals
+
+GPT-6.1 Sol / High; local-only/uncommitted, feature/shared-dictionary-schema HEADf97a733.
+Separate strict v2 native schema20/browser journals, explicit offline metadata queue,
+SDK/Auth owner/ABA fencing, exact original replay/CAS recovery/cancel and immutable
+receipts preserve v1/personal/SRS. Transfer2 planner/native preview preserve originals
+and block private-copy downgrade. Full mobile174/2161/22/web98/887, zero skipped/todo;
+focused6/64+2/14, types/lint/format/diff PASS. Initial fixture/table/coverage/literal/
+lint config/wrapper issues repaired/rerun; logs retained.23 paths,173 prior preserved,
+8 extensions/15 additions,196 union;37 mirrors/47 artifacts unchanged. Node long tasks
+remain; no device/native/browser latency acceptance. Edge76/PG95/target carried only.
+No resources/runners/external operation pending; flags OFF and release/paid gates unchanged.
+Evidence: evidence/D13A-following-import-client-20261010.md/json. Next D13A.5 Sol/High:
+explicit following selection, trusted public dependencies, durable documents/index-to-
+nonce mapping, preserved-difference review and owner-fenced personal/shared hydration/
+web recovery. Client APIs complete; adoption UI/document storage/hydration not yet wired.
+D13A.5 and D13 observation open, D14pending, AUTH27–29 consumed; dirty bundle preserved.
+
+## 2026-10-10 — D13A.5 durable transfer2 storage/workflow
+
+GPT-6.1 Sol / High; local-only/uncommitted, feature/shared-dictionary-schema HEADf97a733.
+Native schema21/separate browser owner sessions persist originals before public revision
+reads and exact index-to-nonce decisions before explicit reserve/deliver. Private or
+unresolved entries remain review cases; no private fallback/automatic dispatch/SRS write.
+10 retained sessions/100 selections/1000000 code units per owner; no eviction. Final
+mobile176/2180/22 coverage, web100/899 benchmark, zero skipped/todo; focused4/53+2/12;
+types/root-web/changed-domain lint/scoped format/diff PASS. Web Lock generic, read-only
+UUID mock/import-order warning repaired; format-only SDK test token equality verified.
+Broad all-domain lint found unchanged app-config.ts:171 any, outside the current delta.
+19 paths,191 preserved/5 extensions/14 additions,210 source union;298 entry paths checked,
+37 mirrors/47 artifacts preserved. Node long tasks remain; no performance acceptance.
+Evidence: evidence/D13A-transfer-storage-20261010.md/json. No runner/resource/external
+operation pending; gates OFF, consumed approvals untouched. Next D13A.5 Sol/High: explicit
+transfer2 UI/review/status and receipt-driven owner-fenced personal pull/shared hydration/
+web refresh, preserving newer placement/SRS/tombstones. Other source adoption, private/
+mode/history/performance and D7/8 gates remain. D13 observation open/D14pending.
+
+## 2026-10-10 — D13A.5 explicit transfer2 selection/retained UI
+
+GPT-6.1 Sol / High; local-only/uncommitted, feature/shared-dictionary-schema HEADf97a733.
+Mobile/web schema2 now uses full-original save, exact shared selection/review, explicit
+reference verification/queue/import/same-ID status and retained document inspection.
+No legacy spelling/private copy or automatic dispatch on mount/restore. Mounted epoch,
+Auth ABA and flag withdrawal fence delivery after reservation; nonces retained. Confirmed
+server result still requires local dictionary loading. Full mobile178/2198/22 coverage,
+web101/905 benchmark, zero skipped/todo; focused3/30+4/20, types/lint/format/diff PASS.
+Initial fixture/type/ref/label assertions repaired; failed logs retained and final trivia
+format token equality verified.14 paths,209 prior preserved/1 extension/13 union additions,
+223 union;353 entry paths,37 mirrors/47 artifacts unchanged. Node long tasks do not qualify
+performance. Backend/generated target unchanged; Edge76/PG95/target carried only.
+Evidence: evidence/D13A-transfer-ui-20261010.md/json. All runners exited, gates OFF, no
+external operation. Next D13A.5 Sol/High: explicit owner-fenced targeted personal pull,
+complete shared hydration/web refresh after import/recovery receipts preserving newer
+placement/SRS/tombstones and recoverable hydration failure. Broader source/recovery/private/
+mode/history/review-performance and D7/8 gates remain; D13 observation open/D14pending.
+
+## 2026-10-10 — User-requested repository pause
+
+`/repo pause`:D13A.5 paused/incomplete; D13 observation open/D14pending. No new
+implementation or long test. Latest evidence414 paths verified before pause;223 source
+paths,37 mirrors and47 sealed artifacts preserved. Mobile178/2198/22 coverage/web101/905,
+types/lint/format/diff results carried unchanged. No runner/resource/uncertain operation.
+feature/shared-dictionary-schema HEADf97a733, local-only/uncommitted dirty bundle retained;
+exact paths in reports/shared-dictionary-cefr/d13a5-pause-20261010-175802/git-status.txt. Gates OFF,
+shared_analysis FALSE, roles/policies unseeded, CEFR OFF, AUTH27–29 consumed unchanged.
+Evidence:evidence/D13A-pause-20261010-175802.json. Resume D13A.5 with recommended GPT-6.1 Sol / High:
+explicit owner-fenced targeted personal pull after import/recovery results, complete shared
+hydration/web refresh, preserving newer placement/SRS/tombstones and original retry IDs.
+High is recommended for coupled Auth/personal-row/SRS/tombstone/cache recovery. Broader
+source/recovery/private/mode/history/review-performance and D7/8 gates remain.
+
+### 2026-10-10 — D13A.5 explicit import hydration checkpoint
+
+Resumed from owner `/repo continue`; verified419 preserved hashes and Node24 dependencies.
+Prepared explicit receipt-bound exact personal loading, atomic SQLite preservation/debt,
+shared sibling hydration and mobile/web Load saved import/current-route refresh. Retained
+original IDs/receipts across offline/restart, account ABA, concurrent deletion, pending
+recovery, disabled gates and failed dependencies. No semantic merge or receipt-derived SRS.
+Full mobile179/2227/22 coverage, web102/917 benchmark pass; later two syncManager helper
+extractions verified with final2/110 affected tests and test-inclusive types. All types,
+root/web/changed-domain lint/scoped format/diff pass. Node20, mocks, type/collection-column
+and complexity failures repaired and retained. Node long tasks remain unqualified.
+16 paths,11 extensions/5 additions,228 union;37 mirrors/47 sealed artifacts unchanged.
+Evidence: D13A-import-hydration-20261010.md/json. All runners exited; no pending operation.
+Local-only/uncommitted feature/shared-dictionary-schema HEADf97a733; full dirty bundle
+preserved. Gates OFF, CEFR OFF, AUTH27–29 consumed; no remote/publication/release action.
+Next D13A.5 explicit placement recovery/cancel UI, recommended GPT-6.1 Sol / High for
+CAS/nonces/owner/deletion boundaries. Existing-card conflict resolution and missing local
+collection sync remain explicit; broader source/private/mode/history/performance and
+D7/8 acceptance remain. D13 observation open/D14 pending; no quota measurement.
+
+### 2026-10-10 — D13A.5 recovery/cancellation UI checkpoint
+
+Owner explicitly resumed.475 entry hashes verified. Added explicit current-state/destination
+recovery/cancel controls on mobile/web; durable CAS/nonces and same-ID pending replay,
+mounted/Auth epoch fencing and applied/conflict/cancel statuses. Existing recovery/cancel
+works with creation OFF; uncreated gated, deleted rows never recovered. Cancellation keeps
+existing cards/learning/originals, original import cannot replay after a related operation.
+Full mobile179/2245/22 coverage and web102/922 benchmark; native18/web5 new tests,
+production/test/web/domain types and root/web/changed-domain zero-warning lint/format/diff
+PASS. Focused3/42 before stale-status regression and2/17 web; all included in final full.
+Fixture ordering/guard/error/duplicate-string failures repaired; logs retained. Two UI test
+files subsequently formatted; token equality and final affected native1/12/web1/7 pass.
+No production change after full.10 extensions,
+no additions,228 union;37 mirrors/47 artifacts unchanged. Backend/generated target unchanged;
+prior backend checks carried only. Node long tasks unqualified; broad-domain any untouched.
+Evidence:D13A-recovery-ui-20261010.md/json. Same feature/shared-dictionary-schema HEADf97a733,
+local-only/uncommitted; all runners exited, no pending resource/external operation. Gates
+OFF, CEFR OFF, consumed AUTH27–29 unchanged; no remote/Git/release/publication action.
+Next D13A.5 existing-card resolution for identity-conflict receipts, recommended GPT-6.1 Sol /
+High for ownership/identity/learning/cache boundaries. Broader source/private/mode/history/
+review-performance and D7/8 qualification remain; D13 open/D14 pending. No quota measurement.
+
+### 2026-10-10 — D13A.5 existing-card identity-conflict resolution
+
+Owner resumed;519 entry hashes verified. Explicit mobile/web existing-card loading from
+immutable original/recovery conflict IDs, current root version, owner/deletion/follow
+meaning/mode and mounted/Auth fences connected. Native raw reference validation before
+same-ID personal refresh preserves learning/newer placement/queues/tombstones; no semantic
+merge/original replay/conversion. Shared sibling/debt and web refresh explicit/retryable;
+legacy/private/wrong meanings fail closed. Full mobile179/2273/22 coverage and web102/939
+benchmark, zero skipped/todo; native28/web17 new cases. Focused3/87 and2/35 before final
+unknown-deletion cases; full includes them. One unreachable web fixture comparison removed
+after full; final1/28 and web types pass, production/mobile test sources unchanged. All
+types/root-web/changed-domain zero-warning lint/scoped format/diff pass. Complexity/string/
+mock-wrapper/type failures repaired and retained.13 extensions/0 additions,228 union;
+37 mirrors/47 artifacts unchanged. Backend/generated target unchanged; prior checks carried
+only. Node long tasks unqualified, broad-domain any untouched. Evidence:identity-resolution
+20261010.md/json. Same feature/shared-dictionary-schema HEADf97a733, local-only/uncommitted;
+all runners exited, no pending resource/external operation. Gates OFF/CEFR OFF/consumed
+AUTH27–29 unchanged; no remote/Git/provider/paid/publication/release/automation. Next D13A.5
+Sol/High official starter-pack following adoption with verified provenance, durable selected
+IDs and retained unmapped originals; broader new-word/shared/private/mode/server-history/
+review-performance/D7/8 remain. D13 open/D14 pending; no quota measurement.
+
+2026-10-10 — D13A.5 official starter-pack following adoption complete locally,
+feature/shared-dictionary-schema at f97a733407a4d2b37e8f9ca030ad9574de85a794. Approved raw
+originals, stable selected IDs and exact verified pack/version/manifest/content map to
+immutable provenance and separately checked published references; official-pack v2 intents
+reuse explicit receipt/conflict/recovery/hydration. No private fallback/learning copies/
+collection creation; old paths blocked in new mode. Owner/ABA/mounted/gate/target/restart
+regressions. Native181/2304/22 coverage, web104/967 benchmark, types/lint/format/diff PASS.
+Failed initial fixture/type/lint/first-web-full repaired and retained; final passing source
+manifests exact. 562 entry hashes; 29 paths, 11 extensions/18 first-audited additions, 246
+union, 37 mirrors/47 sealed artifacts kept. Backend checks carried only. Node long tasks
+unqualified. Evidence D13A-official-import-20261010.md/json; local-only/uncommitted/OFF.
+No pending runner or external operation. D13A.5 in_progress/D13 open/D14 pending. Next
+shared-collection following source adoption, GPT-6.1 Sol / High. Owner reaffirmed: always
+state model/effort for the next step. No automatic picker switch, live migration/provider/
+paid/publication/Git/EAS/release/device/automation authorization or operation.
+
+2026-10-10 — D13A.5 explicit shared-collection following source adoption complete locally.
+Same feature/shared-dictionary-schema HEADf97a733407a4d2b37e8f9ca030ad9574de85a794;635 entry
+hashes verified. Complete v2 originals, explicit token/source collection/all stable source
+word IDs, fresh whole-snapshot preparation and exact published planning now feed existing
+explicit receipt/conflict/hydration/recovery UI. Native explicit preview, token routing,
+owned targets and owner/token remount; web preview avoids spelling/owned-word filtering.
+Legacy mutations fenced; no private/v1 fallback, source learning copy or automatic
+conversion/publication. Native183/2330/22 coverage/web107/994 benchmark, focused6/103 and
+6/46, production/test/web/domain types/root-web/changed-domain zero-warning lint/scoped
+format/diff PASS; final relevant full-run sources exact. Sync rejection and root lint
+failures repaired and retained.29 paths,11 extensions/18 additions (8 new/10 existing first
+audited),264 union;37 mirrors/47 artifacts preserved. Backend/SQL/contracts unchanged,
+prior checks carried only. Node long tasks remain, no device/browser acceptance. All
+runners exited. Evidence D13A-shared-import-20261010.md/json. Local-only/uncommitted/OFF,
+AUTH27–29 consumed. No external/provider/paid/hosted/Git/publication/EAS/release/device/
+automation operation. Next D13A.5 new-word following source adoption, GPT-6.1 Sol / High.
+Always state next model/effort. Broader private/mode/server-history/review-performance/
+D7/8 remain; D13 open/D14 pending. No quota measurement or picker switch claim.
+
+Final format follow-up: one native test required a second whitespace-only Prettier pass.
+Full native183/2330/22, test-inclusive types and affected zero-warning lint repeated on
+final bytes; source manifest mobile-full-source-verified.json and logs retained.
+No production/web source change after their passing full checks. All runners exited.
+
+2026-10-10 — D13A.5 new-word published-meaning lookup/adoption complete locally.
+See D13A-new-word-20261010.md/json and reports/d13a5-new-word-20261010. Native add and both
+web add routes retain every exact-lemma published candidate, explicit selection/full refs
+and content, then reuse durable v2 import/receipt/conflict/recovery/hydration. Fresh owner/
+Auth ABA/input/mount/gate/capability guards; read-only adoption/owned preferences retained,
+legacy provider/private saves blocked. No automatic analysis, personal fallback, collection
+creation or batch completion. Native186/2380/22 coverage, web111/1045 benchmark; zero skipped/
+todo, focused8/131 and6/64, final types/lint/format/diff pass and exact full-source manifests.
+703 entry hashes,35 current paths (6 extensions/29 additions;14 new/15 first audited),293
+source union;37 mirrors/47 sealed artifacts preserved. Generated schema/SQL/Edge unchanged;
+prior backend checks carried only. Node long tasks192–457ms unqualified; local-only/OFF.
+All runners exited; no external/provider/paid/hosted/Git/publication/release/device/automation.
+Next D13A.5 explicit unresolved-new-meaning resolution/validated creation contract and local
+backend fixtures, GPT-6.1 Sol / High. Existing analysis2 requires an owned word/entry/head;
+service-only persist_canonical_dictionary_analysis_v1 cannot replace new validated creation.
+Define durable owner/query/meaning/anchor/provenance/permission/quota/nonces/unknown outcomes
+before connecting no-match submission and post-receipt batch completion. Unresolved input,
+aliases/inflections still have no durable creation operation. Provider/paid/publication/hosted/
+flag actions require separate authorization. Broader private/mode/history/review-performance/
+D7/8 remain; D13A.5/D13 open, D14 pending. Always announce next model and reasoning effort.
+
+## 2026-10-10 — D13A.5 new-meaning contract and journal foundation
+
+Resumed809 saved hashes on feature/shared-dictionary-schema/rootf97a733; no mismatch.
+Added separate owner intent resolution/minimal creation/strict receipt contracts and
+pure owner-bound reservation/reconciliation reducers, retaining originals/nonce/fence/
+result through JSON restart and forbidding unknown-outcome redispatch or terminal rewrite.
+Documented trusted reviewed identity/source, existing quota/independent validator and
+atomic first-publication/adoption boundaries. Backend/storage/UI remains pending.
+Final native187/2424/22 coverage, web112/1089 benchmark, zero skipped/todo; focused2/78
+each before test-only constants repair. Final types/root-web-domain-test zero-warning
+lint/scoped format/diff PASS; exact final full source manifests. Error-order expectation
+and five repeated test literals repaired, attempts retained; full suites repeated.
+5 current paths/297 union,37 prior mirrors/47 artifacts unchanged. SQL/Edge/generated
+schema unchanged; backend checks carried. Node long tasks/device acceptance unresolved.
+Evidence: [report](evidence/D13A-creation-contract-20261010.md) and
+[hashes/results](evidence/D13A-creation-contract-20261010.json). Local-only/uncommitted;
+gates OFF, shared_analysis FALSE, roles/policies unseeded, CEFR OFF; AUTH27–29 consumed.
+No external operation or pending runner. Next dormant reviewed-identity/resolution/creation
+backend and local fixtures, GPT-6.1 Sol / High. D13A.5 in_progress, D13 open, D14 pending.
+Always announce next model/effort; no picker switch claimed.
+
+## 2026-10-10 — D13A.5 creation acceptance backend checkpoint
+
+See [report](evidence/D13A-creation-acceptance-20261010.md) and [exact hashes/results](evidence/D13A-creation-acceptance-20261010.json).
+
+Dormant reviewed-identity/resolution and creation acceptance/status backend checkpoint
+complete locally; D13A.5 remains in_progress. Migration1800 retains private original
+intent, binds service-reviewed source/identity evidence and authorizes owner acceptance
+with current permission, profile and shared quota. Replay is immutable; concurrent owners
+accept one reviewed sense once, with durable zero-charge busy receipts. Accepted draft/
+anchor is invisible to ordinary clients and produces no head/event or personal/SRS write.
+First revision_no1 is separate from the global positive BIGINT head cursor. Busy retry
+requires a new command nonce. Dispatch/validation/publication/storage/forms remain pending.
+
+Final PostgreSQL full39 files/443 tests and focused35 creation +10 existing RLS PASS;
+native187/2426/22 snapshots with configured coverage and web112/1091 benchmark PASS,
+zero failed/skipped/todo. Final production/test/web/domain/contracts types, root/web/
+package zero-warning lint, target generation/check and scoped format/diff PASS. Final
+relevant full source manifests match. Native initdb SYSV ENOSPC required an explicit cached
+Docker fallback with network none, tmpfs and no ports/hosted env; final process readiness
+and listen_addresses='' corrected initialization races/socket-only RLS. Initial fixture/
+lint errors and unchanged native transfer test timeout were repaired/retested with
+SQL constraints and test timeouts preserved. Attempts retained. A partial DB run was stopped
+for harness repair; only its orphan task-owned container was removed. All runners exited.
+
+862 entry hashes verified;12 current sources (8 extensions/4 additions),301 source union;
+37 historical mirrors/47 sealed artifacts unchanged. No external/provider/paid/hosted/
+publication/Git/release/EAS/device/automation action; all new gates OFF, shared_analysis
+FALSE, creation profile and roles/policies unseeded, CEFR OFF. AUTH27–29 consumed.
+Node benchmark remains unqualified; no browser/native/device/performance acceptance.
+
+Next **D13A.5 — GPT-6.1 Sol / High recommended**: creation dispatch/result/independent
+validation and atomic first publication backend with local fake-provider fixtures.
+Extend accepted-only status/lease with immutable attempt/result accounting, unknown-outcome
+quarantine and late reconciliation; no unsafe redispatch/takeover. Before dispatch is
+possible, retain/redact unknown/paid accounting across Auth deletion instead of cascading
+it. Bind validation to reviewed identity/anchor/source/profile/fence/result and fresh
+permission/availability. Commit revision_no1 plus one global head/event atomically, return
+exact publication receipt, write no personal/SRS state. Generate/check target contract.
+Test first publication after other entries advanced the global cursor, including cursors
+above JavaScript safe integer range; never equate head_sequence with revision_no1.
+Then add SQLite/browser durable creation storage and fresh-owner transport before connecting
+no-match forms; native batch completion still requires explicit authoritative adoption.
+Broader private/mode/history/account-return/review parity/performance remain. Use local
+fixtures only; live provider/paid/hosted/publication/flag/role/Git/release needs its own scope.
+Always announce next model/effort; no picker switch is claimed.
+
+Remaining numbered checkpoints: **10**, including current D13A.5; this is not a
+work-session count. D13 remains in_progress and D14 pending.
+
+| Checkpoint | Remaining deliverable                                                                           | Recommended model | Effort |
+| ---------- | ----------------------------------------------------------------------------------------------- | ----------------- | ------ |
+| D13.6      | Complete current release observation/adoption and native offline-return evidence                | GPT-6 Astra       | High   |
+| D13A.5     | Finish creation backend, storage/forms, recovery/private-mode/history/review parity/performance | GPT-6.1 Sol       | High   |
+| D13A.6     | Reviewed old-card mapping and migration rehearsal preserving IDs, SRS, history and originals    | GPT-6.1 Sol       | High   |
+| D13A.7     | Dedicated contract/code/migration/end-to-end/model/device acceptance review                     | GPT-6 Astra       | High   |
+| D13A.8     | Exact approved coordinated release/linking with backup, delta and rollback                      | GPT-6 Astra       | High   |
+| D13A.9     | Observe newly activated behavior for at least7 days                                             | GPT-6 Astra       | High   |
+| D14.1      | Gate old-client retirement and supported returning-client reconciliation                        | GPT-6 Astra       | High   |
+| D14.2      | Remove redundant authoritative per-user content while preserving unresolved originals           | GPT-6.1 Sol       | High   |
+| D14.3      | Remove verified-unused compatibility writers and caches                                         | GPT-6.1 Sol       | High   |
+| D14.4      | Final migration, learning, older-device and performance regression/review                       | GPT-6 Astra       | High   |
+
+## 2026-10-10 — D13A.5 durable creation generation journal
+
+- Scope: dormant local SQL generation intent/result/quarantine and retained/redacted paid
+  accounting. No HTTP/provider adapter, independent judge, accepted creation validation,
+  first publication, storage or no-match form is wired. D13A.5 stays in_progress.
+- Migration1900 separates durable runs/attempts from cascading owner journals; unknown
+  dispatch survives Auth deletion with actor redaction and its lease retained. Fresh
+  reconciliation requires exact result hash/audit/authority/dependencies; no redispatch.
+- Original command receipt immutable; owner get/accept replay projects live run status.
+  One accepted generation slot reused; no public content/event or personal/SRS writes.
+- Entry923 hashes verified; historical37 mirrors/47 artifacts preserved. Three new and
+  three extended source paths,304 source union. Additive target contract reconstructs
+  prior exact public type bytes after removing five service RPCs/restoring header.
+- Final77 focused tests, contract/native production+test/web types, zero-warning changed
+  fixture lint and target generation/check PASS. Final full40 PostgreSQL files/475 tests
+  PASS, zero failed/cancelled/skipped/todo;173-path frozen source boundary exact. Prior native187/2426/22 coverage and web112/1091 benchmark
+  are carried, runtime unchanged, type-only differences covered by fresh checks.
+- Failed diagnostic attempts retained: wrong canonical-hash test import, repeated status
+  literals, stale old acceptance assertion that demanded dispatch-function absence.
+  Corrected to ordinary execute denial/default OFF; no guards or limits relaxed.
+- Persistence: local-only feature/shared-dictionary-schema HEADf97a733, dirty bundle
+  preserved; AUTH27–29 consumed. No external/paid/hosted/publication/Git/EAS/device action.
+  All own temporary Docker runners/containers closed; exact evidence sealed in
+  D13A-creation-dispatch-20261010.json.
+- Next: independent creation judgement/strict validation/provenance/atomic revision_no1
+  plus global head/event, including above-JS-safe cursor; preserve existing source hashes
+  when extending source row shape. Then recovery/storage/transport/forms/adoption.
+  GPT-6.1 Sol / High;10 numbered checkpoints remain including current D13A.5.
+
+October11 local independent creation judge/first publication checkpoint complete locally;
+D13A.5 remains in_progress, GPT-6.1 Sol / High recommended. Migration2000 stores one
+separately charged neutral judge, derived six-dimension grounded validation, source
+hash-compatible machine provenance and atomic revision1/global event/exact receipt.
+Known failures/review immutable; unknown audited reconciliation/no redispatch; deletion
+redacts actor without losing paid/unknown/published proof. No personal/SRS writes.
+Final41 PostgreSQL files/512 and focused114, isolated legacy ACL1, target/types/new-fixture
+lint/format/diff PASS; old mobile187/2426/22 and web112/1091 runtime suites carried only.
+Source manifest176 final bytes match, generated contract strips only7 new RPCs.
+957 baseline hashes/307 source union/37 mirrors/47 artifacts preserved. Initial publication
+head/state order, synthetic Auth recreation, lint and legacy provenance trigger invoker
+ACL failures repaired; logs retained, final full/focused repeated. One own interrupted
+fixture cleaned; preserved QA untouched. All runners exited, temporary cleanup complete.
+Local-only feature/shared-dictionary-schema HEADf97a733; dirty bundle retained. No external/
+paid/hosted/Git/release/EAS/device/automation action. Gates OFF, policies/roles unseeded,
+shared_analysis FALSE/CEFR OFF, AUTH27–29 consumed. Next explicit audited draft recovery,
+then local fake HTTP worker/storage/fresh-owner no-match forms/adoption, Sol/High. Broader
+mode/history/account-return/review/performance remain. Ten numbered checkpoints remain;
+D13 open/D14 pending. See evidence/D13A-creation-publication-20261010.md/json.
+
+October11 local audited same-owner creation recovery complete locally; D13A.5 remains
+in_progress. Migration2100 adds immutable15-minute administrator review bound to fresh
+owner resolution/nonce/fence/neutral/source/current profile and atomic separately charged
+new run/fence/known-lease handover. Original accounting/validation/receipts unchanged;
+unknown/actorless/cross-owner/active/published recovery denied. Auth reviewer/owner
+redaction prevents UUID resurrection; no personal/SRS/publication write during recovery.
+Final full42 PostgreSQL files/547 and focused149 including35 new, isolated schema repair1,
+target/types/lint/format/diff PASS, zero failed/cancelled/skipped/todo. Exact179 DB source
+paths; client runtime suites/edge carried only,2 RPC types reconstruct exact prior bytes.
+995 baseline references/310 source union/37 mirrors/47 artifacts preserved. Initial quote,
+unused import and fixture RPC name repaired; next28 passed. Extended35 fixture schema
+assumption corrected through actual server validation; isolated1/full/focused passed.
+No guard relaxed. Local-only feature/shared-dictionary-schema HEADf97a733; dirty bundle
+retained. All runners exited; no temporary task containers/networks, six QA untouched.
+No external/provider/paid/hosted/Git/release/EAS/device/automation; gates OFF, roles/profile
+unseeded, shared_analysis FALSE/CEFR OFF, AUTH27–29 consumed. Next fake HTTP creation
+worker then SQLite/browser journals, fresh-owner transport/forms/adoption; broader mode/
+history/account-return/review/performance remain. GPT-6.1 Sol / High;10 numbered
+checkpoints remain including current D13A.5. See evidence/D13A-creation-recovery-20261011.md/json.
+
+### 2026-10-11 — D13A.5 creation HTTP worker/local fake transport checkpoint
+
+Completed strict normal/recovery HTTP orchestration through retained run IDs, isolated
+caller/service clients, fresh Auth, committed one-shot generation/judge grants, derived
+validation and first publication. No serve entrypoint/default paid transport or live action.
+35 new PostgreSQL integrations and108 Deno tests PASS; prior full547 DB checks carried on
+179 exact unchanged sources.8 source paths/317 union, historical mirrors/artifacts preserved;
+all runners exited, own temporary Docker resources zero, six QA containers untouched.
+See docs/tasks/shared-dictionary-cefr/evidence/D13A-creation-worker-20261011.md/.json.
+D13A.5 in_progress;10 numbered checkpoints remain. Next durable SQLite/browser creation
+journals, then fresh-owner forms/adoption. GPT-6.1 Sol / High recommended; no picker switch.
+Concrete provider request/transport/profile qualification, mode/history/account-return/
+review/performance and D13A.7/8 still open. New gates OFF/CEFR OFF/shared_analysis FALSE,
+AUTH27–29 consumed; no additional provider/paid/hosted/role/flag/Git/release authority.
+
+## 2026-10-11 — D13A.5 durable creation journals
+
+- Complete locally: shared strict intent/receipt journal; native additive migration22 and transaction adapter; browser one-key exclusive Web Lock adapter.
+- Preserve original query/hint, owner/session tags, exact ordinary/recovery nonce, submitted/unknown/status/publication and separate adoption receipt across restart; no automatic redispatch, eviction, card/SRS/hydration write.
+- Fresh: native188/2451/22 with configured coverage; web113/1117 with Node harness; focused107/72; Edge108; domain/contracts/native production+test/web types and zero-warning scoped lint/format/diff PASS.
+- Diagnostic repairs: focused99 passed but full-app coverage thresholds caused exit1; expanded fixtures105/107 and70/72 corrected two malformed fixture values; wrong web harness env left1 skipped before final all1117 passed. No guard suppression.
+- Prior PG547 full +35 worker carried only;2 broad-manifest changed client/barrel paths excluded by actual static relative imports, all other paths/SQL/imported runtime exact. No Docker/provider/paid/hosted/Git/EAS/release operation.
+- Integrity:1074 entry references;14 source paths (8 additions/6 extensions),325 union;37 historical mirrors/47 sealed artifacts unchanged. Branch feature/shared-dictionary-schema HEADf97a733; local-only/uncommitted; runners exited.
+- Stage D13A.5 in_progress; next fresh owner/session/gate creation transport, then no-match forms and separate published-reference adoption/cache hydration. GPT-6.1 Sol / High;10 numbered checkpoints remain. New gates OFF, policies/roles unseeded, AUTH27–29 consumed.
+- Evidence: [report](evidence/D13A-creation-journals-20261011.md), [hashes](evidence/D13A-creation-journals-20261011.json).
+
+## 2026-10-11 — D13A.5 fresh-owner creation workflow and SDK transport
+
+- Complete locally: persisted resolution/prepare/atomic-submit/status workflow; mobile/web SDK factories; fresh Auth/mounted guards and abort, explicit bearer verification, no retry or adoption on publication.
+- Native generic fetch no longer retries dictionary-creation503/504/520/546; actual FunctionsClient/fake fetch proves one call with exact body/signal. Existing analysis/Auth/data behavior retained and tested.
+- Fresh native190/2490/22 configured coverage, web114/1150 Node harness, focused130/105, Edge108, domain/contracts/native production+test/web types and scoped zero-warning lint/format/diff PASS. No actual device/browser/Auth/provider qualification.
+- Diagnostic repairs: generator NameError omitted first web suite; next98/99 had synchronous connect rejection, made runner async; Json-interface request serialized explicitly. Initial97/99 and expanded103/105 passed; final130/105 includes native retry regressions. No lint suppression or backend guard change.
+- Integrity:1138 entry references;12 source paths (9 additions/3 extensions),334 union;37 mirrors/47 artifacts unchanged. Prior PG547/worker35 carried only, unchanged imported runtime/SQL; no Docker/provider/paid/hosted/Git/EAS/release action.
+- Stage D13A.5 in_progress; next mounted no-match/meaning-hint/recovery forms and distinct authoritative published-reference adoption/cache hydration. GPT-6.1 Sol / High;10 numbered checkpoints remain. New gates OFF, policies/roles unseeded, AUTH27–29 consumed.
+- Evidence: [report](evidence/D13A-creation-client-20261011.md), [hashes](evidence/D13A-creation-client-20261011.json).
+
+## 2026-10-11 — D13A.5 explicit creation no-match/status recovery forms
+
+Shared mounted action and native/web panels connected to published lookup. Restore
+before nonce; original query/hint retention; explicit pending resolution, creation and
+status-only submitted/unknown recovery. Continuous A-B-A latch, AbortSignal, Strict Mode
+lifetime and input remount tested. No personal adoption or automatic batch completion.
+Native192/2536/22 snapshots, web116/1195 with benchmark, Edge108, types/lint/coverage PASS.
+1198 entry references verified;12 sources (7 new/5 extended),341 union; protected37
+mirrors/47 artifacts unchanged. PG547/worker35 carried via unchanged dependency closures.
+Local-only/uncommitted feature/shared-dictionary-schema HEADf97a733; all runners exited.
+No provider/paid/hosted/Git/device/release/EAS/automation; new gates OFF/CEFR OFF.
+Next distinct authoritative published-reference adoption/import receipt/cache hydration,
+GPT-6.1 Sol / High. Ten numbered checkpoints remain including D13A.5; D13 open/D14 pending.
+See evidence/D13A-creation-forms-20261011.md/json and report git-status.txt.
+
+## October11 — D13A.5 creation adoption and stable progress ledger
+
+Branch feature/shared-dictionary-schema HEADf97a733; prior1250 evidence refs verified.
+Added explicit creation-to-personal import bridge, immutable nonce/target, read-only
+status, deliberate same-nonce non-provider receipt confirmation, guarded load and
+native batch completion after actual personal/shared hydration. Fresh final native
+195/2582/22, web118/1222, Edge108, focused native4/64/web3/44; domain/mobile production+
+test/web types, scoped lint/format/diff PASS. Exact manifests/runner exits and repaired
+fixture/mock/path diagnostics are retained in creation-adoption evidence. No backend/
+SQL/flags/target contract changes, hosted/paid/provider/Git/release/EAS/device operation.
+All processes exited. Local-only18 sources; union350;37 mirrors/47 artifacts preserved.
+
+User requested an explicit explanation of the repeating ten-step count. Recorded a
+stable original eight-item D13A.5 ledger:5 complete,3 partial/open. Item7 has a named
+four-area inventory,3 done locally,1 open after this checkpoint; preserved private/mode
+reconciliation is next. Item6 publication-refresh parity and item8 web recovery/review
+performance remain. Do not reset or expand counts as a substitute for completion.
+Next model/effort recommendation GPT-6.1 Sol / High; no picker switch claimed.
+
+Final checkpoint review found that existing loaders update SQLite but not necessarily
+application memory. Repaired native batch completion to await direct owner-bound
+personal/card cache reads before checking fresh queue/store context. Application words
+may remain unrefreshed. Added regression for an empty application word list and an
+awaited failing batch callback. Initial fresh full195/2580/22 and web118/1222 passed;
+final suites on the repaired bytes195/2582/22 and118/1222 are the checkpoint authority.
+
+## October11 — D13A.5 private/mode preview and stale resolution guards
+
+Verified prior500 references before edits. Added owner-bound read-only SQLite
+snapshot/remote protocol2 comparison and guarded hold UI for following or remote
+legacy return. Pending payloads, originals, debt/cursors and learning remain intact.
+Mode previews cannot enter v1 resolution; latest mode and legacy response content
+are checked, and the write transaction rejects cached following/inactive owner,
+with a final mounted guard. Current same-mode legacy resolution remains available.
+Auth A-B-A/replaced/unmounted controls are fenced; ordinary cards add no Auth listener.
+
+Fresh native196/2614/22 with coverage, focused6/146, production/test types, zero-warning
+lint/format/diff pass. Initial196/2613 full pass preceded one added positive legacy
+regression; final current-byte196/2614 is the authority. Initial type/lint/move/cache
+fixture diagnostics retained. Three new files/four existing extensions; evidence
+union355, native boundary195. Prior web118/1222, Edge108, PostgreSQL547/worker35 are
+carried with exact unchanged boundaries/closures, not rerun or combined. Historical
+37 mirrors/47 artifacts preserved. Local-only dirty feature/shared-dictionary-schema
+HEADf97a733; flags unchanged/OFF, shared_analysis FALSE/CEFR OFF. All runners exited;
+no provider/paid/hosted/Git/EAS/device/release/automation operation; AUTH27-29 consumed.
+
+Fixed progress: D13A.5 5/8; item7 3/4 areas; area4 checkpoint1/2 complete. Next checkpoint2:
+explicit reviewed local disposition/protected original+pending storage and atomic
+chosen-mode hydration with stale owner/version/head/placement guards and no learning
+mutation. D13A.6 actual corpus mapping/apply remains separate. Item6 refresh parity
+and item8 web recovery/performance remain open. Recommend GPT-6.1 Sol / High.
+See private-mode-preview evidence and report git-status.txt for exact local paths.
+
+## 2026-10-11 — D13A.5 reviewed private/mode disposition complete locally
+
+Resumed area4 checkpoint2/2 from the saved read-only comparison. Read runbook/active
+handoff/DEC10-11/contract; Context7 Expo SQLite exclusive transaction docs confirmed
+shared inner transaction helpers and rollback, with no nested connection writes.
+Preserved dirty branch feature/shared-dictionary-schema HEADf97a733; prior461 hash
+references matched. Added schema23 protected originals/command/dependency archive,
+explicit complete-content comparison/load, fresh validated sibling hydration,
+atomic preservation/retirement/cache/debt and mode-return marker. Owner/A-B-A/
+mounted/placement/deletion/version/head/dependency/generation guards retain learning.
+Confirmed retries are local reads, never server receipts or cache rewinds. Protected
+records remain owner-scoped and survive restart/card deletion/reset through D14.
+
+Fresh native196/2647/22, focused8/303, native production/test types, zero-warning
+scoped lint/format/diff pass on frozen final bytes. Final full suite uses one
+worker; a prior two-worker SIGSEGV in the existing official import SQLite suite
+is recorded separately and not counted as a pass. Initial migration-table ordering,
+fixture uniqueness/reopen, old mocks/error expectations and lint constants repaired;
+initial diagnostic logs retained. Web118/1222, Edge108, PG547/worker35 carried on exact
+unchanged boundaries, not fresh. One new schema/eighteen current source/test paths;
+source union356, native boundary196, web135/Edge76, old37 mirrors/47 artifacts intact.
+All runners closed; no provider/paid/hosted/Git/EAS/device/release/automation action.
+Flags unchanged/OFF, shared_analysis FALSE/CEFR OFF; AUTH27-29 consumed.
+
+Fixed progress: D13A.5 6/8; item7 4/4 areas; area4 2/2 checkpoints, zero open.
+Next D13A.5 item6: inspect native/web analysis completion and qualify complete shared
+head/sibling refresh, owner/gate/dependency/cache recovery and parity without paid
+analysis redispatch. Item8 web recovery/review-start performance remains next after
+item6. D13A.6 actual corpus mapping/apply/rollback remains separate. Recommend
+GPT-6.1 Sol / High. See private-mode-apply evidence and exact report git-status.txt.
+
+## 2026-10-11 — D13A.5 shared publication refresh parity complete locally
+
+Resumed original item6 from runbook/active handoff; verified465 prior direct hashes.
+Read installed Next router/revalidation guides and Context7 current official docs.
+Added explicit content-only saved-publication reload, exact journal binding inside
+native atomic sibling hydration and captured UI lifetime/generation guards. Web
+validates fresh owned content before /app layout revalidation; current private/mode
+props supersede stale publication overlays. Learning and paid-attempt boundaries stay
+independent. Reopen/error retries preserve metadata and need no new analysis dispatch.
+
+Fresh frozen native196/2670/22 with configured coverage/maxWorkers1; web118/1241 with
+existing opt-in benchmark at unchanged5000ms timeout; Edge108. Focused7/179 and4/56,
+domain/native production/native test/web types, zero-warning scoped three-platform
+lint, format/diff pass. Initial fixture/selector/argument/path/lint repairs retained.
+A concurrent web benchmark timed out; isolated final full web passed unchanged.
+A native full before final mode-button gate is diagnostic; frozen final rerun passed.
+Historical PG547/worker35 carried on freshly derived erased-type-aware TypeScript AST
+runtime closures91/23 plus unchanged SQL/migration dependencies; no DB rerun claimed.
+Fifteen existing source/test extensions; union357, native196/web136/Edge76 boundaries;
+37 old mirrors/47 artifacts preserved. All runners closed, local/uncommitted branch
+feature/shared-dictionary-schema HEADf97a733. Flags unchanged/OFF/shared_analysis FALSE/
+CEFR OFF; AUTH27-29 consumed. No provider/paid/hosted/Git/EAS/device/release/automation.
+
+Fixed progress:7/8 original D13A.5 items, only item8 open; item7 remains4/4 areas,
+area4 remains2/2 checkpoints. Next original item8: web offline/account-return and
+representative review-start performance/parity, GPT-6.1 Sol / High. Inspect existing
+browser recovery/performance harness, then qualify offline retry, same-owner return,
+cross-owner isolation and shared collection/detail/review freshness. D13A.6 corpus
+mapping/apply/rollback remains separate. See analysis-refresh evidence and exact
+report git-status.txt. Ten larger milestones remain; these are not turn estimates.
+
+## October11 — D13A.5 item8 web recovery complete; performance open
+
+Following review uses an exact indexed dictionary-descriptor table and independently
+restored per-word metadata; lexical/placement/learning/revision/private/CEFR identity
+and active question boundaries remain. Snapshot1/2 stays raw. Initial setup controls
+wait for one-time owner preference application, preventing a late restoration from
+overwriting the first deliberate choice. The probe uses real enabled controls and
+one click per transition with no artificial readiness wait.
+
+Final synthetic browser recovery passes five groups in light/dark (10 checks),
+including Retry/offline loaded-question behavior, shared-head collection/detail and
+next-session adoption, owner A-B-A return/isolation and read-only request boundaries.
+Cold offline navigation still needs connectivity/retry; production Auth/SQL/device
+behavior is not established. Desktop160 plus CPU4x160 functional samples pass, but
+material navigation-to-card timing regression keeps original item8 performance open.
+Desktop5000 all-due cold704.4/899.6ms (+27.7%); CPU4x1497.3/1654.7ms (+10.5%).
+CPU4x5000/20-due client576.3/733.0ms (+27.2%). Observed p95 is max of10, not production
+p95; reduced page bytes about28.8% do not establish acceptable latency or attribution.
+
+Fresh web119/1249, focused4/40, types/lint/backend-probe7; native196/2670/22, Edge108
+and PG547/worker35 carried, not rerun. Source13/browser449 frozen, union370/web142;
+prior evidence/source/mirrors/artifacts preserved. Original progress7/8, item8 areas
+1/2 complete; ten broader milestones remain, not session estimates. Next **GPT-6 Astra /
+High**: actual server/browser performance profiling and a demonstrated fix, preserve
+paired fixtures/readiness/owner/session/learning fences, then requalify. D13A.5 remains
+in_progress; no pending operation. Flags OFF/shared_analysis FALSE/CEFR OFF, AUTH27-29
+consumed; no provider/paid/hosted/Git/EAS/device/release/automation action.
+
+See [evidence](evidence/D13A-web-acceptance-20261011.md).
+
+## October11 — D13A.5 complete locally; next D13A.6
+
+Original client checklist8/8 and item8 existing areas2/2 complete; nine broader
+milestones remain (D13.6,D13A.6-9,D14.1-4). Profiles identified repeated revision
+projection/full-row copying and RSC field traversal. Compact same-build JSON/typed-word
+transport preserves every personal/lexical/SRS/event/metadata field and session/owner
+boundary; snapshot1/2 and public contracts stay unchanged. Web119/1253, focused1/9,
+types/lint/backend-probe7 pass. Desktop160 + CPU4x160 + unchanged-source large-case
+CPU4 repeat120 pass; recovery10 passes in light/dark. All full/repeat navigation
+medians stay within the existing10% local investigation threshold; pooled large CPU4
+median differences-5.3% to+7%. Rare cold tails remain documented, with variation in
+both paths; no production p95/SLA claim. D13A.7 retains dedicated broader review,
+device and production-like performance qualification. No gate was waived.
+
+Source9/browser449 frozen, union371/web142; prior evidence preserved. Native196/2670/22,
+Edge108, PG547/worker35 carried with exact declared boundaries, not rerun. All owned
+processes exited. Next D13A.6 **GPT-6.1 Sol / High**: reviewed semantic mapping and
+local snapshot/apply/rollback rehearsal; zero safe matches remains valid, preserve
+originals/later learning and classify unresolved meanings. No live linking/provider/
+paid/hosted/Git/EAS/device/release/automation permission; flags OFF/shared_analysis
+FALSE/CEFR OFF and AUTH27-29 consumed. See [evidence](evidence/D13A-web-performance-20261011.md).
+
+## October11 — D13A.6 inventory and planning checkpoint,2/5 complete
+
+Saved snapshot all2914 cards classified: ambiguous2465,missing429,private-review18,
+excluded2,eligible0; no real semantic approval or live refresh inferred. Immutable
+local administrator planning binds protected full originals and exact source/owner/
+version/target head decimal sequence/content/meaning attestations/full-media diff.
+Synthetic positive fixtures only; no shared publication from private data. Source/
+head mismatches held, incomplete diff fails atomic, exact retry survives deletion,
+new intent revalidates source, originals retained without preventing deletion.
+Final PostgreSQL14 and inventory4 pass, scoped zero-warning lint/format/diff pass;
+all owned runners/container exited. Native host shared-memory failure and fixed
+synthetic fixture/lint failures retained. No system/other cluster cleanup.
+Five new operator sources outside migrations;3378 entry refs verified,3373 preserved
+after five task-note updates; union376/web142/browser449 unchanged prior boundaries.
+Exact580 dirty paths; local-only/uncommitted. Full prior suites carried, not rerun.
+No apply/rollback endpoint or SQLite migration rehearsal implemented in this checkpoint.
+Next D13A.6.3 **GPT-6.1 Sol / High**: bounded apply default50/max100, immutable
+plan/decision/source/head/diff checks under locks, durable per-row receipts and no
+learning writes. Fixed3/5 remain: apply, concurrent/interrupted delta, selective
+rollback after new learning/edits in PostgreSQL+SQLite. Nine broad milestones remain.
+No external action/permission change; flags OFF/shared_analysis FALSE/CEFR OFF;
+AUTH27-29 consumed. See [evidence](evidence/D13A-following-mapping-plan-20261011.md).
+
+## October11 — D13A.6 bounded apply checkpoint,3/5 complete
+
+Administrator-only disposable apply outside migrations; complete plan/decision hash
+and personal owner/source/state/target head exact decimal sequence/content/full-media
+diff checked under locks. Default50/max100, immutable per-row outcomes/result snapshots/
+hashes/versions and exact batch request/results. Reference/mode and content state only;
+private raw fields/IDs/owners/placement/SRS remain intact. Same batch retry returns
+original result after gate changes/deletion; changed intent fails; fresh UUID processes
+remaining work. Unknown/stale/unreviewed rows held. No publication from private data.
+Final actual PostgreSQL11 and zero-warning lint/format/diff pass; owned runners and
+container exited. Sequential stale checks and transaction ROLLBACK proven; multi-worker
+races/interruptions and selective reversal after commit remain separate fixed gates.
+Earlier fixture6/10 and10/11 failures corrected without weakening source immutability,
+mandatory published head/fallback or FK constraints. Entry3414 refs verified;3409
+preserved after five task-note updates; new source3, union379/web142/browser449. Prior
+planning/D06/app/domain/migrations/evidence unchanged; plan14/inventory4 and full suites
+carried only. Exact585 dirty paths, local-only/uncommitted. Real2914 eligible/approved/
+applied0. No external action/permission change; flags OFF/shared_analysis FALSE/CEFR
+OFF, AUTH27-29 consumed. Next D13A.6.4 **GPT-6.1 Sol / High**: actual interrupted/
+concurrent batches/workers/content/state/head/deletion/learning; then5 selective
+PostgreSQL+SQLite rollback retaining later reviews/edits. Fixed2/5 remain and nine
+broader milestones remain. See [evidence](evidence/D13A-following-apply-20261011.md).
+
+## October11 — D13A.6 actual concurrency/interruption checkpoint,4/5 complete
+
+New14 PostgreSQL tests execute unchanged D06/planning/apply SQL with independent
+owned sessions and observed server lock barriers. Busy retries/no false counts;
+content/placement/state/head/capability/deletion fences; actual authenticated accepted
+review event and canonical SRS/history/same-event retry preserved; bounded disjoint
+workers, same-batch callers; row/final receipt failure; owned backend interruption
+mid-batch and lost connection after commit. No partial writes/duplicates/resurrection.
+First13 pass plus final idle-client observer timeout retained; ending stdin after
+owned backend termination fixes observer, no SQL/guard change. Final14 and scoped
+zero-warning lint/format/diff pass, both owned runners/container exited. Entry3432
+refs verified,3427 preserved after five task-note updates; source4, union383/web142/
+browser449, exact591 dirty paths. Old apply11/plan14/inventory4/full suites carried,
+not rerun. Real2914 eligible/approved/applied0; local-only/uncommitted, no external
+operation/global flag/permission change; AUTH27-29 consumed. Next D13A.6.5 **GPT-6.1
+Sol / High**: selective receipt-owned rollback after committed apply/new accepted
+learning in PostgreSQL and file-backed SQLite, skip later edits/deletion, preserve
+learning/history/pending values and originals/receipts. Transaction ROLLBACK is not
+this gate. Fixed1/5 remains and nine broader milestones remain. See [evidence](evidence/D13A-following-concurrency-20261011.md).
+
+**2026-10-11 local — D13A.6.5 complete; D13A.6 done locally, fixed5/5.**
+
+Selective receipt-owned compensation passes actual PostgreSQL14/14 and file-backed
+native SQLite21/21. Committed apply/new accepted learning/reset/correction survives
+rollback; exact version+1, protected originals/receipts, original linked legacy refs,
+private media/diffs, head/content/placement/version/owner/deletion holds. Owned
+backend/SQLite process interruption, restart, receipt failures, parallel workers,
+50/100 bounds and exact retries verified. No snapshot learning restore/resurrection.
+SQLite operator isolated from runtime; actual device delivery/queues remain D7/8.
+First failed PG/SQLite attempts retained; corrected final sources pass types and
+zero-warning lint/format/diff. Every owned runner/container/child exited; no pending
+operation. Entry3449 refs verified,3444 retained after five task-note updates;
+new source7/union390/web142/browser449, exact600 dirty paths preserving all591.
+Prior D06/plan/apply/concurrency/domain/app/migrations/evidence unchanged; old full
+suites carried only. Real2914 eligible/approved/applied0, flags OFF/shared_analysis
+FALSE/CEFR OFF, AUTH27-29 consumed, no external operation. Local-only/uncommitted.
+
+Next **D13A.7 — GPT-6 Astra / High**, not started: dedicated contract/code/migration
+and acceptance matrix review; semantic negatives/exact model/prompt qualification
+and actual devices/old-client/offline return. No picker switch/independent agent
+claimed. Current stage5/5,0 remaining. **Eight broad milestones remain:**
+D13.6,D13A.7,D13A.8,D13A.9,D14.1,D14.2,D14.3,D14.4. No new stage started.
+See [evidence](evidence/D13A-following-rollback-20261011.md).
+
+## October11 — D13A.7 traceability and server review checkpoint
+
+**2026-10-11 local — D13A.7 checkpoints1–2 complete; fixed2/6,4 remain.**
+
+Mapped all26 declarative cases to implementation and89 suite references/27 suites;
+current overlay resolves six DEC-11 expectations while preserving the original
+fixture. Reviewed server/domain analysis, semantic/profile/authority fencing,
+publication/provenance and head rollback. Fixed four focused Edge type errors with
+two explicit RequestInit annotations; added concrete A26 two-attempt no-change
+coverage and strengthened A08 generation-only journal recovery. Runtime/domain/SQL
+unchanged. Fresh PG96/96 plus final updated endpoint17/17 (97 distinct current
+cases), Edge76/76 with typecheck, domain4 suites82/82 and scoped lint/format/diff.
+Initial failed typecheck retained. Historical full suites are carried, not fresh.
+
+Next **D13A.7.3 — GPT-6 Astra / High**: native/web delivery, pending private queues,
+imports/creation/account lifetimes and stable sessions. Then fixed steps4 mapping/
+compensation review,5 exact model qualification,6 devices/old clients/performance.
+Eight broad milestones remain: D13.6,D13A.7,D13A.8,D13A.9,D14.1,D14.2,D14.3,D14.4.
+D13A.7 is in_progress; no independent reviewer or picker switch claimed. Local-only,
+all600 entry dirty paths preserved, owned runners exited/no pending operation.
+Real2914 eligible/approved/applied0, flags OFF/shared_analysis FALSE/CEFR OFF,
+AUTH27-29 consumed; no provider/hosted/Git/EAS/device/release authority added.
+See [review evidence](evidence/D13A-acceptance-review-20261011.md) and
+[current26-case overlay](D13A-acceptance-traceability-20261011.json).
+
+## 2026-10-11 — D13A.7.3 client review
+
+**2026-10-11 local — D13A.7.3 client review complete; fixed3/6 complete,3 remain.**
+
+Reviewed native/web following delivery, private queues, import/creation/adoption,
+account fencing and stable sessions. Confirmed and fixed raw SQLite row replacement
+of materialized shared content after a review or correction: merge persisted learning
+fields only, retaining content/revision, private placement and conflict metadata.
+Regression tests failed before the fix and pass afterwards. Added actual native
+controller/persistence/file-SQLite A12/A13 checks; these use synthetic RPC/ACKs,
+not installed clients or a real provider. Final native46 suites712/712 and web47
+suites609/609 pass; native test typecheck, scoped zero-warning lint/format pass.
+
+Next **D13A.7.4 — GPT-6 Astra / High**: mapping/apply/compensation review and live
+operation prerequisites. Then5 exact semantic model/prompt qualification and6 actual
+devices/old builds/offline/performance. Eight broad milestones remain:
+D13.6,D13A.7,D13A.8,D13A.9,D14.1,D14.2,D14.3,D14.4. No independent reviewer or
+picker switch claimed. Local-only/uncommitted; entry603 dirty paths preserved.
+No pending runner/external operation. Real2914 eligible/approved/applied0,
+flags OFF/shared_analysis FALSE/CEFR OFF, AUTH27-29 consumed; no remote/provider/
+Git/EAS/device/release authority added. Historical full suites are carried only.
+See [client review evidence](evidence/D13A-client-review-20261011.md).
+
+## 2026-10-11 — D13A.7.4 operator review
+
+**2026-10-11 local — D13A.7.4 operator review complete; fixed4/6 complete,2 remain.**
+
+Reviewed ten mapping/apply/compensation invariants and live-operation prerequisites.
+No new defect found; implementation/tests/migrations unchanged. Fresh PostgreSQL53/53,
+file-backed native SQLite21/21 and inventory4/4 pass. Reclassification of exact saved
+2914-card inputs still permits0 links. Later learning, private originals/queues,
+selective rollback, concurrency/interruption and immutable receipts verified locally.
+Initial sandbox Docker-socket denial retained; approved isolated rerun passes.
+Entry3607 SHA refs verified;611 dirty paths preserved, final613. All owned runners
+exited; no pending external operation. Local-only/uncommitted; no live authority added.
+
+Next **D13A.7.5 — GPT-6 Astra / High**: exact semantic model/prompt/policy qualification.
+Prepare concrete non-private fixtures, expected outcomes, call/cost bounds and exact
+operation packet before asking for missing provider authority; no paid call is authorized.
+Then6 actual device/old-build/offline/performance qualification. Eight broad milestones
+remain: D13.6,D13A.7,D13A.8,D13A.9,D14.1,D14.2,D14.3,D14.4. Real2914 eligible/
+approved/applied0, flags OFF/shared_analysis FALSE/CEFR OFF, AUTH27-29 consumed.
+No independent reviewer or picker switch claimed. See
+[operator review evidence](evidence/D13A-operator-review-20261011.md).
+
+## 2026-10-11 — D13A.7.5 pilot preparation, not model qualification
+
+**2026-10-11 local — D13A.7.5 pilot preparation complete; qualification pending.**
+
+Prepared24 synthetic cases and an immutable48-attempt/USD15 maximum Gemini3.8-flash
+proposal; no paid/provider call dispatched. Fresh offline Deno13/13 with typecheck,
+ESLint and Prettier pass. Proposed labels need independent review; no linguistic
+accuracy or qualified model claimed. Local credential unavailable and paid authority
+not granted (DEC-11). Four standalone scripts added; production runtime unchanged.
+Entry3629 SHA references/613 dirty paths preserved; final619; source union400.
+D13A.7 remains **4/6 complete,2 remain**; eight broad milestones remain.
+Next **D13A.7.5 — GPT-6 Astra / High**: review the saved operation proposal, obtain
+explicit pilot authority and intended-project credential, then measure/review results.
+See `docs/tasks/shared-dictionary-cefr/evidence/D13A-semantic-qualification-preparation-20261011.md`.
+No model-picker switch, independent reviewer, activation or external operation claimed.
+
+## 2026-10-11 — Exact pilot authorized, credential pending
+
+**2026-10-11 local — AUTH-30 granted; exact semantic pilot awaiting local key.**
+
+Owner authorized one saved Gemini3.8-flash pilot, maximum48 attempts/USD15; packet
+SHA d397dcd23022e9fb4eaeef4469b2e7f0915ff7b57d225805cc0844600b256cf6,
+expiry2026-10-18T00:00:00Z. Do not ask for duplicate approval. State: not started,
+0 provider attempts; no live-run directory. Key absent from environment/.env/.env.local.
+Owner will configure DICTIONARY_ANALYSIS_GEMINI_API_KEY in ignored .env.local for the
+intended personal Google project and confirm readiness/project. Load only that key
+into the runner child environment; never print it, source unrelated shell content,
+or change the frozen sources/packet. Resume the single live-run journal, not a new run.
+Entry3659 prior SHA references verified without mismatch. Source union400 unchanged;
+prior Deno13/13 remains historical. Current620 dirty paths; local-only/uncommitted.
+D13A.7 remains4/6 complete,2 remain; eight broad milestones remain.
+Next D13A.7.5 — GPT-6 Astra / High. See AUTH-30 in decisions.md and
+[evidence](evidence/D13A-semantic-qualification-authorization-20261011.json).
+
+## 2026-10-11 — AUTH-30 completed; measured qualification failure
+
+**2026-10-11 local — AUTH-30 pilot complete; qualification failed, remediation next.**
+
+Completed46 real Gemini3.8-flash calls (44 judges +2 generations),46 returned,
+0 failed/unknown outcomes/retries. Calculated token cost USD0.242451; conservative
+reservations USD12.88, within48/USD15. AUTH-30 consumed; no second run authorized.
+Frozen source/prompt/corpus/policy/packet unchanged. Actual parsed judge results:
+44 invalid because transport rejects documented thoughtSignature metadata.
+Offline signature-only diagnostic:14/16 positive accepts,16/16 negative rejects,
+11/12 uncertain abstentions,0 false accepts,3 invalid verdict schemas. One generation
+also has a malformed nested example; the other passes structural guards only after
+normalization. Neither generated output has live semantic-judge approval.
+See [pilot results](evidence/D13A-semantic-pilot-result-20261011.md) and sealed manifest.
+All46 original receipts retained; runner exited0, lock removed, no pending operation.
+Runtime untouched; current622 dirty paths, local-only/uncommitted. Flags OFF.
+D13A.7 stays4/6 complete,2 remain; eight broad milestones. Execution is finished,
+but checkpoint5 requires successful qualification and is not marked complete.
+Next local remediation: **GPT-6.1 Sol / High**; subsequent review: **GPT-6 Astra / High**.
+
+## 2026-10-11 — Offline semantic fixes and immutable live-response replay
+
+**2026-10-11 local — D13A.7.5 offline fixes/replay complete;103 tests pass.**
+
+Transport accepts documented typed thoughtSignature metadata and preserves raw envelopes.
+Generation/judge requests use strict current responseFormat schemas; nested contrast
+examples are explicit objects/null. Validator v2 policy binds both prompts/template/
+configs and metadata contract; stale/altered policy rejected. Four old source files
+updated and four source/test files added. New packet is unapproved; AUTH-30 consumed.
+Actual offline replay of46 saved responses:41/44 valid judge outputs,3 correctly
+rejected schema failures,14/16 positive accepts,16/16 negative rejects,11/12 uncertain,
+0 false accepts. Bank generation remains schema-invalid; slot passes structural guards
+only. All94 old journal files/hash bindings verified before/after; no new provider calls.
+Fresh focused Deno103/103 with typecheck, server Deno lint, script ESLint and format pass.
+Entry3781 refs/622 paths preserved; final628; source union404/web142/browser449 unchanged.
+Local-only/uncommitted; all checks exited, no pending operation. Exact v2 qualification
+still unmeasured, so D13A.7 remains4/6 complete,2 remain; eight broad milestones.
+Next **D13A.7.5 review — GPT-6 Astra / High**. See
+[remediation evidence](evidence/D13A-semantic-remediation-20261011.md).
+
+## 2026-10-11 — Semantic remediation review complete
+
+**2026-10-11 local — D13A.7.5 remediation review complete; two qualification gaps specified.**
+
+Accepted local thoughtSignature/schema/policy/replay remediation; no regression found.
+SEM-REVIEW-01 (P1): runtime accepts a bound verdict with absent/wrong observed generator
+or judge version; four synthetic reproductions plus matching control confirm it.
+SEM-REVIEW-02 (P2): all negative cases use one bank sense; no positive usage notes or
+nested contrast-example negatives; broader corpus/reviewed labels are required.
+Fresh focused Deno47/47 and actual46-response replay pass; replay equals prior result.
+Old malformed3 verdicts/bank generation still rejected, qualification false. No new
+provider calls/key access. AUTH-30 consumed; source union404/web142/browser449 unchanged.
+Entry3817 SHA refs/628 paths preserved; final630, local-only/uncommitted, no pending operation.
+D13A.7 stays4/6 complete,2 remain; eight broad milestones. Inside checkpoint5 the
+remaining route is three work packages: local readiness fixes/corpus/packet; separately
+authorized exact measurement; final failure/qualification review. Current no-paid scope
+permits only local work. Next **GPT-6.1 Sol / High** for local readiness, then Astra/High
+review. See [review evidence](evidence/D13A-semantic-review-20261011.md).
+
+The owner requested review without new paid calls. No additional operation authority
+was requested or granted. SEM-REVIEW-01/02 are local prerequisites before any new
+qualification proposal; measured provider qualification and activation remain separate.
+
+## 2026-10-11 — D13A.7.5 observed-version/corpus readiness fixes
+
+Owner authorized both local findings, local verification and no new paid requests.
+Independent-v3 explicitly binds generation/judge observed versions, protects both
+update and separate creation SQL proof paths, preserves stored/reconciled accounting.
+Expanded corpus42 cases/6 negative senses/4 parts of speech/all6 focused dimensions;
+labels proposed. Frozen candidate48 attempts/USD15 maximum,unapproved/unqualified.
+Deno147/147,SQL82/82,5 stored probes,46 old responses replayed;94 receipts immutable.
+Scoped zero-warning lint/format/diff and target type check pass. Failure history in
+current evidence includes test-fixture/expected-status repairs, local socket denial,
+native shared-memory setup failures and successful isolated Docker reruns.
+No credentials/provider/hosted/Git/device/release operation. Both readiness findings
+implemented locally,package1 of3 done;2 qualification work packages remain.
+D13A.7 fixed4/6 complete,2 remain;eight broad milestones. Next Astra/High local
+readiness/labels/profile/packet review. See readiness evidence and sealed manifest.
+
+## 2026-10-11 — D13A.7.5 readiness/corpus/packet review
+
+Read-only runtime/corpus review:3882 entry SHA references verified,636 paths preserved.
+Found SEM-READY-01: v3 creation proof finalizes a dispatching judge as wrong-version,
+then the real response cannot journal. Two isolated SQL cases compare historical
+correct refusal+late receipt with v3 premature review-required+terminal error. Existing
+Deno147/147 still pass. No runtime/test/packet source changed.42 labels reviewed for
+anchor/prompt consistency with0 corrections,not independent human certification.
+Exact packet16 source hashes,40 fixed judges+4 generations+up to4 contingent judges,
+USD13.44 reserve/15 ceiling verified. Same-model pair incompatible with creation profile;
+recorded as execution-scope limitation,not evidence of creation qualification.
+Actual46-response replay identical;94 old files retained. No new provider call/key access,
+hosted/Git/EAS/device operation. Temporary SQL cluster closed;no pending operation.
+Final638 paths;all408 source hashes unchanged. D13A.7 fixed4/6,2 remain;8 broad.
+Next Sol/High repair+SQL regression+new immutable packet scope,then Astra/High re-review.
+
+## 2026-10-11 — D13A.7.5 pending-judge repair and explicit packet scope
+
+Owner authorized P1 repair, regression tests, a new scope-bound packet and local checks,
+explicitly no new paid requests. SEM-READY-01 repaired: returned/charged/profile/input
+checks precede observed-version classification. Two new SQL tests fail before repair
+and pass afterwards; matching and wrong-version late raw responses both retained,
+charged slots remain2 and no duplicate attempt. Fresh148 Deno/typechecked,49 disposable
+SQL, scoped zero-warning lint/format/diff pass. New packet535a5e15228c46ae6c6496d8f07b346823bc85e267c62fccd7b4eddf5875acf5
+explicitly covers direct analysis probes, excludes creation/publication/devices/runtime
+activation; compatible creation profile/transport qualification separate. Policy/corpus/
+requests/limits/thresholds unchanged.46 old responses replay unchanged,94 files immutable.
+Historical checks carried only.638 entry dirty paths preserved,640 final. No provider,
+key, hosted, Git, EAS, device or release action; disposable SQL cleaned up.
+Fixed4/6,2 remain;8 broad;2 existing packages inside5. Next Astra/High re-review.
+
+## 2026-10-11 — D13A.7.5 pending-judge and scoped packet re-review
+
+Verified3925 entry SHA references and640 dirty paths. Source review closes SEM-READY-01:
+returned/charged/bound evidence precedes observed-version classification; public entry
+points retain consistent run locks, pending results and unknown quarantine. Fresh SQL12
+and Deno148/typecheck pass; prior SQL49 and red-before2 remain historical. Five scope
+mutation probes reject before transport; exact16 sources and packet535a5e15228c46ae6c6496d8f07b346823bc85e267c62fccd7b4eddf5875acf5
+verified. No source/corpus/policy/packet edit; no new actionable finding. Offline46-response
+replay unchanged;94 immutable provider files retained. A deno check invocation rejected
+unsupported cached-only flag before running; corrected deno run --check --cached-only
+succeeded. Disposable SQL removed, no pending operations or paid/key/hosted/Git/device action.
+Local readiness/re-review complete; measurement still needs new explicit authority.
+642 final dirty paths; fixed4/6,2 remain;8 broad;2 existing packages inside5.
+Next Sol/High exact measurement after authorization, then Astra/High result review.
+
+## 2026-10-11 — AUTH-31 exact scoped Gemini pilot terminated
+
+Owner explicitly authorized one reviewed packet535a5e15228c46ae6c6496d8f07b346823bc85e267c62fccd7b4eddf5875acf5, maximum48 requests/USD15,
+personal Google project, retries0; Sol/High confirmed. Verified3945 entry SHA references,
+642 dirty paths,16 packet sources. Named key assignment only loaded from ignored .env.local
+into child env; no secret printed/retained. Fresh official standard pricing0.75/M input,
+3.75/M output including thinking confirms13.44 maximum reservation. Explicit network
+execution approved by sandbox review. First positive-1-1 dispatch returned provider-failed;
+1 dispatch/0 results/1 known failure/0 unknown/0 retry. Runner exit1, lock released.
+Status/body hash retained, exact HTTP status/message not retained; cause unverified.
+USD0.28 reserved, no usage/cost estimate or verified invoice. Authority consumed; unused47
+not reusable. Sources/packet unchanged; old94 provider files intact. No full tests rerun.
+644 final paths; fixed4/6,2 remain;8 broad;2 packages inside5. No pending operation.
+Next Astra/High failure/request/transport review without paid calls.
+
+## 2026-10-11 — AUTH-31 request and transport failure review
+
+Verified3969 entry references/644 dirty paths. Found P1 wire enum discrepancy in all44
+fixed requests using official public Discovery revision20261010; guide conflicts with
+machine schema. In-memory uppercase enum replacements pass wire check; no request sent
+and no original file altered. P2 diagnostic loss reproduced with7 mocked HTTP errors
+and1 runner/resume scenario; retries remain0. Fresh focused Deno148/typecheck passes.
+Public documentation inspected through Context7 and web; public Discovery GET saved,
+no keys/private account/provider invocation. Initial helper arity error corrected;
+sandbox DNS failed public download, explicit read-only escalation succeeded. No automatic
+approval rejection. Actual AUTH-31 rejection cause remains unproven. Local docs only;
+all408 source paths,94 old response artifacts and3 AUTH-31 journal files immutable.
+646 final dirty paths; fixed4/6,2 remain;8 broad;2 packages inside5. Next Sol/High local
+wire/diagnostic repair and tests/new packet, then Astra/High review. No pending operation.
+
+## 2026-10-11 — Final AUTH-32 saved-result review
+
+**2026-10-11 local — D13A.7.5 direct-analysis pilot review accepted.**
+
+Final saved-result review complete: no new actionable finding. All48 provider envelopes
+reparse identically;40 fixed verdicts and4 generated judges reproduce the immutable
+report exactly. Four generated entries preserve the supplied senses;14/14 positive,
+14/14 negative,12/12 uncertain and2/2 structural guards pass. Exact packet17 sources,
+all48 request hashes, observed gemini-3.8-flash versions, standard usage, rate/day limits
+and aggregate budget verified. No new paid call or credential access.
+
+Decision: accept this exact direct-analysis synthetic pilot, with0 pilot substeps left.
+This does not qualify production, creation, publication, devices or runtime activation.
+Labels remain proposed, not independently human reviewed; no population accuracy claim.
+Original packet/report qualified:false stays immutable. AUTH-32 remains valid only until
+2026-10-11T22:00:00Z, aggregate USD15, unchanged scope/no retries/no repeated payment
+questions. Day committed0.8142535 including old0.28 failure reserve; remaining14.1857465.
+This is reported-token accounting, not a verified invoice. No pending operation.
+
+Next **GPT-6.1 Sol / High**: locally prepare compatible creation generator/judge profile,
+grant-to-request transport and bounded qualification packet, with mocked lifecycle/binding
+checks. Keep the existing distinct-model creation contract; do not reuse the same-model
+analysis packet or weaken the contract to obtain a pass. Capture exact profiles/versions,
+source/scope bindings and aggregate budget assumptions; return for Astra/High review.
+Preparation needs no paid call. Any later paid creation/model scope must be checked
+against actual owner authority; AUTH-32 does not grant excluded workflows.
+
+D13A.7 remains4/6 complete: checkpoint5 has the creation measurement package and final
+cross-workflow scope decision remaining; checkpoint6 is actual-device/old-client/offline/
+performance acceptance. Eight broad milestones remain. Direct pilot progressed from
+1 remaining review substep to0; its completion is retained and must not be repeated.
+657 local-only/uncommitted paths,655 entry paths preserved. Runtime/corpus/packet unchanged;
+flags OFF outside QA,shared_analysis FALSE/CEFR OFF;real2914,eligible/approved/applied0.
+
+Evidence: [final pilot review](evidence/D13A-semantic-day-review-20261011.md).
+
+## 2026-10-11 — Creation qualification local readiness
+
+**2026-10-11 local — D13A.7.5 creation profile/transport preparation complete.**
+
+Distinct-model creation candidate prepared: generator gemini-3.8-flash,judge
+gemini-3.6-flash,explicit proposed observed pins. Gemini3.7 is not used: current primary
+docs say its requests redirect to3.8. Profile binds creation prompts/config/mapping and
+versions under independent-v3;existing TS/SQL distinct-model requirement retained.
+New explicitly injected adapter maps committed generation/judgement grants to bounded
+requests,keeps SQL grant input hashes separate from provider request hashes,and returns
+raw provider/version evidence for durable SQL acceptance or review. No env/live default.
+
+Fresh cached Deno187/187 with typecheck and disposable PostgreSQL15/15 pass(3 new real
+SQL grant-to-mocked-HTTP cases plus12 observed-version cases). All48 fixed/contingent
+request fixtures pass saved Discovery20261010 wire validation;27 packet source hashes
+and exact local packet verification pass. Scoped ESLint/Deno lint/format/diff pass.
+Old accepted direct-analysis packet/report and94+3+98 provider journal files unchanged.
+No key access or paid call;only local mocked provider responses. Test containers removed.
+
+New immutable candidate packet `5c37f3240a54271eff1a615d436b3171ebdcea698bc163f6c99ca71249c36d29`;
+policy `b9c2515d5fbaebbc25f798292a9cae62a4780b96993de940fbfc6da529a7f827`.42 proposed cases,40 fixed judges+4 generators
++up to4 contingent judges;max48 requests,USD13.44 worst-case reservation,0 retries,
+validity through2026-10-18T00:00:00Z. Registry proposal disabled;qualified FALSE and
+approved_for_execution FALSE. CLI provides local prepare/verify only,no paid run mode.
+Actual availability,observed versions and semantic behavior of this creation pair are
+unmeasured. No hosted database/publication/device/runtime activation inferred.
+
+Next **GPT-6 Astra / High**: review creation profile/prompt/policy,committed grant mapping,
+version/journal/no-retry lifecycle,real SQL evidence and exact packet scope/budget. No
+paid call needed. Creation track4 deliverable substeps:preparation complete;3 remain
+(prescribed review,exact measured pilot,final result review). Inside checkpoint5 the
+creation measurement package and final combined workflow/scope decision remain.
+D13A.7 fixed4/6 complete,2 remain;8 broad milestones. Direct-analysis pilot remains
+completed(0 substeps),must not be restarted. No added numbered milestones.
+
+AUTH-32 unchanged:October11 direct-analysis scope until22:00Z,aggregateUSD15,no repeated
+same-scope payment questions. Day committed0.8142535,remaining14.1857465 unchanged;
+proposed13.44 creation reserve would fit numerically(aggregate14.2542535),but budget fit
+is not authority for excluded creation/distinct judge. No payment question asked now.
+666 local-only/uncommitted paths,657 entry paths preserved. Seven new source/test files;
+no existing runtime/migration/corpus changed. Flags OFF outside QA,shared_analysis FALSE,
+CEFR OFF;real2914,eligible/approved/applied0. No pending operation.
+
+Evidence: [creation readiness](evidence/D13A-creation-readiness-20261011.md).
+
+## 2026-10-11 — Creation profile, adapter and packet review
+
+**2026-10-11 local — D13A.7.5 creation profile/adapter/packet review accepted.**
+
+No new actionable P1/P2 finding. All4242 entry references and666 dirty paths verified.
+The exact creation packet5c37f3240a54271eff1a615d436b3171ebdcea698bc163f6c99ca71249c36d29
+rebuilds unchanged;27 sources,48 fixed/contingent request/grant bindings verified.
+Fresh offline audit:44 valid judge parser probes and352 corrupted version/hash/verdict
+probes pass. Corpus14 positive/14 negative/12 uncertain/2 structural cases is consistent
+with the stated synthetic scope; labels are not independent human certification.
+Prior source-bound Deno187/187 and PostgreSQL15/15 retained,not rerun or newly claimed.
+Primary model/pricing pages rechecked; observed creation versions remain unmeasured.
+
+Local readiness review accepted,not paid execution or release qualification. The CLI
+still only prepares/verifies; no bounded paid runner exists. Measurement deliverable
+must first provide that runner with exclusive durable per-row journals, current daily
+budget/expiry authority, phase version/usage checks, no retries, contingent bindings and
+strict completion scoring. All synthetic grant IDs are fixture IDs; use unique packet
+row IDs for pilot journal identity. Do not run the old analysis CLI on a creation packet.
+
+Next **GPT-6.1 Sol / High**: prepare/test the creation pilot runner locally, reuse reviewed
+transport and applicable budget helpers, preserve this immutable packet and issue a
+new source-bound packet if execution sources change; then Astra/High review before
+any payment. No credentials or paid calls needed for this implementation step. The
+four creation deliverables remain fixed:2 complete(preparation,local review),2 remain
+(exact measurement including execution preparation; final result review). No new
+numbered milestone. D13A.7 remains4/6 complete,2 remain;8 broad milestones. The completed
+direct-analysis pilot stays complete with0 remaining substeps.
+
+AUTH-32 and day accounting unchanged:direct-analysis only throughOctober11 22:00Z,
+aggregateUSD15,no repeated same-scope payment question. Creation/distinct judge scope
+requires reconciliation against actual owner authority before a later paid dispatch;
+no payment question asked at this checkpoint. Current-turn paid calls0,key access0;
+committed0.8142535,remaining14.1857465,invoice not verified.668 local-only/uncommitted
+paths;666 entry paths preserved,existing code/migrations/corpus/packets unchanged.
+Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;real2914,eligible/approved/applied0.
+No pending operation.
+
+Evidence: [creation review](evidence/D13A-creation-review-20261011.md).
+
+## 2026-10-11 — Creation runner, daily budget and offline replay preparation
+
+**2026-10-11 local — D13A.7.5 bounded creation pilot runner prepared.**
+
+Eight new local source/test files implement source-bound packet preparation/verification,
+exclusive per-row dispatch/raw-response journals,full daily reservation before credentials,
+phase-specific observed-version/standard-usage checks,no retries,contingent judge binding,
+strict completion/threshold scoring and offline sealed replay. A fixed CLI budget directory
+serializes all cooperating creation runs and counts previous95 attempts plus all newer
+allocations. Incomplete/failed/unknown runs retain the entire13.44 allocation; settlement
+requires complete replayed48-result evidence and rederived integer-nanodollar charges.
+No hosted workflow/activation or production endpoint change. API key is read only by run
+mode after exact packet/explicit reviewed creation authority and durable allocation.
+
+Fresh cached/typechecked Deno38/38(21 runner failure/lifecycle cases+17 existing creation
+packet/adapter cases),scoped ESLint0 warnings,format/diff and CLI prepare/verify pass.
+All paid calls mocked,temp run/budget directories removed. Prior Deno170 and PostgreSQL15
+retained source-bound;no fresh full/client/device/SQL suite claim. Entry4258 references and
+668 paths verified;old runtime/migrations/corpus/packets and94+3+98 provider files unchanged.
+
+New immutable execution packet `dba036688086857d23dd8b705e4610faab2151c5cf788ab5987c745b4991ec02` binds36 sources and195 historical provider
+files. Its provider requests/profile/corpus are identical to reviewed readiness packet
+5c37f3240a54271eff1a615d436b3171ebdcea698bc163f6c99ca71249c36d29. Limits48 calls,13.44
+worst-case reserve,no retries;proposed3.8 generator/3.6 judge pins remain unmeasured.
+Qualified FALSE,approved_for_execution FALSE. No live authority or new reservation created.
+AUTH-32 unchanged direct-analysis scope untilOctober11 22:00Z;aggregateUSD15,no repeat
+same-scope payment question. Day committed0.8142535,remaining14.1857465 unchanged.
+
+Next **GPT-6 Astra / High**: locally review runner/ledger locking,authority/deadline/rate,
+raw journal before acceptance,contingent pairs,full completion/settlement/replay,tampering
+and exact new packet. No paid call needed. Then reconcile actual creation/distinct judge
+owner authority before any paid dispatch. No payment question asked now. Future launch
+must count all then-current day allocations,not trust the packet's old cost illustration.
+
+Fixed creation track2/4 complete,2 remain(measurement,result review). Runner preparation
+inside measurement is now complete;runner review/authority reconciliation/measurement
+still pending. No added numbered milestone or reset of accepted readiness/direct pilot.
+D13A.7 fixed4/6 complete,2 remain;8 broad milestones.678 local-only/uncommitted paths,
+668 entry paths preserved. Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;
+real2914,eligible/approved/applied0. New paid calls0,key access0,pending operations0.
+
+Evidence: [creation runner](evidence/D13A-creation-runner-20261011.md).
+
+## 2026-10-11 — Creation runner review and96-call offline reproduction
+
+**2026-10-11 local — D13A.7.5 creation runner review complete; one P1 open.**
+
+CRR-1: after a complete48-result run settles, the identical48-call authority can
+start another run in a new output directory. Offline reproduction completes both
+runs:96 mocked calls,one unchanged authority,two allocations. DailyUSD15 accounting
+and the per-run limit do not prevent reuse of the permission. Execution is not accepted.
+No other actionable P1/P2 found in the reviewed packet,ledger,journal,replay or scoring.
+
+Fresh cached/typechecked Deno38/38 plus one independent bug reproduction pass; CLI
+exact packet verification passes. The reproduction passing confirms the defect,not
+readiness. All426 source files,195 provider receipts and the execution packet remain
+unchanged. Entry4292 references/678 dirty paths verified. No key access,paid calls,
+live allocation,hosted action or pending operation. Existing day commitment0.8142535
+and remaining14.1857465 are unchanged; invoice not verified.
+
+Next **GPT-6.1 Sol / High**: fix CRR-1 with durable one-use authority consumption under
+the shared budget lock,bind receipt/packet/allocation/run identity,add regressions for
+new-output/copied-receipt reuse and interruption,then prepare a new source-bound packet.
+Run local checks and return to Astra/High for prescribed review before paid execution.
+AUTH-32 remains its recorded direct-analysis scope throughOctober11 22:00Z; no repeated
+same-scope payment question and no new creation/distinct-judge authority inferred.
+No payment question is needed for the next local repair.
+
+Fixed creation track2/4 complete,2 remain(measurement,result review). Runner review is
+finished with one repair inside the existing measurement deliverable; no new numbered
+milestone. D13A.7 fixed4/6 complete,2 remain;8 broad milestones. Completed direct-analysis
+pilot stays complete with0 remaining substeps.680 local-only/uncommitted paths;678 entry
+paths preserved. Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;real2914,
+eligible/approved/applied0. Stage remains in_progress; provider measurement still pending.
+
+Evidence: [creation runner review](evidence/D13A-creation-runner-review-20261011.md).
+
+**2026-10-11 — User-requested pause at D13A.7.5. Status: paused.**
+
+Saved after creation runner review; CRR-1 P1 remains open: one48-call authority
+can fund two completed runs in different output directories(96 mocked calls).
+No implementation, test rerun, credential access or paid request during pause.
+Prior38 tests and one defect reproduction remain source-bound evidence, not fresh checks.
+
+Resume with **GPT-6.1 Sol / High**: durably consume one-use authority under the shared
+budget lock, bind receipt/packet/allocation/run identity, add reuse/interruption
+regressions and prepare a new immutable packet. Then Astra/High reviews the repair.
+Preserve the accepted direct-analysis pilot and creation readiness work; do not restart.
+Creation track2/4 complete,2 remain; D13A.7 fixed4/6 complete,2 remain;8 broad milestones.
+No pending operation or uncertain external dispatch. Work is local-only and uncommitted.
+
+AUTH-32 expires2026-10-11T22:00:00Z and covers its recorded direct-analysis scope only;
+pause does not extend authority. Recheck actual date and authority on resume. The next
+local repair needs no paid call or new payment permission. Saved day commitmentUSD0.8142535
+and remainingUSD14.1857465 are historical to October11, not a future-day allowance.
+The prior immutable review manifest is retained; this pause manifest supersedes only
+five task-note hashes. All426 source bindings and195 provider files are unchanged.
+
+Pause evidence: [saved checkpoint](evidence/D13A-pause-20261011-2028.md).
+
+**2026-10-11 — D13A.7.5 CRR-1 locally repaired; Astra/High re-review pending.**
+
+One-use authority now has a deterministic allocation identity in the shared budget
+ledger. An exclusive synced allocation consumes permission and reserves USD13.44
+under the budget lock before run creation, credentials or dispatch. Exact receipt
+bytes/hash, packet, authority/allocation ID, unique run ID and absolute run directory
+are bound in allocation/run/settlement and checked during replay/accounting.
+Settlement frees verified dollars only; it cannot renew permission. Existing,
+copied/reformatted, next-day or interrupted claims cannot automatically redispatch.
+Partial claims fail closed; a claim without a run retains the entire reservation.
+
+Final cached/typechecked Deno51/51 passes(34 runner+3 packet+14 adapter cases),
+including13 new authority/reuse/interruption/concurrency/binding regressions.
+Scoped ESLint0 warnings,source formatting,diff and CLI prepare/verify pass.
+Two earlier51-case runs passed; two lint attempts required literal constants and a
+small directory-reading helper before the final clean result. No suppressed rules.
+All provider calls mocked; no network/env permission, key access or paid dispatch.
+Earlier full/client/SQL/device suites are retained evidence, not fresh verification.
+
+New immutable execution packet `ea2bad9acbe04f376bc9ab3287a3be13a0cd99480a230b2223daa13aca9ee3d7` binds36 sources and195
+unchanged historical provider files. Profile,42-case corpus,requests,guards,thresholds,
+limits and accepted readiness packet remain identical. Old packets/reports retained.
+Qualified FALSE; approved_for_execution FALSE; no live creation authority/allocation.
+
+Next **GPT-6 Astra / High**: review CRR-1 repair, interruption/reservation semantics,
+receipt/allocation/run/settlement bindings,13 regressions and this exact packet.
+No paid call needed. Stop at this model/review boundary. Reconcile explicit creation/
+distinct-judge authority only after accepted review and before any later paid dispatch.
+AUTH-32 remains direct-analysis-only through2026-10-11T22:00:00Z; no renewal or scope
+extension. Historical day commitmentUSD0.8142535/remainingUSD14.1857465 unchanged;
+invoice not verified. No new payment question for this local repair.
+
+Creation2/4 complete,2 remain; D13A.7 fixed4/6 complete,2 remain;8 broad milestones.
+Accepted direct-analysis pilot remains complete,0 remaining substeps. Stage in_progress.
+All682 entry dirty paths preserved;684 total,local-only/uncommitted. Six pilot script
+files changed; application/runtime/migrations/corpus and195 provider files unchanged.
+Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;real2914,eligible/approved/applied0.
+No pending operation,commit,push,hosted,EAS,device,release or automation action.
+
+Evidence: [repair](evidence/D13A-creation-authority-repair-20261011.md).
+
+**2026-10-11 — D13A.7.5 CRR-1 repair review accepted; finding closed.**
+
+No new actionable P1/P2. The authority-keyed exclusive synced allocation consumes
+permission before run creation/credentials and survives settlement or interruption.
+Exact receipt,packet,allocation and run bindings hold through replay/settlement.
+Fresh cached/typechecked Deno51/51 and4 additional review probes pass. Three real
+SIGKILL probes(after claim/before run,before credentials,after durable dispatch)
+retain the fullUSD13.44 allocation and refuse same/copied authority reuse before
+factory construction,including after the dead synthetic process's stale lock is removed.
+All calls mocked; test processes and temporary directories cleaned up.
+
+Exact packet `ea2bad9acbe04f376bc9ab3287a3be13a0cd99480a230b2223daa13aca9ee3d7` accepted for local execution readiness review.
+Its36 source bindings,426 current source files and195 historical provider files match;
+packet/profile/corpus/requests/thresholds/limits are unchanged. No source edit,key access,
+paid request,live allocation or hosted operation. Paid execution remains unauthorized;
+qualified FALSE and approved_for_execution FALSE in the immutable packet remain valid.
+
+Next **GPT-6.1 Sol / High**: reconcile explicit owner authority for this exact creation
+pilot(generator3.8,distinct judge3.6),then run only if the actual approved scope,expiry,
+personal project and current aggregate day budget permit. Use a fresh unique authority
+ID and new journal,48-call maximum,USD13.44 full reserve,no retries. Do not invent authority
+from AUTH-32: it covers direct-analysis only until2026-10-11T22:00:00Z. No payment question
+or new authority in this review. Review any measured result on Astra/High before qualifying.
+
+Creation2/4 complete,2 remain(measurement and result review); D13A.7 fixed4/6 complete,
+2 remain;8 broad milestones. Direct-analysis pilot remains complete,0 substeps.
+All684 entry dirty paths preserved;686 total,local-only/uncommitted. Only five task notes
+and this evidence pair change. Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;
+real2914,eligible/approved/applied0. Historical day commitmentUSD0.8142535 and remaining
+USD14.1857465 unchanged; invoice not verified. No pending operation.
+
+Evidence: [review](evidence/D13A-creation-authority-review-20261011.md).
+
+**2026-10-11 — D13A.7.5 creation pilot stopped; invalid judge verdict review pending.**
+
+Owner confirmed GPT-6.1 Sol / High and explicitly authorized all today's pilots and
+paid checks. Broad AUTH-33 supersedes AUTH-32's direct-analysis-only restriction;
+aggregateUSD15 includes prior calls and expires2026-10-11T22:00:00Z. Do not ask payment
+permission again within this scope/day/budget. AUTH-33-CREATION-01 was consumed by
+the permanent synced allocation before credentials/dispatch for exact reviewed packet
+`ea2bad9acbe04f376bc9ab3287a3be13a0cd99480a230b2223daa13aca9ee3d7`. CRR-1 remains closed.
+
+Three judge requests returned with exact observed `gemini-3.6-flash`,standard tier.
+Two valid same-meaning verdicts; `positive-2-1` repeated `translations-ru` and omitted
+`examples`. Strict parsing correctly rejected it and stopped the run. Dispatch3,
+returned3,provider-failed0,unknown0,retries0. Generator3.8 was not reached; qualification
+FALSE,measurement incomplete. No automatic redispatch or relaxed validity checks.
+
+Runner exited1; budget.lock removed; no pending process or external operation.
+Raw dispatch/results,termination,run/receipt bindings and9 journal hashes verified;
+offline replay confirms incomplete/invalid1. New reported usage3832 input and5120
+output including thinking costsUSD0.022074 at official standard pricing. Invoice
+not verified. FullUSD13.44 allocation remains reserved because the run is incomplete;
+historicalUSD0.8142535 plus retained reserve commitsUSD14.2542535,leavingUSD0.7457465.
+Known historical plus new reported costUSD0.8363275 is not released budget. No settlement.
+
+Next **GPT-6 Astra / High**: review the exact failed response,prompt/schema and strict
+dimension coverage; determine any local repair/new packet and explicit accounting
+reconciliation. Do not replay consumed authority or remove its claim. Broad AUTH-33
+still covers today's paid checks,subject to remaining budget and expiry; a fresh full
+pilot cannot fit the currently retained budget. Failure review is the next boundary,
+not a missing payment permission. No new dispatch before review; no automatic retry.
+
+Creation2/4 complete,2 remain; D13A.7 fixed4/6 complete,2 remain;8 broad milestones.
+Direct-analysis pilot remains complete,0 substeps. All686 entry dirty paths preserved;
+688 total,local-only/uncommitted. Only five task notes and this evidence pair change.
+All426 source bindings,36 packet sources and195 historical provider files unchanged.
+Prior51+4 tests and3 interruption probes remain source-bound evidence,not fresh reruns.
+Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;real2914,eligible/approved/applied0.
+No commit,push,hosted publication,deployment,EAS,device,release or automation action.
+
+Evidence: [pilot](evidence/D13A-creation-day-pilot-20261011.md).
+
+**2026-10-11 — D13A.7.5 failed judge/budget review complete; CJR-1 P2 repair next.**
+
+Owner confirmed GPT-6 Astra / High. CJR-1 P2: provider checks schema allows repeated
+dimensions,so the exact invalid response satisfies that schema despite the prompt's
+six-distinct requirement. Strict parser/runner behavior is correct: raw reply saved,
+third call stops,zero retries,no generation,no qualification. CRR-1 remains closed.
+
+Fresh3 offline review tests pass,including exact raw-response mock replay through
+the runner and refusal to settle an incomplete run as complete. JSON Schema2020-12
+probe confirms current schema and uniqueItems both accept the bad reply; proposed
+six prefixItems with singleton dimension enums reject it,accept2 saved valid replies,
+and reject12 duplicate plus4 missing/extra mutations. Provider support is documented;
+the proposed request has not been measured. No runtime source or provider file changes.
+
+Budget arithmetic accepted:3 returned requests,3832 input+5120 output including thinking,
+USD0.022074 reported cost,invoice unverified. All3 outcomes known; no new unknowns.
+Current full13.44 reserve is correct under the existing completed-only settlement
+contract. Current day commitment14.2542535,remaining0.7457465. No ledger change.
+Technical review accepts22,074,000nanousd as the basis for a distinct reviewed-terminal
+settlement after its implementation/tests/review. This could release13.417926 and
+leave total commitment0.8363275/remaining14.1636725,including the old0.28 reservation.
+Those are prospective numbers,not currently spendable funds. Never renew the claim.
+
+Next **GPT-6.1 Sol / High**: fix CJR-1 in creation judge schema/prompt,retain the strict
+parser,add the real-response regression; implement explicit reviewed-terminal accounting
+with complete journal/binding/charge verification,immutable one-use claim and no network.
+Keep the direct-analysis request/policy behavior intact. Prepare a new immutable packet,
+then Astra/High reviews code/packet/reconciliation before any new paid pilot. Review the
+saved accounting contract; do not fabricate successful completion or release via hand edit.
+
+AUTH-33 already covers today's pilots/paid checks within aggregateUSD15 until22:00Z;
+no repeated payment question,no automatic retry/rollover. AUTH-33-CREATION-01 stays
+consumed. This review adds no paid call,key access,live settlement or external operation.
+Creation2/4,D13A.7 fixed4/6,8 broad milestones unchanged; direct-analysis pilot complete.
+All688 entry dirty paths preserved;690 total,local-only/uncommitted. Five task notes and
+this evidence pair updated;426 source files,36 packet sources,195 old and9 new provider
+journal files unchanged. Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;
+real2914,eligible/approved/applied0. No pending operation,commit,push or deployment.
+
+Evidence: [review](evidence/D13A-creation-failure-review-20261011.md).
+
+**2026-10-11 — D13A.7.5 CJR-1 locally repaired; terminal calculation/new packet await review.**
+
+Owner confirmed GPT-6.1 Sol / High. Creation judge now uses six fixed prefixItems with
+singleton dimension enums and explicit prompt order. Shared direct-analysis schema,
+prompt,policy behavior and strict verdict parser are unchanged. CJR-1 is locally repaired,
+pending Astra/High review; CRR-1 remains closed. No provider reply was edited or accepted
+retroactively. Creation profile/prompt/request hashes changed and are bound in a new packet.
+
+New offline terminal accounting verifies a pinned review,permanent allocation,exact raw
+authority/run/frozen packet,complete directory inventory,ordered fixed-judge prefix,
+one returned outcome per dispatch,request/result hashes,model/tier/token components and
+independently derived charges. It does not regenerate old packets from changed sources.
+Explicit apply rederives the exact pinned calculation under the shared lock and writes
+a separate reviewed-terminated settlement once; it never renews authority or qualification.
+Scope is reviewed,known returned fixed-judge prefixes only; other failed/unknown runs
+retain the full reserve. Existing completed-run settlement checks remain intact.
+
+Fresh cached/typechecked Deno71/71(34 runner+3 qualification+18 terminal+14 adapter+2 schema),
+ESLint0 warnings,source formatting,diff and exact CLI prepare/verify pass. Independent
+JSON Schema validation rejects the actual bad reply and12 duplicate/4 size mutations,
+accepts both good replies. Maximum prepared request7330 bytes. All42 sources,195 historical
+files and unchanged corpus/guards/thresholds/models/scope verified; generation prompt/schema
+unchanged. New schema support is documented; provider acceptance remains unmeasured.
+
+New packet `b7eda62bb37e7ba9c596d6d62ea2225a16803b27b35a3271584ac5c5e152d4a1` is immutable,qualified FALSE,approved_for_execution FALSE.
+Exact terminal calculation `07c2af7cff205bf34c1c7847edf79a83a97b668383beda0f51a34019fc84acd9` prepares USD13.417926 release and
+USD0.022074 retained charge. Current live ledger unchanged:USD14.2542535 committed,
+USD0.7457465 remaining. After reviewed application only:USD0.8363275 committed,
+USD14.1636725 remaining,including the olderUSD0.28 unsettled reservation. Invoice unverified.
+
+Next **GPT-6 Astra / High**: review CJR-1 repair,terminal evidence/application/budget guards,
+20 new regressions,exact new packet and exact calculation. No live settlement or paid
+pilot before this review. AUTH-33 already covers today's pilots/paid checks withinUSD15
+until2026-10-11T22:00:00Z; do not ask payment again within that scope/day/budget. No rollover.
+AUTH-33-CREATION-01 remains consumed. No new paid call,key access or live settlement here.
+
+Creation2/4,D13A.7 fixed4/6,8 broad milestones unchanged; direct-analysis pilot complete.
+All690 entry dirty paths preserved;698 total,local-only/uncommitted. Four existing sources
+modified,six sources/tests added;five task notes/evidence pair updated. Original195 provider
+files,9 failed-run files and live allocation unchanged. Flags OFF outside QA,shared_analysis
+FALSE,CEFR OFF;real2914,eligible/approved/applied0. No pending operation,commit,push or deployment.
+
+Evidence: [repair](evidence/D13A-creation-judge-repair-20261011.md).
+
+**2026-10-11 — D13A.7.5 CJR-1 and terminal accounting review accepted.**
+
+Owner confirmed GPT-6 Astra / High. No actionable finding in the ten changed/added
+sources. CJR-1 closed: creation-only six-position singleton dimension schema and explicit
+prompt order prevent the saved duplicate/missing dimension; strict verdict parsing and
+shared direct-analysis behavior remain unchanged. CRR-1 remains closed.
+
+Terminal accounting/code review accepted for the exact known returned judge prefix.
+Frozen packet/raw journal, pinned review/allocation, full inventory, request/result/model/
+usage bindings and integer charge calculations verify. Explicit apply rederives the exact
+calculation under the shared lock, writes once and preserves the consumed authority claim.
+Unknown/unsupported evidence remains reserved. No successful-completion claim is fabricated.
+
+Fresh cached/typechecked Deno71/71 and5 independent review probes pass. Extra dispatch after
+settlement, partial settlement and identical-content symlink fail closed; a second allocation
+retains its full reserve. Exact saved calculation reproduced against the live ledger without
+application. JSON Schema audit rejects the saved invalid reply and16 mutations, accepts2 good
+replies. CLI packet verification, scoped ESLint0 warnings, formatting and diff checks pass.
+
+Exact packet `b7eda62bb37e7ba9c596d6d62ea2225a16803b27b35a3271584ac5c5e152d4a1` and calculation file SHA256
+`07c2af7cff205bf34c1c7847edf79a83a97b668383beda0f51a34019fc84acd9` are technically accepted. Immutable packet qualified/approved flags
+remain FALSE; a fresh run receipt and runtime checks are still required for execution.
+Live ledger unchanged:USD14.2542535 committed,USD0.7457465 remaining. Reviewed release is
+USD13.417926, retainingUSD0.022074. Only after apply:USD0.8363275 committed andUSD14.1636725
+remaining, including olderUSD0.28 unsettled. Invoice unverified. AUTH-33-CREATION-01 consumed.
+
+Next **GPT-6.1 Sol / High**: apply the exact reviewed calculation through the explicit CLI,
+verify the settlement and aggregate ledger, then prepare a fresh AUTH-33-CREATION-02 receipt
+bound to this accepted packet. AUTH-33 already permits today's pilots/paid checks within
+aggregateUSD15 until2026-10-11T22:00:00Z; check actual time and ledger before any dispatch.
+Do not ask payment again within this scope/day/budget; no automatic rollover or retry.
+If expired, stop before paid work and record that a new-day authority is required.
+Astra/High reviews any subsequent measured result or failure. Direct-analysis stays complete.
+
+Creation2/4,D13A.7 fixed4/6,8 broad milestones unchanged. All698 entry dirty paths preserved;
+700 total,local-only/uncommitted.432 sources,42 packet sources,195 historical provider files,
+9 failed-run files and live allocation byte-unchanged. Only five task notes and evidence pair
+updated. No new paid calls,credentials,live settlement,commit,push or deployment; no pending
+operation. Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;real2914,eligible/approved/applied0.
+
+Evidence: [review](evidence/D13A-creation-judge-review-20261011.md).
+
+**2026-10-11 — D13A.7.5 reviewed reconciliation applied; new pilot stopped on unknown outcome.**
+
+Owner requested continuation and progress totals in every final response. Followed the
+Sol/High execution recommendation; no picker inspection or switch claimed. Accepted exact
+terminal calculation applied through CLI:13.417926 released,0.022074 retained. Reverified
+frozen evidence and aggregate0.8363275 committed/14.1636725 remaining. Permanent
+AUTH-33-CREATION-01 allocation unchanged and consumed; distinct terminal settlement saved.
+
+Fresh AUTH-33-CREATION-02 binds accepted packet `b7eda62bb37e7ba9c596d6d62ea2225a16803b27b35a3271584ac5c5e152d4a1`.
+Full13.44 allocation synced before credentials and dispatch. First judge request stopped
+with provider-outcome-unknown and no diagnostic; returned0,provider-failed0,unknown1,retries0.
+Runner exit1,5-file raw journal sealed outside the run. No completed seal/report or new
+settlement. Generator3.8 and new judge schema compatibility/quality remain unmeasured.
+CJR-1 and CRR-1 remain closed; this is a separate transport/environment failure checkpoint.
+
+Read-only unauthenticated GET diagnosis: sandbox DNS lookup fails; unrestricted GET reaches
+service with HTTP404. This supports a sandbox network cause but cannot prove the original
+POST never reached the provider: transport saved no diagnostic. The paid launch should have
+used a connectivity preflight. Do not downgrade unknown to known failure/zero charge or retry.
+The unrestricted check had no key,no generation and no billing authority change.
+
+Verified day accounting:historical0.8142535 + first settled0.022074 + new full13.44 reserve =
+USD14.2763275 committed;USD0.7236725 remaining. New actual cost is unknown,invoice unverified.
+The accepted known-returned-prefix reconciliation cannot settle this zero-returned unknown
+run. AUTH-33 still covers today's paid checks within aggregate15 until22:00Z,no repeat payment
+question or rollover. Current full-pilot budget does not fit; no new dispatch before review.
+
+Next **GPT-6 Astra / High**: review immutable unknown-outcome run,network evidence and budget
+retention; determine any separately implemented/reviewed accounting or execution preparation.
+Preserve both consumed claims and original receipts. Any future execution must preflight
+connectivity in its actual execution environment without credentials,then use fresh valid
+packet-bound authority and full current time/budget checks. Never redispatch an existing run.
+
+Creation2/4 complete,2 remain; D13A.7 fixed4/6 complete,2 remain;8 broad milestones remain.
+Direct-analysis pilot stays complete,0 substeps. All700 entry dirty paths preserved;702 total,
+local-only/uncommitted.432 sources,42 packet sources,195 historical and9 first-run files
+unchanged. New5-file journal and2 added ledger files retained. Five task notes/evidence pair
+updated;no runtime source changes,commit,push,publication,deployment,EAS,device or automation.
+Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;real2914,eligible/approved/applied0.
+No pending process,lock or known external operation; original provider outcome remains unknown.
+
+Evidence: [checkpoint](evidence/D13A-creation-reviewed-pilot-20261011.md).
+
+**2026-10-11 — D13A.7.5 unknown outcome/DNS/budget review complete; CNR-1 P2 open.**
+
+Owner confirmed GPT-6 Astra / High. CNR-1: operational preflight checks only files/budget;
+it consumes the one-use claim/full reserve before discovering unavailable DNS on the first
+paid request. Require bounded unauthenticated connectivity preflight inside the actual
+execution process/environment before claim,credentials or paid dispatch. Scope any network
+permission to the provider host. A prior probe from another sandbox/process is insufficient.
+No connectivity success may imply authenticated API/schema readiness or guarantee later delivery.
+
+Original unknown outcome is correct. Frozen journal has one dispatch,zero returned,one
+unknown; no retry. Separate sandbox GET failed DNS and unrestricted GET reached HTTP404.
+These support the likely sandbox cause but do not prove original POST delivery or zero charge.
+Four fresh offline tests reproduce the exact unknown envelope and post-claim failure,confirm
+no redispatch/full reserve,and verify current terminal accounting refuses the unknown run.
+Frozen-run inspection/replay and all source/receipt/ledger bindings pass. No network/key call here.
+
+Current full retention is correct under the accepted contract:14.2763275 committed and
+0.7236725 remaining. Conditional accounting basis accepted for a separate reviewed path:
+retain0.28 for the one unknown dispatch,release47 never-dispatched slots*0.28 =13.16.
+After implementation,tests and exact calculation/packet review only,this would leave
+1.1163275 committed and13.8836725 remaining. Both the earlier0.28 unknown and this new0.28
+unknown remain reserved. New actual cost stays unknown; no invoice/zero-cost claim.
+No live release in this review. Both AUTH-33-CREATION-01/02 remain permanently consumed.
+
+Next **GPT-6.1 Sol / High**: repair CNR-1 with reproducible same-process no-key connectivity
+failure gating before claim; add regressions proving failure consumes no authority/budget
+and performs no credential/paid action. Implement distinct pinned stopped-run accounting
+for this exact one-unknown judge prefix,retaining its full0.28 liability and permanent claim.
+Prepare verifiable13.16 release calculation and a new source-bound packet; Astra/High reviews
+before any live application/new pilot. Preserve old files and the current valid first settlement.
+AUTH-33 already covers today's paid checks within15 until2026-10-11T22:00:00Z; no repeated
+payment question within scope/day/budget,no rollover. Time/ledger must be checked at execution.
+
+CJR-1/CRR-1 remain closed. Creation2/4 complete,2 remain; D13A.7 fixed4/6 complete,2 remain;
+8 broad milestones remain. Direct-analysis complete,0 substeps.702 entry dirty paths preserved;
+704 total,local-only/uncommitted.432 sources,42 packet sources,195 historical,9 first-run,
+5 unknown-run and3 ledger files unchanged. Five task notes/evidence pair updated. No new
+provider attempts,credential access,live reconciliation,commit,push,deploy or pending operation.
+Flags OFF outside QA,shared_analysis FALSE,CEFR OFF;real2914,eligible/approved/applied0.
+
+Evidence: [review](evidence/D13A-creation-unknown-review-20261011.md).
+
+**2026-10-12 — AUTH-35 accepted; grammar qualification pilot prepared.**
+
+Owner explicitly authorized ONE new-day pilot for packet
+94e3ffd1b933d760eb63fa4f07ff12b36d5db9fd7c5a7dc36e3f48e4a1d8e279:
+48 requests maximum, USD13.44 reserve, no automatic retry, expiry2026-10-12T22:00:00Z.
+Prior reported costs and two unknown liabilities totalUSD1.54301675; combined worst
+caseUSD14.98301675. AUTH-33 expired; none of its claims are renewed. No real-card,
+publication, activation or deployment scope. AUTH-34 retains Astra/High until D13A.7.
+
+Prior03 completed48 responses,reportedUSD0.42668925,thresholds FALSE. Frozen-source
+replay reproduces its exact report. CGQ-1 expression separability and CGQ-2 first-person
+conjugation contracts repaired; final87/87 regressions and exact47-source packet review
+pass. New measured qualification remains pending. Evidence/one-use launch intent:
+reports/shared-dictionary-cefr/d13a7-creation-grammar-pilot-20261012.
+Inspect existing AUTH-35-CREATION-01 allocation/run before any launch; never replay it.
+
+Physical iPhone app metadata now confirms2.4.0/build85; OTA/device matrix still pending.
+Android current-source isolated QA85 installed preserving data. Old84 connected iOS/Android
+smokes passed; new Android test driver initialization failed, not a qualified app result.
+Task-owned simulator/emulator/proxy remain running; pre-existing QA backend unchanged.
+Fixed D13A.7:4/6 complete,2 remain;8 broad milestones remain. Stop before D13A.8.
+
+**2026-10-12 — AUTH-35 consumed; CNI-1 false acceptance, local repair tested.**
+
+AUTH-35-CREATION-01 completed48 responses,no retries/unknowns; reportedUSD0.42903825.
+Exact offline replay and integer audit pass. Combined prior/current commitmentUSD1.972055,
+includingUSD0.56 retained unknowns; no further paid authority. All grammar regressions and
+four generated pairs accepted, but nested usage_notes.contrasts[0].example.en injection
+was falsely accepted. CNI-1 P1 remains a qualification blocker; thresholds stay FALSE.
+Local repair adds explicit complete path-indexed candidate text coverage and nested-example
+instructions.89 regression tests pass; measured acceptance remains pending.
+
+Budget follow-up CBA-1: completed settlement accounting calls current-profile semantic replay;
+changing a reviewed prompt makes an old completed day's charge unreadable. Fail-closed,
+not a lost reserve or free claim. Separate frozen raw usage accounting from current-profile
+semantic qualification, preserving immutable receipt/packet/claim/inventory/cost bindings.
+Prepare and review this fix before any further paid proposal. No request authorized now.
+
+Physical iPhone metadata confirms both exact repair OTA IDs/runtime with5/3 successful launches,
+zero recorded failed launches. Fourteen local QA migrations applied from pinned sources after
+backup; all original word columns preserved. Two fresh synthetic following cards seeded for
+two QA owners. Exact archived-source SQLite compatibility probes and native builds ongoing.
+Fixed4/6 complete,2 remain;8 broad milestones remain. Astra through D13A.7 only.
+
+**2026-10-12 — AUTH-36 accepted; one coverage/accounting pilot prepared.**
+
+Owner explicitly authorizes ONE pilot for packetdc9e180eb814dad232d2920dc229319a0c7ddbdbb8dba7fe35dd914ce226f3ee.
+Maximum48 requests,USD13.44 reserve,no retries,expiry2026-10-12T22:00:00Z.
+Current-day worst-caseUSD13.86903825; prior-day-inclusive boundUSD15.412055,
+including both unknown liabilitiesUSD0.56. AUTH35 remains consumed. No publication,
+real-card transition,deployment or activation. Reviewed CNI-1 coverage repair and CBA-1
+frozen raw accounting pass91 tests andzero-warning lint. CNI-1 measured acceptance pending.
+Inspect AUTH-36-CREATION-01 and reports/shared-dictionary-cefr/d13a7-creation-coverage-pilot-20261012
+before any action; never replay a consumed allocation. Astra through D13A.7 only.
+Fixed4/6,2 remain;8 broad remain. Two-owner/native/offline/performance checks continue.
+
+**2026-10-12 — Native/archived compatibility checkpoint during AUTH-36.**
+
+Exact archived build85/repair1/repair2 parser and repository sources verified against
+original build commit/OTA manifests. Real SQLite plus local HTTP:12 head-delivery cases
+pass;18 protocol1 edit-private/detach/resolve-conflict cases preserve complete queued
+payloads, recognize legacy-content-upgrade-required and leave server/local originals
+and learning unchanged. Disposable SQLite cleanup separates cases; no device queue cleared.
+iOS current QA binary renders following revision2 and two synthetic account transitions
+pass (A-to-B earlier segment, B-to-A final flow). Old assertion that isolated owner had
+no fiets was stale QA data; actual fixture has its own legitimate fiets. Collection owner
+isolation checks retained. No original native85 execution equivalence claimed.
+Fresh isolated Android35 emulator boots and QA85 installs; old AVD data retained.
+AUTH36 remains running, one-use allocation consumed. Fixed4/6,2 remain;8 broad remain.
+
+**2026-10-12 — AUTH-36 consumed; exact audit complete, CGT-1 blocks qualification.**
+
+One pilot completed48/48 responses, no new unknowns/retries. Exact replay and independent
+integer audit pass. Cost435432750 nanousd (USD0.43543275); unused reserve released:
+13440000000 - 435432750 =13004567250 nanousd (USD13.00456725). October12 commitment
+USD0.864471; combined with October11 USD2.40748775, including unchanged USD0.56 unknown
+liabilities. All claims permanently consumed; no further paid authority.
+CNI-1 measured repair passes all40 controls (12 positive,16 negative,12 uncertain), no
+false acceptance. CGT-1 P2: generator adds approximate English idiom to bite the bullet
+for protected decision-after-hesitation expression; distinct judge correctly rejects it.
+Generated acceptance3/4; threshold remains FALSE. Generation-only minimal exact-translation
+prompt repair and replay regression prepared; full offline suite running. Judge, corpus,
+labels, thresholds and budgets unchanged. Fresh review/owner pilot approval required.
+Fixed D13A.7 remains4/6,2 remain;8 broad milestones remain. Continue native QA independently.
+
+**2026-10-12 — CGT-1 repair ready for one separately approved pilot.**
+
+Packet5e581635ea5d9a1dba880da7a19695f5c90e0b8d089b462161816ff8acca963d,
+48 exact sources;92 offline tests pass,lint0 warnings. Only generation prompt changes:
+minimal exact translations, no approximate idiom padding. Judge prompt, corpus, labels,
+thresholds, limits and historic receipts unchanged. Local exact review accepted; measured
+qualification remains pending. AUTH36 consumed; next48-call reserveUSD13.44 would bound
+October12 atUSD14.304471 and both days including unknowns atUSD15.84748775.
+No new pilot may run without owner approval. Proposal/review in coverage-pilot20261012 root.
+iOS synthetic offline review survived restart and reached local PostgreSQL once; one
+synced event,zero queued commands,protected original and following mode preserved. Native
+Android/physical-device/performance acceptance incomplete. Fixed4/6,2 remain;8 broad remain.
+
+**2026-10-12 — Durable checkpoint; next pilot approval pending.**
+
+AUTH36 audit and frozen replay complete;92 final regressions and all final lint/diff
+checks pass. Exact next packet5e581635ea5d9a1dba880da7a19695f5c90e0b8d089b462161816ff8acca963d
+remains unchanged and locally reviewed. Owner question for one48-call pilot is pending;
+no AUTH37 allocation or launch exists. No further paid request until an explicit answer.
+iOS account isolation, review snapshot, offline restart, exact once-only server delivery
+and visible online return pass within isolated Simulator/local REST503 scope. Synthetic
+head restored to revision2; successful review retained; proxy blocks all OFF. Android
+emulator5584 gracefully stopped via console (exit0); both old/new AVD data preserved.
+QA iOS Simulator and task proxy remain available; pre-existing four backend containers
+preserved. Physical iPhone personal app/data untouched. Native Android/physical cohort/
+performance gate remains open; no success inferred from a rebuilt QA artifact.
+
+Permanent evidence: evidence/D13A-coverage-budget-native-20261012.md/json,438 source hashes,
+48 exact packet sources. Root714 dirty entries,local-only/uncommitted; no commit/push/deploy.
+Fixed D13A.7:4/6 complete,2 remain;8 broad milestones remain. Astra/High remains selected
+by owner through D13A.7; stop before D13A.8. Next inspect approval and exact packet,
+then one new claimed run if approved; otherwise continue only local qualification work.
+
+**2026-10-12 — AUTH-37 accepted; one exact translation-repair pilot prepared.**
+
+Owner explicitly authorizes ONE pilot for packet5e581635ea5d9a1dba880da7a19695f5c90e0b8d089b462161816ff8acca963d.
+Maximum48 requests,reserveUSD13.44,no retries or publication; expiry2026-10-12T22:00:00Z.
+October12 worst caseUSD14.304471; both daysUSD15.84748775 includingUSD0.56 unknowns.
+AUTH36 remains consumed. Exact48 sources/review/proposal and prior carry/ledger verified.
+New root reports/shared-dictionary-cefr/d13a7-creation-translation-pilot-20261012;
+authority AUTH-37-CREATION-01. Inspect existing allocation/run before any action.
+No real cards,hosted changes,activation or D13A.8 scope. Fixed4/6,2 remain;8 broad remain.
+
+**2026-10-12 — AUTH-37 stopped on implicit cached input; local repair in verification.**
+
+AUTH-37-CREATION-01 is permanently consumed:33 dispatches,33 returned fixed judges,
+zero new unknowns/retries; no generation reached. Original accounting rejected431
+implicit cached input tokens in the last response. CCA-1 P2: supported provider cache
+usage was treated as invalid. Raw69-file journal and exact48-source snapshot preserved.
+Independent integer usage audit gives281150325 nanousd; conditional unused reserve
+release13158849675. FullUSD13.44 allocation remains until exact repaired calculation
+is reviewed/applied; combined commitment currentlyUSD15.84748775 includingUSD0.56
+historical unknowns. No further paid call authorized. Cached input is a subset of
+prompt tokens; standard text rates750/75/3750 nanousd,verified official October12 docs.
+Local repair and schema7 packet prepared; final suite in progress. No semantic qualification.
+
+Owner confirms no test Android currently available. Both AVDs preserved/stopped after
+System UI/ADB failures; no repeated startup. Personal iPhone remains read-only. Nine
+archived sync orchestration probes pass across build85/repair1/repair2:content failures
+still allow learning push and canonical refresh before conflict reporting. Dependency
+adapters only; previous12 SQLite/18 queue probes and iOS local native offline evidence
+remain valid within their stated scope. D13A.7.6 physical Android/exact cohort/performance
+acceptance remains open. Fixed4/6 complete,2 remain;8 broad remain. Stop before D13A.8.
+
+**2026-10-12 — CCA-1 fixed/reviewed; AUTH37 settled; next pilot permission pending.**
+
+AUTH37 stopped after33 fixed-judge responses,zero new unknowns/retries,generation0.
+CCA-1 implicit cache accounting repaired:cached input is a validated subset of prompt,
+charged750/75/3750 nanousd per uncached/cached/output token at verified standard rates.
+Schema7/executionv6 packet3427e6183d310f6c0adcde36bf20bcbd642e989ba981216158480bcb81187a02
+pins48 sources;95 regressions pass,lint0 warnings. Semantic requests/profile/corpus/labels/
+thresholds unchanged. Frozen original validator reproduces the failure. Initial schema
+allowlist test failure and duplicate-literal lint warning retained; final repaired suite passes.
+
+Exact reviewed terminal settlement applied once:13440000000 -281150325 =13158849675
+nanousd released (USD13.158849675). Reported usageUSD0.281150325; October12 commitment
+USD1.145621325; combinedUSD2.688638075 includes unchangedUSD0.56 unknown liabilities.
+All six one-use allocations remain consumed. Invoice unverified. No new provider call.
+Partial controls32/33 correct:positive bank contrast falsely rejected; no false acceptance.
+The corpus label remains unchanged; incomplete measurement grants no qualification.
+CGT-1 generation repair remains unmeasured. Seven fixed judges and four generated pairs
+were never dispatched. No continuation/retry of AUTH37 is allowed.
+
+New48-call proposal reserveUSD13.44:day maximumUSD14.585621325,combinedUSD16.128638075.
+Owner question pending; no AUTH38 allocation/launch exists. Exact proposal/review/budget
+in reports/shared-dictionary-cefr/d13a7-creation-translation-pilot-20261012.
+Owner has no test Android. iOS isolated native account/offline/online checks retained;
+old-source SQLite12/queue18 and nine sync-order probes pass within stated local scopes.
+Physical Android/exact cohort/performance acceptance remains open. Personal iPhone untouched.
+Fixed D13A.7:4/6 complete,2 remaining;8 broad milestones remain. Astra/High through7;
+stop before D13A.8. Local-only/uncommitted; no publication,commit,push or deployment.
+
+**2026-10-12 — AUTH38 accepted; one cache-accounting pilot prepared.**
+
+Owner explicitly authorizes one pilot for exact packet3427e6183d310f6c0adcde36bf20bcbd642e989ba981216158480bcb81187a02:
+maximum48 calls,reserveUSD13.44,no retries/publication,expiry2026-10-12T22:00:00Z.
+Day maximumUSD14.585621325; combinedUSD16.128638075 includingUSD0.56 old unknowns.
+Authority AUTH-38-CREATION-01; root reports/shared-dictionary-cefr/d13a7-creation-cache-pilot-20261012.
+Inspect existing allocation/run before any action; never relaunch consumed authority.
+All48 source pins and95-test review verified. AUTH37 remains stopped and settled.
+No test Android available; personal iPhone untouched. Fixed4/6,2 remain;8 broad remain.
+Astra/High through D13A.7 only; stop beforeD13A.8. No broader permissions inferred.
+
+**2026-10-12 — D13A.7.5 accepted; D13A.7.6 awaits test-device evidence.**
+
+AUTH38 completed48 returned responses,no retries/new unknowns. Exact packet
+3427e6183d310f6c0adcde36bf20bcbd642e989ba981216158480bcb81187a02:
+40/40 controls correct(12 positive,16 negative,12 uncertain),4/4 generated candidates
+accepted by distinct judge and final saved-content review;zero false acceptance/invalid
+verdicts. CGT-1 resolved in this exact measured candidate;CCA-1 exercised1163 actual
+cached tokens without failure. AUTH37's earlier false rejection remains in history;
+no repeat-run stability claim. Corpus,labels,thresholds and semantic requests unchanged.
+Exact replay,independent integer audit,48 source pins and242 direct-analysis carry files
+verified. Both direct-analysis and creation tracks complete within scoped synthetic
+request/grant qualification;no production,publication,device or activation qualification.
+Original report qualified:false is retained; acceptance is a separate review receipt.
+
+UsageUSD0.416180475;13440000000 -416180475 =13023819525 nanousd unused reserve released
+(USD13.023819525). October12 commitmentUSD1.5618018;combinedUSD3.10481855 includes
+unchangedUSD0.56 historical unknown liabilities. Seven allocation identities remain
+consumed;invoice unverified. No further paid authority. No real cards/publication/hosted
+changes,Git commit/push or D13A.8 work.
+
+Fixed D13A.7 now5/6 complete,1 remaining;8 broad milestones remain. Checkpoint6 needs
+actual two-owner/device/offline-return,original85/repair-OTA compatibility and native
+same-environment performance. Owner confirms no test Android;personal iPhone remains
+read-only. Simulator,archived-source and launch-metadata evidence cannot close this gate.
+Task proxy55331 stopped(exit130);dedicated iOS QA Simulator shut down,data preserved;
+both Android AVDs already stopped,preserved. Pre-existing backend containers untouched.
+No paid/test runner or budget lock remains. Astra/High retained throughD13A.7;stop before8.
+
+Evidence:evidence/D13A-creation-final-review-20261012.md/json;raw review and remaining
+matrix in reports/shared-dictionary-cefr/d13a7-creation-cache-pilot-20261012.
+Next resume only D13A.7.6 when required test-device evidence can be obtained. Do not
+repeat accepted semantic pilots or relaunch AUTH38. All work local-only/uncommitted.
+
+**2026-10-12 — Owner night pause and conditional resume schedule.**
+
+Stop DutchLearningApp work at2026-10-12 02:30 Europe/Amsterdam (00:30Z). Save checkpoint,
+gracefully stop only confirmed project-owned workloads and preserve data. Do not stop
+another project's Claude E2E runner,simulator or emulator. Remain paused until at least
+06:00 Europe/Amsterdam (04:00Z). At06:00 resume only if ALL required E2E tests of the
+other Claude project passed on both platforms AND no runner/test processes remain active.
+The owner identified Claude with simulator/emulator E2E,but has not yet supplied the
+exact project path or result/report path;clarification pending. Unknown identity,incomplete
+results,failure or running tests means no resume. Process absence alone is not success.
+
+Automation dutchlearningapp-02-30 is ACTIVE in this chat,with exactly two verified local
+occurrences:October12 02:30 and06:00. One existing heartbeat was updated;no duplicate
+morning automation was created. The morning callback must pause the automation after
+its one check,regardless of outcome. No repeated morning polling is authorized.
+
+This schedule does not renew paid authority or remove the physical-device blocker.
+D13A.7.5 remains accepted;D13A.7.6 requires actual devices/exact-cohort/offline/performance.
+Test Android unavailable;personal iPhone metadata-only. Task proxy and dedicated iOS QA
+Simulator already stopped,Android AVDs stopped,data preserved. Do not restart them just
+to stop them. Preserve unrelated/pre-existing resources unless confirmed within stop scope.
+Fixed5/6 complete,1 remains;8 broad milestones remain. Stop beforeD13A.8.
+
+**2026-10-12 — Night resume gate identified: Guardia Claude E2E.**
+
+Owner supplied /Users/devrush/actions-runner and checkout
+/Users/devrush/actions-runner/_work/Guardia/Guardia. Read-only Worker logs:
+/Users/devrush/actions-runner/_diag/Worker_*-utc.log. LaunchAgent:
+/Users/devrush/Library/LaunchAgents/actions.runner.firstlinesoftware-Guardia.devs-MacBook-Pro.plist.
+Current e2e-nightly.yml schedule requires sanity,ios,android,real-iqvia;verify the actual
+night run and fresh results for all required jobs. Reports:e2e-artifacts/{ios,android,real-iqvia}
+and apps/mobile/.maestro/reports in that checkout. Old October11 05:09:45Z success is
+not the forthcoming run. Runner.Listener waiting is not an active test;check Runner.Worker,
+E2E descendants and remaining queued workflow jobs. Never modify Guardia or invoke svc.sh.
+
+One active heartbeat dutchlearningapp-02-30 now binds this exact gate. Verified two
+occurrences today02:30/06:00 Europe/Amsterdam. At02:30 stop confirmed DutchLearningApp
+workloads and exclusive QA containers gracefully,preserving data and all Guardia work.
+At06:00 resume only after all required Guardia tests pass and no tests remain active.
+Failure,unknown or incomplete evidence leaves this task paused. After success,owner's
+conditional resume permits another attempt with the preserved dedicated QA AVD and
+needed local stack/Simulator because resource contention may have changed. No wipe,
+no device reassignment,no paid authority renewal,no real-device qualification inference.
+After morning check pause the heartbeat;no autonomous later retries or new schedule.
+No project-path clarification remains. Fixed5/6,1 remains;8 broad remain;stop beforeD13A.8.
+
+**2026-10-12 — EAS reminder scheduled.**
+
+Owner requested a morning reminder to switch EAS. Separate one-use heartbeat eas-08-30
+is ACTIVE for October12 08:30 Europe/Amsterdam,independent of Guardia test results.
+Reminder only;no EAS command,account switch or repository resume is authorized by it.
+The night pause/conditional06:00 schedule remains unchanged. Fixed5/6,1 remains;8 broad remain.
+
+**2026-10-12 02:35 Europe/Amsterdam — Scheduled night pause executed.**
+
+Status: paused. The 02:30 callback verified exact project labels and stopped the four
+exclusive woordenaar-d08-qa.ZFsE50 containers (kong, rest, auth, db); completion at
+00:34:25Z. Containers and database volume preserved. Docker stop used no forced kill.
+Kong/PostgreSQL PID1 shells required direct graceful signals to their confirmed child
+PIDs from pidfiles. PostgreSQL logged checkpoint complete and database system is shut
+down. REST exited255 after the stop signal; no OOM. No data or logs removed.
+QA proxy55331 has no listener; dedicated Simulator DDEDCE4E-153B-48A4-A47C-B4ED0F499F1F
+is Shutdown; no Android emulator process observed. Previously stopped devices were not
+restarted. Guardia, other Docker projects, user apps and personal iPhone untouched.
+
+Receipt: reports/shared-dictionary-cefr/d13a7-creation-cache-pilot-20261012/night-stop-20261012.json.
+Automation dutchlearningapp-02-30 remains ACTIVE for today's06:00 conditional check.
+Do not resume before then. Require fresh success of every required Guardia nightly job
+and evidence that no E2E work remains active or queued. Unknown/failure means stay paused.
+After that check pause the automation regardless of outcome. EAS08:30 reminder unchanged.
+
+D13A.7.5 accepted; AUTH38 and all paid permissions consumed. First incomplete checkpoint
+D13A.7.6, fixed5/6 complete,1 remaining;8 broad milestones remain. Retain Astra/High and
+stop beforeD13A.8. Test Android unavailable; personal iPhone metadata-only. No new test,
+paid call, publication, migration, commit or push. All work remains local-only/uncommitted
+on feature/shared-dictionary-schema at f97a733407a4d2b37e8f9ca030ad9574de85a794.
+
+**2026-10-12 06:00 Europe/Amsterdam — Morning resume gate failed; pause retained.**
+
+Read-only Guardia check found fresh sanity Succeeded at01:25:22Z (Job completed01:25:25Z),
+ios Failed at03:04:30Z (Job completed03:04:33Z), and android still active without a final
+job result/completion. Runner.Worker86888 has an Android E2E command and emulator/Maestro
+in its descendant tree. Current nightly workflow still requires sanity,ios,android,real-iqvia.
+No completed real-iqvia evidence found; e2e-artifacts/{ios,android,real-iqvia} absent.
+Fresh Maestro reports are partial and include failures for medical-records-list attempts1/2.
+An exact common workflow run_id was not established; no all-tests-passed claim is made.
+Both success and resource-release gates fail. No Guardia file/process/device was changed.
+
+DutchLearningApp remains paused; no QA stack, simulator or emulator restarted. No paid
+request, implementation, migration, publication, commit or push. Night automation
+dutchlearningapp-02-30 is now PAUSED as requested; no new wakeups. EAS08:30 reminder
+remains independent and unchanged. Next resume requires fresh confirmation that every
+required Guardia job passed and all its E2E work has finished, plus a new user resume request.
+
+Evidence: evidence/D13A-morning-gate-20261012.json. D13A.7 fixed5/6 complete,1 remaining
+(D13A.7.6);8 broad milestones remain. All paid authorities consumed. Retain Astra/High;
+personal iPhone metadata-only; test Android unavailable. Stop beforeD13A.8. Local-only
+checkpoint on feature/shared-dictionary-schema,HEAD f97a733407a4d2b37e8f9ca030ad9574de85a794.
+
+**2026-10-12T08:44:23+02:00 — Explicit /repo pause checkpoint.**
+
+Status: paused by owner. D13A.7 remains 5/6 complete; first incomplete checkpoint
+D13A.7.6 (device/offline/original build85 and repair-OTA/native performance). One stage
+checkpoint and eight broad milestones remain. D13A.7.5 accepted; all paid authorities
+consumed. Retain owner-selected Astra/High through D13A.7; stop before D13A.8.
+
+Both one-use automations are verified PAUSED: dutchlearningapp-02-30 and eas-08-30.
+The EAS reminder was delivered at08:30; no account switch or Expo/EAS command performed.
+No new test, implementation, runtime operation, paid call, commit or push for this pause.
+Guardia status is the historical06:00 check (iOS failed, Android active), not a fresh claim.
+On explicit resume, first recheck Guardia success/resource release under the saved gate,
+then continue only D13A.7.6. Test Android remains unavailable in owner-provided context;
+personal iPhone is metadata-only. Unavailable exact-device/performance checks stay open.
+
+Branch feature/shared-dictionary-schema; HEAD f97a733407a4d2b37e8f9ca030ad9574de85a794.
+Local-only/uncommitted work preserved; exact dirty-file inventory and pause metadata:
+evidence/D13A-owner-pause-20261012.json. Prior test/review and runtime receipts remain
+unchanged. No automatic continuation or further wakeup scheduled by this checkpoint.
+
+**2026-10-23 — D13A.7.6 resumed on physical test Android.**
+
+Owner requested /repo continue and confirmed a test Android is available. Connected
+Huawei CLT-L29,Android10/API29,serial WCR7N18727000520 is the prior disposable QA device.
+Installed build84 APK exactly matches retained D12 QA artifact (sha17127358d0a8a3eef37a2a90863c1d62e62be4f48079c6c16047a716f225114b).
+APK saved; baseline and candidate signatures match. App data is preserved; no uninstall
+or reset authorized/performed. Primary iPhone remains metadata-only.
+
+Guardia schedule run39881970192/#89 attempt1,commit544fc6a56929c23d597b15439ce2f60d1d88ebc9
+completed all four required jobs successfully. Exact downloaded JUnit reports:ios45,
+android43,real-iqvia6;zero failures/errors/skips. Worker logs share the run identity;
+no active Worker/emulator/Maestro observed. Remote run completed,not a gap between jobs.
+QA containers resumed preserving volumes; synthetic loopback proxy active. No paid call,
+hosted migration,publication,commit,push or D13A.8. Both old automations remain paused.
+
+Next: preserve baseline state,execute physical Android account/offline/return checks,
+then same-device QA comparison within available artifacts. QA rebuilds cannot qualify
+original85/repair-OTA execution. Fixed5/6 complete,1 remains;8 broad milestones remain.
+Evidence root:reports/shared-dictionary-cefr/d13a7-native-resume-20261023.
+Astra/High retained per owner throughD13A.7. Stop beforeD13A.8.
+
+**2026-10-23 — Physical Android account/offline qualification checkpoint.**
+
+D13A.7.6 remains in_progress,partial acceptance. Owner confirmed connected Huawei CLT-L29
+is available for QA. Actual QA84→85 upgrade preserves session/12 words/3 collections.
+A→B→A isolation/return passes. Physical radio and USB transport loss,offline Recognition
+answer,process restart,reconnect and exactly-once server delivery verified in segmented
+ADB checks. Both personal originals preserved; isolated owner's learning unchanged.
+Final radios restored,head2 visible,empty sync queue. No personal iPhone operation.
+
+QA-only loopback policy issue fixed in separate native checkout20261023d13a7. APK
+6652c5a59c3bfe5f3a665a54c4ffdc28862053bc8dc27b88a94086346a785a28:JS unchanged,
+same signer;native/generated differences enumerated. Original QA85/source preserved.
+First Gradle attempt failed on excluded task provider;second passed1m52s. Maestro and
+three driver expectation/timing failures retained; no application data cleared/review replayed.
+See evidence/D13A-physical-android-20261023.md and reports/shared-dictionary-cefr/
+d13a7-native-resume-20261023/physical-native-review.json for exact scopes and limitations.
+
+Next:representative native review-start baseline/candidate matrix on this same test device,
+and actual original85/repair-OTA scenarios on isolated test cohort. Separate test iPhone
+availability question pending;primary iPhone metadata-only. Activity-start timings are
+NOT native performance acceptance. Do not repeat accepted semantic pilots;all paid
+permissions consumed. No hosted mutation/publication/commit/push. Astra/High retained.
+Fixed5/6 complete,1 remains;8 broad milestones remain. Stop beforeD13A.8.
+Local-only/uncommitted,feature/shared-dictionary-schema,HEADf97a733407a4d2b37e8f9ca030ad9574de85a794.
+
+**2026-10-23 — Unlocked iPhone85 confirmed; personal signing expired.**
+
+Read-only inventory confirms2.4.0/build85,com.oldrefery.dutch-learning-app,on the
+owner-unlocked iPhone16Pro. No launch/account change/uninstall/install. Local personal
+team7FQ395U52U profile includes this device,but its development certificate137FD9A9…
+expired2026-09-12. The two valid signing identities belong to work organizations and
+are excluded. Do not use another organization or revoke any certificate.
+An isolated APFS-cloned checkout woordenaar-d08-native.20261023iphone is assembling
+unsigned Release iphoneos with local QA endpoint192.168.178.106:55341,OTA disabled,
+shared analysis disabled,QA Sentry guard enabled. No LAN listener started yet.
+Check iphone-build-result.json before any retry;driver build-iphone-qa.mjs persists exit/log.
+Next verify build,bundle/endpoint/entitlements;prepare separate QA package where possible,
+then resolve personal signing authority before install. Original app remains preserved.
+Fixed5/6 complete,1 remains;8 broad milestones. No D13A.8,paid call or publication.
+
+**2026-10-23 — Separate iPhone QA package verified; personal signing approval pending.**
+
+Owner-unlocked iPhone16Pro retains original2.4.0/build85;no launch/account action/install.
+Unsigned Release iphoneos QA package com.oldrefery.dutch-learning-app.d13aqa is ready.
+Twelve artifact checks and four local relay boundaries pass;678 business-source files
+match the workspace/retained QA. Separate scheme/storage,QA guard true,OTA false,
+actual embedded local endpoint verified. Initial global-ID and stale-cache packages
+were rejected before install;corrected final manifestfe7e61c5…seals102 files.
+
+Personal development certificate expired2026-09-12;valid work identities excluded.
+Next request scoped approval for personal team7FQ395U52U development certificate,
+separate QA App ID/profile,sign/install. No portal/provisioning action authorized yet.
+Original installation will be preserved. QA relay55341 stopped;no build/test remains.
+Existing loopback QA stack/proxy retained. Native timing and exact85/OTA gates stay open.
+See evidence/D13A-iphone-qa-package-20261023.md and the linked machine receipt.
+Fixed5/6 complete,1 remains(D13A.7.6);8 broad milestones remain. Astra/High;stop beforeD13A.8.
+All local/uncommitted;no paid call,hosted migration,publication,commit or push.
+
+**2026-10-23 — Owner authorizes personal QA signing and installation.**
+
+Explicit approval received for team7FQ395U52U:new Apple Development certificate,
+separate App ID com.oldrefery.dutch-learning-app.d13aqa,device development profile,
+signing and side-by-side installation. No work-team use,revocation,distribution
+profile changes or main-account/main-app changes. Existing unsigned102-file manifest
+verified and copied to iphone-unsigned-reviewed before signed assembly.
+Next run targeted automatic development provisioning/build;inspect persisted signed
+build result and actual portal/local artifacts before retrying any uncertain operation.
+No install until signature/team/profile/device/endpoint/entitlements pass.
+Fixed5/6 complete,1 remains;8 broad milestones. Stop beforeD13A.8.
+
+**2026-10-23 — QA signing authorized; Xcode personal login rejected.**
+
+Owner's personal-team signing/install approval remains valid;do not request it again.
+Automatic development provisioning targeted team7FQ395U52U and only
+com.oldrefery.dutch-learning-app.d13aqa. Build exited65 because Xcode rejected the
+saved personal Apple Account login and could not find the QA development profile.
+No local QA profile found;remote creation unconfirmed. Do not assume a certificate
+was created or blindly repeat unknown mutations. No signing/install/main-app action.
+The reviewed unsigned102-file package is preserved and all hashes reverified.
+
+Attempt to open Xcode through Computer Use timed out;settings UI not confirmed.
+Owner asked to reauthenticate in Xcode Settings > Apple Accounts for the personal
+team;password/2FA must be entered there,not in chat. After login confirmation,inspect
+existing signing state,then complete the already-authorized personal QA provision,
+verify signature/team/device/bundle/entitlements and install side-by-side. No work
+team,revocation,distribution profile change or primary-account operation authorized.
+No build/test active. QA LAN relay remains stopped;prior loopback QA stack retained.
+Receipt:reports/shared-dictionary-cefr/d13a7-native-resume-20261023/iphone-signing-login-blocker.json.
+D13A.7 fixed5/6 complete,1 remains;8 broad milestones. Retain Astra/High;stop beforeD13A.8.
+Native performance and exact original85/OTA runtime acceptance remain open. Local-only.
+
+**2026-10-23 — Xcode team retrieval failure confirmed by owner screenshot.**
+
+Screenshot14:26:12 shows Failed to retrieve development teams for the personal Apple
+Account. Combined with the prior rejected-login build log,this confirms unavailable
+Xcode account/team access;it does not prove wrong password or expired membership.
+Next diagnostic is owner sign-in at developer.apple.com/account and Membership details
+for team7FQ395U52U,including any access/agreement notice. No account removal,keychain
+cleanup,certificate revocation or provisioning retry performed. Signing approval persists.
+Fixed5/6 complete,1 remains;8 broad milestones remain.
+
+**2026-10-23 — Owner reports macOS malware block during Xcode Codex setup.**
+
+Owner attempted to connect Codex in Xcode and reports a malware/access block. Exact
+component/path and warning wording are not yet known. Do not infer malware confirmed
+or dismiss as false positive. Signing/install attempts are on hold pending diagnosis;
+do not bypass Gatekeeper,XProtect,quarantine or certificate validation. Prior QA build
+invoked xcodebuild automatic provisioning,not Codex installation. Computer Use access
+to Xcode timed out and no settings action was confirmed. Read-only diagnosis only.
+Existing personal signing approval persists;the separate Xcode login/team-access
+blocker remains unresolved. No QA app installed;main app/account untouched.
+Fixed5/6 complete,1 remains;8 broad milestones. Stop beforeD13A.8.
+
+**2026-10-23 — Xcode Codex malware alert identified from screenshots.**
+
+Owner selected Codex in Xcode Settings > Intelligence. Screenshot14:29:45 explicitly
+shows "Malware Blocked and Moved to Trash": "codex" was not opened because it
+contains malware; the dialog states this action did not harm the Mac. This confirms
+a macOS security block, not whether the payload is malicious or falsely classified.
+Read-only inspection found Agents/codex/0.120.0/Info.plist and the XcodeVersions/17F42
+symlink; no executable remains under that agent version directory. The manifest names
+version0.120.0 and an official github.com/openai/codex release URL. Manifest metadata
+alone does not authenticate the removed executable; its hash/signature were not checked.
+Do not restore, execute, re-download or bypass protection for the blocked component.
+Xcode's optional Codex agent is not required by the existing xcodebuild QA workflow.
+The earlier personal Apple Account/team retrieval error remains a separate unresolved
+signing blocker; no causal link to the agent alert has been established. Next owner
+action: dismiss with Done and check personal developer account/team access. Existing
+QA signing approval persists; no provisioning retry or installation was performed.
+Main app/account unchanged. Fixed5/6 complete,1 remains;8 broad milestones remain.
+Stop beforeD13A.8.
+
+**2026-10-23 — Developer agreement accepted; Xcode login still rejected.**
+
+Owner reports accepting the updated agreement. Membership screenshot confirms personal
+team7FQ395U52U, Individual Apple Developer Program, renewal2027-09-11. No contact or
+address fields copied. Read-only preflight found no valid personal signing identity,
+no separate QA profile, no active conflicting build/test workers; LAN IP unchanged.
+One targeted automatic-provisioning retry under existing approval exited65, still
+reporting rejected saved personal Apple Account login and missing QA profile.
+Log:woordenaar-d08-native.20261023iphone/build-ios-true-1792759778791.log.
+Receipt:d13a7-native-resume-20261023/iphone-post-agreement-login-check.json.
+No QA installation or primary-account action. Remote artifact creation remains
+unconfirmed; inspect persisted signing state before any subsequent retry. Do not loop.
+Next owner action: reopen Xcode Apple Accounts and reauthenticate the personal account
+with password/2FA entered only in Apple UI. Existing scoped signing/install approval
+persists. Optional blocked Xcode Codex agent remains excluded; no security bypass.
+Fixed5/6 complete,1 remains(D13A.7.6);8 broad milestones remain. Stop beforeD13A.8.
+
+**2026-10-23 — Personal QA signed, verified and installed beside original85.**
+
+Owner reauthenticated the personal Apple Account in Xcode and explicitly requested
+continuing QA signing/install. Automatic signing now succeeds(exit0);new personal
+Apple Development identity FY3VY8C3J4 is used with team7FQ395U52U. Xcode selected a
+wildcard development profile5efdec4b-0de9-4a9e-9547-b6d6a89121e2,valid through2027-10-23,
+including the authorized iPhone. Explicit portal QA App ID creation is not confirmed;
+do not report it created or create a redundant identifier. Signed application identifier
+is exactly7FQ395U52U.com.oldrefery.dutch-learning-app.d13aqa,with only team and debug
+entitlements and no shared keychain entitlement. No revocation or work-team use.
+
+All20 artifact checks pass:deep strict signature,device/profile/team,bundle/scheme,
+QA guard,OTA disabled,local LAN endpoint,framework IDs,678 frozen source files and
+unchanged reviewed JavaScript. Signed manifest contains113 files. devicectl install
+succeeded and subsequent inventory confirms Woordenaar QA2.4.0/85 plus untouched
+original De Woordenaar2.4.0/85. Neither application was launched in this checkpoint;
+no account operation. QA LAN relay remains stopped. No active build/test remains.
+
+Evidence:reports/shared-dictionary-cefr/d13a7-native-resume-20261023/
+iphone-signed-artifact-review.json,iphone-signed-artifact-manifest.json,
+iphone-qa-install-result.json,iphone-qa-installed-metadata.json,
+iphone-original-after-qa-install.json,iphone-signing-install-checkpoint.json.
+Build log:woordenaar-d08-native.20261023iphone/build-ios-true-1792760011047.log.
+Next:physical iOS QA against synthetic local fixtures using only separate QA bundle;
+revalidate LAN IP192.168.178.106 and local relay before launch. Preserve main account.
+Exact original85/repair OTA acceptance and representative native performance remain
+open;installation is not evidence for those gates. Optional blocked Xcode Codex agent
+was not installed,restored or executed. No security bypass.
+Fixed5/6 complete,1 remains(D13A.7.6);8 broad milestones remain. Stop beforeD13A.8.
+No paid call,hosted migration,publication,commit or push. Local evidence only.
+
+**2026-10-23 — Physical iPhone QA execution started in isolated bundle.**
+
+Owner explicitly requested continued iPhone QA with no primary-account interaction and
+stop at D13A.7. Local stack/proxy and fixed LAN IP revalidated;no conflicting worker.
+Dedicated LAN relay55341 started for synthetic fixture accounts only. A standalone
+XCTest runner,personal team7FQ395U52U,bundle com.oldrefery.dutch-learning-app.d13aqa.uitests,
+was built for the physical iPhone. The runner addresses only QA app bundle,not original.
+Initial launch test passed1/1 on iPhone16Pro,iOS27.0.1;retained screenshot/hierarchy show
+QA login screen with no inherited primary session. No main-app/account operation.
+Primary synthetic login/following test is running;inspect primary-login-result.json and
+xcresult before retry. Keep private synthetic fixture/login test logs access-restricted.
+Runner/evidence:reports/shared-dictionary-cefr/d13a7-native-resume-20261023/iphone-xctest/.
+App source and signed QA artifact remain unchanged. UI-driving XCTest code only.
+D13A.7 fixed5/6 complete,1 remains;8 broad milestones. Exact85/OTA and native performance
+remain open. Stop beforeD13A.8;no paid/provider/publication/commit/push action.
+
+## 2026-10-23 — Physical iPhone offline regression and native timing pilot
+
+Isolated QA account/device checks exposed IOR-1 (false legacy create-private after
+offline learning with only v2 cache). Prevention fixed; regression failed before and
+135 targeted tests pass afterward,types/lint pass. New signed QA installed after
+archiving prior artifact/DB;segmented offline/restart/reconnect delivered one new event
+exactly once,zero content commands,head restored,both owners isolated.7 server events
+unchanged after final restart. Main app/account untouched. See IOR-1 evidence.
+Native timing helper lives only in disposable QA clone;initial500-word pilot rejected
+by independent collector because warm reload was not triggered. Driver/instrumentation
+repair in progress;no accepted timing. Functional artifact/DB saved for restoration.
+Local-only,feature/shared-dictionary-schema/HEADf97a733;preserve all dirty work.
+D13A.7 remains5/6,1 remaining;8 broad milestones. No paid call/hosted mutation/commit/push.
+
+## 2026-10-23 — Native iPhone parity pilots and NPR-1
+
+Functional IOR-1/offline/owner evidence remains passing. Validated500-word paired pilot;
+5000-word/5000-event pairs in both orders preserve parity but reproduce about2x following
+slowdown. All are warmups,not acceptance samples. Diagnostic-only eight-path clone build
+installed,16 checks andtypes pass; profile1-5000-full running. No root performance change.
+Mainapp untouched,relay stopped;5/6 complete,1 remaining;8 broad milestones. Local-only.
+
+## 2026-10-23 — Physical CPU comparison and bounded experiments
+
+CPU candidate/baseline traces cover all UI phase captures and preserve data parity.
+Four parser/allocation experiments plus the100-row read experiment have been reverted
+exactly. The100-row candidate warm3933ms did not clearly improve on prior3896/3964ms.
+No production parser/repository chunk change is retained. See per-experiment receipts.
+
+A bounded option-pool experiment is in root and QA: distractors capture only immutable
+identity/part-of-speech/normalized labels/translation keys, avoiding an additional full
+Word snapshot per vocabulary entry. Question payloads still deeply snapshot full words,
+shared metadata and adaptive decisions before any yield.24 tests in4 suites pass,
+including5000 questions, cancellation, snapshot mutation, following-session parity and
+new independent distractor identity/secondary labels; mobile types/scoped lint pass.
+Signed five-marker QA artifact JS18bca276... passes16 checks and is installed. Pair
+npr1-option-pool is running; inspect actual XCTest and independent receipts before any
+further device action. Do not claim benefit or keep it without physical evidence.
+Synthetic auth refreshed once at16:17:57Z through auth-only relay; UI pass1/1, then
+verified owned relay PID89946 stopped. No benchmark REST writes. Relay55341 is closed.
+Benchmark SQLite remains onQA. Plain functional IOR-1+NPR-1 package and functional DB
+are preserved for restore; main application/account untouched. D13A.7 remains5/6 complete,
+1 remaining;8 broad milestones. Full matrix/exact85/repairOTA open;stop beforeD13A.8.
+
+## 2026-10-23 — Final physical checkpoint and functional restore
+
+Current packet: evidence/D13A-iphone-qa-checkpoint-20261023.md. All six follow-up performance
+experiments were reverted byte-for-byte. Retained changes are IOR-1 and NPR-1 duplicate
+initialization/root-refresh removal. Final244 tests/7 suites, mobile types and scoped lint
+pass. Native5k warm latency still exceeds baseline by24.7–32.5% in the retained package;
+CPU evidence confirms material GC work but no single cause. No accepted full-matrix samples.
+Exact original85/repairOTA also remains unqualified under main-account protection.
+
+Phone now has the normal isolatedQA IOR-1+NPR-1 artifact (JS5685ea87...), no timing markers,
+and restored functional SQLite. Final offline XCTest1/1 passes. Independent copy confirms
+26 words/24 active,7 collections,7 local/server events, exact preserved content/event tables,
+no benchmark tables or content commands. QA process is stopped; relay55341 is stopped.
+Auth-only refresh at16:17:57Z passed, owned relay stopped; no benchmark REST writes.
+Functional archive native-performance/npr1-functional-app remains valid. QA clone SOURCE
+matches root with original five timing-marker paths; its current compiled build output is
+STALE option-pool experiment and MUST NOT be installed. Rebuild/verify before further QA.
+
+Next: review the new packet, investigate remaining materialization/GC delay without repeating
+rejected experiments, establish a safe exact-original/repair runtime path, then execute the
+full matrix after repair. Preserve main account, all598 worktree entries and private evidence.
+No paid/hosted/publication/Git operations. D13A.7:5/6 complete,1 remains;8 broad milestones.
+No completion is claimed and no D13A.8 work was started.
+
+**2026-10-23 — NPR-2 frozen physical matrix running.**
+
+UI allocation repair, bounded SQLite JSON transport, equivalent decimal/parser shape
+validation and reduced duplicate Word copies are provisionally retained. Final diagnostic
+following5k cold/warm total1855/2229ms versus baseline1543/1663ms; this is not full-matrix
+acceptance.77 repository/materialization/store/session tests pass, plus65 contracts and44
+UI-focused tests in prior focused runs. Physical scroll/search passes1/1,zero skipped.
+
+Frozen artifact native-performance/npr2-allocation-app: JS SHA256
+35a4b484bde473e8967ab5408b578e76b7e15d0ac1b420f7f16bcbed3380f3e1.
+All679 source hashes and16 artifact checks pass. Five timing paths only; heap/row
+instrumentation removed. Full48-pair matrix is running in terminal session18794;
+run-matrix.py preserves every attempt and stops without retry on failure. Inspect
+npr2-matrix-progress.json and actual XCTest receipts before any further device action.
+Do not change source, QA app/database, or relay during the matrix. Relay55341 stopped;
+synthetic auth last refreshed17:17:35Z. Benchmark DB remains onphone; functional DB/app
+preserved elsewhere. Rebuild plain functional QA with retained fixes before final restore.
+
+Read-only archived85/repair bytecode inspection prepared local config-only derivatives
+under legacy-isolation-review; no legacy package installed or executed. Their modified
+endpoint/checksum bytes cannot be described as exact original/native OTA activation.
+Exact compatibility gate remains open. Main app/account untouched; no hosted/paid/Git
+operations. Fixed D13A.7:5/6 complete,1 remains;8 broad milestones. Stop beforeD13A.8.
+
+**2026-10-23 — Frozen matrix paused safely between cases for synthetic auth renewal.**
+
+First36 pairs completed and validated (500,2500,and5000 full selection); supervisorPID228
+is SIGSTOP at35 progress entries while the final pair9 receipt is already complete. Child
+4465 finished; pause receipt npr2-matrix-auth-boundary.json is quiescent_between_cases.
+No measured observation was interrupted. Final5000/20 case still requires2 warmup+10 pairs.
+Product/source/app unchanged; existing timing artifact JS35a4b484... still installed.
+
+Auth-only relay55341 is running in terminal76361. QA-only logout succeededHTTP204; initial
+UI password entry was wrong and loginHTTP400. Actual XCTest65,0/1 passes is retained under
+npr2-matrix-renew-synthetic. This is outside benchmark samples. Input-repair test is now
+running in terminal6502,typing each password character with masked-length confirmation.
+Never print credentials. Matrix supervisor must remain paused until synthetic login200,
+app stopped, original XCTest driver restored byte-for-byte from matrix-driver-before-auth.swift,
+relay stopped/portclosed,and frozen root source hashes rechecked. Then SIGCONT onlyPID228.
+Do not repeat measured pairs; supervisor records completedpair9 and proceeds to last case.
+
+370 tests in16 suites, mobile types, scoped lint and15-file formatting pass. Prepared
+legacy-isolation-review has three signed isolated derivatives; unchanged instruction/data
+sections for10 native binaries each, exact old bytecode apart from endpoint/checksum55bytes,
+all45 OTA asset keys present in original bytecode, Sentry source/config guard verified.
+No legacy derivative installed/executed yet. They are not original store/OTA artifacts.
+Test Android currently absent fromADB; owner asked to reconnect. Main app/account untouched.
+FixedD13A.7:5/6complete,1left;8broad milestones. D13A.8 excluded.
+
+**2026-10-23 — Matrix resumed after verified synthetic-only auth renewal.**
+
+QA loginHTTP200 at18:14:55Z; actual XCTestexit0,1passed/0failed/0skipped. Secure-field UI
+input failed in three retained test attempts outside measurements; the final driver used
+the app's visibility toggle, verified the value internally without logging it, then masked
+it before submission. Exported auth attachments are private0600 in0700 directories.
+Original measured XCTest source restored byte-for-byte; all679 frozen root source hashes
+reverified. Owned auth-only relay stopped and55341closed. SupervisorPID228 resumed; terminal
+18794 is now running final5000/5000/20 case, including its two excluded warmup pairs.
+First36 pairs are complete/validated. No measured pair was retried or discarded.
+Current synthetic token is fresh through approximately19:14Z; no personal account touched.
+
+Remaining work: finish48-pair matrix, investigate residual cache-load cost, validate old
+native instruction-preserving QA derivatives, rebuild plain functional QA and restore its
+saved database. TestAndroid unavailable atlastADBcheck; clarification pending. Do not edit
+root/QA source or operate phone/relay while matrix runs. Fixed5/6complete,1left;8broadremain.
+Stop beforeD13A.8. No paid/hosted/Git operations.
+
+**2026-10-23 — D13A.8.4 requested runtime/configuration repairs complete locally.**
+
+AUTH-40 local scope is fulfilled: disabled-by-default creation serve/bootstrap,
+explicit model/version/policy/prompt bindings, function-local frozen dependencies,
+and native following/import/analysis flags with used-build85/test-mode rejection.
+Android dictionary submission now stays draft. No actual build number was allocated;
+version sources remain2.4.0(85). No hosted operation, paid call, device/account action,
+commit or push. Review [runtime/build addendum](evidence/D13A.8.4-runtime-build-review-20261023.md)
+and its JSON receipt.193 Edge tests,78 overlapping function-local tests,34 mobile
+config/release tests and real loopback startup pass; types/lint/format pass.
+
+Original0e706ee packet remains immutable historical evidence and correctly rejects
+this changed checkout. New source delta and logs are preserved under
+reports/shared-dictionary-cefr/d13a84-runtime-build-20261023. No native or semantic
+requalification is claimed. R01/R02 local defects are repaired; final artifact bindings,
+unused versions, fresh backup/delta/queues, policy/spending/operator readiness and exact
+execution authority remain open. D13A.8 is3/6 complete,3 fixed steps remain;7 broad
+milestones including current,6 excluding it. Next remains D13A.8.4, GPT-6 Astra / High.
+
+**2026-10-23 — D13A.8.4 final local review package prepared (AUTH-41).**
+
+Committed the completed runtime/configuration/tests and earlier preparation as
+`4bc707372cf9359fc8324d45d5df1965fc044f81` (25 files), with normal hooks passing
+2731 mobile and 1252 web tests; one existing web test remains skipped. No push.
+Browser artifacts are now excluded portably by .gitignore. All ignored reports,
+QA data, builds and signing material are preserved; no forced add or deletion.
+
+Fresh personal EAS/Apple/Google inventory observed latest 2.4.0(85); no build 86
+was found. Planning candidate 2.5.0(86) passes a dry run, but actual source stays
+2.4.0(85). No reservation: recheck before upload and freeze new source after applying
+versions. Apple shows an updated Paid Applications Schedule notice; owner action
+is needed before affected operations. Google public production access is inactive;
+internal testing is available. No agreement or store metadata was changed.
+
+Review evidence/D13A.8.4-final-review-20261023.md and its final-packet, inventory and
+verification receipts. Exact committed archive: 2137 files; current source pins: 1513;
+14 candidate additive migrations; 12 explicit execution holds. Offline verification
+and rejection checks are recorded in the final verification receipt. No build,
+publication, migration, enablement, paid call, real linking or D13A.9 start occurred.
+
+Current HEAD is one local commit ahead of origin. Final-review documents and this
+checkpoint are subsequent uncommitted documentation only. Main account/devices
+untouched; QA stack stays stopped. D13A.8 remains 3/6 complete: 3 fixed steps remain;
+7 broad milestones including current, 6 excluding it. Next is still D13A.8.4 on
+GPT-6 Astra / High, with exact artifact/backup/operator/authority gates open.
+
+**2026-10-23 — D13A.8.4 agreement verified and version 86 applied (AUTH-42).**
+
+Read-only personal App Store Connect Business shows both Free Apps Agreement and
+Paid Apps Agreement Active, effective October 23, 2026–September 10, 2027. R11 closed
+for this observation; no account, agreement, banking or tax mutation performed.
+
+Applied 2.5.0(86) in four version sources via the existing prepare-release.js script
+in an isolated clean copy of 4bc7073. Transferred only the verified version files and
+updated one config regression test. Actual dictionary-release config resolves the
+personal owner/project/bundles, production OTA, fingerprint policy, QA OFF and four
+features ON. Explicit old build 85 rejection remains covered by a separate fixture.
+35 focused tests, complete mobile test TypeScript, scoped lint and formatting pass.
+First launcher failed before tests due to incompatible worker flags; corrected run
+passed and both logs remain preserved. No full-suite rerun is claimed for this delta.
+
+Review evidence/D13A.8.4-version86-review-20261023.md, version86 packet and verification.
+12 integrity/refusal checks pass, 1513 full source pins, five-file source delta and
+2137-file source archive. Previous final-review packet/bundle remain immutable and
+correctly reject this changed checkout. New native fingerprints and signed artifacts
+are still absent; no build/upload/submission/publication/paid operation occurred.
+
+HEAD remains local 4bc7073, one ahead of origin; five source files plus review/task
+files are uncommitted. Numbers are applied locally but not reserved. Next: exact
+source commit/review and scoped local iOS/Android build approval, then final artifact,
+backup/delta/queue and operator readiness. No push or builds are authorized by AUTH-42.
+Main account/devices untouched; QA stack stays stopped. D13A.8 is 3/6 complete:
+3 fixed steps, 7 broad milestones including current, 6 excluding it. Astra / High.
+
+**2026-10-23 — D13A.8.4 authorized local build checkpoint started (AUTH-43).**
+
+Owner authorizes commit plus two local signed 2.5.0(86) builds, iOS IPA and Android
+AAB, with existing credentials only. No push, store submission, certificate change,
+publication, provider call, migration or real-card operation. Commit the five verified
+source changes and review/task documentation, then bind the exact resulting source.
+Use dictionary-release, frozen credentials and disabled Sentry auto-upload.
+
+PR/merge question checked read-only: no open PR; Quality runs on PR/main/develop.
+Vercel previously created Preview on feature push and Production on main merge.
+Do not treat push/merge as publication-free. Main tree equals common base f97a733;
+no extra main file changes need integration. Proceed within authorized local scope.
+Build slots: iOS unstarted, Android unstarted. Exact execution/logs go under
+reports/shared-dictionary-cefr/d13a84-local-builds-20261023. D13A.8 stays 3/6;
+3 fixed steps and 7 broad milestones including current remain. Astra / High.
+
+**2026-10-23 — AUTH-43 commit and both signed local builds completed.**
+
+Commit df08a60fd6337cce06e1706a07538185d27b3a15 contains version86 source and review
+preparation (18 files). Normal hooks pass 2732 mobile tests / 200 suites / 22 snapshots
+and 1252 web tests / 118 suites, with one existing skipped web suite/test. No push.
+1513 source pins match the committed 2146-file archive and remained unchanged in builds.
+
+Both local dictionary-release 2.5.0(86) builds succeeded and artifact audits pass:
+builds/app-2.5.0-86.ipa and builds/app-2.5.0-86.aab. IPA system signature/App Store
+profile/team/version/runtime pass; AAB bundletool/JAR signature/package/version/runtime
+pass and signer matches retained build80. Exact hashes/fingerprints are in
+[evidence/D13A.8.4-local-build-review-20261023.json](evidence/D13A.8.4-local-build-review-20261023.json).
+No certificate change, app installation/launch, store submission or debug upload.
+
+Expo Doctor reports 20/21: 12 available patch updates, retained as an open CI/release
+finding. Frozen dependencies were not upgraded during builds. Native artifacts are
+not device-tested or authorized for publication. AUTH-43's two build slots are used.
+No paid provider call, migration, runtime enablement or real linking; CEFR remains OFF.
+
+PR/merge assessment: no open PR; CI runs on PR without merge. Vercel history includes
+feature Preview and main Production deployments, so preserve no-push/no-publication
+until that behavior and PR scope are agreed. Main tree matches common base f97a733.
+Next D13A.8.4: resolve Doctor/PR checks, web/function/rollback artifact and fresh
+backup/delta/operator gates. D13A.8 remains 3/6, with 3 fixed steps and 7 broad milestones
+including current (6 excluding). Final build review/task notes are local documentation
+above committed df08a60; origin remains 0e706ee. No builds remain running. Astra / High.
+
+## 2026-10-23 — PR preparation authorized and dependencies repaired
+
+AUTH-44 permits feature push/PR/merge and associated Vercel web publication. Aligned
+SDK57 patches: Expo Doctor21/21. Updated vulnerable web Next/eslint-config-next to
+16.4.3 and Sentry to10.75.2, plus compatible transitive fixes; native df08a60 IPA/AAB
+remain historical and need rebuilding for any changed-source release. Local web
+production build and mobile application/test typing pass. Web lint first scanned
+584 generated performance capture files; excluded output/performance artifacts
+without suppressing source rules or deleting evidence. Final lint/check/hook and
+hosted CI outcomes will be recorded separately. Private logs: reports/shared-
+dictionary-cefr/d13a84-pr-20261023. No store upload/migration/server activation or
+provider call. D13A.8.4 remains in progress,3/6 complete,3 fixed steps remain.
+
+## 2026-10-23 — PR 123 and clean-checkout CI repairs
+
+Pushed 6e837da, opened PR 123 and synchronized main with 97a097f without changing
+the tree. Local complete hooks pass 2732 mobile tests, 1252 web tests and 22
+snapshots; one web test remains skipped. Hosted CI found two environment defects:
+a rollback test depended on ignored historical reports, and the database job
+lacked npm dependencies for the analysis endpoint. Prepared isolated per-run
+fixture compilation and added npm ci to that job. Both focused 21-test suites
+pass locally. Vercel Preview succeeded; new exact-head CI remains required.
+Read-only API confirms new dictionary rollout flags are absent in Vercel; no
+settings changed. D13A.8 remains 3/6 with 3 fixed steps and 7 broad milestones
+including current. No native upload, migration, server activation or paid call.
+
+The original web-fixtures job hit its 10-minute limit while apt downloaded browser
+system dependencies from the Ubuntu mirror; no browser tests had started. Extend
+only that job to 20 minutes, retaining all installation and test steps. The two
+code/environment repairs are committed as a556edd; their complete hooks pass
+2732 mobile and 1252 web tests with 22 snapshots and one existing web skip.
+
+**2026-10-24 — Quality job timeout diagnosed; bounded budget repair prepared.**
+
+PR123 HEAD bca2a84 passed database (659 tests and schema contract), browser
+fixtures (3 + 7 tests), lightweight checks and exact Vercel Preview. The quality
+job passed lint, typing, formatting, mobile tests and web coverage, then hit its
+30-minute total limit while mutation testing was still making progress:
+1404/1420 tested, 24 survived, zero individual timeouts. No final mutation score
+exists; edge tests, web build and Doctor were skipped. No merge occurred.
+
+Increase only the quality job budget to45 minutes to accommodate the measured
+22-minute mutation phase plus prerequisite and remaining checks. Test scope,
+90% mutation threshold, concurrency and protected branch requirements stay intact.
+Commit/push under AUTH-44 and require all checks for the new exact HEAD. Source
+archive bca2a84 remains historical; regenerate the integration manifest afterward.
+D13A.8 remains3/6 complete,3 fixed steps and6 other major milestones remain.
+
+The first timeout-repair commit was refused by normal hooks: both framework-config
+ESLint subprocesses exceeded15 seconds (status null). This repeats the earlier
+local cold-start timeout; the exact source previously passed hosted checks. Allow
+30 seconds for only those configuration subprocesses and assert result.error
+explicitly. Rule/config assertions and warning-fixture expectations are preserved.
+No hook bypass or successful commit is claimed before the normal retry completes.
+
+**2026-10-24 — Remaining hosted CI prerequisites repaired locally.**
+
+PR123 source b977971 completed mutation testing successfully:96.13% against90%,
+1420 mutations, no individual timeouts. Quality then failed on Edge-test read
+permissions and a test depending on ignored historical reports. Database passed
+659 tests but failed downloading postgres-meta from ECR (Data limit exceeded).
+No merge or Production deployment occurred; do not treat b977971 as fully green.
+
+The local repair grants Edge tests read access only to dependencies and required
+source directories, removes historical report reads in favor of a portable fixture
+containing schema, non-secret policy hashes and dimension sequences, and uses
+fresh synthetic verdicts. Duplicate rejection and its repaired positive control
+pass. All351 Edge tests pass with reports/ outside the read allowance. Switch
+postgres-meta from ECR to official GHCR with the identical sha256 digest; both
+GHCR and Docker Hub manifests were independently read and matched that digest.
+Fast Edge/build/Doctor checks now precede unchanged mutation testing.
+
+Next: commit/push these scoped CI repairs with normal hooks, archive the new exact
+source and require fresh protected PR checks/Preview before AUTH-44 merge. Do not
+repeat the old failed jobs after source changes. Existing local review is a draft;
+its source IDs and CI outcome need updating after the commit. No signed rebuild,
+store upload, migrations, flags, real linking or provider spending. D13A.8 stays
+3/6 complete:3 fixed steps and6 other broad milestones remain. Astra / High.

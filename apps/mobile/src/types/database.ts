@@ -8,6 +8,7 @@ import type {
   CefrAssessmentStatus,
   CefrLevel,
   DictionaryContentSource,
+  DictionaryEffectiveCardV2,
 } from '@woordenaar/domain'
 
 export interface Collection {
@@ -91,7 +92,16 @@ export interface Word {
   cefr_level?: CefrLevel | null
   cefr_status?: CefrAssessmentStatus
   cefr_confidence?: number | null
-  dictionary_content_source?: DictionaryContentSource
+  dictionary_content_source?: DictionaryContentSource | 'following'
+  dictionary_content_state?: {
+    protocol_version: 2
+    mode: DictionaryEffectiveCardV2['mode']
+    content_version: string
+    reference: DictionaryEffectiveCardV2['reference']
+    adopted_revision_id: string | null
+    head_sequence: string | null
+    watermark: string
+  }
   dictionary_content_conflict?: boolean
   dictionary_import_conflict?: boolean
   dictionary_import_recovery?: ImportRecoveryIssue

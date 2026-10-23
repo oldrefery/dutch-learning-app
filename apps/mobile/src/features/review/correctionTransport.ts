@@ -14,6 +14,7 @@ import {
 } from '@/services/reviewCorrectionResolution'
 import type { NativeCorrectionTransport } from './correctionController'
 import type { ReviewCorrectionCommand } from '@/types/ReviewCorrection'
+import { mergeReviewLearningProgress } from './learningProgress'
 
 export function createNativeCorrectionTransport(
   userId: string
@@ -36,7 +37,11 @@ export function createNativeCorrectionTransport(
     requireOwner()
     useApplicationStore.setState(state => ({
       words: state.words.flatMap(existing =>
-        existing.word_id === command.word_id ? (word ? [word] : []) : [existing]
+        existing.word_id === command.word_id
+          ? word
+            ? [mergeReviewLearningProgress(existing, word)]
+            : []
+          : [existing]
       ),
     }))
     return effective

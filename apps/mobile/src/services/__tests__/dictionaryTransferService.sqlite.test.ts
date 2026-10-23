@@ -15,6 +15,7 @@ import { parseDictionaryCollectionExport } from '@woordenaar/domain'
 jest.mock('@/db/initDB')
 jest.mock('@/lib/sentry')
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 jest.mock('@/stores/useApplicationStore', () => ({

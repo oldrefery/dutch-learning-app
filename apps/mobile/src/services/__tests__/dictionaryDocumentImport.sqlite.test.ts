@@ -21,6 +21,7 @@ import {
 jest.mock('@/db/initDB')
 jest.mock('@/lib/sentry')
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: jest.fn(() => true),
 }))
 jest.mock('@/stores/useApplicationStore', () => ({

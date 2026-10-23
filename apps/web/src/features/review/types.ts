@@ -40,6 +40,7 @@ export interface ReviewEventEvidence {
 }
 
 export interface ReviewWorkspaceData {
+  dictionaryWatermark?: string
   dictionaryContentEnabled?: boolean
   correctionsAvailable?: boolean
   collections: ReviewCollection[]

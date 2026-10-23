@@ -3,12 +3,19 @@ import { Sentry } from '@/lib/sentry'
 import { wordService } from '@/lib/supabase'
 import { logError, logInfo } from '@/utils/logger'
 import { wordRepository } from '@/db/wordRepository'
-import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
+import {
+  getDictionaryWordMaterializations,
+  getDictionaryWordProjections,
+} from '@/db/dictionaryWordReads'
 import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
 import { dictionaryImportRecoveryViewRepository } from '@/db/dictionaryImportRecoveryViewRepository'
 import { wordToDictionaryContent } from '@/db/dictionaryContentMapping'
 import { applyDictionaryMaterializations } from '@/db/dictionaryWordMaterialization'
-import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingEnabled,
+  isDictionaryFollowingImportsEnabled,
+} from '@/constants/dictionaryContent'
 import * as Crypto from 'expo-crypto'
 import { createStoreError, ErrorCategory } from '@/types/ErrorTypes'
 import type {
@@ -145,10 +152,13 @@ const requestSharedImport = (
   collectionId: string,
   words: Partial<Word>[],
   source?: SharedImportSource
-) =>
-  source
+) => {
+  if (isDictionaryFollowingImportsEnabled())
+    throw new Error('Use the explicit shared following import.')
+  return source
     ? wordService.importWordsToCollection(collectionId, words, source)
     : wordService.importWordsToCollection(collectionId, words)
+}
 
 const createWordFromAnalysis = (
   analysis: AnalyzedWord | GeminiWordAnalysis,
@@ -232,12 +242,7 @@ export const createWordActions = (
 
       // Offline-first: fetch from local SQLite
       const words = await wordRepository.getWordsByUserId(userId)
-      const materializations = isDictionaryContentEnabled()
-        ? await dictionaryContentRepository.getMaterializedContent(
-            userId,
-            words.map(word => word.word_id)
-          )
-        : new Map()
+      const projectedWords = await getDictionaryWordProjections(userId, words)
       const imports = isDictionaryContentEnabled()
         ? await dictionaryImportRepository.getPending(userId)
         : []
@@ -257,17 +262,16 @@ export const createWordActions = (
 
       // Empty word list is a valid state for new users
       set({
-        words: applyDictionaryMaterializations(words, materializations).map(
-          word => ({
+        words: projectedWords.map(word => {
+          const conflict = importConflicts.has(word.word_id)
+          const issue = importIssues.get(word.word_id)
+          if (!conflict && !issue) return word
+          return {
             ...word,
-            ...(importConflicts.has(word.word_id) && {
-              dictionary_import_conflict: true,
-            }),
-            ...(importIssues.has(word.word_id) && {
-              dictionary_import_recovery: importIssues.get(word.word_id),
-            }),
-          })
-        ),
+            ...(conflict && { dictionary_import_conflict: true }),
+            ...(issue && { dictionary_import_recovery: issue }),
+          }
+        }),
         wordsLoading: false,
       })
     } catch (error) {
@@ -306,6 +310,8 @@ export const createWordActions = (
     analyzedWord: AnalyzedWord | GeminiWordAnalysis,
     collectionId?: string
   ) => {
+    if (isDictionaryFollowingEnabled())
+      throw new Error('Use published shared meanings to add a word.')
     try {
       const userId = get().currentUserId
       if (!userId) {
@@ -722,6 +728,10 @@ export const createWordActions = (
       }
 
       // Call the AI analysis service with the word's dutch_lemma
+      if (currentWord.user_id !== userId)
+        throw new Error('This word belongs to another account.')
+      await wordRepository.assertPrivateContentEditable(userId, wordId)
+      if (get().currentUserId !== userId) return null
       const response = await wordService.analyzeWord(currentWord.dutch_lemma, {
         forceRefresh: true,
       })
@@ -792,11 +802,9 @@ export const createWordActions = (
       // analysis would collide with another active word.
       const persistedWord =
         await wordRepository.updateAnalyzedWord(updatedWordData)
-      const materializations = isDictionaryContentEnabled()
-        ? await dictionaryContentRepository.getMaterializedContent(userId, [
-            persistedWord.word_id,
-          ])
-        : new Map()
+      const materializations = await getDictionaryWordMaterializations(userId, [
+        persistedWord.word_id,
+      ])
       if (get().currentUserId !== userId) return null
       const latestWords = get().words
       const wordIndex = latestWords.findIndex(w => w.word_id === wordId)

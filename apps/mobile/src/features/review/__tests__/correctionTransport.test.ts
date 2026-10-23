@@ -189,3 +189,29 @@ it('allows cancellation only if no durable intent was written', async () => {
   expect(await transport.cancelUnqueued!(command)).toBe(true)
   expect(recovery.finish).not.toHaveBeenCalled()
 })
+
+it.each(['apply', 'keepServer'] as const)(
+  'preserves current content and conflict metadata after %s refreshes learning',
+  async action => {
+    const displayed = {
+      ...vocabulary[0],
+      translations: { en: ['current shared meaning'] },
+      collection_id: 'current-private-collection',
+      dictionary_content_source: 'following' as const,
+      dictionary_content_conflict: true,
+      dictionary_import_conflict: true,
+      cefr_level: 'A2' as const,
+    }
+    useApplicationStore.setState({ words: [displayed] })
+    await createNativeCorrectionTransport(userId)[action](command)
+    expect(useApplicationStore.getState().words[0]).toEqual({
+      ...displayed,
+      interval_days: word.interval_days,
+      repetition_count: word.repetition_count,
+      easiness_factor: word.easiness_factor,
+      next_review_date: word.next_review_date,
+      last_reviewed_at: word.last_reviewed_at,
+      updated_at: word.updated_at,
+    })
+  }
+)

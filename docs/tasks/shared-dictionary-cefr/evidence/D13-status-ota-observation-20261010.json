@@ -1,0 +1,182 @@
+{
+  "date": "2026-10-10",
+  "timezone": "Europe/Amsterdam",
+  "checked_at": "2026-10-09T22:44:33.573511+00:00",
+  "mode": "read-only",
+  "identity": "oldrefery",
+  "sentry": {
+    "checked_at": "2026-10-09T22:44:33.573511+00:00",
+    "environment": "production",
+    "time_range": "14d",
+    "queries": [
+      {
+        "query": "is:unresolved",
+        "returned_issue_count": 5,
+        "issues": [
+          {
+            "id": "7714106978",
+            "shortId": "DUTCH-LEARNING-APP-48",
+            "status": "unresolved",
+            "level": "warning",
+            "firstSeen": "2026-10-09T22:17:39Z",
+            "lastSeen": "2026-10-09T22:18:32Z",
+            "count": "5",
+            "permalink": "https://oldrefery.sentry.io/issues/7714106978/"
+          },
+          {
+            "id": "7784180404",
+            "shortId": "DUTCH-LEARNING-APP-4E",
+            "status": "unresolved",
+            "level": "error",
+            "firstSeen": "2026-10-09T22:06:48Z",
+            "lastSeen": "2026-10-09T22:06:48Z",
+            "count": "1",
+            "permalink": "https://oldrefery.sentry.io/issues/7784180404/"
+          },
+          {
+            "id": "7737950888",
+            "shortId": "DUTCH-LEARNING-APP-4C",
+            "status": "unresolved",
+            "level": "error",
+            "firstSeen": "2026-09-17T13:29:37Z",
+            "lastSeen": "2026-10-09T22:06:40Z",
+            "count": "24",
+            "permalink": "https://oldrefery.sentry.io/issues/7737950888/"
+          },
+          {
+            "id": "7715295374",
+            "shortId": "DUTCH-LEARNING-APP-49",
+            "status": "unresolved",
+            "level": "warning",
+            "firstSeen": "2026-10-04T22:45:18Z",
+            "lastSeen": "2026-10-05T14:23:41Z",
+            "count": "3",
+            "permalink": "https://oldrefery.sentry.io/issues/7715295374/"
+          },
+          {
+            "id": "7737951320",
+            "shortId": "DUTCH-LEARNING-APP-4D",
+            "status": "unresolved",
+            "level": "error",
+            "firstSeen": "2026-09-17T13:29:35Z",
+            "lastSeen": "2026-09-25T21:24:17Z",
+            "count": "2",
+            "permalink": "https://oldrefery.sentry.io/issues/7737951320/"
+          }
+        ]
+      },
+      {
+        "query": "timestamp:>2026-10-09T22:28:25.284Z dist:85",
+        "returned_issue_count": 0,
+        "issues": []
+      },
+      {
+        "query": "expo.updates.update_id:01a122c8-2844-7c42-807e-2595f8b8b287",
+        "returned_issue_count": 0,
+        "issues": []
+      },
+      {
+        "query": "expo.updates.update_id:01a122c8-2844-7513-91a9-3a42b2672229",
+        "returned_issue_count": 0,
+        "issues": []
+      }
+    ],
+    "historical_issues": [
+      {
+        "id": "7737950888",
+        "shortId": "DUTCH-LEARNING-APP-4C",
+        "status": "unresolved",
+        "level": "error",
+        "firstSeen": "2026-09-17T13:29:37.910000Z",
+        "lastSeen": "2026-10-09T22:06:40Z",
+        "count": "24",
+        "permalink": "https://oldrefery.sentry.io/issues/7737950888/"
+      },
+      {
+        "id": "7715295374",
+        "shortId": "DUTCH-LEARNING-APP-49",
+        "status": "unresolved",
+        "level": "warning",
+        "firstSeen": "2026-09-06T13:28:25.473000Z",
+        "lastSeen": "2026-10-05T14:23:41Z",
+        "count": "4",
+        "permalink": "https://oldrefery.sentry.io/issues/7715295374/"
+      },
+      {
+        "id": "7784180404",
+        "shortId": "DUTCH-LEARNING-APP-4E",
+        "status": "unresolved",
+        "level": "error",
+        "firstSeen": "2026-10-09T22:06:48.619000Z",
+        "lastSeen": "2026-10-09T22:06:48Z",
+        "count": "1",
+        "permalink": "https://oldrefery.sentry.io/issues/7784180404/"
+      }
+    ]
+  },
+  "ota_metrics": {
+    "ios": {
+      "update_id": "01a122c8-2844-7c42-807e-2595f8b8b287",
+      "group_id": "e46de173-daaf-4713-8a23-ac60d65ac70d",
+      "totals": {
+        "uniqueUsers": 1,
+        "installs": 1,
+        "failedInstalls": 0,
+        "crashRatePercent": 0
+      },
+      "through": "2026-10-09T22:44:36.575Z",
+      "channel_embedded_users": 1,
+      "channel_ota_user_sum": 2
+    },
+    "android": {
+      "update_id": "01a122c8-2844-7513-91a9-3a42b2672229",
+      "group_id": "34cfafa2-e672-4bd1-a0c0-649dbeed8f5e",
+      "totals": {
+        "uniqueUsers": 0,
+        "installs": 0,
+        "failedInstalls": 0,
+        "crashRatePercent": 0
+      },
+      "through": "2026-10-09T22:44:36.570Z",
+      "channel_embedded_users": 4,
+      "channel_ota_user_sum": 0
+    }
+  },
+  "warning48": {
+    "issue_id": "7714106978",
+    "short_id": "DUTCH-LEARNING-APP-48",
+    "operation": "getUserAccessLevel",
+    "classification": "Offline network warning on previous AUTH-28 iOS OTA; compatible with owner offline test; not an AUTH-29 regression",
+    "event_samples": [
+      {
+        "event_id": "78df843c31b24f2d82f40e3ba0739c1e",
+        "date": "2026-10-09T22:18:32Z",
+        "update_id": "01a122ad-683e-7763-a736-9a522c38cec8"
+      },
+      {
+        "event_id": "a82afb3b95e143be8401ece44a598478",
+        "date": "2026-10-09T22:18:32Z",
+        "update_id": "01a122ad-683e-7763-a736-9a522c38cec8"
+      },
+      {
+        "event_id": "537657910bf349dbb3620541ac99cf70",
+        "date": "2026-10-09T22:17:39Z",
+        "update_id": "01a122ad-683e-7763-a736-9a522c38cec8"
+      }
+    ]
+  },
+  "owner_check": "AUTH-29 iOS sync/status without error confirmed; AUTH-28 iOS offline preservation confirmed",
+  "limitations": [
+    "No independent device update-ID capture",
+    "Diagnostic downloads can affect EAS metrics",
+    "Channel OTA totals sum groups and may double-count the same person",
+    "Android OTA adoption not demonstrated",
+    "No new server census, orphan/latency/cost inspection in this check",
+    "Seven-day observation not complete"
+  ],
+  "d13": "in_progress",
+  "d14": "pending",
+  "cefr": "OFF",
+  "external_mutations": 0,
+  "private_receipts": "reports/shared-dictionary-cefr/d13-observe-20261010-0044"
+}

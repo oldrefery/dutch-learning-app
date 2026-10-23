@@ -8,6 +8,7 @@ import type {
 import type { PostgrestSingleResponse } from '@supabase/supabase-js'
 import { dictionaryContentSync } from '../dictionaryContentSync'
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 
@@ -27,7 +28,10 @@ jest.mock('@/db/dictionaryContentRepository', () => ({
   },
 }))
 jest.mock('@/db/wordRepository', () => ({
-  wordRepository: { getWordsByUserId: jest.fn() },
+  wordRepository: {
+    getWordsByUserId: jest.fn(),
+    assertPrivateContentEditable: jest.fn().mockResolvedValue(undefined),
+  },
 }))
 jest.mock('@/lib/supabase')
 
@@ -165,6 +169,72 @@ const installTableRows = (
 }
 
 describe('dictionaryContentSync', () => {
+  it('hydrates an unlinked legacy card despite old nullable-field omissions', async () => {
+    const legacy = {
+      ...content,
+      dutch_original: '',
+      analysis_notes: '',
+      is_separable: true,
+      prefix_part: null,
+      conjugation: {
+        present: 'loop',
+        simple_past: 'liep',
+        past_participle: 'gelopen',
+      },
+      examples: [{ nl: 'Ik loop.', en: 'I walk.' }],
+    }
+    jest.mocked(supabase.rpc).mockResolvedValue(
+      rpcResult({
+        protocol_version: 1,
+        cards: [
+          {
+            ...linkedCard,
+            reference: null,
+            content_version: 0,
+            content: legacy,
+            cefr: { status: 'unknown' },
+          },
+        ],
+      })
+    )
+    installTableRows({})
+    await expect(dictionaryContentSync.pull(USER_ID, [WORD_ID])).resolves.toBe(
+      1
+    )
+    expect(dictionaryContentRepository.saveCardStates).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({
+          word_id: WORD_ID,
+          reference: null,
+          content_version: 0,
+          fallback_content: expect.objectContaining({
+            dutch_original: null,
+            analysis_notes: null,
+            is_separable: true,
+            prefix_part: null,
+            conjugation: { ...legacy.conjugation, simple_past_plural: null },
+            examples: [{ ...legacy.examples[0], ru: null }],
+          }),
+        }),
+      ],
+      []
+    )
+  })
+
+  it('continues to reject malformed pinned canonical content', async () => {
+    jest.mocked(supabase.rpc).mockResolvedValue(
+      rpcResult({
+        protocol_version: 1,
+        cards: [{ ...linkedCard, content: { ...content, dutch_original: '' } }],
+      })
+    )
+    installTableRows({})
+    await expect(
+      dictionaryContentSync.pull(USER_ID, [WORD_ID])
+    ).rejects.toThrow('Invalid effective dictionary content')
+    expect(dictionaryContentRepository.saveCardStates).not.toHaveBeenCalled()
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
     Object.assign(supabase.auth, { getUser: jest.fn() })

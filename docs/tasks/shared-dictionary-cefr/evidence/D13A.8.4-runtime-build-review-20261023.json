@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "stage": "D13A.8.4",
+  "status": "requested-local-repair-complete-release-held",
+  "authority": {
+    "id": "AUTH-40",
+    "local_runtime_config_tests": true,
+    "production_operations": false,
+    "paid_requests": 0,
+    "real_links": 0,
+    "commit_push": false
+  },
+  "source": {
+    "branch": "feature/shared-dictionary-schema",
+    "base_commit": "0e706eead0c2e7c3a8aecc31883cc3d27061fd3b",
+    "persistence": "local-only-uncommitted",
+    "parent_packet_sha256": "63135787722f0bf537de3f66d6bd9c5bfdc7dca37ac655a6fa300902678304d1",
+    "parent_archive_sha256": "86621e36f2445686f7a5915c893c29efa70797f62878d6e4847ff62293369953",
+    "changed_existing_files": 4,
+    "new_files": 7,
+    "unchanged_parent_files": 1502,
+    "current_source_files": 1513,
+    "source_index": "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/source-index.json",
+    "source_index_sha256": "cf176602b59ae79a5f7e71173ad0bfad0435782865d3f3a3959cbd02f8df9e94",
+    "delta": {
+      "apps/mobile/app.config.js": {
+        "before_sha256": "8834a489a7110e7be8ba408f836f98f8531d67731939b9d81ff80b927fcc8ab2",
+        "after_sha256": "ae12c87fbc6319474875d363de92b80ce47beaba270200dd180cdc306a9d64f7"
+      },
+      "apps/mobile/eas.json": {
+        "before_sha256": "0273a681e60b7fc982d869b11a1064a0d5a9929bc247748d39bd53dc3ef9d7f8",
+        "after_sha256": "99ecc6ac48bbb9ab2e5826ee6c45456a4fad4bdfe0dcd74692779077529ad2c3"
+      },
+      "apps/mobile/src/__tests__/appConfigOta.test.ts": {
+        "before_sha256": "af703bd6fbec7b4b84f55abe7915e956ee9f383379720ea70ad5b3e40bde25d6",
+        "after_sha256": "56b51c522d03ef1bd25a1575732785430e3dc62c6d082684178dc53f8c0ed10c"
+      },
+      "supabase/functions/dictionary-creation/.env.example": {
+        "before_sha256": null,
+        "after_sha256": "d595ccc44b001edae7268f17320e2bb46ab5d17c5c9696c54612be04d41b788a"
+      },
+      "supabase/functions/dictionary-creation/bootstrap.ts": {
+        "before_sha256": null,
+        "after_sha256": "6a6dcd9adfb43daa06730fafc9c143f103d875e383ce0601babccd56ea256a91"
+      },
+      "supabase/functions/dictionary-creation/deno.json": {
+        "before_sha256": null,
+        "after_sha256": "a88b1240a8e1c40e8eedff488faddc4996adc751b154f9cec321c9e605a6ea39"
+      },
+      "supabase/functions/dictionary-creation/deno.lock": {
+        "before_sha256": null,
+        "after_sha256": "2efa2d171d069caba19411f6e80de3347325bbd2cd28f9c282be11c65d438491"
+      },
+      "supabase/functions/dictionary-creation/endpoint.ts": {
+        "before_sha256": "fcf5be82e8bce76c8189c992a57ebd819c8da5ccf6d61a377f1e4b70d2d492e6",
+        "after_sha256": "a514e6c7408e772b500b84289894a0f919e3da25c86ee0ba9093ff9e50230020"
+      },
+      "supabase/functions/dictionary-creation/index.ts": {
+        "before_sha256": null,
+        "after_sha256": "cd049c0b54797a0bfef1f11910c9f61e27d0d64ea4687d023b868f18a75c93c8"
+      },
+      "supabase/functions/dictionary-creation/runtime.ts": {
+        "before_sha256": null,
+        "after_sha256": "e75754add9c0c9788ad1bedb9193ac4d136bc95e371d2daf40f13daae540ff5a"
+      },
+      "supabase/functions/dictionary-creation/runtime_test.ts": {
+        "before_sha256": null,
+        "after_sha256": "d86d502b59407ec8e4403ba43b19677a4706d4900434fc29f65ec9d67b27b0d3"
+      }
+    },
+    "delta_archive": "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/source-delta-0e706ee.tar.gz",
+    "delta_archive_sha256": "bca752bfdc929858d72e13f1a2b3274067447cfe4fc1486a65bae7553a4d0157"
+  },
+  "verification": {
+    "edge_tests": 193,
+    "edge_network_denied": true,
+    "function_local_tests": 78,
+    "function_local_tests_overlap_edge": true,
+    "mobile_tests": 34,
+    "actual_entrypoint_loopback": {
+      "status": "pass",
+      "actual_index_served": true,
+      "http_status": 503,
+      "body": {
+        "code": "dictionary-creation-disabled"
+      },
+      "credential_env_permission": false,
+      "external_network_permission": false,
+      "listener_override": "ephemeral loopback only",
+      "production_operations": 0
+    },
+    "typecheck": "pass",
+    "lint": "pass",
+    "format": "pass",
+    "historical_packet_rejects_current_source": true,
+    "independent_reviewer": false,
+    "new_native_or_paid_qualification": false
+  },
+  "configuration": {
+    "creation_default_enabled": false,
+    "creation_sdk": "2.110.8",
+    "creation_policy_prompt_exact_bindings": true,
+    "existing_worker_prompts_transports_unchanged": true,
+    "mobile_profile": "dictionary-release",
+    "flags": {
+      "EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED": "true",
+      "EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED": "true",
+      "EXPO_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED": "true",
+      "EXPO_PUBLIC_DICTIONARY_SHARED_ANALYSIS_ENABLED": "true"
+    },
+    "current_version": "2.4.0",
+    "current_build": 85,
+    "selected_new_version": null,
+    "selected_new_build": null,
+    "synthetic_build86_is_not_reserved": true,
+    "android_submit_status": "draft",
+    "remote_environment_changed": false
+  },
+  "readiness": {
+    "ready_for_execution": false,
+    "R01": "local flag bindings repaired; final embedded artifacts pending",
+    "R02": "local bootstrap/dependency configuration repaired; hosted exact artifact checks pending",
+    "remaining_holds": ["R03", "R04", "R05", "R06", "R07", "R08", "R09", "R10"],
+    "historical_unknown_retained_nanousd": 560000000,
+    "final_release_sha": null,
+    "production_artifacts": [],
+    "authorized_commands_to_execute": [],
+    "D13A9_started": false
+  },
+  "remaining": {
+    "fixed_stage_steps": 3,
+    "broad_including_current": 7,
+    "broad_excluding_current": 6
+  },
+  "evidence_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/edge-tests-final.log": "a8b5516165d4292aa0517665f2961021c903c82e0a9319355f2005a282c1fbec",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/creation-isolated-tests.log": "2e236ca330cf42221d902a772d3eaadd78b521cabd1bf7ba5afedfe92344cf9f",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/mobile-config-tests-verified.log": "053e1788568596ebb496ec042b49c4bc9a4c22f8622b0b281e45c7a512d7a94a",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/creation-entry-check-final.log": "6b1c7be2eaac37077867ea04e6b46877a18ca3e81ad27bd6cf89f39b6130642f",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/mobile-test-types-final.log": "b08cacdb1afa6cdff3f23d09e5ecf164db5be7f7bde02e2ac46ae4f2238be303",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/edge-lint.log": "ff3955886a906e95785d1e49cc4d95e0db9f13b5f5312a5fa2895fe30443bab0",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/mobile-lint-verified.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/format-check.log": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/entry-smoke-review.json": "5f17897a20217f555e9d8ee9fdebace91c2049379e437d08b60967390102137e",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/old-packet-rejection.log": "2456b467c3e206d921c53f3c1c363966d9185cc589c6954f6e9630264c259e0e",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/entry-smoke.ts": "2cc132ecc18e04b556a6663157e3b7585488cb72c3f7ee7f377777defb423e9b",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/entry-smoke.py": "9960c7c242f4d1580ea164284b8ab2c87a970c6c592bc1dc33063db1e36f5430",
+    "reports/shared-dictionary-cefr/d13a84-runtime-build-20261023/package-review.py": "8e3773cdbcdf8d3cf265b272e4b1b9ef421b64f5b2728537236e0dc5b528c916",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-runtime-build-review-20261023.md": "4c0f856116fd71f90836e0e425cb848fc3c3f6bcd9ee1c0fbf364597ce7c8d52"
+  }
+}

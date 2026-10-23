@@ -394,3 +394,19 @@ describe('wordService analyzeWord Edge Function error handling', () => {
     )
   })
 })
+
+test('blocks lower legacy provider calls in following mode before network or retries', async () => {
+  jest.clearAllMocks()
+  process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+  process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED = 'true'
+  try {
+    await expect(wordService.analyzeWord('huis')).rejects.toThrow(
+      'Use published shared meanings'
+    )
+    expect(assertNetworkConnection).not.toHaveBeenCalled()
+    expect(getSupabaseFunctionsMock().functions.invoke).not.toHaveBeenCalled()
+  } finally {
+    delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+    delete process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED
+  }
+})

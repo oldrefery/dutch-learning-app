@@ -1,3 +1,4 @@
+import { useShallow } from 'zustand/react/shallow'
 import React, { useMemo, useState, useCallback } from 'react'
 import {
   StyleSheet,
@@ -50,7 +51,12 @@ function SwipeableCollectionCardContent({
   const colorScheme = useColorScheme() ?? 'light'
   const translateX = useSharedValue(0)
   const [showContextMenu, setShowContextMenu] = useState(false)
-  const { userAccessLevel, collections } = useApplicationStore()
+  const { userAccessLevel, collections } = useApplicationStore(
+    useShallow(state => ({
+      userAccessLevel: state.userAccessLevel,
+      collections: state.collections,
+    }))
+  )
 
   // Calculate real stats for this collection
   const collectionWords = words.filter(

@@ -1,5 +1,11 @@
 # D02 foundation proposal — shared content with private learning state
 
+> October10 update: this document records the implemented pinned-revision baseline.
+> DEC-10 and plan section3.1/D13A supersede the explicit-adoption target for the next
+> release. Analysis is shared-only; full_access users/admins may request validated
+> shared reanalysis. Existing contracts stay active until a verified,
+> separately authorized rollout. Do not rewrite historical implementation evidence.
+
 Status: foundation policy accepted in part on 2026-09-21; technical details remain
 proposed. Accepted: shared content/private learning, private personal edits and
 explicit revision adoption. No implementation authority is implied.

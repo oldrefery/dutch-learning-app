@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "stage": "D13A.8.4",
+  "reviewed_at": "2026-10-23T21:30:40.468735+00:00",
+  "status": "two_authorized_local_artifacts_built_and_verified_release_held",
+  "authority": {
+    "id": "AUTH-43",
+    "commit_completed": true,
+    "ios_builds_completed": 1,
+    "android_builds_completed": 1,
+    "remaining_local_build_slots": 0,
+    "push": false,
+    "merge": false,
+    "submission": false,
+    "publication": false,
+    "credential_creation_or_change": false,
+    "paid_provider_requests": 0,
+    "real_links": 0
+  },
+  "source": {
+    "commit": "df08a60fd6337cce06e1706a07538185d27b3a15",
+    "tree": "d21893df54ff9ca8d7db9b80d2b42995301b637c",
+    "source_files": 1513,
+    "pins_match_version86_packet": true,
+    "clean": true,
+    "archive": "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/source-df08a60.tar",
+    "archive_sha256": "050a0d56bea87ed9d93d97c1aba1834d9787226f948292488c913a797f429453",
+    "archive_files": 2146,
+    "source_pins_verified_against_committed_archive": true
+  },
+  "artifacts": {
+    "ios": {
+      "status": "passed",
+      "artifact": "builds/app-2.5.0-86.ipa",
+      "artifact_sha256": "339d1e232408f2096da41adecb88ca25706df915956ffc014599a5c067ae9655",
+      "bytes": 24080430,
+      "bundle": "com.oldrefery.dutch-learning-app",
+      "version": "2.5.0",
+      "build": "86",
+      "team": "7FQ395U52U",
+      "codesign_deep_strict": true,
+      "distribution": "App Store",
+      "get_task_allow": false,
+      "profile_expiration": "2027-07-24T11:47:54",
+      "runtime_version": "02b8357f5c6753884003d0833c743e9876a25067",
+      "fingerprint_files": [
+        {
+          "path": "EXUpdates.bundle/fingerprint",
+          "sha256": "91963e4ec16b37a6dc72756eee404e1e5803826f4193dc18072525ea33de3489"
+        }
+      ],
+      "updates_enabled": true,
+      "channel": "production",
+      "javascript_sha256": "a600c63be33b0657aa89ebd4074352a13596a030992b222b65073c96a74d6b48",
+      "installed_or_launched": false
+    },
+    "android": {
+      "status": "passed",
+      "artifact": "builds/app-2.5.0-86.aab",
+      "bytes": 86435679,
+      "artifact_sha256": "915dc0f7209e2b0f677f2ad5c45b4bbf577ed6113284af8659b5ce0cc90d17a1",
+      "package": "com.oldrefery.dutchlearningapp",
+      "version": "2.5.0",
+      "build": 86,
+      "debuggable": false,
+      "bundletool_version": "1.18.1",
+      "bundletool_sha256": "675786493983787ffa11550bdb7c0715679a44e1643f3ff980a529e9c822595c",
+      "bundle_validation": true,
+      "jar_signature_verified": true,
+      "signer_certificate_sha256": "764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc",
+      "signer_matches_retained_build80": true,
+      "runtime_version": "7743c14dc8f3e727bf2b955746d43f0b4a054528",
+      "updates_enabled": true,
+      "channel": "production",
+      "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+      "javascript_sha256": "853539aaf189025f4e42251027e8ebef2703eae6464af227755605b886ab4322",
+      "installed_or_launched": false
+    }
+  },
+  "checks": {
+    "mobile_suites": 200,
+    "mobile_tests": 2732,
+    "mobile_snapshots": 22,
+    "web_suites": 118,
+    "web_tests": 1252,
+    "web_skipped": 1,
+    "all_1513_source_hashes_match_commit": true,
+    "both_actual_build_exit_codes": 0,
+    "expo_doctor": {
+      "passed": 20,
+      "total": 21,
+      "failed_check": "Packages match versions required by installed Expo SDK",
+      "patch_updates_reported": 12,
+      "not_fixed_in_frozen_source": true,
+      "details": "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/expo-doctor-review.log"
+    },
+    "hosted_CI_for_candidate_verified": false,
+    "new_signed_artifacts_device_tested": false,
+    "verification_notes": [
+      "Initial sandbox codesign trust lookup failed; same IPA passed system trust verification outside sandbox without credential changes.",
+      "Audit readers were corrected to the actual Expo resource layout and bundletool 1.18.1 CLI syntax; no artifact rebuild or patch occurred."
+    ]
+  },
+  "github_order": {
+    "repository": "oldrefery/dutch-learning-app",
+    "main": "44141e00bddfe00267314374bc33a7a0cf8fb4a2",
+    "feature_remote": "0e706eead0c2e7c3a8aecc31883cc3d27061fd3b",
+    "open_prs_for_feature": 0,
+    "main_tree_matches_common_base": "f97a733407a4d2b37e8f9ca030ad9574de85a794",
+    "quality_trigger": "PR to main/develop or push main/develop; not feature push",
+    "observed_deployments": [
+      {
+        "id": 7287545434,
+        "environment": "Preview",
+        "sha": "0e706eead0c2e7c3a8aecc31883cc3d27061fd3b",
+        "creator": "vercel[bot]",
+        "created_at": "2026-10-23T19:58:56Z"
+      },
+      {
+        "id": 6846341152,
+        "environment": "Production",
+        "sha": "44141e00bddfe00267314374bc33a7a0cf8fb4a2",
+        "creator": "vercel[bot]",
+        "created_at": "2026-10-04T20:32:26Z"
+      }
+    ],
+    "conclusion": "PR review before release is recommended; merge is not required to run PR CI. Push/merge may trigger Vercel deployment and remain outside current authorization. Build authorized local feature commit now."
+  },
+  "debug_artifacts": {
+    "ios_archives": [
+      {
+        "path": "/Users/devrush/Library/Developer/Xcode/Archives/2026-10-23/DeWoordenaar 2026-10-23 23.14.15.xcarchive",
+        "version": "2.5.0",
+        "build": "86",
+        "dsym_directories": 7
+      }
+    ],
+    "automatic_upload_authorized": false
+  },
+  "execution_holds": {
+    "R01": "Native signature/version/runtime/profile checks passed; final controlled cohort behavior remains unverified.",
+    "R02": "Hosted creation/analysis artifacts remain undeployed and disabled.",
+    "R03": "Local 2.5.0(86) is committed and built, not reserved/uploaded; recheck store availability before upload.",
+    "R04": "IPA/AAB now exist; exact web/function and compatible rollback artifacts remain unverified.",
+    "R05": "Fresh protected production backup/restore, schema/delta and device queues pending.",
+    "R06": "Real-link authority remains zero.",
+    "R07": "Production profile/roles/quota/spending controls pending.",
+    "R08": "PR/exact-source hosted checks pending; Expo Doctor reports 12 available patch updates (20/21).",
+    "R09": "AUTH-43 local commit/build scope fulfilled; no push/merge/distribution/deployment/activation authority.",
+    "R10": "Live operator delivery/compensation readiness pending.",
+    "R12": "Google public production eligibility remains conditional; internal testing is available."
+  },
+  "closed_holds": {
+    "R11": "Apple Free/Paid Apps Agreements observed Active before builds."
+  },
+  "unknown_retained_nanousd": 560000000,
+  "ready_for_release_execution": false,
+  "evidence_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/commit.log": "cf60d55785cf1f295ada3b106437ace7c0bc03c8480dc27e86593514481a7036",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/source-freeze.json": "42ee8561dc703fa26decf39edb741dea421dbb4082f3fd6dfc855e82890b97c5",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/committed-source-review.json": "801d169d7f89a5482410d6c7c1bfa67f6be0f956e61971c77cf763ce7d40cc94",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/ios-slot.json": "776c028cd744d7561276c0eb2cbebc843cb42ec94a6ada0fd9d9f1221f10bb2d",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/android-slot.json": "1df7f885cdb04e3efe3c427cd906f4aa855ce8bcb773c939be4f501d30dbce2e",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/ios-artifact-review.json": "87f36aad4aec027aa1c8745c7db5de6206c2763d543d842d2119124f958775cb",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/android-artifact-review.json": "6f831e1556c30c595ff6d784eaed0d39405c6d53e5a3bce58ed86677d2a10404",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/ios-codesign-verify.log": "e44b2cf4896b0566291d8daba91f42e0c50ed07841d6cdc2ae6b3193fb83ae0e",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/android-bundle-validation.log": "963d41f9ee98170d7bc7a846eb92c93fb15cafa0bafcc3e7aafc52b51bcf83df",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/android-jarsigner.log": "765b64afda002ae5e4395d61f698f773a43aae91377ca25df818c3db61b451db",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/android-manifest.xml": "7afe50fefe5b873fd1022d318d6698b9a243f88826206d866d673f29bf9fc971",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/android-runtime-resource.log": "7c3eb05ea675495e4e4fcf455aeb970505fb02248fc4ca61b305eb3d731134ff",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/expo-doctor-review.log": "be03f7e270956550220579e0751f0bd50b376dc7a0165bab55ea51651b99d86f",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/github-order-review.json": "1a40ba788a76432d889a2a5d60485adde9fe66a60426b8b939f11fb30ab82678",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/native-debug-artifacts.json": "52c9e9ef283effe36e652a4b364aabd9cce0c7e760894bea77c934dcd70d069a",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/ios-build.log": "b3f6acb75459b59c70c26cd87957d46a133f7928324a9e0978e4fdba36144e6f",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/android-build.log": "44bd98f1e645d2458a5481bb53ed377c0c4ddb10fc01d6e51ab127f72f79904f",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/run-local-build.py": "1d6f5ec9520b14950672fe542fed60ffc6cf7485c83f39d225ac908b46262d40",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/verify-ios.py": "0918b74e599e50b5d9f49dc30fdf9c7bdb6725159d0c73b8f0b32043437572c5",
+    "reports/shared-dictionary-cefr/d13a84-local-builds-20261023/verify-android.py": "d25f239a019059ea9e2e523b8a49cc7b330b3ea6cf661be0ffebb64eb7bd7944"
+  },
+  "remaining": {
+    "stage_steps": 3,
+    "broad_including_current": 7,
+    "broad_excluding_current": 6
+  }
+}

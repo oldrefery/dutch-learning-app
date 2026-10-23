@@ -12,6 +12,7 @@ jest.mock('@/lib/supabase', () => ({
 jest.mock('@/lib/sentry')
 jest.mock('@/utils/logger')
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 

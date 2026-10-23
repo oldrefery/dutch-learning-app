@@ -3,11 +3,17 @@ import 'server-only'
 import {
   hydrateOwnedWords,
   isDictionaryContentEnabled,
+  isDictionaryFollowingEnabled,
   type DictionaryDatabase,
 } from '@/features/dictionary/repository'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { parseSharedDictionaryCollection } from '@woordenaar/domain'
+import {
+  parseSharedDictionaryCollection,
+  parseSharedDictionaryCollectionV2,
+  type SharedDictionaryCollectionV2,
+} from '@woordenaar/domain'
 
+import type { DictionaryFollowingImportDatabase } from '@woordenaar/supabase-contracts'
 import type { Database } from '@woordenaar/supabase-contracts'
 import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
@@ -41,6 +47,25 @@ export interface SharedCollectionImportContext {
   collection: SharedCollectionRow
   collections: SharedTargetCollection[]
   previewWords: SharedCollectionPreviewWord[]
+  followingShared?: SharedDictionaryCollectionV2
+}
+
+export const isFollowingSharedImportEnabled = () =>
+  isDictionaryFollowingEnabled() &&
+  process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED === 'true'
+
+export async function loadSharedFollowingCollection(shareToken: string) {
+  if (!isSharedResourceId(shareToken)) return null
+  if (!isFollowingSharedImportEnabled())
+    throw new Error('Following shared imports are unavailable')
+  const client =
+    (await createClient()) as unknown as SupabaseClient<DictionaryFollowingImportDatabase>
+  const { data, error } = await client.rpc(
+    'get_shared_dictionary_collection_v2',
+    { p_share_token: shareToken }
+  )
+  if (error) throw new Error('Could not load the shared collection words.')
+  return data === null ? null : parseSharedDictionaryCollectionV2(data)
 }
 
 const SHARED_WORD_COLUMNS =
@@ -160,6 +185,27 @@ export async function getSharedCollectionImportContext(
   userId: string,
   shareToken: string
 ): Promise<SharedCollectionImportContext | null> {
+  if (isFollowingSharedImportEnabled()) {
+    const shared = await loadSharedFollowingCollection(shareToken)
+    if (!shared) return null
+    const client = await createClient()
+    const { data, error } = await client
+      .from('collections')
+      .select('collection_id,name')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+    if (error)
+      throw new Error('Could not prepare the shared collection import.')
+    return {
+      collection: shared.collection,
+      collections: (data ?? []).map(row => ({
+        id: row.collection_id,
+        name: row.name,
+      })),
+      previewWords: [],
+      followingShared: shared,
+    }
+  }
   const shared = await loadSharedCollectionRows(shareToken)
   if (!shared) return null
 

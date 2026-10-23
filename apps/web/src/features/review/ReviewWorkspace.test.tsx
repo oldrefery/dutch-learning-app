@@ -103,6 +103,52 @@ beforeEach(() => {
   })
 })
 
+it('applies owner preferences before enabling setup and never overwrites the first deliberate mode choice', () => {
+  update.mockClear()
+  const settings = {
+    ...DEFAULT_WEB_SETTINGS,
+    lastSelectedReviewMode: 'meaning-recall' as const,
+    manualRecognition: true,
+  }
+  jest
+    .mocked(useWebSettings)
+    .mockReturnValue({ isHydrated: false, settings, update })
+  const data = makeData()
+  const view = renderWorkspace(data)
+  const recognition = screen.getByRole('radio', { name: /^Recognition/ })
+  expect(recognition).toBeDisabled()
+  expect(screen.getByRole('radio', { name: /^One collection/ })).toBeDisabled()
+  expect(screen.getByRole('button', { name: /Start ·/ })).toBeDisabled()
+  expect(
+    screen.getByLabelText('Rate correct recognition answers manually')
+  ).toBeDisabled()
+  fireEvent.click(recognition)
+  expect(update).not.toHaveBeenCalled()
+  jest
+    .mocked(useWebSettings)
+    .mockReturnValue({ isHydrated: true, settings, update })
+  const props = {
+    canUseAi: true,
+    data,
+    userId: 'test-user',
+    initialScope: 'all-due' as const,
+    initialCollectionId: null,
+  }
+  view.rerender(<ReviewWorkspace {...props} />)
+  expect(
+    screen.getByRole('radio', { name: /^Meaning recall/ })
+  ).toHaveAttribute('aria-checked', 'true')
+  expect(recognition).toBeEnabled()
+  expect(
+    screen.getByLabelText('Rate correct recognition answers manually')
+  ).toBeChecked()
+  fireEvent.click(recognition)
+  expect(recognition).toHaveAttribute('aria-checked', 'true')
+  view.rerender(<ReviewWorkspace {...props} />)
+  expect(recognition).toHaveAttribute('aria-checked', 'true')
+  expect(update).toHaveBeenCalledWith({ lastSelectedReviewMode: 'recognition' })
+})
+
 it('waits for a boundary refresh and starts with content received during the previous session', async () => {
   const data = { ...makeData(), dictionaryContentEnabled: true }
   const view = renderWorkspace(data)

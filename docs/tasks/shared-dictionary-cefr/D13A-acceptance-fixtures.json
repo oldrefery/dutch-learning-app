@@ -1,0 +1,508 @@
+{
+  "schema_version": 1,
+  "kind": "declarative-acceptance-specification",
+  "execution_status": "not-implemented-or-executed",
+  "checkpoint": "D13A.1",
+  "model": "GPT-6 Astra",
+  "reasoning_effort": "High",
+  "symbols": {
+    "U1": "full_access learner",
+    "U2": "read_only learner",
+    "A1": "trusted administrator with read_only access",
+    "E1": "one verified meaning",
+    "R1": "initial published revision",
+    "R2": "valid same-meaning revision",
+    "R3": "different-meaning candidate",
+    "W1": "U1 personal reference",
+    "W2": "U2 personal reference"
+  },
+  "baseline": {
+    "head": {
+      "entry": "E1",
+      "revision": "R1",
+      "sequence": "100"
+    },
+    "cards": [
+      {
+        "id": "W1",
+        "owner": "U1",
+        "entry": "E1",
+        "mode": "follow",
+        "collection": "C1",
+        "learning": {
+          "repetitions": 7,
+          "interval": 12,
+          "ease": 2.4,
+          "due": "2026-10-15",
+          "history": ["H1", "H2"]
+        }
+      },
+      {
+        "id": "W2",
+        "owner": "U2",
+        "entry": "E1",
+        "mode": "follow",
+        "collection": "C2",
+        "learning": {
+          "repetitions": 2,
+          "interval": 3,
+          "ease": 2.5,
+          "due": "2026-10-12",
+          "history": ["H3"]
+        }
+      }
+    ]
+  },
+  "global_invariants": [
+    "Preserve personal ID, owner, collection and all learning/history except explicitly submitted learning operations.",
+    "No following reference receives a private linguistic override or silently detaches.",
+    "No private original, operation prompt or another owner learning state leaks into public content.",
+    "CEFR stays disabled; provider calls occur only for explicitly accepted analysis operations."
+  ],
+  "cases": [
+    {
+      "id": "A01",
+      "layers": ["postgres", "mobile", "web"],
+      "given": {
+        "actor": "U1",
+        "operation": "O1",
+        "candidate": "R2"
+      },
+      "when": [
+        "Analyze E1 with expected R1/100",
+        "Publish",
+        "Synchronize U1 and U2"
+      ],
+      "expected": {
+        "head": "R2",
+        "sequence": "101",
+        "provider_calls": 1,
+        "quota_slots": 1,
+        "following_content_equal": true,
+        "personal_state": "unchanged"
+      }
+    },
+    {
+      "id": "A02",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "actor": "U2",
+        "admin": false
+      },
+      "when": ["Request analysis"],
+      "expected": {
+        "outcome": "forbidden",
+        "provider_calls": 0,
+        "quota_slots": 0,
+        "head": "R1"
+      }
+    },
+    {
+      "id": "A03",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "actor": "A1",
+        "admin": true,
+        "access": "read_only"
+      },
+      "when": ["Analyze E1", "Attempt user-controlled admin grant as U2"],
+      "expected": {
+        "admin_analysis": "allowed through same validated/quota path",
+        "self_grant": "forbidden",
+        "direct_head_write": "forbidden"
+      }
+    },
+    {
+      "id": "A04",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "actor": "U1",
+        "accepted": true,
+        "candidate": "R2"
+      },
+      "when": ["Revoke full access before publish"],
+      "expected": {
+        "outcome": "authorization-revoked",
+        "head": "R1",
+        "publication_events": 0
+      }
+    },
+    {
+      "id": "A05",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "actor": "U1",
+        "operation": "O1"
+      },
+      "when": [
+        "Publish R2",
+        "Lose HTTP response",
+        "Replay same operation",
+        "Replay O1 with different request"
+      ],
+      "expected": {
+        "same_request": "same durable receipt",
+        "changed_request": "operation-payload-conflict",
+        "provider_calls": 1,
+        "quota_slots": 1,
+        "revisions_inserted": 1,
+        "events_inserted": 1
+      }
+    },
+    {
+      "id": "A06",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "active_operation": "O1",
+        "entry": "E1"
+      },
+      "when": ["Submit O2 for E1 concurrently"],
+      "expected": {
+        "O2": "analysis-in-progress",
+        "total_provider_calls": 1,
+        "total_quota_slots": 1,
+        "other_actor_private_receipt_visible": false
+      }
+    },
+    {
+      "id": "A07",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "operation": "O1",
+        "dispatch_intent_committed": true,
+        "result_journaled": false
+      },
+      "when": [
+        "Crash after provider dispatch",
+        "Expire lease",
+        "Retry operation"
+      ],
+      "expected": {
+        "outcome": "provider-outcome-unknown",
+        "automatic_redispatch": false,
+        "head": "R1",
+        "late_worker_publication": "fencing checked"
+      }
+    },
+    {
+      "id": "A08",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "operation": "O1",
+        "result_journaled": true,
+        "candidate": "R2"
+      },
+      "when": ["Crash before publication", "Resume publication"],
+      "expected": {
+        "additional_provider_calls": 0,
+        "head": "R2",
+        "events_inserted": 1
+      }
+    },
+    {
+      "id": "A09",
+      "layers": ["edge", "postgres", "domain"],
+      "given": {
+        "candidates": [
+          "malformed content",
+          "changed sense R3",
+          "unverified meaning anchor"
+        ]
+      },
+      "when": ["Validate each candidate"],
+      "expected": {
+        "all_candidates": "rejected or held for review",
+        "head": "R1",
+        "publication_events": 0,
+        "human_review_falsely_recorded": false
+      }
+    },
+    {
+      "id": "A10",
+      "layers": ["postgres"],
+      "given": {
+        "expected": "R1/100",
+        "candidate": "R2",
+        "current": "R1/102 after R2 publication and rollback"
+      },
+      "when": ["Try stale publication with expected R1/100"],
+      "expected": {
+        "outcome": "head-conflict",
+        "head": "R1",
+        "new_publication_events": 0
+      }
+    },
+    {
+      "id": "A11",
+      "layers": ["postgres", "mobile", "web"],
+      "given": {
+        "head": "R2/101",
+        "new_reviews": ["H4"]
+      },
+      "when": ["Administrator rolls head back to R1", "Synchronize"],
+      "expected": {
+        "head": "R1/102",
+        "H4": "preserved",
+        "clients_apply": "R1 by newer sequence",
+        "ordinary_user_rollback": "forbidden"
+      }
+    },
+    {
+      "id": "A12",
+      "layers": ["sqlite", "device"],
+      "given": {
+        "offline_revision": "R1",
+        "head": "R2/101"
+      },
+      "when": [
+        "Review twice offline",
+        "Cold restart offline",
+        "Reconnect and replay synchronization"
+      ],
+      "expected": {
+        "reviews_applied_once": 2,
+        "card_ids": ["W1", "W2"],
+        "online_revision": "R2",
+        "offline_revision": "R1 until hydrated"
+      }
+    },
+    {
+      "id": "A13",
+      "layers": ["sqlite", "web", "device"],
+      "given": {
+        "active_session_revision": "R1"
+      },
+      "when": [
+        "Publish and hydrate R2 during session",
+        "Finish session",
+        "Start next online session"
+      ],
+      "expected": {
+        "active_session_revision": "R1",
+        "next_session_revision": "R2",
+        "learning": "preserved"
+      }
+    },
+    {
+      "id": "A14",
+      "layers": ["sqlite", "web"],
+      "given": {
+        "acknowledged_cursor": "100",
+        "page_cursor": "101",
+        "missing_dependency": "R2"
+      },
+      "when": [
+        "Receive page",
+        "Fail hydration",
+        "Restart",
+        "Recover dependency"
+      ],
+      "expected": {
+        "before_recovery_content": "R1",
+        "before_recovery_cursor": "100",
+        "refresh_debt": "retained",
+        "after_recovery_content": "R2",
+        "after_recovery_cursor": "101"
+      }
+    },
+    {
+      "id": "A15",
+      "layers": ["domain", "postgres", "sqlite"],
+      "given": {
+        "sequences": ["9007199254740992", "9007199254740993"]
+      },
+      "when": ["Parse, compare, persist and replay protocol 2 page"],
+      "expected": {
+        "distinct_and_ordered": true,
+        "wire_type": "decimal string",
+        "unsafe_protocol_1_number": "explicit failure"
+      }
+    },
+    {
+      "id": "A16",
+      "layers": ["postgres", "sqlite", "device"],
+      "given": {
+        "client": "embedded build85 and both repair OTAs",
+        "mode": "follow",
+        "pending": "version 1 private edit"
+      },
+      "when": [
+        "Read via v1 adapter",
+        "Replay old private edit",
+        "Send learning-only write"
+      ],
+      "expected": {
+        "read_reference_content_dependency": "same actual revision",
+        "overrides": {},
+        "private_edit": "reconciliation with payload retained",
+        "learning": "preserved; blocked pipeline must reconcile before conversion",
+        "failed_compatibility": "cohort remains legacy"
+      }
+    },
+    {
+      "id": "A17",
+      "layers": ["postgres", "sqlite"],
+      "given": {
+        "mode": "legacy",
+        "mapping": "unreviewed or ambiguous",
+        "pending_learning": true
+      },
+      "when": ["Run migration apply"],
+      "expected": {
+        "disposition": "skipped",
+        "original": "retained privately",
+        "mode": "legacy",
+        "learning_queue": "unchanged",
+        "fully_migrated": false
+      }
+    },
+    {
+      "id": "A18",
+      "layers": ["postgres", "sqlite"],
+      "given": {
+        "mapping": "approved-diff-link",
+        "approved_fields": ["translation"],
+        "original_hash": "exact expected hash",
+        "new_review": "H4"
+      },
+      "when": ["Apply", "Retry apply", "Record H4", "Roll back mapping"],
+      "expected": {
+        "apply_count": 1,
+        "only_analysis_changes": ["translation"],
+        "original": "recoverable privately",
+        "H4": "preserved",
+        "rollback_scope": "mapping-owned reference/content only"
+      }
+    },
+    {
+      "id": "A19",
+      "layers": ["postgres"],
+      "given": {
+        "mapping": "exact-link",
+        "races": [
+          "content changed",
+          "target head changed",
+          "collection changed",
+          "card deleted"
+        ]
+      },
+      "when": ["Apply each stale mapping"],
+      "expected": {
+        "all_races": "skip with reason",
+        "learning_overwrite": false,
+        "guessed_match": false
+      }
+    },
+    {
+      "id": "A20",
+      "layers": ["postgres"],
+      "given": {
+        "mapping": "already applied",
+        "subsequent_reference_change": true
+      },
+      "when": ["Roll back migration receipt"],
+      "expected": {
+        "outcome": "skip for reconciliation",
+        "subsequent_reference": "preserved",
+        "later_learning": "preserved"
+      }
+    },
+    {
+      "id": "A21",
+      "layers": ["postgres", "domain", "sqlite", "web"],
+      "given": {
+        "imports": [
+          "verified official reference",
+          "foreign spoofed entry ID",
+          "private example document"
+        ],
+        "source_learning": ["H1"]
+      },
+      "when": ["Import and export v1/v2"],
+      "expected": {
+        "official": "fresh personal reference following verified head; original manifest unchanged",
+        "foreign": "verify or hold",
+        "private_document": "protected review; no automatic global publication",
+        "exported_owner_or_learning": false,
+        "source_learning_copied": false
+      }
+    },
+    {
+      "id": "A22",
+      "layers": ["sqlite", "web", "postgres"],
+      "given": {
+        "active_owner": "U1",
+        "queued_work": "U1",
+        "next_owner": "U2"
+      },
+      "when": ["Switch account", "Hydrate and synchronize"],
+      "expected": {
+        "U1_private_state_visible_to_U2": false,
+        "queue_actor_rewritten": false,
+        "public_revision_cache": "reusable without private state"
+      }
+    },
+    {
+      "id": "A23",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "quota": "exhausted",
+        "actor": "U1"
+      },
+      "when": ["Request new analysis", "Hydrate existing published content"],
+      "expected": {
+        "analysis": "quota rejection",
+        "provider_calls": 0,
+        "hydration": "allowed without quota consumption"
+      }
+    },
+    {
+      "id": "A24",
+      "layers": ["postgres", "web", "device"],
+      "given": {
+        "shared_entry_count": 1,
+        "personal_card_count": 1000
+      },
+      "when": ["Publish R2", "Open review after hydration"],
+      "expected": {
+        "publication_personal_row_fanout": 0,
+        "review_snapshot_rpcs": 1,
+        "per_card_dictionary_requests": 0,
+        "performance": "meet existing same-environment D13 gate; measure before and after"
+      }
+    },
+    {
+      "id": "A25",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "actor": "U2",
+        "client_metadata": {
+          "admin": true
+        },
+        "direct_rpc_actor": "U1"
+      },
+      "when": ["Try metadata bypass and supplied actor ID"],
+      "expected": {
+        "outcome": "forbidden",
+        "provider_calls": 0,
+        "shared_mutations": 0
+      }
+    },
+    {
+      "id": "A26",
+      "layers": ["edge", "postgres"],
+      "given": {
+        "actor": "U1",
+        "candidate_hash": "same as R1"
+      },
+      "when": ["Analyze and validate unchanged content"],
+      "expected": {
+        "outcome": "no-change",
+        "head": "R1",
+        "new_revisions": 0,
+        "new_events": 0,
+        "quota_slots": 1
+      }
+    }
+  ]
+}

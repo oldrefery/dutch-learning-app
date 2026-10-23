@@ -1,4 +1,5 @@
 import 'server-only'
+import { isDictionaryFollowingEnabled } from '@/features/dictionary/repository'
 
 import { createClient } from '@/lib/supabase/server'
 import type { WordAnalysis } from './analysis-contract'
@@ -18,6 +19,12 @@ export const persistAnalyzedWord = async (
   collectionId: string,
   analysis: WordAnalysis
 ): Promise<PersistAnalyzedWordResult> => {
+  if (isDictionaryFollowingEnabled())
+    return {
+      success: false,
+      code: 'insert',
+      message: 'Use published shared meanings to add a word.',
+    }
   const supabase = await createClient()
   const { data: collection, error: collectionError } = await supabase
     .from('collections')

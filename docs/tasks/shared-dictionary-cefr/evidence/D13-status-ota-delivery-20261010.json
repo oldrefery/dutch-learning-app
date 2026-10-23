@@ -1,0 +1,162 @@
+{
+  "date": "2026-10-10",
+  "timezone": "Europe/Amsterdam",
+  "authorization": "AUTH-29",
+  "status": "published-and-verified",
+  "published_at": "2026-10-09T22:28:25.284Z",
+  "source_archive_sha256": "493fcb2557373577625ef05b785afbd3cf3b47a2544cc19047666113f40f3d30",
+  "export_manifest_sha256": "fb8b5e715c3465ef939fabc4dfbb335b19ea3ae7a1205de04f3956fc497e6b2c",
+  "updates": [
+    {
+      "id": "01a122c8-2844-7c42-807e-2595f8b8b287",
+      "group": "e46de173-daaf-4713-8a23-ac60d65ac70d",
+      "platform": "ios",
+      "runtimeVersion": "94476f50e33e655576f1ef396170c5e29b38664e",
+      "createdAt": "2026-10-09T22:28:25.284Z"
+    },
+    {
+      "id": "01a122c8-2844-7513-91a9-3a42b2672229",
+      "group": "34cfafa2-e672-4bd1-a0c0-649dbeed8f5e",
+      "platform": "android",
+      "runtimeVersion": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4",
+      "createdAt": "2026-10-09T22:28:25.284Z"
+    }
+  ],
+  "serving": [
+    {
+      "platform": "ios",
+      "checked_at": "2026-10-09T22:28:53.550443+00:00",
+      "update_id": "01a122c8-2844-7c42-807e-2595f8b8b287",
+      "group_id": "e46de173-daaf-4713-8a23-ac60d65ac70d",
+      "runtime": "94476f50e33e655576f1ef396170c5e29b38664e",
+      "manifest_http": 200,
+      "launch_asset_http": 200,
+      "downloaded_bundle_sha256": "2b8d85d0d7d3fb1f4fa031d1d0ebfafe17e27dfbde12cf31f277d902cdb4b92d",
+      "original_bundle_match": true,
+      "all_asset_hashes_match": true,
+      "asset_hash_count": 45,
+      "qa_build": false,
+      "version": "2.4.0",
+      "build": "85"
+    },
+    {
+      "platform": "android",
+      "checked_at": "2026-10-09T22:28:56.973549+00:00",
+      "update_id": "01a122c8-2844-7513-91a9-3a42b2672229",
+      "group_id": "34cfafa2-e672-4bd1-a0c0-649dbeed8f5e",
+      "runtime": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4",
+      "manifest_http": 200,
+      "launch_asset_http": 200,
+      "downloaded_bundle_sha256": "1ae99cf1e36f925a2da2d7a6697215e0e7ff744d30c689cb2980e157f12c258c",
+      "original_bundle_match": true,
+      "all_asset_hashes_match": true,
+      "asset_hash_count": 49,
+      "qa_build": false,
+      "version": "2.4.0",
+      "build": "85"
+    }
+  ],
+  "sentry_artifacts": [
+    {
+      "platform": "android",
+      "artifact_bundle_id": "06e735f7-c48f-591c-a299-07cac8997dfe",
+      "debug_id": "8843bcd9-e89b-477d-9ddc-e08dffcf80ff",
+      "processing": "complete"
+    },
+    {
+      "platform": "ios",
+      "artifact_bundle_id": "cc41a8a2-20ab-5a1a-a867-e2d4dd816463",
+      "debug_id": "2a2474ec-c69f-4b4c-9c7f-954627d80268",
+      "processing": "complete"
+    }
+  ],
+  "sentry_health": {
+    "checked_at": "2026-10-09T22:28:57.905672+00:00",
+    "environment": "production",
+    "time_range": "14d",
+    "queries": [
+      {
+        "query": "timestamp:>2026-10-09T22:28:25.284Z dist:85",
+        "returned_issue_count": 0,
+        "issues": []
+      },
+      {
+        "query": "expo.updates.update_id:01a122c8-2844-7c42-807e-2595f8b8b287",
+        "returned_issue_count": 0,
+        "issues": []
+      },
+      {
+        "query": "expo.updates.update_id:01a122c8-2844-7513-91a9-3a42b2672229",
+        "returned_issue_count": 0,
+        "issues": []
+      }
+    ],
+    "historical_issues": [
+      {
+        "id": "7737950888",
+        "shortId": "DUTCH-LEARNING-APP-4C",
+        "status": "unresolved",
+        "level": "error",
+        "firstSeen": "2026-09-17T13:29:37.910000Z",
+        "lastSeen": "2026-10-09T22:06:40Z",
+        "count": "24",
+        "permalink": "https://oldrefery.sentry.io/issues/7737950888/"
+      },
+      {
+        "id": "7715295374",
+        "shortId": "DUTCH-LEARNING-APP-49",
+        "status": "unresolved",
+        "level": "warning",
+        "firstSeen": "2026-09-06T13:28:25.473000Z",
+        "lastSeen": "2026-10-05T14:23:41Z",
+        "count": "4",
+        "permalink": "https://oldrefery.sentry.io/issues/7715295374/"
+      },
+      {
+        "id": "7784180404",
+        "shortId": "DUTCH-LEARNING-APP-4E",
+        "status": "unresolved",
+        "level": "error",
+        "firstSeen": "2026-10-09T22:06:48.619000Z",
+        "lastSeen": "2026-10-09T22:06:48Z",
+        "count": "1",
+        "permalink": "https://oldrefery.sentry.io/issues/7784180404/"
+      }
+    ]
+  },
+  "ota_metrics": {
+    "ios": {
+      "totals": {
+        "uniqueUsers": 0,
+        "installs": 0,
+        "failedInstalls": 0,
+        "crashRatePercent": 0
+      },
+      "through": "2026-10-09T22:29:03.003Z"
+    },
+    "android": {
+      "totals": {
+        "uniqueUsers": 0,
+        "installs": 0,
+        "failedInstalls": 0,
+        "crashRatePercent": 0
+      },
+      "through": "2026-10-09T22:29:02.986Z"
+    }
+  },
+  "channel_unchanged": true,
+  "source_and_export_hashes_unchanged": true,
+  "on_device_new_candidate": {
+    "status": "owner-confirmed-sync-and-status-without-error",
+    "platform": "ios",
+    "recorded_at": "2026-10-09T22:42:38Z",
+    "scenario": "Requested online/reopen check following AUTH-29 publication",
+    "exact_update_id_independently_captured": false,
+    "offline_scenario_rerun": false
+  },
+  "prior_ios_offline_return": "owner-confirmed AUTH-28; not a new candidate test",
+  "d13_status": "in_progress",
+  "d14_status": "pending",
+  "cefr": "OFF",
+  "private_receipts": "reports/shared-dictionary-cefr/d13-status-ota-20261010"
+}

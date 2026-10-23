@@ -9,6 +9,7 @@ import {
 import { TextThemed, ViewThemed, useThemeColor } from '@/components/Themed'
 import { ImportScreenContent } from '@/components/ImportScreenContent'
 import { ImportHeaderButton } from '@/components/ImportHeaderButton'
+import { DictionaryFollowingTransferPanel } from '@/components/DictionaryFollowingTransferPanel'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useDictionaryDocumentImport } from '@/hooks/useDictionaryDocumentImport'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
@@ -32,6 +33,7 @@ export default function DictionaryDocumentImportScreen() {
 function OwnedDocumentImport({ owner }: { owner: string }) {
   const state = useDictionaryDocumentImport(owner)
   const [hideDuplicates, setHideDuplicates] = useState(true)
+  const [showSaved, setShowSaved] = useState(false)
   const textColor = useThemeColor({}, 'text')
   const borderColor = useThemeColor({}, 'border')
   const error = state.error && (
@@ -39,6 +41,23 @@ function OwnedDocumentImport({ owner }: { owner: string }) {
       {state.error}
     </TextThemed>
   )
+  if (showSaved || state.followingDocument)
+    return (
+      <ViewThemed style={styles.container}>
+        <Stack.Screen
+          options={{ title: 'Shared collection import', headerShown: true }}
+        />
+        <DictionaryFollowingTransferPanel
+          ownerId={owner}
+          document={state.followingDocument ?? undefined}
+          collections={state.collections}
+          onClose={() => {
+            setShowSaved(false)
+            state.clearFollowingDocument()
+          }}
+        />
+      </ViewThemed>
+    )
   return (
     <ViewThemed style={styles.container}>
       <Stack.Screen
@@ -113,6 +132,15 @@ function OwnedDocumentImport({ owner }: { owner: string }) {
             Paste a full collection JSON export. Choose words and a collection
             on the next screen.
           </TextThemed>
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Saved shared imports"
+            disabled={state.busy}
+            style={styles.button}
+            onPress={() => setShowSaved(true)}
+          >
+            <TextThemed>Saved shared imports</TextThemed>
+          </TouchableOpacity>
           <TextInput
             accessibilityLabel="Collection JSON"
             value={state.text}

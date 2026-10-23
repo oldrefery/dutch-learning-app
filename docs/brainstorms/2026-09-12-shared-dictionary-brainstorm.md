@@ -6,6 +6,10 @@ status: proposed-for-review
 
 # Shared dictionary and CEFR
 
+> Historical initial proposal. The accepted October10 shared-only automatic-update
+> design supersedes explicit adoption and permanent personal analysis overrides:
+> [current design](2026-10-10-shared-dictionary-auto-updates.md).
+
 ## What We Are Building
 
 A durable, meaning-aware dictionary shared by web and mobile. Personal cards refer

@@ -1,0 +1,1293 @@
+{
+  "checkpoint": "D13A.5 original item6: shared Analyze again/publication refresh parity on native/web",
+  "checkpoint_status": "complete locally",
+  "stage_status": "in_progress",
+  "stage_complete": false,
+  "branch": "feature/shared-dictionary-schema",
+  "head": "f97a733407a4d2b37e8f9ca030ad9574de85a794",
+  "persistence": "local-only/uncommitted",
+  "model_recommendation": {
+    "model": "GPT-6.1 Sol",
+    "effort": "High",
+    "picker_switch_claimed": false
+  },
+  "source_sha256": {
+    "packages/domain/src/dictionary-analysis-client.ts": "247ffd04a66586626f5eee33fdf5fa724707165dda72ea84d8e5319b52a1135a",
+    "packages/domain/src/dictionary-analysis-action.ts": "a1290e1a4dff9e1f927a3e3c0557fa9405a4daa38aef47d7de44fec16338caeb",
+    "apps/mobile/src/services/dictionaryAnalysisService.ts": "803a30a94df1872127c8f574af78c40c04ebc2e8c14193cbfced134fbc8e4cc4",
+    "apps/mobile/src/components/DictionaryAnalysisPanel.tsx": "f7908de67999bac5092f6f8560d5eeb5f01e1faf7fe3b41c999e3caca6b315ea",
+    "apps/mobile/src/db/dictionaryFollowingRepository.ts": "c0208fac90dcb183b33267df742b31aa8912181c3a2c2f0cafbaaf108291e4bf",
+    "apps/mobile/src/services/dictionaryFollowingSync.ts": "76b46fe4d25d6865039bfa42e5725367decde81e2e1f3d5eef8d1e185d3d2402",
+    "apps/web/src/features/dictionary/analysis-client.ts": "2ffbe38ecd46be1888f1bd49d58e81b7d4e42e22c97877e1cb64321690af4c47",
+    "apps/web/src/features/dictionary/FollowingWordDetail.tsx": "c450e26aa710864ba2290350640ee44e700565ecce5bb33ef7b1cf335e866edd",
+    "apps/mobile/src/components/__tests__/DictionaryAnalysisPanel.test.tsx": "0f4fdb2a5bbbc574c33301d091c5f9babcac03327a165a59e1e588125b33ab6b",
+    "apps/mobile/src/services/__tests__/dictionaryAnalysisService.sqlite.test.ts": "ca7537b3403289de2f71d959536eb200bf745b296da230fb742e3d47ed3a9f7e",
+    "apps/mobile/src/utils/__tests__/dictionaryAnalysisAction.test.ts": "4322efe84a46196b1607e7c499dcc9d91ee476a25a10676a1170158122201d28",
+    "apps/web/src/features/dictionary/analysis-client.test.ts": "376f24b991d0a27de6bca25c980c9dc8c0d555f30fa804a03134bf867cb69085",
+    "apps/web/src/features/dictionary/FollowingWordDetail.test.tsx": "326b56299cfa1d72bab0a338ca5d5c65349d089fcfd4254104137171cdfd338f",
+    "apps/web/src/features/words/actions.ts": "8a3e7d9483fdeb5fc2ba7667e4c9734c2a9fc34a8edb6fcbca63a430f1bb9443",
+    "apps/web/src/features/words/following-actions.test.ts": "3a20af64b3383a8897c446b7ab996a7345307dcddf3a37ed3f59140d230392e4"
+  },
+  "task_notes_sha256": {
+    "docs/tasks/shared-dictionary-cefr/handoff.md": "132a576a7d4905cdd77a722423488982b2173b0bf676f5f60688fe75cce760b7",
+    "docs/tasks/shared-dictionary-cefr/steps/D13A.md": "f6db4c4f57a291ae0af3549214d5f5f5aefb3d1bd305ba77f788e4c1bd5a397f",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A-analysis-refresh-20261011.md": "f29ac1f5c9d5036a07bb090af86725a9f4dd3a9350503d9c5fe17000c61f62e7",
+    "docs/tasks/shared-dictionary-cefr/D13A-technical-contract.md": "6d3f975fcd5cd45e51afac5caaea54df22a8760b3bfbbc186bb96c7010e9e9fa",
+    "docs/plans/shared-dictionary-cefr-2026-09-12.md": "1f397c61fa5efd20c7d839138b8f397d3294e372f9230874709a5eba7ea72f35",
+    "docs/tasks/shared-dictionary-cefr/sessions.md": "45510c7d9b38a8a71d04bdb383d89cb9a3407edc96ff9045204937afc832bf54"
+  },
+  "integrity": {
+    "prior_manifest": "docs/tasks/shared-dictionary-cefr/evidence/D13A-private-mode-apply-20261011.json",
+    "prior_manifest_sha256": "115f81d5943f25ad6d2260c049d1a5273a0c0b06fee5d800408cd453c9b06037",
+    "baseline_verified_paths_at_entry": 465,
+    "preserved_sha256": {
+      "supabase/migrations/20261010150000_add_dictionary_semantic_checks.sql": "6858af85b4c8a6e76492063a8bf697be21f3f4114e06cefe8e81e5d364d57fec",
+      "scripts/postgres-tests/dictionary-semantic-checks.test.mjs": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+      "supabase/functions/dictionary-analysis/candidateGuards.ts": "a354bd4b92c74b4207164304b46d319b7b5ca80df6de33c0fd2fe07cd2fa2f01",
+      "supabase/functions/dictionary-analysis/independentEvaluator.ts": "fd152a69ca6077fdedf4be88540273a1cfe591bbfb5ddbd2c16705200753aa4d",
+      "supabase/functions/dictionary-analysis/semanticStore.ts": "325195883c12a8cf9a0fa534752489eed958703b69e634ce29ac54391fde0f0c",
+      "supabase/functions/dictionary-analysis/semantic_test.ts": "e409b78ff28a2d1bc8143bcf73b3328b6acdada88c438e5a52570c9f29a7b69b",
+      "supabase/functions/dictionary-analysis/worker.ts": "ac4d290bf3bc6e67cb5913650d1fcc7dd24d87c7edcce39316d7762de07a204d",
+      "supabase/functions/dictionary-analysis/worker_test.ts": "6aee9a7131cebc3e08bac2cf5d45f912481d1189e4fc49e248b650f5c5d85df0",
+      "supabase/migrations/20261010140000_add_dictionary_analysis_worker_reads.sql": "5841ee9561301da78325ca594b4063aafc4aa15c279af52a54e7627b4ae9e5cb",
+      "scripts/postgres-tests/dictionary-analysis-worker.test.mjs": "5fa36c9e7637a181aa77ffc61373de8234fc9851a29156fa49c2bb1ef0daa145",
+      "supabase/functions/dictionary-analysis/geminiTransport.ts": "b4327e9e86ba7ced6f652dcccab80f4a53c8cf41b6f662989098c441937e6ca5",
+      "supabase/functions/dictionary-analysis/handler.ts": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57",
+      "supabase/functions/dictionary-analysis/protectedInput.ts": "f940f6a37233e5332059f48994c5d8fa145e6829ccbcec6fd405b2e9dbb66a6c",
+      "supabase/functions/dictionary-analysis/store.ts": "d8e36a51a001359b319960ba17b181d6bf2de8c47aa46fb69c42aea413d4be4f",
+      "supabase/functions/dictionary-analysis/supabaseAdapter.ts": "e3e68988c79d734d076db64acd984761566ac5b3c1608c9143fbabe545fa93f6",
+      "supabase/migrations/20261010130000_add_dictionary_history_rollback.sql": "3ebb1c777f58999db9d797b03a90f3785452e12244f351270831b20230f111c9",
+      "packages/domain/src/dictionary-history.ts": "c9c956cd095e0ca512f79dffbee1a9fa86bb8d03d571d0c8c1439fa185f95fb7",
+      "scripts/postgres-tests/dictionary-history-rollback.test.mjs": "171a5de9ffb1850ba130be85baecde739edc067591582fac9e0a477e15c1d171",
+      "apps/mobile/src/utils/__tests__/dictionaryHistoryContract.test.ts": "01fb4c01c21935697ad54f2cdda59010c20aadee5f1781a6e995f88d08c9c099",
+      "apps/mobile/app.config.js": "8834a489a7110e7be8ba408f836f98f8531d67731939b9d81ff80b927fcc8ab2",
+      "apps/mobile/eas.json": "0273a681e60b7fc982d869b11a1064a0d5a9929bc247748d39bd53dc3ef9d7f8",
+      "apps/mobile/src/__tests__/appConfigOta.test.ts": "af703bd6fbec7b4b84f55abe7915e956ee9f383379720ea70ad5b3e40bde25d6",
+      "apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts": "10b48cb2af9dda6fd8e80e412ff2ac584a258fe941cfadb17d30528081b2d272",
+      "apps/mobile/src/db/dictionaryContentMapping.ts": "b5275936dcc8264da8d3a22af172999ed95da5aceae78aa26ea3012b3f316b04",
+      "apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts": "55ab21501c958a5e13ed1eeaa427cf2b786b19429491b4138d1eceb0a4740cf2",
+      "packages/domain/src/shared-dictionary.ts": "61bdbf8e15cee1dd3e094a0b31eeb6bba55204d7a9b2419d534f3463207507f0",
+      "supabase/migrations/20261010090000_add_dictionary_following_reads.sql": "bd89aaf077b7a95e5a71f5a57c3c753aad9439987182970bf157f11257e5ec87",
+      "scripts/postgres-tests/dictionary-following-reads.test.mjs": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+      "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e",
+      "packages/domain/src/dictionary-analysis.ts": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82",
+      "apps/mobile/src/utils/__tests__/dictionaryAnalysisContract.test.ts": "954af7ee2e6df5ae8143aafa5613919cf5433f6bd27d9dcebc15ddd127282415",
+      "scripts/postgres-tests/dictionary-analysis-operations.test.mjs": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+      "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193",
+      "packages/domain/src/dictionary-publication.ts": "923563f3dc728e1730c64b6d4151eb9054f2471089b19494f6a9e034ea834d44",
+      "apps/mobile/src/utils/__tests__/dictionaryPublicationContract.test.ts": "2634407f56b61d742568cc661e73cd165cdd34f410dd173b29d91ebf5c164825",
+      "scripts/postgres-tests/dictionary-analysis-publication.test.mjs": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+      "supabase/migrations/20261010120000_add_dictionary_following_imports.sql": "709feaf1ad878b03019453698ba1fd0daad155e44bf13d4d6101fbbc8cc3b75a",
+      "packages/domain/src/dictionary-following-import.ts": "296c0be20ca7e89fe8cac5e4293fb1091aaa59b385ad061ec0525738e9db505a",
+      "packages/domain/src/dictionary-following-import-recovery.ts": "1bf66d46f68c8610245f1c9848ceac473ce8abb3e96496d945573f0c6f862eb2",
+      "packages/domain/src/dictionary-following-import-recovery.types.ts": "0eed4960de5ef3a7cbb9cbc03c90b1766d083c95dd40f3ee714d5dbf78de46e0",
+      "apps/mobile/src/utils/__tests__/dictionaryFollowingImportContract.test.ts": "371eafa6c7bcb57919eaf754aa586c4f286abbb8c4057982635b05e4b2148c8c",
+      "scripts/postgres-tests/dictionary-following-imports.test.mjs": "50d2045244b2c5270fcda2a0e3f00512ed061a97130cb23b881fce93d2e9fafd",
+      "scripts/postgres-tests/dictionary-following-import-recovery.test.mjs": "24eb762eef81339fb95db657f706b24c8ea94309a29ee28ba97f1d51f6a2dfc5",
+      "packages/domain/src/dictionary-import.ts": "2d5804dc6cf02ae3315c9e65700822fa90a3559ccab69ecb43bbc3d28afb6d0d",
+      "packages/domain/src/dictionary-import-recovery.ts": "b224ee560d38838981dd2f63735e554074b842fdfaccbb9ecc76f38caccb35f2",
+      "packages/domain/src/dictionary-import-recovery.types.ts": "585ad85815c94415421abafdf824e2a64d92b8027e3335d0880933bf56ae1458",
+      "packages/domain/src/dictionary-transfer.ts": "48aea5cb70edf501cab4bfaf762fbae41ee84e271ef4fd0d877dda4966babd60",
+      "scripts/postgres-tests/platform.sql": "a5b313975126a9235f69e02ffe60537706c1557e9c3d3719405c40e4172e79fa",
+      "scripts/postgres-tests/fixtures.mjs": "25c526868d54e966b2b7b97289d22e57be31fa422cd3f91ad3e1d30dd0dc5450",
+      "scripts/postgres-tests/concurrency-fixtures.mjs": "e7606e84234bb9db4fbdd7cd8d617deb455f39988a9a2fbfc52095cb60aa40d2",
+      "scripts/postgres-tests/dictionary-content-protocol.test.mjs": "1dcb7a92874118099febbc0b6fe44b671963dbc2454fc694c7ab386c91300320",
+      "scripts/postgres-tests/dictionary-import-recovery.test.mjs": "cd7e9c47a6b092202265f2d9f83f6d1fcce13af6466dd36011840622fa193e19",
+      "scripts/postgres-tests/official-content-import.test.mjs": "9fa02c9b117993e659422626ffdf518b8580a7322a44faab3ce7ee38d7c6ddf1",
+      "scripts/postgres-tests/official-dictionary-mapping.test.mjs": "67f8dcad128d7a41062793fd7f8830c71b8c9d0dba27df98b46ea6532d14f93e",
+      "scripts/postgres-tests/shared-dictionary-schema.test.mjs": "6ae895d945b31fdb0f931ce823776d6d869dec91e1a3e0da500593c1854d2f72",
+      "reports/shared-dictionary-cefr/d13-delivery-20261009/candidate-source.tar": "19e8e9bd2c7ef8885554ca45e2582a3d35aa1af8ecad9177cc1a8c1600673daa",
+      "reports/shared-dictionary-cefr/d13-delivery-20261009/dist-manifest.json": "3e4a9696cb9bd5bc6c420e1a8167c23f9739ae981d5ecfee91ef4cb2d3b65a89",
+      "reports/shared-dictionary-cefr/d13-status-ota-20261010/candidate-source.tar": "493fcb2557373577625ef05b785afbd3cf3b47a2544cc19047666113f40f3d30",
+      "reports/shared-dictionary-cefr/d13-status-ota-20261010/dist-manifest.json": "fb8b5e715c3465ef939fabc4dfbb335b19ea3ae7a1205de04f3956fc497e6b2c",
+      "supabase/functions/deno.lock": "7002ec4f7875746cbebe4e295741845fb36b798c2a4aa0bd780d8357a336c6aa",
+      "supabase/functions/gemini-handler/geminiUtils.ts": "67dc6022572ffece8dbc4e6b7c360c6172a0230499131c9b6b75fef0312d020a",
+      "supabase/functions/_shared/authorizeFullAccess.ts": "c9c234ac40ee3c04720a81eb3fd6ff933762bf9141379502394b24eb542be0f7",
+      "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756",
+      "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+      "supabase/functions/dictionary-analysis/independentStore.ts": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388",
+      "supabase/functions/dictionary-analysis/endpoint.ts": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753",
+      "supabase/functions/dictionary-analysis/runtime.ts": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259",
+      "supabase/functions/dictionary-analysis/index.ts": "54f296b8f3a927ff89694c37579ed980e9a7f0538104be5ed71b5b1ebb9c2735",
+      "supabase/functions/dictionary-analysis/cors.ts": "2193edab2f509f524cd1e91bc0b631c64a204a36f4356890a3fdd00ea920429f",
+      "supabase/functions/dictionary-analysis/endpoint_test.ts": "a4dbfb962827b512b6fe9226ee717d2f84d941c1566928fe7badc9e9ebabce03",
+      "supabase/functions/dictionary-analysis/semanticModel.ts": "27e416b7b11bbae27cdb7afa9d44bbf1f703c702d8fabea67de25d152929ce9a",
+      "apps/mobile/src/utils/__tests__/dictionaryFollowingContract.test.ts": "ae8651227b03e1bb64cccf808e1396c9cfd2335eee5e865560c63e0a4c26b8cd",
+      "apps/web/src/features/dictionary/__fixtures__/following.ts": "7d047b71dfa4f6331af2875d5ec9d14e8a7e806d509870eeff2eced7992bc280",
+      "apps/web/src/features/dictionary/commands.ts": "85e8c432384bcecaeef5793243570b75d82333151dd2cbb27458afa7f6bd4069",
+      "apps/web/src/features/dictionary/content.ts": "722e852e6e246118d164879e0341cf25c500710d04732eb648e35f2af22c128f",
+      "apps/web/src/features/dictionary/following-content.test.ts": "bccd7a7099eb58a9b3733da8d3cc3c6f7032de056789694c8789fb19ef520b66",
+      "apps/web/src/features/dictionary/following-content.ts": "9aca1b3d1d36178e5b7414667550daedb6c8c1b3aea58ef17992027ccd0e5edd",
+      "apps/web/src/features/dictionary/following-repository.test.ts": "67a9058a11a2a33dfc582d7577e9619455c08e9af2a6f0a8df6be4f6353459da",
+      "apps/web/src/features/dictionary/repository.ts": "5196d489ecc7a5c0cd08eab829a2cb94f44e70fc025263668b7b384bbc1e5594",
+      "apps/web/src/features/review/following-session.test.ts": "bb42142d6962bfd5712d8e600355dfd80c2e8a8e33ccfb98bcbd3d87d07dc4ba",
+      "apps/web/src/features/review/following-snapshot.test.ts": "90e780c1988e01c0b2396349e830a647d1e106fb07afe27a390f56abf5ae1c72",
+      "apps/web/src/features/review/repository.ts": "aea771244822989ec9777764626ebebcd7b9ddc103e49d92ce9b56ed66326213",
+      "apps/web/src/features/review/session-controller.ts": "9ebf904766fecb4b933c468e2d5f2c3018f07edc79770e5b938601af33c7d776",
+      "apps/web/src/features/review/session-questions.ts": "8f306c92da3c7554bc592198a5e0e6df8054f34b6529aa5f22eaeefc234ecb78",
+      "apps/web/src/features/review/types.ts": "88103f2ac544d1f03df98229d4f40114f663b218883e0e926acbdc1fb400303b",
+      "apps/web/src/features/words/WordManagementForms.tsx": "d7b991804417839b426a6bce474aa368da6831c2955d803fc36fccb4a909f48f",
+      "apps/web/src/features/words/repository.ts": "c497c0a23361d420b6be827e223a9322aefc0999b701d0b3789822868294d5d6",
+      "packages/domain/src/dictionary-following.ts": "3d387a22228f8d77b6ac3f434c01acf360704b372ede6bfa051eeb6f2561907b",
+      "packages/domain/src/dictionary-read-content.ts": "68c5687579e5b21835acfc359ec0567b95a4f1da62912e8cc22477211bb3539b",
+      "apps/mobile/src/db/dictionaryFollowingSchema.ts": "8e0cd52b1be9657a3258a7b38a32fc0c2d6497f06cb9df84dc7eaa32374a9169",
+      "apps/mobile/src/db/dictionaryFollowingHydration.ts": "4dfd4d59b756d511113cfd99ea9a68b9a24aefb72bed93b13302d9c5b66b4313",
+      "apps/mobile/src/db/__tests__/dictionaryFollowing.fixture.ts": "676cd039ece0c29d30fd99d5d2ce945363540e02d2c827a298719b43f572b91a",
+      "apps/mobile/src/db/__tests__/dictionaryFollowingRepository.sqlite.test.ts": "4bdd9dcd50ff8aa7a90949c4e0c26d03dd90c83a27f7e12c33f6d3c5a9293860",
+      "apps/mobile/src/components/UniversalWordCard/__tests__/FollowingActions.test.tsx": "6b81906428ff0bec56af88dfbc2202356f7c81e480b441188fc719f7fb749041",
+      "apps/mobile/src/components/UniversalWordCard/sections/ActionsSection.tsx": "038a1ab445c31e8fab107214e176e79d5aac65a2073a0d153a40e3eaf3ff8ca5",
+      "apps/mobile/src/components/UniversalWordCard/sections/ImageSection.tsx": "3f5b745ea7f700ae60027b710fe45212f876466b06ba853c545e17a0a705807a",
+      "apps/mobile/src/components/__tests__/DictionaryImportConflictResolver.test.tsx": "d40d8f5666d66f4b0a2b2b70c5ac098456d4cc04d8bac7c8eae31bb23da39e86",
+      "apps/mobile/src/components/__tests__/DictionaryTransfer.test.tsx": "830a67d1e2b6365003c27ea9780458a1d6dfe57d067cd6a007682f9df44dc145",
+      "apps/mobile/src/db/__tests__/dictionaryContentRestart.sqlite.test.ts": "547da4755edac7b571f7f8d35aaffe63ba1b11896e75ad3ea02b874b9b4d3520",
+      "apps/mobile/src/db/__tests__/dictionaryImportDeletion.sqlite.test.ts": "c9bb596384cb0a8ecaf8fa49c51b9413357f0030b3733b4bfd27c18c5ec5b0bf",
+      "apps/mobile/src/db/__tests__/dictionaryImportRecovery.sqlite.test.ts": "5192ee772721390037b369ed51f18ba3d8be49263aad59e7f05a3739da90b9a3",
+      "apps/mobile/src/db/__tests__/dictionaryImportRepository.sqlite.test.ts": "df1b47f0ce46e61cf9facaa8ea492e8a8008235902659e12acc038fd9e54e97e",
+      "apps/mobile/src/db/__tests__/officialPackImport.sqlite.test.ts": "828bebe276297b34a2ca63f26715cb637492df186ee936696f851aaeefc2c45a",
+      "apps/mobile/src/db/__tests__/wordRepository.test.ts": "16436311f176f72ee9db42401f036d0d23323ea2e4798a704100dc462a537585",
+      "apps/mobile/src/db/dictionaryFollowingAcknowledgement.ts": "e76fedb70979eda5bb933fa4475dbb9ec128b8617c00329b152ce85606f92a1a",
+      "apps/mobile/src/db/dictionaryReadProjection.ts": "26e626e90889b21a5784173c134505befafe633ce4a98949bc161dfb078053dc",
+      "apps/mobile/src/db/dictionaryWordMaterialization.ts": "27e4932a6a03b423c6c013a6933d8f0f87562401ad2c6995c4c33c5fdf3e6e76",
+      "apps/mobile/src/features/review/__tests__/questions.test.ts": "f63e9c57a36f3ed019a90effa9f243a42c69802faedb84da0e15cfd576fde044",
+      "apps/mobile/src/features/review/questions.ts": "d98de0b59c8df903f554e670d3892b5ed2b6b5bfa3a58d7973f949525271d8f1",
+      "apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts": "899c1f8e8ff00eb491b3ee58b64a3af503e17c9065bf96dfd7eff23663518931",
+      "apps/mobile/src/services/__tests__/dictionaryDocumentImport.sqlite.test.ts": "20ecadbc5b40200853216659dbf9ca972b964d00ef2b259d4ff1d6bc4f9ef480",
+      "apps/mobile/src/services/__tests__/dictionaryFollowingRuntime.sqlite.test.ts": "abd0187af338709393cb2a6f88c59aaf7df2f25e1c8eb366a76259cd07f10883",
+      "apps/mobile/src/services/__tests__/dictionaryImportMetadata.sqlite.test.ts": "f2d0ef55a0a83fc40dd58a24a612ef73c4a90869214135cd6767e4359216b090",
+      "apps/mobile/src/services/__tests__/dictionaryImportRecovery.sqlite.test.ts": "89691ec3baf41ec525bc7dc0605bf02d9014c147b1f2e04fde222c62af8bee96",
+      "apps/mobile/src/services/__tests__/dictionaryImportRecoverySync.sqlite.test.ts": "1fed605b77f91fa182d6b1d1318e470f1f9454775c72cbbd7b92e837d47eb3b0",
+      "apps/mobile/src/services/__tests__/dictionaryImportReviewRegression.sqlite.test.ts": "0124511af43f7d2d2795e4ae5fced70ba3212d3c592980ce4befe49a0c6bc95d",
+      "apps/mobile/src/services/__tests__/dictionaryImportSync.test.ts": "2ead5519b1b3a8cc51e6d3c3b1dc4175808f9de9d901ef994230abe6e73dfc90",
+      "apps/mobile/src/services/__tests__/dictionarySharingService.test.ts": "c22875052b9ca569555a8c727c840f151c601536901b5aafa9278fdbc036803b",
+      "apps/mobile/src/services/__tests__/dictionaryTransferService.sqlite.test.ts": "6fdbaed9f962f381524d547eaf83ba33d2c4cc9b4fab23f38764c837f2aae1c3",
+      "apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts": "c86862b7024116d1665cb3856c5875cba63abb0e7e1c9ebaa03ebcde1c93a37c",
+      "apps/mobile/src/services/__tests__/syncStatusService.test.ts": "91e10cdaeee508186d76eb5df80553af17663ff3de6bf39bedc22c1939f1415a",
+      "apps/mobile/src/services/syncStatusService.ts": "24f97794cfc1e2b1aeac9964e8a81fe29dab509c670f78178831131ace202f42",
+      "apps/mobile/src/types/database.ts": "a5b629c6b4c1e08f68d22660b24cccbe9922fa28152d6bf461303f61801d8103",
+      "apps/mobile/src/db/__tests__/dictionaryAnalysis.fixture.ts": "ee86fa2da7f64f968baddfc133252f6015f1d58590c26829aeac051dec35dd75",
+      "supabase/migrations/20261010170000_add_dictionary_analysis_actor_signal.sql": "2e3d172682a03bd672fc58d8f8902328a5691778fa20c01a36a1307f5d5d76ce",
+      "scripts/postgres-tests/dictionary-analysis-actor.test.mjs": "72df9bd4e5c717ffeced89ce6c5104315812b3fc9adb7c7aef29bfc2cdb2fc26",
+      "packages/supabase-contracts/src/dictionary-analysis.ts": "ec8e5968abdf0a9dc7b39d46942f0c1f2c1850622f13f27d8f7f127abdd92051",
+      "packages/domain/src/dictionary-analysis-owner.ts": "7e28b9b2d5febe908323f7a11d5ed377f258c34de439490704be9295dbd9740a",
+      "packages/domain/src/dictionary-analysis-actor.ts": "b981e744be67e4f62ae6de97e6dd246fc86dbeca310752566372372b62eed991",
+      "packages/domain/src/dictionary-analysis-transport.ts": "16d57041cfd7e52f7372b259d2c4297ada0b4a98f1226c184b296bfd8fecc003",
+      "apps/mobile/src/lib/__tests__/supabaseFetch.test.ts": "e395cf98b7db40595bbbde2cfaa168cab8d29b41450d0dd5e93e2e272d475fa7",
+      "apps/mobile/src/services/dictionaryImportOwner.ts": "eded22ccd21a8a443eaba8657ddf676e6b671af96b2c222b2de79c7b6ed26760",
+      "apps/mobile/src/services/dictionaryAnalysisDisplay.ts": "a782d6fae66e1dc096961993f82308a3821aad07fa4f9b1c4716486d5d6cdad3",
+      "apps/mobile/src/components/WordDetailModal.tsx": "8511c5d7a1f036820a8eccee73e4b1877935485ce0cbd276c09ff91421043e24",
+      "apps/mobile/src/services/__tests__/dictionaryAnalysisDisplay.sqlite.test.ts": "6189e8ba60e02814aaba7e998a7fd2087cbc9b0aa8eec628ead20eef322d8bdd",
+      "apps/web/src/features/dictionary/analysis-display.ts": "53b088c98e345baaddfc3c490e32dd3be7fc8b5228c7c2bc4753dee51fc39c7d",
+      "apps/web/src/features/dictionary/analysis-display.test.ts": "a914870f486b5a941b420b010fdc1f7ed2b96eda4a209c2a2b116447f4c2dd24",
+      "apps/web/src/app/app/collections/[collectionId]/words/[wordId]/page.tsx": "495e0691d0e92e300e52b61edaee360b3a08dd04edbe0598c218de5ec16eb266",
+      "packages/domain/src/dictionary-analysis-attempts.ts": "acd05216368e7b6b8ea791af7cc8f7c71df4bb7089ca94f6475c201980c6568e",
+      "apps/mobile/src/db/dictionaryAnalysisSchema.ts": "7dc05b5bcfe3c2a9f1ad71433133929584613978ba5e8da4a088dd3d8bdcd065",
+      "apps/mobile/src/db/dictionaryAnalysisRepository.ts": "96732b0237a7183f3182e085009d6f8fc7c497227bae2cebf9f943a75883b61f",
+      "apps/mobile/src/db/__tests__/dictionaryAnalysisRepository.sqlite.test.ts": "78d0049f64113085d9b8c06e20f80a918dec53bdb94f411e1e0b09260fed8e31",
+      "apps/web/src/features/dictionary/analysis-journal.ts": "d6b8bbeba58ec7b693dcbe14739f99cdb23cc886f3e1589c57a505a1250e15ea",
+      "apps/web/src/features/dictionary/analysis-journal.test.ts": "c0330ba7afb814452fd84d46b209154a896c5c834a191693df635de36e7f8811",
+      "packages/domain/src/dictionary-following-import-journal.ts": "dcfa145c59f646f6f1449a267076bdc6c2c216008821f02f07dd4ba651a2948a",
+      "packages/domain/src/dictionary-following-import-client.ts": "95cd5fa65bb70b8a07aba490066f360ce7054062f5a87f6c982b95432109bf5e",
+      "apps/mobile/src/db/dictionaryFollowingImportSchema.ts": "e6a06c63025734e5c218c285f2ee744918e5f32cfbf76a428d85b275b6cfe5a9",
+      "apps/mobile/src/db/dictionaryFollowingImportRepository.ts": "0148f0def160730f951ca842886a27b7cc8bd20e4d47c35527b3a1d8f01a5edc",
+      "apps/mobile/src/constants/dictionaryContent.ts": "a20c9db08e2b7c225c2d63c90ae6613ce79dee6bb79a1b760425ed5d2c6d6e8d",
+      "apps/mobile/src/services/dictionaryTransferService.ts": "e7e09d150d79ce8d60402334e679ea1b647a55f17f1a1e2fddf5b8122ac8253b",
+      "apps/web/src/features/sharing/following-import-journal.ts": "923c7425c59e8e9d9a4709a7c1007f40b0cf27f5b051bdc6b7f5a9f62b7300d7",
+      "apps/mobile/src/db/__tests__/dictionaryFollowingImport.fixture.ts": "513e7959030ede2919bb5830111259d6d904e17dc98b618c70646703876dcde3",
+      "apps/mobile/src/db/__tests__/dictionaryFollowingImportRepository.sqlite.test.ts": "7853dcf9f0ee99c9d948dd2c25be7e70357999f3997eed2c535b76a0537704da",
+      "apps/mobile/src/utils/__tests__/dictionaryFollowingTransferClient.test.ts": "f2452558ff6824adce2f23358f73d7ab686272ceff82f7385c4debfb7093a0b5",
+      "apps/web/src/features/sharing/following-import-journal.test.ts": "ce16c7d4440ce615d86cd3bd527d1aeb81ee1f7b274cce6d98694030ddaefdbe",
+      "packages/domain/src/dictionary-following-transfer-client.ts": "48d19497efef553c802f597160d1b940fa8144f3896a98e6dec974c5638bff16",
+      "packages/domain/src/dictionary-following-transfer-revisions.ts": "c638e2de9b5dd0f5d2198b924b094c920e5ef67ad46fc563767757c7a8f8fa09",
+      "apps/mobile/src/db/dictionaryFollowingTransferSchema.ts": "d1b41d5db7fa1242b583357c8c89cebe4ee3175e7311cb95ff3961ec025a66e1",
+      "apps/mobile/src/db/dictionaryFollowingTransferRepository.ts": "d49074fa1aeb04924906def34f16e5b01461b24bb5c9b1d8976c391d84283e74",
+      "apps/mobile/src/services/dictionaryFollowingTransferService.ts": "5b589415aa589fbcdec8ab3aa637c7ce5b6ca883ede182c095e781015b0ea59a",
+      "apps/mobile/src/db/__tests__/dictionaryFollowingTransfer.fixture.ts": "ec7f5f84521bf8ca6f4f66a953a7d923868a68756a99bbc96cbce52360d807a1",
+      "apps/mobile/src/services/__tests__/dictionaryFollowingTransferService.sqlite.test.ts": "1bee1d99ad8842fdc0752400043698af4267bc1d76cd9ee76e794ed054686b34",
+      "apps/web/src/features/sharing/following-transfer-journal.ts": "6ea94e88e91d485ca8eb10f4550f9893f939aade461b060d4e2995e4ac7c5c31",
+      "apps/web/src/features/sharing/following-transfer-client.ts": "2028decf060f92b5b2c5368cc4caa9364d77356faaca90e32765ccc1d9d62e65",
+      "apps/web/src/features/sharing/following-transfer-client.test.ts": "9a9cbfd54fa455f7cbb0edb4a8a675db20615b0a9f0d3d4f2a15c5ff87451183",
+      "apps/web/src/features/sharing/__fixtures__/following-transfer.ts": "d1fc1a99cac3dd99b0cc6fc9890f717216b7d72401aa7892aa43e22c01ec7e09",
+      "apps/mobile/src/styles/DictionaryFollowingTransfer.styles.ts": "f3f62f48f23f50cc63798a28366bff188dee1b504ddc40721607b3e8245cc440",
+      "apps/mobile/src/hooks/useDictionaryDocumentImport.ts": "0dd412cd8a330485e7d3fd1b5283e7f6a1598a1a7b690d492034d7ca846529c5",
+      "apps/mobile/src/app/dictionary-import.tsx": "1c11292b7d821539a0b4e050cc295adff00e14b38346e4a6748142ec058b8a8d",
+      "apps/web/src/features/sharing/document-import-parser.ts": "756fdc3ab97ecba3198bc18405c35ba4fcc63216e7894d4fa6f6727cf075b6fe",
+      "apps/web/src/features/sharing/DictionaryDocumentImport.tsx": "dce4b8a9620e13a6fd9876d3a46a0efb55dbb5f1d568f0b9635aeb14c1e60d98",
+      "apps/web/src/app/app/dictionary-import/page.tsx": "1673702302cb01e2854e0261dc47515553105872e4cbd8c1ec96838483b59409",
+      "apps/web/src/features/sharing/DictionaryDocumentImport.test.tsx": "359afc5d00faacf12dac77111ac05ff8c2b80c073f6da93a9f2c279f30cc0eb0",
+      "packages/supabase-contracts/src/dictionary-following-import.ts": "e2cbd5e72258776439bca1dab767a78188efb1acbfc03f27584b78f81a8f2575",
+      "apps/mobile/src/services/dictionaryFollowingImportService.ts": "f56062661537bb3498038232c97de1197b267591478234da64165f17c8f40167",
+      "apps/mobile/src/services/__tests__/dictionaryFollowingImportService.sqlite.test.ts": "d4985399e0664eb1e202e41fe3f65e10b91f50a201db2a867b59829de3a15783",
+      "apps/web/src/features/sharing/following-import-client.ts": "17f4a965ae4b85da7f8487b558c14a7bc4b8b879e1e40f9d15f1710008b9d398",
+      "apps/web/src/features/sharing/following-import-client.test.ts": "db25bf4e905e01c8e1c623bd6a326b4f855bce19acc2d824a3e3202e20872b1c",
+      "packages/domain/src/dictionary-following-import-hydration.ts": "9b1ebf46950dc0366953d2e1b1dfab4c3dc0ff86d2864b0e898ea2c21e61befc",
+      "apps/mobile/src/services/dictionaryFollowingImportHydration.ts": "4191c412a922b807f58f1207a88936d9de203eab86ca9cf501b644e00978bae6",
+      "apps/web/src/features/sharing/following-import-hydration.ts": "9c92af49e19c487b721d81f021ceb392fde8bb5a974bab67908941f3b05d39c0",
+      "apps/mobile/src/services/__tests__/dictionaryFollowingImportHydration.sqlite.test.ts": "757eea6f239648ac8257a6c70ac120842a69ba621fc8f5cb4e92d965a9dcbc91",
+      "apps/web/src/features/sharing/following-import-hydration.test.ts": "0dfe367c499797306b2bdbf740cba3ecf3e32b53d695d7d09347ca9c71d7ae53",
+      "packages/content/src/dictionary.ts": "9f87b8c0b92d13014dd11a59d72256ce076d6ff48f18a10584bc2767c9da38ea",
+      "apps/mobile/src/services/officialFollowingImport.ts": "107329b01f050c5c9554ad44999df64a417881503460560a767515d77cdefaa1",
+      "apps/mobile/src/app/starter-pack.tsx": "16abfca32d129bbb026cf30cc47fbddaa108bd2349fa335ab8559ec0cd6c4b36",
+      "apps/mobile/src/hooks/useStarterPackImport.ts": "8e38ec53dd4574ff244e23d037b00c12942e0928e34c1cd9ba614095a73b9a29",
+      "apps/web/src/features/starter-pack/official-following-import.ts": "94c7b0bb732c2742fed5239a45f6b09aa11903c297d978b44998949b3b2d42d5",
+      "apps/web/src/features/starter-pack/dictionary-import.ts": "5d54711d328987b59d839b51ae84429f7c8df96e435cc43e22693821b4a34843",
+      "apps/web/src/features/starter-pack/actions.ts": "5c38d11da925d11aaafd4cbb5ed8c4141e406f5786c6f4e7238aa53bc48fb7be",
+      "apps/web/src/features/starter-pack/starter-pack-domain.ts": "dccf08b061d3ac1720b7b3b535c03996eadb44be9768c97fdb8329f61f126ccb",
+      "apps/web/src/features/starter-pack/official-content-repository.ts": "dea667d73f8b26dee95196adce1584f089a798aed745728c061a523fbb0116d6",
+      "apps/web/src/app/app/starter-pack/page.tsx": "6f1dc6f19f5e3f342ecaed1503b7ad0a492c09a0127838daba750d76b055ad74",
+      "apps/web/src/features/starter-pack/StarterPackImport.tsx": "26403a5f9bb2c49922fb3020140f1c42b58f4ae201385e42e1ae218c5f39ac64",
+      "apps/mobile/src/services/__tests__/officialFollowingImport.test.ts": "6f636b54ff50664c05f832764c952d5a8aca26eab74394706dad15ad2b5fd34d",
+      "apps/web/src/features/starter-pack/official-following-import.test.ts": "91c850918e03bb00f347a397fb6769c27e9b06e2cd88f8c8a0b5213bf5539eab",
+      "apps/mobile/src/hooks/__tests__/useStarterPackImport.test.ts": "a4207c4ae5646eeb434a75b8d05280857ebbe7d33e8a7b5e2866559dfe0c210a",
+      "apps/web/src/features/starter-pack/dictionary-import.test.ts": "face8f41c390ca03ff711f138be5e7346173922bebce0853082bfaf6f54cdf2b",
+      "apps/web/src/features/starter-pack/actions.behavior.test.ts": "61c5913c5b2de13befe44635786121613ed8072aa27d829020b752c314f77cdf",
+      "apps/mobile/src/utils/__tests__/dictionaryFollowingTransferAction.test.ts": "35686c97eead6cdf33dadc12da1d356147d30f3d6e7122365d824509247cc546",
+      "apps/web/src/features/starter-pack/StarterPackImport.test.tsx": "12ada479b219cb92c95e67e9e0042c79c134a13d1928e3dbfcda42a4afd9edff",
+      "apps/mobile/src/components/__tests__/StarterPackFollowingScreen.test.tsx": "839273fd79a4578a7ed93b9507233229ed076062bb22987332e52fe1cf4140fd",
+      "apps/web/src/app/app/starter-pack/page.test.tsx": "650f171abb706eded58c4cb447ea1e0ee456790c860374c3df82e08871d4ab49",
+      "apps/mobile/src/app/import/[token].tsx": "812be2f58b14920b3998df3b7e2c5499a031495bfd1c5a2a99f2888d7fe334ce",
+      "apps/mobile/src/components/ImportByTokenModal.tsx": "ca1265a90f56b8c658b941119ab5efcfce9e214b3b272a54bd8f482cedb84042",
+      "apps/mobile/src/components/SharedFollowingCollectionImport.tsx": "b179080d66c4057571c4b046734c21c71032e88cafb226096ba84cce9f48977d",
+      "apps/mobile/src/components/__tests__/DictionaryFollowingTransferPanel.test.tsx": "017ba2380a6e3a6d84834242b3edead03d007991a6f40a04569a0f20a2cc377e",
+      "apps/mobile/src/components/__tests__/SharedFollowingCollectionImport.test.tsx": "91af7dcfeb1dd9d08391473364aa05308698544b0cc875de4c2d6d8ec52553da",
+      "apps/mobile/src/components/glass/modals/ImportCollectionSheet.tsx": "09f33670fe8b310040a473637cb14f8a6fa0be7906122159fa3be1e11bad40c2",
+      "apps/mobile/src/db/__tests__/dictionaryFollowingTransferRepository.sqlite.test.ts": "779e8394185c22a814fe54a25ad45ead1a168a1b0fb72e11cc77becbda5d78f8",
+      "apps/mobile/src/hooks/__tests__/useImportSelection.test.ts": "be0ffc404da22e5b27c4b4e41b0f572d6bfee53fd92966eccb513fbeeab312d4",
+      "apps/mobile/src/hooks/useImportSelection.ts": "82b262d165b1ce387de16e0063b92aaf8eb15f3927253a420cf11ecd70982e6a",
+      "apps/mobile/src/services/__tests__/sharedFollowingImport.test.ts": "8c5c7410dfc4dfffe104ad2fc8463838e74b90a7ea2a1677fd475bdeb42aa3c8",
+      "apps/mobile/src/services/sharedFollowingImport.ts": "6156fa6dc78d8cd9dd755a0b88670383397a5e49208d94d33967e63ef7e71f13",
+      "apps/web/src/app/share/[shareToken]/page.tsx": "3e04d49ba5b013fe99482bba7ae1f6220db2c37edb92b392dbb41358ef2f9df5",
+      "apps/web/src/features/sharing/DictionaryFollowingTransferPanel.test.tsx": "b6e61c3c56123bda887ad8236139e8cfd2538bfcf43ea8605418e7d81ec3f009",
+      "apps/web/src/features/sharing/SharedCollectionImport.test.tsx": "66a91496a8ddd0a780f98ac40d1fba60801d413a49b5b1be53d770ea1400566b",
+      "apps/web/src/features/sharing/SharedCollectionImport.tsx": "a589dc15f5cc6acbb9aa024940afc81a76fe45f47f79a7f35566d9da19589e8e",
+      "apps/web/src/features/sharing/actions.ts": "1546fb0e3a9efcbf04fe621a9f25cf461d221d45b16dd991c5c2301589be139d",
+      "apps/web/src/features/sharing/dictionary-repository.test.ts": "4dc08c3c31122667659ca4c9f85284a22612927a2505eb733cc93a6a1d67713c",
+      "apps/web/src/features/sharing/following-transfer-journal.test.ts": "1cfae7f7b84c96c94d9d23c32b595c47df791ecb32def0b9a4f70d1f2994f065",
+      "apps/web/src/features/sharing/repository.ts": "3462f35f587821f4089637be8a284b5c8b77e071603e60f44f9cf5d2ae0087bb",
+      "apps/web/src/features/sharing/shared-following-action.test.ts": "130323922ea9136f6cc88bcbe2bc9b861656cc6e0cd370f6599b1fa4e2636738",
+      "apps/web/src/features/sharing/shared-following-import.test.ts": "4ec2f8a3faf98a3262c6736fa49cf4b9f2dd4b23d359d974fc269332c6eeca95",
+      "apps/web/src/features/sharing/shared-following-import.ts": "9fd5a7019990573faca75713892037f18ffa47f130a7d1b4598e657b5ded9179",
+      "packages/domain/src/dictionary-following-transfer-action.ts": "fb80f323be7ad4984f299c3d9b6c28622ec31688e0a4d1b9b753e7692aff3d3d",
+      "packages/domain/src/dictionary-following-transfer-journal.ts": "b6b67a4960701c513ce5150bf5fdb31c8aea7825d613b95e854b1850ce798888",
+      "packages/domain/src/dictionary-following-transfer.ts": "d69d5d453aad7587cae17e0f7ae5043d7eb187a20699d5d68c82230fa9c0e162",
+      "apps/mobile/src/components/AddWordScreen/AddWordScreen.tsx": "2be5bbcd9e741a53fe9aece84decb44eea2e372d40c01c655ca5f927e3dbf64c",
+      "apps/mobile/src/components/AddWordScreen/hooks/__tests__/useAddWord.test.ts": "60d5cbf038be11c3267404174841b3603922dcd325bceb2a7a55a6d76589a040",
+      "apps/mobile/src/components/AddWordScreen/hooks/__tests__/useWordAnalysis.test.ts": "7979618053f27c6b8c7bc489c6c15e6f0bd58b37cef31d98aa08692d391a0b20",
+      "apps/mobile/src/components/AddWordScreen/hooks/useAddWord.ts": "ca68e1fa610857b5e852410af29c248525c43cf842e8692ddba8f70ef9e8d7c8",
+      "apps/mobile/src/components/AddWordScreen/hooks/useWordAnalysis.ts": "5f8b64adf213be3ad05bb1bed36f9a3ff5ef125cb9773f0846abd8a399067993",
+      "apps/mobile/src/components/AddWordScreen/index.ts": "9f3fa14f122e06fb5d22fce35c015c1c9a9530ad4e42ce928ced55cfb6d90c44",
+      "apps/mobile/src/components/DictionaryFollowingTransferPanel.tsx": "dd0d9829db43302d8ff411b31caed0f86135421c5e9166cea2a1f67e5acba1b2",
+      "apps/mobile/src/lib/__tests__/supabase.test.ts": "6a6607b2eea52eeb5077331e0d84fa36f9986153d8a48f7bf570ed30e9d2f59b",
+      "apps/mobile/src/lib/supabase.ts": "7bfa7ef860ccb19c8865f48145b29b88761912fbf58abed1767bbbd9efd18a35",
+      "apps/mobile/src/services/__tests__/dictionaryMeaningLookup.test.ts": "df6128d5572f8c21a37c758b3a71181e3a17e2daadab280dba3bade93680db14",
+      "apps/mobile/src/services/dictionaryMeaningLookup.ts": "ae00f5e80ad6e57f7a97bc9625c4a6e8e0b32577ae79c00e8d8e9e4565f5f935",
+      "apps/mobile/src/stores/actions/wordActions.ts": "f724b8a3edcf93e46042815c620d852bd5bd6d066523bd32fb38ed855bf60771",
+      "apps/mobile/src/utils/__tests__/dictionaryMeaningLookup.test.ts": "75e3734857c027dd01ac5ee39bf1c62e07a94d7cc867fe9bd243c59be6bc89f8",
+      "apps/web/src/app/app/add/page.tsx": "8e7410210f33e80252603baf754f92e2f480f66d13948dd8aa6a7790ad16a775",
+      "apps/web/src/app/app/collections/[collectionId]/words/new/page.tsx": "88fd2a6a839fab534dbee24ddad4ad7f799044117e33d157d862ccf2d8f591ab",
+      "apps/web/src/features/analysis/AddWordWorkflow.tsx": "60456e2b26cf347367875c02368b3fcad610e7cd931b74889a42b8bda2f59033",
+      "apps/web/src/features/analysis/actions.ts": "c1a392596df3937809f1aa451db72c33f4db5476691c16ba39a2d9b5e8efd00e",
+      "apps/web/src/features/analysis/analysis-client.test.ts": "41ae9b58122f9f85ec97eb22e3f9cd57ad6cfa04f302fd316468b5e22d44aa84",
+      "apps/web/src/features/analysis/analysis-client.ts": "3bf5c776ee1f6419a93914830bfee4a441d0ac5324449a4af9b348f808ffe2a2",
+      "apps/web/src/features/analysis/dictionary-meaning-contract.test.ts": "069d7006e8a67109a75b73c5b96a925246138fdf31ee6625dce90fb76d5937ab",
+      "apps/web/src/features/analysis/dictionary-meaning-lookup.test.ts": "98d6fca9694f58c58e0c7605a25fc35439eb2a0ca9193898e2fbc92b902b9ecd",
+      "apps/web/src/features/analysis/dictionary-meaning-lookup.ts": "578e876a105a341205222028e3221c6d5240529e7d9e3c832b3369c276f149c9",
+      "apps/web/src/features/analysis/following-creation-guards.test.ts": "2f54ccdcb2b360047c4d052b0f823cac44b353e95ab89ff86fc9c66eeec4c618",
+      "apps/web/src/features/analysis/persistence-repository.ts": "22bd7ca6bae77651dbc8379638ad64ec3200b1d30c91af5573535349fac816eb",
+      "apps/web/src/features/sharing/DictionaryFollowingTransferPanel.tsx": "f3ccca913541328d76385b9cbbb53c0b70aaa13ed492ce9f7d8aaddc4325172d",
+      "packages/domain/src/dictionary-meaning-lookup.ts": "a5cbeab42107d1abb8627c7b6b8b82516348793faa88d025245d252068dfceb8",
+      "packages/supabase-contracts/src/dictionary-meaning-lookup.ts": "413a54a2582b6d202dff9763df58a20b36fd0a64c57a78f13bc1bdc0c3f9382e",
+      "packages/domain/src/dictionary-creation.ts": "632516aa333050c6ce4d9c7f0351b4f52cec8175d6d58e0656a956a867e5f4bc",
+      "apps/mobile/src/utils/__tests__/dictionaryCreationContract.test.ts": "69c12a7d1a91bfd239c4dbc18331662eed916623a82c17105e994ba05cabe585",
+      "apps/web/src/features/analysis/dictionary-creation-contract.test.ts": "69c12a7d1a91bfd239c4dbc18331662eed916623a82c17105e994ba05cabe585",
+      "supabase/migrations/20261010180000_add_dictionary_creation_acceptance.sql": "d8dd13958b959abb0cd4d38e7af77472c89cc6d056c6ba7a07d5025d377a098d",
+      "scripts/postgres-tests/cluster.mjs": "0d3bcbc894759b5ccaad4f001c5fc08b702e43901bd473022b79e1811bd844da",
+      "scripts/postgres-tests/cluster-docker.mjs": "97547a6c7e966f3ffc203bd9f168fdf243715b7ddbfdbe0d363a9c4ae996391c",
+      "packages/supabase-contracts/src/index.ts": "5d490fcc0f7fe770e0ff018d8df7bbdfdd3065640c5993e267bbe437e235ee9e",
+      "supabase/migrations/20261010190000_add_dictionary_creation_dispatch.sql": "8b2cb4505dc76ab463cb10b5b779f2f1016d527306e247d74848f61b167b0a3b",
+      "scripts/postgres-tests/dictionary-creation-dispatch.fixture.mjs": "c33ff60325e204eeaeb1b1dc026fcd5b085ecfb8b49e6abe7fee60798a73b107",
+      "scripts/postgres-tests/dictionary-creation-dispatch.test.mjs": "8322f7799665e67fec3542974f02ac1d36373944cfe007612735b6181fb412f2",
+      "scripts/postgres-tests/dictionary-creation-acceptance.test.mjs": "f10704fbc200a58c658fbc6e37d81ec00a72f1c3a80383d063b47ae13633e3dd",
+      "supabase/migrations/20261010200000_add_dictionary_creation_publication.sql": "ad4c29ea01144a11e9ab8d8bf301681d682ea42c31cbf76fd31bd10e7c5cad77",
+      "scripts/postgres-tests/dictionary-creation-publication.fixture.mjs": "a8a3220cdc2eaa273f2d4c5c8a71ab5802e37bfe6a6920cb1635a478e791af63",
+      "scripts/postgres-tests/dictionary-creation-publication.test.mjs": "5e762714fccc71bd4487de7a6eb5cd0b462eb557e2888f6fc07febde6d223b8c",
+      "supabase/migrations/20261011210000_add_dictionary_creation_recovery.sql": "04e3aee7070f0bc3fa33f42884efd6bd03e1b6c1d3df0494de9a230f21e7c5c4",
+      "scripts/postgres-tests/dictionary-creation-recovery.fixture.mjs": "b5e7d8e8f371ac5c5848acb5d9de7c4f8d7307f87e1c421e21e68865e4c68db7",
+      "scripts/postgres-tests/dictionary-creation-recovery.test.mjs": "c1a482f5ff55c73a537da6995ee21cfad70b205c4345d7f2eac5178cf0c6a189",
+      "packages/supabase-contracts/target-schema.json": "38a1e0e107c127b6dbd803c58faa604ccb584431b00e7fd21c4f305b7fa239fb",
+      "packages/supabase-contracts/src/database.target.generated.ts": "b4a09e00c173dc28f53b365c6c497c4217b65121d014ad22d521152a3f0d2387",
+      "supabase/functions/deno.json": "675c9ee820e45c9ea81305b447752029cad7d61c005ab0077c51c3fa2ecba92e",
+      "supabase/functions/dictionary-creation/contracts.ts": "aecfcbcd3e83b2ac3bb26c3e07d28ac7fa27e37c5c0f2b161efcb33f3893f79c",
+      "supabase/functions/dictionary-creation/endpoint.ts": "fcf5be82e8bce76c8189c992a57ebd819c8da5ccf6d61a377f1e4b70d2d492e6",
+      "supabase/functions/dictionary-creation/handler.ts": "578e43b4dd1a1425409f7837805088037bab4dbf6ce79adc8c7157b5c15c3c92",
+      "supabase/functions/dictionary-creation/store.ts": "b5c9c666783dedabceedbf2b214424d5e0b061104a77c10487f158014fd5c78d",
+      "supabase/functions/dictionary-creation/worker.ts": "8572972ac2a47062063958542860ce001acb698a4724e3c8f1ccace4a04751ef",
+      "supabase/functions/dictionary-creation/worker_test.ts": "bfb7105a2da2235f6387132c2c0941d4c600fbfd6b595e8aef555636192b8984",
+      "scripts/postgres-tests/dictionary-creation-worker.test.mjs": "d55ef2106fb387ff8c7a29fd3aed09b5bb67cd78f1ced48c9bf33e9da3220732",
+      "packages/domain/src/dictionary-creation-client.ts": "9165e3c6ec91383e06dc16ff4d0aca9ed5c0259caab18584cbe845e2b003acf7",
+      "packages/domain/src/dictionary-creation-journal.ts": "ade09bc99f5d82cf1623a0247c8574771772792032763137d85c33f63ee78d2e",
+      "packages/domain/src/dictionary-creation-recovery.ts": "7736cf110e96cc358e923cab18f581b9f343787225ec3c53ebc62c3cd4ae4147",
+      "packages/domain/src/dictionary-creation-journal.fixture.ts": "d07ac776258f4826d585c326610fb531b8f2c7807bf291895c0d2b7cce9779d6",
+      "apps/mobile/src/db/dictionaryCreationSchema.ts": "f5435ce3f2c2e2cbbbe9b53a50c1482d3c60868ba027e263e6f0abc5dd25604c",
+      "apps/mobile/src/db/dictionaryCreationRepository.ts": "8e78379cb83abcb5aa0f6f9987d4ad4fce1735411665b748690716db816f8131",
+      "apps/mobile/src/db/__tests__/dictionaryCreationRepository.sqlite.test.ts": "0ee4281925f32514604960015a7113266d6fbafdd88b8f06b36a7a7408409e2e",
+      "apps/web/src/features/dictionary/creation-journal.ts": "279225f015b023a8bd7e2f3ccedef0561b47c1120c8d195c11a4f13048eb915d",
+      "apps/web/src/features/dictionary/creation-journal.test.ts": "5c1d97c81e8427265aa92df6e2ae431e0df78ff08db39538c3d83b13119e57e6",
+      "packages/domain/src/dictionary-creation-workflow.ts": "1b486c540e98608ac635568d527a648a5d0bca664d5c03c781a1c8b3708ee031",
+      "packages/domain/src/dictionary-creation-transport.ts": "511d1924d4339edef001c0e9ad32ad519a91d0287b374b053a5337c786b8c2de",
+      "packages/domain/src/dictionary-creation-owner.ts": "cce22db99f8d1e3ce8a3d6c43501aa8b3163d13e6ef244d7a32c219d28fd4120",
+      "packages/domain/src/dictionary-creation-sdk.ts": "5e6d0cbdbdeb1b986638cd7ad06217c22c3c16bdb0d7689f9c73abcfce8c12ad",
+      "packages/supabase-contracts/src/dictionary-creation.ts": "d20bfe2cef074505f92a0669684453f742932793caf7687a99687023feb7ff97",
+      "apps/mobile/src/services/dictionaryCreationService.ts": "14e8d882505ef7a0ba2238376ae4fab09b4f38f9cc9fc3dc731a04f6e5085af5",
+      "apps/mobile/src/services/__tests__/dictionaryCreationService.sqlite.test.ts": "2c91279308258c22f6a4700504ce681ff6f4b2e392387a6daf8302010bfe5f61",
+      "apps/mobile/src/lib/supabaseFetch.ts": "ca980e295d8b6d40d426021eafaf3a62119d518cc6175ee065473dba9e6bf54f",
+      "apps/mobile/src/lib/__tests__/dictionaryCreationFetch.test.ts": "492afdaf4e27f89ee56fd9922ec38cd4ab4fd49e871909686a6fc8e518463db8",
+      "apps/web/src/features/dictionary/creation-client.ts": "4978e03743dda2a87139228322de2d5ffef030bdc23bba44fac63f2df5be6f31",
+      "apps/web/src/features/dictionary/creation-client.test.ts": "7bdbeb46d4a60aac830667a7125497b2a173525c79cd2e1b743007753633cc1b",
+      "apps/mobile/src/utils/__tests__/dictionaryCreationAction.test.ts": "fc1107e95d258fa7d3ce6c1d69f5f73705e2bb570f8675b2f8e7a27e3eb82d13",
+      "apps/mobile/src/components/__tests__/PublishedMeaningAddWord.test.tsx": "043a9c604bb1a9137612609216fe02426135a3112b21e3174dc0246acd9f2c58",
+      "apps/web/src/features/dictionary/creation-action.test.ts": "54020786982302506fdcbbdede5c8eb157154ce9b022ebad426ae8bc2305352a",
+      "apps/web/src/features/analysis/PublishedMeaningAddWord.test.tsx": "60af6202cba950b543ae8df6e4ce412e14814b08f61aef44070ecbbc074e3f17",
+      "packages/domain/src/dictionary-creation-adoption.ts": "c3d9aac503b2c61b94db33b355eba4b397603dda57465fe3959d6974877db2d2",
+      "packages/domain/src/dictionary-creation-action.ts": "5b360ba87844bb55e456f58915fb513d9470065f013c859e33569f22cc29774f",
+      "packages/domain/src/index.ts": "fd2ac9a119fd4e45f66f34485fdf33d9343263fc2f231a7107150dc930dfc439",
+      "apps/mobile/src/services/dictionaryCreationAdoptionService.ts": "71768a0534217dacec448c9401060bec01821d3673f0c0a1a3d320d52ccdc8a3",
+      "apps/mobile/src/services/dictionaryCreationBatchCompletion.ts": "7fec439cafd68cb1db508bac5bca44a308eaa759088e97b0e26b969492df057b",
+      "apps/mobile/src/services/__tests__/dictionaryCreationAdoption.sqlite.test.ts": "b6c725d20a7d5fb6be3dccd525694eef8f436fd4b5b6c4091f84229e33227689",
+      "apps/mobile/src/services/__tests__/dictionaryCreationBatchCompletion.test.ts": "70f5ac6968ea3d7263d377d7be7ad02a99308b174576e12b7fa0e380eb856cc5",
+      "apps/mobile/src/components/DictionaryCreationPanel.tsx": "dfdfc0084e00e4054634f71d7f40cf8c5b6378e29dabdb14babed02971c81321",
+      "apps/mobile/src/components/PublishedMeaningAddWord.tsx": "2efd193d9b859c2a2e1d21feac1e56ac218fb6fc0f80c4041c71f4cb8828dd49",
+      "apps/mobile/src/components/AddWordScreen/FollowingAddWordScreen.tsx": "b7bbacd502acf44e54ebf65c0fde49d10df281f6db6db12bf6d976a005f2f7ff",
+      "apps/mobile/src/components/__tests__/DictionaryCreationPanel.test.tsx": "c0e37e8f70c61aacb4c7ca0893c5978e2935e6a059277be6a35e3f2b3a37a00b",
+      "apps/web/src/features/dictionary/creation-adoption-client.ts": "62bd618fc2d52da81f4c2a32994386fac6cea5bbe688f65eb18fbee41e32258a",
+      "apps/web/src/features/dictionary/creation-adoption.test.ts": "2eab10d50d0671b22be237ec150232bbf33adebe000875e95d510bbec0ff594a",
+      "apps/web/src/features/dictionary/DictionaryCreationPanel.tsx": "1059763ea9539686db21d2424ab8c94584fbba678821522ef4ba492cbbc5f48d",
+      "apps/web/src/features/dictionary/DictionaryCreationPanel.test.tsx": "4366bae306928cbe924fe8cd6dabbcb93223a3a195d8854c7f759a8f66abbccc",
+      "apps/web/src/features/analysis/PublishedMeaningAddWord.tsx": "48d6fadd482d08d826baed542b08bdc6ba78ea94402535f0955446cec53c6f37",
+      "apps/mobile/src/services/__tests__/dictionaryCreationAdoptionAdapter.test.ts": "36084c46d5e69e9fa9f2abdd48ba28241692f676ebc44bdbfc4005fd89aacc65",
+      "apps/web/src/features/dictionary/creation-adoption-client.test.ts": "4ca9a03fbe8015255a16c51b09ad43d495e5fed7c6426919aa790eb931d2f981",
+      "apps/mobile/src/services/dictionaryContentSync.ts": "a462889fc8837a617909cb913e0bac82e607671bcf1fd447b24537afa24eea35",
+      "apps/mobile/src/db/dictionaryContentRepository.ts": "8225b071dfa6d4fa8e122a10b80921a6e25947e34757cbddab1d24392764bbbb",
+      "apps/mobile/src/db/dictionaryModeReconciliationSchema.ts": "62b63bf4a479a22f74692a13f83c134c9e1b40ca1baae2e3e92150266de67014",
+      "apps/mobile/src/db/dictionaryModeReconciliationRepository.ts": "edc7a93e2fe7837cdd62959ab5748ef3af2adeedd1f93d75864d9c4a4ecb78b6",
+      "apps/mobile/src/db/dictionaryWordReads.ts": "bd4e188d00d76b254156c8b01a03689a1a0bf7e386749825bfa54fb1124e2a59",
+      "apps/mobile/src/db/wordRepository.ts": "e3c3d0e985ba7cd1bd9219751bf141dfed119e9e238f861d4a72b1d1a81fa6f6",
+      "apps/mobile/src/db/initDB.ts": "9ea18437098f490dac629c0ca63c33dc6b8aa527195844bd0931a8a6ec3211c8",
+      "apps/mobile/src/db/__tests__/sqlite.fixture.ts": "c9d29faa78fa97d8357187fd690d3c2035d1a11e530b3638f4cbeea0069ae344",
+      "apps/mobile/src/db/__tests__/initDB.test.ts": "d664501f423a16cbdc46237572ef9ead087b0023618d3e0194fbe1d3eeca6551",
+      "apps/mobile/src/db/__tests__/initDB.migration.sqlite.test.ts": "a6e1724ae8b7542b9961e6a8845c0bed2643258e820b9eb39b5adf129c7f013f",
+      "apps/mobile/src/services/dictionaryModeReconciliation.ts": "4c22d497a1ac51aa68d47315535e5b3c7ba385128577d98c6864f3d9a603d5d1",
+      "apps/mobile/src/services/syncManager.ts": "4c513041bb487769420908f1e7fc41f608a134e908b62aef63a7b5174c679c5a",
+      "apps/mobile/src/services/__tests__/dictionaryModeReconciliation.sqlite.test.ts": "8c9063d137d47e79f78a17bff817f19df392a4b530efedc0f46be7c352c43704",
+      "apps/mobile/src/services/__tests__/dictionaryFollowingSync.sqlite.test.ts": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+      "apps/mobile/src/services/__tests__/syncManager.test.ts": "74beccdbe0082284392e2eaa383a45069d1fe5c54080eeb0bff4d6be96f2f4e1",
+      "apps/mobile/src/components/DictionaryConflictResolver.tsx": "93ed93414957773235b128417a39f415801d95cbe7d1e7228a57f9673f457698",
+      "apps/mobile/src/components/__tests__/DictionaryConflictResolver.test.tsx": "f36e1063ed1e8c74ed7c0407021d94232a08bd902dc883c76025667fff9e26b1",
+      "apps/mobile/src/stores/__tests__/wordActions.test.ts": "cf66c9ad97c5f2997f59542f51f8ed27610c11cafd9ade45ba7d073002cfc127"
+    },
+    "test_mirror_sha256": {
+      "scripts/postgres-tests/review-correction-migration.test.mjs": "5127dfbe87277d43a0568391a69ee4ebd39343e292b1408a4b7757fcb52f75a5",
+      "scripts/postgres-tests/review-correction-concurrency.test.mjs": "d87ed37ffb75ea7ceb4ab0805c88b620644db94e0ecaa6c91ba7ca1ad45cdc32",
+      "scripts/postgres-tests/dictionary-import-placement-review-baseline.test.mjs": "af260233858f1507080a2d03b8c323bd554a6260263558f7132c1dd1a53ce180",
+      "scripts/postgres-tests/dictionary-import-recovery-baseline.test.mjs": "3e19d57e91183cf30211ab172cb0fc7557381e3a92d9da6abf7d3df194b86d44",
+      "scripts/postgres-tests/shared-dictionary-schema.test.mjs": "6ae895d945b31fdb0f931ce823776d6d869dec91e1a3e0da500593c1854d2f72",
+      "scripts/postgres-tests/dictionary-import-recovery-backfill.test.mjs": "f6ccd44e8ed6ebb3a84571fbc4cde4f474fe840f181ad3c3cbb04d169cdfd909",
+      "scripts/postgres-tests/official-content-import.test.mjs": "9fa02c9b117993e659422626ffdf518b8580a7322a44faab3ce7ee38d7c6ddf1",
+      "scripts/postgres-tests/dictionary-semantic-checks.test.mjs": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+      "scripts/postgres-tests/cefr-budget.test.mjs": "db67ee8f9b2a05cbf06b537b06f9c2164d62575071741380896510de61cf9c36",
+      "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+      "scripts/postgres-tests/cefr-queue.test.mjs": "53645b796110aaca3f0311c8b8d6f582c63fc80b721e50e91aefc98cc3ed5357",
+      "scripts/postgres-tests/dictionary-analysis-operations.test.mjs": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+      "scripts/postgres-tests/new-word-review.test.mjs": "581db62ab518fd82e655892d69c1faef96ff1f7adf993f7e476e2fc4e5cc0f47",
+      "scripts/postgres-tests/web-review-snapshot.test.mjs": "4c7948b57a2da908c0076b54a832861e8b539f41a9a37e649099922249fc0720",
+      "scripts/postgres-tests/schema.test.mjs": "6600de82501d4b5a5148ab65a17a7a0cc1fd6230a063f7d80c8e6d3738de8ad5",
+      "scripts/postgres-tests/web-collection-overviews.test.mjs": "6cbc1c45e9fbd9e508d20f2071ce09097d561e6254773630e1337684cea9257d",
+      "scripts/postgres-tests/dictionary-following-import-recovery.test.mjs": "24eb762eef81339fb95db657f706b24c8ea94309a29ee28ba97f1d51f6a2dfc5",
+      "scripts/postgres-tests/srs.test.mjs": "c5f7232854b0861427321f5bfb87950e1cec11c427958b80ff30f71a989060ad",
+      "scripts/postgres-tests/official-content-catalog.test.mjs": "350666e16a1636cf1147d44aff005df66f4e6ea9b431f2d8642adece12fa3765",
+      "scripts/postgres-tests/learning-reset.test.mjs": "631984a0333c9ef4cc8eeb718fa375975a8098df48398e6e1deb03a3312c93f9",
+      "scripts/postgres-tests/review-correction-srs.test.mjs": "543a0508708fcf0d4b361d7f807396c2185fc7d6d42db4518cc9cee2bdddd655",
+      "scripts/postgres-tests/official-dictionary-mapping.test.mjs": "67f8dcad128d7a41062793fd7f8830c71b8c9d0dba27df98b46ea6532d14f93e",
+      "scripts/postgres-tests/dictionary-content-protocol.test.mjs": "1dcb7a92874118099febbc0b6fe44b671963dbc2454fc694c7ab386c91300320",
+      "scripts/postgres-tests/review-correction-safety.test.mjs": "65ab5925872184b65bc97cb8430506d9acf77bd858cb26501ccff10a5f82393a",
+      "scripts/postgres-tests/dictionary-following-imports.test.mjs": "50d2045244b2c5270fcda2a0e3f00512ed061a97130cb23b881fce93d2e9fafd",
+      "scripts/postgres-tests/dictionary-analysis-publication.test.mjs": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+      "scripts/postgres-tests/learning-sync.test.mjs": "0538c5de2c946a0d706eed07cd852a3f1ce70a48ae333482574a07ad4921a444",
+      "scripts/postgres-tests/dictionary-history-rollback.test.mjs": "171a5de9ffb1850ba130be85baecde739edc067591582fac9e0a477e15c1d171",
+      "scripts/postgres-tests/dictionary-backfill.test.mjs": "273bde39e79637e3db183c949c70fcc621224e815679dd969e55d7b2bc4a2db6",
+      "scripts/postgres-tests/review-correction.test.mjs": "c771d4e01eb1502a050401cc82da2f70a74619258114719e423abc1efdedca3b",
+      "scripts/postgres-tests/review.test.mjs": "0075cadcbbcb9cf02f002c111f1c755c4b436ac726b7095af4d576c08c007d3a",
+      "scripts/postgres-tests/dictionary-following-reads.test.mjs": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+      "scripts/postgres-tests/dictionary-analysis-worker.test.mjs": "5fa36c9e7637a181aa77ffc61373de8234fc9851a29156fa49c2bb1ef0daa145",
+      "scripts/postgres-tests/concurrency.test.mjs": "b4c7a96c38fc63e94b5965638c032c266a5a494712a5163c487c3c3bbdbea34e",
+      "scripts/postgres-tests/analysis-cefr-cache.test.mjs": "c78314d7a5d524977bc67f99c8f7b83ef0766dd326b67fb5a2499956a7bdff56",
+      "scripts/postgres-tests/rls.test.mjs": "9445bad179303a450ec22eb7f3914d89a0099d7f3c51d2e8086b5977a7d2ee5e",
+      "scripts/postgres-tests/dictionary-import-recovery.test.mjs": "cd7e9c47a6b092202265f2d9f83f6d1fcce13af6466dd36011840622fa193e19"
+    },
+    "preserved_artifacts_sha256": {
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A-mobile-storage-20261010.md": "d5fdf9d6bd6934b1b4ab6e269d4187311e4b9ed968017db987c29ba064b4467c",
+      "scripts/postgres-tests/review-correction-migration.test.mjs": "5127dfbe87277d43a0568391a69ee4ebd39343e292b1408a4b7757fcb52f75a5",
+      "scripts/postgres-tests/review-correction-concurrency.test.mjs": "d87ed37ffb75ea7ceb4ab0805c88b620644db94e0ecaa6c91ba7ca1ad45cdc32",
+      "scripts/postgres-tests/dictionary-import-placement-review-baseline.test.mjs": "af260233858f1507080a2d03b8c323bd554a6260263558f7132c1dd1a53ce180",
+      "scripts/postgres-tests/dictionary-import-recovery-baseline.test.mjs": "3e19d57e91183cf30211ab172cb0fc7557381e3a92d9da6abf7d3df194b86d44",
+      "scripts/postgres-tests/dictionary-import-recovery-backfill.test.mjs": "f6ccd44e8ed6ebb3a84571fbc4cde4f474fe840f181ad3c3cbb04d169cdfd909",
+      "scripts/postgres-tests/cefr-budget.test.mjs": "db67ee8f9b2a05cbf06b537b06f9c2164d62575071741380896510de61cf9c36",
+      "scripts/postgres-tests/cefr-queue.test.mjs": "53645b796110aaca3f0311c8b8d6f582c63fc80b721e50e91aefc98cc3ed5357",
+      "scripts/postgres-tests/new-word-review.test.mjs": "581db62ab518fd82e655892d69c1faef96ff1f7adf993f7e476e2fc4e5cc0f47",
+      "scripts/postgres-tests/web-review-snapshot.test.mjs": "4c7948b57a2da908c0076b54a832861e8b539f41a9a37e649099922249fc0720",
+      "scripts/postgres-tests/schema.test.mjs": "6600de82501d4b5a5148ab65a17a7a0cc1fd6230a063f7d80c8e6d3738de8ad5",
+      "scripts/postgres-tests/web-collection-overviews.test.mjs": "6cbc1c45e9fbd9e508d20f2071ce09097d561e6254773630e1337684cea9257d",
+      "scripts/postgres-tests/srs.test.mjs": "c5f7232854b0861427321f5bfb87950e1cec11c427958b80ff30f71a989060ad",
+      "scripts/postgres-tests/official-content-catalog.test.mjs": "350666e16a1636cf1147d44aff005df66f4e6ea9b431f2d8642adece12fa3765",
+      "scripts/postgres-tests/learning-reset.test.mjs": "631984a0333c9ef4cc8eeb718fa375975a8098df48398e6e1deb03a3312c93f9",
+      "scripts/postgres-tests/review-correction-srs.test.mjs": "543a0508708fcf0d4b361d7f807396c2185fc7d6d42db4518cc9cee2bdddd655",
+      "scripts/postgres-tests/review-correction-safety.test.mjs": "65ab5925872184b65bc97cb8430506d9acf77bd858cb26501ccff10a5f82393a",
+      "scripts/postgres-tests/learning-sync.test.mjs": "0538c5de2c946a0d706eed07cd852a3f1ce70a48ae333482574a07ad4921a444",
+      "scripts/postgres-tests/dictionary-backfill.test.mjs": "273bde39e79637e3db183c949c70fcc621224e815679dd969e55d7b2bc4a2db6",
+      "scripts/postgres-tests/review-correction.test.mjs": "c771d4e01eb1502a050401cc82da2f70a74619258114719e423abc1efdedca3b",
+      "scripts/postgres-tests/review.test.mjs": "0075cadcbbcb9cf02f002c111f1c755c4b436ac726b7095af4d576c08c007d3a",
+      "scripts/postgres-tests/concurrency.test.mjs": "b4c7a96c38fc63e94b5965638c032c266a5a494712a5163c487c3c3bbdbea34e",
+      "scripts/postgres-tests/analysis-cefr-cache.test.mjs": "c78314d7a5d524977bc67f99c8f7b83ef0766dd326b67fb5a2499956a7bdff56",
+      "scripts/postgres-tests/rls.test.mjs": "9445bad179303a450ec22eb7f3914d89a0099d7f3c51d2e8086b5977a7d2ee5e",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/diff-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/focused-bounded-final.log": "c116a88885edadb9cebe3fd80b272c7ff824b4eb7d46df227774145f45961f2f",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/focused-final.log": "2b0c856364940b85f369c80b869dd472f763a23977dc67433b548fa06426671b",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/focused-initial.log": "9251e5bd82ac723fca27310d2b6c536193613871334dd1244d818b5280b6efb9",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/focused-refactor.log": "c85ba53b74438893adbf3fdb1ca36991e0d9c38f385df077f4da6d3f40e43b50",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/focused-second.log": "cd961762a54929442a47c52592d903884b9aac7aaf2e6151cd784498ab0be2cc",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/focused-third.log": "d9d3144b7507057406acb17940574a2ff0c9bfcba142e26b5a9241bd92b8b828",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/format-final.log": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/lint-bounded-final.log": "a78e6d235472d5c31271ba010775c5ced0bc1de94e17668989c234d0358a0c8d",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/lint-final.log": "a78e6d235472d5c31271ba010775c5ced0bc1de94e17668989c234d0358a0c8d",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/lint-initial.log": "553f882986bdc318360f2dd82667ea3347b99267f5a0d6dad61c48f9e1260e52",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/lint-refactor.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/mobile-ci-bounded-final.log": "8abd0be30adb6d97a527baf1ed35d99670b0fc1a2b98b1b899e72dafd88c9d40",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/mobile-ci-final.log": "79a463d13dbc78a9eec8395fab2ac1fbf968aaa951da144d23872813ce589d0a",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/test-types-bounded-final.log": "b08cacdb1afa6cdff3f23d09e5ecf164db5be7f7bde02e2ac46ae4f2238be303",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/test-types-final.log": "b08cacdb1afa6cdff3f23d09e5ecf164db5be7f7bde02e2ac46ae4f2238be303",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/test-types-initial.log": "d614f39aa691d0da87f35405bb9cb75671e3cd497c3d80a00e0ffe09e4711f82",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/test-types-refactor.log": "b08cacdb1afa6cdff3f23d09e5ecf164db5be7f7bde02e2ac46ae4f2238be303",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/test-types-second.log": "aac3e701e59cd1a5d4681d801c4376af2a8f03b8a438354133550113633cdb75",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/types-bounded-final.log": "222a5235f81f9bc5fc7af2d83f95f4e8089332b2d5d6c3ca7bed704a93e31948",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/types-final.log": "222a5235f81f9bc5fc7af2d83f95f4e8089332b2d5d6c3ca7bed704a93e31948",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/types-initial.log": "222a5235f81f9bc5fc7af2d83f95f4e8089332b2d5d6c3ca7bed704a93e31948",
+      "reports/shared-dictionary-cefr/d13a5-mobile-storage-20261010/integrity-initial.log": "78566c965c6f920ea697c999a011ded99f497c4eff717354f0fd1d9a8d52124d"
+    },
+    "intentional_changes": {
+      "apps/mobile/src/db/dictionaryFollowingRepository.ts": {
+        "before": "f4cb7690f9f3a9f1601dae5489b19832e353410715045f8ddd2ad27084d27415",
+        "after": "c0208fac90dcb183b33267df742b31aa8912181c3a2c2f0cafbaaf108291e4bf"
+      },
+      "apps/mobile/src/services/dictionaryFollowingSync.ts": {
+        "before": "aee73a2a70b971a87bdd54da27e882c6eb4852e12da2996cd116eebcacff6e5e",
+        "after": "76b46fe4d25d6865039bfa42e5725367decde81e2e1f3d5eef8d1e185d3d2402"
+      },
+      "docs/tasks/shared-dictionary-cefr/handoff.md": {
+        "before": "e7c3df77bbcbe9e1adeb9b56c436c036f5a4d000ee572d2a2dacb3cf184129a2",
+        "after": "132a576a7d4905cdd77a722423488982b2173b0bf676f5f60688fe75cce760b7"
+      },
+      "docs/tasks/shared-dictionary-cefr/steps/D13A.md": {
+        "before": "7cb22abf99a9d22b93037828947493962b3e88b38fe70d8ecfb69b380e851804",
+        "after": "f6db4c4f57a291ae0af3549214d5f5f5aefb3d1bd305ba77f788e4c1bd5a397f"
+      },
+      "docs/tasks/shared-dictionary-cefr/D13A-technical-contract.md": {
+        "before": "20afecad0b76cd7a98bdd13117b9b3cada94776cf8d0d48dbf1a805ea64c1a78",
+        "after": "6d3f975fcd5cd45e51afac5caaea54df22a8760b3bfbbc186bb96c7010e9e9fa"
+      },
+      "docs/plans/shared-dictionary-cefr-2026-09-12.md": {
+        "before": "79be3755815a010eb91fe1464813bd5a48f652d4b9529a296ae2b4b5f0f670e4",
+        "after": "1f397c61fa5efd20c7d839138b8f397d3294e372f9230874709a5eba7ea72f35"
+      },
+      "docs/tasks/shared-dictionary-cefr/sessions.md": {
+        "before": "31d739d7d041abe505e439cb5bb3367311910db8839b4b80fb1da9a1fe118669",
+        "after": "45510c7d9b38a8a71d04bdb383d89cb9a3407edc96ff9045204937afc832bf54"
+      },
+      "apps/web/src/features/words/following-actions.test.ts": {
+        "before": "bce793f7460b2be80f60cbf7706f3337f15128dc9708b7218916492c6298aaef",
+        "after": "3a20af64b3383a8897c446b7ab996a7345307dcddf3a37ed3f59140d230392e4"
+      },
+      "apps/mobile/src/services/__tests__/dictionaryAnalysisService.sqlite.test.ts": {
+        "before": "fe1d41e5cdfe6aaa19f46d45dd7d9ad79d439478d91e0d670d502ea0286f9a85",
+        "after": "ca7537b3403289de2f71d959536eb200bf745b296da230fb742e3d47ed3a9f7e"
+      },
+      "apps/web/src/features/dictionary/analysis-client.test.ts": {
+        "before": "61cadfd200e897ab27833ba9e698be59e15871114c023a0e3017e959ab639293",
+        "after": "376f24b991d0a27de6bca25c980c9dc8c0d555f30fa804a03134bf867cb69085"
+      },
+      "packages/domain/src/dictionary-analysis-client.ts": {
+        "before": "9351bcba768e3f8f2546530195e2ea9c7eb89e5042a2575d115d53a4d11dd11d",
+        "after": "247ffd04a66586626f5eee33fdf5fa724707165dda72ea84d8e5319b52a1135a"
+      },
+      "packages/domain/src/dictionary-analysis-action.ts": {
+        "before": "8a162712883e03f7a47311510735d28781661a0f251639c16093b552fde75597",
+        "after": "a1290e1a4dff9e1f927a3e3c0557fa9405a4daa38aef47d7de44fec16338caeb"
+      },
+      "apps/mobile/src/components/DictionaryAnalysisPanel.tsx": {
+        "before": "015fe42c345c1694a8f1ffe2011f83342369a5d489e026236c2aa9af261cf5ed",
+        "after": "f7908de67999bac5092f6f8560d5eeb5f01e1faf7fe3b41c999e3caca6b315ea"
+      },
+      "apps/mobile/src/components/__tests__/DictionaryAnalysisPanel.test.tsx": {
+        "before": "b9c701bf497eafcf496376947c10df15afc774ea79c9ebcdc05ea6f3c9ab750d",
+        "after": "0f4fdb2a5bbbc574c33301d091c5f9babcac03327a165a59e1e588125b33ab6b"
+      },
+      "apps/mobile/src/services/dictionaryAnalysisService.ts": {
+        "before": "2f53bef0f8fffa8db159fb4109efc92d1ea431637b00eda41ab492bfb59c6579",
+        "after": "803a30a94df1872127c8f574af78c40c04ebc2e8c14193cbfced134fbc8e4cc4"
+      },
+      "apps/mobile/src/utils/__tests__/dictionaryAnalysisAction.test.ts": {
+        "before": "5261a936efbc67ad22dc51259af6b950d2f77f62ef25a0ffd46d9453cc6332f3",
+        "after": "4322efe84a46196b1607e7c499dcc9d91ee476a25a10676a1170158122201d28"
+      },
+      "apps/web/src/features/dictionary/analysis-client.ts": {
+        "before": "9c9f68e9e2d2f6c7811f823ddf303fa0142adf1a7a412234e4cb7d8abe27288f",
+        "after": "2ffbe38ecd46be1888f1bd49d58e81b7d4e42e22c97877e1cb64321690af4c47"
+      },
+      "apps/web/src/features/dictionary/FollowingWordDetail.tsx": {
+        "before": "6254dd7af15976fcbd98c9592d8683b4aaf82131f7ee8afccf63ab23407271d6",
+        "after": "c450e26aa710864ba2290350640ee44e700565ecce5bb33ef7b1cf335e866edd"
+      },
+      "apps/web/src/features/dictionary/FollowingWordDetail.test.tsx": {
+        "before": "b8bb8bfe0132c19a2099c5dd44b0e1a12299f82e03f79943575371ef8dd0255b",
+        "after": "326b56299cfa1d72bab0a338ca5d5c65349d089fcfd4254104137171cdfd338f"
+      }
+    },
+    "source_union_paths": 357,
+    "current_source_paths": 15,
+    "new_implementation_files": 0,
+    "existing_source_test_extensions": 15,
+    "additions_to_evidence_union": 1,
+    "newly_tracked_evidence_source": "Existing web words/actions.ts; not a new implementation file or a file covered by the previous entry hash union"
+  },
+  "full_suite_boundary": {
+    "native": {
+      "path": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/mobile-source.json",
+      "sha256": "a456c2003ed1884adb776d20164a58cad741204d5e33cfdf79394636d36335f7",
+      "source_paths": 196,
+      "final_bytes_match": true,
+      "scope": "Prior task/runtime boundary plus affected sources; not every unrelated repository path",
+      "fresh": true
+    },
+    "web": {
+      "path": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-source.json",
+      "sha256": "a7176a95c1d5bd3fb0341dd871134f8bce4905e3f024f89b77ebdd56e7bacf4a",
+      "source_paths": 136,
+      "final_bytes_match": true,
+      "scope": "Prior task/runtime boundary plus affected sources; not every unrelated repository path",
+      "fresh": true
+    },
+    "edge": {
+      "path": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/edge-source.json",
+      "sha256": "b1542b7e3273fce3c23a343b6ccde8c60be4ea70032d8c5ca4d3c37e80da13ae",
+      "source_paths": 76,
+      "final_bytes_match": true,
+      "scope": "Prior task/runtime boundary plus affected sources; not every unrelated repository path",
+      "fresh": true
+    },
+    "target_contracts": {
+      "packages/supabase-contracts/src/database.target.generated.ts": "b4a09e00c173dc28f53b365c6c497c4217b65121d014ad22d521152a3f0d2387",
+      "packages/supabase-contracts/target-schema.json": "38a1e0e107c127b6dbd803c58faa604ccb584431b00e7fd21c4f305b7fa239fb"
+    },
+    "carried_postgres": {
+      "proof": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/carried-postgres.json",
+      "sha256": "7cf11b46761eb42008f5d1e818efa2e87844bc25a29c3c19ceffa59b77cc0cee",
+      "checks": {
+        "postgres-full": {
+          "prior_manifest": "reports/shared-dictionary-cefr/d13a5-creation-recovery-20261011/postgres-full-source.json",
+          "prior_manifest_sha256": "a7c79ad6c622dc1ec628773d48cbc19c0ffc8959e1a7c95fed345bad2d23181f",
+          "prior_result": {
+            "tests": 547,
+            "pass": 547,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          },
+          "rerun_this_checkpoint": false,
+          "broad_manifest_paths": 179,
+          "exact_unchanged_paths": 177,
+          "static_relative_import_closure": {
+            "packages/content/src/manifest.ts": "a682c7ecf98cab3f283635f6d6cf0c112fd864828a2b93dacc91ff06e8d822e8",
+            "packages/domain/src/dictionary-analysis.ts": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82",
+            "packages/domain/src/dictionary-creation.ts": "632516aa333050c6ce4d9c7f0351b4f52cec8175d6d58e0656a956a867e5f4bc",
+            "packages/domain/src/dictionary-following-import-journal.ts": "dcfa145c59f646f6f1449a267076bdc6c2c216008821f02f07dd4ba651a2948a",
+            "packages/domain/src/dictionary-following-import-recovery.ts": "1bf66d46f68c8610245f1c9848ceac473ce8abb3e96496d945573f0c6f862eb2",
+            "packages/domain/src/dictionary-following-import.ts": "296c0be20ca7e89fe8cac5e4293fb1091aaa59b385ad061ec0525738e9db505a",
+            "packages/domain/src/dictionary-following-transfer-journal.ts": "b6b67a4960701c513ce5150bf5fdb31c8aea7825d613b95e854b1850ce798888",
+            "packages/domain/src/dictionary-following-transfer-revisions.ts": "c638e2de9b5dd0f5d2198b924b094c920e5ef67ad46fc563767757c7a8f8fa09",
+            "packages/domain/src/dictionary-following-transfer.ts": "d69d5d453aad7587cae17e0f7ae5043d7eb187a20699d5d68c82230fa9c0e162",
+            "packages/domain/src/dictionary-following.ts": "3d387a22228f8d77b6ac3f434c01acf360704b372ede6bfa051eeb6f2561907b",
+            "packages/domain/src/dictionary-meaning-lookup.ts": "a5cbeab42107d1abb8627c7b6b8b82516348793faa88d025245d252068dfceb8",
+            "packages/domain/src/dictionary-publication.ts": "923563f3dc728e1730c64b6d4151eb9054f2471089b19494f6a9e034ea834d44",
+            "packages/domain/src/dictionary-read-content.ts": "68c5687579e5b21835acfc359ec0567b95a4f1da62912e8cc22477211bb3539b",
+            "packages/domain/src/shared-dictionary.ts": "61bdbf8e15cee1dd3e094a0b31eeb6bba55204d7a9b2419d534f3463207507f0",
+            "packages/domain/src/srs.ts": "63dc4eac2c564fb5e388846224c5d1ecb1cac2fdb750a45dd5dda8cfc357f2f5",
+            "scripts/postgres-tests/analysis-cefr-cache.test.mjs": "c78314d7a5d524977bc67f99c8f7b83ef0766dd326b67fb5a2499956a7bdff56",
+            "scripts/postgres-tests/cefr-budget-fixtures.mjs": "7e32e3fc2fe4c86cd531b58c2ad4c0fa9489b0d6afccfe01a4ff119a016a2ea3",
+            "scripts/postgres-tests/cefr-budget.test.mjs": "db67ee8f9b2a05cbf06b537b06f9c2164d62575071741380896510de61cf9c36",
+            "scripts/postgres-tests/cefr-queue-fixtures.mjs": "6b05b8b4b5d9f57a2c6a6ceae66956078d30294e341d0b15d079680a5f15a40b",
+            "scripts/postgres-tests/cefr-queue.test.mjs": "53645b796110aaca3f0311c8b8d6f582c63fc80b721e50e91aefc98cc3ed5357",
+            "scripts/postgres-tests/cluster-docker.mjs": "97547a6c7e966f3ffc203bd9f168fdf243715b7ddbfdbe0d363a9c4ae996391c",
+            "scripts/postgres-tests/cluster.mjs": "0d3bcbc894759b5ccaad4f001c5fc08b702e43901bd473022b79e1811bd844da",
+            "scripts/postgres-tests/concurrency-fixtures.mjs": "e7606e84234bb9db4fbdd7cd8d617deb455f39988a9a2fbfc52095cb60aa40d2",
+            "scripts/postgres-tests/concurrency.test.mjs": "b4c7a96c38fc63e94b5965638c032c266a5a494712a5163c487c3c3bbdbea34e",
+            "scripts/postgres-tests/correction-fixtures.mjs": "b6b7d19485d78f95f2a7047d40a021905cddd63dbe4994f4c0f20a5b322e5354",
+            "scripts/postgres-tests/dictionary-analysis-actor.test.mjs": "72df9bd4e5c717ffeced89ce6c5104315812b3fc9adb7c7aef29bfc2cdb2fc26",
+            "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+            "scripts/postgres-tests/dictionary-analysis-operations.test.mjs": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+            "scripts/postgres-tests/dictionary-analysis-publication.test.mjs": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+            "scripts/postgres-tests/dictionary-analysis-worker.test.mjs": "5fa36c9e7637a181aa77ffc61373de8234fc9851a29156fa49c2bb1ef0daa145",
+            "scripts/postgres-tests/dictionary-backfill.test.mjs": "273bde39e79637e3db183c949c70fcc621224e815679dd969e55d7b2bc4a2db6",
+            "scripts/postgres-tests/dictionary-content-protocol.test.mjs": "1dcb7a92874118099febbc0b6fe44b671963dbc2454fc694c7ab386c91300320",
+            "scripts/postgres-tests/dictionary-creation-acceptance.test.mjs": "f10704fbc200a58c658fbc6e37d81ec00a72f1c3a80383d063b47ae13633e3dd",
+            "scripts/postgres-tests/dictionary-creation-dispatch.fixture.mjs": "c33ff60325e204eeaeb1b1dc026fcd5b085ecfb8b49e6abe7fee60798a73b107",
+            "scripts/postgres-tests/dictionary-creation-dispatch.test.mjs": "8322f7799665e67fec3542974f02ac1d36373944cfe007612735b6181fb412f2",
+            "scripts/postgres-tests/dictionary-creation-publication.fixture.mjs": "a8a3220cdc2eaa273f2d4c5c8a71ab5802e37bfe6a6920cb1635a478e791af63",
+            "scripts/postgres-tests/dictionary-creation-publication.test.mjs": "5e762714fccc71bd4487de7a6eb5cd0b462eb557e2888f6fc07febde6d223b8c",
+            "scripts/postgres-tests/dictionary-creation-recovery.fixture.mjs": "b5e7d8e8f371ac5c5848acb5d9de7c4f8d7307f87e1c421e21e68865e4c68db7",
+            "scripts/postgres-tests/dictionary-creation-recovery.test.mjs": "c1a482f5ff55c73a537da6995ee21cfad70b205c4345d7f2eac5178cf0c6a189",
+            "scripts/postgres-tests/dictionary-following-import-recovery.test.mjs": "24eb762eef81339fb95db657f706b24c8ea94309a29ee28ba97f1d51f6a2dfc5",
+            "scripts/postgres-tests/dictionary-following-imports.test.mjs": "50d2045244b2c5270fcda2a0e3f00512ed061a97130cb23b881fce93d2e9fafd",
+            "scripts/postgres-tests/dictionary-following-reads.test.mjs": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+            "scripts/postgres-tests/dictionary-history-rollback.test.mjs": "171a5de9ffb1850ba130be85baecde739edc067591582fac9e0a477e15c1d171",
+            "scripts/postgres-tests/dictionary-import-placement-review-baseline.test.mjs": "af260233858f1507080a2d03b8c323bd554a6260263558f7132c1dd1a53ce180",
+            "scripts/postgres-tests/dictionary-import-recovery-backfill.test.mjs": "f6ccd44e8ed6ebb3a84571fbc4cde4f474fe840f181ad3c3cbb04d169cdfd909",
+            "scripts/postgres-tests/dictionary-import-recovery-baseline.test.mjs": "3e19d57e91183cf30211ab172cb0fc7557381e3a92d9da6abf7d3df194b86d44",
+            "scripts/postgres-tests/dictionary-import-recovery-fixtures.mjs": "06cfc7d9a134b621f6841d0a919dfb179720e8ffbb8d611109f362eeba07e6a9",
+            "scripts/postgres-tests/dictionary-import-recovery.test.mjs": "cd7e9c47a6b092202265f2d9f83f6d1fcce13af6466dd36011840622fa193e19",
+            "scripts/postgres-tests/dictionary-semantic-checks.test.mjs": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+            "scripts/postgres-tests/fixtures.mjs": "25c526868d54e966b2b7b97289d22e57be31fa422cd3f91ad3e1d30dd0dc5450",
+            "scripts/postgres-tests/learning-reset.test.mjs": "631984a0333c9ef4cc8eeb718fa375975a8098df48398e6e1deb03a3312c93f9",
+            "scripts/postgres-tests/learning-sync.test.mjs": "0538c5de2c946a0d706eed07cd852a3f1ce70a48ae333482574a07ad4921a444",
+            "scripts/postgres-tests/new-word-review.test.mjs": "581db62ab518fd82e655892d69c1faef96ff1f7adf993f7e476e2fc4e5cc0f47",
+            "scripts/postgres-tests/official-content-catalog.test.mjs": "350666e16a1636cf1147d44aff005df66f4e6ea9b431f2d8642adece12fa3765",
+            "scripts/postgres-tests/official-content-import.test.mjs": "9fa02c9b117993e659422626ffdf518b8580a7322a44faab3ce7ee38d7c6ddf1",
+            "scripts/postgres-tests/official-dictionary-mapping.test.mjs": "67f8dcad128d7a41062793fd7f8830c71b8c9d0dba27df98b46ea6532d14f93e",
+            "scripts/postgres-tests/review-correction-concurrency.test.mjs": "d87ed37ffb75ea7ceb4ab0805c88b620644db94e0ecaa6c91ba7ca1ad45cdc32",
+            "scripts/postgres-tests/review-correction-migration.test.mjs": "5127dfbe87277d43a0568391a69ee4ebd39343e292b1408a4b7757fcb52f75a5",
+            "scripts/postgres-tests/review-correction-safety.test.mjs": "65ab5925872184b65bc97cb8430506d9acf77bd858cb26501ccff10a5f82393a",
+            "scripts/postgres-tests/review-correction-srs.test.mjs": "543a0508708fcf0d4b361d7f807396c2185fc7d6d42db4518cc9cee2bdddd655",
+            "scripts/postgres-tests/review-correction.test.mjs": "c771d4e01eb1502a050401cc82da2f70a74619258114719e423abc1efdedca3b",
+            "scripts/postgres-tests/review.test.mjs": "0075cadcbbcb9cf02f002c111f1c755c4b436ac726b7095af4d576c08c007d3a",
+            "scripts/postgres-tests/rls.test.mjs": "9445bad179303a450ec22eb7f3914d89a0099d7f3c51d2e8086b5977a7d2ee5e",
+            "scripts/postgres-tests/schema.test.mjs": "6600de82501d4b5a5148ab65a17a7a0cc1fd6230a063f7d80c8e6d3738de8ad5",
+            "scripts/postgres-tests/shared-dictionary-schema.test.mjs": "6ae895d945b31fdb0f931ce823776d6d869dec91e1a3e0da500593c1854d2f72",
+            "scripts/postgres-tests/srs.test.mjs": "c5f7232854b0861427321f5bfb87950e1cec11c427958b80ff30f71a989060ad",
+            "scripts/postgres-tests/web-collection-overviews.test.mjs": "6cbc1c45e9fbd9e508d20f2071ce09097d561e6254773630e1337684cea9257d",
+            "scripts/postgres-tests/web-review-snapshot.test.mjs": "4c7948b57a2da908c0076b54a832861e8b539f41a9a37e649099922249fc0720",
+            "supabase/functions/_shared/cefr-calibration/fixture.ts": "e631b54a924398091f9162e1890d7606a30272f63196ea25e57a607823097633",
+            "supabase/functions/_shared/cefr-calibration/metrics.ts": "81d012aea3f957e77310ed6d2a9d3909a328940fd53c6c84e2522f790a1d57df",
+            "supabase/functions/_shared/cefr-calibration/policy.ts": "bae3fd64a99fa6614d673065f2a2331350d4d346b3cef726e8366958bf444999",
+            "supabase/functions/_shared/cefr-calibration/profile.ts": "ba708978fce4cde87babac766b3a0aab89769c13dd38668c0306fedb7246952a",
+            "supabase/functions/_shared/cefr-calibration/report.ts": "bea73f491e9aa1e9f3b8a61effb482ac8eec00f2ab4c042eb4295a49b4d4069b",
+            "supabase/functions/_shared/cefr-calibration/synthetic-fixtures.ts": "d59d2d26b6b9f6e6c8d8b8410ea92b5f01715e8a05ed825fa97067fb512ae57f",
+            "supabase/functions/_shared/cefr-calibration/validation.ts": "e66b975216d85b388ed8912b194337d4fda2a61abb4a9fd9d8ecb16fa4c46de0",
+            "supabase/functions/_shared/cefr-worker/evaluate.ts": "0c76bd96bedc1fe15c7ef27316656ea733a152256262853cf26bec1f3b4f8fb6",
+            "supabase/functions/_shared/cefr-worker/handler.ts": "b3b16eacdc4a25f48ebb6449d7fda1caa834dd6b37cb2dd572d920c2b4990d17",
+            "supabase/functions/_shared/cefr-worker/store.ts": "cf080c3418860c1546a072344453d68c4ca3d5fe28304cd9d9b1abbc1906d5a3",
+            "supabase/functions/_shared/cefr-worker/synthetic-fixtures.ts": "72d5b29450c6ba1cdfec3163e36b9ca475ea09bea12dbb79d3cd049c1b0050ea",
+            "supabase/functions/dictionary-analysis/candidateGuards.ts": "a354bd4b92c74b4207164304b46d319b7b5ca80df6de33c0fd2fe07cd2fa2f01",
+            "supabase/functions/dictionary-analysis/cors.ts": "2193edab2f509f524cd1e91bc0b631c64a204a36f4356890a3fdd00ea920429f",
+            "supabase/functions/dictionary-analysis/endpoint.ts": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753",
+            "supabase/functions/dictionary-analysis/geminiTransport.ts": "b4327e9e86ba7ced6f652dcccab80f4a53c8cf41b6f662989098c441937e6ca5",
+            "supabase/functions/dictionary-analysis/handler.ts": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57",
+            "supabase/functions/dictionary-analysis/independentEvaluator.ts": "fd152a69ca6077fdedf4be88540273a1cfe591bbfb5ddbd2c16705200753aa4d",
+            "supabase/functions/dictionary-analysis/independentStore.ts": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388",
+            "supabase/functions/dictionary-analysis/protectedInput.ts": "f940f6a37233e5332059f48994c5d8fa145e6829ccbcec6fd405b2e9dbb66a6c",
+            "supabase/functions/dictionary-analysis/semanticModel.ts": "27e416b7b11bbae27cdb7afa9d44bbf1f703c702d8fabea67de25d152929ce9a",
+            "supabase/functions/dictionary-analysis/semanticStore.ts": "325195883c12a8cf9a0fa534752489eed958703b69e634ce29ac54391fde0f0c",
+            "supabase/functions/dictionary-analysis/store.ts": "d8e36a51a001359b319960ba17b181d6bf2de8c47aa46fb69c42aea413d4be4f",
+            "supabase/functions/dictionary-analysis/worker.ts": "ac4d290bf3bc6e67cb5913650d1fcc7dd24d87c7edcce39316d7762de07a204d"
+          },
+          "all_sql_in_prior_boundary_exact": true,
+          "note": "Historical results carried, not rerun. TypeScript AST excludes erased type-only imports; every runtime relative import and previous additional SQL/migration dependency is byte-identical. Client loadPublished and UI action additions are outside the runtime closure.",
+          "additional_static_dependency_integrity": {
+            "packages/content/src/manifest.ts": {
+              "unchanged_tracked_HEAD_sha256": "a682c7ecf98cab3f283635f6d6cf0c112fd864828a2b93dacc91ff06e8d822e8",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "packages/supabase-contracts/src/database.target.generated.ts": {
+              "baseline_reference_sha256": "b4a09e00c173dc28f53b365c6c497c4217b65121d014ad22d521152a3f0d2387"
+            },
+            "supabase/functions/_shared/cefr-calibration/fixture.ts": {
+              "unchanged_tracked_HEAD_sha256": "e631b54a924398091f9162e1890d7606a30272f63196ea25e57a607823097633",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-calibration/metrics.ts": {
+              "unchanged_tracked_HEAD_sha256": "81d012aea3f957e77310ed6d2a9d3909a328940fd53c6c84e2522f790a1d57df",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-calibration/policy.ts": {
+              "unchanged_tracked_HEAD_sha256": "bae3fd64a99fa6614d673065f2a2331350d4d346b3cef726e8366958bf444999",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-calibration/profile.ts": {
+              "unchanged_tracked_HEAD_sha256": "ba708978fce4cde87babac766b3a0aab89769c13dd38668c0306fedb7246952a",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-calibration/report.ts": {
+              "unchanged_tracked_HEAD_sha256": "bea73f491e9aa1e9f3b8a61effb482ac8eec00f2ab4c042eb4295a49b4d4069b",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-calibration/synthetic-fixtures.ts": {
+              "unchanged_tracked_HEAD_sha256": "d59d2d26b6b9f6e6c8d8b8410ea92b5f01715e8a05ed825fa97067fb512ae57f",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-calibration/validation.ts": {
+              "unchanged_tracked_HEAD_sha256": "e66b975216d85b388ed8912b194337d4fda2a61abb4a9fd9d8ecb16fa4c46de0",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-worker/evaluate.ts": {
+              "unchanged_tracked_HEAD_sha256": "0c76bd96bedc1fe15c7ef27316656ea733a152256262853cf26bec1f3b4f8fb6",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-worker/handler.ts": {
+              "unchanged_tracked_HEAD_sha256": "b3b16eacdc4a25f48ebb6449d7fda1caa834dd6b37cb2dd572d920c2b4990d17",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-worker/store.ts": {
+              "unchanged_tracked_HEAD_sha256": "cf080c3418860c1546a072344453d68c4ca3d5fe28304cd9d9b1abbc1906d5a3",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            },
+            "supabase/functions/_shared/cefr-worker/synthetic-fixtures.ts": {
+              "unchanged_tracked_HEAD_sha256": "72d5b29450c6ba1cdfec3163e36b9ca475ea09bea12dbb79d3cd049c1b0050ea",
+              "baseline_note": "Pre-existing dependency outside historical task manifest; exact tracked HEAD, absent from baseline dirty status and unchanged this checkpoint."
+            }
+          },
+          "excluded_type_imports": [
+            {
+              "from": "supabase/functions/_shared/cefr-worker/store.ts",
+              "to": "packages/supabase-contracts/src/database.target.generated.ts"
+            },
+            {
+              "from": "supabase/functions/_shared/cefr-worker/store.ts",
+              "to": "supabase/functions/_shared/cefr-worker/handler.ts"
+            },
+            {
+              "from": "supabase/functions/_shared/cefr-calibration/metrics.ts",
+              "to": "supabase/functions/_shared/cefr-calibration/fixture.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/semanticModel.ts",
+              "to": "supabase/functions/dictionary-analysis/worker.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/semanticModel.ts",
+              "to": "supabase/functions/dictionary-analysis/candidateGuards.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-read-content.ts",
+              "to": "packages/domain/src/shared-dictionary.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-analysis.ts",
+              "to": "packages/domain/src/shared-dictionary.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/worker.ts",
+              "to": "supabase/functions/dictionary-analysis/geminiTransport.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/worker.ts",
+              "to": "supabase/functions/dictionary-analysis/independentEvaluator.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/store.ts",
+              "to": "supabase/functions/dictionary-analysis/worker.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/independentStore.ts",
+              "to": "supabase/functions/dictionary-analysis/semanticModel.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/independentEvaluator.ts",
+              "to": "packages/domain/src/dictionary-publication.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/candidateGuards.ts",
+              "to": "packages/domain/src/dictionary-publication.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/candidateGuards.ts",
+              "to": "supabase/functions/dictionary-analysis/worker.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/independentEvaluator.ts",
+              "to": "supabase/functions/dictionary-analysis/geminiTransport.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/independentEvaluator.ts",
+              "to": "supabase/functions/dictionary-analysis/worker.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/semanticStore.ts",
+              "to": "supabase/functions/dictionary-analysis/store.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-analysis/semanticStore.ts",
+              "to": "supabase/functions/dictionary-analysis/independentEvaluator.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-creation.ts",
+              "to": "packages/domain/src/dictionary-following-import.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-meaning-lookup.ts",
+              "to": "packages/domain/src/dictionary-analysis-client.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-meaning-lookup.ts",
+              "to": "packages/domain/src/dictionary-following-import.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-following-transfer-revisions.ts",
+              "to": "packages/domain/src/dictionary-analysis-client.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-following-import-recovery.ts",
+              "to": "packages/domain/src/dictionary-following-import-recovery.types.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-following-import-recovery.ts",
+              "to": "packages/domain/src/dictionary-following-import-recovery.types.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-creation.ts",
+              "to": "packages/domain/src/shared-dictionary.ts"
+            }
+          ],
+          "changed_non_runtime_paths": {
+            "packages/domain/src/dictionary-analysis-action.ts": {
+              "prior": "8a162712883e03f7a47311510735d28781661a0f251639c16093b552fde75597",
+              "current": "a1290e1a4dff9e1f927a3e3c0557fa9405a4daa38aef47d7de44fec16338caeb"
+            },
+            "packages/domain/src/dictionary-analysis-client.ts": {
+              "prior": "9351bcba768e3f8f2546530195e2ea9c7eb89e5042a2575d115d53a4d11dd11d",
+              "current": "247ffd04a66586626f5eee33fdf5fa724707165dda72ea84d8e5319b52a1135a"
+            },
+            "packages/domain/src/dictionary-creation-client.ts": {
+              "prior": "d545c0c1956ac5824103c3fdaeb3fa217b8e2b1e532ea8eb89d86e6d6c0170be",
+              "current": "9165e3c6ec91383e06dc16ff4d0aca9ed5c0259caab18584cbe845e2b003acf7"
+            },
+            "packages/domain/src/index.ts": {
+              "prior": "0855faae0c3a3a65e671b8da61e6886c76de6053601fde7ca6cd7120486db00e",
+              "current": "fd2ac9a119fd4e45f66f34485fdf33d9343263fc2f231a7107150dc930dfc439"
+            }
+          }
+        },
+        "postgres-worker": {
+          "prior_manifest": "reports/shared-dictionary-cefr/d13a5-creation-worker-20261011/postgres-worker-source.json",
+          "prior_manifest_sha256": "634052203193a5604f4494fe276580622785dea42a0ddd4d1a587752a669266b",
+          "prior_result": {
+            "tests": 35,
+            "pass": 35,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          },
+          "rerun_this_checkpoint": false,
+          "broad_manifest_paths": 187,
+          "exact_unchanged_paths": 185,
+          "static_relative_import_closure": {
+            "packages/domain/src/dictionary-creation.ts": "632516aa333050c6ce4d9c7f0351b4f52cec8175d6d58e0656a956a867e5f4bc",
+            "packages/domain/src/dictionary-following-import-journal.ts": "dcfa145c59f646f6f1449a267076bdc6c2c216008821f02f07dd4ba651a2948a",
+            "packages/domain/src/dictionary-following-import-recovery.ts": "1bf66d46f68c8610245f1c9848ceac473ce8abb3e96496d945573f0c6f862eb2",
+            "packages/domain/src/dictionary-following-import.ts": "296c0be20ca7e89fe8cac5e4293fb1091aaa59b385ad061ec0525738e9db505a",
+            "packages/domain/src/dictionary-following-transfer-journal.ts": "b6b67a4960701c513ce5150bf5fdb31c8aea7825d613b95e854b1850ce798888",
+            "packages/domain/src/dictionary-following-transfer-revisions.ts": "c638e2de9b5dd0f5d2198b924b094c920e5ef67ad46fc563767757c7a8f8fa09",
+            "packages/domain/src/dictionary-following-transfer.ts": "d69d5d453aad7587cae17e0f7ae5043d7eb187a20699d5d68c82230fa9c0e162",
+            "packages/domain/src/dictionary-following.ts": "3d387a22228f8d77b6ac3f434c01acf360704b372ede6bfa051eeb6f2561907b",
+            "packages/domain/src/dictionary-meaning-lookup.ts": "a5cbeab42107d1abb8627c7b6b8b82516348793faa88d025245d252068dfceb8",
+            "packages/domain/src/dictionary-read-content.ts": "68c5687579e5b21835acfc359ec0567b95a4f1da62912e8cc22477211bb3539b",
+            "packages/domain/src/shared-dictionary.ts": "61bdbf8e15cee1dd3e094a0b31eeb6bba55204d7a9b2419d534f3463207507f0",
+            "scripts/postgres-tests/cluster-docker.mjs": "97547a6c7e966f3ffc203bd9f168fdf243715b7ddbfdbe0d363a9c4ae996391c",
+            "scripts/postgres-tests/cluster.mjs": "0d3bcbc894759b5ccaad4f001c5fc08b702e43901bd473022b79e1811bd844da",
+            "scripts/postgres-tests/dictionary-creation-dispatch.fixture.mjs": "c33ff60325e204eeaeb1b1dc026fcd5b085ecfb8b49e6abe7fee60798a73b107",
+            "scripts/postgres-tests/dictionary-creation-publication.fixture.mjs": "a8a3220cdc2eaa273f2d4c5c8a71ab5802e37bfe6a6920cb1635a478e791af63",
+            "scripts/postgres-tests/dictionary-creation-recovery.fixture.mjs": "b5e7d8e8f371ac5c5848acb5d9de7c4f8d7307f87e1c421e21e68865e4c68db7",
+            "scripts/postgres-tests/dictionary-creation-worker.test.mjs": "d55ef2106fb387ff8c7a29fd3aed09b5bb67cd78f1ced48c9bf33e9da3220732",
+            "scripts/postgres-tests/fixtures.mjs": "25c526868d54e966b2b7b97289d22e57be31fa422cd3f91ad3e1d30dd0dc5450",
+            "supabase/functions/dictionary-analysis/protectedInput.ts": "f940f6a37233e5332059f48994c5d8fa145e6829ccbcec6fd405b2e9dbb66a6c",
+            "supabase/functions/dictionary-creation/contracts.ts": "aecfcbcd3e83b2ac3bb26c3e07d28ac7fa27e37c5c0f2b161efcb33f3893f79c",
+            "supabase/functions/dictionary-creation/handler.ts": "578e43b4dd1a1425409f7837805088037bab4dbf6ce79adc8c7157b5c15c3c92",
+            "supabase/functions/dictionary-creation/store.ts": "b5c9c666783dedabceedbf2b214424d5e0b061104a77c10487f158014fd5c78d",
+            "supabase/functions/dictionary-creation/worker.ts": "8572972ac2a47062063958542860ce001acb698a4724e3c8f1ccace4a04751ef"
+          },
+          "all_sql_in_prior_boundary_exact": true,
+          "note": "Historical results carried, not rerun. TypeScript AST excludes erased type-only imports; every runtime relative import and previous additional SQL/migration dependency is byte-identical. Client loadPublished and UI action additions are outside the runtime closure.",
+          "additional_static_dependency_integrity": {},
+          "excluded_type_imports": [
+            {
+              "from": "packages/domain/src/dictionary-read-content.ts",
+              "to": "packages/domain/src/shared-dictionary.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-creation.ts",
+              "to": "packages/domain/src/dictionary-following-import.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-meaning-lookup.ts",
+              "to": "packages/domain/src/dictionary-analysis-client.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-meaning-lookup.ts",
+              "to": "packages/domain/src/dictionary-following-import.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-following-transfer-revisions.ts",
+              "to": "packages/domain/src/dictionary-analysis-client.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-following-import-recovery.ts",
+              "to": "packages/domain/src/dictionary-following-import-recovery.types.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-following-import-recovery.ts",
+              "to": "packages/domain/src/dictionary-following-import-recovery.types.ts"
+            },
+            {
+              "from": "packages/domain/src/dictionary-creation.ts",
+              "to": "packages/domain/src/shared-dictionary.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-creation/store.ts",
+              "to": "supabase/functions/dictionary-analysis/store.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-creation/worker.ts",
+              "to": "packages/domain/src/dictionary-creation.ts"
+            },
+            {
+              "from": "supabase/functions/dictionary-creation/worker.ts",
+              "to": "supabase/functions/dictionary-analysis/geminiTransport.ts"
+            }
+          ],
+          "changed_non_runtime_paths": {
+            "packages/domain/src/dictionary-analysis-action.ts": {
+              "prior": "8a162712883e03f7a47311510735d28781661a0f251639c16093b552fde75597",
+              "current": "a1290e1a4dff9e1f927a3e3c0557fa9405a4daa38aef47d7de44fec16338caeb"
+            },
+            "packages/domain/src/dictionary-analysis-client.ts": {
+              "prior": "9351bcba768e3f8f2546530195e2ea9c7eb89e5042a2575d115d53a4d11dd11d",
+              "current": "247ffd04a66586626f5eee33fdf5fa724707165dda72ea84d8e5319b52a1135a"
+            },
+            "packages/domain/src/dictionary-creation-client.ts": {
+              "prior": "d545c0c1956ac5824103c3fdaeb3fa217b8e2b1e532ea8eb89d86e6d6c0170be",
+              "current": "9165e3c6ec91383e06dc16ff4d0aca9ed5c0259caab18584cbe845e2b003acf7"
+            },
+            "packages/domain/src/index.ts": {
+              "prior": "0855faae0c3a3a65e671b8da61e6886c76de6053601fde7ca6cd7120486db00e",
+              "current": "fd2ac9a119fd4e45f66f34485fdf33d9343263fc2f231a7107150dc930dfc439"
+            }
+          }
+        }
+      }
+    },
+    "acceptance_limits": "File-backed Node SQLite/reopen and synthetic SDK/Auth/UI, native both themes. Web Next cache invalidation validated by server-action/UI tests, not a browser run. Node CPU benchmark only; no device/provider/representative browser latency or full item8 offline acceptance."
+  },
+  "checks": [
+    {
+      "command": "Node24.20.0 npm run mobile:test:ci -- --maxWorkers=1 with unchanged configured coverage",
+      "exit_code": 0,
+      "result": {
+        "suites": 196,
+        "tests": 2670,
+        "snapshots": 22,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-full.log",
+      "sha256": "da53d9978f5d24f4c6f499ab8b62181fa8278806e00e481542bb9344872be5ea"
+    },
+    {
+      "command": "Node24.20.0 PERFORMANCE_HARNESS=1 WEB_PERFORMANCE_OUTPUT=<report>/web-benchmark npm run web:test; unchanged default5000ms timeout; no concurrent native suite",
+      "exit_code": 0,
+      "result": {
+        "suites": 118,
+        "tests": 1241,
+        "snapshots": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-full.log",
+      "sha256": "4fc4c3f4aed6fc7dc3ef4374f2145c57bd48de76201ec7e2bb49ba33ca9332ce"
+    },
+    {
+      "command": "Node24 mobile:test:ci --maxWorkers=1 --coverage=false --runTestsByPath seven workspace-relative analysis/UI/display/following suites",
+      "exit_code": 0,
+      "result": {
+        "suites": 7,
+        "tests": 179,
+        "snapshots": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-focused-complete.log",
+      "sha256": "9cd1c4937b90a23c99d4fec6b119866e8631c421271dd91f51eccb92e830c6b9"
+    },
+    {
+      "command": "Node24 web:test --runTestsByPath four workspace-relative SDK/UI/snapshot/server-revalidation suites",
+      "exit_code": 0,
+      "result": {
+        "suites": 4,
+        "tests": 56,
+        "snapshots": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-focused-complete.log",
+      "sha256": "2085edaf95a405ed3891df517b0162cb9f22d9abbb22eefbaede6ac07df5d2b7"
+    },
+    {
+      "command": "Repository Deno2.9.4 test --cached-only --no-remote --config supabase/functions/deno.json creation worker and analysis worker/semantic/endpoint suites",
+      "exit_code": 0,
+      "result": {
+        "passed": 108,
+        "failed": 0
+      },
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/edge-fresh.log",
+      "sha256": "4cc3c00e0e822fbb74be1b9b0bbf63576c6f504edc1eb6fbdfed6328a8375514"
+    },
+    {
+      "command": "tsc --noEmit -p packages/domain/tsconfig.json",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/domain-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "npm run mobile:typecheck",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-production-types-complete.log",
+      "sha256": "222a5235f81f9bc5fc7af2d83f95f4e8089332b2d5d6c3ca7bed704a93e31948"
+    },
+    {
+      "command": "npm run mobile:typecheck:test",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-test-types-complete.log",
+      "sha256": "b08cacdb1afa6cdff3f23d09e5ecf164db5be7f7bde02e2ac46ae4f2238be303"
+    },
+    {
+      "command": "npm run web:typecheck",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-types-complete.log",
+      "sha256": "dd2dc10af6c68e7d23574d5c8ca7018f9c7d4666dbef55d3de93fc7342ae04bb"
+    },
+    {
+      "command": "Node24 scoped native ESLint --max-warnings=0",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-native-complete.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "Node24 scoped web ESLint --max-warnings=0",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-web-accepted.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "Node24 ESLint --config apps/web/eslint.config.mjs both changed domain modules --max-warnings=0",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-domain.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "Node24 check-postgres-boundary.mjs; TypeScript AST runtime relative-import closure excludes erased type imports",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/postgres-boundary-accepted.log",
+      "sha256": "1cf14b9b8feac6944298c5bab5c8a13da82dd157d1fda9fd67f250513ec45106"
+    },
+    {
+      "command": "Scoped Prettier check fifteen sources/six task notes",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/format-check.log",
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "PASS",
+      "log": "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/diff-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "carried_checks": {
+    "postgres": {
+      "tests": 547,
+      "worker": 35,
+      "fresh": false
+    },
+    "source": "Historical distinct PostgreSQL results on regenerated erased-type-aware AST runtime relative-import closures and prior unchanged additional SQL/migration integrity; no SQL rerun or combined fresh total."
+  },
+  "diagnostics": {
+    "repairs": "Updated mounted-guard expectations; fixed undefined saved-operation fixtures, mocked UI selectors, focused path mistakes and duplicate/dependency/unused import lint warnings. No suppressions or threshold changes.",
+    "native_prefreeze": "196/2670/22 passed before final native button mode gate. Diagnostic only; another complete frozen run accepted.",
+    "web_contended": "117 suites/1240 tests passed; existing benchmark exceeded default5000ms while native full ran concurrently. Final complete web118/1241 passes without native contention at unchanged timeout.",
+    "web_test_format": "Final scoped formatter changed following-actions.test.ts bytes after the first isolated full pass; complete web and focused suites rerun on final bytes.",
+    "postgres_proof": "First closure inventory erroneously included the later worker suite in historical full547 roots; corrected roots to exact prior manifest. Historical worker35 validated separately. Current client/action changes occur only outside runtime closures, including erased type-only client links.",
+    "historical_worker_crash": "Prior checkpoint had a two-worker SIGSEGV in existing officialPackImport.sqlite. Root cause unproven; this final native suite uses maxWorkers1 and has no crash.",
+    "runner_exits": {
+      "native-types-initial": 0,
+      "native-focused-initial": 1,
+      "web-types-initial": 2,
+      "web-focused-initial": 0,
+      "native-focused": 1,
+      "web-focused": 1,
+      "native-production-types": 0,
+      "native-test-types": 0,
+      "web-types": 2,
+      "native-focused-accepted": 0,
+      "web-focused-accepted": 0,
+      "web-types-accepted": 0,
+      "lint-native": 1,
+      "lint-web": 0,
+      "web-focused-final": 0,
+      "lint-native-accepted": 0,
+      "web-types-final": 0,
+      "lint-web-final": 1,
+      "lint-web-accepted": 0,
+      "lint-native-final": 1,
+      "web-focused-complete": 0,
+      "domain-types": 0,
+      "native-full-prefreeze": 0,
+      "web-full-contended": 1,
+      "native-production-types-final": 0,
+      "native-test-types-final": 0,
+      "web-types-complete": 0,
+      "edge-fresh": 0,
+      "lint-native-complete": 0,
+      "postgres-boundary": 1,
+      "postgres-boundary-accepted": 0,
+      "native-full": 0,
+      "native-focused-complete": 0,
+      "native-production-types-complete": 0,
+      "native-test-types-complete": 0,
+      "lint-domain": 0,
+      "web-full": 0,
+      "format-write": 0,
+      "format-check": 0,
+      "diff-check": 0,
+      "web-full-preformat": 0
+    },
+    "documentation": {
+      "router_refresh": "https://github.com/vercel/next.js/blob/canary/docs/01-app/03-api-reference/04-functions/use-router.mdx",
+      "revalidate_path": "https://github.com/vercel/next.js/blob/canary/docs/01-app/03-api-reference/04-functions/revalidatePath.mdx",
+      "retrieval": "Context7 resolve/vercel/next.js followed by scoped queries; installed Next guide read before code"
+    }
+  },
+  "progress": {
+    "original_D13A5_items": 8,
+    "complete_original_items": 7,
+    "open_original_items": [8],
+    "item7_named_areas": 4,
+    "item7_complete_areas": [1, 2, 3, 4],
+    "item7_open_areas": [],
+    "advanced_this_checkpoint": "Original item6 complete locally",
+    "item7_next": "None; item7 complete locally. D13A.6 corpus mapping/apply/rollback remains separate.",
+    "other_open_items": [
+      "Item8 web offline/account-return recovery and representative review-start performance/parity"
+    ],
+    "counts_are_not_session_estimates": true,
+    "item7_area4_fixed_checkpoints": 2,
+    "item7_area4_complete_checkpoints": [1, 2],
+    "item7_area4_open_checkpoints": []
+  },
+  "scope": {
+    "content_retry": "Exact saved published/no-change operation and head; no receipt polling, actor/readiness gating, journal rewrite, new intent or analysis POST in loadPublished. Ordinary status recovery remains separate. UI next-attempt eligibility may make independent permission reads.",
+    "native": "Fresh following capability and complete same-entry cached siblings; exact saved operation checked inside exclusive revision/head/card/debt commit. Failed/disabled/stale/corrupt/conflicting reads preserve old cache and retryable debt; reopen and permission/analysis-flag withdrawal tested.",
+    "web": "Owner-bound strict target snapshot; fresh server RPC verifies receipt/head before revalidatePath app layout. All app descendants load fresh on subsequent navigation. Captured lifetime and current personal props prevent late/stale overlay application.",
+    "owner_and_generation": "SDK captured owner rejects A-B-A. Action assertCurrent is captured for its epoch; old request remains invalid after restart, and a new view resets old busy state.",
+    "learning": "Shared-only hydration preserves current word/learning/collection state; learning edits during fresh reads survive. Head comparison accepts later rollback without rewinding newer content.",
+    "analysis_dispatch": "Existing exact journal claims/permission/head gates remain mandatory for a deliberate distinct next attempt; no automatic paid retry added.",
+    "limits": "Fresh reads and native commit are not a distributed server transaction. Web cache invalidation is tested locally and has not been verified in a real browser. Full web offline/account-return and representative review-start performance remain original item8.",
+    "flags_unchanged_off": true,
+    "shared_analysis_off": true,
+    "cefr_off": true,
+    "provider_calls": 0,
+    "paid_calls": 0,
+    "hosted_migrations": 0,
+    "git_mutations": 0,
+    "external_mutations": [],
+    "pending_operations": [],
+    "consumed_authorities": ["AUTH-27", "AUTH-28", "AUTH-29"]
+  },
+  "remaining_numbered_checkpoints": [
+    "D13.6",
+    "D13A.5",
+    "D13A.6",
+    "D13A.7",
+    "D13A.8",
+    "D13A.9",
+    "D14.1",
+    "D14.2",
+    "D14.3",
+    "D14.4"
+  ],
+  "next": "D13A.5 original item8: web offline/account-return and representative review-start performance/parity. Inspect existing recovery/browser harness; qualify offline retry, same-owner return, cross-owner isolation and shared collection/detail/review freshness. GPT-6.1 Sol / High. Original counts7/8, item7 4/4, area4 2/2. D13A.6 corpus mapping/apply/rollback separate.",
+  "reports_sha256": {
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/baseline.json": "115f81d5943f25ad6d2260c049d1a5273a0c0b06fee5d800408cd453c9b06037",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/build-evidence.py": "96125946a19ce90f16459bd4bc96c40e3053f6bf96e18a72da3c2abb543d50ea",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/carried-postgres.json": "7cf11b46761eb42008f5d1e818efa2e87844bc25a29c3c19ceffa59b77cc0cee",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/check-postgres-boundary.mjs": "98d45b08bbbeda0cc4d84e2dcfcf498c7b2d0a683dcf25b15ef44ffa3b7ca656",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/current-source.json": "df7def140ae2f4d5a104efd2e296e9588947e836ed6b353af5882b3a59493330",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/domain-types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/edge-fresh.log": "4cc3c00e0e822fbb74be1b9b0bbf63576c6f504edc1eb6fbdfed6328a8375514",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/edge-source.json": "b1542b7e3273fce3c23a343b6ccde8c60be4ea70032d8c5ca4d3c37e80da13ae",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/entry-integrity.json": "d812c7d9a7bdacfab3c0570436878b270b7e8390c415ab5b48071dfe0d1fdebd",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/format-check.log": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/format-initial.log": "284ffe43cda4289269e055a13f3ac2354ad89e9ce224b7dcdab84b948b1b7139",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/format-write.log": "1af86de8256f6dbde3aea546e834c5b0313ea8b30d01b068f8653020fafd0782",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/git-status.txt": "6ce364aa3e95b3238a37f1a316465534f164f1863a9b4ab4981a7bd78c4a42ef",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-domain.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-native-accepted.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-native-complete.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-native-final.log": "6e601aa4e7e773e75032516baf762bc6394913cb60856f8cd2763de0835167ab",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-native.log": "93285917362188e35ee3cd93cb9e60d6120fdbd195d75b6e1b320ab2c779798a",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-web-accepted.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-web-final.log": "11625aa3f0eabc063781cec7b9d7a593b3c96da08be230ff2af6c8a476c2dc30",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/lint-web.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/mobile-source.json": "a456c2003ed1884adb776d20164a58cad741204d5e33cfdf79394636d36335f7",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-focused-accepted.log": "2cca42424286f0b630c0258abc6c0556033546493e61164d6eaca968981f863c",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-focused-complete.log": "9cd1c4937b90a23c99d4fec6b119866e8631c421271dd91f51eccb92e830c6b9",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-focused-initial.log": "fb919452b5ee83418ff6c8fc1e74043e3241d7039eb13d9a92c49dbc65930c9b",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-focused.log": "afb8b395c40f79cdbfe33d92dd95983eba5b6a0ce19c5b670c4529fee22bb569",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-full-prefreeze.log": "70ce6c13870950ee4be4c73f1273ab9491890c18ebc7971dc3699bfdbaf599dd",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-full.log": "da53d9978f5d24f4c6f499ab8b62181fa8278806e00e481542bb9344872be5ea",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-production-types-complete.log": "222a5235f81f9bc5fc7af2d83f95f4e8089332b2d5d6c3ca7bed704a93e31948",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-production-types-final.log": "222a5235f81f9bc5fc7af2d83f95f4e8089332b2d5d6c3ca7bed704a93e31948",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-production-types.log": "222a5235f81f9bc5fc7af2d83f95f4e8089332b2d5d6c3ca7bed704a93e31948",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-test-types-complete.log": "b08cacdb1afa6cdff3f23d09e5ecf164db5be7f7bde02e2ac46ae4f2238be303",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-test-types-final.log": "b08cacdb1afa6cdff3f23d09e5ecf164db5be7f7bde02e2ac46ae4f2238be303",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-test-types.log": "b08cacdb1afa6cdff3f23d09e5ecf164db5be7f7bde02e2ac46ae4f2238be303",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/native-types-initial.log": "222a5235f81f9bc5fc7af2d83f95f4e8089332b2d5d6c3ca7bed704a93e31948",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/notes-paths.json": "8e038ccfc13f83d9e3e48ca72a7695cc28dfad4a4587846a8d80bf009101fb05",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/postgres-boundary-accepted.log": "1cf14b9b8feac6944298c5bab5c8a13da82dd157d1fda9fd67f250513ec45106",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/postgres-boundary.log": "61363a3d34205781fdf2069b6a30f2cee8c80abd69da4922c9e5560651e9a911",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/runner-exits.json": "59f305a3a97dce9c2dc34cc6983e08cda414ba92f3e020f9faae76fe28126fae",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/source-paths.json": "feb5ff2482933fadf9c2b058ee95d71f40ab43ec998e5931ea95e244098bb655",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-benchmark/preparation-metrics.json": "9d5496cac4d94c9139c5f0b7ecbf339aeea5d69404fa75d3f7bb671589b42afb",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-benchmark/preparation-metrics.md": "66cac2b07927b51fbd58f3ca2b807a1c3e8479ee296ed89ca3c781cd7d6e5ac4",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-focused-accepted.log": "73d0b61c92b85e250e8aca60a8916a244199a6eb346503c8276c7c041fadd836",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-focused-complete.log": "2085edaf95a405ed3891df517b0162cb9f22d9abbb22eefbaede6ac07df5d2b7",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-focused-final.log": "f63ec10918dad8efdff4200aab62ed8025c6c0c2e0c51ba4247ae60ca753a11c",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-focused-initial.log": "e3324ec05eab3136114b86d725b19343762dce7764395bd6ebbbe5dfb8210263",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-focused.log": "47abb4ca6d8a5ca65d3ab8b7a89f5ddc0cc629e2348f459f56e3f5d2f5477e8c",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-full-contended.log": "fc52f8fcfa3b53d6bc937b3df1acb4f985710996ea6c0b1b6e3fe9a08d42edea",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-full-preformat.log": "a03f64b314783ee335bf1fb4584c9a0e2d6ae57b48d6cf54332a7b7b438926f5",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-full.log": "4fc4c3f4aed6fc7dc3ef4374f2145c57bd48de76201ec7e2bb49ba33ca9332ce",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-source.json": "a7176a95c1d5bd3fb0341dd871134f8bce4905e3f024f89b77ebdd56e7bacf4a",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-types-accepted.log": "dd2dc10af6c68e7d23574d5c8ca7018f9c7d4666dbef55d3de93fc7342ae04bb",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-types-complete.log": "dd2dc10af6c68e7d23574d5c8ca7018f9c7d4666dbef55d3de93fc7342ae04bb",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-types-final.log": "dd2dc10af6c68e7d23574d5c8ca7018f9c7d4666dbef55d3de93fc7342ae04bb",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-types-initial.log": "b9ab00a0ca106b7ffa15af5b34882afea66013837c698b4c22bc6c7bfe2fc624",
+    "reports/shared-dictionary-cefr/d13a5-analysis-refresh-20261011/web-types.log": "068bf69a5442bd2338668c8777294aed70ea102adba445c26e161338f6a5b415"
+  }
+}

@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { StyleSheet, TouchableOpacity, useColorScheme } from 'react-native'
-import { useLocalSearchParams, Stack } from 'expo-router'
+import { useLocalSearchParams, Stack, router } from 'expo-router'
 import { TextThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { SharedCollectionLoadingScreen } from '@/components/SharedCollectionLoadingScreen'
@@ -9,7 +9,45 @@ import { ImportHeaderButton } from '@/components/ImportHeaderButton'
 import { ImportScreenContent } from '@/components/ImportScreenContent'
 import { useImportSelection } from '@/hooks/useImportSelection'
 
+import { isDictionaryFollowingImportsEnabled } from '@/constants/dictionaryContent'
+import { useApplicationStore } from '@/stores/useApplicationStore'
+import { SharedFollowingCollectionImport } from '@/components/SharedFollowingCollectionImport'
+
 export default function ImportSelectionScreen() {
+  const { token } = useLocalSearchParams<{ token: string }>()
+  const ownerId = useApplicationStore(state => state.currentUserId)
+  const rows = useApplicationStore(state => state.collections)
+  const collections = useMemo(
+    () =>
+      rows
+        .filter(row => row.user_id === ownerId)
+        .map(row => ({ collection_id: row.collection_id, name: row.name })),
+    [rows, ownerId]
+  )
+  if (isDictionaryFollowingImportsEnabled()) {
+    if (!ownerId)
+      return (
+        <SharedCollectionErrorScreen
+          title="Import Words"
+          error="Sign in to verify a shared collection."
+          onGoBack={() => router.back()}
+          showRetry={false}
+        />
+      )
+    return (
+      <SharedFollowingCollectionImport
+        key={`${ownerId}:${token}`}
+        ownerId={ownerId}
+        shareToken={token || ''}
+        collections={collections}
+        onClose={() => router.back()}
+      />
+    )
+  }
+  return <LegacyImportSelectionScreen />
+}
+
+function LegacyImportSelectionScreen() {
   const { token } = useLocalSearchParams<{ token: string }>()
   const colorScheme = useColorScheme() ?? 'light'
 

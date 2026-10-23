@@ -3,7 +3,10 @@ import { router } from 'expo-router'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { ROUTES } from '@/constants/Routes'
-import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingImportsEnabled,
+} from '@/constants/dictionaryContent'
 import { Sentry } from '@/lib/sentry'
 import {
   starterPackService,
@@ -274,6 +277,13 @@ export function useStarterPackImport(
 
   const handleImport = useCallback(async () => {
     if (importInFlightRef.current) return
+    if (isDictionaryFollowingImportsEnabled()) {
+      ToastService.show(
+        'Use the shared pack import to keep a saved original and explicit requests.',
+        ToastType.ERROR
+      )
+      return
+    }
 
     if (!pack.manifest || !targetCollectionId) {
       ToastService.show('Please select a collection first', ToastType.ERROR)

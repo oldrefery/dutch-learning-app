@@ -64,7 +64,7 @@ it('previews without writing, excludes document duplicates, and imports the sele
   ).toHaveAttribute('href', `/app/collections/${TARGET}`)
 })
 it('rejects a future-schema document before allowing an import', () => {
-  show({ ...document, schema_version: 2 } as never)
+  show({ ...document, schema_version: 3 } as never)
   expect(screen.getByRole('alert')).toHaveTextContent('schema-v1')
   expect(screen.queryByLabelText('Import into')).not.toBeInTheDocument()
   expect(requestDictionaryTransfer).not.toHaveBeenCalled()

@@ -24,11 +24,20 @@ import {
   MIGRATION_V14_DICTIONARY_IMPORTS,
   MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS,
 } from './dictionaryImportSchema'
+import { MIGRATION_V20_DICTIONARY_FOLLOWING_IMPORTS } from './dictionaryFollowingImportSchema'
+import { MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS } from './dictionaryFollowingTransferSchema'
+import { MIGRATION_V22_DICTIONARY_CREATION } from './dictionaryCreationSchema'
+import { MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION } from './dictionaryModeReconciliationSchema'
 import { MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY } from './dictionaryImportRecoverySchema'
+import { MIGRATION_V17_DICTIONARY_FOLLOWING } from './dictionaryFollowingSchema'
+import {
+  MIGRATION_V18_DICTIONARY_ANALYSIS,
+  MIGRATION_V19_DICTIONARY_ANALYSIS_HISTORY,
+} from './dictionaryAnalysisSchema'
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 16
+const SCHEMA_VERSION = 23
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -271,30 +280,26 @@ async function applyPendingMigrations(
       'review_corrections.resolved_at'
     )
   }
-  if (currentVersion < 12) {
-    await db.withExclusiveTransactionAsync(async transaction => {
-      await transaction.execAsync(MIGRATION_V12_CORRECTION_RECOVERY)
-    })
-  }
-  if (currentVersion < 13) {
-    await db.withExclusiveTransactionAsync(async transaction => {
-      await transaction.execAsync(MIGRATION_V13_DICTIONARY_CONTENT)
-    })
-  }
-  if (currentVersion < 14) {
-    await db.withExclusiveTransactionAsync(async transaction => {
-      await transaction.execAsync(MIGRATION_V14_DICTIONARY_IMPORTS)
-    })
-  }
-  if (currentVersion < 15) {
-    await db.withExclusiveTransactionAsync(async transaction => {
-      await transaction.execAsync(MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS)
-    })
-  }
-  if (currentVersion < 16) {
-    await db.withExclusiveTransactionAsync(async transaction => {
-      await transaction.execAsync(MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY)
-    })
+  const transactionalMigrations = [
+    { version: 12, sql: MIGRATION_V12_CORRECTION_RECOVERY },
+    { version: 13, sql: MIGRATION_V13_DICTIONARY_CONTENT },
+    { version: 14, sql: MIGRATION_V14_DICTIONARY_IMPORTS },
+    { version: 15, sql: MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS },
+    { version: 16, sql: MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY },
+    { version: 17, sql: MIGRATION_V17_DICTIONARY_FOLLOWING },
+    { version: 18, sql: MIGRATION_V18_DICTIONARY_ANALYSIS },
+    { version: 19, sql: MIGRATION_V19_DICTIONARY_ANALYSIS_HISTORY },
+    { version: 20, sql: MIGRATION_V20_DICTIONARY_FOLLOWING_IMPORTS },
+    { version: 21, sql: MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS },
+    { version: 22, sql: MIGRATION_V22_DICTIONARY_CREATION },
+    { version: 23, sql: MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION },
+  ]
+  for (const migration of transactionalMigrations) {
+    if (currentVersion < migration.version) {
+      await db.withExclusiveTransactionAsync(async transaction => {
+        await transaction.execAsync(migration.sql)
+      })
+    }
   }
 }
 
@@ -382,9 +387,14 @@ export async function resetDatabase(): Promise<void> {
   try {
     const db = await getDatabase()
     const statements = [
+      'DROP TABLE IF EXISTS dictionary_mode_reconciliation_requests',
       'DROP TABLE IF EXISTS dictionary_import_acknowledgements',
       'DROP TABLE IF EXISTS dictionary_import_intents',
       'DROP TABLE IF EXISTS dictionary_personal_refresh_queue',
+      'DROP TABLE IF EXISTS dictionary_following_refresh_queue',
+      'DROP TABLE IF EXISTS dictionary_following_cursors',
+      'DROP TABLE IF EXISTS dictionary_effective_card_cache',
+      'DROP TABLE IF EXISTS dictionary_following_heads',
       'DROP TABLE IF EXISTS dictionary_change_cursors',
       'DROP TABLE IF EXISTS dictionary_content_commands',
       'DROP TABLE IF EXISTS dictionary_card_content',

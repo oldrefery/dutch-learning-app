@@ -1,0 +1,194 @@
+{
+  "date": "2026-10-10",
+  "timezone": "Europe/Amsterdam",
+  "health": {
+    "checked_at": "2026-10-09T22:10:15.489810+00:00",
+    "environment": "production",
+    "time_range": "14d",
+    "queries": [
+      {
+        "query": "is:unresolved",
+        "returned_issue_count": 4,
+        "issues": [
+          {
+            "id": "7784180404",
+            "shortId": "DUTCH-LEARNING-APP-4E",
+            "status": "unresolved",
+            "level": "error",
+            "firstSeen": "2026-10-09T22:06:48Z",
+            "lastSeen": "2026-10-09T22:06:48Z",
+            "count": "1",
+            "permalink": "https://oldrefery.sentry.io/issues/7784180404/"
+          },
+          {
+            "id": "7737950888",
+            "shortId": "DUTCH-LEARNING-APP-4C",
+            "status": "unresolved",
+            "level": "error",
+            "firstSeen": "2026-09-17T13:29:37Z",
+            "lastSeen": "2026-10-09T22:06:40Z",
+            "count": "24",
+            "permalink": "https://oldrefery.sentry.io/issues/7737950888/"
+          },
+          {
+            "id": "7715295374",
+            "shortId": "DUTCH-LEARNING-APP-49",
+            "status": "unresolved",
+            "level": "warning",
+            "firstSeen": "2026-10-04T22:45:18Z",
+            "lastSeen": "2026-10-05T14:23:41Z",
+            "count": "3",
+            "permalink": "https://oldrefery.sentry.io/issues/7715295374/"
+          },
+          {
+            "id": "7737951320",
+            "shortId": "DUTCH-LEARNING-APP-4D",
+            "status": "unresolved",
+            "level": "error",
+            "firstSeen": "2026-09-17T13:29:35Z",
+            "lastSeen": "2026-09-25T21:24:17Z",
+            "count": "2",
+            "permalink": "https://oldrefery.sentry.io/issues/7737951320/"
+          }
+        ]
+      },
+      {
+        "query": "timestamp:>2026-10-09T21:59:12Z dist:85",
+        "returned_issue_count": 2,
+        "issues": [
+          {
+            "id": "7784180404",
+            "shortId": "DUTCH-LEARNING-APP-4E",
+            "status": "unresolved",
+            "level": "error",
+            "firstSeen": "2026-10-09T22:06:48Z",
+            "lastSeen": "2026-10-09T22:06:48Z",
+            "count": "1",
+            "permalink": "https://oldrefery.sentry.io/issues/7784180404/"
+          },
+          {
+            "id": "7737950888",
+            "shortId": "DUTCH-LEARNING-APP-4C",
+            "status": "unresolved",
+            "level": "error",
+            "firstSeen": "2026-09-17T13:29:37Z",
+            "lastSeen": "2026-10-09T22:06:40Z",
+            "count": "24",
+            "permalink": "https://oldrefery.sentry.io/issues/7737950888/"
+          }
+        ]
+      },
+      {
+        "query": "expo.updates.update_id:01a122ad-683e-7763-a736-9a522c38cec8",
+        "returned_issue_count": 1,
+        "issues": [
+          {
+            "id": "7784180404",
+            "shortId": "DUTCH-LEARNING-APP-4E",
+            "status": "unresolved",
+            "level": "error",
+            "firstSeen": "2026-10-09T22:06:48Z",
+            "lastSeen": "2026-10-09T22:06:48Z",
+            "count": "1",
+            "permalink": "https://oldrefery.sentry.io/issues/7784180404/"
+          }
+        ]
+      },
+      {
+        "query": "expo.updates.update_id:01a122ad-683e-7c6a-bbbd-d6a42da5437b",
+        "returned_issue_count": 0,
+        "issues": []
+      }
+    ],
+    "historical_issues": [
+      {
+        "id": "7737950888",
+        "shortId": "DUTCH-LEARNING-APP-4C",
+        "status": "unresolved",
+        "level": "error",
+        "firstSeen": "2026-09-17T13:29:37.910000Z",
+        "lastSeen": "2026-10-09T22:06:40Z",
+        "count": "24",
+        "permalink": "https://oldrefery.sentry.io/issues/7737950888/"
+      },
+      {
+        "id": "7715295374",
+        "shortId": "DUTCH-LEARNING-APP-49",
+        "status": "unresolved",
+        "level": "warning",
+        "firstSeen": "2026-09-06T13:28:25.473000Z",
+        "lastSeen": "2026-10-05T14:23:41Z",
+        "count": "4",
+        "permalink": "https://oldrefery.sentry.io/issues/7715295374/"
+      }
+    ]
+  },
+  "ota_metrics": {
+    "ios": {
+      "totals": {
+        "uniqueUsers": 1,
+        "installs": 1,
+        "failedInstalls": 0,
+        "crashRatePercent": 0
+      },
+      "through": "2026-10-09T22:10:19.699Z",
+      "embedded_users": 1,
+      "ota_users": 1
+    },
+    "android": {
+      "totals": {
+        "uniqueUsers": 0,
+        "installs": 0,
+        "failedInstalls": 0,
+        "crashRatePercent": 0
+      },
+      "through": "2026-10-09T22:10:24.134Z",
+      "embedded_users": 0,
+      "ota_users": 0
+    }
+  },
+  "events": [
+    {
+      "event_id": "efac98fc0d124a309e382b58cdc3bece",
+      "date": "2026-10-09T22:06:48.619000Z",
+      "operation": "loadSyncStatus",
+      "update_id": "01a122ad-683e-7763-a736-9a522c38cec8",
+      "embedded": false,
+      "handled": "yes",
+      "title": "Error: FunctionCallException: Calling the 'finalizeAsync' function has failed (at ExpoModulesCore/AsyncFunctionDefinition.swift:123) \u2192 Caused by: SQLiteErrorException: Error code 5: database is locked (at ExpoSQLite/SQLiteModule.swift:471)",
+      "exception_stack_frames_available": false
+    },
+    {
+      "event_id": "b2327b5a795e4cf1b2a8bc33bc0ea0ce",
+      "date": "2026-10-09T22:06:40.623000Z",
+      "operation": "performSync",
+      "update_id": "f2711421-1e67-4516-acfe-4aafb39db992",
+      "embedded": true,
+      "handled": "yes",
+      "title": "Error: Invalid effective dictionary content: content.conjugation.simple_past_plural is required",
+      "exception_stack_frames_available": false
+    }
+  ],
+  "local_repair": {
+    "status": "validated-and-exact-OTA-prepared-not-published",
+    "scope": "Retry read-only sync-status snapshot at most3 times only for SQLite locked errors, preserving persistent/non-lock errors.",
+    "focused_suites": 4,
+    "focused_tests": 32,
+    "data_write_changes": false,
+    "deployed": false,
+    "full_mobile_suites": 157,
+    "full_mobile_tests": 1806,
+    "snapshots": 22,
+    "lint_ci": true,
+    "source_archive_sha256": "493fcb2557373577625ef05b785afbd3cf3b47a2544cc19047666113f40f3d30"
+  },
+  "offline_result": {
+    "status": "owner-confirmed-success",
+    "platform": "ios",
+    "recorded_local_date": "2026-10-10",
+    "scope": "Offline reviews, offline restart and reconnect; cards and review results preserved.",
+    "evidence": "Owner answered the requested offline-return scenario and separately identified iOS.",
+    "applies_to": "Delivered AUTH-28 repair; new status-read candidate not yet published",
+    "android": "not newly verified"
+  }
+}

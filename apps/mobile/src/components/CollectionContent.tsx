@@ -107,7 +107,7 @@ export default function CollectionContent({
     }
   }, [highlightWordId, filteredWords])
 
-  const ListHeaderComponent = () => (
+  const listHeader = (
     <ViewThemed style={styles.headerContent}>
       <CollectionStats stats={stats} />
       <CollectionReviewButton
@@ -196,7 +196,8 @@ export default function CollectionContent({
         paddingTop: Platform.OS === 'android' ? (topInset ?? 0) : 0,
       }}
       data={filteredWords}
-      ListHeaderComponent={ListHeaderComponent}
+      ListHeaderComponent={listHeader}
+      windowSize={5}
       keyExtractor={keyExtractor}
       onScroll={event => {
         const y = event.nativeEvent.contentOffset.y

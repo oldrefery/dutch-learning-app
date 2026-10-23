@@ -1,5 +1,6 @@
 'use client'
 
+import { requireLegacyWordAnalysis } from './actions'
 import { createClient } from '@/lib/supabase/client'
 import {
   parseAnalysisFunctionResponse,
@@ -20,6 +21,7 @@ export const analyzeWordWithAi = async (
   word: string,
   forceRefresh = false
 ): Promise<WordAnalysisResult> => {
+  await requireLegacyWordAnalysis()
   const supabase = createClient()
   const { data, error } = await supabase.functions.invoke<unknown>(
     'gemini-handler',
@@ -46,6 +48,7 @@ export const findWordImages = async (
   analysis: WordAnalysis,
   offset = 0
 ): Promise<WordImageOption[]> => {
+  await requireLegacyWordAnalysis()
   const supabase = createClient()
   const { data, error } = await supabase.functions.invoke<unknown>(
     'get-multiple-images',

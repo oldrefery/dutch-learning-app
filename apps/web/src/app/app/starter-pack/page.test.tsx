@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { OfficialContentCatalogItem } from '@woordenaar/content/remote'
-import type { StarterPackManifest } from '@/features/starter-pack/starter-pack-domain'
+import type { OfficialContentManifest } from '@woordenaar/content/manifest'
+import { loadBundledOfficialManifest } from '@/features/starter-pack/starter-pack-domain'
 import { getStarterPackContext } from '@/features/starter-pack/repository'
 import {
   getOfficialContentCatalog,
-  loadRemoteOfficialStarterPack,
+  loadRemoteOfficialContentManifest,
 } from '@/features/starter-pack/official-content-repository'
 import { requireAuthContext } from '@/lib/auth/session'
 import StarterPackPage from './page'
@@ -24,19 +25,34 @@ jest.mock('@/features/starter-pack/repository', () => ({
 
 jest.mock('@/features/starter-pack/official-content-repository', () => ({
   getOfficialContentCatalog: jest.fn(),
-  loadRemoteOfficialStarterPack: jest.fn(),
+  loadRemoteOfficialContentManifest: jest.fn(),
 }))
 
 jest.mock('@/features/starter-pack/StarterPackImport', () => {
   const React = jest.requireActual<typeof import('react')>('react')
 
   return {
-    StarterPackImport: ({ packId }: { packId: string }) => {
+    StarterPackImport: ({
+      packId,
+      ownerId,
+      officialManifest,
+      followingEnabled,
+    }: {
+      packId: string
+      ownerId: string
+      officialManifest: OfficialContentManifest
+      followingEnabled: boolean
+    }) => {
       const [view, setView] = React.useState(`selection:${packId}`)
 
       return React.createElement(
         'div',
-        { 'data-testid': 'starter-pack-import' },
+        {
+          'data-testid': 'starter-pack-import',
+          'data-owner': ownerId,
+          'data-pack': officialManifest.pack_id,
+          'data-following': String(followingEnabled),
+        },
         React.createElement('span', null, view),
         React.createElement(
           'button',
@@ -56,8 +72,8 @@ jest.mock('@/features/starter-pack/StarterPackImport', () => {
 const mockRequireAuthContext = jest.mocked(requireAuthContext)
 const mockGetStarterPackContext = jest.mocked(getStarterPackContext)
 const mockGetOfficialContentCatalog = jest.mocked(getOfficialContentCatalog)
-const mockLoadRemoteOfficialStarterPack = jest.mocked(
-  loadRemoteOfficialStarterPack
+const mockLoadRemoteOfficialContentManifest = jest.mocked(
+  loadRemoteOfficialContentManifest
 )
 
 const catalog: OfficialContentCatalogItem[] = [
@@ -89,38 +105,24 @@ const createManifest = (
   packId: string,
   version: string,
   title: string
-): StarterPackManifest => ({
-  description: `${title} description`,
-  entries: [
-    {
-      analysisNotes: null,
-      antonyms: [],
-      article: 'de',
-      conjugation: null,
-      dutchLemma: `${packId}-word`,
-      dutchOriginal: `${packId}-word`,
-      entryId: `${packId}-entry`,
-      examples: [],
-      expressionType: null,
-      isExpression: false,
-      isIrregular: false,
-      isReflexive: false,
-      isSeparable: false,
-      partOfSpeech: 'noun',
-      plural: null,
-      prefixPart: null,
-      preposition: null,
-      register: 'neutral',
-      rootVerb: null,
-      synonyms: [],
-      translations: { en: ['word'], ru: [] },
-    },
-  ],
-  packId,
-  reviewedAt: '2026-09-11T09:00:00.000Z',
-  title,
-  version,
-})
+): OfficialContentManifest => {
+  const raw = loadBundledOfficialManifest()
+  return {
+    ...raw,
+    pack_id: packId,
+    version,
+    title,
+    description: `${title} description`,
+    entries: [
+      {
+        ...raw.entries[0],
+        entry_id: `${packId}-entry`,
+        dutch_lemma: `${packId}-word`,
+        dutch_original: `${packId}-word`,
+      },
+    ],
+  }
+}
 
 const renderPage = async (pack?: string) => {
   const page = await StarterPackPage({
@@ -141,12 +143,64 @@ describe('StarterPackPage', () => {
       existingWords: [],
     })
     mockGetOfficialContentCatalog.mockResolvedValue(catalog)
-    mockLoadRemoteOfficialStarterPack.mockImplementation(
+    mockLoadRemoteOfficialContentManifest.mockImplementation(
       async (packId, version) => {
         const item = catalog.find(candidate => candidate.packId === packId)
         if (!item) throw new Error('missing')
         return createManifest(packId, version, item.title)
       }
+    )
+  })
+
+  it('passes the exact approved raw manifest and captured owner into following mode', async () => {
+    process.env.DICTIONARY_CONTENT_ENABLED = 'true'
+    process.env.DICTIONARY_FOLLOWING_ENABLED = 'true'
+    process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED = 'true'
+    try {
+      await renderPage('dutch-a1-01')
+      expect(screen.getByTestId('starter-pack-import')).toHaveAttribute(
+        'data-owner',
+        'user-1'
+      )
+      expect(screen.getByTestId('starter-pack-import')).toHaveAttribute(
+        'data-pack',
+        'dutch-a1-01'
+      )
+      expect(screen.getByTestId('starter-pack-import')).toHaveAttribute(
+        'data-following',
+        'true'
+      )
+      expect(screen.getByText('Available to verify')).toBeInTheDocument()
+      expect(mockLoadRemoteOfficialContentManifest).toHaveBeenCalledWith(
+        'dutch-a1-01',
+        '1.0.0'
+      )
+    } finally {
+      delete process.env.DICTIONARY_CONTENT_ENABLED
+      delete process.env.DICTIONARY_FOLLOWING_ENABLED
+      delete process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED
+    }
+  })
+
+  it('resets selection for a different owner even when the pack identity stays the same', async () => {
+    const user = userEvent.setup()
+    const view = await renderPage('dutch-a1-01')
+    await user.click(screen.getByRole('button', { name: 'Change selection' }))
+    mockRequireAuthContext.mockResolvedValue({
+      userId: 'user-2',
+      email: 'second@example.com',
+      accessLevel: 'full_access',
+    })
+    view.rerender(
+      await StarterPackPage({
+        searchParams: Promise.resolve({ pack: 'dutch-a1-01' }),
+      })
+    )
+    expect(screen.getByText('selection:dutch-a1-01')).toBeVisible()
+    expect(screen.queryByText('selection:changed')).not.toBeInTheDocument()
+    expect(screen.getByTestId('starter-pack-import')).toHaveAttribute(
+      'data-owner',
+      'user-2'
     )
   })
 
@@ -191,7 +245,7 @@ describe('StarterPackPage', () => {
     ).toBeVisible()
     expect(screen.getByText(/could not be found/i)).toBeVisible()
     expect(screen.queryByTestId('starter-pack-import')).not.toBeInTheDocument()
-    expect(mockLoadRemoteOfficialStarterPack).not.toHaveBeenCalled()
+    expect(mockLoadRemoteOfficialContentManifest).not.toHaveBeenCalled()
   })
 
   it('keeps bundled Essentials usable when the remote catalog fails', async () => {
@@ -223,7 +277,7 @@ describe('StarterPackPage', () => {
   })
 
   it('offers recovery when a selected remote version cannot be loaded', async () => {
-    mockLoadRemoteOfficialStarterPack.mockRejectedValueOnce(
+    mockLoadRemoteOfficialContentManifest.mockRejectedValueOnce(
       new Error('pack network failure')
     )
 

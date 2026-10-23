@@ -1,5 +1,11 @@
 # D02 identity, compatibility and recovery contract
 
+> October10 update: this document records the implemented pinned-revision baseline.
+> DEC-10 and plan section3.1/D13A supersede the explicit-adoption target for the next
+> release. Analysis is shared-only; full_access users/admins may request validated
+> shared reanalysis. Existing contracts stay active until a verified,
+> separately authorized rollout. Do not rewrite historical implementation evidence.
+
 Status: D02 design baseline, 2026-09-21. The user accepted the foundation's
 shared-content/private-learning split, private personal edits and explicit content
 revision adoption and subsequently confirmed both transition restrictions:

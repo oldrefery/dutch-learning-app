@@ -12,6 +12,10 @@ import {
   type EffectiveCard,
   type DictionaryCardMetadata,
 } from './content'
+import {
+  parseFollowingCards,
+  validateFollowingHeads,
+} from './following-content'
 
 /** Additive local target RPCs; the deployed generated schema stays unchanged. */
 export type DictionaryDatabase = Omit<Database, 'public'> & {
@@ -30,6 +34,11 @@ export type DictionaryDatabase = Omit<Database, 'public'> & {
         Returns: Json
       }
       get_web_review_snapshot_v2: { Args: Record<string, never>; Returns: Json }
+      get_dictionary_effective_content_v2: {
+        Args: { p_word_ids: string[] }
+        Returns: Json
+      }
+      get_web_review_snapshot_v3: { Args: Record<string, never>; Returns: Json }
       import_official_dictionary_pack_v1: {
         Args: {
           p_collection_id: string
@@ -66,6 +75,11 @@ export type DictionaryDatabase = Omit<Database, 'public'> & {
 export const isDictionaryContentEnabled = () =>
   process.env.DICTIONARY_CONTENT_ENABLED === 'true'
 
+// Separate rollout gate; protocol1 stays unchanged until explicitly enabled.
+export const isDictionaryFollowingEnabled = () =>
+  isDictionaryContentEnabled() &&
+  process.env.DICTIONARY_FOLLOWING_ENABLED === 'true'
+
 export const getAvailableRevision = async (
   client: SupabaseClient<Database>,
   reference: DictionaryReference
@@ -97,15 +111,20 @@ export const hydrateOwnedWords = async <Row extends { word_id: string }>(
     client as unknown as SupabaseClient<DictionaryDatabase>
   const ids = [...new Set(rows.map(row => row.word_id))]
   const cards = new Map<string, EffectiveCard>()
+  const following = isDictionaryFollowingEnabled()
   for (let offset = 0; offset < ids.length; offset += 1000) {
     const requested = ids.slice(offset, offset + 1000)
     const { data, error } = await dictionaryClient.rpc(
-      'get_dictionary_effective_content_v1',
+      following
+        ? 'get_dictionary_effective_content_v2'
+        : 'get_dictionary_effective_content_v1',
       { p_word_ids: requested }
     )
     if (error)
       throw new Error('Could not load dictionary content. Please retry.')
-    const batch = parseEffectiveCards(data)
+    const batch = following
+      ? parseFollowingCards(data).cards
+      : parseEffectiveCards(data)
     if (
       batch.size !== requested.length ||
       requested.some(id => !batch.has(id))
@@ -114,5 +133,6 @@ export const hydrateOwnedWords = async <Row extends { word_id: string }>(
     }
     for (const [id, card] of batch) cards.set(id, card)
   }
+  if (following) validateFollowingHeads(cards)
   return applyEffectiveCards(rows, cards)
 }

@@ -5,8 +5,15 @@ import { createTestDatabase } from './sqlite.fixture'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import { dictionaryContentRepository } from '../dictionaryContentRepository'
 import { wordToDictionaryContent } from '../dictionaryContentMapping'
+import { dictionaryFollowingRepository } from '../dictionaryFollowingRepository'
+import {
+  followingBatch,
+  REVISION_2,
+  WORD_A,
+} from './dictionaryFollowing.fixture'
 
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: jest.fn(() => true),
 }))
 
@@ -220,6 +227,53 @@ describe('official pack imports in real SQLite', () => {
       kind: CREATE_PRIVATE,
       content: { dutch_lemma: original.dutch_lemma },
     })
+  })
+
+  it('keeps downloaded following cards out of legacy creation after an offline review', async () => {
+    jest.mocked(isDictionaryContentEnabled).mockReturnValue(false)
+    const word = createWord(889, { word_id: WORD_A })
+    await wordRepository.addWord(word)
+    const initial = await dictionaryFollowingRepository.prepareHydration(
+      USER_ID,
+      [WORD_A],
+      () => {}
+    )
+    await dictionaryFollowingRepository.commitHydration(
+      initial,
+      [followingBatch('1')],
+      () => {}
+    )
+    database
+      .prepare(
+        "UPDATE words SET sync_status = 'pending', repetition_count = 7 WHERE word_id = ?"
+      )
+      .run(WORD_A)
+    const original = database.prepare(WORD_BY_ID).get(WORD_A)
+    jest.mocked(isDictionaryContentEnabled).mockReturnValue(true)
+    await wordRepository.preserveLegacyPendingContent(USER_ID)
+    await wordRepository.preserveLegacyPendingContent(USER_ID)
+    expect(database.prepare(ALL_DICTIONARY_COMMANDS).all()).toEqual([])
+    expect(
+      database.prepare('SELECT * FROM dictionary_card_content').all()
+    ).toEqual([])
+    const next = await dictionaryFollowingRepository.prepareHydration(
+      USER_ID,
+      [WORD_A],
+      () => {}
+    )
+    await dictionaryFollowingRepository.commitHydration(
+      next,
+      [followingBatch('2', REVISION_2)],
+      () => {}
+    )
+    expect(
+      database
+        .prepare(
+          'SELECT revision_id FROM dictionary_effective_card_cache WHERE word_id = ?'
+        )
+        .get(WORD_A)
+    ).toEqual({ revision_id: REVISION_2 })
+    expect(database.prepare(WORD_BY_ID).get(WORD_A)).toEqual(original)
   })
 
   it('stores a large pack atomically as pending without changing supplied SRS values', async () => {

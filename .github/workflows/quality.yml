@@ -21,7 +21,7 @@ permissions:
 jobs:
   web-fixtures:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Check out code
         uses: actions/checkout@v7.0.1
@@ -57,6 +57,10 @@ jobs:
         uses: actions/setup-node@v7.0.0
         with:
           node-version: '24.20.0'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Install isolated database test prerequisites
         run: |
@@ -71,7 +75,7 @@ jobs:
 
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       NEXT_PUBLIC_SITE_URL: https://woordenaar.app
       NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
@@ -126,9 +130,6 @@ jobs:
       - name: Run web Jest coverage
         run: npm run web:test:coverage
 
-      - name: Run web mutation tests
-        run: npm run web:mutation
-
       - name: Run Edge Function tests
         run: npm run test:edge
 
@@ -137,6 +138,9 @@ jobs:
 
       - name: Run Expo Doctor
         run: npm run mobile:expo:doctor
+
+      - name: Run web mutation tests
+        run: npm run web:mutation
 
       - name: Upload coverage
         if: always()

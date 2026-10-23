@@ -1,0 +1,219 @@
+{
+  "checkpoint": "D13A.2",
+  "verified_at": "2026-10-09T23:22:08.236565+00:00",
+  "scope": "Local reconciliation and integration validation; no remote refresh, commit or release.",
+  "model": "GPT-6.1 Sol / High, owner-confirmed",
+  "root_head": "f97a733407a4d2b37e8f9ca030ad9574de85a794",
+  "merged_main": "44141e00bddfe00267314374bc33a7a0cf8fb4a2",
+  "build85_source": "0a3bae137d3e58c406215114cbccadd773f71098",
+  "root_and_main_trees_identical": true,
+  "build85_delta": [
+    "apps/mobile/app.config.js",
+    "apps/mobile/eas.json",
+    "apps/mobile/src/__tests__/appConfigOta.test.ts"
+  ],
+  "auth28_to_auth29_delta": [
+    "apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts",
+    "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+    "apps/mobile/src/services/syncStatusService.ts"
+  ],
+  "integration_files": {
+    "apps/mobile/app.config.js": "8834a489a7110e7be8ba408f836f98f8531d67731939b9d81ff80b927fcc8ab2",
+    "apps/mobile/eas.json": "0273a681e60b7fc982d869b11a1064a0d5a9929bc247748d39bd53dc3ef9d7f8",
+    "apps/mobile/src/__tests__/appConfigOta.test.ts": "af703bd6fbec7b4b84f55abe7915e956ee9f383379720ea70ad5b3e40bde25d6",
+    "apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts": "10b48cb2af9dda6fd8e80e412ff2ac584a258fe941cfadb17d30528081b2d272",
+    "apps/mobile/src/db/dictionaryContentMapping.ts": "b5275936dcc8264da8d3a22af172999ed95da5aceae78aa26ea3012b3f316b04",
+    "apps/mobile/src/db/dictionaryContentRepository.ts": "66cb493b12d3c818727c52439dc2401cc721c7c8f5f78e8718e660a5078ab0e7",
+    "apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts": "48a7ea4142421d553bb989972f2aff84ab9a25a0b8ab8fe7c23a4b1aea8b3718",
+    "apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts": "a45d2c9fdafaf1cd635f2710152af5b607d2b14f0028abcb914ca03791ca4109",
+    "apps/mobile/src/services/__tests__/syncStatusService.test.ts": "2ac0ee4868c2f024945b7c220dd3cb3f5157991b9cf6167a6a636d487384c60d",
+    "apps/mobile/src/services/dictionaryContentSync.ts": "e05bea84645605afef5967ed743343a2d5189cb931e04ada01f2ddbe5bb18fb4",
+    "apps/mobile/src/services/syncStatusService.ts": "11c15b44b7bce348c63bcd04a828b434809103da76fd00d39361b4149ee34c8e",
+    "apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts": "55ab21501c958a5e13ed1eeaa427cf2b786b19429491b4138d1eceb0a4740cf2",
+    "packages/domain/src/shared-dictionary.ts": "61bdbf8e15cee1dd3e094a0b31eeb6bba55204d7a9b2419d534f3463207507f0"
+  },
+  "non_document_manifest_files_matching_auth29": 1210,
+  "artifacts": [
+    {
+      "authorization": "AUTH-28",
+      "private_path": "reports/shared-dictionary-cefr/d13-delivery-20261009",
+      "source_files_verified": 1622,
+      "export_files_verified": 61,
+      "artifact_sha256": {
+        "candidate-source.tar": "19e8e9bd2c7ef8885554ca45e2582a3d35aa1af8ecad9177cc1a8c1600673daa",
+        "dist-manifest.json": "3e4a9696cb9bd5bc6c420e1a8167c23f9739ae981d5ecfee91ef4cb2d3b65a89"
+      }
+    },
+    {
+      "authorization": "AUTH-29",
+      "private_path": "reports/shared-dictionary-cefr/d13-status-ota-20261010",
+      "source_files_verified": 1623,
+      "export_files_verified": 61,
+      "artifact_sha256": {
+        "candidate-source.tar": "493fcb2557373577625ef05b785afbd3cf3b47a2544cc19047666113f40f3d30",
+        "dist-manifest.json": "fb8b5e715c3465ef939fabc4dfbb335b19ea3ae7a1205de04f3956fc497e6b2c"
+      }
+    }
+  ],
+  "patch": {
+    "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A-source-integration-20261010.patch",
+    "sha256": "20a1c22367f6d08985b9d4679cae88fdf80178d2d9e8e457525e3d7690f8c99e",
+    "files": 13,
+    "apply_to_main_verified": true,
+    "reverse_to_main_verified": true
+  },
+  "remote_operations": [],
+  "validation": "passed",
+  "local_date": "2026-10-10",
+  "timezone": "Europe/Amsterdam",
+  "runtime": {
+    "node": "24.20.0",
+    "npm": "11.19.0"
+  },
+  "checks": [
+    {
+      "command": ["npm", "run", "typecheck"],
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a2-integration-20261010/typecheck.log",
+      "finished_at": "2026-10-09T23:21:18.846695+00:00",
+      "log_sha256": "a8509de08b8c4fa02d7c49b95015ca2f991dac58edc890cf24b888ecf911ffac"
+    },
+    {
+      "command": ["npm", "run", "typecheck:test"],
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a2-integration-20261010/typecheck-test.log",
+      "finished_at": "2026-10-09T23:21:29.662537+00:00",
+      "log_sha256": "62c67e2af39eb61ffeb7e9ef319d251f21cc7fb2b6e0eacbc2fd7c1afc23792e"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck",
+        "--workspace",
+        "@woordenaar/domain"
+      ],
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a2-integration-20261010/typecheck-domain.log",
+      "finished_at": "2026-10-09T23:21:31.311133+00:00",
+      "log_sha256": "ef891c419996415101c2c4649c1471cf7f4f50d7b9a301d162ada28370b15146"
+    },
+    {
+      "command": ["npm", "run", "lint:ci"],
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a2-integration-20261010/lint-ci.log",
+      "finished_at": "2026-10-09T23:21:51.956480+00:00",
+      "log_sha256": "d565f64884b444fc69aed8fc02f769ebf7340850cf7ec6b6c144651348a26383"
+    },
+    {
+      "command": ["npm", "run", "test:ci"],
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a2-integration-20261010/mobile-tests.log",
+      "suites_passed": 157,
+      "tests_passed": 1808,
+      "snapshots_passed": 22,
+      "coverage_gates": "passed",
+      "log_sha256": "d6813c261213a5bfca71f4ab08ab10f2bcc8612fb2f2e1f3b0d28c1dac1c8473",
+      "finished_at": "2026-10-09T23:21:57.502166+00:00"
+    },
+    {
+      "command": ["npm", "run", "web:test"],
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a2-integration-20261010/web-tests.log",
+      "suites_passed": 86,
+      "tests_passed": 780,
+      "suites_skipped": 1,
+      "tests_skipped": 1,
+      "log_sha256": "8bc4331560be755c61fba31ee06ba8a737ba0d762f27d76056a911ad6f9b35c6",
+      "finished_at": "2026-10-09T23:21:27.921213+00:00"
+    },
+    {
+      "command": [
+        "node",
+        "node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        "apps/mobile/app.config.js",
+        "apps/mobile/eas.json",
+        "apps/mobile/src/__tests__/appConfigOta.test.ts",
+        "apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts",
+        "apps/mobile/src/db/dictionaryContentMapping.ts",
+        "apps/mobile/src/db/dictionaryContentRepository.ts",
+        "apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts",
+        "apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts",
+        "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+        "apps/mobile/src/services/dictionaryContentSync.ts",
+        "apps/mobile/src/services/syncStatusService.ts",
+        "apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts",
+        "packages/domain/src/shared-dictionary.ts"
+      ],
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a2-integration-20261010/source-format.log",
+      "log_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "finished_at": "2026-10-09T23:22:20.450737+00:00"
+    }
+  ],
+  "helper_failure": "First temporary archive extraction stopped before apply: system Python lacks the filter keyword; validated member paths/types and reran successfully.",
+  "completed_at": "2026-10-09T23:23:50.109992+00:00",
+  "dirty_paths_at_checkpoint": [
+    " M apps/mobile/app.config.js",
+    " M apps/mobile/eas.json",
+    " M apps/mobile/src/__tests__/appConfigOta.test.ts",
+    " M apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts",
+    " M apps/mobile/src/db/dictionaryContentMapping.ts",
+    " M apps/mobile/src/db/dictionaryContentRepository.ts",
+    " M apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts",
+    " M apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+    " M apps/mobile/src/services/dictionaryContentSync.ts",
+    " M apps/mobile/src/services/syncStatusService.ts",
+    " M apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts",
+    " M docs/brainstorms/2026-09-12-shared-dictionary-brainstorm.md",
+    " M docs/plans/shared-dictionary-cefr-2026-09-12.md",
+    " M docs/tasks/shared-dictionary-cefr/D02-compatibility-contract.md",
+    " M docs/tasks/shared-dictionary-cefr/D02-design-proposal.md",
+    " M docs/tasks/shared-dictionary-cefr/D02-schema-blueprint.md",
+    " M docs/tasks/shared-dictionary-cefr/decisions.md",
+    " M docs/tasks/shared-dictionary-cefr/handoff.md",
+    " M docs/tasks/shared-dictionary-cefr/sessions.md",
+    " M docs/tasks/shared-dictionary-cefr/steps/D13.md",
+    " M docs/tasks/shared-dictionary-cefr/steps/D14.md",
+    " M packages/domain/src/shared-dictionary.ts",
+    "?? .playwright-cli/",
+    "?? apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts",
+    "?? docs/brainstorms/2026-10-10-shared-dictionary-auto-updates.md",
+    "?? docs/tasks/shared-dictionary-cefr/D13A-acceptance-fixtures.json",
+    "?? docs/tasks/shared-dictionary-cefr/D13A-technical-contract.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-activation-execution-20261005.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-activation-execution-20261005.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-activation-preflight-20261004.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-activation-preflight-20261004.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-native-activation-settings-20261004.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-native-candidate-20261004.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-native-inspection-20261004.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-observation-20261009.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-observation-20261009.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-ota-candidate-20261009.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-ota-candidate-20261009.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-ota-delivery-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-ota-delivery-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-post-ota-observation-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-post-ota-observation-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-source-merge-20261004.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-candidate-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-candidate-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-delivery-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-delivery-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-observation-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-observation-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-contract-baseline-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-source-integration-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-source-integration-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-source-integration-20261010.patch",
+    "?? docs/tasks/shared-dictionary-cefr/steps/D13A.md"
+  ],
+  "persistence": "local-only, uncommitted; no pending operations",
+  "document_checks": {
+    "local_links": "passed",
+    "prettier": "passed",
+    "git_diff_check": "passed"
+  }
+}

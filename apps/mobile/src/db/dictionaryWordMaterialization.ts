@@ -1,4 +1,5 @@
-import type { LocalDictionaryMaterialization } from './dictionaryContentRepository'
+import type { DictionaryWordMaterialization } from './dictionaryWordReads'
+import { projectDictionaryReadWord } from './dictionaryReadProjection'
 import type { Word } from '@/types/database'
 import { isValidExpressionType } from '@/types/ExpressionTypes'
 
@@ -12,9 +13,35 @@ const toExpressionType = (
 
 export const applyDictionaryMaterialization = (
   word: Word,
-  materialization: LocalDictionaryMaterialization | undefined
+  materialization: DictionaryWordMaterialization | undefined
 ): Word => {
   if (!materialization) return word
+  if ('card' in materialization) {
+    const { card, revision, watermark } = materialization
+    const content =
+      card.mode === 'legacy' ? card.legacy_content : revision?.content
+    return projectDictionaryReadWord(word, content, {
+      cefr_level: card.cefr.level,
+      cefr_status: card.cefr.status,
+      cefr_confidence: card.cefr.confidence,
+      dictionary_content_source:
+        card.mode === 'follow'
+          ? 'following'
+          : card.reference
+            ? 'pinned'
+            : 'fallback',
+      dictionary_content_conflict: materialization.has_conflict,
+      dictionary_content_state: {
+        protocol_version: 2,
+        mode: card.mode,
+        content_version: card.content_version,
+        reference: card.reference === null ? null : { ...card.reference },
+        adopted_revision_id: card.adopted_revision_id,
+        head_sequence: card.head_sequence,
+        watermark,
+      },
+    })
+  }
   const content = materialization.effective.content
   const metadata = {
     cefr_level: materialization.cefr.level,
@@ -89,7 +116,7 @@ export const applyDictionaryMaterialization = (
 
 export const applyDictionaryMaterializations = (
   words: readonly Word[],
-  materializations: ReadonlyMap<string, LocalDictionaryMaterialization>
+  materializations: ReadonlyMap<string, DictionaryWordMaterialization>
 ): Word[] =>
   words.map(word =>
     applyDictionaryMaterialization(word, materializations.get(word.word_id))

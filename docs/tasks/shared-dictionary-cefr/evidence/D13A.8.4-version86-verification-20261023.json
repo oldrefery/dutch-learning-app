@@ -1,0 +1,25 @@
+{
+  "status": "local-version-preparation-verified",
+  "packet": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-version86-packet-20261023.json",
+  "packet_sha256": "0430d37c1974cfdc3485f6612698720cb4b7927ebdc9dbc70baf0e107d18ddb3",
+  "verifier_sha256": "7863f0d29e635a4908e5fc7d0ebb4fab08e1174599fc439950297b3636df7988",
+  "packet_checks_passed": 12,
+  "focused_tests_passed": 35,
+  "source_delta_files": 5,
+  "full_source_pins": 1513,
+  "archive_files": 2137,
+  "previous_packet_immutable_and_rejects_current_source": true,
+  "agreement_R11": "closed: Free/Paid Active",
+  "bundle": {
+    "path": "reports/shared-dictionary-cefr/d13a84-version86-20261023/D13A.8.4-version86-review.tar.gz",
+    "sha256": "e7912ec85dfc437e94ab78b14bc7cff4b49e7ca343e14fe0f2a4b47dbd77ecc9",
+    "member_hashes_verified": true
+  },
+  "authorized_builds": 0,
+  "publication": false,
+  "remaining": {
+    "fixed_steps": 3,
+    "broad_including_current": 7,
+    "broad_excluding_current": 6
+  }
+}

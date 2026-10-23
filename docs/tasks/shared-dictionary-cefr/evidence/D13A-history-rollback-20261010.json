@@ -1,0 +1,410 @@
+{
+  "checkpoint": "D13A.4",
+  "subcheckpoint": "bounded redacted history/diff and audited administrator-only head rollback",
+  "stage_status": "in_progress",
+  "subcheckpoint_status": "complete",
+  "local_date": "2026-10-10",
+  "timezone": "Europe/Amsterdam",
+  "completed_at": "2026-10-10T10:21:26.465345+00:00",
+  "model": "GPT-6.1 Sol / High, owner-confirmed; no picker switch claimed",
+  "branch": "feature/shared-dictionary-schema",
+  "head": "f97a733407a4d2b37e8f9ca030ad9574de85a794",
+  "source_sha256": {
+    "supabase/migrations/20261010130000_add_dictionary_history_rollback.sql": "3ebb1c777f58999db9d797b03a90f3785452e12244f351270831b20230f111c9",
+    "packages/domain/src/dictionary-history.ts": "c9c956cd095e0ca512f79dffbee1a9fa86bb8d03d571d0c8c1439fa185f95fb7",
+    "packages/domain/src/index.ts": "856b1fb862ed06a4030351e99cab9b98bd6b50d09a1b9a60a5a7256b9c6821aa",
+    "packages/supabase-contracts/target-schema.json": "9233c403c325eb3d7040fdd694272636dbe5e2ffcb6785305f64e8ef5caefc27",
+    "packages/supabase-contracts/src/database.target.generated.ts": "92eb4c9646deee86f32737231a17b327c842285b0ce38d008efcedac589a9366",
+    "scripts/postgres-tests/dictionary-history-rollback.test.mjs": "171a5de9ffb1850ba130be85baecde739edc067591582fac9e0a477e15c1d171",
+    "apps/mobile/src/utils/__tests__/dictionaryHistoryContract.test.ts": "01fb4c01c21935697ad54f2cdda59010c20aadee5f1781a6e995f88d08c9c099"
+  },
+  "unchanged_prior_source_sha256": {
+    "apps/mobile/app.config.js": "8834a489a7110e7be8ba408f836f98f8531d67731939b9d81ff80b927fcc8ab2",
+    "apps/mobile/eas.json": "0273a681e60b7fc982d869b11a1064a0d5a9929bc247748d39bd53dc3ef9d7f8",
+    "apps/mobile/src/__tests__/appConfigOta.test.ts": "af703bd6fbec7b4b84f55abe7915e956ee9f383379720ea70ad5b3e40bde25d6",
+    "apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts": "10b48cb2af9dda6fd8e80e412ff2ac584a258fe941cfadb17d30528081b2d272",
+    "apps/mobile/src/db/dictionaryContentMapping.ts": "b5275936dcc8264da8d3a22af172999ed95da5aceae78aa26ea3012b3f316b04",
+    "apps/mobile/src/db/dictionaryContentRepository.ts": "66cb493b12d3c818727c52439dc2401cc721c7c8f5f78e8718e660a5078ab0e7",
+    "apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts": "48a7ea4142421d553bb989972f2aff84ab9a25a0b8ab8fe7c23a4b1aea8b3718",
+    "apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts": "a45d2c9fdafaf1cd635f2710152af5b607d2b14f0028abcb914ca03791ca4109",
+    "apps/mobile/src/services/__tests__/syncStatusService.test.ts": "2ac0ee4868c2f024945b7c220dd3cb3f5157991b9cf6167a6a636d487384c60d",
+    "apps/mobile/src/services/dictionaryContentSync.ts": "e05bea84645605afef5967ed743343a2d5189cb931e04ada01f2ddbe5bb18fb4",
+    "apps/mobile/src/services/syncStatusService.ts": "11c15b44b7bce348c63bcd04a828b434809103da76fd00d39361b4149ee34c8e",
+    "apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts": "55ab21501c958a5e13ed1eeaa427cf2b786b19429491b4138d1eceb0a4740cf2",
+    "packages/domain/src/shared-dictionary.ts": "61bdbf8e15cee1dd3e094a0b31eeb6bba55204d7a9b2419d534f3463207507f0",
+    "packages/domain/src/dictionary-following.ts": "5cef53a9a5844d6813537f1fce81b8059812102e3d78c3e4db60b7d5788f578a",
+    "supabase/migrations/20261010090000_add_dictionary_following_reads.sql": "bd89aaf077b7a95e5a71f5a57c3c753aad9439987182970bf157f11257e5ec87",
+    "apps/mobile/src/utils/__tests__/dictionaryFollowingContract.test.ts": "64ce626054ac92516d1e60e09331d51fcb365a6a8403908d87d3d9b9c5c4a681",
+    "scripts/postgres-tests/dictionary-following-reads.test.mjs": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+    "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e",
+    "packages/domain/src/dictionary-analysis.ts": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82",
+    "apps/mobile/src/utils/__tests__/dictionaryAnalysisContract.test.ts": "954af7ee2e6df5ae8143aafa5613919cf5433f6bd27d9dcebc15ddd127282415",
+    "scripts/postgres-tests/dictionary-analysis-operations.test.mjs": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+    "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193",
+    "packages/domain/src/dictionary-publication.ts": "923563f3dc728e1730c64b6d4151eb9054f2471089b19494f6a9e034ea834d44",
+    "apps/mobile/src/utils/__tests__/dictionaryPublicationContract.test.ts": "2634407f56b61d742568cc661e73cd165cdd34f410dd173b29d91ebf5c164825",
+    "scripts/postgres-tests/dictionary-analysis-publication.test.mjs": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+    "supabase/migrations/20261010120000_add_dictionary_following_imports.sql": "709feaf1ad878b03019453698ba1fd0daad155e44bf13d4d6101fbbc8cc3b75a",
+    "packages/domain/src/dictionary-following-import.ts": "296c0be20ca7e89fe8cac5e4293fb1091aaa59b385ad061ec0525738e9db505a",
+    "packages/domain/src/dictionary-following-import-recovery.ts": "1bf66d46f68c8610245f1c9848ceac473ce8abb3e96496d945573f0c6f862eb2",
+    "packages/domain/src/dictionary-following-import-recovery.types.ts": "0eed4960de5ef3a7cbb9cbc03c90b1766d083c95dd40f3ee714d5dbf78de46e0",
+    "apps/mobile/src/utils/__tests__/dictionaryFollowingImportContract.test.ts": "371eafa6c7bcb57919eaf754aa586c4f286abbb8c4057982635b05e4b2148c8c",
+    "scripts/postgres-tests/dictionary-following-imports.test.mjs": "50d2045244b2c5270fcda2a0e3f00512ed061a97130cb23b881fce93d2e9fafd",
+    "scripts/postgres-tests/dictionary-following-import-recovery.test.mjs": "24eb762eef81339fb95db657f706b24c8ea94309a29ee28ba97f1d51f6a2dfc5"
+  },
+  "legacy_protocol1_modules_sha256": {
+    "packages/domain/src/dictionary-import.ts": "2d5804dc6cf02ae3315c9e65700822fa90a3559ccab69ecb43bbc3d28afb6d0d",
+    "packages/domain/src/dictionary-import-recovery.ts": "b224ee560d38838981dd2f63735e554074b842fdfaccbb9ecc76f38caccb35f2",
+    "packages/domain/src/dictionary-import-recovery.types.ts": "585ad85815c94415421abafdf824e2a64d92b8027e3335d0880933bf56ae1458",
+    "packages/domain/src/dictionary-transfer.ts": "48aea5cb70edf501cab4bfaf762fbae41ee84e271ef4fd0d877dda4966babd60"
+  },
+  "unchanged_original_test_support_sha256": {
+    "scripts/postgres-tests/cluster.mjs": "ed0b1439dd88567e15ad1e3f5365cd2712ee9fd4e5a633b7a16aee739637ca03",
+    "scripts/postgres-tests/platform.sql": "a5b313975126a9235f69e02ffe60537706c1557e9c3d3719405c40e4172e79fa",
+    "scripts/postgres-tests/fixtures.mjs": "25c526868d54e966b2b7b97289d22e57be31fa422cd3f91ad3e1d30dd0dc5450",
+    "scripts/postgres-tests/concurrency-fixtures.mjs": "e7606e84234bb9db4fbdd7cd8d617deb455f39988a9a2fbfc52095cb60aa40d2"
+  },
+  "sealed_artifact_hashes_reverified": [
+    {
+      "authorization": "AUTH-28",
+      "private_path": "reports/shared-dictionary-cefr/d13-delivery-20261009",
+      "artifact_sha256": {
+        "candidate-source.tar": "19e8e9bd2c7ef8885554ca45e2582a3d35aa1af8ecad9177cc1a8c1600673daa",
+        "dist-manifest.json": "3e4a9696cb9bd5bc6c420e1a8167c23f9739ae981d5ecfee91ef4cb2d3b65a89"
+      }
+    },
+    {
+      "authorization": "AUTH-29",
+      "private_path": "reports/shared-dictionary-cefr/d13-status-ota-20261010",
+      "artifact_sha256": {
+        "candidate-source.tar": "493fcb2557373577625ef05b785afbd3cf3b47a2544cc19047666113f40f3d30",
+        "dist-manifest.json": "fb8b5e715c3465ef939fabc4dfbb335b19ea3ae7a1205de04f3956fc497e6b2c"
+      }
+    }
+  ],
+  "test_body_hashes": {
+    "scripts/postgres-tests/dictionary-analysis-operations.test.mjs": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+    "scripts/postgres-tests/dictionary-following-reads.test.mjs": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+    "scripts/postgres-tests/dictionary-content-protocol.test.mjs": "1dcb7a92874118099febbc0b6fe44b671963dbc2454fc694c7ab386c91300320",
+    "scripts/postgres-tests/dictionary-import-recovery.test.mjs": "cd7e9c47a6b092202265f2d9f83f6d1fcce13af6466dd36011840622fa193e19",
+    "scripts/postgres-tests/official-content-import.test.mjs": "9fa02c9b117993e659422626ffdf518b8580a7322a44faab3ce7ee38d7c6ddf1",
+    "scripts/postgres-tests/official-dictionary-mapping.test.mjs": "67f8dcad128d7a41062793fd7f8830c71b8c9d0dba27df98b46ea6532d14f93e",
+    "scripts/postgres-tests/shared-dictionary-schema.test.mjs": "6ae895d945b31fdb0f931ce823776d6d869dec91e1a3e0da500593c1854d2f72",
+    "scripts/postgres-tests/dictionary-analysis-publication.test.mjs": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+    "scripts/postgres-tests/dictionary-following-imports.test.mjs": "50d2045244b2c5270fcda2a0e3f00512ed061a97130cb23b881fce93d2e9fafd",
+    "scripts/postgres-tests/dictionary-following-import-recovery.test.mjs": "24eb762eef81339fb95db657f706b24c8ea94309a29ee28ba97f1d51f6a2dfc5",
+    "scripts/postgres-tests/dictionary-history-rollback.test.mjs": "171a5de9ffb1850ba130be85baecde739edc067591582fac9e0a477e15c1d171"
+  },
+  "adapter_sha256": "a85013ec65f37f586b6dc054efb5e2ba828e12f015ef2d36dc8561d34cdae884",
+  "runtime": {
+    "node": "24.20.0",
+    "npm": "11.19.0",
+    "postgresql": "16.13",
+    "test_backend": "temporary local Docker adapter, network none, Unix socket, tmpfs",
+    "postgres_image": "postgres@sha256:20edbde7749f822887a1a022ad526fde0a47d6b2be9a8364433605cf65099416"
+  },
+  "checks": [
+    {
+      "command": "PATH=/Users/devrush/.nvm/versions/node/v24.20.0/bin:$PATH node --test --test-timeout=120000 reports/shared-dictionary-cefr/d13a4-history-20261010/test-mirror/scripts/postgres-tests/dictionary-history-rollback.test.mjs",
+      "working_directory": "/Users/devrush/code/pet/DutchLearningApp",
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/postgres-history-second.log",
+      "log_sha256": "e40361a1f5a6562cac6381c62747aa0a598e2f0902452153a5c84c1f8249a9bd",
+      "log_last_written_at": "2026-10-10T10:11:28.717717+00:00",
+      "result": {
+        "passed": 17,
+        "failed": 0
+      }
+    },
+    {
+      "command": "PATH=/Users/devrush/.nvm/versions/node/v24.20.0/bin:$PATH node --test --test-concurrency=1 --test-timeout=120000 reports/shared-dictionary-cefr/d13a4-history-20261010/test-mirror/scripts/postgres-tests/dictionary-analysis-operations.test.mjs reports/shared-dictionary-cefr/d13a4-history-20261010/test-mirror/scripts/postgres-tests/dictionary-analysis-publication.test.mjs reports/shared-dictionary-cefr/d13a4-history-20261010/test-mirror/scripts/postgres-tests/dictionary-following-reads.test.mjs",
+      "working_directory": "/Users/devrush/code/pet/DutchLearningApp",
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/postgres-compatibility-final.log",
+      "log_sha256": "ef37f00822757456cc279e0fdba700331051346c6d5ab9610c2643e9bec93c3f",
+      "log_last_written_at": "2026-10-10T10:17:23.553041+00:00",
+      "result": {
+        "passed": 57,
+        "failed": 0
+      }
+    },
+    {
+      "command": "PATH=/Users/devrush/.nvm/versions/node/v24.20.0/bin:$PATH CI=true npm run mobile:test:ci",
+      "working_directory": "/Users/devrush/code/pet/DutchLearningApp",
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/mobile-verified.log",
+      "log_sha256": "9f73fa3c7cb060c60b70f6da3f3111b0ac2a9093cca29e9cd7427475d35b16ef",
+      "log_last_written_at": "2026-10-10T10:18:24.767953+00:00",
+      "result": {
+        "suites": 162,
+        "tests": 1906,
+        "snapshots": 22,
+        "coverage_gates": "passed"
+      }
+    },
+    {
+      "command": "PATH=/Users/devrush/.nvm/versions/node/v24.20.0/bin:$PATH CI=true npm run mobile:test:ci -- --coverage=false dictionaryHistoryContract.test.ts dictionaryPublicationContract.test.ts dictionaryAnalysisContract.test.ts dictionaryFollowingContract.test.ts dictionaryFollowingImportContract.test.ts sharedDictionaryContract.test.ts",
+      "working_directory": "/Users/devrush/code/pet/DutchLearningApp",
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/contracts-verified.log",
+      "log_sha256": "83634d9ed235373e6b4c3365ac299d9cd794452678b353d84adebeb506ec5bff",
+      "log_last_written_at": "2026-10-10T10:17:53.304804+00:00",
+      "result": {
+        "suites": 6,
+        "tests": 105
+      }
+    },
+    {
+      "command": "export PATH=/Users/devrush/.nvm/versions/node/v24.20.0/bin:$PATH\n(npm run typecheck --workspace @woordenaar/domain && npm run typecheck --workspace @woordenaar/supabase-contracts && npm run mobile:typecheck && npm run mobile:typecheck:test && npm run web:typecheck)",
+      "working_directory": "/Users/devrush/code/pet/DutchLearningApp",
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/types-verified.log",
+      "log_sha256": "21e74d1e8b20382a0ed0accabc92d7a34f84344665cdab6fb1695a3029f9d861",
+      "log_last_written_at": "2026-10-10T10:18:10.535583+00:00",
+      "result": {
+        "domain": "passed",
+        "contracts": "passed",
+        "mobile_build": "passed",
+        "mobile_test": "passed",
+        "web": "passed"
+      }
+    },
+    {
+      "command": "PATH=/Users/devrush/.nvm/versions/node/v24.20.0/bin:$PATH npm run lint:ci",
+      "working_directory": "/Users/devrush/code/pet/DutchLearningApp",
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/lint-final.log",
+      "log_sha256": "d565f64884b444fc69aed8fc02f769ebf7340850cf7ec6b6c144651348a26383",
+      "log_last_written_at": "2026-10-10T10:13:53.563531+00:00",
+      "result": {
+        "warnings": 0,
+        "errors": 0
+      }
+    },
+    {
+      "command": "PATH=/Users/devrush/.nvm/versions/node/v24.20.0/bin:$PATH npx --no-install prettier --check packages/domain/src/dictionary-history.ts packages/domain/src/index.ts packages/supabase-contracts/target-schema.json packages/supabase-contracts/src/database.target.generated.ts scripts/postgres-tests/dictionary-history-rollback.test.mjs apps/mobile/src/utils/__tests__/dictionaryHistoryContract.test.ts",
+      "working_directory": "/Users/devrush/code/pet/DutchLearningApp",
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/format-source-verified.log",
+      "log_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "log_last_written_at": "2026-10-10T10:17:50.046731+00:00",
+      "result": {
+        "result": "passed",
+        "sql_formatter": "not configured"
+      }
+    },
+    {
+      "command": "PATH=/Users/devrush/.nvm/versions/node/v24.20.0/bin:$PATH npm run supabase-contracts:target:check",
+      "working_directory": "/Users/devrush/code/pet/DutchLearningApp",
+      "exit_code": 0,
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/target-check-final.log",
+      "log_sha256": "be522e7399ba07344c0283772e2ecae6251b07ac443dd7cbe34ed249278ede23",
+      "log_last_written_at": "2026-10-10T10:13:56.258405+00:00",
+      "result": {
+        "result": "passed",
+        "migration_head": "20261010130000_add_dictionary_history_rollback.sql"
+      }
+    }
+  ],
+  "postgres_final_unique_passed": 74,
+  "postgres_breakdown": {
+    "history_diff_rollback": 17,
+    "operations": 19,
+    "publication": 22,
+    "following": 16
+  },
+  "compatibility_scope_note": "All74 selected tests use the final SQL migration. Ten prior test bodies remain unchanged; only three relevant suites (57 checks) rerun this checkpoint, not the complete prior158/entire database suite. Other prior tests remain supported by D13A.3 evidence within its scope.",
+  "failed_attempts": [
+    {
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/postgres-history-first.log",
+      "log_sha256": "a826b4e0fef8a5a2882aebeeb52d19640446abad2101e82461fa96a58bbd2732",
+      "resolved_reason": "13/16 passed; two fixture calls used wrong effective-read RPC, and revocation fixture lacked SET ROLE service_role. Fixed fixture only; final expanded17/17 passed."
+    },
+    {
+      "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/types-final.log",
+      "log_sha256": "db08727be99a5de47980303ecf57fc9b0d6632601a68d8db6326c896416c407b",
+      "resolved_reason": "Final web targets ES2017 and rejected 1n literal; used BigInt(1) as existing domain does. Final all-types/mobile/contracts rerun passes."
+    }
+  ],
+  "initial_typecheck_repair": "First domain CLI run (tool output, no separate file) widened event.kind to string; explicitly typed map result narrowed the union. Later domain check passed.",
+  "cleanup": {
+    "verified_at": "2026-10-10T10:21:26.069275+00:00",
+    "method": "read-only Docker inventory; unchanged adapter reuses d13a3-test name prefix",
+    "commands": {
+      "task_postgres_containers": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "name=woordenaar-d13a3-test-",
+        "--format",
+        "{{.Names}}"
+      ],
+      "task_type_containers": [
+        "docker",
+        "ps",
+        "-a",
+        "--filter",
+        "name=woordenaar-types-",
+        "--format",
+        "{{.Names}}"
+      ],
+      "task_type_networks": [
+        "docker",
+        "network",
+        "ls",
+        "--filter",
+        "name=woordenaar-types-",
+        "--format",
+        "{{.Name}}"
+      ]
+    },
+    "task_postgres_containers": 0,
+    "task_type_containers": 0,
+    "task_type_networks": 0
+  },
+  "provider_calls": 0,
+  "hosted_migration_applications": 0,
+  "live_grants": 0,
+  "real_validator_policies_seeded": 0,
+  "production_flags_changed": false,
+  "pending_checks": [],
+  "pending_external_operations": [],
+  "persistence": "local-only/uncommitted",
+  "git_diff_check": "passed",
+  "dirty_paths_at_checkpoint": [
+    " M apps/mobile/app.config.js",
+    " M apps/mobile/eas.json",
+    " M apps/mobile/src/__tests__/appConfigOta.test.ts",
+    " M apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts",
+    " M apps/mobile/src/db/dictionaryContentMapping.ts",
+    " M apps/mobile/src/db/dictionaryContentRepository.ts",
+    " M apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts",
+    " M apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+    " M apps/mobile/src/services/dictionaryContentSync.ts",
+    " M apps/mobile/src/services/syncStatusService.ts",
+    " M apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts",
+    " M docs/brainstorms/2026-09-12-shared-dictionary-brainstorm.md",
+    " M docs/plans/shared-dictionary-cefr-2026-09-12.md",
+    " M docs/tasks/shared-dictionary-cefr/D02-compatibility-contract.md",
+    " M docs/tasks/shared-dictionary-cefr/D02-design-proposal.md",
+    " M docs/tasks/shared-dictionary-cefr/D02-schema-blueprint.md",
+    " M docs/tasks/shared-dictionary-cefr/decisions.md",
+    " M docs/tasks/shared-dictionary-cefr/handoff.md",
+    " M docs/tasks/shared-dictionary-cefr/sessions.md",
+    " M docs/tasks/shared-dictionary-cefr/steps/D13.md",
+    " M docs/tasks/shared-dictionary-cefr/steps/D14.md",
+    " M packages/domain/src/index.ts",
+    " M packages/domain/src/shared-dictionary.ts",
+    " M packages/supabase-contracts/src/database.target.generated.ts",
+    " M packages/supabase-contracts/target-schema.json",
+    "?? .playwright-cli/",
+    "?? apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts",
+    "?? apps/mobile/src/utils/__tests__/dictionaryAnalysisContract.test.ts",
+    "?? apps/mobile/src/utils/__tests__/dictionaryFollowingContract.test.ts",
+    "?? apps/mobile/src/utils/__tests__/dictionaryFollowingImportContract.test.ts",
+    "?? apps/mobile/src/utils/__tests__/dictionaryHistoryContract.test.ts",
+    "?? apps/mobile/src/utils/__tests__/dictionaryPublicationContract.test.ts",
+    "?? docs/brainstorms/2026-10-10-shared-dictionary-auto-updates.md",
+    "?? docs/tasks/shared-dictionary-cefr/D13A-acceptance-fixtures.json",
+    "?? docs/tasks/shared-dictionary-cefr/D13A-technical-contract.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-activation-execution-20261005.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-activation-execution-20261005.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-activation-preflight-20261004.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-activation-preflight-20261004.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-native-activation-settings-20261004.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-native-candidate-20261004.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-native-inspection-20261004.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-observation-20261009.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-observation-20261009.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-ota-candidate-20261009.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-ota-candidate-20261009.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-ota-delivery-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-ota-delivery-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-post-ota-observation-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-post-ota-observation-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-source-merge-20261004.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-candidate-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-candidate-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-delivery-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-delivery-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-observation-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13-status-ota-observation-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-analysis-operations-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-analysis-operations-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-analysis-publication-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-analysis-publication-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-contract-baseline-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-following-reads-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-following-reads-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-history-rollback-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-history-rollback-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-import-cache-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-import-cache-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-source-integration-20261010.json",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-source-integration-20261010.md",
+    "?? docs/tasks/shared-dictionary-cefr/evidence/D13A-source-integration-20261010.patch",
+    "?? docs/tasks/shared-dictionary-cefr/steps/D13A.md",
+    "?? packages/domain/src/dictionary-analysis.ts",
+    "?? packages/domain/src/dictionary-following-import-recovery.ts",
+    "?? packages/domain/src/dictionary-following-import-recovery.types.ts",
+    "?? packages/domain/src/dictionary-following-import.ts",
+    "?? packages/domain/src/dictionary-following.ts",
+    "?? packages/domain/src/dictionary-history.ts",
+    "?? packages/domain/src/dictionary-publication.ts",
+    "?? scripts/postgres-tests/dictionary-analysis-operations.test.mjs",
+    "?? scripts/postgres-tests/dictionary-analysis-publication.test.mjs",
+    "?? scripts/postgres-tests/dictionary-following-import-recovery.test.mjs",
+    "?? scripts/postgres-tests/dictionary-following-imports.test.mjs",
+    "?? scripts/postgres-tests/dictionary-following-reads.test.mjs",
+    "?? scripts/postgres-tests/dictionary-history-rollback.test.mjs",
+    "?? supabase/migrations/20261010090000_add_dictionary_following_reads.sql",
+    "?? supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql",
+    "?? supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql",
+    "?? supabase/migrations/20261010120000_add_dictionary_following_imports.sql",
+    "?? supabase/migrations/20261010130000_add_dictionary_history_rollback.sql"
+  ],
+  "next_checkpoint": "D13A.4 protected shared provider orchestration and semantic evaluator; durable result/unknown retries, qualified policy and positive/negative sense fixtures; GPT-6.1 Sol / High",
+  "limitations": [
+    "D13A.4 is not complete: semantic evaluator/provider workflow and final workflow gates remain unfinished.",
+    "New flags default OFF; memberships/policies unseeded and capability shared analysis unavailable; CEFR OFF.",
+    "Draft/explicitly retired targets cannot bypass their review hold; published historical revisions of the same entry are rollback candidates.",
+    "New common history/diff hides retired entries; original authorized pin/follow read paths remain intact.",
+    "No fresh full web unit run or exact embedded/build85/device/end-to-end acceptance; final web typecheck passes.",
+    "All26 declarative fixtures remain distinct from executed contract tests.",
+    "Root ESLint excludes domain as before; strict types and parser tests pass.",
+    "Pinned isolated local PG16.13 adapter reused unchanged, including its d13a3-test name prefix. Original cluster/fixtures/platform and host PG15 IPC untouched.",
+    "Four sealed archive/manifest hashes refreshed; detailed export verification belongs to D13A.2.",
+    "No source integration/publication or hosted-schema claim follows from locally generated public target types."
+  ],
+  "document_formatting": {
+    "exit_code": 0,
+    "log": "reports/shared-dictionary-cefr/d13a4-history-20261010/format-documents.log",
+    "log_sha256": "11aec4ee279d73d834debef8d49ee67da449ce993620452992c22c34201afc02"
+  },
+  "retained_log_sha256": {
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/contracts-final.log": "2cbbfdb33e451ea31aa8b04726d7005367689f1ffcc3ff24b5f6e992526e927a",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/contracts-verified.log": "83634d9ed235373e6b4c3365ac299d9cd794452678b353d84adebeb506ec5bff",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/domain-contract-first.log": "0e8e6313f420fa8f8656565a934a0a350f164746b0cb18a76a9df5cb94990d0a",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/domain-typecheck-first.log": "ef891c419996415101c2c4649c1471cf7f4f50d7b9a301d162ada28370b15146",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/format-compatibility-fix.log": "41e7c78b8a19a933fd97c5aedb5eaedf9bf7f74f58c964d5767b701ce4bf2dba",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/format-documents.log": "11aec4ee279d73d834debef8d49ee67da449ce993620452992c22c34201afc02",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/format-parser-tests-first.log": "5d9c69a29c8164f4cbe1734435bfc556cd18c685ef68c753d4ea7d20a2fff777",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/format-source-final.log": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/format-source-first.log": "55c96090e5c91376d39c882e14c9a94b002689f0453dd6c427020a84c15af46a",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/format-source-second.log": "eaeff164d655cffe344b901b289b84ba816e86b77a54cf8616da1a0095cda528",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/format-source-verified.log": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/lint-final.log": "d565f64884b444fc69aed8fc02f769ebf7340850cf7ec6b6c144651348a26383",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/lint-first.log": "d565f64884b444fc69aed8fc02f769ebf7340850cf7ec6b6c144651348a26383",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/mobile-final.log": "9725c3e46d505812c1464f92199ea2dfbf2f8a26837c3e43c6f751412352ea46",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/mobile-verified.log": "9f73fa3c7cb060c60b70f6da3f3111b0ac2a9093cca29e9cd7427475d35b16ef",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/postgres-compatibility-final.log": "ef37f00822757456cc279e0fdba700331051346c6d5ab9610c2643e9bec93c3f",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/postgres-history-first.log": "a826b4e0fef8a5a2882aebeeb52d19640446abad2101e82461fa96a58bbd2732",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/postgres-history-second.log": "e40361a1f5a6562cac6381c62747aa0a598e2f0902452153a5c84c1f8249a9bd",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/target-check-final.log": "be522e7399ba07344c0283772e2ecae6251b07ac443dd7cbe34ed249278ede23",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/target-generate-first.log": "124c09ccf915d9db60cc943a9c911692794572f666071cdcb92958598ef300b6",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/types-final.log": "db08727be99a5de47980303ecf57fc9b0d6632601a68d8db6326c896416c407b",
+    "reports/shared-dictionary-cefr/d13a4-history-20261010/types-verified.log": "21e74d1e8b20382a0ed0accabc92d7a34f84344665cdab6fb1695a3029f9d861"
+  },
+  "final_integrity_verified_at": "2026-10-10T10:22:31.835947+00:00"
+}

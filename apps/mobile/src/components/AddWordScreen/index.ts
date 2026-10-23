@@ -1,4 +1,4 @@
-export { AddWordScreen } from './AddWordScreen'
+export { AddWordScreen } from './FollowingAddWordScreen'
 export type {
   AnalysisResult,
   WordInputSectionProps,

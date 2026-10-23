@@ -220,7 +220,7 @@ function ReanalyzeWordForm({
   collectionId,
   wordId,
 }: {
-  contentVersion?: number
+  contentVersion?: number | string
   collectionId: string
   wordId: string
 }) {
@@ -264,7 +264,7 @@ export function WordManagementForms({
   moveTargets,
   wordId,
 }: {
-  contentVersion?: number
+  contentVersion?: number | string
   canUseAi: boolean
   collectionId: string
   moveTargets: CollectionOption[]

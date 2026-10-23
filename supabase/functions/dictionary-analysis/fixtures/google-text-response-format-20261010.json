@@ -1,0 +1,25 @@
+{
+  "source": "https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta",
+  "revision": "20261010",
+  "TextResponseFormat": {
+    "properties": {
+      "mimeType": {
+        "enumDescriptions": [
+          "Default value. This value is unused.",
+          "JSON output format.",
+          "Plain text output format."
+        ],
+        "description": "Optional. The MIME type of the text output.",
+        "type": "string",
+        "enum": ["MIME_TYPE_UNSPECIFIED", "APPLICATION_JSON", "TEXT_PLAIN"]
+      },
+      "schema": {
+        "type": "any",
+        "description": "Optional. The JSON schema that the output should conform to. Only applicable when mime_type is APPLICATION_JSON."
+      }
+    },
+    "id": "TextResponseFormat",
+    "description": "Configuration for text output format.",
+    "type": "object"
+  }
+}

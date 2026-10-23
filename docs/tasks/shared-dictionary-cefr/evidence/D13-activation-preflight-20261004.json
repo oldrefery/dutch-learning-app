@@ -1,0 +1,73 @@
+{
+  "authorization": "AUTH-27",
+  "status": "preflight_and_exact_local_rehearsal_passed_waiting_for_supabase_cli_login",
+  "project_ref": "josxavjbcjbcjgulwcyy",
+  "backup": {
+    "path": "builds/d13-activation-backup.87qvcan2",
+    "sha256": "9880ab9f5caf5fe07b2344b3a671eb0ad92d06f490e594e9f4fbe19075ed4443",
+    "bytes": 27476336,
+    "tables": 79,
+    "rows": 24259,
+    "restore": {
+      "tables": 79,
+      "rows": 24259,
+      "all_match": true
+    }
+  },
+  "delta": {
+    "\"public\".\"words\"": {
+      "old_rows": 5987,
+      "new_rows": 5988,
+      "added": 1,
+      "removed": 0,
+      "modified": 0,
+      "changed_fields": {},
+      "cohorts": {}
+    },
+    "\"public\".\"collections\"": {
+      "old_rows": 70,
+      "new_rows": 70,
+      "added": 0,
+      "removed": 0,
+      "modified": 1,
+      "changed_fields": {
+        "updated_at": 1
+      },
+      "cohorts": {
+        "P1": 1
+      }
+    },
+    "\"public\".\"word_analysis_cache\"": {
+      "old_rows": 2910,
+      "new_rows": 2911,
+      "added": 1,
+      "removed": 0,
+      "modified": 0,
+      "changed_fields": {},
+      "cohorts": {}
+    },
+    "\"public\".\"edge_function_rate_limits\"": {
+      "old_rows": 7,
+      "new_rows": 7,
+      "kind": "ephemeral rate-limit counter table"
+    }
+  },
+  "learning_function_contracts_unchanged": 14,
+  "deployed_migration_hashes_verified": 9,
+  "proposal_sha256": "4d54ba82661604b7b5f0e70d2126b988daadaeb8ccb370e4c19192b6c713166d",
+  "exact_publication_rehearsal": {
+    "batches": 83,
+    "result": {
+      "entries": 2053,
+      "sources": 2053,
+      "mappings": 2053,
+      "assessments": 0,
+      "linked_words": 0
+    },
+    "container_removed": true
+  },
+  "production_writes": 0,
+  "store_submissions": 0,
+  "temporary_credential_removed": true,
+  "next_action": "After owner login, read-only verify Supabase project and gemini-handler deployment access, then resume AUTH-27 exact publication and coordinated activation; do not repeat completed builds, migrations or local rehearsal."
+}

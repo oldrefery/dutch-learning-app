@@ -2,9 +2,11 @@ import assert from 'node:assert/strict'
 import { spawn, execFileSync } from 'node:child_process'
 import {
   cp,
+  access,
   mkdir,
   mkdtemp,
   readFile,
+  readdir,
   rm,
   symlink,
   writeFile,
@@ -18,25 +20,51 @@ import { chromium } from 'playwright'
 import {
   startFixtureBackend,
   createFixture,
+  createFollowingFixture,
   PUBLIC_KEY,
 } from './fixture-backend.mjs'
 import { installBrowserProbe, readBrowserMetrics } from './browser-probe.mjs'
+import { qualifyFollowingRecovery } from './following-recovery.mjs'
+import { connectServerProfiler, startCpuProfiles } from './cpu-profile.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
+const following = process.argv.includes('--following')
+const recovery = process.argv.includes('--recovery')
+const cpuProfile = process.argv.includes('--profile')
 const dictionary = process.argv.includes('--dictionary')
-const modes = dictionary ? ['snapshot', 'dictionary'] : ['legacy', 'snapshot']
+const modes = following
+  ? ['snapshot', 'following']
+  : dictionary
+    ? ['snapshot', 'dictionary']
+    : ['legacy', 'snapshot']
+const fixtureFor = following ? createFollowingFixture : createFixture
 const smoke = process.argv.includes('--smoke')
 const core = process.argv.includes('--core')
 assert.ok(
   process.argv
     .slice(2)
-    .every(arg => ['--smoke', '--core', '--dictionary'].includes(arg)),
+    .every(arg =>
+      [
+        '--smoke',
+        '--core',
+        '--dictionary',
+        '--following',
+        '--recovery',
+        '--profile',
+      ].includes(arg)
+    ),
   'Unknown benchmark option'
 )
 assert.ok(!(smoke && core), 'Choose smoke or core, not both')
+assert.ok(!recovery || following, 'Recovery requires following fixtures')
+assert.ok(
+  !cpuProfile || (following && !smoke && !core && !recovery),
+  'Profiling requires standalone following mode'
+)
 const AUTO_PREFETCH = 'auto-prefetch'
 const runs = Number(
-  process.env.WEB_PERF_RUNS ?? (smoke ? 1 : dictionary ? 10 : 5)
+  process.env.WEB_PERF_RUNS ??
+    (cpuProfile ? 3 : smoke ? 1 : dictionary || following ? 10 : 5)
 )
 assert.ok(
   Number.isInteger(runs) && runs >= 1 && runs <= 50,
@@ -53,8 +81,9 @@ const allScenarios = smoke
       { words: 5000, events: 5000, selected: 5000 },
       { words: 5000, events: 5000, selected: 20 },
     ]
-const scenarios =
-  dictionary && !smoke
+const scenarios = cpuProfile
+  ? allScenarios.filter(scenario => scenario.words === 5000)
+  : dictionary && !smoke
     ? [
         { words: 500, events: 501, selected: 500 },
         { words: 2500, events: 501, selected: 2500 },
@@ -63,13 +92,13 @@ const scenarios =
       ? allScenarios.filter(scenario => scenario.words >= 2500)
       : allScenarios
 const navigationKinds =
-  smoke || core || dictionary
+  smoke || core || dictionary || following
     ? ['cold', 'client']
     : ['cold', 'client', AUTO_PREFETCH, 'repeat']
 const output = join(
   root,
   'apps/web/output/performance/navigation',
-  `${Date.now()}-${cpuRate}x${smoke ? '-smoke' : ''}${core ? '-core' : ''}${dictionary ? '-dictionary' : ''}`
+  `${Date.now()}-${cpuRate}x${smoke ? '-smoke' : ''}${core ? '-core' : ''}${dictionary ? '-dictionary' : ''}${following ? '-following' : ''}${cpuProfile ? '-profile' : ''}`
 )
 await mkdir(output, { recursive: true })
 
@@ -106,19 +135,34 @@ function startProcess(args, cwd, env, log) {
 
 async function isolatedSource(directory) {
   const app = join(directory, 'apps/web')
+  const packageFile = 'package.json'
   await mkdir(app, { recursive: true })
-  for (const file of ['package.json', 'package-lock.json'])
+  for (const file of [packageFile, 'package-lock.json'])
     await cp(join(root, file), join(directory, file))
   for (const file of [
     'src',
     'public',
-    'package.json',
+    packageFile,
     'tsconfig.json',
     'jest.setup.ts',
     'next.config.ts',
     'postcss.config.mjs',
   ]) {
     await cp(join(root, 'apps/web', file), join(app, file), { recursive: true })
+  }
+  for (const name of await readdir(join(root, 'packages'))) {
+    for (const file of ['src', packageFile, 'tsconfig.json']) {
+      const source = join(root, 'packages', name, file)
+      try {
+        await access(source)
+      } catch (error) {
+        if (error.code === 'ENOENT') continue
+        throw error
+      }
+      await cp(source, join(directory, 'packages', name, file), {
+        recursive: true,
+      })
+    }
   }
   await symlink(join(root, 'node_modules'), join(directory, 'node_modules'))
   await symlink(join(root, 'apps/web/node_modules'), join(app, 'node_modules'))
@@ -165,14 +209,16 @@ async function measure(
   pair
 ) {
   const id = `${scenario.words}-${scenario.events}-${scenario.selected}-${navigation}-${pair}-${mode}`
-  backend.configure(createFixture(scenario), mode, `${id}-setup`)
+  backend.configure(fixtureFor(scenario), mode, `${id}-setup`)
   const context = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
+    colorScheme: 'light',
     serviceWorkers: 'block',
   })
   const unexpected = []
   const errors = []
   const prefetchRequests = []
+  let stopProfiles = async () => {}
   await context.route('**/*', route => {
     const request = route.request()
     const url = new URL(request.url())
@@ -240,13 +286,20 @@ async function measure(
       navigation === 'cold'
         ? null
         : await page.evaluate(() => performance.timeOrigin)
-    backend.configure(createFixture(scenario), mode, id)
+    backend.configure(fixtureFor(scenario), mode, id)
+    stopProfiles = await startCpuProfiles(
+      context,
+      page,
+      serverProfilers.get(appUrl),
+      pair
+    )
     if (navigation === 'cold')
       await page.goto(`${appUrl}/app/review`, { waitUntil: 'commit' })
     else await primaryNavigation.getByTitle('Review', { exact: true }).click()
     await page.waitForFunction(() => window.__reviewPerformance.done, null, {
       timeout: 30000,
     })
+    await stopProfiles(join(output, id))
     await page.waitForLoadState('networkidle')
     await backend.drain()
     const metrics = await page.evaluate(readBrowserMetrics)
@@ -266,6 +319,23 @@ async function measure(
     assert.equal(errors.length, 0, JSON.stringify(errors))
     assert.equal(unexpected.length, 0, 'Browser attempted a non-fixture origin')
     assert.equal(backend.errors.length, 0, JSON.stringify(backend.errors))
+    if (mode === 'following') {
+      assert.equal(
+        backend.requests.filter(r =>
+          r.path.endsWith('/get_web_review_snapshot_v3')
+        ).length,
+        1
+      )
+      assert.equal(
+        backend.requests.filter(r =>
+          r.path.endsWith('/get_dictionary_effective_content_v2')
+        ).length,
+        0
+      )
+      assert.ok(
+        await page.getByText('A1 · reviewed', { exact: true }).isVisible()
+      )
+    }
     if (mode === 'dictionary') {
       assert.equal(
         backend.requests.filter(request =>
@@ -322,6 +392,7 @@ async function measure(
     )
     throw error
   } finally {
+    await stopProfiles(join(output, `${id}-failed`))
     await context.close()
     await backend.drain()
   }
@@ -357,6 +428,7 @@ let backend
 let server
 let dictionaryServer
 let browser
+const serverProfilers = new Map()
 try {
   backend = await startFixtureBackend({ latencyMs })
   const appUrl = `http://127.0.0.1:${await availablePort()}`
@@ -383,19 +455,40 @@ try {
   )
   const buildCode = await build.finished
   assert.equal(buildCode, 0, build.text())
+  if (cpuProfile) {
+    // Retain symbols from the exact diagnostic build before its private checkout is removed.
+    await cp(join(app, '.next/server'), join(output, 'symbols/server'), {
+      recursive: true,
+    })
+    await cp(join(app, '.next/static'), join(output, 'symbols/static'), {
+      recursive: true,
+    })
+  }
   server = startProcess(
-    [next, 'start', '--hostname', '127.0.0.1', '--port', new URL(appUrl).port],
+    [
+      ...(cpuProfile ? ['--inspect=127.0.0.1:0'] : []),
+      next,
+      'start',
+      '--hostname',
+      '127.0.0.1',
+      '--port',
+      new URL(appUrl).port,
+    ],
     app,
     env,
     join(output, 'server.log')
   )
   await waitForServer(appUrl, server)
-  const dictionaryUrl = dictionary
-    ? `http://127.0.0.1:${await availablePort()}`
-    : appUrl
-  if (dictionary) {
+  if (cpuProfile)
+    serverProfilers.set(appUrl, await connectServerProfiler(server))
+  const dictionaryUrl =
+    dictionary || following
+      ? `http://127.0.0.1:${await availablePort()}`
+      : appUrl
+  if (dictionary || following) {
     dictionaryServer = startProcess(
       [
+        ...(cpuProfile ? ['--inspect=127.0.0.1:0'] : []),
         next,
         'start',
         '--hostname',
@@ -404,12 +497,44 @@ try {
         new URL(dictionaryUrl).port,
       ],
       app,
-      { ...env, DICTIONARY_CONTENT_ENABLED: 'true' },
+      {
+        ...env,
+        DICTIONARY_CONTENT_ENABLED: 'true',
+        ...(following ? { DICTIONARY_FOLLOWING_ENABLED: 'true' } : {}),
+      },
       join(output, 'dictionary-server.log')
     )
     await waitForServer(dictionaryUrl, dictionaryServer)
+    if (cpuProfile)
+      serverProfilers.set(
+        dictionaryUrl,
+        await connectServerProfiler(dictionaryServer)
+      )
   }
   browser = await chromium.launch()
+  if (recovery) {
+    const recoveryRuns = []
+    for (const theme of ['light', 'dark']) {
+      recoveryRuns.push(
+        await qualifyFollowingRecovery(
+          browser,
+          backend,
+          dictionaryUrl,
+          output,
+          theme
+        )
+      )
+    }
+    const result = {
+      runs: recoveryRuns,
+      passed: recoveryRuns.reduce((total, run) => total + run.passed, 0),
+    }
+    await writeFile(
+      join(output, 'recovery.json'),
+      JSON.stringify(result, null, 2)
+    )
+    console.log(`Recovery: ${result.passed} checks passed`)
+  }
   const metadata = {
     commit: execFileSync('git', ['rev-parse', 'HEAD'], {
       cwd: root,
@@ -422,8 +547,10 @@ try {
     createdAt: new Date().toISOString(),
     runs,
     dictionary,
+    following,
     profile: smoke ? 'smoke' : core ? 'core' : 'full',
     cpuRate,
+    cpuProfile,
     latencyMs,
     caveats: [
       'Synthetic loopback upstream; not production network, SQL or authentication performance.',
@@ -442,7 +569,7 @@ try {
       await measure(
         browser,
         backend,
-        mode === 'dictionary' ? dictionaryUrl : appUrl,
+        ['dictionary', 'following'].includes(mode) ? dictionaryUrl : appUrl,
         scenarios[0],
         mode,
         'cold',
@@ -459,7 +586,9 @@ try {
             await measure(
               browser,
               backend,
-              mode === 'dictionary' ? dictionaryUrl : appUrl,
+              ['dictionary', 'following'].includes(mode)
+                ? dictionaryUrl
+                : appUrl,
               scenario,
               mode,
               navigation,
@@ -477,6 +606,7 @@ try {
   console.log(`Results: ${output}`)
 } finally {
   await browser?.close()
+  for (const profiler of serverProfilers.values()) await profiler.close()
   if (dictionaryServer) {
     dictionaryServer.child.kill('SIGTERM')
     await dictionaryServer.finished

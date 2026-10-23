@@ -1,3 +1,4 @@
+import { useShallow } from 'zustand/react/shallow'
 import React, { useState, useRef, useCallback } from 'react'
 import {
   FlatList,
@@ -27,7 +28,6 @@ import {
 } from '@/styles/CollectionsScreen.styles'
 import type { Collection } from '@/types/database'
 import { calculateStreak } from '@/utils/streakUtils'
-import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 import { isDueOnLocalDate } from '@/utils/dateUtils'
 import { isMasteredWord } from '@/utils/reviewInsights'
 import { GlassHeaderDefaults } from '@/constants/GlassConstants'
@@ -71,9 +71,24 @@ export default function CollectionsScreen() {
     userAccessLevel,
     fetchWords,
     fetchCollections,
-  } = useApplicationStore()
-
-  const { refreshCount } = useReviewWordsCount()
+  } = useApplicationStore(
+    useShallow(state => ({
+      collections: state.collections,
+      collectionsLoading: state.collectionsLoading,
+      words: state.words,
+      wordsLoading: state.wordsLoading,
+      error: state.error,
+      clearError: state.clearError,
+      deleteCollection: state.deleteCollection,
+      renameCollection: state.renameCollection,
+      shareCollection: state.shareCollection,
+      getCollectionShareStatus: state.getCollectionShareStatus,
+      unshareCollection: state.unshareCollection,
+      userAccessLevel: state.userAccessLevel,
+      fetchWords: state.fetchWords,
+      fetchCollections: state.fetchCollections,
+    }))
+  )
 
   const handleCollectionPress = (collection: Collection) => {
     router.push(ROUTES.COLLECTION_DETAIL(collection.collection_id))
@@ -188,11 +203,11 @@ export default function CollectionsScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     try {
-      await Promise.all([refreshCount(), fetchWords(), fetchCollections()])
+      await Promise.all([fetchWords(), fetchCollections()])
     } finally {
       setRefreshing(false)
     }
-  }, [refreshCount, fetchWords, fetchCollections])
+  }, [fetchWords, fetchCollections])
 
   const handleShareCollection = async (collectionId: string) => {
     try {

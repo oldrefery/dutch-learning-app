@@ -22,6 +22,20 @@ export interface ReviewPreparationOptions {
 
 const cloneWord = (word: ReviewWord): ReviewWord => ({
   ...word,
+  ...(word.dictionary
+    ? {
+        dictionary: {
+          ...word.dictionary,
+          reference: word.dictionary.reference
+            ? { ...word.dictionary.reference }
+            : null,
+          ...(word.dictionary.availableRevision
+            ? { availableRevision: { ...word.dictionary.availableRevision } }
+            : {}),
+          cefr: { ...word.dictionary.cefr },
+        },
+      }
+    : {}),
   translations: JSON.parse(
     JSON.stringify(word.translations)
   ) as ReviewWord['translations'],

@@ -1,3 +1,4 @@
+import { DictionaryModeReconciliationRequiredError } from '@/db/dictionaryModeReconciliationRepository'
 import { dictionaryImportRecoverySync } from '../dictionaryImportRecoverySync'
 import { dictionaryImportDeliveryRepository } from '@/db/dictionaryImportDeliveryRepository'
 /**
@@ -648,12 +649,74 @@ describe('SyncManager', () => {
       expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
     })
 
+    it.each(['unavailable', 'network failure'])(
+      'delivers learning while dictionary capability has %s without private snapshot writes',
+      async failure => {
+        const previous = process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+        process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+        if (failure === 'network failure')
+          jest
+            .mocked(dictionaryContentSync.isAvailable)
+            .mockRejectedValueOnce(new Error('Dictionary network failure'))
+        else
+          jest
+            .mocked(dictionaryContentSync.isAvailable)
+            .mockResolvedValueOnce(false)
+        jest.mocked(wordRepository.getPendingSyncWords).mockResolvedValue([
+          {
+            ...createMockWord({ word_id: 'deferred-word', user_id: userId }),
+            deleted_at: null,
+            last_sync_attempt_at: null,
+            synced_at: null,
+            register: null,
+            sync_status: 'pending' as const,
+          },
+        ])
+        try {
+          const result = await syncManager.performSync(userId)
+          expect(result.success).toBe(false)
+          expect(result.error).toContain('Dictionary')
+          expect(dictionaryContentSync.isAvailable).toHaveBeenCalledWith(userId)
+          expect(
+            reviewEventRepository.getPendingSyncEvents
+          ).toHaveBeenCalledWith(userId, 500)
+          expect(
+            progressRepository.getPendingSyncProgress
+          ).toHaveBeenCalledWith(userId)
+          expect(wordRepository.getPendingSyncWords).not.toHaveBeenCalled()
+          expect(dictionaryContentSync.push).not.toHaveBeenCalled()
+          expect(wordRepository.markWordsSynced).not.toHaveBeenCalled()
+          expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+        } finally {
+          if (previous === undefined)
+            delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+          else process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = previous
+        }
+      }
+    )
+
     it('keeps learning queues flowing but reports a retained content conflict', async () => {
       jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
       jest
         .mocked(dictionaryContentSync.push)
         .mockRejectedValue(
           new DictionaryContentConflictError('Resolve the content conflict')
+        )
+      const result = await syncManager.performSync(userId)
+      expect(reviewEventRepository.getPendingSyncEvents).toHaveBeenCalledWith(
+        userId,
+        500
+      )
+      expect(result).toMatchObject({ success: false, dictionaryConflict: true })
+      expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+    })
+
+    it('reports a mode return as an actionable content conflict while learning continues', async () => {
+      jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
+      jest
+        .mocked(dictionaryContentSync.pullRequired)
+        .mockRejectedValue(
+          new DictionaryModeReconciliationRequiredError('word')
         )
       const result = await syncManager.performSync(userId)
       expect(reviewEventRepository.getPendingSyncEvents).toHaveBeenCalledWith(
@@ -2248,6 +2311,54 @@ describe('SyncManager', () => {
       expect(result.success).toBe(false)
       expect(result.error).toBe('SQLite event apply failed')
       expect(networkUtils.setSyncCursor).not.toHaveBeenCalled()
+    })
+
+    it('acknowledges a queued review while dictionary capability is unavailable', async () => {
+      const previous = process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+      process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+      jest
+        .mocked(dictionaryContentSync.isAvailable)
+        .mockResolvedValueOnce(false)
+      const eventId = 'event-without-dictionary'
+      const event = {
+        ...createRemoteReviewEvent({ event_id: eventId }),
+        assessment: 'good' as const,
+        review_mode: 'recognition' as const,
+        local_sequence: 1,
+        created_at: null,
+        sync_status: 'pending' as const,
+        last_sync_attempt_at: null,
+        synced_at: null,
+      }
+      const upsert = createUpsertMock()
+      installReviewEventTable(
+        createReviewEventTable(createWordsPullQuery(), upsert)
+      )
+      jest
+        .mocked(reviewEventRepository.getPendingSyncEvents)
+        .mockResolvedValueOnce([event])
+      try {
+        const result = await syncManager.performSync(userId)
+        expect(result).toMatchObject({
+          success: false,
+          error: 'Dictionary content protocol is unavailable',
+        })
+        expect(upsert).toHaveBeenCalledWith(
+          [expect.objectContaining({ event_id: eventId })],
+          { onConflict: 'event_id' }
+        )
+        expect(
+          reviewEventRepository.reconcilePushedEvents
+        ).toHaveBeenCalledWith(userId, [
+          { event_id: eventId, created_at: SERVER_TIMESTAMP },
+        ])
+        expect(dictionaryContentSync.push).not.toHaveBeenCalled()
+        expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+      } finally {
+        if (previous === undefined)
+          delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+        else process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = previous
+      }
     })
 
     it('retries an offline event with an idempotent upsert', async () => {

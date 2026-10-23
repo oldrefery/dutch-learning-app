@@ -3,7 +3,14 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Check, Headphones, Volume2, X } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { useWebSettings } from '@/features/settings/useWebSettings'
@@ -18,6 +25,10 @@ import { useReviewKeyboard } from './useReviewKeyboard'
 import { useAudioReviewPlayback } from './useAudioReviewPlayback'
 import { useReviewSession } from './useReviewSession'
 import { ReviewDetailCache } from './review-detail-cache'
+import {
+  deserializeReviewWorkspace,
+  type SerializedReviewWorkspaceData,
+} from './review-serialization'
 import type {
   ReviewAssessment,
   ReviewScope,
@@ -100,7 +111,7 @@ function AccountReviewWorkspace({
   initialCollectionId,
   initialScope,
   userId,
-}: ReviewWorkspaceProps) {
+}: Omit<ReviewWorkspaceProps, 'data'> & { data: ReviewWorkspaceData }) {
   const router = useRouter()
   const [refreshingDictionary, startRefresh] = useTransition()
   const refreshDictionary = useCallback(
@@ -120,6 +131,7 @@ function AccountReviewWorkspace({
   const { play: playAudio, stop: stopAudio } = useAudioReviewPlayback()
   const { isHydrated, settings, update } = useWebSettings(userId)
   const appliedPreferencesRef = useRef(false)
+  const [preferencesApplied, setPreferencesApplied] = useState(false)
   const setSessionCollectionId = session.setCollectionId
   const setSessionMode = session.setMode
   const setManualRecognition = session.setManualRecognition
@@ -157,6 +169,7 @@ function AccountReviewWorkspace({
     ) {
       setSessionCollectionId(settings.lastSelectedCollectionId)
     }
+    setPreferencesApplied(true)
   }, [
     data.collections,
     initialCollectionId,
@@ -221,6 +234,7 @@ function AccountReviewWorkspace({
         <label className={styles.manualPreference}>
           <input
             type="checkbox"
+            disabled={!preferencesApplied}
             checked={session.manualRecognition}
             onChange={event => {
               session.setManualRecognition(event.target.checked)
@@ -233,6 +247,7 @@ function AccountReviewWorkspace({
           Off: correct answers are saved as Good and advance automatically.
         </p>
         <ReviewSetup
+          ready={preferencesApplied}
           adaptiveReviewEnabled={settings.adaptiveReviewEnabled}
           collectionId={session.collectionId}
           collections={data.collections}
@@ -396,12 +411,16 @@ function AccountReviewWorkspace({
 
 interface ReviewWorkspaceProps {
   canUseAi: boolean
-  data: ReviewWorkspaceData
+  data: ReviewWorkspaceData | SerializedReviewWorkspaceData
   initialCollectionId: string | null
   initialScope: ReviewScope
   userId: string
 }
 
 export function ReviewWorkspace(props: ReviewWorkspaceProps) {
-  return <AccountReviewWorkspace key={props.userId} {...props} />
+  const data = useMemo(
+    () => deserializeReviewWorkspace(props.data),
+    [props.data]
+  )
+  return <AccountReviewWorkspace key={props.userId} {...props} data={data} />
 }

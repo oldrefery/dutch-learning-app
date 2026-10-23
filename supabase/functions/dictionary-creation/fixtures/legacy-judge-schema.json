@@ -1,0 +1,113 @@
+{
+  "analysis_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "content": {
+        "additionalProperties": false,
+        "properties": {
+          "anchor_sha256": {
+            "type": "string"
+          },
+          "checks": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "anchor_quote": {
+                  "type": "string"
+                },
+                "dimension": {
+                  "enum": [
+                    "translations-en",
+                    "translations-ru",
+                    "examples",
+                    "related-words",
+                    "notes",
+                    "grammar"
+                  ],
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "verdict": {
+                  "enum": ["preserved", "contradicted", "uncertain"],
+                  "type": "string"
+                }
+              },
+              "required": ["dimension", "verdict", "reason", "anchor_quote"],
+              "type": "object"
+            },
+            "maxItems": 6,
+            "minItems": 6,
+            "type": "array"
+          },
+          "content_sha256": {
+            "type": "string"
+          },
+          "decision": {
+            "enum": ["same-meaning", "different-meaning", "uncertain"],
+            "type": "string"
+          },
+          "result_sha256": {
+            "type": "string"
+          },
+          "schema_version": {
+            "enum": [1],
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schema_version",
+          "anchor_sha256",
+          "content_sha256",
+          "result_sha256",
+          "decision",
+          "checks"
+        ],
+        "type": "object"
+      }
+    },
+    "required": ["content"],
+    "type": "object"
+  },
+  "legacy_policy_sha256": "b9c2515d5fbaebbc25f798292a9cae62a4780b96993de940fbfc6da529a7f827",
+  "legacy_prompt_sha256": "868b88a80fccf82cd0c50b074a16be861b133f63bb24f796c23d64a6d2e071dd",
+  "cases": [
+    {
+      "id": "positive-1-1",
+      "dimensions": [
+        "translations-en",
+        "translations-ru",
+        "examples",
+        "related-words",
+        "notes",
+        "grammar"
+      ],
+      "expected_decision": "same-meaning"
+    },
+    {
+      "id": "positive-notes-1-1",
+      "dimensions": [
+        "translations-en",
+        "translations-ru",
+        "examples",
+        "related-words",
+        "notes",
+        "grammar"
+      ],
+      "expected_decision": "same-meaning"
+    },
+    {
+      "id": "positive-2-1",
+      "dimensions": [
+        "translations-en",
+        "translations-ru",
+        "translations-ru",
+        "related-words",
+        "notes",
+        "grammar"
+      ],
+      "expected_decision": "invalid"
+    }
+  ]
+}

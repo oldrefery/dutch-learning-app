@@ -1,5 +1,6 @@
 import { ReviewWorkspace } from '@/features/review/ReviewWorkspace'
 import { getReviewWorkspaceData } from '@/features/review/repository'
+import { serializeReviewWorkspace } from '@/features/review/review-serialization'
 import type { ReviewScope } from '@/features/review/types'
 import { requireAuthContext } from '@/lib/auth/session'
 
@@ -29,7 +30,7 @@ export default async function ReviewPage({
   return (
     <ReviewWorkspace
       canUseAi={auth.accessLevel === 'full_access'}
-      data={data}
+      data={serializeReviewWorkspace(data)}
       initialCollectionId={initialCollectionId}
       initialScope={getInitialScope(getQueryValue(query.scope))}
       userId={auth.userId}

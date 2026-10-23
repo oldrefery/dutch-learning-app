@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261003100000_add_dictionary_cefr_budget.sql.
+// Generated from local migrations through 20261011220000_bind_dictionary_observed_model_versions.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -987,6 +987,7 @@ export type Database = {
           conjugation: Json | null
           created_at: string
           deleted_at: string | null
+          dictionary_content_mode: string
           dictionary_entry_id: string | null
           dictionary_revision_id: string | null
           dutch_lemma: string
@@ -1025,6 +1026,7 @@ export type Database = {
           conjugation?: Json | null
           created_at?: string
           deleted_at?: string | null
+          dictionary_content_mode?: string
           dictionary_entry_id?: string | null
           dictionary_revision_id?: string | null
           dutch_lemma: string
@@ -1063,6 +1065,7 @@ export type Database = {
           conjugation?: Json | null
           created_at?: string
           deleted_at?: string | null
+          dictionary_content_mode?: string
           dictionary_entry_id?: string | null
           dictionary_revision_id?: string | null
           dutch_lemma?: string
@@ -1180,6 +1183,30 @@ export type Database = {
       }
     }
     Functions: {
+      accept_dictionary_analysis_v2: {
+        Args: { p_command: Json }
+        Returns: Json
+      }
+      accept_dictionary_creation_recovery_v2: {
+        Args: { p_command: Json }
+        Returns: Json
+      }
+      accept_dictionary_creation_v2: {
+        Args: { p_command: Json }
+        Returns: Json
+      }
+      accept_dictionary_independent_analysis_v2: {
+        Args: {
+          p_command: Json
+          p_media_url_prefixes: string[]
+          p_model: string
+          p_policy_sha256: string
+          p_prompt_sha256: string
+          p_semantic_model: string
+          p_version: string
+        }
+        Returns: Json
+      }
       account_dictionary_cefr_attempt_v1: {
         Args: {
           p_lease_token: string
@@ -1193,6 +1220,10 @@ export type Database = {
         Returns: Json
       }
       apply_dictionary_import_intent_v1: {
+        Args: { p_intent: Json }
+        Returns: Json
+      }
+      apply_dictionary_import_intent_v2: {
         Args: { p_intent: Json }
         Returns: Json
       }
@@ -1214,6 +1245,7 @@ export type Database = {
         }[]
       }
       cancel_dictionary_import_v1: { Args: { p_request: Json }; Returns: Json }
+      cancel_dictionary_import_v2: { Args: { p_request: Json }; Returns: Json }
       claim_dictionary_cefr_jobs_v1: {
         Args: { p_method_id: string }
         Returns: Json
@@ -1253,13 +1285,29 @@ export type Database = {
           word_id: string
         }[]
       }
+      dictionary_analysis_actor_v1: { Args: never; Returns: Json }
       dictionary_content_capability_v1: { Args: never; Returns: Json }
+      dictionary_content_capability_v2: { Args: never; Returns: Json }
       enqueue_dictionary_cefr_jobs_v1: {
         Args: { p_method_id: string }
         Returns: number
       }
       export_dictionary_collection_v1: {
         Args: { p_collection_id: string }
+        Returns: Json
+      }
+      export_dictionary_collection_v2: {
+        Args: { p_collection_id: string }
+        Returns: Json
+      }
+      fail_dictionary_creation_judgement_v1: {
+        Args: {
+          p_evidence_sha256: string
+          p_fence: string
+          p_input_sha256: string
+          p_known_failure: boolean
+          p_run: string
+        }
         Returns: Json
       }
       finish_dictionary_cefr_attempt_v1: {
@@ -1278,12 +1326,60 @@ export type Database = {
         Args: { p_run_id: string }
         Returns: Json
       }
+      get_dictionary_analysis_operation_v2: {
+        Args: { p_operation: string }
+        Returns: Json
+      }
+      get_dictionary_analysis_work_v1: {
+        Args: { p_actor: string; p_fence: string; p_operation: string }
+        Returns: Json
+      }
       get_dictionary_content_changes_v1: {
         Args: { p_after?: number; p_limit?: number }
         Returns: Json
       }
+      get_dictionary_content_changes_v2: {
+        Args: { p_after?: string; p_limit?: number }
+        Returns: Json
+      }
+      get_dictionary_creation_judgement_v1: {
+        Args: { p_fence: string; p_run: string }
+        Returns: Json
+      }
+      get_dictionary_creation_operation_v2: {
+        Args: { p_operation: string }
+        Returns: Json
+      }
+      get_dictionary_creation_work_v1: {
+        Args: { p_actor: string; p_operation: string }
+        Returns: Json
+      }
       get_dictionary_effective_content_v1: {
         Args: { p_word_ids?: string[] }
+        Returns: Json
+      }
+      get_dictionary_effective_content_v2: {
+        Args: { p_word_ids?: string[] }
+        Returns: Json
+      }
+      get_dictionary_entry_history_v2: {
+        Args: { p_before?: string; p_entry: string; p_limit?: number }
+        Returns: Json
+      }
+      get_dictionary_meaning_resolution_v2: {
+        Args: { p_resolution: string }
+        Returns: Json
+      }
+      get_dictionary_revision_diff_v2: {
+        Args: { p_entry: string; p_from: string; p_to: string }
+        Returns: Json
+      }
+      get_dictionary_revision_provenance_v2: {
+        Args: { p_revision_ids: string[] }
+        Returns: Json
+      }
+      get_dictionary_semantic_check_v1: {
+        Args: { p_actor: string; p_fence: string; p_operation: string }
         Returns: Json
       }
       get_official_dictionary_mapping_v1: {
@@ -1291,6 +1387,10 @@ export type Database = {
         Returns: Json
       }
       get_shared_dictionary_collection_v1: {
+        Args: { p_share_token: string }
+        Returns: Json
+      }
+      get_shared_dictionary_collection_v2: {
         Args: { p_share_token: string }
         Returns: Json
       }
@@ -1340,6 +1440,7 @@ export type Database = {
       }
       get_web_review_snapshot_v1: { Args: never; Returns: Json }
       get_web_review_snapshot_v2: { Args: never; Returns: Json }
+      get_web_review_snapshot_v3: { Args: never; Returns: Json }
       import_dictionary_copies_v1: {
         Args: { p_collection_id: string; p_contents: Json }
         Returns: {
@@ -1350,6 +1451,7 @@ export type Database = {
           conjugation: Json | null
           created_at: string
           deleted_at: string | null
+          dictionary_content_mode: string
           dictionary_entry_id: string | null
           dictionary_revision_id: string | null
           dutch_lemma: string
@@ -1402,6 +1504,7 @@ export type Database = {
           conjugation: Json | null
           created_at: string
           deleted_at: string | null
+          dictionary_content_mode: string
           dictionary_entry_id: string | null
           dictionary_revision_id: string | null
           dutch_lemma: string
@@ -1453,6 +1556,7 @@ export type Database = {
           conjugation: Json | null
           created_at: string
           deleted_at: string | null
+          dictionary_content_mode: string
           dictionary_entry_id: string | null
           dictionary_revision_id: string | null
           dutch_lemma: string
@@ -1500,6 +1604,7 @@ export type Database = {
           conjugation: Json | null
           created_at: string
           deleted_at: string | null
+          dictionary_content_mode: string
           dictionary_entry_id: string | null
           dictionary_revision_id: string | null
           dutch_lemma: string
@@ -1544,7 +1649,45 @@ export type Database = {
         Args: { cache_ttl_hours: number; created_at: string }
         Returns: boolean
       }
+      journal_dictionary_analysis_result_v1: {
+        Args: {
+          p_actor: string
+          p_fence: string
+          p_operation: string
+          p_provider_request_id: string
+          p_result: Json
+        }
+        Returns: Json
+      }
+      journal_dictionary_semantic_result_v1: {
+        Args: {
+          p_actor: string
+          p_fence: string
+          p_operation: string
+          p_provider_request_id: string
+          p_result: Json
+        }
+        Returns: Json
+      }
       learning_sync_protocol: { Args: never; Returns: number }
+      list_dictionary_analysis_operations_v2: {
+        Args: {
+          p_actor?: string
+          p_before_created_at?: string
+          p_before_operation?: string
+          p_limit?: number
+        }
+        Returns: Json
+      }
+      list_dictionary_rollbacks_v2: {
+        Args: {
+          p_before_audit?: string
+          p_before_created_at?: string
+          p_entry: string
+          p_limit?: number
+        }
+        Returns: Json
+      }
       persist_canonical_dictionary_analysis_v1: {
         Args: {
           p_cache_id?: string
@@ -1562,6 +1705,19 @@ export type Database = {
         Args: { p_pack_id: string; p_promoted_at: string; p_version: string }
         Returns: undefined
       }
+      publish_dictionary_analysis_v1: {
+        Args: {
+          p_actor: string
+          p_fence: string
+          p_operation: string
+          p_validation: string
+        }
+        Returns: Json
+      }
+      publish_dictionary_creation_v1: {
+        Args: { p_fence: string; p_run: string; p_validation: string }
+        Returns: Json
+      }
       publish_official_content_pack: {
         Args: {
           p_cefr_level: string
@@ -1576,6 +1732,107 @@ export type Database = {
       }
       read_dictionary_import_recovery_v1: {
         Args: { p_intent: Json }
+        Returns: Json
+      }
+      read_dictionary_import_recovery_v2: {
+        Args: { p_intent: Json }
+        Returns: Json
+      }
+      reconcile_dictionary_analysis_result_v1: {
+        Args: {
+          p_actor: string
+          p_evidence_sha256: string
+          p_fence: string
+          p_operation: string
+          p_result_sha256: string
+        }
+        Returns: Json
+      }
+      reconcile_dictionary_creation_judgement_v1: {
+        Args: {
+          p_evidence_sha256: string
+          p_fence: string
+          p_result_sha256: string
+          p_run: string
+        }
+        Returns: Json
+      }
+      reconcile_dictionary_creation_result_v1: {
+        Args: {
+          p_evidence_sha256: string
+          p_fence: string
+          p_result_sha256: string
+          p_run: string
+        }
+        Returns: Json
+      }
+      reconcile_dictionary_semantic_result_v1: {
+        Args: {
+          p_actor: string
+          p_evidence_sha256: string
+          p_fence: string
+          p_operation: string
+          p_result_sha256: string
+        }
+        Returns: Json
+      }
+      record_dictionary_analysis_failure_v1: {
+        Args: {
+          p_actor: string
+          p_evidence_sha256?: string
+          p_fence: string
+          p_operation: string
+          p_outcome: string
+        }
+        Returns: Json
+      }
+      record_dictionary_analysis_validation_v1: {
+        Args: {
+          p_actor: string
+          p_fence: string
+          p_operation: string
+          p_validation: Json
+        }
+        Returns: Json
+      }
+      record_dictionary_creation_failure_v1: {
+        Args: {
+          p_evidence_sha256: string
+          p_fence: string
+          p_input_sha256: string
+          p_known_failure: boolean
+          p_run: string
+        }
+        Returns: Json
+      }
+      record_dictionary_creation_judgement_v1: {
+        Args: {
+          p_fence: string
+          p_input_sha256: string
+          p_provider_request_id: string
+          p_result: Json
+          p_run: string
+        }
+        Returns: Json
+      }
+      record_dictionary_creation_result_v1: {
+        Args: {
+          p_fence: string
+          p_input_sha256: string
+          p_provider_request_id: string
+          p_result: Json
+          p_run: string
+        }
+        Returns: Json
+      }
+      record_dictionary_semantic_failure_v1: {
+        Args: {
+          p_actor: string
+          p_evidence_sha256: string
+          p_fence: string
+          p_operation: string
+          p_outcome: string
+        }
         Returns: Json
       }
       record_review_assessment: {
@@ -1599,6 +1856,15 @@ export type Database = {
         }[]
       }
       recover_dictionary_import_v1: { Args: { p_request: Json }; Returns: Json }
+      recover_dictionary_import_v2: { Args: { p_request: Json }; Returns: Json }
+      register_dictionary_creation_identity_v1: {
+        Args: { p_identity: Json }
+        Returns: string
+      }
+      request_dictionary_meaning_resolution_v2: {
+        Args: { p_request: Json }
+        Returns: Json
+      }
       reset_word_learning_progress: {
         Args: {
           p_collection_id?: string
@@ -1611,7 +1877,26 @@ export type Database = {
           word_id: string
         }[]
       }
+      resolve_dictionary_cache_references_v2: {
+        Args: { p_cache_ids: string[] }
+        Returns: Json
+      }
+      resolve_dictionary_meaning_request_v1: {
+        Args: {
+          p_actor: string
+          p_decision: string
+          p_identity: string
+          p_request_sha256: string
+          p_resolution: string
+        }
+        Returns: Json
+      }
       review_correction_protocol: { Args: never; Returns: number }
+      review_dictionary_creation_recovery_v2: {
+        Args: { p_request: Json }
+        Returns: Json
+      }
+      rollback_dictionary_entry_v2: { Args: { p_command: Json }; Returns: Json }
       settle_dictionary_cefr_job_v1: {
         Args: {
           p_attempt: number
@@ -1626,8 +1911,53 @@ export type Database = {
         }
         Returns: Json
       }
+      start_dictionary_analysis_dispatch_v1: {
+        Args: {
+          p_actor: string
+          p_fence: string
+          p_input_sha256: string
+          p_model: string
+          p_operation: string
+          p_provider: string
+        }
+        Returns: Json
+      }
       start_dictionary_cefr_run_v1: {
         Args: { p_policy_id: string; p_run_id: string }
+        Returns: Json
+      }
+      start_dictionary_creation_dispatch_v1: {
+        Args: { p_fence: string; p_run: string }
+        Returns: Json
+      }
+      start_dictionary_creation_judgement_v1: {
+        Args: { p_fence: string; p_run: string }
+        Returns: Json
+      }
+      start_dictionary_independent_analysis_dispatch_v1: {
+        Args: {
+          p_actor: string
+          p_fence: string
+          p_input_sha256: string
+          p_model: string
+          p_operation: string
+          p_policy_sha256: string
+          p_version: string
+        }
+        Returns: Json
+      }
+      start_dictionary_semantic_check_v1: {
+        Args: {
+          p_actor: string
+          p_content_sha256: string
+          p_fence: string
+          p_input_sha256: string
+          p_model: string
+          p_operation: string
+          p_policy_sha256: string
+          p_prompt_sha256: string
+          p_version: string
+        }
         Returns: Json
       }
       sync_user_access_levels: {
@@ -1656,6 +1986,10 @@ export type Database = {
       uuid_ns_oid: { Args: never; Returns: string }
       uuid_ns_url: { Args: never; Returns: string }
       uuid_ns_x500: { Args: never; Returns: string }
+      validate_dictionary_creation_v1: {
+        Args: { p_fence: string; p_run: string }
+        Returns: Json
+      }
       withdraw_official_content_pack: {
         Args: { p_pack_id: string }
         Returns: undefined

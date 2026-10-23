@@ -1,3 +1,4 @@
+import { requireLegacyWordAnalysis } from './actions'
 import { createClient } from '@/lib/supabase/client'
 import { recordAnalysisHistory } from '@/features/history/analysis-history'
 import {
@@ -6,6 +7,8 @@ import {
   getNextImageOffset,
 } from './analysis-client'
 import type { WordAnalysis } from './analysis-contract'
+
+jest.mock('./actions', () => ({ requireLegacyWordAnalysis: jest.fn() }))
 
 const mockInvoke = jest.fn()
 
@@ -32,7 +35,10 @@ const analysisResponse = {
 }
 
 describe('analysis client', () => {
-  beforeEach(() => mockInvoke.mockReset())
+  beforeEach(() => {
+    mockInvoke.mockReset()
+    jest.mocked(requireLegacyWordAnalysis).mockReset()
+  })
 
   test('analyzes a word and records successful history', async () => {
     mockInvoke.mockResolvedValue({ data: analysisResponse, error: null })
@@ -92,4 +98,17 @@ describe('analysis client', () => {
     )
     expect(recordAnalysisHistory).not.toHaveBeenCalled()
   })
+})
+
+test('refuses provider and image calls when the authoritative legacy guard rejects', async () => {
+  jest
+    .mocked(requireLegacyWordAnalysis)
+    .mockRejectedValue(new Error('Use shared meanings'))
+  await expect(analyzeWordWithAi('user-1', 'huis')).rejects.toThrow(
+    'Use shared meanings'
+  )
+  await expect(findWordImages({} as WordAnalysis)).rejects.toThrow(
+    'Use shared meanings'
+  )
+  expect(mockInvoke).not.toHaveBeenCalled()
 })

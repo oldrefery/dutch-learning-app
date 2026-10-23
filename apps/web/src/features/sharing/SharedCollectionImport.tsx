@@ -1,6 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import type { SharedDictionaryCollectionV2 } from '@woordenaar/domain'
+import { DictionaryFollowingTransferPanel } from './DictionaryFollowingTransferPanel'
 import { useActionState, useMemo, useState } from 'react'
 import { importSharedCollection } from './actions'
 import { INITIAL_SHARED_COLLECTION_IMPORT_STATE } from './form-state'
@@ -12,9 +15,42 @@ interface SharedCollectionImportProps {
   collections: SharedTargetCollection[]
   shareToken: string
   words: SharedCollectionPreviewWord[]
+  ownerId?: string
+  followingEnabled?: boolean
+  sharedCollection?: SharedDictionaryCollectionV2
 }
 
-export function SharedCollectionImport({
+export function SharedCollectionImport(props: SharedCollectionImportProps) {
+  const router = useRouter()
+  const source = useMemo(
+    () =>
+      props.sharedCollection
+        ? { shareToken: props.shareToken, original: props.sharedCollection }
+        : undefined,
+    [props.shareToken, props.sharedCollection]
+  )
+  if (props.followingEnabled) {
+    if (!props.ownerId || !props.sharedCollection)
+      return (
+        <p role="alert">
+          Reload this shared collection before preparing an import.
+        </p>
+      )
+    return (
+      <DictionaryFollowingTransferPanel
+        key={`${props.ownerId}:${props.shareToken}`}
+        ownerId={props.ownerId}
+        sharedSource={source}
+        collections={props.collections}
+        followingEnabled={props.followingEnabled}
+        onClose={() => router.push('/app/collections')}
+      />
+    )
+  }
+  return <LegacySharedCollectionImport {...props} />
+}
+
+function LegacySharedCollectionImport({
   collectionName,
   collections,
   shareToken,

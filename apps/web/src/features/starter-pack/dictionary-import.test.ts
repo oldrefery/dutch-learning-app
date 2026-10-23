@@ -76,3 +76,32 @@ it('keeps the existing legacy import when the feature is off', async () => {
   await importStarterPackEntries(client, 'owned', manifest, entries)
   expect(rpc.mock.calls[0][0]).toBe('import_words_to_collection')
 })
+
+const priorFollowingFlags = {
+  content: process.env.DICTIONARY_CONTENT_ENABLED,
+  following: process.env.DICTIONARY_FOLLOWING_ENABLED,
+  imports: process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED,
+}
+it('blocks the legacy RPC and private fallback when following imports are enabled', async () => {
+  process.env.DICTIONARY_CONTENT_ENABLED = 'true'
+  process.env.DICTIONARY_FOLLOWING_ENABLED = 'true'
+  process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED = 'true'
+  try {
+    await expect(
+      importStarterPackEntries(client, 'owned', manifest, entries)
+    ).resolves.toMatchObject({
+      error: { message: expect.stringContaining('saved shared') },
+    })
+    expect(rpc).not.toHaveBeenCalled()
+  } finally {
+    for (const [key, value] of Object.entries({
+      DICTIONARY_CONTENT_ENABLED: priorFollowingFlags.content,
+      DICTIONARY_FOLLOWING_ENABLED: priorFollowingFlags.following,
+      NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED:
+        priorFollowingFlags.imports,
+    })) {
+      if (value === undefined) delete process.env[key]
+      else process.env[key] = value
+    }
+  }
+})

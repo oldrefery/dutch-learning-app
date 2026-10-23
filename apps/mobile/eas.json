@@ -61,6 +61,20 @@
       "android": {
         "buildType": "apk"
       }
+    },
+    "dictionary-release": {
+      "extends": "production",
+      "env": {
+        "EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED": "true",
+        "EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED": "true",
+        "EXPO_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED": "true",
+        "EXPO_PUBLIC_DICTIONARY_SHARED_ANALYSIS_ENABLED": "true",
+        "WOORDENAAR_QA_BUILD": "false",
+        "EXPO_PUBLIC_E2E_TEST_MODE": "false",
+        "EXPO_PUBLIC_DEV_USER_EMAIL": "disabled@example.invalid",
+        "EXPO_PUBLIC_DEV_USER_ID": "00000000-0000-0000-0000-000000000000",
+        "EXPO_PUBLIC_DEV_USER_PASSWORD": "disabled"
+      }
     }
   },
   "submit": {
@@ -69,6 +83,13 @@
         "appleTeamId": "7FQ395U52U",
         "ascAppId": "6752469146"
       },
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
+      }
+    },
+    "dictionary-release": {
+      "extends": "production",
       "android": {
         "track": "internal",
         "releaseStatus": "draft"

@@ -40,6 +40,7 @@ jest.mock('@/services/dictionaryTransferService', () => ({
   exportOfflineDictionaryCollection: jest.fn(),
 }))
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: jest.fn(() => true),
 }))
 jest.mock('@/components/AppToast', () => ({
