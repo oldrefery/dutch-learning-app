@@ -84,3 +84,6 @@ debug-*.png
 .vercel/
 .env.local
 /design/
+
+# Local browser verification artifacts
+/.playwright-cli/

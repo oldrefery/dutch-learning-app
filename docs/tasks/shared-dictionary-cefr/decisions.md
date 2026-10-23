@@ -2030,3 +2030,57 @@ seed a new diagnostic pair, inspect allocation/GC deltas and actual lifecycle be
 Functional normal QA/database preserved and currently restored onphone; relay stopped.
 All six earlier unproven experiments remain reverted. No accepted matrix samples or exact
 original/repair native qualification. Fixed5/6 complete,1 remains;8 broad milestones.
+
+## AUTH-39 — D13A.8 release preparation only
+
+October23 owner instruction: proceed to D13A.8 and prepare the release packet and
+rollback plan; do not publish anything. GPT-6 Astra / High confirmed. This permits
+local source/evidence inventory, read-only target identity/artifact metadata, a local
+source archive, offline verification and documentation. Existing three commits are
+pushed through 0e706ee; that push is completed authority, not renewed publication scope.
+
+No production build, submission, update, merge, deployment, migration, runtime flag,
+profile/role grant, public dictionary publication, real-card apply/rollback or paid call
+is authorized. No new commit/push is implied. Previously consumed pilot approvals and
+unknown budget liabilities remain unchanged. Prepare concrete review material and stop
+before execution. Fresh backup/delta and exact operation approval remain separate gates.
+
+**AUTH-39 preparation checkpoint:** source/target/artifact inventory,coordinated release
+packet,selective rollback and fresh-backup/delta plan are prepared and verified offline.
+16 fail-closed checks pass; execution mode refuses. Read-only EAS identity/project/build
+metadata verified oldrefery. No publication,production mutation,paid call,new commit/push
+or source implementation occurred. D13A.8 is3/6 complete;3 steps remain. Future exact
+execution/build/paid/linking scope is still unapproved. The three earlier commits are
+already pushed; their authority is not reused for the new preparation files.
+
+## AUTH-40 — D13A.8.4 local runtime and build configuration
+
+October23 owner explicitly requests continuation at D13A.8.4: repair the creation
+function bootstrap and prepare new native build configuration; publish nothing.
+This permits local implementation, mocked/offline tests and updated review evidence.
+No remote build, submission, deployment, migration, enablement, paid request, real
+linking, commit or push is authorized. Main account remains protected. AUTH-39's
+source packet is historical after these source changes; preserve it and record the
+new delta separately. GPT-6 Astra / High remains owner-confirmed.
+
+**AUTH-40 outcome:** requested local runtime/configuration changes and validation complete.
+Production authority remains absent. New creation runtime defaults disabled and binds
+profile/prompt hashes; no secret or policy installed remotely. Native profile binds all
+features, rejects used85/mismatched versions/test flags, and retains draft Android
+submission. Actual build/version allocation is pending; no number was reserved.
+193 Edge/34 mobile checks,78 overlapping local-dependency checks and loopback startup
+pass; types/lint/format pass. No paid call or unknown-liability release. Source delta
+is local-only; original0e706ee release packet retained as historical and rejected for
+current source. D13A.8 remains3/6;3 fixed steps remain.
+
+## AUTH-41 — Commit completed preparation and finalize review inventory
+
+October23 owner requests a local commit first, exclusion of unnecessary generated
+files from Git, then continuation of D13A.8.4 with fresh build-number checks and
+a final review packet. This authorizes committing the completed local runtime,
+configuration, tests and preparation documentation, plus portable browser-artifact
+exclusion. Preserve ignored logs, QA data and private evidence; no cleanup/reset.
+Read-only personal store/EAS inventory and local review packaging are authorized.
+No push, remote build, upload/submission, publication, migration, live enablement,
+real-card operation or paid call is authorized. Existing budget liabilities remain
+held. Any free-number finding is time-bound, not a store reservation.

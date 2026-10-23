@@ -1603,3 +1603,31 @@ production latency remain outside this local qualification.
 The owner-required stop is honored. D13A.8 has not started. Seven broad milestones remain:
 D13.6,D13A.8,D13A.9,D14.1,D14.2,D14.3,D14.4. No paid/hosted/publication/migration/Git action;
 main account untouched; isolated QA apps/proxy/containers stopped with data retained.
+
+## October23 — D13A.8 release and rollback preparation
+
+Owner-authorized preparation only (AUTH-39),no publication. D13A.8 fixed3/6 checkpoints
+complete: source/qualification/target freeze,coordinated review packet and selective
+rollback/backup-delta plan with offline fail-closed validation. Three remain: final
+artifact/source/backup/delta/queue readiness plus exact approval,staged execution and
+production verification. Seven broad milestones remain including D13A.8;six excluding it.
+
+[Release plan](../tasks/shared-dictionary-cefr/evidence/D13A.8-release-plan-20261023.md),
+[rollback](../tasks/shared-dictionary-cefr/evidence/D13A.8-rollback-plan-20261023.md) and
+[machine packet](../tasks/shared-dictionary-cefr/evidence/D13A.8-release-packet-20261023.json)
+bind source0e706ee,1506 source pins,14 candidate migrations and current read-only EAS
+metadata. Sixteen validation/tamper checks pass; execution is refused. Ten explicit
+holds include the missing creation runtime entrypoint,unbound native flags,used build85,
+missing signed/rollback artifacts,fresh backup/delta/cohort review and absent production/
+paid authority. Current real-link ceiling0 preserves all historical2914 unresolved cards.
+No app runtime,production state,paid request or new Git publication changed.
+
+## October23 — D13A.8.4 local startup/configuration prerequisites
+
+AUTH-40 requested creation bootstrap and native build configuration are implemented
+and verified locally. See [review and remaining gates](../tasks/shared-dictionary-cefr/evidence/D13A.8.4-runtime-build-review-20261023.md).
+The source delta is not published or committed; prior packet remains historical.
+193 Edge/34 mobile checks,78 overlapping function-local tests and actual loopback
+startup pass. Actual versions remain2.4.0(85); new store allocation and final artifacts
+are pending. D13A.8 stays3/6 complete with3 fixed steps remaining and7 broad milestones
+including current. No new paid/build/release authority; D13A.9 observation has not begun.

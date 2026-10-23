@@ -1,3 +1,49 @@
+**2026-10-23 — D13A.8 release/rollback preparation complete; no execution.**
+
+Current checkpoint D13A.8.1–3 complete,3/6;3 steps remain. Seven broad milestones remain
+including current D13A.8,six excluding it. GPT-6 Astra / High owner-confirmed. AUTH-39
+permits preparation only. Source remains pushed0e706ee; new packet/docs are local-only.
+No new commit/push,production build/deployment/publication/migration/flag/role change,
+real linking,device mutation or paid call. Main account protected; QA stack stays stopped.
+
+Review [release plan](evidence/D13A.8-release-plan-20261023.md),
+[rollback plan](evidence/D13A.8-rollback-plan-20261023.md),
+[fresh backup/delta checklist](evidence/D13A.8-backup-delta-20261023.md),
+[packet](evidence/D13A.8-release-packet-20261023.json) and
+[verification receipt](evidence/D13A.8-preparation-review-20261023.json).
+Exact source archive2122files;1506production/test/tool pins;14 candidate additive
+migrations. Local review bundle and sanitized receipts are under
+reports/shared-dictionary-cefr/d13a8-release-prepare-20261023; raw EAS responses stay private.
+
+Read-only current EAS identity/project are oldrefery/@oldrefery/dutch-learning-app.
+Latest10build records still show existing2.4.0(85),not a store-number reservation. Parser
+source carry passes58902comparisons over5886inputs; original qualification packets stay
+unchanged and no new provider qualification is claimed. All16 packet/tamper checks pass;
+execution mode rejects. Ten execution holds remain explicit,including missing creation
+serve bootstrap,unbound native following flags,used85,missing final signed/rollback
+artifacts,fresh production backup/delta/queues,zero approved real links and no paid/
+production authority. Complete offline preparation does not close those release gates.
+
+Next D13A.8.4: resolve exact final source/artifact and operator readiness,then fresh
+backup/delta/cohort evidence and scoped operation approval. No execution is authorized
+by this handoff. Do not start D13A.9's observation clock before actual verified activation.
+
+**2026-10-23 — D13A.8 started: release and rollback preparation only (AUTH-39).**
+
+Orchestrated resume on clean feature/shared-dictionary-schema, pushed HEAD0e706ee.
+D13A.7 remains complete. Current scope is a local release packet, read-only inventories
+and rollback plan; no publication or production mutation. Recommended/owner-confirmed
+GPT-6 Astra / High. Six fixed D13A.8 checkpoints are now defined below; source/scope
+preparation is in progress. Seven broad milestones remain including current D13A.8.
+
+Initial holds: mobile profile lacks explicit following/import/shared-analysis bindings;
+dictionary-creation has an endpoint factory but no serve entrypoint; version/build85
+are already used. These must not be described as a deployable final artifact set.
+Historical2914-card inventory has0 approved links; keep real apply ceiling0 until new
+reviewed decisions and fresh queue/delta evidence. Read-only EAS identity is oldrefery;
+linked project inspection is in progress. See reports/shared-dictionary-cefr/
+d13a8-release-prepare-20261023. No production action or new source implementation.
+
 **2026-10-23 — Qualification changes committed locally.**
 
 The owner authorized local commits. Server/contracts/tools are committed in a0f7480;
@@ -6609,3 +6655,22 @@ native instruction-preserving QA derivatives, rebuild plain functional QA and re
 saved database. TestAndroid unavailable atlastADBcheck; clarification pending. Do not edit
 root/QA source or operate phone/relay while matrix runs. Fixed5/6complete,1left;8broadremain.
 Stop beforeD13A.8. No paid/hosted/Git operations.
+
+**2026-10-23 — D13A.8.4 requested runtime/configuration repairs complete locally.**
+
+AUTH-40 local scope is fulfilled: disabled-by-default creation serve/bootstrap,
+explicit model/version/policy/prompt bindings, function-local frozen dependencies,
+and native following/import/analysis flags with used-build85/test-mode rejection.
+Android dictionary submission now stays draft. No actual build number was allocated;
+version sources remain2.4.0(85). No hosted operation, paid call, device/account action,
+commit or push. Review [runtime/build addendum](evidence/D13A.8.4-runtime-build-review-20261023.md)
+and its JSON receipt.193 Edge tests,78 overlapping function-local tests,34 mobile
+config/release tests and real loopback startup pass; types/lint/format pass.
+
+Original0e706ee packet remains immutable historical evidence and correctly rejects
+this changed checkout. New source delta and logs are preserved under
+reports/shared-dictionary-cefr/d13a84-runtime-build-20261023. No native or semantic
+requalification is claimed. R01/R02 local defects are repaired; final artifact bindings,
+unused versions, fresh backup/delta/queues, policy/spending/operator readiness and exact
+execution authority remain open. D13A.8 is3/6 complete,3 fixed steps remain;7 broad
+milestones including current,6 excluding it. Next remains D13A.8.4, GPT-6 Astra / High.

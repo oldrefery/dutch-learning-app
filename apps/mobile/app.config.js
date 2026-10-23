@@ -14,6 +14,39 @@ export default () => {
     )
   }
 
+  if (buildProfile === 'dictionary-release') {
+    const iosBuild = appJson.expo.ios.buildNumber
+    const androidBuild = appJson.expo.android.versionCode
+    if (
+      !/^[1-9][0-9]*$/.test(iosBuild) ||
+      !Number.isSafeInteger(androidBuild) ||
+      Number(iosBuild) !== androidBuild ||
+      androidBuild <= 85 ||
+      androidBuild > 2100000000
+    ) {
+      throw new Error(
+        'dictionary-release requires matching new build numbers greater than 85; verify store availability before version preparation'
+      )
+    }
+    for (const key of [
+      'EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED',
+      'EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED',
+      'EXPO_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED',
+      'EXPO_PUBLIC_DICTIONARY_SHARED_ANALYSIS_ENABLED',
+    ]) {
+      if (process.env[key] !== 'true')
+        throw new Error(`dictionary-release requires ${key}=true`)
+    }
+    if (
+      process.env.WOORDENAAR_QA_BUILD !== 'false' ||
+      process.env.EXPO_PUBLIC_E2E_TEST_MODE !== 'false'
+    ) {
+      throw new Error(
+        'dictionary-release requires explicit production isolation'
+      )
+    }
+  }
+
   return {
     ...appJson.expo,
     extra: {

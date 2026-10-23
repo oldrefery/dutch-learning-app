@@ -66,6 +66,9 @@
       "extends": "production",
       "env": {
         "EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED": "true",
+        "EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED": "true",
+        "EXPO_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED": "true",
+        "EXPO_PUBLIC_DICTIONARY_SHARED_ANALYSIS_ENABLED": "true",
         "WOORDENAAR_QA_BUILD": "false",
         "EXPO_PUBLIC_E2E_TEST_MODE": "false",
         "EXPO_PUBLIC_DEV_USER_EMAIL": "disabled@example.invalid",
@@ -89,7 +92,7 @@
       "extends": "production",
       "android": {
         "track": "internal",
-        "releaseStatus": "completed"
+        "releaseStatus": "draft"
       }
     }
   }

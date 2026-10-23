@@ -5,8 +5,8 @@ import { createDictionaryCreationHandler } from './handler.ts'
 import { createCreationStore } from './store.ts'
 import type { CreationTransport } from './worker.ts'
 
-// No serve entrypoint, env reader, deployment or default paid transport. Local
-// tests inject fake HTTP/transport. Real transport/profile qualification is separate.
+// Explicit dependencies; the separately gated runtime owns environment loading.
+// Tests inject fake HTTP/transport. Real profile qualification is separate.
 export const createDictionaryCreationEndpoint = (options: {
   url: string
   anonKey: string
