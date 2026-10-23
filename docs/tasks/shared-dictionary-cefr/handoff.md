@@ -1,3 +1,42 @@
+**2026-10-24 — Quality job timeout diagnosed; bounded budget repair prepared.**
+
+PR123 HEAD bca2a84 passed database (659 tests and schema contract), browser
+fixtures (3 + 7 tests), lightweight checks and exact Vercel Preview. The quality
+job passed lint, typing, formatting, mobile tests and web coverage, then hit its
+30-minute total limit while mutation testing was still making progress:
+1404/1420 tested, 24 survived, zero individual timeouts. No final mutation score
+exists; edge tests, web build and Doctor were skipped. No merge occurred.
+
+Increase only the quality job budget to45 minutes to accommodate the measured
+22-minute mutation phase plus prerequisite and remaining checks. Test scope,
+90% mutation threshold, concurrency and protected branch requirements stay intact.
+Commit/push under AUTH-44 and require all checks for the new exact HEAD. Source
+archive bca2a84 remains historical; regenerate the integration manifest afterward.
+D13A.8 remains3/6 complete,3 fixed steps and6 other major milestones remain.
+
+**2026-10-24 — PR 123 fixes pushed; waiting for exact-head CI.**
+
+Current pushed HEAD: bca2a84833b5f927fe20d047eb5b465f2ee49aef. Commits a556edd
+and bca2a84 repair clean-checkout test prerequisites and give browser dependency
+installation 20 minutes after the Ubuntu mirror exceeded the former 10-minute
+job budget. Complete hooks pass 2732 mobile tests, 1252 web tests, 22 snapshots;
+one existing web skip remains. Focused SQLite and PostgreSQL suites each pass 21.
+
+Quality run 40030800759: database passed 659 tests and the schema contract;
+web-fixtures passed 3 browser and 7 navigation tests. Lightweight run 40030800520
+and exact bca2a84 Vercel Preview dpl_CXs3y3dkDrpxmYi6cGNnhvLhBZ6e passed.
+The quality job passed lint, typing, formatting and mobile/web Jest; mutation
+tests are still running, with edge tests, web build and Doctor pending. Earlier
+97a097f results do not qualify this HEAD. Do not merge until quality also passes.
+Then merge PR 123 without bypassing protection and verify actual Production.
+AUTH-44 allows Git integration and this web publication only. No additional
+native builds, stores, migrations, paid providers, flags or real linking.
+
+D13A.8 remains 3/6 complete: 3 fixed steps, 7 broad milestones including current
+(6 after). Source and fixes are pushed; this waiting checkpoint is local.
+Astra / High. Logs and read-only Vercel receipts remain under
+reports/shared-dictionary-cefr/d13a84-pr-20261023.
+
 **2026-10-23 — PR 123 clean-checkout CI repairs prepared.**
 
 Hosted Quality on 97a097f exposed a nonportable SQLite fixture: the test depended

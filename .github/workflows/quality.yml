@@ -75,7 +75,7 @@ jobs:
 
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       NEXT_PUBLIC_SITE_URL: https://woordenaar.app
       NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co

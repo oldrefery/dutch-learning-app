@@ -65,8 +65,9 @@ describe('workspace-aware staged linting', () => {
           '--print-config',
           path.join(repoRoot, file),
         ],
-        { cwd: repoRoot, encoding: 'utf8', timeout: 15_000 }
+        { cwd: repoRoot, encoding: 'utf8', timeout: 30_000 }
       )
+      expect(result.error).toBeUndefined()
       expect(result.status).toBe(0)
       const config = JSON.parse(result.stdout) as {
         rules: Record<string, unknown>

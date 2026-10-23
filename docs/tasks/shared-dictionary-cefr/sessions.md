@@ -6804,3 +6804,26 @@ system dependencies from the Ubuntu mirror; no browser tests had started. Extend
 only that job to 20 minutes, retaining all installation and test steps. The two
 code/environment repairs are committed as a556edd; their complete hooks pass
 2732 mobile and 1252 web tests with 22 snapshots and one existing web skip.
+
+**2026-10-24 — Quality job timeout diagnosed; bounded budget repair prepared.**
+
+PR123 HEAD bca2a84 passed database (659 tests and schema contract), browser
+fixtures (3 + 7 tests), lightweight checks and exact Vercel Preview. The quality
+job passed lint, typing, formatting, mobile tests and web coverage, then hit its
+30-minute total limit while mutation testing was still making progress:
+1404/1420 tested, 24 survived, zero individual timeouts. No final mutation score
+exists; edge tests, web build and Doctor were skipped. No merge occurred.
+
+Increase only the quality job budget to45 minutes to accommodate the measured
+22-minute mutation phase plus prerequisite and remaining checks. Test scope,
+90% mutation threshold, concurrency and protected branch requirements stay intact.
+Commit/push under AUTH-44 and require all checks for the new exact HEAD. Source
+archive bca2a84 remains historical; regenerate the integration manifest afterward.
+D13A.8 remains3/6 complete,3 fixed steps and6 other major milestones remain.
+
+The first timeout-repair commit was refused by normal hooks: both framework-config
+ESLint subprocesses exceeded15 seconds (status null). This repeats the earlier
+local cold-start timeout; the exact source previously passed hosted checks. Allow
+30 seconds for only those configuration subprocesses and assert result.error
+explicitly. Rule/config assertions and warning-fixture expectations are preserved.
+No hook bypass or successful commit is claimed before the normal retry completes.
