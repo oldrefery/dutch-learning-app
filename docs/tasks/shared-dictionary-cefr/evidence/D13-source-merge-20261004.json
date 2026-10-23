@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-04",
+  "authorization": "AUTH-25",
+  "pr": "https://github.com/oldrefery/dutch-learning-app/pull/122",
+  "state": "MERGED",
+  "head_commit": "f97a733407a4d2b37e8f9ca030ad9574de85a794",
+  "merge_commit": "44141e00bddfe00267314374bc33a7a0cf8fb4a2",
+  "merged_at": "2026-10-04T20:30:38Z",
+  "base_before_merge": "c5dfb14d49b9a53521b53e13bdd19991999ede5d",
+  "all_pr_checks": "success",
+  "merge_tree_equals_tested_head": true,
+  "merge_method": "merge",
+  "protection_bypassed": false,
+  "required_checks": ["quality", "database", "web-fixtures", "lint-e2e-tests"],
+  "quality_run": "https://github.com/oldrefery/dutch-learning-app/actions/runs/37230682302",
+  "hosted_validation": {
+    "mobile_suites": 156,
+    "mobile_tests": 1796,
+    "web_suites": 86,
+    "web_tests": 780,
+    "web_skipped_tests": 1,
+    "mutation_score": 96.58,
+    "mutation_threshold": 90,
+    "expo_doctor": "21/21"
+  },
+  "vercel": {
+    "project": "woordenaar-web",
+    "root_directory": "apps/web",
+    "production_branch": "main",
+    "dictionary_cefr_env_keys": [],
+    "production_deployment": "dpl_6BoPjhGd2GFiykayzsUv3uaiDUkk",
+    "state": "READY",
+    "production_target_matches": true,
+    "anonymous_public_page": {
+      "status": 200,
+      "final_url": "https://woordenaar.app/login?next=%2Fapp%2Fcollections",
+      "title": "De Woordenaar"
+    },
+    "checked_at": "2026-10-04T20:33:27.566543+00:00"
+  },
+  "functional_dictionary_release": "not_activated",
+  "native_distribution": "not_performed",
+  "personal_cards_linked": 0,
+  "cefr_worker": "OFF",
+  "persistence": "source merged remotely; this post-merge receipt and checkpoint are local-only"
+}

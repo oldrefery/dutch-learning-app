@@ -1,0 +1,116 @@
+{
+  "created_at": "2026-10-09T22:17:15.633924+00:00",
+  "status": "published-and-verified",
+  "source_base": "0a3bae137d3e58c406215114cbccadd773f71098",
+  "changed_files": [
+    "apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts",
+    "apps/mobile/src/db/dictionaryContentMapping.ts",
+    "apps/mobile/src/db/dictionaryContentRepository.ts",
+    "apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts",
+    "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+    "apps/mobile/src/services/dictionaryContentSync.ts",
+    "apps/mobile/src/services/syncStatusService.ts",
+    "apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts",
+    "packages/domain/src/shared-dictionary.ts",
+    "apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts"
+  ],
+  "dist_files": 61,
+  "source_files": 1623,
+  "runtime_checks": [
+    {
+      "mode": "candidate",
+      "platform": "ios",
+      "runtime": "94476f50e33e655576f1ef396170c5e29b38664e",
+      "expected": "94476f50e33e655576f1ef396170c5e29b38664e",
+      "match": true
+    },
+    {
+      "mode": "candidate",
+      "platform": "android",
+      "runtime": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4",
+      "expected": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4",
+      "match": true
+    }
+  ],
+  "bundle_checks": [
+    {
+      "platform": "ios",
+      "bundle": "_expo/static/js/ios/entry-963dd4d95c127f7749bc979d78b9ed2e.hbc",
+      "bundle_sha256": "2b8d85d0d7d3fb1f4fa031d1d0ebfafe17e27dfbde12cf31f277d902cdb4b92d",
+      "bundle_bytes": 6771124,
+      "source_map_sha256": "06923db5972e3fd48485f4f8809901b9fe22d21f8f55d71e90470ec8dfb00384",
+      "debug_id": "2a2474ec-c69f-4b4c-9c7f-954627d80268",
+      "asset_count": 45,
+      "checks": {
+        "hermes_magic": true,
+        "debug_id_in_bundle": true,
+        "old_dev_credentials_absent": true,
+        "supabase_url_present": true,
+        "supabase_anon_key_present": true,
+        "sentry_dsn_present": true,
+        "changed_runtime_sources_exact": true,
+        "dictionary_enabled_constant_true": true,
+        "private_parser_present": true,
+        "canonical_parser_present": true
+      },
+      "source_checks": {
+        "packages/domain/src/shared-dictionary.ts": true,
+        "apps/mobile/src/services/dictionaryContentSync.ts": true,
+        "apps/mobile/src/db/dictionaryContentRepository.ts": true,
+        "apps/mobile/src/db/dictionaryContentMapping.ts": true,
+        "apps/mobile/src/services/syncStatusService.ts": true
+      },
+      "dictionary_enabled_bytecode": [
+        "NCFunction<isDictionaryContentEnabled>(1 params, 1 registers, 0 numbers, 1 non-pointers):\n    LoadConstTrue     r0\n    Ret               r0\n"
+      ]
+    },
+    {
+      "platform": "android",
+      "bundle": "_expo/static/js/android/entry-4e8a5b6915041f77da05c73860b80642.hbc",
+      "bundle_sha256": "1ae99cf1e36f925a2da2d7a6697215e0e7ff744d30c689cb2980e157f12c258c",
+      "bundle_bytes": 6932764,
+      "source_map_sha256": "a728a437632850d1d648498669180c6d908cf8c84c949ae44dbebde36657044a",
+      "debug_id": "8843bcd9-e89b-477d-9ddc-e08dffcf80ff",
+      "asset_count": 49,
+      "checks": {
+        "hermes_magic": true,
+        "debug_id_in_bundle": true,
+        "old_dev_credentials_absent": true,
+        "supabase_url_present": true,
+        "supabase_anon_key_present": true,
+        "sentry_dsn_present": true,
+        "changed_runtime_sources_exact": true,
+        "dictionary_enabled_constant_true": true,
+        "private_parser_present": true,
+        "canonical_parser_present": true
+      },
+      "source_checks": {
+        "packages/domain/src/shared-dictionary.ts": true,
+        "apps/mobile/src/services/dictionaryContentSync.ts": true,
+        "apps/mobile/src/db/dictionaryContentRepository.ts": true,
+        "apps/mobile/src/db/dictionaryContentMapping.ts": true,
+        "apps/mobile/src/services/syncStatusService.ts": true
+      },
+      "dictionary_enabled_bytecode": [
+        "NCFunction<isDictionaryContentEnabled>(1 params, 1 registers, 0 numbers, 1 non-pointers):\n    LoadConstTrue     r0\n    Ret               r0\n"
+      ]
+    }
+  ],
+  "tests": {
+    "full_mobile_suites": 157,
+    "full_mobile_tests": 1806,
+    "snapshots": 22,
+    "focused_suites": 4,
+    "focused_tests": 32,
+    "mobile_typecheck": true,
+    "test_typecheck": true,
+    "lint_ci": true
+  },
+  "authorization": "AUTH-29 consumed",
+  "artifact_sha256": {
+    "candidate-source.tar": "493fcb2557373577625ef05b785afbd3cf3b47a2544cc19047666113f40f3d30",
+    "dist-manifest.json": "fb8b5e715c3465ef939fabc4dfbb335b19ea3ae7a1205de04f3956fc497e6b2c"
+  },
+  "private_artifacts": "reports/shared-dictionary-cefr/d13-status-ota-20261010",
+  "delivery_receipt": "D13-status-ota-delivery-20261010.json"
+}

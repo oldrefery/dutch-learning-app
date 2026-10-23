@@ -1,0 +1,189 @@
+{
+  "date": "2026-10-09",
+  "source_head": "f97a733407a4d2b37e8f9ca030ad9574de85a794",
+  "branch": "feature/shared-dictionary-schema",
+  "environment": "production",
+  "time_range": "14d",
+  "queries": ["is:unresolved", "dist:85"],
+  "initial_unresolved": [
+    {
+      "shortId": "DUTCH-LEARNING-APP-4C",
+      "level": "error",
+      "status": "unresolved",
+      "firstSeen": "2026-09-17T13:29:37Z",
+      "lastSeen": "2026-10-08T13:23:21Z",
+      "permalink": "https://oldrefery.sentry.io/issues/7737950888/"
+    },
+    {
+      "shortId": "DUTCH-LEARNING-APP-49",
+      "level": "warning",
+      "status": "unresolved",
+      "firstSeen": "2026-10-04T22:45:18Z",
+      "lastSeen": "2026-10-05T14:23:41Z",
+      "permalink": "https://oldrefery.sentry.io/issues/7715295374/"
+    },
+    {
+      "shortId": "DUTCH-LEARNING-APP-4D",
+      "level": "error",
+      "status": "unresolved",
+      "firstSeen": "2026-09-17T13:29:35Z",
+      "lastSeen": "2026-09-25T21:24:17Z",
+      "permalink": "https://oldrefery.sentry.io/issues/7737951320/"
+    }
+  ],
+  "build85_issues": [
+    {
+      "shortId": "DUTCH-LEARNING-APP-4C",
+      "level": "error",
+      "status": "unresolved",
+      "lastSeen": "2026-10-09T21:26:07Z",
+      "permalink": "https://oldrefery.sentry.io/issues/7737950888/",
+      "issue_lifetime_count": 13,
+      "filtered_14d_bucket_sum": 11
+    },
+    {
+      "shortId": "DUTCH-LEARNING-APP-49",
+      "level": "warning",
+      "status": "unresolved",
+      "lastSeen": "2026-10-05T14:23:41Z",
+      "permalink": "https://oldrefery.sentry.io/issues/7715295374/",
+      "issue_lifetime_count": 3,
+      "filtered_14d_bucket_sum": 3
+    }
+  ],
+  "latest_verified_error_event_utc": "2026-10-09T21:26:07Z",
+  "native_release": "com.oldrefery.dutch-learning-app@2.4.0+85",
+  "native_platform": "iOS",
+  "owner_report": "Version 2.4.0 (85) is installed and sync displays the same missing conjugation field error. Successful offline return is not confirmed.",
+  "web": {
+    "checked_at": "2026-10-09T21:27:32.669970+00:00",
+    "identity": "oldrefery",
+    "deployment": "dpl_74ZRdMpdPQpbjQADbdRpFxniUKdr",
+    "state": "READY",
+    "source_sha": "44141e00bddfe00267314374bc33a7a0cf8fb4a2",
+    "production_target": "dpl_74ZRdMpdPQpbjQADbdRpFxniUKdr",
+    "web_http": 200,
+    "edge_options_http": 200
+  },
+  "historical_backup_shape_counts": {
+    "words": 5988,
+    "active_words": 5858,
+    "active_conjugation_objects": 2004,
+    "active_missing_simple_past_plural": 284,
+    "word_content_state": 0
+  },
+  "production_applied": false,
+  "release_health_gate": "failed",
+  "observation_earliest_boundary": "2026-10-12 Europe/Amsterdam",
+  "native_offline_return": "unverified",
+  "android_adoption": "unverified",
+  "provider_calls": 0,
+  "external_mutations": 0,
+  "local_fix": {
+    "status": "validated-not-released",
+    "kind": "private-read-compatibility",
+    "source_files": {
+      "packages/domain/src/shared-dictionary.ts": "61bdbf8e15cee1dd3e094a0b31eeb6bba55204d7a9b2419d534f3463207507f0",
+      "apps/mobile/src/services/dictionaryContentSync.ts": "e05bea84645605afef5967ed743343a2d5189cb931e04ada01f2ddbe5bb18fb4",
+      "apps/mobile/src/db/dictionaryContentRepository.ts": "66cb493b12d3c818727c52439dc2401cc721c7c8f5f78e8718e660a5078ab0e7",
+      "apps/mobile/src/db/dictionaryContentMapping.ts": "b5275936dcc8264da8d3a22af172999ed95da5aceae78aa26ea3012b3f316b04",
+      "apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts": "55ab21501c958a5e13ed1eeaa427cf2b786b19429491b4138d1eceb0a4740cf2",
+      "apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts": "48a7ea4142421d553bb989972f2aff84ab9a25a0b8ab8fe7c23a4b1aea8b3718",
+      "apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts": "10b48cb2af9dda6fd8e80e412ff2ac584a258fe941cfadb17d30528081b2d272"
+    },
+    "database_migration": false,
+    "native_configuration_change": false,
+    "canonical_authoring_validation": "unchanged"
+  },
+  "snapshot_rehearsal": {
+    "phase": "complete",
+    "network": "none",
+    "production_calls": 0,
+    "validation": {
+      "all": {
+        "canonical": {
+          "active": 5858,
+          "valid": 3527,
+          "invalid": 2331,
+          "issues": {
+            "content.dutch_original must be a non-empty string": 1292,
+            "content.conjugation.simple_past_plural is required": 284,
+            "content.conjugation.simple_past_plural must be a non-empty string": 284,
+            "content.analysis_notes must be a non-empty string": 1444,
+            "content.examples[].ru is required": 106,
+            "content.examples[].ru must be a non-empty string": 106,
+            "content.prefix_part is required for a separable verb": 2
+          }
+        },
+        "private_read": {
+          "active": 5858,
+          "valid": 5858,
+          "invalid": 0,
+          "issues": {}
+        }
+      },
+      "P1": {
+        "canonical": {
+          "active": 2343,
+          "valid": 2227,
+          "invalid": 116,
+          "issues": {
+            "content.conjugation.simple_past_plural is required": 83,
+            "content.conjugation.simple_past_plural must be a non-empty string": 83,
+            "content.prefix_part is required for a separable verb": 2,
+            "content.examples[].ru is required": 86,
+            "content.examples[].ru must be a non-empty string": 86,
+            "content.dutch_original must be a non-empty string": 17,
+            "content.analysis_notes must be a non-empty string": 1
+          }
+        },
+        "private_read": {
+          "active": 2343,
+          "valid": 2343,
+          "invalid": 0,
+          "issues": {}
+        }
+      },
+      "P2": {
+        "canonical": {
+          "active": 570,
+          "valid": 0,
+          "invalid": 570,
+          "issues": {
+            "content.dutch_original must be a non-empty string": 510,
+            "content.analysis_notes must be a non-empty string": 215,
+            "content.conjugation.simple_past_plural is required": 38,
+            "content.conjugation.simple_past_plural must be a non-empty string": 38,
+            "content.examples[].ru is required": 5,
+            "content.examples[].ru must be a non-empty string": 5
+          }
+        },
+        "private_read": {
+          "active": 570,
+          "valid": 570,
+          "invalid": 0,
+          "issues": {}
+        }
+      }
+    },
+    "preservation": {
+      "tables": 79,
+      "all_match": true
+    },
+    "container_removed": true
+  },
+  "validation": {
+    "focused_suites": 3,
+    "focused_tests": 42,
+    "mobile_suites": 156,
+    "mobile_tests": 1802,
+    "mobile_snapshots": 22,
+    "mobile_note": "155 suites/1801 tests passed in the full invocation; the one cwd-dependent appConfig suite passed separately from apps/mobile. SQLite 16 tests passed again after a test-only lint refactor.",
+    "web_suites": 86,
+    "web_tests": 780,
+    "web_skipped_tests": 1,
+    "typechecks": ["mobile", "mobile-tests", "domain", "web"],
+    "lint_ci": "passed"
+  },
+  "next_action": "Prepare the exact native release artifact or runtime-qualified update for the validated client fix; obtain new scoped delivery authorization before publication, then verify real sync/offline return. Do not apply the rejected partial SQL candidate or toggle runtime flags as a substitute."
+}

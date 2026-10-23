@@ -1,5 +1,11 @@
 # D02 schema blueprint and implementation boundary
 
+> October10 update: this document records the implemented pinned-revision baseline.
+> DEC-10 and plan section3.1/D13A supersede the explicit-adoption target for the next
+> release. Analysis is shared-only; full_access users/admins may request validated
+> shared reanalysis. Existing contracts stay active until a verified,
+> separately authorized rollout. Do not rewrite historical implementation evidence.
+
 Design baseline: 2026-09-21. Complements the accepted product policies in
 [decisions](decisions.md) and the [compatibility contract](D02-compatibility-contract.md).
 This is a specification, not applied SQL or evidence of a deployed schema.

@@ -1,0 +1,1793 @@
+{
+  "schema_version": 1,
+  "kind": "current-acceptance-traceability-overlay",
+  "checkpoint": "D13A.7.1",
+  "date": "2026-10-11",
+  "original": {
+    "path": "docs/tasks/shared-dictionary-cefr/D13A-acceptance-fixtures.json",
+    "sha256": "1a6fb904d77568472a8401868964d110f1cded267928e7136d378c5d6b5a96e2",
+    "preserved": true
+  },
+  "decision": "DEC-11: separate generation and independent semantic judge attempts",
+  "rules": [
+    "Normal successful/no-change valid analysis is two calls/two quota slots; rejects before judge may consume only generation.",
+    "Exact retries do not redispatch either durable attempt. Unknown outcomes require explicit reconciliation.",
+    "A08 generation-only journal is not a journaled independent verdict.",
+    "Traceability completion is not end-to-end acceptance; mapped unit/component fixtures do not establish provider/device/performance qualification.",
+    "Legacy external-v1 SQL fixtures cover publication mechanics only; independent endpoint/semantic suites cover DEC-11."
+  ],
+  "cases": [
+    {
+      "id": "A01",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/services/dictionaryFollowingSync.ts",
+          "sha256": "76b46fe4d25d6865039bfa42e5725367decde81e2e1f3d5eef8d1e185d3d2402"
+        },
+        {
+          "path": "apps/web/src/features/dictionary/analysis-client.ts",
+          "sha256": "2ffbe38ecd46be1888f1bd49d58e81b7d4e42e22c97877e1cb64321690af4c47"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/migrations/20261010090000_add_dictionary_following_reads.sql",
+          "sha256": "bd89aaf077b7a95e5a71f5a57c3c753aad9439987182970bf157f11257e5ec87"
+        },
+        {
+          "path": "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql",
+          "sha256": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        }
+      ],
+      "title": "Shared publication and both owners",
+      "required_layers": ["postgres", "mobile", "web"],
+      "current_expected": {
+        "head": "R2",
+        "sequence": "101",
+        "provider_calls": 2,
+        "quota_slots": 2,
+        "following_content_equal": true,
+        "personal_state": "unchanged"
+      },
+      "expectation_correction": true,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-publication.test.mjs",
+          "sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "previous_sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-following-reads.test.mjs",
+          "sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "previous_sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingSync.sqlite.test.ts",
+          "sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "previous_sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/dictionary/analysis-client.test.ts",
+          "sha256": "376f24b991d0a27de6bca25c980c9dc8c0d555f30fa804a03134bf867cb69085",
+          "previous_sha256": "376f24b991d0a27de6bca25c980c9dc8c0d555f30fa804a03134bf867cb69085",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Exact real model/prompt qualification and two-owner/device end-to-end run remain open."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A02",
+      "implementation": [
+        {
+          "path": "packages/domain/src/dictionary-analysis.ts",
+          "sha256": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/geminiTransport.ts",
+          "sha256": "b4327e9e86ba7ced6f652dcccab80f4a53c8cf41b6f662989098c441937e6ca5"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/protectedInput.ts",
+          "sha256": "f940f6a37233e5332059f48994c5d8fa145e6829ccbcec6fd405b2e9dbb66a6c"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/worker.ts",
+          "sha256": "ac4d290bf3bc6e67cb5913650d1fcc7dd24d87c7edcce39316d7762de07a204d"
+        },
+        {
+          "path": "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql",
+          "sha256": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        }
+      ],
+      "title": "Read-only denial",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "outcome": "forbidden",
+        "provider_calls": 0,
+        "quota_slots": 0,
+        "head": "R1"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-operations.test.mjs",
+          "sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "previous_sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/worker_test.ts",
+          "sha256": "fd4deb10284d3a583aebc57954a8213e278508206757151f89e5a221cf46d70c",
+          "previous_sha256": "6aee9a7131cebc3e08bac2cf5d45f912481d1189e4fc49e248b650f5c5d85df0",
+          "evidence": "fresh-server-edge",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A03",
+      "implementation": [
+        {
+          "path": "packages/domain/src/dictionary-analysis.ts",
+          "sha256": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql",
+          "sha256": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e"
+        },
+        {
+          "path": "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql",
+          "sha256": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        },
+        {
+          "path": "supabase/migrations/20261010170000_add_dictionary_analysis_actor_signal.sql",
+          "sha256": "2e3d172682a03bd672fc58d8f8902328a5691778fa20c01a36a1307f5d5d76ce"
+        }
+      ],
+      "title": "Trusted administrator and no self-grant",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "admin_analysis": "allowed through the same generation plus independent judge path; two calls/two slots for an accepted valid candidate",
+        "self_grant": "forbidden",
+        "direct_head_write": "forbidden"
+      },
+      "expectation_correction": true,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-actor.test.mjs",
+          "sha256": "72df9bd4e5c717ffeced89ce6c5104315812b3fc9adb7c7aef29bfc2cdb2fc26",
+          "previous_sha256": "72df9bd4e5c717ffeced89ce6c5104315812b3fc9adb7c7aef29bfc2cdb2fc26",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-operations.test.mjs",
+          "sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "previous_sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-publication.test.mjs",
+          "sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "previous_sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A04",
+      "implementation": [
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql",
+          "sha256": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        }
+      ],
+      "title": "Revocation before publication",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "outcome": "authorization-revoked",
+        "head": "R1",
+        "publication_events": 0
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-publication.test.mjs",
+          "sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "previous_sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A05",
+      "implementation": [
+        {
+          "path": "packages/domain/src/dictionary-analysis.ts",
+          "sha256": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql",
+          "sha256": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e"
+        },
+        {
+          "path": "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql",
+          "sha256": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        }
+      ],
+      "title": "Lost publication response and changed intent",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "same_request": "same durable receipt",
+        "changed_request": "operation-payload-conflict",
+        "provider_calls": 2,
+        "quota_slots": 2,
+        "revisions_inserted": 1,
+        "events_inserted": 1
+      },
+      "expectation_correction": true,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-publication.test.mjs",
+          "sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "previous_sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-operations.test.mjs",
+          "sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "previous_sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A06",
+      "implementation": [
+        {
+          "path": "packages/domain/src/dictionary-analysis.ts",
+          "sha256": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentEvaluator.ts",
+          "sha256": "fd152a69ca6077fdedf4be88540273a1cfe591bbfb5ddbd2c16705200753aa4d"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/semanticModel.ts",
+          "sha256": "27e416b7b11bbae27cdb7afa9d44bbf1f703c702d8fabea67de25d152929ce9a"
+        },
+        {
+          "path": "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql",
+          "sha256": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e"
+        },
+        {
+          "path": "supabase/migrations/20261010150000_add_dictionary_semantic_checks.sql",
+          "sha256": "6858af85b4c8a6e76492063a8bf697be21f3f4114e06cefe8e81e5d364d57fec"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        }
+      ],
+      "title": "Competing actors",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "O2": "analysis-in-progress",
+        "total_provider_calls": 2,
+        "total_quota_slots": 2,
+        "other_actor_private_receipt_visible": false
+      },
+      "expectation_correction": true,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-operations.test.mjs",
+          "sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "previous_sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-semantic-checks.test.mjs",
+          "sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "previous_sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A07",
+      "implementation": [
+        {
+          "path": "packages/domain/src/dictionary-analysis.ts",
+          "sha256": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/candidateGuards.ts",
+          "sha256": "a354bd4b92c74b4207164304b46d319b7b5ca80df6de33c0fd2fe07cd2fa2f01"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/geminiTransport.ts",
+          "sha256": "b4327e9e86ba7ced6f652dcccab80f4a53c8cf41b6f662989098c441937e6ca5"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentEvaluator.ts",
+          "sha256": "fd152a69ca6077fdedf4be88540273a1cfe591bbfb5ddbd2c16705200753aa4d"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/protectedInput.ts",
+          "sha256": "f940f6a37233e5332059f48994c5d8fa145e6829ccbcec6fd405b2e9dbb66a6c"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/semanticModel.ts",
+          "sha256": "27e416b7b11bbae27cdb7afa9d44bbf1f703c702d8fabea67de25d152929ce9a"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/worker.ts",
+          "sha256": "ac4d290bf3bc6e67cb5913650d1fcc7dd24d87c7edcce39316d7762de07a204d"
+        },
+        {
+          "path": "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql",
+          "sha256": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e"
+        },
+        {
+          "path": "supabase/migrations/20261010140000_add_dictionary_analysis_worker_reads.sql",
+          "sha256": "5841ee9561301da78325ca594b4063aafc4aa15c279af52a54e7627b4ae9e5cb"
+        },
+        {
+          "path": "supabase/migrations/20261010150000_add_dictionary_semantic_checks.sql",
+          "sha256": "6858af85b4c8a6e76492063a8bf697be21f3f4114e06cefe8e81e5d364d57fec"
+        }
+      ],
+      "title": "Unknown provider outcome and late result",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "outcome": "provider-outcome-unknown",
+        "automatic_redispatch": false,
+        "head": "R1",
+        "late_worker_publication": "fencing checked"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-worker.test.mjs",
+          "sha256": "5fa36c9e7637a181aa77ffc61373de8234fc9851a29156fa49c2bb1ef0daa145",
+          "previous_sha256": "5fa36c9e7637a181aa77ffc61373de8234fc9851a29156fa49c2bb1ef0daa145",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-operations.test.mjs",
+          "sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "previous_sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-semantic-checks.test.mjs",
+          "sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "previous_sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/worker_test.ts",
+          "sha256": "fd4deb10284d3a583aebc57954a8213e278508206757151f89e5a221cf46d70c",
+          "previous_sha256": "6aee9a7131cebc3e08bac2cf5d45f912481d1189e4fc49e248b650f5c5d85df0",
+          "evidence": "fresh-server-edge",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/semantic_test.ts",
+          "sha256": "e409b78ff28a2d1bc8143bcf73b3328b6acdada88c438e5a52570c9f29a7b69b",
+          "previous_sha256": "e409b78ff28a2d1bc8143bcf73b3328b6acdada88c438e5a52570c9f29a7b69b",
+          "evidence": "fresh-server-edge",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A08",
+      "implementation": [
+        {
+          "path": "supabase/functions/dictionary-analysis/candidateGuards.ts",
+          "sha256": "a354bd4b92c74b4207164304b46d319b7b5ca80df6de33c0fd2fe07cd2fa2f01"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentEvaluator.ts",
+          "sha256": "fd152a69ca6077fdedf4be88540273a1cfe591bbfb5ddbd2c16705200753aa4d"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/semanticModel.ts",
+          "sha256": "27e416b7b11bbae27cdb7afa9d44bbf1f703c702d8fabea67de25d152929ce9a"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/worker.ts",
+          "sha256": "ac4d290bf3bc6e67cb5913650d1fcc7dd24d87c7edcce39316d7762de07a204d"
+        },
+        {
+          "path": "supabase/migrations/20261010140000_add_dictionary_analysis_worker_reads.sql",
+          "sha256": "5841ee9561301da78325ca594b4063aafc4aa15c279af52a54e7627b4ae9e5cb"
+        },
+        {
+          "path": "supabase/migrations/20261010150000_add_dictionary_semantic_checks.sql",
+          "sha256": "6858af85b4c8a6e76492063a8bf697be21f3f4114e06cefe8e81e5d364d57fec"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        }
+      ],
+      "title": "Resume durable results",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "additional_provider_calls": {
+          "generation_result_only_journaled": 1,
+          "generation_and_judge_results_journaled": 0,
+          "accepted_validation_journaled": 0,
+          "unknown_generation_or_judge_outcome": 0
+        },
+        "head": "R2",
+        "events_inserted": 1
+      },
+      "expectation_correction": true,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-worker.test.mjs",
+          "sha256": "5fa36c9e7637a181aa77ffc61373de8234fc9851a29156fa49c2bb1ef0daa145",
+          "previous_sha256": "5fa36c9e7637a181aa77ffc61373de8234fc9851a29156fa49c2bb1ef0daa145",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-semantic-checks.test.mjs",
+          "sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "previous_sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/semantic_test.ts",
+          "sha256": "e409b78ff28a2d1bc8143bcf73b3328b6acdada88c438e5a52570c9f29a7b69b",
+          "previous_sha256": "e409b78ff28a2d1bc8143bcf73b3328b6acdada88c438e5a52570c9f29a7b69b",
+          "evidence": "fresh-server-edge",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A09",
+      "implementation": [
+        {
+          "path": "supabase/functions/dictionary-analysis/candidateGuards.ts",
+          "sha256": "a354bd4b92c74b4207164304b46d319b7b5ca80df6de33c0fd2fe07cd2fa2f01"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentEvaluator.ts",
+          "sha256": "fd152a69ca6077fdedf4be88540273a1cfe591bbfb5ddbd2c16705200753aa4d"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/semanticModel.ts",
+          "sha256": "27e416b7b11bbae27cdb7afa9d44bbf1f703c702d8fabea67de25d152929ce9a"
+        },
+        {
+          "path": "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql",
+          "sha256": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193"
+        },
+        {
+          "path": "supabase/migrations/20261010150000_add_dictionary_semantic_checks.sql",
+          "sha256": "6858af85b4c8a6e76492063a8bf697be21f3f4114e06cefe8e81e5d364d57fec"
+        }
+      ],
+      "title": "Strict candidate and independent meaning checks",
+      "required_layers": ["edge", "postgres", "domain"],
+      "current_expected": {
+        "all_candidates": "rejected or held for review",
+        "head": "R1",
+        "publication_events": 0,
+        "human_review_falsely_recorded": false
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "supabase/functions/dictionary-analysis/semantic_test.ts",
+          "sha256": "e409b78ff28a2d1bc8143bcf73b3328b6acdada88c438e5a52570c9f29a7b69b",
+          "previous_sha256": "e409b78ff28a2d1bc8143bcf73b3328b6acdada88c438e5a52570c9f29a7b69b",
+          "evidence": "fresh-server-edge",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-semantic-checks.test.mjs",
+          "sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "previous_sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-publication.test.mjs",
+          "sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "previous_sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Synthetic verdicts prove protocol rejection, not actual model sensitivity; positive/negative measured qualification remains open."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A10",
+      "implementation": [
+        {
+          "path": "packages/domain/src/dictionary-analysis.ts",
+          "sha256": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82"
+        },
+        {
+          "path": "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql",
+          "sha256": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e"
+        },
+        {
+          "path": "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql",
+          "sha256": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193"
+        }
+      ],
+      "title": "ABA publication fence",
+      "required_layers": ["postgres"],
+      "current_expected": {
+        "outcome": "head-conflict",
+        "head": "R1",
+        "new_publication_events": 0
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-operations.test.mjs",
+          "sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "previous_sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-publication.test.mjs",
+          "sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "previous_sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A11",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/db/dictionaryFollowingHydration.ts",
+          "sha256": "4dfd4d59b756d511113cfd99ea9a68b9a24aefb72bed93b13302d9c5b66b4313"
+        },
+        {
+          "path": "apps/mobile/src/db/dictionaryFollowingRepository.ts",
+          "sha256": "c0208fac90dcb183b33267df742b31aa8912181c3a2c2f0cafbaaf108291e4bf"
+        },
+        {
+          "path": "apps/web/src/features/review/session-controller.ts",
+          "sha256": "9ebf904766fecb4b933c468e2d5f2c3018f07edc79770e5b938601af33c7d776"
+        },
+        {
+          "path": "supabase/migrations/20261010090000_add_dictionary_following_reads.sql",
+          "sha256": "bd89aaf077b7a95e5a71f5a57c3c753aad9439987182970bf157f11257e5ec87"
+        },
+        {
+          "path": "supabase/migrations/20261010130000_add_dictionary_history_rollback.sql",
+          "sha256": "3ebb1c777f58999db9d797b03a90f3785452e12244f351270831b20230f111c9"
+        }
+      ],
+      "title": "Audited head rollback retains learning",
+      "required_layers": ["postgres", "mobile", "web"],
+      "current_expected": {
+        "head": "R1/102",
+        "H4": "preserved",
+        "clients_apply": "R1 by newer sequence",
+        "ordinary_user_rollback": "forbidden"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-history-rollback.test.mjs",
+          "sha256": "171a5de9ffb1850ba130be85baecde739edc067591582fac9e0a477e15c1d171",
+          "previous_sha256": "171a5de9ffb1850ba130be85baecde739edc067591582fac9e0a477e15c1d171",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-following-reads.test.mjs",
+          "sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "previous_sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/db/__tests__/dictionaryFollowingRepository.sqlite.test.ts",
+          "sha256": "4bdd9dcd50ff8aa7a90949c4e0c26d03dd90c83a27f7e12c33f6d3c5a9293860",
+          "previous_sha256": "4bdd9dcd50ff8aa7a90949c4e0c26d03dd90c83a27f7e12c33f6d3c5a9293860",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/review/following-session.test.ts",
+          "sha256": "bb42142d6962bfd5712d8e600355dfd80c2e8a8e33ccfb98bcbd3d87d07dc4ba",
+          "previous_sha256": "bb42142d6962bfd5712d8e600355dfd80c2e8a8e33ccfb98bcbd3d87d07dc4ba",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Actual device delivery remains part of checkpoint6."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A12",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/services/dictionaryFollowingSync.ts",
+          "sha256": "76b46fe4d25d6865039bfa42e5725367decde81e2e1f3d5eef8d1e185d3d2402"
+        },
+        {
+          "path": "scripts/shared-dictionary/following-rollback.sqlite.ts",
+          "sha256": "02a9d81fdd925f7ade9f65765875d632286213e656415e68bf1cab9f1408c0f3"
+        }
+      ],
+      "title": "Offline review, restart and return",
+      "required_layers": ["sqlite", "device"],
+      "current_expected": {
+        "reviews_applied_once": 2,
+        "card_ids": ["W1", "W2"],
+        "online_revision": "R2",
+        "offline_revision": "R1 until hydrated"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "apps/mobile/src/db/__tests__/dictionaryFollowingMigrationRollback.sqlite.test.ts",
+          "sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "previous_sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingSync.sqlite.test.ts",
+          "sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "previous_sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Component tests cover accepted learning/retry and file restart separately; the exact two-review cold-device end-to-end scenario is not yet certified."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A13",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/db/dictionaryWordReads.ts",
+          "sha256": "bd4e188d00d76b254156c8b01a03689a1a0bf7e386749825bfa54fb1124e2a59"
+        },
+        {
+          "path": "apps/mobile/src/services/dictionaryContentSync.ts",
+          "sha256": "a462889fc8837a617909cb913e0bac82e607671bcf1fd447b24537afa24eea35"
+        },
+        {
+          "path": "apps/web/src/features/review/repository.ts",
+          "sha256": "ed2e132cad08877946dd1da46bc8c8201476c8686e5d398c468cefb8ff31a255"
+        },
+        {
+          "path": "apps/web/src/features/review/session-controller.ts",
+          "sha256": "9ebf904766fecb4b933c468e2d5f2c3018f07edc79770e5b938601af33c7d776"
+        }
+      ],
+      "title": "Stable active review session",
+      "required_layers": ["sqlite", "web", "device"],
+      "current_expected": {
+        "active_session_revision": "R1",
+        "next_session_revision": "R2",
+        "learning": "preserved"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "apps/web/src/features/review/following-session.test.ts",
+          "sha256": "bb42142d6962bfd5712d8e600355dfd80c2e8a8e33ccfb98bcbd3d87d07dc4ba",
+          "previous_sha256": "bb42142d6962bfd5712d8e600355dfd80c2e8a8e33ccfb98bcbd3d87d07dc4ba",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/review/following-snapshot.test.ts",
+          "sha256": "ac3e90a24a2313c3c0426e31c063a9ed7ebc456254792df8cac3fff2045e7f8d",
+          "previous_sha256": "ac3e90a24a2313c3c0426e31c063a9ed7ebc456254792df8cac3fff2045e7f8d",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingRuntime.sqlite.test.ts",
+          "sha256": "abd0187af338709393cb2a6f88c59aaf7df2f25e1c8eb366a76259cd07f10883",
+          "previous_sha256": "abd0187af338709393cb2a6f88c59aaf7df2f25e1c8eb366a76259cd07f10883",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Native active-session boundary and actual device scenario still require dedicated review/qualification; runtime materialization is not proof of an immutable active UI session."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A14",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/db/dictionaryFollowingHydration.ts",
+          "sha256": "4dfd4d59b756d511113cfd99ea9a68b9a24aefb72bed93b13302d9c5b66b4313"
+        },
+        {
+          "path": "apps/mobile/src/db/dictionaryFollowingRepository.ts",
+          "sha256": "c0208fac90dcb183b33267df742b31aa8912181c3a2c2f0cafbaaf108291e4bf"
+        },
+        {
+          "path": "apps/mobile/src/services/dictionaryFollowingSync.ts",
+          "sha256": "76b46fe4d25d6865039bfa42e5725367decde81e2e1f3d5eef8d1e185d3d2402"
+        },
+        {
+          "path": "apps/web/src/features/dictionary/repository.ts",
+          "sha256": "5196d489ecc7a5c0cd08eab829a2cb94f44e70fc025263668b7b384bbc1e5594"
+        }
+      ],
+      "title": "Missing dependency retains cursor and debt",
+      "required_layers": ["sqlite", "web"],
+      "current_expected": {
+        "before_recovery_content": "R1",
+        "before_recovery_cursor": "100",
+        "refresh_debt": "retained",
+        "after_recovery_content": "R2",
+        "after_recovery_cursor": "101"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingSync.sqlite.test.ts",
+          "sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "previous_sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/db/__tests__/dictionaryFollowingRepository.sqlite.test.ts",
+          "sha256": "4bdd9dcd50ff8aa7a90949c4e0c26d03dd90c83a27f7e12c33f6d3c5a9293860",
+          "previous_sha256": "4bdd9dcd50ff8aa7a90949c4e0c26d03dd90c83a27f7e12c33f6d3c5a9293860",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/dictionary/following-repository.test.ts",
+          "sha256": "67a9058a11a2a33dfc582d7577e9619455c08e9af2a6f0a8df6be4f6353459da",
+          "previous_sha256": "67a9058a11a2a33dfc582d7577e9619455c08e9af2a6f0a8df6be4f6353459da",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A15",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/services/dictionaryFollowingSync.ts",
+          "sha256": "76b46fe4d25d6865039bfa42e5725367decde81e2e1f3d5eef8d1e185d3d2402"
+        },
+        {
+          "path": "packages/domain/src/dictionary-following.ts",
+          "sha256": "3d387a22228f8d77b6ac3f434c01acf360704b372ede6bfa051eeb6f2561907b"
+        },
+        {
+          "path": "supabase/migrations/20261010090000_add_dictionary_following_reads.sql",
+          "sha256": "bd89aaf077b7a95e5a71f5a57c3c753aad9439987182970bf157f11257e5ec87"
+        }
+      ],
+      "title": "Exact BIGINT delivery",
+      "required_layers": ["domain", "postgres", "sqlite"],
+      "current_expected": {
+        "distinct_and_ordered": true,
+        "wire_type": "decimal string",
+        "unsafe_protocol_1_number": "explicit failure"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-following-reads.test.mjs",
+          "sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "previous_sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/utils/__tests__/dictionaryFollowingContract.test.ts",
+          "sha256": "ae8651227b03e1bb64cccf808e1396c9cfd2335eee5e865560c63e0a4c26b8cd",
+          "previous_sha256": "ae8651227b03e1bb64cccf808e1396c9cfd2335eee5e865560c63e0a4c26b8cd",
+          "evidence": "fresh-domain-contracts",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingSync.sqlite.test.ts",
+          "sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "previous_sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A16",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/db/dictionaryFollowingHydration.ts",
+          "sha256": "4dfd4d59b756d511113cfd99ea9a68b9a24aefb72bed93b13302d9c5b66b4313"
+        },
+        {
+          "path": "apps/mobile/src/db/dictionaryFollowingRepository.ts",
+          "sha256": "c0208fac90dcb183b33267df742b31aa8912181c3a2c2f0cafbaaf108291e4bf"
+        },
+        {
+          "path": "apps/mobile/src/db/dictionaryWordReads.ts",
+          "sha256": "bd4e188d00d76b254156c8b01a03689a1a0bf7e386749825bfa54fb1124e2a59"
+        },
+        {
+          "path": "apps/mobile/src/services/dictionaryContentSync.ts",
+          "sha256": "a462889fc8837a617909cb913e0bac82e607671bcf1fd447b24537afa24eea35"
+        },
+        {
+          "path": "supabase/migrations/20261010090000_add_dictionary_following_reads.sql",
+          "sha256": "bd89aaf077b7a95e5a71f5a57c3c753aad9439987182970bf157f11257e5ec87"
+        }
+      ],
+      "title": "Old-client adapter and pending private edit",
+      "required_layers": ["postgres", "sqlite", "device"],
+      "current_expected": {
+        "read_reference_content_dependency": "same actual revision",
+        "overrides": {},
+        "private_edit": "reconciliation with payload retained",
+        "learning": "preserved; blocked pipeline must reconcile before conversion",
+        "failed_compatibility": "cohort remains legacy"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-following-reads.test.mjs",
+          "sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "previous_sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingRuntime.sqlite.test.ts",
+          "sha256": "abd0187af338709393cb2a6f88c59aaf7df2f25e1c8eb366a76259cd07f10883",
+          "previous_sha256": "abd0187af338709393cb2a6f88c59aaf7df2f25e1c8eb366a76259cd07f10883",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/db/__tests__/dictionaryFollowingRepository.sqlite.test.ts",
+          "sha256": "4bdd9dcd50ff8aa7a90949c4e0c26d03dd90c83a27f7e12c33f6d3c5a9293860",
+          "previous_sha256": "4bdd9dcd50ff8aa7a90949c4e0c26d03dd90c83a27f7e12c33f6d3c5a9293860",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Embedded build85 and both repair OTA artifacts must be exercised; current source tests do not certify an installed old build or its blocked queue."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A17",
+      "implementation": [
+        {
+          "path": "scripts/shared-dictionary/following-apply.sql",
+          "sha256": "0fefb0b6b076611e9002961f56b249307194e5cccc14600a14b6c4da0dfa6726"
+        },
+        {
+          "path": "scripts/shared-dictionary/following-plan.sql",
+          "sha256": "cbc04ad84b24aca6e646dcecb7dc608a927ee78f60392d5bde5467b25418b228"
+        },
+        {
+          "path": "scripts/shared-dictionary/following-rollback.sqlite.ts",
+          "sha256": "02a9d81fdd925f7ade9f65765875d632286213e656415e68bf1cab9f1408c0f3"
+        }
+      ],
+      "title": "Unreviewed migration remains legacy",
+      "required_layers": ["postgres", "sqlite"],
+      "current_expected": {
+        "disposition": "skipped",
+        "original": "retained privately",
+        "mode": "legacy",
+        "learning_queue": "unchanged",
+        "fully_migrated": false
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-following-plan.test.mjs",
+          "sha256": "83519c746b95b9e4ae52a13102300b66b2897548db00ad6ba178aa70830c6340",
+          "previous_sha256": "83519c746b95b9e4ae52a13102300b66b2897548db00ad6ba178aa70830c6340",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-following-apply.test.mjs",
+          "sha256": "806520daeb26fa07086b730bbce4685ab91d8757a2a67c7a5c85d410f159d45d",
+          "previous_sha256": "806520daeb26fa07086b730bbce4685ab91d8757a2a67c7a5c85d410f159d45d",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/db/__tests__/dictionaryFollowingMigrationRollback.sqlite.test.ts",
+          "sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "previous_sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Real2914-card inventory still permits0 approved links; operator attestations are synthetic."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A18",
+      "implementation": [
+        {
+          "path": "scripts/shared-dictionary/following-apply.sql",
+          "sha256": "0fefb0b6b076611e9002961f56b249307194e5cccc14600a14b6c4da0dfa6726"
+        },
+        {
+          "path": "scripts/shared-dictionary/following-rollback.sql",
+          "sha256": "9165db64d6cec1899511836e1a22fae0eb32dc41f5ffa4261bb48edaad36d199"
+        },
+        {
+          "path": "scripts/shared-dictionary/following-rollback.sqlite.ts",
+          "sha256": "02a9d81fdd925f7ade9f65765875d632286213e656415e68bf1cab9f1408c0f3"
+        }
+      ],
+      "title": "Approved diff and selective compensation",
+      "required_layers": ["postgres", "sqlite"],
+      "current_expected": {
+        "apply_count": 1,
+        "only_analysis_changes": ["translation"],
+        "original": "recoverable privately",
+        "H4": "preserved",
+        "rollback_scope": "mapping-owned reference/content only"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-following-apply.test.mjs",
+          "sha256": "806520daeb26fa07086b730bbce4685ab91d8757a2a67c7a5c85d410f159d45d",
+          "previous_sha256": "806520daeb26fa07086b730bbce4685ab91d8757a2a67c7a5c85d410f159d45d",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-following-rollback.test.mjs",
+          "sha256": "9ea365481276af6699cccc370aa34c0aa9396a2abddc7ace2786b0998f2d2774",
+          "previous_sha256": "9ea365481276af6699cccc370aa34c0aa9396a2abddc7ace2786b0998f2d2774",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/db/__tests__/dictionaryFollowingMigrationRollback.sqlite.test.ts",
+          "sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "previous_sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "SQLite compensation is a disposable operator; authoritative server-to-device compensation delivery is not certified."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A19",
+      "implementation": [
+        {
+          "path": "scripts/shared-dictionary/following-apply.sql",
+          "sha256": "0fefb0b6b076611e9002961f56b249307194e5cccc14600a14b6c4da0dfa6726"
+        },
+        {
+          "path": "scripts/shared-dictionary/following-plan.sql",
+          "sha256": "cbc04ad84b24aca6e646dcecb7dc608a927ee78f60392d5bde5467b25418b228"
+        },
+        {
+          "path": "scripts/shared-dictionary/following-rollback.sqlite.ts",
+          "sha256": "02a9d81fdd925f7ade9f65765875d632286213e656415e68bf1cab9f1408c0f3"
+        }
+      ],
+      "title": "Stale mapping and contention",
+      "required_layers": ["postgres"],
+      "current_expected": {
+        "all_races": "skip with reason",
+        "learning_overwrite": false,
+        "guessed_match": false
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-following-plan.test.mjs",
+          "sha256": "83519c746b95b9e4ae52a13102300b66b2897548db00ad6ba178aa70830c6340",
+          "previous_sha256": "83519c746b95b9e4ae52a13102300b66b2897548db00ad6ba178aa70830c6340",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-following-apply.test.mjs",
+          "sha256": "806520daeb26fa07086b730bbce4685ab91d8757a2a67c7a5c85d410f159d45d",
+          "previous_sha256": "806520daeb26fa07086b730bbce4685ab91d8757a2a67c7a5c85d410f159d45d",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-following-concurrency.test.mjs",
+          "sha256": "a1d2741e84d121478522ff32a3ee953705eb942fdf8d0a040fc1a454043739d2",
+          "previous_sha256": "a1d2741e84d121478522ff32a3ee953705eb942fdf8d0a040fc1a454043739d2",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/db/__tests__/dictionaryFollowingMigrationRollback.sqlite.test.ts",
+          "sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "previous_sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A20",
+      "implementation": [
+        {
+          "path": "scripts/shared-dictionary/following-rollback.sql",
+          "sha256": "9165db64d6cec1899511836e1a22fae0eb32dc41f5ffa4261bb48edaad36d199"
+        },
+        {
+          "path": "scripts/shared-dictionary/following-rollback.sqlite.ts",
+          "sha256": "02a9d81fdd925f7ade9f65765875d632286213e656415e68bf1cab9f1408c0f3"
+        }
+      ],
+      "title": "Later reference blocks compensation",
+      "required_layers": ["postgres"],
+      "current_expected": {
+        "outcome": "skip for reconciliation",
+        "subsequent_reference": "preserved",
+        "later_learning": "preserved"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-following-rollback.test.mjs",
+          "sha256": "9ea365481276af6699cccc370aa34c0aa9396a2abddc7ace2786b0998f2d2774",
+          "previous_sha256": "9ea365481276af6699cccc370aa34c0aa9396a2abddc7ace2786b0998f2d2774",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/db/__tests__/dictionaryFollowingMigrationRollback.sqlite.test.ts",
+          "sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "previous_sha256": "0b4cef52e609cc711e8835e726a93abff19409dd088da80f8f1b2d41a470e8c7",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A21",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/db/dictionaryWordReads.ts",
+          "sha256": "bd4e188d00d76b254156c8b01a03689a1a0bf7e386749825bfa54fb1124e2a59"
+        },
+        {
+          "path": "apps/mobile/src/services/dictionaryContentSync.ts",
+          "sha256": "a462889fc8837a617909cb913e0bac82e607671bcf1fd447b24537afa24eea35"
+        },
+        {
+          "path": "apps/mobile/src/services/dictionaryFollowingTransferService.ts",
+          "sha256": "5b589415aa589fbcdec8ab3aa637c7ce5b6ca883ede182c095e781015b0ea59a"
+        },
+        {
+          "path": "apps/web/src/features/sharing/dictionary-transfer.ts",
+          "sha256": "2569827b7f8942485225f2299bd6eb79ce2dff2dc810f774d701f306e7fd3d46"
+        },
+        {
+          "path": "apps/web/src/features/starter-pack/official-following-import.ts",
+          "sha256": "94c7b0bb732c2742fed5239a45f6b09aa11903c297d978b44998949b3b2d42d5"
+        },
+        {
+          "path": "supabase/migrations/20261010120000_add_dictionary_following_imports.sql",
+          "sha256": "709feaf1ad878b03019453698ba1fd0daad155e44bf13d4d6101fbbc8cc3b75a"
+        }
+      ],
+      "title": "Official/shared/private import and portable export",
+      "required_layers": ["postgres", "domain", "sqlite", "web"],
+      "current_expected": {
+        "official": "fresh personal reference following verified head; original manifest unchanged",
+        "foreign": "verify or hold",
+        "private_document": "protected review; no automatic global publication",
+        "exported_owner_or_learning": false,
+        "source_learning_copied": false
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-following-imports.test.mjs",
+          "sha256": "50d2045244b2c5270fcda2a0e3f00512ed061a97130cb23b881fce93d2e9fafd",
+          "previous_sha256": "50d2045244b2c5270fcda2a0e3f00512ed061a97130cb23b881fce93d2e9fafd",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingRuntime.sqlite.test.ts",
+          "sha256": "abd0187af338709393cb2a6f88c59aaf7df2f25e1c8eb366a76259cd07f10883",
+          "previous_sha256": "abd0187af338709393cb2a6f88c59aaf7df2f25e1c8eb366a76259cd07f10883",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingTransferService.sqlite.test.ts",
+          "sha256": "1bee1d99ad8842fdc0752400043698af4267bc1d76cd9ee76e794ed054686b34",
+          "previous_sha256": "1bee1d99ad8842fdc0752400043698af4267bc1d76cd9ee76e794ed054686b34",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/starter-pack/official-following-import.test.ts",
+          "sha256": "91c850918e03bb00f347a397fb6769c27e9b06e2cd88f8c8a0b5213bf5539eab",
+          "previous_sha256": "91c850918e03bb00f347a397fb6769c27e9b06e2cd88f8c8a0b5213bf5539eab",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/sharing/dictionary-transfer.test.ts",
+          "sha256": "8c0e56657b71e9ce9d06e7bbe97f7c3af2935e57527fce9f7d352e88876b7689",
+          "previous_sha256": "8c0e56657b71e9ce9d06e7bbe97f7c3af2935e57527fce9f7d352e88876b7689",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Cross-client installed-artifact qualification remains open."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A22",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/db/dictionaryWordReads.ts",
+          "sha256": "bd4e188d00d76b254156c8b01a03689a1a0bf7e386749825bfa54fb1124e2a59"
+        },
+        {
+          "path": "apps/mobile/src/services/dictionaryContentSync.ts",
+          "sha256": "a462889fc8837a617909cb913e0bac82e607671bcf1fd447b24537afa24eea35"
+        },
+        {
+          "path": "apps/mobile/src/services/dictionaryFollowingSync.ts",
+          "sha256": "76b46fe4d25d6865039bfa42e5725367decde81e2e1f3d5eef8d1e185d3d2402"
+        },
+        {
+          "path": "apps/web/src/features/dictionary/analysis-client.ts",
+          "sha256": "2ffbe38ecd46be1888f1bd49d58e81b7d4e42e22c97877e1cb64321690af4c47"
+        }
+      ],
+      "title": "Account switch and queue ownership",
+      "required_layers": ["sqlite", "web", "postgres"],
+      "current_expected": {
+        "U1_private_state_visible_to_U2": false,
+        "queue_actor_rewritten": false,
+        "public_revision_cache": "reusable without private state"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingSync.sqlite.test.ts",
+          "sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "previous_sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingRuntime.sqlite.test.ts",
+          "sha256": "abd0187af338709393cb2a6f88c59aaf7df2f25e1c8eb366a76259cd07f10883",
+          "previous_sha256": "abd0187af338709393cb2a6f88c59aaf7df2f25e1c8eb366a76259cd07f10883",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/dictionary/analysis-client.test.ts",
+          "sha256": "376f24b991d0a27de6bca25c980c9dc8c0d555f30fa804a03134bf867cb69085",
+          "previous_sha256": "376f24b991d0a27de6bca25c980c9dc8c0d555f30fa804a03134bf867cb69085",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Actual account-switch/device qualification remains open."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A23",
+      "implementation": [
+        {
+          "path": "packages/domain/src/dictionary-analysis.ts",
+          "sha256": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentEvaluator.ts",
+          "sha256": "fd152a69ca6077fdedf4be88540273a1cfe591bbfb5ddbd2c16705200753aa4d"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/semanticModel.ts",
+          "sha256": "27e416b7b11bbae27cdb7afa9d44bbf1f703c702d8fabea67de25d152929ce9a"
+        },
+        {
+          "path": "supabase/migrations/20261010090000_add_dictionary_following_reads.sql",
+          "sha256": "bd89aaf077b7a95e5a71f5a57c3c753aad9439987182970bf157f11257e5ec87"
+        },
+        {
+          "path": "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql",
+          "sha256": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e"
+        },
+        {
+          "path": "supabase/migrations/20261010150000_add_dictionary_semantic_checks.sql",
+          "sha256": "6858af85b4c8a6e76492063a8bf697be21f3f4114e06cefe8e81e5d364d57fec"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        }
+      ],
+      "title": "Quota denial does not charge hydration",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "analysis": "quota rejection",
+        "provider_calls": 0,
+        "hydration": "allowed without quota consumption"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-operations.test.mjs",
+          "sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "previous_sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-following-reads.test.mjs",
+          "sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "previous_sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-semantic-checks.test.mjs",
+          "sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "previous_sha256": "bcf44558182178eead5143ffeb74eba59330993f8a14c4bdd2cfd8ead5c44669",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Generation quota rejection and second-slot denial are distinct outcomes; second-slot denial retains the first charge and a durable uncharged judge receipt."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A24",
+      "implementation": [
+        {
+          "path": "apps/mobile/src/services/dictionaryFollowingSync.ts",
+          "sha256": "76b46fe4d25d6865039bfa42e5725367decde81e2e1f3d5eef8d1e185d3d2402"
+        },
+        {
+          "path": "apps/web/src/features/dictionary/repository.ts",
+          "sha256": "5196d489ecc7a5c0cd08eab829a2cb94f44e70fc025263668b7b384bbc1e5594"
+        },
+        {
+          "path": "apps/web/src/features/review/repository.ts",
+          "sha256": "ed2e132cad08877946dd1da46bc8c8201476c8686e5d398c468cefb8ff31a255"
+        },
+        {
+          "path": "supabase/migrations/20261010090000_add_dictionary_following_reads.sql",
+          "sha256": "bd89aaf077b7a95e5a71f5a57c3c753aad9439987182970bf157f11257e5ec87"
+        },
+        {
+          "path": "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql",
+          "sha256": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193"
+        }
+      ],
+      "title": "No fanout, bounded reads and performance",
+      "required_layers": ["postgres", "web", "device"],
+      "current_expected": {
+        "publication_personal_row_fanout": 0,
+        "review_snapshot_rpcs": 1,
+        "per_card_dictionary_requests": 0,
+        "performance": "meet existing same-environment D13 gate; measure before and after"
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-following-reads.test.mjs",
+          "sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "previous_sha256": "ac730e63af4fd69312a945cbbb8d3d44f71d13ef78ad28f8de9dd38d3d01bd4a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-publication.test.mjs",
+          "sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "previous_sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/dictionary/following-repository.test.ts",
+          "sha256": "67a9058a11a2a33dfc582d7577e9619455c08e9af2a6f0a8df6be4f6353459da",
+          "previous_sha256": "67a9058a11a2a33dfc582d7577e9619455c08e9af2a6f0a8df6be4f6353459da",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/review/following-snapshot.test.ts",
+          "sha256": "ac3e90a24a2313c3c0426e31c063a9ed7ebc456254792df8cac3fff2045e7f8d",
+          "previous_sha256": "ac3e90a24a2313c3c0426e31c063a9ed7ebc456254792df8cac3fff2045e7f8d",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/mobile/src/services/__tests__/dictionaryFollowingSync.sqlite.test.ts",
+          "sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "previous_sha256": "44ce0701e4d013d3624bca940943c98db51446b1f476575e58855e7c7523129a",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [
+        "Structural query/fanout tests are available; same-environment before/after representative performance with actual target artifacts remains open."
+      ],
+      "acceptance_status": "not-certified-end-to-end"
+    },
+    {
+      "id": "A25",
+      "implementation": [
+        {
+          "path": "packages/domain/src/dictionary-analysis.ts",
+          "sha256": "51cf8f3547b2040d140f27cb1d29ebbcc7e0488935002f5355de91c626234b82"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/geminiTransport.ts",
+          "sha256": "b4327e9e86ba7ced6f652dcccab80f4a53c8cf41b6f662989098c441937e6ca5"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/protectedInput.ts",
+          "sha256": "f940f6a37233e5332059f48994c5d8fa145e6829ccbcec6fd405b2e9dbb66a6c"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/worker.ts",
+          "sha256": "ac4d290bf3bc6e67cb5913650d1fcc7dd24d87c7edcce39316d7762de07a204d"
+        },
+        {
+          "path": "supabase/migrations/20261010100000_add_dictionary_analysis_operations.sql",
+          "sha256": "f0a586733b67da47803559c4191060cbd1f9efa9da78f646d12c77d0899fa77e"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        },
+        {
+          "path": "supabase/migrations/20261010170000_add_dictionary_analysis_actor_signal.sql",
+          "sha256": "2e3d172682a03bd672fc58d8f8902328a5691778fa20c01a36a1307f5d5d76ce"
+        }
+      ],
+      "title": "Untrusted actor/metadata injection",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "outcome": "forbidden",
+        "provider_calls": 0,
+        "shared_mutations": 0
+      },
+      "expectation_correction": false,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-operations.test.mjs",
+          "sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "previous_sha256": "0cce5c3d7a093f03436423b7346acec58848e88f830f3145be01efd658361d96",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-actor.test.mjs",
+          "sha256": "72df9bd4e5c717ffeced89ce6c5104315812b3fc9adb7c7aef29bfc2cdb2fc26",
+          "previous_sha256": "72df9bd4e5c717ffeced89ce6c5104315812b3fc9adb7c7aef29bfc2cdb2fc26",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/worker_test.ts",
+          "sha256": "fd4deb10284d3a583aebc57954a8213e278508206757151f89e5a221cf46d70c",
+          "previous_sha256": "6aee9a7131cebc3e08bac2cf5d45f912481d1189e4fc49e248b650f5c5d85df0",
+          "evidence": "fresh-server-edge",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    },
+    {
+      "id": "A26",
+      "implementation": [
+        {
+          "path": "apps/web/src/features/dictionary/analysis-client.ts",
+          "sha256": "2ffbe38ecd46be1888f1bd49d58e81b7d4e42e22c97877e1cb64321690af4c47"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/candidateGuards.ts",
+          "sha256": "a354bd4b92c74b4207164304b46d319b7b5ca80df6de33c0fd2fe07cd2fa2f01"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/endpoint.ts",
+          "sha256": "1dbf9d65e6f8f61e95131d56c275d223765b0d5f97e6cfafec918ce62540f753"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/handler.ts",
+          "sha256": "808c21dd4fb95087fe352b07dff553aae7d993b7ae641859594a9b25a0d8dc57"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentEvaluator.ts",
+          "sha256": "fd152a69ca6077fdedf4be88540273a1cfe591bbfb5ddbd2c16705200753aa4d"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/independentStore.ts",
+          "sha256": "47347f4b49803a33c155f68741383a9e1743cf5aea10a3b19052cc8c9c302388"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/runtime.ts",
+          "sha256": "8da4efeaa7abe818432181a7dc1c97d51171430df56b98c8637f9ce0637d8259"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/semanticModel.ts",
+          "sha256": "27e416b7b11bbae27cdb7afa9d44bbf1f703c702d8fabea67de25d152929ce9a"
+        },
+        {
+          "path": "supabase/migrations/20261010110000_add_dictionary_analysis_publication.sql",
+          "sha256": "23d751e6204bfb0499932dc048e2b299af7635919d5ffc7235429a3442902193"
+        },
+        {
+          "path": "supabase/migrations/20261010160000_add_dictionary_analysis_endpoint_gates.sql",
+          "sha256": "751a052a4aa1d49bccf24882962a83a7eb1e075aba7fc3f4dab12f0677268756"
+        }
+      ],
+      "title": "No-change keeps head without extra publication",
+      "required_layers": ["edge", "postgres"],
+      "current_expected": {
+        "outcome": "no-change",
+        "head": "R1",
+        "new_revisions": 0,
+        "new_events": 0,
+        "quota_slots": 2,
+        "provider_calls": 2
+      },
+      "expectation_correction": true,
+      "test_evidence": [
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-publication.test.mjs",
+          "sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "previous_sha256": "2345521f34db6ae3cb28e4f02b7ef8fe60f1dd6f25cbc4a0c1419aca1db0226d",
+          "evidence": "fresh-server-postgres",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "scripts/postgres-tests/dictionary-analysis-endpoint.test.mjs",
+          "sha256": "458238171115e481d71d95e3418187bbed38c131cde0dbba29f0a3d3964fe81a",
+          "previous_sha256": "17b66824be97c7d8e0e2def26f41b13059dd3b720b31636eff3de3ea885eae40",
+          "evidence": "fresh-server-endpoint-final",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "supabase/functions/dictionary-analysis/semantic_test.ts",
+          "sha256": "e409b78ff28a2d1bc8143bcf73b3328b6acdada88c438e5a52570c9f29a7b69b",
+          "previous_sha256": "e409b78ff28a2d1bc8143bcf73b3328b6acdada88c438e5a52570c9f29a7b69b",
+          "evidence": "fresh-server-edge",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        },
+        {
+          "path": "apps/web/src/features/dictionary/analysis-client.test.ts",
+          "sha256": "376f24b991d0a27de6bca25c980c9dc8c0d555f30fa804a03134bf867cb69085",
+          "previous_sha256": "376f24b991d0a27de6bca25c980c9dc8c0d555f30fa804a03134bf867cb69085",
+          "evidence": "carried-from-D13A.6.5-not-rerun",
+          "scope": "local synthetic test suite; see title/assertions for covered portions"
+        }
+      ],
+      "remaining_qualification": [],
+      "acceptance_status": "local-test-coverage-identified"
+    }
+  ]
+}

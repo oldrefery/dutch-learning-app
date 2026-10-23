@@ -107,7 +107,10 @@ Before ending any work session:
 5. Record the persistence level: local-only, committed, or pushed. Make a scoped
    commit only when authorized; never push, open/merge a PR, deploy, or buy credits
    merely to preserve a handoff. Do not commit private reports or secrets.
-6. If complete, select the next stage and announce its model. Stop at the boundary
+6. After saving each checkpoint, state the exact next work, recommended model and
+   reasoning effort. When presenting options, always name the recommendation, explain
+   why, and give the advantages and disadvantages of each option.
+   If complete, select the next stage and announce its model. Stop at the boundary
    unless the user requested continued multi-stage work. If paused, retain the
    same stage and exact next checkpoint rather than resetting its checklist.
 

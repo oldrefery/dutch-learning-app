@@ -1,0 +1,820 @@
+diff --git a/apps/mobile/app.config.js b/apps/mobile/app.config.js
+index 74b264e..e8feeaf 100644
+--- a/apps/mobile/app.config.js
++++ b/apps/mobile/app.config.js
+@@ -5,9 +5,12 @@ export default () => {
+   const isQaBuild = process.env.WOORDENAAR_QA_BUILD === 'true'
+   const buildProfile = process.env.EAS_BUILD_PROFILE
+ 
+-  if (isQaBuild && ['preview', 'production'].includes(buildProfile)) {
++  if (
++    isQaBuild &&
++    ['preview', 'production', 'dictionary-release'].includes(buildProfile)
++  ) {
+     throw new Error(
+-      'WOORDENAAR_QA_BUILD cannot be used with preview or production'
++      'WOORDENAAR_QA_BUILD cannot be used with preview, production or dictionary-release'
+     )
+   }
+ 
+diff --git a/apps/mobile/eas.json b/apps/mobile/eas.json
+index 0c4c0b3..274df02 100644
+--- a/apps/mobile/eas.json
++++ b/apps/mobile/eas.json
+@@ -61,6 +61,17 @@
+       "android": {
+         "buildType": "apk"
+       }
++    },
++    "dictionary-release": {
++      "extends": "production",
++      "env": {
++        "EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED": "true",
++        "WOORDENAAR_QA_BUILD": "false",
++        "EXPO_PUBLIC_E2E_TEST_MODE": "false",
++        "EXPO_PUBLIC_DEV_USER_EMAIL": "disabled@example.invalid",
++        "EXPO_PUBLIC_DEV_USER_ID": "00000000-0000-0000-0000-000000000000",
++        "EXPO_PUBLIC_DEV_USER_PASSWORD": "disabled"
++      }
+     }
+   },
+   "submit": {
+@@ -73,6 +84,13 @@
+         "track": "internal",
+         "releaseStatus": "draft"
+       }
++    },
++    "dictionary-release": {
++      "extends": "production",
++      "android": {
++        "track": "internal",
++        "releaseStatus": "completed"
++      }
+     }
+   }
+ }
+diff --git a/apps/mobile/src/__tests__/appConfigOta.test.ts b/apps/mobile/src/__tests__/appConfigOta.test.ts
+index d641ee4..cb0d1ea 100644
+--- a/apps/mobile/src/__tests__/appConfigOta.test.ts
++++ b/apps/mobile/src/__tests__/appConfigOta.test.ts
+@@ -104,7 +104,21 @@ describe('mobile OTA build configuration', () => {
+     }
+   )
+ 
+-  it.each(['preview', 'production'])(
++  it('keeps OTA enabled for the held dictionary release candidate', () => {
++    const result = readConfig({
++      ...easJson.build['dictionary-release'].env,
++      EAS_BUILD_PROFILE: 'dictionary-release',
++    })
++
++    expect(result.status).toBe(0)
++    expect(JSON.parse(result.stdout)).toMatchObject({
++      qaBuild: false,
++      iosEnabled: true,
++      androidEnabled: 'true',
++    })
++  })
++
++  it.each(['preview', 'production', 'dictionary-release'])(
+     'rejects a QA flag leaking into %s',
+     profile => {
+       const result = readConfig({
+diff --git a/apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts b/apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts
+index 2efedd0..8b4ed40 100644
+--- a/apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts
++++ b/apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts
+@@ -11,6 +11,7 @@ import { dictionaryContentRepository as repository } from '../dictionaryContentR
+ jest.mock('../initDB')
+ 
+ const at = '2026-09-21T12:00:00.000Z'
++const WORD_ROW_QUERY = 'SELECT * FROM words WHERE word_id = ?'
+ const ownerId = '11111111-1111-4111-8111-111111111111'
+ const otherOwnerId = '22222222-2222-4222-8222-222222222222'
+ const wordId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+@@ -104,6 +105,59 @@ describe('dictionary content storage on SQLite', () => {
+     jest.useRealTimers()
+   })
+ 
++  it('reads incomplete private fallback content from SQLite without changing words or pending commands', async () => {
++    const fallback = { ...content, is_separable: true, prefix_part: null }
++    const before = db.prepare(WORD_ROW_QUERY).get(wordId)
++    await repository.saveCardStates([
++      {
++        word_id: wordId,
++        user_id: ownerId,
++        content_version: 0,
++        reference: null,
++        fallback_content: fallback,
++        overrides: {},
++        updated_at: at,
++      },
++    ])
++    const legacy = {
++      ...fallback,
++      dutch_original: '',
++      analysis_notes: '',
++      conjugation: {
++        present: 'loop',
++        simple_past: 'liep',
++        past_participle: 'gelopen',
++      },
++      examples: [{ nl: 'Ik loop.', en: 'I walk.' }],
++    }
++    db.prepare(
++      'UPDATE dictionary_card_content SET fallback_content_json = ? WHERE word_id = ?'
++    ).run(JSON.stringify(legacy), wordId)
++    for (let attempt = 0; attempt < 2; attempt++) {
++      const materialized = (
++        await repository.getMaterializedContent(ownerId, [wordId])
++      ).get(wordId)
++      expect(materialized).toMatchObject({
++        reference: null,
++        effective: {
++          content: {
++            dutch_original: null,
++            analysis_notes: null,
++            is_separable: true,
++            prefix_part: null,
++            conjugation: { ...legacy.conjugation, simple_past_plural: null },
++            examples: [{ ...legacy.examples[0], ru: null }],
++          },
++        },
++      })
++    }
++    expect(db.prepare(WORD_ROW_QUERY).get(wordId)).toEqual(before)
++    expect(await repository.getPendingCommands(ownerId)).toEqual([])
++    expect(
++      await repository.getMaterializedContent(otherOwnerId, [wordId])
++    ).toEqual(new Map())
++  })
++
+   it('preserves a pending private edit against equal and higher remote versions', async () => {
+     const local = {
+       word_id: wordId,
+@@ -210,9 +264,7 @@ describe('dictionary content storage on SQLite', () => {
+       'conflict',
+       'stale-content-version'
+     )
+-    const originalWord = db
+-      .prepare('SELECT * FROM words WHERE word_id = ?')
+-      .get(wordId)
++    const originalWord = db.prepare(WORD_ROW_QUERY).get(wordId)
+     const resolution = {
+       userId: ownerId,
+       wordId,
+@@ -237,9 +289,7 @@ describe('dictionary content storage on SQLite', () => {
+     expect(
+       (await repository.getMaterializedContent(ownerId, [wordId])).get(wordId)
+     ).toMatchObject({ content_version: 1, has_conflict: false })
+-    expect(
+-      db.prepare('SELECT * FROM words WHERE word_id = ?').get(wordId)
+-    ).toEqual(originalWord)
++    expect(db.prepare(WORD_ROW_QUERY).get(wordId)).toEqual(originalWord)
+   })
+ 
+   it('keeps an explicitly chosen local version as a new versioned private command', async () => {
+diff --git a/apps/mobile/src/db/dictionaryContentMapping.ts b/apps/mobile/src/db/dictionaryContentMapping.ts
+index ad5d7c4..7270d4e 100644
+--- a/apps/mobile/src/db/dictionaryContentMapping.ts
++++ b/apps/mobile/src/db/dictionaryContentMapping.ts
+@@ -1,11 +1,11 @@
+ import type { Word } from '@/types/database'
+ import {
+-  parseDictionaryContent,
++  parsePrivateDictionaryContent,
+   type DictionaryContent,
+ } from '@woordenaar/domain'
+ 
+ const requireContent = (value: unknown): DictionaryContent => {
+-  const result = parseDictionaryContent(value)
++  const result = parsePrivateDictionaryContent(value)
+   if (result.success) return result.data
+   const firstIssue = result.issues[0]
+   throw new Error(
+diff --git a/apps/mobile/src/db/dictionaryContentRepository.ts b/apps/mobile/src/db/dictionaryContentRepository.ts
+index d8ff065..648b43e 100644
+--- a/apps/mobile/src/db/dictionaryContentRepository.ts
++++ b/apps/mobile/src/db/dictionaryContentRepository.ts
+@@ -2,7 +2,7 @@ import { getDatabase } from './initDB'
+ import type { SQLiteBindValue } from 'expo-sqlite'
+ import {
+   parseDictionaryCefrAssessment,
+-  parseDictionaryContent,
++  parsePrivateDictionaryContent,
+   parseDictionaryContentCommand,
+   parseDictionaryContentOverrides,
+   parseDictionaryReference,
+@@ -471,7 +471,7 @@ export class DictionaryContentRepository {
+       state.fallback_content === null
+         ? null
+         : requireParsed(
+-            parseDictionaryContent(state.fallback_content),
++            parsePrivateDictionaryContent(state.fallback_content),
+             'dictionary fallback content'
+           )
+     const overrides = requireParsed(
+@@ -755,7 +755,7 @@ export class DictionaryContentRepository {
+       row.fallback_content_json === null
+         ? null
+         : requireParsed(
+-            parseDictionaryContent(
++            parsePrivateDictionaryContent(
+               parseJson(
+                 row.fallback_content_json,
+                 'dictionary fallback content'
+diff --git a/apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts b/apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts
+index ed26bb0..4e11d70 100644
+--- a/apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts
++++ b/apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts
+@@ -165,6 +165,72 @@ const installTableRows = (
+ }
+ 
+ describe('dictionaryContentSync', () => {
++  it('hydrates an unlinked legacy card despite old nullable-field omissions', async () => {
++    const legacy = {
++      ...content,
++      dutch_original: '',
++      analysis_notes: '',
++      is_separable: true,
++      prefix_part: null,
++      conjugation: {
++        present: 'loop',
++        simple_past: 'liep',
++        past_participle: 'gelopen',
++      },
++      examples: [{ nl: 'Ik loop.', en: 'I walk.' }],
++    }
++    jest.mocked(supabase.rpc).mockResolvedValue(
++      rpcResult({
++        protocol_version: 1,
++        cards: [
++          {
++            ...linkedCard,
++            reference: null,
++            content_version: 0,
++            content: legacy,
++            cefr: { status: 'unknown' },
++          },
++        ],
++      })
++    )
++    installTableRows({})
++    await expect(dictionaryContentSync.pull(USER_ID, [WORD_ID])).resolves.toBe(
++      1
++    )
++    expect(dictionaryContentRepository.saveCardStates).toHaveBeenCalledWith(
++      [
++        expect.objectContaining({
++          word_id: WORD_ID,
++          reference: null,
++          content_version: 0,
++          fallback_content: expect.objectContaining({
++            dutch_original: null,
++            analysis_notes: null,
++            is_separable: true,
++            prefix_part: null,
++            conjugation: { ...legacy.conjugation, simple_past_plural: null },
++            examples: [{ ...legacy.examples[0], ru: null }],
++          }),
++        }),
++      ],
++      []
++    )
++  })
++
++  it('continues to reject malformed pinned canonical content', async () => {
++    jest.mocked(supabase.rpc).mockResolvedValue(
++      rpcResult({
++        protocol_version: 1,
++        cards: [{ ...linkedCard, content: { ...content, dutch_original: '' } }],
++      })
++    )
++    installTableRows({})
++    await expect(
++      dictionaryContentSync.pull(USER_ID, [WORD_ID])
++    ).rejects.toThrow('Invalid effective dictionary content')
++    expect(dictionaryContentRepository.saveCardStates).not.toHaveBeenCalled()
++  })
++
+   beforeEach(() => {
+     jest.clearAllMocks()
+     Object.assign(supabase.auth, { getUser: jest.fn() })
+diff --git a/apps/mobile/src/services/__tests__/syncStatusService.test.ts b/apps/mobile/src/services/__tests__/syncStatusService.test.ts
+index f9529ba..b549e0a 100644
+--- a/apps/mobile/src/services/__tests__/syncStatusService.test.ts
++++ b/apps/mobile/src/services/__tests__/syncStatusService.test.ts
+@@ -283,3 +283,46 @@ it('counts cancellation and independent placement debt even when generic metadat
+   expect(snapshot.pendingWords).toBe(2)
+   expect(snapshot.totalPending).toBe(2)
+ })
++
++describe('temporary SQLite contention', () => {
++  beforeEach(() => jest.useFakeTimers())
++  afterEach(() => {
++    jest.useRealTimers()
++    jest.mocked(wordRepository.getWordsByUserId).mockResolvedValue([])
++  })
++
++  it('retries a native finalize lock and returns the current owner snapshot', async () => {
++    const lock = new Error(
++      "Calling 'finalizeAsync' failed: SQLiteErrorException: Error code 5: database is locked"
++    )
++    jest.mocked(wordRepository.getWordsByUserId).mockRejectedValueOnce(lock)
++    const result = syncStatusService.getSnapshot(PENDING_OWNER)
++    await jest.runAllTimersAsync()
++    expect(await result).toMatchObject({ totalLocalWords: 0 })
++    expect(wordRepository.getWordsByUserId).toHaveBeenCalledTimes(2)
++    expect(wordRepository.getWordsByUserId).toHaveBeenLastCalledWith(
++      PENDING_OWNER
++    )
++  })
++
++  it('surfaces a persistent lock after bounded retries instead of fabricating an empty status', async () => {
++    const lock = new Error('database is locked')
++    jest.mocked(wordRepository.getWordsByUserId).mockRejectedValue(lock)
++    const result = expect(
++      syncStatusService.getSnapshot(PENDING_OWNER)
++    ).rejects.toBe(lock)
++    await jest.runAllTimersAsync()
++    await result
++    expect(wordRepository.getWordsByUserId).toHaveBeenCalledTimes(4)
++  })
++
++  it('does not retry schema or content failures', async () => {
++    const failure = new Error('no such table: words')
++    jest.mocked(wordRepository.getWordsByUserId).mockRejectedValueOnce(failure)
++    await expect(syncStatusService.getSnapshot(PENDING_OWNER)).rejects.toBe(
++      failure
++    )
++    expect(wordRepository.getWordsByUserId).toHaveBeenCalledTimes(1)
++    expect(jest.getTimerCount()).toBe(0)
++  })
++})
+diff --git a/apps/mobile/src/services/dictionaryContentSync.ts b/apps/mobile/src/services/dictionaryContentSync.ts
+index eadbe5d..ffe9513 100644
+--- a/apps/mobile/src/services/dictionaryContentSync.ts
++++ b/apps/mobile/src/services/dictionaryContentSync.ts
+@@ -8,6 +8,7 @@ import {
+   DICTIONARY_CONTENT_PROTOCOL_VERSION,
+   parseDictionaryCefrAssessment,
+   parseDictionaryContent,
++  parsePrivateDictionaryContent,
+   parseDictionaryContentCapability,
+   parseDictionaryReference,
+   parseDictionaryRevision,
+@@ -141,7 +142,9 @@ const parseEffectiveCard = (value: unknown): EffectiveCard => {
+           'effective dictionary reference'
+         )
+   const content = requireParsed(
+-    parseDictionaryContent(value.content),
++    reference === null
++      ? parsePrivateDictionaryContent(value.content)
++      : parseDictionaryContent(value.content),
+     'effective dictionary content'
+   )
+   if (
+@@ -229,7 +232,7 @@ const parseContentState = (value: unknown, userId: string): ContentStateRow => {
+     value.fallback_content === null
+       ? null
+       : requireParsed(
+-          parseDictionaryContent(value.fallback_content),
++          parsePrivateDictionaryContent(value.fallback_content),
+           'dictionary fallback content'
+         )
+   if (!isRecord(value.overrides)) {
+@@ -379,7 +382,9 @@ export const dictionaryContentSync = {
+       await dictionaryContentRepository.getMaterializedContent(userId, [wordId])
+     ).get(wordId)
+     const localContent = requireParsed(
+-      parseDictionaryContent(local?.effective.content),
++      local?.reference === null
++        ? parsePrivateDictionaryContent(local.effective.content)
++        : parseDictionaryContent(local?.effective.content),
+       'local conflict content'
+     )
+     const { data, error } = await supabase.rpc(
+diff --git a/apps/mobile/src/services/syncStatusService.ts b/apps/mobile/src/services/syncStatusService.ts
+index f066ec2..22c5e32 100644
+--- a/apps/mobile/src/services/syncStatusService.ts
++++ b/apps/mobile/src/services/syncStatusService.ts
+@@ -8,6 +8,7 @@ import { dictionaryImportRecoveryRepository } from '@/db/dictionaryImportRecover
+ import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
+ import { dictionaryPersonalRefreshRepository } from '@/db/dictionaryPersonalRefreshRepository'
+ import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
++import { retryWithBackoff } from '@/utils/retryUtils'
+ 
+ export interface SyncStatusSnapshot {
+   totalLocalWords: number
+@@ -21,76 +22,92 @@ export interface SyncStatusSnapshot {
+   isOnline: boolean
+ }
+ 
+-export const syncStatusService = {
+-  async getSnapshot(userId: string): Promise<SyncStatusSnapshot> {
+-    const [
+-      localWords,
+-      localCollections,
+-      localProgress,
+-      pendingWords,
+-      pendingCollections,
+-      pendingProgress,
+-      deletedWords,
+-      deletedCollections,
+-      lastSyncAt,
+-      isOnline,
+-    ] = await Promise.all([
+-      wordRepository.getWordsByUserId(userId),
+-      collectionRepository.getCollectionsByUserId(userId),
+-      progressRepository.getProgressByUserId(userId),
+-      wordRepository.getPendingSyncWords(userId),
+-      collectionRepository.getPendingSyncCollections(userId),
+-      progressRepository.getPendingSyncProgress(userId),
+-      wordRepository.getDeletedWords(userId),
+-      collectionRepository.getDeletedCollections(userId),
+-      getLastSyncTimestamp(userId),
+-      isNetworkAvailable(),
+-    ])
++async function readSnapshot(userId: string): Promise<SyncStatusSnapshot> {
++  const [
++    localWords,
++    localCollections,
++    localProgress,
++    pendingWords,
++    pendingCollections,
++    pendingProgress,
++    deletedWords,
++    deletedCollections,
++    lastSyncAt,
++    isOnline,
++  ] = await Promise.all([
++    wordRepository.getWordsByUserId(userId),
++    collectionRepository.getCollectionsByUserId(userId),
++    progressRepository.getProgressByUserId(userId),
++    wordRepository.getPendingSyncWords(userId),
++    collectionRepository.getPendingSyncCollections(userId),
++    progressRepository.getPendingSyncProgress(userId),
++    wordRepository.getDeletedWords(userId),
++    collectionRepository.getDeletedCollections(userId),
++    getLastSyncTimestamp(userId),
++    isNetworkAvailable(),
++  ])
++
++  const [
++    commands,
++    missingCardWordIds,
++    imports,
++    personalRefreshIds,
++    recoveries,
++    placementDebtIds,
++  ] = isDictionaryContentEnabled()
++    ? await Promise.all([
++        dictionaryContentRepository.getPendingCommands(userId),
++        dictionaryContentRepository.getMissingCardWordIds(userId),
++        dictionaryImportRepository.getPending(userId),
++        dictionaryPersonalRefreshRepository.getWordIds(userId),
++        dictionaryImportRecoveryRepository.getPending(userId),
++        dictionaryImportDeliveryRepository.getDebtWordIds(userId),
++      ])
++    : [[], [], [], [], [], []]
++  const pendingWordCount = new Set([
++    ...pendingWords.map(word => word.word_id),
++    ...deletedWords.map(word => word.word_id),
++    ...commands.map(row => row.command.word_id),
++    ...imports.map(row => row.intent.word_id),
++    ...personalRefreshIds,
++    ...recoveries.map(row => row.word_id),
++    ...placementDebtIds,
++    ...missingCardWordIds,
++  ]).size
++  const pendingCollectionCount = new Set([
++    ...pendingCollections.map(collection => collection.collection_id),
++    ...deletedCollections.map(collection => collection.collection_id),
++  ]).size
++  const pendingProgressCount = pendingProgress.length
+ 
+-    const [
+-      commands,
+-      missingCardWordIds,
+-      imports,
+-      personalRefreshIds,
+-      recoveries,
+-      placementDebtIds,
+-    ] = isDictionaryContentEnabled()
+-      ? await Promise.all([
+-          dictionaryContentRepository.getPendingCommands(userId),
+-          dictionaryContentRepository.getMissingCardWordIds(userId),
+-          dictionaryImportRepository.getPending(userId),
+-          dictionaryPersonalRefreshRepository.getWordIds(userId),
+-          dictionaryImportRecoveryRepository.getPending(userId),
+-          dictionaryImportDeliveryRepository.getDebtWordIds(userId),
+-        ])
+-      : [[], [], [], [], [], []]
+-    const pendingWordCount = new Set([
+-      ...pendingWords.map(word => word.word_id),
+-      ...deletedWords.map(word => word.word_id),
+-      ...commands.map(row => row.command.word_id),
+-      ...imports.map(row => row.intent.word_id),
+-      ...personalRefreshIds,
+-      ...recoveries.map(row => row.word_id),
+-      ...placementDebtIds,
+-      ...missingCardWordIds,
+-    ]).size
+-    const pendingCollectionCount = new Set([
+-      ...pendingCollections.map(collection => collection.collection_id),
+-      ...deletedCollections.map(collection => collection.collection_id),
+-    ]).size
+-    const pendingProgressCount = pendingProgress.length
++  return {
++    totalLocalWords: localWords.length,
++    totalLocalCollections: localCollections.length,
++    totalLocalProgress: localProgress.length,
++    pendingWords: pendingWordCount,
++    pendingCollections: pendingCollectionCount,
++    pendingProgress: pendingProgressCount,
++    totalPending:
++      pendingWordCount + pendingCollectionCount + pendingProgressCount,
++    lastSyncAt,
++    isOnline,
++  }
++}
+ 
+-    return {
+-      totalLocalWords: localWords.length,
+-      totalLocalCollections: localCollections.length,
+-      totalLocalProgress: localProgress.length,
+-      pendingWords: pendingWordCount,
+-      pendingCollections: pendingCollectionCount,
+-      pendingProgress: pendingProgressCount,
+-      totalPending:
+-        pendingWordCount + pendingCollectionCount + pendingProgressCount,
+-      lastSyncAt,
+-      isOnline,
+-    }
++export const syncStatusService = {
++  getSnapshot(userId: string): Promise<SyncStatusSnapshot> {
++    // Status reads can overlap an exclusive sync transaction on another connection.
++    // Retry the read only; persistent locks and all other failures still reach the UI.
++    return retryWithBackoff(() => readSnapshot(userId), {
++      maxRetries: 3,
++      initialDelayMs: 100,
++      maxDelayMs: 400,
++      shouldRetry: error =>
++        typeof error === 'object' &&
++        error !== null &&
++        'message' in error &&
++        typeof error.message === 'string' &&
++        /\bdatabase (?:table )?is locked\b/i.test(error.message),
++    })
+   },
+ }
+diff --git a/apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts b/apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts
+index 279dea6..6c96b2e 100644
+--- a/apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts
++++ b/apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts
+@@ -3,6 +3,7 @@ import {
+   DICTIONARY_CONTENT_PROTOCOL_VERSION,
+   parseDictionaryCefrAssessment,
+   parseDictionaryContent,
++  parsePrivateDictionaryContent,
+   parseDictionaryContentCommand,
+   parseDictionaryContentOverrides,
+   parseDictionaryEntry,
+@@ -62,6 +63,80 @@ const revision = (): DictionaryRevision => ({
+ })
+ 
+ describe('shared dictionary contract', () => {
++  it('reads historical private omissions without weakening canonical content or mutating the input', () => {
++    const legacy = {
++      ...content(),
++      dutch_original: '',
++      analysis_notes: '  ',
++      tts_url: '',
++      conjugation: {
++        present: 'loop',
++        simple_past: 'liep',
++        past_participle: 'gelopen',
++      },
++      examples: [{ nl: 'Ik loop.', en: 'I walk.' }],
++    }
++    const before = JSON.stringify(legacy)
++    expect(parseDictionaryContent(legacy).success).toBe(false)
++    expect(parsePrivateDictionaryContent(legacy)).toEqual({
++      success: true,
++      data: {
++        ...legacy,
++        dutch_original: null,
++        analysis_notes: null,
++        tts_url: null,
++        conjugation: { ...legacy.conjugation, simple_past_plural: null },
++        examples: [{ ...legacy.examples[0], ru: null }],
++      },
++    })
++    expect(JSON.stringify(legacy)).toBe(before)
++  })
++
++  it('preserves incomplete private separable metadata but rejects authoring it as new canonical content', () => {
++    const legacy = {
++      ...content(),
++      is_separable: true,
++      prefix_part: null,
++      root_verb: null,
++    }
++    expect(parsePrivateDictionaryContent(legacy)).toEqual({
++      success: true,
++      data: legacy,
++    })
++    expect(parseDictionaryContent(legacy).success).toBe(false)
++    expect(
++      parseDictionaryContentCommand({
++        protocol_version: 1,
++        operation_id: operationId,
++        word_id: wordId,
++        expected_content_version: 0,
++        kind: 'create-private',
++        content: legacy,
++      }).success
++    ).toBe(false)
++    expect(
++      parseDictionaryRevision({ ...revision(), content: legacy }).success
++    ).toBe(false)
++  })
++
++  it('keeps type checks and unknown-field rejection at the private read boundary', () => {
++    for (const legacy of [
++      { ...content(), private_note: 'unexpected' },
++      { ...content(), examples: [{ nl: 'Hoi', en: 'Hello', ru: 42 }] },
++      {
++        ...content(),
++        conjugation: {
++          present: 'loop',
++          simple_past: 'liep',
++          past_participle: 'gelopen',
++          simple_past_plural: 42,
++        },
++      },
++      { ...content(), translations: { en: [], ru: [] } },
++    ])
++      expect(parsePrivateDictionaryContent(legacy).success).toBe(false)
++  })
++
+   it('strictly validates content, identities, revisions, and reference pairs', () => {
+     expect(parseDictionaryContent(content())).toEqual({
+       success: true,
+diff --git a/packages/domain/src/shared-dictionary.ts b/packages/domain/src/shared-dictionary.ts
+index c9dc4c8..ede04fa 100644
+--- a/packages/domain/src/shared-dictionary.ts
++++ b/packages/domain/src/shared-dictionary.ts
+@@ -441,8 +441,9 @@ const toResult = <Value>(
+ ): DictionaryValidationResult<Value> =>
+   issues.length === 0 ? { success: true, data } : { success: false, issues }
+ 
+-export const parseDictionaryContent = (
+-  value: unknown
++const parseDictionaryContentFields = (
++  value: unknown,
++  requireSeparableParts: boolean
+ ): DictionaryValidationResult<DictionaryContent> => {
+   const issues: DictionaryValidationIssue[] = []
+   if (!isRecord(value)) {
+@@ -458,7 +459,7 @@ export const parseDictionaryContent = (
+       issues
+     )
+   })
+-  if (parsed.is_separable === true) {
++  if (requireSeparableParts && parsed.is_separable === true) {
+     if (parsed.prefix_part === null) {
+       addIssue(
+         issues,
+@@ -473,6 +474,61 @@ export const parseDictionaryContent = (
+   return toResult(issues, parsed as unknown as DictionaryContent)
+ }
+ 
++export const parseDictionaryContent = (
++  value: unknown
++): DictionaryValidationResult<DictionaryContent> =>
++  parseDictionaryContentFields(value, true)
++
++const legacyNullableText = (value: unknown): unknown =>
++  typeof value === 'string' && value.trim().length === 0 ? null : value
++
++const legacyExample = (value: unknown): unknown =>
++  isRecord(value) ? { ...value, ru: value.ru ?? null } : value
++
++const legacyUsageNotes = (value: unknown): unknown => {
++  if (!isRecord(value) || !Array.isArray(value.contrasts)) return value
++  return {
++    ...value,
++    contrasts: value.contrasts.map(contrast =>
++      isRecord(contrast)
++        ? { ...contrast, example: legacyExample(contrast.example ?? null) }
++        : contrast
++    ),
++  }
++}
++
++// Existing private cards predate the canonical authoring contract. Normalize
++// representational omissions only in their read model, retaining incomplete
++// separable-verb metadata without inventing a prefix or changing its meaning.
++// New commands, revisions and shared imports continue to use the strict parser.
++export const parsePrivateDictionaryContent = (
++  value: unknown
++): DictionaryValidationResult<DictionaryContent> => {
++  if (!isRecord(value)) return parseDictionaryContentFields(value, false)
++  return parseDictionaryContentFields(
++    {
++      ...value,
++      dutch_original: legacyNullableText(value.dutch_original),
++      analysis_notes: legacyNullableText(value.analysis_notes),
++      tts_url: legacyNullableText(value.tts_url),
++      translations: isRecord(value.translations)
++        ? { ...value.translations, ru: value.translations.ru ?? [] }
++        : value.translations,
++      examples: Array.isArray(value.examples)
++        ? value.examples.map(legacyExample)
++        : value.examples,
++      conjugation: isRecord(value.conjugation)
++        ? {
++            ...value.conjugation,
++            simple_past_plural: value.conjugation.simple_past_plural ?? null,
++          }
++        : value.conjugation,
++      usage_notes: legacyUsageNotes(value.usage_notes),
++    },
++    false
++  )
++}
++
+ const parseUuid = (
+   value: unknown,
+   path: string,
+diff --git a/apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts b/apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts
+new file mode 100644
+index 0000000..7239b0d
+--- /dev/null
++++ b/apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts
+@@ -0,0 +1,64 @@
++import { DatabaseSync } from 'node:sqlite'
++import { mkdtempSync, rmSync } from 'node:fs'
++import { tmpdir } from 'node:os'
++import { join } from 'node:path'
++import { createTestDatabase } from '@/db/__tests__/sqlite.fixture'
++import { syncStatusService } from '../syncStatusService'
++
++jest.mock('@/db/initDB')
++jest.mock('@/utils/network', () => ({
++  getLastSyncTimestamp: jest.fn().mockResolvedValue(null),
++  isNetworkAvailable: jest.fn().mockResolvedValue(false),
++}))
++jest.mock('@/constants/dictionaryContent', () => ({
++  isDictionaryContentEnabled: () => true,
++}))
++
++it('reads status after a competing SQLite transaction releases its lock without changing cards or queues', async () => {
++  const directory = mkdtempSync(join(tmpdir(), 'sync-status-lock-'))
++  const path = join(directory, 'status.db')
++  const database = createTestDatabase(path)
++  const writer = new DatabaseSync(path)
++  let unlock: ReturnType<typeof setTimeout> | undefined
++  try {
++    const insert = database.prepare(`
++      INSERT INTO words (
++        word_id, user_id, dutch_lemma, translations, next_review_date,
++        created_at, updated_at, sync_status
++      ) VALUES (?, ?, 'huis', '{}', '2026-10-10', '2026-10-10', '2026-10-10', 'pending')
++    `)
++    insert.run('own-word', 'owner')
++    insert.run('other-word', 'other-owner')
++    const before = database
++      .prepare('SELECT * FROM words ORDER BY word_id')
++      .all()
++    const changesBefore = database
++      .prepare('SELECT total_changes() AS count')
++      .get()
++    writer.exec('BEGIN EXCLUSIVE')
++    expect(() => database.prepare('SELECT * FROM words').all()).toThrow(
++      'database is locked'
++    )
++    unlock = setTimeout(() => writer.exec('COMMIT'), 20)
++
++    const snapshot = await syncStatusService.getSnapshot('owner')
++
++    expect(snapshot).toMatchObject({
++      totalLocalWords: 1,
++      pendingWords: 1,
++      totalPending: 1,
++      isOnline: false,
++    })
++    expect(
++      database.prepare('SELECT * FROM words ORDER BY word_id').all()
++    ).toEqual(before)
++    expect(database.prepare('SELECT total_changes() AS count').get()).toEqual(
++      changesBefore
++    )
++  } finally {
++    clearTimeout(unlock)
++    writer.close()
++    database.close()
++    rmSync(directory, { recursive: true, force: true })
++  }
++})

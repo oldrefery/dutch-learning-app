@@ -1,0 +1,179 @@
+{
+  "completed_at": "2026-10-09T22:03:29.002516+00:00",
+  "authorization": "AUTH-28",
+  "delivery_status": "published-and-verified",
+  "stage": "D13.6 in_progress",
+  "publication_utc": "2026-10-09T21:59:12.190Z",
+  "owner": "oldrefery",
+  "project_id": "d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
+  "environment": "production",
+  "channel": "production",
+  "branch": "production",
+  "channel_mapping_preserved": true,
+  "source_base": "0a3bae137d3e58c406215114cbccadd773f71098",
+  "source_archive_sha256": "19e8e9bd2c7ef8885554ca45e2582a3d35aa1af8ecad9177cc1a8c1600673daa",
+  "export_manifest_sha256": "3e4a9696cb9bd5bc6c420e1a8167c23f9739ae981d5ecfee91ef4cb2d3b65a89",
+  "updates": [
+    {
+      "id": "01a122ad-683e-7763-a736-9a522c38cec8",
+      "group": "d5e5379d-2ca5-4d76-86de-02638cac6041",
+      "platform": "ios",
+      "runtimeVersion": "94476f50e33e655576f1ef396170c5e29b38664e",
+      "createdAt": "2026-10-09T21:59:12.190Z",
+      "branch": "production",
+      "message": "Fix legacy private dictionary sync on 2.4.0 (85); source 19e8e9bd2c7e"
+    },
+    {
+      "id": "01a122ad-683e-7c6a-bbbd-d6a42da5437b",
+      "group": "efcee60d-d833-4f52-b91c-86c3177bf983",
+      "platform": "android",
+      "runtimeVersion": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4",
+      "createdAt": "2026-10-09T21:59:12.190Z",
+      "branch": "production",
+      "message": "Fix legacy private dictionary sync on 2.4.0 (85); source 19e8e9bd2c7e"
+    }
+  ],
+  "serving": [
+    {
+      "platform": "ios",
+      "checked_at": "2026-10-09T22:02:25.978175+00:00",
+      "update_id": "01a122ad-683e-7763-a736-9a522c38cec8",
+      "group_id": "d5e5379d-2ca5-4d76-86de-02638cac6041",
+      "runtime": "94476f50e33e655576f1ef396170c5e29b38664e",
+      "manifest_http": 200,
+      "launch_asset_http": 200,
+      "downloaded_bundle_sha256": "679b8f65f2cc027540b8f4dfb7cfce74867b5c734a340f2771c024766e1cccb4",
+      "original_bundle_match": true,
+      "all_asset_hashes_match": true,
+      "asset_hash_count": 45,
+      "qa_build": false,
+      "version": "2.4.0",
+      "build": "85"
+    },
+    {
+      "platform": "android",
+      "checked_at": "2026-10-09T22:02:30.149057+00:00",
+      "update_id": "01a122ad-683e-7c6a-bbbd-d6a42da5437b",
+      "group_id": "efcee60d-d833-4f52-b91c-86c3177bf983",
+      "runtime": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4",
+      "manifest_http": 200,
+      "launch_asset_http": 200,
+      "downloaded_bundle_sha256": "cf1aa5c93b2a799a07ca5d632848b5ed1a0f6da25d8b5c995a074f24686e2f0e",
+      "original_bundle_match": true,
+      "all_asset_hashes_match": true,
+      "asset_hash_count": 49,
+      "qa_build": false,
+      "version": "2.4.0",
+      "build": "85"
+    }
+  ],
+  "sentry": {
+    "authorization": "AUTH-28",
+    "phase": "processed",
+    "started_at": "2026-10-09T21:59:17.978616+00:00",
+    "org": "oldrefery",
+    "project": "dutch-learning-app",
+    "debug_ids": [
+      "1654b320-8f80-4cf1-afb0-3c9a91a5cc2a",
+      "4865f93e-e7a3-473b-9669-199861bebc2b"
+    ],
+    "original_dist_preserved": true,
+    "wait_for_processing_seconds": 60,
+    "exit_code": 0,
+    "finished_at": "2026-10-09T21:59:29.122736+00:00",
+    "artifact_bundle_ids": [
+      "bbed729d-e570-505b-b77b-114467eb1cd4",
+      "1491774f-7eb4-5ba7-b1fb-16f350952c36"
+    ]
+  },
+  "initial_eas_metrics": {
+    "ios": {
+      "checked_until": "2026-10-09T22:00:10.560Z",
+      "totals": {
+        "uniqueUsers": 0,
+        "installs": 0,
+        "failedInstalls": 0,
+        "crashRatePercent": 0
+      }
+    },
+    "android": {
+      "checked_until": "2026-10-09T22:00:16.539Z",
+      "totals": {
+        "uniqueUsers": 0,
+        "installs": 0,
+        "failedInstalls": 0,
+        "crashRatePercent": 0
+      }
+    }
+  },
+  "initial_sentry_health": {
+    "checked_at": "2026-10-09T22:01:04.539281+00:00",
+    "environment": "production",
+    "time_range": "14d",
+    "queries": [
+      {
+        "query": "timestamp:>2026-10-09T21:59:12Z dist:85",
+        "returned_issue_count": 0,
+        "issues": []
+      },
+      {
+        "query": "expo.updates.update_id:01a122ad-683e-7763-a736-9a522c38cec8",
+        "returned_issue_count": 0,
+        "issues": []
+      },
+      {
+        "query": "expo.updates.update_id:01a122ad-683e-7c6a-bbbd-d6a42da5437b",
+        "returned_issue_count": 0,
+        "issues": []
+      }
+    ],
+    "historical_issues": [
+      {
+        "id": "7737950888",
+        "shortId": "DUTCH-LEARNING-APP-4C",
+        "status": "unresolved",
+        "level": "error",
+        "firstSeen": "2026-09-17T13:29:37.910000Z",
+        "lastSeen": "2026-10-09T21:29:06Z",
+        "count": "23",
+        "permalink": "https://oldrefery.sentry.io/issues/7737950888/"
+      },
+      {
+        "id": "7715295374",
+        "shortId": "DUTCH-LEARNING-APP-49",
+        "status": "unresolved",
+        "level": "warning",
+        "firstSeen": "2026-09-06T13:28:25.473000Z",
+        "lastSeen": "2026-10-05T14:23:41Z",
+        "count": "4",
+        "permalink": "https://oldrefery.sentry.io/issues/7715295374/"
+      }
+    ]
+  },
+  "device_sync": "owner-confirmed-success-after-OTA-reopen-check",
+  "native_offline_return": "unverified",
+  "health_acceptance": "online-sync-owner-confirmed; offline-return-and-observation-pending",
+  "local_persistence": "uncommitted",
+  "private_receipts": "reports/shared-dictionary-cefr/d13-delivery-20261009",
+  "operations_not_performed": [
+    "rebundle",
+    "native build",
+    "store submission",
+    "backend migration",
+    "runtime flag change",
+    "CEFR activation",
+    "personal-data or phone write",
+    "source commit/push/merge",
+    "background automation"
+  ],
+  "resolved_verification_limitation": "Initial bare CDN asset GETs returned403 because multipart assetRequestHeaders were omitted. Official protocol extensions were then honored; both original bundles returned200 and exact hashes matched.",
+  "owner_sync_confirmation": {
+    "recorded_at_utc": "2026-10-09T22:07:40Z",
+    "local_date": "2026-10-10",
+    "timezone": "Europe/Amsterdam",
+    "result": "Synchronization completed without the previous error.",
+    "source": "Owner reply to post-OTA online/reopen verification question",
+    "device_update_id_independently_verified": false,
+    "platform_in_reply": null
+  }
+}

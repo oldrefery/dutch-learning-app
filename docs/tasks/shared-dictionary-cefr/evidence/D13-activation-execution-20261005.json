@@ -1,0 +1,148 @@
+{
+  "authorization": "AUTH-27",
+  "date": "2026-10-05",
+  "status": "authorized-dictionary-beta-release-complete",
+  "native_source": "0a3bae137d3e58c406215114cbccadd773f71098",
+  "web_source": "44141e00bddfe00267314374bc33a7a0cf8fb4a2",
+  "backup": {
+    "path": "builds/d13-activation-backup.87qvcan2/database.sql",
+    "sha256": "9880ab9f5caf5fe07b2344b3a671eb0ad92d06f490e594e9f4fbe19075ed4443",
+    "tables": 79,
+    "rows": 24259,
+    "restored_and_verified": true
+  },
+  "publication": {
+    "jobs": 0,
+    "runs": 0,
+    "packs": 21,
+    "worker": {
+      "enabled": false,
+      "policy_id": null,
+      "singleton": true
+    },
+    "entries": 2053,
+    "methods": 0,
+    "runtime": {
+      "singleton": true,
+      "reads_enabled": false,
+      "operations_enabled": false,
+      "legacy_guard_enabled": false
+    },
+    "sources": 2053,
+    "mappings": 2053,
+    "revisions": 2053,
+    "assessments": 0,
+    "linked_cache": 0,
+    "linked_words": 0,
+    "original_official_content_parity": 2053
+  },
+  "publication_transactions": 83,
+  "edge": {
+    "version": 132,
+    "status": "ACTIVE",
+    "verify_jwt": true,
+    "other_functions_unchanged": true,
+    "cefr_env_absent": true,
+    "non_provider_smoke": {
+      "OPTIONS": 200,
+      "POST": 401
+    },
+    "source_commit": "0a3bae137d3e58c406215114cbccadd773f71098"
+  },
+  "runtime": {
+    "authorization": "AUTH-27",
+    "phase": "committed",
+    "sha256": "9d1913544408426e4360fb60f1efe7053b62fd52b21197dc703feb16c3affab3",
+    "flags": ["operations_enabled", "reads_enabled", "legacy_guard_enabled"],
+    "started_at": "2026-10-04T22:29:57Z",
+    "personal_tables_preserved": 14,
+    "authenticated_accounts_verified": 2,
+    "official_packs_verified": 21
+  },
+  "final_runtime": {
+    "jobs": 0,
+    "runs": 0,
+    "worker": {
+      "enabled": false,
+      "policy_id": null,
+      "singleton": true
+    },
+    "entries": 2053,
+    "methods": 0,
+    "runtime": {
+      "singleton": true,
+      "reads_enabled": true,
+      "operations_enabled": true,
+      "legacy_guard_enabled": true
+    },
+    "mappings": 2053,
+    "assessments": 0,
+    "linked_cache": 0,
+    "linked_words": 0,
+    "cross_owner_rpc_isolation": "P1 and P2 return zero foreign cards",
+    "checked_at": "2026-10-04T22:34:58Z"
+  },
+  "web": {
+    "id": "dpl_74ZRdMpdPQpbjQADbdRpFxniUKdr",
+    "url": "woordenaar-ox6ngczb3-rustems-projects.vercel.app",
+    "sha": "44141e00bddfe00267314374bc33a7a0cf8fb4a2",
+    "state": "READY",
+    "target": "production",
+    "production_target_id": "dpl_74ZRdMpdPQpbjQADbdRpFxniUKdr",
+    "dictionary_flag": "true",
+    "cefr_flags_absent": true,
+    "variable_id": "KK8bnhqFfUWwZmza",
+    "flag_value_verified": true,
+    "production_http": 200
+  },
+  "submissions": [
+    {
+      "id": "de0cf035-a573-45ba-a7e8-99351f05f0e0",
+      "platform": "ios",
+      "status": "FINISHED",
+      "build_id": "5d37d6fa-fc60-4137-b694-3b0909071ee9",
+      "version": "2.4.0",
+      "build_number": "85",
+      "created_at": "2026-10-04T22:34:20.455Z",
+      "completed_at": "2026-10-04T22:37:26.071Z",
+      "group_requested": "Team (Expo)"
+    },
+    {
+      "id": "73192494-0213-4df9-8ceb-9214a115995c",
+      "platform": "android",
+      "status": "FINISHED",
+      "build_id": "84beddfc-9c76-4128-9b8f-d7975c3dd082",
+      "version": "2.4.0",
+      "build_number": "85",
+      "created_at": "2026-10-04T22:34:29.239Z",
+      "completed_at": "2026-10-04T22:36:40.832Z",
+      "track": "internal"
+    }
+  ],
+  "stores": {
+    "verified_at": "2026-10-04T22:40:47Z",
+    "ios": {
+      "version": "2.4.0",
+      "build": "85",
+      "status": "Testing",
+      "group": "Team (Expo)",
+      "group_type": "Internal",
+      "asc_build_id": "7a7cf65e-6d32-4f2d-bce5-b4c8dc23557e",
+      "url": "https://appstoreconnect.apple.com/teams/2bb52ebc-8d95-48b2-b897-028f4d865573/apps/6752469146/testflight/groups/5e99b483-870c-4240-b01e-ad0d15a1a206/builds"
+    },
+    "android": {
+      "version": "2.4.0",
+      "status": "Available to internal testers",
+      "track": "internal",
+      "track_status": "Active",
+      "url": "https://play.google.com/console/u/0/developers/7222292767747034150/app/4973515322279519779/tracks/internal-testing"
+    }
+  },
+  "temporary_db_credential_removed": true,
+  "private_receipts": "reports/shared-dictionary-cefr/d13-activation-20261004/",
+  "remaining": [
+    "Seven-day observation and native offline return",
+    "Separate CEFR quality/cost gate; CEFR stays OFF"
+  ],
+  "persistence": "Local-only documentation; source PR122 already merged; release candidate0a3bae1 remains local-only"
+}

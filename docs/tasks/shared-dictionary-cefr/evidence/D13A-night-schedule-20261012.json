@@ -1,0 +1,67 @@
+{
+  "recorded_at": "2026-10-11T23:47:02.336719+00:00",
+  "automation_id": "dutchlearningapp-02-30",
+  "status": "PAUSED",
+  "target_thread_id": "01a12ca9-02c3-7be0-a2a0-aabcf78bb701",
+  "occurrences_local": [
+    "2026-10-12T02:30:00+02:00",
+    "2026-10-12T06:00:00+02:00"
+  ],
+  "timezone": "Europe/Amsterdam",
+  "stop_scope": "Confirmed DutchLearningApp workloads only; preserve data and other Claude project tests",
+  "resume_conditions": [
+    "All required E2E tests in the other Claude project passed on simulator and emulator",
+    "No runner or test process from that project remains active"
+  ],
+  "other_project_path": "/Users/devrush/actions-runner/_work/Guardia/Guardia",
+  "clarification_pending": false,
+  "unknown_means": "remain paused",
+  "automation_prompt_sha256": "b4ecbd1257ff7ebecc66c505d54a4297b02fdf7f7d9c0b92380f1cdcf38a5d5f",
+  "stage_progress": {
+    "total": 6,
+    "complete": 5,
+    "remaining": 1,
+    "broad_remaining": 8
+  },
+  "authority": "Scheduling only; no paid or release authority renewed",
+  "other_project": "Guardia in Claude",
+  "runner_root": "/Users/devrush/actions-runner",
+  "worker_logs": "/Users/devrush/actions-runner/_diag/Worker_*-utc.log",
+  "launch_agent": "/Users/devrush/Library/LaunchAgents/actions.runner.firstlinesoftware-Guardia.devs-MacBook-Pro.plist",
+  "other_project_results_paths": [
+    "/Users/devrush/actions-runner/_work/Guardia/Guardia/e2e-artifacts/ios",
+    "/Users/devrush/actions-runner/_work/Guardia/Guardia/e2e-artifacts/android",
+    "/Users/devrush/actions-runner/_work/Guardia/Guardia/e2e-artifacts/real-iqvia",
+    "/Users/devrush/actions-runner/_work/Guardia/Guardia/apps/mobile/.maestro/reports"
+  ],
+  "current_nightly_required_jobs": ["sanity", "ios", "android", "real-iqvia"],
+  "workflow_sha256": "2a4a3546b0d5f0f4d62993bd149d76e7cacf0ae4c0b525e028f0400daee41e6c",
+  "old_success_not_eligible": {
+    "log": "Worker_20261011-044107-utc.log",
+    "success_at": "2026-10-11T05:09:45Z"
+  },
+  "runner_listener": "May remain idle/running; inspect Runner.Worker and active E2E descendants plus expected remaining workflow jobs",
+  "resume_resources": "May restart preserved dedicated QA AVD/Simulator/local stack after foreign tests succeed and release resources; no wipes and no exact-binary/physical-performance inference",
+  "eas_reminder": {
+    "automation_id": "eas-08-30",
+    "status": "PAUSED",
+    "at_local": "2026-10-12T08:30:00+02:00",
+    "action": "Remind owner to switch EAS account; no automatic EAS commands or account changes",
+    "independent_of_guardia_gate": true,
+    "delivered_at_local": "2026-10-12T08:30:00+02:00"
+  },
+  "stop_checkpoint": {
+    "state": "paused",
+    "containers_stopped": 4,
+    "database_clean_shutdown_confirmed": true,
+    "completed_at": "2026-10-12T00:34:25.730657879Z",
+    "receipt": "reports/shared-dictionary-cefr/d13a7-creation-cache-pilot-20261012/night-stop-20261012.json",
+    "morning_automation_left_active": true
+  },
+  "morning_checkpoint": {
+    "decision": "remain_paused",
+    "reason": "iOS failed; Android E2E active; full required run not complete",
+    "evidence": "docs/tasks/shared-dictionary-cefr/evidence/D13A-morning-gate-20261012.json",
+    "automation_paused": true
+  }
+}

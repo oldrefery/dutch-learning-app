@@ -1,0 +1,122 @@
+{
+  "created_at": "2026-10-09T21:53:38.568603+00:00",
+  "status": "prepared-not-published",
+  "source_base": "0a3bae137d3e58c406215114cbccadd773f71098",
+  "changed_files": [
+    "apps/mobile/src/db/__tests__/dictionaryContentRepository.sqlite.test.ts",
+    "apps/mobile/src/db/dictionaryContentMapping.ts",
+    "apps/mobile/src/db/dictionaryContentRepository.ts",
+    "apps/mobile/src/services/__tests__/dictionaryContentSync.test.ts",
+    "apps/mobile/src/services/dictionaryContentSync.ts",
+    "apps/mobile/src/utils/__tests__/sharedDictionaryContract.test.ts",
+    "packages/domain/src/shared-dictionary.ts"
+  ],
+  "dist_files": 61,
+  "source_files": 1622,
+  "runtime_checks": [
+    {
+      "mode": "candidate",
+      "platform": "ios",
+      "runtime": "94476f50e33e655576f1ef396170c5e29b38664e",
+      "expected": "94476f50e33e655576f1ef396170c5e29b38664e",
+      "match": true
+    },
+    {
+      "mode": "candidate",
+      "platform": "android",
+      "runtime": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4",
+      "expected": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4",
+      "match": true
+    }
+  ],
+  "bundle_checks": [
+    {
+      "platform": "ios",
+      "bundle": "_expo/static/js/ios/entry-800cc8fff337bc351addf758d3f7a42c.hbc",
+      "bundle_sha256": "679b8f65f2cc027540b8f4dfb7cfce74867b5c734a340f2771c024766e1cccb4",
+      "bundle_bytes": 6771132,
+      "source_map_sha256": "d3de4939b41734c3fab646eb3e92d93a9b6bf28a11f62ca41a86fff0110627a5",
+      "debug_id": "1654b320-8f80-4cf1-afb0-3c9a91a5cc2a",
+      "asset_count": 45,
+      "checks": {
+        "hermes_magic": true,
+        "debug_id_in_bundle": true,
+        "old_dev_credentials_absent": true,
+        "supabase_url_present": true,
+        "supabase_anon_key_present": true,
+        "sentry_dsn_present": true,
+        "changed_runtime_sources_exact": true,
+        "dictionary_enabled_constant_true": true,
+        "private_parser_present": true,
+        "canonical_parser_present": true
+      },
+      "source_checks": {
+        "packages/domain/src/shared-dictionary.ts": true,
+        "apps/mobile/src/services/dictionaryContentSync.ts": true,
+        "apps/mobile/src/db/dictionaryContentRepository.ts": true,
+        "apps/mobile/src/db/dictionaryContentMapping.ts": true
+      },
+      "dictionary_enabled_bytecode": [
+        "NCFunction<isDictionaryContentEnabled>(1 params, 1 registers, 0 numbers, 1 non-pointers):\n    LoadConstTrue     r0\n    Ret               r0\n"
+      ]
+    },
+    {
+      "platform": "android",
+      "bundle": "_expo/static/js/android/entry-081b24f07962a40337ea44a22dc392f8.hbc",
+      "bundle_sha256": "cf1aa5c93b2a799a07ca5d632848b5ed1a0f6da25d8b5c995a074f24686e2f0e",
+      "bundle_bytes": 6931964,
+      "source_map_sha256": "e0dae97273b2c9150c880244790a0884563c93222ccf5aae1a8da83ee76790d9",
+      "debug_id": "4865f93e-e7a3-473b-9669-199861bebc2b",
+      "asset_count": 49,
+      "checks": {
+        "hermes_magic": true,
+        "debug_id_in_bundle": true,
+        "old_dev_credentials_absent": true,
+        "supabase_url_present": true,
+        "supabase_anon_key_present": true,
+        "sentry_dsn_present": true,
+        "changed_runtime_sources_exact": true,
+        "dictionary_enabled_constant_true": true,
+        "private_parser_present": true,
+        "canonical_parser_present": true
+      },
+      "source_checks": {
+        "packages/domain/src/shared-dictionary.ts": true,
+        "apps/mobile/src/services/dictionaryContentSync.ts": true,
+        "apps/mobile/src/db/dictionaryContentRepository.ts": true,
+        "apps/mobile/src/db/dictionaryContentMapping.ts": true
+      },
+      "dictionary_enabled_bytecode": [
+        "NCFunction<isDictionaryContentEnabled>(1 params, 1 registers, 0 numbers, 1 non-pointers):\n    LoadConstTrue     r0\n    Ret               r0\n"
+      ]
+    }
+  ],
+  "staged_tests": {
+    "suites": 3,
+    "passed": 42
+  },
+  "external_mutations": 0,
+  "artifact_sha256": {
+    "candidate-source.tar": "19e8e9bd2c7ef8885554ca45e2582a3d35aa1af8ecad9177cc1a8c1600673daa",
+    "client-repair.patch": "48a706d0298400c98c3f1513de1750af7996cff6371b7fb16e0f19bc7f1dbdbe",
+    "dist-manifest.json": "3e4a9696cb9bd5bc6c420e1a8167c23f9739ae981d5ecfee91ef4cb2d3b65a89"
+  },
+  "project": {
+    "owner": "oldrefery",
+    "project_id": "d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
+    "channel": "production",
+    "branch": "production",
+    "environment": "production"
+  },
+  "existing_updates_for_build85": {
+    "ios": 0,
+    "android": 0
+  },
+  "permission": "Scoped OTA and original Sentry source-map delivery approval pending; AUTH-27 consumed.",
+  "private_artifacts": "reports/shared-dictionary-cefr/d13-delivery-20261009",
+  "limitations": [
+    "Static artifact and local regression validation; exact OTA not yet launched on device.",
+    "No delivery or source-map upload performed.",
+    "Actual sync and offline return remain unverified."
+  ]
+}

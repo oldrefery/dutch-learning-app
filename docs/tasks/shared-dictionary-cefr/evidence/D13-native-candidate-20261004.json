@@ -1,0 +1,203 @@
+{
+  "status": "both_cloud_builds_finished_static_artifact_checks_passed_distribution_held",
+  "authorization": "AUTH-26",
+  "source_commit": "0a3bae137d3e58c406215114cbccadd773f71098",
+  "branch": "feature/dictionary-release-candidate",
+  "build_profile": "dictionary-release",
+  "version": "2.4.0",
+  "build": 85,
+  "profile_checks": {
+    "ios": {
+      "version": "2.4.0",
+      "build": 85,
+      "distribution": "store",
+      "channel": "production",
+      "environment": "production",
+      "dictionary_enabled": true,
+      "qa": false,
+      "e2e": false,
+      "credentials": "remote",
+      "identifier": "com.oldrefery.dutch-learning-app"
+    },
+    "android": {
+      "version": "2.4.0",
+      "build": 85,
+      "distribution": "store",
+      "channel": "production",
+      "environment": "production",
+      "dictionary_enabled": true,
+      "qa": false,
+      "e2e": false,
+      "credentials": "remote",
+      "identifier": "com.oldrefery.dutchlearningapp"
+    }
+  },
+  "source_archive_manifest_sha256": "aff123202b6a34a911b93b396484c23ae37de9895cdfe7dc06e95f90862e859c",
+  "auto_submit": false,
+  "destinations_after_approval": ["TestFlight", "Google Play internal testing"],
+  "distribution_approval": "pending after artifacts inspection",
+  "production_backend": "dormant; not changed",
+  "personal_linking": 0,
+  "cefr_worker": "OFF",
+  "local_tests": {
+    "mobile": 1798,
+    "mobile_suites": 156,
+    "web": 780,
+    "web_suites": 86,
+    "web_skipped": 1
+  },
+  "private_receipt_directory": "reports/shared-dictionary-cefr/d13-native-candidate-20261004",
+  "builds": [
+    {
+      "id": "84beddfc-9c76-4128-9b8f-d7975c3dd082",
+      "platform": "ANDROID",
+      "status": "FINISHED",
+      "appVersion": "2.4.0",
+      "appBuildVersion": "85",
+      "runtimeVersion": null,
+      "gitCommitHash": "0a3bae137d3e58c406215114cbccadd773f71098",
+      "buildProfile": "dictionary-release",
+      "distribution": "STORE",
+      "createdAt": "2026-10-04T21:00:19.401Z",
+      "completedAt": "2026-10-04T21:17:51.918Z",
+      "error": null,
+      "inspection": {
+        "command_exit_codes": {
+          "validate": 0,
+          "manifest": 0,
+          "runtime-resource": 0,
+          "signature": 0,
+          "certificate": 0
+        },
+        "identifier": "com.oldrefery.dutchlearningapp",
+        "version": "2.4.0",
+        "build": "85",
+        "minimum_sdk": "24",
+        "target_sdk": "36",
+        "debuggable": false,
+        "updates": {
+          "expo.modules.updates.ENABLED": "true",
+          "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT": "true",
+          "expo.modules.updates.EXPO_RUNTIME_VERSION": "@string/expo_runtime_version",
+          "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH": "ALWAYS",
+          "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS": "0",
+          "expo.modules.updates.EXPO_UPDATE_URL": "https://u.expo.dev/d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
+          "expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY": "{\"expo-channel-name\":\"production\"}"
+        },
+        "runtime_files": {
+          "base/assets/fingerprint": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4"
+        },
+        "bundle_sha256": "9a6a3f6fa57f4f2a9ffcebdc997626def3cd07f644dfc89067c1b714b3349a94",
+        "bundle_debug_id_present": true,
+        "production_backend_string_present": true,
+        "dictionary_opt_in_bytecode_verified": true,
+        "runtime_version": "9ddb21d335bb50b7547daa1d5d63122cf4d61fd4",
+        "previous_runtime_version": "2ee8484c4e828d17d4f7bd09ae78a5ece9a4baa0",
+        "runtime_differs_from_build_84": true,
+        "signature": "JAR signature verified; self-signed upload certificate with no timestamp; expected JDK chain warnings retained",
+        "certificate_sha256": "764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc",
+        "certificate_expires": "2053-01-26",
+        "sentry_upload": {
+          "release": "com.oldrefery.dutchlearningapp@2.4.0+85",
+          "dist": "85",
+          "debug_id": "735997f8-55d1-497e-84a5-035caa900676",
+          "upload": "original Hermes bundle and combined map uploaded; server processing not independently verified"
+        },
+        "elf_16kb_alignment": {
+          "libraries_checked": 54,
+          "all_passed": true
+        },
+        "verified_at": "2026-10-04T21:19:15.929279+00:00",
+        "limitations": [
+          "Static artifact verification only; this AAB has not been processed by Google Play or installed on a phone.",
+          "Upload certificate fingerprint recorded; Play Console acceptance remains unverified until later authorized upload.",
+          "Original source-map upload confirmed from cloud logs; server processing not independently inspected."
+        ]
+      },
+      "artifact": {
+        "bytes": 86280803,
+        "sha256": "c3337ddfa287cb36753ea0009c61991e61ee9d99fb6a67758999aab1408c357e",
+        "downloaded_at": "2026-10-04T21:18:32Z"
+      }
+    },
+    {
+      "id": "5d37d6fa-fc60-4137-b694-3b0909071ee9",
+      "platform": "IOS",
+      "status": "FINISHED",
+      "appVersion": "2.4.0",
+      "appBuildVersion": "85",
+      "runtimeVersion": null,
+      "gitCommitHash": "0a3bae137d3e58c406215114cbccadd773f71098",
+      "buildProfile": "dictionary-release",
+      "distribution": "STORE",
+      "createdAt": "2026-10-04T21:00:56.837Z",
+      "completedAt": "2026-10-04T21:08:26.982Z",
+      "error": null,
+      "inspection": {
+        "command_exit_codes": {
+          "signature": 0,
+          "signer": 0,
+          "entitlements": 0,
+          "profile": 0
+        },
+        "identifier": "com.oldrefery.dutch-learning-app",
+        "version": "2.4.0",
+        "build": "85",
+        "minimum_os": "16.4",
+        "supported_platforms": ["iPhoneOS"],
+        "team": "7FQ395U52U",
+        "debuggable": false,
+        "profile_expiration": "2027-07-24T11:47:54Z",
+        "profile_device_list_present": false,
+        "profile_all_devices": false,
+        "updates": {
+          "EXUpdatesCheckOnLaunch": "ALWAYS",
+          "EXUpdatesEnableBsdiffPatchSupport": true,
+          "EXUpdatesEnabled": true,
+          "EXUpdatesLaunchWaitMs": 0,
+          "EXUpdatesRequestHeaders": {
+            "expo-channel-name": "production"
+          },
+          "EXUpdatesRuntimeVersion": "file:fingerprint",
+          "EXUpdatesURL": "https://u.expo.dev/d968536e-1e9b-4224-9ed7-a1e9c6d821c8"
+        },
+        "bundle_sha256": "28d57567d08741d3a984c2d24d63fd080958103c91874072ad0468780f68f110",
+        "bundle_debug_id_present": true,
+        "production_backend_string_present": true,
+        "runtime_version": "94476f50e33e655576f1ef396170c5e29b38664e",
+        "dictionary_opt_in_bytecode_verified": true,
+        "sentry_upload": {
+          "release": "com.oldrefery.dutch-learning-app@2.4.0+85",
+          "dist": "85",
+          "debug_id": "dc7e37e9-9dc2-4008-9cc6-068136c87a86",
+          "upload": "original Hermes bundle and combined map uploaded; server processing not independently verified"
+        },
+        "verified_at": "2026-10-04T21:15:44.150869+00:00",
+        "limitations": [
+          "Static artifact verification only; this App Store IPA was not installed or launched on the primary iPhone.",
+          "Original source maps uploaded according to build logs; server-side processing not independently inspected.",
+          "EAS API runtimeVersion is null; actual runtime read from signed EXUpdates.bundle/fingerprint."
+        ],
+        "signing_authorities": [
+          "iPhone Distribution: Rustem Shakirov (7FQ395U52U)",
+          "Apple Worldwide Developer Relations Certification Authority",
+          "Apple Root CA"
+        ],
+        "previous_runtime_version": "f9fa8a5f7f094e4d4b4606eb5deb4f0c80ab544d",
+        "runtime_differs_from_build_84": true
+      },
+      "artifact": {
+        "bytes": 23921508,
+        "sha256": "555bbfea1fdaf62ac9f97eb1ff8f84074952ab60136141e8c0218176cb41959d",
+        "downloaded_at": "2026-10-04T21:12:12Z"
+      }
+    }
+  ],
+  "activation_packet": "D13-native-activation-settings-20261004.md",
+  "verified_at": "2026-10-04T21:20:19.113997+00:00",
+  "limitations": [
+    "No store submission/processing or installation of these artifacts; primary devices unchanged.",
+    "Sentry original bundle/map upload confirmed from build logs; server-side processing not independently verified.",
+    "Backend capabilities remain dormant; production activation and exact distribution require the later agreement."
+  ]
+}
