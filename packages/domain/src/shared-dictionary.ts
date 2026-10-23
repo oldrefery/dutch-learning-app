@@ -217,12 +217,12 @@ const parseStringArray = (
 
 const validateKeys = (
   value: UnknownRecord,
-  fields: readonly string[],
+  fields: readonly string[] | ReadonlySet<string>,
   path: string,
   issues: DictionaryValidationIssue[],
   requireAll = true
 ): void => {
-  const allowed = new Set(fields)
+  const allowed = fields instanceof Set ? fields : new Set(fields)
   Object.keys(value).forEach(field => {
     if (!allowed.has(field))
       addIssue(issues, `${path}.${field}`, 'is not allowed')
@@ -261,12 +261,14 @@ const parseExamples: FieldParser = (value, path, issues) => {
     .filter((item): item is DictionaryExample => item !== null)
 }
 
+const TRANSLATION_FIELDS = new Set(['en', 'ru'])
+
 const parseTranslations: FieldParser = (value, path, issues) => {
   if (!isRecord(value)) {
     addIssue(issues, path, MUST_BE_OBJECT)
     return { en: [], ru: [] }
   }
-  validateKeys(value, ['en', 'ru'], path, issues)
+  validateKeys(value, TRANSLATION_FIELDS, path, issues)
   return {
     en: parseStringArray(value.en, `${path}.en`, issues, { min: 1, max: 30 }),
     ru: parseStringArray(value.ru, `${path}.ru`, issues, { max: 30 }),
@@ -435,30 +437,34 @@ const contentFieldParsers: Record<DictionaryContentField, FieldParser> = {
     parseNullableString(value, path, issues, 2_000),
 }
 
+const CONTENT_KEYS = new Set(CONTENT_FIELDS)
+const CONTENT_READERS = CONTENT_FIELDS.map(field => ({
+  field,
+  path: `content.${field}`,
+  parse: contentFieldParsers[field],
+}))
+
 const toResult = <Value>(
   issues: DictionaryValidationIssue[],
   data: Value
 ): DictionaryValidationResult<Value> =>
   issues.length === 0 ? { success: true, data } : { success: false, issues }
 
-export const parseDictionaryContent = (
-  value: unknown
+const parseDictionaryContentFields = (
+  value: unknown,
+  requireSeparableParts: boolean
 ): DictionaryValidationResult<DictionaryContent> => {
   const issues: DictionaryValidationIssue[] = []
   if (!isRecord(value)) {
     addIssue(issues, 'content', MUST_BE_OBJECT)
     return { success: false, issues }
   }
-  validateKeys(value, CONTENT_FIELDS, 'content', issues)
+  validateKeys(value, CONTENT_KEYS, 'content', issues)
   const parsed: Record<string, unknown> = {}
-  CONTENT_FIELDS.forEach(field => {
-    parsed[field] = contentFieldParsers[field](
-      value[field],
-      `content.${field}`,
-      issues
-    )
+  CONTENT_READERS.forEach(({ field, path, parse }) => {
+    parsed[field] = parse(value[field], path, issues)
   })
-  if (parsed.is_separable === true) {
+  if (requireSeparableParts && parsed.is_separable === true) {
     if (parsed.prefix_part === null) {
       addIssue(
         issues,
@@ -471,6 +477,61 @@ export const parseDictionaryContent = (
     }
   }
   return toResult(issues, parsed as unknown as DictionaryContent)
+}
+
+export const parseDictionaryContent = (
+  value: unknown
+): DictionaryValidationResult<DictionaryContent> =>
+  parseDictionaryContentFields(value, true)
+
+const legacyNullableText = (value: unknown): unknown =>
+  typeof value === 'string' && value.trim().length === 0 ? null : value
+
+const legacyExample = (value: unknown): unknown =>
+  isRecord(value) ? { ...value, ru: value.ru ?? null } : value
+
+const legacyUsageNotes = (value: unknown): unknown => {
+  if (!isRecord(value) || !Array.isArray(value.contrasts)) return value
+  return {
+    ...value,
+    contrasts: value.contrasts.map(contrast =>
+      isRecord(contrast)
+        ? { ...contrast, example: legacyExample(contrast.example ?? null) }
+        : contrast
+    ),
+  }
+}
+
+// Existing private cards predate the canonical authoring contract. Normalize
+// representational omissions only in their read model, retaining incomplete
+// separable-verb metadata without inventing a prefix or changing its meaning.
+// New commands, revisions and shared imports continue to use the strict parser.
+export const parsePrivateDictionaryContent = (
+  value: unknown
+): DictionaryValidationResult<DictionaryContent> => {
+  if (!isRecord(value)) return parseDictionaryContentFields(value, false)
+  return parseDictionaryContentFields(
+    {
+      ...value,
+      dutch_original: legacyNullableText(value.dutch_original),
+      analysis_notes: legacyNullableText(value.analysis_notes),
+      tts_url: legacyNullableText(value.tts_url),
+      translations: isRecord(value.translations)
+        ? { ...value.translations, ru: value.translations.ru ?? [] }
+        : value.translations,
+      examples: Array.isArray(value.examples)
+        ? value.examples.map(legacyExample)
+        : value.examples,
+      conjugation: isRecord(value.conjugation)
+        ? {
+            ...value.conjugation,
+            simple_past_plural: value.conjugation.simple_past_plural ?? null,
+          }
+        : value.conjugation,
+      usage_notes: legacyUsageNotes(value.usage_notes),
+    },
+    false
+  )
 }
 
 const parseUuid = (
@@ -558,6 +619,18 @@ export const parseDictionaryEntry = (
   })
 }
 
+const REFERENCE_FIELDS = new Set(['entry_id', 'revision_id'])
+const REVISION_FIELDS = new Set([
+  'revision_id',
+  'entry_id',
+  'revision_no',
+  'schema_version',
+  'content',
+  'content_sha256',
+  'cefr_input_sha256',
+  'review_status',
+])
+
 export const parseDictionaryReference = (
   value: unknown
 ): DictionaryValidationResult<DictionaryReference> => {
@@ -566,7 +639,7 @@ export const parseDictionaryReference = (
     addIssue(issues, 'reference', MUST_BE_OBJECT)
     return { success: false, issues }
   }
-  validateKeys(value, ['entry_id', 'revision_id'], 'reference', issues)
+  validateKeys(value, REFERENCE_FIELDS, 'reference', issues)
   const entryId = parseUuid(value.entry_id, 'reference.entry_id', issues)
   const revisionId = parseUuid(
     value.revision_id,
@@ -587,17 +660,7 @@ export const parseDictionaryRevision = (
     addIssue(issues, 'revision', MUST_BE_OBJECT)
     return { success: false, issues }
   }
-  const fields = [
-    'revision_id',
-    'entry_id',
-    'revision_no',
-    'schema_version',
-    'content',
-    'content_sha256',
-    'cefr_input_sha256',
-    'review_status',
-  ]
-  validateKeys(value, fields, 'revision', issues)
+  validateKeys(value, REVISION_FIELDS, 'revision', issues)
   const revisionId = parseUuid(
     value.revision_id,
     'revision.revision_id',

@@ -247,3 +247,55 @@ export const officialDictionaryDependencies = (
       },
     }
   })
+
+/** The complete approved original is retained, including unmapped entries. */
+export function officialFollowingDocument(manifest: OfficialContentManifest) {
+  const validation = validateOfficialContentManifest(manifest)
+  if (!validation.success || manifest.content_review.status !== 'approved')
+    throw new Error('Following imports require an approved official manifest.')
+  return {
+    schema_version: 2 as const,
+    collection: { name: manifest.title },
+    entries: manifest.entries.map(entry => ({
+      content: officialEntryToDictionaryContent(entry),
+      shared_reference: null as {
+        reference: { entry_id: string; revision_id: string }
+        content_sha256: string
+      } | null,
+    })),
+  }
+}
+
+/** Mapping verification establishes provenance, not current publication rights.
+ * Published revisions and server source validation remain separate gates. */
+export async function prepareOfficialFollowingPack(
+  manifest: OfficialContentManifest,
+  value: unknown,
+  sha256: Sha256
+) {
+  const document = officialFollowingDocument(manifest)
+  const mapping =
+    value === null
+      ? null
+      : await verifyOfficialDictionaryMapping(value, manifest, sha256)
+  const byId = new Map(
+    mapping?.entries.map(entry => [entry.pack_entry_id, entry])
+  )
+  document.entries.forEach((entry, index) => {
+    const mapped = byId.get(manifest.entries[index].entry_id)
+    if (mapped)
+      entry.shared_reference = {
+        reference: mapped.reference,
+        content_sha256: mapped.revision_content_sha256,
+      }
+  })
+  return {
+    document,
+    official_pack: {
+      pack_id: manifest.pack_id,
+      version: manifest.version,
+      manifest_sha256: await sha256(canonicalizeOfficialContent(manifest)),
+      entry_ids: manifest.entries.map(entry => entry.entry_id),
+    },
+  }
+}

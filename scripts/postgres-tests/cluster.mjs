@@ -24,6 +24,10 @@ function command(name, args) {
 
 // No connection string, ambient PG* variables, credentials or existing cluster.
 export async function createCluster({ throughMigration } = {}) {
+  if (process.env.WOORDENAAR_PG_DOCKER === '1') {
+    const { createDockerCluster } = await import('./cluster-docker.mjs')
+    return createDockerCluster({ throughMigration })
+  }
   command('initdb', ['--version'])
   // macOS TMPDIR is too long for PostgreSQL's Unix socket path limit.
   const directory = await mkdtemp(
