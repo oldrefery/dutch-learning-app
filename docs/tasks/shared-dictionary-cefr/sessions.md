@@ -6827,3 +6827,27 @@ local cold-start timeout; the exact source previously passed hosted checks. Allo
 30 seconds for only those configuration subprocesses and assert result.error
 explicitly. Rule/config assertions and warning-fixture expectations are preserved.
 No hook bypass or successful commit is claimed before the normal retry completes.
+
+**2026-10-24 — Remaining hosted CI prerequisites repaired locally.**
+
+PR123 source b977971 completed mutation testing successfully:96.13% against90%,
+1420 mutations, no individual timeouts. Quality then failed on Edge-test read
+permissions and a test depending on ignored historical reports. Database passed
+659 tests but failed downloading postgres-meta from ECR (Data limit exceeded).
+No merge or Production deployment occurred; do not treat b977971 as fully green.
+
+The local repair grants Edge tests read access only to dependencies and required
+source directories, removes historical report reads in favor of a portable fixture
+containing schema, non-secret policy hashes and dimension sequences, and uses
+fresh synthetic verdicts. Duplicate rejection and its repaired positive control
+pass. All351 Edge tests pass with reports/ outside the read allowance. Switch
+postgres-meta from ECR to official GHCR with the identical sha256 digest; both
+GHCR and Docker Hub manifests were independently read and matched that digest.
+Fast Edge/build/Doctor checks now precede unchanged mutation testing.
+
+Next: commit/push these scoped CI repairs with normal hooks, archive the new exact
+source and require fresh protected PR checks/Preview before AUTH-44 merge. Do not
+repeat the old failed jobs after source changes. Existing local review is a draft;
+its source IDs and CI outcome need updating after the commit. No signed rebuild,
+store upload, migrations, flags, real linking or provider spending. D13A.8 stays
+3/6 complete:3 fixed steps and6 other broad milestones remain. Astra / High.

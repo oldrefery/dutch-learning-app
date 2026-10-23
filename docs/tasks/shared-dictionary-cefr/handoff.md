@@ -1,18 +1,26 @@
-**2026-10-24 — Quality job timeout diagnosed; bounded budget repair prepared.**
+**2026-10-24 — Remaining hosted CI prerequisites repaired locally.**
 
-PR123 HEAD bca2a84 passed database (659 tests and schema contract), browser
-fixtures (3 + 7 tests), lightweight checks and exact Vercel Preview. The quality
-job passed lint, typing, formatting, mobile tests and web coverage, then hit its
-30-minute total limit while mutation testing was still making progress:
-1404/1420 tested, 24 survived, zero individual timeouts. No final mutation score
-exists; edge tests, web build and Doctor were skipped. No merge occurred.
+PR123 source b977971 completed mutation testing successfully:96.13% against90%,
+1420 mutations, no individual timeouts. Quality then failed on Edge-test read
+permissions and a test depending on ignored historical reports. Database passed
+659 tests but failed downloading postgres-meta from ECR (Data limit exceeded).
+No merge or Production deployment occurred; do not treat b977971 as fully green.
 
-Increase only the quality job budget to45 minutes to accommodate the measured
-22-minute mutation phase plus prerequisite and remaining checks. Test scope,
-90% mutation threshold, concurrency and protected branch requirements stay intact.
-Commit/push under AUTH-44 and require all checks for the new exact HEAD. Source
-archive bca2a84 remains historical; regenerate the integration manifest afterward.
-D13A.8 remains3/6 complete,3 fixed steps and6 other major milestones remain.
+The local repair grants Edge tests read access only to dependencies and required
+source directories, removes historical report reads in favor of a portable fixture
+containing schema, non-secret policy hashes and dimension sequences, and uses
+fresh synthetic verdicts. Duplicate rejection and its repaired positive control
+pass. All351 Edge tests pass with reports/ outside the read allowance. Switch
+postgres-meta from ECR to official GHCR with the identical sha256 digest; both
+GHCR and Docker Hub manifests were independently read and matched that digest.
+Fast Edge/build/Doctor checks now precede unchanged mutation testing.
+
+Next: commit/push these scoped CI repairs with normal hooks, archive the new exact
+source and require fresh protected PR checks/Preview before AUTH-44 merge. Do not
+repeat the old failed jobs after source changes. Existing local review is a draft;
+its source IDs and CI outcome need updating after the commit. No signed rebuild,
+store upload, migrations, flags, real linking or provider spending. D13A.8 stays
+3/6 complete:3 fixed steps and6 other broad milestones remain. Astra / High.
 
 **2026-10-24 — PR 123 fixes pushed; waiting for exact-head CI.**
 

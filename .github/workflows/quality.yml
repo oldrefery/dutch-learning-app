@@ -130,9 +130,6 @@ jobs:
       - name: Run web Jest coverage
         run: npm run web:test:coverage
 
-      - name: Run web mutation tests
-        run: npm run web:mutation
-
       - name: Run Edge Function tests
         run: npm run test:edge
 
@@ -141,6 +138,9 @@ jobs:
 
       - name: Run Expo Doctor
         run: npm run mobile:expo:doctor
+
+      - name: Run web mutation tests
+        run: npm run web:mutation
 
       - name: Upload coverage
         if: always()

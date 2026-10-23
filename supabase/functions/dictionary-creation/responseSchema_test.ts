@@ -8,16 +8,14 @@ import {
   prepareCreationQualification,
   scoreCreationJudge,
 } from '../../../scripts/shared-dictionary/creation-qualification.ts'
-import type { CreationPilotPacket } from '../../../scripts/shared-dictionary/creation-pilot-packet.ts'
+import legacy from './fixtures/legacy-judge-schema.json' with { type: 'json' }
 
-const ORIGINAL =
-  'reports/shared-dictionary-cefr/d13a7-creation-day-pilot-20261011/live-run'
+// Retain only public schema, policy hashes and dimension sequences from the
+// synthetic regression; historical provider receipts remain private artifacts.
 Deno.test(
-  'creation fixed dimensions reject the real duplicate; original strict verdict remains invalid',
+  'creation fixed dimensions reject the observed duplicate in a portable synthetic verdict',
   async () => {
-    const old: CreationPilotPacket = JSON.parse(
-      await Deno.readTextFile(`${ORIGINAL}/packet.json`)
-    )
+    const { packet } = await prepareCreationQualification()
     const schema =
       CREATION_JUDGEMENT_RESPONSE_SCHEMA.properties.content.properties.checks
     assert.equal(schema.minItems, 6)
@@ -26,24 +24,44 @@ Deno.test(
       schema.prefixItems.map(item => item.properties.dimension.enum),
       SEMANTIC_DIMENSIONS.map(d => [d])
     )
-    for (const id of ['positive-1-1', 'positive-notes-1-1', 'positive-2-1']) {
-      const receipt = JSON.parse(
-        await Deno.readTextFile(`${ORIGINAL}/${id}.result.json`)
-      )
-      const dimensions = receipt.result.content.checks.map(
-        (c: { dimension: string }) => c.dimension
-      )
-      const matches = dimensions.every((d: string, i: number) =>
-        schema.prefixItems[i].properties.dimension.enum.some(
-          value => value === d
+    for (const { id, dimensions, expected_decision } of legacy.cases) {
+      const matches = dimensions.every((dimension, index) =>
+        schema.prefixItems[index].properties.dimension.enum.some(
+          value => value === dimension
         )
       )
-      assert.equal(matches, id !== 'positive-2-1')
-      const row = old.packet.requests.find(r => r.id === id)!
+      assert.equal(matches, expected_decision === 'same-meaning')
+      const row = packet.requests.find(request => request.id === id)
+      assert.ok(row)
+      const result = {
+        provider_response: {
+          modelVersion: packet.profile.judgement_model_version,
+        },
+        content: {
+          schema_version: 1,
+          anchor_sha256: row.context.input.anchor.anchor_sha256,
+          content_sha256: row.grant.input.content_sha256,
+          result_sha256: row.context.receipt.result_sha256,
+          decision: 'same-meaning',
+          checks: dimensions.map(dimension => ({
+            dimension,
+            verdict: 'preserved',
+            reason: 'Synthetic protected-sense evidence is preserved.',
+            anchor_quote: row.context.input.anchor.gloss,
+          })),
+        },
+      }
       assert.equal(
-        scoreCreationJudge(row, receipt.result, old.packet.profile).decision,
-        matches ? 'same-meaning' : 'invalid'
+        scoreCreationJudge(row, result, packet.profile).decision,
+        expected_decision
       )
+      if (expected_decision === 'invalid') {
+        result.content.checks[2].dimension = 'examples'
+        assert.equal(
+          scoreCreationJudge(row, result, packet.profile).decision,
+          'same-meaning'
+        )
+      }
     }
   }
 )
@@ -51,19 +69,14 @@ Deno.test(
   'every prepared creation judge binds tuple schema and direct-analysis schema stays unchanged',
   async () => {
     const packet = await prepareCreationQualification()
-    const old: CreationPilotPacket = JSON.parse(
-      await Deno.readTextFile(`${ORIGINAL}/packet.json`)
-    )
-    const oldSchema = JSON.parse(old.packet.requests[0].request.body)
-      .generationConfig.responseFormat.text.schema
-    assert.deepEqual(SEMANTIC_RESPONSE_SCHEMA, oldSchema)
+    assert.deepEqual(SEMANTIC_RESPONSE_SCHEMA, legacy.analysis_schema)
     assert.notEqual(
       packet.packet.profile.policy_sha256,
-      old.packet.profile.policy_sha256
+      legacy.legacy_policy_sha256
     )
     assert.notEqual(
       packet.packet.profile.prompt_sha256,
-      old.packet.profile.prompt_sha256
+      legacy.legacy_prompt_sha256
     )
     for (const row of packet.packet.requests.filter(
       row => row.phase === 'judgement'
