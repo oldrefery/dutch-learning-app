@@ -18,6 +18,7 @@ import { dictionaryPersonalRefreshRepository } from '../dictionaryPersonalRefres
 jest.mock('../initDB')
 jest.mock('@/lib/sentry')
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 

@@ -41,7 +41,7 @@ interface DuplicateWordData {
   article?: string
 }
 
-interface AddWordScreenProps {
+export interface AddWordScreenProps {
   preselectedCollectionId?: string
   batchItemId?: string
   initialWord?: string
@@ -269,7 +269,7 @@ const handleRemoteDuplicate = ({
   )
 }
 
-export function AddWordScreen({
+export function LegacyAddWordScreen({
   preselectedCollectionId,
   batchItemId,
   initialWord,

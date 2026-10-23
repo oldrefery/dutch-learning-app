@@ -4,11 +4,17 @@ import {
   applyEffectiveCards,
   parseEffectiveCards,
   type DictionaryCardMetadata,
+  type EffectiveCard,
 } from '@/features/dictionary/content'
 import {
   isDictionaryContentEnabled,
+  isDictionaryFollowingEnabled,
   type DictionaryDatabase,
 } from '@/features/dictionary/repository'
+import {
+  parseFollowingCards,
+  validateFollowingHeads,
+} from '@/features/dictionary/following-content'
 
 import type { Database } from '@woordenaar/supabase-contracts'
 import {
@@ -116,43 +122,62 @@ const mapSnapshotCollection = (value: unknown): ReviewCollection | null => {
   return { id: value.collection_id, name: value.name }
 }
 
-const mapSnapshotWord = (value: unknown): ReviewWord | null => {
+const mapSnapshotWord = (
+  value: unknown,
+  contentOverride?: EffectiveCard['content']
+): ReviewWord | null => {
+  if (!isRecord(value)) return null
+  const content = contentOverride ?? value
   if (
-    !isRecord(value) ||
-    !isNullableString(value.article) ||
+    !isNullableString(content.article) ||
     !isNullableString(value.collection_id) ||
-    typeof value.dutch_lemma !== 'string' ||
-    !isNullableString(value.dutch_original) ||
+    typeof content.dutch_lemma !== 'string' ||
+    !isNullableString(content.dutch_original) ||
     !isFiniteNumber(value.easiness_factor) ||
-    !isNullableString(value.image_url) ||
+    !isNullableString(content.image_url) ||
     !isFiniteNumber(value.interval_days) ||
     !isNullableString(value.last_reviewed_at) ||
     typeof value.next_review_date !== 'string' ||
-    !isNullableString(value.part_of_speech) ||
+    !isNullableString(content.part_of_speech) ||
     !isFiniteNumber(value.repetition_count) ||
-    !isNullableString(value.tts_url) ||
+    !isNullableString(content.tts_url) ||
     typeof value.word_id !== 'string' ||
-    !('translations' in value)
+    !('translations' in content)
   ) {
     return null
   }
 
   return {
-    article: value.article,
+    article: content.article,
     collectionId: value.collection_id,
-    dutchLemma: value.dutch_lemma,
-    dutchOriginal: value.dutch_original,
+    dutchLemma: content.dutch_lemma,
+    dutchOriginal: content.dutch_original,
     easinessFactor: value.easiness_factor,
     id: value.word_id,
-    imageUrl: value.image_url,
+    imageUrl: content.image_url,
     intervalDays: value.interval_days,
     lastReviewedAt: value.last_reviewed_at,
     nextReviewDate: value.next_review_date,
-    partOfSpeech: value.part_of_speech,
+    partOfSpeech: content.part_of_speech,
     repetitionCount: value.repetition_count,
-    translations: value.translations as ReviewWord['translations'],
-    ttsUrl: value.tts_url || null,
+    translations: content.translations as ReviewWord['translations'],
+    ttsUrl: content.tts_url || null,
   }
+}
+
+const mapFollowingSnapshotWord = (
+  value: unknown,
+  cards: ReadonlyMap<string, EffectiveCard>
+): ReviewWord | null => {
+  const card =
+    isRecord(value) && typeof value.word_id === 'string'
+      ? cards.get(value.word_id)
+      : undefined
+  if (!card) throw new Error('Could not load dictionary content. Please retry.')
+  const { content, wordId, ...dictionary } = card
+  void wordId
+  const word = mapSnapshotWord(value, content)
+  return word ? { ...word, dictionary } : null
 }
 
 const mapSnapshotEvent = (value: unknown): ReviewEventEvidence | null => {
@@ -184,7 +209,9 @@ const mapSnapshotEvent = (value: unknown): ReviewEventEvidence | null => {
 export const mapReviewSnapshot = (value: unknown): ReviewWorkspaceData => {
   if (
     !isRecord(value) ||
-    (value.protocolVersion !== 1 && value.protocolVersion !== 2) ||
+    (value.protocolVersion !== 1 &&
+      value.protocolVersion !== 2 &&
+      value.protocolVersion !== 3) ||
     typeof value.correctionsAvailable !== 'boolean' ||
     !Array.isArray(value.collections) ||
     !Array.isArray(value.words) ||
@@ -196,6 +223,8 @@ export const mapReviewSnapshot = (value: unknown): ReviewWorkspaceData => {
   const collections = value.collections.map(mapSnapshotCollection)
   let snapshotWords: unknown[] = value.words
   const metadata = new Map<string, DictionaryCardMetadata>()
+  let dictionaryWatermark: string | undefined
+  let followingCards: ReadonlyMap<string, EffectiveCard> | undefined
   if (value.protocolVersion === 2) {
     if (
       value.dictionaryContentProtocol !== 1 ||
@@ -210,19 +239,35 @@ export const mapReviewSnapshot = (value: unknown): ReviewWorkspaceData => {
       cards: value.effectiveContent,
     })
     for (const [id, card] of cards) {
-      metadata.set(id, {
-        contentVersion: card.contentVersion,
-        reference: card.reference,
-        source: card.source,
-        cefr: card.cefr,
-      })
+      const { content, wordId, ...dictionary } = card
+      void [content, wordId]
+      metadata.set(id, dictionary)
     }
     snapshotWords = applyEffectiveCards(
       value.words as { word_id: string }[],
       cards
     )
   }
+  if (value.protocolVersion === 3) {
+    if (
+      value.dictionaryContentProtocol !== 2 ||
+      new Set(value.words.map(word => (isRecord(word) ? word.word_id : null)))
+        .size !== value.words.length ||
+      value.words.some(
+        word => !isRecord(word) || typeof word.word_id !== 'string'
+      )
+    ) {
+      throw new Error('Could not load the review workspace.')
+    }
+    const hydrated = parseFollowingCards(value.dictionaryContent)
+    validateFollowingHeads(hydrated.cards)
+    dictionaryWatermark = hydrated.watermark
+    if (hydrated.cards.size !== value.words.length)
+      throw new Error('Could not load dictionary content. Please retry.')
+    followingCards = hydrated.cards
+  }
   const words = snapshotWords.map(value => {
+    if (followingCards) return mapFollowingSnapshotWord(value, followingCards)
     const word = mapSnapshotWord(value)
     const dictionary = word ? metadata.get(word.id) : undefined
     return word && dictionary ? { ...word, dictionary } : word
@@ -238,7 +283,10 @@ export const mapReviewSnapshot = (value: unknown): ReviewWorkspaceData => {
 
   return {
     correctionsAvailable: value.correctionsAvailable,
-    ...(value.protocolVersion === 2 ? { dictionaryContentEnabled: true } : {}),
+    ...(value.protocolVersion === 2 || value.protocolVersion === 3
+      ? { dictionaryContentEnabled: true }
+      : {}),
+    ...(dictionaryWatermark !== undefined ? { dictionaryWatermark } : {}),
     collections: collections as ReviewCollection[],
     words: words as ReviewWord[],
     events: events as ReviewEventEvidence[],
@@ -311,10 +359,15 @@ export async function getReviewWorkspaceData(
   if (isDictionaryContentEnabled()) {
     const dictionaryClient =
       supabase as unknown as SupabaseClient<DictionaryDatabase>
+    const following = isDictionaryFollowingEnabled()
     const { data, error } = await dictionaryClient.rpc(
-      'get_web_review_snapshot_v2'
+      following ? 'get_web_review_snapshot_v3' : 'get_web_review_snapshot_v2'
     )
-    if (error || !isRecord(data) || data.protocolVersion !== 2) {
+    if (
+      error ||
+      !isRecord(data) ||
+      data.protocolVersion !== (following ? 3 : 2)
+    ) {
       throw new Error('Could not load the review workspace.')
     }
     return mapReviewSnapshot(data)

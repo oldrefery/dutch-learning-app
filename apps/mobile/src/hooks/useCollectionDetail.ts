@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useShallow } from 'zustand/react/shallow'
+import { useMemo, useState } from 'react'
 import { router, type Href } from 'expo-router'
 import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
@@ -37,7 +38,23 @@ export function useCollectionDetail(collectionId: string) {
     unshareCollection,
     reanalyzeWord,
     startReviewSession,
-  } = useApplicationStore()
+  } = useApplicationStore(
+    useShallow(state => ({
+      userAccessLevel: state.userAccessLevel,
+      words: state.words,
+      collections: state.collections,
+      fetchCollections: state.fetchCollections,
+      deleteWord: state.deleteWord,
+      updateWordImage: state.updateWordImage,
+      moveWordToCollection: state.moveWordToCollection,
+      resetWordProgress: state.resetWordProgress,
+      shareCollection: state.shareCollection,
+      getCollectionShareStatus: state.getCollectionShareStatus,
+      unshareCollection: state.unshareCollection,
+      reanalyzeWord: state.reanalyzeWord,
+      startReviewSession: state.startReviewSession,
+    }))
+  )
   const lastSelectedReviewMode = useSettingsStore(
     state => state.lastSelectedReviewMode
   )
@@ -46,13 +63,17 @@ export function useCollectionDetail(collectionId: string) {
 
   const collection = collections.find(c => c.collection_id === collectionId)
 
-  const collectionWords = words
-    .filter(word => word.collection_id === collectionId)
-    .sort((a, b) => {
-      const wordA = a.dutch_lemma.toLowerCase()
-      const wordB = b.dutch_lemma.toLowerCase()
-      return wordA.localeCompare(wordB)
-    })
+  const collectionWords = useMemo(
+    () =>
+      words
+        .filter(word => word.collection_id === collectionId)
+        .sort((a, b) => {
+          const wordA = a.dutch_lemma.toLowerCase()
+          const wordB = b.dutch_lemma.toLowerCase()
+          return wordA.localeCompare(wordB)
+        }),
+    [words, collectionId]
+  )
 
   const baseStats = calculateCollectionStats(collectionWords)
   const stats = {

@@ -1,5 +1,9 @@
-import type { Database, Json } from '@woordenaar/supabase-contracts'
-import { CEFR_LEVELS, parseDictionaryReference } from '@woordenaar/domain'
+import type { Database } from '@woordenaar/supabase-contracts'
+import {
+  CEFR_LEVELS,
+  parseDictionaryReference,
+  parseDictionaryReadContent,
+} from '@woordenaar/domain'
 import type {
   CefrLevel,
   CefrAssessmentStatus,
@@ -39,11 +43,9 @@ type ContentField = (typeof contentFields)[number]
 type WordRow = Database['public']['Tables']['words']['Row']
 type ContentProjection = Pick<WordRow, ContentField>
 
-export interface DictionaryCardMetadata {
+interface DictionaryMetadataBase {
   availableRevision?: DictionaryReference
-  contentVersion: number
   reference: DictionaryReference | null
-  source: 'pinned' | 'fallback'
   cefr: {
     level: CefrLevel | null
     status: CefrAssessmentStatus
@@ -51,7 +53,21 @@ export interface DictionaryCardMetadata {
   }
 }
 
-export interface EffectiveCard extends DictionaryCardMetadata {
+export type DictionaryCardMetadata = DictionaryMetadataBase &
+  (
+    | { contentVersion: number; source: 'pinned' | 'fallback'; mode?: 'legacy' }
+    | {
+        protocolVersion: 2
+        contentVersion: string
+        source: 'following' | 'pinned' | 'fallback'
+        mode: 'legacy' | 'follow'
+        adoptedRevisionId: string | null
+        headSequence: string | null
+        watermark: string
+      }
+  )
+
+export type EffectiveCard = DictionaryCardMetadata & {
   wordId: string
   content: ContentProjection
 }
@@ -61,54 +77,19 @@ const invalid = (): never => {
 }
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
-const isJson = (value: unknown): value is Json =>
-  value === null ||
-  typeof value === 'string' ||
-  typeof value === 'boolean' ||
-  (typeof value === 'number' && Number.isFinite(value)) ||
-  (Array.isArray(value)
-    ? value.every(isJson)
-    : isRecord(value) && Object.values(value).every(isJson))
-
-// Validate the read projection, which also contains legacy/private JSON. The
-// stricter canonical publication validator must not reject older private cards.
-const parseContent = (value: unknown): ContentProjection => {
-  if (
-    !isRecord(value) ||
-    Object.keys(value).length !== contentFields.length ||
-    !contentFields.every(field => Object.hasOwn(value, field)) ||
-    typeof value.dutch_lemma !== 'string' ||
-    !value.dutch_lemma.trim()
-  )
-    return invalid()
-  for (const field of textFields) {
-    if (value[field] !== null && typeof value[field] !== 'string')
-      return invalid()
-  }
-  for (const field of booleanFields) {
-    if (value[field] !== null && typeof value[field] !== 'boolean')
-      return invalid()
-  }
-  for (const field of jsonFields) if (!isJson(value[field])) return invalid()
-  for (const field of arrayFields) {
-    const values = value[field]
-    if (values !== null && (!Array.isArray(values) || !values.every(isJson)))
-      return invalid()
-    if (
-      field !== 'examples' &&
-      Array.isArray(values) &&
-      !values.every(item => typeof item === 'string')
-    )
-      return invalid()
-  }
+// Normalize only display defaults; raw removals remain validated at the wire boundary.
+export const projectDictionaryContent = (value: unknown): ContentProjection => {
+  const parsed = parseDictionaryReadContent(value)
+  if (!parsed.success) return invalid()
+  const content = parsed.data
   return {
-    ...value,
-    translations: value.translations ?? { en: [], ru: [] },
-    examples: value.examples ?? [],
-    synonyms: value.synonyms ?? [],
-    antonyms: value.antonyms ?? [],
-    tts_url: value.tts_url ?? '',
-  } as ContentProjection
+    ...content,
+    translations: content.translations ?? { en: [], ru: [] },
+    examples: content.examples ?? [],
+    synonyms: content.synonyms ?? [],
+    antonyms: content.antonyms ?? [],
+    tts_url: content.tts_url ?? '',
+  }
 }
 
 export const parseEffectiveCards = (
@@ -150,7 +131,7 @@ export const parseEffectiveCards = (
           confidence > 1))
     )
       return invalid()
-    const content = parseContent(row.content)
+    const content = projectDictionaryContent(row.content)
     if (
       !Array.isArray(row.removed_fields) ||
       row.removed_fields.some(

@@ -8,6 +8,8 @@ import { WordManagementForms } from '@/features/words/WordManagementForms'
 import styles from '@/features/words/WordPage.module.css'
 import { getOwnedWordPageData } from '@/features/words/repository'
 import { requireAuthContext } from '@/lib/auth/session'
+import { FollowingWordDetail } from '@/features/dictionary/FollowingWordDetail'
+import { isDictionaryFollowingEnabled } from '@/features/dictionary/repository'
 
 export default async function WordDetailPage({
   params,
@@ -36,7 +38,16 @@ export default async function WordDetailPage({
       </nav>
 
       <div className={styles.cardWrap}>
-        <WordDetailCard headingLevel="h1" word={data.word} />
+        {data.word.dictionary?.mode === 'follow' ? (
+          <FollowingWordDetail
+            key={`${auth.userId}:${data.word.id}:${'headSequence' in data.word.dictionary ? data.word.dictionary.headSequence : ''}`}
+            word={data.word}
+            userId={auth.userId}
+            followingEnabled={isDictionaryFollowingEnabled()}
+          />
+        ) : (
+          <WordDetailCard headingLevel="h1" word={data.word} />
+        )}
       </div>
 
       {data.word.dutchOriginal &&
@@ -46,18 +57,19 @@ export default async function WordDetailPage({
           </p>
         )}
 
-      {auth.accessLevel === 'full_access' && (
-        <section className={styles.management}>
-          <div className={styles.managementTitle}>
-            <span className="dw-label">Image</span>
-          </div>
-          <WordImageManager
-            key={`${data.word.id}:${data.word.dictionary?.contentVersion ?? 'legacy'}`}
-            collectionId={data.collection.id}
-            word={data.word}
-          />
-        </section>
-      )}
+      {auth.accessLevel === 'full_access' &&
+        data.word.dictionary?.mode !== 'follow' && (
+          <section className={styles.management}>
+            <div className={styles.managementTitle}>
+              <span className="dw-label">Image</span>
+            </div>
+            <WordImageManager
+              key={`${data.word.id}:${data.word.dictionary?.contentVersion ?? 'legacy'}`}
+              collectionId={data.collection.id}
+              word={data.word}
+            />
+          </section>
+        )}
 
       <section className={styles.management}>
         <div className={styles.managementTitle}>
@@ -76,7 +88,10 @@ export default async function WordDetailPage({
           <WordManagementForms
             key={`${data.word.id}:${data.word.dictionary?.contentVersion ?? 'legacy'}`}
             contentVersion={data.word.dictionary?.contentVersion}
-            canUseAi={auth.accessLevel === 'full_access'}
+            canUseAi={
+              auth.accessLevel === 'full_access' &&
+              data.word.dictionary?.mode !== 'follow'
+            }
             collectionId={data.collection.id}
             moveTargets={data.moveTargets}
             wordId={data.word.id}

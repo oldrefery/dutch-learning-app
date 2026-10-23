@@ -50,6 +50,7 @@ interface ReviewSetupProps {
   onScopeChange: (value: ReviewScope) => void
   onStart: () => void
   preparing?: boolean
+  ready?: boolean
   scope: ReviewScope
 }
 
@@ -65,6 +66,7 @@ export function ReviewSetup({
   onScopeChange,
   onStart,
   preparing = false,
+  ready = true,
   scope,
 }: ReviewSetupProps) {
   const estimateMinutes = Math.max(1, Math.ceil(dueCount * 0.35))
@@ -96,7 +98,7 @@ export function ReviewSetup({
               <button
                 aria-checked={mode === option.value}
                 className={styles.modeCard}
-                disabled={disabled}
+                disabled={disabled || !ready}
                 key={option.value}
                 onClick={() => onModeChange(option.value)}
                 role="radio"
@@ -135,6 +137,7 @@ export function ReviewSetup({
           {SCOPE_OPTIONS.map(option => (
             <button
               aria-checked={scope === option.value}
+              disabled={!ready}
               className={styles.scopeButton}
               key={option.value}
               onClick={() => onScopeChange(option.value)}
@@ -152,6 +155,7 @@ export function ReviewSetup({
         {scope === 'collection-due' && (
           <select
             aria-label="Collection"
+            disabled={!ready}
             className={`dw-field ${styles.collectionSelect}`}
             onChange={event => onCollectionChange(event.target.value)}
             value={collectionId ?? ''}
@@ -184,7 +188,7 @@ export function ReviewSetup({
             <Headphones aria-hidden="true" size={16} /> Audio review
           </Link>
           <Button
-            disabled={dueCount === 0 || preparing}
+            disabled={!ready || dueCount === 0 || preparing}
             onClick={onStart}
             type="button"
           >

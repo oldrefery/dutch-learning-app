@@ -86,6 +86,77 @@ describe('appInitializationActions', () => {
   })
 
   describe('initializeApp', () => {
+    it('shares concurrent local initialization but permits a later fresh load', async () => {
+      let finishWords: () => void = () => {}
+      mockFetchWords.mockImplementationOnce(
+        () =>
+          new Promise<void>(resolve => {
+            finishWords = resolve
+          })
+      )
+      const first = actions.initializeApp(USER_ID)
+      const second = actions.initializeApp(USER_ID)
+      const third = actions.initializeApp(USER_ID)
+      expect(mockFetchWords).toHaveBeenCalledTimes(1)
+      expect(mockFetchCollections).toHaveBeenCalledTimes(1)
+      finishWords()
+      await Promise.all([first, second, third])
+      await actions.initializeApp(USER_ID)
+      expect(mockFetchWords).toHaveBeenCalledTimes(2)
+      expect(mockFetchCollections).toHaveBeenCalledTimes(2)
+    })
+
+    it('does not let an unfinished access lookup block another local refresh', async () => {
+      let finishAccess: () => void = () => {}
+      mockFetchUserAccessLevel.mockImplementationOnce(
+        () =>
+          new Promise<void>(resolve => {
+            finishAccess = resolve
+          })
+      )
+      const first = actions.initializeApp(USER_ID)
+      await Promise.resolve()
+      await Promise.resolve()
+      await Promise.resolve()
+      await actions.initializeApp(USER_ID)
+      expect(mockFetchWords).toHaveBeenCalledTimes(2)
+      finishAccess()
+      await first
+    })
+
+    it.each(['logout', 'other-owner'] as const)(
+      'starts a fresh local load after %s and return while an old load is pending',
+      async transition => {
+        let finishOld: () => void = () => {}
+        let finishReturn: () => void = () => {}
+        mockFetchWords.mockImplementationOnce(
+          () =>
+            new Promise<void>(resolve => {
+              finishOld = resolve
+            })
+        )
+        const old = actions.initializeApp(USER_ID)
+        await actions.initializeApp(
+          transition === 'logout' ? undefined : 'other-owner'
+        )
+        const beforeReturn = mockFetchWords.mock.calls.length
+        mockFetchWords.mockImplementationOnce(
+          () =>
+            new Promise<void>(resolve => {
+              finishReturn = resolve
+            })
+        )
+        const returned = actions.initializeApp(USER_ID)
+        expect(mockFetchWords).toHaveBeenCalledTimes(beforeReturn + 1)
+        finishOld()
+        await old
+        const repeated = actions.initializeApp(USER_ID)
+        expect(mockFetchWords).toHaveBeenCalledTimes(beforeReturn + 1)
+        finishReturn()
+        await Promise.all([returned, repeated])
+      }
+    )
+
     it('should set currentUserId and fetch data when userId provided', async () => {
       ;(accessControlService.getUserAccessLevel as jest.Mock).mockResolvedValue(
         { success: true, data: 'full_access' }

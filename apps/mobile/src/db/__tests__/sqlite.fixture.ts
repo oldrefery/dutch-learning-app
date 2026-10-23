@@ -17,7 +17,16 @@ import {
   MIGRATION_V14_DICTIONARY_IMPORTS,
   MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS,
 } from '../dictionaryImportSchema'
+import { MIGRATION_V20_DICTIONARY_FOLLOWING_IMPORTS } from '../dictionaryFollowingImportSchema'
+import { MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS } from '../dictionaryFollowingTransferSchema'
+import { MIGRATION_V22_DICTIONARY_CREATION } from '../dictionaryCreationSchema'
+import { MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION } from '../dictionaryModeReconciliationSchema'
 import { MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY } from '../dictionaryImportRecoverySchema'
+import { MIGRATION_V17_DICTIONARY_FOLLOWING } from '../dictionaryFollowingSchema'
+import {
+  MIGRATION_V18_DICTIONARY_ANALYSIS,
+  MIGRATION_V19_DICTIONARY_ANALYSIS_HISTORY,
+} from '../dictionaryAnalysisSchema'
 
 // Only the native Expo bridge is replaced; execute actual repository SQL.
 export const createTestDatabase = (
@@ -39,6 +48,13 @@ export const createTestDatabase = (
     database.exec(MIGRATION_V14_DICTIONARY_IMPORTS)
     database.exec(MIGRATION_V15_DICTIONARY_IMPORT_RECEIPTS)
     database.exec(MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY)
+    database.exec(MIGRATION_V17_DICTIONARY_FOLLOWING)
+    database.exec(MIGRATION_V18_DICTIONARY_ANALYSIS)
+    database.exec(MIGRATION_V19_DICTIONARY_ANALYSIS_HISTORY)
+    database.exec(MIGRATION_V20_DICTIONARY_FOLLOWING_IMPORTS)
+    database.exec(MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS)
+    database.exec(MIGRATION_V22_DICTIONARY_CREATION)
+    database.exec(MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION)
   }
   const runAsync = async (sql: string, ...values: SQLInputValue[]) =>
     database.prepare(sql).run(...values)

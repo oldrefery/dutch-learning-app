@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@woordenaar/supabase-contracts'
 import {
   isDictionaryContentEnabled,
+  isDictionaryFollowingEnabled,
   type DictionaryDatabase,
 } from '@/features/dictionary/repository'
 import {
@@ -13,12 +14,21 @@ import {
   type StarterPackManifest,
 } from './starter-pack-domain'
 
+export const isFollowingStarterPackEnabled = () =>
+  isDictionaryFollowingEnabled() &&
+  process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED === 'true'
+
 export async function importStarterPackEntries(
   client: SupabaseClient<Database>,
   collectionId: string,
   manifest: StarterPackManifest,
   entries: StarterPackEntry[]
 ) {
+  if (isFollowingStarterPackEnabled())
+    return {
+      data: null,
+      error: { message: 'Use the saved shared pack import.' },
+    }
   if (!isDictionaryContentEnabled()) {
     return client.rpc('import_words_to_collection', {
       p_collection_id: collectionId,

@@ -1,4 +1,5 @@
 import {
+  compareDictionarySequences,
   beginReviewSubmission,
   continueReviewFlow,
   createReviewFlow,
@@ -39,6 +40,7 @@ export type ReviewPreparationState =
   | { message: string; status: 'error' }
 
 export interface WebReviewSnapshot {
+  dictionaryWatermark?: string
   flow: WebReviewFlow | null
   words: ReviewWorkspaceData['words']
   events: ReviewWorkspaceData['events']
@@ -59,6 +61,7 @@ export function createReviewSessionController(
   correctionTransport: CorrectionTransport
 ) {
   let snapshot: WebReviewSnapshot = {
+    dictionaryWatermark: data.dictionaryWatermark,
     flow: null,
     words: data.words,
     events: data.events,
@@ -214,6 +217,15 @@ export function createReviewSessionController(
     transition,
     submit,
     refreshWorkspace: (next: ReviewWorkspaceData) => {
+      if (
+        snapshot.dictionaryWatermark !== undefined &&
+        (next.dictionaryWatermark === undefined ||
+          compareDictionarySequences(
+            next.dictionaryWatermark,
+            snapshot.dictionaryWatermark
+          ) < 0)
+      )
+        return false
       // An in-flight session owns its questions, content and learning snapshot.
       // Accept fresh server data only before a session or after completion.
       if (
@@ -224,6 +236,7 @@ export function createReviewSessionController(
         return false
       snapshot = {
         ...snapshot,
+        dictionaryWatermark: next.dictionaryWatermark,
         words: next.words,
         events: next.events,
         correctionsAvailable: next.correctionsAvailable === true,

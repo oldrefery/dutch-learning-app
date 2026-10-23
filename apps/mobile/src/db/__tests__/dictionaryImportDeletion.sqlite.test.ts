@@ -17,6 +17,7 @@ import {
 jest.mock('../initDB')
 jest.mock('@/lib/sentry')
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 let fixture: ReturnType<typeof openImportFixture>

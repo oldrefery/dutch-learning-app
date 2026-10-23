@@ -1,5 +1,8 @@
 import { getDatabase } from './initDB'
-import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingEnabled,
+} from '@/constants/dictionaryContent'
 import type {
   SQLiteBindValue,
   SQLiteDatabase,
@@ -258,6 +261,68 @@ export class WordRepository {
     } finally {
       await this.finalizeSaveWordStatements(statements)
     }
+  }
+
+  /** Exact personal identity only; no semantic merge or resurrection. The whole
+   * pull and its refresh debt commit under one captured owner lifetime. */
+  async saveFollowingPersonalWord(
+    word: Word,
+    assertOwner: () => void
+  ): Promise<void> {
+    const db = await getDatabase()
+    await db.withExclusiveTransactionAsync(async transaction => {
+      assertOwner()
+      const existing = await transaction.getFirstAsync<
+        ExistingWordCheck & { user_id: string }
+      >('SELECT * FROM words WHERE word_id = ?', [word.word_id])
+      if (
+        existing &&
+        (existing.user_id !== word.user_id ||
+          existing.deleted_at ||
+          existing.sync_status === 'deleted')
+      )
+        throw new Error(
+          'Imported personal row is deleted or belongs to another owner'
+        )
+      if (word.collection_id) {
+        const collection = await transaction.getFirstAsync<{
+          collection_id: string
+        }>(
+          "SELECT collection_id FROM collections WHERE collection_id = ? AND user_id = ? AND sync_status <> 'deleted'",
+          [word.collection_id, word.user_id]
+        )
+        if (!collection)
+          throw new Error('Imported collection must be synchronized first')
+      }
+      const statements = await this.prepareSaveWordStatements(transaction)
+      try {
+        const matched = await this.findExistingWord(
+          statements.checkExisting,
+          word
+        )
+        if (matched && matched.word_id !== word.word_id)
+          throw new Error(
+            'Personal word identity conflict. Existing card is preserved.'
+          )
+        // A response fetched before a newer local/remote merge must not move it back.
+        if (
+          !existing ||
+          Date.parse(existing.updated_at) <= Date.parse(word.updated_at)
+        )
+          await this.persistWord(word, statements, { preserveUnsynced: true })
+        await transaction.runAsync(
+          `INSERT INTO dictionary_following_refresh_queue(word_id,user_id,refresh_version)
+           VALUES (?,?,1) ON CONFLICT(word_id) DO UPDATE SET refresh_version = refresh_version + 1
+           WHERE user_id = excluded.user_id`,
+          word.word_id,
+          word.user_id
+        )
+        assertOwner()
+      } finally {
+        await this.finalizeSaveWordStatements(statements)
+      }
+      assertOwner()
+    })
   }
 
   async saveRemoteWordTombstones(words: RemoteWordTombstone[]): Promise<void> {
@@ -1165,7 +1230,12 @@ export class WordRepository {
         `SELECT words.* FROM words
          LEFT JOIN dictionary_card_content cards ON cards.word_id = words.word_id
          WHERE words.user_id = ? AND words.deleted_at IS NULL
-           AND words.sync_status = 'pending' AND cards.word_id IS NULL`,
+           AND words.sync_status = 'pending' AND cards.word_id IS NULL
+           AND NOT EXISTS (
+             SELECT 1 FROM dictionary_effective_card_cache effective
+             WHERE effective.word_id = words.word_id
+               AND effective.user_id = words.user_id
+           )`,
         [userId]
       )
       for (const row of rows) {
@@ -1229,11 +1299,65 @@ export class WordRepository {
     }
   }
 
+  async assertPrivateContentEditable(
+    userId: string,
+    wordId: string
+  ): Promise<void> {
+    await this.requirePrivateContentEditable(
+      await getDatabase(),
+      userId,
+      wordId
+    )
+  }
+
+  private async requirePrivateContentEditable(
+    db: SQLiteDatabase,
+    userId: string,
+    wordId: string
+  ): Promise<void> {
+    const cached = await db.getFirstAsync<{
+      mode: string
+      content_version: string
+    }>(
+      'SELECT mode, content_version FROM dictionary_effective_card_cache WHERE user_id = ? AND word_id = ?',
+      [userId, wordId]
+    )
+    if (cached?.mode === 'follow')
+      throw new Error(
+        'This word uses shared dictionary content. Shared analysis is required.'
+      )
+    if (!isDictionaryFollowingEnabled()) {
+      if (cached?.mode !== 'legacy') return
+      const reviewed = await db.getFirstAsync<{ operation_id: string }>(
+        'SELECT operation_id FROM dictionary_mode_reconciliations WHERE user_id = ? AND word_id = ? LIMIT 1',
+        [userId, wordId]
+      )
+      if (!reviewed) return
+    }
+
+    const legacy = await db.getFirstAsync<{ content_version: number }>(
+      'SELECT content_version FROM dictionary_card_content WHERE user_id = ? AND word_id = ?',
+      [userId, wordId]
+    )
+    if (
+      !cached ||
+      cached.content_version !== String(legacy?.content_version ?? 0)
+    )
+      throw new Error(
+        'Sync or resolve dictionary content before changing this word.'
+      )
+  }
+
   private async runAnalyzedWordUpdate(
     db: SQLiteDatabase,
     word: Word
   ): Promise<void> {
     await db.withExclusiveTransactionAsync(async transaction => {
+      await this.requirePrivateContentEditable(
+        transaction,
+        word.user_id,
+        word.word_id
+      )
       const result = await transaction.runAsync(
         UPDATE_ANALYZED_WORD_SQL,
         ...this.getAnalyzedWordUpdateValues(word)
@@ -1353,6 +1477,7 @@ export class WordRepository {
     const db = await getDatabase()
     const updatedAt = new Date().toISOString()
     await db.withExclusiveTransactionAsync(async transaction => {
+      await this.requirePrivateContentEditable(transaction, userId, wordId)
       const result = await transaction.runAsync(
         `UPDATE words
          SET image_url = ?, updated_at = ?, sync_status = 'pending',

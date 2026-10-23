@@ -178,7 +178,7 @@ export const toStarterPackManifest = (
   }
 }
 
-export const loadOfficialStarterPack = (): StarterPackManifest => {
+export const loadBundledOfficialManifest = (): OfficialContentManifest => {
   const result = validateOfficialContentManifest(officialDutchA1Pack)
   if (!result.success) {
     throw new OfficialContentValidationError(result.issues)
@@ -192,8 +192,11 @@ export const loadOfficialStarterPack = (): StarterPackManifest => {
   if (result.data.content_review.status !== 'approved') {
     throw new Error('The official starter pack is awaiting content review.')
   }
-  return toStarterPackManifest(result.data)
+  return result.data
 }
+
+export const loadOfficialStarterPack = (): StarterPackManifest =>
+  toStarterPackManifest(loadBundledOfficialManifest())
 
 export const getStarterPackSemanticKey = (
   dutchLemma: string,

@@ -3,13 +3,15 @@
 import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { DictionaryCollectionExport } from '@woordenaar/domain'
+import type {
+  DictionaryCollectionExport,
+  DictionaryCollectionExportV2,
+} from '@woordenaar/domain'
 import { Button } from '@/components/ui/Button'
 import type { ExistingSharedImportWord } from './shared-collection-domain'
 import type { SharedTargetCollection } from './repository'
 import {
   buildTransferPreview,
-  parseTransferText,
   requestDictionaryTransfer,
   type TransferPreviewWord,
   type TransferReply,
@@ -17,6 +19,8 @@ import {
 import { DictionaryDocumentPreview } from './DictionaryDocumentPreview'
 import { TransferSessionNotice } from './TransferSessionNotice'
 import { useTransferSession } from './useTransferSession'
+import { parseDocumentImportText } from './document-import-parser'
+import { DictionaryFollowingTransferPanel } from './DictionaryFollowingTransferPanel'
 import styles from './DictionaryTransfer.module.css'
 
 type Saved = Extract<TransferReply, { status: 'saved' }>
@@ -48,10 +52,12 @@ export function DictionaryDocumentImport({
   ownerId,
   collections,
   existingWords,
+  followingEnabled = false,
 }: {
   ownerId: string
   collections: SharedTargetCollection[]
   existingWords: ExistingSharedImportWord[]
+  followingEnabled?: boolean
 }) {
   const session = useTransferSession(ownerId)
   const router = useRouter()
@@ -59,21 +65,25 @@ export function DictionaryDocumentImport({
   const [pending, setPending] = useState(false)
   const [text, setText] = useState('')
   const [preview, setPreview] = useState<{
-    document: DictionaryCollectionExport
+    document: DictionaryCollectionExport | DictionaryCollectionExportV2
     words: TransferPreviewWord[]
   } | null>(null)
   const [selected, setSelected] = useState<Set<number>>(new Set())
   const [target, setTarget] = useState(collections[0]?.id ?? '')
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [saved, setSaved] = useState<Saved | null>(null)
+  const [showSaved, setShowSaved] = useState(false)
 
   const prepare = () => {
     if (!session.capture() || busy.current) return
     setFeedback(null)
     setPreview(null)
     try {
-      const document = parseTransferText(text)
-      const words = buildTransferPreview(document, existingWords)
+      const document = parseDocumentImportText(text)
+      const words =
+        document.schema_version === 2
+          ? []
+          : buildTransferPreview(document, existingWords)
       setPreview({ document, words })
       setSelected(
         new Set(words.filter(word => !word.duplicate).map(word => word.index))
@@ -93,6 +103,7 @@ export function DictionaryDocumentImport({
     if (
       !ticket ||
       !preview ||
+      preview.document.schema_version !== 1 ||
       !target ||
       selected.size === 0 ||
       busy.current ||
@@ -147,10 +158,33 @@ export function DictionaryDocumentImport({
   }
 
   if (!session.active) return <TransferSessionNotice ready={session.ready} />
+  if (showSaved || preview?.document.schema_version === 2)
+    return (
+      <DictionaryFollowingTransferPanel
+        ownerId={ownerId}
+        document={
+          preview?.document.schema_version === 2 ? preview.document : undefined
+        }
+        collections={collections}
+        followingEnabled={followingEnabled}
+        onClose={() => {
+          setShowSaved(false)
+          setPreview(null)
+        }}
+      />
+    )
   if (saved) return <SavedImport result={saved} />
   return (
     <div className={`dw-surface ${styles.panel}`}>
       <h2>Paste a JSON export</h2>
+      <Button
+        type="button"
+        variant="secondary"
+        disabled={pending}
+        onClick={() => setShowSaved(true)}
+      >
+        Saved shared imports
+      </Button>
       <p className="dw-support">
         Choose the words to import. New cards start with fresh learning
         progress; existing words stay where they are.

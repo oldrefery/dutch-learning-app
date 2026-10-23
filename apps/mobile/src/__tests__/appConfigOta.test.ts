@@ -104,7 +104,21 @@ describe('mobile OTA build configuration', () => {
     }
   )
 
-  it.each(['preview', 'production'])(
+  it('keeps OTA enabled for the held dictionary release candidate', () => {
+    const result = readConfig({
+      ...easJson.build['dictionary-release'].env,
+      EAS_BUILD_PROFILE: 'dictionary-release',
+    })
+
+    expect(result.status).toBe(0)
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      qaBuild: false,
+      iosEnabled: true,
+      androidEnabled: 'true',
+    })
+  })
+
+  it.each(['preview', 'production', 'dictionary-release'])(
     'rejects a QA flag leaking into %s',
     profile => {
       const result = readConfig({

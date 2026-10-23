@@ -6,6 +6,7 @@ import { useApplicationStore } from '@/stores/useApplicationStore'
 import { learningOperationQueue } from '@/services/learningOperationQueue'
 import { reviewCorrectionRecoveryRepository } from '@/db/reviewCorrectionRecoveryRepository'
 import type { NativeReviewSubmission } from './controller'
+import { mergeReviewLearningProgress } from './learningProgress'
 
 /** Keep the full local persistence payload stable through a failed acknowledgement. */
 export function createNativeReviewPersistence(userId: string) {
@@ -58,7 +59,9 @@ export function createNativeReviewPersistence(userId: string) {
     if (useApplicationStore.getState().currentUserId === userId && word) {
       useApplicationStore.setState(state => ({
         words: state.words.map(existing =>
-          existing.word_id === word.word_id ? word : existing
+          existing.word_id === word.word_id
+            ? mergeReviewLearningProgress(existing, word)
+            : existing
         ),
       }))
     }

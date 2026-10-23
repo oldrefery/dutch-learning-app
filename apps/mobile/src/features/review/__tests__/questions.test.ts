@@ -4,6 +4,10 @@ import {
 } from '../questions'
 import { makeSession, userId, vocabulary } from './fixtures'
 
+const OLD_SEQUENCE = '9007199254740993'
+const OLD_REVISION = 'revision-old'
+const NEW_REVISION = 'revision-new'
+const DUTCH_PRODUCTION = 'dutch-production'
 const MEANING_RECALL = 'meaning-recall'
 
 it('prepares immutable owned questions and options once', () => {
@@ -102,15 +106,86 @@ it('falls back to recall when there are too few unambiguous choices', () => {
 it('uses the session adaptive decision and falls back when a production prompt is absent', () => {
   const session = makeSession('adaptive')
   session.adaptiveModeByWordId[vocabulary[0].word_id] = {
-    mode: 'dutch-production',
+    mode: DUTCH_PRODUCTION,
     reason: 'promotion',
     previousMode: MEANING_RECALL,
   }
   expect(
     prepareNativeReviewQuestions(session, vocabulary, userId)[0].mode
-  ).toBe('dutch-production')
+  ).toBe(DUTCH_PRODUCTION)
   session.words = [{ ...vocabulary[0], translations: { en: [] } }]
   expect(
     prepareNativeReviewQuestions(session, vocabulary, userId)[0].mode
   ).toBe(MEANING_RECALL)
+})
+
+it('freezes all words, shared metadata, distractors and adaptive decisions before preparation yields', async () => {
+  const words = Array.from({ length: 105 }, (_, index) => ({
+    ...vocabulary[index % 4],
+    word_id: `snapshot-${index}`,
+    translations: { en: [`old meaning ${index}`] },
+    dictionary_content_state: {
+      protocol_version: 2 as const,
+      mode: 'follow' as const,
+      content_version: '9007199254740992',
+      reference: { entry_id: 'entry', revision_id: OLD_REVISION },
+      adopted_revision_id: OLD_REVISION,
+      head_sequence: OLD_SEQUENCE,
+      watermark: OLD_SEQUENCE,
+    },
+    cefr_level: 'A2' as 'A2' | 'B1',
+    cefr_status: 'estimated' as const,
+    cefr_confidence: 0.8,
+  }))
+  const session = { ...makeSession('adaptive'), words }
+  session.adaptiveModeByWordId[words[104].word_id] = {
+    mode: DUTCH_PRODUCTION,
+    reason: 'promotion',
+    previousMode: MEANING_RECALL,
+  }
+  const expected = prepareNativeReviewQuestions(session, words, userId)
+  let yields = 0
+  const result = await prepareNativeReviewQuestionsAsync(
+    session,
+    words,
+    userId,
+    new AbortController().signal,
+    () => {},
+    async () => {
+      if (yields++ !== 0) return
+      words.forEach(word => {
+        word.translations.en[0] = 'new meaning'
+        word.dictionary_content_state.reference.revision_id = NEW_REVISION
+        word.cefr_level = 'B1'
+        word.cefr_confidence = 0.9
+      })
+      session.config.mode = MEANING_RECALL
+      session.adaptiveModeByWordId[words[104].word_id].mode = 'recognition'
+    }
+  )
+  expect(yields).toBeGreaterThan(2)
+  expect(result).toEqual(expected)
+  expect(result?.[104]).toMatchObject({
+    mode: DUTCH_PRODUCTION,
+    payload: {
+      word: {
+        cefr_level: 'A2',
+        cefr_confidence: 0.8,
+        dictionary_content_state: { reference: { revision_id: OLD_REVISION } },
+      },
+      translation: 'old meaning 104',
+    },
+  })
+  expect(
+    prepareNativeReviewQuestions(session, words, userId)[104]
+  ).toMatchObject({
+    mode: MEANING_RECALL,
+    payload: {
+      word: {
+        cefr_level: 'B1',
+        dictionary_content_state: { reference: { revision_id: NEW_REVISION } },
+      },
+      translation: 'new meaning',
+    },
+  })
 })

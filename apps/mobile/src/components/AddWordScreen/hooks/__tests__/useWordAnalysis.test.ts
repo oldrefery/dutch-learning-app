@@ -68,4 +68,20 @@ describe('useWordAnalysis', () => {
     })
     expect(result.current.analysisResult?.usage_notes).toEqual(usageNotes)
   })
+  it('blocks legacy provider analysis and history writes in following mode', async () => {
+    process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+    process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED = 'true'
+    try {
+      const { result } = renderHook(() => useWordAnalysis())
+      await act(async () => result.current.analyzeWord('huis'))
+      expect(result.current.analysisError).toBe(
+        'Use published shared meanings to add a word.'
+      )
+      expect(wordService.analyzeWord).not.toHaveBeenCalled()
+      expect(addAnalyzedWord).not.toHaveBeenCalled()
+    } finally {
+      delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+      delete process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED
+    }
+  })
 })

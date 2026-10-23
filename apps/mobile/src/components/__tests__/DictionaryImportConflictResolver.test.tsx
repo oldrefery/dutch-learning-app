@@ -21,6 +21,7 @@ import { wordToDictionaryContent } from '@/db/dictionaryContentMapping'
 import type { Word, Collection } from '@/types/database'
 
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 jest.mock('@/hooks/useNormalizedColorScheme', () => ({

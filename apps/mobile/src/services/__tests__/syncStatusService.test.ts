@@ -33,8 +33,16 @@ jest.mock('@/db/dictionaryImportRepository', () => ({
 }))
 
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: jest.fn(() => false),
 }))
+jest.mock('@/db/dictionaryFollowingRepository', () => ({
+  dictionaryFollowingRepository: {
+    getPendingRefreshWordIds: jest.fn().mockResolvedValue([]),
+    getMissingCardWordIds: jest.fn().mockResolvedValue([]),
+  },
+}))
+
 jest.mock('@/db/dictionaryContentRepository', () => ({
   dictionaryContentRepository: {
     getPendingCommands: jest.fn(),
@@ -282,4 +290,47 @@ it('counts cancellation and independent placement debt even when generic metadat
   const snapshot = await syncStatusService.getSnapshot(PENDING_OWNER)
   expect(snapshot.pendingWords).toBe(2)
   expect(snapshot.totalPending).toBe(2)
+})
+
+describe('temporary SQLite contention', () => {
+  beforeEach(() => jest.useFakeTimers())
+  afterEach(() => {
+    jest.useRealTimers()
+    jest.mocked(wordRepository.getWordsByUserId).mockResolvedValue([])
+  })
+
+  it('retries a native finalize lock and returns the current owner snapshot', async () => {
+    const lock = new Error(
+      "Calling 'finalizeAsync' failed: SQLiteErrorException: Error code 5: database is locked"
+    )
+    jest.mocked(wordRepository.getWordsByUserId).mockRejectedValueOnce(lock)
+    const result = syncStatusService.getSnapshot(PENDING_OWNER)
+    await jest.runAllTimersAsync()
+    expect(await result).toMatchObject({ totalLocalWords: 0 })
+    expect(wordRepository.getWordsByUserId).toHaveBeenCalledTimes(2)
+    expect(wordRepository.getWordsByUserId).toHaveBeenLastCalledWith(
+      PENDING_OWNER
+    )
+  })
+
+  it('surfaces a persistent lock after bounded retries instead of fabricating an empty status', async () => {
+    const lock = new Error('database is locked')
+    jest.mocked(wordRepository.getWordsByUserId).mockRejectedValue(lock)
+    const result = expect(
+      syncStatusService.getSnapshot(PENDING_OWNER)
+    ).rejects.toBe(lock)
+    await jest.runAllTimersAsync()
+    await result
+    expect(wordRepository.getWordsByUserId).toHaveBeenCalledTimes(4)
+  })
+
+  it('does not retry schema or content failures', async () => {
+    const failure = new Error('no such table: words')
+    jest.mocked(wordRepository.getWordsByUserId).mockRejectedValueOnce(failure)
+    await expect(syncStatusService.getSnapshot(PENDING_OWNER)).rejects.toBe(
+      failure
+    )
+    expect(wordRepository.getWordsByUserId).toHaveBeenCalledTimes(1)
+    expect(jest.getTimerCount()).toBe(0)
+  })
 })

@@ -5,8 +5,13 @@ import { collectionSharingService } from '@/services/collectionSharingService'
 import { supabase } from '@/lib/supabaseClient'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
+import { isDictionaryFollowingImportsEnabled } from '@/constants/dictionaryContent'
 import { Sentry } from '@/lib/sentry'
 
+jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryContentEnabled: () => false,
+  isDictionaryFollowingImportsEnabled: jest.fn(() => false),
+}))
 jest.mock('@/stores/useApplicationStore', () => ({
   useApplicationStore: {
     getState: jest.fn(),
@@ -105,8 +110,24 @@ describe('useImportSelection', () => {
     return result
   }
 
+  it('blocks the legacy handler if following mode is enabled after preview', async () => {
+    const result = await renderAndWait()
+    jest.mocked(isDictionaryFollowingImportsEnabled).mockReturnValue(true)
+    await act(async () => {
+      await result.current.handleImport()
+    })
+    expect(
+      useApplicationStore.getState().addWordsToCollection
+    ).not.toHaveBeenCalled()
+    expect(ToastService.show).toHaveBeenCalledWith(
+      'Use the explicit shared following import.',
+      ToastType.ERROR
+    )
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.mocked(isDictionaryFollowingImportsEnabled).mockReturnValue(false)
     ;(supabase.auth.getSession as jest.Mock).mockResolvedValue({
       data: {
         session: {

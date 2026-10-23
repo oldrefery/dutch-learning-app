@@ -61,7 +61,7 @@ export async function getOwnedWordPageData(
   if (!collectionResult.data || !wordResult.data) return null
 
   const [word] = await hydrateOwnedWords(supabase, [wordResult.data])
-  if (word.dictionary?.reference) {
+  if (word.dictionary?.reference && word.dictionary.mode !== 'follow') {
     word.dictionary.availableRevision = await getAvailableRevision(
       supabase,
       word.dictionary.reference

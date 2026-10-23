@@ -7,7 +7,10 @@ import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import type { StarterPackImportState } from './form-state'
 import { loadRemoteOfficialStarterPack } from './official-content-repository'
-import { importStarterPackEntries } from './dictionary-import'
+import {
+  importStarterPackEntries,
+  isFollowingStarterPackEnabled,
+} from './dictionary-import'
 import {
   getStarterPackSemanticKey,
   loadOfficialStarterPack,
@@ -228,6 +231,12 @@ export async function importStarterPack(
   _state: StarterPackImportState,
   formData: FormData
 ): Promise<StarterPackImportState> {
+  if (isFollowingStarterPackEnabled())
+    return {
+      status: 'error',
+      message:
+        'Use the saved shared pack import. No legacy import was started.',
+    }
   const auth = await requireAuthContext()
   let manifest
   try {

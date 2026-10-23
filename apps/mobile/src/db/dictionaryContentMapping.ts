@@ -1,11 +1,11 @@
 import type { Word } from '@/types/database'
 import {
-  parseDictionaryContent,
+  parsePrivateDictionaryContent,
   type DictionaryContent,
 } from '@woordenaar/domain'
 
 const requireContent = (value: unknown): DictionaryContent => {
-  const result = parseDictionaryContent(value)
+  const result = parsePrivateDictionaryContent(value)
   if (result.success) return result.data
   const firstIssue = result.issues[0]
   throw new Error(

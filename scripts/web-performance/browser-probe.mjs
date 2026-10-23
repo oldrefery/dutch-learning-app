@@ -8,6 +8,7 @@ export function installBrowserProbe({ selected }) {
     cardMs: null,
     longTasks: [],
     stage: 0,
+    initialModeClicked: false,
     done: false,
   }
   window.__reviewPerformance = probe
@@ -28,6 +29,7 @@ export function installBrowserProbe({ selected }) {
     probe.startMs = null
     probe.cardMs = null
     probe.stage = 0
+    probe.initialModeClicked = false
     probe.done = false
   }
   document.addEventListener(
@@ -72,7 +74,16 @@ export function installBrowserProbe({ selected }) {
     const allDue = findRadio('All due')
     // Initially checked SSR markup is not proof of hydration. Require actual
     // mode AND scope changes to be accepted by the real React handlers.
-    if (probe.stage === 0 && enabled(recognition)) recognition.click()
+    // Shipped setup controls stay disabled until owner preferences are applied.
+    if (
+      probe.stage === 0 &&
+      !probe.initialModeClicked &&
+      enabled(recognition)
+    ) {
+      probe.initialModeClicked = true
+      recognition.click()
+    }
+    if (!probe.initialModeClicked) return
     const transitions = [
       [checked(recognition), () => adaptive.click()],
       [checked(adaptive), () => collection.click()],

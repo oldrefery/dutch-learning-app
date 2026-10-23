@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useActionState, useState, useSyncExternalStore } from 'react'
+import { useActionState, useMemo, useState, useSyncExternalStore } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
@@ -28,6 +28,7 @@ import type { DuplicateWordResult } from './form-state'
 import { INITIAL_ADD_WORD_ACTION_STATE } from './form-state'
 import { ImageOptionGrid } from './ImageOptionGrid'
 import styles from './AddWordWorkflow.module.css'
+import { PublishedMeaningAddWord } from './PublishedMeaningAddWord'
 
 const subscribeToConnectivity = (listener: () => void) => {
   window.addEventListener('online', listener)
@@ -114,7 +115,44 @@ const ImageOptions = ({
   )
 }
 
-export function AddWordWorkflow({
+interface AddWordWorkflowProps {
+  collections: CollectionOption[]
+  initialCollectionId: string
+  useStoredCollectionPreference?: boolean
+  userId: string
+  followingEnabled?: boolean
+}
+
+export function AddWordWorkflow(props: AddWordWorkflowProps) {
+  if (props.followingEnabled)
+    return <FollowingAddWordWorkflow key={props.userId} {...props} />
+  return <LegacyAddWordWorkflow {...props} />
+}
+
+function FollowingAddWordWorkflow(props: AddWordWorkflowProps) {
+  const { settings } = useWebSettings(props.userId)
+  const preferred =
+    props.useStoredCollectionPreference &&
+    props.collections.some(row => row.id === settings.lastSelectedCollectionId)
+      ? settings.lastSelectedCollectionId
+      : props.initialCollectionId
+  const collections = useMemo(
+    () => [
+      ...props.collections.filter(row => row.id === preferred),
+      ...props.collections.filter(row => row.id !== preferred),
+    ],
+    [props.collections, preferred]
+  )
+  return (
+    <PublishedMeaningAddWord
+      ownerId={props.userId}
+      collections={collections}
+      followingEnabled
+    />
+  )
+}
+
+function LegacyAddWordWorkflow({
   collections,
   initialCollectionId,
   useStoredCollectionPreference = false,

@@ -1,6 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import type { OfficialContentManifest } from '@woordenaar/content/manifest'
+import { DictionaryFollowingTransferPanel } from '@/features/sharing/DictionaryFollowingTransferPanel'
 import { useActionState, useMemo, useState } from 'react'
 import { importStarterPack } from './actions'
 import { INITIAL_STARTER_PACK_IMPORT_STATE } from './form-state'
@@ -17,6 +20,9 @@ interface StarterPackImportProps {
   packId: string
   packTitle: string
   packVersion: string
+  ownerId?: string
+  followingEnabled?: boolean
+  officialManifest?: OfficialContentManifest
 }
 
 export function StarterPackImport({
@@ -26,7 +32,11 @@ export function StarterPackImport({
   packId,
   packTitle,
   packVersion,
+  ownerId,
+  followingEnabled = false,
+  officialManifest,
 }: StarterPackImportProps) {
+  const router = useRouter()
   const availableEntryIds = useMemo(
     () =>
       entries.filter(item => !item.isDuplicate).map(item => item.entry.entryId),
@@ -68,6 +78,21 @@ export function StarterPackImport({
       allAvailableSelected ? new Set() : new Set(availableEntryIds)
     )
   }
+
+  if (followingEnabled)
+    return ownerId && officialManifest ? (
+      <DictionaryFollowingTransferPanel
+        ownerId={ownerId}
+        officialManifest={officialManifest}
+        collections={collections}
+        followingEnabled={followingEnabled}
+        onClose={() => router.push('/app/collections')}
+      />
+    ) : (
+      <p role="alert">
+        The official shared pack is unavailable. Reload before continuing.
+      </p>
+    )
 
   if (state.status === 'success' && state.collectionId) {
     return (

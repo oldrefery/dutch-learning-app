@@ -18,6 +18,28 @@ export const createAppInitializationActions = (
   'initializeApp' | 'fetchUserAccessLevel' | 'setError' | 'clearError'
 > => {
   let accessRequest = 0
+  let localInitialization: {
+    userId: string
+    promise: Promise<void>
+  } | null = null
+
+  // Auth restoration and the entry route may initialize the same owner together.
+  // Share only their unfinished local reads; permission lookup has its own lifetime.
+  const loadInitialLocalData = (userId: string): Promise<void> => {
+    if (localInitialization?.userId === userId)
+      return localInitialization.promise
+    const request = {
+      userId,
+      promise: Promise.all([get().fetchWords(), get().fetchCollections()]).then(
+        () => {}
+      ),
+    }
+    localInitialization = request
+    request.promise = request.promise.finally(() => {
+      if (localInitialization === request) localInitialization = null
+    })
+    return request.promise
+  }
 
   return {
     initializeApp: async (userId?: string) => {
@@ -25,6 +47,7 @@ export const createAppInitializationActions = (
         if (userId) {
           // User is authenticated, set the user ID and fetch data
           if (get().currentUserId !== userId) {
+            localInitialization = null
             accessRequest += 1
             set({ currentUserId: userId, userAccessLevel: null })
           } else {
@@ -33,11 +56,11 @@ export const createAppInitializationActions = (
 
           // Fetch initial data for an authenticated user
           await Promise.all([
-            get().fetchWords(),
-            get().fetchCollections(),
+            loadInitialLocalData(userId),
             get().fetchUserAccessLevel(),
           ])
         } else {
+          localInitialization = null
           accessRequest += 1
           // No user, clear data
           set({

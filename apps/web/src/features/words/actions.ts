@@ -1,12 +1,23 @@
 'use server'
 
 import { randomUUID } from 'node:crypto'
-import { parseDictionaryContent } from '@woordenaar/domain'
+import {
+  parseDictionaryContent,
+  parseDictionaryAnalysisClientOperation,
+  parseDictionaryEffectiveBatchV2,
+  requireDictionaryAnalysisPublication,
+  type DictionaryAnalysisClientOperation,
+} from '@woordenaar/domain'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { DictionaryAnalysisDatabase } from '@woordenaar/supabase-contracts'
 import {
   applyDictionaryCommand,
   readDictionaryWriteState,
 } from '@/features/dictionary/commands'
-import { isDictionaryContentEnabled } from '@/features/dictionary/repository'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingEnabled,
+} from '@/features/dictionary/repository'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireAuthContext } from '@/lib/auth/session'
@@ -460,4 +471,30 @@ export async function updateWordImage(
   revalidatePath(getWordPath(collectionId, wordId))
 
   return { status: 'success', message: 'Word image updated.' }
+}
+
+/** Read-only publication validation before invalidating every owned shared-content view. */
+export async function refreshPublishedDictionaryAnalysis(
+  value: DictionaryAnalysisClientOperation
+): Promise<void> {
+  const operation = parseDictionaryAnalysisClientOperation(value)
+  const auth = await requireAuthContext()
+  if (auth.userId !== operation.user_id || !isDictionaryFollowingEnabled())
+    throw new Error('Shared analysis content is unavailable')
+  const client =
+    (await createClient()) as unknown as SupabaseClient<DictionaryAnalysisDatabase>
+  const { data, error } = await client.rpc(
+    'get_dictionary_effective_content_v2',
+    { p_word_ids: [operation.word_id] }
+  )
+  const batch = parseDictionaryEffectiveBatchV2(data)
+  if (
+    error ||
+    !batch.success ||
+    batch.data.cards.length !== 1 ||
+    batch.data.cards[0].word_id !== operation.word_id
+  )
+    throw new Error('Shared analysis content is unavailable')
+  requireDictionaryAnalysisPublication(operation, batch.data.cards[0])
+  revalidatePath('/app', 'layout')
 }

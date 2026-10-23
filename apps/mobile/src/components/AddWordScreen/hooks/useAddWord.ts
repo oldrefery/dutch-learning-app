@@ -1,3 +1,4 @@
+import { isDictionaryFollowingEnabled } from '@/constants/dictionaryContent'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -90,6 +91,13 @@ export const useAddWord = (preselectedCollectionId?: string) => {
   }, [isSettingsHydrated, selectedCollection, lastSelectedCollectionId])
 
   const addWord = async (analysisResult: GeminiWordAnalysis) => {
+    if (isDictionaryFollowingEnabled()) {
+      ToastService.show(
+        'Use published shared meanings to add a word.',
+        ToastType.ERROR
+      )
+      return false
+    }
     setIsAdding(true)
     clearError()
 

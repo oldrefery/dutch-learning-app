@@ -1,3 +1,4 @@
+import { DictionaryModeReconciliationRequiredError } from '@/db/dictionaryModeReconciliationRepository'
 import { collectionService, supabase, wordService } from '@/lib/supabase'
 import { learningOperationQueue } from './learningOperationQueue'
 import { recoverConfirmedReviewCorrections } from './reviewCorrectionRecovery'
@@ -47,7 +48,10 @@ import {
 } from './dictionaryContentSync'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import { dictionaryImportRecoveryRepository } from '@/db/dictionaryImportRecoveryRepository'
-import { withDictionaryImportOwner } from './dictionaryImportOwner'
+import {
+  withDictionaryImportOwner,
+  type DictionaryOwnerGuard,
+} from './dictionaryImportOwner'
 import { prepareImportMetadata } from './dictionaryImportMetadata'
 import type { ImportDelivery } from '@/db/dictionaryImportRecoveryStorage'
 import { dictionaryImportDeliveryRepository } from '@/db/dictionaryImportDeliveryRepository'
@@ -192,7 +196,62 @@ interface SupabaseWordPayload {
 }
 
 interface SyncWord extends Word {
+  dictionary_content_mode?: string
+  dictionary_entry_id?: string | null
   deleted_at: string | null
+}
+
+const requireFollowingPersonalRow = (
+  data: SyncWord[] | null,
+  userId: string,
+  wordId: string | undefined
+): void => {
+  const row = data?.[0]
+  if (
+    !row ||
+    data?.length !== 1 ||
+    row.word_id !== wordId ||
+    row.user_id !== userId ||
+    row.deleted_at ||
+    !row.created_at ||
+    !row.updated_at ||
+    !Number.isFinite(Date.parse(row.updated_at)) ||
+    !row.next_review_date ||
+    !Number.isFinite(row.interval_days) ||
+    !Number.isInteger(row.repetition_count) ||
+    !Number.isFinite(row.easiness_factor)
+  )
+    throw new Error('Imported personal learning state is unavailable')
+}
+
+const requireFollowingPersonalReference = (
+  row: SyncWord,
+  entryId: string | undefined
+): void => {
+  if (!entryId) return
+  if (
+    row.deleted_at !== null ||
+    row.dictionary_content_mode !== 'follow' ||
+    row.dictionary_entry_id !== entryId
+  )
+    throw new Error(
+      'Existing card no longer follows the requested shared meaning'
+    )
+}
+
+const requireRequestedPersonalWords = (
+  data: SyncWord[],
+  userId: string,
+  wordIds?: readonly string[]
+): void => {
+  if (
+    wordIds &&
+    data.some(
+      word => !wordIds.includes(word.word_id) || word.user_id !== userId
+    )
+  ) {
+    throw new Error('Personal refresh contains an unrequested word')
+  }
 }
 
 interface SyncProgress extends ProgressRecord {
@@ -285,7 +344,7 @@ const isReviewEventAfterCursor = (
 ): boolean => compareSyncCursors(toReviewEventSyncCursor(event), cursor) > 0
 
 export class SyncManager {
-  private dictionaryContentAvailable = false
+  private dictionaryContentProtected = false
   private health = new SyncHealthReporter()
   private isSyncing = false
   private syncListeners: ((result: SyncResult) => void)[] = []
@@ -387,14 +446,20 @@ export class SyncManager {
         userId,
         () => reviewCorrectionSync.isAvailable(userId)
       )
-      const dictionaryContentAvailable =
-        await this.runSyncStageWithSessionRetry('check_protocol', userId, () =>
-          dictionaryContentSync.isAvailable()
+      let dictionaryContentAvailable = false
+      await attemptDictionarySync(async () => {
+        dictionaryContentAvailable = await this.runSyncStageWithSessionRetry(
+          'check_protocol',
+          userId,
+          () => dictionaryContentSync.isAvailable(userId)
         )
-      this.dictionaryContentAvailable = dictionaryContentAvailable
-      if (isDictionaryContentEnabled() && !dictionaryContentAvailable) {
-        throw new Error('Dictionary content protocol is unavailable')
-      }
+        if (isDictionaryContentEnabled() && !dictionaryContentAvailable)
+          throw new Error('Dictionary content protocol is unavailable')
+      })
+      // Keep content/placement protections when capability fails. Dictionary
+      // failure must not select legacy snapshot writes or stop learning delivery.
+      this.dictionaryContentProtected =
+        isDictionaryContentEnabled() || dictionaryContentAvailable
 
       // Step 0: Pull collections from Supabase
       console.log('[Sync] Stage 1: pull collections')
@@ -486,11 +551,14 @@ export class SyncManager {
         )
       }
       console.log('[Sync] Stage 6: push words')
-      const pushedWordsCount = await this.runSyncStageWithSessionRetry(
-        'push_words',
-        userId,
-        async () => this.pushWordsToSupabase(userId)
-      )
+      const pushedWordsCount =
+        isDictionaryContentEnabled() && !dictionaryContentAvailable
+          ? 0
+          : await this.runSyncStageWithSessionRetry(
+              'push_words',
+              userId,
+              async () => this.pushWordsToSupabase(userId)
+            )
 
       if (dictionaryContentAvailable) {
         await attemptDictionarySync(() =>
@@ -574,6 +642,7 @@ export class SyncManager {
       const result: SyncResult = {
         success: false,
         dictionaryConflict:
+          error instanceof DictionaryModeReconciliationRequiredError ||
           error instanceof DictionaryContentConflictError ||
           error instanceof DictionaryImportConflictError,
         wordsSynced: 0,
@@ -594,7 +663,7 @@ export class SyncManager {
   }
 
   private async refreshDictionaryPersonalRows(userId: string): Promise<void> {
-    if (!this.dictionaryContentAvailable) return
+    if (!this.dictionaryContentProtected) return
     const refreshIds = await dictionaryPersonalRefreshRepository.getWordIds(
       userId,
       true
@@ -946,10 +1015,31 @@ export class SyncManager {
     return session.expires_at <= nowSeconds + expiryBufferSeconds
   }
 
+  /** Read-only exact refresh for a confirmed v2 import or existing-card conflict. Never pushes,
+   * advances a broad cursor, merges semantic IDs or acknowledges learning queues. */
+  async pullFollowingImportWord(
+    userId: string,
+    wordId: string,
+    owner: DictionaryOwnerGuard,
+    expectedEntryId?: string
+  ): Promise<void> {
+    await owner.check()
+    await this.pullWordsFromSupabase(
+      userId,
+      null,
+      [wordId],
+      owner,
+      expectedEntryId
+    )
+    owner.assert()
+  }
+
   private async pullWordsFromSupabase(
     userId: string,
     cursor: SyncCursor | null,
-    wordIds?: readonly string[]
+    wordIds?: readonly string[],
+    followingOwner?: DictionaryOwnerGuard,
+    expectedFollowingEntryId?: string
   ): Promise<SyncWord[]> {
     let data: SyncWord[] | null = null
     let error: SupabaseLikeError | null = null
@@ -993,18 +1083,17 @@ export class SyncManager {
       throw new Error(`Failed to pull words: ${error.message}`)
     }
 
+    if (followingOwner) {
+      await followingOwner.check()
+      requireFollowingPersonalRow(data, userId, wordIds?.[0])
+      requireFollowingPersonalReference(data![0], expectedFollowingEntryId)
+    }
+
     if (!data || data.length === 0) {
       console.log('[Sync] No new words to pull from Supabase')
       return []
     }
-    if (
-      wordIds &&
-      data.some(
-        word => !wordIds.includes(word.word_id) || word.user_id !== userId
-      )
-    ) {
-      throw new Error('Personal refresh contains an unrequested word')
-    }
+    requireRequestedPersonalWords(data, userId, wordIds)
 
     // Parse JSON fields from Supabase and ensure required fields
     const now = new Date().toISOString()
@@ -1052,6 +1141,15 @@ export class SyncManager {
       return []
     }
 
+    if (followingOwner) {
+      followingOwner.assert()
+      await wordRepository.saveFollowingPersonalWord(
+        parsedWords[0],
+        followingOwner.assert
+      )
+      return parsedWords
+    }
+
     const tombstones = parsedWords.filter(
       (word): word is SyncWord & { deleted_at: string } =>
         Boolean(word.deleted_at)
@@ -1061,7 +1159,7 @@ export class SyncManager {
     await wordRepository.saveRemoteWordTombstones(tombstones)
     await wordRepository.saveWords(activeWords, { preserveUnsynced: true })
 
-    if (this.dictionaryContentAvailable) {
+    if (this.dictionaryContentProtected) {
       // Persist the hydration obligation before advancing the legacy cursor.
       await dictionaryContentRepository.requireCardRefresh(
         userId,
@@ -1526,7 +1624,7 @@ export class SyncManager {
   ): Promise<number> {
     if (deletedWords.length === 0) return 0
 
-    if (this.dictionaryContentAvailable)
+    if (this.dictionaryContentProtected)
       await dictionaryImportDeletionRepository.assertSettled(userId)
     const wordIds = deletedWords.map(word => word.word_id)
     const deletedAt = new Date().toISOString()
@@ -1641,10 +1739,10 @@ export class SyncManager {
       return []
     }
 
-    const imports = this.dictionaryContentAvailable
+    const imports = this.dictionaryContentProtected
       ? await dictionaryImportRepository.getPending(userId)
       : []
-    const recoveries = this.dictionaryContentAvailable
+    const recoveries = this.dictionaryContentProtected
       ? await dictionaryImportRecoveryRepository.getPending(userId)
       : []
     const importWordIds = new Set([
@@ -1659,7 +1757,7 @@ export class SyncManager {
       return []
     }
 
-    const deliveries = this.dictionaryContentAvailable
+    const deliveries = this.dictionaryContentProtected
       ? await dictionaryImportDeliveryRepository.getAll(userId)
       : []
     const settledIds = new Set(
@@ -1974,7 +2072,7 @@ export class SyncManager {
   }
 
   private async markDuplicateWordsSynced(words: Word[]): Promise<void> {
-    if (this.dictionaryContentAvailable && words.length > 0) {
+    if (this.dictionaryContentProtected && words.length > 0) {
       throw new Error(
         'Personal word identity conflict. Local content and learning queues are preserved.'
       )
@@ -2266,7 +2364,7 @@ export class SyncManager {
     payloads: SupabaseWordsUpsertPayload[]
   ): Promise<WordsUpsertResult> {
     try {
-      if (this.dictionaryContentAvailable) {
+      if (this.dictionaryContentProtected) {
         return await this.executeDictionaryWordMetadataUpsert(payloads)
       }
       const result = await supabase
@@ -2542,7 +2640,7 @@ export class SyncManager {
     )
     // Dictionary imports can belong to read-only accounts: an already delivered
     // target must not require ordinary collection INSERT permission again.
-    const collections = this.dictionaryContentAvailable
+    const collections = this.dictionaryContentProtected
       ? localCollections.filter(
           collection => collection.sync_status !== 'synced'
         )
@@ -2711,7 +2809,7 @@ export class SyncManager {
       console.log(
         `[Sync] Deleting collection ${collection.collection_id} in Supabase`
       )
-      if (this.dictionaryContentAvailable)
+      if (this.dictionaryContentProtected)
         await dictionaryImportDeletionRepository.assertSettled(userId)
       await collectionService.deleteCollection(collection.collection_id, userId)
       await collectionRepository.deleteCollection(collection.collection_id)

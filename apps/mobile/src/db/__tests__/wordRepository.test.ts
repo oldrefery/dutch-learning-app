@@ -11,6 +11,7 @@ import { ExpressionType } from '@/types/ExpressionTypes'
 jest.mock('../initDB')
 
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 
@@ -456,6 +457,7 @@ describe('WordRepository', () => {
         .mockRejectedValueOnce(semanticConflict)
         .mockResolvedValue({ changes: 1 })
       mockDatabase.getFirstAsync
+        .mockResolvedValueOnce(null)
         .mockResolvedValueOnce({
           ...mockWord,
           translations: JSON.stringify(mockWord.translations),
@@ -468,6 +470,7 @@ describe('WordRepository', () => {
           article: 'het',
           sync_status: 'synced',
         })
+        .mockResolvedValueOnce(null)
         .mockResolvedValueOnce(null)
 
       const result = await wordRepository.updateAnalyzedWord(analyzedWord)

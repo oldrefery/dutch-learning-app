@@ -15,6 +15,7 @@ jest.mock('../dictionaryImportRecoverySync', () => ({
   dictionaryImportRecoverySync: { push: jest.fn().mockResolvedValue(0) },
 }))
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 jest.mock('@/db/dictionaryImportRepository', () => ({

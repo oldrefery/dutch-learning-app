@@ -7,9 +7,114 @@ import {
   createFixture,
   snapshot,
   dictionarySnapshot,
+  createFollowingFixture,
+  followingSnapshot,
+  FOLLOWING_HEAD,
   PUBLIC_KEY,
   USER_ID,
 } from './fixture-backend.mjs'
+
+test('following fixtures deduplicate shared revisions and preserve paired vocabulary, learning and bulk boundaries', async t => {
+  const backend = await startFixtureBackend()
+  t.after(() => backend.close())
+  const client = createClient(backend.url, PUBLIC_KEY, {
+    auth: { persistSession: false },
+  })
+  for (const scenario of [
+    { words: 500, events: 0, selected: 500 },
+    { words: 2500, events: 501, selected: 2500 },
+    { words: 5000, events: 5000, selected: 5000 },
+    { words: 5000, events: 5000, selected: 20 },
+  ]) {
+    const fixture = createFollowingFixture(scenario)
+    backend.configure(fixture, 'following', 'following-contract')
+    const result = await client.rpc('get_web_review_snapshot_v3')
+    assert.equal(result.error, null)
+    assert.deepEqual(result.data, followingSnapshot(fixture))
+    const { dictionaryContent, words, events, collections } = result.data
+    assert.deepEqual(
+      { words, events, collections },
+      {
+        words: snapshot(fixture).words,
+        events: snapshot(fixture).events,
+        collections: snapshot(fixture).collections,
+      }
+    )
+    assert.equal(dictionaryContent.watermark, FOLLOWING_HEAD)
+    assert.equal(dictionaryContent.cards.length, scenario.words)
+    assert.equal(dictionaryContent.revisions.length, scenario.words / 4)
+    for (const card of dictionaryContent.cards) {
+      const revision = dictionaryContent.revisions.find(
+        r => r.revision_id === card.reference.revision_id
+      )
+      assert.ok(revision)
+      assert.equal(revision.entry_id, card.reference.entry_id)
+      assert.equal(card.head_sequence, FOLLOWING_HEAD)
+      assert.equal(card.content_version, '9007199254740993')
+      assert.match(revision.content_sha256, /^[a-f0-9]{64}$/)
+    }
+    assert.equal(backend.requests.length, 1)
+  }
+  assert.deepEqual(backend.errors, [])
+})
+
+test('following detail batch, read failure retry and changed owner remain read-only and bounded', async t => {
+  const backend = await startFixtureBackend()
+  t.after(() => backend.close())
+  const ownerId = '00000000-0000-4000-8000-000000000003'
+  const fixture = createFollowingFixture(
+    { words: 500, events: 501, selected: 20 },
+    { ownerId, updated: true }
+  )
+  backend.configure(fixture, 'following', 'following-detail')
+  const client = createClient(backend.url, PUBLIC_KEY, {
+    auth: { persistSession: false },
+  })
+  const ids = [fixture.words[0].word_id, fixture.words[4].word_id]
+  backend.setUnavailable(true)
+  assert.ok(
+    (
+      await client.rpc('get_dictionary_effective_content_v2', {
+        p_word_ids: ids,
+      })
+    ).error
+  )
+  backend.setUnavailable(false)
+  const result = await client.rpc('get_dictionary_effective_content_v2', {
+    p_word_ids: ids,
+  })
+  assert.equal(result.error, null)
+  assert.deepEqual(
+    result.data.cards.map(card => card.word_id),
+    ids
+  )
+  assert.equal(result.data.revisions.length, 2)
+  assert.equal(result.data.watermark, '9007199254740995')
+  const complete = await client.rpc('get_web_review_snapshot_v3')
+  assert.equal(complete.error, null)
+  assert.equal(complete.data.dictionaryContent.cards.length, 500)
+  assert.equal(complete.data.dictionaryContent.revisions.length, 125)
+  const own = await client
+    .from('words')
+    .select('*')
+    .eq('user_id', ownerId)
+    .eq('word_id', ids[0])
+    .is('deleted_at', null)
+    .maybeSingle()
+  assert.equal(own.error, null)
+  assert.deepEqual(own.data, fixture.words[0])
+  assert.deepEqual(backend.errors, [])
+  assert.ok(
+    (
+      await client
+        .from('words')
+        .select('*')
+        .eq('user_id', USER_ID)
+        .is('deleted_at', null)
+    ).error
+  )
+  assert.equal(backend.errors.length, 1)
+})
 
 test('dictionary fixture supplies the real v2 envelope in one owned snapshot', async t => {
   const backend = await startFixtureBackend()

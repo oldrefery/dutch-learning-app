@@ -8,6 +8,11 @@ export function createSupabaseFetch(
   transport: typeof fetch
 ): typeof fetch {
   const authPrefix = `${supabaseUrl.replace(/\/$/, '')}/auth/v1/`
+  const durableUrls = new Set(
+    ['dictionary-analysis', 'dictionary-creation'].map(
+      name => `${supabaseUrl.replace(/\/$/, '')}/functions/v1/${name}`
+    )
+  )
   const retryDataRequest = fetchRetry(transport, {
     retries: 2,
     retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 10000),
@@ -20,6 +25,9 @@ export function createSupabaseFetch(
         ? input
         : undefined
     const url = request?.url ?? String(input)
+    // Durable paid intents must never be automatically redispatched.
+    if (durableUrls.has(url.split('?')[0].replace(/\/$/, '')))
+      return transport(input, init)
     if (!url.startsWith(authPrefix)) return retryDataRequest(input, init)
 
     const controller = new AbortController()

@@ -2,7 +2,7 @@ import { getDatabase } from './initDB'
 import type { SQLiteBindValue } from 'expo-sqlite'
 import {
   parseDictionaryCefrAssessment,
-  parseDictionaryContent,
+  parsePrivateDictionaryContent,
   parseDictionaryContentCommand,
   parseDictionaryContentOverrides,
   parseDictionaryReference,
@@ -52,6 +52,7 @@ export interface DictionaryConflictResolution {
   wordId: string
   operationIds: readonly string[]
   replacement: DictionaryContentCommand | null
+  assertCurrent?: () => void
 }
 
 export interface LocalDictionaryCommand {
@@ -318,6 +319,18 @@ export class DictionaryContentRepository {
     ) {
       throw new Error('Invalid conflict resolution owner')
     }
+    resolution.assertCurrent?.()
+    const owned = await transaction.getFirstAsync<{ word_id: string }>(
+      'SELECT word_id FROM words WHERE user_id = ? AND word_id = ? AND deleted_at IS NULL',
+      [resolution.userId, resolution.wordId]
+    )
+    if (!owned) throw new Error('Conflict word is unavailable')
+    const cached = await transaction.getFirstAsync<{ mode: string }>(
+      'SELECT mode FROM dictionary_effective_card_cache WHERE user_id = ? AND word_id = ?',
+      [resolution.userId, resolution.wordId]
+    )
+    if (cached?.mode === 'follow')
+      throw new Error('Shared content requires reviewed mode reconciliation')
     const pending = await transaction.getAllAsync<{
       operation_id: string
       status: string
@@ -408,6 +421,7 @@ export class DictionaryContentRepository {
         )
       }
       for (const state of parsed) {
+        resolution?.assertCurrent?.()
         await transaction.runAsync(
           'DELETE FROM dictionary_card_refresh_queue WHERE user_id = ? AND word_id = ?',
           state.user_id,
@@ -448,6 +462,7 @@ export class DictionaryContentRepository {
           resolution ? 1 : 0
         )
       }
+      resolution?.assertCurrent?.()
     })
   }
 
@@ -471,7 +486,7 @@ export class DictionaryContentRepository {
       state.fallback_content === null
         ? null
         : requireParsed(
-            parseDictionaryContent(state.fallback_content),
+            parsePrivateDictionaryContent(state.fallback_content),
             'dictionary fallback content'
           )
     const overrides = requireParsed(
@@ -755,7 +770,7 @@ export class DictionaryContentRepository {
       row.fallback_content_json === null
         ? null
         : requireParsed(
-            parseDictionaryContent(
+            parsePrivateDictionaryContent(
               parseJson(
                 row.fallback_content_json,
                 'dictionary fallback content'

@@ -9,6 +9,10 @@ Use the repository's Node 24 runtime and installed Playwright Chromium:
 ```sh
 npm run web:performance:navigation:test
 npm run web:performance:navigation -- --smoke
+npm run web:performance:navigation -- --smoke --following --recovery
+npm run web:performance:navigation -- --following
+WEB_PERF_CPU_RATE=4 npm run web:performance:navigation -- --following
+WEB_PERF_CPU_RATE=4 npm run web:performance:navigation -- --following --profile
 npm run web:performance:navigation
 WEB_PERF_CPU_RATE=4 npm run web:performance:navigation
 WEB_PERF_CPU_RATE=4 npm run web:performance:navigation -- --core
@@ -21,6 +25,10 @@ The SQL command additionally requires PostgreSQL binaries on PATH (or `WOORDENAA
 Default upstream delay is 40 ms **per request**, without simulated bandwidth limits. This exposes sequential round trips; it is not a measured production RTT. CPU slowdown accepts 1 or 4. Smoke uses one pair per navigation kind and is a harness check, not a performance conclusion.
 
 `--core` keeps five pairs for the 2,500-word and both 5,000-word datasets, restricted to cold entry and first client navigation. It is useful for the additional CPU-throttled check after the full desktop matrix; it does not replace the full matrix.
+
+`--following` compares snapshot1 with following snapshot3/content2 on the same current source and identical lexical, placement, events and SRS inputs. Four cards reference each shared meaning; complete revisions appear once in the bulk response. Large version/head counters remain decimal strings. It uses ten alternating pairs, all four datasets, cold entry and first client navigation. Every following review start must retain the selected word count and use exactly one snapshot3 RPC with zero individual effective-content RPCs. It does not measure pre-change source, hosted auth/SQL or device performance. `--recovery` additionally exercises shipped Retry after a failed snapshot, loaded-session offline reveal, failed full-detail retry, new shared content in collection/detail versus a frozen active question, next-session adoption and A-B-A owner settings/session isolation. Recovery uses synthetic identity and submits no assessment; it does not promise cold offline navigation. Recovery runs before timing warmups; use smoke when only qualifying recovery.
+
+`--following --profile` is a separate diagnostic: three alternating pairs for both 5,000-word datasets, cold/client navigation. It captures Node and Chromium CPU samples plus the browser main-thread timeline from immediately before navigation through the first card, using inspectors bound only to owned loopback processes. The exact isolated build symbols are retained beside the profiles. Profiling changes execution overhead, so these timings never qualify performance; repeat the ordinary unprofiled matrix after a fix. CPU samples identify executed stacks, not all asynchronous or native work, and cannot by themselves attribute every millisecond of elapsed latency. Timeline event durations can overlap or nest and must not be summed as wall time. Do not combine profiling with smoke/core/recovery.
 
 ## What is measured
 
@@ -38,7 +46,7 @@ Build-time public font download may use the network. During browser measurements
 
 ## Limits and interpretation
 
-Browser totals include repository mapping, serialization, transfer, parsing and hydration; these are **not individually attributed** by subtraction. Auth fixtures exercise the application flow but do not measure cryptographic verification or live auth latency. The separate SQL harness records authenticated `EXPLAIN (ANALYZE, BUFFERS)` for both the function and its exact body, with real triggers, corrections and two owners. Its warm-buffer times do not model hosted contention or network transfer.
+Browser totals include repository mapping, serialization, transfer, parsing and hydration; these are **not individually attributed** by subtraction. The shipped setup controls stay disabled until owner preferences are applied. The probe sends the first enabled mode click once and awaits the real aria transition; subsequent mode/scope/Start clicks are also sent once. The navigation clock includes actual setup readiness, with no fixed wait or test-only application hook. Earlier per-frame pre-hydration clicking can amplify latency and must not be used for acceptance. Synthetic payloads and stored revision hashes are prepared before measured requests. Auth fixtures exercise the application flow but do not measure cryptographic verification or live auth latency. The separate SQL harness records authenticated `EXPLAIN (ANALYZE, BUFFERS)` for both the function and its exact body, with real triggers, corrections and two owners. Its warm-buffer times do not model hosted contention or network transfer.
 
 All artifacts are under ignored `apps/web/output/performance/`. Preserve selected sanitized findings in the execution report. Five samples give median and min/max, not a reliable production p95. A faster local snapshot does not establish that live navigation improved by the same amount.
 

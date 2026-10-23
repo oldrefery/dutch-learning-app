@@ -6,6 +6,11 @@ import {
   parseDictionaryContentCommand,
   parseDictionaryContentOverrides,
 } from '@woordenaar/domain'
+import {
+  isDictionaryFollowingEnabled,
+  type DictionaryDatabase,
+} from './repository'
+import { parseFollowingCards } from './following-content'
 import type {
   DictionaryContentCommand,
   DictionaryContentOverrides,
@@ -44,6 +49,24 @@ export const readDictionaryWriteState = async (
   wordId: string,
   formData: FormData
 ): Promise<{ version: number; overrides: DictionaryContentOverrides }> => {
+  if (isDictionaryFollowingEnabled()) {
+    const followingClient =
+      client as unknown as SupabaseClient<DictionaryDatabase>
+    const { data, error } = await followingClient.rpc(
+      'get_dictionary_effective_content_v2',
+      { p_word_ids: [wordId] }
+    )
+    if (error)
+      throw new Error('Could not verify the word content. Please retry.')
+    const { cards } = parseFollowingCards(data)
+    const card = cards.get(wordId)
+    if (cards.size !== 1 || !card)
+      throw new Error('Could not verify the word content.')
+    if (card.mode === 'follow')
+      throw new Error(
+        'This word uses shared dictionary analysis. Private changes are unavailable.'
+      )
+  }
   const supplied = formData.get('contentVersion')
   if (
     typeof supplied !== 'string' ||

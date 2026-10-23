@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import type { DictionaryCollectionExportV2 } from '@woordenaar/domain'
 import { collectionRepository } from '@/db/collectionRepository'
 import { wordRepository } from '@/db/wordRepository'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import {
   importOfflineDictionaryCollection,
   previewDictionaryTransfer,
+  parseDictionaryTransferText,
 } from '@/services/dictionaryTransferService'
 import { buildImportWordSelections } from '@/utils/importSelection'
 import type {
@@ -16,6 +18,8 @@ import type {
 export function useDictionaryDocumentImport(owner: string) {
   const [text, setText] = useState('')
   const [preview, setPreview] = useState<ImportPreviewData | null>(null)
+  const [followingDocument, setFollowingDocument] =
+    useState<DictionaryCollectionExportV2 | null>(null)
   const [selections, setSelections] = useState<WordSelectionItem[]>([])
   const [collections, setCollections] = useState<ImportTargetCollection[]>([])
   const [target, setTarget] = useState<string | null>(null)
@@ -57,6 +61,16 @@ export function useDictionaryDocumentImport(owner: string) {
   const prepare = () =>
     run(async () => {
       if (!isCurrent()) return
+      const document = parseDictionaryTransferText(text)
+      if (document.schema_version === 2) {
+        const ownedCollections =
+          await collectionRepository.getCollectionsByUserId(owner)
+        if (!isCurrent()) return
+        setCollections(ownedCollections)
+        setFollowingDocument(document)
+        setPreview(null)
+        return
+      }
       const documentPreview = previewDictionaryTransfer(text)
       const [ownedCollections, words] = await Promise.all([
         collectionRepository.getCollectionsByUserId(owner),
@@ -125,6 +139,8 @@ export function useDictionaryDocumentImport(owner: string) {
     text,
     setText,
     preview,
+    followingDocument,
+    clearFollowingDocument: () => setFollowingDocument(null),
     selections,
     collections,
     target,

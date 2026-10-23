@@ -10,8 +10,14 @@ import { SharedCollectionLoadingScreen } from '@/components/SharedCollectionLoad
 import { StarterPackImportSuccess } from '@/components/StarterPackImportSuccess'
 import { StarterPackImportBar } from '@/components/StarterPackImportBar'
 import { StarterPackReviewBanner } from '@/components/StarterPackReviewBanner'
-import { useStarterPackImport } from '@/hooks/useStarterPackImport'
+import {
+  useStarterPackImport,
+  NEW_STARTER_COLLECTION_ID,
+} from '@/hooks/useStarterPackImport'
 import { useApplicationStore } from '@/stores/useApplicationStore'
+import { isDictionaryFollowingImportsEnabled } from '@/constants/dictionaryContent'
+import { DictionaryFollowingTransferPanel } from '@/components/DictionaryFollowingTransferPanel'
+import type { OfficialContentManifest } from '@woordenaar/content/manifest'
 
 interface StarterPackScreenContentProps {
   packId?: string
@@ -23,6 +29,7 @@ export function StarterPackScreenContent({
   version,
 }: StarterPackScreenContentProps) {
   const colorScheme = useColorScheme() ?? 'light'
+  const ownerId = useApplicationStore(state => state.currentUserId)
   const starterPack = useStarterPackImport({ packId, version })
   const screenTitle = starterPack.manifest?.title ?? 'Official Pack'
 
@@ -47,6 +54,29 @@ export function StarterPackScreenContent({
         onGoBack={starterPack.handleGoBack}
         onRetry={starterPack.retryRemotePack}
         showRetry={Boolean(packId && version)}
+      />
+    )
+  }
+
+  if (isDictionaryFollowingImportsEnabled()) {
+    if (!ownerId)
+      return (
+        <SharedCollectionErrorScreen
+          title={screenTitle}
+          error="Sign in to prepare an official shared pack import."
+          onGoBack={starterPack.handleGoBack}
+        />
+      )
+    return (
+      <DictionaryFollowingTransferPanel
+        ownerId={ownerId}
+        officialManifest={
+          starterPack.manifest as unknown as OfficialContentManifest
+        }
+        collections={starterPack.collections.filter(
+          row => row.collection_id !== NEW_STARTER_COLLECTION_ID
+        )}
+        onClose={starterPack.handleBackToCollections}
       />
     )
   }

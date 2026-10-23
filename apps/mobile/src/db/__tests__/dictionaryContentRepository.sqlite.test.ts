@@ -11,6 +11,7 @@ import { dictionaryContentRepository as repository } from '../dictionaryContentR
 jest.mock('../initDB')
 
 const at = '2026-09-21T12:00:00.000Z'
+const WORD_ROW_QUERY = 'SELECT * FROM words WHERE word_id = ?'
 const ownerId = '11111111-1111-4111-8111-111111111111'
 const otherOwnerId = '22222222-2222-4222-8222-222222222222'
 const wordId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
@@ -102,6 +103,59 @@ describe('dictionary content storage on SQLite', () => {
   afterEach(() => {
     db.close()
     jest.useRealTimers()
+  })
+
+  it('reads incomplete private fallback content from SQLite without changing words or pending commands', async () => {
+    const fallback = { ...content, is_separable: true, prefix_part: null }
+    const before = db.prepare(WORD_ROW_QUERY).get(wordId)
+    await repository.saveCardStates([
+      {
+        word_id: wordId,
+        user_id: ownerId,
+        content_version: 0,
+        reference: null,
+        fallback_content: fallback,
+        overrides: {},
+        updated_at: at,
+      },
+    ])
+    const legacy = {
+      ...fallback,
+      dutch_original: '',
+      analysis_notes: '',
+      conjugation: {
+        present: 'loop',
+        simple_past: 'liep',
+        past_participle: 'gelopen',
+      },
+      examples: [{ nl: 'Ik loop.', en: 'I walk.' }],
+    }
+    db.prepare(
+      'UPDATE dictionary_card_content SET fallback_content_json = ? WHERE word_id = ?'
+    ).run(JSON.stringify(legacy), wordId)
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const materialized = (
+        await repository.getMaterializedContent(ownerId, [wordId])
+      ).get(wordId)
+      expect(materialized).toMatchObject({
+        reference: null,
+        effective: {
+          content: {
+            dutch_original: null,
+            analysis_notes: null,
+            is_separable: true,
+            prefix_part: null,
+            conjugation: { ...legacy.conjugation, simple_past_plural: null },
+            examples: [{ ...legacy.examples[0], ru: null }],
+          },
+        },
+      })
+    }
+    expect(db.prepare(WORD_ROW_QUERY).get(wordId)).toEqual(before)
+    expect(await repository.getPendingCommands(ownerId)).toEqual([])
+    expect(
+      await repository.getMaterializedContent(otherOwnerId, [wordId])
+    ).toEqual(new Map())
   })
 
   it('preserves a pending private edit against equal and higher remote versions', async () => {
@@ -210,9 +264,7 @@ describe('dictionary content storage on SQLite', () => {
       'conflict',
       'stale-content-version'
     )
-    const originalWord = db
-      .prepare('SELECT * FROM words WHERE word_id = ?')
-      .get(wordId)
+    const originalWord = db.prepare(WORD_ROW_QUERY).get(wordId)
     const resolution = {
       userId: ownerId,
       wordId,
@@ -237,9 +289,7 @@ describe('dictionary content storage on SQLite', () => {
     expect(
       (await repository.getMaterializedContent(ownerId, [wordId])).get(wordId)
     ).toMatchObject({ content_version: 1, has_conflict: false })
-    expect(
-      db.prepare('SELECT * FROM words WHERE word_id = ?').get(wordId)
-    ).toEqual(originalWord)
+    expect(db.prepare(WORD_ROW_QUERY).get(wordId)).toEqual(originalWord)
   })
 
   it('keeps an explicitly chosen local version as a new versioned private command', async () => {

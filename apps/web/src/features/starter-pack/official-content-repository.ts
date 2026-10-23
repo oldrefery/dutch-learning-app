@@ -2,6 +2,7 @@ import 'server-only'
 
 import { createHash } from 'node:crypto'
 import type { OfficialContentCatalogItem } from '@woordenaar/content/remote'
+import type { OfficialContentManifest } from '@woordenaar/content/manifest'
 import {
   assertRequestedOfficialContentIdentity,
   verifyRemoteOfficialContentVersion,
@@ -59,10 +60,10 @@ export async function getOfficialContentCatalog(): Promise<
   })
 }
 
-export async function loadRemoteOfficialStarterPack(
+export async function loadRemoteOfficialContentManifest(
   packId: string,
   version: string
-): Promise<StarterPackManifest> {
+): Promise<OfficialContentManifest> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('official_content_pack_versions')
@@ -83,5 +84,14 @@ export async function loadRemoteOfficialStarterPack(
   }
   assertRequestedOfficialContentIdentity(remote, packId, version)
   const manifest = await verifyRemoteOfficialContentVersion(remote, sha256)
-  return toStarterPackManifest(manifest)
+  return manifest
+}
+
+export async function loadRemoteOfficialStarterPack(
+  packId: string,
+  version: string
+): Promise<StarterPackManifest> {
+  return toStarterPackManifest(
+    await loadRemoteOfficialContentManifest(packId, version)
+  )
 }

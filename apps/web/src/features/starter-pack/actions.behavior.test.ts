@@ -212,3 +212,36 @@ describe('official content import persistence', () => {
     expect(rpc).not.toHaveBeenCalled()
   })
 })
+
+const priorFollowingFlags = {
+  content: process.env.DICTIONARY_CONTENT_ENABLED,
+  following: process.env.DICTIONARY_FOLLOWING_ENABLED,
+  imports: process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED,
+}
+it('rejects a stale legacy form before authentication or collection mutation in following mode', async () => {
+  jest.clearAllMocks()
+  process.env.DICTIONARY_CONTENT_ENABLED = 'true'
+  process.env.DICTIONARY_FOLLOWING_ENABLED = 'true'
+  process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED = 'true'
+  try {
+    await expect(
+      importStarterPack(INITIAL_STARTER_PACK_IMPORT_STATE, form())
+    ).resolves.toMatchObject({
+      status: 'error',
+      message: expect.stringContaining('No legacy import'),
+    })
+    expect(requireAuthContext).not.toHaveBeenCalled()
+    expect(createClient).not.toHaveBeenCalled()
+    expect(revalidatePath).not.toHaveBeenCalled()
+  } finally {
+    for (const [key, value] of Object.entries({
+      DICTIONARY_CONTENT_ENABLED: priorFollowingFlags.content,
+      DICTIONARY_FOLLOWING_ENABLED: priorFollowingFlags.following,
+      NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED:
+        priorFollowingFlags.imports,
+    })) {
+      if (value === undefined) delete process.env[key]
+      else process.env[key] = value
+    }
+  }
+})

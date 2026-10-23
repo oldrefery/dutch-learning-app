@@ -14,6 +14,8 @@ import { router } from 'expo-router'
 import { TextThemed, ViewThemed, useThemeColor } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
+import { isDictionaryFollowingImportsEnabled } from '@/constants/dictionaryContent'
+import { requireFollowingImportOwner } from '@woordenaar/domain'
 import { collectionSharingService } from '@/services/collectionSharingService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { Sentry } from '@/lib/sentry'
@@ -52,6 +54,12 @@ export default function ImportByTokenModal({
     setError(null)
 
     try {
+      if (isDictionaryFollowingImportsEnabled()) {
+        requireFollowingImportOwner(trimmedToken)
+        handleClose()
+        router.push(ROUTES.IMPORT_COLLECTION(trimmedToken))
+        return
+      }
       const wordsResult =
         await collectionSharingService.getSharedCollectionWords(trimmedToken)
 

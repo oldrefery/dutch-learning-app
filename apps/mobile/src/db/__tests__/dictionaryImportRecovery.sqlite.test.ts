@@ -19,6 +19,7 @@ import { wordToDictionaryContent } from '../dictionaryContentMapping'
 jest.mock('../initDB')
 jest.mock('@/lib/sentry')
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 const USER = '10000000-0000-4000-8000-000000000001'

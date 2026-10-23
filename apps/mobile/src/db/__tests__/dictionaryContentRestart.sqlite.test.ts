@@ -16,6 +16,7 @@ jest.mock('@/utils/network', () => ({
 
 jest.mock('../initDB')
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 

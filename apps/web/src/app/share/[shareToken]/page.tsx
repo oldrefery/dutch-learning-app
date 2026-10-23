@@ -24,6 +24,26 @@ export default async function SharedCollectionPage({
 
   if (!context) notFound()
 
+  if (context.followingShared)
+    return (
+      <section>
+        <h1>{context.collection.name}</h1>
+        <p>
+          Keep the original shared meanings and verify the entries you select.
+        </p>
+        <SharedCollectionImport
+          key={`${auth.userId}:${shareToken}`}
+          collectionName={context.collection.name}
+          collections={context.collections}
+          shareToken={shareToken}
+          words={[]}
+          ownerId={auth.userId}
+          followingEnabled={true}
+          sharedCollection={context.followingShared}
+        />
+      </section>
+    )
+
   const duplicateCount = context.previewWords.filter(
     word => word.isDuplicate
   ).length

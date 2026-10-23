@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
-import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingImportsEnabled,
+} from '@/constants/dictionaryContent'
 import { router } from 'expo-router'
 import { supabase } from '@/lib/supabaseClient'
 import { useApplicationStore } from '@/stores/useApplicationStore'
@@ -121,6 +124,7 @@ export function useImportSelection(token: string) {
   }, [])
 
   const loadSharedCollection = useCallback(async () => {
+    if (isDictionaryFollowingImportsEnabled()) return
     try {
       const result =
         await collectionSharingService.getSharedCollectionWords(token)
@@ -202,6 +206,13 @@ export function useImportSelection(token: string) {
   }
 
   const handleImport = async () => {
+    if (isDictionaryFollowingImportsEnabled()) {
+      ToastService.show(
+        'Use the explicit shared following import.',
+        ToastType.ERROR
+      )
+      return
+    }
     if (!sharedData || !targetCollectionId) {
       ToastService.show('Please select a collection first', ToastType.ERROR)
       return

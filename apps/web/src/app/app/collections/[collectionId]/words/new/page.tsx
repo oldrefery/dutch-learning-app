@@ -5,6 +5,7 @@ import {
   hasOwnedCollection,
   listOwnedCollectionOptions,
 } from '@/features/analysis/repository'
+import { isDictionaryFollowingEnabled } from '@/features/dictionary/repository'
 import { requireAuthContext } from '@/lib/auth/session'
 
 export default async function AddWordPage({
@@ -13,6 +14,7 @@ export default async function AddWordPage({
   params: Promise<{ collectionId: string }>
 }) {
   const auth = await requireAuthContext()
+  const followingEnabled = isDictionaryFollowingEnabled()
   const { collectionId } = await params
   const collections = await listOwnedCollectionOptions(auth.userId)
 
@@ -30,20 +32,23 @@ export default async function AddWordPage({
       </Link>
       <div className="mt-5">
         <p className="text-sm font-medium text-neutral-500">
-          AI-assisted vocabulary
+          {followingEnabled ? 'Shared vocabulary' : 'AI-assisted vocabulary'}
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
           Add a Dutch word
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-          Analyze a word, review the complete result, choose an image, and save
-          it to one of your collections.
+          {followingEnabled
+            ? 'Find a published Dutch meaning, review it, and choose which meanings to add to your collection.'
+            : 'Analyze a word, review the complete result, choose an image, and save it to one of your collections.'}
         </p>
       </div>
 
       <div className="mt-8">
-        {auth.accessLevel === 'full_access' ? (
+        {followingEnabled || auth.accessLevel === 'full_access' ? (
           <AddWordWorkflow
+            key={`${auth.userId}:${followingEnabled}`}
+            followingEnabled={followingEnabled}
             collections={collections}
             initialCollectionId={collectionId}
             userId={auth.userId}

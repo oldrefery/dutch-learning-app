@@ -9,13 +9,18 @@ import {
 import { officialContentCatalogService } from '@/services/officialContentCatalogService'
 import { Sentry } from '@/lib/sentry'
 import type { Collection, Word } from '@/types/database'
-import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingImportsEnabled,
+} from '@/constants/dictionaryContent'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import type { OfficialDictionaryMapping } from '@woordenaar/content/dictionary'
 import type { DictionaryImportOptions } from '@/types/ImportTypes'
 
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: jest.fn(() => false),
+  isDictionaryFollowingImportsEnabled: jest.fn(() => false),
 }))
 jest.mock('@/db/dictionaryContentRepository', () => ({
   dictionaryContentRepository: { cacheDependencies: jest.fn() },
@@ -114,6 +119,7 @@ describe('useStarterPackImport', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.mocked(isDictionaryContentEnabled).mockReturnValue(false)
+    jest.mocked(isDictionaryFollowingImportsEnabled).mockReturnValue(false)
     const collection = createCollection()
     storeState = {
       currentUserId: 'user-id',
@@ -149,6 +155,21 @@ describe('useStarterPackImport', () => {
     await waitFor(() => expect(hook.result.current.loading).toBe(false))
     return hook
   }
+
+  it('blocks legacy writes and collection creation while following imports are enabled', async () => {
+    jest.mocked(isDictionaryFollowingImportsEnabled).mockReturnValue(true)
+    const { result } = await renderAndWait()
+    await act(async () => result.current.handleImport())
+    expect(storeState.createNewCollection).not.toHaveBeenCalled()
+    expect(storeState.addWordsToCollection).not.toHaveBeenCalled()
+    expect(
+      officialContentCatalogService.getDictionaryMapping
+    ).not.toHaveBeenCalled()
+    expect(ToastService.show).toHaveBeenCalledWith(
+      expect.stringContaining('shared pack import'),
+      expect.anything()
+    )
+  })
 
   it('previews offline content without mutating the library', async () => {
     const { result } = await renderAndWait()

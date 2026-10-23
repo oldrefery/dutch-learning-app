@@ -167,3 +167,26 @@ it('does not restore old-account words after a save completes during logout', as
   expect(useApplicationStore.getState().words).toEqual([])
 })
 jest.mock('@/db/reviewCorrectionRecoveryRepository')
+
+it('preserves current shared content and private placement when learning is refreshed', async () => {
+  const displayed = {
+    ...vocabulary[0],
+    translations: { en: ['current shared meaning'] },
+    collection_id: 'current-private-collection',
+    dictionary_content_source: 'following' as const,
+    dictionary_content_conflict: true,
+    dictionary_import_conflict: true,
+    cefr_level: 'A2' as const,
+  }
+  useApplicationStore.setState({ words: [displayed] })
+  await createNativeReviewPersistence(userId)(input)
+  expect(useApplicationStore.getState().words[0]).toEqual({
+    ...displayed,
+    interval_days: word.interval_days,
+    repetition_count: word.repetition_count,
+    easiness_factor: word.easiness_factor,
+    next_review_date: word.next_review_date,
+    last_reviewed_at: word.last_reviewed_at,
+    updated_at: word.updated_at,
+  })
+})

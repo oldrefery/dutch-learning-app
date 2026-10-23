@@ -1,3 +1,4 @@
+import { FunctionsClient } from '@supabase/functions-js'
 import { AUTH_REQUEST_TIMEOUT_MS, createSupabaseFetch } from '../supabaseFetch'
 
 const base = 'https://qa.example.invalid'
@@ -92,6 +93,67 @@ describe('native Supabase transport', () => {
       expect(jest.getTimerCount()).toBe(0)
     }
   )
+
+  it.each([503, 504, 520, 546])(
+    'never retries shared-analysis HTTP %i',
+    async status => {
+      const result = { status, ok: false } as Response
+      transport.mockResolvedValue(result)
+      const init = {
+        method: 'POST',
+        body: 'exact-operation',
+        signal: new AbortController().signal,
+      }
+      await expect(
+        request(
+          `${base}/functions/v1/dictionary-analysis?forceFunctionRegion=eu-west-1`,
+          init
+        )
+      ).resolves.toBe(result)
+      expect(transport).toHaveBeenCalledTimes(1)
+      expect(transport).toHaveBeenCalledWith(expect.any(String), init)
+      expect(jest.getTimerCount()).toBe(0)
+    }
+  )
+
+  it('preserves a failed actual FunctionsClient invocation without any transport retry', async () => {
+    transport.mockResolvedValue(
+      new Response('{}', {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    )
+    const sdk = new FunctionsClient(`${base}/functions/v1`, {
+      customFetch: request,
+    })
+    const body = { operation_id: 'synthetic-operation' }
+    const result = await sdk.invoke('dictionary-analysis', {
+      body,
+      headers: { Authorization: 'Bearer synthetic-token' },
+    })
+    expect(result.error).not.toBeNull()
+    expect(transport).toHaveBeenCalledTimes(1)
+    expect(transport).toHaveBeenCalledWith(
+      `${base}/functions/v1/dictionary-analysis`,
+      expect.objectContaining({
+        body: JSON.stringify(body),
+        headers: expect.objectContaining({
+          Authorization: 'Bearer synthetic-token',
+        }),
+      })
+    )
+    expect(jest.getTimerCount()).toBe(0)
+  })
+
+  it('does not retry a lost shared-analysis network response', async () => {
+    const error = new TypeError('Connection lost')
+    transport.mockRejectedValue(error)
+    await expect(
+      request(`${base}/functions/v1/dictionary-analysis/`)
+    ).rejects.toBe(error)
+    expect(transport).toHaveBeenCalledTimes(1)
+    expect(jest.getTimerCount()).toBe(0)
+  })
 
   it('preserves the existing data-request retries and caller signal', async () => {
     const signal = new AbortController().signal

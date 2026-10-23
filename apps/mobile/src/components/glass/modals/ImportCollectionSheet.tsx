@@ -14,10 +14,14 @@ import { GlassModalCenter } from '@/components/glass/modals/GlassModalCenter'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
 import { OFFICIAL_DUTCH_A1_PACK_SIZE } from '@/services/starterPackService'
+import { requireFollowingImportOwner } from '@woordenaar/domain'
 import { collectionSharingService } from '@/services/collectionSharingService'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { Sentry } from '@/lib/sentry'
-import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingImportsEnabled,
+} from '@/constants/dictionaryContent'
 
 export type ImportCollectionSheetProps = {
   visible: boolean
@@ -74,6 +78,12 @@ export const ImportCollectionSheet: React.FC<ImportCollectionSheetProps> = ({
     setError(null)
 
     try {
+      if (isDictionaryFollowingImportsEnabled()) {
+        requireFollowingImportOwner(trimmedToken)
+        onClose()
+        router.push(ROUTES.IMPORT_COLLECTION(trimmedToken))
+        return
+      }
       const wordsResult =
         await collectionSharingService.getSharedCollectionWords(trimmedToken)
 

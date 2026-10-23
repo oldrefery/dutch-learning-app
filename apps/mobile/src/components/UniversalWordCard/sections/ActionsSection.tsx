@@ -193,28 +193,36 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
           </TouchableOpacity>
         )}
 
-        {actions.showReanalyzeButton && actions.onReanalyze && (
-          <TouchableOpacity
-            style={[styles.actionButton, styles.reanalyzeButton]}
-            onPress={actions.onReanalyze}
-            disabled={actions.isReanalyzing}
-          >
-            {actions.isReanalyzing ? (
-              <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
-            ) : (
-              <Ionicons
-                name="refresh"
-                size={20}
-                color={Colors.primary.DEFAULT}
-              />
-            )}
-            <TextThemed
-              style={[styles.actionButtonText, styles.reanalyzeButtonText]}
+        {actions.showReanalyzeButton &&
+          actions.onReanalyze &&
+          !(
+            isWordFromDB(word) &&
+            word.dictionary_content_state?.mode === 'follow'
+          ) && (
+            <TouchableOpacity
+              style={[styles.actionButton, styles.reanalyzeButton]}
+              onPress={actions.onReanalyze}
+              disabled={actions.isReanalyzing}
             >
-              {actions.isReanalyzing ? 'Analyzing...' : 'Re-analyze Word'}
-            </TextThemed>
-          </TouchableOpacity>
-        )}
+              {actions.isReanalyzing ? (
+                <ActivityIndicator
+                  size="small"
+                  color={Colors.primary.DEFAULT}
+                />
+              ) : (
+                <Ionicons
+                  name="refresh"
+                  size={20}
+                  color={Colors.primary.DEFAULT}
+                />
+              )}
+              <TextThemed
+                style={[styles.actionButtonText, styles.reanalyzeButtonText]}
+              >
+                {actions.isReanalyzing ? 'Analyzing...' : 'Re-analyze Word'}
+              </TextThemed>
+            </TouchableOpacity>
+          )}
 
         {actions.showDeleteButton && actions.onDelete && (
           <DeleteButton

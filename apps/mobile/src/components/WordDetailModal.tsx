@@ -27,6 +27,7 @@ import {
 } from '@/components/UniversalWordCard'
 import { styles } from './WordDetailModal/styles'
 import { WordDetailHeader } from './WordDetailModal/components'
+import { DictionaryAnalysisPanel } from './DictionaryAnalysisPanel'
 
 interface WordDetailModalProps {
   visible: boolean
@@ -231,6 +232,13 @@ export default function WordDetailModal({
                   onPlayPronunciation={handlePlayAudio}
                   onChangeImage={onChangeImage}
                 />
+                {visible &&
+                  word.dictionary_content_state?.mode === 'follow' && (
+                    <DictionaryAnalysisPanel
+                      key={`${word.user_id}:${word.word_id}`}
+                      word={word}
+                    />
+                  )}
               </Animated.ScrollView>
             </GestureDetector>
           </Animated.View>

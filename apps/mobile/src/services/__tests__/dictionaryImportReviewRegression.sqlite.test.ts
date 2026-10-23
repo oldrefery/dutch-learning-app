@@ -32,6 +32,7 @@ jest.mock('@/lib/supabase')
 jest.mock('@/lib/sentry')
 jest.mock('@/utils/network')
 jest.mock('@/constants/dictionaryContent', () => ({
+  isDictionaryFollowingEnabled: () => false,
   isDictionaryContentEnabled: () => true,
 }))
 const LOST_REPLY = 'Lost reply'

@@ -5,9 +5,12 @@ export default () => {
   const isQaBuild = process.env.WOORDENAAR_QA_BUILD === 'true'
   const buildProfile = process.env.EAS_BUILD_PROFILE
 
-  if (isQaBuild && ['preview', 'production'].includes(buildProfile)) {
+  if (
+    isQaBuild &&
+    ['preview', 'production', 'dictionary-release'].includes(buildProfile)
+  ) {
     throw new Error(
-      'WOORDENAAR_QA_BUILD cannot be used with preview or production'
+      'WOORDENAAR_QA_BUILD cannot be used with preview, production or dictionary-release'
     )
   }
 

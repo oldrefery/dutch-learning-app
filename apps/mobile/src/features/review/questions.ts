@@ -13,6 +13,8 @@ export interface NativeReviewPayload {
   explanation: string | null
 }
 
+const copyWord = (word: Word): Word => JSON.parse(JSON.stringify(word)) as Word
+
 export function prepareNativeReviewQuestions(
   session: ReviewSession,
   vocabulary: Word[],
@@ -24,15 +26,16 @@ export function prepareNativeReviewQuestions(
 function* iterateNativeReviewQuestions(
   session: ReviewSession,
   vocabulary: Word[],
-  userId: string
+  userId: string,
+  copyWords = true
 ): Generator<ReviewFlowQuestion<NativeReviewPayload>> {
   const ownedVocabulary = vocabulary.filter(word => word.user_id === userId)
   const buildOptions = createRecognitionOptionBuilder(ownedVocabulary)
+  const ownedWords = session.words.filter(word => word.user_id === userId)
+  const sourceWords = copyWords ? ownedWords.map(copyWord) : ownedWords
   let index = 0
-  for (const source of session.words) {
-    if (source.user_id !== userId) continue
+  for (const word of sourceWords) {
     // Database words contain only JSON values; keep history independent of live edits.
-    const word: Word = JSON.parse(JSON.stringify(source))
     const decision = session.adaptiveModeByWordId[word.word_id]
     let mode =
       session.config.mode === 'adaptive'
@@ -71,8 +74,36 @@ export async function prepareNativeReviewQuestionsAsync(
   onProgress: (completed: number) => void,
   yieldToUI = () => new Promise<void>(resolve => setTimeout(resolve, 0))
 ) {
+  if (signal.aborted) return null
+  // Capture all content before the first yield. A sync during preparation must
+  // not give later questions or distractors a different shared revision/CEFR.
+  const capturedSession: ReviewSession = {
+    ...session,
+    config: { ...session.config },
+    adaptiveModeByWordId: Object.fromEntries(
+      Object.entries(session.adaptiveModeByWordId).map(([id, decision]) => [
+        id,
+        { ...decision },
+      ])
+    ),
+    words: session.words.filter(word => word.user_id === userId).map(copyWord),
+  }
+  const capturedVocabulary = vocabulary
+    .filter(word => word.user_id === userId)
+    .map(word => ({
+      ...word,
+      translations: {
+        en: [...word.translations.en],
+        ru: word.translations.ru ? [...word.translations.ru] : undefined,
+      },
+    }))
   const questions: ReviewFlowQuestion<NativeReviewPayload>[] = []
-  const iterator = iterateNativeReviewQuestions(session, vocabulary, userId)
+  const iterator = iterateNativeReviewQuestions(
+    capturedSession,
+    capturedVocabulary,
+    userId,
+    false
+  )
   while (!signal.aborted) {
     await yieldToUI()
     if (signal.aborted) return null

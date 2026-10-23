@@ -5,14 +5,17 @@ import { StarterPackImport } from '@/features/starter-pack/StarterPackImport'
 import { getStarterPackContext } from '@/features/starter-pack/repository'
 import {
   getOfficialContentCatalog,
-  loadRemoteOfficialStarterPack,
+  loadRemoteOfficialContentManifest,
 } from '@/features/starter-pack/official-content-repository'
 import {
   buildStarterPackPreview,
-  loadOfficialStarterPack,
+  loadBundledOfficialManifest,
+  toStarterPackManifest,
 } from '@/features/starter-pack/starter-pack-domain'
 import type { StarterPackManifest } from '@/features/starter-pack/starter-pack-domain'
 import { requireAuthContext } from '@/lib/auth/session'
+import { isFollowingStarterPackEnabled } from '@/features/starter-pack/dictionary-import'
+import type { OfficialContentManifest } from '@woordenaar/content/manifest'
 
 interface StarterPackPageProps {
   searchParams: Promise<{ pack?: string }>
@@ -102,12 +105,14 @@ export default async function StarterPackPage({
   }
 
   let manifest: StarterPackManifest
+  let officialManifest: OfficialContentManifest
   if (selectedCatalogItem) {
     try {
-      manifest = await loadRemoteOfficialStarterPack(
+      officialManifest = await loadRemoteOfficialContentManifest(
         selectedCatalogItem.packId,
         selectedCatalogItem.version
       )
+      manifest = toStarterPackManifest(officialManifest)
     } catch {
       return (
         <UnavailablePack
@@ -117,10 +122,14 @@ export default async function StarterPackPage({
       )
     }
   } else {
-    manifest = loadOfficialStarterPack()
+    officialManifest = loadBundledOfficialManifest()
+    manifest = toStarterPackManifest(officialManifest)
   }
   const entries = buildStarterPackPreview(manifest, context.existingWords)
-  const availableCount = entries.filter(entry => !entry.isDuplicate).length
+  const followingEnabled = isFollowingStarterPackEnabled()
+  const availableCount = followingEnabled
+    ? manifest.entries.length
+    : entries.filter(entry => !entry.isDuplicate).length
 
   return (
     <section>
@@ -162,7 +171,7 @@ export default async function StarterPackPage({
         </div>
         <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            Available to import
+            {followingEnabled ? 'Available to verify' : 'Available to import'}
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-tight">
             {availableCount}
@@ -184,10 +193,13 @@ export default async function StarterPackPage({
           canCreateCollection={auth.accessLevel === 'full_access'}
           collections={context.collections}
           entries={entries}
-          key={`${manifest.packId}@${manifest.version}`}
+          key={`${auth.userId}:${manifest.packId}@${manifest.version}`}
           packId={manifest.packId}
           packTitle={manifest.title}
           packVersion={manifest.version}
+          ownerId={auth.userId}
+          followingEnabled={followingEnabled}
+          officialManifest={officialManifest}
         />
       </div>
     </section>

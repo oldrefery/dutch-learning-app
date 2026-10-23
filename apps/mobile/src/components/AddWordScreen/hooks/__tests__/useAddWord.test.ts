@@ -250,4 +250,19 @@ describe('useAddWord', () => {
       ToastType.ERROR
     )
   })
+  it('blocks legacy collection creation and personal saving in following mode', async () => {
+    process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+    process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED = 'true'
+    try {
+      const { result } = renderHook(() => useAddWord())
+      await act(async () => {
+        await expect(result.current.addWord(analysis)).resolves.toBe(false)
+      })
+      expect(saveAnalyzedWord).not.toHaveBeenCalled()
+      expect(createNewCollection).not.toHaveBeenCalled()
+    } finally {
+      delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+      delete process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED
+    }
+  })
 })
