@@ -1,0 +1,83 @@
+{
+  "packet_type": "D13A.8.4-pr-release-checks",
+  "observed_at": "2026-10-24T17:11:41.123531+00:00",
+  "source_commit": "c3a1f2d900e119245f528b6c63a4e1a07682caa2",
+  "pr": 124,
+  "release_ready": false,
+  "authorized_release_commands": [],
+  "source_maps_uploaded": false,
+  "maps": {
+    "ios": {
+      "artifact": "builds/app-2.5.0-86-nds-fixed.ipa",
+      "artifact_sha256": "a44f6162c10599f3d63e40d96c46f553fd406be82d8f028aab3d2c99db3b7b5b",
+      "entry": "Payload/DeWoordenaar.app/main.jsbundle",
+      "source": "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/ios/main.jsbundle",
+      "recompiled": "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/ios/recompiled.hbc",
+      "bytecode_sha256": "f2baada76c3ff1a24965aeb5bc1312dcad3769e019d52797d3e65304cca6f084",
+      "chain_review": {
+        "platform": "ios",
+        "debug_id": "ac1ca4e0-762c-4334-9e91-cb53ce3a9174",
+        "compiler_mappings": 829080,
+        "checked_addresses": 5025,
+        "application_addresses": 1024,
+        "application_sources_sampled": 239,
+        "application_sources_byte_verified": 323,
+        "unmapped_addresses": 289
+      }
+    },
+    "android": {
+      "artifact": "builds/app-2.5.0-86-nds-fixed.aab",
+      "artifact_sha256": "34a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554",
+      "entry": "base/assets/index.android.bundle",
+      "source": "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/android/index.android.bundle.exact.js",
+      "recompiled": "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/android/recompiled.hbc",
+      "bytecode_sha256": "1ef645498288f9caaf30050109ec48e0d10062187f01a578a67927b72e72d8dd",
+      "chain_review": {
+        "platform": "android",
+        "debug_id": "ced941ce-1f4f-4874-9b4d-ef71e8a14405",
+        "compiler_mappings": 839280,
+        "checked_addresses": 5026,
+        "application_addresses": 1013,
+        "application_sources_sampled": 241,
+        "application_sources_byte_verified": 323,
+        "unmapped_addresses": 282
+      }
+    }
+  },
+  "release_gates": "reports/shared-dictionary-cefr/d13a84-pr-20261024/release-gates-review.json",
+  "map_rejection_cases": 8,
+  "budget": {
+    "new_paid_requests": 0,
+    "unknown_held_usd": "0.56"
+  },
+  "remaining": {
+    "stage_steps": 3,
+    "later_major_milestones": 6
+  },
+  "files_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/ios/main.jsbundle": "b89ac2e142af70bb8c93f29cc951b5cff80ecbfaaf135b358caaacf208b8c3a3",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/ios/main.jsbundle.map": "c351534f773adb0568f7e6c4e4075763e029c97f1ebc6bd0c2129b30b3eb1dea",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/ios/recompiled.hbc": "f2baada76c3ff1a24965aeb5bc1312dcad3769e019d52797d3e65304cca6f084",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/ios/recompiled.hbc.map": "2fcd974c250eac9987259aa1e74171b54ba064fb39ba3daebdc47edae30ee3de",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/ios/main.jsbundle.composed.map": "01b1b742bafcd9e6b0d816ba462b38ff1f58cfe01601d15669187bc4d2a1b3f5",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/ios/bytecode-review.json": "ec7e95037a85b7e31129e42e437449b06166d3f4b266f892091cb59f7382706d",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/android/index.android.bundle.exact.js": "e87fbd4b26e0c0884d05251cfb969e2e0e01e706aa4974719b4d3e7e347d3694",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/android/index.android.bundle.map": "6d10625999fcaf9777b65236c9c9c256b7609c6954bf07698d1524ff8e319141",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/android/recompiled.hbc": "1ef645498288f9caaf30050109ec48e0d10062187f01a578a67927b72e72d8dd",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/android/recompiled.hbc.map": "a1ac7701eca26900ad104f8441e6b23a9ef77499561b391294b8a93ca9965bf2",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/android/index.android.bundle.composed.map": "6766774ff8a346f30607b272f76faf8b58e36b532f89de64c7d6467a1f0eb71d",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/android/bytecode-review.json": "d4be017c93f1b238fb1095c33f49162b1835574f26ab9a11f64e04d563742947",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/map-chain-review.json": "d0389b6da0ed20c0a828d7a797e53fd577cd27a6f0edbda0d394463fd6d3754d",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/rejection-review.json": "e8882a4108c12dbd2cbfbca3e7714fb51447b6e9203712f15690468cda0f3758",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/maps/check-rejections.cjs": "fe7e540670a0dffb1917f8fa59d80e2006b2a992c31bb2922a1a91b747be18e6",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/release-gates-review.json": "53e52e4901f7bd9325bd40d832621840c39b26e0ca082ae304482db9b450278f",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/endpoint-gate-representation.json": "f068d122062570174f54143f552b9eedadefba2cb933924d843550078119efce",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/backend-metadata-review.json": "41062e14c441c387db7f563198e3c2a1448f6fefbe96a8e85cc61ab51ec71bd2",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/managed-backup-availability.json": "302aa28bc10ae69e19c1c0f41afa65adbbc3e8bdf811d1a10c79692721ba2684",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/committed-source-review.json": "ec8326cd9291107520a895b5432cdc2523f8ff4c588be1d6baa8f3bdbee535c3",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/committed-credential-scan.json": "4acb922eef3181bc40b8d110acf141935c6e5a606e3a63de9748bec57a2c2bc6",
+    "reports/shared-dictionary-cefr/d13a84-pr-20261024/store-readiness-review.json": "96b198bb129b2293c47d1ff134d88ffe1ad9ef4ba19d3914099bfea838e1a588",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-verify-diagnostics-20261024.cjs": "a82db55bec0086e5d2c02e105c6434e7285fb075d870a9bde3cabc026816ad9a",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-verify-pr-release-checks-20261024.cjs": "7885823540c21f7f7b80a11ed84ca238a893ad67ad99c26fff0ee7027d0c712b"
+  }
+}
