@@ -6934,3 +6934,285 @@ set and obtain scoped execution authority. These release gates remain open;
 local build preparation alone does not authorize publication or device use.
 D13A.8 stays 3/6 complete: 3 fixed steps and 6 other broad milestones remain.
 Recommended model/effort: Astra / High. Stop at the requested preparation scope.
+
+**2026-10-24 — AUTH-46 device smoke and updated release/rollback review prepared.**
+
+Continue D13A.8.4 on feature/d13a84-main-native-builds, HEADc626e6c. Application
+source remains merged main165501a; all1514 non-document pins match. Original
+IPA0b388685... and AABd3567c02... remain unchanged. This session changes only task
+documents/verifier; no commit, push, publication, migration or provider request.
+
+New-code diagnostic derivatives were tested on both physical devices. iPhone QA
+2.5.0(86) reuses the existing approved profile/certificate; JS and ten Mach-O
+instruction/data sections match the IPA. Cold launch/restart XCTest passed1/1,
+zero failures; screenshot/hierarchy confirms signed-out login. Primary iPhone app
+remains2.4.0(85) and was never launched. Initial driver scheme error occurred before
+tests; device-lock authentication canceled the first initialization; the same built
+test passed after owner unlock. No certificate or profile was created/changed.
+
+Test Huawei connected. Existing build85 signer differs, so a separate QA package
+com.oldrefery.dutchlearningapp.d13aqa was derived with the existing debug key.
+Only manifest/resource namespace, label, signature and disabled OTA differ; all116
+DEX/native/JS/runtime files match. Cold login UI, empty-form local validation and
+signed-out restart pass. No credentials entered or sign-in dispatched. Original
+package85 and full update timestamp are unchanged. QA apps remain installed.
+These are diagnostic smoke checks, not exact App Store/Play delivery qualification.
+Authenticated offline/sync,5000-word/performance and coordinated backend tests stay open.
+
+New immutable review source snapshotc626e6c, analysis24-file and creation40-file
+archives,14 migrations and13 operator-rehearsal files are prepared. Both extracted
+functions return disabled503 for GET/POST with loopback-only permissions, reading
+only their enable flag and no credentials. Owned Deno processes stopped. Seven iOS
+dSYMs were retained with executable UUID matching the IPA; exact JS maps are missing.
+Vercel metadata still confirms production165501a READY. Existing rollback74ZRdM...
+is a candidate requiring compatibility recheck before any later promotion.
+
+Review: evidence/D13A.8.4-release-review-20261024.md, rollback review, machine packet,
+backup template and offline verifier. Private bundle/receipts:
+reports/shared-dictionary-cefr/d13a84-device-release-20261024/.
+The verifier covers archive/native/source/receipt integrity and refuses execution;
+negative cases include traversal/symlinks/duplicates/missing imports, false device
+claims and unauthorized spending/rollback. Bundle digest is in bundle-receipt.json.
+No raw device inventory, private keys, environment values or personal DBs are bundled.
+
+Fresh protected backup/isolated restore/live delta/cohort queues were not captured;
+no personal production data exported. Exact store delivery, compatible native
+rollback, JS maps, backend/gateway/operator readiness, current store eligibility,
+exact-set rehearsal and operation approval remain explicit open gates. Paid calls
+and real linking ceiling remain0; historical unknownUSD0.56 stays held.
+
+D13A.8 stays3/6 complete:3 fixed steps remain and6 other major milestones follow.
+Next: review this exact packet and resolve those gates within new explicit scope.
+Recommended model/effort: Astra / High. This checkpoint and five new evidence files
+are local-only/uncommitted on the feature branch; signed binaries/private bundle
+stay ignored. No ongoing test or external operation remains after completion.
+
+## 2026-10-24 — D13A.8.4 exact diagnostics and backend metadata
+
+Continued local preparation on feature/d13a84-main-native-builds at c626e6c.
+Recovered exact iOS/Android JavaScript maps with offline Expo export and Hermes
+250829098.0.17: both compiled bytecode hashes match embedded IPA/AAB byte for byte.
+Verified10050 address chains and323 source files per platform; reused matched
+Debug IDs. No Sentry upload or new signed native build. Source and binaries unchanged.
+Metadata-only Supabase API reads confirmed read-only transactions,52 ledger
+versions, all14 candidate migrations absent and both candidate Edge functions
+undeployed. No application-account data/queues/backups exported or production writes.
+Preserved base packet/bundle and prepared a separately verified diagnostics addendum;
+private maps/receipts/tests under d13a84-diagnostics-20261024. Checker duplicate-column
+and binary-asset assumptions corrected without map/bytecode changes. New evidence
+remains local/uncommitted; no push, publication, certificate or provider action.
+Remaining fixed stage steps3/6, other major milestones6. Next: full baseline/policy/
+gateway/backup/delta/queue and exact device/delivery/rehearsal/authority gates.
+
+Final diagnostics gate22/22 passed; formatted new evidence and git diff --check pass.
+Separate supplement23 members,30,449,717 bytes, SHA256
+fcddf70e6293e841b2dfaf36dffab5053e96d4cdc1e6737e7dd24bdc232a9609.
+Four task files modified and eight new evidence files are local/uncommitted;
+original packet665722a5... and bundleab682bc7... are unchanged. No pending external job.
+
+## 2026-10-24 — D13A.8.4 catalog/backup-delta/rollback rehearsal
+
+Same branch c626e6c and unchanged application/native artifacts. Read-only catalog
+reconciles41 relations,413 named columns,102 routine definitions,35 RLS and43
+triggers; explicit column/extension/article/default-ACL platform differences retained.
+Whole runtime-row read auto-review rejected; approved narrow three-boolean read
+succeeds,allTRUE,no personal rows/secrets read. Observed ACL/defaults/article CHECK
+mirrored in owned PostgreSQL17.6 ARM64/no-network/tmpfs cluster. Twelve rehearsal
+checks pass:5000 cards,17 full preservation digests,synthetic backup/isolated restore,
+accepted review delta/original metadata,idempotent retry,14 exact migrations,dormant
+new gates,no new anon/PUBLIC RPC grants,selective rollback preserving later learning.
+RPC-only delta replay changed server timestamps; original after-images were required,
+not omitted from comparison. Initial harness image/identifier/receipt issues fixed;
+all owned containers stopped/removed. Seven frozen-source nativePG15 suites126/126,
+zero failures/skips. Google search86 absent;Apple fresh inventory requires login.
+New readiness/proposal/manifest/verifier local;B01 real protected backup not approved
+or captured;B02 writes and native delivery remain separate. No main account mutation,
+publication,provider request,certificate,new native build,commit/push or stage advance.
+D13A.8 stays3/6;3 fixed and6 other major milestones remain.
+
+Final offline readiness/tamper gate17/17 passed,alongside126 DB tests and12 synthetic
+rehearsal checks. New review archive32 members,624,984 bytes,SHA256
+2e03063109fe602cda1846b313f2762ac1054f2451f5c773594ff37b02b9f5a5.
+Prettier and git diff --check pass. Four task documents and12 new evidence files
+remain local/uncommitted; base/maps/native artifacts unchanged. B01 question is
+pending owner approval; no active runner or external operation remains.
+
+Managed backup metadata also read without download/restore:WAL-G enabled,PITR disabled,
+no logical backup entries listed. Physical availability metadata,if present,is retained
+in d13a84-readiness-20261024/managed-backup-availability.json;it does not prove a fresh
+verified restore or post-backup delta. No managed restore was requested.
+
+## 2026-10-24 — AUTH-47 protected backup preparation
+
+Owner approved B01 only,then reported finding the database password. Linked pooler
+URL still contains YOUR-PASSWORD; no usable secure pgpass exists at checkpoint.
+Prepared owner-run hidden TTY credential writer,0600 exact-project file,no overwrite
+or global settings changes. Pending async asks for local entry confirmation/path;
+no password should be sent in chat. Dedicated non-sync WhenUnlockedThisDeviceOnly
+Keychain key created/retrieved; bounded-memory native CryptoKit AES256GCM helper
+compiled and passed14 synthetic roundtrip/random-nonce/full-hash/tamper/truncation/
+unknown-key checks. Invalid inputs release no plaintext; no plaintext files/key export.
+Prepared parsed metadata-only verify-full TLS/read-only PG17 preflight with pinned
+CA/client,52-version ledger/identity checks and size estimate; not executed yet.
+Private operation/tools/receipts:d13a84-b01-20261024. No production snapshot,
+personal-data export,restore or delta verification performed. Auth credential/session
+rows,Storage object bytes and device-local queues remain excluded/unverified.
+Off-machine key custody is not proven. B02,publication,main-account mutation and
+paid calls remain excluded. Same branch c626e6c; no source/native artifact changes,
+commit,push or stage advance. D13A.8 remains3/6:3 fixed steps and6 broad remain.
+
+## 2026-10-24 — AUTH-47 B01 scoped application backup and restore evidence
+
+Owner confirmed hidden local password entry. Session-pooler5432 verify-full TLS1.3
+and explicit read-only transactions verified project/server17.4/52-version ledger.
+Initial capture lacked explicit Docker log override; unaccepted encrypted outputs
+retained separately,temporary runtime plaintext logging cannot be ruled out,secure
+erasure not asserted. Accepted S1/S2 repeat with log-driver none and exported
+repeatable-read/read-only snapshot boundaries12:53:09Z/13:00:20Z. Native AES256GCM
+archives and companions authenticate21/21; local non-sync Keychain key is retained,
+not exported/off-machine proven. Crypto14/catalog tamper19/packet tamper26 pass.
+
+Both snapshots restore50 projections/32,636 full rows including timestamps. Latest
+restore matches catalog/ACLs/role attributes/effective memberships/RLS;zero foreign
+private words,intentional shared reads preserved. Catalog81 relations/816 columns/
+397 constraints/181 routines/35 policies/233 indexes. Exact database owner,UTF8,
+en_US.UTF-8/ICUen-US153.120,ACL and connection limit verified using cachedARM64
+178f0976... image;075 ICU153.121 rejected by added locale gate. No image download.
+Local grantor/schema/extension/shared-policy expectation/catalog/default-ACL/locale
+issues corrected only in isolated tmpfs containers,all removed.19 managed membership
+grantor adaptations retain originalSQL;54 managed object ACLs restored. Temporary
+extension bootstrap elevation reverted; final attributes checked. Physical attnum
+and implicit-owner ACL representations are explicit equivalences,not data omission.
+
+All50 S1/S2 complete digests match,no intervening row change detected. Full S2
+after-images/receipts retained; no RPC replay/new timestamps. Five server queue/
+control projections checked,worker disabled,job/run/usage/import-origin tables empty.
+Device queues and future deltas remain unverified;unknownUSD0.56 still held.
+Auth onlyid/email plus schema;Auth credential/session/token rows,Storage object bytes,
+Vault/managed service state,nonallowlisted DB settings and independent key recovery
+excluded. Database setting app.settings.jwt_exp observed by name only. Scoped
+application restore verified;full managed disaster recovery is not claimed.
+
+Final private bundle57 members,24,079,247 bytes,SHA256
+1dbaf51f713673ce08e4195b48595f75bf9313849765440d428ceef8ea560822.
+All members verified without extraction; public packet868f8711... and offline verifier
+pin52 private artifacts plus unchanged earlier packets. Both dedicated pgpass files
+removed;no owned containers/exporter/runner remain. No production writes,main-account
+launch/mutation,provider request,publication,store/certificate/new native build,
+commit/push or D13A.9. Same feature branch c626e6c. New B01 review/packet/verifier
+remain local; all backups/diagnostics stay ignored. B02 remains separately
+unauthorized. D13A.8 stays3/6 complete:3 fixed steps and6 other broad milestones remain.
+
+## 2026-10-24 — AUTH-48 B02 dormant production backend
+
+Owner approved exact14 migrations/two functions with new flags off,no stores/main
+account changes. Existing Management API credential used;no DB password reset.
+Fresh read-only identity/52-ledger/catalog/50 original-projection hashes matchedB01S2.
+Pinned78 files validated;exact guarded wrapper rehearsed on restoredB01/ICU153.120:
+14 pass,stale-backup and ledger replay guards refuse. All14 applied once with exact
+original source ledger hashes,66 total. Each atomicDO checks old52 ledger/data/
+timestamps before/after. Target catalog/ACL/RLS matches rehearsal;118 new routines
+deny anon/PUBLIC,new25 tables empty,words legacy,new14 flagsFALSE,old3TRUE.
+
+Third requestTLS interruption stopped writes. Read-only no-active-query/absent-third/
+ledger54/50 hashes/flags reconciliation preceded deliberate same-SQL resume. All
+remaining versions verified;unknowns empty,no automatic retry or duplicate version.
+Read-only seed-file filter/local receipt/diagnostic issues corrected. Extra capability
+probe denied supabase_read_only_user as intended;no permission broadening.
+
+Only2 endpoint enable secrets setfalse before only dictionary-analysis/creation
+deploys,ACTIVE/version1/JWTtrue. Original24/40 source bytes unchanged;derived same-
+directory import maps pin directSDK2.110.8 from approvedlocks. Eight HTTP smoke checks
+pass:missing/invalidJWT401×4,public-anon disabled503/no-store×4,no user/service token.
+Returned source22/29 hashes match,zero mismatches;missing config/lock/other files
+listed,full transitive/enabled/provider qualification remains held.
+
+Version-only metadata effect after secret update:legacy four functions incremented
+132→133,7→8,34→35,8→9. All other fields identical including updated_at/JWT;two exposed
+bundle hashes unchanged,two unavailable. No source/deploy/invocation targeting old
+functions. Initial unchanged-version assertion reconciled without extra writes.
+Final read-only aftersmoke confirms50 old-column/timestamp hashes,66 ledger,new14off/
+old3on,25 empty tables. Provider/real-link/main-account operations0;heldUSD0.56 retained.
+
+B02 packet2a94e733... pins576 private artifacts;217 ciphertexts authenticate;
+tamper36/36. Private bundle581 members/16,822,591 bytes,SHA256
+c41c14effbddb73ec8c0a07964cb7788e393ad31162069d4f6986e28acb6f51e.
+All members checked without extraction;priorB01/base/native/maps unchanged. Owned
+containers removed,no credential files created/activeoperation/unknown left. Scope
+consumed;17 successful write responses (14+1+2),18 attempts including resolvedTLS.
+No activation/store/OTA/web/certificate/new native build/commit/push/stage advance.
+Same feature branch c626e6c;four task documents plus18 evidence files local-only.
+Next:remaining native/offline/sync/5000/delivery/rollback/operator/enabled-path and
+fresh delta/device queue/authority gates;B01 full-DR/key exclusions remain.
+D13A.8 stays3/6 complete:3 fixed steps and6 other broad milestones remain. Astra/High.
+
+## 2026-10-24 — D13A.8.4 physical QA and final NO-GO packet
+
+AUTH-49:existing build86 diagnosticderivatives,isolatedsyntheticbackend;no main
+account/production/provider/storeaction. iPhone8passed/3retaineddriverprecondition
+failures;offlinepending1 survivesrestart,exactlyone eventdelivers,pending0,no repeat
+duplicate;ownerreturn and5000scroll/search pass. Android12viewport/searchpass;
+NDS-1freshsync deletedIDhydrationfails,localfilterfix/regression123testsplusmobile/
+testtypes/lint/formatpass. ARS-1 diagnosticrestartsession/emptyrelogin unresolved;
+Androidoffline/reconnectnotaccepted. Two sourcefiles localuncommitted;IPA/AABunchanged.
+Finalpacketa8ed02298d89a7a790886772b123983d02891d2082ba6a596b2ecfb7c7c15bcf;supplementc9e90eff01e4cd46145287c5d239b98aded3b304f03d0893d903de364db1aa44,
+33members/161221bytes. Offline65pins/10tamper checks andpriorB01/B02verifierspass.
+AllownedQAresources stopped,data/volumesretained,mainappmetadataunchanged. No active
+operation. ResumeNDS-1review/ARS-1investigation,thennewreviewedsource/artifacts and
+remaining8.4gates. D13A.8 remains3/6,3fixedsteps+6laterbroadmilestones. Astra/High.
+
+## 2026-10-24 — ARS-1 root cause and NDS-2 source correction
+
+Late unlock reply: iPhone return already passed, so continued Android-only local
+QA diagnosis. Protected sandbox fingerprints and metadata prove session storage
+survives restart; cross-device global synthetic logout revoked Android sessions.
+Empty anonymous RLS snapshot triggered NDS-2: 5012 local word tombstones (5000+12).
+QA server retains 5028 active words / two tombstones / eight review events. No
+Android answer or deletion replay; protected queue retained, online route removed.
+Source owner/server-auth/transition guard plus NDS-1 fix local; three red cases then
+127/127 green tests. Mobile/test types, scoped lint zero warnings and format pass.
+Initial fixture/type failures retained; no physical fixed-build acceptance claim.
+Plain QA APK restored by same-signer install-r, installed SHA verified. No data
+clear/uninstall; no post-restore sandbox export available. QA/relay/four containers
+stopped with volumes preserved. No main account, production or provider action.
+Session-reconciliation packet739df652..., supplementf05dc2fc... (32 members/71369
+bytes), 37 input pins / 33 prior archive members / 11 rejection cases verified.
+Prior packet immutable with exactly two expected workspace source drifts. No new
+native compilation, certs, commit/push/publication or8.5. Same feature branch/HEAD;
+six tracked modifications and25 new evidence files. D13A.8 stays3/6,three fixed
+steps plus six later broad milestones remain. Astra/High.
+
+## 2026-10-24 — AUTH-50 reviewed recovery and replacement physical QA complete
+
+Samefeaturebranch/c626e6c,no commit. Prior37pinpacketverified,localNDS-1/NDS-2review
+no blockers;exact1514sourcefreeze/actualbuildcopy hashes,newIPA a44f6162.../AAB34a7759b...
+2.5.0(86),old candidatesimmutable. Existingcredentials frozen,no sourcemap/storeupload.
+Recover5012accidentaldeletions/3collections only,30other tables/alllearning/auth
+preserved;protectedpre/postcopies andexactrowplan. Initialtransfer timeoutbefore
+replacement reconciled;no blind retry,queue replay or data clearing.
+iPhone8passed/1retaineddriverpreconditionfailure;offlinepending1survivesrestart,
+exactlyone delivery/pending0,repeatsync no duplicate,5000scroll/search,ownerreturn.
+Androidfresh2tombstone delta passes;secondsynthowner offline1/restart1inUI+SQLite,
+reconnect0/repeatno duplicate;12nonblank5000windows(last134–143)/lastwordsearchpass.
+Searchdriverprematuretap correctedwithexplicitwait;helperindex/variablefailures kept.
+FinalAndroid5026words/5024active,pendingreviews0/deletions0/contentcommands0. Server
+old8eventsexact+two legitimateQAanswers,total10;5028active/two tombstones. Finalword
+comparison permitsonly2controlledtimestamps+2assessedwordlearningprojections;four
+excludedrows unchanged. Initialstrictfullrow/readinesschecks reconciledread-only.
+Newreplacementpacket0b2aaa53...,bundlef294e8c8...(70members/534741bytes),82pins/
+1514sourcefiles/5012recoveryrows/14tampercases pass. Mainmetadataunchanged,mainaccounts
+untouched;normalQAAPKrestored/QAapps+reverse+relay+fourcontainersstopped,volumesretained.
+No production/provider/paid/reallinks/certchanges/commit/push/publication/8.5. Six
+trackedmodifications+29newevidencefiles localonly. Broaderreleaseholds persist;
+D13A.8 remains3/6,threefixedsteps+sixlaterbroadmilestones. Astra/High.
+
+## 2026-10-24 — AUTH-51 source commit and PR checkpoint preparation
+
+Owner authorizes currentbranch commit/push/PR andremaining checks,no merge/publication.
+Sourcefixc3a1f2d... normalhooks pass2737mobile/1252web tests (oneexistingwebskip),
+22snapshots. All1514committed sourcefiles equalqualifiednativefreeze;oldartifacts
+remainvalidlocalcandidates. Canonicalpacketbytes archivedadjacent.raw;formatted
+publicationcopies verified by explicitserialization/input-relocation adapter. No
+source/artifact/supplement/budget/acceptancechange. Preparing sanitizeddocs checkpoint
+and PR. Mainremote165501a,currentbranchremoteabsent. AllQAresourcesstaystopped.
+Threefixedsteps plus sixlaterbroadmilestones remain. Astra/High.

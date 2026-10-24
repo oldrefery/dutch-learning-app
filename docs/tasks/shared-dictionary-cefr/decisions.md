@@ -2194,3 +2194,236 @@ profile and Android upload signer were preserved. No stores, certificate changes
 push, new deployment, migration, activation, paid providers or device installation.
 Two build slots are fulfilled. Final branch-only evidence commit is within scope.
 See evidence/D13A.8.4-main-build-review-20261024.md and JSON receipt.
+
+## AUTH-46 — Device checks and remaining local release/rollback packet
+
+Owner authorizes device checks of the new IPA/AAB and local release/rollback
+preparation, with no publication and no changes to the main application account.
+Read-only personal iPhone metadata and isolated test-Android checks are within scope.
+The App Store IPA cannot be directly installed; no TestFlight upload is authorized.
+The previously approved isolated QA identity/profile may be reused for a diagnostic
+derivative with the original IPA unchanged; this does not qualify store delivery. Existing primary app/data stay untouched. Use only loopback/synthetic
+qualification for archived backend artifacts; no paid requests or production writes.
+Fresh personal backup/delta/queue exports and rollout authority remain unresolved.
+No new native build, certificate change, push, PR, merge or store operation is included.
+
+**AUTH-46 outcome:** physical diagnostic smoke completed on both devices using
+isolated QA identifiers and existing credentials. Primary applications remain85;
+no main-account sign-in/review/sync/content action occurred. Android original signer
+mismatch was handled with a separate package, preserving116 code/runtime files;
+iPhone reused the approved QA profile, preserving JS and ten native binaries' sections.
+XCTest cold-launch/restart passed1/1 after owner unlock; Android local validation and
+restart passed. These results do not qualify store delivery or authenticated offline/
+5000-word/coordinated backend behavior. A new review packet, archived function startup
+checks, source/migration/operator archives and selective rollback plan are prepared.
+No publication, certificate change, new production binary build, provider request,
+production write or personal export. Fresh backup/delta/queues, diagnostics/maps,
+exact coordinated rehearsal and execution authority remain open. Evidence is local.
+
+**AUTH-46 continuation — exact diagnostics and read-only backend observation.**
+
+Owner requests continuation within local preparation scope. Offline regeneration
+recovers maps whose reconstructed source hash and complete Hermes bytecode match
+both accepted native artifacts. No signed native binary is rebuilt or replaced;
+no Sentry upload occurs. A pinned addendum supersedes only missing-map and
+unobserved migration/function-presence statements; the finalized base stays intact.
+Metadata-only Supabase queries use read_only=true and confirm transaction_read_only=on.
+All14 candidate migrations and both candidate Edge deployments are absent. No
+application-account rows or backup/delta/queues are read/exported; no remote state
+is changed. Baseline raw representation differences are unverified, not schema drift.
+R04 map retention is resolved locally; its native rollback gate and R05/R13 broader
+conditions remain open. All paid/real-link limits and unknownUSD0.56 reserve remain.
+No publication, certificate change, push, new operation authority or stage advance.
+
+**AUTH-46 continuation — remaining safe local qualification and review.**
+
+Owner requests remaining checks and release preparation. Same no-publication/
+no-main-account-changes boundary. New read-only schema/security comparison and
+three catalog-verified boolean gates are observed. A full runtime-row query was
+automatically rejected before execution; approved least-data replacement reads
+only the three named boolean values. No personal export or secret disclosure.
+PostgreSQL17.6 owned synthetic rehearsal passes12 checks for14 exact migrations,
+5000 cards,backup/restore/full accepted delta metadata and selective rollback.
+126 focused frozen-source database tests pass. No product source/native artifact
+changes. B01 protected real-data backup/restore approval is requested next; B02
+production writes/stores/activation/linking/spending remain separately unauthorized.
+No paid request or unknown-reserve release;USD0.56 remains held. Fixed8.4 open.
+
+## AUTH-47 — B01 protected read-only production backup and isolated restore
+
+Owner explicitly authorizes B01: protected read-only production copy and isolated
+restore verification for project josxavjbcjbcjgulwcyy. Main application account must
+not be launched/mutated. No migration,function deployment,flag write,certificate,
+publication,push,paid request or real linking. Use a consistent verified-TLS snapshot,
+stream authenticated ciphertext only to disk,and retain a dedicated local Keychain
+key. Include application/schema/security/queue state; explicitly document Auth/
+Storage/device exclusions rather than silently exporting credential/session material.
+Fresh delta evidence is tied to its actual observation,not future write authority.
+Existing linked pooler URL contains a password placeholder; no verified pgpass is
+available. Owner has been asked only for a secure local credential-file path,not
+another permission or a chat password. Do not reset the DB password or bypass
+consistent-snapshot requirements through paginated Management API data exports.
+
+**AUTH-47 outcome — scoped application restore verified; no B02 authority.**
+
+Owner supplied the password through hidden local entry. Exact project/session-pooler
+TLS1.3 verify-full/read-only preflight passed; no password/account reset. Accepted
+S1/S2 exported snapshots encrypt50 table projections/32,636 rows; full restore/delta
+digests include timestamps and detect no change between those two boundaries.
+Latest isolated restore verifies database owner/encoding/ICU153.120/ACL,logical
+catalog,role attributes/effective memberships and zero foreign private words under
+authenticated RLS,while keeping intentional shared reads. Original managed grantor
+SQL retained;19 local membership grantor adapters,54 managed object ACL adapters and
+physical attnum/default-owner ACL equivalences explicitly documented. All temporary
+bootstrap privileges reverted. Both dedicated pgpass files and all owned containers
+removed; encrypted snapshots and dedicated non-sync local Keychain key retained.
+
+First capture's Docker logging override was not explicit; runtime plaintext logging
+cannot be ruled out. It is unaccepted,kept separately,and not a ciphertext-only
+guarantee. Corrected accepted captures use log-driver none. No secure-erasure claim.
+Failed local restore/probe attempts remain as encrypted diagnostics; no production
+write occurred. Final crypto14/catalog tamper19/packet tamper26 checks pass;21 chosen
+ciphertexts authenticate. Review packet868f8711... / private57-member bundle1dbaf51f...
+pin this scoped evidence without altering prior finalized packets.
+
+Full Auth credentials/session recovery,Auth data/sequence outsideid/email projection,
+Storage object bytes,Vault/managed services,nonallowlisted database settings,device
+queues and off-machine key custody remain excluded/unverified. New production writes
+require fresh accepted-delta/queue reconciliation; no future changes are covered by
+the current two boundaries. Historical unknownUSD0.56 remains held. No paid request,
+main-app launch/mutation,publication,certificate,new native build,commit or push.
+B02 remains separately unauthorized for its14 migrations/two functions; no store/
+activation authority follows B01. Fixed D13A.8.4 remains open,3 fixed steps remain.
+
+## AUTH-48 — B02 dormant additive production backend preparation
+
+Owner explicitly authorizes applying the exact14 pinned migrations and deploying
+dictionary-analysis and dictionary-creation with all new flags disabled,continuing
+D13A.8.4. Target josxavjbcjbcjgulwcyy; exact paths/digests and analysis24-file/
+creation40-file archives come from the unchanged October24 base review packet.
+Preserve existing operations/read/legacy gates and all original personal/learning/
+receipt state. Reconfirm current ledger/schema/security and accepted delta/queues
+before writes; reconcile uncertain outcomes read-only before any retry. Stop on a
+failed preservation/security/configuration check. No include-all/reset/history
+repair,existing function redeploy,main-account changes,store/OTA/web publication,
+certificate changes,paid calls,real links,commit or push. Only the two named endpoint
+enable secrets may be set false; JWT gateway protection remains enabled. B01 remains
+scoped application backup evidence with its documented exclusions. AUTH-48 does
+not authorize a destructive restore or resolve native/device/full-DR holds.
+Operation intent:reports/shared-dictionary-cefr/d13a84-b02-20261024/operation.json.
+
+**AUTH-48 outcome — dormant backend completed; scope consumed.**
+
+All14 exact sources applied once in guarded atomic statements with original-body
+ledger hashes,66 total versions and50 full original-column/timestamp preservation
+checks before/after each. Fresh pre/post catalog matches exact isolated rehearsal;
+new118 routines deny anon/PUBLIC,new25 tables empty,all words legacy,new14 flagsFALSE
+andold3TRUE. Both named endpoint flags setfalse before only the2 target deployments,
+ACTIVE/version1/JWTtrue. Original24/40 file inputs preserved;derived maps fix direct
+SDK2.110.8 from approvedlocks. Gateway/disabled smoke8/8 with public anon only;
+source-body22/29 hashes match,zero mismatches. Enabled/provider/client capability and
+complete transitive identity remain unqualified. No main-account/content/SRS action.
+
+Named secret update coincided with version-only increments ofall4 old functions:
+132→133,7→8,34→35,8→9 respectively gemini-handler,data-migration,get-multiple-images,
+delete-account. Every other metadata field unchanged;both exposed bundle hashes
+unchanged,two unavailable. No old-function source/deploy/invocation request issued.
+This platform metadata effect is explicitly retained;no claim of unchanged counters.
+
+TLS interruption atthird migration stopped writes until read-only no-active-query/
+absent-third/ledger54/data/flags reconciliation;intentional same-SQL resume verified
+all remaining versions. No automatic retry/duplicate version;unknown outcomes empty.
+Optional read-only RPC EXECUTE denial was preserved,no extra grant. Final50 hashes/
+66 versions/17 boolean states/25 empty new tables reconfirmed afterfunction smoke.
+17 successful write responses,18 attempts including the resolved TLS interruption.
+
+New review/packet/verifier and private581-member bundlec41c14ef... retained;217
+ciphertexts and576 artifact pins verify;packet tamper36/36. PriorB01/native/source/
+review bundles unchanged. No store/OTA/web activation,certificate,new native build,
+provider call,real link,commit or push. HeldUSD0.56 unchanged. Full managed Auth/
+Storage/Vault/off-machine/device recovery and native/enabled-path gates remain.
+No further activation/write authority follows this completed scope. D13A.8 remains
+3/6 complete:3 fixed steps and6 other broad milestones remain.
+
+## AUTH-49 — isolated build86 physical device functional QA
+
+Owner requests iPhone/Android offline,synchronization and5000-word checks plus the
+final release/rollback packet. Reuse the two accepted build86 artifacts as isolated
+diagnostic derivatives,existing QA identities/profile/signers and the preserved
+synthetic local backend. Only backend URL string/checksum and explicit QA/OTA/native
+identity configuration may differ; native instructions and application JS instructions
+remain unchanged. Back up existing QA state before installation. Do not operate the
+main app/account or seed/enable production. No new native compilation,certificates,
+provider requests,publication,commit/push or next-stage authority. Store delivery and
+production enabled paths remain separate gates. Intent:reports/shared-dictionary-cefr/
+d13a84-device-functional-20261024/operation.json.
+
+**AUTH-49 outcome — device qualification found release holds; no release authority.**
+
+Separate diagnostic copies use only existing native/signing artifacts,configuration
+changes and synthetic local backend. iPhone8 physical checks pass,including offline
+SQLite pending1/restart/once-only serverdelivery/pending0/repeatedsync and ownerreturn.
+Both platforms5000 scroll/search pass. Androidfreshsync reproduces NDS-1;source
+correction/regression prepared locally,123 tests pass;current signed86 remainsstale.
+Androidsessionloss/emptyrelogin ARS-1 remainsdiagnostic-only unresolved,so offline
+queue/reconnect acceptance is open. No queueclearing orguardbypass. JS-onlyfixexport
+compiledoffline butnotinstalled;no nativeappcompilation,newcertificate orpublication.
+FourownedQAcontainers/relay/Androidreverse stoppedwithdata/volumes retained;main
+appmetadataunchanged,mainapps/accountsneveroperated. Finalpacket NO-GO;B01/B02
+limits,freshdelta/queue/nextoperation/native-repair/storeholdspersist,USD0.56held.
+Localfixrequiresreviewandseparatelyapprovednativeartifacts;no commit/push or8.5
+authority. Fixedstage3/6,threefixedstepsandsixlaterbroadmilestonesremain.
+
+**AUTH-49 continuation — ARS-1 cause and NDS-2 local source safeguard.**
+
+Late iPhone unlock resumes local diagnosis; it does not authorize repeated completed
+checks, new native compilation or publication. Temporary debuggable manifest and
+metadata-only JS diagnostics used the existing isolated QA ID/signer; main data was
+not read. Protected copies retained; original plain diagnostic APK restored in place.
+Global synthetic logout explains session revocation; no logout semantics/key reset.
+NDS-2 local fix prevents unauthenticated collection snapshots from initiating remote
+reconciliation in the reproduced cases; NDS-1 remains local. 127 tests and scoped
+checks pass, but signed86 unchanged. 5012 local synthetic deletion intents preserved;
+no replay/clearing/recovery authorized by this finding. Local server intact.
+New immutable addendum supplements prior NO-GO package; expected two source-pin
+changes are disclosed, not rewritten. All owned QA resources stopped. No production
+access, paid/real-link operations, certificates, commits, push or stage advance.
+Review fixes/recovery before separately approved native artifacts and repeat QA.
+Three fixed steps and six later broad milestones remain; USD0.56 stays held.
+
+## AUTH-50 — reviewed local fixes, synthetic recovery and replacement native QA
+
+Owner authorizes review of NDS-1/NDS-2, safe recovery of the retained isolated
+synthetic QA data, new locally signed IPA/AAB and repeat physical QA within
+D13A.8.4. Preserve exact preimages and unrelated queue/learning/auth state. Reconcile
+only proven accidental tombstones against the local synthetic server, no production
+restore or main-account operation. Reuse existing signers/certificates; no credential
+changes, store/OTA/web publication, paid/provider calls, commits/push or8.5.
+Replacement artifacts use reviewed source plus local fixes, explicitly uncommitted;
+original immutable packets/artifacts remain unchanged. Operation root:
+reports/shared-dictionary-cefr/d13a84-fixed-native-20261024/.
+
+**AUTH-50 outcome — local scope completed; release authority not granted.**
+
+Reviewed fixed source captured without commit. Two new local signed IPA/AAB use the
+existing credentials and unchanged runtime/version86,distinct artifact hashes. QA
+recovery repaired only5012proven deletion fields/threecollections,preserved allother
+learning/auth/state. Preimages retained;no queue replay/clearing/productionrestore.
+NewphysicaliPhone8cases andAndroid freshtombstones/offline/restart/reconnect/5000
+acceptance pass. Eightoldevents remainexact,two newsyntheticevents retained,total10;
+finalqueues0,no duplicates. Driver/helper failures retained and corrected;no false
+performance/store/main-ID-upgrade claim. Four excludedlocalQAwords unchanged.
+Allownedresourcesstopped;mainmetadataunchanged,mainaccountsnotoperated. Immutable
+replacement review/rollback/packet/verifier passed82pins/1514sources/70members/14cases.
+No paid/provider/reallinks,certchanges,commit/push/publication/8.5. No new build or
+release authority inferred from completed scope. Broader8.4/B01/B02holds andUSD0.56
+reserve persist;threefixedsteps andsixlaterbroadmilestones remain.
+
+## AUTH-51 — commit reviewed fixes, prepare PR and continue release checks
+
+Owner authorizes committing the reviewed fixes on the current feature branch,
+pushing that branch as required to open a PR into main, preparing the PR and
+continuing remaining D13A.8.4 release checks. No merge, application publication,
+activation, certificate changes, new paid requests or next-stage execution follows.
+Preserve canonical frozen evidence and private artifacts; publish only reviewed
+source and sanitized task evidence. Existing signers/device accounts remain intact.
