@@ -1,26 +1,94 @@
-**2026-10-24 — Remaining hosted CI prerequisites repaired locally.**
+**2026-10-24 — AUTH-45 merged-source local signed builds authorized.**
 
-PR123 source b977971 completed mutation testing successfully:96.13% against90%,
-1420 mutations, no individual timeouts. Quality then failed on Edge-test read
-permissions and a test depending on ignored historical reports. Database passed
-659 tests but failed downloading postgres-meta from ECR (Data limit exceeded).
-No merge or Production deployment occurred; do not treat b977971 as fully green.
+Owner requests checkpoint commits only on branches and two new local signed
+artifacts from main, with no store submission or certificate changes. Created
+feature/d13a84-main-native-builds from current main
+165501a0f547765011630fdab04ba0654ac75626, preserving all five checkpoint documents.
+Only documentation differs from main. Commit this checkpoint with normal hooks,
+then freeze that commit and verify every non-document source pin against main.
+Use dictionary-release 2.5.0(86), existing signing credentials, local compilation,
+--freeze-credentials and disabled capability/debug uploads. Preserve historical
+IPA/AAB; new outputs use distinct main-source filenames. Both slots are unstarted.
+Private evidence: reports/shared-dictionary-cefr/d13a84-main-builds-20261024/.
 
-The local repair grants Edge tests read access only to dependencies and required
-source directories, removes historical report reads in favor of a portable fixture
-containing schema, non-secret policy hashes and dimension sequences, and uses
-fresh synthetic verdicts. Duplicate rejection and its repaired positive control
-pass. All351 Edge tests pass with reports/ outside the read allowance. Switch
-postgres-meta from ECR to official GHCR with the identical sha256 digest; both
-GHCR and Docker Hub manifests were independently read and matched that digest.
-Fast Edge/build/Doctor checks now precede unchanged mutation testing.
+No push, PR, merge, store upload, certificate change, remote build, migration,
+runtime activation, provider spending or device installation is in this request.
+Verify oldrefery and the linked personal Expo project before each remote EAS step.
+After builds verify signatures, identifiers, versions, runtime fingerprints and
+artifact hashes, then commit the resulting sanitized checkpoint on this branch.
+D13A.8 remains 3/6 complete: 3 fixed steps and 6 other broad milestones remain.
+Recommended model/effort remains Astra / High. This entry supersedes older holds
+on additional native builds only within the new explicit two-build scope.
 
-Next: commit/push these scoped CI repairs with normal hooks, archive the new exact
-source and require fresh protected PR checks/Preview before AUTH-44 merge. Do not
-repeat the old failed jobs after source changes. Existing local review is a draft;
-its source IDs and CI outcome need updating after the commit. No signed rebuild,
-store upload, migrations, flags, real linking or provider spending. D13A.8 stays
-3/6 complete:3 fixed steps and6 other broad milestones remain. Astra / High.
+**2026-10-24 — PR 123 squash merged; Production verified.**
+
+Owner explicitly selected squash and merge. All required checks passed on
+8fdac6e97a6f563fcab3bbda3415fc19723d2e78; quality run40037599366 succeeded,
+including mutation96.13% against90%,351 Edge tests and Doctor21/21. Database659
+and schema contract, browser3+7, lightweight checks and exact Preview passed.
+Protected squash merge completed at2026-10-23T23:41:24Z without bypass:
+main165501a0f547765011630fdab04ba0654ac75626, parent44141e0,
+treec243f88e90b6b0c7f5e36883b196094eeb5142d7 identical to reviewed PR source.
+
+Production dpl_FRfe4t8nwMVw1qBNZ36zWwZLEvqj is READY on that exact main commit;
+woordenaar.app is assigned. Unauthenticated GET checks for /, /login, /app and
+/robots.txt match the saved premerge statuses, redirects and security headers.
+Previous READY rollback target dpl_74ZRdMpdPQpbjQADbdRpFxniUKdr is recorded;
+no rollback was needed. Evidence: D13A.8.4-integration-review-20261024.md and
+private reports/shared-dictionary-cefr/d13a84-pr-20261023/integration-outcome.json.
+
+AUTH-44 source integration and web publication are fulfilled. Native files remain
+historical df08a60 artifacts; AUTH-43 build slots are consumed. Next D13A.8.4 gates
+are new exact merged-source native artifacts/qualification under fresh authority,
+coordinated function/release artifacts, fresh protected backup/delta/queue receipts,
+exact-set rehearsal and scoped execution approval. No native store submission,
+migration, runtime flag change, provider spending or real-card linking occurred.
+Personal application account and device data were untouched.
+
+D13A.8 remains3/6 complete:3 fixed steps remain, plus6 other broad milestones.
+Current branch remains feature/shared-dictionary-schema at8fdac6e; origin/main is
+165501a. Five checkpoint documents are local uncommitted changes (handoff,
+stage card, integration review, sessions and decisions); source changes are merged.
+Preserve these edits when basing future work on the new main; do not remerge the
+old feature history after squash. This checkpoint supersedes the historical
+pending-merge entries below. Astra / High.
+
+**2026-10-24 — Protected squash merge authorized; exact-head checks green.**
+
+Owner explicitly requests squash and merge for PR123. All required checks on
+8fdac6e97a6f563fcab3bbda3415fc19723d2e78 passed; GitHub reports CLEAN/MERGEABLE.
+Proceed once with a matching-head guard, then verify the resulting main tree
+and actual Vercel Production deployment. Preserve local checkpoint edits.
+
+**2026-10-24 — Final clean-checkout CI repairs pushed as8fdac6e.**
+
+Current pushed HEAD8fdac6e97a6f563fcab3bbda3415fc19723d2e78, tree
+c243f88e90b6b0c7f5e36883b196094eeb5142d7. Normal hooks pass2732 mobile tests,
+1252 web tests and22 snapshots, one existing web skip. Scoped Deno lint passes;
+all351 Edge tests pass with reports/ excluded from read permissions. The legacy
+fixture contains only schema, non-secret policy hashes and dimension sequences;
+current synthetic verdicts prove duplicate rejection and repaired acceptance.
+Schema generator selects official GHCR at the exact prior sha256 digest; public
+GHCR/Docker Hub manifests were independently verified. No runtime source changed.
+
+Exact8fdac6e database passed659 tests and target-schema generation through GHCR.
+Web fixtures, lightweight run40037599413 and exact Vercel Preview passed.
+Quality run40037599366 passed mobile/web tests and all351 Edge tests; web build
+is in progress with Doctor/mutation pending. Require final quality success.
+Do not rerun the historical b977971 jobs: their96.13% mutation result is preserved,
+but Edge permission/fixture and ECR failures made that run unsuccessful. New
+workflow puts Edge tests, web build and Doctor before unchanged mutation tests.
+When all gates pass, merge through protected PR under AUTH-44 and verify actual
+Vercel Production commit/tree/aliases and unauthenticated baseline smoke.
+
+Private archive source-8fdac6e.tar SHA256
+c50288d645ede64f1401466baf413c3d8f712e555a72606a29d36099405efec2,
+2150 tracked files,1514 non-document pins, retained under
+reports/shared-dictionary-cefr/d13a84-pr-20261023. The integration review is draft
+until exact-head CI/merge/deployment receipts are filled. Source pushed; this
+checkpoint local. No merge, additional signed build, store, migration, flag,
+provider spending or real linking. D13A.8 remains3/6:3 fixed steps and6 other
+broad milestones remain. Astra / High. Personal account/device data untouched.
 
 **2026-10-24 — PR 123 fixes pushed; waiting for exact-head CI.**
 

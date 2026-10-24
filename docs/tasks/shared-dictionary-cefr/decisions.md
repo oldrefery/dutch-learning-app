@@ -2164,3 +2164,25 @@ to that revision; dependency changes require new artifact qualification.
 Current checkpoint: no open PR; origin feature 0e706ee, main 44141e0. Resolve the
 Expo Doctor patch-version finding before merge and preserve exact CI/deployment
 receipts. D13A.8.4 remains in progress; this scope does not close its other gates.
+
+**AUTH-44 outcome — October24, 2026:** owner explicitly requested squash and merge.
+PR123 merged through protection after all exact-head checks passed, producing
+main165501a0f547765011630fdab04ba0654ac75626 with the reviewed tree unchanged.
+Vercel Production dpl_FRfe4t8nwMVw1qBNZ36zWwZLEvqj is READY on this commit and
+assigned to woordenaar.app. Four unauthenticated baseline smoke checks passed.
+No additional native build, store upload, migration, certificate change, runtime
+activation, provider call or real-card linking occurred. The Git/web scope is
+fulfilled; other D13A.8.4 gates remain open. Final receipts are local checkpoints.
+
+## AUTH-45 — Two local signed artifacts from merged main
+
+Owner authorizes branch-only checkpoint commits and two new local signed builds,
+one iOS IPA and one Android AAB, from main165501a. No store submission or changes
+to certificates. Branch feature/d13a84-main-native-builds starts at this main;
+checkpoint documentation may be committed without changing application sources.
+Use dictionary-release 2.5.0(86), existing credentials, frozen credential handling
+and disabled capability/debug upload. Keep original df08a60 binaries unchanged.
+No push, remote builds, migrations, activation, paid provider calls or device
+installation is included. Inspect durable per-platform slots before any retry.
+Both build slots are unstarted at authorization recording. Final evidence and
+checkpoint commits on this branch are included in the requested preparation.
