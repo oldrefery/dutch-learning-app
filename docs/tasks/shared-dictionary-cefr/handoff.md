@@ -1,25 +1,46 @@
-**2026-10-24 — AUTH-51 source committed; documentation checkpoint and PR preparation.**
+**2026-10-24 — AUTH-51: draft PR 124 open; remaining release checks in progress.**
 
-Sourcefix commitc3a1f2d900e119245f528b6c63a4e1a07682caa2 onexistingfeaturebranch.
-Normalhooks pass:mobile200suites/2737tests/22snapshots;web118suites/1252tests,
-onepreexistingskippedtest. All1514committed non-document source files byte-match
-replacementnative buildfreeze;no rebuild needed. SameIPA a44f6162.../AAB34a7759b....
-Private root:reports/shared-dictionary-cefr/d13a84-pr-20261024/.
+Current branch: `feature/d13a84-main-native-builds`, pushed HEAD `f201b4276106825c4695604a0bd89d95e4005e1c`.
+Source fix commit `c3a1f2d` and documentation commit `f201b42` are pushed.
+Draft PR: https://github.com/oldrefery/dutch-learning-app/pull/124 (attached to chat).
+No merge. Normal hooks passed: mobile 200 suites / 2737 tests / 22 snapshots;
+web 118 suites / 1252 tests, one pre-existing skipped test. All 1514 committed
+non-document source files match the replacement native build freeze exactly.
 
-Canonical session/replacement packets preserved as adjacent.raw files withoriginal
-SHA739df652.../0b2aaa53.... FormattedsessionJSON parsedcontentidentical;published
-replacementJSON relocates sessioninputpin tocanonical.raw andpinsitsowncanonical
-predecessor(83currentpins vs82historical). Frozen70membersupplementunchanged. New
-verify-publication script validates publicequivalence plusoriginalcanonical/current
-privatepacketproofs. Read evidence/D13A.8.4-pr-readiness-20261024.md. Do not describe
-format-normalized JSONsha asoriginalcanonicalhash. Allrawsandprivateevidence preserved.
+Hosted CI is separate from local qualification. Read final results for the exact
+PR head from `reports/shared-dictionary-cefr/d13a84-pr-20261024/operation.json` and
+GitHub before merge. At the pre-follow-up checkpoint on f201b42, database,
+web-fixtures, Lightweight E2E and Vercel preview passed; Quality was still running.
+A documentation-only follow-up is prepared; resolve its final SHA from the branch
+and operation record rather than treating this preceding head as the latest one.
+Normal hooks are mandatory for the follow-up; their exact result is in the same
+private operation record. This record is local evidence, not committed CI authority.
 
-Next:commit sanitizedtask/evidence checkpoint withnormalhooks,pushcurrentbranch,
-openPRinto main(noexistingPRfound),attachit,continueCI/read-onlybackend/store and
-localsource-map/dependencyqualification. No merge,applicationpublication,activation,
-newpaid/provider requests/certificates/deviceaccountactions. Mainremote165501a,
-workingbranchremoteabsentbeforepush. SourcefixcommitandlocalQAcomplete;broader8.4
-holdsremain. Threefixedsteps andsixlaterbroadmilestones. ContinueAstra/High.
+New review: evidence/D13A.8.4-pr-release-checks-20261024.md and its JSON/verifier.
+The 24-input offline check passes: both replacement maps reproduce embedded Hermes
+bytes, 5025 iOS / 5026 Android mapping addresses and 323 app sources per platform;
+eight map mutations rejected. Maps remain private/local; no Sentry upload.
+Read-only production observation at 17:05:30 UTC: ledger 66, all 14 migration
+body hashes match, new 14 DB flags FALSE, legacy three TRUE, both endpoint secrets
+match SHA256(false), functions ACTIVE/version 1/JWT enabled. No production writes,
+account-row reads or provider invocation. Managed backup listing: WAL-G enabled,
+PITR disabled, no listed backups; scoped B01 exclusions still apply.
+Fresh Android store inventory: 38 versions, latest 2.4.0(85), search 86 empty;
+no reservation. App Store Connect redirects to login; fresh iOS inventory blocked.
+All devices, QA relays and QA containers remain stopped; main apps/accounts untouched.
+
+Canonical session/replacement manifests remain adjacent .raw files with original
+SHA739df652... / 0b2aaa53.... Published JSON formatting/input relocation is explicitly
+verified; current replacement has 83 pins vs historical 82. Frozen supplement is
+unchanged. See evidence/D13A.8.4-pr-readiness-20261024.md.
+
+Next: review exact-head CI from the operation record and PR, then resolve the
+remaining release gates within separately authorized scopes. Broader 8.4 holds remain:
+review/merge authority, store availability/delivery, compatible old-build repair/
+rollback, paired performance, complete enabled backend/provider/dependency and
+operator/policy/fresh boundary checks. No merge/publication/activation/new paid calls,
+certificates, account changes or 8.5. D13A.8 stays 3/6 complete: three fixed steps
+(8.4–8.6) and six later broad milestones remain. Continue Astra / High.
 
 **2026-10-24 — AUTH-50 completed: reviewed recovery, signed replacements and repeat QA.**
 
