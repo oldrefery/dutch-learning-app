@@ -2186,3 +2186,11 @@ No push, remote builds, migrations, activation, paid provider calls or device
 installation is included. Inspect durable per-platform slots before any retry.
 Both build slots are unstarted at authorization recording. Final evidence and
 checkpoint commits on this branch are included in the requested preparation.
+
+**AUTH-45 outcome:** both local signed builds succeeded from caf17415a70efbf3ca99d866c1cfca10fc753d9b
+(non-document source identical to merged main165501a). iOS was built once; Android succeeded on its second attempt after local JVM
+Metaspace tuning. The failed attempt produced no AAB and its receipts are retained. IPA and AAB signatures/configuration/hashes passed; existing iOS signer and
+profile and Android upload signer were preserved. No stores, certificate changes,
+push, new deployment, migration, activation, paid providers or device installation.
+Two build slots are fulfilled. Final branch-only evidence commit is within scope.
+See evidence/D13A.8.4-main-build-review-20261024.md and JSON receipt.

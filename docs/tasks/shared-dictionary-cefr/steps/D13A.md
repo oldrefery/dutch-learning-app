@@ -1,3 +1,31 @@
+**2026-10-24 — AUTH-45 local signed artifacts complete from merged main.**
+
+On feature/d13a84-main-native-builds, checkpoint commit caf17415a70efbf3ca99d866c1cfca10fc753d9b
+contains documentation only; all 1514 source/configuration files match main
+165501a0f547765011630fdab04ba0654ac75626. Normal hooks passed 2732 mobile tests, 1252 web tests and
+22 snapshots (one existing web skip). Both local builds succeeded with existing
+frozen credentials; both isolated environments passed Expo Doctor 21/21.
+
+Outputs: builds/app-2.5.0-86-main-165501a.ipa and
+builds/app-2.5.0-86-main-165501a.aab. Signature, version, identifiers, production
+channel, runtime fingerprints and SHA256 checks pass. iOS certificate/profile
+match the retained prior IPA; Android signer matches retained build80. Historical
+IPA/AAB hashes remain unchanged. No store submission, certificate change, push,
+migration, activation, provider call, device install or personal account change.
+Both AUTH-45 build slots are fulfilled. Inspect receipts before considering retries.
+
+See evidence/D13A.8.4-main-build-review-20261024.md and its JSON. Full private
+logs/source freeze/slots are under reports/shared-dictionary-cefr/d13a84-main-builds-20261024/.
+Final evidence is committed on this feature branch; use git log to identify the
+receipt commit. Binaries and private evidence remain ignored local files.
+
+Next D13A.8.4: qualify these exact artifacts, complete the coordinated function
+artifact set and fresh protected backup/delta/queue receipts, rehearse the exact
+set and obtain scoped execution authority. These release gates remain open;
+local build preparation alone does not authorize publication or device use.
+D13A.8 stays 3/6 complete: 3 fixed steps and 6 other broad milestones remain.
+Recommended model/effort: Astra / High. Stop at the requested preparation scope.
+
 **2026-10-24 — AUTH-45 merged-source local signed builds authorized.**
 
 Owner requests checkpoint commits only on branches and two new local signed

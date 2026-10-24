@@ -1,0 +1,116 @@
+{
+  "status": "local_signed_artifacts_verified",
+  "authority": "AUTH-45",
+  "recorded_at": "2026-10-24T08:09:13.204782+00:00",
+  "branch": "feature/d13a84-main-native-builds",
+  "source_commit": "caf17415a70efbf3ca99d866c1cfca10fc753d9b",
+  "main_commit": "165501a0f547765011630fdab04ba0654ac75626",
+  "non_document_files_match_main": true,
+  "source_file_count": 1514,
+  "profile": "dictionary-release",
+  "version": "2.5.0",
+  "build": 86,
+  "resolved_config": {
+    "ios": {
+      "owner": "oldrefery",
+      "project_id": "d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
+      "version": "2.5.0",
+      "qa_build": false,
+      "doctor": "21/21",
+      "ios_build": "86",
+      "android_version_code": 86
+    },
+    "android": {
+      "owner": "oldrefery",
+      "project_id": "d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
+      "version": "2.5.0",
+      "qa_build": false,
+      "doctor": "21/21",
+      "ios_build": "86",
+      "android_version_code": 86
+    }
+  },
+  "artifacts": {
+    "ios": {
+      "status": "passed",
+      "artifact": "builds/app-2.5.0-86-main-165501a.ipa",
+      "artifact_sha256": "0b38868515c1cc9124e8609573e4de4e71f48316cfb495fcb9926a9ad2411bb6",
+      "bytes": 24129827,
+      "bundle": "com.oldrefery.dutch-learning-app",
+      "version": "2.5.0",
+      "build": "86",
+      "team": "7FQ395U52U",
+      "codesign_deep_strict": true,
+      "distribution": "App Store",
+      "get_task_allow": false,
+      "profile_expiration": "2027-07-24T11:47:54",
+      "runtime_version": "31652155a10a781f3654b3a6ff56eb406db2e6b6",
+      "fingerprint_files": [
+        {
+          "path": "EXUpdates.bundle/fingerprint",
+          "sha256": "9aa289bf05d72a29ea2ff138a10a9fea2e9b0a18d7f4da2e4445722df21cc1a2"
+        }
+      ],
+      "updates_enabled": true,
+      "channel": "production",
+      "javascript_sha256": "7d7b496d7ae12d31012d6c9625f1021cb9cdf3c47a3dec1511b560d8344218c4",
+      "installed_or_launched": false,
+      "signer_certificate_sha256": "9bd403c3e6d3d86316beb1263ddad68ca5c83362360ee2545f2e95c7c49c155c",
+      "signer_matches_historical_ipa": true,
+      "profile_matches_historical_ipa": true
+    },
+    "android": {
+      "status": "passed",
+      "artifact": "builds/app-2.5.0-86-main-165501a.aab",
+      "bytes": 86448743,
+      "artifact_sha256": "d3567c02c740a2db4992978ee7abbf9c30a9979ad734ea94bb24810ea44e465f",
+      "package": "com.oldrefery.dutchlearningapp",
+      "version": "2.5.0",
+      "build": 86,
+      "debuggable": false,
+      "bundletool_version": "1.18.1",
+      "bundletool_sha256": "675786493983787ffa11550bdb7c0715679a44e1643f3ff980a529e9c822595c",
+      "bundle_validation": true,
+      "jar_signature_verified": true,
+      "signer_certificate_sha256": "764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc",
+      "signer_matches_retained_build80": true,
+      "runtime_version": "82a893fa72d70cd47dbf85272bf3028463e9f58d",
+      "updates_enabled": true,
+      "channel": "production",
+      "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+      "javascript_sha256": "787063e2eec684b16246ad35acdefb39be34ad849f9e6086054a7669d1041abf",
+      "installed_or_launched": false
+    }
+  },
+  "historical_artifact_hashes_preserved": {
+    "builds/app-2.5.0-86.ipa": "339d1e232408f2096da41adecb88ca25706df915956ffc014599a5c067ae9655",
+    "builds/app-2.5.0-86.aab": "915dc0f7209e2b0f677f2ad5c45b4bbf577ed6113284af8659b5ce0cc90d17a1"
+  },
+  "stores_submitted": false,
+  "certificates_changed": false,
+  "installed_on_devices": false,
+  "push_performed": false,
+  "remaining_fixed_steps": 3,
+  "remaining_other_major_milestones": 6,
+  "evidence_directory": "reports/shared-dictionary-cefr/d13a84-main-builds-20261024",
+  "limitations": [
+    "New binaries have not been installed or device-qualified.",
+    "Runtime fingerprints differ from historical binaries; old OTA compatibility is not assumed.",
+    "Store version availability must be refreshed before submission.",
+    "Fresh protected backup/delta/queue receipts, exact-set rehearsal and scoped execution authority remain open."
+  ],
+  "android_attempts": 2,
+  "android_retry": {
+    "recorded_at": "2026-10-24T08:00:24.709983+00:00",
+    "platform": "android",
+    "first_attempt": "failed with JVM Metaspace exhaustion",
+    "artifact_created": false,
+    "first_attempt_receipts_preserved": true,
+    "retry_scope": "same requested AAB, unchanged frozen source, existing signing credentials",
+    "memory_override": "-Xmx4096m -XX:MaxMetaspaceSize=1024m",
+    "workers_max": 4,
+    "authority": "AUTH-45 requested artifact remains incomplete",
+    "ios_repeated": false
+  },
+  "validation_note": "The initial additional iOS certificate extraction check used an incorrect optional-argument syntax; corrected verifier passed on the same IPA without rebuilding. The initial app-config log parser was corrected for multiline logging; both resolved configurations passed."
+}
