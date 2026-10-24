@@ -28,7 +28,7 @@ import {
   setSyncCursor,
 } from '@/utils/network'
 import type { SyncCursor } from '@/utils/network'
-import type { Word } from '@/types/database'
+import type { Collection, Word } from '@/types/database'
 import type { ReviewEvent } from '@/types/ReviewTypes'
 import { Sentry } from '@/lib/sentry'
 import { SyncHealthReporter, type SyncOutcome } from './syncHealth'
@@ -50,6 +50,7 @@ import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import { dictionaryImportRecoveryRepository } from '@/db/dictionaryImportRecoveryRepository'
 import {
   withDictionaryImportOwner,
+  withDictionaryOwner,
   type DictionaryOwnerGuard,
 } from './dictionaryImportOwner'
 import { prepareImportMetadata } from './dictionaryImportMetadata'
@@ -491,7 +492,9 @@ export class SyncManager {
             () =>
               dictionaryContentSync.pullRequired(
                 userId,
-                pulledWords.map(word => word.word_id)
+                pulledWords
+                  .filter(word => !word.deleted_at)
+                  .map(word => word.word_id)
               )
           )
           await this.runSyncStageWithSessionRetry(
@@ -2681,75 +2684,89 @@ export class SyncManager {
     )
   }
 
-  private async pullCollectionsFromSupabase(userId: string): Promise<any[]> {
-    const deletedCollections =
-      await collectionRepository.getDeletedCollections(userId)
-    const deletedIds = new Set(
-      deletedCollections.map(collection => collection.collection_id)
+  private async pullCollectionsFromSupabase(
+    userId: string
+  ): Promise<Collection[]> {
+    return withDictionaryOwner(
+      userId,
+      async owner => {
+        const deletedCollections =
+          await collectionRepository.getDeletedCollections(userId)
+        const deletedIds = new Set(
+          deletedCollections.map(collection => collection.collection_id)
+        )
+        const pendingCollections =
+          await collectionRepository.getPendingSyncCollections(userId)
+        const pendingIds = new Set(
+          pendingCollections.map(collection => collection.collection_id)
+        )
+
+        const { data, error, count } = await supabase
+          .from('collections')
+          .select('*', { count: 'exact' })
+          .eq('user_id', userId)
+
+        if (error) {
+          throw new Error(`Failed to pull collections: ${error.message}`)
+        }
+
+        // A successful anonymous RLS response is not an authoritative empty snapshot.
+        // Verify the captured owner after the read and fence sign-out / A-B-A changes.
+        await owner.check()
+        if (typeof count === 'number' && count === (data?.length ?? 0)) {
+          await this.reconcileRemoteCollectionDeletes(userId, data ?? [], owner)
+        }
+
+        if (!data || data.length === 0) {
+          console.log('[Sync] No collections to pull from Supabase')
+          return []
+        }
+
+        // Ensure all collections have required fields and filter out invalid ones
+        const parsedCollections = data
+          .filter(
+            collection =>
+              collection && collection.collection_id && collection.user_id
+          )
+          .filter(collection => !deletedIds.has(collection.collection_id))
+          .filter(collection => !pendingIds.has(collection.collection_id))
+          .map(collection => ({
+            ...collection,
+            updated_at:
+              collection.updated_at ||
+              collection.created_at ||
+              new Date().toISOString(),
+          }))
+
+        if (deletedIds.size > 0) {
+          console.log(
+            `[Sync] Skipped ${deletedIds.size} deleted collections during pull`
+          )
+        }
+        if (pendingIds.size > 0) {
+          console.log(
+            `[Sync] Skipped ${pendingIds.size} pending collections during pull`
+          )
+        }
+
+        if (parsedCollections.length > 0) {
+          owner.assert()
+          await collectionRepository.saveCollections(parsedCollections)
+          owner.assert()
+        } else {
+          console.log('[Sync] No valid collections to save')
+        }
+
+        return parsedCollections
+      },
+      'collection synchronization'
     )
-    const pendingCollections =
-      await collectionRepository.getPendingSyncCollections(userId)
-    const pendingIds = new Set(
-      pendingCollections.map(collection => collection.collection_id)
-    )
-
-    const { data, error, count } = await supabase
-      .from('collections')
-      .select('*', { count: 'exact' })
-      .eq('user_id', userId)
-
-    if (error) {
-      throw new Error(`Failed to pull collections: ${error.message}`)
-    }
-
-    if (typeof count === 'number' && count === (data?.length ?? 0)) {
-      await this.reconcileRemoteCollectionDeletes(userId, data ?? [])
-    }
-
-    if (!data || data.length === 0) {
-      console.log('[Sync] No collections to pull from Supabase')
-      return []
-    }
-
-    // Ensure all collections have required fields and filter out invalid ones
-    const parsedCollections = data
-      .filter(
-        collection =>
-          collection && collection.collection_id && collection.user_id
-      )
-      .filter(collection => !deletedIds.has(collection.collection_id))
-      .filter(collection => !pendingIds.has(collection.collection_id))
-      .map(collection => ({
-        ...collection,
-        updated_at:
-          collection.updated_at ||
-          collection.created_at ||
-          new Date().toISOString(),
-      }))
-
-    if (deletedIds.size > 0) {
-      console.log(
-        `[Sync] Skipped ${deletedIds.size} deleted collections during pull`
-      )
-    }
-    if (pendingIds.size > 0) {
-      console.log(
-        `[Sync] Skipped ${pendingIds.size} pending collections during pull`
-      )
-    }
-
-    if (parsedCollections.length > 0) {
-      await collectionRepository.saveCollections(parsedCollections)
-    } else {
-      console.log('[Sync] No valid collections to save')
-    }
-
-    return parsedCollections
   }
 
   private async reconcileRemoteCollectionDeletes(
     userId: string,
-    remoteCollections: { collection_id?: string | null }[]
+    remoteCollections: { collection_id?: string | null }[],
+    owner: DictionaryOwnerGuard
   ): Promise<void> {
     const remoteIds = new Set(
       remoteCollections
@@ -2758,6 +2775,7 @@ export class SyncManager {
     )
     const localCollections =
       await collectionRepository.getCollectionsByUserId(userId)
+    owner.assert()
     const deletedRemotely = localCollections.filter(
       collection =>
         collection.sync_status === 'synced' &&
@@ -2765,12 +2783,15 @@ export class SyncManager {
     )
 
     for (const collection of deletedRemotely) {
+      owner.assert()
       await wordRepository.deleteWordsByCollection(
         collection.collection_id,
         userId,
         { preservePendingImports: true }
       )
+      owner.assert()
       await collectionRepository.deleteCollection(collection.collection_id)
+      owner.assert()
     }
 
     if (deletedRemotely.length > 0) {

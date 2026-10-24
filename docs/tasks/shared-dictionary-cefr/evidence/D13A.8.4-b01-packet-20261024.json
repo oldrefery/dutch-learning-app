@@ -1,0 +1,380 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-24",
+  "authorization": "AUTH-47",
+  "scope": "B01",
+  "project_ref": "josxavjbcjbcjgulwcyy",
+  "status": "scoped_application_restore_verified_recovery_holds_remain",
+  "source_main": "165501a0f547765011630fdab04ba0654ac75626",
+  "documentation_branch_head": "c626e6c85d9d12f0589d568a3dbd46fda5e587e2",
+  "production_writes": false,
+  "execution_authorized": false,
+  "publication_authorized": false,
+  "paid_calls": 0,
+  "redispatches": 0,
+  "unknown_budget_usd_held": "0.56",
+  "main_application_account_changed": false,
+  "full_managed_disaster_recovery_proven": false,
+  "capture": {
+    "consistency": "Imported exported repeatable-read/read-only snapshots",
+    "client_tls": "verify-full TLS1.3",
+    "accepted_docker_log_driver": "none",
+    "snapshots": [
+      {
+        "label": "s1",
+        "boundary": "2026-10-24T12:53:09.520137+00:00",
+        "completed_at": "2026-10-24T12:53:57.644691+00:00",
+        "encrypted_archives": 5
+      },
+      {
+        "label": "s2",
+        "boundary": "2026-10-24T13:00:20.625162+00:00",
+        "completed_at": "2026-10-24T13:00:38.677111+00:00",
+        "encrypted_archives": 6
+      }
+    ]
+  },
+  "key_custody": {
+    "system": "local macOS Keychain",
+    "service": "com.oldrefery.woordenaar.b01.backup",
+    "account": "5d4c07ed-4d73-48f8-95f9-d36d1666ad0b",
+    "accessibility": "WhenUnlockedThisDeviceOnly",
+    "sync": false,
+    "exported": false,
+    "off_machine_recovery_proven": false
+  },
+  "encryption": "AES256GCM authenticated complete input before restore plaintext; bounded memory256MiB",
+  "crypto_checks_passed": 14,
+  "catalog_tamper_checks_passed": 19,
+  "ciphertexts_authenticated": 21,
+  "restore": {
+    "tables_verified": 50,
+    "rows_verified": 32636,
+    "full_sorted_sha256_match": true,
+    "timestamp_columns_included": true,
+    "catalog_logical_match": true,
+    "database_owner_encoding_locale_provider_version_acl_match": true,
+    "role_attributes_match": true,
+    "effective_membership_options_match": true,
+    "foreign_private_words_visible": 0,
+    "intentional_shared_collection_reads_preserved": true,
+    "icu_collation_version": "153.120",
+    "image": "sha256:178f0976b54a39237096bfa310c1a352dbc82fb1b08dda45cdb8acb5d40c1426",
+    "network": "none",
+    "log_driver": "none",
+    "managed_membership_grantor_adaptations": 19,
+    "managed_object_acl_adaptations": 53,
+    "logical_equivalences": [
+      "physical attnum compaction",
+      "null/default-owner ACL representation"
+    ],
+    "managed_grantor_identity_exactly_reproduced": false
+  },
+  "delta": {
+    "compared_tables": 50,
+    "changed_tables_between_boundaries": 0,
+    "timestamps_included": true,
+    "after_images_retained": true,
+    "future_changes_covered": false,
+    "device_local_queues_verified": false,
+    "must_reconcile_before_later_write": true
+  },
+  "coverage_exclusions": [
+    "full_auth_rows_and_sessions",
+    "storage_object_bytes",
+    "vault_and_managed_services",
+    "device_local_queues",
+    "non_allowlisted_database_settings",
+    "off_machine_key_recovery"
+  ],
+  "cleanup": {
+    "remaining_owned_containers": 0,
+    "dedicated_credential_files_removed": 2,
+    "other_project_changes": false
+  },
+  "incident": {
+    "initial_capture_accepted": false,
+    "initial_issue": "Docker logging override not explicit; temporary plaintext runtime logs cannot be ruled out",
+    "initial_encrypted_outputs_retained_separately": true,
+    "initial_runtime_log_secure_erasure_proven": false,
+    "accepted_repeat_capture_log_driver": "none"
+  },
+  "remaining_fixed_stage_steps": 3,
+  "other_broad_milestones": 6,
+  "unchanged_packets": [
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-review-packet-20261024.json",
+      "sha256": "665722a50bd0d1be91db1c9d3e7131653cf097042762cee997450530dcf73c6e"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-diagnostics-packet-20261024.json",
+      "sha256": "ef3c187d3ed1d0ed00cab8120c6dfce58dea8110e83b83c37eef91650c6ccc6d"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-readiness-packet-20261024.json",
+      "sha256": "1023345bbf8e2e53bb3c7111c2656ac68de1c13e00187ea3d3d1cfa0e00d9a7e"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "BackupCrypto.swift",
+      "bytes": 4411,
+      "sha256": "78519158761713b280a0f2d79bd619edab16f88f84ac44de2612ea6a7000455e"
+    },
+    {
+      "path": "b01-crypt",
+      "bytes": 90936,
+      "sha256": "74d0b62c5bd4109493e8accb628eb9368803020e321bb448c82cad6bee8cab3c"
+    },
+    {
+      "path": "b01lib.py",
+      "bytes": 10307,
+      "sha256": "8d152d8884c5d4622f374c39e3305b1687a8128aaa152cbebbb2afc8358dbd28"
+    },
+    {
+      "path": "capture.py",
+      "bytes": 4039,
+      "sha256": "73babea32e7b4bb7e6465b3fe852a7980aef08736f72603668d8ef38e1b76d53"
+    },
+    {
+      "path": "catalog-test-results.json",
+      "bytes": 1486,
+      "sha256": "9ce5f570432d6a0f451dec17083b6ca7a00af36cd0643481ad0eb0ad4f9e2a47"
+    },
+    {
+      "path": "catalog.py",
+      "bytes": 3129,
+      "sha256": "9e5d15f45ba795078c8564ee40dbaf4368d62c5e52c655590e4339f9e1d4fdba"
+    },
+    {
+      "path": "cleanup-result.json",
+      "bytes": 355,
+      "sha256": "0df9a774ea8320de6f6e33d07b099c6f4bf9db18631db1cfdb447e50151e6b94"
+    },
+    {
+      "path": "crypto-test-results.json",
+      "bytes": 1396,
+      "sha256": "22a0827986947e579bf2d9b23e0c6f515f4869714ad6f7126bb5ad3479f07d06"
+    },
+    {
+      "path": "database-platform-metadata.json.enc",
+      "bytes": 577,
+      "sha256": "09e155403cd827933d2c68bb1496d85106ad34a435accfc894b73e77949fa20a"
+    },
+    {
+      "path": "delta-result.json",
+      "bytes": 766,
+      "sha256": "5352b466ef99e3a5f5d54df8ee1dcc1f04a20d8dd57a7b2f1bc604c8007e7861"
+    },
+    {
+      "path": "delta-table-comparison.json.enc",
+      "bytes": 14239,
+      "sha256": "ba7b1801ab6714412f10458fccc574e4a4ddbeb6cce603d0c9d7034f35674ce0"
+    },
+    {
+      "path": "extension-owners.json.enc",
+      "bytes": 662,
+      "sha256": "be279c26129cfa6d6f7783dc47a64ca7ea5386b7822f501e1e491c65b258a397"
+    },
+    {
+      "path": "final-authentication-result.json",
+      "bytes": 2504,
+      "sha256": "da907838ffd8d8eaf81f20f18f8b75030044bd333ea20df29e022706eeeb965c"
+    },
+    {
+      "path": "finalize-evidence.py",
+      "bytes": 7126,
+      "sha256": "4526b0d35c6a6db410aa9b81d8b8d67dcac1723b18f6e0ebf9611f3808b708f5"
+    },
+    {
+      "path": "locale-probe-063-intent.json",
+      "bytes": 270,
+      "sha256": "60c165dbdf5826ecd45a15644e3538932d86cf19b85c7480bf7adfa867fdbf53"
+    },
+    {
+      "path": "locale-probe-063-result.json",
+      "bytes": 522,
+      "sha256": "b485814dd4871970d7ef951178dee3dcf84334385d71790030a5a1f53f9c189f"
+    },
+    {
+      "path": "locale-probe-intent.json",
+      "bytes": 270,
+      "sha256": "43ea7fa0441cf97792cfac48600482007a36f75f26aabe3e73e7f90ec33a72d0"
+    },
+    {
+      "path": "locale-probe-result.json",
+      "bytes": 463,
+      "sha256": "83fda0766ecbbfc6d9ae21f24c53e41ec3b0fcddd70279b325055501b225b24b"
+    },
+    {
+      "path": "operation.json",
+      "bytes": 2522,
+      "sha256": "85246b52c3c7e4ca7bfc1f3d0edc4990a4ca80a72d1cfc67088a554c820b96a2"
+    },
+    {
+      "path": "preflight.json",
+      "bytes": 1661,
+      "sha256": "5fd87eafecc1eb3d9f36d2b5aad6c946a03afc744afd534f4717bc80aa631923"
+    },
+    {
+      "path": "preflight.py",
+      "bytes": 5061,
+      "sha256": "5745302d559c1d4082313643a5776fd59fbf2b7c152422381c5e1033d1a7c6f3"
+    },
+    {
+      "path": "probe-locale.py",
+      "bytes": 2959,
+      "sha256": "9ece9fb26dd42e464f6e22ada230146673782158108a895f99af349b5d49495c"
+    },
+    {
+      "path": "queue-evidence.py",
+      "bytes": 2166,
+      "sha256": "00067913228780176940cf2d3786b4dece50cb4f35e7cf15ae8782bfc446123e"
+    },
+    {
+      "path": "queue-result.json",
+      "bytes": 676,
+      "sha256": "ccf51e6f496d2a35d1875213c1c6b5195ba30f671468511dedec54919b44494d"
+    },
+    {
+      "path": "restore.py",
+      "bytes": 15560,
+      "sha256": "0d15e08a8e1f05178c49296e95ad685de8c8c52aba55a9518a790f689a023e92"
+    },
+    {
+      "path": "s1-auth-identities.csv.enc",
+      "bytes": 1660,
+      "sha256": "84dc14a1370f28b2c281c74206b64695146cfe654e7e1ec908597052c716e128"
+    },
+    {
+      "path": "s1-database.dump.enc",
+      "bytes": 11231249,
+      "sha256": "7edae51f8b313c6cf9c914b51c8e866f6b9f18d377d8ef2ec274be06906ad47b"
+    },
+    {
+      "path": "s1-manifest.json.enc",
+      "bytes": 7143,
+      "sha256": "9ef90a8a1d22654050b292ae01b90c51d991af5b867306a618a4cb65cfcd5fb4"
+    },
+    {
+      "path": "s1-metadata.json.enc",
+      "bytes": 13141,
+      "sha256": "39ad5b21a2058a519e34bd36b2d6fae3d1115825a1874e9f3837005e768ab758"
+    },
+    {
+      "path": "s1-receipt.json",
+      "bytes": 1810,
+      "sha256": "3a50ad2ae0dfa523d6f51be359005fccdc0d623d865f122fbd2975c820c7d630"
+    },
+    {
+      "path": "s1-restore-intent.json",
+      "bytes": 437,
+      "sha256": "7a818add8717b2c34c36cf452385b8cb079982e6cef674afc45600bff29c84b3"
+    },
+    {
+      "path": "s1-restore-result.json",
+      "bytes": 899,
+      "sha256": "d7093ffdc067a9a810b0701a4081150e4370d58f692586831879b861bf6ce038"
+    },
+    {
+      "path": "s1-restored-manifest.json.enc",
+      "bytes": 7143,
+      "sha256": "10e711fed7e563488d813de516f5a64c454b2d8632795ffec8e03d9bfd37a00d"
+    },
+    {
+      "path": "s1-roles.sql.enc",
+      "bytes": 5956,
+      "sha256": "11f752122be00988e6db4be043072c09d352cf14268c190e037b875b6c341b54"
+    },
+    {
+      "path": "s2-auth-identities.csv.enc",
+      "bytes": 1660,
+      "sha256": "bb70b2a9bb61a0cac68a37e7959136dbc73b6bed60f11dc7de25f0521ea2a974"
+    },
+    {
+      "path": "s2-catalog-result.json",
+      "bytes": 9163,
+      "sha256": "03c3e6f228e470b4840aedf007bc1b8eb5b8334bbc4c4237eaa0820b7c648fdf"
+    },
+    {
+      "path": "s2-catalog.json.enc",
+      "bytes": 687713,
+      "sha256": "809413046b92083d27855765145c5028a1b869e2f645f813e683fb9c8feac2fe"
+    },
+    {
+      "path": "s2-database.dump.enc",
+      "bytes": 11231249,
+      "sha256": "c5c312c6f2a8fc419d4a4c8cd11805d281fd514b55328f85da4ed7ca207be2d4"
+    },
+    {
+      "path": "s2-local-acl-adapter.sql.enc",
+      "bytes": 61932,
+      "sha256": "b64b0185c02df293672a05fa661acf71233fa791691e93892ae2201121964854"
+    },
+    {
+      "path": "s2-manifest.json.enc",
+      "bytes": 7143,
+      "sha256": "83359361325084677ecc3e681ad3d2bc437713ebdb85b1b6004ae652b108c7da"
+    },
+    {
+      "path": "s2-metadata.json.enc",
+      "bytes": 13291,
+      "sha256": "c3acd2579d7c9396b1b780f148e9102788a805e02e4237c23e501bf9b3a5a2f4"
+    },
+    {
+      "path": "s2-receipt.json",
+      "bytes": 1966,
+      "sha256": "8962c785d04c2bc460ca9f7c84dc4728fbd1a48a352fa9dfdfea15b4ac5315b2"
+    },
+    {
+      "path": "s2-restore-intent.json",
+      "bytes": 437,
+      "sha256": "22799a3396a05f09783e00c9cada7dec581e1483622224c83f666999a48a2c70"
+    },
+    {
+      "path": "s2-restore-result.json",
+      "bytes": 11368,
+      "sha256": "a2918086a2ca4878c3d686dbd8059113e2c80693c2b452db6ccdab4791c16d96"
+    },
+    {
+      "path": "s2-restored-catalog.json.enc",
+      "bytes": 687289,
+      "sha256": "0eca36d679ec3550f1f1cc9bdfe8d78636c899b377a08c7436cc1dcceea2af64"
+    },
+    {
+      "path": "s2-restored-database-properties.json.enc",
+      "bytes": 416,
+      "sha256": "7db9d92f2c20a8d75611fb5f2009ebb86236f064bbc5f3ac8f23763456db3c89"
+    },
+    {
+      "path": "s2-restored-manifest.json.enc",
+      "bytes": 7143,
+      "sha256": "ce8d3fe5cc40a3523d4d025a84d0919887f34dc793d9ff49e4fcd51c9e6e49f5"
+    },
+    {
+      "path": "s2-restored-role-rls.json.enc",
+      "bytes": 12779,
+      "sha256": "bb3db00ae010a67924d4006c7267299a9bea036f2ec5e2e2cf72497561891ce7"
+    },
+    {
+      "path": "s2-roles.sql.enc",
+      "bytes": 5956,
+      "sha256": "9160cc181d4c0f549b8eacccd982edc2726fc5f175de20eb05899b9ebf22c197"
+    },
+    {
+      "path": "s2-server-queue-extraction.sql.enc",
+      "bytes": 2442,
+      "sha256": "8759b88506d67a39a159f19d2515636225d9221cec8c3c06de92347eef60d911"
+    },
+    {
+      "path": "test-catalog.py",
+      "bytes": 2577,
+      "sha256": "4be193051bff16e784a42e08ff4693e998e7952c9c1261eb9c2eabf90b0595c0"
+    },
+    {
+      "path": "test-crypto.py",
+      "bytes": 2701,
+      "sha256": "642798f840e88d9e13f5761c86877ab1f657ffd53440d8b25f8d1f1f1f793e79"
+    }
+  ]
+}

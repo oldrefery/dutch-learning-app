@@ -1,26 +1,890 @@
-**2026-10-24 — Remaining hosted CI prerequisites repaired locally.**
+**2026-10-24 — AUTH-51: draft PR 124 open; remaining release checks in progress.**
 
-PR123 source b977971 completed mutation testing successfully:96.13% against90%,
-1420 mutations, no individual timeouts. Quality then failed on Edge-test read
-permissions and a test depending on ignored historical reports. Database passed
-659 tests but failed downloading postgres-meta from ECR (Data limit exceeded).
-No merge or Production deployment occurred; do not treat b977971 as fully green.
+Current branch: `feature/d13a84-main-native-builds`, pushed HEAD `f201b4276106825c4695604a0bd89d95e4005e1c`.
+Source fix commit `c3a1f2d` and documentation commit `f201b42` are pushed.
+Draft PR: https://github.com/oldrefery/dutch-learning-app/pull/124 (attached to chat).
+No merge. Normal hooks passed: mobile 200 suites / 2737 tests / 22 snapshots;
+web 118 suites / 1252 tests, one pre-existing skipped test. All 1514 committed
+non-document source files match the replacement native build freeze exactly.
 
-The local repair grants Edge tests read access only to dependencies and required
-source directories, removes historical report reads in favor of a portable fixture
-containing schema, non-secret policy hashes and dimension sequences, and uses
-fresh synthetic verdicts. Duplicate rejection and its repaired positive control
-pass. All351 Edge tests pass with reports/ outside the read allowance. Switch
-postgres-meta from ECR to official GHCR with the identical sha256 digest; both
-GHCR and Docker Hub manifests were independently read and matched that digest.
-Fast Edge/build/Doctor checks now precede unchanged mutation testing.
+Hosted CI is separate from local qualification. Read final results for the exact
+PR head from `reports/shared-dictionary-cefr/d13a84-pr-20261024/operation.json` and
+GitHub before merge. At the pre-follow-up checkpoint on f201b42, database,
+web-fixtures, Lightweight E2E and Vercel preview passed; Quality was still running.
+A documentation-only follow-up is prepared; resolve its final SHA from the branch
+and operation record rather than treating this preceding head as the latest one.
+Normal hooks are mandatory for the follow-up; their exact result is in the same
+private operation record. This record is local evidence, not committed CI authority.
 
-Next: commit/push these scoped CI repairs with normal hooks, archive the new exact
-source and require fresh protected PR checks/Preview before AUTH-44 merge. Do not
-repeat the old failed jobs after source changes. Existing local review is a draft;
-its source IDs and CI outcome need updating after the commit. No signed rebuild,
-store upload, migrations, flags, real linking or provider spending. D13A.8 stays
-3/6 complete:3 fixed steps and6 other broad milestones remain. Astra / High.
+New review: evidence/D13A.8.4-pr-release-checks-20261024.md and its JSON/verifier.
+The 24-input offline check passes: both replacement maps reproduce embedded Hermes
+bytes, 5025 iOS / 5026 Android mapping addresses and 323 app sources per platform;
+eight map mutations rejected. Maps remain private/local; no Sentry upload.
+Read-only production observation at 17:05:30 UTC: ledger 66, all 14 migration
+body hashes match, new 14 DB flags FALSE, legacy three TRUE, both endpoint secrets
+match SHA256(false), functions ACTIVE/version 1/JWT enabled. No production writes,
+account-row reads or provider invocation. Managed backup listing: WAL-G enabled,
+PITR disabled, no listed backups; scoped B01 exclusions still apply.
+Fresh Android store inventory: 38 versions, latest 2.4.0(85), search 86 empty;
+no reservation. App Store Connect redirects to login; fresh iOS inventory blocked.
+All devices, QA relays and QA containers remain stopped; main apps/accounts untouched.
+
+Canonical session/replacement manifests remain adjacent .raw files with original
+SHA739df652... / 0b2aaa53.... Published JSON formatting/input relocation is explicitly
+verified; current replacement has 83 pins vs historical 82. Frozen supplement is
+unchanged. See evidence/D13A.8.4-pr-readiness-20261024.md.
+
+Next: review exact-head CI from the operation record and PR, then resolve the
+remaining release gates within separately authorized scopes. Broader 8.4 holds remain:
+review/merge authority, store availability/delivery, compatible old-build repair/
+rollback, paired performance, complete enabled backend/provider/dependency and
+operator/policy/fresh boundary checks. No merge/publication/activation/new paid calls,
+certificates, account changes or 8.5. D13A.8 stays 3/6 complete: three fixed steps
+(8.4–8.6) and six later broad milestones remain. Continue Astra / High.
+
+**2026-10-24 — AUTH-50 completed: reviewed recovery, signed replacements and repeat QA.**
+
+Read evidence/D13A.8.4-replacement-native-review-20261024.md and replacement-native-
+rollback addendum. Packet SHA256:0b2aaa539b213880d26a67423bdbaf2b0db8b919f8f3af4b045d989e8d419787.
+Supplement SHA256:f294e8c8996efa5f1176b61d43a9914716ae46c84c8ba79ed37cd82cea59aee4;
+70members/534741bytes. Offline verifier:82pins,1514sourcefiles,5012recoveryrows,
+14rejectioncases. Prior session-reconciliation packet stillpasses37pins/11cases.
+Private root:reports/shared-dictionary-cefr/d13a84-fixed-native-20261024/.
+
+Reviewed NDS-1/NDS-2: no blocking change-review findings in reported cases;127tests/
+mobile+testtypes/scopedlint0warnings/format refer to exact unchanged pinned source.
+Source remains uncommitted on feature/d13a84-main-native-builds,c626e6c. Both actual
+native build copies contain exact reviewed source; freeze1514files/source tar retained.
+New local2.5.0(86) replacements,original candidates immutable:
+
+- builds/app-2.5.0-86-nds-fixed.ipa SHA256a44f6162c10599f3d63e40d96c46f553fd406be82d8f028aab3d2c99db3b7b5b.
+- builds/app-2.5.0-86-nds-fixed.aab SHA25634a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554.
+  Existing distribution/QA signers and profiles reused;deepIPA/jarAAB/bundletool pass;
+  EASoldrefery/owneroldrefery,EXPO_TOKENabsent,freezecredentials,no sourcemap upload.
+  Native runtimes unchanged;QAderivatives10iOSnative/114AndroidDEXlibraryidentical;
+  onlyURL/footer/identity/QA/OTA/localtransport metadata differ. No store delivery claim.
+
+Android recovery:exact5012accidental deletion intents corrected in3fields only;
+3requiredcollections restored,30other tables/alllearning/auth preserved. Two local
+reviewdates differingfromserver retained. Pre/post/protectedcopies/rowplan/hashes
+kept;no data clearing or queue replay. Candidate transfer timeout before replacement
+reconciled by original hash. Independent copy provespendingdeletions0 before online.
+
+iPhone16Pro/iOS27.0.1:newcandidate8passed cases including sync/following,offline1,
+restartpending1,exactlyone serverdelivery/pending0,repeatsync withoutduplicate,5000
+scroll/search andownerreturn. One driverattempt fromdetail failed;correctedcoldstart
+passes. Earlier backup fixtureindex omitted knownscrollowner,corrected beforeinstall.
+AndroidCLT-L29/API29:fresh2tombstones delta syncs(wordsSynced2,oldmismatchabsent),
+secondsyntheticowner offlineanswer/restartpending1 inUI+SQLite,reconnectpending0,
+repeatno duplicate. Twelve nonblankconsecutive5000scrollwindows(last134–143) and
+lastwordsearchpass. Searchdriver selected field beforeappearance;retainedfailed
+attemptthenexplicitwaitpassed. Derivative helper index/variable failures retained,
+final114filemapping/signaturespass. FinalAndroid5026words/5024active/9collections,
+pendingreviews0/deletions0/contentcommands0;ordinarynondebuggableQArestored andstopped.
+iPhonefinal5026words/9collections/9reviews,pending0/contentcommands0,QA stopped.
+Server8originalevents exact;one iPhone+oneAndroid newevents retained,total10,no
+repeatduplicates.5028active/two tombstones. All5026scopedwordidentities andfour
+excludedrows preserved. Wordchanges exactlytwo controlledtombstonetimestamps plus
+learningprojections ofthetwo assessedwords;contentunchanged. Initial overlystrict
+fullrowassertion/readiness failure reconciledread-only;finalDBread afterallroutes
+closed,thenDBstopped. No unexplainedchanges/activeownedoperation remains.
+
+MainiOSmetadata andAndroidversion/installfields unchanged;mainapps/accountsnever
+operated. Androidreverse55342 removed,relayportsclosed,fourQAcontainersstopped,
+volumes/data retained. No productionaccess/provider/paid/reallinks/newcertificates/
+commit/push/store/OTA/webpublication. HeldUSD0.56 retained. AUTH-50local scope complete;
+no repeatedbuild or release authority follows it. Sixtrackedfiles+29evidencefiles
+remainlocal;private reports/builds ignored. No modelchange;continueAstra/High.
+
+FixedD13A.8.4 remainsopen:reviewedsourceintegration/storeavailability+delivery,
+oldbuild85/repair/rollbackcompatibility,pairedperformance,completeenabledbackend/
+provider/transitivedependency,operator/policy/freshproduction+deviceboundaries and
+nextoperationauthority. B01fullDR/key/Auth/Storage exclusions+B02dormantlimitsremain.
+No8.5execution. D13A.8 stays3/6:threefixedsteps(8.4–8.6),sixlaterbroadmilestones.
+
+**2026-10-24 — AUTH-50 both local native artifacts verified; iPhone QA passed.**
+
+Replacement IPA a44f6162... and AAB34a7759b... exist in builds/app-2.5.0-86-nds-fixed.*.
+Sameversion86 candidates for local review only; exact uncommitted1514file source
+snapshot and actual build-copy hashes retained. Existing production signers/profiles
+reused; no credentials changed. iOS runtime31652155..., Android82a893fa... unchanged.
+Isolated derivatives:10iOS native sections and114AndroidDEX/native files matchnew
+originals; only ID/QA/OTA/transport configuration differs. Mainapps not launched.
+iPhone8passed XCTest cases:sync/following,offlineanswer,pending1 after restart,
+exactlyone new serverevent,pending0,repeatedsync no duplicate,5000scroll/search and
+ownerreturn. One repeat-driver attempt began on detail screen; failed retained,
+cold-launch driver correction passes. Earlier preinstall owner-index check omitted
+knownscroll fixture; corrected before install,all5026syntheticwords preserved.
+Server total9events/old8preserved/5028activewords. iPhoneQA nowstopped; Android fresh
+QA login/functional test running. Recovery5012 accidental deletions and3collections
+verified; all30other tables/auth/learning unchanged. Four localQAcontainers andowned
+relay running; Androidreverse55342 exists. Keep no simultaneous owner transitions.
+Next:Android fresh delta/offline/restart/reconnect/5000 checks,final queue/snapshot,
+immutable replacement review/rollback packet and cleanup. No production/provider/
+publish/certs/commit/push/8.5. Threefixedsteps plus sixlaterbroadmilestones remain.
+
+**2026-10-24 — AUTH-50 synthetic recovery verified; replacement builds running.**
+
+Reviewed local fixes/source freeze1514 files; no blocking change-review findings.
+EAS account exactlyoldrefery,EXPO_TOKEN absent. iOS local dictionary-release build86
+running; slot and log in d13a84-fixed-native-20261024. Actual build copy contains the
+exact two reviewed source hashes. No commit inferred from build; source uncommitted.
+Android recovery complete offline: corrected5012 deletion fields only, restored3
+required collections; all30 other tables and every learning field identical,
+including2 local review dates differing from server. Protected pre/post copies,
+per-row plan and table digests retained. Auth files identical. Fresh post-read:
+5014 words,5012active,5collections,pendingdeletions0,reviewevents0,contentcommands0.
+Initial candidate transfer timeout happened before replacement; original hash was
+reconfirmed before alternate atomic transfer. Current QA remains stopped/no reverse.
+Server scoped5026words/9collections;four other local QA words explicitly excluded.
+Next:finish iOS then Android local signed builds,verify signatures/source/metadata,
+make isolated configuration-only derivatives and serially repeat physical QA.
+Four owned QA containers running; no relay/QA app online. Primary accounts untouched.
+No production/provider/publish/certificate/commit/push/8.5 action. Three fixedsteps
+and six later broadmilestones remain. Continue Astra/High.
+
+**2026-10-24 — AUTH-50 replacement native QA in progress.**
+
+Owner explicitly authorizes local fix review, safe synthetic data recovery, new
+locally signed IPA/AAB and repeat QA. Same featurebranch/HEAD; dirty files preserved,
+no commits/push/publication/certificate/main-account action. New private root:
+reports/shared-dictionary-cefr/d13a84-fixed-native-20261024/. Prior packet verifier
+passes37pins/11rejectioncases. Review found no blocking issue in NDS-1/NDS-2 within
+reported cases; preserve transaction/race limits. Next: freeze exact source, build
+locally with frozen existing credentials, prove/recover exact synthetic tombstones
+offline, then serial physical QA. No online launch of damaged queue before recovery.
+Current D13A.8 remains3/6:three fixedsteps plus six later broad milestones.
+
+**2026-10-24 — ARS-1 reconciled; NDS-2 fix and immutable NO-GO addendum.**
+
+Read evidence/D13A.8.4-session-reconciliation-review-20261024.md first.
+Packet SHA256: 739df652de38b99950197fdac2fb614b608f9456592b1e54437c76e3b135ba00.
+Supplement SHA256: f05dc2fccc221972b26cc36fd08e2207f3b230ddc302b7ab2a71d8b5a26139e3;
+32 members / 71,369 bytes. Offline verifier checks 37 input pins, the retained QA
+SQLite queue, 32 new and 33 prior archive members, and 11 rejection cases.
+
+ARS-1: encrypted MMKV/SecureStore fingerprints are unchanged; the stored session
+restores offline. Concurrent iPhone tests globally signed out the same synthetic
+owners, revoking Android sessions. Preserve global logout semantics; serialize
+owner transitions or use distinct platform fixture owners. No storage/key reset.
+NDS-2: an anonymous empty RLS collection read was accepted as remote deletion.
+Final protected Android QA SQLite: 5,014 words; 5,012 pending deletions (5,000 scroll,
+12 other synthetic owner), plus two synchronized tombstones; zero review events,
+zero pending reviews/content commands. Local server: 5,030 words / 5,028 active /
+two tombstones, all 5,000 scroll words active, eight review events. No Android
+answer dispatched. Do not launch this retained QA state online or replay/clear its
+queue. Copies exclude Android Keystore keys; no complete portable restore claim.
+
+Local NDS-2 fix captures collection snapshot owner, revalidates server auth after
+read, and latches sign-out/A-B-A before reconciliation. NDS-1 hydration fix retained.
+Three NDS-2 cases fail before fix; stable authenticated deletion remains supported.
+127/127 tests, mobile/test TypeScript, scoped lint zero warnings and format pass.
+Initial fixture/type/diagnostic failures retained. Both fixes are uncommitted and
+absent from original signed build86; no physical fixed-build acceptance claimed.
+Old device-final packet unchanged; its workspace verification has expected source
+drift in exactly two files. All other old pins and frozen archive still verify.
+
+Temporary debuggable/metadata-instrumented Android QA replaced in place by the
+original plain QA APK; installed SHA256 98c76f688fcdefef5dac7f7484b6b709125f80e8821f913cc78c34a27513705a.
+No uninstall/data clearing; protected final copy taken immediately before replacement.
+QA stopped; reverse55342 absent; owned relay ports closed; four confirmed local QA
+containers stopped with volumes/data intact. No active owned operation remains.
+Late iPhone unlock did not repeat its already passing return test. Main apps/accounts
+not operated. No production access, paid calls, real links, new native compilation,
+certificate changes, commits, pushes, publication or next-stage action.
+
+Next: review both fixes and exact synthetic queue recovery; obtain scoped authority
+for new native artifacts/commits as needed; repeat Android offline/reconnect and
+remaining device/performance/delivery/repair/rollback/operator/policy/enabled-path/
+dependency/fresh delta gates. Keep B01/B02 exclusions and USD0.56 reserve. Branch
+feature/d13a84-main-native-builds at c626e6c. Six tracked files and 25 evidence files
+local; reports/builds remain ignored. D13A.8 remains 3/6 complete: three fixed steps
+(8.4–8.6), six later broad milestones. Continue Astra/High; do not execute 8.5.
+
+**2026-10-24 — ARS-1 root cause and NDS-2 local deletion safeguard.**
+
+Protected QA-only backups show MMKV/SecureStore fingerprints unchanged and the
+stored session restores offline. Concurrent iPhone synthetic logout used default
+global scope and revoked Android sessions; no encrypted-storage reset is justified.
+A subsequent anonymous RLS collection response (empty, count0, no error) was treated
+as remote deletion: 5000 local word tombstones now pending, while local QA server
+retains all5000 active rows. Android QA force-stopped,reverse55342 removed; do not
+replay/clear/restore this queue. Main apps/accounts untouched. No Android answer sent.
+NDS-2 local source fix wraps collection snapshots in captured-owner guard, rechecks
+server auth after response and fences SIGNED_OUT/A-B-A before destructive work.
+Three regression cases failed before fix; post-fix verification in progress.
+Previous frozen final packet remains immutable; its workspace source pins now have
+expected drift due to this additional uncommitted fix. Prepare a new addendum.
+Owned relay and four preserved QA containers currently running; stop before end.
+No new native application compilation,certificate,production/provider/commit/push.
+D13A.8 remains3/6 complete:3 fixedsteps and6 later broad milestones remain.
+
+**2026-10-24 — ARS-1 continuation: encrypted QA storage diagnosis.**
+
+Late iPhone unlock reply does not repeat the completed iPhone return test. Continue
+local Android diagnostic ARS-1 only under existing QA scope. Prior final NO-GO packet
+and all65 input pins remain immutable; new root:reports/shared-dictionary-cefr/
+d13a84-ars1-20261024. Intent:temporarily enable debuggable manifest only for the
+existing isolated Android QA ID,existing signer/native/JS inputs; back up its data
+and compare encrypted MMKV/SecureStore file fingerprints and SQLite state across
+restart. Never expose keys/tokens or inspect main app data. No production/provider/
+publication/new native compilation/commit/push. Source NDS-1 fix already local;
+current fixed stage remains3/6,3 fixedsteps and6 laterbroadmilestones.
+
+**2026-10-24 — AUTH-49 device review complete; native release NO-GO.**
+
+Same feature/d13a84-main-native-builds atc626e6c. Original165501a signedIPA/AAB
+unchanged. Read evidence/D13A.8.4-device-final-review-20261024.md and device-rollback
+addendum; packet SHA256 a8ed02298d89a7a790886772b123983d02891d2082ba6a596b2ecfb7c7c15bcf.
+Private root:reports/shared-dictionary-cefr/d13a84-device-functional-20261024/.
+Supplement33members/161221bytes SHA256 c9e90eff01e4cd46145287c5d239b98aded3b304f03d0893d903de364db1aa44.
+Offline verifier checks65files/33members and10tamper cases. B01/B02 original
+verifiers still pass52/576 private pins. Keep all finalized bundles immutable.
+
+Physical iPhone16Pro nowiOS27.0.1:8 passed XCTest cases,3 retained failed driver/
+precondition attempts. Auth/following,offline answer,pending1 after restart,exactly
+one server delivery,pending0/repeated-sync no duplicate,5000 scroll/search and
+synthetic owner return pass. Final SQLite5026 syntheticwords/9collections/8reviews,
+pending0/contentcommands0. Original7serverevents preserved exactly;one iPhone event
+retained. Original sharedhead restored. No Android answer dispatched. Optional
+5000review timing notaccepted:fixture had0due/5000scheduled2099;collectionfirstrow
+1.980s includesdriveroverhead andisnotpairedperformance/FPS acceptance.
+
+AndroidCLT-L29 API29:12 nonblank consecutive scrollwindows,lastviewport123–132,
+last-word search1of5000 passes. Fresh14-row dictionarysync including2tombstones
+fails NDS-1 because SyncManager passes deleted IDs to v2 hydration. Local source
+correction filters only hydrationcandidates;keeps tombstones/fullcursor/ownerguards.
+Regression fails beforefix;2 suites123/123 pass underNode24. Mobile/testTypeScript,
+scopedlint0warnings andformatpass. Default-node SQLite attempt lackednode:sqlite;
+correctedruntimepass. Two application/testfiles dirty;fix notcommitted orinside86.
+OfflineAndroidJS-onlyfixexport compiled,notinstalled;no nativeapplicationbuild.
+
+ARS-1 remains unresolved in diagnosticAndroid only:force-stop/restart returns to
+login,andlaterrelogin shows emptycollections. No store/productionrootcause claimed.
+Androidofflinepending/reconnect acceptance blocked;no data clearing orfalsepass.
+Rawprivateprocesslogs/failedreceiptsretained;nondebuggableQAdataexport unavailable.
+Review NDS-1 and investigate ARS-1 before new reviewedsource/artifacts and repeatQA.
+No newnativebuild/commit/push/certificate/publication authority inferred.
+
+All10iOSnative sections and114AndroidDEX/library files matchoriginals;deviceJS
+instructionsunchanged exceptURL/checksum,QA/OTA/identitymetadata explicitlydiffer.
+AndroidQA-onlycleartextmanifest needed forloopback;no globaldevicepolicychange.
+Primaryappmetadataidentical,bothneverlaunched/accountsnotoperated. FourownedQA
+containers gracefullystopped,volumespreserved;relay55341/55342closed;Androidreverse
+55342removed;QAapps stopped. No remainingownedtest orremoteoperation. Questionabout
+iPhoneunlock was superseded byactualpassingreturntest;do not rerun on alate reply.
+
+B02lastproductionboundary14:05:33Z stillhistorical:new14gatesFALSE/old3TRUE,66ledger,
+25emptytables/50unchangedoldprojections;thissession made no productionwrites. B01
+Auth/Storage/Vault/device/off-machinekey exclusions,freshdelta/queue/nextscope and
+compatiblenativerepair/store/operator/policy/dependency/enabledpathholdspersist.
+Paid/real-linkscope0;unknownUSD0.56held. Sixtrackedfiles and22newevidencefiles local;
+privateartifactrootignored. No8.5execution/D13A.9observation. D13A.8 remains3/6:
+3fixedsteps(8.4–8.6) and6laterbroadmilestonesremain. ContinueAstra/High.
+
+**2026-10-24 — AUTH-49 NDS-1 release blocker; local fix prepared.**
+
+Original build86 iPhone isolated derivative passes auth/following,offline answer,
+SQLite pending1 after restart,server7 unchanged offline,then exactlyone newevent/
+localpending0/repeat-sync no duplicate. 5000-row scroll/search passes. Android
+fresh sync with14 rows (including2 tombstones) fails dictionary refresh owner
+mismatch because SyncManager passes deleted IDs into pullRequired/v2 hydration.
+Regression reproduces beforefix and84 orchestration tests pass afterfiltering
+deleted IDs fromhydration candidates only;tombstones/cursor handling preserved.
+SQLite suite requires Node24;initial default-node attempt lackednode:sqlite.
+Two sourcefiles are nowdirty onexisting featurebranch,notcommitted; frozen165501a
+artifacts remainunchanged andreleaseheld. Do not claimnew sourcefix exists in86.
+Private root:d13a84-device-functional-20261024;operation.json records livephase.
+Four confirmed localQAcontainers andownedrelayports55341/55342 running;Android
+reverse55342 exists. No production/mainaccount/providerwrites. Next:finishsafe
+Android QA and5000review preconditions,verifyfix,freeze NO-GO release/rollback
+addendum andstopownedresources. No newnativecompilation/publication/certs/commit.
+D13A.8 remains3/6,3 fixedsteps and6laterbroadmilestonesremain.
+
+**2026-10-24 — AUTH-49 physical build86 functional QA preparation.**
+
+Both test devices are visible. Preserve existing QA application state first; prepare
+configuration-only isolated derivatives of accepted IPA/AAB,unchanged JS instructions
+and native sections,existing signers only. Reuse confirmed four owned local QA
+containers/volumes; no production routing/seed/flags or main app/account actions.
+Private root:reports/shared-dictionary-cefr/d13a84-device-functional-20261024.
+B01/B02 and earlier immutable packets remain unchanged; no B02 replay. Next:validate
+local transport fences,install QA only,run offline/restart/once-only sync/5000-word
+checks,then freeze release/rollback addendum. No publication/commit/push/new native
+compilation. D13A.8 remains3/6,3 fixed steps and6 later broad milestones remain.
+
+**2026-10-24 — AUTH-48 B02 complete:14 migrations and2 dormant Edge functions verified.**
+
+Continue D13A.8.4,not activation/D13A.9. Same feature/d13a84-main-native-builds,
+HEADc626e6c; application main165501a/IPA/AAB/maps/prior packets unchanged. AUTH-48
+scoped operation eafe96ea-c331-4617-b201-dd4ed954a838 is complete/consumed. No
+further write/enablement/store/OTA/web/certificate/provider/account authority follows.
+
+Read evidence/D13A.8.4-b02-review-20261024.md and b02-packet JSON; offline verifier
+D13A.8.4-verify-b02-20261024.py passes576 private artifact pins. Private evidence:
+reports/shared-dictionary-cefr/d13a84-b02-20261024/. Archive581 members/16,822,591
+bytes,SHA256 c41c14effbddb73ec8c0a07964cb7788e393ad31162069d4f6986e28acb6f51e.
+Packet SHA256 2a94e7336e3b62147664ac7f1059c1502610c334273a4907642670b62d286111.
+All archived members verified without extraction;217 ciphertexts authenticate;
+packet tamper gate36/36. B01 offline verifier still passes52 unchanged private pins.
+Keep all finalized supplements immutable. Personal rows remain encrypted/ignored,
+Keychain key remains local/non-sync; no off-machine/full managed recovery claim.
+
+All14 pinned migration versions applied once in exact order; ledger66 with original
+source bytes/hashes per version. Each atomic guard checks expected ledger prefix,
+brief table locks,50 complete original-column projections/timestamps before/after,
+new gatesFALSE and exact source ledger insertion. Outer source BEGIN/COMMIT only
+replaced by atomicDO wrapper; no include-all/reset/history repair. Rehearsal on
+restoredB01S2/ICU153.120 passed14/14 and stale-backup/replay negative guards. Actual
+postflight catalog/ACL/RLS matches that exact target;118 new routines deny anon/
+PUBLIC,25 new tables empty,no words converted. Three legacy flagsTRUE;new14FALSE.
+Final read-only check after smoke at2026-10-24T14:05:33Z reconfirms all50 original
+projections including timestamps and old52 ledger rows,66 total,empty25 tables.
+Future accepted deltas/device queues remain outside this dated observation.
+
+Only the two named endpoint-enable secrets setfalse,then only dictionary-analysis
+and dictionary-creation deployed ACTIVE/version1/verify_jwtTRUE. Original24/40
+source bytes preserved; derived same-directory import maps pin directSDK2.110.8
+from frozenlocks. Actual deployed bundle digests:
+analysis ca1ebe2f34d1f1fc30d90ef9e37b2ab133a856c90261a4b17a9960cd9838e09a;
+creation f932cb991400b34200bea5e4eae14ff94adb897760de9fb4f9871932b8a24fad.
+Production smoke8/8:four missing/invalidJWT401 andfour public-anon disabled503/
+no-store. No user/service token,main-app launch,provider/real-link/account operation.
+Read-only body export matches22/29 original files,zero mismatches,both entrypoints;
+unreturned config/lock/other files explicitly listed. Complete transitive dependency
+identity and enabled/provider/client-capability behavior remain unqualified.
+
+Observed secret-update metadata effect:existing function versions incremented by1:
+gemini-handler132→133,data-migration7→8,get-multiple-images34→35,delete-account8→9.
+Every other inventory field matches,including updated_at and JWT;both exposed
+bundle hashes match. Two legacy hashes are unavailable,so full code-hash comparison
+of allfour is not claimed. No source/deploy request targeted those functions,and
+none were invoked. Initial unchanged-version assertion was reconciled from captured
+evidence;do not revert/deploy old functions to change counters.
+
+TLS interruption on third request was reconciled before deliberate resume:no active
+owned statement,third absent,exactfirst2 ledger54,50 hashes/flags intact. Same SQL
+then applied asversions3–14;unknown outcomes empty,no automatic write retry. Other
+read-only/local mistakes (seed-file filter,receipt label,diagnostic variable and
+capabilityEXECUTE denial by supabase_read_only_user) are recorded;no ACL broadened.
+All owned rehearsal containers removed;no credential files created,no active
+external operation remains.17 successful write responses:14 migrations,one named
+two-flag secret update,two function deployments;18 attempts include reconciled TLS.
+
+Next:remaining exact native authenticated/offline/sync/5000/store-delivery checks,
+compatible native repair/rollback,operator/policy/enabled-path/dependency bindings,
+fresh accepted-delta/queue boundaries and any later explicit rollout authority.
+Preserve B01 Auth/Storage/Vault/device/off-machine-key exclusions and heldUSD0.56.
+No main account content/learning/SRS mutation,store/OTA/web publication,certificate,
+new native build,commit/push or stage advance. Four task files plus18 evidence files
+local/uncommitted;576 private artifacts/archives stay ignored. D13A.8 remains3/6:
+3 fixed steps and6 other broad milestones remain. Astra / High.
+
+**2026-10-24 — AUTH-48 all14 migrations verified; dormant function deploy next.**
+
+Operation eafe96ea-c331-4617-b201-dd4ed954a838 applied all14 exact sources; ledger66
+and single-statement original-body hashes verified per version. Both guard boundaries
+check50 old-column projections including timestamps and original52 ledger entries.
+Final read-only postflight matches exact local target catalog/security,all50 original
+projections unchanged,14 new flagsFALSE,three legacy flagsTRUE,118 new routines deny
+anon/PUBLIC,25 new tables empty,and all words remain legacy mode. No content/learning/
+review/link/provider operation executed. Private database-verification-result.json.
+
+Third request had TLS SSLError with uncertain transport outcome. Writes stopped;
+read-only reconciliation found no active owned query,ledger54/exact first2 only,
+third absent,50 unchanged projections and both installed new flagsFALSE. Deliberate
+resume used identical SQL with a new request label;versions3–14 now verified. Local
+read-receipt label collision was fixed before any HTTP/new write. No automatic
+write retry or duplicated installed migration. Unknown outcome list is now empty.
+Read-only API uses supabase_read_only_user; optional capability_v1 execution was
+denied as designed. Critical catalog/data/ACL tests passed; no permission was added
+or write-capable API used to bypass that read-role boundary. Client capability
+execution remains a separate qualification hold.
+
+Next running action:deploy-functions.py. Scope only named enable secretsfalse and
+dictionary-analysis/creation,verify_jwt explicitlyTRUE. Multipart inputs preserve
+all24/40 archived source bytes. A generated same-directory import map pins the
+direct @supabase/supabase-js dependency to2.110.8 from each approved deno.lock;
+its digest is recorded,source archives unchanged. Server bundle identity/transitives
+must be observed;do not claim full enabled/provider qualification from disabled smoke.
+Inspect per-operation request/outcome/metadata before any retry after interruption.
+Other four Edge functions/stores/main app/account/certificates/paid calls/real links
+are excluded. Stage remains3/6,3 fixed steps and6 other broad milestones remain.
+
+**2026-10-24 — AUTH-48 exact14 guarded production apply intent.**
+
+B02 operation eafe96ea-c331-4617-b201-dd4ed954a838 on josxavjbcjbcjgulwcyy.
+Read-only preflight proves52-version ledger,all50 original projections equalB01S2,
+unchanged full logical catalog/ACL/RLS and legacy flagsTRUE; targets undeployed.
+Pinned archives78 files (14+24+40) verified. The exact guarded SQL14-file manifest is
+reports/shared-dictionary-cefr/d13a84-b02-20261024/guarded-migration-manifest.json.
+Local rehearsal on restoredB01S2/ICU153.120 succeeds14/14 with50 full old-column
+hashes before/after each,atomic original-source ledger insert,14 flagsFALSE,
+118 new routines denying anon/PUBLIC. Two negative guards refuse stale backup and
+ledger replay; all local containers removed. Original snapshot/bundles unchanged.
+Driver trailing diagnostic reused a local variable (printed2 instead of50); the
+50-table receipt/guards were correct and the diagnostic variable is corrected.
+
+Next running action:apply-migrations.py,strict timestamp order,one atomicDO per
+exact migration,sourcebody BEGIN/COMMIT boundaries replaced by the wrapper only;
+original bytes stored in its exact version's ledger row. Each statement locks
+existing public/private/ledger tables briefly with3s lock timeout,and compares the
+50 original projections including timestamps and old52 ledger rows before/after.
+New columns are outside the old-column projection and separately checked dormant.
+No personal content/review/learning operation is invoked. Existing data change or
+unexpected ledger causes rollback/stop. Every request/response is encrypted and
+intent logged. If interrupted,inspect operation.json,per-version outcomes and live
+ledger/body hashes before retrying anything; unknown writes must be reconciled.
+Stop first failed check. Two-function/false-secret deployment follows only verified
+migrations. No stores/main-account actions/paid calls/real links/commit/push.
+D13A.8 remains3/6;3 fixed steps and6 other broad milestones remain.
+
+**2026-10-24 — AUTH-48 B02 explicitly authorized; preflight in progress.**
+
+Owner permits only the14 pinned migrations and dictionary-analysis/creation dormant
+deployments,all new gates false,legacy flags/personal data preserved. No stores,
+main-account mutation,provider calls,real links,commit/push or D13A.9. Same branch/
+HEAD c626e6c. B01 ciphertexts/key/evidence remain immutable and available locally;
+dedicated DB passwords were removed,so prefer an existing verified Management API
+credential for metadata and guard checks; never reset DB credentials. Reconfirm
+current ledger/body/schema/ACL and full protected-row/delta/queue hashes before any
+write. If a fresh guarded boundary cannot prove the B01 base still covers accepted
+data,stop writes for a new protected snapshot/credential,not paginated API export.
+Record intent/outcome for each operation; never retry an unknown write blindly.
+Private B02 operation directory:d13a84-b02-20261024. No B02 remote write yet.
+D13A.8 remains3/6;3 fixed steps and6 other broad milestones remain. Astra / High.
+
+**2026-10-24 — AUTH-47 scoped B01 application restore verified; release holds remain.**
+
+Same feature/d13a84-main-native-builds at c626e6c. Owner entered the password locally;
+verify-full TLS1.3/read-only preflight confirmed project josxavjbcjbcjgulwcyy,
+PostgreSQL17.4 and52 migrations. Session pooler5432 uses the same verified project/
+host; original transaction-pooler6543 setting unchanged. Both dedicated pgpass files
+have now been removed. Do not rerun capture/preflight automatically or keygen again.
+No active exporter/test/container remains. No source/native artifact changed.
+
+Read evidence/D13A.8.4-b01-review-20261024.md and b01-packet JSON; offline verifier
+D13A.8.4-verify-b01-20261024.py passes52 private artifact pins and unchanged earlier
+packets,without executing commands/decryption/network. Private directory:
+reports/shared-dictionary-cefr/d13a84-b01-20261024/. The final bundle has57 members,
+24,079,247 bytes,SHA256 1dbaf51f713673ce08e4195b48595f75bf9313849765440d428ceef8ea560822.
+Packet SHA256 868f8711ac7e87cc811b2f7fc139f04875f2773854d6e50a406ceb5a205dbe31.
+All57 archived member hashes checked without extraction. Do not overwrite it or the
+base/diagnostics/readiness packets. No plaintext personal rows or keys are bundled.
+
+Accepted S1/S2 boundaries12:53:09.520137Z/13:00:20.625162Z on October24 use exported
+repeatable-read/read-only snapshots and explicit Docker log-driver none. Native
+AES256GCM/Keychain protects archives; all21 selected ciphertexts authenticate.
+Key remains non-sync WhenUnlockedThisDeviceOnly on this Mac; not exported,not an
+off-machine recovery proof. Crypto14/14,catalog tamper19/19,packet tamper26/26 pass.
+
+Both application snapshots restore50 projections/32,636 rows with exact complete
+sorted SHA256 including timestamps. Latest S2 proves catalog/ACL/roles/RLS and
+database owner/encoding/locale/provider/version/ACL. Runtime uses already cached
+ARM64 sha256:178f0976b54a39237096bfa310c1a352dbc82fb1b08dda45cdb8acb5d40c1426,
+PostgreSQL17.6,matching ICU153.120. Cached075 image ICU153.121 was rejected for the
+final database-properties gate. Latest catalog matches81 relations,816 columns,
+397 constraints,181 routines,35 policies,233 indexes and captured triggers/views/
+schema/default ACLs; no unvalidated constraints/disabled triggers. Role attributes
+and effective membership options match; authenticated role sees zero foreign
+private words while intentional shared collection reads remain.
+
+Local managed-platform adapters are explicit:19 membership GRANTED BY clauses use
+the isolated superuser,original SQL retained;54 extension/view/schema ACLs restored;
+temporary extension bootstrap elevations reverted and final role attributes checked.
+Source managed grantor identity is not exactly reproduced. Physical attnum compaction
+and null/default-owner ACL equivalence are recorded; raw catalogs remain encrypted.
+All owned restore/probe containers were network-none/log-none/tmpfs,then stopped and
+removed. Neither source archives nor real production rows were modified.
+
+Delta:all50 full digests S1/S2 match,no intervening row change detected. S2 full
+after-images/receipts retained; no RPC replay. Five server queue/control projections
+verified from dump:jobs/runs/usage/import origins empty,worker disabled. This does
+not cover future changes/device queues or release historical unknownUSD0.56.
+Fresh accepted delta/queue reconciliation is required at any later write boundary.
+
+Explicit exclusions/holds:Auth rows beyond id/email and Auth login/session recovery,
+Auth sequence/data outside projection,Storage object bytes,Vault/managed service
+state,non-allowlisted database setting values,device-local pending/unknown queues,
+independent key custody. app.settings.jwt_exp was observed by name only,not exported.
+Scoped application restore verified; full managed disaster recovery remains unproven.
+
+Initial capture lacked explicit Docker logging override and is NOT accepted as
+ciphertext-only evidence. Its encrypted outputs remain in initial-capture-unaccepted;
+temporary plaintext runtime logging cannot be ruled out and secure erasure is not
+asserted. Auto-removed clients leave no owned container in final audit. Accepted
+captures repeat with log-driver none. All failed local attempts are retained privately
+and removed,including grantor/default-schema/extension/shared-policy expectation/
+catalog representation/ICU mismatches. Review describes the corrections and limits.
+
+Next:review scoped backup/key/Auth/Storage/device-queue holds and remaining exact
+native offline/sync/5000/store-delivery/compatible rollback/operator-policy bindings.
+B02 is still a separate future write approval for the pinned14 migrations and two
+dormant function deployments; no authority is inferred from AUTH-47 or this packet.
+No production/provider/main-account mutation,publication,new native build,certificate,
+commit,push or stage advance occurred. Four task documents plus15 evidence files are
+local/uncommitted; private backups/scripts/archives stay ignored. D13A.8 stays3/6:
+3 fixed steps remain and6 other broad milestones follow. Astra / High.
+
+**2026-10-24 — AUTH-47 encryption gate passed; secure credential entry pending.**
+
+B01 remains authorized. Owner found the password but has not supplied a secure file
+path or confirmed local entry. Do not request the password in chat. Owner-run command:
+`python3 /Users/devrush/code/pet/DutchLearningApp/reports/shared-dictionary-cefr/d13a84-b01-20261024/provide-credential.py`.
+Hidden TTY input writes only the dedicated credentials/pgpass with mode0600 and
+refuses overwrite; no global account/connection changes. Pending async question
+asks for completion or another local pgpass path. File is still absent at checkpoint.
+
+Native CryptoKit AES256GCM helper compiled; dedicated local Keychain key created
+and retrieved under service com.oldrefery.woordenaar.b01.backup/account
+5d4c07ed-4d73-48f8-95f9-d36d1666ad0b. Do not run keygen again. Key is non-sync,
+WhenUnlockedThisDeviceOnly; no key exported, so off-machine recovery is not proven.
+Synthetic crypto gate14/14 passed: empty/binary/4MiB roundtrips, randomized nonces,
+full digests, header/nonce/payload/tag corruption, truncation/trailing data and
+missing/invalid key rejection with zero plaintext output. Payload cap256MiB;
+authenticate the complete input before releasing restore plaintext. Evidence/private
+tools:reports/shared-dictionary-cefr/d13a84-b01-20261024/. No plaintext files written.
+
+Metadata-only preflight.py prepared/parsed,not executed. It pins existing PG17.6
+ARM64 image and CA,requires verify-full TLS,exact session-pooler project identity,
+PGOPTIONS read-only plus explicit repeatable-read/read-only transaction,then checks
+server17/52-version ledger and estimates data size. On credential arrival validate
+its permissions/ownership and run preflight before designing/capturing the consistent
+backup. No production snapshot/export/restore/delta has happened. Auth credential/
+session rows,Storage object bytes and device-local queues remain explicit exclusions.
+B02 and publication remain unauthorized. Same feature branch/HEAD; all source,
+native artifacts and finalized bundles unchanged. No commit/push/provider request.
+D13A.8 remains3/6:3 fixed steps and6 other broad milestones remain.
+
+**2026-10-24 — AUTH-47 B01 approved; credential preflight needs owner input.**
+
+Owner explicitly permits protected read-only production backup and isolated restore.
+Same feature branch/HEAD c626e6c; no production write/publication/native build scope.
+Operation receipt:reports/shared-dictionary-cefr/d13a84-b01-20261024/operation.json.
+Actual linked pooler URL has YOUR-PASSWORD placeholder; ~/.pgpass is absent. Do not
+attempt a dump with guessed credentials,reset password or replace a consistent dump
+with paginated API rows. Pending async question asks the owner for a local .pgpass
+path with mode0600; no passwords in chat. Prepare/test local authenticated encryption
+and Keychain custody independently. No personal data has been exported or snapshot
+opened; no backup/restore success can be claimed yet. On credential arrival,verify
+project/TLS/read-only identity and follow B01 exactly. B02/stores/activation remain
+separate. Preserve prior immutable packets;3 fixed D13A.8 steps and6 broad remain.
+
+**2026-10-24 — D13A.8.4 catalog/rehearsal gate passed; live backup approval next.**
+
+Same feature/d13a84-main-native-builds at c626e6c. Application source, accepted
+IPA/AAB, base review packet and diagnostics supplement are unchanged. Current
+request completes remaining available preparation checks, not publication.
+Read evidence/D13A.8.4-readiness-review-20261024.md and the readiness-packet JSON.
+
+Production catalog read-only comparison:41 relations,413 named columns,102 routine
+bodies/security definitions,35 RLS policies and43 triggers reconciled. Explicit
+platform differences:physical word-column order,UUID-extension namespace,article
+CHECK,public/current/default ACLs and PostgreSQL17 MAINTAIN. No private client/
+service grant broadening. Three catalog-verified booleans operations/read/legacy
+remainTRUE; no flags changed. Full-row runtime read was rejected before execution;
+a safe approved allowlist read only the three boolean fields. No secrets or
+application-account rows were read/exported. Raw migration-body identity is not
+asserted solely from catalog equivalence; current state must be rechecked before write.
+
+Owned PostgreSQL17.6 ARM64/no-network/tmpfs rehearsal passed12/12. Exact14 archived
+migration hashes applied after matching production article/default ACLs. Preserved
+5000 synthetic cards and full digests of17 protected tables. Synthetic custom dump
+restored into a separate DB; accepted post-backup review delta plus original server
+metadata restored exactly and exact retry idempotent. RPC replay alone changed
+server timestamps and correctly failed initially; no digest normalization hides it.
+Selective synthetic link rollback retained later review/SRS/content. All14 new
+boolean gates stayedFALSE and118 new routines deny anon/PUBLIC even under observed
+production defaults. Owned container stopped/removed; receipt retained. Initial
+image/identifier/receipt-driver failures were local only; no product source changed.
+
+Seven frozen-source database suites passed126/126,zero failures/skips on private
+native PostgreSQL15 clusters; separate compatibility rehearsal used17.6 against
+production17.4 metadata. New offline readiness verifier/tamper gate17/17 passes. Review supplement32 members,
+624,984 bytes; SHA256 2e03063109fe602cda1846b313f2762ac1054f2451f5c773594ff37b02b9f5a5.
+Receipt: reports/shared-dictionary-cefr/d13a84-readiness-20261024/readiness-bundle-receipt.json.
+Prettier/new evidence and git diff --check pass. Four task files plus12 new evidence
+files are local/uncommitted; no application code is dirty.
+Google personal account current inventory:38 versions,latest85,search86 returns0.
+Apple inventory refresh requires sign-in; historical inventory/agreement is not
+current confirmation.
+Managed backup metadata also read without download/restore:WAL-G enabled,PITR disabled,
+no logical backup entries listed. Physical availability metadata,if present,is retained
+in d13a84-readiness-20261024/managed-backup-availability.json;it does not prove a fresh
+verified restore or post-backup delta. No managed restore was requested. No login/account switch,upload,agreement or certificate change.
+
+Next required scope is B01 in evidence/D13A.8.4-production-preparation-proposal-20261024.md:
+explicit approval for protected read-only production backup and isolated restore,
+including personal-data coverage/delta/queues and secure credential/key custody.
+No actual production backup was captured. B02 additive14-migration/two-function
+preparation is a later separate write approval; currently none is deployed. Main
+application account remains untouched. Full native authenticated/offline/sync/5000
+and store-delivery,compatible native repair/rollback,live policy/operator bindings
+and exact operation authority remain open. No paid calls or real links;USD0.56 held.
+No test/external operation is pending. All task files/evidence are local/uncommitted;
+private archives/synthetic dump stay ignored. No push,publication or D13A.9 start.
+D13A.8 stays3/6 complete:3 fixed steps and6 other major milestones remain.
+Recommended model/effort Astra / High; stop at the stage boundary.
+
+**2026-10-24 — D13A.8.4 remaining local checks running.**
+
+Current request: complete remaining checks and prepare release readiness, retaining
+no-publication/no-main-account changes. Same branch/HEAD c626e6c; source/native
+artifacts unchanged. Running owned PostgreSQL17.6 tmpfs/network-none rehearsal
+with the exact14 archived migrations,5000 synthetic words, observed production
+article constraint/default ACLs, synthetic backup/restore/review-delta and selective
+link rollback. A separate focused seven-suite database gate runs from the frozen
+source archive on native PostgreSQL15 with no TCP/production environment.
+Evidence/intents/results: reports/shared-dictionary-cefr/d13a84-readiness-20261024/.
+Inspect rehearsal-results.json and logs before retrying an interrupted run; never
+repeat external operations. Production was queried only for catalogs and three
+catalog-verified boolean flags. A full configuration-row read was rejected by
+automatic review; it was removed and replaced by the approved boolean allowlist.
+No secret/personal data was read. Fresh personal backup/delta/queues and actual
+store delivery still need separate scope; do not infer publication authority.
+D13A.8 remains3/6;3 fixed steps and6 other major milestones remain.
+
+**2026-10-24 — D13A.8.4 exact JavaScript maps recovered; backend metadata observed.**
+
+Continue on feature/d13a84-main-native-builds, HEAD c626e6c. Local-only preparation
+under continued AUTH-46; no commit/push/publication/new signed native build. The
+base review packet SHA665722a5... and bundle SHAab682bc7... remain unchanged.
+Read evidence/D13A.8.4-diagnostics-review-20261024.md and its diagnostics-packet
+addendum before relying on the earlier missing-map/unobserved-presence statements.
+
+Offline Expo export plus the matching Hermes compiler reproduced both embedded
+bundles byte for byte. Exact maps now exist for IPA0b388685... and AABd3567c02...;
+5025 Hermes addresses per platform and323 application JS/TS sources per platform
+are verified. Matching runtime Debug IDs are retained in composed maps. Nothing
+was uploaded to Sentry. No application source or original binary changed. The
+initial checker was corrected for duplicate generated columns and binary assets;
+the bytecode/maps were unchanged. R04 map retention is resolved locally; compatible
+native rollback and hosted symbolication acceptance remain open.
+
+Read-only Supabase Management API metadata for josxavjbcjbcjgulwcyy confirms
+transaction_read_only=on,52 migration versions and absence of all14 candidate
+migrations. Neither dictionary-analysis nor dictionary-creation is deployed.
+Catalog hashes/security metadata are retained privately. No application-account
+rows, queues, Auth users or Storage objects were read or exported. Ten recorded
+single-statement bodies exactly match local files;42 split/non-exact raw
+representations still need baseline reconciliation, not a drift diagnosis.
+No production flags, functions, schema or policies were changed/invoked.
+
+Private receipts/maps/supplement are under
+reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/. The new verifier checks
+the unchanged base gate, native/source/map identities, metadata and continued
+execution refusal. Its tamper suite and supplement hash are recorded there.
+Tamper suite:22/22 passed; Prettier and git diff --check pass. Supplement23 members,
+30,449,717 bytes; SHA256 fcddf70e6293e841b2dfaf36dffab5053e96d4cdc1e6737e7dd24bdc232a9609.
+Receipt: d13a84-diagnostics-20261024/supplement-receipt.json. Working tree has four
+modified task documents and eight new evidence files, all local/uncommitted;
+signed artifacts and private supplement stay ignored.
+
+Next: resolve baseline/schema/policy/gateway bindings and a protected fresh
+backup/restore/delta/queue scope before an exact coordinated rehearsal. Full new
+client authenticated/offline/sync/5000-word and store-delivery qualification remain
+open: diagnostic ID changes do not redirect their embedded production backend.
+Do not use the main account or publish to bypass those limits. No paid calls or
+real links; historical unknownUSD0.56 stays held. No external operation is pending.
+D13A.8 stays3/6 complete:3 fixed steps and6 other major milestones remain.
+Recommended model/effort remains Astra / High; stop at the stage boundary.
+
+**2026-10-24 — AUTH-46 device smoke and updated release/rollback review prepared.**
+
+Continue D13A.8.4 on feature/d13a84-main-native-builds, HEADc626e6c. Application
+source remains merged main165501a; all1514 non-document pins match. Original
+IPA0b388685... and AABd3567c02... remain unchanged. This session changes only task
+documents/verifier; no commit, push, publication, migration or provider request.
+
+New-code diagnostic derivatives were tested on both physical devices. iPhone QA
+2.5.0(86) reuses the existing approved profile/certificate; JS and ten Mach-O
+instruction/data sections match the IPA. Cold launch/restart XCTest passed1/1,
+zero failures; screenshot/hierarchy confirms signed-out login. Primary iPhone app
+remains2.4.0(85) and was never launched. Initial driver scheme error occurred before
+tests; device-lock authentication canceled the first initialization; the same built
+test passed after owner unlock. No certificate or profile was created/changed.
+
+Test Huawei connected. Existing build85 signer differs, so a separate QA package
+com.oldrefery.dutchlearningapp.d13aqa was derived with the existing debug key.
+Only manifest/resource namespace, label, signature and disabled OTA differ; all116
+DEX/native/JS/runtime files match. Cold login UI, empty-form local validation and
+signed-out restart pass. No credentials entered or sign-in dispatched. Original
+package85 and full update timestamp are unchanged. QA apps remain installed.
+These are diagnostic smoke checks, not exact App Store/Play delivery qualification.
+Authenticated offline/sync,5000-word/performance and coordinated backend tests stay open.
+
+New immutable review source snapshotc626e6c, analysis24-file and creation40-file
+archives,14 migrations and13 operator-rehearsal files are prepared. Both extracted
+functions return disabled503 for GET/POST with loopback-only permissions, reading
+only their enable flag and no credentials. Owned Deno processes stopped. Seven iOS
+dSYMs were retained with executable UUID matching the IPA; exact JS maps are missing.
+Vercel metadata still confirms production165501a READY. Existing rollback74ZRdM...
+is a candidate requiring compatibility recheck before any later promotion.
+
+Review: evidence/D13A.8.4-release-review-20261024.md, rollback review, machine packet,
+backup template and offline verifier. Private bundle/receipts:
+reports/shared-dictionary-cefr/d13a84-device-release-20261024/.
+The verifier covers archive/native/source/receipt integrity and refuses execution;
+negative cases include traversal/symlinks/duplicates/missing imports, false device
+claims and unauthorized spending/rollback. Bundle digest is in bundle-receipt.json.
+No raw device inventory, private keys, environment values or personal DBs are bundled.
+
+Fresh protected backup/isolated restore/live delta/cohort queues were not captured;
+no personal production data exported. Exact store delivery, compatible native
+rollback, JS maps, backend/gateway/operator readiness, current store eligibility,
+exact-set rehearsal and operation approval remain explicit open gates. Paid calls
+and real linking ceiling remain0; historical unknownUSD0.56 stays held.
+
+D13A.8 stays3/6 complete:3 fixed steps remain and6 other major milestones follow.
+Next: review this exact packet and resolve those gates within new explicit scope.
+Recommended model/effort: Astra / High. This checkpoint and five new evidence files
+are local-only/uncommitted on the feature branch; signed binaries/private bundle
+stay ignored. No ongoing test or external operation remains after completion.
+
+**2026-10-24 — AUTH-46 device qualification and remaining release preparation.**
+
+Owner requests testing the new main-source artifacts on devices and preparing the
+remaining release/rollback packet, without publication or personal account changes.
+Current branch feature/d13a84-main-native-builds at c626e6c is preserved; application
+source remains main165501a. AUTH-45 builds are complete, not replayed by this request.
+
+Read-only inventory: personal iPhone is available; primary app remains 2.4.0(85)
+and isolated Woordenaar QA remains 2.4.0(85). No app launched, installed or removed.
+The new IPA is App Store signed with no device provisioning; exact direct physical
+installation is unavailable. TestFlight upload is publication outside this request.
+No Android is attached through ADB; owner has been asked to connect the test phone.
+Existing booted Simulator is left untouched because ownership is not established.
+
+Prepare a new immutable source/function/migration/operator archive set and updated
+release/rollback manifest with verified native hashes, CI and web bindings. Test
+archived functions locally in disabled mode with loopback-only network permissions
+and no provider credentials. Keep fresh backup/restore/delta/queues, actual native
+device qualification and scoped execution authority explicitly open. Do not export
+personal production data, replace the primary iPhone app, create credentials,
+publish, migrate, enable flags, invoke providers or link cards. Current personal
+linking ceiling and paid requests remain zero; historical unknown USD0.56 stays held.
+D13A.8 remains 3/6 complete: 3 fixed steps and 6 other broad milestones remain.
+Private evidence: reports/shared-dictionary-cefr/d13a84-device-release-20261024/.
+
+**2026-10-24 — AUTH-45 local signed artifacts complete from merged main.**
+
+On feature/d13a84-main-native-builds, checkpoint commit caf17415a70efbf3ca99d866c1cfca10fc753d9b
+contains documentation only; all 1514 source/configuration files match main
+165501a0f547765011630fdab04ba0654ac75626. Normal hooks passed 2732 mobile tests, 1252 web tests and
+22 snapshots (one existing web skip). Both local builds succeeded with existing
+frozen credentials; both isolated environments passed Expo Doctor 21/21.
+
+Outputs: builds/app-2.5.0-86-main-165501a.ipa and
+builds/app-2.5.0-86-main-165501a.aab. Signature, version, identifiers, production
+channel, runtime fingerprints and SHA256 checks pass. iOS certificate/profile
+match the retained prior IPA; Android signer matches retained build80. Historical
+IPA/AAB hashes remain unchanged. No store submission, certificate change, push,
+migration, activation, provider call, device install or personal account change.
+Both AUTH-45 build slots are fulfilled. Inspect receipts before considering retries.
+
+See evidence/D13A.8.4-main-build-review-20261024.md and its JSON. Full private
+logs/source freeze/slots are under reports/shared-dictionary-cefr/d13a84-main-builds-20261024/.
+Final evidence is committed on this feature branch; use git log to identify the
+receipt commit. Binaries and private evidence remain ignored local files.
+
+Next D13A.8.4: qualify these exact artifacts, complete the coordinated function
+artifact set and fresh protected backup/delta/queue receipts, rehearse the exact
+set and obtain scoped execution authority. These release gates remain open;
+local build preparation alone does not authorize publication or device use.
+D13A.8 stays 3/6 complete: 3 fixed steps and 6 other broad milestones remain.
+Recommended model/effort: Astra / High. Stop at the requested preparation scope.
+
+**2026-10-24 — AUTH-45 merged-source local signed builds authorized.**
+
+Owner requests checkpoint commits only on branches and two new local signed
+artifacts from main, with no store submission or certificate changes. Created
+feature/d13a84-main-native-builds from current main
+165501a0f547765011630fdab04ba0654ac75626, preserving all five checkpoint documents.
+Only documentation differs from main. Commit this checkpoint with normal hooks,
+then freeze that commit and verify every non-document source pin against main.
+Use dictionary-release 2.5.0(86), existing signing credentials, local compilation,
+--freeze-credentials and disabled capability/debug uploads. Preserve historical
+IPA/AAB; new outputs use distinct main-source filenames. Both slots are unstarted.
+Private evidence: reports/shared-dictionary-cefr/d13a84-main-builds-20261024/.
+
+No push, PR, merge, store upload, certificate change, remote build, migration,
+runtime activation, provider spending or device installation is in this request.
+Verify oldrefery and the linked personal Expo project before each remote EAS step.
+After builds verify signatures, identifiers, versions, runtime fingerprints and
+artifact hashes, then commit the resulting sanitized checkpoint on this branch.
+D13A.8 remains 3/6 complete: 3 fixed steps and 6 other broad milestones remain.
+Recommended model/effort remains Astra / High. This entry supersedes older holds
+on additional native builds only within the new explicit two-build scope.
+
+**2026-10-24 — PR 123 squash merged; Production verified.**
+
+Owner explicitly selected squash and merge. All required checks passed on
+8fdac6e97a6f563fcab3bbda3415fc19723d2e78; quality run40037599366 succeeded,
+including mutation96.13% against90%,351 Edge tests and Doctor21/21. Database659
+and schema contract, browser3+7, lightweight checks and exact Preview passed.
+Protected squash merge completed at2026-10-23T23:41:24Z without bypass:
+main165501a0f547765011630fdab04ba0654ac75626, parent44141e0,
+treec243f88e90b6b0c7f5e36883b196094eeb5142d7 identical to reviewed PR source.
+
+Production dpl_FRfe4t8nwMVw1qBNZ36zWwZLEvqj is READY on that exact main commit;
+woordenaar.app is assigned. Unauthenticated GET checks for /, /login, /app and
+/robots.txt match the saved premerge statuses, redirects and security headers.
+Previous READY rollback target dpl_74ZRdMpdPQpbjQADbdRpFxniUKdr is recorded;
+no rollback was needed. Evidence: D13A.8.4-integration-review-20261024.md and
+private reports/shared-dictionary-cefr/d13a84-pr-20261023/integration-outcome.json.
+
+AUTH-44 source integration and web publication are fulfilled. Native files remain
+historical df08a60 artifacts; AUTH-43 build slots are consumed. Next D13A.8.4 gates
+are new exact merged-source native artifacts/qualification under fresh authority,
+coordinated function/release artifacts, fresh protected backup/delta/queue receipts,
+exact-set rehearsal and scoped execution approval. No native store submission,
+migration, runtime flag change, provider spending or real-card linking occurred.
+Personal application account and device data were untouched.
+
+D13A.8 remains3/6 complete:3 fixed steps remain, plus6 other broad milestones.
+Current branch remains feature/shared-dictionary-schema at8fdac6e; origin/main is
+165501a. Five checkpoint documents are local uncommitted changes (handoff,
+stage card, integration review, sessions and decisions); source changes are merged.
+Preserve these edits when basing future work on the new main; do not remerge the
+old feature history after squash. This checkpoint supersedes the historical
+pending-merge entries below. Astra / High.
+
+**2026-10-24 — Protected squash merge authorized; exact-head checks green.**
+
+Owner explicitly requests squash and merge for PR123. All required checks on
+8fdac6e97a6f563fcab3bbda3415fc19723d2e78 passed; GitHub reports CLEAN/MERGEABLE.
+Proceed once with a matching-head guard, then verify the resulting main tree
+and actual Vercel Production deployment. Preserve local checkpoint edits.
+
+**2026-10-24 — Final clean-checkout CI repairs pushed as8fdac6e.**
+
+Current pushed HEAD8fdac6e97a6f563fcab3bbda3415fc19723d2e78, tree
+c243f88e90b6b0c7f5e36883b196094eeb5142d7. Normal hooks pass2732 mobile tests,
+1252 web tests and22 snapshots, one existing web skip. Scoped Deno lint passes;
+all351 Edge tests pass with reports/ excluded from read permissions. The legacy
+fixture contains only schema, non-secret policy hashes and dimension sequences;
+current synthetic verdicts prove duplicate rejection and repaired acceptance.
+Schema generator selects official GHCR at the exact prior sha256 digest; public
+GHCR/Docker Hub manifests were independently verified. No runtime source changed.
+
+Exact8fdac6e database passed659 tests and target-schema generation through GHCR.
+Web fixtures, lightweight run40037599413 and exact Vercel Preview passed.
+Quality run40037599366 passed mobile/web tests and all351 Edge tests; web build
+is in progress with Doctor/mutation pending. Require final quality success.
+Do not rerun the historical b977971 jobs: their96.13% mutation result is preserved,
+but Edge permission/fixture and ECR failures made that run unsuccessful. New
+workflow puts Edge tests, web build and Doctor before unchanged mutation tests.
+When all gates pass, merge through protected PR under AUTH-44 and verify actual
+Vercel Production commit/tree/aliases and unauthenticated baseline smoke.
+
+Private archive source-8fdac6e.tar SHA256
+c50288d645ede64f1401466baf413c3d8f712e555a72606a29d36099405efec2,
+2150 tracked files,1514 non-document pins, retained under
+reports/shared-dictionary-cefr/d13a84-pr-20261023. The integration review is draft
+until exact-head CI/merge/deployment receipts are filled. Source pushed; this
+checkpoint local. No merge, additional signed build, store, migration, flag,
+provider spending or real linking. D13A.8 remains3/6:3 fixed steps and6 other
+broad milestones remain. Astra / High. Personal account/device data untouched.
 
 **2026-10-24 — PR 123 fixes pushed; waiting for exact-head CI.**
 

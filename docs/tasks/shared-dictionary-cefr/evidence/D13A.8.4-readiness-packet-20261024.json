@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "packet_type": "D13A.8.4-local-readiness-review",
+  "prepared_at": "2026-10-24T12:07:22.202371+00:00",
+  "authority": {
+    "local_preparation": true,
+    "publication": false,
+    "production_writes": false,
+    "personal_rows_read": false,
+    "paid_requests": 0,
+    "real_links": 0
+  },
+  "ready_for_execution": false,
+  "authorized_commands": [],
+  "base_packet": {
+    "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-review-packet-20261024.json",
+    "sha256": "665722a50bd0d1be91db1c9d3e7131653cf097042762cee997450530dcf73c6e"
+  },
+  "diagnostics_packet": {
+    "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-diagnostics-packet-20261024.json",
+    "sha256": "ef3c187d3ed1d0ed00cab8120c6dfce58dea8110e83b83c37eef91650c6ccc6d"
+  },
+  "rehearsal_receipt": "reports/shared-dictionary-cefr/d13a84-readiness-20261024/rehearsal-results.json",
+  "synthetic_dump": "reports/shared-dictionary-cefr/d13a84-readiness-20261024/synthetic-before-release.dump",
+  "database_test_log": "reports/shared-dictionary-cefr/d13a84-readiness-20261024/focused-database-tests.log",
+  "production_backup": {
+    "status": "not_captured",
+    "restore_verified": false,
+    "live_delta_verified": false,
+    "cohort_queues_verified": false
+  },
+  "native_full_qualification": false,
+  "native_compatible_rollback": false,
+  "next_approval": {
+    "id": "B01",
+    "authorized": false,
+    "production_writes": false,
+    "proposal": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-production-preparation-proposal-20261024.md"
+  },
+  "budget": {
+    "new_provider_requests": 0,
+    "unknown_held_usd": "0.56"
+  },
+  "remaining": {
+    "stage_complete": 3,
+    "stage_total": 6,
+    "stage_steps_remaining": 3,
+    "other_major_milestones": 6
+  },
+  "files_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/catalog-queries.json": "7ebba26fa2d68b90db7c025a5be5c23bc18fe60a86da79c546236ef98c8e4e93",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/local-baseline-catalog.json": "a6250e7635d7fcb1c8dfd5518ea6be3c6d5261b95ebb0cce9a60e1d2cc258c2a",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/remote-baseline-catalog-private.json": "50e4ed440e3206663a08d4498e6d2cee669fdfacd91390d80ec3334a5634048f",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/baseline-comparison.json": "ead4d98746f42c56c83c5fc19248b91294e7fcb03efcb7ded28a1acf240b6b11",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/baseline-reconciliation-review.json": "bd9a5f1970c35283b05861782561ff8ea9350c645eb4c319e1cfb8b99f7cb7f9",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/boolean-runtime-flags.json": "0e08d028d1e81c01e7fbbdd86410314bf108455966ea2b86a774aae2a9702167",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/store-readiness-review.json": "5122b0586c2fa093cac580d766c1f3b0002c033be19876787d7d492dc23c34a7",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/rehearsal-results.json": "6c3ad4d6ec8e4168f684b4ee084595e391f044e951a95a779ff43dcf768518c2",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/rehearsal.log": "957033d557a71db5e3ec9deafdc08897564c1b677d5c446f2e005dbd9fa95269",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/rehearsal-attempt1-results.json": "23333ed0c4e855f3ffdd04b61bd62b9aa504dff9dd09f0659cfdf04539186f7a",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/rehearsal-attempt2-results.json": "79b63efe2583b912842010277b58c0ea13cbafa8e42c71fb7bb64abdd86aefae",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/synthetic-before-release.dump": "2a8f76de4416413fb1fedf211b49785f0248b63da42ea8786cf671b74d209ec0",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/rehearsed-target-catalog.json": "da28c4719f8ea129afdc50b40a1f38c3f3c0eb41449393a781f476de6957c03e",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/focused-database-tests.log": "6784f2a0d43755c67bd8d59b7f02177d68d8df6f297414da36355bd9c23fdf12",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/owned-container-intent.json": "a283e7056ca8f46f286196d249c37606d7709fb78c7cd22517f547e32a166b06",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/owned-container-final.json": "54ed590ad29ac58c2f757a25af450a7cfaeced1e3dfac2a34975dd0c0a1c9c3c",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/collect-baseline.mjs": "97437f6f7aeea32201bb0c38f93d5c1eb1e06cbefb887894d32bc2298e528414",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/read-catalog.py": "2b3aafca986fdab5e689a20c8ccf171350add43a34fc39f47828504ae002eeea",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/read-boolean-flags.py": "346f32f91fc4e938e84fc5f1b29be95f02b9e83de7efd716d946659065320bf4",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/reconcile-baseline.py": "9f8cbeed0dd9d254dd7180fb9461af9c52a4164010dc0958500482cd4553fb7a",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/postgres17.mjs": "d09a0ed8926605337423392d01c4a62072d1cdbff8cb7c9c846300bfb6736694",
+    "reports/shared-dictionary-cefr/d13a84-readiness-20261024/rehearse-release.mjs": "58c96d75445837a4d25d875ebea332d90d6101a51f48709c8ed4d9fe1482737e",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-readiness-review-20261024.md": "b5f225e6f9ff5ea3956380dd16a732dd21fcfe79d39ce2507518b2293a0b5b1f",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-production-preparation-proposal-20261024.md": "d72a1eac8b061569ca236fd4e2447d95926eb45df1a266202d9b208066d45f59",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-verify-readiness-20261024.py": "aaa486214cf8074632d12c7ac017cb1a73d4875213bb30a3c0e7dc44f396238d"
+  }
+}

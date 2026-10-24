@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "packet_type": "D13A.8.4-diagnostics-and-backend-addendum",
+  "prepared_at": "2026-10-24T11:30:02.621760+00:00",
+  "authority": {
+    "preparation_only": true,
+    "publication": false,
+    "production_writes": false,
+    "account_rows_read": false,
+    "paid_requests": 0,
+    "real_link_ceiling": 0
+  },
+  "ready_for_execution": false,
+  "authorized_commands": [],
+  "base_packet": {
+    "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-review-packet-20261024.json",
+    "sha256": "665722a50bd0d1be91db1c9d3e7131653cf097042762cee997450530dcf73c6e"
+  },
+  "base_bundle": {
+    "path": "reports/shared-dictionary-cefr/d13a84-device-release-20261024/review-bundle-main165501a-20261024.tar.gz",
+    "sha256": "ab682bc7a2850fdff2b1f88d0b32639041eb4f7d6f55a510f971e717dd30dc1f"
+  },
+  "base_verifier": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-verify-review-20261024.py",
+  "maps": {
+    "ios": {
+      "source": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/main.jsbundle",
+      "recompiled": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/recompiled.hbc",
+      "packager_map": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/main.jsbundle.map",
+      "compiler_map": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/recompiled.hbc.map",
+      "composed_map": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/main.jsbundle.composed.map",
+      "native_entry": "Payload/DeWoordenaar.app/main.jsbundle",
+      "bytecode_sha256": "7d7b496d7ae12d31012d6c9625f1021cb9cdf3c47a3dec1511b560d8344218c4",
+      "chain_review": {
+        "platform": "ios",
+        "debug_id": "1407bc0e-6122-4594-ae1b-782ad47a4ee8",
+        "compiler_mappings": 828974,
+        "checked_addresses": 5025,
+        "application_addresses": 1022,
+        "application_sources_sampled": 239,
+        "application_sources_byte_verified": 323,
+        "unmapped_addresses": 287
+      }
+    },
+    "android": {
+      "source": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/index.android.bundle.exact.js",
+      "recompiled": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/recompiled.hbc",
+      "packager_map": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/index.android.bundle.map",
+      "compiler_map": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/recompiled.hbc.map",
+      "composed_map": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/index.android.bundle.composed.map",
+      "native_entry": "base/assets/index.android.bundle",
+      "bytecode_sha256": "787063e2eec684b16246ad35acdefb39be34ad849f9e6086054a7669d1041abf",
+      "chain_review": {
+        "platform": "android",
+        "debug_id": "e047f815-0c72-450a-8c48-63af0f9e9018",
+        "compiler_mappings": 839174,
+        "checked_addresses": 5025,
+        "application_addresses": 1016,
+        "application_sources_sampled": 243,
+        "application_sources_byte_verified": 323,
+        "unmapped_addresses": 281
+      }
+    }
+  },
+  "source_maps_uploaded": false,
+  "full_device_qualification": false,
+  "backend_metadata": {
+    "path": "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/backend-metadata-review.json",
+    "sha256": "d0158c9a38c14b6b7b0c9e196a54c67e594d024fdbea01da93a32e81e1f47107",
+    "fresh_backup": false,
+    "live_policy_qualification": false
+  },
+  "budget": {
+    "new_provider_requests": 0,
+    "unknown_held_usd": "0.56"
+  },
+  "remaining": {
+    "stage_complete": 3,
+    "stage_total": 6,
+    "stage_steps_remaining": 3,
+    "other_major_milestones": 6
+  },
+  "files_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/main.jsbundle": "ceccc8f2f00c1ac2eee53e068613a0a2b5ffe8d5fc894a5b2bc8bdbd473f70e9",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/recompiled.hbc": "7d7b496d7ae12d31012d6c9625f1021cb9cdf3c47a3dec1511b560d8344218c4",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/main.jsbundle.map": "906c6c6227e66435a1b09a190fe5e0e098f9abde71114b5dcacda5516e4dc4eb",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/recompiled.hbc.map": "6b1ac88fb00e7f05e4d59aa4b907ffbfc347975043472dad1b0aff3e4944d620",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/ios/main.jsbundle.composed.map": "921ff8e76481cf50eac8190ca14bb4b6354d5cb4789d341a70c13ea54a5d5323",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/index.android.bundle.exact.js": "17187f8df522a9b5ef406ab2bc01e19f3699f888c4425d066e38b621172c5594",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/recompiled.hbc": "787063e2eec684b16246ad35acdefb39be34ad849f9e6086054a7669d1041abf",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/index.android.bundle.map": "8b5a3a3a7713c62c87ec87c55f23df8c0bcb3adede7e84e0cb2b7ac2c8f60086",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/recompiled.hbc.map": "7e4e0c0e0e497de4aa31aaa5d2a6f6536a9f9a3ac390f45cc7f6ebd61d916b3e",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/android/index.android.bundle.composed.map": "8dd717ed17976055ce606d6411b1a9e92d509cede3d57c847f329d5a7d7a7501",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/backend-metadata-review.json": "d0158c9a38c14b6b7b0c9e196a54c67e594d024fdbea01da93a32e81e1f47107",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/map-chain-review.json": "deebdcadaa0743d689e6de5415c565a70d4cc03af8bd8be4498fd2d23bb31b01",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/export-maps.cjs": "3031b4c25d9564e1fb569d3cc88cc6eb7037a1e0be40c05f44ba78afc49685e8",
+    "reports/shared-dictionary-cefr/d13a84-diagnostics-20261024/read-backend-metadata.py": "d03c164256cec30ed1fc31ea61ccfbc24a913f1605dc0cf322e993a008afd4bb",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-verify-diagnostics-20261024.cjs": "a82db55bec0086e5d2c02e105c6434e7285fb075d870a9bde3cabc026816ad9a",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-diagnostics-review-20261024.md": "772ee7849f18314b28d42b7546f5719c53a6660a5644f93fd9a0f03019ca9c8f"
+  },
+  "tool_provenance": {
+    "node_modules/hermes-compiler/hermesc/osx-bin/hermesc": "459d352c9a3cfdbe9289a167d93f7e30700c6ee591dfee3a4d52dc26eb8548cb",
+    "node_modules/react-native/scripts/compose-source-maps.js": "59ec238e2d2dc4d614728fbfd912eddf77f8f96c6324f4ee40cb668f7f5eb5ed",
+    "node_modules/@sentry/react-native/scripts/copy-debugid.js": "e1298ada2970cf92df5e9afd346b5402bb6a5e4d37f4433e2202f0281102f8cf"
+  },
+  "supersedes_only": [
+    "R04 exact JavaScript maps not retained",
+    "R05 migration/function presence not yet observed"
+  ],
+  "open_conditions": [
+    "compatible native rollback",
+    "exact store delivery and eligibility",
+    "authenticated/offline/sync/5000-word qualification",
+    "baseline schema/policy/gateway/runtime verification",
+    "fresh protected backup and isolated restore",
+    "live delta and cohort queues",
+    "exact coordinated rehearsal",
+    "scoped execution approval"
+  ],
+  "tool_versions": {
+    "expo": "57.0.31",
+    "react-native": "0.86.3",
+    "@sentry/react-native": "8.25.0",
+    "hermes-compiler": "250829098.0.17",
+    "@jridgewell/trace-mapping": "0.3.31",
+    "hermes_release": "250829098.0.17",
+    "hermes_bytecode": 98
+  }
+}

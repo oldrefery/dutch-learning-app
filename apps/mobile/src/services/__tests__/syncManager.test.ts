@@ -1576,6 +1576,10 @@ describe('SyncManager', () => {
         data: { session: { ...createSession(3600), user: { id: 'user-2' } } },
         error: null,
       } as never)
+      jest.mocked(supabase.auth.getUser).mockResolvedValue({
+        data: { user: { id: 'user-2' } },
+        error: null,
+      } as Awaited<ReturnType<typeof supabase.auth.getUser>>)
       expect((await syncManager.performSync('user-2')).success).toBe(true)
       expect(networkUtils.setLastSyncTimestamp).toHaveBeenLastCalledWith(
         'user-2',
@@ -1748,6 +1752,115 @@ describe('SyncManager', () => {
       )
       expect(collectionRepository.deleteCollection).toHaveBeenCalledWith(
         localCollection.collection_id
+      )
+    })
+  })
+
+  describe('collection snapshot authentication', () => {
+    it.each(['signed-out', 'server-revoked', 'owner-aba'] as const)(
+      'preserves local collections and words after %s during an empty remote read',
+      async transition => {
+        const local = {
+          ...createMockCollection({ user_id: userId }),
+          sync_status: 'synced' as const,
+          last_sync_attempt_at: null,
+          synced_at: null,
+        }
+        jest
+          .mocked(collectionRepository.getCollectionsByUserId)
+          .mockResolvedValue([local])
+        const listeners: Parameters<
+          typeof supabase.auth.onAuthStateChange
+        >[0][] = []
+        jest
+          .mocked(supabase.auth.onAuthStateChange)
+          .mockImplementation(callback => {
+            listeners.push(callback)
+            return {
+              data: {
+                subscription: {
+                  id: 'collection-owner-test',
+                  callback,
+                  unsubscribe: jest.fn(),
+                },
+              },
+            }
+          })
+        const query = {
+          eq: jest.fn(async () => {
+            if (transition === 'server-revoked') {
+              jest.mocked(supabase.auth.getUser).mockResolvedValue({
+                data: { user: null },
+                error: new Error('Session not found'),
+              } as Awaited<ReturnType<typeof supabase.auth.getUser>>)
+            } else {
+              listeners.forEach(listener => listener('SIGNED_OUT', null))
+              if (transition === 'owner-aba')
+                listeners.forEach(listener =>
+                  listener('SIGNED_IN', {
+                    ...createSession(3600),
+                    expires_in: 3600,
+                    token_type: 'bearer',
+                    user: {
+                      id: userId,
+                      app_metadata: {},
+                      user_metadata: {},
+                      aud: 'authenticated',
+                      created_at: DEFAULT_TIMESTAMP,
+                    },
+                  })
+                )
+            }
+            return { data: [], error: null, count: 0 }
+          }),
+        }
+        mockSupabaseFrom(table => {
+          if (table === 'collections')
+            return {
+              select: jest.fn().mockReturnValue(query),
+              upsert: createUpsertMock(),
+            }
+          if (table === 'words')
+            return {
+              select: jest.fn().mockReturnValue(createWordsPullQuery()),
+              upsert: createUpsertMock(),
+            }
+          if (table === 'user_progress') return createProgressTable()
+          return {
+            select: jest.fn().mockReturnValue(createWordsPullQuery()),
+            upsert: createUpsertMock(),
+          }
+        })
+
+        const result = await syncManager.performSync(userId)
+
+        expect(result.success).toBe(false)
+        expect(wordRepository.deleteWordsByCollection).not.toHaveBeenCalled()
+        expect(collectionRepository.deleteCollection).not.toHaveBeenCalled()
+        expect(wordRepository.deleteOrphanWords).not.toHaveBeenCalled()
+        expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+      }
+    )
+
+    it('still reconciles an authoritative empty snapshot for the unchanged authenticated owner', async () => {
+      const local = {
+        ...createMockCollection({ user_id: userId }),
+        sync_status: 'synced' as const,
+        last_sync_attempt_at: null,
+        synced_at: null,
+      }
+      jest
+        .mocked(collectionRepository.getCollectionsByUserId)
+        .mockResolvedValue([local])
+      const result = await syncManager.performSync(userId)
+      expect(result.success).toBe(true)
+      expect(wordRepository.deleteWordsByCollection).toHaveBeenCalledWith(
+        local.collection_id,
+        userId,
+        { preservePendingImports: true }
+      )
+      expect(collectionRepository.deleteCollection).toHaveBeenCalledWith(
+        local.collection_id
       )
     })
   })
@@ -1929,6 +2042,47 @@ describe('SyncManager', () => {
       expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
         updatedAt: nextUpdatedAt,
         id: 'word-500',
+      })
+    })
+
+    it('hydrates only active cards when a fresh dictionary pull includes tombstones', async () => {
+      jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
+      const active = createPendingWord({
+        word_id: 'active-dictionary-card',
+        updated_at: nextUpdatedAt,
+        deleted_at: null,
+        sync_status: 'synced',
+      })
+      const tombstone = createPendingWord({
+        word_id: 'deleted-dictionary-card',
+        updated_at: nextUpdatedAt,
+        deleted_at: nextUpdatedAt,
+        sync_status: 'synced',
+      })
+      mockWordPull([active, tombstone])
+      jest
+        .mocked(dictionaryContentSync.pullRequired)
+        .mockImplementation(async (_owner, ids = []) => {
+          if (ids.includes(tombstone.word_id))
+            throw new Error('dictionary refresh owner mismatch')
+          return ids.length
+        })
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result.success).toBe(true)
+      expect(dictionaryContentSync.pullRequired).toHaveBeenCalledWith(userId, [
+        active.word_id,
+      ])
+      expect(wordRepository.saveRemoteWordTombstones).toHaveBeenCalledWith([
+        expect.objectContaining({
+          word_id: tombstone.word_id,
+          deleted_at: nextUpdatedAt,
+        }),
+      ])
+      expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
+        updatedAt: nextUpdatedAt,
+        id: tombstone.word_id,
       })
     })
 
