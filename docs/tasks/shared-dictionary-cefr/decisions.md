@@ -2563,3 +2563,13 @@ stricterACL preserved privately and superseded before sourcecommit/deployment;
 actual existing managed service_role grant retained and revalidated. Original dirty
 checkout and protected transfer bundle preserved; new worktree clean before this
 record. UnknownUSD0.56reserve remains held. No repeat new-PR operation.
+
+**AUTH-55 factual correction — Android availability resolved, no scope expansion.**
+
+Retained ADB logs after owner connection, including09:41UTC, contain the testHuawei.
+The earlier session summary incorrectly called them empty.10:05UTC read-only
+recheck confirms testHuawei online/mainpackage2.4.0(85), no launch/accountdataread.
+Correct existing review MD/JSON with explicit supersedes chain; preserve previous
+receipt/archive privately. Same22authorizedpaths, no source/binary change. Commit/
+push correction under AUTH55 before evaluating final-head CI. Android86stilldraft;
+no rollout/installoveraccount/merge/migration/flags/provider authority follows.

@@ -1,3 +1,24 @@
+**2026-10-25 — Android inventory correction; source repair unchanged.**
+
+The test Huawei is connected. Earlier absence claims in this session's summaries
+were incorrect: after the initial empty inventory, retained ADB logs show Huawei
+online after the owner's reply, including09:41UTC. At10:05UTC a read-only recheck
+confirms one test Huawei online and main packagecom.oldrefery.dutchlearningapp
+2.4.0(85). No app launch/account rows/device setting change. Both observed main-ID
+apps remain85; store86 installation/upgrade/recovery is still unverified. Android
+availability is resolved; Android86 remains only an internal draft, no rollout
+authority. Do not ask the owner to reconnect a device already confirmed online.
+
+Corrected the existing review MD/JSON with an explicit supersedes hash and protected
+prior receipt/MD/archive/check copies under before-android-inventory-correction/.
+New receipt binds30 inputs/9 sanitized archive members;47 prior TestFlight pins
+unchanged. No source code or binary changes. This correction is within AUTH-55's
+same22paths and must be committed/pushed before final-head CI verification. Existing
+PR125 has3commits througha1cf002; Quality40183149866 running, Lightweight success.
+Inspect the current head after correction; superseded runs cannot qualify it.
+No merge/apply/flags/provider/store/device execution. Original checkout preserved,
+mainaccount untouched, QAoff/USD0.56held.3fixedsteps+6later remain; Astra/High.
+
 **2026-10-25 — AUTH-55 completed: repair pushed and PR125 open; CI pending.**
 
 Authoritative working branch: feature/d13a84-capability-release in managed worktree

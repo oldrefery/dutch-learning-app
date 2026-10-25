@@ -5,7 +5,7 @@
   "stage_complete": false,
   "execution_authorized": false,
   "local_branch": "feature/d13a84-capability-release",
-  "local_head": "3699d7ccdde8e98b9cd21c0a06f3f5b468e8f6fd",
+  "local_head": "a1cf00249f164e788521a62a6a4cdedad6a08f56",
   "deployed_source_main": "37c197fd167afdf91dd6e89a52e498ef8d7b90f8",
   "source_files": [
     "supabase/migrations/20261025093000_add_dictionary_capability_release_gate.sql",
@@ -26,8 +26,8 @@
   "public_types_body_changed": false,
   "current_native_artifacts_changed": false,
   "main_iphone_observed_version": "2.4.0(85)",
-  "android_visible_at_checkpoint": false,
-  "owner_plans_android_connection": true,
+  "android_visible_at_checkpoint": true,
+  "owner_plans_android_connection": false,
   "direct_hosted_capability_execution": "read-only role denied42501; no grant/role bypass",
   "hosted_capability_evidence": "catalog function definitions and three runtime flags; inferred response, not authenticated E2E",
   "new_authenticated_hosted_or_device_tests": 0,
@@ -67,7 +67,7 @@
   "store_actions": 0,
   "device_launches": 0,
   "review_archive": "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/capability-release-review.tar.gz",
-  "review_archive_members": 8,
+  "review_archive_members": 9,
   "proposed_pr_title": "fix: gate dictionary capability advertisement",
   "remaining": {
     "fixed_stage_steps": 3,
@@ -78,9 +78,9 @@
     "scripts/postgres-tests/dictionary-capability-release.test.mjs": "6ca3aefed0c93e62b86edc011e109dd7aa6d33ccfcced4a3575b4d66ead97aab",
     "packages/supabase-contracts/target-schema.json": "03cf31fd1a6fb39655148396b695f5aae11cff5fdedb1c90298afc11c0669f5f",
     "packages/supabase-contracts/src/database.target.generated.ts": "c2dff0d6971485b382513ea2bb8c61daefc3a4af40bd9d782cd1057c5f94c3fa",
-    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-capability-release-review-20261025.md": "f111efd07c423256e1e92b7d8e97bceeedd70256b240953d53af09f93c77c497",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-capability-release-review-20261025.md": "18e6e66ce5d2c831f68789c5718fcaab8001155b0f8f5b3791737dc013c57e8b",
     "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-testflight-outcome-20261025.json": "edecf60cbf268d8acb8335851d3dc083af2d976871f970029ac48787d3536c2d",
-    "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/capability-release-review.tar.gz": "ecbd797ce8a6c0e915f6205dc2b4157f04e8f9a4eee0b74c42c1ec3efcba7d7b",
+    "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/capability-release-review.tar.gz": "b7949ea2815fe54eff6ffa1ab92cd12f9d5efb33ab886c8f3841da324b72f6ae",
     "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/checks.json": "59993d1ee07a8d53a7400450ba802292b1f9ab5108e0f5059a83e9bee941c6ed",
     "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/source-carry-review.json": "7794c81f896d1166eb1b65ebf3451bbf44dc1914b9859e1ad2011d5ec21bcde0",
     "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/capability-definitions.json": "98b9fa02751c25a4f8046901616f84593b56b740036b883162577ea723917201",
@@ -98,11 +98,20 @@
     "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/target-contract-image-preflight.json": "688135bbb2fbd91c1056f4fcc797b5572e22fdf4eb133907033acd051d729815",
     "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/resource-cleanup.json": "7aec4fac7c63c2444fabc62c6f4222418047a82539b8e5a13efb465dc2ac999d",
     "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/proposed-pr-body.md": "2e6d6d38ab7e9b142fbb0c9b391a01e5a386fdfd6eba1a9eaa705c003f56bb25",
-    "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/read-capability-definitions.py": "58fbf3742f6e674941f3667cebe82fff954cba50e28795965ad8f9a415a6d45f"
+    "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/read-capability-definitions.py": "58fbf3742f6e674941f3667cebe82fff954cba50e28795965ad8f9a415a6d45f",
+    "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/android-current-correction.log": "3ceb54b9c46b0fbaae1a9047e42abaf44230153cdf7dfdda8c9fa7cce3084ece",
+    "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/android-main-package-correction.log": "81b8564ae88dd6e180d0bae4b71e63d2fa8fd4fac92256aec3d874295aaebfc0",
+    "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/android-inventory-correction.json": "f069c9b6db00ee139be2f0a1eac82fba33cc76bc0b7e92c50cfc399397ceb2d7",
+    "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/before-android-inventory-correction/D13A.8.4-capability-release-review-20261025.json": "60736daa3a824793e8467237f7ca4c5ff6799d16b90abe3bb94b86be38a67290",
+    "reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/before-android-inventory-correction/capability-release-review.tar.gz": "ecbd797ce8a6c0e915f6205dc2b4157f04e8f9a4eee0b74c42c1ec3efcba7d7b"
   },
   "git_authority": "AUTH-55: new feature branch from main, scoped commits, push and PR; no merge",
   "managed_service_role_grant_preserved": true,
   "initial_acl_candidate_superseded_before_commit": true,
   "local_worktree": "/Users/devrush/.codex/worktrees/d13a84-capability-release/DutchLearningApp",
-  "original_checkout_preserved": "/Users/devrush/code/pet/DutchLearningApp"
+  "original_checkout_preserved": "/Users/devrush/code/pet/DutchLearningApp",
+  "owner_connected_test_android": true,
+  "android_main_package_observed_version": "2.4.0(85)",
+  "review_supersedes_sha256": "60736daa3a824793e8467237f7ca4c5ff6799d16b90abe3bb94b86be38a67290",
+  "correction": "ADB inventory was misclassified in the prior summary; raw logs already showed the connected test Huawei. Corrected with read-only metadata; no code change."
 }

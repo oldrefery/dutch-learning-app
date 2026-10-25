@@ -7420,3 +7420,17 @@ checkpoint records pending and must be followed by actual final-head verificatio
 AUTH55Gitoperation fulfilled, no merge/apply/flags/provider/store/native/device/8.5.
 Originaldirtycheckout/bundles retained, primaryaccounts untouched, QAoff/USD0.56held.
 Threefixedsteps8.4–8.6 andsixlatermilestones remain; continueAstra/High.
+
+## 2026-10-25 — Android inventory reconciliation before final review
+
+Detected an incorrect absence classification in the session summary: initial ADB
+was empty, but after owner connection retained logs (including09:41UTC) already
+showed the testHuawei online. Read-only10:05UTC recheck confirms one testHuawei,
+mainpackage2.4.0(85), no applaunch/account reads/settings. Androidavailability
+resolved, store86upgrade still unverified/internaldraftunchanged. Correct existing
+review MD/JSON with explicit supersedes hash and protected previous receipt/archive;
+30newinputpins/9sanitizedmembers,47priorTestFlightpins intact. No code/binary delta.
+Same22approvedpaths; correction commit/push and actual final-head CI remain next.
+PR125head a1cf002/3commits currently, Lightweightgreen/Qualityrunning; superseded
+checks cannot qualify a laterhead. No merge/apply/flags/provider/store/device/8.5.
+Primaryaccounts untouched, QAoff/USD0.56held;3fixedsteps+6later remain; Astra/High.
