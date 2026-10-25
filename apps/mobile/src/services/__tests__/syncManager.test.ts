@@ -119,6 +119,8 @@ jest.mock('@/db/wordRepository', () => ({
     getWordsByUserId: jest.fn().mockResolvedValue([]),
     preserveLegacyPendingContent: jest.fn().mockResolvedValue(undefined),
     saveWords: jest.fn().mockResolvedValue(undefined),
+    getAcknowledgedLearningWordIds: jest.fn().mockResolvedValue([]),
+    reconcileAcknowledgedLearning: jest.fn().mockResolvedValue(undefined),
     saveRemoteWordTombstones: jest.fn().mockResolvedValue(undefined),
     getPendingSyncWords: jest.fn().mockResolvedValue([]),
     getDeletedWords: jest.fn().mockResolvedValue([]),
@@ -356,6 +358,9 @@ describe('SyncManager', () => {
     jest.clearAllMocks()
     syncManager = new SyncManager()
     jest.mocked(wordRepository.getPendingSyncWords).mockResolvedValue([])
+    jest
+      .mocked(wordRepository.getAcknowledgedLearningWordIds)
+      .mockResolvedValue([])
     jest.mocked(supabase.rpc).mockResolvedValue({
       data: 2,
       error: null,
@@ -2507,6 +2512,55 @@ describe('SyncManager', () => {
           { event_id: eventId, created_at: SERVER_TIMESTAMP },
         ])
         expect(dictionaryContentSync.push).not.toHaveBeenCalled()
+        expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+      } finally {
+        if (previous === undefined)
+          delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+        else process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = previous
+      }
+    })
+
+    it('refreshes acknowledged pending words behind the cursor with dictionary gates unavailable', async () => {
+      const previous = process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+      process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+      const incoming = createPendingWord({ word_id: REMOTE_WORD_ID })
+      const range = jest
+        .fn()
+        .mockResolvedValue({ data: [incoming], error: null })
+      const query = createWordsPullQuery(range)
+      installReviewEventTable(createReviewEventTable(), query)
+      jest.mocked(networkUtils.getSyncCursor).mockResolvedValue({
+        updatedAt: SERVER_TIMESTAMP,
+        id: 'already-past-word',
+      })
+      jest
+        .mocked(wordRepository.getAcknowledgedLearningWordIds)
+        .mockResolvedValueOnce([REMOTE_WORD_ID])
+      try {
+        const result = await syncManager.performSync(userId)
+        expect(result).toMatchObject({
+          success: false,
+          error: 'Dictionary content protocol is unavailable',
+        })
+        expect(query.gte).toHaveBeenCalledTimes(1)
+        expect(query.in).toHaveBeenCalledWith('word_id', [REMOTE_WORD_ID])
+        expect(
+          wordRepository.reconcileAcknowledgedLearning
+        ).toHaveBeenCalledWith(userId, [
+          expect.objectContaining({ word_id: REMOTE_WORD_ID }),
+        ])
+        expect(wordRepository.saveWords).toHaveBeenCalledWith(
+          [expect.objectContaining({ word_id: REMOTE_WORD_ID })],
+          { preserveUnsynced: true }
+        )
+        expect(networkUtils.setSyncCursor).not.toHaveBeenCalledWith(
+          userId,
+          'words',
+          expect.anything()
+        )
+        expect(
+          reviewEventRepository.reconcilePushedEvents
+        ).not.toHaveBeenCalled()
         expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
       } finally {
         if (previous === undefined)

@@ -27,6 +27,7 @@ import { wordToDictionaryContent } from './dictionaryContentMapping'
 import { recordExplicitImportMove } from './dictionaryImportPlacementRepository'
 import { queueImportDeletion } from './dictionaryImportDeletionRepository'
 import { dictionaryImportRepository } from './dictionaryImportRepository'
+import { canonicalDictionaryJson } from './dictionaryFollowingHydration'
 
 const requireDictionaryOverrides = (value: unknown) => {
   const result = parseDictionaryContentOverrides(value)
@@ -99,6 +100,29 @@ const UNSYNCED_STATUSES = new Set<SyncStatus>([
   'conflict',
   'deleted',
 ])
+
+// A review marks the legacy word pending as well as queueing its event. Only
+// consider that residue after the event and every other local operation settle.
+const ACKNOWLEDGED_LEARNING_WORD_SQL = `
+  SELECT words.* FROM words
+  WHERE user_id = ? AND sync_status = 'pending' AND deleted_at IS NULL
+    AND EXISTS (SELECT 1 FROM review_events e
+      WHERE e.user_id = words.user_id AND e.word_id = words.word_id
+        AND e.sync_status = 'synced'
+        AND julianday(e.reviewed_at) = julianday(words.last_reviewed_at)
+        AND julianday(e.reviewed_at) = julianday(words.updated_at))
+    AND NOT EXISTS (SELECT 1 FROM learning_commands l WHERE l.word_id = words.word_id)
+    AND NOT EXISTS (SELECT 1 FROM review_events e
+      WHERE e.word_id = words.word_id AND e.sync_status <> 'synced')
+    AND NOT EXISTS (SELECT 1 FROM review_corrections r
+      WHERE r.word_id = words.word_id AND r.status <> 'synced' AND r.resolved_at IS NULL)
+    AND NOT EXISTS (SELECT 1 FROM review_correction_recovery r WHERE r.word_id = words.word_id)
+    AND NOT EXISTS (SELECT 1 FROM dictionary_content_commands c WHERE c.word_id = words.word_id)
+    AND NOT EXISTS (SELECT 1 FROM dictionary_import_intents i WHERE i.word_id = words.word_id)
+    AND NOT EXISTS (SELECT 1 FROM dictionary_import_recovery_outbox r WHERE r.word_id = words.word_id)
+    AND NOT EXISTS (SELECT 1 FROM dictionary_import_delivery d WHERE d.word_id = words.word_id
+      AND (d.acknowledged_placement_revision IS NULL OR d.local_placement_revision > d.acknowledged_placement_revision))
+`
 
 const CHECK_EXISTING_WORD_SQL = `
   SELECT word_id, sync_status, updated_at, deleted_at,
@@ -246,6 +270,63 @@ export class WordRepository {
 
   private toNullableSqlValue(value: string | null | undefined): string | null {
     return value || null
+  }
+
+  async getAcknowledgedLearningWordIds(userId: string): Promise<string[]> {
+    const db = await getDatabase()
+    const rows = await db.getAllAsync<{ word_id: string }>(
+      `SELECT word_id FROM (${ACKNOWLEDGED_LEARNING_WORD_SQL})`,
+      [userId]
+    )
+    return rows.map(row => row.word_id)
+  }
+
+  async reconcileAcknowledgedLearning(
+    userId: string,
+    canonicalWords: Word[]
+  ): Promise<void> {
+    if (canonicalWords.length === 0) return
+    const db = await getDatabase()
+    const syncedAt = new Date().toISOString()
+    await db.withExclusiveTransactionAsync(async transaction => {
+      for (const canonical of canonicalWords) {
+        if (canonical.user_id !== userId) continue
+        const row = await transaction.getFirstAsync<Record<string, unknown>>(
+          `${ACKNOWLEDGED_LEARNING_WORD_SQL} AND words.word_id = ?`,
+          [userId, canonical.word_id]
+        )
+        if (!row) continue
+        const local = this.parseWordRow(row)
+        // Timestamp equality with the event alone cannot prove a learning-only
+        // change: a review may have overwritten an earlier content-edit timestamp.
+        // Compare every persisted content, placement and SRS value instead.
+        const comparable = (word: Word) =>
+          this.getContentAndProgressValues(
+            {
+              ...word,
+              last_reviewed_at: word.last_reviewed_at
+                ? new Date(word.last_reviewed_at).toISOString()
+                : null,
+            },
+            canonicalDictionaryJson
+          )
+        if (
+          JSON.stringify(comparable(local)) !==
+          JSON.stringify(comparable(canonical))
+        )
+          continue
+        await transaction.runAsync(
+          `UPDATE words SET sync_status = 'synced', updated_at = ?,
+            last_sync_attempt_at = ?, synced_at = ?
+           WHERE word_id = ? AND user_id = ?`,
+          canonical.updated_at,
+          syncedAt,
+          syncedAt,
+          canonical.word_id,
+          userId
+        )
+      }
+    })
   }
 
   async saveWords(
@@ -501,6 +582,21 @@ export class WordRepository {
     syncedAt: string | null = null
   ): SQLiteBindValue[] {
     return [
+      ...this.getContentAndProgressValues(word),
+      this.toSqlValue(word.created_at),
+      this.toSqlValue(word.updated_at),
+      deletedAt,
+      syncStatus,
+      null,
+      syncedAt,
+    ]
+  }
+
+  private getContentAndProgressValues(
+    word: Word,
+    serialize: (value: unknown) => string = JSON.stringify
+  ): SQLiteBindValue[] {
+    return [
       this.toNullableSqlValue(word.collection_id),
       this.toSqlValue(word.dutch_lemma),
       this.toNullableSqlValue(word.dutch_original),
@@ -515,11 +611,11 @@ export class WordRepository {
       this.toNullableSqlValue(word.article),
       this.toNullableSqlValue(word.plural),
       this.toNullableSqlValue(word.register),
-      JSON.stringify(this.toSqlValue(word.translations) || []),
-      word.examples ? JSON.stringify(word.examples) : null,
-      JSON.stringify(this.toSqlValue(word.synonyms) || []),
-      JSON.stringify(this.toSqlValue(word.antonyms) || []),
-      word.conjugation ? JSON.stringify(word.conjugation) : null,
+      serialize(this.toSqlValue(word.translations) || []),
+      word.examples ? serialize(word.examples) : null,
+      serialize(this.toSqlValue(word.synonyms) || []),
+      serialize(this.toSqlValue(word.antonyms) || []),
+      word.conjugation ? serialize(word.conjugation) : null,
       this.toNullableSqlValue(word.preposition),
       this.toNullableSqlValue(word.image_url),
       this.toNullableSqlValue(word.tts_url),
@@ -529,13 +625,7 @@ export class WordRepository {
       this.toSqlValue(word.next_review_date),
       this.toNullableSqlValue(word.last_reviewed_at),
       this.toNullableSqlValue(word.analysis_notes),
-      word.usage_notes ? JSON.stringify(word.usage_notes) : null,
-      this.toSqlValue(word.created_at),
-      this.toSqlValue(word.updated_at),
-      deletedAt,
-      syncStatus,
-      null,
-      syncedAt,
+      word.usage_notes ? serialize(word.usage_notes) : null,
     ]
   }
 
