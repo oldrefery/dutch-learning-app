@@ -1,0 +1,54 @@
+{
+  "packet_type": "D13A.8.4-upload-certificate-comparison",
+  "observed_at": "2026-10-24T23:52:10.842463+00:00",
+  "evidence_source": "Owner supplied the public SHA256 after instructions to copy Play Console App signing / Upload key. Not an independently retrieved remote certificate.",
+  "owner_supplied_sha256": "764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc",
+  "actual_aab_signer_sha256": "764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc",
+  "matches": true,
+  "artifact": "builds/app-2.5.0-86-nds-fixed.aab",
+  "artifact_sha256": "34a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554",
+  "package": "com.oldrefery.dutchlearningapp",
+  "version": "2.5.0",
+  "build": 86,
+  "keytool_read_succeeded": true,
+  "prior_signature_validation_still_bound_by_unchanged_artifact_hash": true,
+  "prior_internal_check_inputs_verified": 28,
+  "prior_internal_packet_sha256": "dc27360c9ed154a590be9fe75ee2d27bf40e4b02f3cc8dadabda307053e90eca",
+  "files_sha256": {
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-internal-checks-20261025.json": "dc27360c9ed154a590be9fe75ee2d27bf40e4b02f3cc8dadabda307053e90eca",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/upload-certificate-keytool.log": "30c8ef9292ce7b19a0f37277cebc68c1e3295c44418a945a0b26549521855d80",
+    "builds/app-2.5.0-86-nds-fixed.aab": "34a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554"
+  },
+  "play_acceptance_or_delivery_proven": false,
+  "uploads": 0,
+  "key_changes": 0,
+  "new_builds": 0,
+  "release_authorized": false,
+  "stage_complete": false,
+  "remaining": {
+    "fixed_stage_steps": 3,
+    "later_major_milestones": 6
+  },
+  "next_operation_proposal": {
+    "authorized": false,
+    "platform": "android",
+    "track": "internal",
+    "release_status": "draft",
+    "operation": "Create one internal draft and upload only the pinned 2.5.0(86) AAB once; inspect acceptance and stop before rollout.",
+    "preconditions": [
+      "Fresh personal Play application identity",
+      "Version86 still unused",
+      "Unchanged pinned AAB hash and signature",
+      "Current OTA/backend state and exact operation boundary reviewed"
+    ],
+    "excluded": [
+      "Rollout/publication",
+      "Tester-list edits",
+      "OTA or backend activation",
+      "New builds/certificates",
+      "Paid/provider requests",
+      "Primary-account/device operations"
+    ],
+    "note": "This is a local review proposal, not upload or publication authority."
+  }
+}

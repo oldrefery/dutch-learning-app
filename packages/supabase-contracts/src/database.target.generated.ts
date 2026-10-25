@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261011220000_bind_dictionary_observed_model_versions.sql.
+// Generated from local migrations through 20261025093000_add_dictionary_capability_release_gate.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string

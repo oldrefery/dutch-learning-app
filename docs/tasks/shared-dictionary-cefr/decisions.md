@@ -2427,3 +2427,149 @@ continuing remaining D13A.8.4 release checks. No merge, application publication,
 activation, certificate changes, new paid requests or next-stage execution follows.
 Preserve canonical frozen evidence and private artifacts; publish only reviewed
 source and sanitized task evidence. Existing signers/device accounts remain intact.
+
+## AUTH-52 — PR124 protected squash merge and internal-testing preparation
+
+Owner explicitly approves squash merge of PR124 at head
+375408186b5b60f42bb8a2ecd827e3eaf3cfbef5 into main, including its automatic
+Vercel production web deployment. Recheck exact head and required checks; use
+expected-head protection and preserve the dirty feature-branch checkout. No
+administrator bypass or branch deletion. Verify the merged source and resulting
+production deployment with unauthenticated read-only smoke checks.
+
+Android destination is INTERNAL TESTING preparation only. No store upload,
+release creation/publication, OTA, backend activation, new build, certificate
+change, paid/provider request, primary-account operation or next-stage execution
+is authorized. AUTH-51 source/PR work remains distinct. Unknown USD0.56 stays held.
+Operation root: reports/shared-dictionary-cefr/d13a84-merge-20261024/.
+
+**AUTH-52 outcome — merge and automatic production web verified.**
+
+PR124 squash37c197fd167afdf91dd6e89a52e498ef8d7b90f8 merged once with expected-head
+guard at21:57:02UTC October24. Whole tree equals approved3754081. Production
+dpl_G4K7vxtxJXNCTsYq7QahGPunt4VZ READY; exact source, words domain and four public
+smoke results verified. Main Lightweight passed; push Quality40136442002 pending
+at checkpoint. Source/old native artifacts unchanged; no new build/certificate or
+backend/provider action. Local internal-only preparation MD/JSON ready for owner
+review; no store form edit/save/upload/release. The one merge scope is consumed.
+Fresh mobile publication/OTA/activation/paid/provider/primary-account/8.5 authority
+is not granted. Remaining access/compatibility/operator/policy/fresh-boundary gates
+persist. Eight checkpoint documents remain local-only on the preserved feature
+checkout; private reports ignored. UnknownUSD0.56 remains held.
+
+**2026-10-25 — AUTH-52 read-only preparation follow-up; no scope expansion.**
+
+Main Quality40136442002 and all associated jobs completedSUCCESS on37c197f;
+Lightweight passed. Available Android internal packet checks completed: unchanged
+artifact/canonical/maps, current internal/draft configuration, personal Play track
+and version inventory, identity-gated personal EAS/channel/runtime OTA metadata.
+Google permits internal testing before full setup; public assets/iOS inventory
+remain separate broader gates. This correction changes prerequisite classification,
+not publication authority. Existing tester list4users observed without editing or
+reading emails; no new audience approval inferred. Upload-certificate comparison
+awaits only a PUBLIC owner-supplied SHA256; no key reset/credential action. No upload,
+newbuild/certs, activation/paid/provider/primaryaccount/commit/push/8.5 authorized
+or performed. UnknownUSD0.56held; broad8.4 preservation/delivery/repair holds persist.
+
+**2026-10-25 — public upload fingerprint supplied; verification only.**
+
+Owner supplies the requested public Play Upload key SHA256. It exactly matches
+fresh actual-AAB certificate764dbff7... and unchanged pinned artifact34a7759b....
+This resolves the fingerprint question and comparison gate, without expanding
+AUTH-52. No upload/draft creation/rollout, account/key/build/provider or8.5 authority.
+Evidence D13A.8.4-upload-certificate-20261025.json preserves owner-attested source.
+
+## AUTH-53 — one Android build86 upload to an internal-testing draft
+
+Owner authorizes uploading the existing signed AAB2.5.0(86), SHA256
+34a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554, for package
+com.oldrefery.dutchlearningapp to the personal Play app4973515322279519779 in
+developer7222292767747034150, INTERNAL TESTING, saved as DRAFT only. Existing
+public upload certificate comparison passed. Verify current app/account/version
+availability and artifact hash; reconcile uncertain upload outcomes before retries.
+No rollout, publication/review submission, OTA, backend flag changes, tester edits,
+new builds/certificates, primary-account/device actions, paid/provider calls or8.5.
+Operation root:reports/shared-dictionary-cefr/d13a84-internal-draft-20261025/.
+
+**AUTH-53 outcome — fulfilled and consumed; internal draft only.**
+
+Owner manually uploaded the pinned local2.5.0(86) AAB after the extension refused
+fileURLaccess. Independent Console verifies artifact4860244320809747751/release7/
+internal track4701630533941298146 with Draft status and savedchanges. Old85 remains
+Available to internal testers. No agentfiletransfer orEAS Submit occurred; no key/
+permission changes. CurrentAABhash unchanged, remoteoriginalnotdownloaded; owner
+fileprovenance disclosed. Postupload backend allnewgatesOFF; no OTA/flag/provider/
+primaryaccount/newbuild/commit/push action. Singleupload authorityconsumed, no retries
+or rollout authority. Outcome D13A.8.4-internal-draft-outcome-20261025.md/.json;
+fixed8.4 and later operation/preservation/device gates remainopen. USD0.56held.
+
+**2026-10-25 — continuation and owner-restored iOS access, no scope expansion.**
+
+Owner asks to continue and then verify the restored App Store Connect session.
+Read-only inventory access is resolved. Existing Team(Expo) has automatic Xcode
+build distribution to3testers. Any next IPA upload must explicitly account for
+possible automatic internal delivery; current continuation does not approve it.
+No automatic-distribution setting, group membership, upload or rollout changed.
+Exact delivery proposal is local in D13A.8.4-delivery-review-20261025.md. AUTH53
+remains consumed; prior no-publication/no-primary-account constraints persist.
+
+## AUTH-54 — existing IPA86 upload to TestFlight with automatic internal delivery
+
+Owner explicitly authorizes uploading the existing IPA2.5.0(86), SHA256
+a44f6162c10599f3d63e40d96c46f553fd406be82d8f028aab3d2c99db3b7b5b,
+for com.oldrefery.dutch-learning-app / ASC6752469146 / Apple team7FQ395U52U,
+to TestFlight, including automatic delivery to the existing Team(Expo) internal
+group5e99b483-870c-4240-b01e-ad0d15a1a206 with3testers. Recheck current inventory,
+exact file, personal account/project and existing group before upload. Reconcile
+submission IDs/processing state before any retry. Reuse existing credentials only.
+No new build, certificate/key, tester/group expansion, external testing, App Store
+review/public release, Android rollout, OTA, backend/provider/linking, primary-app
+operation, Git commit/push or general8.5 authority. Operation checkpoint:
+reports/shared-dictionary-cefr/d13a84-testflight-upload-20261025/operation.json.
+
+**AUTH-54 outcome — fulfilled and consumed.**
+
+One pinnedIPAa44f6162... upload through existingpersonalEAS/project/ASCkey succeeded.
+Submissionf7103f00-5737-4804-a766-3cb6729fd1ea FINISHED09:11:58UTC/noerror. Applebuild
+86c4a397-4b2b-4460-869b-f4777976bfed /2.5.0(86) nowTesting in exactexistingTeam(Expo)
+group, still3testers/builds7→8/old85Testing. Existingautomaticdelivery and explicitly
+selectedsamegroup; no audience expansion, newkey/cert/build or device operation.
+Storeavailability verified, actualinstallation notinferred. Version86occupied;
+no further upload or different distribution scope. OutcomeMD/JSON and privateproofs
+retained. No AppStore review/external/Androidrollout/OTA/backend/provider/primary
+account/Git/general8.5 action. Remaining8.4 gates andUSD0.56reserve unchanged.
+
+## AUTH-55 — new capability repair branch, commits, push and PR
+
+Owner authorizes a new feature branch from main, commits of the capability repair
+and accumulated checkpoint (22files), branch push and a new PR. No merge, production
+migration, flag activation, provider call, native build/store operation or device
+mutation follows. Preserve the current dirty feature3754081 checkout/task bundle.
+Before commit, preserve the managed production service_role capability grant found
+in the retained metadata; do not apply the minimal fixture's stricter default ACL
+to production. Update the regression/review packet and repeat affected validation.
+
+**AUTH-55 outcome — branch, commits, push and PR fulfilled.**
+
+New feature/d13a84-capability-release based on fresh main37c197f. Source3699d7c and
+checkpointc624c57 pushed, exact22approvedpaths independently confirmed by PR125:
+https://github.com/oldrefery/dutch-learning-app/pull/125, initialheadc624c577,2commits,
+open/unmerged/no conflicts. Normal hooks2737mobile/22snapshots,1252web/one existing
+skip pass. PR attached. Initial Quality40182915985 queued, Lightweight40182915968
+running/Vercel pending; no green claim. This outcome checkpoint may be committed/
+pushed under the same22-file scope; inspect its final head/CI separately. No merge
+or productionmigration/flag/provider/store/native/device/8.5 authority. Initial
+stricterACL preserved privately and superseded before sourcecommit/deployment;
+actual existing managed service_role grant retained and revalidated. Original dirty
+checkout and protected transfer bundle preserved; new worktree clean before this
+record. UnknownUSD0.56reserve remains held. No repeat new-PR operation.
+
+**AUTH-55 factual correction — Android availability resolved, no scope expansion.**
+
+Retained ADB logs after owner connection, including09:41UTC, contain the testHuawei.
+The earlier session summary incorrectly called them empty.10:05UTC read-only
+recheck confirms testHuawei online/mainpackage2.4.0(85), no launch/accountdataread.
+Correct existing review MD/JSON with explicit supersedes chain; preserve previous
+receipt/archive privately. Same22authorizedpaths, no source/binary change. Commit/
+push correction under AUTH55 before evaluating final-head CI. Android86stilldraft;
+no rollout/installoveraccount/merge/migration/flags/provider authority follows.

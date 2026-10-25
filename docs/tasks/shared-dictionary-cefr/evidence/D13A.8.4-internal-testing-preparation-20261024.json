@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "stage": "D13A.8.4",
+  "authority": "AUTH-52",
+  "status": "local_draft_not_for_execution",
+  "executable": false,
+  "distribution": {
+    "android_track": "internal",
+    "ios_destination": null,
+    "uploads_authorized": false,
+    "publication_authorized": false,
+    "closed_testing_selected": false,
+    "production_selected": false
+  },
+  "candidate": {
+    "version": "2.5.0",
+    "build": 86,
+    "merged_source": "37c197fd167afdf91dd6e89a52e498ef8d7b90f8",
+    "approved_head": "375408186b5b60f42bb8a2ecd827e3eaf3cfbef5",
+    "tree": "52fd292dcfbec61b68ca93dee493c45c0e4443ae",
+    "android": {
+      "path": "builds/app-2.5.0-86-nds-fixed.aab",
+      "sha256": "34a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554",
+      "package": "com.oldrefery.dutchlearningapp",
+      "upload_signer_sha256": "764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc",
+      "runtime": "82a893fa72d70cd47dbf85272bf3028463e9f58d",
+      "channel": "production",
+      "updates_enabled": true
+    },
+    "ios": {
+      "path": "builds/app-2.5.0-86-nds-fixed.ipa",
+      "sha256": "a44f6162c10599f3d63e40d96c46f553fd406be82d8f028aab3d2c99db3b7b5b",
+      "submission_prepared": false
+    }
+  },
+  "metadata_candidate": {
+    "locale": "en-US",
+    "name": "De Woordenaar",
+    "short_description": "Learn Dutch vocabulary with flashcards and spaced repetition",
+    "full_description": "Build your Dutch vocabulary with De Woordenaar.\n\nOrganize words into personal collections and practice with flashcard reviews. Use available word details and examples to support your learning, and keep track of your review progress.\n\nReview previously synchronized cards offline. When you reconnect, synchronize your progress across your signed-in devices. An account and an internet connection are required for initial setup and synchronization. Online features depend on service availability.\n\nThis internal test focuses on synchronization reliability, offline review recovery and navigation through large word collections. Features available in the app can depend on the current configuration.",
+    "release_notes": "Improved synchronization when words are deleted or an authentication session changes.\nImproved offline review recovery and navigation through large word collections.",
+    "saved_in_console": false,
+    "owner_copy_approval": false
+  },
+  "required_assets": [
+    {
+      "kind": "app_icon",
+      "width": 512,
+      "height": 512,
+      "format": "32-bit PNG",
+      "max_bytes": 1048576,
+      "ready": false
+    },
+    {
+      "kind": "feature_graphic",
+      "width": 1024,
+      "height": 500,
+      "format": "JPEG or 24-bit PNG without alpha",
+      "ready": false
+    },
+    {
+      "kind": "phone_screenshots",
+      "minimum_count": 2,
+      "recommended_candidate_count": 4,
+      "proposed_width": 1080,
+      "proposed_height": 1920,
+      "format": "JPEG or 24-bit PNG without alpha",
+      "ready": false,
+      "content": "Synthetic account only; collections, review, word details and progress"
+    }
+  ],
+  "fresh_pre_upload_gates": [
+    "Exact AAB hash and signature",
+    "Personal Play account and app identity",
+    "Version 86 availability; prior absence is not reservation",
+    "Play upload certificate matches AAB signer",
+    "Current internal track and tester cohort selected by owner",
+    "Store/API required fields and assets complete for selected track",
+    "OTA channel production risk reviewed; no OTA or channel change implied",
+    "Backup/delta/queue preservation and compatible installed-client upgrade/rollback qualified",
+    "Exact scoped upload/release authority; no automatic provider/backend activation"
+  ],
+  "rollback": {
+    "web_previous_ready_deployment": "dpl_FRfe4t8nwMVw1qBNZ36zWwZLEvqj",
+    "web_previous_commit": "165501a0f547765011630fdab04ba0654ac75626",
+    "backend": "Keep new database and endpoint gates OFF; do not reverse applied migrations or restore over concurrent personal writes.",
+    "android": "Do not promise version-code downgrade or uninstall/clear-data recovery. Hold further distribution and qualify a separately signed forward corrective build plus preservation before a release operation.",
+    "ios": "No store operation selected; old build 85 / repair OTA compatibility remains open.",
+    "executed": false
+  },
+  "holds": [
+    "Fresh Apple inventory blocked by login",
+    "Missing visual assets and owner copy approval",
+    "Terms page product spelling differs from current name; owner review pending",
+    "Play upload signer comparison unverified",
+    "Actual store delivery, compatible main-ID upgrade and rollback unqualified",
+    "Paired performance and enabled hosted provider/client paths unqualified",
+    "Full Auth/Storage/Vault/device/off-machine-key disaster recovery outside scoped B01"
+  ],
+  "paid_calls_authorized": false,
+  "unknown_provider_reserve_usd": "0.56",
+  "sources": [
+    "https://support.google.com/googleplay/android-developer/answer/9859152?hl=en",
+    "https://support.google.com/googleplay/android-developer/answer/9866151?hl=en"
+  ]
+}
