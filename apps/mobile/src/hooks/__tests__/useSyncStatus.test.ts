@@ -28,6 +28,8 @@ const snapshot = (lastSyncAt: string | null = null): SyncStatusSnapshot => ({
   pendingWords: 0,
   pendingCollections: 0,
   pendingProgress: 0,
+  pendingUploads: 0,
+  pendingDownloads: 0,
   totalPending: 0,
   lastSyncAt,
   isOnline: true,

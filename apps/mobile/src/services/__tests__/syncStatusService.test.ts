@@ -1,3 +1,4 @@
+import { getLearningSyncStatusWordIds } from '@/db/learningSyncStatus'
 import { dictionaryImportDeliveryRepository } from '@/db/dictionaryImportDeliveryRepository'
 import { dictionaryImportRecoveryRepository } from '@/db/dictionaryImportRecoveryRepository'
 import { wordRepository } from '@/db/wordRepository'
@@ -12,6 +13,12 @@ import { dictionaryPersonalRefreshRepository } from '@/db/dictionaryPersonalRefr
 import { dictionaryImportRepository } from '@/db/dictionaryImportRepository'
 import { dictionaryContentRepository } from '@/db/dictionaryContentRepository'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+jest.mock('@/db/learningSyncStatus', () => ({
+  getLearningSyncStatusWordIds: jest.fn().mockResolvedValue({
+    uploadWordIds: [],
+    downloadWordIds: [],
+  }),
+}))
 jest.mock('@/db/dictionaryImportDeliveryRepository', () => ({
   dictionaryImportDeliveryRepository: {
     getDebtWordIds: jest.fn().mockResolvedValue([]),
@@ -81,6 +88,10 @@ const SHARED_WORD_ID = 'shared-word'
 
 beforeEach(() => {
   jest.clearAllMocks()
+  jest.mocked(getLearningSyncStatusWordIds).mockResolvedValue({
+    uploadWordIds: [],
+    downloadWordIds: [],
+  })
   jest.mocked(isDictionaryContentEnabled).mockReturnValue(false)
   jest
     .mocked(dictionaryContentRepository.getPendingCommands)
@@ -333,4 +344,56 @@ describe('temporary SQLite contention', () => {
     expect(wordRepository.getWordsByUserId).toHaveBeenCalledTimes(1)
     expect(jest.getTimerCount()).toBe(0)
   })
+})
+
+it('separates missing content from uploads without discarding retained work', async () => {
+  jest.mocked(isDictionaryContentEnabled).mockReturnValue(true)
+  jest
+    .mocked(dictionaryContentRepository.getMissingCardWordIds)
+    .mockResolvedValue(['download', 'overlap'])
+  jest.mocked(wordRepository.getPendingSyncWords).mockResolvedValue([
+    {
+      ...createMockWord({ word_id: 'overlap' }),
+      sync_status: 'pending',
+      deleted_at: null,
+      last_sync_attempt_at: null,
+      synced_at: null,
+    },
+  ])
+  jest.mocked(getLearningSyncStatusWordIds).mockResolvedValue({
+    uploadWordIds: ['learning', 'overlap'],
+    downloadWordIds: ['recovery', 'overlap'],
+  })
+  expect(await syncStatusService.getSnapshot('owner')).toMatchObject({
+    pendingWords: 4,
+    pendingUploads: 2,
+    pendingDownloads: 3,
+    totalPending: 4,
+  })
+})
+
+it('counts learning uploads and acknowledged recovery even with dictionary features off', async () => {
+  jest.mocked(getLearningSyncStatusWordIds).mockResolvedValue({
+    uploadWordIds: ['review', 'reset'],
+    downloadWordIds: ['recovery'],
+  })
+  expect(await syncStatusService.getSnapshot('owner')).toMatchObject({
+    pendingWords: 3,
+    pendingUploads: 2,
+    pendingDownloads: 1,
+    totalPending: 3,
+  })
+  expect(getLearningSyncStatusWordIds).toHaveBeenCalledWith('owner')
+  expect(
+    dictionaryContentRepository.getMissingCardWordIds
+  ).not.toHaveBeenCalled()
+})
+
+it('does not turn an unavailable learning queue read into an empty status', async () => {
+  jest
+    .mocked(getLearningSyncStatusWordIds)
+    .mockRejectedValueOnce(new Error('Learning queue unavailable'))
+  await expect(syncStatusService.getSnapshot('owner')).rejects.toThrow(
+    'Learning queue unavailable'
+  )
 })
