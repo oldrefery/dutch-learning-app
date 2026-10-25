@@ -7237,3 +7237,172 @@ Current PR source-head web-fixtures/database/Lightweight E2E/preview pass; Quali
 still running at this checkpoint. No result inferred for the future follow-up.
 All owned QA resources remain stopped. No merge/activation/publication/paid/cert
 scope. Fixed D13A.8 stays3/6: three fixed steps and six later broad milestones.
+
+## 2026-10-24 — AUTH-51 exact-head CI, retained symbols and store access gates
+
+Continued same branch3754081 without new source changes, commits or pushes. Final
+Quality40115249669 succeeded17:48:21UTC; full log confirms200/2737/22 mobile,
+118/1252 web plus one existing skip, Doctor21/21 and mutation96.13%/threshold90.
+Database/web-fixtures/Lightweight E2E/Vercel preview pass. Initial stale step fields
+reconciled by complete logs/workflow result. PR124 marked ready for review after
+passing checks; current product-diff review found no new blocking NDS-1/NDS-2 finding.
+No independent human review/merge approval is inferred. PR body includes new state.
+Seven matching replacement iOS dSYMs retained from build-log-bound Xcode archive;
+26 file hashes/IPA UUIDs pass. Tar SHA6facfbb0c71e5864f48ec96bcfe48e35f925148ff048a35e26087ce2bc264b2f.
+Three vendor binaries lack dSYMs in examined local release caches; no rebuild/upload.
+Read-only Play state:85 internal, production access absent, draft/setup10of11,
+missing listing, no closed release/testers0, displayed12testers/14days requirement.
+No store changes. Apple login redirectsFAILED and blank controls after refresh;
+marked tab1715307842 for handoff, no account actions. Consolidated R01–R13 evidence
+local. Private closure root d13a84-integration-closure-20261024 preserves exact
+receipts/logs/scripts/symbols. Owner questions pending for head-bound squash merge
+and Android destination; previous Apple login pending. No permission inferred.
+Latest handoff/stage/session/new gate review are four local task files, not pushed;
+existing PR stays3754081/all green. AUTH-51 remains bounded; no merge/publication/
+activation/provider/paid/certs/device/main-account/8.5 action. Owned QA stays stopped,
+unknownUSD0.56held. Three fixed steps and six later broad milestones. Astra / High.
+
+## 2026-10-25 Amsterdam — AUTH-52 PR124 squash merge and internal-only preparation
+
+Fresh exact-head checks green; owner-approved expected-head squash37c197f completed
+once, actual tree52fd292d equals PR3754081, native1514-source provenance retained.
+Automatic production dpl_G4K7vxtxJXNCTsYq7QahGPunt4VZ READY on37c197f; words domain
+woordenaar.app assigned; all four unauthenticated route/headers checks match baseline.
+Previous READY deployment retained as rollback target, no rollback/manual deploy.
+Main Lightweight40136442037 passed; new push Quality40136442002 still in progress,
+not conflated with successful PRQuality40115249669. Fresh read-only backend ledger66,
+all14 hashes/new14FALSE/legacy3TRUE/two endpointfalse digests/JWTversion1 pass.
+Restricted network attempt failed before metadata; subsequent approved read-only
+access succeeded. No account rows/database writes/provider invocation.
+Internal-testing preparation MD/JSON includes exact candidates, copy, asset plan,
+OTA exposure and delivery/rollback gates. Artifacts unchanged; historical12pins intact.
+No store form edits/save/release/upload. Terms-title spelling mismatch and asset/
+copy review open. Play upload signer comparison unverified (download no confirmed
+file/copy acknowledged but empty browser clipboard); no key actions. Apple login
+stillFAILED/blank, tab1715307842 handoff retained. Feature checkout3754081 unchanged,
+remote main37c197f; eight task docs local-only, no new local commit/push/checkout.
+AUTH-52 merge scope consumed; no store/OTA/backend/newbuild/paid/cert/main-account/
+8.5 authority follows. QA stays stopped; USD0.56 held. Three fixed steps and six
+later broad milestones remain; continue Astra / High.
+
+## 2026-10-25 — final main CI and available internal-testing qualification
+
+Main37c197f Quality40136442002 finishedSUCCESS00:29Amsterdam; database/web-fixtures/
+quality all success,25qualitysteps. Lightweight40136442037 passed. Full retainedmain
+log confirms2737mobile/1252web/22snapshots/Doctor21/21/mutation96.13%; existingwebskip.
+Initial direct log request failed, gh run view full-log retrieval succeeded; no CI
+rerun/source change/newbuild. AAB signature/bundle/runtime/version86 and existing
+canonical/publication/exact-map verifiers pass; historical13+12pins unchanged.
+Fresh Play: internalactive2.4.0, selected TESTERS4users without opening memberemails,
+38versions/latest85/search86 empty/no reservation, no unpublished changes orwrites.
+Official internal policy allows incomplete setup; public listing/assets/production
+access and iOS inventory are not blanket prerequisites for Android-only preparation.
+Identity-gated EASreadonly confirmsoldrefery/owneroldrefery/projectd968536e..., no
+EXPO_TOKEN, productionchannel onebranch/unpaused/zero matchingAndroidruntime82a893fa
+updategroups. Parser reconciled whoamiusername+emaillines, noaccountswitch. OTA
+exposure reviewed but futurestate/device/oldrepair delivery notinferred. Clipboard
+copy empty/nativefallback unconfirmed; publicuploadSHA requestpending. Signingtab
+1715307857 and Apple1715307842 preserved. NewMD/JSON28pin addendum; ten local task
+docs on preservedfeature3754081, nocommit/push. No upload/release/publication/backend
+activation/newbuild/cert/provider/primaryaccount/8.5. No QA resourcesstarted,
+USD0.56held. Three fixedsteps andsixlaterbroadmilestones; continueAstra/High.
+
+## 2026-10-25 — owner-supplied public upload certificate comparison passed
+
+Normalized owner PUBLIC SHA256764dbff7... exactly matches fresh keytool certificate
+from actual AAB34a7759b...; unchanged hash and28 previous inputs verified. Remote
+fingerprint provenance is owner attestation, not independent Play retrieval. New
+certificate JSON addendum records the comparison and a local internal/draft-only
+next-operation proposal. Question resolved; no key/account/build/upload/rollout/
+activation/paid/provider/device/commit/push action. Eleven docs local on feature
+3754081; original immutable checks retained. Actual Play acceptance/delivery/
+upgrade/rollback and broader8.4 gates remain; no8.5. USD0.56held;3fixed+6later remain.
+
+## 2026-10-25 — AUTH-53 draft7 and blocked browser transfer, owner manual handoff
+
+Exact AAB34a7759b... unchanged; personal Play/free86 preflight passed. New internal
+empty draft7 created; old85 not included. Extension fileChooser.setFiles rejected
+missing file-URL access; no permission change. Long interruption reconciled to empty
+form/no AAB. Fresh backend/EAS/OTA read-only checks passed08:30UTC, allnewgatesOFF.
+Native fallback did not transfer file. Existing EAS submission-key metadata confirmed
+without private key/credential mutations; SDK import diagnostic fixed. EAS Submit
+not started, no cloud archive upload. Owner asks exact file path and offers manual
+upload; keep draft7/tab1715307857, no concurrent CLI upload. Verify remote outcome
+before any new transfer/save; no publication/OTA/flags/newbuild/provider/8.5. Current
+operation persisted privately; eleven local task docs preserved, source unchanged.
+Three fixedsteps and six later milestones remain; Astra/High.
+
+## 2026-10-25 — AUTH-53 fulfilled by owner upload; actual internal draft verified
+
+Owner reports selecting the pinned AAB and Save as draft. Independent Console
+verifies86(2.5.0)/artifact4860244320809747751/release7/internal4701630533941298146:
+formSaved,1draftassociation andexplicitDraftcard. Old2.4.0/version85 remainsAvailable
+with86notincluded inoldrelease. Screenshot retained. No Next/review/rollout.
+Localartifact34a7759b... unchanged; remoteoriginalnotdownloaded, ownerfileprovenance
+kept. PlayAPI24/target36/4ABIs/Supports16KBmetadata only; release notesempty.
+Postupload08:41:42UTC read-only backendledger66/14hashes/14newFALSE/3legacyTRUE/
+2endpointFALSE/JWTversion1 passes, noaccountrows/writes/provider. Priorpreflights
+preserved. UIfilepermission interruption anddetails6173ED5E error retained and
+reconciled without uploadretry; no extensionpermissions/credentialschanged, noEAS
+Submit/cloudbinarytransfer. NewMD/JSONoutcome supplementsfrozen evidence. AUTH53
+consumed; no repeatupload orpublication/OTA/flags/newbuild/mainaccount/8.5 scope.
+Thirteenlocaltaskdocs on preservedfeature3754081; sourcealreadymergedmain37c197f,
+CIgreen. NoQAresourcesstarted, USD0.56held. Threefixedstepsandsixlatermilestones.
+
+## 2026-10-25 — restored iOS inventory and explicit delivery boundary
+
+Read-only continuation after consumedAUTH53. Owner restored personal ASC in newtab
+1715307900; exactapp6752469146 latestvisible85/2.4.0,latestfiveupload85–81Complete,
+no86/2.5.0shown; accessholdresolved. ExistinggroupTeam(Expo)3testers/7builds has
+AutomaticforXcodeBuilds; inlinehelp plus Context7officialAppleinternaltester docs
+confirm automaticdelivery. No settings/group/tester/build writes. Initialoldtab
+FAILED/cleanloginspinner preserved as historical; no credential/agreement submission.
+One new public deliveryreview binds pinnedIPA/AAB, draft7, expectedclient/backend
+state, OTA/audience/queue/repair boundaries and proposed next-operation envelopes.
+No upload/publication/provider/backend/device/key/newbuild/Git or8.5. Privateproofs
+and hashverification retained; sourcefeature3754081 unchanged,14taskdocs localonly.
+AUTH53consumed/USD0.56held/QAoff/mainaccountuntouched.3fixedsteps+6latermilestones.
+
+## 2026-10-25 — AUTH-54 TestFlight upload and existing internal delivery complete
+
+Owner authorized pinnedIPA2.5.0(86)a44f6162... and automaticexistinggroup3testers.
+Freshidentityoldrefery/owneroldrefery, correctproject/team and existingassignedASCkey
+verified; no localprivatekeyretrieval or credentialchange. Installedproject:info
+prints table despiteJSONflag; two read-only parserfailures reconciled beforeupload.
+Freshbackend09:06UTC ledger66/14hashes/new14DBFALSE/legacy3TRUE/endpoint2FALSE/JWTv1,
+newiOSruntime316521... zeroOTA onunchangedproductionmapping. One EASupload+submission
+f7103f00-5737-4804-a766-3cb6729fd1ea, CLIexit0, FINISHED09:11:58UTC. AppleProcessing
+then build86c4a397...ReadytoSubmit overview and exactexistinggroupTesting independently
+observed; group3testers/8builds vs7,old85stillTesting. FinalgroupAX/screenshotretained.
+No installation/notificationreceipt/mainIDupgrade claimed. AUTH54fulfilled/consumed;
+no repeat86upload, AppStore/external/Androidrollout/OTA/backend/provider/device/key/
+newbuild/Git/general8.5. NewoutcomeMD/JSON andverifierpins, priorfrozeninputs unchanged.
+16taskdocs local onpreservedfeature3754081; source/mainCIunchanged. Mainaccountsnot
+operated/QAoff/USD0.56held. Threefixedsteps andsixlatermilestones; Astra/High.
+
+## 2026-10-25 — capability integration repair and AUTH-55 Git preparation
+
+Read-only iPhone primary metadata confirms2.4.0(85), no app launch/account rows;
+Android remains absent after owner connection intent. Hosted read-only RPC call
+was denied42501; no privilege bypass. Catalog definitions/runtime flags confirm
+commands[1]/shared-analysisFALSE and following readsFALSE. Ten focused client tests
+pass while retaining content debt and learning delivery;178 intentionally excluded.
+New single additive migration adds default-OFF capability advertisement requiring
+all14 prior gates and3legacy guards; preserves v1/exact v2 shape and existing
+managed service_role grant. Initial stricter ACL candidate caught before commit or
+deployment, retained privately, corrected and revalidated:22 nativePG15/44 targetPG,
+target generation/check and source-only lint/format. Public type body/runtime/native
+artifacts unchanged;1512of1514 frozen inputs unchanged,2manifest/header deltas and
+2new sourcefiles. No production mutation/provider/store/device execution.
+Owner AUTH-55 authorizes new feature branch from fresh main, scoped22-file repair/
+checkpoint commits, push/new PR only. Preserved dirty feature3754081 and protected
+transfer archive; created managed worktree feature/d13a84-capability-release from
+freshmain37c197f. Fresh worktree lacked generated Husky wrappers; installed them
+and recreate unpublished source commit with normal hooks, no bypass. Shared ignored
+dependency directories only; no secret files copied. Commit/PR outcome still pending
+at this checkpoint. Mainaccount untouched/QAoff/USD0.56held;3fixed+6later remain.
+
+Source commit3699d7c completed through normal hooks (2737mobile/22snapshots and
+1252web/one pre-existing skip). Corrected25-pin review and8-member private archive
+verify;47 prior TestFlight pins unchanged, credential scan0. Source four files match
+the original approved checkout byte-for-byte. Checkpoint commit/push/PR pending.
