@@ -1,3 +1,33 @@
+**2026-10-25 — AUTH-55 completed: repair pushed and PR125 open; CI pending.**
+
+Authoritative working branch: feature/d13a84-capability-release in managed worktree
+`/Users/devrush/.codex/worktrees/d13a84-capability-release/DutchLearningApp`.
+Base main37c197fd167afdf91dd6e89a52e498ef8d7b90f8; source3699d7c and checkpointc624c57
+pushed. PR https://github.com/oldrefery/dutch-learning-app/pull/125 independently
+confirms exact headc624c57796499ceaf96266ef65d4cd643950a704,2commits,22approvedfiles,
+open/unmerged and no conflicts. Attached to this task. Quality40182915985 queued,
+Lightweight40182915968 running and Vercel pending at initial observation. These
+are not green results; inspect the final current head after this outcome checkpoint
+is committed/pushed. New CI replaces the initial-head results; no merge authority.
+
+Both commits passed normal hooks:2737mobile/22snapshots and1252web/one existing skip.
+Managed worktree was clean before recording this outcome; ignored local dependency
+links only. Private reports/binaries/credentials were excluded. Original dirty
+checkout feature3754081 is deliberately preserved, not an unsent duplicate to
+reset/clean. Exact initial/final22-file transfer manifests, corrected25-pin review,
+8-member archive and operation logs remain protected in the original checkout's
+reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/.
+
+AUTH-55 permits this scoped Git outcome checkpoint too; branch/push/PR operation
+is fulfilled, not reusable merge/production authority. Migration/default-OFF flag
+is still unapplied; no production or provider call, store operation, native rebuild
+or device launch. Mainlearning account untouched; Android connection still pending,
+primary iPhone metadata85; store-device upgrade/repair/recovery remains unverified.
+Next: review exact-current-head CI and this PR; then separately scoped backend/
+cohort/policy/budget/device qualification. Do not enable flags, apply migrations or
+start8.5. USD0.56 held; QA resources remain stopped. D13A.8 remains3/6:3fixedsteps
+and6later milestones. Astra/High. Earlier entries below are chronological history.
+
 **2026-10-25 — AUTH-55 capability repair branch and PR checkpoint in progress.**
 
 A new managed worktree is based on fresh origin/main37c197f:

@@ -2548,3 +2548,18 @@ mutation follows. Preserve the current dirty feature3754081 checkout/task bundle
 Before commit, preserve the managed production service_role capability grant found
 in the retained metadata; do not apply the minimal fixture's stricter default ACL
 to production. Update the regression/review packet and repeat affected validation.
+
+**AUTH-55 outcome — branch, commits, push and PR fulfilled.**
+
+New feature/d13a84-capability-release based on fresh main37c197f. Source3699d7c and
+checkpointc624c57 pushed, exact22approvedpaths independently confirmed by PR125:
+https://github.com/oldrefery/dutch-learning-app/pull/125, initialheadc624c577,2commits,
+open/unmerged/no conflicts. Normal hooks2737mobile/22snapshots,1252web/one existing
+skip pass. PR attached. Initial Quality40182915985 queued, Lightweight40182915968
+running/Vercel pending; no green claim. This outcome checkpoint may be committed/
+pushed under the same22-file scope; inspect its final head/CI separately. No merge
+or productionmigration/flag/provider/store/native/device/8.5 authority. Initial
+stricterACL preserved privately and superseded before sourcecommit/deployment;
+actual existing managed service_role grant retained and revalidated. Original dirty
+checkout and protected transfer bundle preserved; new worktree clean before this
+record. UnknownUSD0.56reserve remains held. No repeat new-PR operation.
