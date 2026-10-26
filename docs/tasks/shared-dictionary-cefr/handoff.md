@@ -1,3 +1,1539 @@
+**2026-10-26 — Owner-authorized local checkpoint commit; task remains `paused`.**
+
+The owner requested saving and committing the existing changes after `/repo pause`. Scope: one local checkpoint on `feature/d13a84-main-native-builds` (parent `375408186b5b60f42bb8a2ecd827e3eaf3cfbef5`), preserving the existing sync fixes, capability migration/contracts and sanitized task evidence. This does not resume release work. D13A.8 remains at **step 4/6**, official Play85 installation **3/3 complete**, and **seven broad milestones remain including the current one**. Recommended next model: **GPT-6.1 Sol / High**.
+
+Next resume checkpoint remains `HUAWEI-PLAY85-TEST-BASELINE-01`: prepare/obtain the separate production-backed test-account login and Play85 baseline scope. AUTH-79 is fulfilled/consumed; never repeat old-QA deletion or installation. Last verified Huawei state: official Play85, signed out, app closed; separate QA preserved. Last verified store state: 88 Draft, TESTERS 5. No device/store/network refresh or release action was made while saving this checkpoint; no pending operation is recorded.
+
+Persistence: this note and the existing 110 changed/untracked source/document paths are included in the owner-authorized **local Git checkpoint**; obtain its exact hash from Git history after successful commit. If interrupted before success, inspect HEAD/index/worktree before retrying. Private backups, credentials, device UI captures and ignored reports remain outside Git. The private pre-commit inventory and byte-for-byte originals are retained under `reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/commit-preservation-originals.json` and `commit-preservation-originals/`. Earlier local-only/dirty-count notes below describe the pre-commit state. See `evidence/D13A.8.4-pause-commit-checkpoint-20261026.json` for formatting normalization and validation scope. No push, PR, deployment or rollout is part of this checkpoint.
+
+**2026-10-26 — Paused by owner (`/repo pause`); current status: `paused`.**
+
+D13A.8 remains at step **4/6**, with three fixed steps complete. Official Play85 installation is **3/3 complete**. **Seven broad milestones remain including the current one** (D13.6, D13A.8, D13A.9, D14.1–4). Completed checkboxes and earlier evidence are retained. GPT-6.1 Sol / High is the owner-confirmed model/effort and the recommendation for the next checkpoint.
+
+Last verified state: Huawei CLT-L29 has official `com.oldrefery.dutchlearningapp` 2.4.0 (85), installer `com.android.vending`, verified Play signing certificate. First launch reached SignIn with empty fields; the app was then closed. Separate QA installation is preserved. AUTH-78 synthetic-data discard and AUTH-79 installation are fulfilled/consumed: **never repeat the old-QA uninstall or installation**. No pending process or uncertain operation is recorded. Retained Console state: 85 available internally, 88 Draft, TESTERS 5 after the owner's manual change. No fresh external check was performed during this pause.
+
+First incomplete checkpoint / exact next work: `HUAWEI-PLAY85-TEST-BASELINE-01` in `reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/play85-test-baseline-proposal.json`. On explicit resume, prepare/obtain the bounded production-backed test-account login and Play85 baseline scope before Android88 publication/update. AUTH-79 ended at SignIn and does not cover that login. Use a separate test account with credentials entered locally; never request credentials in chat or send local QA fixture credentials to production. Refresh relevant device/store/release gates before future execution. Active update UUID, full row parity and performance remain unverified. No new answers, forced sync, private data capture or rollout is implied by resume.
+
+Checkout: `feature/d13a84-main-native-builds`, HEAD `375408186b5b60f42bb8a2ecd827e3eaf3cfbef5`; **110 dirty paths (14 tracked modifications, 96 untracked)** preserved. Exact path inventory, timestamp and operation reconciliation: `reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/pause-checkpoint-20261026.json` (private, mode 0600). Last completed evidence: `evidence/D13A.8.4-huawei-play85-install-outcome-20261026.md` and `.json`. Managed worktrees and ignored private reports are retained. Persistence: **local-only**; no commit/push. Pause performed only local checkpoint writes; no new device/browser/network operation or code test was started. This current pause checkpoint supersedes all earlier current-status/next-action notes below without changing their historical outcomes.
+
+**2026-10-26 — AUTH-79 complete: official Play85 installed and verified on Huawei.**
+
+One main-QA uninstall succeeded; accepted synthetic-data/pending1 discard is consumed. Do not repeat deletion. Official com.oldrefery.dutchlearningapp2.4.0(85) is now installed by com.android.vending. Package Manager and APK manifest agree; API29 signature verification passes with Play app certificate c91f309e... (not the former Debug signer). Base APK SHA2566621f6deafa5bb17cc91b8567373e794732b75de3e962d297f9cc9e5dd488e7a. Temporary APK code copy removed; no private application-data capture. Separate.d13aqa metadata unchanged.
+
+Two web chooser opens stayed Loading without a final device confirmation. Continued through the official native Play Store on the same device and approved owner Google account. One Install tap completed; no repeated install. One launch reached SignIn with empty fields after an early blank startup frame; no in-app login/new answer/SyncNow. App closed and process absent. Active update UUID/full row parity/performance are not claimed.
+
+Fresh Console88 remains Draft; TESTERS5 reflects the owner's manual addition. AUTH79 fulfilled/consumed; no pending process or uncertain operation. No rollout/backend/OTA/provider/Git publication. Current main package is real Play85: never replay old-QA uninstall. Next prepared HUAWEI-PLAY85-TEST-BASELINE-01 needs a separate production-backed test-account login/baseline scope before88publication/update; keep personal accounts and localQAcredentials out of this flow. GPT-6.1 Sol/High next. D13A.8step4/6; installation3/3 complete; seven broad milestones including current.
+
+Evidence: evidence/D13A.8.4-huawei-play85-install-outcome-20261026.md/.json. Private operation/receipts/proposal: reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026. Personal Console Chrome1715307964/browser4 retained; temporary listing tab closed. Primary3754081 dirty and managed worktrees preserved; local-only. This supersedes all pending AUTH79 installation notes below.
+
+**2026-10-26 — AUTH-79: QA removed; one official Play 85 installation is in progress.**
+
+The main QA package was removed once with Success and absence verified; accepted test-data/pending1 deletion is consumed. Separate QA package metadata is unchanged. Two web device-chooser opens remained on Loading without a final installation confirmation. Both were reconciled and the page reloaded. Continued through the official native Play Store on the same Huawei under the same approved oldrefery Google account. Native About confirms 2.4.0. One Install tap was sent; UI shows Pending and Verified by Play Protect. Do not tap Install again or repeat deletion. Inspect package/UI until installation completes, then verify version85, installer, Play signing certificate and first SignIn screen. No in-app login or88rollout.
+
+Durable operation.auth79: reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026. D13A.8 step4/6; installation2/3; seven broad milestones including current. GPT-6.1 Sol/High.
+
+**2026-10-26 — AUTH-79 mainQA removal completed once; officialPlay85installation pending.**
+
+Exactmaincom.oldrefery.dutchlearningapp uninstallreturnedSuccess; freshpmpath confirmsabsent. AcceptedlocalQAdata/pending1discard consumed, neverrepeatuninstall. Separate.d13aqaUID/version/update unchanged. Officialwebinstaller firstopen stuckLoading beforedevicechooser/finaldispatch; no finalInstalltap yet. Continuealready-authorized Play85installation, inspectactualpackageandUIbeforeretry. Operation.auth79 reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026. No appaccountlogin/88rollout. D13A.8step4/6, install2/3, sevenbroadmilestones includingcurrent; GPT-6.1 Sol/High.
+
+**2026-10-26 — AUTH-79 Play85 installation authorized; preflight in progress.**
+
+Ownerapproves exactHuawei2.4.0(85) officialGooglePlayweb installation, version/signer/initialSignInverification. PriorQAdata/pending1discardaccepted; removeonlymainQApackageafterfreshstore/devicepreflight, preserveseparate.d13aqa/Googleaccounts/QAvolumes. Noproductionappaccountlogin/newanswers/88publication. Operation.auth79 reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026; recordintents/reconcileoutcomesbeforeretry. D13A.8step4/6, install1/3, sevenbroadmilestones includingcurrent; GPT-6.1 Sol/High.
+
+**2026-10-26 — AUTH-78 accesspreparation complete: ownerenrolled, TESTERS5, officialwebPlay85compatiblewithHuawei.**
+
+Owneraddedoldrefery and acceptedbothinvites; freshConsoleTESTERS5checked/Save disabled. PhonewebYouretester independentlyobserved; no assistantinvite/listedit/Googlewebswitch. Priorwebpermissionholdsupersededbyowneraction. NativePlaycury still404/blank aftersingleprocessrestart(no dataclear); rootcauseunverified. OfficialGooglePlayweb underexistingowner session hasInstall and exactactiveHUAWEICLT-L29 Version2.4.0/Works ondevice; freshConsoleversionCode85Available,88Draft. Readinessproofcaptured. NoQAdelete/install/rollout.
+
+Prepared HUAWEI-PLAY85-INSTALL-01: afterfreshaccess/versionpreflight, use acceptedQAdata/pending1discard to removeonlymainQApackage, officialGooglePlaywebinstall85onlyontoHuawei, verifyversion/installer/Playcert via temporaryAPKcodecopy, initialSignInsmoke+close. SeparateQA/Googleaccounts/servervolumespreserved. Actualinstallationexecutionscopepending; neverre-askalreadyaccepteddiscard. No productionappaccountlogin/newanswers/SyncNow/backend/OTA/88publication. Thenprepare dedicatedtestaccountbaselinebefore88rollout. Future88audience5supersedesold4; newreleaseauthoritymustmatch.
+
+D13A.8step4/6, accesspreparation3/3complete, sevenbroadmilestones includingcurrent. GPT-6.1 Sol/Highnext. No pendingprocess/uncertainmutation. Evidence evidence/D13A.8.4-huawei-play85-access-outcome-20261026.md/.json; private reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026. ConsoleChrome1715307964/browser4 and listing1715307985compatibilitydialog retained. Primary3754081dirty/worktrees preserved; local-only. Supersedes webinvite-scopependingnotesbelow.
+
+**2026-10-26 — AUTH-78 preparation complete; eligiblePlayaccount chosen, Googlewebinvite scopepending.**
+
+Owner accepted deletionoflocalsyntheticQAincluding1pending; neverre-askdiscard. SelectedexistingGooglePlaytester authorized; alreadyselectedatfreshpre-actionUI, no assistantswitchtap. CurrentaccountinTESTERS4; no listexpansion. FreshConsole85Available/versionCode85,88Draft. DeviceexactdetailsstillItemnotfound; optinlinknowshowsinvited/Acceptinvite, but Googlewebheaderisoriginalowneraccount, notselectedtester. Acceptinvite disclosesemail/appuse sharingto developer.
+
+Automaticapprovalreview rejected selectingtester inChromeGooglewebsession: ownerauthorizedonlyPlayStoreaccountselection. Rejectedcommandneverexecuted; no bypass. Accountmenuclosedwithoutselection; Acceptinvitenotclicked. QA85stillinstalled/UID/updateunchanged/appclosed; no uninstall/install/rollout. No pendingoperation. Prepared HUAWEI-PLAY85-WEB-OPTIN-01 for specificwebaccountselection+invite/sharingconsent; afteraccepted/identityverified, establishexactPlay85access beforeanyQAdeletion. Exactreplacementplanprepared; accepteddiscardvalid butnotconsumed. No productionappaccountlogin/newanswers/backend/OTA/QAstandrestart.
+
+D13A.8step4/6; preparationreview3/3, actualreplacement0executed; sevenbroadmilestones includingcurrent; GPT-6.1 Sol/Highnext. Evidence evidence/D13A.8.4-huawei-play85-preparation-20261026.md/.json; private reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026. ChromeConsole1715307964/browser4retained; phoneChromeexactinvitationcurrentwebowneridentity. Dirtyprimary3754081/worktrees preserved; local-only. Supersedes pendingAUTH78notes below.
+
+**2026-10-26 — AUTH-78 Huawei QA-to-Play85 preparation in progress; synthetic discard accepted.**
+
+Owner explicitly permits removing localQAdata including1pendingWords. Do not re-ask that same discard decision. Prepare realPlay85access/eligibility/version and exacttransition before any deletion; currentinstalled85is hash-proven localQA/debugsigned, no in-placePlaypreservation. QAstandremainsstopped, priorAUTH77consumed. No uninstall/install/rollout or productionappaccountactionyet. Report reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026. D13A.8step4/6, preparation1/3, sevenbroadmilestones includingcurrent; GPT-6.1 Sol/High.
+
+**2026-10-26 — AUTH-77 complete: Huawei synthetic account/data verified;1pendingWords preserved.**
+
+One existingprimarysyntheticSignIn succeeded. Settings email exactly matches fixture; localQA85/12words/3collections/0progress; Words1pending, Collections0, Progress0 consistently, lastsyncOct23. Historytab renders emptyRecentAnalysis/Notifications; no reviewhistoryparityclaim. No answers/SyncNow/logout/edit/preferences/SQLiteexport. Before/after localQAserver12activewords/3collections/10reviewevents exactly equal; orderedreviewrowSHA256unchanged. Pendingpayload/direction and fullphonebackup unverified; do not clear or infer dataempty.
+
+Scopedcleanup verified: appclosed/testsessionretained; only addedHuawei55331route removed; ownproxyabsent, exact4QAcontainers exited with sameIDs/images/mounts/volumes;55321/55322/55331closed. No pendingoperation. AUTH77fulfilled/consumed, neverreplaylogin. No production/Expo/OTA/provider/Playrollout/install/Gitpublication. Primary3754081dirty/worktrees preserved; local-only.
+
+Next ANDROID88-HUAWEI-PLAY-TRANSITION-DECISION-01 prepared: retain currentQAstate(recommended) and separatePlaydevice/AVD for actualPlay85baseline before88publication; or, after exactPlayeligibility/versionpreflight, explicitly accept loss of localQAcache/unverifiedpending1 and authorize HuaweiQAuninstall/Play85install/dedicatedproduction-testlogin. No destructiveauthorityyet. Exact installed9f7eb806...is localQA85/debugsigned, notPlay85baseline. Keepinternal88unpublished untilrealbaselineprepared. D13A.8step4/6, logininspection3/3complete, sevenbroadmilestones includingcurrent; GPT-6.1 Sol/Highnext. Evidence evidence/D13A.8.4-huawei85-qa-login-outcome-20261026.md/.json; private reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026. Supersedes pendingAUTH77notes below.
+
+**2026-10-26 — AUTH-77 synthetic QA login/inspection authorized; preflight in progress.**
+
+One existing primary synthetic login authorized with same exact4retainedQAcontainers/proxy and HuaweiUSB55331route, visiblewords/collections/queues/History and ordinarylocalQAsync; then scopedcleanup preservingdata. No newanswers/manualSyncNow/reinstall/production/rollout. Verify exactresources/device, refresh server event baseline beforelogin, journal one submit and reconcile before retry. Operation.auth77 in reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026. D13A.8step4/6; logininspection1/3; sevenbroadmilestones includingcurrent; GPT-6.1 Sol/High.
+
+**2026-10-26 — AUTH-76 complete: local QA transport restored, saved session rejected; all resources cleaned up.**
+
+Exact4retainedQAcontainers/images/mounts and proxyhash verified; started only these, localhealth200/PGready. TargetHuaweiUSB55331route restored; mainQA85launched once. Auth now reachable but rejects saved refresh token; WelcomeBack/SignIn visually confirmed. No active account/handset words/queues available; no login/logout/credentials/newanswer/SyncNow. LocalQAserver primary retains12active/14totalwords,3collections;10reviewevents count/hash captured after launch, not pre-launch equality/historical7. Current installed9f7eb806... is hash-proven QAartifact, notPlay85baseline.
+
+Scopedcleanup verified: app closed, only addedreverse removed, identity-checked ownproxy absent, exact4containers exited with originalmounts/images/volumes preserved;55321/55322/55331closed. No production/Expo/OTA/provider/Playrollout/install/dataexport or Gitpublication. No pending operation. AUTH76fulfilled/consumed; do not replay or leave QAresources running.
+
+Next concrete HUAWEI85-QA-LOGIN-INSPECTION-01: obtain scope for one retainedprimarysynthetic login, ordinarylocalQAsync and account/counts/queue/historyUIinspection, with fresh server event baseline/aftercomparison, same boundedresource resume/cleanup. No newanswers/forcedsync/logout/install/uninstall/production/rollout. Device data not proven empty; preserve until inspected. D13A.8step4/6; restorationreview3/3with authenticationboundary; seven broadmilestones includingcurrent. GPT-6.1 Sol/High recommended. Primaryfeature/d13a84-main-native-builds3754081dirty/worktrees preserved; local-only. Evidence: evidence/D13A.8.4-huawei85-qa-inspection-outcome-20261026.md/.json; private reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026. Supersedes pendingAUTH76notes below.
+
+**2026-10-26 — AUTH-76 temporary local QA restoration authorized; preflight in progress.**
+
+Owner approves exact retained4QAcontainers/proxy and targetHuaweiUSB55331route for account/data UIinspection, ordinarylocalQAsync possible, then scopedcleanup preservingall data. No answers/logout/login/reinstall/production/OTA/provider/rollout. Verify exactcontainer IDs/mounts/images, unused loopbackports, proxyhash and expectedHuawei/main85 before start; save intent and reconcile on resume. Private operation/proposal: reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026. D13A.8step4/6; restoration1/3; seven broad milestones including current; GPT-6.1 Sol/High.
+
+**2026-10-26 — AUTH-75 Huawei85 identified as retained local QA; session inspection blocked by stopped transport.**
+
+USB readiness resolved. Huawei exact85 launched once; assistant Try again1 and owner additional retry show same saved-session-check error. Current account/words/collections/queues remain unverified. Connected validated Wi-Fi/airplaneOFF; sanitized error AuthRetryableFetchError -> ConnectException127.0.0.1:55331, noUSBreverse. Installed APK9f7eb806... exactly matches hash-pinned October23android-npr3 QA artifact: qaBuildtrue, OTAOFF, loopback endpoint. It is not a Play85baseline. Historical synthetic12words is historical only, not current account proof.
+
+Four exact retained QA containers all exited; volumes preserved, loopback55321/55322/55331closed. Existing proxy only forwards local55321/providersfixture. Prepared HUAWEI85-LOCAL-QA-INSPECTION-RESTORE-01: temporary exact4containers/proxy/Huaweireverse55331, one session retry, account/counts/queue/history inspection, then scoped cleanup. Current AUTH75UI-only/no backend change scope does not execute this proposal. No QA service start, route change, logout/login, answer, manualsync, install/uninstall, database export, production/OTA or rollout. App closed, session/data retained; no pending operation. AUTH75 inspected blocked screen, not full acceptance and not fresh launch authority after arbitrary state changes.
+
+Next obtain bounded local QA restoration scope, revalidate exact resource identities and existing device state before execution; then inspect account/data and separately decide Play transition. Save and publish88notclicked; TESTERS4/zero blocking errors/one R8 warning retained. D13A.8step4/6; inspection review3/3 with blocker, seven broad milestones including current. GPT-6.1 Sol/High recommended. Primary3754081dirty/worktrees preserved; task/evidence local-only. Evidence evidence/D13A.8.4-android88-rollout-preparation-20261026.md/.json; private reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026. Supersedes USB-pending notes below.
+
+**2026-10-26 — Android88 rollout preview prepared; AUTH-75 Huawei inspection waiting for USB.**
+
+Store draft7only88 preview has zero blocking errors/one reconciled R8 warning, existing TESTERS4 unchanged; Save and publish not invoked.118retained pins and read-only production gates/Android88OTA checks pass. Huawei main85 uses Android Debug signer fac61745... unlike Play c91f309e...; data-preserving direct upgrade remains unqualified. Temporary APK code copy removed; no database capture or installation.
+
+Owner selected current Huawei account/data inspection before a separate Play-transition decision. AUTH75 authorizes main85UIinspection and inherent ordinary startup sync only. Latest elevated ADB inventory has zero devices; main app not launched, account/data/queues unverified. Waiting for owner reconnect/unlock/USB-debugging confirmation. No pending operation. Next exact-device inventory, keyguard/activity verification, main85read-only account/counts/queue/history inspection; no learning answer/SyncNow/logout/install/uninstall/SQLite export/rollout. Do not consume AUTH75 as completed or reuse consumed AUTH74.
+
+D13A.8 step4/6; Huawei inspection1/3; seven broad milestones including current. GPT-6.1 Sol/High owner-confirmed, recommended for next step. Primary feature/d13a84-main-native-builds HEAD3754081dirty and worktrees preserved; task/evidence local-only. Evidence: evidence/D13A.8.4-android88-rollout-preparation-20261026.md/.json; private reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026. Broader coordinated-release holds remain open. This supersedes the prior next-step preparation notes, not completed history.
+
+**2026-10-26 — AUTH-74 complete: Android88 uploaded; existing internal draft7saved without rollout.**
+
+Exact AAB88 SHA2563f2beea91fa0eb848a41958efff2ed5d136e3d49b7b7f606dc2bfa17772c85ff successfully transferred once and processed. Existing draft7now only88, title88(2.5.0), en-USnotes1language; Changes saved confirmed. Final release overview88Internal testing Draft, same draft7link. Internal85(2.4.0) remainsAvailable to internal testers/Full rollout.86removed only from draftselection and retainedInactive in library. No rollout/install/backend/OTA/credential change. Failed pre-transfer file selection resolved after owner enabled ChatGPT Chrome fileURLaccess; successful transfer1/save1, no duplicate upload. AUTH74fulfilled/consumed; no pending process/unknown outcome.
+
+Next prepare separately scoped internal88rollout and Android upgrade/preservation acceptance; current draftsave permission does not authorize rollout/install. Do not reupload88or recreate draft7. Source/main/IPA/AAB88verification retained. Broader provider/operator/cohort/recovery/performance/fresh backup-delta gates remain open. D13A.8step4/6, Play3/3complete,7broad including current; GPT-6.1 Sol/High owner-confirmed. Primary dirty checkout and managed worktrees preserved; local-only task updates, no commit/push.
+
+Evidence: evidence/D13A.8.4-android88-draft-outcome-20261026.md/.json. Private operation/screenshot/DOM: reports/shared-dictionary-cefr/d13a84-android88-upload-20261026. Final screenshot final-overview.png visually verified. Chrome tab1715307964retained as deliverable; current browser4maychange after reconnect, use fresh inventory. This supersedes waiting/in-progress AUTH74notes below.
+
+**2026-10-26 — AUTH-74 waiting for Chrome local-file access; no successful upload.**
+
+Fresh preflight passed: personaloldrefery, exact app/draft7still86/no unsaved edits; Play88search0results; exact AAB/notes hashes verified. File chooser wait3s initially timed out before selection; semantic click with10s wait recovered. setFiles then failed explicitly because ChatGPT Chrome extension lacks Allow access to file URLs. No file upload or draft save confirmed; current form remains86. Native fallback did not open a picker; coordinate action noWindowsAvailable. Asked owner to enable extension fileURLaccess or choose exact AAB manually. AUTH74remains in progress, not consumed; do not reauthorize upload. Inspect operation and actual Play state before retry; upload_invocations1is the recorded intent/failed attempt, successful_uploads0. No pending local/remote process.
+
+Retained Chrome tab1715307964in current browserid1(after kernel reset; IDs changed), URL existing draft7prepare. Do not use old browserid3(nowIAB). Reacquire by current inventory if needed. Reports: reports/shared-dictionary-cefr/d13a84-android88-upload-20261026, upload-blocked.png. D13A.8step4/6, Play2/3,7broad including current; GPT-6.1 Sol/High owner-confirmed. No rollout/install/backend/OTA. Next after user-ready: recheck88presence/currentdraft, transmit exactAABonce if absent, process, replace86draftselection, title/notes, save once, verify persistedDraftand85stillavailable.
+
+**2026-10-26 — AUTH-74 Android88 upload/draft replacement in progress.**
+
+Owner confirms GPT-6.1 Sol/High and authorizes exact Android88upload, replacement86in existing internal draft7and save without rollout. Artifact/notes hashes reverified. Refresh personal Play account/app/draft/version occupancy before one upload; persist intent before mutation. Inspect operation and Play state before any retry. No rollout/install/backend/OTA scope. Reports: reports/shared-dictionary-cefr/d13a84-android88-upload-20261026. D13A.8step4/6, Play1/3,7broad milestones including current. Primary dirty checkout preserved.
+
+**2026-10-25 — AUTH-73 complete: current-main Android88 AAB verified; Play draft proposal ready.**
+
+One local Android2.5.0(88) build from fresh mainb0cf2c7 includes PR126/127; only version86->88overlay, matching all2208pins of verified iOS88source. Artifact builds/app-2.5.0-88-learning-ack.aab, SHA256 3f2beea91fa0eb848a41958efff2ed5d136e3d49b7b7f606dc2bfa17772c85ff. Gradle7m58s/Doctor21of21; bundle/signature/package/version/4ABI/SDK24-36 verified, existing signer matches86, QAfalse. Actual697source/config inputs and5repair source-map contents match; Hermes bytes equal AAB. Runtimebf8198c2399c1dcbabcf69f7374da90d363d3aac, production branch/channel,0compatible OTA. Retained maps and60matching symbol build IDs; same48vendor symbol gaps as86. Disposable builder cleaned,11.7GiB free. No device install, upload, rollout, backend/OTA change, commit or push. AUTH73 consumed; no pending process or unknown outcome.
+
+Fresh Play personalapp: latest uploaded86, exact88search0results; internal draft7has86, available internal85unchanged. Next exact proposal ANDROID88-INTERNAL-DRAFT-01 uploads hash-pinned88, replaces86only in draft7selection, adds prepared English notes and saves as draft; leaves86artifact library and85tester availability. Separate upload/draft-edit authority required; current request was local build/preparation. Recheck occupancy/account/draft/hash first. Never replay build or prior one-off approvals. No rollout/device scope yet.
+
+D13A.8step4/6, Android preparation3/3complete,7broad milestones including current; GPT-6 Astra/High owner-confirmed. Broader delivery/device-preservation/recovery/performance/provider/operator/cohort/fresh backup-delta gates remain open. Primary dirty3754081and managed worktrees preserved. Evidence: evidence/D13A.8.4-android88-build-outcome-20261025.md/.json; private reports/shared-dictionary-cefr/d13a84-android-current-20261025. This supersedes earlier AUTH73running checkpoints.
+
+**2026-10-25 — AUTH-73 Android88 local build running.**
+
+Single build slot claimed at22:42UTC, current mainb0cf2c7 plus verified version88overlay. Inspect reports/shared-dictionary-cefr/d13a84-android-current-20261025/build-slot.json and android-build.log/artifact before any retry. Existing personal identity/project and Play88availability verified. No upload/install/rollout/backend scope. D13A.8step4/6, Android2/3,7broad remaining including current; Astra/High owner-confirmed.
+
+**2026-10-25 — AUTH-73 current-main Android88 preparation in progress.**
+
+Owner authorizes one local Android AAB plus verification and Google Play next-step preparation. Fresh GitHub mainb0cf2c7 includes PR126/127. Isolated source equals all2208pins of verified iOS88candidate, main plus version86->88overlay only. EAS identity/owner oldrefery verified; latest hosted Android85. Fresh Play Console personal app latest uploaded86; exact88search0results. Existing internal draft7contains86and no notes; no Play mutation. Prepare2.5.0(88) with existing dictionary-release profile and frozen credentials, no cloud build/upload/install/rollout/OTA/backend writes. Primary dirty3754081preserved.
+
+Operation/build-request/source-freeze/scripts: reports/shared-dictionary-cefr/d13a84-android-current-20261025. Inspect operation and build-slot/log/artifact before any retry. Dependencies installing; build not yet invoked. D13A.8step4/6, Android1/3,7broad milestones including current; GPT-6 Astra/High owner-confirmed.
+
+**2026-10-25 — AUTH-72 complete: iOS88 protected data and active runtime verified.**
+
+Two encrypted local capture sets and exactly one controlled dedicated-account launch completed. Six device ciphertexts verified; temporary plaintext removed. Personal rows in27tables and NULL-owner rows preserved against87and across launch;15testevents, SRS/content/identity and collection membership preserved. Test words2105synced; write queues0, separate download debt2105. Exact test-server word/events/count/other-word digest unchanged. UI0To upload/2105To download; full sync not claimed.
+
+Active embedded88runtime93e0e71f0034fe480f43f8adf76271bb264dfd61/update893b83a7-61f1-4fee-8f3a-1061d97abfd4 proved by launch counter3->4, failed0, last-access advance and unchanged other update counters. One XCTest passed after two runner initialization failures that never launched the app; phone-ready confirmation resolved the block. Main app closed. Initial strict captureA hold reconciled read-only as equivalent timestamp spelling/test collection synced_at metadata; no personal-row normalization, data repair or recapture.
+
+AUTH72 fulfilled/consumed; no remaining capture/launch slots, pending process or unknown outcome. No new answers/manualsync/flags/install/publication. Next prepare current-main Android artifact/store acceptance scope; existing draft86omitsPR126/127. Recheck source/version occupancy before choosing build number. Broader release/recovery/performance/provider/operator/cohort/fresh backup-delta gates remain open. No8.5activation or9observation. D13A.8step4/6, proof3/3complete,7broad milestones including current. GPT-6 Astra/High owner-confirmed. Primary dirty checkout and managed worktrees preserved; local-only.
+
+Evidence: evidence/D13A.8.4-ios88-preservation-outcome-20261025.md/.json. Private immutable receipts/ciphertexts/driver: reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025. This checkpoint supersedes the pending AUTH72 entries below.
+
+**2026-10-25 — AUTH-72 captureA verified; waiting for phone automation readiness.**
+
+Two XCTest attempts failed before UI test initialization (Timed out while enabling automation mode). No test method or controlled main-app launch executed; fresh processes show main/runner absent. No local process remains. User asked to unlock phone, keep home screen awake and USB connected, and not open main app. devicectl passcodeRequired=false does not establish screen-awake readiness. Do not retry until that response/environment change.
+
+CaptureA complete:3encrypted device files, plaintext removed,27personal tables and existing15events preserved,0write queues/2105synced words; server records unchanged. Strict initial comparison hold was reconciled read-only as equivalent review timestamp format and22testcollections synced_at refresh; all actual content/SRS/identity preserved. No data correction or second capture. AUTH72 remains in progress:1capture set and1controlled launch remain. The existing launch_invocations=1 is a reserved slot, not a successful app launch; controlled_launches_consumed=0and runner_attempts=2are explicit.
+
+After phone-ready response: recheck device build/processes, run a uniquely named one-launch XCTest once, reconcile result before any retry; after success/close captureB, read exact test server records and run final verification. Update verify-final.py to the actual successful runner result; preserve both initialization failures. Expected88runtime/update893b83a7-61f1-4fee-8f3a-1061d97abfd4, baseline successful_launch_count3. No new answers/manualsync/flags/install. Private operation, scripts, encrypted baseline and checkpoint: reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025. D13A.8step4/6, proof2/3,7broad milestones including current;Astra/High owner-confirmed. Local-only, no publication.
+
+**2026-10-25 — AUTH-72 captureA reconciled; sole88launch invoking.**
+
+CaptureA encrypted3files, plaintext removed.27personal table digests unchanged;15events preserved, write queues0, words2105synced, download debt2105. Initial strict diff resolved read-only: last_reviewed_at Z/+00:00same instant, test22collections synced_at refreshed by pinned saveCollections; content/identity unchanged, exact server records unchanged. No data correction performed. Launch slot1/1claimed; inspect single-launch88-result before any further action. CaptureB slot remains. Reports d13a84-ios88-preservation-20261025. D13A.8step4/6, proof2/3,7broad;Astra/High owner-confirmed.
+
+**2026-10-25 — AUTH-72 protected iOS88runtime/data proof prepared.**
+
+Owner authorizes2protected capture sets and1controlled dedicated-account launch; no new answer/flag change. Validate baseline pins/encryption/device-closed/version/OTA/backend gates, captureA, one launch+close, captureB, reconcile personal hashes/testevent/queues/runtime counters. Inspect operation/intents before retry; never exceed2sets/1launch. Reports: reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025. D13A.8step4/6, proof1/3,7broad milestones including current;GPT-6 Astra/High owner-confirmed.
+
+**2026-10-25 — Post88 readiness reconciled; protected data/runtime proposal prepared.**
+
+Readiness review3/3complete; D13A.8.4 remains open.648retained pins and IPA88/AAB86hashes pass. Fresh GitHub mainb0cf2c7 matches88source, Vercel commit status success; fullCI/site proof remains retained AUTH68. Fresh production15newDBflagsOFF,3legacyON,2endpointgatesOFF; oldrefery EAS owner/identity and production mapping verified,0compatible iOS88OTA groups. No remote/device mutation or new capture.
+
+Accepted: actual TestFlight87→88 and dedicated-account1→0upload with restart stability, prior87offline delivery/preservation. Still open: current88active-runtime/protected queue/data proof; current-source Android build/store/main-ID acceptance (draft86omits PR126/127 and must not be rolled out as current repair); exact enabled provider/policy/budget/operator/cohort scope; broader recovery/paired performance; final coordinated rehearsal and fresh production backup/delta/authority at the actual write boundary. Paid/real-link ceilings0,USD0.56unknown reserve retained. No8.5or observation start.
+
+Next prepared scope IOS88-PRESERVATION-RUNTIME-01: two encrypted local capture sets of learning DB/Expo updates DB/log around one controlled dedicated-account launch of installed88, compare retained personal hashes/event/SRS/queues and exact test server records read-only. Expected runtime93e0e71f0034fe480f43f8adf76271bb264dfd61/update893b83a7-61f1-4fee-8f3a-1061d97abfd4; zero new answer/manualsync/install/backend action. New captures include retained personal progress and require explicit bounded permission; AUTH65andAUTH71are consumed. Detailed scope/abort/privacy/baseline pins in reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/next-device-preservation-proposal.json. Do not execute on this preparation request alone.
+
+D13A.8 step4/6,3fixed completed;7broad milestones including current. GPT-6 Astra/High owner-confirmed. Evidence: evidence/D13A.8.4-post88-readiness-20261025.md/.json. Primary3754081dirty and managed worktrees preserved; local-only, no commit/push. No pending process or unknown external outcome. Historical checkpoint notes below remain historical.
+
+**2026-10-25 — AUTH-71 complete: iPhone88 installed; existing upload status repaired.**
+
+One exact TestFlight2.5.0(88) update completed from87; observed Update→Open plus fresh device inventory/in-app version. Dedicated account verified before/after/restart. Existing1To upload reproduced on87, becomes0on88 and remains0after cold restart. Settings/Collections/History pass; visible2,105words/22collections unchanged. Independent2,105To download and Last complete sync Not completed yet remain; full synchronization is not claimed. Three XCTest runs pass(3tests,0failures,0skips), driver build passes with existing signing. Screenshot visually checked. No new answer, forced sync, logout, capture, backend/OTA/network-setting action. Main app closed, dedicated session retained. AUTH71 fulfilled/consumed; no pending process/uncertain outcome, do not reinstall blindly.
+
+Next checkpoint remains D13A.8.4: reconcile remaining coordinated-release holds with successful88physical UI acceptance, prepare exact active-runtime/protected-queue/preservation proof and remaining artifact/dependency/rollback/fresh backup-delta gates. Fresh database capture, server parity and active update UUID not verified by this UI-only scope. New protected captures or backend execution require their bounded scope; never replay consumed AUTH65 answer/repeat. Primary3754081dirty and managed worktrees preserved; no commit/push. Evidence/task local-only.
+
+D13A.8 step4/6 active,3fixed completed;7broad milestones including current. Device subtask3/3complete. GPT-6 Astra / High owner-confirmed. Evidence: evidence/D13A.8.4-ios88-device-outcome-20261025.md/.json; private driver/results/screenshots/operation in reports/shared-dictionary-cefr/d13a84-ios88-device-20261025. Earlier pending installation notes below are superseded.
+
+**2026-10-25 — AUTH-71 preflight passed; exact TestFlight88 update in progress.**
+
+Dedicated account verified on main app87; existing upload count1 reproduced. TestFlight app6752469146 row shows exact2.5.0(88) and Update. One installation invocation recorded; inspect install88-result/attachments and fresh device inventory before any retry. Driver built with existing signing, preflight XCTest1passed/0failed/0skipped. No new learning answer or database capture. Reports: reports/shared-dictionary-cefr/d13a84-ios88-device-20261025. D13A.8 step4/6, device2/3,7 broad milestones including current; GPT-6 Astra/High owner-confirmed.
+
+**2026-10-25 — AUTH-71 iOS88 installation and existing-upload verification prepared.**
+
+Owner authorizes exact TestFlight88 installation and verification on the dedicated account. Preflight account/current version, inspect exact TestFlight row, perform at most one update tap after confirming current state, then verify zero upload and stability after restart. No new answer, queue clearing, database export or backend/OTA action. Inspect durable intent/results before retrying any uncertain install. Reports: reports/shared-dictionary-cefr/d13a84-ios88-device-20261025. D13A.8 step4/6, device1/3,7 broad milestones including current; GPT-6 Astra/High owner-confirmed.
+
+**2026-10-25 — AUTH-70 complete: iOS 88 available in TestFlight for Team (Expo).**
+
+Exact IPA 2.5.0 (88), SHA256 fb4e2f04cfb33b5a7c8aed51cff99a3abfe2f1ee87cd9a0f63f4fb7a38105e4c, uploaded once. EAS submission 3938acd1-76a3-4f3e-85ed-7738eb0d961f FINISHED without error. Apple build 5986d8ee-05a3-4942-b852-a7e323b5fe07 upload Complete; existing Team (Expo), 3 testers/10 builds, shows 88 Testing. Build list shows 3 invites. Availability verified; installations and email receipt not asserted. AUTH70 fulfilled/consumed; never repeat upload. No pending local or remote operation, no unknown outcome.
+
+Next: prepare bounded installation of 88 on the physical iPhone and verify the existing stuck upload on the dedicated test account. Current authorization covered upload/delivery only; no device update, new answer, sync trigger or database capture performed. Preserve retained personal rows and never replay consumed AUTH65 answer/repeat. New protected capture scope remains separate. Backend gates remain OFF as verified before submission; no backend/OTA changes. Primary dirty checkout and managed worktrees preserved; task/evidence local-only, no commit/push.
+
+D13A.8 step 4/6 remains active, 3 completed; 7 broad milestones remain including current. Upload 3/3 complete. GPT-6 Astra / High owner-confirmed. Evidence: evidence/D13A.8.4-testflight88-outcome-20261025.md/.json; private operation/apple-final-review/next-device-checkpoint receipts under reports/shared-dictionary-cefr/d13a84-testflight88-upload-20261025. Historical pending/proposal entries below are superseded by this checkpoint.
+
+**2026-10-25 — AUTH-70 IPA88 submission scheduled; store verification pending.**
+
+Exact IPA2.5.0(88), SHA256 fb4e2f04cfb33b5a7c8aed51cff99a3abfe2f1ee87cd9a0f63f4fb7a38105e4c, submitted once with existing credentials and Team (Expo). CLIexit0; submission3938acd1-76a3-4f3e-85ed-7738eb0d961f. Do not upload again. Next inspect EAS submission terminal state, Apple processing and group88 Testing/3testers. Durable operation/log under reports/shared-dictionary-cefr/d13a84-testflight88-upload-20261025. No local submit process pending; remote submission active. D13A.8step4/6,3complete;7broad milestones including current. Upload3/3verification;Astra/High owner-confirmed. No install/device learning/backend/OTA action.
+
+**2026-10-25 — AUTH-70 exact IPA88 TestFlight submission prepared; invocation next.**
+
+Owner authorizes one verified iOS2.5.0(88) upload and automatic delivery to existing Team (Expo),3testers. IPA SHA256 fb4e2f04cfb33b5a7c8aed51cff99a3abfe2f1ee87cd9a0f63f4fb7a38105e4c; all38build receipt pins verified. Fresh EAS identity/owner oldrefery, assigned existing ASC key/team metadata confirmed without private-key read. Apple88absent, existing group3testers/9builds. Exact-runtime production OTA0compatible groups. Read-only Supabase15new flagsOFF,3legacyON,2endpoint gatesOFF. No backend changes. Invoke submit-once.py once; inspect operation.json/submission_ids/log and Apple before retrying uncertain outcomes. Reports: reports/shared-dictionary-cefr/d13a84-testflight88-upload-20261025. D13A.8step4/6,3complete;7broad milestones including current. Upload2/3starting;Astra/High owner-confirmed. No device installation/learning/capture/OTA scope.
+
+**2026-10-25 — AUTH-69 complete: signed iOS88 verified; TestFlight proposal ready.**
+
+One local iOS2.5.0(88) build from main b0cf2c71b9eccb1fee2d735c4655e00c8a315c58 plus only local version-number overlay86→88. Artifact builds/app-2.5.0-88-learning-ack.ipa, SHA256 fb4e2f04cfb33b5a7c8aed51cff99a3abfe2f1ee87cd9a0f63f4fb7a38105e4c. Doctor21/21, strict signature/existing credentials,697actual source inputs, exact repair source-map hashes and byte-identical Hermes verification pass. Runtime 93e0e71f0034fe480f43f8adf76271bb264dfd61, production channel,0compatible OTA groups. Maps/dSYMs retained; same three vendor dSYM gaps as87 (7/10coverage). Sandbox trust failure reconciled by unchanged strict verification outside sandbox. Source preparation2208pins and fresh npm ci. Task temporary build directory cleaned after retaining artifacts/logs/maps/symbols/Xcode archive. No pending operation.
+
+AUTH69 fulfilled/consumed; no upload/install/OTA/backend mutation. Next concrete scope: exact IPA88 upload with automatic internal delivery to existing Team (Expo),3testers. Proposal prepared, not yet authorized; refresh identity/store/runtime/backend gates before submission. Existing iPhone87 remains unchanged and lacks repair. Subsequent bounded installation/existing-residue verification and any new protected captures require scoped approval; never replay AUTH65 answer/repeat. D13A.8 currentstep4/6,3completed;7broad milestones including current;local buildpreparation4/4complete. GPT-6 Astra/High owner-confirmed. Primary3754081dirty and managedc826509 preserved. Evidence/task local-only: evidence/D13A.8.4-build88-outcome-20261025.md/.json; private final-verification.json/testflight-upload-proposal.json under reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025.
+
+**2026-10-25 — AUTH-69 iOS88 local build prepared from main b0cf2c7.**
+
+Owner requests iOS repair build and next TestFlight step. Source archive exact b0cf2c71b9eccb1fee2d735c4655e00c8a315c58, only local app.base.json build-number overlay86→88 (both platform fields required by profile; iOS build only). 2208source pins verified; fresh npm ci completed, no external dependency symlink topology. Config2.5.0(88), production dictionary-release, fingerprint policy, QAfalse. Apple recent uploads Complete87/86;88 absent. EAS identity/owner oldrefery verified. First read-only project check raced dependency install and failed config; retry after install succeeded, no build started by that check. Source/preparation receipts under reports/shared-dictionary-cefr/d13a84-build88-preparation-20261025. Build operation under d13a84-build88-outcome-20261025; inspect slot/log/artifact before retry. Next local build with frozen existing credentials, then verify signature/runtime/embedded repair/maps/symbols and prepare exact-artifact TestFlight proposal. No upload/install/OTA/backend action authorized. D13A.8step4/6 active,3/6 complete;7 broad milestones including current. Local preparation2/4 starting. Astra/High owner-confirmed.
+
+**2026-10-25 — AUTH-68 complete: PR127 merged; production CI, deployment and site verified.**
+
+PR127 ready then squash-merged c826509 into main as b0cf2c71b9eccb1fee2d735c4655e00c8a315c58. Parent5be08b8 and exact tree b3ad0363478a6fdec75ea4f159d3caaff7f0a020 verified; four approved files only. MainQuality40231424230/LightweightE2E40231424222 SUCCESS; all required checks green. Mobile2770/web1252tests, ExpoDoctor21/21, mutation96.13% (threshold90), report artifacts available. Vercel E36wwizQWhfWWGoDGo74DeJeocRm Ready/Production on b0cf2c7 with woordenaar.app alias, reconfirmed after CI. SiteHTTP200/sign-in rendered;12static assetsHTTP200. No application login/data write.
+
+AUTH68 fulfilled/consumed; never replay ready/merge. No pending local process or remote CI run. Primary3754081dirty and clean managedc826509 preserved; evidence/task changes local-only. iPhone87 still lacks fix; no native/device/backend/OTA action. Next checkpoint: prepare exact-main native release candidate/proposal, preserving all existing progress and consumed AUTH65 answer/repeat scope; new build/upload/install and protected captures require their concrete scoped authorization. D13A.8.4active,3/6fixed,7broad;GPT-6 Astra/High owner-confirmed. Evidence: evidence/D13A.8.4-pr127-integration-outcome-20261025.md/.json; private integration-outcome.json and next-native-checkpoint.json under reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025.
+
+**2026-10-25 — AUTH-68 PR127 merged; production verification in progress.**
+
+PR127 marked ready and squash-merged once with exact-head guard. Source c826509, squash b0cf2c71b9eccb1fee2d735c4655e00c8a315c58, parent5be08b8; tree b3ad0363478a6fdec75ea4f159d3caaff7f0a020 exactly matches reviewed candidate. Four files only. Automatic main Quality40231424230, LightweightE2E40231424222 and Vercel production E36wwizQWhfWWGoDGo74DeJeocRm are running. Next await terminal CI, verify deployment/production alias and read-only site smoke. Do not repeat merge. Native87 remains unchanged and lacks fix. No backend/device action. Journal: reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/operation.json. Primary dirty checkout preserved. D13A.8.4 active;3/6 fixed,7 broad. Astra/High owner-confirmed.
+
+**2026-10-25 — PR127 terminal CI passed; ready/squash proposal prepared.**
+
+All six statuses SUCCESS for exact head c826509ec915f9c40a7ad0e16ed597d987501bf6, including required quality/database/web-fixtures/lint-e2e-tests and Vercel. Quality40228373906 completed successfully: mobile2770/web1252tests, ExpoDoctor21/21, mutation score96.13% (threshold90%). Coverage/mutation artifacts available. No inline comments or GitHub reviews. Source/test author review found no blocking issue; not an independent approval. Four source hashes match, managed worktree clean, current main/base5be08b8 unchanged, PR draft/open and mergeable without conflicts. Expected squash tree b3ad0363478a6fdec75ea4f159d3caaff7f0a020.
+
+Next concrete proposal: after separate owner permission, refresh exact head/base/checks, mark PR127 ready, squash-merge c826509 into main including automatic production Vercel deployment, then verify merged tree, production CI/deploy/site. No ready/merge/release action performed. Build87 still lacks repair; native candidate/device verification follows separately. AUTH67 publication and AUTH65 answer/repeat remain consumed. No pending local process or CI run. Evidence: evidence/D13A.8.4-pr127-terminal-review-20261025.md/.json; private terminal-review.json/next-step-preparation.json under reports/shared-dictionary-cefr/d13a84-learning-ack-pr-20261025. Older operation.json is the immutable publication checkpoint, not current CI state. Task/evidence local-only; implementation pushed. D13A.8.4active,3/6fixed,7broad;Astra/High last owner-confirmed.
+
+**2026-10-25 — PR127 terminal CI verification and next-step preparation in progress.**
+
+Owner requests CI completion verification and preparation of the next step. PR127 remains draft/open, headc826509/base5be08b8 unchanged, mergeable without conflicts, no reviews or non-Vercel comments. All check runs bind to exact head. Main requires quality/database/web-fixtures/lint-e2e-tests; Quality still runs mutation tests, five other statuses succeeded. Exact-head/base ready+squash proposal prepared locally, expected tree b3ad0363478a6fdec75ea4f159d3caaff7f0a020. Author source/test diff review found no blocking issue; not an independent approval. Four source pins match; managed worktree clean. No remote mutation or approval inference. Wait for terminal CI before proposing merge. Private next-step-preparation.json and checks-terminal-watch.log under reports/shared-dictionary-cefr/d13a84-learning-ack-pr-20261025. D13A.8.4active;3/6fixed,7broad;Astra/High last owner-confirmed.
+
+**2026-10-25 — AUTH-67 complete: learning acknowledgement draft PR127 published; CI pending.**
+
+Commit c826509ec915f9c40a7ad0e16ed597d987501bf6 pushed on feature/d13a84-learning-ack; draft https://github.com/oldrefery/dutch-learning-app/pull/127 created and attached. Base5be08b8, exactly four source/test files, pinned hashes unchanged. Pre-commit mobile202suites/2770tests and web118suites/1252tests PASS; one existing skipped web suite/test. Managed worktree /Users/devrush/.codex/worktrees/d13a84-learning-ack/DutchLearningApp clean; primary dirty task bundle and older checkouts preserved.
+
+Fresh checks: database, web-fixtures, lint-e2e-tests, Vercel and Vercel Preview Comments SUCCESS. Quality40228373906 remains IN_PROGRESS at mutation tests; all earlier steps passed. Overall CI not yet green. Preview deployment succeeded and De Woordenaar sign-in rendered in existing Chrome session; anonymous HTTP required Vercel login. No application login, device/backend action or native delivery. Local watcher stopped; remote CI continues. No local pending process.
+
+Evidence: evidence/D13A.8.4-learning-ack-pr-outcome-20261025.md/.json; private receipts reports/shared-dictionary-cefr/d13a84-learning-ack-pr-20261025. Implementation committed/pushed; primary task/evidence local-only. AUTH67 publication consumed; never duplicate commit/push/PR. Next read terminal CI for exact PR127 head, inspect any failure and review readiness. Keep draft; no ready/merge/production/native release approval inferred. iPhone87 still lacks the repair. D13A.8.4active,3/6fixed,7broad;GPT-6 Astra/High last owner-confirmed. AUTH65 answer/repeat remains consumed.
+
+**2026-10-25 — AUTH-67 PR127 published; preview verified; final CI step running.**
+
+Draft PR127 head c826509ec915f9c40a7ad0e16ed597d987501bf6, base5be08b8, four files. Commit/push/draft authority fulfilled. Vercel deployment J8djbFbLgTBqU3UhLBxHAmBFuoS4 succeeded; anonymous GET redirects to Vercel login, existing Chrome session renders De Woordenaar sign-in at the exact branch preview URL. No app login/data mutation. GitHub database, web-fixtures, lightweight E2E passed. Quality passed mobile/web tests, Edge tests, web build and Expo Doctor; mutation tests still running. Overall CI not yet confirmed green. Check watcher/remote status before final checkpoint; no repeat publication. Local task/evidence remain uncommitted in primary; implementation pushed. No merge/native/backend scope. D13A.8.4active;3/6fixed,7broad;Astra/High last owner-confirmed.
+
+**2026-10-25 — AUTH-67 commit/push/draft PR127 complete; CI running.**
+
+Commit c826509ec915f9c40a7ad0e16ed597d987501bf6 on feature/d13a84-learning-ack pushed, draft https://github.com/oldrefery/dutch-learning-app/pull/127 created and attached. Base5be08b8; exact four candidate files and source hashes verified. Original pre-commit hooks passed: mobile202suites/2770tests, web118suites/1252tests (one existing skipped suite/test). Worktree /Users/devrush/.codex/worktrees/d13a84-learning-ack/DutchLearningApp clean. Primary dirty task state preserved. Automatic Quality40228373906, Lightweight E2E40228373873 and Vercel preview pending. Check operation.json/checks-watch.log and PR head before retrying any publication; never duplicate push/PR creation. Next await checks, inspect failures if any, retain draft and checkpoint terminal result. No merge, production deployment, signed build, device action or backend change. Reports: reports/shared-dictionary-cefr/d13a84-learning-ack-pr-20261025. D13A.8.4active,3/6fixed,7broad;Astra/High last owner-confirmed.
+
+**2026-10-25 — AUTH-67 learning acknowledgement draft publication in progress.**
+
+Owner authorizes commit/push feature/d13a84-learning-ack and draft PR with automatic CI/possible Vercel preview. Fresh origin/main remains5be08b8; no existing remote branch or PR. Managed worktree /Users/devrush/.codex/worktrees/d13a84-learning-ack/DutchLearningApp created and attached; four candidate source hashes match AUTH66. Primary dirty work and older managed checkouts preserved. Task bundle copied into ignored reports/session-context in new worktree. Commit in progress with original hooks; inspect commit.log and git HEAD before retrying. Private operation: reports/shared-dictionary-cefr/d13a84-learning-ack-pr-20261025/operation.json. No push/PR yet. Next confirm commit, publish exact head, create draft and inspect CI/preview. D13A.8.4active;3/6fixed,7broad;GPT-6 Astra/High owner-confirmed. No merge/build/device/backend scope.
+
+**2026-10-25 — AUTH-66 local learning acknowledgement repair verified.**
+
+Fixed the durable word-level residue after acknowledged learning. Canonical full-word comparison (content, placement and SRS) plus exclusive-transaction queue guards clears only matching pending rows. Exact-ID refresh repairs rows already behind the cursor, including dictionary capability unavailable. Real SQLite restart/status regression proves1→0upload, retained download debt and unchanged event identity; real content/placement/learning/correction/import work remains protected. 34suites/538tests PASS; production/test TypeScript, zero-warning targeted ESLint and Prettier PASS.
+
+Evidence: evidence/D13A.8.4-learning-ack-repair-20261025.md/.json. Four-file patch/source pins/logs: reports/shared-dictionary-cefr/d13a84-learning-ack-repair-20261025. Candidate against local main5be08b8; implemented in primary3754081dirty, existing work/checkouts preserved. No commit/push/PR/build/upload/install/OTA/backend/device action. Build87 on iPhone does not contain the fix; physical counter not rechecked. AUTH65 answer/repeat remains consumed.
+
+Next: obtain scoped commit/push/draft PR authorization for feature/d13a84-learning-ack, then refresh main and transfer only the four pinned candidate files. Prepare exact release/device verification afterward; no flag activation or new learning answer inferred. No pending process. Local-only; D13A.8.4active,3/6fixed,7broad. GPT-6 Astra/High last owner-confirmed, picker not independently inspected.
+
+**2026-10-25 — AUTH-65 complete: offline delivery passes; residual upload defect confirmed.**
+
+One Good survived cold offline restart and reached server exactly once (14→15events). Event acknowledged, command queue empty; one repeat Sync Now created no duplicate or scheduling change. Personal hashes and unrelated test words unchanged. Local word remains pending and UI1To upload/2105To download, Last complete sync Not completed yet: status acceptance FAIL. Original networking and Adaptive restored; main app closed on dedicated session. Production15new flags/2endpoint gates OFF. No pending process. One-answer and repeat authorities consumed; never replay.
+
+Evidence: evidence/D13A.8.4-ios87-offline-outcome-20261025.md/.json; private final-verification.json and operation.json under reports/shared-dictionary-cefr/d13a84-ios87-offline-20261025. Next: local acknowledgement/status repair with regression coverage for learning-only pending rows and preservation of real content/placement edits; no flag activation, fresh device answer or release inferred. D13A.8.4active;3/6fixed,7broad;Astra/High owner-confirmed. Primary3754081dirty and managedcheckouts preserved;local-only.
+
+**2026-10-25 — AUTH-65 one offline answer and restart durability verified.**
+
+Unique event22de1041-f0b8-4b8e-b659-05bf90bf8c40 recorded once for pinned test word02e20a74-5b71-4955-8c2c-3aef4f6196b9, Good/meaning-recall, airplaneON/Wi-FiOFF. Protected offline-answer and offline-restarted copies show identical event/progress/learning command;1pending+14synced, next review2026-10-26, repetition1. Existing14events and personal table hashes unchanged. Visual screenshot pins word because offline AX tree omits visible card text. Unified v4 now restores networking and checks server delivery/local acknowledgement before one repeat sync. Never run any answer test again; answer allowance consumed. See operation.json and *-verification.json under reports/shared-dictionary-cefr/d13a84-ios87-offline-20261025. D13A.8.4active;3/6fixed,7broad;Astra/High user-confirmed.
+
+**2026-10-25 — AUTH-65 offline driver reconciliation; no answer executed.**
+
+USB wired confirmed. Network disconnect passed (airplaneON/Wi-FiOFF). Separate runner relaunch failed on offline developer-certificate trust before any app action; encrypted offline-no-answer capture proves14events, no learning command, personal hashes unchanged. Owner restored network. Unified v1 reached ready encrypted baseline then encountered retained preview session (pinned word,0reviewed), failing before reveal/Good. Fatal XCTest assertion bypassed deferred network restoration; owner asked to restore network again. Prepared v2 explicitly terminates app, uses throwing guards and same-process restoration, and exchanges phase/ack files over USB for protected snapshots. Inspect operation.json and unique slots before running. No learning answer recorded or server mutation asserted. D13A.8.4active;3/6fixed,7broad;Astra/High user-confirmed.
+
+**2026-10-25 — AUTH-65 runtime and protected baseline verified; USB confirmed.**
+
+Fresh encrypted captures authorized explicitly and completed with temporary plaintext removed. Actual embedded87 runtime bound by Expo successful-launch counter delta2→3 and matching IPA update UUID; dedicated owner and14synced events/zero pending learning verified. Pinned existing due word selected and observed without answer. Personal table hashes unchanged. USB wired transport verified after owner connected cable. Network disconnect in progress; first runner assertion checked the asynchronous airplane switch too early, no answer executed. Read actual switch state before finishing disconnect. Operation and all private evidence: reports/shared-dictionary-cefr/d13a84-ios87-offline-20261025. Do not replay any answer slot; inspect result and database first. D13A.8.4active;3/6fixed,7broad;Astra/High user-confirmed.
+
+**2026-10-25 — AUTH-65 dedicated-account offline/reconnect authorized; baseline preparation.**
+
+Owner requests offline/reconnect on existing dedicated iPhone87 account. Scope: one pinned due-word Good answer offline, offline restart, reconnect delivery and one repeated sync, preserving original phone network state. Gates remainOFF; no personal learning or provider action. Fresh protected main SQLite capture permission pending because it includes retained personal rows; no copy or answer started. Operation: reports/shared-dictionary-cefr/d13a84-ios87-offline-20261025/operation.json. D13A.8.4active;3/6fixed,7broad;Astra/High user-confirmed.
+
+**2026-10-25 — AUTH-64 TestFlight87 installed and dedicated-account smoke passed.**
+
+One observed TestFlight Update86→87 completed (Open), fresh devicectl and Settings
+confirm2.5.0(87). Dedicated account retained before/after update and after restart.
+Collections/History/Settings passed;0 To upload /2105 To download; Last complete sync
+Not completed yet. Four XCTest runs passed, zero failures/skips. Initial TestFlight
+loading-only capture reconciled before update. No learning answer, forced sync,
+account switch, backend flag/provider action or personal SQLite copy. App closed
+with dedicated session retained; no pending operation. AUTH64 fulfilled/consumed.
+[Outcome](evidence/D13A.8.4-ios87-device-outcome-20261025.md) and JSON pin private evidence.
+Exact active runtime/updateUUID and fresh protected queue baseline remain unverified;
+next prepare those and the bounded dedicated-account offline/reconnect scenario.
+D13A.8.4active;3/6fixed,7broad remaining,USD0.56held;Astra/High user-confirmed.
+Primary3754081dirty and manageda8618a1/e1d3966 preserved;local-only task/evidence.
+
+**2026-10-25 — AUTH-64 TestFlight87 installed; smoke pending.**
+
+Dedicated test account verified on86. Exact TestFlight87 Update tapped once; test passed, button Open. Fresh devicectl confirms2.5.0(87), builtByDeveloper=true retained as reported. No uninstall or data reset. Next execute prepared testVerify87NavigationAndSync; inspect run slot first. Reports: d13a84-ios87-device-20261025. D13A.8.4active;3/6fixed,7broad;Astra/High.
+
+**2026-10-25 — AUTH-64 TestFlight87 device update and test-account verification authorized.**
+
+Owner approves installing2.5.0(87) through TestFlight on the existing iPhone and checking the separate test account. First inspect device lock/version/session, then bounded update and navigation/sync/restart checks. Existing XCTest runner authorization persists; no personal learning changes, backend flags, paid provider calls, credential changes or publication. Operation: reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/operation.json. D13A.8.4active;3/6fixed,7broad;Astra/High user-confirmed.
+
+**2026-10-25 — AUTH-63 iOS87 TestFlight delivery complete.**
+
+Exact IPA2.5.0(87) uploaded once; EAS submission 4bf6a31a-cc29-44fd-931e-e2ad7b1c9bbc FINISHED.
+Apple upload Complete; existing Team (Expo) has3testers/9builds and87 Testing,
+3invites,90days expiry. Authority fulfilled/consumed, do not resubmit. Production
+15new flags/2endpoint gates OFF; no compatible iOS OTA. No pending process/outcome.
+[Outcome](evidence/D13A.8.4-testflight87-outcome-20261025.md) and JSON pin the receipts and screenshot.
+No device operation performed; installed iPhone version not freshly verified and
+may auto-update through TestFlight. Next: prepare protected87 runtime/test-owner/queue
+baseline and concrete device scope; no learning test yet. Primary3754081dirty and
+manageda8618a1/e1d3966 preserved; task/evidence local-only, no commit/push.
+D13A.8.4active;3/6fixed,7broad remaining,USD0.56held;Astra/High user-confirmed.
+
+**2026-10-25 — AUTH-63 IPA87 submitted once; store verification pending.**
+
+Exact IPA87 uploaded to EAS. Submission 4bf6a31a-cc29-44fd-931e-e2ad7b1c9bbc targets ASC6752469146, existing Team (Expo), three testers. Inspect operation.json and read-submission-status.cjs in reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025; do not invoke submit again. Await terminal EAS and Apple/group verification. D13A.8.4 active;3/6fixed,7broad remaining;Astra/High user-confirmed.
+
+**2026-10-25 — AUTH-63 exact IPA87 upload authorized; preflight complete.**
+
+One submission to existing Team (Expo), three testers, with automatic delivery authorized. IPA and 50 prior evidence pins match. Personal EAS identity/project/key confirmed; production15new flags and2endpoint gates OFF, no compatible iOS OTA. Operation slot: reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/operation.json. Inspect slot before invoking; never duplicate an uncertain upload. D13A.8.4 active;3/6fixed,7broad remaining;GPT-6 Astra/High user-confirmed.
+
+**2026-10-25 — AUTH-62 local iOS87 built and verified; upload not started.**
+
+[Outcome](evidence/D13A.8.4-build87-outcome-20261025.md) / JSON: IPA2.5.0(87),24,130,630bytes,
+SHA256 7d167077fb841601703427ade84a6e47864c1c3870cec50e212362aa32013488.
+Source main5be08b8 plus the pinned two-line version overlay. App Store signature,
+existing86 profile/certificate, production bundle and QAfalse verified. Runtime
+c2e0bc63ed30aef49749eb7a6c00804aabf165d1; embedded ID 52abba6d-6cc2-4311-96ba-1a38100266a9.
+696 actual source/config/lock hashes matched. Three repaired production sources match
+sourcemap; same-compiler Hermes bytes equal IPA. Seven dSYMs match10native binaries;
+three vendor dSYMs unavailable. ExpoDoctor21/21. No compatible production iOS OTA.
+
+First EAS attempt failed before native compilation on external dependency-symlink
+fingerprints; materialized locked dependencies, equality check retained, second EAS
+attempt succeeded. No initial IPA. System-trust verification and corrected manifest/
+Hermes verification assumptions reconciled. Both attempts/logs preserved. Two owned
+temporary build dirs removed only after retention;18.5GiB free. Apple session restored
+by owner; no87 visible, existing Team(Expo)3testers/8builds, automatic Xcode delivery.
+
+AUTH62 fulfilled/consumed; no upload/install/OTA/Android/backend/device/commit/push.
+Exact next: Prepare/review one exact IPA87 TestFlight submission to existing Team (Expo), including automatic internal delivery to its three testers; refresh store/OTA/backend gates and source/artifact pins before separate upload authorization. Device installation and protected runtime/owner/queue baseline remain separate; no learning test yet.
+IPA/source overlay/task records local-only. Primary3754081dirty and manageda8618a1/
+e1d3966 preserved. No pending process; iPhone86 unchanged. D13A.8.4active,3/6fixed,
+7broad remaining,USD0.56held. GPT-6 Astra/High last user-confirmed.
+
+**2026-10-25 — iOS87 first attempt reconciled; dependency topology repaired.**
+
+AUTH62 local build stopped before native compilation because symlinked node_modules
+produced a different runtime fingerprint. No IPA was created; temporary signing
+credentials cleanup was logged. Materialized exact npm-ci dependencies inside the
+frozen candidate; application source and lockfile unchanged. Local fingerprint now
+c2e0bc63ed30aef49749eb7a6c00804aabf165d1 equals the build environment. Runtime checks
+remain enabled. First slot/log preserved; second attempt targets the same artifact.
+Operation and retry-reconciliation receipts under d13a84-build87-outcome-20261025.
+No upload/install/OTA scope. D13A.8.4 active;3/6fixed,7broad remaining;Astra/High.
+
+**2026-10-25 — AUTH-62 local iOS87 build authorized; preflight starting.**
+
+One local signed iOS2.5.0(87), pinned main5be08b8 plus reviewed version overlay,
+existing credentials and artifact verification. No upload/install/OTA/Android or
+credential change. Operation: reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/operation.json.
+Inspect this slot/log/artifact before any retry. Apple session expired on fresh reload;
+prior inventory showed no87. Local compilation does not allocate a store number;
+recheck before later upload. Primary and managed checkouts preserved. D13A.8.4 active,
+3/6fixed,7broad remaining,USD0.56held. GPT-6 Astra/High last user-confirmed.
+
+**2026-10-25 — Sync-status iOS build87 candidate prepared; build approval pending.**
+
+[Preparation](evidence/D13A.8.4-build87-preparation-20261025.md) pins main5be08b8 plus the two-line version87 overlay in one file,
+2207 archived source files and the exact local-only build request. Config passed,
+lockfile equal, explicit EAS archive root verified; primary/managed checkouts preserved.
+Fresh EAS identity/owner oldrefery; Apple lists2.5.0(86), no87 in current version/latest
+uploads. This is not a reservation. Local runtime estimate470269d9529ce7725e895da1394bc1f12fe85c7d
+has no matching iOS production groups; final IPA/device identity remains unverified.
+About16GiB disk free; no files deleted. Initial DNS failure recovered with permitted
+network access. No native compilation, upload, installation, account/device operation,
+backend read/write, provider call, commit or push. No pending process.
+
+Exact next: obtain scoped permission for one local signed iOS2.5.0(87) from pinned
+main plus reviewed version overlay, using existing credentials, then validate the
+resulting artifact. Upload/internal delivery and device testing remain later concrete
+decisions. AUTH61 consumed; do not repeat merge/deploy. D13A.8.4 active,3/6fixed,
+7broad remaining,USD0.56held. Local-only evidence; GPT-6 Astra/High user-confirmed.
+
+**2026-10-25 — PR126 merged; main CI, production and public smoke complete.**
+
+AUTH-61 fulfilled and consumed. Approved e1d3966 merged once to main
+5be08b8e592b7c96741887289771da772735de3d; expected tree 24350f4bacc356dba7f3f91f2b95db33474f4272 confirmed.
+Quality 40204067200 and lightweight 40204067204 both passed on exact main;
+2747 mobile / 1252 web / 681 database / 351 edge tests, 22 snapshots, Expo Doctor
+21/21 and mutation 96.13% passed. One existing web suite/test skipped.
+Vercel dpl_4AkFFNzVPfmpthuAkZHj5vsomXdh READY at exact main; final binding checked
+at 15:17:47 UTC. Public HTTP and desktop/mobile browser smoke passed; no login or
+form submission. Artifact metadata checked, ZIP contents not downloaded.
+
+[Integration outcome](evidence/D13A.8.4-pr126-integration-outcome-20261025.md) and adjacent JSON pin 23 private receipts.
+No pending local process, CI run or deployment. Prior in-progress entries below are
+superseded by this terminal outcome. Primary dirty checkout remains 3754081;
+capability a8618a1 and sync-status e1d3966 managed checkouts remain clean. origin/main
+is fetched to 5be08b8; retained source copies must not be recommitted as a new repair.
+Task/operation evidence local-only; merged code pushed. iPhone 2.5.0(86) unchanged.
+
+Exact next: Prepare a concrete native/TestFlight delivery candidate for the merged sync-status repair; bind its runtime, dedicated test owner and fresh queue baseline before the bounded offline/reconnect proposal. Build, upload, install, OTA and device learning-write operations require their own concrete scoped authorization.
+D13A.8.4 active; 3/6 fixed substages complete, fourth active, fifth/sixth pending.
+Seven broad steps remain including current; USD0.56 held. GPT-6 Astra / High last
+user-confirmed. No flag/provider/migration/device operation in this checkpoint.
+
+**2026-10-25 — PR126 production live and public site passed; main Quality running.**
+
+AUTH61 merged approved e1d3966 once into main5be08b8e592b7c96741887289771da772735de3d;
+expected tree24350f4bacc356dba7f3f91f2b95db33474f4272 confirmed, exactly seven files.
+Vercel production dpl_4AkFFNzVPfmpthuAkZHj5vsomXdh READY on exact SHA,woordenaar.app
+alias assigned without error. Public GET routes/security headers match accepted
+baseline; browser desktop/mobile login/reset/signup/root redirect verified. Four
+screenshots inspected,zero console warnings/errors and no retained failed request;
+no form submission/login. Owned browser closed. Production/device flags untouched.
+
+At14:57UTC main lightweight run40204067204 successful; database/web-fixtures passed.
+Quality run40204067200 still in progress. Exact next: wait for terminal Quality,
+inspect final summaries/artifact head bindings, recheck main/production and record
+AUTH61 outcome. No duplicate merge/deploy, no further publication or native operation.
+Operation and smoke receipts: reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/.
+All checkouts preserved; D13A.8.4 active,3/6fixed done,7broad steps remaining,USD0.56held.
+GPT-6 Astra/High last user-confirmed; local operational records not committed.
+
+**2026-10-25 — AUTH-61 merge completed; production/main CI verification running.**
+
+PR126 marked ready then squash-merged once at approved head e1d3966. Resulting
+main5be08b8e592b7c96741887289771da772735de3d/tree24350f4bacc356dba7f3f91f2b95db33474f4272
+matches expected seven-file candidate; parent32d3c78. Merge authority consumed;
+postchecks remain in progress. Do not repeat merge, publish native/OTA or change flags.
+Quality run40204067200 and lightweight40204067204 started on exact main. Verify
+Vercel automatic production SHA and public site, then terminal CI. Durable operation:
+reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/operation.json.
+Prior checkouts preserved; D13A.8.4 active,3/6fixed,7broad remaining,USD0.56held.
+GPT-6 Astra/High last owner-confirmed; no device update or learning scope.
+
+**2026-10-25 — PR126 terminal CI passed; exact-head merge proposal ready.**
+
+All four required checks and Vercel passed on e1d3966237567792c74855ec4e6080f16a1897c4.
+Quality completed:2747 mobile/1252 web/681 database/351 edge tests passed;22snapshots,
+ExpoDoctor21/21,mutation96.13% >=90%. One existing web suite/test skipped. Two CI
+artifact metadata/digests bound to head; no ZIP download. Main/base unchanged32d3c78.
+Seven source hashes and14prior outcome pins verified; managed worktree clean.
+
+[Terminal review](evidence/D13A.8.4-pr126-terminal-review-20261025.md). PR126 remains draft/unmerged, conflict-free; no external
+review submissions/threads. Scoped self-review has no blocking finding. Exact next:
+owner decision to mark draft ready and squash-merge only e1d3966 into main, including
+automatic Vercel production deployment and post-merge mainCI/public-site checks.
+Expected tree24350f4bacc356dba7f3f91f2b95db33474f4272 if base unchanged. Re-read
+head/base/checks immediately before execution. AUTH60consumed; no merge authority yet.
+No iPhone update/OTA/flag/provider/migration/learning scope. Preview protected-login
+limitation retained. D13A.8.4 active;7broad steps including current;3/6fixed done,
+3remain including active;USD0.56held. GPT-6 Astra/High last owner-confirmed.
+Local-only review records; no pending local/remote CI job. Prior checkouts preserved.
+
+**2026-10-25 — PR126 reviewed locally; database passed, quality still running.**
+
+At14:29UTC exact-head e1d3966:database/web-fixtures/lint-e2e-tests pass;quality is
+running web mutation tests. Vercel success, protected-login limitation retained.
+Seven-file scope matches; no GitHub reviews/threads; no blocker found in scoped
+self-review, not independent approval. Fourteen previous outcome pins verified;
+managed worktree clean. No new code or external mutation. PR remains draft/unmerged.
+
+Stable count: seven broad checkpoints including current D13A.8, six outside it:
+D13.6,D13A.9,D14.1–4. Current step has six fixed substages:three done, fourth active,
+fifth/sixth pending;three remain including active. No count changed in this review.
+[Review checkpoint](evidence/D13A.8.4-pr126-review-checkpoint-20261025.md). Exact next: inspect terminal Quality result/artifacts
+for e1d3966 and prepare next integration/release decision. AUTH60 consumed; no merge,
+release, device learning or flag scope. D13A.8.4 active/USD0.56held; Astra/High last
+owner-confirmed. Local-only checkpoint; remote CI remains active, no local process.
+
+**2026-10-25 — AUTH-60 fulfilled: draft PR126 open, preview ready, CI pending.**
+
+One approved commit e1d3966237567792c74855ec4e6080f16a1897c4 on
+feature/d13a84-sync-status pushed; draft PR126 attached, seven files only. Parent
+main32d3c78; committed hashes equal reviewed candidate. Normal hooks:2747 mobile
+and1252 web tests/22 snapshots passed,one web suite/test skipped. New managed
+worktree d13a84-sync-status clean; original primary dirty and a8618a1 preserved.
+
+At14:17:20UTC lint-e2e-tests/web-fixtures passed; quality/database still running in
+run40201229329. Vercel reports success, preview HTTP redirects to Vercel Login;
+application smoke unverified. No overall-green CI or merge-readiness claim.
+[Outcome](evidence/D13A.8.4-sync-status-pr-outcome-20261025.md) / JSON pins receipts. AUTH-60 consumed; do not recreate commit/PR.
+Exact next: inspect terminal checks for head e1d3966 and review draft PR126. No
+merge/production/OTA/native/install/flag/device-learning authority. Offline scenario
+still requires fresh runtime/owner/queue binding. D13A.8.4 active,3/6/USD0.56held.
+GPT-6 Astra/High last owner-confirmed; announce each continuation. Seven code/test
+files pushed; task/operation records local-only. No pending local process; CI ongoing.
+
+**2026-10-25 — AUTH-60 draft PR126 created; CI and preview running.**
+
+Owner authorized the reviewed seven-file commit/push/draft PR with automatic CI and
+possible Vercel preview. Managed worktree d13a84-sync-status created from main32d3c78;
+commit e1d3966237567792c74855ec4e6080f16a1897c4 exactly matches approved source hashes.
+Pre-commit passed 2747 mobile tests/22 snapshots and1252 web tests (one skipped).
+Branch pushed, draft PR126 open/attached, seven files/one commit. No merge or release.
+Initial required checks database/quality/lint-e2e-tests/web-fixtures running, Vercel
+preview pending. Do not recreate branch/commit/PR. Continue exact-head CI/preview
+inspection; operation receipt: reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/operation.json.
+Original dirty primary and prior managed checkout preserved; new managed checkout:
+/Users/devrush/.codex/worktrees/d13a84-sync-status/DutchLearningApp.
+D13A.8.4 active,3/6/USD0.56held. GPT-6 Astra/High last user-confirmed.
+
+**2026-10-25 — Seven-file sync status candidate validated on current main.**
+
+Fresh main32d3c786bf57d15a5d2a525fd7520e200eb4aec4 and its two push CI runs verified
+successful. Local a8618a1 has the exact main tree; isolated archive overlaid with only
+seven repair files, no dirty contracts/docs/migrations. Forward/reverse patch checks,
+173 tests across eight suites and typecheck passed. Source hashes match prior lint/
+format validation. Patch f9d1f48a7d2cbe7bee8e87599044b079cee4ec641a110d2c93735895f521da9e.
+
+[Integration review](evidence/D13A.8.4-sync-status-integration-review-20261025.md) / adjacent JSON pins candidate, PR title/body and bounded
+offline/reconnect proposal. The latter is not executed: bind fresh owner/queues and
+active runtime before one due-card answer; existing86 UI omits active OTA identity.
+No device/network/personal export/provider/flag/build/publication operation.
+
+Exact next: obtain scoped authority to commit the seven files on
+feature/d13a84-sync-status from refreshed main, push and open a draft PR (automatic
+CI/possible Vercel preview included). No merge or production release scope. Check
+for existing branch/PR before creation; revalidate if main/source changes. Primary
+375408186b5b60f42bb8a2ecd827e3eaf3cfbef5 stays dirty, managed a8618a1 clean; all prior
+work preserved. No pending process, commit or push. Local-only; D13A.8.4 in progress,
+D13A.8=3/6/USD0.56held. GPT-6 Astra/High last owner-confirmed; announce each continuation.
+
+**2026-10-25 — Local sync status repair validated; 173 regression tests passed.**
+
+Settings now separates uploads/downloads and labels the last complete sync. New
+read-only owner-scoped SQLite aggregation includes reviews, resets, unresolved
+corrections and canonical recovery, without changing delivery/gates/timestamps.
+Word overlap is deduplicated in totalPending. The reproduced 2105-cache-debt case
+is covered as 0 uploads / 2105 downloads in both themes; no new device DB audit.
+
+Eight suites passed 173/173; final layout-only adjustment passed 15 Settings tests.
+Typecheck, scoped lint/format and diff checks passed. Initial fixture failures and
+lint receipts retained. Seven local app/test files (five modified, two new), pinned
+source copies and validation commands in [repair outcome](evidence/D13A.8.4-sync-status-repair-20261025.md) / adjacent JSON.
+Installed86 unchanged; no physical-device visual check or new release/phone action.
+
+Exact next within D13A.8.4: prepare scoped integration/release review against current
+main for these seven files, bind artifact/runtime and propose bounded offline/
+reconnect checks. Do not publish/install or execute learning writes without concrete
+scope. D13A.8=3/6; USD0.56 held; no D13A.8.5 advance. GPT-6 Astra/High last owner-
+confirmed; announce each continuation. Both checkouts and prior dirty files preserved:
+primary375408186b5b60f42bb8a2ecd827e3eaf3cfbef5, managed clean a8618a1c77dfeaf5aacb4f32100c422ad1292c5d.
+Local-only, no commit/push, no pending operation.
+
+**2026-10-25 — Pending/last-sync cause reproduced;50 local tests passed.**
+
+Fresh production13:39:41UTC read-only:legacy reads/operations TRUE,following_reads
+FALSE,shared_analysis_capability FALSE. Eight sources match retained86freeze. Client
+following is ON; unavailable v2 is retained through learning delivery, then thrown
+before full-success timestamp. Settings Never therefore means no complete pass,
+not proof that no data was exchanged. Do not move timestamp or enable flags to
+hide the partial state. Function EXECUTE via management role denied42501; retained,
+no grant change; Boolean-only query succeeded. No actual device RPC probe claimed.
+
+Retained encrypted13:14UTC test snapshot reproduced2105pending exactly:2105missing
+cards and2105legacy read-refresh IDs union to2105; all2105words/14reviews synced,
+other audited outboxes empty. In-memory/query-only, no new phone copy or plaintext.
+Historical baseline only; zero badge is not all-learning delivery proof.50selected
+tests pass (46status/runtime+4syncManager;84unselected). No application source edit.
+
+[Diagnosis and repair criteria](evidence/D13A.8.4-sync-status-diagnosis-20261025.md) / JSON18pins.
+Exact next withinD13A.8.4: locally separate upload/read-cache status, cover learning/
+correction queues and clarify Last complete sync, preserving existing success/gate/
+queue semantics. Then bind active runtime and prepare reviewed offline/reconnect
+scope. No phone/flag/provider/store/publication/new build or D13A.8.5 authority.
+Both checkouts/dirty files preserved, no pending operation, local-only/no commit/push.
+D13A.8=3/6;USD0.56held;GPT-6 Astra/High last owner-confirmed, announce each continuation.
+
+**2026-10-25 — Main iPhone navigation passed; TestFlight lists86/Open.**
+
+Current continuation completed ordinary navigation on the existing dedicated test
+session using the already approved XCTest method. Main test at13:30:21UTC passed
+1/0/0: Collections, History, Settings and account persistence after terminate/activate.
+Version2.5.0(86),2105words/22collections. TestFlight foreground capture at13:32:20UTC
+passed1/0/0; inspected list shows De Woordenaar86/90days/Open. Detail not captured;
+exact installed bytes, active update UUID and historical upgrade remain unproven.
+
+Initial device wait was stopped while locked; owner later confirmed unlock and a
+fresh lockState=false preceded a separate successful run. No login/logout replay,
+learning answer, force-sync, update/install, provider or flag change. Both apps
+closed; main dedicated session retained. No pending process or temporary runfile.
+
+Fresh owner-gated EAS reads:oldrefery/project matched,production unpaused/singlebranch,
+0matching iOS OTA groups; approved IPA hash verified. Prior AUTH59packet30pins valid.
+Settings still2105pending/Last sync Never; historical snapshot words/collections/
+14reviews synced,2105read-refresh entries. Counter merges write/cache work; not a
+fresh delivery audit. Source trace documented; no production application-code edit.
+
+[Outcome](evidence/D13A.8.4-ios-main-smoke-outcome-20261025.md) / JSON pins52private files.
+Exact next D13A.8.4 checkpoint: investigate mixed pending/last-sync presentation,
+establish observable runtime and prepare concrete one-answer offline/reconnect
+scope before any new learning/network mutation. Remaining recovery/performance/
+activation gates stay open. D13A.8=3/6;3fixedsteps+6latermilestones;USD0.56held.
+GPT-6 Astra / High last owner-confirmed; announce each continuation. Both checkouts
+and prior dirty files preserved; all current evidence local-only/no commit or push.
+
+**2026-10-25 — AUTH-59 fulfilled: test account active; personal data preserved.**
+
+This supersedes the older pending account/method/preservation entries below.
+Approved global Logout executed once; login-only continuation passed at13:13:28UTC
+and confirmed the dedicated test account in main-app Settings, build2.5.0(86).
+Application closed after verification; device test session retained. Do not repeat
+Logout/login. AUTH-59 consumed; no pending external operation.
+
+Protected before/after SQLite copies remain encrypted with the existing Keychain
+key on this Mac. All 6,825 personal rows across27owner tables preserved;26tables
+match full-row hashes. Only12collections.synced_at fields changed, statuses synced;
+learning/content unchanged. Initial strict comparison and field reconciliation both
+retained. Temporary plaintext/credential runfile removed. Initial copy rejection
+was resolved by separate explicit owner consent before execution.
+
+2,377pending represents missing following effective-card cache, not unsent personal
+word/review writes. 2,031review events synced;24legacy read-refresh requests retained.
+Settings badge alone does not cover all learning queues. No full-device recovery,
+pre-upgrade preservation or TestFlight-origin claim.
+
+Outcome: [account switch and preservation](evidence/D13A.8.4-ios-account-switch-outcome-20261025.md)
+and adjacent JSON with30private pins. Exact next within D13A.8.4: prepare bounded
+smoke verification for the dedicated account and bind distribution/OTA evidence;
+new learning-write or release actions require concrete scope. No D13A.8.5/flag/
+provider/store operation. D13A.8 stays3/6,3fixedsteps+6latermilestones;USD0.56held.
+GPT-6 Astra / High last owner-confirmed; announce each continuation.
+
+Both checkouts preserved: primary375408186b5b60f42bb8a2ecd827e3eaf3cfbef5 dirty,
+managed a8618a1c77dfeaf5aacb4f32100c422ad1292c5d clean. Uncommitted task documents,
+target contracts/schema and migration/test/evidence candidates retained. This
+checkpoint is local-only; no commit/push or production application-source edit.
+
+**2026-10-25 — AUTH-59 account switch approved; alternate UI method pending.**
+
+Owner confirms main iPhone86 uses personal learning account, explicitly allows
+sign-out and another account, and accepts global sign-out on every device. This
+supersedes the earlier no-account-switch scope. Select existing WEB_E2E credentials
+from apps/web/.env.local; presence/non-owner check passed, values never printed.
+No logout/login sent, AUTH-59 not consumed. No password reset/account creation or
+learning/provider/flag writes authorized. Both checkouts preserved. Astra / High
+last owner-confirmed; announce model/effort each continuation.
+
+CUA iPhone Mirroring failed to launch (application not found). Prepared a bounded
+XCTest Settings inspection in reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/.
+Unsigned local build-for-testing passed; no phone execution/install yet. Driver
+only activates existing main app, opens Settings, scrolls/captures; it never taps
+Logout/Force Sync. Owner explicit XCTest method choice is pending, required by
+CUA method policy. On approval record it, use existing signer/profile without
+provisioning changes, execute only the named inspection and inspect private results.
+Do not run the old full QA suite or submit credentials to its local-only fixture.
+
+Review found normal signOut() uses global scope (owner accepted); inspected logout
+initialization clears in-memory UI, not SQLite. Settings totalPending does not
+explicitly count review_events/reset/correction queues: zero badge is not proof of
+all learning delivery. Preserve this limitation and assess before logout. No
+production app source edits, no pending process. Current work local-only.
+
+**2026-10-25 — Readiness reconciled; main iPhone already has build86.**
+
+Owner selected iPhone/TestFlight preparation. Fresh read-only metadata at 12:41 UTC
+shows the known iPhone 16 Pro / iOS27.0.1 main bundle already at 2.5.0(86), versus
+historical85. TestFlight4.4.1 confirmed with corrected default-app filter at12:42UTC.
+No app launch/data read/install/account change. Do not reinstall or downgrade.
+Device source route, active update, main-app account and lossless upgrade remain
+unverified. Owner main-app account classification question is pending.
+
+[Reconciled gates and concrete iPhone scenario](evidence/D13A.8.4-post-migration-readiness-20261025.md)
+and adjacent JSON retain seven new private evidence pins. Five outcome packets /
+124 pins and both signed artifacts verified; R01-R13 current conditions reconciled.
+This supersedes earlier "upgrade85 to86 next" planning, not frozen QA evidence.
+Private receipts: reports/shared-dictionary-cefr/d13a84-post-migration-readiness-20261025/.
+No external write or pending process. Both checkouts and existing dirty files kept;
+all current checkpoint documents local-only, no commit/push. AUTH-58 consumed/OFF.
+
+Exact next: obtain the main-app account classification, bind the current TestFlight
+source/OTA and observable preservation/queue baseline, then prepare scoped app-action
+approval for already installed86. If personal/unknown, do not automate reviews,
+sign-out or account switching. No device writes before the missing facts and scope.
+Earlier QA remains separate; no pre-upgrade baseline can be invented after the fact.
+Remaining activation/operator/recovery/performance/Android gates remain open;
+D13A.8 stays3/6,3fixedsteps+6latermilestones; USD0.56held. Announce GPT-6 Astra / High
+on every continuation as last owner-confirmed selection; picker not inspected.
+
+**2026-10-25 — Post-migration readiness reconciliation in progress.**
+
+Owner selected iPhone/TestFlight preparation and requests model/effort on every
+continuation; last owner confirmation GPT-6 Astra / High. Retained outcome packets
+verify 124 pins and both signed native artifacts. Preparing current release-gate
+reconciliation and a main-ID iOS verification scenario. Read-only device version
+metadata only; no app launch, app data read or installation. Main-app account
+classification requested; no safe synthetic account assumption.
+Private receipts: reports/shared-dictionary-cefr/d13a84-post-migration-readiness-20261025/.
+AUTH-58 remains consumed, capability OFF. Preserve both checkouts and remaining
+release gates; do not start D13A.8.5.
+
+**2026-10-25 — AUTH-58 fulfilled: production capability migration verified, flag OFF.**
+
+Only 20261025093000 applied to josxavjbcjbcjgulwcyy in one guarded transaction.
+Fresh preflight 12:32:01 UTC matched AUTH-57 S2. Read-only postcheck 12:32:12 UTC:
+ledger 66 to 67 with exact original source; all 75 protected projections / 32,718
+original rows preserved; exact rehearsed target catalog, unchanged policies/ACLs.
+All 17 existing flags unchanged; shared_analysis_capability_enabled is FALSE.
+24 review pins / 559 historical files / 30 backup pins verified. Prior operation
+bytes preserved as operation-before-auth58.json. AUTH-58 consumed; no retry.
+
+[Outcome](evidence/D13A.8.4-capability-apply-outcome-20261025.md) and adjacent JSON
+pin 13 execution artifacts. Private operation is production_apply_verified;
+no pending external job. Encrypted receipts/backups and both checkouts preserved.
+Local-only checkpoint, no commit/push. Production authenticated RPC not executed;
+function definition/runtime inputs verified, authenticated behavior tested locally.
+
+Next within D13A.8.4: reconcile remaining coordinated activation, cohort/policy/
+budget/operator, store/device, recovery and performance acceptance gates before
+proposing any further external operation. This authorization does not enable flags
+or authorize providers/store/device/8.5. D13A.8 remains 3/6; 3 fixed steps and 6 later
+milestones; USD 0.56 held. Continue Astra / High.
+
+**2026-10-25 — AUTH-58 approved: exact production migration in progress.**
+
+Owner approved only 20261025093000 on josxavjbcjbcjgulwcyy, flag OFF.
+Use the reviewed one-shot apply-approved.py after its fresh preflight. Original
+operation bytes preserved in operation-before-auth58.json. Inspect operation.json
+and production-apply-request.json before any retry; no automatic retry.
+Verify all protected data, exact target catalog, ledger and flag after application.
+Other activation/store/device/provider gates remain. Astra/High; D13A.8 stays 3/6.
+
+**2026-10-25 — Exact capability migration rehearsed; separate production approval pending.**
+
+D13A.8.4 local guarded20261025093000 rehearsal passed on authenticated freshAUTH57S2:
+75projections/32718originalrows preserved, ledger66to67, newflagFALSE, v1/currentv2
+responses unchanged, managedACL preserved, only newcolumn/v2body catalogchanges.
+Exact SQL1.777seconds locally;10negative tests pass, including stale data/flags/ACL/
+definition/source, real table/advisory contention, rollback afterDDL/ledger and replay.
+SQL SHAeacd37b7cc565b2d292bbc4e6f75f895ee96e80aa8b1ac3b3d709aaa098e4354;
+original source f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7.
+Production12:19:53UTC readonly:75projections/catalog stillmatchS2, ledger66/candidate
+absent/legacy3TRUE/new14FALSE. Future execution must repeat fresh checks.
+
+[Application review](evidence/D13A.8.4-capability-apply-review-20261025.md) and JSON
+pin24files plus privateinventory. Private root:
+reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/.
+One-shot apply-approved.py refuses before key/network without separate exact owner
+approval; gate check passed. operation.phase=awaiting_production_apply_approval,
+production_apply_authorizedfalse. No AUTH58 assigned. Never reuse AUTH57 or56.
+Proposed txn locks runtimeACCESS EXCLUSIVE and65otherapplication/ledger tables
+SHARE ROW EXCLUSIVE;3second per-lockwait/90second statement/120second idletx limits.
+ManagedAuth/Storage not write-locked; their data compared. May delay app requests.
+
+Both owned localcontainers removed. First attempt's helper filename/import mismatch
+failed before migration; receipts preserved, content-identical rename fixed it and
+second fullrehearsal passed. No DBpassword file/newbackup/productionwrite/provider/
+store/device operation. No pending externaljob. Originalbackup30pins and4sourcehashes
+verified; original3754081dirty and manageda8618a1clean preserved. New docs local-only.
+
+Next: owner approval ONLY exact guarded migration on josxavjbcjbcjgulwcyy with newflag
+OFF, then record new authority/scope, fresh preflight, one-shot apply and read-only
+postcheck. On drift/timeout/unknown outcome stop/reconcile; no automaticretry or
+historyrepair. Broader activation/store/device/recovery gates remain. Astra/High;
+D13A.8stays3/6,3fixedsteps+6latermilestones, USD0.56held.
+
+**2026-10-25 — Local capability migration rehearsal in progress.**
+
+Resumed D13A.8.4 with verified AUTH57S2 backup. Private rehearsal directory:
+reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/.
+Preparing exact source/hash/ledger/data/ACL guarded transaction, then restoreS2 in
+owned network-none/log-none/tmpfs container and exercise success/stale/replay/
+rollback behavior. No production write authority; AUTH57backup remains consumed.
+Inspect operation/restore intent and receipts before retry. Both checkouts and
+original backup receipts preserved. Continue Astra/High; D13A.8remains3/6.
+
+**2026-10-25 — AUTH-57 complete: fresh encrypted backup and both restores verified.**
+
+Corrected credential/TLSverify-full/read-only identity and ledger66 passed. FreshS1
+11:58:02UTC andS2 11:59:46UTC each contain75table projections/32718rows/seven encrypted
+archives; all14archives authenticated with existingKeychain. Both isolated
+network-none/log-none/tmpfsPG17.6 restores pass full digests/timestamps, roles/membership/
+RLS, sequences and exactB02logicalcatalog/databaseICU153.120/ACL checks.53local ACL
+adaptations perrestore,0foreignprivatewordvisibility. S1-to-S2zerochangedtables.
+Final12:03:31UTC production read-only comparison:all75tables/catalog unchanged fromS2,
+ledger66/candidateabsent/legacy3TRUE/new14FALSE. Future accepted deltas still need
+fresh boundary checks; devicequeues/fullAuth/Storagebytes/managedservices exclusions
+remain. No production writes/provider/store/device operation.
+
+Both ownedcontainers removed, snapshotsclosed, both temporarypgpassfiles removed;
+existingkey and encryptedbackups retained. AUTH57fulfilled/consumed; do not repeat
+capture or reuse its scope for production migration. No externaljob remains.
+[Outcome](evidence/D13A.8.4-backup-refresh-outcome-20261025.md) and adjacentJSON pin30
+files/privateinventory. Original16proposalpins retained through preserved copies.
+Local helper import and incorrect no-role-settings assertion were corrected and
+recorded; finalchecks pass. All4capabilitysourcehashes unchanged; original3754081dirty
+and manageda8618a1clean preserved. Currentdocs/evidence local-only; no commit/push.
+
+Next D13A.8.4 checkpoint: prepare/rehearse exact guarded20261025093000 on freshS2
+restore, verify preservation/defaultOFF/ACL/stale/replay guards and later delta,
+then request narrow production-apply approval. Backup completion does not authorize
+SQL/flags/provider/store/device/8.5. D13A.8stays3/6;3fixedsteps+6latermilestones,
+USD0.56held; continue owner-confirmed Astra/High.
+
+**2026-10-25 — AUTH-57 approved: protected backup refresh in progress.**
+
+Owner corrected the local DBcredential and explicitly requested connection check
+and backup continuation. Exact scope is the two-snapshot read-only encrypted
+backup/isolated-restore proposal; no production migration/flag/provider/store/device
+write. Private root reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/.
+Inspect operation.json, preflight, snapshot receipts and restore intents before
+retry; preserve all existing artifacts. Start with TLS/read-only/project/ledger
+preflight, then capture/restore each snapshot and reconcile complete data deltas.
+Clean up only this operation's credentials and owned temporary containers.
+Continue Astra/High; both checkouts preserved; D13A.8 remains3/6.
+
+**2026-10-25 — Owner requested correction of the temporary database credential.**
+
+Owner reported possibly incorrect password input. No connection/preflight/capture
+had started; operation remains awaiting authorization, with no active snapshot.
+Removed only the owner-created0600credentials/pgpass file, without reading its
+contents, so the unchanged hidden prompt can run again. No database password reset,
+production mutation or backup occurred. Await corrected owner-local credential;
+backup scope state remains as recorded below. Continue Astra/High.
+
+**2026-10-25 — Keychain recovered; fresh data drift requires a protected backup refresh.**
+
+Owner completed local unlock. Existing helper now authenticates all6S2archives;
+no key export/reset/ACL change. Previous Keychain-25293 blocker is RESOLVED.
+Read-only11:47UTC preflight:66ledger/prior14sourcehashes exact, candidate absent,
+legacy3TRUE/new14FALSE, logicalcatalog/security matchesB02, all25newtablesempty.
+50original projections include timestamps:42match,8changed sinceS2; current74full
+nonAuth tables captured as aggregate hashes. New31review events/checkpoints and
+one collection/word/account are among the differences; do not infer append-only
+changes or overwrite accepted data. Original backup is historical, not current.
+
+Concrete [backup refresh proposal](evidence/D13A.8.4-backup-refresh-proposal-20261025.md)
+and adjacent JSON pin16new private files. Two fresh read-only encrypted snapshots,
+isolated no-network/log-none/tmpfs restore and current delta checks proposed; no
+production SQL/flag/provider/store/device mutation included. Six prepared scripts
+parse; preflight/capture authorization guards both refuse before connection. No new
+snapshot/restore has run. Existing temporary DBcredentials were removed afterB01;
+no available DBpassword found by name/path checks. Owner must approve the new scope
+and run the dedicated provide-credential.py hidden prompt using the existing Supabase
+DBpassword. Do not ask for Macpassword again or reset any password/key.
+
+Private refresh root: reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/.
+Current operation.json authorization is null/owner_approved_backup_refreshfalse.
+After approval record exact scope, verify credential, execute/verify fresh capture,
+then prepare migration-only guarded rehearsal and separate apply approval. Do not
+reuse AUTH47/48/56. Original3754081dirty and manageda8618a1clean preserved; local-only
+docs/scripts, no commit/push or pending external job/container. D13A.8stays3/6;
+3fixedsteps+6latermilestones, USD0.56held; continue Astra/High.
+
+**2026-10-25 — default-OFF migration preparation: fresh metadata passed; Keychain access blocked.**
+
+Current D13A.8.4 checkpoint: capability migration application preparation. Read-only
+Supabase11:37UTC:66versions, previous14bodyhashes match, candidate20261025093000 and
+column absent, legacy3TRUE/new14FALSE; two target Edge functions ACTIVEv1/JWTtrue.
+Four observed server queue tables empty/CEFRworkerFALSE; no device-local queue claim.
+All52B01pins including crypto binary and sixS2archives match. Source f993c58... matches
+approveda8618a1 and merged32d3c78 tree. No new source edits or production writes.
+
+Fresh backup authentication failed3times with Keychain-25293, including escalated
+verify mode. Owner asked to inspect or explain. Native UI found exact backup item in
+login; Access Control already allows applications (unchanged), Show password unused.
+Read-only keychain settings also fail-25293. No automatic approval rejection, secret
+export, key replacement, ACL change or new plaintext backup. Current lock state is
+not conclusively known. Owner next: run `security unlock-keychain
+"$HOME/Library/Keychains/login.keychain-db"` locally and enter password at hidden prompt;
+then retry existing helper verify, complete delta/restore/guarded single-migration
+rehearsal and only then request separate production apply approval. Never reset or
+replace retained keys/archives. No approval-ready wrapper or fresh delta proof yet.
+
+[Preparation evidence](evidence/D13A.8.4-capability-apply-preparation-20261025.md) and
+adjacent JSON pin8private receipts/scripts. Original3754081 dirty and manageda8618a1
+clean preserved; current docs/evidence local-only. AUTH56merge/deploy consumed; no
+SQL/flags/provider/store/device/8.5 authority. No pending external job/container.
+D13A.8 stays3/6;3fixedsteps+6latermilestones, USD0.56held; continue Astra/High.
+
+**2026-10-25 — AUTH-56 fulfilled: PR125 merged; main CI and production smoke passed.**
+
+PR125 protected squash merge completed once at11:01:11UTC: main32d3c786bf57d15a5d2a525fd7520e200eb4aec4,
+parent37c197f, exact approveda8618a1 tree0e4d60d0851274767ea54332e52557378a7f9876.
+Automatic Vercel production dpl_GRn2S7Ee9hsdb3axTBx2WjyNbvsU READY; domain
+woordenaar.app assigned and exact source confirmed again11:28UTC. Four public
+HTTP routes match fresh baseline; isolated desktop/mobile browser login/signup/
+reset/root navigation passed,0console errors/warnings/failed requests. No account
+login/forms/device operation; normal browser telemetry observed. Own browser closed.
+
+Main Quality40187129712 SUCCESS11:27:48UTC/all3jobs; Lightweight40187129644 SUCCESS.
+Database681/681/0skipped/target contract, mobile2737/22snapshots, web1252/one existing
+skip, Doctor21/21 and mutation96.13 passed; coverage/mutation uploads succeeded and
+artifact digests bind32d3c78. No rerun/cancel or pending external operation.
+[Integration outcome](evidence/D13A.8.4-pr125-integration-outcome-20261025.md) and
+adjacent JSON preserve the result; private receipts/browser artifacts are in
+reports/shared-dictionary-cefr/d13a84-pr125-merge-20261025/.
+
+AUTH56 fulfilled/consumed; no repeat merge/deploy. Next D13A.8.4 checkpoint: prepare
+separate application proposal for migration20261025093000 with advertisement OFF,
+fresh backend/backup/delta/queue evidence and exact execution scope. No SQL/flags/
+provider/store/native/device/8.5 execution follows this Git/web operation. Broader
+cohort/policy/budget/operator/store-upgrade/repair/rollback/performance gates remain.
+Paid/real-link ceilings0/USD0.56held; D13A.8 stays3/6,3fixedsteps+6latermilestones.
+Continue owner-confirmed Astra/High. Original checkout3754081 and clean managed
+PRworktreea8618a1 preserved; four source hashes unchanged. This continuation's task
+docs and two new review MDs plus outcome JSON are local-only in original checkout;
+no new commit/push. Private reports remain ignored. Earlier pending entries are history.
+
+**2026-10-25 — PR125 merged; production/public smoke passed; main Quality pending.**
+
+AUTH56 merge completed once:32d3c78 at11:01:11UTC, tree equals approveda8618a1.
+Vercel production dpl_GRn2S7Ee9hsdb3axTBx2WjyNbvsU is READY and woordenaar.app
+alias assigned to that exact commit. Four unauthenticated HTTP routes match the
+fresh pre-merge baseline. Isolated browser login/signup/reset/root navigation and
+desktop/mobile screenshots pass;0console errors/warnings/failed requests. No form
+submission/account login; normal automatic Sentry telemetry observed. Own browser closed.
+Main Lightweight40187129644, database and web-fixtures PASS. Quality40187129712
+still running web coverage; do not claim complete main CI yet. Protected operation,
+production/source/HTTP/browser receipts: reports/shared-dictionary-cefr/
+d13a84-pr125-merge-20261025/. Next wait for terminal Quality and save final outcome.
+No new deployment/merge retry required. Both checkouts preserved; no backend SQL/
+flags/provider/store/device/8.5 authority. D13A.8 stays3/6; Astra/High confirmed.
+
+**2026-10-25 — AUTH-56 merge completed; main CI and production verification running.**
+
+PR125 merged once at11:01:11UTC with expected-head guard. Squash32d3c786bf57d15a5d2a525fd7520e200eb4aec4
+has exact approved tree0e4d60d0851274767ea54332e52557378a7f9876 and parent37c197f.
+Main Quality40187129712 and Lightweight40187129644 running; no terminal success
+claimed yet. Operation receipts in reports/shared-dictionary-cefr/
+d13a84-pr125-merge-20261025/. Continue authorized CI/Vercel/public site verification.
+Merge authority consumed; do not repeat merge. Both local checkouts preserved.
+No backend migration/flags/provider/store/device/8.5 authority.
+
+**2026-10-25 — AUTH-56 approved; protected PR125 merge in progress.**
+
+Owner approved exact a8618a1 squash merge into main including automatic Vercel
+production deployment and post-merge CI/public site verification. Fresh head/base
+and five check runs pass; baseline production37c197f READY/four public routes pass.
+Operation intent and receipts are in reports/shared-dictionary-cefr/
+d13a84-pr125-merge-20261025/. Inspect PR125/main/operation.json before any retry.
+Both checkouts preserved. No SQL/flags/provider/store/device/8.5 authority.
+
+**2026-10-25 — PR125 terminal CI/review complete; merge approval is the next gate.**
+
+Read-only GitHub observation at10:53UTC confirms PR125 still open/unmerged,
+head `a8618a1c77dfeaf5aacb4f32100c422ad1292c5d`, base37c197f,4commits/22paths.
+Quality40183535009 completed SUCCESS at10:30:03UTC, including mutation96.13 and
+both report uploads. All3jobs passed; database681/681/zero skipped, target contract,
+mobile2737/22snapshots, web1252/one existing skip and Doctor21/21 pass.
+Lightweight40183534982 and exact-head Vercel preview SUCCESS. Terminal CI is no
+longer pending. No rerun/cancellation or duplicate local suite was necessary.
+
+Local source review found no blocking defect in the four-file capability repair;
+v1/v2 shape, default-OFF behavior,17prerequisites and managedACL preserved. This is
+not independent human approval or hosted/device E2E proof. Verified30reviewpins,
+47priorTestFlightpins/nine archive files and original/PR source identity. Managed
+worktree remains clean; original dirty recovery checkout and frozen packets retained.
+New evidence: [terminal CI and review](evidence/D13A.8.4-pr125-terminal-review-20261025.md).
+Protected pr125-terminal API/quality/integrity receipts live in the original
+reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/.
+
+Exact next action: obtain owner approval for expected-head protected squash merge
+of PR125 into main, INCLUDING automatic Vercel production web deployment, then
+verify merged source/main CI/public smoke. AUTH55 excluded merge and is consumed;
+this continuation creates no new permission. No merge/apply/flags/provider/store/
+native/device/8.5 operation occurred. Backend/store/device facts were not refreshed
+and keep their original observation times. Paid/real-link ceilings0/USD0.56held.
+D13A.8 stays3/6;3fixedsteps+6latermilestones. Continue Astra/High; the owner confirmed this model/effort on October25. This terminal checkpoint is local-only in the original
+checkout; no new commit/push or managed-worktree edit. Earlier entries are history.
+
+**2026-10-25 — AUTH-55 fulfilled: PR125 ready for review; final Quality pending mutation.**
+
+New branch feature/d13a84-capability-release from freshly fetched main37c197f,
+managed worktree `/Users/devrush/.codex/worktrees/d13a84-capability-release/DutchLearningApp`.
+Final pushed head `a8618a1c77dfeaf5aacb4f32100c422ad1292c5d`;4commits/22approvedpaths,
+PR https://github.com/oldrefery/dutch-learning-app/pull/125 open/unmerged, no conflicts.
+Source3699d7c, release checkpointc624c57, PR checkpointa1cf002, inventory correction
+a8618a1. New worktree clean. No attribution in commit messages. Original dirty
+feature3754081 checkout is deliberately preserved as a recovery copy, with6modified
+tracked/16untracked approved paths; they are already represented in the pushed PR.
+Only live task state in this original checkout is newer than the committed record.
+Do not reset/clean it, create another PR or replay fulfilled store/Git operations.
+
+Final-head checks: database681/681 PASS, zero failures/skips, including all17 new
+prerequisite cases and exact managed ACL preservation; target-schema contract PASS.
+Lightweight40183534982, web-fixtures and Vercel preview SUCCESS. Quality40183535009
+still IN_PROGRESS at final observation: lint/types/format/Maestro/tooling/mobile
+Jest/web coverage/Edge tests/web build/Expo Doctor SUCCESS; mutation tests and report
+upload remain unfinished. Do not call the overall Quality run green. Previous
+successful main mutation step took23m22s; elapsed time is not a result. Earlier
+head runs were superseded and do not qualify this head. Local normal hooks pass:
+2737mobile/22snapshots,1252web/one pre-existing skip. Local focused44targetPG/22nativePG/
+10client cases and deterministic type checks retained. No new code after3699d7c.
+
+Read protected git-operation.json, pr125-final-api-snapshot.json, final database log
+and watch log under the ORIGINAL checkout reports/shared-dictionary-cefr/
+d13a84-device-delivery-preflight-20261025/. The live quality-log download returned
+BlobNotFound while the job was unfinished; that is not a CI failure. No retry or
+workflow cancellation was requested. Only local read-only watchers are stopped
+when this session ends; remote CI continues. Next resume: inspect actual PR125 head
+and terminal Quality40183535009/jobs/artifacts, investigate only an actual failure,
+then review exact source delta. Merge/apply/activation still require separate scope.
+No new build/store/OTA/provider/migration/flag/device or8.5 operation is authorized.
+
+Android availability is resolved: testHuawei online/main package2.4.0(85) confirmed
+10:05UTC. Earlier absence summaries were wrong and explicitly superseded in the
+corrected30-pin/9-member review, with old receipt/archive protected. Primary iPhone
+metadata also85; no app launch/account data read. Store86 upgrade/repair/rollback/
+performance and selected enabled/cohort/policy/budget/operator gates remain open.
+IPA86 stays Testing for existing3testers, Android86 stays an internal draft.
+Prior47 TestFlight pins remain intact. Mainaccounts untouched; QA resources stopped;
+USD0.56 unknown reserve held. D13A.8 remains3/6:3fixedsteps8.4–8.6 and6latermilestones.
+Continue Astra/High. This is a checkpoint within8.4, not completion of8.4 or8.5 entry.
+
+**2026-10-25 — PR125 final head a8618a1 pushed; Quality running.**
+
+AUTH-55 Git operation is fulfilled: new feature/d13a84-capability-release from
+main37c197f,4commits/22approvedpaths, PR125 open/unmerged. Final head
+`a8618a1c77dfeaf5aacb4f32100c422ad1292c5d`; working tree clean in managed worktree
+`/Users/devrush/.codex/worktrees/d13a84-capability-release/DutchLearningApp`.
+Source3699d7c unchanged by later documentation commits. Normal hooks pass on the
+final commit:2737mobile/22snapshots,1252web/one existing skip. Commit messages have
+no attribution. Original dirty checkout/22-file bundle intentionally preserved;
+this original handoff is the live local continuation checkpoint, with committed
+history in the new worktree. No further commit is needed just to repeat CI status.
+
+Exact-head Lightweight40183534982 and Vercel preview SUCCESS. Quality40183535009
+running: web-fixtures SUCCESS; lint/types/format/Maestro/tooling steps pass;
+full Jest/database/RLS and later quality steps incomplete. Read the actual current
+PR head and these run jobs; earlier head runs were superseded/cancelled and cannot
+qualify this head. Own read-only watcher and protected logs are in reports/
+shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/ in original checkout.
+Do not start another PR or repeat any store operation. No merge authority.
+
+Android inventory corrected: testHuawei online, main app2.4.0(85) at10:05UTC.
+iPhone observed main app85 too; no app launch/account data read. Current review
+30pins/9archive members supersedes the incorrect absence summary with protected
+prior receipt;47 TestFlight input pins preserved. Availability resolved, actual86
+store upgrade/repair/rollback still unqualified. Backend migration/advertisement
+unapplied and flags unchanged, no provider calls/native/store/8.5 action. Mainaccounts
+untouched/QAoff/USD0.56held; D13A.8 stays3/6:3fixedsteps+6later milestones. Astra/High.
+
+**2026-10-25 — Android inventory correction; source repair unchanged.**
+
+The test Huawei is connected. Earlier absence claims in this session's summaries
+were incorrect: after the initial empty inventory, retained ADB logs show Huawei
+online after the owner's reply, including09:41UTC. At10:05UTC a read-only recheck
+confirms one test Huawei online and main packagecom.oldrefery.dutchlearningapp
+2.4.0(85). No app launch/account rows/device setting change. Both observed main-ID
+apps remain85; store86 installation/upgrade/recovery is still unverified. Android
+availability is resolved; Android86 remains only an internal draft, no rollout
+authority. Do not ask the owner to reconnect a device already confirmed online.
+
+Corrected the existing review MD/JSON with an explicit supersedes hash and protected
+prior receipt/MD/archive/check copies under before-android-inventory-correction/.
+New receipt binds30 inputs/9 sanitized archive members;47 prior TestFlight pins
+unchanged. No source code or binary changes. This correction is within AUTH-55's
+same22paths and must be committed/pushed before final-head CI verification. Existing
+PR125 has3commits througha1cf002; Quality40183149866 running, Lightweight success.
+Inspect the current head after correction; superseded runs cannot qualify it.
+No merge/apply/flags/provider/store/device execution. Original checkout preserved,
+mainaccount untouched, QAoff/USD0.56held.3fixedsteps+6later remain; Astra/High.
+
+**2026-10-25 — AUTH-55 completed: repair pushed and PR125 open; CI pending.**
+
+Authoritative working branch: feature/d13a84-capability-release in managed worktree
+`/Users/devrush/.codex/worktrees/d13a84-capability-release/DutchLearningApp`.
+Base main37c197fd167afdf91dd6e89a52e498ef8d7b90f8; source3699d7c and checkpointc624c57
+pushed. PR https://github.com/oldrefery/dutch-learning-app/pull/125 independently
+confirms exact headc624c57796499ceaf96266ef65d4cd643950a704,2commits,22approvedfiles,
+open/unmerged and no conflicts. Attached to this task. Quality40182915985 queued,
+Lightweight40182915968 running and Vercel pending at initial observation. These
+are not green results; inspect the final current head after this outcome checkpoint
+is committed/pushed. New CI replaces the initial-head results; no merge authority.
+
+Both commits passed normal hooks:2737mobile/22snapshots and1252web/one existing skip.
+Managed worktree was clean before recording this outcome; ignored local dependency
+links only. Private reports/binaries/credentials were excluded. Original dirty
+checkout feature3754081 is deliberately preserved, not an unsent duplicate to
+reset/clean. Exact initial/final22-file transfer manifests, corrected25-pin review,
+8-member archive and operation logs remain protected in the original checkout's
+reports/shared-dictionary-cefr/d13a84-device-delivery-preflight-20261025/.
+
+AUTH-55 permits this scoped Git outcome checkpoint too; branch/push/PR operation
+is fulfilled, not reusable merge/production authority. Migration/default-OFF flag
+is still unapplied; no production or provider call, store operation, native rebuild
+or device launch. Mainlearning account untouched; Android connection still pending,
+primary iPhone metadata85; store-device upgrade/repair/recovery remains unverified.
+Next: review exact-current-head CI and this PR; then separately scoped backend/
+cohort/policy/budget/device qualification. Do not enable flags, apply migrations or
+start8.5. USD0.56 held; QA resources remain stopped. D13A.8 remains3/6:3fixedsteps
+and6later milestones. Astra/High. Earlier entries below are chronological history.
+
+**2026-10-25 — AUTH-55 capability repair branch and PR checkpoint in progress.**
+
+A new managed worktree is based on fresh origin/main37c197f:
+`/Users/devrush/.codex/worktrees/d13a84-capability-release/DutchLearningApp`,
+branch `feature/d13a84-capability-release`. The original dirty checkout at
+feature/d13a84-main-native-builds3754081 and its exact22-file transfer archive are
+preserved; do not reset or clean it. AUTH-55 allows the new branch, scoped repair
+and checkpoint commits, push and PR only. No merge/deploy/migration/flag activation.
+Before retrying Git operations inspect the new branch, logs and remote PR state.
+Private operation evidence: reports/shared-dictionary-cefr/
+d13a84-device-delivery-preflight-20261025/ in the original checkout.
+
+Corrected additive default-OFF advertisement migration preserves the existing
+managed service_role grant found in retained production metadata. Initial review
+inputs remain in initial-review/. Revalidated22 new cases on native PG15.14 and
+44 total on the pinned target image;10 focused client cases pass (178 intentionally
+not selected), exact target types/check/lint/format pass. Public types differ only
+in the generated migration-head comment; application runtime and signed binaries
+are unchanged. Normal pre-commit suites passed in the new worktree:2737 mobile tests/22 snapshots
+and1252 web tests/one pre-existing skip; shared ignored dependencies only. Source
+commit3699d7ccdde8e98b9cd21c0a06f3f5b468e8f6fd contains only the four repair files. Husky wrappers were initially absent in the fresh
+worktree; installed locally and the unpublished source commit was recreated through
+normal hooks. No hook bypass or project dependency upgrade.
+
+Production still advertises commands[1]/shared-analysisFALSE; following readsFALSE.
+Client86 intentionally holds content sync while learning can reconcile. The new
+migration is not installed and does not enable its own prerequisites. Direct
+read-only hosted RPC execution was denied42501, with no role/grant bypass; catalog
+metadata and local tests are not authenticated hosted/device E2E proof. Primary
+iPhone metadata is2.4.0(85), no launch/account data read; Android still absent.
+Store IPA86 Testing to existing3testers, Android86 internal draft remain unchanged.
+Remaining8.4: exact-head review/CI and separately authorized coordinated backend,
+policy/budget/cohort qualification plus store-device upgrade/repair/rollback and
+performance. No paid calls or8.5; primary accounts untouched, QA resources stopped,
+USD0.56 unknown reserve held. D13A.8 stays3/6:3 fixed steps and6 later milestones.
+Continue Astra/High.
+
+**2026-10-25 — local capability release gate repair in progress; no production apply.**
+
+Read-only primary iPhone metadata confirms2.4.0(85), notstore86installed. No app
+launch/accountdataread. Android absentfromADB; owner says willconnect. Newbackend
+review confirmsv2capability permanentlyadvertisescommands[1]/shared_analysisFALSE;
+client86followingflagON therefore failclosescontentwhilelearningcancontinue.10focused
+mocked/clientSQLite tests pass. Directcapabilityexecution denied42501byread-onlyrole;
+no role/grant bypass. Read-onlyfunctiondefinitions/runtime metadata confirm legacy
+operations/readsTRUE,followingreadsFALSE; no accountrows/writes/provider.
+
+Preparing onlylocal migration20261025093000_add_dictionary_capability_release_gate.sql
+and realPostgreSQLregressions. Separate defaultOFF advertisementbit plus conservative
+fullprofileprerequisites, exactsame5fieldv2response/legacyv1unchanged. No flag enables
+itself. AdvertisementOFF does not replace dispatch/publication containment. Public
+targetschema manifest head advancedlocally; generatedartifact/check stillrequired.
+Current sourcechanges are NOT in uploadedIPA/AAB. Historical packets remainunchanged.
+No applicationruntime/binarychange/newbuild, productionmigration/deploy/flags/provider,
+AppStore/Androidrollout/device/Git/8.5 authority. Inspect privatepreflight reports and
+source diff/teststatus beforecontinuing. Keep feature3754081dirty;USD0.56held.
+D13A.8 still3/6:3fixedsteps and6latermilestones. Astra/High.
+
+**2026-10-25 — AUTH-54 fulfilled: IPA86 available to existing TestFlight group.**
+
+Verification:47new packet input pins and19prior draft pins pass; exactIPAhash, EASFINISHED, AppleTesting/group3, format/credentialscan/diffcheck pass. No runtime test repeated for store-only work.
+
+Pinned IPAa44f6162... uploaded once through personaloldrefery/EASprojectd968536e...
+using the already assigned ASCkey/team7FQ395U52U. EASsubmission
+f7103f00-5737-4804-a766-3cb6729fd1ea FINISHED/noerror09:11:58UTC. Apple independently
+confirms build86c4a397-4b2b-4460-869b-f4777976bfed /2.5.0(86) in existing Team(Expo)
+group5e99b483-870c-4240-b01e-ad0d15a1a206 with Testing status, expires90days. Group
+still3testers, builds7→8; old85 alsoTesting. Authorized internal store availability
+is complete, not proof of emailreceipt/download/installation/main-ID preservation.
+No primaryaccount or testerdevice operation. Do not repeat upload;86nowoccupied.
+AUTH54 fulfilled/consumed; no new rollout/audience/otherstore authority follows.
+
+Evidence evidence/D13A.8.4-testflight-outcome-20261025.md/.json. Private operation,
+CLI/EAS/metadata/backend/OTA and Apple proofs under reports/shared-dictionary-cefr/
+d13a84-testflight-upload-20261025/. Screenshot apple-group-builds-final.png and full
+AX confirm actualTesting. Earlier AppleProcessing captured; no retry. Read-only
+CLIprojectJSON parsing diagnostics reconciled before upload against actualtable
+and independent credential query; no identity mismatch. Existing signers/keys reused,
+no new build/keys/certs/group/tester changes. Backend new14DB/twoendpointgatesOFF,
+legacy3TRUE and iOSruntime316521... zero compatibleOTA confirmed immediately before
+upload. No OTA/channel/flag/provider/linking change. Android86 remains prior draft.
+
+Preserve dirtyfeature/d13a84-main-native-builds at3754081; integratedmain37c197f/finalCI
+unchanged. Sixteen taskdocuments local-only, no commit/push/source change. Mainlearning
+accounts untouched,QAresourcesoff,USD0.56held. Next8.4: separate approved synthetic
+store-delivered main-ID upgrade/oldrepair/compatible rollback and paired performance,
+selected enabled/provider/operator scope, and fresh preservation/backup/delta/queues
+for any actual mutation. Do not install over primary learning accounts or start8.5.
+D13A.8 stays3/6:threefixedsteps8.4–8.6 andsixlaterbroadmilestones; Astra/High.
+
+**2026-10-25 — AUTH-54 IPA86 accepted by Apple; processing/delivery verification pending.**
+
+One EAS submission f7103f00-5737-4804-a766-3cb6729fd1ea was scheduled successfully
+from the pinned IPAa44f6162... via personaloldrefery/projectd968536e... and existing
+assigned ASCkey. No new key/certificate/build. Existing Team(Expo)3testers explicitly
+selected; no group/tester expansion. ASC now independently shows2.5.0(86) Processing,
+uploadcreatedOct25 10:08Amsterdam. Private apple-processing.txt/.png and operation.json
+under reports/shared-dictionary-cefr/d13a84-testflight-upload-20261025/. Do not rerun
+submit-once.py or send anotherIPA; uploadscopeconsumed. Read the known EAS submission
+and current ASCbuild state to finish processing/groupdelivery verification. EAS first
+read IN_PROGRESS/noerror09:08:30UTC. Groupdelivery not yet claimed. No new processing/
+compliance declaration, AppStore review/external/Androidrollout/OTA/backend/provider/
+device/Git/general8.5operation. New14DB/twoendpointgatesOFF/legacy3TRUE and exactnewiOS
+runtimezeroOTA checked before upload. Mainaccounts notoperated; QAoff/USD0.56held.
+Preserve dirtyfeature3754081. D13A.8remains3/6:3fixedsteps and6latermilestones.
+
+**2026-10-25 — AUTH-54 TestFlight IPA86 upload prepared; operation checkpoint.**
+
+Owner authorizes exact existing IPA2.5.0(86), a44f6162..., TestFlight plus automatic
+existing Team(Expo) group3testers delivery. Authority AUTH54 in decisions.md. Private
+operation reports/shared-dictionary-cefr/d13a84-testflight-upload-20261025/operation.json.
+Before any retry inspect operation/submit.log/submission IDs and current ASC uploads.
+File/bundle/version, personal EASoldrefery/project owner and already assigned Apple
+team7FQ395U52U submission key verified. No private key read or credential mutation.
+Fresh backend09:06UTC all14newDB/twoendpointgatesOFF; new iOSruntime316521... has
+zero compatible OTA groups on unchanged production channel/branch. ASC latest85,
+no86processing visible; existinggroupstill3testers/7builds. Initial EASproject:info
+JSON parser failed twice because this installed CLI prints a table; exact table
+and independent project/credential query reconcile personal identity. No upload
+was invoked during those read-only failures. EAS Submit will send only pinned IPA,
+non-interactive/existing key, existinggroup name; no new build/keys/groups.
+No AppStore review/external testing/Android rollout/OTA/backend/provider/device/Git
+or general8.5 authority. Keep dirty feature3754081, primaryaccounts untouched,
+USD0.56held/QAoff; D13A.8 stays3/6,3steps and6latermilestones. Astra/High.
+
+**2026-10-25 — iOS inventory access restored; automatic internal delivery identified.**
+
+Owner opened an authenticated personal App Store Connect tab and requested verification.
+Current De Woordenaar app6752469146 TestFlight UI shows version2.4.0/build85 Ready to
+Submit, latest five upload records85–81 Complete, no visible2.5.0/86. This resolves
+inventory access, not a reservation or exhaustive uniqueness guarantee. New owner tab
+1715307900 is the current deliverable; the old1715307842 login failure is historical.
+Existing Team (Expo), group5e99b483-870c-4240-b01e-ad0d15a1a206, has3testers/7builds
+and Automatic for Xcode Builds. UI explanation and official Apple docs confirm possible
+automatic delivery to the group. No group/build/tester setting or invitation changed.
+Do not promise an upload-only IPA operation without resolving that delivery envelope.
+
+Review evidence/D13A.8.4-delivery-review-20261025.md: exact pinned IPA/AAB, Android
+existing draft7/active85, candidate release notes, client flags ON/backend gates OFF,
+production OTA exposure, selected-audience/preservation/queue and native repair gates.
+Private UI proofs and input-hash verification: reports/shared-dictionary-cefr/
+d13a84-delivery-review-20261025/. Tester identities/telemetry stay out of public docs.
+AUTH53 consumed. No upload/review/rollout, OTA/backend/provider/device/key, commit/push
+or8.5 action. Primary learning accounts untouched; QA resources remain stopped;
+USD0.56 held. Preserve dirty feature/d13a84-main-native-builds at3754081. Fourteen
+task documents local-only; no source changes. Earlier frozen packets unchanged.
+
+Next within8.4: owner review of one exact delivery envelope, including iOS automatic
+group delivery versus a verified manual route; current scope is preparation/read-only.
+Then bind the actual approved cohort, fresh preservation/backup/delta/queues and
+compatible repair/performance/operator/provider scope. Missing public listing assets
+are not a blanket Android internal prerequisite. Do not reuse upload AUTH53 or start8.5.
+D13A.8 remains3/6:3fixedsteps8.4–8.6 and6later broad milestones. Astra/High.
+
+**2026-10-25 — AUTH-53 fulfilled: Android 86 accepted and saved as an internal draft.**
+
+The owner uploaded the pinned AAB and saved release 7. Independent Console reads
+confirm version 86/name 2.5.0, artifact 4860244320809747751, internal track 4701630533941298146,
+and explicit Draft status. The form reports saved changes; artifact details show
+one draft. The existing 2.4.0/version 85 release remains Available to internal testers.
+No Next, review or rollout control was used. Version 86 is now occupied; do not
+repeat the upload or start the EAS fallback.
+
+Read evidence/D13A.8.4-internal-draft-outcome-20261025.md/.json. Private operation,
+observations, diagnostics and screenshot are in
+reports/shared-dictionary-cefr/d13a84-internal-draft-20261025/.
+Screenshot play-internal-draft-verified.png shows the draft and old active release.
+The local AAB remains SHA256 34a7759b...; file provenance is owner selection of the
+named path. Server-original bytes were not downloaded and independently hashed.
+Play reports API 24+/target 36/four ABIs/16 KB support metadata and a native-symbol
+attachment. Actual device delivery/performance/full symbol coverage is not inferred.
+Release notes remain empty and need review before a separately approved rollout.
+
+Post-upload read-only backend check at 08:41:42UTC confirms ledger 66, all 14 migration
+body hashes, all 14 new gates FALSE, legacy 3 TRUE, both endpoint gates FALSE and target
+functions ACTIVE/version 1/JWT protected. No account-row reads, writes or provider
+calls. Resumed identity-gated OTA preflight at 08:30UTC confirmed personal oldrefery
+ownership and no compatible Android updates on the mapped production branch.
+No channel, OTA or backend-flag change occurred. Earlier snapshots are preserved.
+
+The blocked extension file transfer was reconciled against empty draft 7 before
+manual handoff; extension permissions were not changed. Existing submission-key
+metadata was read without private key material or credential mutations. No archive
+was sent to EAS and no Submit job started. The local SDK import diagnostic and
+Console release-summary error 6173ED5E remain recorded; fresh artifact/track reads
+reconciled the outcome without an upload/save retry. Unknown external outcomes: none.
+
+AUTH-53 is consumed. No further upload/publication/review/OTA/activation, build/key,
+paid/provider, primary-app/device, commit/push or 8.5 authority follows. No QA resources
+were started; USD0.56 stays held. Preserve feature/d13a84-main-native-builds at 3754081
+and its dirty task files. Source was integrated as main 37c197f, final CI green.
+Thirteen task documents are LOCAL ONLY: previous eleven plus the new draft-outcome
+MD/JSON. Older frozen packets remain unchanged. Browser 1715307857 is a deliverable
+on the verified track; Apple 1715307842 remains a separate login handoff.
+
+Next within 8.4: current iOS inventory/delivery, compatible main-ID upgrade/old repair/
+rollback, paired performance, enabled provider/operator qualification and fresh
+cohort/backup/delta/queues for one separately approved next operation. Draft acceptance
+does not establish store-signed device delivery. Do not start 8.5 or reuse AUTH-53.
+D13A.8 stays 3/6: three fixed steps 8.4–8.6 and six later broad milestones remain.
+Continue Astra / High.
+
+**2026-10-25 — AUTH-53 internal draft7 empty; owner takes manual file upload.**
+
+Owner authorizes one pinned AAB2.5.0(86) upload to INTERNAL TESTING as DRAFT only.
+Authority AUTH-53 in decisions.md; private durable operation:
+reports/shared-dictionary-cefr/d13a84-internal-draft-20261025/operation.json.
+Exact file: /Users/devrush/code/pet/DutchLearningApp/builds/app-2.5.0-86-nds-fixed.aab
+SHA25634a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554.
+Fresh Play preflight showed no86; correct personal app/account. Create new release
+created empty draft7 at tracks/4701630533941298146/releases/7/prepare. Build85 remains
+not included and current active2.4.0 release was not changed. Browser fileChooser
+setFiles refused local file access because extension Allow access to file URLs is
+off. No extension permissions changed. Long interruption reconciled: current draft7
+has no AAB, no transfer/acceptance occurred. Native chooser fallback did not establish
+a transfer; no unrelated browser authentication was operated. Never retry unknown
+transfer blindly. Current confirmed transfer count0, one blocked selection attempt.
+
+After interruption fresh read-only backend08:30UTC: all14DB flagsFALSE/two endpoint
+gatesFALSE/ledger66/all14body hashes/JWTtrue; EASoldrefery/owneroldrefery and no matching
+Androidruntime82a893fa OTA. No flags/channels changed. Read-only SDK metadata confirms
+one already-assigned Google submission key; no private key material or credential
+mutation. Initial local SDK import failed, corrected metadata-only read succeeded.
+EAS Submit NOT started and no archive sent to EAS. CLI fallback must not run while
+owner uploads manually, to prevent duplicate/conflicting submissions.
+
+Latest owner asks where the file is and offers manual upload. Hand off existing
+Play draft7/tab1715307857 and exact file path. Ask them to use Upload, select only
+this AAB, wait for86(2.5.0), then Save as draft; do not use Next/rollout. After reply,
+inspect current draft/inventory first before any transfer. AUTH-53 still authorizes
+this single upload/draft persistence, but no successful upload has been claimed.
+No publication/OTA/backend/key/newbuild/provider/primary-app/commit/push/8.5 action.
+No QA resources started; USD0.56held. Dirty feature checkout3754081 preserved;
+source already main37c197f, final main CI green. Existing eleven task documents
+remain local-only, plus current updates to those checkpoint files. Do not clean.
+D13A.8 stays3/6: three fixed steps8.4–8.6 and six later broad milestones remain.
+Continue Astra / High. Await manual-upload outcome, then verify draft status.
+
+**2026-10-25 — public Play upload fingerprint matches the signed AAB.**
+
+Owner supplied PUBLIC SHA256 from the requested Play Upload key section:
+764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc.
+Fresh keytool read from the actual replacement AAB matches exactly. AAB SHA256
+34a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554 remains unchanged;
+all28 prior internal-check inputs verify. The remote fingerprint source is owner
+attestation, not an independently downloaded Play certificate. No key changes.
+Evidence: evidence/D13A.8.4-upload-certificate-20261025.json; it supplements the
+unchanged internal-checks packet dc27360c... and records a local next-operation
+proposal only. The upload-certificate comparison gate is CLOSED. Main CI and other
+available read-only/internal checks already passed. No upload or Play acceptance/
+store-signed delivery/main-ID upgrade/rollback proof follows from the comparison.
+
+The public-fingerprint owner question is resolved. Next prepare/review one exact
+Android internal DRAFT upload scope using this pinned AAB; actual creation/upload
+requires separate authority and fresh version/identity/OTA/backend boundaries.
+No rollout, tester edits, OTA, activation, paid calls, new builds/certs or8.5.
+No external mutation pending; no QA resources started, primary accounts untouched,
+USD0.56 held. Checkout stays feature/d13a84-main-native-builds at3754081; source
+already merged main37c197f. Eleven checkpoint documents now LOCAL ONLY, including
+this new certificate receipt; preserve dirty work. Broader8.4 holds remain.
+D13A.8 stays3/6: three fixed steps8.4–8.6 and six later broad milestones remain.
+Continue Astra / High.
+
+**2026-10-25 — final main CI and available Android internal checks completed.**
+
+Current checkout remains feature/d13a84-main-native-builds at3754081, with prior
+local task work preserved. Remote main37c197fd167afdf91dd6e89a52e498ef8d7b90f8
+was verified. Main Quality40136442002 completedSUCCESS at22:29:06UTC October24
+(00:29 October25 Amsterdam), all25steps/all3jobs successful. Lightweight40136442037
+also passed. Complete main log confirms mobile200suites/2737tests/22snapshots,
+web118suites/1252tests/one existing skip, Doctor21/21, mutation96.13%/threshold90.
+First direct log retrieval failed; gh run view obtained the full2.3MB final log.
+Log SHA d3c4742d28bedd2f564b6de543b2f334fc3ce2c9ac6e7456d3724009fa6766a7.
+No rerun, source repair or new build required. Prior web deployment remains the
+verified AUTH-52 outcome; no manual publication/rollback repeated.
+
+New review: evidence/D13A.8.4-internal-checks-20261025.md/.json (28 input pins).
+Private root: reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/.
+Offline AAB bundletool/signature/package/version86/runtime/channel checks pass;
+original AAB34a7759b... unchanged. Existing canonical-publication and exact-map
+verifiers pass. Historical13 preparation and12closure pins unchanged; no frozen
+receipt overwritten. Submit profile resolves internal/draft with QA/test modeOFF.
+
+Fresh Play read-only: correct oldrefery/app identity, active internal2.4.0 track,
+preselected TESTERS list4users (no member emails read; opted-in count unproven),
+38versions/latest85/search86 returns0/no reservation; no unpublished changes.
+No list edit/save/release creation/upload. Official Google internal-testing rules
+allow incomplete app setup: missing public assets/production-access requirements
+are not blanket blockers for internal preparation. Keep shared-listing assets/
+copy/policy work and broader release holds separate. Internal app sharing is not
+selected; fresh Apple inventory is not a prerequisite for Android-only preparation.
+
+Read-only EAS: EXPO_TOKEN absent, whoami oldrefery; remote owneroldrefery/project
+d968536e-1e9b-4224-9ed7-a1e9c6d821c8 confirmed. Identity checked before every remote
+command. Initial parser rejected the additional public email line, reconciled
+against known personal account without switching/login. Channelproduction unpaused,
+one unconditional production branch mapping. Android exact runtime82a893fa... has
+ZERO matching update groups at22:35UTC. No channel/update change. Signed candidate
+still production updater, so Play internal does not isolate OTA; refresh inventory
+before any actual distribution, do not claim future-state/device/old85 repair proof.
+
+Play upload certificate comparison remainsUNVERIFIED: browser copy acknowledges
+but clipboard API empty; native fallback did not establish a fingerprint. Owner
+asynchronous request pending for PUBLIC SHA256 from Upload key. Expected candidate
+signer764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc.
+No key reset/change/repeated download. Chrome handoff1715307857 at signing page;
+Apple handoff1715307842 retained (prior login FAILED/blank; no iOS action needed
+for selected Android preparation). Do not inspect unrelated Finder files; no
+credential/account contents were opened during fallback.
+
+This scope has no pending external mutation. No upload/publication/activation,
+new build/cert, paid/provider, primary-app/account, commit/push or8.5. USD0.56 held.
+No QA resources started. Ten task documents remainLOCAL ONLY: previous eight plus
+new internal-checks MD/JSON; product source already merged and unchanged. Preserve
+this dirty feature checkout; do not checkout/pull/reset/clean to match main.
+
+Next: compare supplied current PUBLIC Play upload SHA256 to pinned AAB signer,
+then prepare one concrete next Android internal operation/audience for separate
+approval with fresh version/OTA/backend/backup/delta/queue boundary and compatible
+main-ID delivery/upgrade/rollback acceptance. Current preparation does not prove
+actual Play acceptance or authorize upload. Broader8.4: iOS inventory/oldrepair,
+paired performance, enabled provider/operator and B01 exclusions remain. Do not
+start8.5. D13A.8 stays3/6: three fixed steps8.4–8.6 and six later broad milestones.
+Continue Astra / High.
+
+**2026-10-25 Amsterdam (2026-10-24 UTC) — AUTH-52: PR124 squash merged; production web verified.**
+
+Owner approved the exact PR124/head3754081 squash merge including automatic
+production web deployment, and selected Android INTERNAL TESTING preparation only.
+Merge completed once at2026-10-24T21:57:02Z as
+37c197fd167afdf91dd6e89a52e498ef8d7b90f8, parent165501a. Expected-head protection
+used; no bypass/branch deletion. Actual whole tree52fd292dcfbec61b68ca93dee493c45c0e4443ae
+equals approved3754081. Prior1514-file source match to replacement native artifacts
+remains valid; IPAa44f6162... and AAB34a7759b... hashes rechecked unchanged.
+
+Exact-head PR Quality40115249669, Lightweight40115249585 and Vercel preview
+freshly confirmed success before merge. Automatic production deployment
+dpl_G4K7vxtxJXNCTsYq7QahGPunt4VZ is READY, exact main37c197f, woordenaar.app
+assigned without alias error. Four unauthenticated GETs at22:00:02UTC match
+baseline status/redirect/protection headers. Prior READY rollback target retained:
+dpl_FRfe4t8nwMVw1qBNZ36zWwZLEvqj/main165501a; no rollback/manual deployment.
+New main push CI is separate: Lightweight40136442037 success; Quality40136442002
+IN_PROGRESS at latest observation. Do not report that run green from PR evidence.
+
+Fresh premerge read-only backend21:56:45UTC: ledger66/all14 original body hashes,
+new14DB gatesFALSE/legacy3TRUE/two endpointfalse digests/functionsACTIVEversion1
+JWTtrue. No account-row reads/database writes/provider requests. Initial restricted
+network failure preserved; explicit read-only network access completed checks.
+No backend activation follows web publication. UnknownUSD0.56 remains held.
+
+New evidence: D13A.8.4-pr124-integration-outcome-20261024.md and
+D13A.8.4-internal-testing-preparation-20261024.md/.json. Private merge receipts in
+reports/shared-dictionary-cefr/d13a84-merge-20261024/; local store preparation in
+d13a84-store-preparation-20261024/. Candidate copy13/60/696chars, release notes,
+missing asset plan and delivery/rollback acceptance matrix prepared, not saved in
+Console. Existing listing text was populated; missing visual assets remain.
+Configured privacy/terms linksHTTP200; terms title uses De Wordenaar rather than
+De Woordenaar, owner policy/copy review pending. No legal adequacy claim.
+Play app-signing publicSHA recorded separately; current upload certificate match
+with AAB signer764dbff7... remains UNVERIFIED. Download had no confirmed outcome;
+copy control acknowledged but browser clipboard empty. No key reset/change/upload.
+App Store Connect still authResultFAILED/no usable login controls; Chrome tab
+1715307842 re-marked for user handoff. No credentials/account switch attempted.
+
+AUTH-52 merge scope consumed. Internal preparation does NOT authorize uploads,
+release creation, public listing changes, new builds/certificates, OTA, provider
+calls, backend activation, primary accounts or8.5. AUTH-50 builds remain consumed.
+All owned QA resources remain stopped; do not relaunch for redundant checks.
+Checkout preserved on feature/d13a84-main-native-builds/local HEAD3754081. Remote
+main now37c197f; no local checkout/pull/reset/clean/newcommit/push. Eight task docs
+are LOCAL ONLY: handoff,stage,sessions,decisions; previous current-release-gates
+review; new internal-preparation MD/JSON and PR124 integration outcome. Frozen
+12 closure pins unchanged. Preserve these local files; do not update frozen reviews.
+
+Next: read exact main Quality40136442002 final status; resolve Apple login/current
+inventory and Play upload-certificate comparison, then missing assets/copy/policy,
+compatible delivery/repair/rollback, paired performance, enabled-path/operator and
+fresh backup/delta/queues for a concrete next separately approved operation.
+Do not upload or start D13A.8.5. D13A.8 stays3/6: three fixed steps8.4–8.6 and
+six later broad milestones remain. Continue Astra / High.
+
+**2026-10-24 — AUTH-51: final PR CI green; store eligibility and merge boundaries.**
+
+Current checkout: `feature/d13a84-main-native-builds`, pushed HEAD
+`375408186b5b60f42bb8a2ecd827e3eaf3cfbef5`. PR124 is open, ready for review (no
+longer draft), mergeable and NOT merged. Product/source changes remain c3a1f2d;
+f201b42 and3754081 are documentation commits. All1514 source files in this head
+match the replacement native build freeze. Original/replacement artifacts unchanged.
+
+Quality run40115249669 completed successfully at17:48:21UTC. Complete retained log
+confirms mobile200suites/2737tests/22snapshots, web118suites/1252tests plus one
+pre-existing skip, Doctor21/21 and webmutation96.13% above90%. Database,
+web-fixtures, Lightweight E2E run40115249585 and Vercel preview also passed.
+Some step metadata lagged final job status; completed log and workflow result
+reconciled it. No rerun or product repair was necessary. Final product-diff review
+found no new blocking findings in reported NDS-1/NDS-2 cases; independent human
+approval, atomic repository-write guarantees and paired performance are not implied.
+
+New local review: evidence/D13A.8.4-current-release-gates-20261024.md reconciles
+R01–R13. Private root: reports/shared-dictionary-cefr/d13a84-integration-closure-20261024/.
+Its operation.json and ci-summary.json retain exact CI/head/results and next work.
+Seven generated replacement iOS dSYMs/26 files retained; all match original IPA
+Mach-O UUID/architecture. App UUID736762EC-69D5-3B8A-9B77-1A87E820319C. Archive SHA
+6facfbb0c71e5864f48ec96bcfe48e35f925148ff048a35e26087ce2bc264b2f. Three prebuilt
+vendor libraries (Hermes/React/ReactNativeDependencies) have no matching dSYMs in
+the local release caches examined; full native symbol coverage is not claimed.
+No rebuild, symbol upload, certificate or archive-source change. Existing exact
+JavaScript map qualification remains valid and local.
+
+Fresh Google read-only eligibility: latest2.4.0(85) is INTERNAL testing, full rollout
+to internal testers. Production access unavailable/inactive. App draft; setup10/11,
+missing store listing. No closed release, opted-in testers0. Dashboard requires12
+continuously opted-in testers for14 days before applying; Apply is disabled. No
+unpublished changes/release creation/upload/access application. Do not silently
+substitute an internal/closed destination for production approval.
+Apple inventory remains blocked: authResultFAILED, login controls did not render
+after refresh. Chrome handoff tab1715307842 is marked to survive; ask user to sign
+in manually, then inspect only metadata for app6752469146. No account switch or
+credential read. No new production queries during this checkpoint; prior17:05:30UTC
+disabled-gate observation remains historical and needs refresh before any write.
+
+Two asynchronous owner questions are pending: squash merge of exact PR124/head3754081
+(including automatic production web deployment), and Android preparation destination
+(closed test toward production versus existing internal testing). AUTH-51 excludes
+merge/publication; no response or elapsed time is approval. The previous Apple
+login request is also pending. Do not push more commits while awaiting a head-bound
+merge decision or reuse AUTH-50 build authority. No merge/publication/activation/
+paid/provider/real-link/device-account/8.5 action occurred. USD0.56 remains held;
+all QA apps/relays/containers remain stopped, main apps/accounts untouched.
+
+Persistence: source and prior task packet pushed in PR. Latest checkpoint ONLY LOCAL:
+modified handoff.md, steps/D13A.md, sessions.md and new current-release-gates evidence
+file. No new source changes. Keep these four files; do not clean/reset/switch/pull.
+Next: handle owner decisions, inspect authenticated iOS inventory, then continue
+selected release/rollback/operator/policy/fresh-boundary qualification. If merge is
+approved, recheck exact PR head and required checks before squash; preserve local
+checkpoint and inspect automatic web deployment afterward. No store/OTA/activation
+permission follows merge. D13A.8 stays3/6: three fixed steps8.4–8.6 and six later
+broad milestones remain. Continue Astra / High.
+
 **2026-10-24 — AUTH-51: draft PR 124 open; remaining release checks in progress.**
 
 Current branch: `feature/d13a84-main-native-builds`, pushed HEAD `f201b4276106825c4695604a0bd89d95e4005e1c`.
@@ -8842,23 +10378,23 @@ limits: [D08 final closure](evidence/D08-final-closure-review-20261002.md).
 
 ## Stage ledger
 
-| Stage                 | Status      | Evidence / next gate                                                                                     |
-| --------------------- | ----------- | -------------------------------------------------------------------------------------------------------- |
-| [D01](steps/D01.md)   | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                                                     |
-| [D02](steps/D02.md)   | done        | Accepted design, fixtures, compatibility and rollback                                                    |
-| [D03](steps/D03.md)   | done        | Astra/High review fixed; 145/145 DB tests pass                                                           |
-| [D04](steps/D04.md)   | done        | Terra/High; shared contracts pass mobile/web/Edge                                                        |
-| [D05](steps/D05.md)   | done        | 12/12 focused; 157/157 DB; dormant compatibility                                                         |
-| [D06](steps/D06.md)   | done        | Final D06 16/16; preservation/delta/rollback rehearsal                                                   |
-| [D07](steps/D07.md)   | done        | SQLite v13; 136/136 mobile suites preserve queues                                                        |
-| [D08](steps/D08.md)   | done        | Closure review/fix and final native smoke passed; resources stopped                                      |
-| [D09](steps/D09.md)   | done        | Web integration/performance verification                                                                 |
-| [D10](steps/D10.md)   | done        | Final review, real desktop/Safari visuals and preservation PASS                                          |
-| [D11](steps/D11.md)   | done        | Reduced diagnostic/dormant scope; CEFR activation gate blocked                                           |
-| [D12](steps/D12.md)   | done        | Local matrix/native/web/rollback PASS; CEFR disabled                                                     |
-| [D13](steps/D13.md)   | in_progress | AUTH-27/28/29 delivered; remaining observation/adoption acceptance open; CEFR OFF                        |
-| [D13A](steps/D13A.md) | in_progress | D13A.7 done;D13A.8 preparation3/6;8.4 native artifacts built;Doctor/PR/release gates open;7 broad remain |
-| [D14](steps/D14.md)   | pending     | Adoption gate + compatibility retirement                                                                 |
+| Stage                 | Status      | Evidence / next gate                                                                                                |
+| --------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| [D01](steps/D01.md)   | blocked     | D01.1/D01.3/D01.4 done; device/build evidence needed                                                                |
+| [D02](steps/D02.md)   | done        | Accepted design, fixtures, compatibility and rollback                                                               |
+| [D03](steps/D03.md)   | done        | Astra/High review fixed; 145/145 DB tests pass                                                                      |
+| [D04](steps/D04.md)   | done        | Terra/High; shared contracts pass mobile/web/Edge                                                                   |
+| [D05](steps/D05.md)   | done        | 12/12 focused; 157/157 DB; dormant compatibility                                                                    |
+| [D06](steps/D06.md)   | done        | Final D06 16/16; preservation/delta/rollback rehearsal                                                              |
+| [D07](steps/D07.md)   | done        | SQLite v13; 136/136 mobile suites preserve queues                                                                   |
+| [D08](steps/D08.md)   | done        | Closure review/fix and final native smoke passed; resources stopped                                                 |
+| [D09](steps/D09.md)   | done        | Web integration/performance verification                                                                            |
+| [D10](steps/D10.md)   | done        | Final review, real desktop/Safari visuals and preservation PASS                                                     |
+| [D11](steps/D11.md)   | done        | Reduced diagnostic/dormant scope; CEFR activation gate blocked                                                      |
+| [D12](steps/D12.md)   | done        | Local matrix/native/web/rollback PASS; CEFR disabled                                                                |
+| [D13](steps/D13.md)   | in_progress | AUTH-27/28/29 delivered; remaining observation/adoption acceptance open; CEFR OFF                                   |
+| [D13A](steps/D13A.md) | in_progress | D13A.7 done; D13A.8 preparation3/6; PR125 merged; mainCI/site PASS; backend/store release gates open;7 broad remain |
+| [D14](steps/D14.md)   | pending     | Adoption gate + compatibility retirement                                                                            |
 
 D01 is incomplete but does not block separately authorized local work. D02 design outputs and
 policy acceptance are complete. No production operation is authorized. Do not

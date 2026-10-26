@@ -1,0 +1,668 @@
+{
+  "at": "2026-10-25T22:55:27.069446+00:00",
+  "authority": "AUTH-73",
+  "status": "fulfilled_consumed",
+  "source_commit": "b0cf2c71b9eccb1fee2d735c4655e00c8a315c58",
+  "included_prs": [126, 127],
+  "pr126_merge": "5be08b8",
+  "version_overlay": "iOS and Android86->88, same exact candidate as verified iOS88",
+  "model": "GPT-6 Astra",
+  "effort": "High",
+  "model_source": "owner confirmation",
+  "checkpoint": "D13A.8.4",
+  "fixed_step": 4,
+  "fixed_steps_total": 6,
+  "subtask_steps_complete": 3,
+  "subtask_steps_total": 3,
+  "broad_milestones_remaining_including_current": 7,
+  "verification": {
+    "at": "2026-10-25T22:53:35.710751+00:00",
+    "authority": "AUTH-73",
+    "result": "pass",
+    "local_build_invocations": 1,
+    "build_time": "7m 58s",
+    "doctor_checks": 21,
+    "candidate_source_pins": 2208,
+    "actual_build_source_files": 697,
+    "artifact": {
+      "status": "passed",
+      "artifact": "builds/app-2.5.0-88-learning-ack.aab",
+      "bytes": 86450390,
+      "artifact_sha256": "3f2beea91fa0eb848a41958efff2ed5d136e3d49b7b7f606dc2bfa17772c85ff",
+      "package": "com.oldrefery.dutchlearningapp",
+      "version": "2.5.0",
+      "build": 88,
+      "debuggable": false,
+      "min_sdk": 24,
+      "target_sdk": 36,
+      "bundletool_version": "1.18.1",
+      "bundletool_sha256": "675786493983787ffa11550bdb7c0715679a44e1643f3ff980a529e9c822595c",
+      "bundle_validation": true,
+      "jar_signature_verified": true,
+      "signer_certificate_sha256": "764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc",
+      "signer_matches_retained_build86": true,
+      "runtime_version": "bf8198c2399c1dcbabcf69f7374da90d363d3aac",
+      "updates_enabled": true,
+      "channel": "production",
+      "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+      "javascript_sha256": "fd87376872f5807d7fdcaca416a56022e1cbb6a01c9a1de33928747247a53ccf",
+      "qa_build": false,
+      "embedded_update_id": "ca2a294b-4b1a-4a1d-ab4b-ea6aeb4b44bb",
+      "embedded_repair_markers_verified": true,
+      "installed_or_launched": false
+    },
+    "maps_and_symbols": {
+      "repair_sources": 5,
+      "map_sources": 2696,
+      "matched_native_symbol_files": 60,
+      "native_libraries": 108,
+      "coverage_same_as86": true,
+      "full_native_symbol_coverage": false,
+      "r8_minification": false
+    },
+    "compatible_ota_groups": 0,
+    "google_play_uploads": 0,
+    "rollouts": 0,
+    "device_installs": 0,
+    "backend_changes": 0,
+    "on_device_acceptance": false,
+    "pending_operations": [],
+    "builder_cleaned": true
+  },
+  "next_step": {
+    "id": "ANDROID88-INTERNAL-DRAFT-01",
+    "status": "ready_for_exact_artifact_authorization",
+    "source_commit": "b0cf2c71b9eccb1fee2d735c4655e00c8a315c58",
+    "package": "com.oldrefery.dutchlearningapp",
+    "version": "2.5.0",
+    "version_code": 88,
+    "destination": {
+      "service": "Google Play Console",
+      "developer_id": "7222292767747034150",
+      "app_id": "4973515322279519779",
+      "track": "internal",
+      "track_id": "4701630533941298146",
+      "existing_draft": 7
+    },
+    "recommended_scope": "Upload exact verified AAB88 and replace86 in existing internal-testing draft7, add prepared release notes, save as draft. Do not start rollout or install on a device.",
+    "preflight": [
+      "Revalidate artifact hash and source/runtime/signer receipts",
+      "Refresh current personal Play account/app/draft/version88 occupancy",
+      "If88already exists, inspect artifact and prior operation; do not reupload blindly",
+      "Abort if draft changed concurrently; reconcile exact target first"
+    ],
+    "actions": [
+      "Upload verified AAB88 once",
+      "Observe successful processing and exact version/package",
+      "Remove86 only from this draft release selection; retain uploaded artifact library",
+      "Keep only88 in draft, title88 (2.5.0), prepared English release notes",
+      "Save as draft once and verify persisted88 draft and unchanged available85 release"
+    ],
+    "excluded": [
+      "Rollout to testers or production",
+      "Discard/delete existing release or artifact library",
+      "Change signing keys, service accounts or permissions",
+      "Change testers, countries, pricing or policy declarations",
+      "Backend/OTA activation or device installation"
+    ],
+    "release_notes": "google-play-release-notes.txt",
+    "permission": "Separate explicit exact-artifact upload/draft-edit permission required; AUTH73 covers local build/preparation only",
+    "later_step": "After draft validation, request separately scoped internal tester rollout and Android upgrade/preservation verification; do not conflate draft acceptance with on-device acceptance.",
+    "artifact": "builds/app-2.5.0-88-learning-ack.aab",
+    "artifact_sha256": "3f2beea91fa0eb848a41958efff2ed5d136e3d49b7b7f606dc2bfa17772c85ff",
+    "artifact_bytes": 86450390,
+    "runtime_version": "bf8198c2399c1dcbabcf69f7374da90d363d3aac",
+    "signer_certificate_sha256": "764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc",
+    "release_notes_sha256": "e8d7ec051a83c1b7baa132e61013a97c240de6226e0397ed11b03d47bf700b32",
+    "prepared_at": "2026-10-25T22:53:35.709719+00:00"
+  },
+  "evidence": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/actual-build-source-review.json",
+      "sha256": "38fd927838364d9a7b524d8c7a4ac5bb3585f9c82eb50d1560a7790a5d75f33d",
+      "bytes": 90616
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-artifact-review.json",
+      "sha256": "54e18cc2707613814247cec38a02e6b9c95e59c7d3b222871fcc2760cc75bd17",
+      "bytes": 1113
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-build.log",
+      "sha256": "f4c24513be5f66a2722486ae85a56d3e9671290e47a471cbe54203fcc91b456b",
+      "bytes": 211392
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-builds-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-builds.json",
+      "sha256": "83397629e290f71745f2bff71d32541c2e15dd6bfcdf2aaed954bdc1bf5d3c13",
+      "bytes": 44265
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-builds.log",
+      "sha256": "123378edf5823d6eab3d9ca9d25af311184e6c0017cd25fb8ecc5f4b5b06f2a7",
+      "bytes": 44493
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-bundle-validation.log",
+      "sha256": "963d41f9ee98170d7bc7a846eb92c93fb15cafa0bafcc3e7aafc52b51bcf83df",
+      "bytes": 97394
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-jarsigner.log",
+      "sha256": "f2ad0f3b6508b2ac60f6d13822640aab93c6069fa6d08dc069289d9535022901",
+      "bytes": 817701
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-manifest.xml",
+      "sha256": "2c4bc1f428a053688bfc0f8fa7ed89bf5b106f21398cf8312332172e72a0b9c3",
+      "bytes": 9372
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-runtime-resource.log",
+      "sha256": "7c3eb05ea675495e4e4fcf455aeb970505fb02248fc4ca61b305eb3d731134ff",
+      "bytes": 122
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/android-runtime.txt",
+      "sha256": "2c4a98f9d011c0939be584f182412178354885b2fd7bf4d01c40b37ab134864c",
+      "bytes": 41
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/build-request.json",
+      "sha256": "01b32d25775fd7642b7329769356263628f7505efff34d1616598e328a2ef857",
+      "bytes": 2660
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/build-slot.json",
+      "sha256": "a777b9aca3cd02d3f008602214f5f517c4fa8857c9285b1c9a7444959de979a3",
+      "bytes": 1590
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/builder-cleanup.json",
+      "sha256": "43d5b896155d8da8c031da8c6af87c90a9072d46fc6b5565338a44537cd3e9f1",
+      "bytes": 374
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/close-build.py",
+      "sha256": "fc110a6ac29e409bf95ab94ceb9f18233bb4153eef2dcf5076e7682e76b1e976",
+      "bytes": 3598
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/dependencies-install.log",
+      "sha256": "39a9fefd5354bace13df65fb0812c34dcb00eebede656d147a515476a2fe3167",
+      "bytes": 2076
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/final-verification.json",
+      "sha256": "b11ff88277ef344fa8f00b9b7984cb51aad088dac93ec24a032738b31d8129f7",
+      "bytes": 1894
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/google-play-release-notes.txt",
+      "sha256": "e8d7ec051a83c1b7baa132e61013a97c240de6226e0397ed11b03d47bf700b32",
+      "bytes": 185
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/identity-before-build.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/identity-before-project.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/identity-review.json",
+      "sha256": "1493b79b00cd0fd34bd416429175c6c839530155129740f522871bb25ad95694",
+      "bytes": 197
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/maps/index.android.bundle",
+      "sha256": "fd87376872f5807d7fdcaca416a56022e1cbb6a01c9a1de33928747247a53ccf",
+      "bytes": 7377572
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/maps/index.android.bundle.compiler.map",
+      "sha256": "e7bf90d4cdb230519699dfadcbf3af9b35ee0116c1504a9e26514097f89eb6b0",
+      "bytes": 4802567
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/maps/index.android.bundle.map",
+      "sha256": "e3f3b9242ccc55bf655ba432dc39910c577b38947ac72e39da510349b8bbd954",
+      "bytes": 17588144
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/maps/index.android.bundle.packager.map",
+      "sha256": "16205cea1876187243b90f68504aa350d5968cc2a260c4f59b4246a1b6b2a167",
+      "bytes": 23586235
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/maps-symbols-review.json",
+      "sha256": "50cc81ece7d58f2262d16acd71578b35a013c8d9b25bb609c88e0310a8fd425a",
+      "bytes": 41524
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libappmodules.so.sym",
+      "sha256": "d2a8fb78f50ee6db24e52514a05e64aa4701e8285add21ac948dbfe22043c4b5",
+      "bytes": 1827616
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libc++_shared.so.sym",
+      "sha256": "44dd6f043b004e918e9568976fd0b012b39f320edf0e173f331937d46e78ad26",
+      "bytes": 1770920
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libexpo-modules-core.so.sym",
+      "sha256": "f885b17d238c060aca80beae327c6c8204d74778ec7b29b3743524c88d3fce1c",
+      "bytes": 2399216
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libexpo-updates.so.sym",
+      "sha256": "b5db2fb3b0f900a76463564c793bbc63e2093b0da885051598d89dacdce6eb1d",
+      "bytes": 119536
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libfbjni.so.sym",
+      "sha256": "aa3b4be25de90d999adc069faf52f99c653452d40061670104e019d0b236e556",
+      "bytes": 278400
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libgesturehandler.so.sym",
+      "sha256": "10dea5fbcdd5afce1a4cdd1cf02e433324f1305e603e16ea5c30939c7876c71c",
+      "bytes": 53624
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libjsi.so.sym",
+      "sha256": "e2d832b441b20b8f2820c65cb7aa88431a415179d12868101ec79192aea4063f",
+      "bytes": 553048
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libreact-native-mmkv.so.sym",
+      "sha256": "35ad1c4ef4f75658444f038d67f1d34b5088d106ebc4194e9fec0c6eae3796db",
+      "bytes": 519824
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libreact_codegen_rnscreens.so.sym",
+      "sha256": "aa80b4e08e531e61690371652301b417aae5cb796d52456603f3c1801d8bbdee",
+      "bytes": 1950440
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libreact_codegen_safeareacontext.so.sym",
+      "sha256": "a9e874741f99eef286399adaf3ee3b6ea53f4e5fda880f9044bbec90cb2d26c0",
+      "bytes": 237912
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libreactnative.so.sym",
+      "sha256": "00aa74e9f00eebd96152821ab4ff9adf67ef97131f5f50af1d2587f4a6c4ddf2",
+      "bytes": 11353552
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libreanimated.so.sym",
+      "sha256": "6ec413869793e77a0231f17389b68ef4c308bda9412e055db55100567ed38721",
+      "bytes": 2707200
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/librnscreens.so.sym",
+      "sha256": "376c26af9653c90e9771491c0c628c8b2727218ac46fae4c64eb2a5c23b9f8cf",
+      "bytes": 162384
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libsentry-tm-perf-logger.so.sym",
+      "sha256": "df402cba247ce2d632fd5f9535c1e595fa7aefa67c1d90a9489d7839774a92da",
+      "bytes": 76072
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/arm64-v8a/libworklets.so.sym",
+      "sha256": "a5d62bfba4a1bc1a16683814f9d5bfcbd57da66f49012774c7d2067b2635b64c",
+      "bytes": 1892056
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libappmodules.so.sym",
+      "sha256": "53d6001afbd03c55fe9e5228bf621db48d2aa814889a638b2e7ba33ac14e8e89",
+      "bytes": 1487028
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libc++_shared.so.sym",
+      "sha256": "2e781d9fc3a2cc382d49f652eabf6583b4e666f954be50742c13c82215928750",
+      "bytes": 1277420
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libexpo-modules-core.so.sym",
+      "sha256": "16a85d127aedbcd404d0d2b727380aa8b23c9fa4fccabcd9cdbd6d427314f225",
+      "bytes": 1912000
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libexpo-updates.so.sym",
+      "sha256": "f62dd321a286a8a42192a440cfafa3133d7dbb734289a7194cf57c7d7b4964d9",
+      "bytes": 72660
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libfbjni.so.sym",
+      "sha256": "98ae69cf9d82fae6b3b3ad0b05a6d959b3ef9c816f8d37a380cd18374ca29608",
+      "bytes": 210220
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libgesturehandler.so.sym",
+      "sha256": "d4b73519e848c6dd80b67b52ea437583f8d77e250b8d59c0a69ab319bb74bd8d",
+      "bytes": 15488
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libjsi.so.sym",
+      "sha256": "814bd4b1558dd4f48b9ba71c5544c798747db5778bbfe453674cac47334c6727",
+      "bytes": 409880
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libreact-native-mmkv.so.sym",
+      "sha256": "a2a3381496d0469b021b77a5aaf6b3807c9b3311ad04fb77124b23720df1b36c",
+      "bytes": 374884
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libreact_codegen_rnscreens.so.sym",
+      "sha256": "64644786f37b52634c8b8fe0463adfb6b29e0758e3980d57edd3ad2439837b3e",
+      "bytes": 1547444
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libreact_codegen_safeareacontext.so.sym",
+      "sha256": "1e47153511a9f9b04f8084029a4411a2c249171274246018de10777b1a2a48c4",
+      "bytes": 166060
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libreactnative.so.sym",
+      "sha256": "b7604b90f6e06d59ec718e73f10b46838f9a2532fa87f4960a0a3ea839ada498",
+      "bytes": 8810804
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libreanimated.so.sym",
+      "sha256": "cc4ad0d61641457bca00aa15f800709f32973a2005c5cbf4ba9f93a85807c73b",
+      "bytes": 2070636
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/librnscreens.so.sym",
+      "sha256": "fc8ac41e442bf405e482d5fb3b74c1581065f3fc78390d34c673019ba441351b",
+      "bytes": 101852
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libsentry-tm-perf-logger.so.sym",
+      "sha256": "035f39a7c8db3fa2971f19d7f0cbf6d5fb09a019ae0075b34cbc44333dcfad10",
+      "bytes": 32008
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/armeabi-v7a/libworklets.so.sym",
+      "sha256": "2374f2a6967e411f87676b58a27fd59d3c07bc781019282a45772ac57f539144",
+      "bytes": 1477804
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libappmodules.so.sym",
+      "sha256": "7848576d4b9154c7997aed3618e0e4b544ce8083e89802bf3b0e6db5d8456dac",
+      "bytes": 1692576
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libc++_shared.so.sym",
+      "sha256": "9755d1229e274bc00edeb944061f9ea079d012882bea777dc864856700d6d9ec",
+      "bytes": 1574184
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libexpo-modules-core.so.sym",
+      "sha256": "5502357299f65372b49de39279e80ee4d3c9b264aa0f19e7b585734bfb20ee05",
+      "bytes": 2131596
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libexpo-updates.so.sym",
+      "sha256": "5b3263ba812e6fb7c0ca7223bc0c93eb5e639e18a65aa12df9b6b9be1b00ee2b",
+      "bytes": 118500
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libfbjni.so.sym",
+      "sha256": "a3e32761b2940723673a92dc16f1be6458568d25f47a6643976e15844c3cc097",
+      "bytes": 240736
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libgesturehandler.so.sym",
+      "sha256": "a4074a4aaa20c96995c3ea4c3a4b39e73568dde08b035bd20e812467965e73e9",
+      "bytes": 44464
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libjsi.so.sym",
+      "sha256": "2882115a3e4d2c9a9ba0e3b78996d1cfa9c514ebc2f6f81b886ec1dbc38c2172",
+      "bytes": 532332
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libreact-native-mmkv.so.sym",
+      "sha256": "3b21503dd36a5b21bf4d0453806ea5654d99c311f41deff971a20f6264c7a869",
+      "bytes": 500012
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libreact_codegen_rnscreens.so.sym",
+      "sha256": "152417ae5cdab49869bbc786c24eb132ac2a5a37ce383c15fd8d98d4f7029d4b",
+      "bytes": 1850212
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libreact_codegen_safeareacontext.so.sym",
+      "sha256": "226e8ac2a7fc7d57e9e69c25608cd48ec705c9f06e2fa69e8d6a73e39dd3d475",
+      "bytes": 213464
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libreactnative.so.sym",
+      "sha256": "6e3e72b1e00204ba38bf45efa4b9590ffc68802711ed6cbe37268229fed8e7a9",
+      "bytes": 10844052
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libreanimated.so.sym",
+      "sha256": "39407c6577345b0f4f91604ffc9a051ee9ece761f5653ec27abac21dcdf5b01a",
+      "bytes": 2379892
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/librnscreens.so.sym",
+      "sha256": "bc728fca1c2291879f7f9cfbb5429ab471af2ced0010f662f155f342e607f25d",
+      "bytes": 139156
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libsentry-tm-perf-logger.so.sym",
+      "sha256": "48f25ca2fbc9ccab4bebcd0af2be9784c5d3439d3fbcd924c364592d44920400",
+      "bytes": 62456
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86/libworklets.so.sym",
+      "sha256": "08ce1281ea2f6eb39a922c872a02ce913c5301f2c2f790f4907135e2b74ffe52",
+      "bytes": 1614304
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libappmodules.so.sym",
+      "sha256": "bd21a0752e1343cbc7c183589be9eff80d305fb812e63b586ea87348c1e79e34",
+      "bytes": 1727680
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libc++_shared.so.sym",
+      "sha256": "51bc4d549cbb210a52b4125849f175aa86aa4a2e518c587e7010e0e36e525021",
+      "bytes": 1609312
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libexpo-modules-core.so.sym",
+      "sha256": "ef6f8b2fc5509ee7aa4889477a6c2f0ad94b90e7ddd501530bbb3443cfc01550",
+      "bytes": 2225520
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libexpo-updates.so.sym",
+      "sha256": "f3d4ce8f936115f00bb471bb704e0e38c431185ce70000979dae98d8e8347b86",
+      "bytes": 126168
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libfbjni.so.sym",
+      "sha256": "88ee4f670e59553a9ab7d2b40fac611c3b4370a1301c5b846dc0e85a3e7e2a23",
+      "bytes": 254704
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libgesturehandler.so.sym",
+      "sha256": "b046fcedc5afda6e5a52dfbba8091ba816fea2e41865ab1e46429b8995c718dd",
+      "bytes": 46800
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libjsi.so.sym",
+      "sha256": "b01cf0e7a3e26dadc6defea0116ecb5b7d40c68d5ee470df1961c2f83ca36ca6",
+      "bytes": 526224
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libreact-native-mmkv.so.sym",
+      "sha256": "50bc02143aaf08561767606701a85d0d6184c9d7275f0080f5f66ebb67d956d9",
+      "bytes": 494048
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libreact_codegen_rnscreens.so.sym",
+      "sha256": "1836b63c68c1d81c1503e47d443e262f13c8dbc35a3db79a0153be02c9a7df33",
+      "bytes": 1860512
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libreact_codegen_safeareacontext.so.sym",
+      "sha256": "62579e3f0003fbb9d0de7abb002098d164db5ac0f32a101a48c7683705ed4de5",
+      "bytes": 224688
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libreactnative.so.sym",
+      "sha256": "6171d130cf7cd9e4f2b6f6c25398ac899ba27fa15b2ed863599f19d865de0d8c",
+      "bytes": 10756120
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libreanimated.so.sym",
+      "sha256": "0ba8118652f7a4968635ccd0f357b12699c9f2d482cce8115cfb4bf87161a99a",
+      "bytes": 2549016
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/librnscreens.so.sym",
+      "sha256": "4dd2fa4cc17f658b0616918518563033ad1449b1f4f13b1ad56be41fd8b3c4a8",
+      "bytes": 147344
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libsentry-tm-perf-logger.so.sym",
+      "sha256": "c7526b3fa4918f1699900b9e9cd0f581be35b1baa8fc51ef15544371928a7955",
+      "bytes": 65784
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/native-symbols/x86_64/libworklets.so.sym",
+      "sha256": "235cf51e11d7a455144c5be034c56acddb80346231a384e7c8867e93b18ef429",
+      "bytes": 1735840
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/next-google-play-proposal.json",
+      "sha256": "b7f10fe6bebc1b8faad7082462d7bd30fcac749db47de23340ce21674be19729",
+      "bytes": 2536
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/operation.json",
+      "sha256": "acf547d6141dc418f7098146305565c9ba37dcbc5b32ff86bfa5c8fdc925bb92",
+      "bytes": 892
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/ota-raw.json",
+      "sha256": "c76e74375151a8b84d726a933b2b9ef3d0b0682322b944e2994b3eedb95c8b57",
+      "bytes": 17637
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/ota-review.json",
+      "sha256": "009f9d1aefd52143ca1b9c3cbcc702513fd1d33d9f638698dea47c7d1f12b281",
+      "bytes": 224
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/play-version-review.json",
+      "sha256": "3f8ebf53f807479d0030f37e9127d9b1c2afd24546e1800918da57dc429739b3",
+      "bytes": 895
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/preparation-dependencies-cleanup.json",
+      "sha256": "511b14aaf3fb7a1052f851a0d09e17b1638e3692a0160f2f7bb01bc05fe25ad5",
+      "bytes": 464
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/production-channel-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/production-channel.log",
+      "sha256": "3c5a256f255dedbacc35cdc50f1b4bf89b083e94ad5a2bea0906c5d63827829c",
+      "bytes": 17765
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/project-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/project-info.log",
+      "sha256": "ea5730ee5dc012aae3ca591da6b194141bfc3c4670c8507cb4d3878b5913cbe0",
+      "bytes": 316
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/project.log",
+      "sha256": "ea5730ee5dc012aae3ca591da6b194141bfc3c4670c8507cb4d3878b5913cbe0",
+      "bytes": 316
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/read-eas.py",
+      "sha256": "3c2c96d14d6117a5bdd7bab9e5af16836f020cd767300635fc5e21c640827186",
+      "bytes": 2107
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/read-ota.py",
+      "sha256": "0a54427d15b00865aead084491b3867623de6c5fb2884a79a948f6151edf92a8",
+      "bytes": 2243
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/retain-build-evidence.py",
+      "sha256": "6b72e9b0482a45e87775ea7ae6d6aae86fcf4fd792585b7a24c5f5f7f344d4e1",
+      "bytes": 3584
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/run-local-build.py",
+      "sha256": "1aef50a7edc4c0ac8c6f4677707a42154a8c25da5d0d6b276f1638f2b725e6f5",
+      "bytes": 4531
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/runtime-updates-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/runtime-updates.log",
+      "sha256": "f03ad90b1f3b500f7ace6adc884c921bfea39a663993ed5fda060db3c6e0d4ee",
+      "bytes": 291
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/source-freeze.json",
+      "sha256": "4785174fb715f3c2343f8d277162196df2315b421b7bd35f91ebd737a1e5b78e",
+      "bytes": 295237
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/source-review.json",
+      "sha256": "c841c55e3ddd2197acd1710dc168a138b1191d72aab5a6fa7232f50e12f29204",
+      "bytes": 452
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/symbol-coverage-baseline.json",
+      "sha256": "3c1a14d5364abec6316990f6adc7f7dd0bf6c41608efdd9ec0ba6f1e0bebeba1",
+      "bytes": 4000
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/verify-android.py",
+      "sha256": "81903e21f5d8d95b825d7339ab529a02b29a0fc5e8c23ea17719e4338ae21407",
+      "bytes": 4360
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/verify-symbols.py",
+      "sha256": "6522fcf23c3d2dee35f3ac6b1b1485006627c5d4dfc24d5b34e730c43c165e2a",
+      "bytes": 1740
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android-current-20261025/version88.patch",
+      "sha256": "f68eca7bcec3fcc807e9053a1bb17d5a229f755d4a7c5573ec5aa86b21689937",
+      "bytes": 633
+    }
+  ],
+  "persistence": "local-only; no commit/push",
+  "pending_operations": []
+}

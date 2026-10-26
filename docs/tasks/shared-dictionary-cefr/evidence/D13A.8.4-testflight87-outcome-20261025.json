@@ -1,0 +1,206 @@
+{
+  "packet_type": "D13A.8.4-testflight87-outcome-20261025",
+  "at": "2026-10-25T18:41:09.706130+00:00",
+  "authority": "AUTH-63",
+  "authority_outcome": "fulfilled_and_consumed",
+  "operation_complete": true,
+  "stage_complete": false,
+  "artifact": "builds/app-2.5.0-87-sync-status.ipa",
+  "artifact_sha256": "7d167077fb841601703427ade84a6e47864c1c3870cec50e212362aa32013488",
+  "source": "5be08b8e592b7c96741887289771da772735de3d plus pinned version-only overlay",
+  "submission_id": "4bf6a31a-cc29-44fd-931e-e2ad7b1c9bbc",
+  "eas_status": "FINISHED",
+  "apple": {
+    "at": "2026-10-25T18:41:09.706130+00:00",
+    "source": "Authenticated App Store Connect browser UI",
+    "app_id": "6752469146",
+    "version": "2.5.0",
+    "build": "87",
+    "upload_status": "Complete",
+    "global_build_status": "Ready to Submit",
+    "group": "Team (Expo)",
+    "group_id": "5e99b483-870c-4240-b01e-ad0d15a1a206",
+    "group_testers": 3,
+    "group_builds": 9,
+    "group_build_status": "Testing",
+    "invites": 3,
+    "expires_ui": "90 days",
+    "agent_device_install_or_launch": false,
+    "device_installed_version_verified": false,
+    "screenshot": "apple-group87.jpg"
+  },
+  "gates": {
+    "observed_at": "2026-10-25T18:33:38.142038+00:00",
+    "read_only_confirmed": true,
+    "new_db_flags_false": 15,
+    "legacy_flags_true": 3,
+    "two_endpoint_environment_gates_false": true,
+    "production_writes": 0,
+    "provider_invocations": 0
+  },
+  "ota": {
+    "at": "2026-10-25T18:34:18.855312+00:00",
+    "runtime": "c2e0bc63ed30aef49749eb7a6c00804aabf165d1",
+    "production_channel_unpaused": true,
+    "production_branch_only": true,
+    "compatible_ios_update_groups": 0,
+    "delivery_preflight_passed": true
+  },
+  "prior_evidence_pins_verified": 50,
+  "device_install_verified": false,
+  "fixed_substages_complete": 3,
+  "fixed_substages_total": 6,
+  "broad_steps_remaining_including_current": 7,
+  "private_evidence": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/apple-final-review.json",
+      "sha256": "bcd762d5931aee0c45d1f1d7660b88397ad45d8b41db35808eac2dae25687ad7",
+      "bytes": 572
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/apple-group87.jpg",
+      "sha256": "f4f613bdde469989b4c0ae5bccc36c10e8b4f3ea3524f62ade68a2008268b9ad",
+      "bytes": 74533
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/apple-preflight-review.json",
+      "sha256": "f8f5f28f65d6baef8739e1b8185d3245288dbf007b5b576d48116d3ae0594b6d",
+      "bytes": 496
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/apple-processing-observation.json",
+      "sha256": "af5f81bec21d482defa2e52c3bc43e521058b2278c85de9d67a5585092227d92",
+      "bytes": 200
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/endpoint-gate-representation.json",
+      "sha256": "f068d122062570174f54143f552b9eedadefba2cb933924d843550078119efce",
+      "bytes": 307
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/identity-review.json",
+      "sha256": "e571210a7757234534f7d6a0008e90802dc6f92cbff59e721b0ce93c85dc1ade",
+      "bytes": 197
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/ios-submission-key-metadata.json",
+      "sha256": "de81acf5c737d6eca174ab6438497ecadcfedd849cee0f70581a561b5c6e283f",
+      "bytes": 294
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/key-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/operation.json",
+      "sha256": "10212d2fee66acb0b84f6c509e5bc86c2b9890d93aeb357d8df1e3553787b641",
+      "bytes": 1616
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/ota-preflight-review.json",
+      "sha256": "3a1e5069f755cf9657cf5a8115160e8d36fc9d8c3daeb6ff9c61172fbb2e880c",
+      "bytes": 251
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/ota-raw.json",
+      "sha256": "5d8892784f56d276df07889e0f2a3ca53a699a33214bca7b046ab9c75d202d23",
+      "bytes": 17637
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/production-channel-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/production-channel.log",
+      "sha256": "6f762472149a0146accad44a09e3b0794adfbdfc9925c24118ba3bf72fbde831",
+      "bytes": 17649
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/project-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/project.log",
+      "sha256": "04a95c84c95b176b1aa1dcc53cdec7c61b931c4a576e0febac81716c7d6cc4a5",
+      "bytes": 200
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/read-eas.py",
+      "sha256": "c23c25f145b57de6818f79776b9b44b854d87a8290f99ecde5d6d641c6d423ca",
+      "bytes": 1844
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/read-ios-submission-key.cjs",
+      "sha256": "3af53bfae3b992df8d3cfcae4273bc49df174f4723a0aeb23b92ee402978b147",
+      "bytes": 2014
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/read-release-gates.py",
+      "sha256": "6af04d8809a0369e712dcc5dc41ceb4654541d4c82a5635fed54902a20c3c0d4",
+      "bytes": 2742
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/read-submission-status.cjs",
+      "sha256": "861a66370f96ea45c36ff0e4994e2d30fe4472cd5603392470d2f43f214ba19c",
+      "bytes": 2319
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/release-gates-review.json",
+      "sha256": "22b22e4b84bc17de77cfa2ed2f1788c29413fe92389df8041149c710833b15a1",
+      "bytes": 244
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/runtime-updates-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/runtime-updates.log",
+      "sha256": "2f1b19bcb290c6f457256ca876e96744b58073f53cb2ca3a6734df02933ed992",
+      "bytes": 175
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/status-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/submission-observation-2026-10-25T18-35-24-898Z.json",
+      "sha256": "17e6dbadc56111ef0a7c596bf5639bd433827992f8f530745047076f60d10652",
+      "bytes": 727
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/submission-observation-2026-10-25T18-36-19-418Z.json",
+      "sha256": "8dc3ac8b3e1689f60c4196860e0a25f512bd39973784f0debd54c27529cf8a95",
+      "bytes": 727
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/submission-observation-2026-10-25T18-37-34-944Z.json",
+      "sha256": "184841e33803b65a4585193d00dd0dbdf39c4f76afc7ade615252b10880b4887",
+      "bytes": 727
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/submission-observation-2026-10-25T18-38-45-010Z.json",
+      "sha256": "bf8aaf2caef9cf3b829cfaee0419122487c69f61d4291484a6523f08cb2a7a76",
+      "bytes": 724
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/submit-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/submit-once.py",
+      "sha256": "2946da2e2fad0bd47f6011bc5e84aa7d60220a9a0b9326c35f404dcde947498e",
+      "bytes": 2449
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-testflight87-upload-20261025/submit.log",
+      "sha256": "bc2ed8f7f196a70b5eb9d5b6b0b8a9fd777e837cead92a8a20f60c4b760c6e8c",
+      "bytes": 930
+    }
+  ]
+}

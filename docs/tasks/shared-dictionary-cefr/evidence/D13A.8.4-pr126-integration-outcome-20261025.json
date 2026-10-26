@@ -1,0 +1,287 @@
+{
+  "packet_type": "D13A.8.4-pr126-integration-outcome-20261025",
+  "observed_at": "2026-10-25T15:21:27.990348+00:00",
+  "authority": "AUTH-61",
+  "authority_outcome": "fulfilled_and_consumed",
+  "operation_complete": true,
+  "stage_complete": false,
+  "pr": 126,
+  "pr_url": "https://github.com/oldrefery/dutch-learning-app/pull/126",
+  "approved_head": "e1d3966237567792c74855ec4e6080f16a1897c4",
+  "base": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+  "merge_commit": "5be08b8e592b7c96741887289771da772735de3d",
+  "merge_tree": "24350f4bacc356dba7f3f91f2b95db33474f4272",
+  "approved_tree_equal": true,
+  "merged_at": "2026-10-25T14:49:50Z",
+  "changed_files": 7,
+  "main_ci": [
+    {
+      "id": 40204067204,
+      "name": "E2E Tests (Lightweight)",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "5be08b8e592b7c96741887289771da772735de3d",
+      "html_url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40204067204",
+      "updated_at": "2026-10-25T14:50:44Z"
+    },
+    {
+      "id": 40204067200,
+      "name": "Quality",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "5be08b8e592b7c96741887289771da772735de3d",
+      "html_url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40204067200",
+      "updated_at": "2026-10-25T15:17:25Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12602834788,
+      "name": "web-mutation-report",
+      "size_in_bytes": 590647,
+      "url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12602834788",
+      "archive_download_url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12602834788/zip",
+      "expired": false,
+      "created_at": "2026-10-25T15:17:21Z",
+      "expires_at": "2026-11-08T15:17:20Z",
+      "updated_at": "2026-10-25T15:17:21Z",
+      "digest": "sha256:9c4f91582fad4096dfeeacdbcac2d5a6ee54e2ddf084d419ed6ec59b07d53d11",
+      "workflow_run": {
+        "id": 40204067200,
+        "repository_id": 1049799465,
+        "head_repository_id": 1049799465,
+        "head_branch": "main",
+        "head_sha": "5be08b8e592b7c96741887289771da772735de3d"
+      }
+    },
+    {
+      "id": 12602824853,
+      "name": "jest-coverage",
+      "size_in_bytes": 2143013,
+      "url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12602824853",
+      "archive_download_url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12602824853/zip",
+      "expired": false,
+      "created_at": "2026-10-25T15:17:19Z",
+      "expires_at": "2026-11-08T15:17:18Z",
+      "updated_at": "2026-10-25T15:17:19Z",
+      "digest": "sha256:0cefe67c746f69afdbead6a3593d187c5e3953dc38f8124fccd13a22e2c5377b",
+      "workflow_run": {
+        "id": 40204067200,
+        "repository_id": 1049799465,
+        "head_repository_id": 1049799465,
+        "head_branch": "main",
+        "head_sha": "5be08b8e592b7c96741887289771da772735de3d"
+      }
+    }
+  ],
+  "artifact_scope": "Metadata and head bindings inspected; ZIP contents not downloaded.",
+  "validation": {
+    "mobile_tests": 2747,
+    "mobile_suites": 201,
+    "snapshots": 22,
+    "web_tests": 1252,
+    "web_suites": 118,
+    "web_skipped_tests": 1,
+    "web_skipped_suites": 1,
+    "database_tests": 681,
+    "edge_tests": 351,
+    "release_tooling_tests": 38,
+    "expo_doctor": "21/21",
+    "mutation_score": 96.13,
+    "mutation_threshold": 90
+  },
+  "production": {
+    "id": "dpl_4AkFFNzVPfmpthuAkZHj5vsomXdh",
+    "url": "woordenaar-li31ulhoh-rustems-projects.vercel.app",
+    "name": "woordenaar-web",
+    "readyState": "READY",
+    "target": "production",
+    "createdAt": 1792939793028,
+    "ready": null,
+    "gitSource": null,
+    "alias": [
+      "woordenaar.app",
+      "woordenaar-web.vercel.app",
+      "woordenaar-web-rustems-projects.vercel.app",
+      "woordenaar-web-git-main-rustems-projects.vercel.app"
+    ],
+    "aliasAssigned": 1792939910206,
+    "aliasError": null,
+    "git_commit": "5be08b8e592b7c96741887289771da772735de3d"
+  },
+  "production_verified_at": "2026-10-25T15:17:47.217366+00:00",
+  "browser_smoke": {
+    "at": "2026-10-25T14:54:37.266997+00:00",
+    "production_sha": "5be08b8e592b7c96741887289771da772735de3d",
+    "production_deployment": "dpl_4AkFFNzVPfmpthuAkZHj5vsomXdh",
+    "public_routes": [
+      "/login",
+      "/forgot-password",
+      "/signup?next=%2Fapp%2Fcollections",
+      "/"
+    ],
+    "navigation": [
+      "Forgot password",
+      "Back to sign in",
+      "Create account",
+      "Root to login preserving collection destination"
+    ],
+    "viewports": [
+      {
+        "width": 1200,
+        "height": 756
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "screenshots_visually_inspected": [
+      "login-desktop.png",
+      "forgot-password-mobile.png",
+      "login-mobile.png",
+      "signup-mobile.png"
+    ],
+    "console_errors": 0,
+    "console_warnings": 0,
+    "retained_network_entries": 19,
+    "retained_response_codes": {
+      "307": 2,
+      "200": 17
+    },
+    "retained_failed_requests": 0,
+    "forms_submitted": 0,
+    "account_login": false,
+    "browser_closed": true,
+    "scope": "Public page rendering/navigation; not authenticated data or native-app acceptance. Network receipt reflects tool-retained navigation requests."
+  },
+  "stage": "D13A.8.4",
+  "fixed_substages_completed": 3,
+  "fixed_substages_total": 6,
+  "broad_steps_remaining_including_current": 7,
+  "pending_operations": [],
+  "next_action": "Prepare a concrete native/TestFlight delivery candidate for the merged sync-status repair; bind its runtime, dedicated test owner and fresh queue baseline before the bounded offline/reconnect proposal. Build, upload, install, OTA and device learning-write operations require their own concrete scoped authorization.",
+  "native_build_unchanged": "2.5.0(86)",
+  "flags_changed": false,
+  "unknown_liability_usd_held": 0.56,
+  "persistence": "Merged repair is pushed; operational/task records local-only.",
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/console.txt",
+      "sha256": "8244bba88be0b62a7e4395f5ad8839ee394e16c040dcd709e31a5bdd12a704a7",
+      "bytes": 43
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/forgot-password-mobile.png",
+      "sha256": "3c0f1365ae99727a19ca2df00acbb99cd066b6a2d32cb4823b0ad8d76ff17382",
+      "bytes": 20517
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/login-desktop.png",
+      "sha256": "a8922f3ae719c1c4ef9982473cc0eb8b0f5854bb4d3ddabd5de2889d7fc76350",
+      "bytes": 30160
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/login-mobile.png",
+      "sha256": "108839632b18cd7cbbfc26aaf36df3181bc6befe3e41137f24daacf689f2c891",
+      "bytes": 26082
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/network.txt",
+      "sha256": "a3bb27e27c08efbbbfd5e9757da6f45d1eecea171a0aa6710d57973c89d359ca",
+      "bytes": 1855
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/page-2026-10-25T14-52-39-526Z.yml",
+      "sha256": "114263f612e860014b26760b0785ed3333dbd8f6afc30728833fe362b4fd34f5",
+      "bytes": 1096
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/page-2026-10-25T14-53-07-127Z.yml",
+      "sha256": "2bdab6420b19127a7ab83fd3844ffd10d9ca252f12f3c3a47254c401c1d4b12f",
+      "bytes": 662
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/page-2026-10-25T14-53-26-468Z.yml",
+      "sha256": "09f9fa47fedb2d89390af3a9eaaa66dcf5c0c0de512b5a7a40f5d3988e6ce250",
+      "bytes": 1201
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/page-2026-10-25T14-53-35-999Z.yml",
+      "sha256": "587f4fe564850a1f8e0f045fb2d1ffebb9445252cdbf8753fb73d5afe3cdfc94",
+      "bytes": 1239
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/page-2026-10-25T14-53-48-001Z.yml",
+      "sha256": "a55719866738f8703ef24b41d50613bb1370cd9105d02a347001b72a2c90cbf2",
+      "bytes": 1237
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/root-redirect.yml",
+      "sha256": "a55719866738f8703ef24b41d50613bb1370cd9105d02a347001b72a2c90cbf2",
+      "bytes": 1237
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-evidence/signup-mobile.png",
+      "sha256": "43ec14a1ab05ba20c6c95493977af48f235ef102d0d6b8dd23db334bedc0c0d9",
+      "bytes": 28299
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/browser-smoke.json",
+      "sha256": "6562706a901c7e760cfbe31e2bdfd5ec4a6e4f623824f5b851801958d50eebeb",
+      "bytes": 1122
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/deployment-current.json",
+      "sha256": "80d9b5ee0971d46b9287137dc03c8764ec53a570ce223900b40d645cfb8473ae",
+      "bytes": 804
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/fetch-main.log",
+      "sha256": "9b10589dc67c4156d6ce186b52faf2f7374531938a241c08b08f9764108dd2d7",
+      "bytes": 138
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/main-ci-final.json",
+      "sha256": "02e46fc4be9fb065e675d5bdd72421a2d765e0cc7b2c877aea0e5d5d14402668",
+      "bytes": 14677
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/main-database-summary.json",
+      "sha256": "d0f46d2d7a8f18e347f33fb4d408606077abed7fab172c687d9e9c00479d00fa",
+      "bytes": 334
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/merge-result.json",
+      "sha256": "ac6eece52801be7f97fa07ddcb7fbf367306eea56255dfb3d53b84b6dd47f20b",
+      "bytes": 185
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/operation.json",
+      "sha256": "53de0f88059c03fa169dc5ad5da0ba40eff01cabe0528d1b68cbd6a4fc89d769",
+      "bytes": 1161
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/production-final.json",
+      "sha256": "4298b010c522926eff4bbded923f63a2dd07044b912f9c9ee71c7544a86c9295",
+      "bytes": 728
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/production-http.json",
+      "sha256": "3c5e911d325bda44f30bccd49ec52feb4d521a15257e3ce82fe8fe1717a9dcb2",
+      "bytes": 1091
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/production-initial.json",
+      "sha256": "eba4b25cb17e346a01d2d2639f14ff78522ffea8b032985bf242908fd8631de7",
+      "bytes": 663
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-integration-20261025/verify-production.py",
+      "sha256": "84cc8a72a2e6703c8711629e3a2db6cd01a223ec9d7deb54ee353f55430c5281",
+      "bytes": 2939
+    }
+  ]
+}

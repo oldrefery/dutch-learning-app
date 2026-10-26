@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-25T13:44:04.509050+00:00",
+  "status": "cause_reproduced_no_runtime_change",
+  "production_config": {
+    "at": "2026-10-25T13:39:41.898477+00:00",
+    "project_ref": "josxavjbcjbcjgulwcyy",
+    "execution_role": "management read-only SQL of configuration only; function execute unavailable to this role",
+    "state": {
+      "transaction_read_only": "on",
+      "reads_enabled": true,
+      "operations_enabled": true,
+      "following_reads_enabled": false,
+      "shared_analysis_capability_enabled": false
+    },
+    "provider_calls": 0,
+    "writes": 0
+  },
+  "retained_snapshot_reproduction": {
+    "at": "2026-10-25T13:42:00.593886+00:00",
+    "snapshot_at": "2026-10-25T13:14:12.368843+00:00",
+    "ciphertext_path": "/Users/devrush/code/pet/DutchLearningApp/reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/main-device-db-after-switch.enc",
+    "ciphertext_sha256": "7e4d21b011c7b20ebffaf07a5762c87e3ccbd587959656e96c29e07630a561d3",
+    "matching_dedicated_owner_hash": true,
+    "active_words": 2105,
+    "word_sync_states": {
+      "synced": 2105
+    },
+    "review_sync_states": {
+      "synced": 14
+    },
+    "following_missing_cache": 2105,
+    "legacy_read_refresh": 2105,
+    "read_debt_union": 2105,
+    "other_queues": {
+      "dictionary_content_commands": 0,
+      "dictionary_import_intents": 0,
+      "dictionary_personal_refresh_queue": 0,
+      "dictionary_import_recovery_outbox": 0,
+      "dictionary_import_delivery": 0,
+      "learning_commands": 0,
+      "review_corrections": 0,
+      "review_correction_recovery": 0
+    },
+    "pending_ui_reproduced_by_read_debt": 2105,
+    "production_or_phone_contact": false,
+    "query_only": true,
+    "plaintext_persisted": false,
+    "fresh_device_queue_audit": false
+  },
+  "tests": {
+    "at": "2026-10-25T13:44:04.509050+00:00",
+    "node_version": "v24.20.0",
+    "status_suites": 3,
+    "status_tests_passed": 46,
+    "selected_sync_manager_tests_passed": 4,
+    "unselected_sync_manager_tests": 84,
+    "total_selected_passed": 50,
+    "failures": 0,
+    "full_mobile_suite_run": false,
+    "runtime_sync_unchanged": true
+  },
+  "conclusion": "Client following opt-in plus server following gate OFF retains read/cache debt and yields a partial failed sync; lastSyncAt remains the last fully successful run. UI wording merges read/write debt and makes partial success unclear.",
+  "authenticated_device_capability_call_observed": false,
+  "live_delivery_guarantee": false,
+  "next": "Prepare local status presentation repair with separate write/read categories and accurate complete-sync wording; preserve capability gates, queues and complete-success timestamp contract.",
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/operation.json",
+      "sha256": "7ab64d48a6c17ee41030088a66df3378bb7d8e130e19445b861c2ebe7d9dfa01"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/source-binding.json",
+      "sha256": "857b7e65a16a6a13e7803d867ee2639ea8de18763708e34f083387a66c925b83"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/status-tests.json",
+      "sha256": "98e681a28b4a6b293a842ca150126c480b6dc0ce5eff84e2e6c4aa5d3df04e6e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/status-tests.log",
+      "sha256": "df9405befed2edc2acccbc7b31dfba3b2f3d1e2629a92cbbf64b1c4d6ebb344a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/sync-manager-tests.json",
+      "sha256": "84ac3322ed85050d865b691c266b00a5d3983e3d882de8af8b27e01a1452b797"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/sync-manager-tests.log",
+      "sha256": "c8398b3ee92e472650fdfb0828b943a41e10250469b6b57d0f22ccae31a36886"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/test-summary.json",
+      "sha256": "93f1d008f333d34fe4bb4ac99166a2d3a08b0728304e96ab70ce13f3835ae5aa"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/read-capability.py",
+      "sha256": "a816eb7433724a5b453f29f2416af37f8e8fe4d26ddecd66b68df833baba5131"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/read-capability-attempt1.py.txt",
+      "sha256": "cf91f8d75f9c9b0a3b7b0977ae3aade921be402a2721b86ad6987b4d3bd6f939"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/capability-function-request.json",
+      "sha256": "253f1c8e6e93fc0f4b4244d23e1aa2b960b8f20f51c96db34b92044d6797f050"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/capability-http-error.json",
+      "sha256": "9d591f8ec68aa3da6ee7ac524d0d3f6de2d7da067da5e1e69db4acb53fb1dc4a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/capability-request.json",
+      "sha256": "72940ca331067259cbc19af49b4d337d80c38e6ebe0f14605248a24d34d663c6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/capability-observation.json",
+      "sha256": "6cfc0534693a4b41c0d49f9927f02f543aa512d8ff228deb743fb4e5b2e33e9c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/audit-retained-status.py",
+      "sha256": "998af1966fb7ffd8ed1e5e48d391b4cdf0c8432c70f725fd5a21804887c33bca"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-diagnosis-20261025/retained-status-reproduction.json",
+      "sha256": "458633579991bf06d1cecd43d5c4cbe2016c704e34e68064370b1a009ce8b276"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-fixed-native-20261024/source-freeze.json",
+      "sha256": "de28927064c4b6027cc1b6d9f5d1950e7aa6a2f670ce05d34521ab126a4bbe94"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-fixed-native-20261024/ios-build.log",
+      "sha256": "a2657be8e96a40483422203e2b5eb9cb134d4b8d22b5ad777db52742be5a76dc"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-ios-main-smoke-outcome-20261025.json",
+      "sha256": "3428586473de70d0a129da808f1a2a50f64f329c8ee57454cfe058ee8f2fddd6"
+    }
+  ]
+}

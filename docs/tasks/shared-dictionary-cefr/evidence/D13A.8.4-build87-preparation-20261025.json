@@ -1,0 +1,184 @@
+{
+  "packet_type": "D13A.8.4-build87-preparation-20261025",
+  "at": "2026-10-25T15:31:31.962747+00:00",
+  "status": "local_preparation_complete_build_approval_pending",
+  "source_commit": "5be08b8e592b7c96741887289771da772735de3d",
+  "overlay_patch_sha256": "aa6df97dd718c5c67b27e100ef4d8d4a2f1b624795ab99a6e879cb1768007f48",
+  "source_files_pinned": 2207,
+  "source_freeze_path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/source-freeze.json",
+  "candidate": {
+    "at": "2026-10-25T15:27:28.926Z",
+    "version": "2.5.0",
+    "ios_build": "87",
+    "android_version_code": 87,
+    "owner": "oldrefery",
+    "bundle": "com.oldrefery.dutch-learning-app",
+    "team": "7FQ395U52U",
+    "runtime_policy": {
+      "policy": "fingerprint"
+    },
+    "local_fingerprint": "470269d9529ce7725e895da1394bc1f12fe85c7d",
+    "fingerprint_scope": "Local source/dependency environment only; final signed IPA runtime must be inspected independently.",
+    "profile": "dictionary-release",
+    "channel": "production",
+    "qa_build": false,
+    "environment": "production",
+    "auto_increment": false,
+    "app_version_source": "local",
+    "source_dependencies_installed": false,
+    "native_compilation_started": false
+  },
+  "eas_identity": {
+    "at": "2026-10-25T15:28:23.319351+00:00",
+    "identity": "oldrefery",
+    "owner": "oldrefery",
+    "project": "d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
+    "expo_token_present": false,
+    "writes": 0
+  },
+  "apple_inventory": {
+    "at": "2026-10-25T15:29:36.770773+00:00",
+    "source": "Existing authenticated App Store Connect Chrome tab; iOS Builds and Build Uploads UI",
+    "app_id": "6752469146",
+    "version": "2.5.0",
+    "version_builds": [86],
+    "latest_uploads": [
+      {
+        "version": "2.5.0",
+        "build": 86,
+        "status": "Complete"
+      },
+      {
+        "version": "2.4.0",
+        "build": 85,
+        "status": "Complete"
+      },
+      {
+        "version": "2.3.1",
+        "build": 84,
+        "status": "Complete"
+      },
+      {
+        "version": "2.3.0",
+        "build": 83,
+        "status": "Complete"
+      },
+      {
+        "version": "2.2.1",
+        "build": 82,
+        "status": "Complete"
+      }
+    ],
+    "candidate_87_visible": false,
+    "number_reserved": false,
+    "scope": "Visible version and newest five uploads only; recheck before build/upload.",
+    "internal_group": "Team (Expo)",
+    "internal_group_testers": 3,
+    "internal_group_builds": 8,
+    "writes": 0
+  },
+  "ota": {
+    "at": "2026-10-25T15:29:36.770470+00:00",
+    "channel": "production",
+    "paused": false,
+    "single_unconditional_branch": "production",
+    "runtime": "470269d9529ce7725e895da1394bc1f12fe85c7d",
+    "matching_ios_groups": 0,
+    "runtime_scope": "Local prebuild estimate, not yet the final IPA runtime.",
+    "writes": 0
+  },
+  "native_build_started": false,
+  "upload_or_install_started": false,
+  "runtime_device_binding": "Pending signed IPA and fresh protected device evidence; UI omits active runtime/update ID.",
+  "pending_operations": [],
+  "stage": "D13A.8.4",
+  "stage_complete": false,
+  "fixed_substages": "3/6 complete; fourth active",
+  "remaining_broad_steps": 7,
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/apple-inventory-review.json",
+      "sha256": "c77f44a82172c7821f9c9c9e81d5843ff6d6339fdc46ae8f9a04d61869383131"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/archive-root-review.json",
+      "sha256": "483e5bff108d7873397815193bed0fd020f874dabf46d0e0828241aaf7f79408"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/build-request.json",
+      "sha256": "2bb7b985670a3bc89516bf8f0333aa9b4cb9f1345b3581b84e3bc948ea6732ef"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/candidate-validation.json",
+      "sha256": "f6201346509f0f48aad29b905c63b2bd50b1ff01cfc52650753f0f6147ec7a56"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/disk-review.json",
+      "sha256": "9dd928ec7d2b057f8a15f49e135b0da73ef5172daa2ea55cae84d2a36f550bb3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/fingerprint-local.json",
+      "sha256": "1ad5d290a910865736a2b92998d2c812c75cd7cf6b37569c0fc9366e75e9130f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/identity-review.json",
+      "sha256": "dd53e1328ceaf8c2c07fb8b3e1690ed73d800ecd9144f8797a2e29dcea41d4b8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/identity.log",
+      "sha256": "41c775db83b86c92e40d3a8c35b6ff72463b406aa45d6b2b0ab15433daa521da"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/ota-raw.json",
+      "sha256": "16a2dec465bc28544a70e9a535ec23aea757746d6e10b44a3552de6b8fbf7ebb"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/ota-review.json",
+      "sha256": "b997d8b328cfaa8a6d3a99f6f592c5352bbab35f3df1289a2bbb37ad8d080534"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/production-channel-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/production-channel.log",
+      "sha256": "53ff29c4302d172673489d36818307ce5a320fd920d88f40e078eadb80123ab2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/project-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/project.log",
+      "sha256": "04a95c84c95b176b1aa1dcc53cdec7c61b931c4a576e0febac81716c7d6cc4a5"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/read-eas.py",
+      "sha256": "c23c25f145b57de6818f79776b9b44b854d87a8290f99ecde5d6d641c6d423ca"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/runtime-updates-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/runtime-updates.log",
+      "sha256": "2f1b19bcb290c6f457256ca876e96744b58073f53cb2ca3a6734df02933ed992"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/source-freeze.json",
+      "sha256": "064832fb1957c2047d16d3e69b66b57bd062c61987843094d98789ab0b52cb59"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/tools-review.json",
+      "sha256": "a9370bbded1cdcece0830630c1229dce2ac2d57ff78ebe786ec7a9b321f0f62b"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/validate-candidate.cjs",
+      "sha256": "8051f50aaa46229e89cd00d129ceb439350fbf94c5d70ac411e051bbbf943321"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-preparation-20261025/version87.patch",
+      "sha256": "aa6df97dd718c5c67b27e100ef4d8d4a2f1b624795ab99a6e879cb1768007f48"
+    }
+  ]
+}

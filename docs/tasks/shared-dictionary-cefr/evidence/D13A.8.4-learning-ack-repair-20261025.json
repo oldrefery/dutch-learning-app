@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-25",
+  "authority": "AUTH-66 local repair and verification",
+  "model_effort": "GPT-6 Astra / High, last confirmed by owner; picker not independently inspected",
+  "stage": "D13A.8.4 in_progress",
+  "branch": "feature/d13a84-main-native-builds",
+  "head": "375408186b5b60f42bb8a2ecd827e3eaf3cfbef5",
+  "candidate_base": "5be08b8e592b7c96741887289771da772735de3d",
+  "scope": [
+    "apps/mobile/src/db/wordRepository.ts",
+    "apps/mobile/src/services/syncManager.ts",
+    "apps/mobile/src/services/__tests__/syncManager.test.ts",
+    "apps/mobile/src/db/__tests__/acknowledgedLearning.sqlite.test.ts"
+  ],
+  "source_sha256": {
+    "apps/mobile/src/db/wordRepository.ts": "10420aeec6ae6bdff9a23ee6f530b97008b2b81642a398c141f7567279fba74d",
+    "apps/mobile/src/services/syncManager.ts": "314b4092896a1e59c0007e5cf5bed72daddefd86214509bd12b53d9f09b768dc",
+    "apps/mobile/src/services/__tests__/syncManager.test.ts": "806eea57ddee8391cabe4ece4778d686d2760bbdda49e8de70581f49cc55a503",
+    "apps/mobile/src/db/__tests__/acknowledgedLearning.sqlite.test.ts": "aae299b04c06eaef5dd5d613a1b2a8bc4c8d9e802a4976386ff63d9f0e5854c2"
+  },
+  "private_evidence_sha256": {
+    "red.log": "fd8145030d7c792683925f0cab6318faad6b2c8bb92c6d963aaee5c9e9b3642c",
+    "first-green.log": "6aadc05371a9975eef69171e0db422fca4c73a4d92c29e4867aabfc9ce69deb5",
+    "regression.log": "3ea4e79ecc579f64e6e9804337d0accc1eb9d7142a56b0e7d2a3aaca2e98ee35",
+    "final-tests.log": "e02b5425391bb61708c4fc5b26c96672bf8a8b86fa563ac309bf95768ff34c57",
+    "typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "typecheck-test.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lint-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "format.log": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+    "candidate.patch": "1242735eaefe29b0121d59c0e9b10e03d50658dc674c6c850f1f41388968ea4d"
+  },
+  "validation": {
+    "suites": 34,
+    "tests": 538,
+    "failed": 0,
+    "production_typecheck": "pass",
+    "test_typecheck": "pass",
+    "eslint": "pass, zero warnings",
+    "prettier": "pass"
+  },
+  "device_validation": "not executed; iPhone build87 does not contain this patch",
+  "publication": "none; no commit/push/PR/build/upload/install/OTA",
+  "limitations": [
+    "Only identical persisted content, placement and SRS may be acknowledged; divergent state remains pending.",
+    "Dictionary hydration debt and last-complete-sync semantics remain unchanged."
+  ],
+  "next": "Review and publish the four-file candidate from current main under separately authorized commit/push/draft PR scope; then prepare exact signed build and dedicated-account verification without another learning answer."
+}

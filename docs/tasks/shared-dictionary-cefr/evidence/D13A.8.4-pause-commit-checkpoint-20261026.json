@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-26",
+  "authority": "AUTH-80",
+  "request": "Save and commit existing changes; preserve /repo pause",
+  "task_status": "paused",
+  "stage": "D13A.8",
+  "step": 4,
+  "steps_total": 6,
+  "installation_steps_complete": 3,
+  "installation_steps_total": 3,
+  "broad_milestones_remaining_including_current": 7,
+  "model": "GPT-6.1 Sol",
+  "effort": "High",
+  "branch": "feature/d13a84-main-native-builds",
+  "parent_commit": "375408186b5b60f42bb8a2ecd827e3eaf3cfbef5",
+  "pre_commit_dirty_paths": 110,
+  "pre_commit_tracked_modifications": 14,
+  "pre_commit_untracked_paths": 96,
+  "persistence": "Local Git checkpoint containing this packet; resolve commit identity from Git history. Private ignored reports remain local-only.",
+  "next_checkpoint": "HUAWEI-PLAY85-TEST-BASELINE-01",
+  "pending_operations": [],
+  "verification": {
+    "typecheck": "passed",
+    "typecheck_test": "passed",
+    "credential_pattern_scan": "No real credentials found; two matches were existing test-token literals.",
+    "commit_hook": "The normal repository pre-commit hook must pass before this packet is committed; it runs lint-staged and the mobile/web suites."
+  },
+  "normalization": {
+    "reason": "Apply repository formatting before commit without dropping exact-digest provenance.",
+    "json_values_preserved_before_repinning": true,
+    "historical_observations_refreshed": false,
+    "original_bytes_retained_privately": "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/commit-preservation-originals/",
+    "formatted_json_files": {
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-android88-build-outcome-20261025.json": {
+        "before_sha256": "92527b39b92495f1ee6f32a7136c4a831794e0c52db688200ead05055488ce7c",
+        "after_sha256": "6d95ea8c3cd8779e1676ca4e21168a383042f84336f385108c2093e4845ffaa2"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-android88-draft-outcome-20261026.json": {
+        "before_sha256": "e21b410f08459e59b13e9ebbfa0b02578f5c3db3930473816dd4a240bd9e55be",
+        "after_sha256": "0a76e110c93aa087da35a6181d8d0e92cc07bb3eac75ad6b6722373304f01435"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-build87-preparation-20261025.json": {
+        "before_sha256": "b15b448ffa11f014b544f74bf27a2ba09e0f6a191292ebfa59f1a294d338f9f3",
+        "after_sha256": "a056ea9b07d299d15e5a377d2ca7a7361faab782979443f68a706a2edcc9a6f0"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-build88-outcome-20261025.json": {
+        "before_sha256": "067a660eb1bbd511322f8e46076a0844e69a0b39935b466902a1cb85bde3dd58",
+        "after_sha256": "bd60f76fbb22c0c80544e8aff68bf93096d4378d49b767c073c4160cfb1d8538"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-huawei85-qa-inspection-outcome-20261026.json": {
+        "before_sha256": "d4a8cf9363d9d9335ae39103ae97557b25b3452586dd0a0111f316370f1bfa28",
+        "after_sha256": "33c74b638c679cc72d61af06d024ce08b9dea0968e9c507d348fd76a12ef03fc"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-huawei85-qa-login-outcome-20261026.json": {
+        "before_sha256": "09936c987467fea61e4464f4f4b85daa6db73c378f5485f02c08014c017efc0e",
+        "after_sha256": "045119b4656ca8edc78a870cf41a4a7152fc0db94db66c66e6a6415934c7a07e"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-ios87-device-outcome-20261025.json": {
+        "before_sha256": "286a44355f99bef1cfe753535760068a057418d31b466862248d68386032ebbc",
+        "after_sha256": "ce22974b7c8f95a872653a443c0a91f54e234c0d61e017cd1ba7425b1c9a2af2"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-ios88-device-outcome-20261025.json": {
+        "before_sha256": "324ae0d35c49d86d7673468573b41161bed6bdc368f05de1a698873561dfa079",
+        "after_sha256": "37879a21d1e8b0aeaa12eff1e9e19c73bbee02613ad45553d78103139cb338b2"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-pr126-review-checkpoint-20261025.json": {
+        "before_sha256": "a8a4901a33abe0c4e5e56f4e1e35de523db28025a373634edd6783fe8cafdcda",
+        "after_sha256": "5e929302cbb687e9c17a993a62bf6233ab6575947a18d9b3df939a873871b8a9"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-post88-readiness-20261025.json": {
+        "before_sha256": "b0a44745fbac4132a79335b9b427f53ce29a76216dab9bfb44fa7cb610b38a05",
+        "after_sha256": "c13fd329fee0dfd7f64972746afbef9d9a1ec300517904b4a0c9e69290ff5674"
+      },
+      "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-testflight88-outcome-20261025.json": {
+        "before_sha256": "ee36eb09b69b4733a281f068388715de92382a954b4018872a2530ed2f63db41",
+        "after_sha256": "4c0bd6c0592817edc4a2a431ade8b38931ade6b914f59a12215a0f386c935f3b"
+      }
+    },
+    "repinned_references": [
+      {
+        "file": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-post88-readiness-20261025.json",
+        "target": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-build88-outcome-20261025.json",
+        "before_sha256": "067a660eb1bbd511322f8e46076a0844e69a0b39935b466902a1cb85bde3dd58",
+        "after_sha256": "bd60f76fbb22c0c80544e8aff68bf93096d4378d49b767c073c4160cfb1d8538"
+      },
+      {
+        "file": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-post88-readiness-20261025.json",
+        "target": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-ios88-device-outcome-20261025.json",
+        "before_sha256": "324ae0d35c49d86d7673468573b41161bed6bdc368f05de1a698873561dfa079",
+        "after_sha256": "37879a21d1e8b0aeaa12eff1e9e19c73bbee02613ad45553d78103139cb338b2"
+      },
+      {
+        "file": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-testflight88-outcome-20261025.json",
+        "target": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-build88-outcome-20261025.json",
+        "before_sha256": "067a660eb1bbd511322f8e46076a0844e69a0b39935b466902a1cb85bde3dd58",
+        "after_sha256": "bd60f76fbb22c0c80544e8aff68bf93096d4378d49b767c073c4160cfb1d8538"
+      },
+      {
+        "file": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-post88-readiness-20261025.json",
+        "target": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-testflight88-outcome-20261025.json",
+        "before_sha256": "ee36eb09b69b4733a281f068388715de92382a954b4018872a2530ed2f63db41",
+        "after_sha256": "4c0bd6c0592817edc4a2a431ade8b38931ade6b914f59a12215a0f386c935f3b"
+      }
+    ]
+  },
+  "limits": [
+    "No push or PR",
+    "No device or store actions",
+    "No backend migration or rollout",
+    "No private report, backup or credential added to Git"
+  ]
+}

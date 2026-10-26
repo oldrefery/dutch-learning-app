@@ -722,6 +722,20 @@ export class SyncManager {
         this.pullWordsFromSupabase(userId, wordCursor)
       )
     }
+    // An older client may already have acknowledged the event and advanced the
+    // word cursor while preserving its pending row. Retry these exact identities
+    // even when this sync has no new learning events.
+    const acknowledgedIds =
+      await wordRepository.getAcknowledgedLearningWordIds(userId)
+    for (let offset = 0; offset < acknowledgedIds.length; offset += 400) {
+      await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
+        this.pullWordsFromSupabase(
+          userId,
+          null,
+          acknowledgedIds.slice(offset, offset + 400)
+        )
+      )
+    }
     if (!correctionsAvailable) return
     await this.runSyncStageWithSessionRetry('pull_words', userId, () =>
       recoverConfirmedReviewCorrections(userId)
@@ -1160,6 +1174,7 @@ export class SyncManager {
     const activeWords = parsedWords.filter(word => !word.deleted_at)
 
     await wordRepository.saveRemoteWordTombstones(tombstones)
+    await wordRepository.reconcileAcknowledgedLearning(userId, activeWords)
     await wordRepository.saveWords(activeWords, { preserveUnsynced: true })
 
     if (this.dictionaryContentProtected) {

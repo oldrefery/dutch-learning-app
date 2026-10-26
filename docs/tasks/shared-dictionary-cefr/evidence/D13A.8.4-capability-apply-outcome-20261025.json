@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "status": "applied_and_verified",
+  "at": "2026-10-25T12:32:19.143950+00:00",
+  "operation_id": "1c2fa3ff-a9d3-4805-ac48-59d2fd1c8c68",
+  "authorization": "AUTH-58",
+  "project_ref": "josxavjbcjbcjgulwcyy",
+  "version": "20261025093000",
+  "source_sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7",
+  "guarded_sql_sha256": "eacd37b7cc565b2d292bbc4e6f75f895ee96e80aa8b1ac3b3d709aaa098e4354",
+  "sent_at": "2026-10-25T12:32:07.463009+00:00",
+  "provider_calls": 0,
+  "automatic_retry": false,
+  "ledger_versions": 67,
+  "protected_projections_preserved": 75,
+  "catalog_matches_exact_rehearsal": true,
+  "new_flag_false": true,
+  "capability_rpc_executed_as_production_authenticated_user": false,
+  "verification": {
+    "status": "passed",
+    "at": "2026-10-25T12:33:04.388871+00:00",
+    "preflight_observed_at": "2026-10-25T12:32:01.156966+00:00",
+    "postcheck_observed_at": "2026-10-25T12:32:12.752649+00:00",
+    "review_pins_verified": 24,
+    "historical_inventory_files_verified": 559,
+    "backup_pins_verified": 30,
+    "protected_projections": 75,
+    "original_rows": 32718,
+    "ledger_versions_before": 66,
+    "ledger_versions_after": 67,
+    "only_added_version": "20261025093000",
+    "legacy_flags_true": 3,
+    "dormant_flags_false": 15,
+    "policies_unchanged": true,
+    "object_acls_unchanged": true,
+    "both_checkouts_preserved": true,
+    "historical_operation_pin_resolved_to": "operation-before-auth58.json",
+    "production_authenticated_rpc_probe": false
+  },
+  "review": {
+    "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-capability-apply-review-20261025.json",
+    "sha256": "2e0730402fb171448fcfc0d3b98db1a730d1739e51fbb2d74726b2dab8f998cc"
+  },
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/operation-before-auth58.json",
+      "sha256": "7536f598f8569f8c5e123c7fb8bf045acff0d6ac91140c138e72a6e544068ce9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/operation.json",
+      "sha256": "e74f4dc1ee3274d654afea04ab99a3471e9ed2f4023338482becf65eabdf4b81"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/production-apply-request.json",
+      "sha256": "028239015a9bcade2a11b44602f28531872d934d429d5dea0401088a19d69099"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/approved-project-identity-response.json.enc",
+      "sha256": "ffc8dd2516283c7da952e75f9579e122cfe34f16e8cca25f67f8a57556b8419d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/approved-fresh-preflight-response.json.enc",
+      "sha256": "32ca0394cf08d465215531532cba93ab90583214479ee51cabce01b0a76299a6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/production-apply-response.json.enc",
+      "sha256": "0632c6949801d6da1b9b01b3ea36b809e9e64deca0b23b15bf46d75030b10cd6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/production-postcheck-response.json.enc",
+      "sha256": "d08ff9e324e98c71b5bc2369602db1df3f6a5b95a0c1ac1a6a54ca21c8d5c64a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/production-apply-outcome.json",
+      "sha256": "d9efb74f2d2b6686d44ffeed2f1ab67c44e1335eb911e7860ace9f666a6a913d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/production-final-verification.json",
+      "sha256": "b6cfef6885a3685dd460bd1b81be5088fc92b5f41a9a212b188ea054115ce606"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/apply-approved.py",
+      "sha256": "0450f62de14ce16d27c4fc1c5564620132d607fa5429a136bc97324898bcb539"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/guarded-20261025093000.sql",
+      "sha256": "eacd37b7cc565b2d292bbc4e6f75f895ee96e80aa8b1ac3b3d709aaa098e4354"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/candidate.sql",
+      "sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/postcheck-readonly.sql",
+      "sha256": "d66cdad06d31b8ce78b79ab3aea7b24f32ceecd6e1c5d603561fbeb7702b4da0"
+    }
+  ],
+  "authorization_consumed": true,
+  "production_sql_requests": 1,
+  "pending_external_operations": false,
+  "new_flag": "shared_analysis_capability_enabled",
+  "new_flag_value": false,
+  "activation_authorized": false,
+  "remaining_fixed_steps": 3,
+  "later_milestones": 6,
+  "unknown_budget_usd_held": "0.56",
+  "checkpoint_local_only": true
+}

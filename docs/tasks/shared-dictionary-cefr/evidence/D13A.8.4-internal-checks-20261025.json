@@ -1,0 +1,162 @@
+{
+  "packet_type": "D13A.8.4-internal-testing-checks",
+  "observed_at": "2026-10-24T22:36:46.632974+00:00",
+  "main_sha": "37c197fd167afdf91dd6e89a52e498ef8d7b90f8",
+  "local_branch": "feature/d13a84-main-native-builds",
+  "local_head": "375408186b5b60f42bb8a2ecd827e3eaf3cfbef5",
+  "ci": {
+    "observed_at": "2026-10-24T22:32:14.910779+00:00",
+    "head_sha": "37c197fd167afdf91dd6e89a52e498ef8d7b90f8",
+    "quality": {
+      "run": 40136442002,
+      "job": 120998854307,
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-24T22:29:06Z"
+    },
+    "all_quality_workflow_jobs_success": true,
+    "lightweight": {
+      "run": 40136442037,
+      "conclusion": "success"
+    },
+    "mobile": {
+      "suites": 200,
+      "tests": 2737,
+      "snapshots": 22
+    },
+    "web": {
+      "suites": 118,
+      "tests": 1252,
+      "existing_skipped_tests": 1
+    },
+    "doctor": {
+      "passed": 21,
+      "total": 21
+    },
+    "mutation_score": 96.13,
+    "threshold": 90,
+    "full_log_sha256": "d3c4742d28bedd2f564b6de543b2f334fc3ce2c9ac6e7456d3724009fa6766a7",
+    "first_direct_logs_request_failed": true,
+    "gh_run_view_final_log_succeeded": true,
+    "local_tests_repeated": false
+  },
+  "distribution": {
+    "platform": "android",
+    "track": "internal",
+    "submit_status": "draft",
+    "upload_authorized": false,
+    "publication_authorized": false,
+    "existing_selected_list_users": 4,
+    "members_read": false,
+    "new_cohort_approval": false
+  },
+  "artifact": {
+    "artifact": "builds/app-2.5.0-86-nds-fixed.aab",
+    "artifact_sha256": "34a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554",
+    "package": "com.oldrefery.dutchlearningapp",
+    "version": "2.5.0",
+    "build": 86,
+    "debuggable": false,
+    "jar_signature_verified": true,
+    "bundle_validation": true,
+    "signer_certificate_sha256": "764dbff7fce145e3cd710cb6f08b0e7fc05aa28a61385edc998a3ea28d9fb5fc",
+    "runtime_version": "82a893fa72d70cd47dbf85272bf3028463e9f58d",
+    "channel": "production",
+    "updates_enabled": true
+  },
+  "closed_checks": [
+    "Exact merged-main CI including all Quality jobs and Lightweight",
+    "Unchanged prior preparation13 and closure12 pins",
+    "Canonical raw manifests and exact Hermes/source map chain",
+    "Current AAB bundle/signature/identity/runtime metadata",
+    "Internal/draft submit profile and disabled QA/test mode",
+    "Current personal Play identity, active internal track and existing selected list",
+    "Version86 absent in current inventory; no reservation",
+    "Official internal eligibility despite incomplete store setup",
+    "Personal EAS identity/linked owner and current mapped production channel",
+    "No current Android OTA groups matching candidate runtime on mapped branch"
+  ],
+  "internal_listing_setup_required": false,
+  "internal_app_sharing_selected": false,
+  "ios_inventory_required_for_android_only_preparation": false,
+  "ota": {
+    "observed_at": "2026-10-24T22:35:14.327704+00:00",
+    "identity": "oldrefery",
+    "expo_token_present": false,
+    "remote_project_owner_confirmed": true,
+    "project_id": "d968536e-1e9b-4224-9ed7-a1e9c6d821c8",
+    "channel": "production",
+    "channel_paused": false,
+    "branch": "production",
+    "branch_mapping_entries": 1,
+    "android_runtime": "82a893fa72d70cd47dbf85272bf3028463e9f58d",
+    "matching_update_groups": 0,
+    "query_limit": 50,
+    "query_platform": "android",
+    "read_only": true,
+    "writes": 0,
+    "new_updates": 0,
+    "historical_build85_repair_compatibility_proven": false,
+    "scope": "Current matching-runtime inventory only; future publication/channel changes and actual device selection are separate."
+  },
+  "open_android_gates": [
+    "Current Play upload certificate comparison; owner public fingerprint request pending",
+    "Exact future operation/audience authority plus refreshed preservation/queue/runtime boundary",
+    "Actual Play acceptance, store-signed delivery, compatible main-ID upgrade and rollback"
+  ],
+  "broader_stage_holds": [
+    "iOS current inventory/delivery and old build85 repair compatibility",
+    "Paired performance and enabled hosted provider/operator paths",
+    "Public shared-listing assets/copy/policy and scoped B01 exclusions"
+  ],
+  "new_builds": 0,
+  "uploads": 0,
+  "publication": false,
+  "paid_provider_requests": 0,
+  "unknown_held_usd": "0.56",
+  "new_commits": 0,
+  "new_pushes": 0,
+  "primary_account_operations": 0,
+  "release_ready": false,
+  "stage_complete": false,
+  "remaining": {
+    "fixed_stage_steps": 3,
+    "later_major_milestones": 6
+  },
+  "files_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/ci-final-summary.json": "70df0173c4bb30844972a22593f5ab44e19e2aed8dedfbba248db9d2545c8a0b",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/quality-final-run.json": "39bd4e3f9b0fc3a11493ac570bfd6df874ea3092289ea9b87c22bdf3618d57e9",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/quality-final-jobs.json": "6701069e72a834f99a6467915269040fc6e067e92dd7a1316c0c9f372ad3f79e",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/quality-final.log": "d3c4742d28bedd2f564b6de543b2f334fc3ce2c9ac6e7456d3724009fa6766a7",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/lightweight-run.json": "e501b0c5db03868965dcf55ac33c284e05c393c1693ef89572df734f9905f38d",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/main-ref.json": "91812944e6814e37bf6e89cfa2c0d386c04b2b3d8ae68d26f987a58b6cb58482",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/android-artifact-review.json": "900958fafe211a44d60740729168586e3e1cc7a3b551fc71e123eab3b70d3c1f",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/android-artifact.log": "bec4ace359cdeb91fbfee886fb357883b04df9f3b5a6670c2608ccf748618c87",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/android-bundle-validation.log": "963d41f9ee98170d7bc7a846eb92c93fb15cafa0bafcc3e7aafc52b51bcf83df",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/android-jarsigner.log": "2db86d89e8eb15d83f49690c1c0a360b781327e4709e4ca919adf99a1415cdb1",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/verify-android.py": "6907b2245fb342d943ca4160255fe014798a1522de7b47851257d1a824b0a263",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/canonical-publication.log": "095c8c68301ab73c4f68e42cafb8443743d23023c75e7f0cefc767b96dce5530",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/maps-and-release-packet.log": "02472d5198cc7bba3367e96319e809054249b193cda96a6cb2bb4eb06594681b",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/configuration-review.json": "c2022c52b2a7463345135472eb62259ea420d56450c5551dfc10a5125cdf3bf6",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/internal-track-observation.json": "9f733a5a3e950137cc505bb9e73e2b738bdc26086301b14304e8bf3375a56a37",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/eas-identity-initial-parser.json": "3000f95920ab9ee8ac52be65f605a09b48a9bf26466d5c4a104ce98c2e0a5fd1",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/eas-identity.json": "d24f48c94557354d201a91f16a8125ed75b4d4854c8661d80c83bb4ffd56e6e5",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/ota-readonly-review.json": "1902b601b79cf6d33816cff7722e46af7ca4040955e077cde0489d3fc852e965",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/eas-production-channel.json": "76e01687acf9fd23fe0b1b4b8ed3c877a13a30624e511ac1a24880458f901e3c",
+    "reports/shared-dictionary-cefr/d13a84-internal-checks-20261025/eas-compatible-updates.json": "835f5e9d4f4a595f6da75d2d7a0fdb3d30f8f9ffeac1ebd1bd7944f73454fa16",
+    "apps/mobile/eas.json": "99ecc6ac48bbb9ab2e5826ee6c45456a4fad4bdfe0dcd74692779077529ad2c3",
+    "apps/mobile/app.config.js": "ae12c87fbc6319474875d363de92b80ce47beaba270200dd180cdc306a9d64f7",
+    "apps/mobile/app.base.json": "2a587d7dffab03a99b4ae8aa3d5db4102daca1ef6f33c6e73eb69e2130ff1e1e",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-internal-testing-preparation-20261024.json": "43304f0c13afea2730d7fc0522fb31cc27f81fc663bd93f35997f4b695a641d1",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-internal-testing-preparation-20261024.md": "da88b0b8516132681d1d6d0d46884d61fef772823769c3b88778660d8a72f5f7",
+    "reports/shared-dictionary-cefr/d13a84-store-preparation-20261024/preparation-integrity.json": "d954da4f85d9d2b82b4c33d7e20d7bb575bce095a5982168f8e18bca5bad0e18",
+    "reports/shared-dictionary-cefr/d13a84-integration-closure-20261024/closure-inputs.json": "4f9bbb570abacac8b1dedbb950e9457b1334f841d56b1a53b561eb79ab599b52",
+    "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-internal-checks-20261025.md": "1acb93ca3ad7a68e4dd4211f5cfbdfefbb7d2f99fdfc6e21d0551d83b955ca32"
+  },
+  "private_inputs_require_original_checkout": true,
+  "sources": [
+    "https://support.google.com/googleplay/android-developer/answer/9845334?hl=en",
+    "https://support.google.com/googleplay/android-developer/answer/9844679?hl=en",
+    "https://docs.expo.dev/eas-update/how-it-works"
+  ]
+}

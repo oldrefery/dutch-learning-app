@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-25T13:57:55.029219+00:00",
+  "status": "local_repair_validated_not_released",
+  "stage": "D13A.8.4",
+  "stage_complete": false,
+  "base_head": "375408186b5b60f42bb8a2ecd827e3eaf3cfbef5",
+  "branch": "feature/d13a84-main-native-builds",
+  "managed_head": "a8618a1c77dfeaf5aacb4f32100c422ad1292c5d",
+  "managed_clean": true,
+  "persistence": "local-only; no commit or push",
+  "changed_files": [
+    "apps/mobile/src/app/(tabs)/settings.tsx",
+    "apps/mobile/src/app/__tests__/settings-sync-status.test.tsx",
+    "apps/mobile/src/hooks/__tests__/useSyncStatus.test.ts",
+    "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+    "apps/mobile/src/services/syncStatusService.ts",
+    "apps/mobile/src/db/learningSyncStatus.ts",
+    "apps/mobile/src/db/__tests__/learningSyncStatus.sqlite.test.ts"
+  ],
+  "source_binding": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/source-binding.json",
+  "validation": {
+    "at": "2026-10-25T13:57:55.029219+00:00",
+    "node_version": "v24.20.0",
+    "regression": {
+      "exit_code": 0,
+      "suites": 8,
+      "passed": 173,
+      "failed": 0,
+      "skipped": 0,
+      "argv": [
+        "/Users/devrush/.nvm/versions/node/v24.20.0/bin/node",
+        "node_modules/jest/bin/jest.js",
+        "--config",
+        "apps/mobile/jest.config.js",
+        "--runInBand",
+        "--watchman=false",
+        "--runTestsByPath",
+        "apps/mobile/src/db/__tests__/learningSyncStatus.sqlite.test.ts",
+        "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+        "apps/mobile/src/services/__tests__/syncStatusService.sqlite.test.ts",
+        "apps/mobile/src/services/__tests__/dictionaryFollowingRuntime.sqlite.test.ts",
+        "apps/mobile/src/services/__tests__/dictionaryImportReviewRegression.sqlite.test.ts",
+        "apps/mobile/src/services/__tests__/syncManager.test.ts",
+        "apps/mobile/src/hooks/__tests__/useSyncStatus.test.ts",
+        "apps/mobile/src/app/__tests__/settings-sync-status.test.tsx",
+        "--json",
+        "--outputFile=reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/regression-tests.json"
+      ]
+    },
+    "settings_after_flex_layout": {
+      "exit_code": 0,
+      "passed": 15,
+      "argv": [
+        "/Users/devrush/.nvm/versions/node/v24.20.0/bin/node",
+        "node_modules/jest/bin/jest.js",
+        "--config",
+        "apps/mobile/jest.config.js",
+        "--runInBand",
+        "--watchman=false",
+        "--runTestsByPath",
+        "apps/mobile/src/app/__tests__/settings-sync-status.test.tsx",
+        "--json",
+        "--outputFile=reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/settings-final.json"
+      ]
+    },
+    "typecheck": {
+      "exit_code": 0,
+      "argv": [
+        "/Users/devrush/.nvm/versions/node/v24.20.0/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--project",
+        "apps/mobile/tsconfig.json"
+      ]
+    },
+    "lint": {
+      "exit_code": 0,
+      "max_warnings": 0,
+      "argv": [
+        "/Users/devrush/.nvm/versions/node/v24.20.0/bin/node",
+        "node_modules/eslint/bin/eslint.js",
+        "apps/mobile/src/app/(tabs)/settings.tsx",
+        "apps/mobile/src/app/__tests__/settings-sync-status.test.tsx",
+        "apps/mobile/src/hooks/__tests__/useSyncStatus.test.ts",
+        "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+        "apps/mobile/src/services/syncStatusService.ts",
+        "apps/mobile/src/db/learningSyncStatus.ts",
+        "apps/mobile/src/db/__tests__/learningSyncStatus.sqlite.test.ts",
+        "--max-warnings=0"
+      ],
+      "after_format_and_layout_changed_files_rechecked": true
+    },
+    "format": {
+      "exit_code": 0,
+      "argv": [
+        "/Users/devrush/.nvm/versions/node/v24.20.0/bin/node",
+        "node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        "apps/mobile/src/app/(tabs)/settings.tsx",
+        "apps/mobile/src/app/__tests__/settings-sync-status.test.tsx",
+        "apps/mobile/src/hooks/__tests__/useSyncStatus.test.ts",
+        "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+        "apps/mobile/src/services/syncStatusService.ts",
+        "apps/mobile/src/db/learningSyncStatus.ts",
+        "apps/mobile/src/db/__tests__/learningSyncStatus.sqlite.test.ts"
+      ]
+    },
+    "initial_attempts": "Focused tests initially 73 pass / 2 fixture failures (duplicate lemma unique key); fixture corrected. Initial lint warnings fixed. One test file formatted after the broad regression run. Logs retained. Final layout-only change followed by 15 passing Settings tests and clean lint.",
+    "full_mobile_suite_run": false,
+    "physical_device_visual_qa": false
+  },
+  "new_semantics": {
+    "uploads": "Distinct affected words from durable write queues plus collection/progress rows. Learning includes reviews, resets and unresolved corrections.",
+    "downloads": "Distinct words missing content/refresh or awaiting canonical correction recovery.",
+    "total": "Union of affected words plus collection/progress rows; category overlap is not double counted.",
+    "timestamp": "Last fully completed sync; existing success contract unchanged."
+  },
+  "limitations": [
+    "Installed 2.5.0(86) retains its old UI.",
+    "No new device runtime, offline/reconnect or delivery verification.",
+    "No feature flag or production change; prior OFF observation not freshly re-read in this local-only checkpoint.",
+    "Historical encrypted-snapshot counts are reproduced by test fixtures; no fresh personal database export."
+  ],
+  "next": "Prepare a scoped integration/release review for these seven local files against current main, with exact artifact/runtime identity and a bounded offline/reconnect test proposal. Do not publish, install or execute learning writes without the corresponding concrete authority. Remain in D13A.8.4.",
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/diff-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/final-validation.json",
+      "sha256": "1d0b238095b6a9e7d119b74dd52a165dc0720fc8479afc12e619773a300ad340"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/focused-tests.json",
+      "sha256": "417c3b865da8a0234d74e8c96a5c8a3fb787367986bc3e783f76370871263713"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/focused-tests.log",
+      "sha256": "40495db417d79d71feb8147733e58c02ad4cfa84b1533ad416505249915ca1f8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/format-final.log",
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/implementation.patch",
+      "sha256": "13600c482c2198c837f527abb02100c6c3b09050cd52ab01883ddada38717968"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/lint-after-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/lint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/lint.log",
+      "sha256": "d8f0c8f119e844b5741e6e78209aa20bcf9451b1eca059fcb0f6037001b652af"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/operation.json",
+      "sha256": "f1e15c1ed9882a3d6d730c7b1697e0bae5c48a3887fda05181494d791d99ff41"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/regression-tests.json",
+      "sha256": "63abfe20e28cdf97f7276e9a9613fd95940f3d93ab52b24ef931d70ed40140ad"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/regression-tests.log",
+      "sha256": "fa387f930f2b27726f9271f4db8a2501875df7be3e5334ac808dd6b6940696c2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/settings-final.json",
+      "sha256": "fad3bc4e1ecabda29eeeb98d18cf551109229033e9b65172a97edb0c0aba9b5a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/settings-final.log",
+      "sha256": "2237db93295ee5de182a41d18a788439d3f4b5717f78098ba84d1082e002b616"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/settings-lint-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/source/apps/mobile/src/app/(tabs)/settings.tsx",
+      "sha256": "54f913e00dadb407c205a0c20d5d120f8d181f32fd04a47912340358f795928e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/source/apps/mobile/src/app/__tests__/settings-sync-status.test.tsx",
+      "sha256": "03105cecd127ca913e72376b1e733a9870f2dda1914d20efd138a43680c404c7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/source/apps/mobile/src/db/__tests__/learningSyncStatus.sqlite.test.ts",
+      "sha256": "d06210b1e56e01a05846113d3713bb16ac0fdc135cd25b1ad1da7b0a8c9ee71a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/source/apps/mobile/src/db/learningSyncStatus.ts",
+      "sha256": "93d16cae2b43d01ce3ee5bf9465e13f66805f244daff8fe7bfc0cbbf631ca0fd"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/source/apps/mobile/src/hooks/__tests__/useSyncStatus.test.ts",
+      "sha256": "c8e3dfc403549a570577cd79d118365b76d02d1bd4736e046c1b64ac767cc263"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/source/apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+      "sha256": "7c935d63f062f42914e87fe667065503a0ccd7761668d6189c6a069dac3108d2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/source/apps/mobile/src/services/syncStatusService.ts",
+      "sha256": "b12133cd8322fbc31f71b939777d743afd5a8eb40e7ae964d446da72937e5bc8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/source-binding.json",
+      "sha256": "d01d8751b7af97f4f42cebecc1b602e23c0236bdcbc76f19bd4323282f07a44e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/typecheck-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-repair-20261025/typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "status": "reviewed_local_rehearsal_passed_awaiting_production_apply_approval",
+  "project_ref": "josxavjbcjbcjgulwcyy",
+  "source_commit": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+  "source_sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7",
+  "guarded_sql_sha256": "eacd37b7cc565b2d292bbc4e6f75f895ee96e80aa8b1ac3b3d709aaa098e4354",
+  "version": "20261025093000",
+  "production_apply_authorized": false,
+  "approval_consumed_for_prior_backup": "AUTH-57",
+  "fresh_backup_outcome": {
+    "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-backup-refresh-outcome-20261025.json",
+    "sha256": "92ca9924d911bd821db7c20337ad8dfcc66903aa9e07dec7121a28c803562197"
+  },
+  "guard": {
+    "source_sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7",
+    "guarded_sql_sha256": "eacd37b7cc565b2d292bbc4e6f75f895ee96e80aa8b1ac3b3d709aaa098e4354",
+    "version": "20261025093000",
+    "source_bytes": 2263,
+    "guarded_sql_bytes": 86541,
+    "original_source_recorded_in_ledger": true,
+    "protected_projections": 75,
+    "locked_application_and_ledger_tables": 66,
+    "runtime_lock": "ACCESS EXCLUSIVE",
+    "other_application_table_locks": "SHARE ROW EXCLUSIVE",
+    "managed_auth_storage_write_locks": false,
+    "lock_timeout_seconds": 3,
+    "statement_timeout_seconds": 90,
+    "idle_transaction_timeout_seconds": 120,
+    "baseline_ledger_versions": 66,
+    "production_apply_authorized": false
+  },
+  "rehearsal": {
+    "status": "passed",
+    "completed_at": "2026-10-25T12:19:16.762706+00:00",
+    "source_backup": "AUTH-57 S2",
+    "source_sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7",
+    "guarded_sql_sha256": "eacd37b7cc565b2d292bbc4e6f75f895ee96e80aa8b1ac3b3d709aaa098e4354",
+    "exact_sql_local_apply_seconds": 1.777,
+    "protected_projections": 75,
+    "original_data_rows": 32718,
+    "schema_changes_only_new_column_and_v2_body": true,
+    "ledger_before": 66,
+    "ledger_after": 67,
+    "exact_original_source_in_ledger": true,
+    "new_flag_false": true,
+    "all_existing_flags_and_timestamps_preserved": true,
+    "capability_results_authenticated": {
+      "v1": {
+        "dictionary_content_protocol": 1
+      },
+      "v2": {
+        "following_enabled": false,
+        "read_protocol_versions": [1],
+        "shared_analysis_enabled": false,
+        "command_protocol_versions": [1],
+        "dictionary_content_protocol": 2
+      }
+    },
+    "managed_service_role_execute_preserved": true,
+    "anon_public_execution_denied": true,
+    "negative_tests": [
+      {
+        "name": "negative-stale-data",
+        "expected_refusal": "capability-data-drift",
+        "data_schema_ledger_rollback_verified": true
+      },
+      {
+        "name": "negative-runtime-drift",
+        "expected_refusal": "capability-data-drift",
+        "data_schema_ledger_rollback_verified": true
+      },
+      {
+        "name": "negative-acl-drift",
+        "expected_refusal": "capability-security-drift",
+        "data_schema_ledger_rollback_verified": true
+      },
+      {
+        "name": "negative-definition-drift",
+        "expected_refusal": "capability-definition-drift",
+        "data_schema_ledger_rollback_verified": true
+      },
+      {
+        "name": "negative-source-hash",
+        "expected_refusal": "capability-source-hash-mismatch",
+        "data_schema_ledger_rollback_verified": true
+      },
+      {
+        "name": "negative-rollback-after-ddl",
+        "expected_refusal": "injected-after-ddl",
+        "data_schema_ledger_rollback_verified": true
+      },
+      {
+        "name": "negative-rollback-after-ledger",
+        "expected_refusal": "injected-after-ledger",
+        "data_schema_ledger_rollback_verified": true
+      },
+      {
+        "name": "negative-lock-timeout",
+        "expected_refusal": "canceling statement due to lock timeout",
+        "data_schema_ledger_rollback_verified": true
+      },
+      {
+        "name": "negative-operation-busy",
+        "expected_refusal": "capability-operation-busy",
+        "data_schema_ledger_rollback_verified": true
+      },
+      {
+        "name": "negative-already-applied",
+        "expected_refusal": "capability-ledger-drift",
+        "data_schema_ledger_rollback_verified": true
+      }
+    ],
+    "negative_tests_passed": 10,
+    "local_network": "none",
+    "local_log_driver": "none",
+    "production_writes": 0,
+    "production_apply_authorized": false
+  },
+  "current_readonly": {
+    "observed_at": "2026-10-25T12:19:53.117458+00:00",
+    "project_ref": "josxavjbcjbcjgulwcyy",
+    "read_only_confirmed": true,
+    "protected_projections": 75,
+    "changed_tables_since_s2": [],
+    "catalog_changed_sections": [],
+    "ledger_matches_s2": true,
+    "candidate_absent": true,
+    "legacy3_true": true,
+    "new14_false": true,
+    "production_writes": 0,
+    "provider_calls": 0,
+    "raw_personal_rows_exported": false,
+    "future_deltas_covered": false
+  },
+  "cleanup": {
+    "at": "2026-10-25T12:24:03.196573+00:00",
+    "owned_containers_removed": 2,
+    "owned_containers_remaining": 0,
+    "first_attempt_failed_before_migration": true,
+    "second_attempt_full_rehearsal_passed": true,
+    "production_writes": 0,
+    "database_credential_files_created": false
+  },
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/operation.json",
+      "sha256": "7536f598f8569f8c5e123c7fb8bf045acff0d6ac91140c138e72a6e544068ce9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/guard-manifest.json",
+      "sha256": "4f79d304fde7bc2759d9a77496d868c4b37e74baee75c90f8f8b5f6bcbf88947"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/guarded-20261025093000.sql",
+      "sha256": "eacd37b7cc565b2d292bbc4e6f75f895ee96e80aa8b1ac3b3d709aaa098e4354"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/candidate.sql",
+      "sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/prepare_guard.py",
+      "sha256": "636e29d8cfe5c59e652e8915cd167d6b6238500a583cce254ff3bbe775f41630"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/restore.py",
+      "sha256": "364291d2c3c1b0d80435ec5ca010db8813a8caff5b18f4f7c4842cdd8f921300"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/snapshot_lib.py",
+      "sha256": "ac2294fce925319522aff373949f3e97ebe7dac5105b5ecb5d9a5d844082baa7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/catalog.py",
+      "sha256": "bc7b935fcda43acdfc668c6241be96ff6c669b94575c8e3049b67143a1b7b5a3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/rehearse-hook.py",
+      "sha256": "c78849ccc1d0d1993f1cfc8a0f5d85f2f890ac7383e31077d94f871867b81ea3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/guard-rehearsal-result.json",
+      "sha256": "e439c745063a2ead19f19d430929fafed1ad15462769a72efaa8d993de32f63e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/s2-restore-result.json",
+      "sha256": "e1aa3c429415367135d7f5d8f59bc9393b908de50f290fed379ffa6cd70950a8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/s2-restore-intent.json",
+      "sha256": "d4a4a05f6c6a493817f75ae507ecb57ce02c13cd442ac71cea919d5bcaabe496"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/target-catalog.json.enc",
+      "sha256": "777ea4a307f757d2c8aefadc2d93d7884884057668a323b7be8516ee98e77166"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/current-readonly-result.json",
+      "sha256": "ece9b84e67db4aad1698c9ae3cc495df75b5b19155f49f3e082fcbe2d744c748"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/current-readonly-response.json.enc",
+      "sha256": "2a10eedef645fb0ea2ffa4c0b70a62d71483823375b9815ffc22f68645f12c7a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/read-current.py",
+      "sha256": "c0ccd6c9ed7ff5f52551c1d184aecf56c3fbc4a71cb17b4329e0e12f63c0f0da"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/read-current.sql",
+      "sha256": "cb017de03e68708a13696dbca6d100037a417ae08b3e300b699dbe8bfb0ff31e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/postcheck-readonly.sql",
+      "sha256": "d66cdad06d31b8ce78b79ab3aea7b24f32ceecd6e1c5d603561fbeb7702b4da0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/prepare-postcheck.py",
+      "sha256": "5b49d71682292a2840aa855ec82afedac38e35901f8f309e5efcd495453f72cb"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/apply-approved.py",
+      "sha256": "0450f62de14ce16d27c4fc1c5564620132d607fa5429a136bc97324898bcb539"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/apply-driver-gate-check.json",
+      "sha256": "a9e813c092ce22c2c4dd889fa922eddbbbe47f1e37f5f0454dbf39be6ae1f922"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/cleanup-result.json",
+      "sha256": "f5e99cb36484b68695093e7abb86984c3f6a339a27c45294736352d7454243e4"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/attempt1-reconciliation.json",
+      "sha256": "714ba6318de13f3afc5f2b4fe55004244993589825fc703e9a4b08279a05ff60"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-rehearsal-20261025/private-inventory.json",
+      "sha256": "a4d3afb8dcbf24317cadbc3046d8105e912a2d3774a0c8e76a99b1f2f7a358a3"
+    }
+  ],
+  "private_inventory_files": 559,
+  "original_source_hashes_verified": 4,
+  "prior_backup_pins_verified": 30,
+  "production_writes": 0,
+  "provider_calls": 0,
+  "paid_or_real_link_ceiling": 0,
+  "unknown_budget_usd_held": "0.56",
+  "device_local_queues_verified": false,
+  "remaining_fixed_steps": 3,
+  "later_milestones": 6,
+  "created_at": "2026-10-25T12:26:59.164560+00:00"
+}

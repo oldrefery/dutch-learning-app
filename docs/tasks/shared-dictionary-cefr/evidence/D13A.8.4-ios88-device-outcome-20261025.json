@@ -1,0 +1,857 @@
+{
+  "at": "2026-10-25T21:53:20.172883+00:00",
+  "authority": "AUTH-71",
+  "status": "complete",
+  "authority_consumed": true,
+  "before": "2.5.0 (87)",
+  "after": "2.5.0 (88)",
+  "install_path": "Observed TestFlight app6752469146 Update action, exact88 row; Open after one tap",
+  "installation_attempts": 1,
+  "update_taps": 1,
+  "builtByDeveloper_metadata": true,
+  "dedicated_account_verified_before": true,
+  "dedicated_account_verified_after": true,
+  "dedicated_account_verified_after_restart": true,
+  "upload_before": 1,
+  "upload_after": 0,
+  "upload_after_restart": 0,
+  "download_before": 2105,
+  "download_after": 2105,
+  "last_complete_sync": "Not completed yet",
+  "visible_local_words": 2105,
+  "visible_local_collections": 22,
+  "screens_verified": ["Settings", "Collections", "History"],
+  "new_learning_answers": 0,
+  "forced_sync_taps": 0,
+  "logout_or_login": 0,
+  "new_database_capture": false,
+  "backend_flag_mutation": false,
+  "network_settings_changed": false,
+  "ota_published": false,
+  "main_app_closed_after_verification": true,
+  "test_results": {
+    "build-driver": {
+      "at": "2026-10-25T21:50:06.559721+00:00",
+      "exit_code": 0,
+      "mode": "build",
+      "name": "build-driver"
+    },
+    "preflight88": {
+      "at": "2026-10-25T21:50:41.741431+00:00",
+      "exit_code": 0,
+      "mode": "test",
+      "name": "preflight88",
+      "tests": {
+        "result": "Passed",
+        "passedTests": 1,
+        "failedTests": 0,
+        "skippedTests": 0
+      }
+    },
+    "install88": {
+      "at": "2026-10-25T21:51:19.573791+00:00",
+      "exit_code": 0,
+      "mode": "test",
+      "name": "install88",
+      "tests": {
+        "result": "Passed",
+        "passedTests": 1,
+        "failedTests": 0,
+        "skippedTests": 0
+      }
+    },
+    "verify88": {
+      "at": "2026-10-25T21:52:14.767480+00:00",
+      "exit_code": 0,
+      "mode": "test",
+      "name": "verify88",
+      "tests": {
+        "result": "Passed",
+        "passedTests": 1,
+        "failedTests": 0,
+        "skippedTests": 0
+      }
+    }
+  },
+  "verification_scope": "Physical UI reproduction before update and resolution after update/restart; not a fresh SQLite/server parity or personal-table hash comparison.",
+  "limitations": [
+    "2105 To download and Last complete sync Not completed yet remain; full sync is not claimed.",
+    "No fresh active runtime/update UUID attestation or encrypted database capture in AUTH71.",
+    "devicectl builtByDeveloper remains true; TestFlight update path is evidenced directly by UI, not inferred from that metadata."
+  ],
+  "pending_operations": [],
+  "unknown_external_outcomes": [],
+  "progress": {
+    "stage": "D13A.8",
+    "current_step": 4,
+    "steps_total": 6,
+    "completed_steps": 3,
+    "device_steps_complete": 3,
+    "device_steps_total": 3,
+    "broad_milestones_remaining_including_current": 7
+  },
+  "next_checkpoint": "Reconcile remaining D13A.8.4 release holds with the successful88 UI acceptance; prepare exact active-runtime/protected-queue and preservation proof, coordinated artifact/dependency/rollback and fresh backup/delta requirements. No new capture or backend execution inferred.",
+  "model_effort": "GPT-6 Astra / High, owner-confirmed",
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/IsolatedQA.xcodeproj/project.pbxproj",
+      "sha256": "2eaeae500323f2109a853a6613b2d169924549e75e0cbbf8f36dddf943fb1b5e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/IsolatedQATests.swift",
+      "sha256": "2f805a71c73aa95d301b73ad924323d8177e4ff6f42ef37e083db40800e84d54"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/apps-after-update.json",
+      "sha256": "6690a06d66ba4c05b638d5f93c35c8809046de8a1fb9ad2a6cf3625be833eba8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/apps-after-update.log",
+      "sha256": "745ffcabd8a49d57e6252deb98a845daa49c7b2dfc48b5f95b3628123171e85b"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/apps-before.json",
+      "sha256": "5fd8fdaa21b4d57d97abf37386dd1ac7e4e3a04d3d3bcf0597072cbe855fb92c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/build-driver-intent.json",
+      "sha256": "ce6cc6a16e3e889bedc3aec0f9775396b03a48c1c31534b97cd773b750536308"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/build-driver-result.json",
+      "sha256": "eadc2de7b8f15c30c783e2104082b891092260df5876aa7a17a174f12b52757d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/build-driver.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/device-review.json",
+      "sha256": "33b222d515150efd64da473f991413813b9bf18f39ee9e4eda251801a87f11d8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/driver-bundle-pins.json",
+      "sha256": "5b316033a78ba7d532e9970c37974641e3fa73959a0da3b172d316d1e732efe1"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/finalize.py",
+      "sha256": "6bad8854518deee58fe39bfa004432fbfb2c25b818326fe8fea892888dc39d9d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-attachments/22A91C99-B53C-44C6-A028-0DF9F74F6CCF.png",
+      "sha256": "4eca659943c3e32a16a8eff22d2485592ddce56590cedf3efe9a851214337bf1"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-attachments/52B69B28-4D5C-4C91-92A7-888F4B530B9C.png",
+      "sha256": "2c4d68492972f7927de09b247f42e060efb10620b81b992dd6645490fa98923f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-attachments/57CA55A7-722F-450C-8F74-72BC4358B17C.txt",
+      "sha256": "7b5e4526222d3c64c6d824e4c23ab49b51917bfff23ccface23096f0be2b81a3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-attachments/729E7EA5-6882-49F7-AF64-FA9E3ECED4B5.txt",
+      "sha256": "65ebf85c06266fa52afa04e8982befbdbac73951a0b7f40c812750c2ae45f70d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-attachments/9E6E5EEB-C958-4661-B2EE-ACD1BFB06F2E.txt",
+      "sha256": "718feaa152067a015e5f4dd0b02e4e75abdb66ab40ff0b7fa985f2e0ef8f55c3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-attachments/C018CD57-C89B-4C88-B267-A5BBD2417BAC.png",
+      "sha256": "960085621bfdd551c4ec110be4bce9b7afe721ca671871cabb8f8896399d5716"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-attachments/manifest.json",
+      "sha256": "89c4b7a5ef7ae0a5d2215e3f9244a1391ba82ada78e0a0c172dcd5320d1b65fd"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-intent.json",
+      "sha256": "5deb79c9eeeee4d1dfd7d63a7242953e3d47cc8d5b14c389d3b65aded6391ba9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-result.json",
+      "sha256": "b98e4049dfb75371614a15bd4dd73183c081de70f9124ced990e410ffa3a0652"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88-summary.json",
+      "sha256": "f30412b15d506029bd3eb23a1a6cf9460f5cb373f5ea4dbeef7a27e100bf4955"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.log",
+      "sha256": "a0b9471f95c81a9c5d3779e3d4ba7e0a641e31fdaceec32927e034490dd7ed08"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~0jyS6_ECZK0Sed6yD2qxj1kpLwp4oNB_peQ6JggHK6CmfBZiDJketgZ78JTr6PDBDmtQQKcWLS9GYDWygV8Gkg==",
+      "sha256": "b82b0297f7c3791b826458edf99e379032af9378fff4eaf1229667167593743a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~1i0VO_d1NI4VxMHcCEW1Ocjt3dUDDF4RkkvmO8ZCQuXxLUPDB5tEE2q8MuJyiXyWrddsZbSEgTj-UUA9_sBVMA==",
+      "sha256": "129de5ac1967415d482399132a4337ad01c09cec88b7e739781e7ff94c16e920"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~3sY8Og5qoPTCiWqbCnCg1Hsmwc8GS5Qm4utmP95wcSsx0KI6YwAegKmlj63rAUm0_H8nwc_sn-9hvV0xLalWAw==",
+      "sha256": "03632276b9941fc973a5271bfa525faefeb9cf08819ce8e6c244c32d9c312088"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~AOL_m7vfGEMY_FkOD8EgMFDyi6B73z42nWo9SwgTthgJM7D3414xGZttgrnhr0ENs8HBqmC-VvuyMR1mE5ZE2w==",
+      "sha256": "02d5d0b15c9d39eee12ce7ec6f698ac37c11266cf5466fa78e03206144f9bc5b"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~DV4S1WeQapNxn31CTTUTevYdOfBF8-Ld-L_uM89vP5ZxOPPTCsA9GEpdGYP3iVCsh3ovCTYDVhDbZuQU2-hWFw==",
+      "sha256": "fc1d5778a98e1c7530bf5683e38104ee914d579be3b973e1748a8b94b683d21c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~FCNJChm5swLTHo4Foz0G4rtHdxVgrGEXN-xzLzn6GPs2IXYto0OgSbxwyflKdpsG3Hdd1RyzY1D_JR0LGEJtvg==",
+      "sha256": "36801956acf082f82de1a0289cb4225ecb1933ccc8717de8c0e81352fb4f0ff4"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~Jf1xFZJ63ZedQxxxo6ea5gkKDNlxHt-_x5br7MTm-6TbkOdrPImc1bCQDQcbBM1G5yz_Hjf43QZ3RQDVP9eWSA==",
+      "sha256": "52c1360f6311f915aa0bc0f1cb011f2bc600df60cdb06af2d22df8931673e4db"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~KcUGunJwSu-p4gsfkAWvS9VEok_ZXOtBEaPU6GskT7RThAqPerK2SGqwiYPi4yoKrKmc3odpeFzDySgxDLIfFg==",
+      "sha256": "6c9f811b92eb95a9a909d8d8c728557077985d8bd1d00efa1ba89ad345f366bc"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~Pdw1g7csya4AW8ra7JXHLKopQ4iqcoKKRHk6lBIoXS3iOk65NJYlO6bk8JyBTpftTNhMDkpRZxsHESVzbUqlpA==",
+      "sha256": "960085621bfdd551c4ec110be4bce9b7afe721ca671871cabb8f8896399d5716"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~SIAgBiE-uSLw3YWqAA7Y31F21KQIeXmGDPbaeBrmSyntp7ubn63iSxAthYSOXGBbX703V0y74gPpMZuPsjbmhQ==",
+      "sha256": "b7eb466ec7ad83e16467d5b378085275e987ed51db8827e44ac2cc1afa8c4fab"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~YMpOFBcCcBiotqRiBmHRNZWRQpkvTTnOY3SiaCZjq-3ZimFxxY-ncg4eOAvqJSO4WNr2Xi7jPQdYrtFEgUIu-w==",
+      "sha256": "2c4d68492972f7927de09b247f42e060efb10620b81b992dd6645490fa98923f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~dNt9uifv2li08RWNLIGJBfwlurrZrqyuZHxx6r4qP01gu8K2mTFYm23yaLet4ojBZaQc1aeiGnJ9h2Dz1VWi7Q==",
+      "sha256": "4cf0ffb24033c4004d7b3ccc2a11d66ca85bf7135b8e8f98393229c99b39de83"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~kyeiF1bt90tsIBX1dCnnXf2jNrtdWh_rfkBhuIuHfzJlUmRWiy_H9u8I-oHVPT5JgJaZsm_uszd10l12fTALDw==",
+      "sha256": "4eca659943c3e32a16a8eff22d2485592ddce56590cedf3efe9a851214337bf1"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~lhkld4TLaw7X8Aa_QhfAfb0HIaWHnYDGKPzwEmpdM-Rf_K3vFcB4V_ujHuY0Ww8M2Hv-FS6J9YvL0S5R-E80Pw==",
+      "sha256": "3d89b4599971b90d674ff2f62239fbe9a1e2d526cd27525b8b5e9314966460fa"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~qvB4BLhiGvQ8Zul7jVOqWzEDZhjo5sV773mWUUsbAH8_VKCgHJgpanOFvrKzMmhlnTEOuoq25Nk6mWH0e52RhQ==",
+      "sha256": "bf875ee5809058c21aa70337ed742d5ab92c387289a57a6532dcf5303e5b7e88"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~r76wZ-RtQ7v3sGRJa8BvrAftTnaXtEi-p-PyvqWgYZ8GVnGKsX2VPFS5Oc8S_k4sowjlbGlzN1ryFkS-uYcL-w==",
+      "sha256": "c729fbfc491de0b34fd84228acd615e9e84e5a633c214bcf939a4d1f24b53267"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~sIFpLMZsctpNSAp80ucftQ1jxUGrr8KtL-JyjcXvCMSz8xCL-Jd5EUa658eSlV2NpVXfHdkNabaHGzdpYYBKPw==",
+      "sha256": "2ecdb6a7f420c3769af572aa85b67c724736805be3340f9cf37d94cc5e474fed"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~uvaoREFifVKHif5xfuGl_4UPXT_qffONEYscUPMRYfUzDA8tP4IpBB7B8exUOEFv4cmn5MWwKxC7NVdEAOBPpg==",
+      "sha256": "839466bf268cd34e883e25335dd974e4debdc4c26dc1e09fce0277c0c4650a0c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/data.0~yAONPM_962pp5oA4okg0ckOFkS52jJSMjn-FxvfsSvnUz0SsTyf-Z0rs7nt5YHxJmNoSBawrOrSELEJl-fP6Kw==",
+      "sha256": "c6734c8f2e683db7e43e46b1d0c7df5b7da705bb15c83ff1b119482849034e55"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~0jyS6_ECZK0Sed6yD2qxj1kpLwp4oNB_peQ6JggHK6CmfBZiDJketgZ78JTr6PDBDmtQQKcWLS9GYDWygV8Gkg==",
+      "sha256": "6935ac3f0bbc59b8c04b6f378ba33dcbdb94c115e22126c1f449f32b23e4c49d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~1i0VO_d1NI4VxMHcCEW1Ocjt3dUDDF4RkkvmO8ZCQuXxLUPDB5tEE2q8MuJyiXyWrddsZbSEgTj-UUA9_sBVMA==",
+      "sha256": "881803847cb44f7722185432b592f071f71a63a0d748dfc382ec0c61b48774ce"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~3sY8Og5qoPTCiWqbCnCg1Hsmwc8GS5Qm4utmP95wcSsx0KI6YwAegKmlj63rAUm0_H8nwc_sn-9hvV0xLalWAw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~AOL_m7vfGEMY_FkOD8EgMFDyi6B73z42nWo9SwgTthgJM7D3414xGZttgrnhr0ENs8HBqmC-VvuyMR1mE5ZE2w==",
+      "sha256": "d30315fa5f4da7957994d2d3105285d504b97ae58024e27b910bef50ba968f05"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~DV4S1WeQapNxn31CTTUTevYdOfBF8-Ld-L_uM89vP5ZxOPPTCsA9GEpdGYP3iVCsh3ovCTYDVhDbZuQU2-hWFw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~FCNJChm5swLTHo4Foz0G4rtHdxVgrGEXN-xzLzn6GPs2IXYto0OgSbxwyflKdpsG3Hdd1RyzY1D_JR0LGEJtvg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~Jf1xFZJ63ZedQxxxo6ea5gkKDNlxHt-_x5br7MTm-6TbkOdrPImc1bCQDQcbBM1G5yz_Hjf43QZ3RQDVP9eWSA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~KcUGunJwSu-p4gsfkAWvS9VEok_ZXOtBEaPU6GskT7RThAqPerK2SGqwiYPi4yoKrKmc3odpeFzDySgxDLIfFg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~Pdw1g7csya4AW8ra7JXHLKopQ4iqcoKKRHk6lBIoXS3iOk65NJYlO6bk8JyBTpftTNhMDkpRZxsHESVzbUqlpA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~SIAgBiE-uSLw3YWqAA7Y31F21KQIeXmGDPbaeBrmSyntp7ubn63iSxAthYSOXGBbX703V0y74gPpMZuPsjbmhQ==",
+      "sha256": "ddfaa990af6140afd391128de4afcbb042932ee32564883b7e3b78d982f8bd20"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~YMpOFBcCcBiotqRiBmHRNZWRQpkvTTnOY3SiaCZjq-3ZimFxxY-ncg4eOAvqJSO4WNr2Xi7jPQdYrtFEgUIu-w==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~dNt9uifv2li08RWNLIGJBfwlurrZrqyuZHxx6r4qP01gu8K2mTFYm23yaLet4ojBZaQc1aeiGnJ9h2Dz1VWi7Q==",
+      "sha256": "737ba36b678b2d2874d971d912a7dc5d1e1dc11de26209dfcc3600ad9d09f537"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~kyeiF1bt90tsIBX1dCnnXf2jNrtdWh_rfkBhuIuHfzJlUmRWiy_H9u8I-oHVPT5JgJaZsm_uszd10l12fTALDw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~lhkld4TLaw7X8Aa_QhfAfb0HIaWHnYDGKPzwEmpdM-Rf_K3vFcB4V_ujHuY0Ww8M2Hv-FS6J9YvL0S5R-E80Pw==",
+      "sha256": "5cceceb118551ed70c8a224fd6d289a726f8f7d803b38b5be6aad437f1b59f82"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~qvB4BLhiGvQ8Zul7jVOqWzEDZhjo5sV773mWUUsbAH8_VKCgHJgpanOFvrKzMmhlnTEOuoq25Nk6mWH0e52RhQ==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~r76wZ-RtQ7v3sGRJa8BvrAftTnaXtEi-p-PyvqWgYZ8GVnGKsX2VPFS5Oc8S_k4sowjlbGlzN1ryFkS-uYcL-w==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~sIFpLMZsctpNSAp80ucftQ1jxUGrr8KtL-JyjcXvCMSz8xCL-Jd5EUa658eSlV2NpVXfHdkNabaHGzdpYYBKPw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~uvaoREFifVKHif5xfuGl_4UPXT_qffONEYscUPMRYfUzDA8tP4IpBB7B8exUOEFv4cmn5MWwKxC7NVdEAOBPpg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Data/refs.0~yAONPM_962pp5oA4okg0ckOFkS52jJSMjn-FxvfsSvnUz0SsTyf-Z0rs7nt5YHxJmNoSBawrOrSELEJl-fP6Kw==",
+      "sha256": "1a62d683c6a03ec7c87b80a51e929ac0dd5583a3631718ee814df2c948d584f8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/Info.plist",
+      "sha256": "facbfe85a9ef23e51ed08d6a7b8c02e6d6d8c0b61e3153f6d92f896570f87a09"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/install88.xcresult/database.sqlite3",
+      "sha256": "d78bd8927432db17fe279b777ad26e635a0168b6cb978633957cfcc4d8f5a5ee"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/lock-preflight.json",
+      "sha256": "792dc87fbbe9caf2730e28ec07904937e490e7cee8e63fe1fb0d7a3be14c643c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/operation.json",
+      "sha256": "803499358b41cf2dedf0bd3b509c0d13b52dd8a117269b6da42c3f3a65d265d5"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-attachments/00C98800-8A03-4B63-BB75-DE312F6C47C9.txt",
+      "sha256": "b8f53d9cb51a55795f25458ac7c9d38fe18e6ba6775c1c59a5a1d144877c7e39"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-attachments/05F9ED16-DA79-48B9-996B-373CE1254337.png",
+      "sha256": "fa29415bd33a8f5862f31b2df935ee32f703638b8facaf5d48c8ce7031f16b5d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-attachments/4434D71C-318A-4B6B-8E42-CC24D288B01A.txt",
+      "sha256": "7dc3eec04143e1d6396dc9a098606dd3e9b6229f2f4eff5875d8987052e58966"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-attachments/5402F523-44E8-4D09-89A6-3BD38C9D6C5E.txt",
+      "sha256": "373de2e64c390e65b6629f1d631bc9b9990c2725f68ae4675aab9a6c9f4805db"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-attachments/7C0038A6-6146-441B-964E-A41090A613DB.png",
+      "sha256": "24cdc9ba067f4aa1fe6377ba752c27646b86dba454623d952878aad44a3bed77"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-attachments/EFDD75CB-CCD6-4EA9-9EE0-7158CE4D4021.png",
+      "sha256": "41e03091b4d3ed7347dbadf7d0db0a970d8b90994b5eca7c8378ee67d40ed193"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-attachments/manifest.json",
+      "sha256": "7592ec773d8d53b3deb01640135c6b255d5dad7d16274fec180033ececf67c8a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-intent.json",
+      "sha256": "10eb81b2eafa81156d311555ba5fc32e8bfe71481a598ed90b6696bba1dcd2db"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-result.json",
+      "sha256": "023e20f3bee57a510ec9d05da7f3b7e21f6fb4c708987a7d41bb9e7c48a8e0ec"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88-summary.json",
+      "sha256": "a40f0e3bf3fe9a7926911303cdc6d985847aae2fabc9696f8ea2ee78c78c8664"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.log",
+      "sha256": "17b74f5a13eaf9369959d2a718982612e4c1bdf3b6a19aa4056552c69ff958e7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~3FZfQ6qPbIqiaT1u8mNIueaDt0G1RoB9P8mJlWoZymiEQB4qo8i7jtr7CtKCUi7u0ikjWl6YIapKOC5ztvaxDA==",
+      "sha256": "f4e8a850cf86e3d69f8f5a2d6ecb2174992f17bb13884c01685706ae15d75e37"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~4CXiOJDho_GRfb_LJMA5K_V31VYK2gQT-o9xJrSlHqQhHYHjJi5PdrAF8VlKF4yyEfZIU-yj4oe20nKjJZVHIw==",
+      "sha256": "b9ad4db97c91df6879d0f9e71b910a936dfa8eb02c0cf4f910ac48a7db7b99ae"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~G7zpuq-wwrQfVDRJI3RGLcvV4n9WD6df4Elo60r1i1V7B4qsCbaZGlO8-gb4BRhwMpF5emakFqF2GVClzh_AIw==",
+      "sha256": "704172370fc24006ae38f13798e915d1db971825b1471f3e35999a7c358ad98e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~GiQ0-bTME3aMHrOt31ul7SmtiSItaelG-raExjtCIB1PazPjdL9kMnv-PwpkSDUdgxrjd5aHJxWnwcdRF-5tIQ==",
+      "sha256": "cf5f1569930509ffe2655170ae4abdb387c25cd07468d2406cdb5d844727f134"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~Qx2uup08rVsEUJItAGSem4wQck9z1Vm7WxovxxK18jXooYE6CTlfHlxPxuQ6vLuNhAksNBse6XpxY0i4f3Rkpg==",
+      "sha256": "84839fa1581646f0979ac2ae4c1b3a5c76ad2c40cebe84a7f4bfb5cabba17b69"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~WaZFyGdpk8C-d-Y9RN9Cpsfgccx70XpNmGNwukxalVhohc8xKby4sALYef8BNTGCvw9xxJmHFe04O8ktiRNC0Q==",
+      "sha256": "944e3a85f0a5552e3721f8ce9591481906459929e55f384da5156fe8119c73bb"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~YLWK3Tapr9WksEhp9G_vT5tWzUL4icKI7tVRvIxqAWU4DzwbkSqpcc_zMgYX7ZYVK0tkge84y_a6uf5k-hQQlw==",
+      "sha256": "24cdc9ba067f4aa1fe6377ba752c27646b86dba454623d952878aad44a3bed77"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~aDY51pGw-H4sW1hq13BSm_CXl9kQEnv83Mmbb1MevrsowUNV3OMrbcInNrKcntfpW7dP_R_I07WEgp2tmi3IuQ==",
+      "sha256": "543c54d7c5708fc5837278d02cc5865509b72fc36d93e20bfca2d9da3173c402"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~d7pCilmUhglugYCLIV0ct78F_xrDG5Ae1KWrF91RBfBVKSHAv686vCMR3zEF1Ohh5Gp-DOGhhQAGALdDI5e78A==",
+      "sha256": "ed54a5b5eaa7e6d004fd452acdf421483db7a13fc1b9d1f9a06c46a2078fcea0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~gZopgw9jI_A3EaubWk5EoAXlbdNlb6Wucs79ImrnPbp5Wu67vfUT9y7qWTh153DEMpdxEDvhEOeHTxMLwTIJog==",
+      "sha256": "25e388da94025536b2be8377b0bac0593ed5b92eed4f190b87edfb3c8eb2b870"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~jze9P2toFX-y-ku8KEcVLtj8DKYuffgpuhkGUkXg-MQFYxnkRUeaXrrT3ofkqUVtJU3x40a3sjLFf77rzU_cSg==",
+      "sha256": "2a803e240a106185a102f28e9da6c6b829a9ccd52acffb4bb95f06a39b567504"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~qOR7OcBiwC8rrB0WxmRnWDgdwe81dpZCpCfTa3ixxGc_WvLxRyQc2hDA4Cu8_Elu1slvphRYy5mgUo6VRlEguQ==",
+      "sha256": "4b7ee29e2f4d4db8bf9f6b6826867cb03bbe88ea6ecc76a54b12dbb00f8b4fb8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~reSLKz3YzYug_QBNRk9seuABKrVuUhPEPeglBKTE-fJxvDgs9rFPbCh_1qdCFe4cyjvyywwF0fsDvcfqtxByQA==",
+      "sha256": "fa29415bd33a8f5862f31b2df935ee32f703638b8facaf5d48c8ce7031f16b5d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~tQJ0q9mJy6CeUaeTYFd9rC-gTAD5VOEY6TALNwwo4LLfcjpevTIxr83_FnX7ZenOSJPp8LgnHa2uvh__ezT0ww==",
+      "sha256": "8fb5dddccc154014ddb77b92b8a0116f372012793e7307034a3e55a3fd7ec649"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~wNwXiG4WN7X3E8KhxTLgHF2xLJcxEf4gxjsD9v5rXZVjjnRMBxqcRvKzKdsZstwx7iW3TbZBcMJskmE7akzwhQ==",
+      "sha256": "41e03091b4d3ed7347dbadf7d0db0a970d8b90994b5eca7c8378ee67d40ed193"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~wllJKtstwzVdNJOA2VHT5uAw-2Expvys7iauCbT6sORus22v05UlyaQCGYtqDjWkmOzF8ZvJv2B33ZsjM67eig==",
+      "sha256": "047c96540c9cbd03735cb45965e2e5ddee402e6550851e3bcb25aa15499dd1be"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~xY93r5-8EpoJMTx7lJrjam5RFI5uARyEKwHMErkugvf4nY_qiwtd8r5qdKearLAU3OJHsB2Zj5ElWogCD3Ny-Q==",
+      "sha256": "c6734c8f2e683db7e43e46b1d0c7df5b7da705bb15c83ff1b119482849034e55"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~y_nUdj00JEzuDNsIt8GrxC2hYbDpwvQ2HPNd7q3_wu-iv92Q71v9JowTaqITcP_KAyuTe6sK4Ju8sS1HFAE2OA==",
+      "sha256": "446769ceda3a4fde859d3fc8ad24d2ce79acdd0baf0d3f3ad26e37473a16b885"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/data.0~zHnB3rsBIwf7mBfZ3wKgj6z1BkWLVlk5UANuQRbHFpMg-QtMOhFJwP_rBDoUECGzmQJ-QK9d2JOHwVBaAH7P7A==",
+      "sha256": "fbc240c7d1227aac334e357a1eee5497a74dc6e303ceb714a86bba0d72b464e6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~3FZfQ6qPbIqiaT1u8mNIueaDt0G1RoB9P8mJlWoZymiEQB4qo8i7jtr7CtKCUi7u0ikjWl6YIapKOC5ztvaxDA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~4CXiOJDho_GRfb_LJMA5K_V31VYK2gQT-o9xJrSlHqQhHYHjJi5PdrAF8VlKF4yyEfZIU-yj4oe20nKjJZVHIw==",
+      "sha256": "6dd5664c6eacfd1e0e534ca3b1f47e447672094bd23d81e21c2dafe1c91e7dad"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~G7zpuq-wwrQfVDRJI3RGLcvV4n9WD6df4Elo60r1i1V7B4qsCbaZGlO8-gb4BRhwMpF5emakFqF2GVClzh_AIw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~GiQ0-bTME3aMHrOt31ul7SmtiSItaelG-raExjtCIB1PazPjdL9kMnv-PwpkSDUdgxrjd5aHJxWnwcdRF-5tIQ==",
+      "sha256": "62f65ee68101712f71ee71e3f920e4f4ece0ce07cf36be98e3c1035515085a75"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~Qx2uup08rVsEUJItAGSem4wQck9z1Vm7WxovxxK18jXooYE6CTlfHlxPxuQ6vLuNhAksNBse6XpxY0i4f3Rkpg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~WaZFyGdpk8C-d-Y9RN9Cpsfgccx70XpNmGNwukxalVhohc8xKby4sALYef8BNTGCvw9xxJmHFe04O8ktiRNC0Q==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~YLWK3Tapr9WksEhp9G_vT5tWzUL4icKI7tVRvIxqAWU4DzwbkSqpcc_zMgYX7ZYVK0tkge84y_a6uf5k-hQQlw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~aDY51pGw-H4sW1hq13BSm_CXl9kQEnv83Mmbb1MevrsowUNV3OMrbcInNrKcntfpW7dP_R_I07WEgp2tmi3IuQ==",
+      "sha256": "f37a589aee026a90f71fbb450c140438274bd8a4dc0c1d383c9b6d197ddcc5f0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~d7pCilmUhglugYCLIV0ct78F_xrDG5Ae1KWrF91RBfBVKSHAv686vCMR3zEF1Ohh5Gp-DOGhhQAGALdDI5e78A==",
+      "sha256": "8b0f096075365781792e51efb09d8f2edbdc3e76dbde82a48270fc0cdada85bf"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~gZopgw9jI_A3EaubWk5EoAXlbdNlb6Wucs79ImrnPbp5Wu67vfUT9y7qWTh153DEMpdxEDvhEOeHTxMLwTIJog==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~jze9P2toFX-y-ku8KEcVLtj8DKYuffgpuhkGUkXg-MQFYxnkRUeaXrrT3ofkqUVtJU3x40a3sjLFf77rzU_cSg==",
+      "sha256": "3393a37ec35f2f04e65d7ef76fe80a5325805532e8d6fc40cd44f81221161883"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~qOR7OcBiwC8rrB0WxmRnWDgdwe81dpZCpCfTa3ixxGc_WvLxRyQc2hDA4Cu8_Elu1slvphRYy5mgUo6VRlEguQ==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~reSLKz3YzYug_QBNRk9seuABKrVuUhPEPeglBKTE-fJxvDgs9rFPbCh_1qdCFe4cyjvyywwF0fsDvcfqtxByQA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~tQJ0q9mJy6CeUaeTYFd9rC-gTAD5VOEY6TALNwwo4LLfcjpevTIxr83_FnX7ZenOSJPp8LgnHa2uvh__ezT0ww==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~wNwXiG4WN7X3E8KhxTLgHF2xLJcxEf4gxjsD9v5rXZVjjnRMBxqcRvKzKdsZstwx7iW3TbZBcMJskmE7akzwhQ==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~wllJKtstwzVdNJOA2VHT5uAw-2Expvys7iauCbT6sORus22v05UlyaQCGYtqDjWkmOzF8ZvJv2B33ZsjM67eig==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~xY93r5-8EpoJMTx7lJrjam5RFI5uARyEKwHMErkugvf4nY_qiwtd8r5qdKearLAU3OJHsB2Zj5ElWogCD3Ny-Q==",
+      "sha256": "d781ceb8717aea68766ef4383e07712f8bc85b2f2310903a4deb3b5b1b6aa338"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~y_nUdj00JEzuDNsIt8GrxC2hYbDpwvQ2HPNd7q3_wu-iv92Q71v9JowTaqITcP_KAyuTe6sK4Ju8sS1HFAE2OA==",
+      "sha256": "73268f6a5869c2579e773a6733a83ee306233b2b523029f6493a05dacb160be5"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Data/refs.0~zHnB3rsBIwf7mBfZ3wKgj6z1BkWLVlk5UANuQRbHFpMg-QtMOhFJwP_rBDoUECGzmQJ-QK9d2JOHwVBaAH7P7A==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/Info.plist",
+      "sha256": "d87b00eb91a27c7c9a5aa6fa0e3f61f44a88c1ba4e36f43e3d29b90ecb63d317"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/preflight88.xcresult/database.sqlite3",
+      "sha256": "9b8f1161dc01a78594b7e10856dff6787290fdf464b1d8e36235be44b848c5ca"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/run-driver.py",
+      "sha256": "83ae596ff80eab36ce6019e99d96c7b90697fb54d6c6e1be6d729988b2e2548a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verified88-sync-status.png",
+      "sha256": "4c731267dd015d11a619b807c98d61a924b4b8488cd2cfc57b2da89a439b5dc9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/14755752-E127-4E12-8707-4009BC28A44B.png",
+      "sha256": "687eb5367ea491ca095a064fa27492ae394001af9c2a2e0de84757c7403af709"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/1636AD38-A89C-4DF0-A4CE-34E04C7763FF.txt",
+      "sha256": "c5c24c957feb3833094487f215cf560acaf8d495581e0e1aa198edd087a61ef6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/17340D7C-6652-4282-8D5F-28C41BDC9462.txt",
+      "sha256": "4fa15992e238817676fb1db44653650b50c4e6cd28f1bedf21b7ec4c1e359b88"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/1F39BB2B-B6BF-43BD-9A02-B32F56C2C04A.txt",
+      "sha256": "25f2e629ee3cb494aae62a31cc4f6284fcf56ce2b74e054af761a0e96b2f457e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/2C8F0D6E-C558-4D88-B749-A081E7085CC4.png",
+      "sha256": "687eb5367ea491ca095a064fa27492ae394001af9c2a2e0de84757c7403af709"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/51E1ADC9-0952-40B1-A1CB-5CE1AF79D4B8.png",
+      "sha256": "39328158723b629198cf01c6a42a2b0cc55dcd29119259efd90d22f2840b70e4"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/58924DFB-F8FE-492F-B023-CA1697955B73.png",
+      "sha256": "15a476e650764e76692ede1fde86fc8ecc0142ed79666e33967fbcbad37c7fca"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/92063077-3309-44CD-9CA9-9FD15BE5EBD9.txt",
+      "sha256": "9bcc07fbb2ef71e6550c8de92fc4b39274aecd32e8b156d17148c41c76adfbce"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/BF041BDB-9CBA-4A1D-AFE2-E500FAE108AD.png",
+      "sha256": "1fe387f746c4356cde357f85b5504e48533fd2b9ff7e2acfa5c77597f2be1a29"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/BFF8EA3E-7CC7-45CF-9C58-44E402C07D03.txt",
+      "sha256": "a2b9ce88a27e157d638a995719dc140173a0b32849434b7fa2d35d9201d2a447"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/D05685F4-23F4-4BD6-9975-8E70AFDC237A.txt",
+      "sha256": "27a3c31c000b8c41e20a1c43beb5d2393bc10e28bc8c36a73a2841ade47396ef"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/D9AEFB9A-054B-425E-A4A1-005DB8B27204.png",
+      "sha256": "4c731267dd015d11a619b807c98d61a924b4b8488cd2cfc57b2da89a439b5dc9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/D9D10B3F-63C2-4848-BC17-CCF40E547865.png",
+      "sha256": "35ba398e492b8c71659ae56e6b54b99b4e5aa79aa752139b8321d02d45e4a101"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/F38F41A1-B204-485C-8B11-FCE55501DCF4.txt",
+      "sha256": "59db4a62ea09bc9d7af6421016c5d0fee8c6bbeeb8fd225070334560586b0780"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-attachments/manifest.json",
+      "sha256": "598ed92cdf3a3b1b0d7bc3016248c57de0d124e0c8f7d0b5c0890d69bf9f8772"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-intent.json",
+      "sha256": "f1b8ddb6b9f9d3e102645e4b5ab17b9ee1118eaca51aa15ec350a0cb86095ff7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-result.json",
+      "sha256": "37c0fea64a7d3e11f95ada102836341e6d14185fc1422d408414c4056f016817"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88-summary.json",
+      "sha256": "433b4d642f0186334e5c2f6f1b5bf9c4e62348ab408eebc1939fb54374af3e3d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.log",
+      "sha256": "6c208a202b5bff1fef44c81bae6ab96fe601e0a1bf40ac6c8c742799cdf711ee"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~2nOITM9-nH-z0Z0I1E3XfwNWN5US58R_dNkssG6qKF2xnqw8NSy0DwyAuPqDWnn94tIMWshBpHB6NBbXb1KMlw==",
+      "sha256": "687eb5367ea491ca095a064fa27492ae394001af9c2a2e0de84757c7403af709"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~4qQ9z26MuDXZJHP58XNwqpImSkTQukDPXXiuopEn9tM_WRJ-Py-sfrO3EUtjVRXm2fThHE9CUwbW6cfrZeB2_w==",
+      "sha256": "7813c16ddae7243516b8d0896bcd2e4cf0c161927ef2859ef61ee42ec98d0863"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~9Gv9VQoBfRfDVdyAQ32vdv7lwY-Wdd3BWV2fXk6k7JdoxfEvjCe_COYJsdFedzvYlsaIUcfu82G1jGw1ucyphg==",
+      "sha256": "a882355c77f0c41b84cc870d8eae043aabd2aae61c8c5c693e6aff90a8e2b780"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~9aGqd9VfjEUIAfjL5dDx1MGkdJs1ULGpQ_8dTs-e74D_OztNkqpA6sG8hDpICAxu-SSRFBll5OA3XCpJhLcWKA==",
+      "sha256": "becd874df2296fd497031c7ddfb7f57cf428cac4e50241b12ad684d419304f1a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~9am85V5eGjeufSpUq4vKJJ6SanxCpSLy6aZ5rQtIE1wj9dHctb84q4QpcKoprb5Xa1EbK0W3lLFetKPZfuX6KA==",
+      "sha256": "5d20b21339a2017ac08bf43011e40ee8effbdf9729a7591e5b3938cab42b1b6a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~C_8_dsSJWsx9CV7OiEARKImDCnT8G0wJW70T4oYJLaYiQJIv-1-5eaT4oyju-CLLRW6oxKp2TCX3s8x3vDEWjQ==",
+      "sha256": "27066813687175a282bfd1682f5311e8b4672a1283bcfac56a63d37c27bc9012"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~GhCFr32ixICRnCEgHxiKUiyU5qHngKGaAAwq7Yqn_IBf7NnzIPYrWjQstXD0ERW5KVoiSKOCsIPMIihILPTTeg==",
+      "sha256": "1fe387f746c4356cde357f85b5504e48533fd2b9ff7e2acfa5c77597f2be1a29"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~H6i7_QBt947pL4K9bl-Gkl22dxdtU8aErU5ffKu_zTzbUChPL3N4pNu6SqWHh8kSTOMd1mtXnt2DFBE6rwK6ww==",
+      "sha256": "e9ab31d6e4bfe2ee67b53471014d552bc47f62be85e0bd3475c4303038979877"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~JnetNUo_vis2UM1GxdtotwvwOROBi3Cdo7g60oQA5KHfull_TV-tFX4_sfKKaLqb-Ugf-xQXg8yBnvVB7UorCg==",
+      "sha256": "a38c3fafe2dcb629bc27657e8a297c53790367b354affbd0810f3b9838606361"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~K_0bckhbSuJtJbs46ctBcuZ2FoGfLZvbbHOGLjdk5DLtRb7ocRwyLSKu_3rTV1pj0u_7z_8K7cZbZIMQ-kt2lw==",
+      "sha256": "d5860538f00bdf75abf567784d8c924830df77660ed14512d0a742139bfcdadb"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~LDlRggS0cICzEWuBMTAkgEAUmvwPZ49LJW3QVC-SulNXvjtWo7q_nHd2RxiwNYXu8BP8tABLD5wvLRS0HPNGWw==",
+      "sha256": "8ad16307bca55fac957f43e3f4180a8db05fd2a639d9d07e8b37aafcf88bb4d9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~Q7SoJS1Ed9Q5D8bDdA9-x_sgcbUbT2_Y864JXDOWO_W9u7QCVBWDodmmBkbrH0-40aPKSFgOOBp03ab6SJytDw==",
+      "sha256": "d803f7001015401961b0e6ca3735d72dcd99d46f77b083f270c38cafd30f75a4"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~QOMW7GxKK3vbA0XaS5OM6n_qpsf3HegFQ21j_hEzDdmaPKOdMQncst-N9asoc05WtA02nRtkCG1Rmpww0BM6bg==",
+      "sha256": "9f8eecc9084a12cc0dc81c10d678002fe300a39769e6af36f69a74ba477993b7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~UqMi7St_BhKuaKFjqyJKUHgG8EmRIxOZJlk8SEZuNTWWV2s4bpMIOLuOSa5oqFDjXy_T5GNGK4yXkcMAEYlDdQ==",
+      "sha256": "8dc9ba5f539876af171bd9fbde2eb17272328c32fc6b4d5b7359d1f33f27db76"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~WmOW22XSD6XTiImDZJAouuZsF_BIzGGeUfQUhkA7Beb1TauRwuMehuLgDmnFsphiNigYw5ufPcxlJERW-IR13A==",
+      "sha256": "056a1c8d9b84a5c88551264d27975da408174f9e9f37e6eefed7b46ac85de3c0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~YSBrXw8yOF52D7Y561LuDzDqr618FEVUDri85ZkuIp6xhWaMiZ__tkftNhaH2w0xYd-_baIKNXdfOSYYb5Bdsw==",
+      "sha256": "0a3e38a7ee2f4a7971fb4853eb1fdbd6acbeae91d43fcf4a6e70f65e3371434d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~Z0wwCtPpvqksYAoxnkJ2Joc4Kh8BKzr5Zaa9QW_qSmD3NDO-D8RpAOUfbC8MwknC7FDZIpZaW0gJlIUBopr-zw==",
+      "sha256": "62afeda7ba6cb5867167d275e0885e5fc935723f24ecbac21efd81b4422b7acf"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~bkYh7Xe-0ip3FYcSDb-oI_uoOTUTsfk1D4LWV0_EUzLk9itpqo05ROUzNT0R9_Re6oTjTBYCfJccZh8a725_JA==",
+      "sha256": "15a476e650764e76692ede1fde86fc8ecc0142ed79666e33967fbcbad37c7fca"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~lGhTEIrvPfaN8gKyjrF6gQBPzR67L7osOtAjFmenvdDujyOcguXvgo_aSis217Ru1NbFy1OF3Z3KLUEbAkq1Yg==",
+      "sha256": "4c731267dd015d11a619b807c98d61a924b4b8488cd2cfc57b2da89a439b5dc9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~liM5lfu25-4gKbNpB9JyqdqERJICby-sjaictH_zn1NZlkpcCTZe34MmoBREYNA8XFmY3gb-LUOqibi98mY1Vw==",
+      "sha256": "b3bc4e822f8916580ec27b18b255c599d26664685df2762d78a9e3a1db072274"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~og-xtHKFftJkkKbIbU5evmStizFU6McFF9TjwTkg_iGixmETDLsubBhfsfA2CWi9CX0_9JEyjc_Yh01F9U7BAw==",
+      "sha256": "39328158723b629198cf01c6a42a2b0cc55dcd29119259efd90d22f2840b70e4"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~oy0IvGlkHj-JuRNrubRF5XYYV2WUGsdWkx4cx7E74larN9_N34ox8p598hTl67YLSBxMpl-m2fU-I1QWJ6oxOg==",
+      "sha256": "af937dd72deb1112fe610c44d9ba3c7c3bcd2d2c09509e0cdc4b44e70ef9b71c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~qkMzlZvm_7-gz3zG5xVepQ6Mc-Sk4vwStAwFnlVGOvCsCoIhpKKU7XZZ0anYAXVqq1_r1RIN5EKEdvaGShqoTg==",
+      "sha256": "35ba398e492b8c71659ae56e6b54b99b4e5aa79aa752139b8321d02d45e4a101"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~uftZMJGip5tEjUuVaZ7qbq2pgjfvrp2gtDOE-eaZXLC88BTi4GGwrZfUtf93EHEA7-5eG8DJ3fOpDRXXaE_pHA==",
+      "sha256": "6fd44fc616d4f91a32caad4cbf99151489011ab1664b6fec582f329b8123e540"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~xWMGZHfKt07y6TAxVtenb7WdNZEFQEC4kN9SMypL0J5VIetCSnRpcaVR-9Vz_gD-jfKgA6sQyrjt45rbfgprXw==",
+      "sha256": "990420070f128e4f5c59752a94d5c4158d11355a55f028f51eeff2ae7b84cd8b"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/data.0~yJJJpVzetk5KLnKa2TAf27avSzdX7GJWqVVOb6H3v7U10rGw1NKRAP8FJm58yP8pKNooPqVtcXTjJIJ9hxpmUw==",
+      "sha256": "2e38d92836449c2e9160356f0410f5d63763abada254c5df3d5469e8e2c97a20"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~2nOITM9-nH-z0Z0I1E3XfwNWN5US58R_dNkssG6qKF2xnqw8NSy0DwyAuPqDWnn94tIMWshBpHB6NBbXb1KMlw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~4qQ9z26MuDXZJHP58XNwqpImSkTQukDPXXiuopEn9tM_WRJ-Py-sfrO3EUtjVRXm2fThHE9CUwbW6cfrZeB2_w==",
+      "sha256": "1eec435122d778dc456e81b01503bc79af7eccda3fd9ab9638fd88c4574d1c95"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~9Gv9VQoBfRfDVdyAQ32vdv7lwY-Wdd3BWV2fXk6k7JdoxfEvjCe_COYJsdFedzvYlsaIUcfu82G1jGw1ucyphg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~9aGqd9VfjEUIAfjL5dDx1MGkdJs1ULGpQ_8dTs-e74D_OztNkqpA6sG8hDpICAxu-SSRFBll5OA3XCpJhLcWKA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~9am85V5eGjeufSpUq4vKJJ6SanxCpSLy6aZ5rQtIE1wj9dHctb84q4QpcKoprb5Xa1EbK0W3lLFetKPZfuX6KA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~C_8_dsSJWsx9CV7OiEARKImDCnT8G0wJW70T4oYJLaYiQJIv-1-5eaT4oyju-CLLRW6oxKp2TCX3s8x3vDEWjQ==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~GhCFr32ixICRnCEgHxiKUiyU5qHngKGaAAwq7Yqn_IBf7NnzIPYrWjQstXD0ERW5KVoiSKOCsIPMIihILPTTeg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~H6i7_QBt947pL4K9bl-Gkl22dxdtU8aErU5ffKu_zTzbUChPL3N4pNu6SqWHh8kSTOMd1mtXnt2DFBE6rwK6ww==",
+      "sha256": "9a4e11ccef4e9629870864a19af1d88d0f2e2d491d173f45b8d1894fd1e33769"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~JnetNUo_vis2UM1GxdtotwvwOROBi3Cdo7g60oQA5KHfull_TV-tFX4_sfKKaLqb-Ugf-xQXg8yBnvVB7UorCg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~K_0bckhbSuJtJbs46ctBcuZ2FoGfLZvbbHOGLjdk5DLtRb7ocRwyLSKu_3rTV1pj0u_7z_8K7cZbZIMQ-kt2lw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~LDlRggS0cICzEWuBMTAkgEAUmvwPZ49LJW3QVC-SulNXvjtWo7q_nHd2RxiwNYXu8BP8tABLD5wvLRS0HPNGWw==",
+      "sha256": "68cef0894857fd8737e6ac65e93249c6f4f6da71315b976e270db952ff0e1302"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~Q7SoJS1Ed9Q5D8bDdA9-x_sgcbUbT2_Y864JXDOWO_W9u7QCVBWDodmmBkbrH0-40aPKSFgOOBp03ab6SJytDw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~QOMW7GxKK3vbA0XaS5OM6n_qpsf3HegFQ21j_hEzDdmaPKOdMQncst-N9asoc05WtA02nRtkCG1Rmpww0BM6bg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~UqMi7St_BhKuaKFjqyJKUHgG8EmRIxOZJlk8SEZuNTWWV2s4bpMIOLuOSa5oqFDjXy_T5GNGK4yXkcMAEYlDdQ==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~WmOW22XSD6XTiImDZJAouuZsF_BIzGGeUfQUhkA7Beb1TauRwuMehuLgDmnFsphiNigYw5ufPcxlJERW-IR13A==",
+      "sha256": "00926b92fe792fa9f239d0b379f2d2e7ea09bcf82b989c665276e9f965b7569e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~YSBrXw8yOF52D7Y561LuDzDqr618FEVUDri85ZkuIp6xhWaMiZ__tkftNhaH2w0xYd-_baIKNXdfOSYYb5Bdsw==",
+      "sha256": "b17f0c318bd73cb891adaa429c3047731575f698a8bf3856e0482483f9f21483"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~Z0wwCtPpvqksYAoxnkJ2Joc4Kh8BKzr5Zaa9QW_qSmD3NDO-D8RpAOUfbC8MwknC7FDZIpZaW0gJlIUBopr-zw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~bkYh7Xe-0ip3FYcSDb-oI_uoOTUTsfk1D4LWV0_EUzLk9itpqo05ROUzNT0R9_Re6oTjTBYCfJccZh8a725_JA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~lGhTEIrvPfaN8gKyjrF6gQBPzR67L7osOtAjFmenvdDujyOcguXvgo_aSis217Ru1NbFy1OF3Z3KLUEbAkq1Yg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~liM5lfu25-4gKbNpB9JyqdqERJICby-sjaictH_zn1NZlkpcCTZe34MmoBREYNA8XFmY3gb-LUOqibi98mY1Vw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~og-xtHKFftJkkKbIbU5evmStizFU6McFF9TjwTkg_iGixmETDLsubBhfsfA2CWi9CX0_9JEyjc_Yh01F9U7BAw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~oy0IvGlkHj-JuRNrubRF5XYYV2WUGsdWkx4cx7E74larN9_N34ox8p598hTl67YLSBxMpl-m2fU-I1QWJ6oxOg==",
+      "sha256": "a771f84beedd44ca828438e1c824fcbc6704df931e28228cb44ba49c8c3857cb"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~qkMzlZvm_7-gz3zG5xVepQ6Mc-Sk4vwStAwFnlVGOvCsCoIhpKKU7XZZ0anYAXVqq1_r1RIN5EKEdvaGShqoTg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~uftZMJGip5tEjUuVaZ7qbq2pgjfvrp2gtDOE-eaZXLC88BTi4GGwrZfUtf93EHEA7-5eG8DJ3fOpDRXXaE_pHA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~xWMGZHfKt07y6TAxVtenb7WdNZEFQEC4kN9SMypL0J5VIetCSnRpcaVR-9Vz_gD-jfKgA6sQyrjt45rbfgprXw==",
+      "sha256": "f6f997349a690fa91a6f3acd04b69d498880e671dfdaf0be0de7be2b03604e13"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Data/refs.0~yJJJpVzetk5KLnKa2TAf27avSzdX7GJWqVVOb6H3v7U10rGw1NKRAP8FJm58yP8pKNooPqVtcXTjJIJ9hxpmUw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/Info.plist",
+      "sha256": "e3565f9245e53995f23800d3cd6ba9bdac0ceaf59c6e1742c9848720852dbf75"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-device-20261025/verify88.xcresult/database.sqlite3",
+      "sha256": "0c9c2aee77cc4e2407ad088ae069159fdfaedf1ccbf00acdb70c3e4db2e5a395"
+    }
+  ]
+}

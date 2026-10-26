@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-26",
+  "at": "2026-10-25T23:58:06.793835+00:00",
+  "authority": "AUTH-76",
+  "status": "fulfilled_consumed",
+  "model": "GPT-6.1 Sol",
+  "effort": "High",
+  "fixed_step": "D13A.8.4 / 4of6",
+  "broad_milestones_remaining_including_current": 7,
+  "restoration_inspection_review": "3of3complete; authenticated handset data inspection incomplete",
+  "installed_artifact": {
+    "apk_sha256": "9f7eb806b0bbc3ad8dbf8bb43fd65b499998b618db7a571d6f983e10557c51c2",
+    "js_sha256": "118dacd13678d1882be0f68bfe9f96d642580ae38d0154f73bf87c3b50da0cb7",
+    "qa_build": true,
+    "ota_disabled": true,
+    "endpoint": "http://127.0.0.1:55331",
+    "timing_instrumentation": false,
+    "same_qa_signer": true,
+    "package": "com.oldrefery.dutchlearningapp"
+  },
+  "result": {
+    "local_transport_repaired": true,
+    "auth_health_http": 200,
+    "saved_refresh_token_rejected": true,
+    "visible_screen": "Welcome Back / SignIn",
+    "active_authenticated_account_visible": false,
+    "login_taps": 0,
+    "logout_taps": 0,
+    "new_learning_answers": 0,
+    "forced_sync_taps": 0,
+    "handset_queue_and_word_counts": "unverified",
+    "handset_database_exported": false
+  },
+  "local_qa_server": {
+    "read_only": "on",
+    "primary_words": 14,
+    "primary_active_words": 12,
+    "primary_collections": 3,
+    "all_review_events": 10
+  },
+  "event_baseline_note": "10events count/hash captured after launch; no pre-launch equality claim, historical7events must not be substituted. No new answer submitted.",
+  "cleanup": {
+    "at": "2026-10-25T23:56:57.881224+00:00",
+    "exact_retained_containers_exited": 4,
+    "container_ids_images_mounts_preserved": true,
+    "qa_ports_closed": [55321, 55322, 55331],
+    "added_usb_reverse_removed": true,
+    "own_proxy_process_absent": true,
+    "main_app_closed": true,
+    "containers_or_volumes_removed": false,
+    "pending_operations": []
+  },
+  "rollout_invocations": 0,
+  "installations": 0,
+  "production_changes": 0,
+  "next_proposal": "HUAWEI85-QA-LOGIN-INSPECTION-01",
+  "next_action": "Obtain scope for one login using retained primary synthetic fixture, ordinary localQA sync and read-only handset account/counts/queue/history inspection; temporary same exact local resources and cleanup, no new answers or Play transition.",
+  "next_model": "GPT-6.1 Sol",
+  "next_effort": "High",
+  "pending_operations": [],
+  "evidence_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth76-local-health.json": "840c06c433c9e55f5b4ed79e1931995798a2aab7cc869670867d46b0ccf97475",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth76-initial-ui.xml": "33c070c98cb5bac19d788d3e71abcbaf6e9f731285d25a96f59fcccb3af738e4",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth76-initial.png": "ecc86bf07d2ddf864356b5da9cb785e0c7136fb1f9d7c942b88038986f69599d",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth76-session-result.json": "c0bd3324741b3046708f8c07f48cd8e65509ef0ec403dcf02d1456e08ca57921",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth76-local-data-review.json": "20313c50af9d7fa012a6149a0f914236716c11002f3dc52364577f06e48c5a7f",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth76-local-event-baseline.json": "467b9e098659d7b08d3fe05c71ee5dab131d291a71bff3d527d6454a2c25c386",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth76-cleanup-review.json": "899515fc467f2065d97b15173373cb042a6f31dc89fe7c9af183a9d9b4afe7e4",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/qa-login-inspection-proposal.json": "c096218ab6e50919d4ce4858a3aee91cbfbac6cd8c514854eb0b372d426ca485"
+  },
+  "persistence": "local-only"
+}

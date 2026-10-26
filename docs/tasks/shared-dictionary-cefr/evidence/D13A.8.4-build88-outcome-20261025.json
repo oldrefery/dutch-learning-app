@@ -1,0 +1,231 @@
+{
+  "at": "2026-10-25T21:32:49.146789+00:00",
+  "authority": "AUTH-69",
+  "status": "complete",
+  "source_commit": "b0cf2c71b9eccb1fee2d735c4655e00c8a315c58",
+  "source_tree": "b3ad0363478a6fdec75ea4f159d3caaff7f0a020",
+  "overlay_files": ["apps/mobile/app.base.json"],
+  "overlay_patch_sha256": "f68eca7bcec3fcc807e9053a1bb17d5a229f755d4a7c5573ec5aa86b21689937",
+  "artifact": "builds/app-2.5.0-88-learning-ack.ipa",
+  "artifact_sha256": "fb4e2f04cfb33b5a7c8aed51cff99a3abfe2f1ee87cd9a0f63f4fb7a38105e4c",
+  "artifact_bytes": 24132717,
+  "version": "2.5.0",
+  "build": 88,
+  "bundle": "com.oldrefery.dutch-learning-app",
+  "team": "7FQ395U52U",
+  "runtime": "93e0e71f0034fe480f43f8adf76271bb264dfd61",
+  "build_attempts": 1,
+  "local_build": true,
+  "cloud_build": false,
+  "upload": false,
+  "install": false,
+  "ota_published": false,
+  "backend_mutated": false,
+  "verification": {
+    "doctor": "21/21",
+    "signature": "codesign deep strict passed outside sandbox using normal system trust",
+    "existing_profile_and_certificate_match": true,
+    "app_store_distribution": true,
+    "get_task_allow": false,
+    "qa_build": false,
+    "actual_source_files_matched": 697,
+    "all_candidate_files_pinned": 2208,
+    "repaired_source_map_matches": [
+      {
+        "path": "apps/mobile/src/db/wordRepository.ts",
+        "sha256": "10420aeec6ae6bdff9a23ee6f530b97008b2b81642a398c141f7567279fba74d"
+      },
+      {
+        "path": "apps/mobile/src/services/syncManager.ts",
+        "sha256": "314b4092896a1e59c0007e5cf5bed72daddefd86214509bd12b53d9f09b768dc"
+      }
+    ],
+    "hermes_recompiled_bytes_equal_ipa": true,
+    "production_channel_verified": true,
+    "compatible_ota_groups": 0,
+    "symbols_matched": 7,
+    "native_binaries": 10,
+    "source_map_and_symbol_uploads": false
+  },
+  "limitations": {
+    "missing_vendor_dsyms": [
+      "Frameworks/React.framework/React",
+      "Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies",
+      "Frameworks/hermesvm.framework/hermesvm"
+    ],
+    "same_coverage_limit_as_87": true,
+    "physical_counter_acceptance": "Not performed; installed87 lacks repair until a subsequent approved update.",
+    "backend_gate_state": "Not freshly read during local build; unchanged by this operation. Refresh before upload."
+  },
+  "reconciled_attempts": [
+    "Initial source archive helper used an unsupported Python tar filter option, failed before extraction; rerun with explicit path validation succeeded.",
+    "First read-only EAS project config inspection overlapped npm ci and failed; after dependencies installed identity and project checks passed. No build started by failed check.",
+    "Sandbox codesign trust failed; exact same strict verification outside sandbox passed, no trust settings or credentials changed.",
+    "OTA result parser initially rejected extra metadata; inspected empty currentPage for production and validated channel/branch/runtime before accepting zero compatible updates."
+  ],
+  "next_step_proposal": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/testflight-upload-proposal.json",
+  "progress": {
+    "stage": "D13A.8",
+    "current_step": 4,
+    "steps_total": 6,
+    "completed_steps": 3,
+    "local_build_preparation_complete": 4,
+    "local_build_preparation_total": 4,
+    "broad_milestones_remaining_including_current": 7
+  },
+  "pending_operations": [],
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/operation.json",
+      "sha256": "0da1214655080eea434d8ce82911a49f3c57cf28cc309b8c40edb47391a8a056"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/build-slot.json",
+      "sha256": "afba8093a2dd764931837791883b041b3db94fab089ec4f89c1b1ac4d3954931"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/ios-build.log",
+      "sha256": "974c88de1ef913ce146ac0d0f24791c7b48d501c3c20f81948ca8c8133895207"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/xcode-build.log",
+      "sha256": "39ebb702658d5e59355931a5421e60b2e8af337bdee19f3b9f77cfdb1b78e4eb"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/ios-artifact-review.json",
+      "sha256": "a5189c018cf767d2e1b97e127b824f1519f332584764f3aca894a10c2a0d228e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/actual-build-source-pins.json",
+      "sha256": "6808fd163de9e0bd18a9f1e80f06623915b1473dbac6e3a0ad680f52a722201e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/codesign-verify.log",
+      "sha256": "8d0d56ce12f1c4913cc7c87f2f6b6dba4a7f644af126be8f49c0a7c231080979"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/verify-ios.log",
+      "sha256": "26ba30e168be411f90000164df855a8f5d8f3471b15f1019d887e546be89f9ce"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/verify-ios-unsandboxed.log",
+      "sha256": "9051aff2cd9d1b7a101909c5a8cc469a0da416781147f274e22c3387d8e4919a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/hermes-verification.json",
+      "sha256": "1f082e55828a46318f6939a63ca19ea1f8044ed29374bd20f66bee41d3de80cd"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/hermes-verification.log",
+      "sha256": "a79e0fdc78f7bd2f5705c8c796d780aac954a3d8a88370bea32516c54755dc9e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/hermes-verification.jsbundle",
+      "sha256": "bc916301322c9a8088bfa560cb64cf643750274dc18fdd84b6b9082ee654a153"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/metro-input.jsbundle",
+      "sha256": "a0586cffca90fed4ce5dbbe36aa9394d91abb86a4491f5a1bb649d9c1060cd0c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/main.jsbundle.map",
+      "sha256": "3b7558191e06c0e9be1f720b09a289153cae5a15a6cef6096facd290d2173207"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/source-map-review.json",
+      "sha256": "4755aba09ce77a80443a7f7e1927932abea4d8258ce0a0220099d24ddd326db6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/native-symbols-review.json",
+      "sha256": "cc6cc21b3fcc5003eac1acdef8f6424ed0fb80ba29e2d43ffcd059c51a345cf1"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/ios88-dsyms.tar.gz",
+      "sha256": "202d8b50562d630603f7f5338b9ecb920f37e9dec36068db8449f8beec4ef378"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/ota-review.json",
+      "sha256": "cefbd95d288385df8d7698688ed8c560bcb6a17e7ae33a9220eafd30aa1c09af"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/ota-raw.json",
+      "sha256": "04bbfb4253667202b1f3842b7d7a486e2ec74f3431435d24de42b3ae88d78104"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/identity-review.json",
+      "sha256": "866c5587f04a57623f0c0b42484a41f2327b6f5535cc260c6c8e5e7ca7f1efa6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/compiled-flags-review.json",
+      "sha256": "74cf278c2f8b5cbff887045f79e6f67446f65b795f7d0b98734b2f73607b6184"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/compiled-dictionary-flags.js.txt",
+      "sha256": "fee342d69ef24a48a8fb2e4a256f32c0f6cc8b4776321b6f65aeb05c96e61caf"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/apple-group-review.json",
+      "sha256": "6381ce48d8c862c292e1398bcaa8db40624362ca1c3970b80c699b2eb99a87b4"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/cleanup-review.json",
+      "sha256": "a2e3667b893c3c4786647a2eacfc2250e4b7dce7ba89863f047567140e1fae09"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/testflight-upload-proposal.json",
+      "sha256": "c487fd4dd8761a7b3d27d842ceee2c9f53132ec305f9d5c38501d56da5c51104"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/testflight-what-to-test.txt",
+      "sha256": "cebbbbc5066147d6d2975860e981948e9f517c92eb482da2f815c6467f68953a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/run-local-build.py",
+      "sha256": "3c2983654c878059af0d53a659161991f53cec8584db889e94c864e0e28ef98d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/verify-ios.py",
+      "sha256": "f0754c813ab1584fd4fd9968d77a723405fb4882e894df0c60cc43408c247bf3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/verify-hermes.py",
+      "sha256": "1ea196b8e2644c703d0d5f142a6688252f864558f852d3ba27e41f8c3d02776a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/retain-symbols.py",
+      "sha256": "2db2348e5633f22f5c4c7dabce17fc7775e07d3a4d2343395cdf3b3910f56630"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/retain-source-map.py",
+      "sha256": "207e5175693a2a76ecab747bcc146f24f4ddaa01e5397046eb017a21164e2351"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-outcome-20261025/read-eas.py",
+      "sha256": "f2a18c01e30c22e8411d80ad0de29ff6445d4e97fb00d34a01a79543bec96dff"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-preparation-20261025/source-freeze.json",
+      "sha256": "c6821856fd875b6a81bf4f0d7bb2b6b13785476e9e80c57a255b01ceeb52181f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-preparation-20261025/version88.patch",
+      "sha256": "f68eca7bcec3fcc807e9053a1bb17d5a229f755d4a7c5573ec5aa86b21689937"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-preparation-20261025/build-request.json",
+      "sha256": "13b6d902f99b383741032ac6d58bc49ff0ee717ef317376df326c03388093255"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-preparation-20261025/candidate-validation.json",
+      "sha256": "f317adb1bf52a73417e998f7ac4ceab540f865b1b4676b155dfe1fc38aae01c7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-preparation-20261025/apple-inventory-review.json",
+      "sha256": "68a9db783b9e6a72c4c701538c0f3ea81353d4c71f0e6922541aa8e760a5be28"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build88-preparation-20261025/dependencies-install.log",
+      "sha256": "58f00989f9127461adbdf8a604786b024715554e6ad9bbb17174207353558154"
+    }
+  ]
+}

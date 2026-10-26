@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-26",
+  "at": "2026-10-26T00:38:48.246416+00:00",
+  "scope": "AUTH78 preparation/read-only ownerchange reconciliation",
+  "status": "installation_proposal_ready",
+  "model": "GPT-6.1 Sol",
+  "effort": "High",
+  "fixed_step": "D13A.8.4 / 4of6",
+  "access_preparation": "3of3complete",
+  "broad_milestones_remaining_including_current": 7,
+  "owner_changes": {
+    "selected_TESTERS_members": 5,
+    "oldrefery_added_by_owner": true,
+    "two_invites_accepted_by_owner_report": true,
+    "ownerGooglewebtester_confirmation_observed": true
+  },
+  "official_web": {
+    "exact_app_listing_accessible": true,
+    "Install_visible": true,
+    "HUAWEI_CLT_L29_compatibility": "Works on your device",
+    "version_name": "2.4.0",
+    "version_code_console": 85
+  },
+  "native_play_observation": {
+    "selected_account_is_owner_approved_tester": true,
+    "exactdetails_after_single_normal_restart": "Itemnotfound/404",
+    "downloadtestapp_link_observation": "BlankPlaypage",
+    "data_or_cache_cleared": false,
+    "definitive_root_cause": "unverified; weblisting works and reaches exactHuawei/version, do not diagnose outage or propagation as proven"
+  },
+  "qa": {
+    "still_installed": true,
+    "version_code": 85,
+    "deletion_allowed_including_pending1": true,
+    "uninstall_invocations": 0
+  },
+  "install_taps": 0,
+  "rollout_invocations": 0,
+  "88_state": "Draft",
+  "pending_operations": [],
+  "next_proposal": "HUAWEI-PLAY85-INSTALL-01",
+  "next_model": "GPT-6.1 Sol",
+  "next_effort": "High",
+  "evidence_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/testers-after-owner.txt": "508961b2b2aac006cdaffa598d41797a8e6304d7dd6552743bb56bc03afe17f5",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/releases-after-owner.txt": "6ac85124d01d16d5aa6244ae80e49f88a780c794e2366a4315aee46e6e370e63",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/optin-after-owner-acceptance.xml": "63e5081cf1f99c9f6f459f75725ae4b3b01069fa9b776e73bdf2b1443aaa11d3",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/optin-after-owner-acceptance.png": "dc27e04a28831ba0f04d9bbb52544e58b3a29efe186e4c08fcdefdfcf9fb8554",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/web85-huawei-compatibility.txt": "065f921dff19996296ef90a95eeea117f2548edf21426aedac0d561ead858372",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/web85-huawei-compatibility.png": "d122190d61e05902d1cab0ba2b00d14b2120ea89f4531ebc210a3f800d94156e",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/play85-after-restart-details.xml": "ae485bbed630bbcd4aff0613c133d50a3bc7580316c3976909dcf2c553183366",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/play-diagnostic-categories.json": "736ed344f95d92e494338d9044b136957acde14a32661b9f32cbc92ec51736bf",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/play85-installation-proposal.json": "59e2f325d47002ccd5be20ceb4c023faad1b4971f260eac963cfd8f303b41028"
+  },
+  "persistence": "local-only"
+}

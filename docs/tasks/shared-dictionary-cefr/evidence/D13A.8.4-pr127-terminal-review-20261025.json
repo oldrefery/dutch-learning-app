@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-25T20:30:12.878330+00:00",
+  "status": "terminal_ci_passed_merge_approval_pending",
+  "stage_complete": false,
+  "model_effort": "GPT-6 Astra / High, last owner-confirmed",
+  "pr": 127,
+  "url": "https://github.com/oldrefery/dutch-learning-app/pull/127",
+  "draft": true,
+  "head": "c826509ec915f9c40a7ad0e16ed597d987501bf6",
+  "base": "5be08b8e592b7c96741887289771da772735de3d",
+  "expected_merge_tree": "b3ad0363478a6fdec75ea4f159d3caaff7f0a020",
+  "checks": [
+    {
+      "name": "Vercel Preview Comments",
+      "head": "c826509ec915f9c40a7ad0e16ed597d987501bf6",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-25T19:59:27Z",
+      "url": "https://github.com/oldrefery/dutch-learning-app/runs/121275368108"
+    },
+    {
+      "name": "database",
+      "head": "c826509ec915f9c40a7ad0e16ed597d987501bf6",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-25T20:01:24Z",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40228373906/job/121274610409"
+    },
+    {
+      "name": "web-fixtures",
+      "head": "c826509ec915f9c40a7ad0e16ed597d987501bf6",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-25T19:57:28Z",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40228373906/job/121274610376"
+    },
+    {
+      "name": "quality",
+      "head": "c826509ec915f9c40a7ad0e16ed597d987501bf6",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-25T20:27:38Z",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40228373906/job/121274610136"
+    },
+    {
+      "name": "lint-e2e-tests",
+      "head": "c826509ec915f9c40a7ad0e16ed597d987501bf6",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-25T19:56:57Z",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40228373873/job/121274609499"
+    },
+    {
+      "name": "Vercel",
+      "head": "c826509ec915f9c40a7ad0e16ed597d987501bf6",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-25T19:59:26Z",
+      "url": "https://vercel.com/rustems-projects/woordenaar-web/J8djbFbLgTBqU3UhLBxHAmBFuoS4"
+    }
+  ],
+  "required_checks": ["quality", "database", "web-fixtures", "lint-e2e-tests"],
+  "required_approvals": 0,
+  "mutation_score": 96.13,
+  "mutation_threshold": 90,
+  "expo_doctor": "21/21",
+  "mobile_tests": 2770,
+  "web_tests": 1252,
+  "web_skipped_tests": 1,
+  "review": {
+    "kind": "author source/test diff review",
+    "findings": [],
+    "focus": [
+      "exclusive transaction before acknowledgement",
+      "all persisted content/placement/SRS compared",
+      "unacknowledged operations protected",
+      "behind-cursor refresh independent of dictionary capability",
+      "owner isolation and preserved download debt"
+    ],
+    "limitations": [
+      "Conservative reconciliation retains divergent rows as pending.",
+      "Native iPhone acceptance requires a later release.",
+      "Not an independent GitHub approval."
+    ]
+  },
+  "review_comments": 0,
+  "github_reviews": 0,
+  "artifacts": [
+    {
+      "id": 12612806193,
+      "name": "jest-coverage",
+      "size_in_bytes": 2145031,
+      "expired": false,
+      "digest": "sha256:67549105fa0c3df85c21dba704d4fc1f69297271990622aa0a598b71663c96cc",
+      "url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12612806193"
+    },
+    {
+      "id": 12611894840,
+      "name": "web-mutation-report",
+      "size_in_bytes": 594822,
+      "expired": false,
+      "digest": "sha256:47b4d9fb5e5ad8b0c3fd4e25049397e1fb8a049337134bf70bae5031cb8050da",
+      "url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12611894840"
+    }
+  ],
+  "source_sha256": {
+    "apps/mobile/src/db/wordRepository.ts": "10420aeec6ae6bdff9a23ee6f530b97008b2b81642a398c141f7567279fba74d",
+    "apps/mobile/src/services/syncManager.ts": "314b4092896a1e59c0007e5cf5bed72daddefd86214509bd12b53d9f09b768dc",
+    "apps/mobile/src/services/__tests__/syncManager.test.ts": "806eea57ddee8391cabe4ece4778d686d2760bbdda49e8de70581f49cc55a503",
+    "apps/mobile/src/db/__tests__/acknowledgedLearning.sqlite.test.ts": "aae299b04c06eaef5dd5d613a1b2a8bc4c8d9e802a4976386ff63d9f0e5854c2"
+  },
+  "private_evidence_sha256": {
+    "pr-terminal.json": "511d4923a1831ed6d23003b745a9c357c825a3fafa795e757d04fd090575693d",
+    "quality-terminal.json": "b0b50894ae5f25d7d740d8ce5ade415705c7e2fd1402445e5fedfc9f58b88c02",
+    "quality-terminal.log": "2ca6dcd8ebd06aaa24e6ac6f9fb5467fec463c03b2b94c93462d2b3c3359e51f",
+    "check-runs-terminal.json": "535bcf986dff3c6a76adda7f8f5fadae9d3d919212e3f1965db50c5e70bf1b6b",
+    "commit-status-terminal.json": "a5aaa1f60c58b1bf72382a9dbc03caf6deddcaeaacfbd7bba70ca73e4f641c20",
+    "artifacts-terminal.json": "458a8ecb7dff2a4b886b13156e5eaf5ee684868d1aa6bee06a593d10ae6437e5",
+    "review-comments-terminal.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "protection-preparation.json": "51b9d5d18b275dd9eb57f8a2a418530cab2bdd17267e1b05125d2a87fd76226e",
+    "next-step-preparation.json": "9f942a36ff0177f589ed98c254808fd93f70bad4ba33ef5d828dd2946b92cefd",
+    "checks-terminal-watch.log": "6fc60d450723268b06cb523641e2ebf524ff3d534432ddb8b1c75d3e28631691"
+  },
+  "next": [
+    "Recheck exact head/base and required checks",
+    "Mark PR127 ready",
+    "Squash-merge exact c826509 into main with automatic Vercel production deployment",
+    "Verify merged tree and production CI/deployment/site"
+  ],
+  "authorization": "Preparation/read-only verification only; ready/merge/production deployment require separate owner authorization.",
+  "native_status": "Build87 unchanged; separate release and device verification required."
+}

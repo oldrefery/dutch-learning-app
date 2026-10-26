@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-25T14:18:34.373109+00:00",
+  "authority": "AUTH-60",
+  "authority_consumed": true,
+  "requested_operation_complete": true,
+  "stage_complete": false,
+  "pr": 126,
+  "url": "https://github.com/oldrefery/dutch-learning-app/pull/126",
+  "draft": true,
+  "merged": false,
+  "head": "e1d3966237567792c74855ec4e6080f16a1897c4",
+  "base": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+  "tree": "24350f4bacc356dba7f3f91f2b95db33474f4272",
+  "changed_files": 7,
+  "commits": 1,
+  "committed_source_hashes_match_approved_candidate": true,
+  "worktree": "/Users/devrush/.codex/worktrees/d13a84-sync-status/DutchLearningApp",
+  "worktree_clean": true,
+  "validation": {
+    "mobile_tests_passed": 2747,
+    "mobile_suites_passed": 201,
+    "snapshots_passed": 22,
+    "web_tests_passed": 1252,
+    "web_tests_skipped": 1,
+    "web_suites_passed": 118,
+    "web_suites_skipped": 1,
+    "hook_exit": 0,
+    "prior_candidate_regression_passed": 173,
+    "prior_typecheck": "passed"
+  },
+  "ci": {
+    "at": "2026-10-25T14:17:20.309Z",
+    "head": "e1d3966237567792c74855ec4e6080f16a1897c4",
+    "pr": 126,
+    "checks": [
+      {
+        "id": 121193060564,
+        "name": "Vercel Preview Comments",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+        "url": "https://vercel.com/github"
+      },
+      {
+        "id": 121192639944,
+        "name": "database",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+        "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40201229329/job/121192639944"
+      },
+      {
+        "id": 121192639866,
+        "name": "quality",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+        "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40201229329/job/121192639866"
+      },
+      {
+        "id": 121192639750,
+        "name": "lint-e2e-tests",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+        "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40201229334/job/121192639750"
+      },
+      {
+        "id": 121192639716,
+        "name": "web-fixtures",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+        "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40201229329/job/121192639716"
+      }
+    ],
+    "statuses": [
+      {
+        "context": "Vercel",
+        "state": "success",
+        "url": "https://vercel.com/rustems-projects/woordenaar-web/7jwdYEp528X1961bW4S66hUQt2H7",
+        "description": "Deployment has completed"
+      }
+    ]
+  },
+  "preview": {
+    "at": "2026-10-25T14:18:34.373109+00:00",
+    "url": "https://woordenaar-web-git-feature-d13a84-sync-status-rustems-projects.vercel.app",
+    "git_status": "success",
+    "deployment_inspector": "https://vercel.com/rustems-projects/woordenaar-web/7jwdYEp528X1961bW4S66hUQt2H7",
+    "http_final_code": 200,
+    "observed_page": "Vercel Login",
+    "application_smoke_verified": false,
+    "protection_bypassed": false
+  },
+  "persistence": "Seven code/test files committed and pushed; operational receipts and task documents remain local-only.",
+  "next": "Read exact-head CI to terminal state and review PR126; do not recreate, merge, deploy or update a device under consumed authority.",
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/commit-receipt.json",
+      "sha256": "8ef485da376e3d7d6f3edcf1c3b767ce5415a7429f9e3fa4ca8d7bff79375b35"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/commit.log",
+      "sha256": "367a86abd7ad617fdca74e9725363e2be92c91f3b3711969439aae2ce0e55b35"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/deployments.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/final-ci-preview.json",
+      "sha256": "1457a07d18af82a4d84e34092a48b6fd46024924c9b637c847730637f3bc6523"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/initial-ci-preview.json",
+      "sha256": "cfe936d9f6d475871ca3dd773550ffc4136fdfc7a478741f6d61057dd63cec8f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/operation.json",
+      "sha256": "e7178a2d25a8b93f65eca0950d9a70fe434098ba64230d36d9faaf1cb8723edf"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/pr-created.json",
+      "sha256": "96c0bbf8595fad8ed9eef2fc801f14dde3593d57f2c4a02f05434d7806c49a80"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/prepare-worktree.py",
+      "sha256": "29d03c2edbd815a68e0c0b39542c7dc1ae2a9d1ce3fbacbbefda6d46670d7741"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/preview-http.txt",
+      "sha256": "571d8d368b258151d7019496c7a9c3eea7238aae521e6eeba4be98944a0078b2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/preview-observation.json",
+      "sha256": "bcc77a349c3b8b4faa4f2d9f54be5196eee969d62fe4c0d6c56f8dd4e128d738"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/preview-response.html",
+      "sha256": "5ec6b9795e9db7fb2069a1fe17fcea7bc99c399c759b47a44d892201000d8f4a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/push.log",
+      "sha256": "efd6070aa76e55bb0b2ed05d101932433051277b460e8e288c2b47065df7a1d0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/staged.json",
+      "sha256": "d9f7f07e50f7b7d66d85088119af6323aae78a152075de2b41acc48011879e51"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-pr-20261025/staged.patch",
+      "sha256": "a4e0c7586f7320426180c9317a6bd91b4c8161aa007dd3025562f10f3560880e"
+    }
+  ]
+}

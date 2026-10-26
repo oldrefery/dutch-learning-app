@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-25T23:19:17.486399+00:00",
+  "authority": "AUTH-74",
+  "status": "fulfilled_consumed",
+  "model": "GPT-6.1 Sol",
+  "effort": "High",
+  "model_source": "owner confirmation",
+  "checkpoint": "D13A.8.4",
+  "fixed_step": 4,
+  "fixed_steps_total": 6,
+  "subtask_steps_complete": 3,
+  "subtask_steps_total": 3,
+  "broad_milestones_remaining_including_current": 7,
+  "result": {
+    "at": "2026-10-25T23:19:17.486399+00:00",
+    "authority": "AUTH-74",
+    "result": "pass",
+    "service": "Google Play Console",
+    "account": "oldrefery",
+    "developer_id": "7222292767747034150",
+    "app_id": "4973515322279519779",
+    "package": "com.oldrefery.dutchlearningapp",
+    "track": "internal",
+    "track_id": "4701630533941298146",
+    "draft_id": 7,
+    "version_name": "2.5.0",
+    "version_code": 88,
+    "draft_name": "88 (2.5.0)",
+    "draft_status": "Draft",
+    "draft_artifacts": [88],
+    "notes_language": "en-US",
+    "notes_verified": true,
+    "changes_saved_message": true,
+    "no_unsaved_changes": true,
+    "available_internal_version": 85,
+    "available_internal_version_name": "2.4.0",
+    "available_internal_status": "Available to internal testers; Full rollout",
+    "artifact86_retained_in_library": true,
+    "artifact86_status": "Inactive",
+    "successful_file_transfers": 1,
+    "failed_file_selections_before_transfer": 1,
+    "draft_save_invocations": 1,
+    "rollout_invocations": 0,
+    "device_installs": 0,
+    "backend_changes": 0,
+    "ota_changes": 0,
+    "artifact": "builds/app-2.5.0-88-learning-ack.aab",
+    "artifact_sha256": "3f2beea91fa0eb848a41958efff2ed5d136e3d49b7b7f606dc2bfa17772c85ff",
+    "visual_screenshot_checked": true,
+    "pending_operations": [],
+    "unknown_external_outcomes": []
+  },
+  "notes_sha256": "e8d7ec051a83c1b7baa132e61013a97c240de6226e0397ed11b03d47bf700b32",
+  "evidence": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android88-upload-20261026/final-overview-dom.txt",
+      "sha256": "8c39844055e2997f0c0eca4b233c818f4d4749fe35e522865e00e8031f17761d",
+      "bytes": 8373
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android88-upload-20261026/final-overview.png",
+      "sha256": "545a48f94e54374c215e1afb097c563fda12d8bd93820eb4fcac0adc9a021558",
+      "bytes": 73805
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android88-upload-20261026/final-review.json",
+      "sha256": "071627e2190d9543e5347c8738f3361037028f681d9763ef0f5ac8f52b8c21a2",
+      "bytes": 1302
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android88-upload-20261026/operation.json",
+      "sha256": "a6c3144506c533d9eac9e790208176a8ebd71f8a857a7625b75d4bf4416fdf0e",
+      "bytes": 2472
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android88-upload-20261026/pre-save-dom.txt",
+      "sha256": "69cacc0bedca655d348808c7c5168afade338efb713d369549f53b6d7e9dedb8",
+      "bytes": 6893
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android88-upload-20261026/preflight-observation.json",
+      "sha256": "692dc7c9c8a4d1f261689d3731e8e250fab49eb7cf88648a2575020627675dd3",
+      "bytes": 376
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android88-upload-20261026/saved-draft-dom.txt",
+      "sha256": "9a55f1fc542c1af2958d64d671844ae1ddd6efaf71b6d06ee5674f1993c6e785",
+      "bytes": 6989
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android88-upload-20261026/saved-draft.png",
+      "sha256": "8538e0d172ad1e3ac48a683ba08517211fe79ccaebafa5918c3c480f982f8239",
+      "bytes": 60206
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-android88-upload-20261026/upload-blocked.png",
+      "sha256": "3b2b58cb70abc5c84de6db5327ded7a1e8023463f81c958df13fb42c5d691e59",
+      "bytes": 54161
+    }
+  ],
+  "persistence": "local-only task documents; Google Play draft saved",
+  "next_scope": "Separately scoped internal tester rollout and Android device acceptance; not authorized by AUTH74"
+}

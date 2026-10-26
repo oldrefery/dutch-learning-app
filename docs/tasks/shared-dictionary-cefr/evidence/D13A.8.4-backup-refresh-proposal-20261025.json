@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "status": "backup_refresh_proposed_awaiting_owner_scope_and_database_credential",
+  "keychain_blocker_resolved": true,
+  "authenticated_s2_archives": 6,
+  "current_data_differs_from_s2": true,
+  "delta_tables": [
+    {
+      "table": "\"public\".\"collections\"",
+      "snapshot_rows": 70,
+      "current_rows": 71,
+      "digest_changed": true
+    },
+    {
+      "table": "\"public\".\"review_events\"",
+      "snapshot_rows": 2113,
+      "current_rows": 2144,
+      "digest_changed": true
+    },
+    {
+      "table": "\"public\".\"review_progress_checkpoints\"",
+      "snapshot_rows": 1892,
+      "current_rows": 1923,
+      "digest_changed": true
+    },
+    {
+      "table": "\"public\".\"review_progress_heads\"",
+      "snapshot_rows": 1620,
+      "current_rows": 1621,
+      "digest_changed": true
+    },
+    {
+      "table": "\"public\".\"user_access_levels\"",
+      "snapshot_rows": 22,
+      "current_rows": 23,
+      "digest_changed": true
+    },
+    {
+      "table": "\"public\".\"users\"",
+      "snapshot_rows": 25,
+      "current_rows": 26,
+      "digest_changed": true
+    },
+    {
+      "table": "\"public\".\"words\"",
+      "snapshot_rows": 6042,
+      "current_rows": 6043,
+      "digest_changed": true
+    },
+    {
+      "table": "auth.users",
+      "snapshot_rows": 25,
+      "current_rows": 26,
+      "digest_changed": true
+    }
+  ],
+  "catalog_matches_b02": true,
+  "current_new_tables_empty": true,
+  "proposal": {
+    "schema_version": 1,
+    "phase": "proposal_only",
+    "owner_approved_backup_refresh": false,
+    "production_mutations_authorized": false,
+    "project_ref": "josxavjbcjbcjgulwcyy",
+    "main_source": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+    "candidate_migration_version": "20261025093000",
+    "candidate_migration_sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7",
+    "ledger_versions_expected": 66,
+    "current_tables_expected_including_minimal_auth": 75,
+    "snapshots_proposed": 2,
+    "application_data_schemas": [
+      "public",
+      "private",
+      "storage",
+      "supabase_migrations"
+    ],
+    "schema_only_extra": ["auth", "extensions"],
+    "auth_data_projection": ["id", "email"],
+    "exclusions": [
+      "full_auth_rows_and_sessions",
+      "storage_object_bytes",
+      "vault_and_managed_services",
+      "device_local_queues",
+      "non_allowlisted_database_settings",
+      "off_machine_key_recovery"
+    ],
+    "local_encryption": "existing B01 AES-256-GCM / Keychain key; no new key or key export",
+    "restore_image": "sha256:178f0976b54a39237096bfa310c1a352dbc82fb1b08dda45cdb8acb5d40c1426",
+    "restore_network": "none",
+    "restore_log_driver": "none",
+    "restore_storage": "owned tmpfs only",
+    "credential_ready": false,
+    "provider_calls": 0,
+    "production_writes": 0,
+    "source_reuse_pins": [
+      {
+        "path": "reports/shared-dictionary-cefr/d13a84-b01-20261024/provide-credential.py",
+        "sha256": "c137e35000ff3d0e3bfae3e3f92c4eb42172b8f7f71085d161ae37e3e2536057"
+      },
+      {
+        "path": "reports/shared-dictionary-cefr/d13a84-b01-20261024/preflight.py",
+        "sha256": "5745302d559c1d4082313643a5776fd59fbf2b7c152422381c5e1033d1a7c6f3"
+      },
+      {
+        "path": "reports/shared-dictionary-cefr/d13a84-b01-20261024/b01lib.py",
+        "sha256": "8d152d8884c5d4622f374c39e3305b1687a8128aaa152cbebbb2afc8358dbd28"
+      },
+      {
+        "path": "reports/shared-dictionary-cefr/d13a84-b01-20261024/capture.py",
+        "sha256": "73babea32e7b4bb7e6465b3fe852a7980aef08736f72603668d8ef38e1b76d53"
+      },
+      {
+        "path": "reports/shared-dictionary-cefr/d13a84-b01-20261024/catalog.py",
+        "sha256": "9e5d15f45ba795078c8564ee40dbaf4368d62c5e52c655590e4339f9e1d4fdba"
+      },
+      {
+        "path": "reports/shared-dictionary-cefr/d13a84-b01-20261024/BackupCrypto.swift",
+        "sha256": "78519158761713b280a0f2d79bd619edab16f88f84ac44de2612ea6a7000455e"
+      },
+      {
+        "path": "reports/shared-dictionary-cefr/d13a84-b01-20261024/b01-crypt",
+        "sha256": "74d0b62c5bd4109493e8accb628eb9368803020e321bb448c82cad6bee8cab3c"
+      }
+    ],
+    "adaptation_required_before_capture": [],
+    "created_at": "2026-10-25T11:50:17.981270+00:00",
+    "adaptation_prepared": true,
+    "fresh_capture_validated": false,
+    "prepared_source_manifest": "prepared-source-manifest.json"
+  },
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/keychain-after-owner-unlock.json",
+      "sha256": "91b2b7d9cba77505c04264d22bbbe4469c8398fec2201ca904b1a8e613611b85"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/backup-authentication-result.json",
+      "sha256": "26d58e12a1ba95cecb7d523683ce49fc677799dee7a8b537ccbd64f79ee0e9a4"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/preflight-result.json",
+      "sha256": "6026662a57f78d31d4618d8f5228ee6711d33889e6fce81e08d9f5ee4836233d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/preflight-response.json.enc",
+      "sha256": "e0e3e3b29638d2b877f26b1519b24e7c6b0d42ac5a5e21ad9717ce6a845f3d74"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/catalog-response.json.enc",
+      "sha256": "c2218a53e5d011d40e1ccfcf4d3b67b95c4c9e669f79cd8e65985c4d6d8bb281"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/read-preflight.sql",
+      "sha256": "5630876d48f0d28b4868641cab49c64d70123f60455ec4ca985b3fa2a14e7f4d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/proposal.json",
+      "sha256": "5d81ef8a98dbf167ef241cd6d28e9b211f296e9f094f92672d7897abc3b01ffc"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/operation.json",
+      "sha256": "04d0f3072b4ed860c0523c5133ad31405dd06bcacfa5685d23f8ef2b10a1f048"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/prepared-source-manifest.json",
+      "sha256": "62c7b96dd224293f9d7237e57296e959a6369b3d36375da30723b8e60c725aff"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/preparation-validation.json",
+      "sha256": "d3dcc47eda71f715738966e5540048903f861992d6b2fb4193499ffef10b519a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/capture.py",
+      "sha256": "8891b5ce5cd9242e8d7a643c292758b04190963f2f417e735070f2c258b65f01"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/catalog.py",
+      "sha256": "9e5d15f45ba795078c8564ee40dbaf4368d62c5e52c655590e4339f9e1d4fdba"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/preflight.py",
+      "sha256": "b2801f40ed6ea1cbfad5df3e128afb4ac5e9f626ca45522d4e4f69c3fe0dafb4"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/provide-credential.py",
+      "sha256": "a2300caa43bef152b2c5738835ef634c130f6843ad3c80406bbf81f9d9c7ed91"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/restore.py",
+      "sha256": "85dcc31df2e3b81c3503f36857c388112dce08d5579e25e0d34e1b99542af5f3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/snapshot_lib.py",
+      "sha256": "3b5099dc4ebc3cb7a3a40ef4588448de41800fc14a0d4493073d3af4134ba1a2"
+    }
+  ],
+  "production_writes": 0,
+  "provider_calls": 0,
+  "fresh_snapshot_captured": false,
+  "exact_migration_guard_rehearsed_on_current_data": false,
+  "remaining_fixed_steps": 3,
+  "later_milestones": 6,
+  "updated_at": "2026-10-25T11:53:56.963628+00:00"
+}

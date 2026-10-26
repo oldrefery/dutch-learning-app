@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "status": "auth57_backup_refresh_complete",
+  "authorization": "AUTH-57",
+  "authorization_consumed": true,
+  "operation_id": "f8de8e86-5085-40e6-bee6-809d49333d88",
+  "project_ref": "josxavjbcjbcjgulwcyy",
+  "main_source": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+  "candidate_version": "20261025093000",
+  "production_apply_authorized": false,
+  "backup": {
+    "authorization": "AUTH-57",
+    "operation_id": "f8de8e86-5085-40e6-bee6-809d49333d88",
+    "status": "both_snapshots_and_isolated_restores_verified",
+    "completed_at": "2026-10-25T12:03:24.433282+00:00",
+    "project_ref": "josxavjbcjbcjgulwcyy",
+    "captures": {
+      "s1": {
+        "captured_at": "2026-10-25T11:58:02.919785+00:00",
+        "tables": 75,
+        "rows": 32718,
+        "archives": 7
+      },
+      "s2": {
+        "captured_at": "2026-10-25T11:59:46.725078+00:00",
+        "tables": 75,
+        "rows": 32718,
+        "archives": 7
+      }
+    },
+    "authenticated_archives": 14,
+    "all_full_sorted_data_hashes_and_timestamps_match": true,
+    "delta_tables_between_snapshots": 0,
+    "delta_table_names": [],
+    "catalogs_match_b02": true,
+    "roles_and_effective_memberships_match": true,
+    "database_owner_locale_icu_acl_match": true,
+    "global_role_setting_names_allowlisted": true,
+    "global_role_setting_count": 14,
+    "global_role_configuration_restored_via_roles_sql_and_verified_in_pg_roles": true,
+    "local_acl_adapter_counts": {
+      "s1": 53,
+      "s2": 53
+    },
+    "foreign_private_word_rows_visible": 0,
+    "owned_restore_containers_removed": 2,
+    "future_accepted_changes_covered": false,
+    "device_local_queues_inspected": false,
+    "full_managed_disaster_recovery_proven": false,
+    "production_writes": 0,
+    "provider_calls": 0,
+    "paid_or_real_link_ceiling": 0,
+    "unknown_usd_held": "0.56",
+    "plaintext_files_written": false,
+    "key_exported": false,
+    "exclusions": [
+      "full_auth_rows_and_sessions",
+      "storage_object_bytes",
+      "vault_and_managed_services",
+      "device_local_queues",
+      "non_allowlisted_database_settings",
+      "off_machine_key_recovery"
+    ]
+  },
+  "final_readonly": {
+    "observed_at": "2026-10-25T12:03:31.396174+00:00",
+    "readonly": true,
+    "ledger_versions": 66,
+    "candidate_absent": true,
+    "full_tables_compared": 75,
+    "changed_tables_since_s2": [],
+    "catalog_changed_sections": [],
+    "legacy3_true": true,
+    "new14_false": true,
+    "production_writes": 0,
+    "provider_calls": 0,
+    "future_changes_covered": false
+  },
+  "cleanup": {
+    "completed_at": "2026-10-25T12:04:20.972908+00:00",
+    "dedicated_credential_files_removed": ["pgpass", "pgpass-session"],
+    "credential_contents_read_during_cleanup": false,
+    "owned_restore_containers_remaining": 0,
+    "owned_restore_containers_removed": 2,
+    "active_snapshot": null,
+    "encrypted_backups_retained": true,
+    "key_retained_unchanged": true,
+    "production_writes": 0
+  },
+  "source_hashes_unchanged": {
+    "supabase/migrations/20261025093000_add_dictionary_capability_release_gate.sql": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7",
+    "scripts/postgres-tests/dictionary-capability-release.test.mjs": "6ca3aefed0c93e62b86edc011e109dd7aa6d33ccfcced4a3575b4d66ead97aab",
+    "packages/supabase-contracts/target-schema.json": "03cf31fd1a6fb39655148396b695f5aae11cff5fdedb1c90298afc11c0669f5f",
+    "packages/supabase-contracts/src/database.target.generated.ts": "c2dff0d6971485b382513ea2bb8c61daefc3a4af40bd9d782cd1057c5f94c3fa"
+  },
+  "old_proposal_pins_preserved": 16,
+  "private_inventory_files": 570,
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/operation.json",
+      "sha256": "82daa808c861ea0aa7f85e95ee07e4f8343725cc0ad0d2bd32e9a189bb92f9a3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/preflight.json",
+      "sha256": "b6a0e87808e622e8b9a4d6a6396479e058a05fd3873d7ea1b90c7a7fe8b5ee28"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-receipt.json",
+      "sha256": "cf92eb90c52f794c11c4c07bb570f04d2a6d34551941c1eab0ee01ab45d5e783"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-receipt.json",
+      "sha256": "5fc0988f1b3d88c45a80c54d10a1af7b655ba4f6d322f3a8614581379c93b05a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-restore-result.json",
+      "sha256": "eda2fbd601bcf7f3ff55e8e0618f71b8cf615f5bf4e5c1b2c75b08f39d24b1fe"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-restore-result.json",
+      "sha256": "f6457c2ce21f37714db8e6ff2dfc4f3e30b8a68a654c74c2d407f2ac7d92c53e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-restore-intent.json",
+      "sha256": "b622a517c9c5872fddff25b7d79939b0943b6dcb5c2d1f5e0644bcdaee561c65"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-restore-intent.json",
+      "sha256": "36870c3ebf87cd496706cd2192c3110263c428d40be7b9c9cd3e38bf407640c0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/backup-verification-result.json",
+      "sha256": "7d1f1933a77fcc5b4e90e2c834536bd27e6695f723293ef97afd0f49346067d3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/final-readonly-result.json",
+      "sha256": "cfbf8201bbaa64b1d675dc5432397448e12fa01bce92326e6bc97fc5ac0e4b25"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/final-readonly-state.json.enc",
+      "sha256": "20354ec22b3b7db35f4f91f49b012fd1b96e9b9d127df33a5ad23f277ebf0591"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/snapshot-delta.json.enc",
+      "sha256": "8193da28645ac99eb19adb21908203d5eda9cdb07814653dface2377b506a5b2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/cleanup-result.json",
+      "sha256": "599ca59262032b9086af8722d197b5f5b3668e7343de20a08bff48811f4563de"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/restore-import-repair.json",
+      "sha256": "fb4414def1d827daa4738447fff8eb6509da45b737470953a67c496278fbcba8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/role-setting-review.json",
+      "sha256": "7a8204196a6905f0c27805be373feab51722933bc26e1059defb2eda533713a0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/final-private-inventory.json",
+      "sha256": "1bc0557bc784f843025732d90b478f917effbc5065bad3f3f1704921cea82ae0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-database.dump.enc",
+      "sha256": "3ba12e57b912f6895cb25468b5531f46a0b6477d081e7ffb8764455161f18f35"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-auth-identities.csv.enc",
+      "sha256": "2127193d755a7093677e1e37b7c95abea0921a2dc84662a745b2b277ca42b40f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-manifest.json.enc",
+      "sha256": "f1320039bea5fd29298a36c217d7d15ecf96614adc81b14806be40c90a4ba161"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-catalog.json.enc",
+      "sha256": "90a83a6d0aa63bb3c0ff1e094330976a9103b3334c19771de0cf04adb78e255f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-metadata.json.enc",
+      "sha256": "1fa013fc344e4d01a11f1bca8ab16fa1879917e56067acc5eeb233a706c5b0f9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-roles.sql.enc",
+      "sha256": "c09e82afd1efe4cd6ff66716a636e9a9147b8b7c88c36f06a201affd0fccecde"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s1-database-platform-metadata.json.enc",
+      "sha256": "8664783f8143311fceb46c81c3fa58770f3777071b181437b466e847a89e0e84"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-database.dump.enc",
+      "sha256": "a18b00bd5521d5c2a37772d99d7d5cb1c79994f3490a3220259634c7bbce30b0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-auth-identities.csv.enc",
+      "sha256": "f62928c82ca90b1102fcc6f5a26754051ba5a326ed5a78ea79fac126ec94ee3a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-manifest.json.enc",
+      "sha256": "d3469fbebfd862986bd8c765c99d3cfad97ff77be74e342698730b82d9ad2478"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-catalog.json.enc",
+      "sha256": "aa372565cdc942c4f34ce68a94d708b08b3926ae30d48d80b98652a2aa3a308d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-metadata.json.enc",
+      "sha256": "6eeefb1ec82646ae9ca7373d95a4c7a3a0a38ac17015db58d0533609df73af3d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-roles.sql.enc",
+      "sha256": "a17313f04b9b16d2c71bc47c5086d449a7dcfab6528cf612b20abe24bfd2590f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-backup-refresh-20261025/s2-database-platform-metadata.json.enc",
+      "sha256": "3e84cb79c00926a7c219e584e93c4f46c2d2714229e2ce6789935af624837f01"
+    }
+  ],
+  "scope_limits": [
+    "full_auth_rows_and_sessions",
+    "storage_object_bytes",
+    "vault_and_managed_services",
+    "device_local_queues",
+    "non_allowlisted_database_settings",
+    "off_machine_key_recovery"
+  ],
+  "next_action": "Prepare and rehearse the one-migration guarded application against the authenticated fresh S2 restore; reconcile later accepted deltas and request separate exact production apply approval.",
+  "remaining_fixed_steps": 3,
+  "later_milestones": 6,
+  "persistence": "local-only; original dirty checkout and clean managed worktree preserved",
+  "created_at": "2026-10-25T12:08:31.989120+00:00"
+}

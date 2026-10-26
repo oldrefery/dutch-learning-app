@@ -1,0 +1,658 @@
+{
+  "at": "2026-10-25T22:34:35.334774+00:00",
+  "authority": "AUTH-72",
+  "status": "fulfilled_consumed",
+  "model": "GPT-6 Astra",
+  "effort": "High",
+  "model_source": "owner confirmation",
+  "checkpoint": "D13A.8.4",
+  "fixed_step": 4,
+  "fixed_steps_total": 6,
+  "subtask_steps_complete": 3,
+  "subtask_steps_total": 3,
+  "broad_milestones_remaining_including_current": 7,
+  "capture_sets": 2,
+  "encrypted_device_files": 6,
+  "controlled_main_app_launches": 1,
+  "runner_initialization_failures_before_app_launch": 2,
+  "successful_xctest_runs": 1,
+  "temporary_plaintext_removed": true,
+  "personal_tables_preserved": 27,
+  "review_events_preserved": 15,
+  "test_words": 2105,
+  "collections": 22,
+  "uploads": 0,
+  "downloads": 2105,
+  "full_sync_claim": false,
+  "active_runtime": {
+    "runtime": "93e0e71f0034fe480f43f8adf76271bb264dfd61",
+    "update_id": "893b83a761f14fee8f3a1061d97abfd4",
+    "embedded_status": 5,
+    "successful_launches_before": 3,
+    "successful_launches_after": 4,
+    "failed_launches_before": 0,
+    "failed_launches_after": 0,
+    "last_accessed_advanced": true,
+    "other_update_launch_counts_unchanged": true,
+    "passed": true
+  },
+  "baseline_checks": {
+    "personal_tables_unchanged": true,
+    "null_owner_rows_unchanged": true,
+    "other_test_words_unchanged": true,
+    "other_test_tables_unchanged": true,
+    "collection_content_and_membership_unchanged": true,
+    "selected_changes_allowed": true,
+    "selected_synced": true,
+    "events15synced": true,
+    "words2105synced": true,
+    "write_queues_empty": true,
+    "download_debt_separate": true
+  },
+  "launch_checks": {
+    "personal_tables_unchanged": true,
+    "null_owner_rows_unchanged": true,
+    "other_test_words_unchanged": true,
+    "other_test_tables_unchanged": true,
+    "collection_content_and_membership_unchanged": true,
+    "selected_changes_allowed": true,
+    "selected_synced": true,
+    "events15synced": true,
+    "words2105synced": true,
+    "write_queues_empty": true,
+    "download_debt_separate": true
+  },
+  "server_checks": {
+    "word": true,
+    "events": true,
+    "owner_words": true,
+    "other_test_word_rows_hash": true
+  },
+  "new_answers": 0,
+  "manual_sync_taps": 0,
+  "flag_changes": 0,
+  "pending_operations": [],
+  "unknown_external_outcomes": [],
+  "evidence": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/IsolatedQATests.swift",
+      "sha256": "c72a399e078c1d9c6031180f59db56ad26155acd6fcf1abdedf2ee58a4bd15d4",
+      "bytes": 2616
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-capture-receipt.json",
+      "sha256": "f4cdaec73fbc733c09acd6db3fddfc62bdf6f78d28482603846b44ff16c9dfc3",
+      "bytes": 924
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-learning-comparison.json",
+      "sha256": "1e316113dad5e044dd0a90109baa070efdf1331cba548abd2daa072e045a855d",
+      "bytes": 4768
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-learning.db-1-copy.json",
+      "sha256": "3c4e0278370594e21957cbc18487983eca55e3acb5623f9ee7ec9bf39bd0dd36",
+      "bytes": 1203
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-learning.db-2-copy.json",
+      "sha256": "8e86c41b03ab2e6ee8e526721920c5191646a2d9de8eeee79f78ea78fad59824",
+      "bytes": 1203
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-learning.db-files.json",
+      "sha256": "73965640f60cc64c1337025a6cc41228d16a07df4df1dce3591f74355a8a7d88",
+      "bytes": 1586
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-learning.db.enc",
+      "sha256": "a12a1d9bffad27f242ba3241f88b9cb2cdcb07ef48cd88ef86e61e16ec17dfb1",
+      "bytes": 26824796
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-processes.json",
+      "sha256": "14d3f85088be1f1e55495d1c6ed02d54382cccf08556450cb2ebe5c72a009da0",
+      "bytes": 57376
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-reconciled-review.json",
+      "sha256": "6a7576853154ef757f3bb6dd0a7311ae947b3f3b43a606315600c8eef0961093",
+      "bytes": 5415
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-server.json.enc",
+      "sha256": "733879497bc4b3f51063ccba96d06087d86da63d07e7a4b482161b8d407d56d0",
+      "bytes": 13924
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-updates-summary.json",
+      "sha256": "bd7873cfcbf2acaff029cc727e12f1bc688cce58a773f4703889c4ce73b39610",
+      "bytes": 575
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-updates.db-1-copy.json",
+      "sha256": "19d3b79835d336ad31c57f311ac84b6e165c4622eed00effc90141b2db0df96a",
+      "bytes": 1240
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-updates.db-2-copy.json",
+      "sha256": "b4114f7f783157bb33fed6ab9d829ed2432770fe36b09923e6c0a598e052c4a0",
+      "bytes": 1240
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-updates.db-files.json",
+      "sha256": "1f28f37fdc6c26ca5d3b99697737e42f175e800ed318a7cfca7365de8aada4ee",
+      "bytes": 1597
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-updates.db.enc",
+      "sha256": "195fde92d9956ff0d404f59b071573bd50fa959870fd3557ba94e848cb111c97",
+      "bytes": 172124
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-updates.log-1-copy.json",
+      "sha256": "61917487a77d80bd918b389005f28d81774582af5d366c0d46305ad4872faf2f",
+      "bytes": 1283
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/a-updates.log.enc",
+      "sha256": "afc70b138f2be822e8014734fa503c514b16ed95d62f5295b3e985e3d047d241",
+      "bytes": 126407
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/after-runner-failure-lockState.json",
+      "sha256": "c2f2a062b51e8175edcdf1bd066c41099d326370f83c6952b5e7f86334457378",
+      "bytes": 673
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/after-runner-failure-processes.json",
+      "sha256": "9c92d3ff51a3a27d6a4dc7d038a76f59b40c2ce08602cd2f5abc0b38a556db11",
+      "bytes": 64637
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/after-second-runner-failure-processes.json",
+      "sha256": "7809da86245350668b1ad7fb75e275b6b49e4ce2aff249ab4e1a61daaefde166",
+      "bytes": 65000
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-capture-receipt.json",
+      "sha256": "0c6efb2da511150e9a8cc33235f7cdc8066b6254d61a1d2998d6933bbb6bd122",
+      "bytes": 889
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-learning-comparison.json",
+      "sha256": "378164b89ef9dd026e506ff865190290efafda3ebc73e6382f656336e671dba4",
+      "bytes": 4949
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-learning.db-1-copy.json",
+      "sha256": "78b2ce277af7b309f615aa1042ff4180e335b5dfe3b6f22f14620c3ecec72c1f",
+      "bytes": 1203
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-learning.db-2-copy.json",
+      "sha256": "35afdb1469511c2db6f089f8367c96fc0b91707e72a6464d25cf8b7bb245cc9d",
+      "bytes": 1203
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-learning.db-files.json",
+      "sha256": "382cab1a419eb23157e11db2ab365043f496c7bd180bcb1520dc00961fdc05bc",
+      "bytes": 1586
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-learning.db.enc",
+      "sha256": "eaca0b12d0601f968bc2df24ebf38855b53bc8f90766fdc87dd148d95f68e5d9",
+      "bytes": 26824796
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-processes.json",
+      "sha256": "bdbadd71cd4f10ea8b59a3bdaf1fbcbebe900fa6974efeb673d517b0b5f6f717",
+      "bytes": 65015
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-server.json.enc",
+      "sha256": "0ad4b09e9df83d73939fc92eb1d00f989c65090006b9426a37961a891f35477b",
+      "bytes": 13924
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-updates-summary.json",
+      "sha256": "df1194802ad4cb90a328c11925947916d811a0afec5256e477629a320a35a368",
+      "bytes": 575
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-updates.db-1-copy.json",
+      "sha256": "c0a179468887552381e1f88557103a0ec58793070dae5db9c2796c099183b70a",
+      "bytes": 1240
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-updates.db-2-copy.json",
+      "sha256": "278906fc1d0a3a77ac5ddc1857c3b4a52ac825b5b5736fee2058e7951c356919",
+      "bytes": 1240
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-updates.db-files.json",
+      "sha256": "991c7fcc77facbcfe93be87b3234a256f39d03b447c2bbfbeb8f170aa66fdc09",
+      "bytes": 1597
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-updates.db.enc",
+      "sha256": "fe49ad4ea824f07c9b64660e15b2442f98eee40b7a4821b22896cf7fed80e415",
+      "bytes": 172124
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-updates.log-1-copy.json",
+      "sha256": "856cc9f336a9205c4d495cdcd12b945fa38a96800ce54266bdd817455d4b0b1a",
+      "bytes": 1283
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/b-updates.log.enc",
+      "sha256": "372fe7541000682f1d9a594a9b597ef5e481c8d41eed7166c1b8b54b99373e2c",
+      "bytes": 131785
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/build-one-launch-intent.json",
+      "sha256": "448c5a6e23d4aaa4b811a29670cc38eb79fe90e018f3255edbead38d6d540eeb",
+      "bytes": 712
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/build-one-launch-result.json",
+      "sha256": "28b3f4896b443fc9c6153ac7b162e76be55ab44bca98c3f71c4bfad145a4ba64",
+      "bytes": 114
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/capture.py",
+      "sha256": "8c8be39766dc3f1dfa7d2d944fa671c44d202dad1283f6a11730a5e66e5c07ae",
+      "bytes": 4979
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/closure-review.json",
+      "sha256": "01ba31379a63870139e1121124f49f32ff92643fcaac92745f37b076eea89e29",
+      "bytes": 426
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/endpoint-gate-representation.json",
+      "sha256": "f068d122062570174f54143f552b9eedadefba2cb933924d843550078119efce",
+      "bytes": 307
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/final-verification.json",
+      "sha256": "9adefb43c582a78c15ba555e9f2964f5a03408c7e03ec122b6b962247fed4374",
+      "bytes": 6751
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/identity-review.json",
+      "sha256": "32c9f071f97ac7106d37cf3bc9758a3bfe7cf72bfbe5c9e9edfb3dd20f087845",
+      "bytes": 197
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/operation.json",
+      "sha256": "7d87d8dd1e0760ef579b3fb6f23e6066b8710dabea670a81f6a25c2f98edca52",
+      "bytes": 1596
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/ota-raw.json",
+      "sha256": "70a455b880d6eec1a8f78938013132d3151633ef9fbc6e89d5edaafcd9a8439a",
+      "bytes": 17637
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/phone-readiness-checkpoint.json",
+      "sha256": "5f83c95d676465cd3a682a49c099546ea994b5abf9b56d7ca1f1030eb86516a0",
+      "bytes": 633
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/phone-ready-apps.json",
+      "sha256": "2d8d3562c45f4575d6011979110a76ad0b049d5aeda5cd63d4460b4daf9b0267",
+      "bytes": 4526
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/phone-ready-lockState.json",
+      "sha256": "4802812943191313ec81a7364d67b2182614706c2fd2c9ddd8d6a4de4cf5ace4",
+      "bytes": 664
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/phone-ready-processes.json",
+      "sha256": "0d1c84277796977b44f1ad087515cd290e472df3834d0a9e4b512c9296fa2cef",
+      "bytes": 64984
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/preflight-apps.json",
+      "sha256": "0f518814b2cc33bfb9961b45dff7f0beb77f981fae440d828acb2891677ecd06",
+      "bytes": 4524
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/preflight-close-existing.json",
+      "sha256": "b5138f5944555dfdabfdc725d01a9adbb7d2d4b5cc1f6e1f737e0bdfd660cdd3",
+      "bytes": 960
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/preflight-lockState.json",
+      "sha256": "247dc7c44f5b711f8d825b0c9e0c03a67b64d08fa6c846dd1666427ee7afeaaa",
+      "bytes": 662
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/preflight-processes.json",
+      "sha256": "77c90a7673924c05244e9d73155a187f172ffe7a4631b39d0ec4ffa5baa2cbf0",
+      "bytes": 57747
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/protected-strict-initial.py",
+      "sha256": "a833bf19c2293ffa2c414cc51efd0e6b7d837c50ed560c2fe588b4905c974db5",
+      "bytes": 4512
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/protected.py",
+      "sha256": "93ce0af122fcfc77732814694af6e3a9a3c38b59eabc9394e39cd353bd83dc5e",
+      "bytes": 5865
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/read-eas.py",
+      "sha256": "f2a18c01e30c22e8411d80ad0de29ff6445d4e97fb00d34a01a79543bec96dff",
+      "bytes": 2251
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/read-release-gates.py",
+      "sha256": "6af04d8809a0369e712dcc5dc41ceb4654541d4c82a5635fed54902a20c3c0d4",
+      "bytes": 2742
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/read-server.py",
+      "sha256": "e99fd241b5e7bcbd477307ae0aecad8d7fda1b8f7636b8192d5997c3ca7f8f69",
+      "bytes": 1717
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/reconcile-a.py",
+      "sha256": "a6df49a3c55fa3556cd6253524d1f0442a4097324e343c49ad72f974975d723b",
+      "bytes": 1709
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/release-gates-review.json",
+      "sha256": "7ac983c3f3d58dc6bc83f8cc190c9a230cdccb81e8e443218a5509a5e743da0c",
+      "bytes": 244
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/run-driver.py",
+      "sha256": "47064bf925d3c327a3b7068d7879bb8548bee6004ecbce2e62f03ea26c0ba640",
+      "bytes": 2636
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/runner-initialization-reconciliation.json",
+      "sha256": "1627dc39df11c414e0ec079e12f46a1229f39d01e10eba82653cf3efef83609d",
+      "bytes": 407
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-attachments/16A5D3E4-09E5-4F86-922F-C957DF7D2E7E.png",
+      "sha256": "2ac637aba51e42e989168b8312ec03c69ac2b29b7ac437d821d7d4fc8a53e58d",
+      "bytes": 338648
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-attachments/23AB1A2F-4E06-4A17-84CD-1864D3226C6B.txt",
+      "sha256": "4efbbf5a2c19486efd106ba87bebd0a0548ebfe3b08c8c25a523c1c9181f7842",
+      "bytes": 22095
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-attachments/2CD2BCBB-D4D0-41EA-A7E5-83391E43AD1F.png",
+      "sha256": "99f88454e4a9fcb41f430afa2570590f873251212f384aa873214ad2457140cb",
+      "bytes": 311188
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-attachments/683FB407-6CA5-4D19-B85F-03081BC05229.txt",
+      "sha256": "8d212b34052436d49826e66f5e153da5381c55184a3f3726d5d2260e46a40231",
+      "bytes": 22095
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-attachments/B8175FAA-F4D0-4645-93CB-12A39E4BFED2.png",
+      "sha256": "2ac637aba51e42e989168b8312ec03c69ac2b29b7ac437d821d7d4fc8a53e58d",
+      "bytes": 338648
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-attachments/B97F113A-5A3C-402B-B658-A3BD244075D2.txt",
+      "sha256": "d30001e2a82bb941ff97bcfbd169425c6a00c39363537be50db0e39da84a8c71",
+      "bytes": 22085
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-attachments/manifest.json",
+      "sha256": "5d2845e3cf1e80635566f2fc728d7793461c6a454b6a52f5dd5cde882d38f30f",
+      "bytes": 2761
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-intent.json",
+      "sha256": "4d128ef008ddd4e52c3479727a2fa55d178cc4298f766e3973c314b5a14e9912",
+      "bytes": 971
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-result.json",
+      "sha256": "549924a431274b1fb541dd4e57717583123f66a99be82ddf2eadab68c53482c0",
+      "bytes": 233
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock-summary.json",
+      "sha256": "ac53c46348bf2f61375c0a686872a1dc241ea573ad1586d31c959ef6f1af8fab",
+      "bytes": 954
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~27W1hrwoGKD0MVqlgsag-bMiYfVxtTwJ9IcwYnKVpobd9f8hvTTVRnTzUVJrF1keXWHZWH2Jwqj21s95FA-feA==",
+      "sha256": "ad5b88045877ee14371f23e78cde84feed4f1265d84c4fddbf7c981162b6ed21",
+      "bytes": 3175
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~2dwimnf_bMetzbXvlfqkUeE_Wb0cJT8IO-ZBMGPMYEspdbSBZX4lf_MB-ZAZeXmnKxzTlE2bNwIfBbzyKO4zGw==",
+      "sha256": "99f88454e4a9fcb41f430afa2570590f873251212f384aa873214ad2457140cb",
+      "bytes": 311188
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~3KvDSiOMfteI2XIeD9jB_0eSupfoOQU-8enuieUGfkkk9pl7gdo22SOBzl0l-GaGZ9AbQYrL13_wzU4ujP-Kdw==",
+      "sha256": "c6734c8f2e683db7e43e46b1d0c7df5b7da705bb15c83ff1b119482849034e55",
+      "bytes": 38
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~6prrQHetwuGlNtARmWCCNBV_i49ZSudHeL5A26dxet9JIC2x32cNCM5w9-jBSqyrwvC1MCU1DRbBBI42ullejw==",
+      "sha256": "b78a1fe09d7440a79c277ab41964c19b0281b070a67727f56bc7e8778d1c89c5",
+      "bytes": 4099
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~8sNWVwgpWAypvgyIsVbCmijBPuAO_h9khsEpex1LfqcnybD3q2Nf7MgIgePI09kll6CNT3K4bvPijRPCXsQH6A==",
+      "sha256": "88c737b2a05030ff23aa2e5b738ba036659f3553fb0b03d385c0f26ad3660cc9",
+      "bytes": 3213
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~BfQ7DxvCinog5Awz1uV7GNXDbPv0xG0RuGdD51sBPHnxpRjpk6VOYO2j-di6MSZ7Ty6KV4pWxoh6Hfu9AwRzYg==",
+      "sha256": "b318b1858306417c92bd940c22b92b6540b07025a284b3a15a13dc5569b1a692",
+      "bytes": 1541
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~HCboMm24Ov9eaY62BS4iKujaSTdca2FOSVxhtJe7tS2za4XVeXPjnE2HLHDNuCGHeTd9RazuI3-2Llig0JkfGg==",
+      "sha256": "0659e650a4f08849a9cb00a6ac70272e4e8c99f0ddaebeae29ccc852375a9fa8",
+      "bytes": 752
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~HxoxSfPeZSqoc-Kb5Mv9q2Y4A9UZBvFa8mV8JEuuh1XoVBtB6227SsEJp1bN7dr-J5fCuq3DIOazhxElRuWObA==",
+      "sha256": "6fc6358de5b8edd730ad9e083bfc8b8f62b6b53fc3d7ad9ab21be2c2b8b0ce42",
+      "bytes": 118
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~Or3A5fVsUqKdYKqZhaM3KD5-eLNG_Csx14kf3SE82SIUcENyX5FxRNJrYHu3BDzwxgMJ23M1zhRVHz9Rx5dVPA==",
+      "sha256": "8ce3ca72565de455f094a9e35d7aadaf66ee4fd39e3765e34a215c2395a3d1cf",
+      "bytes": 136798
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~PnldPF5ydtGmQIAgMzkwJaGBIIRot-YBwoJDCACujEZBq7bH25fpRumjFzi6LX27lF5qIMneVUbhhRbLNh6JEw==",
+      "sha256": "34edc18f89495f2fa55fb5904859fcbd04398d5604629ccc94c82b933cc5c4a9",
+      "bytes": 1275
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~YuU5928Eoz6bg6Ilu0QBJiCbYyYqyOvrHYm6oD7FdanH3xWTjLyb0arswduW2vH0ToS1yrqefiHLVQtNyvA8ww==",
+      "sha256": "f462ad452bf1b7a7ba31613d931542dfe33f1b77b70d240dade6a696b7a979ba",
+      "bytes": 109
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~aQIup1aN8VOFGSSKT7ycQrqrRgHp6Cria8WszWmhR7SV_U93scrPiel1Nwr_YC9wFJrnrdKBDrCX6rjN-Jzt4w==",
+      "sha256": "9710fabfd8e2e3f6d7dc118caefb65169a189868db5de00b444af996a21a61ed",
+      "bytes": 295
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~d_ptLFnU7ygsDPbnEYl05AWtqNBshQyFm_T48svZ0si0fIwW1U4u3092ayD5qs3hYkfB4rZhThwj-V5Tg36loQ==",
+      "sha256": "2ac637aba51e42e989168b8312ec03c69ac2b29b7ac437d821d7d4fc8a53e58d",
+      "bytes": 338648
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~dw_awUz9EiJKFL313H9OoZ_uKzIw3waDCVKf0oEvE5aRTuY9UzyLvxkmbM44rvx9zM72r0XypDxM2jd5RwmdWA==",
+      "sha256": "2ecbb72c183158d4b3e8dc345c61c6626609e0f469c4ab9e58e4e85d8d2751fe",
+      "bytes": 327
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~ibAcrIeZ-gaBDumijl_jU1f7YGvvvqCKY-p48Oicg7rV2JB4JAbl--dw9jKtZGdQUQCuxHFZZlT_FkjVA990gg==",
+      "sha256": "56be31b236d3e7f8885c4cbeb865ef460bd59ba7876cba80f9f237802e5cc90c",
+      "bytes": 3221
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~nUWCT3LL_BJDSZ3kscAjE4z_0sR0jnCp87V16dpr97MeC1S4Co2jEPA6Bta2zZnOmFh1D1GyU73bM7h_HF-cPQ==",
+      "sha256": "dc966d67525e4b7399400bee5d499a866fdf9141a3fc7c397c78d641f3582b8a",
+      "bytes": 802
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~pmZiHvYU9kqfKfPQsfYvjRUvRx2O-xV0SEJiXF9aYq74TU584t5BK0VGmveiALcCd9QE-A8y83GkqyDnBnTvCw==",
+      "sha256": "6b12f1c3f9141aea73d18a1df5f32e9124df661091aec96922030f50db352801",
+      "bytes": 4749
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/data.0~tvV9MWpw2nKs4M8fKl__ZV9Zv_zRlSRFUVAvk-SJlbM3sAAgMP-i5vBpUBxLt7PQZF-k4ocJ12kbVIO7I_mtug==",
+      "sha256": "9fc84ea9d94dd60b31afa26528d932d53de96018d3bce1d5f7890187bb49574a",
+      "bytes": 164
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~27W1hrwoGKD0MVqlgsag-bMiYfVxtTwJ9IcwYnKVpobd9f8hvTTVRnTzUVJrF1keXWHZWH2Jwqj21s95FA-feA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~2dwimnf_bMetzbXvlfqkUeE_Wb0cJT8IO-ZBMGPMYEspdbSBZX4lf_MB-ZAZeXmnKxzTlE2bNwIfBbzyKO4zGw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~3KvDSiOMfteI2XIeD9jB_0eSupfoOQU-8enuieUGfkkk9pl7gdo22SOBzl0l-GaGZ9AbQYrL13_wzU4ujP-Kdw==",
+      "sha256": "79b491d903f67fcf9ab11370f9d30c5d7cdbb2380ce03dd34b9f7605005bcf46",
+      "bytes": 67
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~6prrQHetwuGlNtARmWCCNBV_i49ZSudHeL5A26dxet9JIC2x32cNCM5w9-jBSqyrwvC1MCU1DRbBBI42ullejw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~8sNWVwgpWAypvgyIsVbCmijBPuAO_h9khsEpex1LfqcnybD3q2Nf7MgIgePI09kll6CNT3K4bvPijRPCXsQH6A==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~BfQ7DxvCinog5Awz1uV7GNXDbPv0xG0RuGdD51sBPHnxpRjpk6VOYO2j-di6MSZ7Ty6KV4pWxoh6Hfu9AwRzYg==",
+      "sha256": "b1a86b08dca61aada6186ab03ecb6c802dda3711e3dd4d512241cf951b650dcf",
+      "bytes": 265
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~HCboMm24Ov9eaY62BS4iKujaSTdca2FOSVxhtJe7tS2za4XVeXPjnE2HLHDNuCGHeTd9RazuI3-2Llig0JkfGg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~HxoxSfPeZSqoc-Kb5Mv9q2Y4A9UZBvFa8mV8JEuuh1XoVBtB6227SsEJp1bN7dr-J5fCuq3DIOazhxElRuWObA==",
+      "sha256": "17cd1cb1ed6c50e552594bf0bf29780bc80e73ed5cae0f57169afb13982d3b65",
+      "bytes": 133
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~Or3A5fVsUqKdYKqZhaM3KD5-eLNG_Csx14kf3SE82SIUcENyX5FxRNJrYHu3BDzwxgMJ23M1zhRVHz9Rx5dVPA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~PnldPF5ydtGmQIAgMzkwJaGBIIRot-YBwoJDCACujEZBq7bH25fpRumjFzi6LX27lF5qIMneVUbhhRbLNh6JEw==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~YuU5928Eoz6bg6Ilu0QBJiCbYyYqyOvrHYm6oD7FdanH3xWTjLyb0arswduW2vH0ToS1yrqefiHLVQtNyvA8ww==",
+      "sha256": "1ecf6344428205fbe608165eeb88d189d881f95190d1bad58ea33b6fee0b3079",
+      "bytes": 133
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~aQIup1aN8VOFGSSKT7ycQrqrRgHp6Cria8WszWmhR7SV_U93scrPiel1Nwr_YC9wFJrnrdKBDrCX6rjN-Jzt4w==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~d_ptLFnU7ygsDPbnEYl05AWtqNBshQyFm_T48svZ0si0fIwW1U4u3092ayD5qs3hYkfB4rZhThwj-V5Tg36loQ==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~dw_awUz9EiJKFL313H9OoZ_uKzIw3waDCVKf0oEvE5aRTuY9UzyLvxkmbM44rvx9zM72r0XypDxM2jd5RwmdWA==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~ibAcrIeZ-gaBDumijl_jU1f7YGvvvqCKY-p48Oicg7rV2JB4JAbl--dw9jKtZGdQUQCuxHFZZlT_FkjVA990gg==",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "bytes": 1
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~nUWCT3LL_BJDSZ3kscAjE4z_0sR0jnCp87V16dpr97MeC1S4Co2jEPA6Bta2zZnOmFh1D1GyU73bM7h_HF-cPQ==",
+      "sha256": "5287766245b82eed58f98fd7dbd7f92cd5af0d016af968a250fc7438f1511ac0",
+      "bytes": 67
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~pmZiHvYU9kqfKfPQsfYvjRUvRx2O-xV0SEJiXF9aYq74TU584t5BK0VGmveiALcCd9QE-A8y83GkqyDnBnTvCw==",
+      "sha256": "25cbdf8d7f451fb5f06a5218a5f48ed8740c8827d1e5b7ec8911aa13758f028a",
+      "bytes": 331
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Data/refs.0~tvV9MWpw2nKs4M8fKl__ZV9Zv_zRlSRFUVAvk-SJlbM3sAAgMP-i5vBpUBxLt7PQZF-k4ocJ12kbVIO7I_mtug==",
+      "sha256": "95b29282a653b0c360e9c01614e3fc5016d23b230ad836c2720441ef8913a342",
+      "bytes": 133
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/Info.plist",
+      "sha256": "c71b51a6826d0506b27e1b34faaad270c60248504f5def8cd10b9c2812bc30b4",
+      "bytes": 715
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-after-unlock.xcresult/database.sqlite3",
+      "sha256": "a3e1e2889ab2e4aea9d2aacd871a3d546cb42e3c4590710c099a527c8cd0f379",
+      "bytes": 262144
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-intent.json",
+      "sha256": "6a3d155e728dfacfa46c030ab0d80b8efc182145fc550f81190d3035b1a64a82",
+      "bytes": 945
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-reconciled-intent.json",
+      "sha256": "9f203dd7abe542ee7c9daae1477a7a5b43d649ec13a6e3cc5e690c4b9ea5b1b3",
+      "bytes": 967
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-reconciled-result.json",
+      "sha256": "170ae09b2d37f7e13b8eb476617fa7cc404ec2361c3b47b83678fdf36aa8db39",
+      "bytes": 232
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-reconciled-summary.json",
+      "sha256": "a207e36e7221652b06df1faafa82244f00aa8f25c53d13444e58b5ebb3ea010f",
+      "bytes": 1332
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-result.json",
+      "sha256": "cd2de2a65317a69542c7eea15c8b9009abd2c4d16dd36ae721631887e1597c2c",
+      "bytes": 221
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/single-launch88-summary.json",
+      "sha256": "b4e658142628d789ef1e097e7b01b209d96d6def3a70b685abfdb708fc6ba225",
+      "bytes": 1332
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios88-preservation-20261025/verify-final.py",
+      "sha256": "e7dee8fd7473662827db6d68697efd736e51c352e3888cb86e62d297c13fbf42",
+      "bytes": 3410
+    }
+  ]
+}

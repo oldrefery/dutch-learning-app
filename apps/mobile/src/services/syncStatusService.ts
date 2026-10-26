@@ -13,6 +13,7 @@ import {
   isDictionaryFollowingEnabled,
 } from '@/constants/dictionaryContent'
 import { retryWithBackoff } from '@/utils/retryUtils'
+import { getLearningSyncStatusWordIds } from '@/db/learningSyncStatus'
 
 export interface SyncStatusSnapshot {
   totalLocalWords: number
@@ -21,6 +22,11 @@ export interface SyncStatusSnapshot {
   pendingWords: number
   pendingCollections: number
   pendingProgress: number
+  /** Distinct affected words plus collection/progress rows awaiting upload. */
+  pendingUploads: number
+  /** Distinct words awaiting content or canonical learning downloads. */
+  pendingDownloads: number
+  /** Union of affected items; upload/download categories may overlap. */
   totalPending: number
   lastSyncAt: string | null
   isOnline: boolean
@@ -38,6 +44,7 @@ async function readSnapshot(userId: string): Promise<SyncStatusSnapshot> {
     deletedCollections,
     lastSyncAt,
     isOnline,
+    learning,
   ] = await Promise.all([
     wordRepository.getWordsByUserId(userId),
     collectionRepository.getCollectionsByUserId(userId),
@@ -49,6 +56,7 @@ async function readSnapshot(userId: string): Promise<SyncStatusSnapshot> {
     collectionRepository.getDeletedCollections(userId),
     getLastSyncTimestamp(userId),
     isNetworkAvailable(),
+    getLearningSyncStatusWordIds(userId),
   ])
 
   const [
@@ -76,16 +84,21 @@ async function readSnapshot(userId: string): Promise<SyncStatusSnapshot> {
         dictionaryImportDeliveryRepository.getDebtWordIds(userId),
       ])
     : [[], [], [], [], [], []]
-  const pendingWordCount = new Set([
+  const uploadWordIds = new Set([
     ...pendingWords.map(word => word.word_id),
     ...deletedWords.map(word => word.word_id),
     ...commands.map(row => row.command.word_id),
     ...imports.map(row => row.intent.word_id),
-    ...personalRefreshIds,
     ...recoveries.map(row => row.word_id),
     ...placementDebtIds,
+    ...learning.uploadWordIds,
+  ])
+  const downloadWordIds = new Set([
+    ...personalRefreshIds,
     ...missingCardWordIds,
-  ]).size
+    ...learning.downloadWordIds,
+  ])
+  const pendingWordCount = new Set([...uploadWordIds, ...downloadWordIds]).size
   const pendingCollectionCount = new Set([
     ...pendingCollections.map(collection => collection.collection_id),
     ...deletedCollections.map(collection => collection.collection_id),
@@ -99,6 +112,9 @@ async function readSnapshot(userId: string): Promise<SyncStatusSnapshot> {
     pendingWords: pendingWordCount,
     pendingCollections: pendingCollectionCount,
     pendingProgress: pendingProgressCount,
+    pendingUploads:
+      uploadWordIds.size + pendingCollectionCount + pendingProgressCount,
+    pendingDownloads: downloadWordIds.size,
     totalPending:
       pendingWordCount + pendingCollectionCount + pendingProgressCount,
     lastSyncAt,

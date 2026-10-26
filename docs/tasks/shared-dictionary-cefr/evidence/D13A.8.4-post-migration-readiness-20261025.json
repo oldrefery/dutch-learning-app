@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "status": "preparation_complete_account_classification_pending",
+  "created_at": "2026-10-25T12:44:02.523873+00:00",
+  "last_owner_confirmed_model": "GPT-6 Astra",
+  "last_owner_confirmed_effort": "High",
+  "selected_scenario": "iPhone via TestFlight",
+  "scenario_selection_is_execution_authority": false,
+  "installed_main_app": {
+    "version": "2.5.0",
+    "build": "86",
+    "bundle_id": "com.oldrefery.dutch-learning-app",
+    "source_route_verified": false,
+    "account_classification": "pending",
+    "lossless_upgrade_verified": false
+  },
+  "already_installed_no_reinstall_proposed": true,
+  "retained_packet_pins_verified": 124,
+  "artifacts": [
+    {
+      "path": "builds/app-2.5.0-86-nds-fixed.ipa",
+      "sha256": "a44f6162c10599f3d63e40d96c46f553fd406be82d8f028aab3d2c99db3b7b5b",
+      "matches": true,
+      "bytes": 24130513
+    },
+    {
+      "path": "builds/app-2.5.0-86-nds-fixed.aab",
+      "sha256": "34a7759b0e87bbcc0218f9a0d2d7603b79f885a8397f44b57790737a3cefc554",
+      "matches": true,
+      "bytes": 86449008
+    }
+  ],
+  "source_packets": [
+    {
+      "packet": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-testflight-outcome-20261025.json",
+      "sha256": "edecf60cbf268d8acb8335851d3dc083af2d976871f970029ac48787d3536c2d",
+      "pins": 47,
+      "mismatches": []
+    },
+    {
+      "packet": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-internal-draft-outcome-20261025.json",
+      "sha256": "0137d25778b8b0a1750412ed08a0bae2dc821f070e6641b06eb5bb15873aac12",
+      "pins": 19,
+      "mismatches": []
+    },
+    {
+      "packet": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-pr125-integration-outcome-20261025.json",
+      "sha256": "3e111e90e86b7b3e277427003666df14376b4ae71e6aa268ccd2a1c7a2715455",
+      "pins": 15,
+      "mismatches": []
+    },
+    {
+      "packet": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-backup-refresh-outcome-20261025.json",
+      "sha256": "92ca9924d911bd821db7c20337ad8dfcc66903aa9e07dec7121a28c803562197",
+      "pins": 30,
+      "mismatches": []
+    },
+    {
+      "packet": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-capability-apply-outcome-20261025.json",
+      "sha256": "9b5837d1562ed67672908eefba22a35fc31413469ca798b8ea3af5a3280158f4",
+      "pins": 13,
+      "mismatches": []
+    }
+  ],
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post-migration-readiness-20261025/retained-evidence-verification.json",
+      "sha256": "c83a7d28fd81ab21205e6fafa0b8bf078515b5f4e7f6375b8671f40c49507451"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post-migration-readiness-20261025/ios-metadata-summary.json",
+      "sha256": "df2ba985a161fc63c65479bb273b46af6200a46e90c66efb3a9d629ba924085f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post-migration-readiness-20261025/ios-device-inventory.json",
+      "sha256": "4c623d24fffe63b21c989ac40ea0968f9e1f65b0036ef0c6562f00625d75b5a1"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post-migration-readiness-20261025/ios-main-app-metadata.json",
+      "sha256": "45cda6b4647c3b3b53a7d2f15a6b43386aa5844c19b4ffc9a1080784d74651fb"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post-migration-readiness-20261025/ios-testflight-metadata.json",
+      "sha256": "9d169257dd0c115758c7cb183d99fb9488061a12bce408fcda19e9bc1f32102d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post-migration-readiness-20261025/ios-testflight-default-app-metadata.json",
+      "sha256": "4c8a2bb79b5c7fa80f8a1a25803443b05f94b9657d8167568699e9dcbc3645f6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post-migration-readiness-20261025/ios-testflight-filter-reconciliation.json",
+      "sha256": "2c719ecb02f862f7e19f96ed147cf1c0ce1ed532273c2c722099a77a07e8c7b8"
+    }
+  ],
+  "device_metadata_queries": 4,
+  "app_launches": 0,
+  "app_data_reads": 0,
+  "device_installations": 0,
+  "production_mutations": 0,
+  "provider_calls": 0,
+  "stage_complete": false,
+  "local_only": true
+}

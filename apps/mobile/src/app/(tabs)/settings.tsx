@@ -376,7 +376,7 @@ const getSyncSummaryLabel = (
   if (isSyncing) return 'Syncing changes...'
   if (!snapshot) return 'Checking local database...'
   if (snapshot.totalPending > 0) return `${snapshot.totalPending} pending`
-  if (!snapshot.lastSyncAt) return 'Not synced yet'
+  if (!snapshot.lastSyncAt) return 'No complete sync yet'
   return 'Up to date'
 }
 
@@ -392,8 +392,9 @@ const getSyncSummaryColor = (
   return isDarkMode ? Colors.success.darkModeChipText : Colors.success.DEFAULT
 }
 
-const formatLastSyncAt = (lastSyncAt: string | null) => {
-  if (!lastSyncAt) return 'Never'
+const formatLastSyncAt = (lastSyncAt: string | null | undefined) => {
+  if (lastSyncAt === undefined) return 'Checking...'
+  if (!lastSyncAt) return 'Not completed yet'
 
   return new Date(lastSyncAt).toLocaleString(undefined, {
     month: 'short',
@@ -888,15 +889,18 @@ export default function SettingsScreen() {
                   lightColor="transparent"
                   darkColor="transparent"
                 >
-                  <TextThemed style={styles.syncStatValue}>
-                    {syncSnapshot?.pendingWords ?? 0}
+                  <TextThemed
+                    testID="sync-upload-count"
+                    style={styles.syncStatValue}
+                  >
+                    {syncSnapshot?.pendingUploads ?? 0}
                   </TextThemed>
                   <TextThemed
                     style={styles.syncStatLabel}
                     lightColor={Colors.neutral[600]}
                     darkColor={Colors.dark.textSecondary}
                   >
-                    Words
+                    To upload
                   </TextThemed>
                 </ViewThemed>
                 <ViewThemed
@@ -904,33 +908,35 @@ export default function SettingsScreen() {
                   lightColor="transparent"
                   darkColor="transparent"
                 >
-                  <TextThemed style={styles.syncStatValue}>
-                    {syncSnapshot?.pendingCollections ?? 0}
+                  <TextThemed
+                    testID="sync-download-count"
+                    style={styles.syncStatValue}
+                  >
+                    {syncSnapshot?.pendingDownloads ?? 0}
                   </TextThemed>
                   <TextThemed
                     style={styles.syncStatLabel}
                     lightColor={Colors.neutral[600]}
                     darkColor={Colors.dark.textSecondary}
                   >
-                    Collections
+                    To download
                   </TextThemed>
                 </ViewThemed>
-                <ViewThemed
-                  style={styles.syncStatItem}
-                  lightColor="transparent"
-                  darkColor="transparent"
+              </ViewThemed>
+
+              <ViewThemed
+                style={styles.syncInfoRow}
+                lightColor="transparent"
+                darkColor="transparent"
+              >
+                <TextThemed
+                  style={[styles.syncInfoLabel, styles.syncExplanation]}
+                  lightColor={Colors.neutral[600]}
+                  darkColor={Colors.dark.textSecondary}
                 >
-                  <TextThemed style={styles.syncStatValue}>
-                    {syncSnapshot?.pendingProgress ?? 0}
-                  </TextThemed>
-                  <TextThemed
-                    style={styles.syncStatLabel}
-                    lightColor={Colors.neutral[600]}
-                    darkColor={Colors.dark.textSecondary}
-                  >
-                    Progress
-                  </TextThemed>
-                </ViewThemed>
+                  Pending work includes changes to send and word updates to
+                  download. A word may need both.
+                </TextThemed>
               </ViewThemed>
 
               <ViewThemed
@@ -943,10 +949,10 @@ export default function SettingsScreen() {
                   lightColor={Colors.neutral[600]}
                   darkColor={Colors.dark.textSecondary}
                 >
-                  Last sync
+                  Last complete sync
                 </TextThemed>
                 <TextThemed style={styles.syncInfoValue}>
-                  {formatLastSyncAt(syncSnapshot?.lastSyncAt ?? null)}
+                  {formatLastSyncAt(syncSnapshot?.lastSyncAt)}
                 </TextThemed>
               </ViewThemed>
 
@@ -1244,6 +1250,9 @@ const styles = StyleSheet.create({
     justifyContent: JUSTIFY_SPACE_BETWEEN,
     gap: 12,
     marginBottom: 10,
+  },
+  syncExplanation: {
+    flex: 1,
   },
   syncInfoLabel: {
     fontSize: 14,

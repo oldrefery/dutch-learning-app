@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-25T14:30:18.645Z",
+  "pr": 126,
+  "head": "e1d3966237567792c74855ec4e6080f16a1897c4",
+  "base": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+  "draft": true,
+  "merged": false,
+  "mergeable": true,
+  "jobs": [
+    {
+      "id": 121192639716,
+      "name": "web-fixtures",
+      "status": "completed",
+      "conclusion": "success",
+      "active_steps": []
+    },
+    {
+      "id": 121192639866,
+      "name": "quality",
+      "status": "in_progress",
+      "conclusion": null,
+      "active_steps": ["Run web mutation tests"]
+    },
+    {
+      "id": 121192639944,
+      "name": "database",
+      "status": "completed",
+      "conclusion": "success",
+      "active_steps": []
+    }
+  ],
+  "other_checks": {
+    "lint_e2e_tests": "success",
+    "vercel": "success"
+  },
+  "reviews": [],
+  "review_threads": [],
+  "files": [
+    "apps/mobile/src/app/(tabs)/settings.tsx",
+    "apps/mobile/src/app/__tests__/settings-sync-status.test.tsx",
+    "apps/mobile/src/db/__tests__/learningSyncStatus.sqlite.test.ts",
+    "apps/mobile/src/db/learningSyncStatus.ts",
+    "apps/mobile/src/hooks/__tests__/useSyncStatus.test.ts",
+    "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+    "apps/mobile/src/services/syncStatusService.ts"
+  ],
+  "self_review": {
+    "blocking_findings": 0,
+    "scope": "Exact seven-file diff, read-only owner filters, queue recovery and deduplication, complete-sync wording and retained tests.",
+    "independent_review": false
+  },
+  "progress": {
+    "current_step": "D13A.8",
+    "active_substage": "D13A.8.4",
+    "substages_total": 6,
+    "substages_complete": 3,
+    "substages_remaining_including_active": 3,
+    "remaining_broad": [
+      "D13.6",
+      "D13A.8",
+      "D13A.9",
+      "D14.1",
+      "D14.2",
+      "D14.3",
+      "D14.4"
+    ],
+    "remaining_broad_including_current": 7,
+    "other_broad": 6
+  },
+  "next": "Observe quality to terminal state at this exact head, inspect final artifacts and prepare the next concrete integration/release decision. No merge approval exists.",
+  "previous_outcome_pins_verified": 14,
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-review-20261025/checkpoint.json",
+      "sha256": "32453db005681c1485c2882438cc8cf8e4654859d16ac92c47894e6ad1b8f635"
+    }
+  ]
+}

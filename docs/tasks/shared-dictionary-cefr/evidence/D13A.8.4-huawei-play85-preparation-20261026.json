@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-26",
+  "at": "2026-10-26T00:25:25.271926+00:00",
+  "authority": "AUTH-78",
+  "status": "preparation_complete_web_optin_scope_pending",
+  "model": "GPT-6.1 Sol",
+  "effort": "High",
+  "fixed_step": "D13A.8.4 / 4of6",
+  "preparation_review": "3of3complete; actualreplacementnotexecuted",
+  "broad_milestones_remaining_including_current": 7,
+  "accepted_local_QA_data_discard": {
+    "local_synthetic_data": true,
+    "pending_words": 1,
+    "consumption": "notyetdeleted; do not askagain"
+  },
+  "play": {
+    "current_store_account_is_existing_eligible_tester": true,
+    "selected_TESTERS_members": 4,
+    "membership_changed": false,
+    "release85_available_to_internal_testers": true,
+    "release88_draft": true,
+    "device_install_access_verified": false,
+    "phone_store_details": "Itemnotfound",
+    "invite_page_reached": true,
+    "accept_invite_clicked": false,
+    "google_web_header_matches_selected_tester": false
+  },
+  "auto_review_rejection": {
+    "action": "Select approvedtesterGoogleaccount in ChromeGooglePlay webaccountchooser",
+    "reason": "Prioruserauthorization explicitly limitedaccountselection toPlayStore, changingGooglewebsession exceedsit",
+    "action_executed": false,
+    "workaround_attempted": false
+  },
+  "qa": {
+    "at": "2026-10-26T00:24:11.335076+00:00",
+    "package_version_uid_update_metadata_unchanged": true,
+    "qa85_still_installed": true,
+    "qa_main_app_closed": true,
+    "uninstall_invocations": 0,
+    "install_taps": 0,
+    "rollout_invocations": 0
+  },
+  "next_proposal": "HUAWEI-PLAY85-WEB-OPTIN-01",
+  "next_model": "GPT-6.1 Sol",
+  "next_effort": "High",
+  "pending_operations": [],
+  "official_reference": "https://support.google.com/googleplay/android-developer/answer/9845334?hl=en",
+  "evidence_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/tester-membership-review.json": "5693e4135902b52c3406799b0f7494b450ed5221d49c75759df6ae691d7286d4",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/existing-phone-accounts-review.json": "22c557e8d91b4c86ee167dd52317dd2448390a3c6bce084eeefacb44bd3dc567",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/current-releases.txt": "b3531d4f4ba93dc08e479cfa7c366968daee98978033beeb0750b1123eead035",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/current-releases.png": "30e9cf04cea9306a841027af6e921ba6dc624c37080e937adb2592c53a667a30",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/optin-approval-screen.xml": "a18ec683b2848594f024308dca6e727f9d6e38bede63f9d0908e97ec41add233",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/optin-approval-screen.png": "851ae89695d4999e29dd8d2630effb26c973b99b569590e90b29817d1ca8204d",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/qa-preserved-final-review.json": "9e82895289e0502b466c72927b729af9c7ee92f4b93e882750077763f5c5279a",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/web-optin-proposal.json": "da9ed5411db01becfc0e5958bb0e98768e9ce02e2f21e7fd034d4c1a6b3aefdb",
+    "reports/shared-dictionary-cefr/d13a84-huawei-play85-preparation-20261026/replacement-execution-plan.json": "d42fb2169f89b0fb6ba6c674f5c7ad83356c630745066e3a5d3194383369a188"
+  },
+  "persistence": "local-only"
+}

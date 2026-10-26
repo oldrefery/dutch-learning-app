@@ -43,6 +43,7 @@ jest.mock('@/services/syncStatusService', () => ({
 const completedAt = '2026-09-06T13:00:00.000Z'
 const SYNC_BUTTON_ID = 'force-sync-button'
 const UP_TO_DATE_LABEL = 'Up to date'
+const NO_COMPLETE_SYNC_LABEL = 'Not completed yet'
 const LEGAL_LINKS = [
   [
     'Privacy Policy',
@@ -64,6 +65,8 @@ const snapshot = (lastSyncAt: string | null): SyncStatusSnapshot => ({
   pendingWords: 0,
   pendingCollections: 0,
   pendingProgress: 0,
+  pendingUploads: 0,
+  pendingDownloads: 0,
   totalPending: 0,
   lastSyncAt,
   isOnline: true,
@@ -155,15 +158,15 @@ describe('Settings sync status integration', () => {
       jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue(theme)
       const screen = render(<SettingsScreen />)
       await waitFor(() =>
-        expect(screen.getByText('Not synced yet')).toBeTruthy()
+        expect(screen.getByText('No complete sync yet')).toBeTruthy()
       )
-      expect(screen.getByText('Never')).toBeTruthy()
+      expect(screen.getByText(NO_COMPLETE_SYNC_LABEL)).toBeTruthy()
       jest
         .mocked(syncStatusService.getSnapshot)
         .mockResolvedValue(snapshot(completedAt))
       await act(async () => listener(successfulSync))
       expect(screen.getByText(UP_TO_DATE_LABEL)).toBeTruthy()
-      expect(screen.queryByText('Never')).toBeNull()
+      expect(screen.queryByText(NO_COMPLETE_SYNC_LABEL)).toBeNull()
       expect(syncManager.performSync).not.toHaveBeenCalled()
     }
   )
@@ -180,6 +183,7 @@ describe('Settings sync status integration', () => {
       jest.mocked(syncStatusService.getSnapshot).mockResolvedValue({
         ...snapshot(completedAt),
         pendingWords: 1,
+        pendingDownloads: 1,
         totalPending: 1,
       })
       await act(async () =>
@@ -191,13 +195,58 @@ describe('Settings sync status integration', () => {
       )
       expect(screen.getByText('1 pending')).toBeTruthy()
       expect(screen.queryByText(UP_TO_DATE_LABEL)).toBeNull()
-      expect(screen.queryByText('Never')).toBeNull()
+      expect(screen.queryByText(NO_COMPLETE_SYNC_LABEL)).toBeNull()
       jest
         .mocked(syncStatusService.getSnapshot)
         .mockResolvedValue(snapshot(completedAt))
       await act(async () => listener(successfulSync))
       expect(screen.getByText(UP_TO_DATE_LABEL)).toBeTruthy()
       expect(screen.queryByText('1 pending')).toBeNull()
+    }
+  )
+
+  it.each(['light', 'dark'] as const)(
+    'distinguishes pending downloads from uploads before any complete sync in %s mode',
+    async theme => {
+      jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue(theme)
+      jest.mocked(syncStatusService.getSnapshot).mockResolvedValue({
+        ...snapshot(null),
+        totalLocalWords: 2105,
+        totalLocalCollections: 22,
+        pendingWords: 2105,
+        pendingDownloads: 2105,
+        totalPending: 2105,
+      })
+      const screen = render(<SettingsScreen />)
+      await screen.findByText('2105 pending')
+      expect(screen.getByTestId('sync-upload-count')).toHaveTextContent('0')
+      expect(screen.getByTestId('sync-download-count')).toHaveTextContent(
+        '2105'
+      )
+      expect(screen.getByText('To upload')).toBeTruthy()
+      expect(screen.getByText('To download')).toBeTruthy()
+      expect(screen.getByText('Last complete sync')).toBeTruthy()
+      expect(screen.getByText(NO_COMPLETE_SYNC_LABEL)).toBeTruthy()
+      expect(screen.queryByText(UP_TO_DATE_LABEL)).toBeNull()
+      expect(syncManager.performSync).not.toHaveBeenCalled()
+      jest.mocked(syncStatusService.getSnapshot).mockResolvedValue({
+        ...snapshot(null),
+        pendingWords: 1,
+        pendingUploads: 1,
+        pendingDownloads: 1,
+        totalPending: 1,
+      })
+      await act(async () =>
+        listener({
+          ...successfulSync,
+          success: false,
+          error: 'Content unavailable',
+        })
+      )
+      expect(screen.getByText('1 pending')).toBeTruthy()
+      expect(screen.getByTestId('sync-upload-count')).toHaveTextContent('1')
+      expect(screen.getByTestId('sync-download-count')).toHaveTextContent('1')
+      expect(screen.getByText(NO_COMPLETE_SYNC_LABEL)).toBeTruthy()
     }
   )
 
@@ -222,6 +271,6 @@ describe('Settings sync status integration', () => {
       expect(screen.getByTestId(SYNC_BUTTON_ID)).toBeEnabled()
     )
     expect(syncManager.performSync).toHaveBeenCalledTimes(2)
-    expect(screen.queryByText('Never')).toBeNull()
+    expect(screen.queryByText(NO_COMPLETE_SYNC_LABEL)).toBeNull()
   })
 })

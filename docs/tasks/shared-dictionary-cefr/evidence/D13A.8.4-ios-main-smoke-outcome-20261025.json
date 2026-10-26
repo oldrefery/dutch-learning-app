@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-25T13:35:25.854852+00:00",
+  "status": "bounded_navigation_and_testflight_observation_passed",
+  "authorization": "Current continuation plus explicitly approved XCTest method; owner unlock confirmation. AUTH-59 not replayed.",
+  "observations": {
+    "at": "2026-10-25T13:35:25.854852+00:00",
+    "navigation_passed": true,
+    "cold_reactivation_session_persisted": true,
+    "dedicated_account_asserted_twice": true,
+    "version": "2.5.0(86)",
+    "ui_words": 2105,
+    "ui_collections": 22,
+    "ui_pending_words": 2105,
+    "ui_last_sync": "Never",
+    "history_empty_states_rendered": true,
+    "testflight_list_shows_version86_open": true,
+    "testflight_detail_page_captured": false,
+    "exact_installed_artifact_or_upgrade_history_proven": false,
+    "device_active_update_id_proven": false,
+    "application_terminated_after_navigation": true,
+    "testflight_terminated_after_inspection": true,
+    "fresh_personal_or_test_db_capture": false,
+    "learning_write_test": false,
+    "source_sync_status_note": "pendingWordCount unions unsent writes and missing-card/read-refresh debt; this badge cannot distinguish the two. Retained baseline is historical, not post-smoke queue verification.",
+    "temporary_runfiles_removed": true,
+    "pending_operation": false
+  },
+  "ota": {
+    "at": "2026-10-25T13:26:16.782163+00:00",
+    "identity": "oldrefery",
+    "project_owner": "oldrefery",
+    "expo_token_present": false,
+    "channel": "production",
+    "paused": false,
+    "single_unconditional_branch": "production",
+    "ios_runtime": "31652155a10a781f3654b3a6ff56eb406db2e6b6",
+    "matching_ota_groups": 0,
+    "retained_ipa_hash_verified": true,
+    "device_active_runtime_proven": false,
+    "writes": 0
+  },
+  "prior_account_switch_packet_pins_verified": 30,
+  "tests": {
+    "main_navigation": {
+      "result": "Passed",
+      "passedTests": 1,
+      "failedTests": 0,
+      "skippedTests": 0
+    },
+    "testflight_foreground_capture": {
+      "result": "Passed",
+      "passedTests": 1,
+      "failedTests": 0,
+      "skippedTests": 0
+    }
+  },
+  "limitations": [
+    "No learning-write/offline-reconnect qualification",
+    "No full device recovery or pre-upgrade baseline",
+    "UI and store list do not prove exact installed IPA bytes or active update UUID",
+    "No fresh post-smoke personal/test database comparison",
+    "Pending badge merges write and read/cache work"
+  ],
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/operation.json",
+      "sha256": "252a924bfe11a3da29700b1083678aa0c383161ec1a903b66ac0c641bd07881f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/IsolatedQATests.swift",
+      "sha256": "03d3c3f66cbebd9fce6338b3e117f4fb0dde9526c49bff88eb2353000ada8181"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/IsolatedQA.xcodeproj/project.pbxproj",
+      "sha256": "2eaeae500323f2109a853a6613b2d169924549e75e0cbbf8f36dddf943fb1b5e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/signed-build-result.json",
+      "sha256": "efc4f6a777a0ea0a2633bc3cd343490495e75fa8b86fc56b2e83e60722880337"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/unsigned-build.log",
+      "sha256": "a867870dab468276751bd0238862d028339083f12b888383aca33a7c4c2af704"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-review.json",
+      "sha256": "c70f1fb4d27d61c74846cea51d69f75dc6958008326d787852a21dc2e53036b0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/main-metadata.json",
+      "sha256": "d55adca1cb604d2ea33833062fcc964c429e820e91f4dd2328e68625757ded9f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/library-metadata.json",
+      "sha256": "866531f7497babe95ea65429ee6090d6a0c28bd734f421720a069bdf6bf37d30"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/current-lock-state.json",
+      "sha256": "466d39aa7602924348eb726e053942384175ba1d386ddb08414a8ba3d1feed39"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/unlocked-preflight.json",
+      "sha256": "e4424f605adab9392c565cbf660e3a581b83f68b1531b3d5931ceaa68bdf53fd"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/cancel-wait-intent.json",
+      "sha256": "d0ba408b9df09e8ff7f670a5f7600298a608bc54b9a62d8539d0b87facc53643"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/attempt-reconciliation.json",
+      "sha256": "c60ea77c22e74f31122afc72d46165d08cedfb047bfe411722687eb268587a31"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-intent.json",
+      "sha256": "ee10e986b2e001c25e3fdffa66396726aa793beccfc769c7260d85e4e5787d92"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-result.json",
+      "sha256": "34f5f088e2122cd62de1ba6effd7d642b3553e87530353abc46ff73a5c3be03d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-intent.json",
+      "sha256": "a500ca294d9b62d474717f6ab435440e9e3ee49938b888d86915874aa186e2c6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-result.json",
+      "sha256": "bc2796cf5d73b1060aa5a9cef3c900cbb60be3fc5c1c00a64928b6c22e0e0a75"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-summary.json",
+      "sha256": "05822e90ed55bf40d53d6c7caf63877c355cbdbd52d9cc8752b1c316945392ce"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/run-navigation.py",
+      "sha256": "ec385decb93266253268434ebb9c9bb7a8510653c9e48ab615e862002eeb3191"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/run-navigation-after-unlock.py",
+      "sha256": "299abe7df67eb355b17e4e1df4e4a3287104ea36c78f221e48f0c97f2914488e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/read-ota.py",
+      "sha256": "ee0f57d12a19e6a52a9a9e571ddabfd136150a079c2a283851f724d7e1eee5f1"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/ota-review.json",
+      "sha256": "783966b11e2c7b6f8657a869dd298cc96f34dc702c91f87448393398b1080768"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/project-info.log",
+      "sha256": "073c63d608a024a0b0b45dfa5180529118a08b7fe4030551c1172ef8bd5fc885"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/project-info-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/channel.log",
+      "sha256": "f4b43f75546046e9b91765de843b55c53606b6969cd87822722ffe806020fca3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/channel-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/runtime-updates.log",
+      "sha256": "835f5e9d4f4a595f6da75d2d7a0fdb3d30f8f9ffeac1ebd1bd7944f73454fa16"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/runtime-updates-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/test-account-retained-baseline.json",
+      "sha256": "5858765c829034a8df3d6c811ba2df00c99be24cc9685f2260eab6ebed59cb63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/final-observations.json",
+      "sha256": "9478fdd3ca55fca83d0154438adc0dae9605a4d19bcab2ea5211214b141f7840"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/operation.json",
+      "sha256": "b5d7f0db29bb2d0b522239f1c818936fafc78616f39bda48a691348cd23de668"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/IsolatedQATests.swift",
+      "sha256": "bc2bb086c996db5b0c88bc0a00f307b96ae4a659052b1e92cdab75c9fee20918"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/build-result.json",
+      "sha256": "0ce5a5be9abe4c5ade6cabe8ac795e40d3c160f7f1199c29441c18562c306b76"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/lock-state.json",
+      "sha256": "6d9057b8ac75d2a46dc7d4fdabff3f9a0b8497d18d9733089333ed17f432e3b8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/intent.json",
+      "sha256": "2569f8fd7a9b16d0cd4a54bfe5271502e1d64462d480511eee578c3d6a7ba64b"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/result.json",
+      "sha256": "98d500ebf8dab1368fcffd3e891cf64d8ce465e5f72a64014611d4d81d0a3f57"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/summary.json",
+      "sha256": "a315f99c0d99ae5b181c1fba7a1ec5f3c2d74864e54526c8b7d6735f83d0e3ba"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/manifest.json",
+      "sha256": "9f003b64f22818df64b6ffbb2c13c1426c374a79fa4f5a77f89e72b5a3255412"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/attachments/manifest.json",
+      "sha256": "d61134084db8b6c5be3b0513f9f59f9b5f70e8b70d4206205c2e8394a5cee895"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/DEA546BB-16F7-43DA-B4BF-328D65A4C77D.txt",
+      "sha256": "cd9b15f11a03ea48f5f9e75b87bc26a117422735f3d70679f022ad2370ef7d0c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/95DF22B1-BFC0-443F-ADFB-D4FC6FDAAD2E.txt",
+      "sha256": "b9a6082fdb8be48ad8b553510d684423dc268fcb4ab9d8414f879654cab70908"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/AFFA79B6-3CA7-43C8-B68E-A0968F010B45.png",
+      "sha256": "912c122d7b21c39442257ff742b5dc53073dcaac874f08e465898f8319dae6fc"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/A09768E8-68BB-4F7C-91E6-43E642BB62A2.png",
+      "sha256": "2bbedb8769773ed2582e92e62efa3e285cfc76763b1855fc05ab6e1bb03dc692"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/CDD8068F-C035-47CD-B3D6-FE42D976BBA3.txt",
+      "sha256": "7be8a901c645debeeb96d8a4014ce3b92250c7fe9ba8917c360b70dc832878e2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/4BB29FE9-FEA0-4E50-8C12-DE11763676B6.txt",
+      "sha256": "6e3bd9ede04178a1d580f0cc9781c99044e9b34f26c5ff9017b0630c863a75c2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/C4AA789D-BA2B-4767-B061-2C67031480B9.png",
+      "sha256": "4543abeb646d33a35314b9a2bbfdb9b9a7005246c02558f24f3716808e6cff3b"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/BE6E87A4-F2AF-4350-B9F5-2F792ED74224.png",
+      "sha256": "4543abeb646d33a35314b9a2bbfdb9b9a7005246c02558f24f3716808e6cff3b"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/4B82E5DD-1156-4ACE-AD15-4D156FFE6EBC.txt",
+      "sha256": "cd54daedbd9d78650c3faeb31697e25140b38dfcf0dc65dd6b8e7afce346c399"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/ACA5BEB5-6FDE-49A3-84C1-BC6138A1FC32.png",
+      "sha256": "8b5c972dd02ac09c28a1f6ae73483298be2b1780da664034523a1c9e90368c6c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/C15F8D56-C411-47FF-90DD-AE594F3806F3.png",
+      "sha256": "e3e2268bb7f35e145a427203d3e64b6fa74b1f37cee7220643c61f2d6fec5445"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/navigation-unlocked-attachments/D3290C14-0AD7-468D-AD39-D0AC480E1EB4.txt",
+      "sha256": "321f1281f126ee7388d6981992561da2c089049035d18df5d371d3538aac204c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/attachments/A6583305-6269-456B-8B9A-85C538B76BF0.txt",
+      "sha256": "2ea5b807d58efd42a7238415adce28aa5bc0a0f3e4cb3abe37749a17bee7d49d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-main-smoke-20261025/testflight-inspection/attachments/6465F645-E4BC-4424-A1D8-6FD8F6BDA1E1.png",
+      "sha256": "1d5b108b9094183e9f47b3ccbc0a8a2741cf5d95d0297039af5c087f698125e1"
+    }
+  ]
+}

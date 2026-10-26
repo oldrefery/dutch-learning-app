@@ -1,0 +1,464 @@
+{
+  "packet_type": "D13A.8.4-ios87-device-outcome-20261025",
+  "at": "2026-10-25T18:53:21.439037+00:00",
+  "authority": "AUTH-64",
+  "authority_outcome": "fulfilled_and_consumed",
+  "operation_complete": true,
+  "stage_complete": false,
+  "review": {
+    "at": "2026-10-25T18:53:21.439037+00:00",
+    "authority": "AUTH-64",
+    "install_source": "Observed TestFlight Update action for app6752469146",
+    "before": "2.5.0(86)",
+    "after": "2.5.0(87)",
+    "update_taps": 1,
+    "testflight_after": "Open",
+    "metadata_builtByDeveloper": true,
+    "dedicated_account_verified_before": true,
+    "dedicated_account_verified_after": true,
+    "session_survived_restart": true,
+    "screens_verified": ["Collections", "History", "Settings"],
+    "visible_words": 2105,
+    "visible_collections": 22,
+    "sync_upload_count": 0,
+    "sync_download_count": 2105,
+    "last_complete_sync": "Not completed yet",
+    "learning_answers": 0,
+    "forced_sync_taps": 0,
+    "logout_or_login": 0,
+    "backend_flag_mutations": 0,
+    "new_personal_database_export": false,
+    "active_runtime_uuid_verified": false,
+    "fresh_sqlite_queue_audit": false,
+    "main_app_closed_after_test": true,
+    "test_results": {
+      "inspect-before": {
+        "at": "2026-10-25T18:47:56.075691+00:00",
+        "exit_code": 0,
+        "mode": "test",
+        "name": "inspect-before",
+        "tests": {
+          "result": "Passed",
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0
+        }
+      },
+      "flight-ready": {
+        "at": "2026-10-25T18:48:52.531423+00:00",
+        "exit_code": 0,
+        "mode": "test",
+        "name": "flight-ready",
+        "tests": {
+          "result": "Passed",
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0
+        }
+      },
+      "install87": {
+        "at": "2026-10-25T18:50:02.058235+00:00",
+        "exit_code": 0,
+        "mode": "test",
+        "name": "install87",
+        "tests": {
+          "result": "Passed",
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0
+        }
+      },
+      "smoke87": {
+        "at": "2026-10-25T18:51:28.864281+00:00",
+        "exit_code": 0,
+        "mode": "test",
+        "name": "smoke87",
+        "tests": {
+          "result": "Passed",
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0
+        }
+      }
+    }
+  },
+  "private_evidence": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/IsolatedQA.xcodeproj/project.pbxproj",
+      "sha256": "2eaeae500323f2109a853a6613b2d169924549e75e0cbbf8f36dddf943fb1b5e",
+      "bytes": 10815
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/IsolatedQA.xcodeproj/xcshareddata/xcschemes/IsolatedQA.xcscheme",
+      "sha256": "8e3e39434a50acdcbd65cc68df5bfb89ffc8d4ac804c9d947422472dc1f1c359",
+      "bytes": 2473
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/IsolatedQATests.swift",
+      "sha256": "8606c683bc7633f3afc086a3f3fad0ae15c9df27f54d1439491f7692bf14e234",
+      "bytes": 4553
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/apps-after-update-observation.json",
+      "sha256": "76bf6afcd6e636c242a704cda06c7afbbbe7e63b811e30231fe512ac04983320",
+      "bytes": 1363
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/apps-before.json",
+      "sha256": "2de327116127a2e81f571373f687dcb028bdc3f80b4113a438d2c76f26760a0b",
+      "bytes": 1345
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/build-flight-ready-intent.json",
+      "sha256": "10cdb317b828527bfe9460c3064b5e0af22b366ddadb65d110ac9d01b7a1a75f",
+      "bytes": 700
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/build-flight-ready-result.json",
+      "sha256": "50cdcfe36212f3229648544aac5fa9312a2ea9649df9352835fe3b5dbf309dda",
+      "bytes": 116
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/build-flight-ready.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/build-inspect-intent.json",
+      "sha256": "ad7ac7f1c4e4e027ac3aa7ea8e3d77a250bf9c4afd266fc776ceaa7e3d458ff7",
+      "bytes": 700
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/build-inspect-result.json",
+      "sha256": "881518a5efc3c9205c3b1386be3f011c5428a3a5c069479ae726419434c75d8f",
+      "bytes": 111
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/build-inspect.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/build-install-smoke-intent.json",
+      "sha256": "70b28152d6dfcc2def56a712c2e45cc7decc2a03dc5629e7ad7b1fa8670d11a8",
+      "bytes": 700
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/build-install-smoke-result.json",
+      "sha256": "5246c943d9e4968ab2ee079213720ed6a94d8adc841ecf05ed6c3817429ce074",
+      "bytes": 117
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/build-install-smoke.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/device-review.json",
+      "sha256": "dabc594f7d0a5fa4734ec5f90b8431f7b67a75c8416c394a288b799a45efedec",
+      "bytes": 2045
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/driver-flight-ready.swift",
+      "sha256": "d8149c27daf05f6a48c07789c57708bad965b96d113e11c547c9f71a82bab255",
+      "bytes": 2309
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/driver-inspect-before.swift",
+      "sha256": "ad977e29c29c2828c802e7e2798d717b97d992b51b86264dc180abd4ce5ba540",
+      "bytes": 1930
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready-attachments/40E192AC-3D6A-4719-AF0F-721AF3B299F1.png",
+      "sha256": "a94984ff3f0fde0f50d87bbe333d7e2d02a052414671276d70d7fc64ce2d6908",
+      "bytes": 190477
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready-attachments/694E687F-5AC6-40D6-8B3C-1A08D6DAD9B2.png",
+      "sha256": "d82fc4d1ba33f918a682eba1e2ae76b231383afecc54430d5d04d6d62b17987f",
+      "bytes": 208314
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready-attachments/82DFFE7D-C2E6-4E2C-A083-09BE0B1A5CDC.txt",
+      "sha256": "63103b40252a9f0371ed9517ed1e1bc8543e8cb9859609b4cc3ce1df1f01f3f4",
+      "bytes": 8559
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready-attachments/BF851B4D-0910-4149-AA16-A76829C9BB01.txt",
+      "sha256": "d847e5f3814a9e945bc8ba797c5116564f6c4ec16714bd53ed98187367ec755d",
+      "bytes": 4233
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready-attachments/manifest.json",
+      "sha256": "49c9c7ffb963237b3c2be81786f6eaeb72f66b306bee1341b8af9233b8a942c9",
+      "bytes": 1920
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready-intent.json",
+      "sha256": "4d365f44d29292ac0700bbfa0b7808464fbf42257c4d18e33262f956322f235b",
+      "bytes": 934
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready-result.json",
+      "sha256": "c21b9725a3cdb5192e8239da0221e0b016cb9bc9e78b46ded5caad0ddff48eda",
+      "bytes": 217
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready-summary.json",
+      "sha256": "8cbf46706d1ebff4f73bf8e4fb1b3d357485a0ceddf80b7fd650c96cf7d3479f",
+      "bytes": 954
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready.log",
+      "sha256": "d5a670cc5c5ae2bcade2ff00beecfd90e83e561e211bfe34aa7689a9efbbe561",
+      "bytes": 2091
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before-attachments/6620BF9C-143F-4001-B53A-C5DBFB99061B.png",
+      "sha256": "971f0d878d9b09b54422d867b1d6cf89601dc67b351cd927b7affb90a13429fc",
+      "bytes": 311688
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before-attachments/8180F105-1A6D-4BA0-A626-E4CC29F43B14.png",
+      "sha256": "c5e94f339cb35cca1ad2eb245c28f29836f0fcd209d42f9c4e1366fd9de77227",
+      "bytes": 52755
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before-attachments/B30DD43F-9712-4581-92B8-7664648469B3.txt",
+      "sha256": "4f944d935cbfc6785cb6ba152a86456ee0366612e754f7845c1448fba4920de8",
+      "bytes": 22029
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before-attachments/B841848A-6BCB-4F9C-9878-48B54CF56D35.txt",
+      "sha256": "b567b527c4a9a56d1e0bb228cbc8393c61f0f4936c0b13a96bb95a422687244c",
+      "bytes": 897
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before-attachments/manifest.json",
+      "sha256": "a2be037403f895486d63baaa894592299a3dbc88ab32d76afbed7bb4b237d1c8",
+      "bytes": 1927
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before-intent.json",
+      "sha256": "3aa54551b20d11c97c6e2b91fc3619b787c286f7742151ba59246fee7fde4460",
+      "bytes": 939
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before-result.json",
+      "sha256": "00e01cafd8364e379da19f339900ed539876bd808b94aa116cd1924556704989",
+      "bytes": 219
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before-summary.json",
+      "sha256": "ecbd8a7e1179ae8f2a4fc9952890013940bb8d6c2e9e90c0a41e7f332831f542",
+      "bytes": 954
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before.log",
+      "sha256": "61b58cfef0e6a4470b148b68799da97009422bc7b18eb160731dcb263f1d7ebe",
+      "bytes": 1804
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-attachments/20908CCA-2194-4A12-A30F-19A883196C8C.png",
+      "sha256": "da6842f3e166ac073cd888055d9182dc1d1ce97675f1e2b5827bd7a6f2c600f1",
+      "bytes": 199543
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-attachments/47F3D96F-CD3C-459D-8494-6402F15593FA.txt",
+      "sha256": "4d4c2a12dad77c72ed4000d56e1e5b2179c54855aa2dfb0ca675657eacf04238",
+      "bytes": 8438
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-attachments/5AEEF752-C3F0-4984-97FE-4AB90015EDF2.png",
+      "sha256": "4e6232a13eebd57e01d2daab01f86e03caac23398d3db59300373b0eac6ad124",
+      "bytes": 201811
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-attachments/871B9F0D-926A-4574-BC11-50EA5F52A6E4.txt",
+      "sha256": "30fd0d00d102bf37c8c9350bb99407bd6ed6f2416e6a98e64432130d6b631bc1",
+      "bytes": 8553
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-attachments/9A50BA9C-979D-4385-8978-E0171C4BC8C6.png",
+      "sha256": "8687332b75771f6a1f45c45972f4cd7d2909387afc84a5c89763db48726954e9",
+      "bytes": 201588
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-attachments/DCB6A49D-C98D-44E8-8849-1840E864C8CA.txt",
+      "sha256": "306e081b931d2ad3314ab0e7425506aff961e8461c97ddc1dc4f5f2f189e310a",
+      "bytes": 8559
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-attachments/manifest.json",
+      "sha256": "00189f317ac9bf790fcc1435ec1a75de2abccb90bf8a7071323b47e056bafea8",
+      "bytes": 2788
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-intent.json",
+      "sha256": "ce8bd77eff1edb8930c00e8c616d6a85a435517623eb65c6e73718c4b4590c4b",
+      "bytes": 933
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-result.json",
+      "sha256": "ecff0ca9c4a7ce101e7120edc12cc3ffcef6c2297d164718f757e2a332397d00",
+      "bytes": 214
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-summary.json",
+      "sha256": "9418a82d0059511269062866e00473a709c04a4b18907479c47739def4aa58cd",
+      "bytes": 954
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87.log",
+      "sha256": "0b1dba81182c1bd40069001772bf86d1fd5f0a848e18ace0eff3faf8d8c15c36",
+      "bytes": 2091
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/lock-preflight.json",
+      "sha256": "cc4215a43b4848eb15fee048db63c20563a4109a377f05ed89165fc506919e3d",
+      "bytes": 651
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/operation.json",
+      "sha256": "44b8cf99e0301aec0fe4c10b6ac5dc5b4554f36c18f51ed21aaa578065ea68d4",
+      "bytes": 861
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/run-driver.py",
+      "sha256": "5a0844fa45a39ea91341cf2b025cce6ab8b29990a095785c02ff7770c22adb0a",
+      "bytes": 2636
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/03E265E0-7574-4E38-8ECD-4B46EF7375B2.png",
+      "sha256": "e6f8a99432c3b6d3d598d016608f748987e741c047685b376acb610cc35d9197",
+      "bytes": 332836
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/04E16919-53AC-4784-A0C8-1646CE629A1E.txt",
+      "sha256": "4fd4c645b4d6b9e66b78a2e2fc5c1bef862ef4e677050fc66652f00161ce40c3",
+      "bytes": 9738
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/0687DA03-E2C6-4F07-996F-29DBEF3E4778.png",
+      "sha256": "e6f50b81a8508d9bd3e4fc40288227ebf9a31ecf420f0da94fc9c89d163b4f1a",
+      "bytes": 310777
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/14B4FC77-D61A-4B27-B020-AC3B43410496.png",
+      "sha256": "1fc374e418e11b972a21266f3d83ed4a6d1c9dcfa83b3e0dd4cc074ecb6fb2a8",
+      "bytes": 315439
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/24279C2D-1E06-47F5-85E8-F1121643EC56.png",
+      "sha256": "dbc0f8e6a94a595cc424e12a1e203ff08c992c2409f0cb313b07d6555bf81c67",
+      "bytes": 155582
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/2B06C392-DCC0-41D7-9C79-CC90BBE98989.txt",
+      "sha256": "a023730026eeef760b380c83ceff2887639b184afa62bf4ffe1fac0d973a6fc5",
+      "bytes": 22098
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/3A3E0EC5-0839-42ED-899B-F442FB9309AC.png",
+      "sha256": "dfc083c2046fa00bb80533c8d677234ee843fd89127364940ab039adc94fdb47",
+      "bytes": 314852
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/3CF61D4E-16F3-47B2-9F57-BD4BA91D003E.txt",
+      "sha256": "64a44cd295c31800004afb8ee68a2ce4a2ac9243c61ec4456312763f62839b74",
+      "bytes": 22083
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/4C392A9F-08BB-4FF5-86EE-A55C86A9B688.txt",
+      "sha256": "55982cd8925f84e7e8a9571d9e3805cb0443b9f4b74485bad2c80ca3c90667f6",
+      "bytes": 22083
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/8474BE2B-B45B-4C65-8062-E22218BF9C6B.txt",
+      "sha256": "c88248ea8457085772412f021cc1f535db94b29e1f356b0485b0b36e61fbbd36",
+      "bytes": 22083
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/8B79EE90-DE62-408D-A3DA-6DD47BF8586D.png",
+      "sha256": "8989aab43f729397d63ca11218840f184af79ee2c004e81a67b1b73f2a8c7c79",
+      "bytes": 340191
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/9F836093-6454-4E3C-8493-22EE8B6EC447.png",
+      "sha256": "e6f50b81a8508d9bd3e4fc40288227ebf9a31ecf420f0da94fc9c89d163b4f1a",
+      "bytes": 310777
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/A5F151D4-EB0F-46AE-9D3E-05D371B2BD37.txt",
+      "sha256": "24e258fe16d0c2622a7b523a70046f0e9e01e618276a6ecfd0bcbd67e42966eb",
+      "bytes": 23914
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/C48918BD-B629-4738-90E1-E239A9D23CD8.png",
+      "sha256": "9dda466471a4c5e8fa4dac52693668abb443dd48ae74cc0631aaa921da63fa05",
+      "bytes": 340469
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/CAADF4B8-C933-41A1-A75F-D6971473B8D3.txt",
+      "sha256": "acb402c8b5a1ccfece1e07913237c2fadbf7ee21c6f9e4bb63aa959394a7e02f",
+      "bytes": 22098
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/CB2BBE97-503C-40DE-990B-DF7A684026DE.txt",
+      "sha256": "2e78e30c93c2dcee971ab7be4e691cd57bb590271106c84a4ce604d5b7aa6f18",
+      "bytes": 53168
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-attachments/manifest.json",
+      "sha256": "029c6f05945a3062c756e7133a873599f14a29e597b10b364f15a2b587d00691",
+      "bytes": 6949
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-intent.json",
+      "sha256": "b85e563aa690b508c97e86597ffb93712c8858152f1baf4832dbb232ec82379f",
+      "bytes": 931
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-result.json",
+      "sha256": "2536526af012e4517d976cecad6ebb3338fd3056a522afddbcc33ce2117f60ef",
+      "bytes": 212
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-summary.json",
+      "sha256": "a775b98fd0381be7ae859974efcaa4c6bde18a1c6e1b2e7fab0785d3358f6fdd",
+      "bytes": 954
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87.log",
+      "sha256": "4b9ac9d7a1c9319a32bf3546834a78a49748be122c328b04b7bda6d041f93208",
+      "bytes": 2089
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/verified87-sync-status.png",
+      "sha256": "8989aab43f729397d63ca11218840f184af79ee2c004e81a67b1b73f2a8c7c79",
+      "bytes": 340191
+    }
+  ],
+  "result_bundle_manifests": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/flight-ready-bundle-pins.json",
+      "sha256": "ed7e0c3228a97e67b1114d4249b7baa6f22a34736b66f4e85f4bb80eb18c0f06",
+      "files": 36
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/inspect-before-bundle-pins.json",
+      "sha256": "f8d01ea0bd2ff985a25edf189083cd4b3eb9d82ac36a147bd4828d254d1c777f",
+      "files": 36
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/install87-bundle-pins.json",
+      "sha256": "d574713c1855af9abc3a1f050f09712da2105cd6f148e4dfaa5ca19cf837e1b2",
+      "files": 40
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios87-device-20261025/smoke87-bundle-pins.json",
+      "sha256": "3bb652ecd46514a2285193e1278242d9638f3cdff18b78810ebe6578d4a4f28f",
+      "files": 58
+    }
+  ]
+}

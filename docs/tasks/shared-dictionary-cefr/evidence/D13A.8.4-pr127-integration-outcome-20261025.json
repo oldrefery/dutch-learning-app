@@ -1,0 +1,134 @@
+{
+  "timestamp": "2026-10-25T21:08:32.025680+00:00",
+  "authorization": "AUTH-68",
+  "state": "complete",
+  "pr": "https://github.com/oldrefery/dutch-learning-app/pull/127",
+  "sourceHead": "c826509ec915f9c40a7ad0e16ed597d987501bf6",
+  "mergeCommit": "b0cf2c71b9eccb1fee2d735c4655e00c8a315c58",
+  "parent": "5be08b8e592b7c96741887289771da772735de3d",
+  "tree": "b3ad0363478a6fdec75ea4f159d3caaff7f0a020",
+  "exactTreeMatch": true,
+  "filesChanged": 4,
+  "ci": {
+    "quality": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40231424230",
+    "e2e": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40231424222",
+    "allRequiredChecks": "success",
+    "mobileTests": 2770,
+    "mobileSuites": 202,
+    "webTestsPassed": 1252,
+    "webSuitesPassed": 118,
+    "webTestsSkipped": 1,
+    "webSuitesSkipped": 1,
+    "expoDoctor": "21/21",
+    "mutationScore": 96.13,
+    "mutationThreshold": 90,
+    "mutationTimeouts": 0,
+    "qualityDuration": "31m52s",
+    "artifacts": [
+      {
+        "id": 12614560651,
+        "name": "web-mutation-report",
+        "digest": "sha256:a13def20b7c0cb4795f5888aa311bd61755962b35de95747cc5824bf6358ada6"
+      },
+      {
+        "id": 12614156509,
+        "name": "jest-coverage",
+        "digest": "sha256:25c9fd2bdd539dcd2f4e657cf0f80f16db53639e4d4a75caadad2d9a5baeedcd"
+      }
+    ]
+  },
+  "production": {
+    "url": "https://woordenaar.app",
+    "deployment": "E36wwizQWhfWWGoDGo74DeJeocRm",
+    "inspector": "https://vercel.com/rustems-projects/woordenaar-web/E36wwizQWhfWWGoDGo74DeJeocRm",
+    "state": "Ready",
+    "source": "b0cf2c71b9eccb1fee2d735c4655e00c8a315c58",
+    "aliasVerifiedAfterCi": true,
+    "siteHttp": 200,
+    "staticAssetsPassed": 12,
+    "browser": "Sign-in screen rendered; no application login or data write"
+  },
+  "limitations": [
+    "Installed iOS87 does not contain this repair. Physical queue acceptance requires a subsequent native release and bounded verification.",
+    "No backend flags, migrations, OTA, device data or native distribution changed."
+  ],
+  "pendingOperations": [],
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/operation.json",
+      "sha256": "1ff7263a2375dc2569fa585f3066ad55e37f779284e7c96cecd341f4f995c2ee"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/pre-merge-live.json",
+      "sha256": "61e902ea07c121e38513585fb7d3b6e809b407e52193f7c68f3dbaf66718b635"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/pre-merge-protection.json",
+      "sha256": "51b9d5d18b275dd9eb57f8a2a418530cab2bdd17267e1b05125d2a87fd76226e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/ready-confirmed.json",
+      "sha256": "c9dec32bf78598ac23d7837d8b1e293ef153f4c9becd412a17049a55283510e7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/merged-pr.json",
+      "sha256": "4f6f5fde2191218a39579ff508c72744e083550a27e42d091a56f6985942fef2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/quality-terminal.json",
+      "sha256": "38980541b25983b61aac7834a673c4164936509c531e33fafea5a7312951fd71"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/quality-terminal.log",
+      "sha256": "3245e928b0a46cc4f70ef9e9d20644fbef085ba0383da3596db46b98b1762e0d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/quality-watch.log",
+      "sha256": "265b946c125354069ea2f4f6c0b428527c5f482ccdc162b605497cb2346cb21a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/e2e-terminal.json",
+      "sha256": "22371ce7c6afc5463fead16c480754a0f752ab2cd9e0503d1e03777ff9db4cfc"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/check-runs-terminal.json",
+      "sha256": "f5ade283469c8b33c77ed038f3a1ac67c93388b99a4e32932795716f527f9613"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/status-terminal.json",
+      "sha256": "8de30ac3a6a03e3752c789ffcf38f3fb09d7c2b669afaead8441dd55df831693"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/artifacts-terminal.json",
+      "sha256": "68286e5c8439584e83e891028b4492b7e0833573613750a3321ad26b91576706"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/main-ref-terminal.json",
+      "sha256": "6d2b9dbd7ae8d3afd086c58a8582bc45a96f951435622527e2ab50ebe78e6f6c"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/production-site-check.json",
+      "sha256": "ff9e664e218e74e85e184b7712b1de39b50732f690b8b72bae59d6cdac64e35a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/site-assets.json",
+      "sha256": "a09a385e663b6990d5e364e3f5327a402c2f5b61364c7c458383047defe96423"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/site-headers.txt",
+      "sha256": "8f8470eb76e1d058275e502e34ad25c08f34f67f2832858379936ade9f9622dd"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/site-login.html",
+      "sha256": "c0b5e0264db423cb14b45a2e6ef8760c7069aeb45f82b6ebb06ebf1ad240f3ef"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/site-final-http.txt",
+      "sha256": "e6e426446a5e26b929b1ead2299089491a6328284b156bba6a9a5e05c69a9c71"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr127-integration-20261025/next-native-checkpoint.json",
+      "sha256": "57ef82849cb783fc20b5d834aacf68feda87b147aa909c62151cb94c2ae9960a"
+    }
+  ]
+}

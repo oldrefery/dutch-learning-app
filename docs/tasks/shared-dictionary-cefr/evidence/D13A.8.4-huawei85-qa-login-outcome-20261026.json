@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-26",
+  "authority": "AUTH-77",
+  "status": "fulfilled_consumed",
+  "model": "GPT-6.1 Sol",
+  "effort": "High",
+  "current_fixed_step": "D13A.8.4 / 4of6",
+  "current_subtask": "3of3complete",
+  "broad_milestones_remaining_including_current": 7,
+  "review": {
+    "at": "2026-10-26T00:10:34.200549+00:00",
+    "authenticated_fixture_exact_match": true,
+    "fixture_is_synthetic_local_only": true,
+    "version": "2.4.0(85)",
+    "local_words": 12,
+    "local_collections": 3,
+    "local_progress_rows_visible_count": 0,
+    "pending_total": 1,
+    "pending_words": 1,
+    "pending_collections": 0,
+    "pending_progress": 0,
+    "pending_payload_or_direction": "unverified; legacy85UIcount must not be interpreted as confirmed upload or lost data",
+    "last_sync_visible": "Oct23,8:53PM (device UI)",
+    "history": "Recently Analyzed empty; Recent Notifications empty; tab renders. Not review-event history acceptance.",
+    "learning_answers_submitted": 0,
+    "manual_sync_taps": 0,
+    "login_submits": 1,
+    "logout_taps": 0,
+    "server_before_after_equal": true,
+    "review_events_count": 10,
+    "review_events_sha256_unchanged": true,
+    "full_sqlite_backup_or_row_parity": false,
+    "main_app_closed_test_session_retained": true
+  },
+  "server_counts_before": {
+    "read_only": "on",
+    "primary_active_words": 12,
+    "primary_collections": 3,
+    "review_events": {
+      "count": 10,
+      "sha256": "4fbf09f49fc045647a0605e17bd649c1bdd401a582567c6e381db687f079ac7f"
+    }
+  },
+  "server_counts_after": {
+    "read_only": "on",
+    "primary_active_words": 12,
+    "primary_collections": 3,
+    "review_events": {
+      "count": 10,
+      "sha256": "4fbf09f49fc045647a0605e17bd649c1bdd401a582567c6e381db687f079ac7f"
+    }
+  },
+  "cleanup": {
+    "at": "2026-10-26T00:09:15.444742+00:00",
+    "exact_containers_exited": 4,
+    "images_mounts_ids_preserved": true,
+    "qa_ports_closed": [55321, 55322, 55331],
+    "own_proxy_absent": true,
+    "added_usb_route_removed": true,
+    "main_app_closed": true,
+    "test_session_retained_no_logout": true,
+    "containers_volumes_removed": false,
+    "pending_operations": []
+  },
+  "rollout_invocations": 0,
+  "installations": 0,
+  "production_changes": 0,
+  "pending_operations": [],
+  "next_checkpoint": "Owner decision on retaining localQAstate versus separate authorized Huawei replacement; prepare legitimatePlay85baseline before88publication. Do not erase pending1 or conflate QA85 with Play85.",
+  "next_model": "GPT-6.1 Sol",
+  "next_effort": "High",
+  "evidence_sha256": {
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-server-before.json": "692b55d82b8910c1e8a84966a35c1b6e40e087bc54e4d65dee55a05394fbece3",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-server-after.json": "3833ef2e99bcb22c3ab356a475cff905e96b2fdc15a2eb5be82ccddbc18c8db4",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-after-login.xml": "018e96441780dcf74bbcce8d9e296d7182bd2ab63093430184256e07d32396e7",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-settings-top.xml": "a28a6cff268d82d8dd9b3d64eef4fc4edf66ff5209095735ad3c5cb19e3dfe9c",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-settings-scroll1.xml": "99445f3277131183522241af8ec658db04b14adfe0e6156703520e503b418ea8",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-settings-final.xml": "99445f3277131183522241af8ec658db04b14adfe0e6156703520e503b418ea8",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-settings-final.png": "337efae5cc944f92e9bc3e16e45017b256a5d9eb71c5c4291bdc4b71d5c6397b",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-history.xml": "43bc470d1a10102a3e73adf089ba8d717cd8c3b1d81d5dc1b0668d1c3124242e",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-final-review.json": "8b696685f1857f9f33060085498c7b37ebf1c16e6cf7bfdade7a8c5385bfcf21",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/auth77-cleanup-review.json": "5e86d4b66be9dab1848f4d9199a7fa0810998d43338319c0a29727c58f17de07",
+    "reports/shared-dictionary-cefr/d13a84-android88-rollout-preparation-20261026/huawei-play-transition-decision.json": "cd106129aa22b562020770e2aecfe73521dbf556a20e16029018c5d5025a29a9"
+  },
+  "persistence": "local-only"
+}

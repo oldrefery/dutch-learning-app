@@ -1,0 +1,275 @@
+{
+  "at": "2026-10-25T22:14:50.842103+00:00",
+  "status": "readiness_review_complete_release_not_ready",
+  "stage": "D13A.8.4",
+  "execution_authorized": false,
+  "integrity": {
+    "receipt_pins_verified": 648,
+    "failures": 0,
+    "artifacts_match": true
+  },
+  "live_reads": {
+    "github": {
+      "observed_at": "2026-10-25T22:11:28.739Z",
+      "source": "GitHub connector, fetch_commit(main) and get_commit_combined_status",
+      "main_sha": "b0cf2c71b9eccb1fee2d735c4655e00c8a315c58",
+      "message": "fix: reconcile acknowledged learning word uploads (#127)",
+      "statuses": [
+        {
+          "context": "Vercel",
+          "state": "success",
+          "target_url": "https://vercel.com/rustems-projects/woordenaar-web/E36wwizQWhfWWGoDGo74DeJeocRm"
+        }
+      ],
+      "scope": "Current main and commit status; full Actions evidence retained in AUTH68 receipt, not rerun."
+    },
+    "backend": {
+      "observed_at": "2026-10-25T22:10:46.293128+00:00",
+      "read_only_confirmed": true,
+      "new_db_flags_false": 15,
+      "legacy_flags_true": 3,
+      "two_endpoint_environment_gates_false": true,
+      "production_writes": 0,
+      "provider_invocations": 0
+    },
+    "ota": {
+      "runtime": "93e0e71f0034fe480f43f8adf76271bb264dfd61",
+      "channel": "production",
+      "branch": "production",
+      "paused": false,
+      "compatible_ios_groups": 0,
+      "device_selected_runtime_proven": false
+    }
+  },
+  "gates": [
+    {
+      "id": "R01",
+      "state": "partial",
+      "accepted": "iOS88 exact signed artifact, TestFlight route and installed physical repair verified; current production runtime has0compatible OTA groups.",
+      "remaining": "Actual active88 update UUID/launch binding and protected queue/data comparison. Android86 is older than current fixes."
+    },
+    {
+      "id": "R02",
+      "state": "open_enabled_path",
+      "accepted": "Dormant endpoint/source and disabled/local qualification retained.",
+      "remaining": "Exact hosted dependency/JWT/CORS and enabled client/provider contract under an approved cohort; no enabled-path claim while gatesOFF."
+    },
+    {
+      "id": "R03",
+      "state": "allocated_not_reusable",
+      "accepted": "iOS86/87/88 already consumed; Android86 draft occupied.",
+      "remaining": "Fresh availability/version allocation only if another build is selected; do not reuse88or86."
+    },
+    {
+      "id": "R04",
+      "state": "partial",
+      "accepted": "iOS88 JS/map identity and7of10dSYMs retained; actual87\u219288forward repair of stuck upload passes.",
+      "remaining": "Three vendor symbol gaps documented; broad main-ID recovery/compatible fallback and exact coordinated rollback rehearsal not proven by this repair."
+    },
+    {
+      "id": "R05",
+      "state": "partial",
+      "accepted": "AUTH57 encrypted backup and independent restores; AUTH58 exact67th migration applied with preservation. Fresh15newDBflagsOFF,3legacyON,2endpointgatesOFF.",
+      "remaining": "Fresh protected device comparison now; refresh production backup/delta/queue boundary immediately before later mutation, including explicit managed-service exclusions. Do not label the11:59snapshot current after later learning."
+    },
+    {
+      "id": "R06",
+      "state": "held_zero",
+      "accepted": "No reviewed real-card mapping; real-link ceiling0.",
+      "remaining": "Keep zero or explicitly approve a reviewed mapping/cohort/receipt scope; synthetic rehearsal is insufficient."
+    },
+    {
+      "id": "R07",
+      "state": "held_zero",
+      "accepted": "No new paid requests permitted; historicalUSD0.56unknown reserve retained.",
+      "remaining": "Exact production policy/models/prompts/media/origins/admin/quotas/enforced dollar-cap and unknown-outcome handling before any paid activation."
+    },
+    {
+      "id": "R08",
+      "state": "accepted_current_source",
+      "accepted": "Fresh mainb0cf2c7 matches iOS88. AUTH68 fullCI and production smoke retained; current Vercel commit status success.648receipt pins match.",
+      "remaining": "Recheck exact deployment/CI only if source/alias changes or before later release; current inspection did not rerunCIorbrowser smoke."
+    },
+    {
+      "id": "R09",
+      "state": "preparation_only",
+      "accepted": "AUTH53through71 bounded completed operations remain consumed; latest request authorizes read-only readiness and next-step preparation.",
+      "remaining": "Separate exact authority for new personal capture, build/distribution, paid call, flags/operator/linking or broader execution."
+    },
+    {
+      "id": "R10",
+      "state": "open_if_linking",
+      "accepted": "Local selective administrator compensation and monotonic receipt rehearsal retained.",
+      "remaining": "Hosted operator installation and actual server-to-device compensation for any included linking scope; no real links now."
+    },
+    {
+      "id": "R11",
+      "state": "accepted_internal_ios",
+      "accepted": "Apple agreement/authentication hold resolved;88Testing for existing Team(Expo),3testers; installed TestFlight88and physical smoke pass.",
+      "remaining": "No public AppStore approval/publication claimed or requested."
+    },
+    {
+      "id": "R12",
+      "state": "open_android",
+      "accepted": "Retained Android86AAB hash and saved draft7; older85remained available at the observed boundary.",
+      "remaining": "Android86omits PR126/127 fixes. Prepare a new current-source artifact with fresh number/store check before any rollout; qualify Play-signed main-ID upgrade on a dedicated account. Console state not freshly reread in this review."
+    },
+    {
+      "id": "R13",
+      "state": "partial",
+      "accepted": "iOS87 offline/delivery/personal preservation proof retained;88UI1\u21920and restart/account/navigation pass. Earlier isolated iOS/Android replacement QA passes within its limits.",
+      "remaining": "88active-runtime/protected data proof; Android current-artifact/store-path acceptance; paired performance and broader recovery acceptance. Existing87offline evidence is not relabeled88offline evidence."
+    }
+  ],
+  "next_proposal": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/next-device-preservation-proposal.json",
+  "next_proposal_sha256": "c558c1201d41ce8b58c64ff546743ab16673dc82d0caca9bf40959672465ec78",
+  "next_step_recommendation": "Finish the narrow iOS88data/runtime proof first; it closes the gap immediately adjacent to the verified UI repair without changing backend gates or generating another answer. Then prepare current-source Android delivery and the remaining coordinated activation/recovery/performance scope.",
+  "progress": {
+    "current_step": 4,
+    "steps_total": 6,
+    "fixed_steps_completed": 3,
+    "readiness_review_complete": 3,
+    "readiness_review_total": 3,
+    "broad_milestones_remaining_including_current": 7,
+    "broad_milestones": [
+      "D13.6",
+      "D13A.8",
+      "D13A.9",
+      "D14.1",
+      "D14.2",
+      "D14.3",
+      "D14.4"
+    ]
+  },
+  "pending_operations": [],
+  "device_action": false,
+  "new_capture": false,
+  "backend_write": false,
+  "paid_calls": 0,
+  "observation_window_started": false,
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/embedded-runtime-target.json",
+      "sha256": "0d8d60a2eb0548d6bede6e23d050c5c14cf555205fa88d851cf216004502af12"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/endpoint-gate-representation.json",
+      "sha256": "f068d122062570174f54143f552b9eedadefba2cb933924d843550078119efce"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/evidence-integrity.json",
+      "sha256": "3cdc442a2fd8497464212b23990f589972d8b1ae30d89d878bb8441dcfcc12f7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/github-review.json",
+      "sha256": "fc976e44e9ca0e2435f7716af7a78a18f099e4bbd2154642debc47e17f1ded8b"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/identity-review.json",
+      "sha256": "a21127b199dff5cbc27037cb5c0caa1f69b55144417e49cfdb339002e3089455"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/next-device-preservation-proposal.json",
+      "sha256": "c558c1201d41ce8b58c64ff546743ab16673dc82d0caca9bf40959672465ec78"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/operation.json",
+      "sha256": "9591e76d2cf016ae3d6cf01a9f871cdedacad37cd9ab2605e0606f3c7f115afa"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/ota-raw.json",
+      "sha256": "453d5aacda982a4c2d0778594fb8cc50d4f64261b037c27fd523a9f3ee9fe34e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/ota-review.json",
+      "sha256": "0f0a7bf7f1d4feb06fc1e28f018e5b7802311cf8940a8e93b2261d844889aa85"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/production-channel-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/production-channel.log",
+      "sha256": "3c4937eaf1e32697c39abd81429c0435589803e4c25338a399aaedba1263e20b"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/project-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/project.log",
+      "sha256": "ea5730ee5dc012aae3ca591da6b194141bfc3c4670c8507cb4d3878b5913cbe0"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/read-eas.py",
+      "sha256": "f2a18c01e30c22e8411d80ad0de29ff6445d4e97fb00d34a01a79543bec96dff"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/read-release-gates.py",
+      "sha256": "6af04d8809a0369e712dcc5dc41ceb4654541d4c82a5635fed54902a20c3c0d4"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/readiness-review.json",
+      "sha256": "71a9abb4df160cf958920ff5cb5d2bb2c4029d77df01b47c3e016111c0c42c29"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/release-gates-review.json",
+      "sha256": "5b70cdb52a570853bd56d74acad0e4505e46efed243b816fa9890adce432d6a5"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/runtime-updates-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/runtime-updates.log",
+      "sha256": "f03ad90b1f3b500f7ace6adc884c921bfea39a663993ed5fda060db3c6e0d4ee"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/source-gap-review.json",
+      "sha256": "41511c204a0be27c9bd0278bff6d624a83b5ca239f654159227b560a7c25dd9a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/verify-evidence.py",
+      "sha256": "72e70042af2fd42ab9b05fad389ff93903dbb259dd47db79a4a835543d911a35"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-post88-readiness-20261025/write-review.py",
+      "sha256": "b5a4bbe5ea1a6f2fd5b497911d20f57b169d4ea78124f84dda3440dfb1b51708"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-build88-outcome-20261025.json",
+      "sha256": "bd60f76fbb22c0c80544e8aff68bf93096d4378d49b767c073c4160cfb1d8538",
+      "sha256_before_commit_formatting": "067a660eb1bbd511322f8e46076a0844e69a0b39935b466902a1cb85bde3dd58"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-testflight88-outcome-20261025.json",
+      "sha256": "4c0bd6c0592817edc4a2a431ade8b38931ade6b914f59a12215a0f386c935f3b",
+      "sha256_before_commit_formatting": "ee36eb09b69b4733a281f068388715de92382a954b4018872a2530ed2f63db41"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-ios88-device-outcome-20261025.json",
+      "sha256": "37879a21d1e8b0aeaa12eff1e9e19c73bbee02613ad45553d78103139cb338b2",
+      "sha256_before_commit_formatting": "324ae0d35c49d86d7673468573b41161bed6bdc368f05de1a698873561dfa079"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-pr127-integration-outcome-20261025.json",
+      "sha256": "e72b97a31a820771b3773137d03671e359feb6b7408e14ef824aaefed5eb78d9"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-backup-refresh-outcome-20261025.json",
+      "sha256": "92ca9924d911bd821db7c20337ad8dfcc66903aa9e07dec7121a28c803562197"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-capability-apply-outcome-20261025.json",
+      "sha256": "9b5837d1562ed67672908eefba22a35fc31413469ca798b8ea3af5a3280158f4"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-internal-draft-outcome-20261025.json",
+      "sha256": "0137d25778b8b0a1750412ed08a0bae2dc821f070e6641b06eb5bb15873aac12"
+    },
+    {
+      "path": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-ios87-offline-outcome-20261025.json",
+      "sha256": "03ca8986db9e7ecf3bb7d00e4f98501a2b098694e303e9bf732716ec4ba7599d"
+    }
+  ]
+}

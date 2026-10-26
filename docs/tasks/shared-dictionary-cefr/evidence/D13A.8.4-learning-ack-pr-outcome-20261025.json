@@ -1,0 +1,122 @@
+{
+  "authority": "AUTH-67",
+  "branch": "feature/d13a84-learning-ack",
+  "state": "published_ci_pending",
+  "scope": [
+    "apps/mobile/src/db/wordRepository.ts",
+    "apps/mobile/src/services/syncManager.ts",
+    "apps/mobile/src/services/__tests__/syncManager.test.ts",
+    "apps/mobile/src/db/__tests__/acknowledgedLearning.sqlite.test.ts"
+  ],
+  "source_sha256": {
+    "apps/mobile/src/db/wordRepository.ts": "10420aeec6ae6bdff9a23ee6f530b97008b2b81642a398c141f7567279fba74d",
+    "apps/mobile/src/services/syncManager.ts": "314b4092896a1e59c0007e5cf5bed72daddefd86214509bd12b53d9f09b768dc",
+    "apps/mobile/src/services/__tests__/syncManager.test.ts": "806eea57ddee8391cabe4ece4778d686d2760bbdda49e8de70581f49cc55a503",
+    "apps/mobile/src/db/__tests__/acknowledgedLearning.sqlite.test.ts": "aae299b04c06eaef5dd5d613a1b2a8bc4c8d9e802a4976386ff63d9f0e5854c2"
+  },
+  "allowed": [
+    "commit",
+    "push",
+    "draft PR",
+    "automatic CI",
+    "possible Vercel preview"
+  ],
+  "excluded": [
+    "merge",
+    "production deployment",
+    "native build/upload/install",
+    "OTA",
+    "backend mutation"
+  ],
+  "worktree": "/Users/devrush/.codex/worktrees/d13a84-learning-ack/DutchLearningApp",
+  "base": "5be08b8e592b7c96741887289771da772735de3d",
+  "commit_message": "fix: reconcile acknowledged learning word uploads",
+  "head": "c826509ec915f9c40a7ad0e16ed597d987501bf6",
+  "precommit_summaries": [
+    "Test Suites: 202 passed, 202 total\nTests:       2770 passed, 2770 total",
+    "Test Suites: 1 skipped, 118 passed, 118 of 119 total\nTests:       1 skipped, 1252 passed, 1253 total"
+  ],
+  "pr_number": 127,
+  "pr_url": "https://github.com/oldrefery/dutch-learning-app/pull/127",
+  "preview": "success",
+  "preview_ui": "De Woordenaar sign-in rendered in existing Chrome session",
+  "passed_checks": [
+    "database",
+    "web-fixtures",
+    "lint-e2e-tests",
+    "Vercel",
+    "Vercel Preview Comments"
+  ],
+  "pending_checks": ["quality"],
+  "local_watcher": "stopped; remote workflows not cancelled",
+  "checked_at": "2026-10-25T20:11:44.048067+00:00",
+  "checks": [
+    {
+      "name": "lint-e2e-tests",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40228373873/job/121274609499"
+    },
+    {
+      "name": "web-fixtures",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40228373906/job/121274610376"
+    },
+    {
+      "name": "database",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40228373906/job/121274610409"
+    },
+    {
+      "name": "quality",
+      "status": "IN_PROGRESS",
+      "conclusion": null,
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40228373906/job/121274610136"
+    },
+    {
+      "name": "Vercel",
+      "status": "SUCCESS",
+      "conclusion": "SUCCESS",
+      "url": "https://vercel.com/rustems-projects/woordenaar-web/J8djbFbLgTBqU3UhLBxHAmBFuoS4"
+    },
+    {
+      "name": "Vercel Preview Comments",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "url": "https://vercel.com/github"
+    }
+  ],
+  "stage_complete": false,
+  "published_files": [
+    "apps/mobile/src/db/wordRepository.ts",
+    "apps/mobile/src/services/syncManager.ts",
+    "apps/mobile/src/services/__tests__/syncManager.test.ts",
+    "apps/mobile/src/db/__tests__/acknowledgedLearning.sqlite.test.ts"
+  ],
+  "precommit": {
+    "mobile_suites": 202,
+    "mobile_tests": 2770,
+    "web_suites": 118,
+    "web_tests": 1252,
+    "web_skipped_suites": 1,
+    "web_skipped_tests": 1
+  },
+  "preview_url": "https://woordenaar-web-git-feature-d13a84-learning-ack-rustems-projects.vercel.app",
+  "preview_validation": "Vercel success; application sign-in rendered in existing Chrome session. Anonymous HTTP redirected to Vercel login. No application login or data mutation.",
+  "native_validation": "Build87 unchanged; repair not delivered to iPhone.",
+  "next": "Read terminal CI for exact PR127 head c826509, inspect any failures, then review draft readiness. No merge or release authorization.",
+  "private_evidence_sha256": {
+    "operation.json": "9d67fdd5d212765ef923fdbf4b52c2cc1adc0dc98407f982b85d99ae4a031f68",
+    "commit.log": "130e43f71f291a68b03dd4ce0f08232400b3a7e27c2370dd2d8c75703d5a572c",
+    "pr-body.md": "34ba57795f868bd2c80087940e9ddc867e8368439c66d8335d67eaae404ae16e",
+    "pr-initial.json": "c64e8c2d8d7b2698c8f3eef088998118c139f79438774f32b3dcb221f8c143cc",
+    "runs-initial.json": "b7393cba407a8c7c54c7f9d86953ad74012db854be48abd7473274d34bd872a7",
+    "checks-watch.log": "e5d224224a9789b101386184baf8bab365481a15cfbbcc46944588ae091f696a",
+    "pr-checkpoint.json": "b1c6d923e7d02c4be32b0f84ed3a77a743f7592f884624ba5649c86cc99330a5",
+    "quality-checkpoint.json": "737abe1c25a3985f02b1aa1a1871c4cff838a32f09413907cfbc713ed8e2331c",
+    "preview-check.json": "74d51f8e039cbfdff65abca736750a61bfa42b16ffc73ef3898a6e0225d0f5fc",
+    "preview-browser-check.json": "069deff7b29e3b4ea8b0f1493f5b7683136067a3b9626526bbe587633ae0853e"
+  }
+}

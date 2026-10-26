@@ -1,0 +1,399 @@
+{
+  "packet_type": "D13A.8.4-build87-outcome-20261025",
+  "at": "2026-10-25T18:29:01.903133+00:00",
+  "authority": "AUTH-62",
+  "authority_outcome": "fulfilled_and_consumed",
+  "operation_complete": true,
+  "stage_complete": false,
+  "artifact": {
+    "at": "2026-10-25T18:22:12.499884+00:00",
+    "status": "passed",
+    "artifact": "builds/app-2.5.0-87-sync-status.ipa",
+    "artifact_sha256": "7d167077fb841601703427ade84a6e47864c1c3870cec50e212362aa32013488",
+    "bytes": 24130630,
+    "bundle": "com.oldrefery.dutch-learning-app",
+    "version": "2.5.0",
+    "build": "87",
+    "team": "7FQ395U52U",
+    "codesign_deep_strict": true,
+    "distribution": "App Store",
+    "get_task_allow": false,
+    "profile_uuid": "040326cd-806e-40fc-b552-806fb5f28cbf",
+    "profile_and_certificate_match_existing86": true,
+    "certificate_sha256": [
+      "9bd403c3e6d3d86316beb1263ddad68ca5c83362360ee2545f2e95c7c49c155c"
+    ],
+    "profile_expiration": "2027-07-24T11:47:54",
+    "runtime_version": "c2e0bc63ed30aef49749eb7a6c00804aabf165d1",
+    "fingerprint_files": [
+      {
+        "path": "EXUpdates.bundle/fingerprint",
+        "sha256": "9732ff453cd73d5228f1de49e7d11bd6c6825ddd3d20069f3ddb49878ef4a07f"
+      }
+    ],
+    "updates_enabled": true,
+    "channel": "production",
+    "qa_build": false,
+    "embedded_update_id": "52abba6d-6cc2-4311-96ba-1a38100266a9",
+    "javascript_sha256": "4b9aed9b1bc9a38b2e461c5c22888da11810b0cbca1c13d90c0908ff47a1418c",
+    "embedded_repair_markers": [
+      "To upload",
+      "To download",
+      "Last complete sync",
+      "Not completed yet"
+    ],
+    "actual_build_source_files_matched": 696,
+    "source_commit": "5be08b8e592b7c96741887289771da772735de3d",
+    "overlay_patch_sha256": "aa6df97dd718c5c67b27e100ef4d8d4a2f1b624795ab99a6e879cb1768007f48",
+    "installed_or_launched": false
+  },
+  "native_symbols": {
+    "binaries": 10,
+    "matched_dsyms": 7,
+    "uncovered": [
+      "Frameworks/React.framework/React",
+      "Frameworks/ReactNativeDependencies.framework/ReactNativeDependencies",
+      "Frameworks/hermesvm.framework/hermesvm"
+    ],
+    "full_native_symbol_coverage": false
+  },
+  "source_map": {
+    "at": "2026-10-25T18:24:06.541093+00:00",
+    "artifact_sha256": "7d167077fb841601703427ade84a6e47864c1c3870cec50e212362aa32013488",
+    "javascript_sha256": "4b9aed9b1bc9a38b2e461c5c22888da11810b0cbca1c13d90c0908ff47a1418c",
+    "hermes_recompiled_output_equal_ipa": true,
+    "source_map": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/main.jsbundle.map",
+    "source_map_sha256": "6c5f3456312093520b16c15a9ac07698903fb897d165dc37d8e40416b586eed7",
+    "source_map_bytes": 17225838,
+    "source_count": 2617,
+    "changed_production_sources_match_freeze": [
+      {
+        "path": "apps/mobile/src/app/(tabs)/settings.tsx",
+        "sha256": "54f913e00dadb407c205a0c20d5d120f8d181f32fd04a47912340358f795928e"
+      },
+      {
+        "path": "apps/mobile/src/services/syncStatusService.ts",
+        "sha256": "b12133cd8322fbc31f71b939777d743afd5a8eb40e7ae964d446da72937e5bc8"
+      },
+      {
+        "path": "apps/mobile/src/db/learningSyncStatus.ts",
+        "sha256": "93d16cae2b43d01ce3ee5bf9465e13f66805f244daff8fe7bfc0cbbf631ca0fd"
+      }
+    ],
+    "hermes_function_offsets_present": true,
+    "sentry_debug_id": null,
+    "binding": "Same Xcode bundling output path/log; same-compiler Hermes output equals IPA JS; changed source contents match frozen candidate.",
+    "source_map_uploaded": false
+  },
+  "ota": {
+    "at": "2026-10-25T18:23:53.328352+00:00",
+    "channel": "production",
+    "paused": false,
+    "branch": "production",
+    "single_unconditional_mapping": true,
+    "runtime": "c2e0bc63ed30aef49749eb7a6c00804aabf165d1",
+    "runtime_equals_ipa": true,
+    "compatible_ios_update_groups": 0,
+    "writes": 0
+  },
+  "apple_group": {
+    "at": "2026-10-25T18:25:31.105395+00:00",
+    "app": "6752469146",
+    "group": "Team (Expo)",
+    "group_id": "5e99b483-870c-4240-b01e-ad0d15a1a206",
+    "testers": 3,
+    "builds": 8,
+    "distribution_label": "Automatic for Xcode Builds",
+    "group_changes": 0,
+    "upload": false,
+    "individual_tester_data_retained": false
+  },
+  "native_compilation_attempts": 1,
+  "eas_build_attempts": 2,
+  "first_attempt": "Stopped before native compilation on fingerprint mismatch; no IPA.",
+  "recovery": "Materialized pinned npm-ci dependency topology; same application code/lockfile; runtime equality check retained.",
+  "verification_notes": [
+    "Sandbox codesign trust error resolved by verification with system trust store; no trust/credential change.",
+    "Minimal update manifest has no expoClient; QA/version checked in embedded EXConstants config.",
+    "Metro plaintext differs from Hermes bytecode; same-compiler bytecode regeneration matched IPA exactly."
+  ],
+  "cleanup": {
+    "at": "2026-10-25T18:26:13.867462+00:00",
+    "temporary_build_directories_removed": [
+      "/private/var/folders/n_/jv_c0yvs743c84760xwjpvjw0000gn/T/woordenaar-sync-status-release87-ios-z1qr93m9",
+      "/private/var/folders/n_/jv_c0yvs743c84760xwjpvjw0000gn/T/woordenaar-sync-status-release87-ios-71rxmim3"
+    ],
+    "scope": "Only two task-created temporary local-build directories after terminal reconciliation and retention.",
+    "ipa_retained": true,
+    "source_map_retained": true,
+    "dsym_archive_retained": true,
+    "metro_input_and_recompiled_hbc_retained": true,
+    "xcode_archive_retained": true,
+    "candidate_source_and_materialized_dependencies_retained": true,
+    "free_bytes_after": 19848065024
+  },
+  "stage": "D13A.8.4",
+  "fixed_substages_completed": 3,
+  "fixed_substages_total": 6,
+  "broad_steps_remaining_including_current": 7,
+  "unknown_liability_usd_held": 0.56,
+  "upload": false,
+  "install": false,
+  "ota_publish": false,
+  "backend_mutation": false,
+  "pending_operations": [],
+  "next_action": "Prepare/review one exact IPA87 TestFlight submission to existing Team (Expo), including automatic internal delivery to its three testers; refresh store/OTA/backend gates and source/artifact pins before separate upload authorization. Device installation and protected runtime/owner/queue baseline remain separate; no learning test yet.",
+  "persistence": "Local-only IPA, source/version overlay, receipts and task evidence; no commit/push.",
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/actual-build-source-pins.json",
+      "sha256": "784aac98fd291e15b96c9e28a79e35f2935db4bad052a92409faece257f5fbad",
+      "bytes": 88916
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/actual-fingerprint-local.json",
+      "sha256": "324caa331c5d9c91b70ff62709e4813a915f210c373d030c5be13f1523de773b",
+      "bytes": 62192
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/apple-group-review.json",
+      "sha256": "8fa642f13adbd930972affa1e452b329154e2986721646fa518e2b87d8d86c70",
+      "bytes": 320
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/apple-inventory-restored.json",
+      "sha256": "dd2c82e3f5c321385f20a5e571239c3651b1923f2d6fe3685236c82ba8119fa4",
+      "bytes": 554
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/build-retry-slot.json",
+      "sha256": "76fc38ae9ebaa4774cd809a953e5bb98bb9b31688c6ee65660cd26dcd6e5e0d7",
+      "bytes": 1625
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/build-slot.json",
+      "sha256": "54f574617076abc392e6d2aced34ff4fd46720a9aa54e258ff6b836a836c963a",
+      "bytes": 1422
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/check-repaired-fingerprint.cjs",
+      "sha256": "25374eef55317344bc1ab35bbdd5be81da8d2648b326ff5aea540d1407f46eae",
+      "bytes": 1272
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/cleanup-review.json",
+      "sha256": "b3222320421f4532e313113d81780dd34d1e5c15d171e3d604d58d678ab868a5",
+      "bytes": 704
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/codesign-verify.log",
+      "sha256": "2a6ed73092e6d4d3861049ef8714fe52949c0ada14db94e8113d0f66666f618a",
+      "bytes": 341
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/compiled-dictionary-flags.js.txt",
+      "sha256": "dd16abb9e8d7bf25c5f00bfa9e4837ee72e95111dcb3d195a1f228aac2ca8c03",
+      "bytes": 1277
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/compiled-flags-review.json",
+      "sha256": "e232130d55d83a3ab22af90ff227f8a2958e400f08a1c36b0bb46a196a878001",
+      "bytes": 437
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/dependency-topology-repair.json",
+      "sha256": "5790ccba2b8ebe424581e0f26761cb411612dc6c0cc334b9d24ca418b9c60f1a",
+      "bytes": 423
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/diagnose-fingerprint.cjs",
+      "sha256": "2f5c18f4230ff8c9578d6a85256a72d1e3d055d9bd0f2b125990d406bcfc86b2",
+      "bytes": 1385
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/fingerprint-diff-private.json",
+      "sha256": "bcd6553db0c5ba54191ceadcf58364b4d3bce1eb4ba729515d91f39a0b9760b0",
+      "bytes": 119763
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/hermes-verification.jsbundle",
+      "sha256": "4b9aed9b1bc9a38b2e461c5c22888da11810b0cbca1c13d90c0908ff47a1418c",
+      "bytes": 7218464
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/hermes-verification.jsbundle.map",
+      "sha256": "439ad01902b53d8737b58ca68f63f0446cce711ab28ee4fe6f4a13b81144e6aa",
+      "bytes": 4738716
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/hermes-verification.json",
+      "sha256": "ed8fc09a8a376960c859a89b96379b7713065dc05667de8b8ae79f9bd1873621",
+      "bytes": 500
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/hermes-verification.log",
+      "sha256": "fd41bbd40bf39376c4a47ed7ab7f269b25aa5b7d7e47fcfe41af5422ba2727cd",
+      "bytes": 27219
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/identity-before-build.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/identity-before-project.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/identity-review.json",
+      "sha256": "59673b6150c026bed01094d866df4973bed77bba6f2edc546920dce53f4b5dc4",
+      "bytes": 197
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/ios-artifact-review.json",
+      "sha256": "c805a5f7cbf1e1b463b66a076ebefd15fe3f88c88ca92a5171c0918795c2d6b5",
+      "bytes": 1515
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/ios-build-retry.log",
+      "sha256": "a6890f7fe50c6c0615a9f80fc747e5416d1d6ff0096f1b53608bfaae94b5ac31",
+      "bytes": 170546
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/ios-build.log",
+      "sha256": "c9648609affc0b9562b6b8be6c1701e22bbdcaf1d2a08ce55f171d04cb569819",
+      "bytes": 92657
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/ios87-dsyms.tar.gz",
+      "sha256": "5937562e53b2a4968e98fe8f79c3e4020b3c1592250188ece7d9cf0866799a0c",
+      "bytes": 36199340
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/main.jsbundle.map",
+      "sha256": "6c5f3456312093520b16c15a9ac07698903fb897d165dc37d8e40416b586eed7",
+      "bytes": 17225838
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/metro-input.jsbundle",
+      "sha256": "8a506a2e2208d1d1436781248279e0afe590df2dc4075d3eb8deb43549deb162",
+      "bytes": 12714238
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/native-symbols-review.json",
+      "sha256": "39bf68f5818778892af305131ab9d87283d7aad321f86f3b708c4ca001b9cb0e",
+      "bytes": 10013
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/operation.json",
+      "sha256": "16fdc655f7b763526a7c6e970987315f03c3e45f689a2617a9b41228882f5357",
+      "bytes": 1734
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/ota-raw.json",
+      "sha256": "48f0be4d182ecf7aee9c18df12a301950c66394699eda78fa6b59aaa211a2817",
+      "bytes": 17637
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/ota-review.json",
+      "sha256": "7d47c83ae4da058e76610540f32a53a74ab35d80b5da2233646ae247c543f138",
+      "bytes": 298
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/production-channel-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/production-channel.log",
+      "sha256": "ebf5d851135d6570689d00765964871076d3b79a6dc995ed6041e6b3652b0ab6",
+      "bytes": 17649
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/project-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/project-info.log",
+      "sha256": "ea5730ee5dc012aae3ca591da6b194141bfc3c4670c8507cb4d3878b5913cbe0",
+      "bytes": 316
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/project.log",
+      "sha256": "04a95c84c95b176b1aa1dcc53cdec7c61b931c4a576e0febac81716c7d6cc4a5",
+      "bytes": 200
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/read-eas.py",
+      "sha256": "c23c25f145b57de6818f79776b9b44b854d87a8290f99ecde5d6d641c6d423ca",
+      "bytes": 1844
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/repaired-fingerprint-diff.json",
+      "sha256": "ba8b708fc4e3027e2100fea795f864238cb6c4804ef0b86f886ebe86ce877beb",
+      "bytes": 179
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/repaired-source-fingerprint.json",
+      "sha256": "10126870a10e4db49eb18319f7b7ac4ab88a7b3126a5d4913134de5d634b5503",
+      "bytes": 62062
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/retain-source-map.py",
+      "sha256": "f07e24decb93d7bd8631d2588ab261feee52fac2c2d8c0eeb6cf51e43d2b6129",
+      "bytes": 2744
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/retain-symbols.py",
+      "sha256": "9814b8042ee3d4abe3b46de913c44d1c81aa2381aaa84ec494ec3a6b0fd82525",
+      "bytes": 3689
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/retry-reconciliation.json",
+      "sha256": "1954c0221d8bcaa13f9c4c67a6b97beeb73e147e3eff4e2c6a347faa80b68842",
+      "bytes": 733
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/run-local-build-retry.py",
+      "sha256": "6ef0386fc0c7e65e4603bfba4aff568afd09e8bfbc7c10e7761ce014349d6630",
+      "bytes": 4640
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/run-local-build.py",
+      "sha256": "54006b91a5bbbad30979147008d6b98a942e32149b92077999b78f47f834f371",
+      "bytes": 4571
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/runtime-updates-identity.log",
+      "sha256": "e0f0f56e9936ed2e450aa3fa2cb0ae07f83fe6ab58fe1e8aaafe94ae64a61f63",
+      "bytes": 142
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/runtime-updates.log",
+      "sha256": "2f1b19bcb290c6f457256ca876e96744b58073f53cb2ca3a6734df02933ed992",
+      "bytes": 175
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/source-map-review.json",
+      "sha256": "193465f5d071ad0ccea2d1a2a39538d433a07c4eeda433dd6345d7e2b7725282",
+      "bytes": 1283
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/testflight-upload-proposal.json",
+      "sha256": "6b3a1429a6fd4c9fc91c07142e18dc57513c3cb6655003cb213f143d75eb07a6",
+      "bytes": 1260
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/verify-ios.py",
+      "sha256": "58df99a382d3980e40e062b031cb2c306ae21a5e6b85fcc09c6e025b839c3991",
+      "bytes": 5590
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-build87-outcome-20261025/xcode-build-private.log",
+      "sha256": "943e28c8e0e40495fc3e6ad9f10484b9dba0d0dfde55add441318935adbe05c1",
+      "bytes": 18474726
+    }
+  ]
+}

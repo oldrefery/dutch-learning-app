@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-25T13:18:57.129470+00:00",
+  "authorization": "AUTH-59",
+  "status": "fulfilled_and_consumed",
+  "installed_version": "2.5.0(86)",
+  "dedicated_test_account_confirmed_in_settings": true,
+  "application_closed_test_session_retained": true,
+  "personal_preservation": {
+    "at": "2026-10-25T13:18:57.129470+00:00",
+    "status": "preserved_with_collection_sync_timestamp_refresh",
+    "owner_tables_compared": 27,
+    "personal_rows": 6825,
+    "whole_row_unchanged_tables": 26,
+    "collection_rows": 12,
+    "only_changed_personal_field": "collections.synced_at",
+    "personal_rows_added": 0,
+    "personal_rows_missing": 0,
+    "learning_content_unchanged": true,
+    "strict_comparison_retained": "personal-preservation-outcome.json",
+    "field_reconciliation": "collection-delta-reconciliation.json",
+    "whole_database_byte_identical": false,
+    "full_device_recovery_claimed": false,
+    "temporary_credential_runfile_absent": true,
+    "temporary_post_capture_directory_absent": true
+  },
+  "ui_pending_before": 2377,
+  "pending_explanation": "Missing following effective-card cache; not unsent personal word/review writes.",
+  "unsent_personal_word_writes": 0,
+  "unsent_personal_review_events": 0,
+  "legacy_read_refresh_requests_preserved": 24,
+  "initial_copy_rejected_then_explicitly_authorized": true,
+  "testflight_origin_verified": false,
+  "pre_upgrade_preservation_verified": false,
+  "production_flag_activation": false,
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/operation-before-final-verification.json",
+      "sha256": "bb4d3cd65e1acea532fa7bde19c257d7980fa51ab086555d107fc3ceda076031"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/operation.json",
+      "sha256": "ed02790dd6eb0483741257567c4adfeca075c4ba6f14df4afaeca46fbb5bb6e9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/personal-preservation-final.json",
+      "sha256": "c711d3b1f21f26b129d2772b1fa1a0709c2dbb6e8bf7500e8ca3df01757e9eb3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/personal-preservation-outcome.json",
+      "sha256": "87f2716fa5b7810dd8325b377e46a452cfcbf5ac58b40677b2808351fcb18d6d"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/collection-delta-reconciliation.json",
+      "sha256": "f72a75d520705590d3e945157adb7c1294c64ae40403744826dd427c2296ef30"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/personal-queue-audit.json",
+      "sha256": "745253b53949cde9c348016488321bcb60c41aabb31455a77829292d367ab730"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/preservation-preflight-summary.json",
+      "sha256": "198457cc657081de4ab34273004fe8d967d6c4a3223c7c51b235e5d6e1e2adcb"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/device-db-capture.json",
+      "sha256": "91acf86a00c5680e13e8cf4b922e83de3e9da79b362564f713e3bba6bcf5d60a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/main-device-db-before-switch.enc",
+      "sha256": "bcc359d31bfbeecd6cb48a997e23353b537d7beed120b61a077072ba0f4977f6"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/main-device-db-after-switch.enc",
+      "sha256": "7e4d21b011c7b20ebffaf07a5762c87e3ccbd587959656e96c29e07630a561d3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/sqlite-copy-review-rejection.json",
+      "sha256": "6dd32095ca1cb6becaffa6482397e5270b379c83dc3affbdc3cc620c99dc6f24"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/test-credential-preflight.json",
+      "sha256": "186b910aa62a8c26082d7981b277e334f6179611d54edf862a654af43cd3f7f9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/settings-inspection-result.json",
+      "sha256": "2dbd267fa521c73f3deeb24791443876eea970d6b435c35ba9ffba9e0a73cc77"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/account-switch-result.json",
+      "sha256": "7146d8f656dac75e9db4d01b4bc05564627e295f62dab94466c2f8031fc8515f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/account-switch-intent.json",
+      "sha256": "abfbdf74e9d25743c6da07b3f463c25fe65f186ceffa008b268dbc270b89c545"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/login-continuation-intent.json",
+      "sha256": "b5f38421f39e9493988f7a8e5bca383408b84f2aa0cad11f2c7499e5b9283a13"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/login-continuation-result.json",
+      "sha256": "56deea3820c86a4284c54a4f7996b2bf1214880f34261fe2b9cd6826cfacec19"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/login-continuation-summary.json",
+      "sha256": "a278c82e7f347f413f10f22fd5dd641c185cc4c6c51b1af8550277e40c3f8529"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/login-continuation-build-result.json",
+      "sha256": "0076c9775428684367d89f7dfb4418d03ffeb35895bd9016e195b6f3e5b53731"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/post-database-copy-1-receipt.json",
+      "sha256": "def4417f54d0118256c2f6a1a27b7473352ed19a656f38289fef2a7cf9d27d07"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/post-database-copy-2-receipt.json",
+      "sha256": "52ac1d76dc2e60e4c0f70e2a83fb8d69f50113eaf166cf5f1f2a365ffbbce629"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/post-database-file-metadata.json",
+      "sha256": "b15b7e469e8ec779a3ca85a9706e62f1f93ef67e867c7354ccf5d6a3f94153c5"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/IsolatedQATests.swift",
+      "sha256": "b74c485bf8c92d7d4849cda1a41583b19225b851ab00f2a1f591db5ca718975f"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/inspection-driver-original.swift.txt",
+      "sha256": "4fb9d3cb1ed78ae96579fe72564d3226d59a179aa7ee31914b0b5bcc27389ec3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/switch-driver-attempt1.swift.txt",
+      "sha256": "04bdebd29f2390da4a6a9fdbbcacfea4c6aa4537a105b106a0dc272a1d3a9ad3"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/run-approved-switch.py",
+      "sha256": "9dba2bff48ed67a142054ad84bddd7f03c2afbae5e2e9de994f5c794670ca464"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/run-approved-login-continuation.py",
+      "sha256": "327729c27c5f8be9cc48cf117a940547c1eb49cec94805a7536b38bc73a90efe"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/verify-personal-preservation.py",
+      "sha256": "8ade196018ac47f1bdffe53965420a66d71b9d886362f4c0349f1da37a8ed295"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/login-continuation-attachments/09ACDFFE-274C-433D-B000-33481AFCBCE9.png",
+      "sha256": "8ff56c2bd95367afe36e3e7972021060df534dab22a3750580e3805553b393ab"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-ios-account-switch-20261025/login-continuation-attachments/8FA9046E-FA74-4CF1-858C-CA7890311692.txt",
+      "sha256": "f3d9c641e002ff909df2059c698ac1b5d9aca83aa332b8609d7873e24f9dc6ff"
+    }
+  ]
+}

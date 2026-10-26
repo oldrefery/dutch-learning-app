@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "status": "preparation_blocked_on_keychain_authentication",
+  "stage": "D13A.8.4",
+  "source_commit": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+  "candidate_version": "20261025093000",
+  "candidate_sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7",
+  "execution_authorized": false,
+  "production_writes": 0,
+  "provider_calls": 0,
+  "metadata": {
+    "observed_at": "2026-10-25 11:37:05.429621+00",
+    "project_ref": "josxavjbcjbcjgulwcyy",
+    "project_status": "ACTIVE_HEALTHY",
+    "readonly": true,
+    "ledger_versions": 66,
+    "previous14_source_hashes_match": true,
+    "candidate_absent": true,
+    "legacy3_true": true,
+    "new14_false": true,
+    "server_queues": {
+      "dictionary_cefr_jobs": {},
+      "dictionary_cefr_runs": {},
+      "dictionary_import_origins": {},
+      "dictionary_cefr_attempt_usage": {},
+      "dictionary_cefr_worker_control": {
+        "false": 1
+      }
+    },
+    "edge_functions": [
+      {
+        "slug": "dictionary-analysis",
+        "version": 1,
+        "status": "ACTIVE",
+        "verify_jwt": true
+      },
+      {
+        "slug": "dictionary-creation",
+        "version": 1,
+        "status": "ACTIVE",
+        "verify_jwt": true
+      }
+    ],
+    "production_writes": 0,
+    "provider_calls": 0,
+    "account_rows_exported": false,
+    "backup_delta_comparison": "blocked by Keychain -25293",
+    "device_local_queues": "not inspected"
+  },
+  "integrity": {
+    "checked_at": "2026-10-25T11:38:09.664025+00:00",
+    "candidate_source": "supabase/migrations/20261025093000_add_dictionary_capability_release_gate.sql",
+    "candidate_sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7",
+    "approved_pr_head": "a8618a1c77dfeaf5aacb4f32100c422ad1292c5d",
+    "merged_commit": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+    "exact_approved_source_match": true,
+    "merged_tree_identity_evidence": "docs/tasks/shared-dictionary-cefr/evidence/D13A.8.4-pr125-integration-outcome-20261025.json",
+    "backup_packet_artifacts_verified": 52,
+    "crypto_binary_matches_accepted_pin": true,
+    "fresh_key_access": "refused",
+    "keychain_status": -25293,
+    "key_retrieval_attempts": 3,
+    "production_queries_before_key_failure": 0,
+    "new_plaintext_backup_files": 0,
+    "fresh_decryption_or_restore_verified": false,
+    "production_writes": 0,
+    "automatic_approval_rejection": false,
+    "replacement_key_created": false
+  },
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/candidate.sql",
+      "sha256": "f993c58f13c1ed3bbfec4fcc1238ec99420bbc6d9de07e3337f3da4756d58bd7"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/read-preflight.py",
+      "sha256": "3730fbb2d001104b1c9c47cfd8c3fca8f3e4e9873e8aacfaa1eb9c58bdfb94da"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/read-metadata.py",
+      "sha256": "aaa821e7cd39ea26893e2a7cb6275f6746daa732271c4f926d577d2cad4e15d2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/read-metadata.sql",
+      "sha256": "5f143a7fc416527c8aae0b7c554d96257d73b2505cbd541ba9dd1f9207fefa19"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/metadata-result.json",
+      "sha256": "d9e8308ee156cc512259894582e16d25091faec867da4c1514d891365a68d39a"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/metadata-summary.json",
+      "sha256": "0e6b2bd319e18f62a4599b4e91350bc68a0f725e69ece43efa290e2d60abec1e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/source-backup-integrity.json",
+      "sha256": "73fff8bdb8ee697eb3ad6a5dad2689bf5ef245abf7f9991f26aeedeb1add7dd8"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-capability-apply-preparation-20261025/keychain-diagnostic.json",
+      "sha256": "15acfa95b4f1d5fef79e576eb8f2bbe53a65a6dc1bc740a7d21ef9dc612d1a58"
+    }
+  ],
+  "new_migration_rehearsed_against_protected_restore": false,
+  "fresh_delta_verified": false,
+  "device_local_queues_verified": false,
+  "next_action": "Owner-local Keychain authentication; verify retained archives, reconcile current data against S2 plus installed B02 schema, rehearse exact guarded migration, then request narrowly scoped production apply approval.",
+  "remaining_fixed_steps": 3,
+  "later_milestones": 6
+}

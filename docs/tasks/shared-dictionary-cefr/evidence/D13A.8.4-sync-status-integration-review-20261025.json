@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-25T14:06:02.253819+00:00",
+  "status": "candidate_validated_awaiting_scoped_integration_authority",
+  "stage_complete": false,
+  "base": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+  "tree": "0e4d60d0851274767ea54332e52557378a7f9876",
+  "patch_sha256": "f9d1f48a7d2cbe7bee8e87599044b079cee4ec641a110d2c93735895f521da9e",
+  "candidate": "/Users/devrush/code/pet/DutchLearningApp/reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/candidate",
+  "files": [
+    {
+      "path": "apps/mobile/src/app/(tabs)/settings.tsx",
+      "operation": "modify",
+      "base_sha256": "3f83749c7d122029155e0ebe194378a29dd5022658bd3ff32261b28d5872b2e3",
+      "candidate_sha256": "54f913e00dadb407c205a0c20d5d120f8d181f32fd04a47912340358f795928e"
+    },
+    {
+      "path": "apps/mobile/src/app/__tests__/settings-sync-status.test.tsx",
+      "operation": "modify",
+      "base_sha256": "de54eb0507d4988ba8ae0dd2005270224101d1fe11eb78eddd01e191d19a23ff",
+      "candidate_sha256": "03105cecd127ca913e72376b1e733a9870f2dda1914d20efd138a43680c404c7"
+    },
+    {
+      "path": "apps/mobile/src/hooks/__tests__/useSyncStatus.test.ts",
+      "operation": "modify",
+      "base_sha256": "2705ddea6b399c16bd08df4f22fe93df970b0558dad5c5ab691d86691232c92e",
+      "candidate_sha256": "c8e3dfc403549a570577cd79d118365b76d02d1bd4736e046c1b64ac767cc263"
+    },
+    {
+      "path": "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+      "operation": "modify",
+      "base_sha256": "91e10cdaeee508186d76eb5df80553af17663ff3de6bf39bedc22c1939f1415a",
+      "candidate_sha256": "7c935d63f062f42914e87fe667065503a0ccd7761668d6189c6a069dac3108d2"
+    },
+    {
+      "path": "apps/mobile/src/services/syncStatusService.ts",
+      "operation": "modify",
+      "base_sha256": "24f97794cfc1e2b1aeac9964e8a81fe29dab509c670f78178831131ace202f42",
+      "candidate_sha256": "b12133cd8322fbc31f71b939777d743afd5a8eb40e7ae964d446da72937e5bc8"
+    },
+    {
+      "path": "apps/mobile/src/db/learningSyncStatus.ts",
+      "operation": "add",
+      "base_sha256": null,
+      "candidate_sha256": "93d16cae2b43d01ce3ee5bf9465e13f66805f244daff8fe7bfc0cbbf631ca0fd"
+    },
+    {
+      "path": "apps/mobile/src/db/__tests__/learningSyncStatus.sqlite.test.ts",
+      "operation": "add",
+      "base_sha256": null,
+      "candidate_sha256": "d06210b1e56e01a05846113d3713bb16ac0fdc135cd25b1ad1da7b0a8c9ee71a"
+    }
+  ],
+  "validation": {
+    "at": "2026-10-25T14:06:02.253819+00:00",
+    "current_main": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+    "tree": "0e4d60d0851274767ea54332e52557378a7f9876",
+    "changed_tracked_paths_exact": [
+      "apps/mobile/src/app/(tabs)/settings.tsx",
+      "apps/mobile/src/app/__tests__/settings-sync-status.test.tsx",
+      "apps/mobile/src/hooks/__tests__/useSyncStatus.test.ts",
+      "apps/mobile/src/services/__tests__/syncStatusService.test.ts",
+      "apps/mobile/src/services/syncStatusService.ts"
+    ],
+    "new_paths": [
+      "apps/mobile/src/db/learningSyncStatus.ts",
+      "apps/mobile/src/db/__tests__/learningSyncStatus.sqlite.test.ts"
+    ],
+    "regression": {
+      "suites": 8,
+      "passed": 173,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "typecheck": {
+      "exit_code": 0
+    },
+    "patch_forward_check": {
+      "exit_code": 0
+    },
+    "patch_reverse_check": {
+      "exit_code": 0
+    },
+    "source_hashes_match_prior_validated_repair": true,
+    "prior_lint_format_validation": "Passed on identical seven source files; not repeated without a change.",
+    "main_ci": "Fresh read: both current-main push runs successful; no candidate remote CI run yet.",
+    "dependencies": "Shared installed node_modules with byte-identical package lock; isolated project root/source mappings."
+  },
+  "proposal": {
+    "branch": "feature/d13a84-sync-status",
+    "commit": "fix: distinguish sync uploads from pending downloads",
+    "destination": "draft PR into main",
+    "effects": "GitHub branch/commit/PR and automatic CI/possible Vercel preview only",
+    "excluded": [
+      "merge",
+      "production deploy",
+      "OTA",
+      "native build/distribution/install",
+      "device learning writes",
+      "new personal export",
+      "feature flag changes"
+    ]
+  },
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/github-main.json",
+      "sha256": "1525d25b0366b5eb348a9d5d67bb9832b4780f12eeefd968b9df5ca7a25a9b4e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/candidate-manifest.json",
+      "sha256": "91647df9e0e27ecfec6bfc45587afc87ebb9460a8c42c1db49b197b7c31d1611"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/candidate-validation.json",
+      "sha256": "c8f35470b821315457aec8c5fd9c6b0a3f410b09be99164515bb0b7ef2a86ad2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/candidate.patch",
+      "sha256": "f9d1f48a7d2cbe7bee8e87599044b079cee4ec641a110d2c93735895f521da9e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/candidate-tests.json",
+      "sha256": "126678a8f7fc82a916481642338eb9b1c3fd2e2a44bf8e11ca56766c325088c2"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/candidate-tests.log",
+      "sha256": "4022ea7690d6434a3d745b4b66bd8e8f3ce17e83636de134498ca5c6517c051e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/candidate-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/patch-forward-check.log",
+      "sha256": "8a9c4ae90e7a790ae1070a577430fe348eb0eb7d6065876a63aa3e284238dc37"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/patch-reverse-check.log",
+      "sha256": "8a9c4ae90e7a790ae1070a577430fe348eb0eb7d6065876a63aa3e284238dc37"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/pr-title.txt",
+      "sha256": "3dafa2b72e45253c8e09a9c0d59bc98839ced5d9c78a6d79d4ce29734b27125e"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/pr-body.md",
+      "sha256": "fd39fe8b43235d9a75116a8b2f53359c7f368884951681d8fdb439f36142d9bc"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/offline-reconnect-proposal.md",
+      "sha256": "b82e4e94c20686b1e747214b0debeb6086c51acbd58c0d8aee34f07495fcd3dd"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/operation.json",
+      "sha256": "0efd2dcd71a2b61a95a65d1ed50a73d3a2d35b71de713be62a8ca55e5ba0a257"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-sync-status-integration-20261025/existing-integration-check.json",
+      "sha256": "682139c95f96f16d13db6b10bf30f8524c791d9034457993bdfcccdbf7d338f8"
+    }
+  ],
+  "existing_branch_or_pr_found": false
+}

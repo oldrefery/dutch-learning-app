@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-25T14:43:07.628578+00:00",
+  "status": "terminal_ci_passed_merge_approval_pending",
+  "stage_complete": false,
+  "pr": 126,
+  "head": "e1d3966237567792c74855ec4e6080f16a1897c4",
+  "base": "32d3c786bf57d15a5d2a525fd7520e200eb4aec4",
+  "expected_merge_tree": "24350f4bacc356dba7f3f91f2b95db33474f4272",
+  "checks": [
+    {
+      "id": 121193060564,
+      "name": "Vercel Preview Comments",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+      "completed_at": "2026-10-25T14:15:21Z",
+      "url": "https://vercel.com/github"
+    },
+    {
+      "id": 121192639944,
+      "name": "database",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+      "completed_at": "2026-10-25T14:18:35Z",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40201229329/job/121192639944"
+    },
+    {
+      "id": 121192639866,
+      "name": "quality",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+      "completed_at": "2026-10-25T14:39:46Z",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40201229329/job/121192639866"
+    },
+    {
+      "id": 121192639750,
+      "name": "lint-e2e-tests",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+      "completed_at": "2026-10-25T14:14:25Z",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40201229334/job/121192639750"
+    },
+    {
+      "id": 121192639716,
+      "name": "web-fixtures",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4",
+      "completed_at": "2026-10-25T14:14:58Z",
+      "url": "https://github.com/oldrefery/dutch-learning-app/actions/runs/40201229329/job/121192639716"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12602692658,
+      "name": "jest-coverage",
+      "size_in_bytes": 2143073,
+      "url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12602692658",
+      "archive_download_url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12602692658/zip",
+      "expired": false,
+      "created_at": "2026-10-25T14:39:41Z",
+      "expires_at": "2026-11-08T14:39:40Z",
+      "updated_at": "2026-10-25T14:39:41Z",
+      "digest": "sha256:ee57d1cc3b4bed6b2aa5b87580b469d90fd3f333414b445d6e52b3e11cd16f30",
+      "workflow_run": {
+        "id": 40201229329,
+        "repository_id": 1049799465,
+        "head_repository_id": 1049799465,
+        "head_branch": "feature/d13a84-sync-status",
+        "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4"
+      }
+    },
+    {
+      "id": 12602443257,
+      "name": "web-mutation-report",
+      "size_in_bytes": 591677,
+      "url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12602443257",
+      "archive_download_url": "https://api.github.com/repos/oldrefery/dutch-learning-app/actions/artifacts/12602443257/zip",
+      "expired": false,
+      "created_at": "2026-10-25T14:39:43Z",
+      "expires_at": "2026-11-08T14:39:42Z",
+      "updated_at": "2026-10-25T14:39:43Z",
+      "digest": "sha256:86adc94989cce957097ad4760ae7f3728f7ffff8c8f9afb3ea867b965c0d611c",
+      "workflow_run": {
+        "id": 40201229329,
+        "repository_id": 1049799465,
+        "head_repository_id": 1049799465,
+        "head_branch": "feature/d13a84-sync-status",
+        "head_sha": "e1d3966237567792c74855ec4e6080f16a1897c4"
+      }
+    }
+  ],
+  "results": {
+    "mobile_suites": 201,
+    "mobile_tests_passed": 2747,
+    "mobile_snapshots_passed": 22,
+    "web_suites_passed": 118,
+    "web_tests_passed": 1252,
+    "web_suites_skipped": 1,
+    "web_tests_skipped": 1,
+    "database_tests_passed": 681,
+    "edge_tests_passed": 351,
+    "official_tooling_tests_passed": 38,
+    "expo_doctor": "21/21",
+    "mutation_score": 96.13,
+    "mutation_break_threshold": 90
+  },
+  "review": {
+    "blocking_self_review_findings": 0,
+    "independent_review": false,
+    "submitted_reviews": 0,
+    "threads": 0,
+    "prior_outcome_pins_verified": 14,
+    "source_hashes_verified": 7,
+    "worktree_clean": true
+  },
+  "limitations": [
+    "Preview protected by Vercel Login; application smoke not verified there.",
+    "No iPhone update or fresh offline/reconnect run.",
+    "Artifact metadata/digests/head binding checked; ZIP contents not downloaded in this continuation."
+  ],
+  "next_operation": "Mark draft ready and squash-merge exact head to main with automatic Vercel production and post-merge main CI/site verification, only after owner approval.",
+  "pins": [
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-terminal-20261025/database-summary.json",
+      "sha256": "5bab56a5b3736c6fe21271deb27f3ccd7beeb20f18c85de8a5e9d0051914c0e9"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-terminal-20261025/merge-proposal.md",
+      "sha256": "94191cd20d183ab754d6a4a5540e6bc03ea37df57c022802fff0608f97268265"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-terminal-20261025/operation.json",
+      "sha256": "d33499d77ee5edc30f1860259128997fb9da58526a32009612f29193a97fbe62"
+    },
+    {
+      "path": "reports/shared-dictionary-cefr/d13a84-pr126-terminal-20261025/terminal-ci.json",
+      "sha256": "f2cffafc5d5c4b331bb2693a3b07b47ad41d1bc2a1fb00a5c1e156bf608cf1f7"
+    }
+  ]
+}
