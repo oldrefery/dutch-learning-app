@@ -6,6 +6,7 @@ import { createSemanticStore } from './semanticStore.ts'
 import { buildSemanticPolicy } from './semanticModel.ts'
 import { createGeminiTransport } from './geminiTransport.ts'
 import { withAnalysisCors } from './cors.ts'
+import { withDictionaryPaidSpend } from '../_shared/dictionaryPaidSpend.ts'
 
 export interface IndependentEndpointOptions {
   url: string
@@ -18,6 +19,7 @@ export interface IndependentEndpointOptions {
   semanticModelVersion: string
   mediaUrlPrefixes: readonly string[]
   allowedOrigins: readonly string[]
+  paidReleaseBinding: string
   fetch?: typeof fetch
 }
 
@@ -49,33 +51,40 @@ export const createIndependentDictionaryAnalysisEndpoint = async (
     apiKey: options.apiKey,
     fetch: http,
   })
-  const evaluate = createIndependentEvaluator({
-    store: createSemanticStore(service),
-    transport,
-    policy,
-  })
   return withAnalysisCors(
     createDictionaryAnalysisHandler({
       verifyUser: async token => {
         const { data, error } = await verifier.auth.getUser(token)
         return error ? null : (data.user?.id ?? null)
       },
-      forCaller: token => ({
-        store: createIndependentAnalysisStore(
-          createClient(options.url, options.anonKey, {
-            auth,
-            global: {
-              fetch: http,
-              headers: { Authorization: `Bearer ${token}` },
-            },
-          }),
+      forCaller: (token, actor) => {
+        const paidTransport = withDictionaryPaidSpend({
+          actor,
+          bindingSha256: options.paidReleaseBinding,
           service,
-          policy
-        ),
-        transport,
-        model: policy.generation_model,
-        evaluate,
-      }),
+          transport,
+        })
+        return {
+          store: createIndependentAnalysisStore(
+            createClient(options.url, options.anonKey, {
+              auth,
+              global: {
+                fetch: http,
+                headers: { Authorization: `Bearer ${token}` },
+              },
+            }),
+            service,
+            policy
+          ),
+          transport: paidTransport,
+          model: policy.generation_model,
+          evaluate: createIndependentEvaluator({
+            store: createSemanticStore(service),
+            transport: paidTransport,
+            policy,
+          }),
+        }
+      },
     }),
     options.allowedOrigins
   )

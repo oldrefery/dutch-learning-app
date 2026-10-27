@@ -29,6 +29,11 @@ export const createDictionaryAnalysisRuntime = async (
         throw new Error('invalid-endpoint-configuration')
       return value
     }
+    const paidReleaseBinding = required(
+      'DICTIONARY_PAID_RELEASE_BINDING_SHA256'
+    )
+    if (!/^[0-9a-f]{64}$/.test(paidReleaseBinding))
+      throw new Error('invalid-paid-release-binding')
     return await load({
       url: required('SUPABASE_URL'),
       anonKey: required('SUPABASE_ANON_KEY'),
@@ -42,6 +47,7 @@ export const createDictionaryAnalysisRuntime = async (
       ),
       mediaUrlPrefixes: list('DICTIONARY_ANALYSIS_MEDIA_URL_PREFIXES'),
       allowedOrigins: list('DICTIONARY_ANALYSIS_ALLOWED_ORIGINS'),
+      paidReleaseBinding,
     })
   } catch {
     // Never log configuration errors, raw keys, provider bodies or SQL.

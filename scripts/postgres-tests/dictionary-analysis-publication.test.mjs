@@ -225,7 +225,11 @@ async function waitFor(connection, marker) {
   throw new Error(`Synthetic transaction did not reach ${marker}`)
 }
 before(async () => {
-  db = await createCluster()
+  db = await createCluster({
+    // Historical core contract; current paid containment uses all migrations in dictionary-paid-* and the endpoint suite.
+    throughMigration:
+      '20261025093000_add_dictionary_capability_release_gate.sql',
+  })
   await seedUsers(db)
   await db.sql(
     `INSERT INTO auth.users(id,email) VALUES ('${admin}','admin-fixture@example.invalid');`

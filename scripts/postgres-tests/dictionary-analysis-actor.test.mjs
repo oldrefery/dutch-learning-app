@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { before, after, test } from 'node:test'
 import { createCluster } from './cluster.mjs'
 import { owner, other, seedUsers, asUser } from './fixtures.mjs'
+import { paidRelease } from './dictionary-paid.fixture.mjs'
 
 let db
 const ACTOR = 'public.dictionary_analysis_actor_v1()'
@@ -35,6 +36,7 @@ test('read_only actor receives only their own permission and no ability to selec
   )
 })
 test('current full_access grant and revocation change the self signal immediately', async () => {
+  await paidRelease(db)
   await db.sql(
     `UPDATE public.user_access_levels SET access_level='full_access' WHERE user_id='${owner}';`
   )
@@ -46,6 +48,8 @@ test('current full_access grant and revocation change the self signal immediatel
   assert.equal((await actor()).may_analyze, false)
 })
 test('private administrator is allowed with read_only; disabling membership revokes the signal', async () => {
+  await paidRelease(db, { actors: [other] })
+  await db.sql("UPDATE public.user_access_levels SET access_level='read_only';")
   await db.sql(
     `INSERT INTO private.dictionary_administrators(user_id,audit_reference) VALUES ('${other}','synthetic-actor-test');`
   )

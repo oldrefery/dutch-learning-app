@@ -2,6 +2,7 @@ import { createGeminiTransport } from '../dictionary-analysis/geminiTransport.ts
 import { createDictionaryCreationEndpoint } from './endpoint.ts'
 import { buildCreationGeminiProfile } from './geminiModel.ts'
 import { createCreationGeminiTransport } from './geminiTransport.ts'
+import { createClient } from '@supabase/supabase-js'
 
 export interface CreationRuntimeOptions {
   url: string
@@ -12,6 +13,7 @@ export interface CreationRuntimeOptions {
   policySha256: string
   promptSha256: string
   allowedOrigins: readonly string[]
+  paidReleaseBinding: string
   fetch?: typeof fetch
 }
 
@@ -29,6 +31,17 @@ export const createConfiguredCreationEndpoint = async (
   const transport = await createCreationGeminiTransport({
     profile,
     transport: createGeminiTransport({ apiKey: options.apiKey, fetch: http }),
+    paid: {
+      bindingSha256: options.paidReleaseBinding,
+      service: createClient(options.url, options.serviceRoleKey, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false,
+        },
+        global: { fetch: http },
+      }),
+    },
   })
   return createDictionaryCreationEndpoint({
     url: options.url,

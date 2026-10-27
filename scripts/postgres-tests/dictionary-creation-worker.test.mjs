@@ -42,7 +42,11 @@ const profile = {
 const UNKNOWN = 'provider-outcome-unknown'
 const FAILED = 'provider-failed'
 before(async () => {
-  db = await createCluster()
+  db = await createCluster({
+    // Historical core contract; current paid containment uses all migrations in dictionary-paid-* and the endpoint suite.
+    throughMigration:
+      '20261025093000_add_dictionary_capability_release_gate.sql',
+  })
   await seedUsers(db)
 })
 after(async () => {

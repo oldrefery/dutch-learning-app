@@ -23,6 +23,7 @@ const env: Record<string, string> = {
   DICTIONARY_CREATION_POLICY_SHA256: profile.policy_sha256,
   DICTIONARY_CREATION_PROMPT_SHA256: profile.prompt_sha256,
   DICTIONARY_CREATION_ALLOWED_ORIGINS: '["https://web.fixture.invalid"]',
+  DICTIONARY_PAID_RELEASE_BINDING_SHA256: 'd'.repeat(64),
 }
 const request = () =>
   new Request('https://fixture.invalid/functions/v1/dictionary-creation')
@@ -88,6 +89,7 @@ for (const [key, value] of [
   ],
   ['DICTIONARY_CREATION_GEMINI_API_KEY', ' '],
   ['SUPABASE_URL', 'not-a-url'],
+  ['DICTIONARY_PAID_RELEASE_BINDING_SHA256', 'invalid'],
 ]) {
   Deno.test(`creation runtime rejects invalid ${key}: ${value}`, async () => {
     let calls = 0

@@ -34,7 +34,11 @@ export interface CreationStore {
 }
 export interface CreationTransport {
   // Only a committed RPC grant may reach a qualified transport. No default provider.
-  invoke(phase: CreationPhase, grant: CreationGrant): Promise<ProviderOutcome>
+  invoke(
+    phase: CreationPhase,
+    grant: CreationGrant,
+    actor?: string
+  ): Promise<ProviderOutcome>
 }
 export interface CreationWorkerDependencies {
   store: CreationStore

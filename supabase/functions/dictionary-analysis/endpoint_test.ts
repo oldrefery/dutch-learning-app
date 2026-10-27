@@ -22,6 +22,7 @@ const options = {
   semanticModelVersion: 'gemini-judge-fixture',
   mediaUrlPrefixes: [],
   allowedOrigins: ['https://web.example.invalid'],
+  paidReleaseBinding: 'd'.repeat(64),
 }
 for (const flag of [undefined, 'false', 'TRUE', '1'])
   Deno.test(`runtime defaults disabled for flag ${flag}`, async () => {
@@ -74,6 +75,7 @@ Deno.test(
       DICTIONARY_ANALYSIS_ALLOWED_ORIGINS: JSON.stringify(
         options.allowedOrigins
       ),
+      DICTIONARY_PAID_RELEASE_BINDING_SHA256: options.paidReleaseBinding,
     }
     const handler = await createDictionaryAnalysisRuntime(
       name => env[name],
@@ -200,6 +202,7 @@ Deno.test(
 for (const missing of [
   'DICTIONARY_ANALYSIS_GENERATION_MODEL_VERSION',
   'DICTIONARY_ANALYSIS_SEMANTIC_MODEL_VERSION',
+  'DICTIONARY_PAID_RELEASE_BINDING_SHA256',
 ])
   Deno.test(
     `enabled runtime requires explicit observed version: ${missing}`,
@@ -218,6 +221,7 @@ for (const missing of [
           options.semanticModelVersion,
         DICTIONARY_ANALYSIS_MEDIA_URL_PREFIXES: '[]',
         DICTIONARY_ANALYSIS_ALLOWED_ORIGINS: '[]',
+        DICTIONARY_PAID_RELEASE_BINDING_SHA256: options.paidReleaseBinding,
       }
       delete values[missing]
       const handler = await createDictionaryAnalysisRuntime(

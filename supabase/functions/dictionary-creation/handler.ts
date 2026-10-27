@@ -42,7 +42,10 @@ const readCommand = async (request: Request): Promise<unknown> => {
 export const createDictionaryCreationHandler =
   (dependencies: {
     verifyUser(token: string): Promise<string | null>
-    forCaller(token: string): Omit<CreationWorkerDependencies, 'verifyActor'>
+    forCaller(
+      token: string,
+      actor: string
+    ): Omit<CreationWorkerDependencies, 'verifyActor'>
   }) =>
   async (request: Request): Promise<Response> => {
     if (request.method !== 'POST')
@@ -61,7 +64,7 @@ export const createDictionaryCreationHandler =
         return reply(400, { code: 'invalid-creation-command' })
       }
       const response = await runDictionaryCreation(actor, command, {
-        ...dependencies.forCaller(token),
+        ...dependencies.forCaller(token, actor),
         verifyActor: () => dependencies.verifyUser(token),
       })
       return reply(
