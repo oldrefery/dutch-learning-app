@@ -1,5 +1,5 @@
 import { useShallow } from 'zustand/react/shallow'
-import React, { useMemo, useState, useCallback } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -21,6 +21,7 @@ import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import CollectionContextMenu from '@/components/CollectionContextMenu'
 import type { Collection, Word } from '@/types/database'
+import { useLatestCallback } from '@/hooks/useLatestCallback'
 import { Sentry } from '@/lib/sentry'
 import { calculateCollectionStats } from '@/utils/collectionStats'
 import { useApplicationStore } from '@/stores/useApplicationStore'
@@ -49,6 +50,7 @@ function SwipeableCollectionCardContent({
   onStopSharing,
 }: SwipeableCollectionCardProps) {
   const colorScheme = useColorScheme() ?? 'light'
+  const handlePress = useLatestCallback(onPress)
   const translateX = useSharedValue(0)
   const [showContextMenu, setShowContextMenu] = useState(false)
   const { userAccessLevel, collections } = useApplicationStore(
@@ -73,7 +75,7 @@ function SwipeableCollectionCardContent({
       : `collection-row-${collection.collection_id}`
   })()
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useLatestCallback(() => {
     // Prevent read-only users from deleting their last collection
     if (userAccessLevel === 'read_only' && collections.length <= 1) {
       ToastService.show('Cannot delete your last collection', ToastType.ERROR)
@@ -106,17 +108,9 @@ function SwipeableCollectionCardContent({
         },
       }
     )
-  }, [
-    userAccessLevel,
-    collections.length,
-    translateX,
-    collection.name,
-    collection.collection_id,
-    stats.totalWords,
-    onDelete,
-  ])
+  })
 
-  const handleRename = useCallback(async () => {
+  const handleRename = useLatestCallback(async () => {
     try {
       await onRename(collection.collection_id, collection.name)
       // Reset position after a successful rename
@@ -136,12 +130,12 @@ function SwipeableCollectionCardContent({
         })
       }
     }
-  }, [onRename, collection.collection_id, collection.name, translateX])
+  })
 
-  const handleLongPress = useCallback(() => {
+  const handleLongPress = useLatestCallback(() => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     setShowContextMenu(true)
-  }, [])
+  })
 
   const handleCloseContextMenu = () => {
     setShowContextMenu(false)
@@ -208,10 +202,10 @@ function SwipeableCollectionCardContent({
           'worklet'
           // Only trigger tap if card is in resting position
           if (Math.abs(translateX.get()) < 5) {
-            scheduleOnRN(onPress)
+            scheduleOnRN(handlePress)
           }
         }),
-    [translateX, onPress]
+    [translateX, handlePress]
   )
 
   const longPressGesture = useMemo(

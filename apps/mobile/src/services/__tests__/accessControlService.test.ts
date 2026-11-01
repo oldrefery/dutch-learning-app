@@ -26,11 +26,13 @@ jest.mock('@/lib/supabase', () => ({
 jest.mock('@/lib/sentry', () => ({
   Sentry: {
     captureException: jest.fn(),
+    captureMessage: jest.fn(),
     addBreadcrumb: jest.fn(),
   },
 }))
 
 jest.mock('@/utils/logger', () => ({
+  ...jest.requireActual('@/utils/logger'),
   logSupabaseError: jest.fn(),
 }))
 
@@ -56,6 +58,49 @@ describe('accessControlService', () => {
   })
 
   describe('getUserAccessLevel', () => {
+    it.each(['42501', 'PGRST301'])(
+      'does not treat server rejection %s as connectivity',
+      async code => {
+        mockMaybeSingle.mockResolvedValue({
+          data: null,
+          error: { message: 'fetch failed', code, details: '', hint: '' },
+        })
+        expect(
+          await accessControlService.getUserAccessLevel(TEST_USER_ID)
+        ).toEqual({ success: false, error: AccessControlError.DATABASE_ERROR })
+        expect(logSupabaseError).toHaveBeenCalled()
+        expect(Sentry.captureMessage).not.toHaveBeenCalled()
+      }
+    )
+
+    it.each(['response', 'rejection'])(
+      'distinguishes DNS failure from database rejection (%s)',
+      async mode => {
+        const error = {
+          message:
+            'fetch failed: java.net.UnknownHostException: Unable to resolve host "test.supabase.co"',
+          code: '',
+          details: '',
+          hint: '',
+        }
+        if (mode === 'response')
+          mockMaybeSingle.mockResolvedValue({ data: null, error })
+        else mockMaybeSingle.mockRejectedValue(error)
+        const result =
+          await accessControlService.getUserAccessLevel(TEST_USER_ID)
+        expect(result).toEqual({ success: false, error: 'NETWORK_ERROR' })
+        expect(Sentry.captureMessage).toHaveBeenCalledWith(
+          'Network request unavailable',
+          expect.objectContaining({
+            level: 'warning',
+            tags: { operation: 'getUserAccessLevel', errorCode: 'network' },
+          })
+        )
+        expect(Sentry.captureException).not.toHaveBeenCalled()
+        expect(supabase.auth.refreshSession).not.toHaveBeenCalled()
+      }
+    )
+
     it('should return full_access when user has full access', async () => {
       mockMaybeSingle.mockResolvedValue({
         data: { access_level: 'full_access' },

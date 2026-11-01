@@ -69,6 +69,7 @@ export class SyncHealthReporter {
       duration_ms: Math.max(0, now - startedAt),
       outage_ms: outageMs,
       failed_attempts: this.failures,
+      queue_scope: 'learning_uploads',
       queue_count: queue?.count ?? null,
       queue_reviews: queue?.reviews ?? null,
       queue_resets: queue?.resets ?? null,
@@ -92,12 +93,27 @@ export class SyncHealthReporter {
       return
     this.reported.set(reason, now)
     this.alerted = reason !== 'recovered'
-    Sentry.captureMessage('Learning synchronization health', {
-      level: reason === 'recovered' ? 'info' : 'warning',
-      tags: { module: 'sync-health', sync_health: reason },
-      fingerprint: ['sync-health', reason],
-      extra: data,
-    })
+    Sentry.captureMessage(
+      reason === 'stalled'
+        ? 'Synchronization stalled'
+        : 'Learning synchronization health',
+      {
+        level: reason === 'recovered' ? 'info' : 'warning',
+        tags: {
+          module: 'sync-health',
+          sync_health: reason,
+          sync_outcome: outcome,
+          learning_queue_state:
+            queue === null
+              ? 'unknown'
+              : queue.count === 0
+                ? 'empty'
+                : 'pending',
+        },
+        fingerprint: ['sync-health', reason],
+        extra: data,
+      }
+    )
   }
 
   private reason(

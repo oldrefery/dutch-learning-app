@@ -5,13 +5,14 @@ import { Sentry } from '@/lib/sentry'
 jest.mock('@/db/learningQueueHealth')
 jest.mock('@/lib/sentry')
 
+const PRIVATE_USER = 'private-user'
 const HEALTH_MESSAGE = 'Learning synchronization health'
 const HEALTH_FINGERPRINT = 'sync-health'
 describe('bounded aggregate sync health reporting', () => {
   let health: SyncHealthReporter
   const record = (
     outcome: Parameters<SyncHealthReporter['record']>[1],
-    user = 'private-user'
+    user = PRIVATE_USER
   ) => health.record(user, outcome, Date.now())
   beforeEach(() => {
     jest.useFakeTimers({ now: 0 })
@@ -37,7 +38,7 @@ describe('bounded aggregate sync health reporting', () => {
     expect(Sentry.captureMessage).not.toHaveBeenCalled()
     expect(
       JSON.stringify(jest.mocked(Sentry.addBreadcrumb).mock.calls)
-    ).not.toContain('private-user')
+    ).not.toContain(PRIVATE_USER)
   })
 
   it.each(['session', 'protocol'] as const)(
@@ -77,6 +78,56 @@ describe('bounded aggregate sync health reporting', () => {
       expect.objectContaining({ fingerprint: [HEALTH_FINGERPRINT, 'stalled'] })
     )
   })
+
+  it.each(['empty', 'pending', 'unknown'] as const)(
+    'explains a stalled series with an %s learning upload queue',
+    async queueState => {
+      if (queueState === 'unknown')
+        jest
+          .mocked(getLearningQueueHealth)
+          .mockRejectedValue(new Error('private queue details'))
+      else if (queueState === 'pending')
+        jest.mocked(getLearningQueueHealth).mockResolvedValue({
+          count: 2,
+          reviews: 1,
+          resets: 1,
+          oldestAgeSeconds: 60,
+        })
+
+      await record('network')
+      jest.setSystemTime(300000)
+      await record('error')
+      jest.setSystemTime(603111)
+      await record('network')
+
+      expect(Sentry.captureMessage).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureMessage).toHaveBeenLastCalledWith(
+        'Synchronization stalled',
+        expect.objectContaining({
+          level: 'warning',
+          fingerprint: [HEALTH_FINGERPRINT, 'stalled'],
+          tags: expect.objectContaining({
+            sync_outcome: 'network',
+            learning_queue_state: queueState,
+          }),
+          extra: expect.objectContaining({
+            failed_attempts: 3,
+            outage_ms: 603111,
+            queue_count:
+              queueState === 'unknown' ? null : queueState === 'empty' ? 0 : 2,
+            queue_scope: 'learning_uploads',
+          }),
+        })
+      )
+      const payload = JSON.stringify(
+        jest.mocked(Sentry.captureMessage).mock.calls
+      )
+      expect(payload).not.toContain(PRIVATE_USER)
+      expect(payload).not.toContain('private queue details')
+      await record('rls')
+      expect(Sentry.captureMessage).toHaveBeenCalledTimes(1)
+    }
+  )
 
   it('reports recovery once only for an alerted identity with a known empty queue', async () => {
     await record('protocol')

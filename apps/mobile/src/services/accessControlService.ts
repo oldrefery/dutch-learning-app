@@ -1,7 +1,11 @@
 import { supabase } from '@/lib/supabase'
 import { Sentry } from '@/lib/sentry'
 import type { AccessLevel, UserAccessLevel } from '@/types/database'
-import { logSupabaseError } from '@/utils/logger'
+import {
+  logSupabaseError,
+  isConnectivityError,
+  logConnectivityFailure,
+} from '@/utils/logger'
 import type { PostgrestError } from '@supabase/supabase-js'
 
 type Result<T, E = string> =
@@ -10,6 +14,7 @@ type Result<T, E = string> =
 export enum AccessControlError {
   NOT_FOUND = 'ACCESS_LEVEL_NOT_FOUND',
   DATABASE_ERROR = 'DATABASE_ERROR',
+  NETWORK_ERROR = 'NETWORK_ERROR',
   UNAUTHORIZED = 'UNAUTHORIZED',
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
@@ -34,6 +39,7 @@ class AccessControlService {
       const { data, error } = response
 
       if (error) {
+        if (isConnectivityError(error)) return this.networkFailure()
         logSupabaseError('Failed to fetch user access level', error, {
           operation: 'getUserAccessLevel',
           userId,
@@ -56,6 +62,7 @@ class AccessControlService {
 
       return { success: true, data: data.access_level }
     } catch (error) {
+      if (isConnectivityError(error)) return this.networkFailure()
       Sentry.captureException(error, {
         tags: { operation: 'getUserAccessLevel' },
         extra: { userId },
@@ -63,6 +70,11 @@ class AccessControlService {
 
       return { success: false, error: AccessControlError.UNKNOWN_ERROR }
     }
+  }
+
+  private networkFailure(): Result<AccessLevel, AccessControlError> {
+    logConnectivityFailure('getUserAccessLevel')
+    return { success: false, error: AccessControlError.NETWORK_ERROR }
   }
 
   private fetchUserAccessLevel(userId: string) {

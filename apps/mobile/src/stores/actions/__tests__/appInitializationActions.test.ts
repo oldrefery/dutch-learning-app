@@ -319,12 +319,15 @@ describe('appInitializationActions', () => {
       expect(accessControlService.getUserAccessLevel).not.toHaveBeenCalled()
     })
 
-    it('should default to read_only on service failure', async () => {
+    it.each([
+      AccessControlError.DATABASE_ERROR,
+      AccessControlError.NETWORK_ERROR,
+    ])('defaults to read_only on service failure %s', async error => {
       currentState.currentUserId = USER_ID
       ;(accessControlService.getUserAccessLevel as jest.Mock).mockResolvedValue(
         {
           success: false,
-          error: AccessControlError.DATABASE_ERROR,
+          error,
         }
       )
 
