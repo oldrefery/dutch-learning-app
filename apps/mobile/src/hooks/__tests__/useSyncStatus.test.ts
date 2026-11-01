@@ -172,6 +172,27 @@ describe('focused sync status', () => {
     expect(syncStatusService.getSnapshot).toHaveBeenCalledTimes(2)
   })
 
+  it('settles repeated refocus and sync notifications without starting a feedback sync', async () => {
+    const { result, rerender } = renderHook(() => useSyncStatus('user-1'))
+    await act(async () => {})
+    for (let cycle = 0; cycle < 20; cycle++) {
+      focused = false
+      rerender({})
+      focused = true
+      rerender({})
+      await act(async () => {
+        listener(syncResult)
+      })
+      expect(result.current.isLoading).toBe(false)
+      expect(result.current.snapshot).not.toBeNull()
+    }
+    expect(syncStatusService.getSnapshot).toHaveBeenCalledTimes(41)
+    expect(syncManager.subscribeSyncStatus).toHaveBeenCalledTimes(21)
+    expect(unsubscribe).toHaveBeenCalledTimes(20)
+    expect(syncManager.performSync).not.toHaveBeenCalled()
+    expect(Sentry.captureException).not.toHaveBeenCalled()
+  })
+
   it('retains the last snapshot on failure and allows a manual retry', async () => {
     const { result } = renderHook(() => useSyncStatus('user-1'))
     await act(async () => undefined)

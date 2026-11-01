@@ -189,6 +189,37 @@ describe('native synchronization lifecycle', () => {
     expect(result.current.isSyncing).toBe(false)
   })
 
+  it('settles repeated foreground, reconnect and store refresh events without resubscribing', async () => {
+    useApplicationStore.setState({
+      fetchWords: jest.fn(async () => {
+        useApplicationStore.setState({ words: [] })
+      }),
+      fetchCollections: jest.fn(async () => {
+        useApplicationStore.setState({ collections: [] })
+      }),
+      fetchUserAccessLevel: jest.fn(async () => {
+        useApplicationStore.setState({ userAccessLevel: 'full_access' })
+      }),
+    })
+    const { result } = renderHook(() => useSyncManager(options))
+    await act(async () => {})
+    for (let cycle = 0; cycle < 20; cycle++) {
+      await changeAppState('background')
+      await changeNetwork(true)
+      await changeAppState('active')
+      await changeNetwork(true)
+      await act(async () => {
+        statusListener(successfulSync)
+      })
+      expect(result.current.isSyncing).toBe(false)
+    }
+    expect(syncManager.performSync).toHaveBeenCalledTimes(40)
+    expect(syncManager.subscribeSyncStatus).toHaveBeenCalledTimes(1)
+    expect(subscribeToNetworkChanges).toHaveBeenCalledTimes(1)
+    expect(useApplicationStore.getState().fetchWords).toHaveBeenCalledTimes(20)
+    expect(result.current.syncResult).toEqual(successfulSync)
+  })
+
   it('rehydrates visible data only for successful sync notifications', async () => {
     renderHook(() => useSyncManager(options))
     const { fetchCollections, fetchWords, fetchUserAccessLevel } =
