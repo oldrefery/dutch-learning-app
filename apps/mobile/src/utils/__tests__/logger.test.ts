@@ -20,6 +20,7 @@ import {
 } from '../logger'
 
 const REDACTED = '[REDACTED]'
+const FETCH_FAILED_MESSAGE = 'fetch failed'
 
 jest.mock('@/lib/sentry', () => ({
   Sentry: {
@@ -79,7 +80,7 @@ describe('logger', () => {
     })
 
     it('should return true for "fetch failed"', () => {
-      expect(isNetworkError('fetch failed')).toBe(true)
+      expect(isNetworkError(FETCH_FAILED_MESSAGE)).toBe(true)
     })
 
     it('should return true for "timeout"', () => {
@@ -355,13 +356,17 @@ describe('logger', () => {
 
 describe('transport errors versus server rejections', () => {
   it.each([
-    [{ message: 'fetch failed', status: 0 }, true],
+    [{ message: FETCH_FAILED_MESSAGE, status: 0 }, true],
     [{ message: 'Unable to resolve host "test.supabase.co"' }, true],
     [{ message: 'Network request failed' }, true],
-    [{ message: 'fetch failed', status: 503 }, false],
+    [{ message: FETCH_FAILED_MESSAGE, status: 503 }, false],
     [{ message: 'network error', code: '42501' }, false],
     [
-      { message: 'fetch failed', code: 'invalid_credentials', status: 400 },
+      {
+        message: FETCH_FAILED_MESSAGE,
+        code: 'invalid_credentials',
+        status: 400,
+      },
       false,
     ],
     [{ message: 'statement timeout' }, false],
