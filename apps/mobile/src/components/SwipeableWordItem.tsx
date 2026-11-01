@@ -20,6 +20,7 @@ import { Colors } from '@/constants/Colors'
 import { WordStatusType } from '@/components/WordDetailModal/types'
 import { isDisplayableRegister, getRegisterLabel } from '@/utils/registerUtils'
 import type { Word } from '@/types/database'
+import { useLatestCallback } from '@/hooks/useLatestCallback'
 
 interface SwipeableWordItemProps {
   word: Word
@@ -44,11 +45,13 @@ export default function SwipeableWordItem({
   highlighted,
 }: SwipeableWordItemProps) {
   const colorScheme = useColorScheme() ?? 'light'
+  const handlePress = useLatestCallback(onPress)
+  const canMoveToCollection = Boolean(onMoveToCollection)
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(20)
   const wasModalVisibleForThisWord = useRef(false)
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useLatestCallback(() => {
     Alert.alert(
       'Delete Word',
       `Are you sure you want to delete "${word.dutch_original || word.dutch_lemma}"?`,
@@ -74,24 +77,18 @@ export default function SwipeableWordItem({
         },
       }
     )
-  }, [
-    word.dutch_original,
-    word.dutch_lemma,
-    word.word_id,
-    onDelete,
-    translateX,
-  ])
+  })
 
   const resetPosition = useCallback(() => {
     translateX.set(withSpring(0))
   }, [translateX])
 
-  const handleMoveToCollection = useCallback(() => {
+  const handleMoveToCollection = useLatestCallback(() => {
     if (!onMoveToCollection) return
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     onMoveToCollection(word.word_id)
-  }, [word.word_id, onMoveToCollection])
+  })
 
   useEffect(() => {
     translateY.set(withTiming(0, { duration: 400 }, () => {}))
@@ -189,12 +186,12 @@ export default function SwipeableWordItem({
     }
   })
 
-  const handleLongPress = useCallback(() => {
+  const handleLongPress = useLatestCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     if (onLongPress) {
       onLongPress()
     }
-  }, [onLongPress])
+  })
 
   const tapGesture = useMemo(
     () =>
@@ -205,10 +202,10 @@ export default function SwipeableWordItem({
           'worklet'
           // Only trigger tap if card is in resting position
           if (Math.abs(translateX.get()) < 5) {
-            scheduleOnRN(onPress)
+            scheduleOnRN(handlePress)
           }
         }),
-    [translateX, onPress]
+    [translateX, handlePress]
   )
 
   const longPressGesture = useMemo(
@@ -237,7 +234,7 @@ export default function SwipeableWordItem({
           'worklet'
           const { translationX } = event
 
-          if (translationX > 150 && onMoveToCollection) {
+          if (translationX > 150 && canMoveToCollection) {
             // Long swipe right - show move to collection dialog
             translateX.set(
               withSpring(300, {}, () => {
@@ -246,7 +243,7 @@ export default function SwipeableWordItem({
                 scheduleOnRN(handleMoveToCollection)
               })
             )
-          } else if (translationX > 80 && onMoveToCollection) {
+          } else if (translationX > 80 && canMoveToCollection) {
             // Short swipe right - show the move button
             translateX.set(withSpring(100))
           } else if (translationX < -150) {
@@ -269,7 +266,7 @@ export default function SwipeableWordItem({
             translateX.set(withSpring(0))
           }
         }),
-    [translateX, onMoveToCollection, handleMoveToCollection, handleDelete]
+    [translateX, canMoveToCollection, handleMoveToCollection, handleDelete]
   )
 
   // Compose gestures: long press should block pan, tap should be separate
