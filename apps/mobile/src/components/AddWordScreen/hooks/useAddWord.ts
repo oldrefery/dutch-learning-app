@@ -78,16 +78,18 @@ export const useAddWord = (preselectedCollectionId?: string) => {
 
   const hadSelectionRef = useRef(false)
 
-  // Persist the resolved selection to the external settings store.
+  // Persist local selection changes without reasserting a background screen's
+  // choice when another screen updates the shared preference.
   useEffect(() => {
     if (!isSettingsHydrated) return
     if (selectedCollection) hadSelectionRef.current = true
     if (!hadSelectionRef.current) return
     const selectedId = selectedCollection?.collection_id ?? null
-    if (selectedId !== lastSelectedCollectionId) {
-      useSettingsStore.getState().setLastSelectedCollectionId(selectedId)
+    const settings = useSettingsStore.getState()
+    if (selectedId !== settings.lastSelectedCollectionId) {
+      settings.setLastSelectedCollectionId(selectedId)
     }
-  }, [isSettingsHydrated, selectedCollection, lastSelectedCollectionId])
+  }, [isSettingsHydrated, selectedCollection])
 
   const addWord = async (analysisResult: GeminiWordAnalysis) => {
     setIsAdding(true)
