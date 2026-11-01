@@ -131,6 +131,10 @@ describe('useAddWord', () => {
         lastSelectedCollectionId: secondCollection.collection_id,
       })
     )
+    jest.mocked(useSettingsStore.getState).mockReturnValue({
+      ...useSettingsStore.getState(),
+      lastSelectedCollectionId: secondCollection.collection_id,
+    })
     ;(useCollections as jest.Mock).mockReturnValue({ collections: [] })
     const { result, rerender } = renderHook(() => useAddWord())
     expect(result.current.selectedCollection).toBeNull()
