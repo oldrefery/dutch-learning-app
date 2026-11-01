@@ -17,6 +17,7 @@ import { useEffect, useRef } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
 import { Sentry } from '@/lib/sentry'
+import { useRuntimeDiagnostics } from '@/hooks/useRuntimeDiagnostics'
 import { AppToast } from '@/components/AppToast'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
@@ -94,6 +95,7 @@ export default Sentry.wrap(function RootLayout() {
 })
 
 function RootLayoutNav() {
+  useRuntimeDiagnostics()
   const colorScheme = useColorScheme()
   const router = useRouter()
   const { preparePasswordRecovery } = useSimpleAuth()
