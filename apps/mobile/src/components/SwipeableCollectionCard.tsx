@@ -1,5 +1,5 @@
 import { useShallow } from 'zustand/react/shallow'
-import React, { useMemo, useState, useCallback } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -132,10 +132,10 @@ function SwipeableCollectionCardContent({
     }
   })
 
-  const handleLongPress = useCallback(() => {
+  const handleLongPress = useLatestCallback(() => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     setShowContextMenu(true)
-  }, [])
+  })
 
   const handleCloseContextMenu = () => {
     setShowContextMenu(false)

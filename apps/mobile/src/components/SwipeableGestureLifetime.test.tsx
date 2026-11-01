@@ -1,5 +1,6 @@
 import React from 'react'
 import { Alert } from 'react-native'
+import * as Haptics from 'expo-haptics'
 import { act, render } from '@testing-library/react-native'
 import {
   createMockCollection,
@@ -296,3 +297,40 @@ it('applies the latest deletion permission to a retained collection pan', () => 
   expect(onDelete).not.toHaveBeenCalled()
   alert.mockRestore()
 })
+
+it.each(['word', 'collection'] as const)(
+  'ignores a queued %s long press after the row unmounts',
+  kind => {
+    const haptics = jest
+      .spyOn(Haptics, 'impactAsync')
+      .mockResolvedValue(undefined)
+    try {
+      const node =
+        kind === 'word' ? (
+          <SwipeableWordItem
+            word={word}
+            index={0}
+            highlighted={false}
+            onPress={jest.fn()}
+            onDelete={jest.fn()}
+            onLongPress={jest.fn()}
+          />
+        ) : (
+          <SwipeableCollectionCard
+            collection={collection}
+            words={[word]}
+            onPress={jest.fn()}
+            onDelete={jest.fn()}
+            onRename={jest.fn().mockResolvedValue(undefined)}
+          />
+        )
+      const { unmount } = render(node)
+      const retained = first('long')
+      unmount()
+      act(() => retained.start?.())
+      expect(haptics).not.toHaveBeenCalled()
+    } finally {
+      haptics.mockRestore()
+    }
+  }
+)
