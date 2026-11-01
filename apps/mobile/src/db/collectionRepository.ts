@@ -2,6 +2,7 @@ import { getDatabase } from './initDB'
 import type { SQLiteBindValue } from 'expo-sqlite'
 import type { Collection } from '@/types/database'
 import type { SyncStatus } from './schema'
+import { retryWithBackoff } from '@/utils/retryUtils'
 
 export interface LocalCollection extends Collection {
   sync_status: SyncStatus
@@ -41,8 +42,9 @@ export class CollectionRepository {
           syncedAt,
         ]
 
-        await db.runAsync(
-          `INSERT INTO collections (
+        const save = () =>
+          db.runAsync(
+            `INSERT INTO collections (
             collection_id, user_id, name, description,
             is_shared, shared_with, created_at, updated_at, sync_status,
             last_sync_attempt_at, synced_at
@@ -56,9 +58,28 @@ export class CollectionRepository {
             created_at = excluded.created_at,
             updated_at = excluded.updated_at,
             sync_status = excluded.sync_status,
-            synced_at = excluded.synced_at`,
-          params
-        )
+            synced_at = excluded.synced_at
+          WHERE excluded.sync_status <> 'synced'
+            OR COALESCE(collections.sync_status, 'synced') = 'synced'`,
+            params
+          )
+        if (syncStatus === 'synced') {
+          // Retry only the atomic local download write. A local edit committed
+          // while waiting must keep its contents and pending status.
+          await retryWithBackoff(save, {
+            maxRetries: 3,
+            initialDelayMs: 100,
+            maxDelayMs: 400,
+            shouldRetry: error =>
+              typeof error === 'object' &&
+              error !== null &&
+              'message' in error &&
+              typeof error.message === 'string' &&
+              /\bdatabase (?:table )?is locked\b/i.test(error.message),
+          })
+        } else {
+          await save()
+        }
       }
       console.log(`[DB] Saved ${collections.length} collections`)
     } catch (error) {
