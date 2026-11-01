@@ -13,7 +13,6 @@ import { wordToDictionaryContent } from '@/db/dictionaryContentMapping'
 import { applyDictionaryMaterializations } from '@/db/dictionaryWordMaterialization'
 import {
   isDictionaryContentEnabled,
-  isDictionaryFollowingEnabled,
   isDictionaryFollowingImportsEnabled,
 } from '@/constants/dictionaryContent'
 import * as Crypto from 'expo-crypto'
@@ -310,8 +309,6 @@ export const createWordActions = (
     analyzedWord: AnalyzedWord | GeminiWordAnalysis,
     collectionId?: string
   ) => {
-    if (isDictionaryFollowingEnabled())
-      throw new Error('Use published shared meanings to add a word.')
     try {
       const userId = get().currentUserId
       if (!userId) {

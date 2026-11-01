@@ -1,4 +1,4 @@
-export { AddWordScreen } from './FollowingAddWordScreen'
+export { LegacyAddWordScreen as AddWordScreen } from './AddWordScreen'
 export type {
   AnalysisResult,
   WordInputSectionProps,
