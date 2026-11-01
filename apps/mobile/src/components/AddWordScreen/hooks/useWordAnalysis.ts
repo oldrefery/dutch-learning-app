@@ -1,4 +1,3 @@
-import { isDictionaryFollowingEnabled } from '@/constants/dictionaryContent'
 import { useState } from 'react'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
@@ -83,10 +82,6 @@ export const useWordAnalysis = () => {
     inputWord: string,
     forceRefresh: boolean = false
   ) => {
-    if (isDictionaryFollowingEnabled()) {
-      setAnalysisError('Use published shared meanings to add a word.')
-      return
-    }
     if (!inputWord.trim()) {
       ToastService.show('Please enter a Dutch word', ToastType.ERROR)
       return

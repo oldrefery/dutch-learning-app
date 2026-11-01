@@ -68,17 +68,27 @@ describe('useWordAnalysis', () => {
     })
     expect(result.current.analysisResult?.usage_notes).toEqual(usageNotes)
   })
-  it('blocks legacy provider analysis and history writes in following mode', async () => {
+  it('analyzes a personal word while following reads remain enabled', async () => {
     process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
     process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED = 'true'
     try {
+      jest.mocked(wordService.analyzeWord).mockResolvedValue({
+        success: true,
+        data: {
+          dutch_lemma: 'huis',
+          part_of_speech: 'noun',
+          translations: { en: ['house'] },
+          examples: [],
+        },
+      })
       const { result } = renderHook(() => useWordAnalysis())
       await act(async () => result.current.analyzeWord('huis'))
-      expect(result.current.analysisError).toBe(
-        'Use published shared meanings to add a word.'
-      )
-      expect(wordService.analyzeWord).not.toHaveBeenCalled()
-      expect(addAnalyzedWord).not.toHaveBeenCalled()
+      expect(result.current.analysisError).toBeNull()
+      expect(result.current.analysisResult?.dutch_lemma).toBe('huis')
+      expect(wordService.analyzeWord).toHaveBeenCalledWith('huis', {
+        forceRefresh: false,
+      })
+      expect(addAnalyzedWord).toHaveBeenCalledWith('huis', 'huis')
     } finally {
       delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
       delete process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED

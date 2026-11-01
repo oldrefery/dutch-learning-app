@@ -525,3 +525,46 @@ test('A15 BIGINT delivery remains distinct above JavaScript safe range and v1 fa
   )
   await assert.rejects(read(owner, [ownWord], 1), /unsafe-protocol-1-sequence/)
 })
+
+test('personal creation coexists with following cards without changing their content or learning', async () => {
+  await db.sql(
+    'UPDATE private.dictionary_content_runtime SET operations_enabled=TRUE, reads_enabled=TRUE, following_reads_enabled=TRUE, legacy_guard_enabled=TRUE WHERE singleton;'
+  )
+  const followed = await seedWord(db, owner, {
+    intervalDays: 12,
+    repetitionCount: 7,
+  })
+  await link(followed, owner)
+  const before = await state(db, followed)
+  const beforeContent = await read(owner, [followed])
+  await db.sql(
+    `UPDATE public.user_access_levels SET access_level='full_access' WHERE user_id=${literal(owner)};`
+  )
+  const personal = randomUUID()
+  await db.sql(
+    asUser(
+      owner,
+      `INSERT INTO public.words(word_id,user_id,dutch_lemma,translations,tts_url) VALUES (${literal(personal)},${literal(owner)},${literal(personal)},'{}','');`
+    )
+  )
+  const command = {
+    protocol_version: 1,
+    operation_id: randomUUID(),
+    word_id: personal,
+    expected_content_version: 0,
+    kind: 'create-private',
+    content: content('Personal analysis'),
+  }
+  await db.sql(
+    asUser(
+      owner,
+      `SELECT public.apply_dictionary_content_command_v1(${literal(JSON.stringify(command))}::JSONB);`
+    )
+  )
+  const result = await read(owner, [personal])
+  assert.equal(result.cards[0].mode, 'legacy')
+  assert.equal(result.cards[0].reference, null)
+  assert.equal(result.cards[0].legacy_content.dutch_lemma, 'fiets')
+  assert.deepEqual(await state(db, followed), before)
+  assert.deepEqual(await read(owner, [followed]), beforeContent)
+})

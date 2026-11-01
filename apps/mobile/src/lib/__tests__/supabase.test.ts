@@ -395,16 +395,23 @@ describe('wordService analyzeWord Edge Function error handling', () => {
   })
 })
 
-test('blocks lower legacy provider calls in following mode before network or retries', async () => {
+test('permits explicit personal analysis while following reads are enabled', async () => {
   jest.clearAllMocks()
   process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
   process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED = 'true'
+  const reply = {
+    success: true,
+    data: { dutch_lemma: 'huis', translations: { en: ['house'] } },
+  }
+  getSupabaseFunctionsMock().functions.invoke.mockResolvedValueOnce({
+    data: reply,
+    error: null,
+  })
+  mockedAssertNetworkConnection.mockResolvedValue(undefined)
   try {
-    await expect(wordService.analyzeWord('huis')).rejects.toThrow(
-      'Use published shared meanings'
-    )
-    expect(assertNetworkConnection).not.toHaveBeenCalled()
-    expect(getSupabaseFunctionsMock().functions.invoke).not.toHaveBeenCalled()
+    await expect(wordService.analyzeWord('huis')).resolves.toEqual(reply)
+    expect(assertNetworkConnection).toHaveBeenCalled()
+    expect(getSupabaseFunctionsMock().functions.invoke).toHaveBeenCalledTimes(1)
   } finally {
     delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
     delete process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED

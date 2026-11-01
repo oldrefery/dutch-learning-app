@@ -1,9 +1,6 @@
 import 'react-native-url-polyfill/auto'
 import { supabase } from './supabaseClient'
-import {
-  isDictionaryContentEnabled,
-  isDictionaryFollowingEnabled,
-} from '@/constants/dictionaryContent'
+import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
 import type { SharedImportSource } from '@/types/ImportTypes'
 import { randomUUID } from 'expo-crypto'
 import { toLocalDateKey } from '@woordenaar/domain'
@@ -372,8 +369,6 @@ function classifyAndThrowImportError(
 export const wordService = {
   // Analyze word using Gemini AI with retry logic
   async analyzeWord(word: string, options?: { forceRefresh?: boolean }) {
-    if (isDictionaryFollowingEnabled())
-      throw new Error('Use published shared meanings to add a word.')
     // Add breadcrumb for tracking
     Sentry.addBreadcrumb({
       category: WORD_ANALYSIS_CATEGORY,

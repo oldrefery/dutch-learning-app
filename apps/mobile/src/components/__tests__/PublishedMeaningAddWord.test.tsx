@@ -143,42 +143,27 @@ it('fences an unmounted pending lookup', async () => {
     'Word input changed'
   )
 })
-it('routes following mode to explicit shared lookup with owned placement and no legacy or batch analysis', () => {
-  const view = render(
-    <AddWordScreen
-      preselectedCollectionId={OWNER_B}
-      initialWord="huis"
-      batchItemId="queued"
-    />
-  )
-  expect(view.getByText(RETAINED)).toBeTruthy()
-  expect(view.getByLabelText(INPUT).props.value).toBe('huis')
-  expect(LegacyAddWordScreen).not.toHaveBeenCalled()
-  expect(lookupPublishedMeanings).not.toHaveBeenCalled()
-  jest.mocked(useApplicationStore).mockImplementation(selector =>
-    selector({
-      currentUserId: OWNER_B,
-      collections: [],
-    } as never)
-  )
-  fireEvent.changeText(view.getByLabelText(INPUT), 'changed')
-  view.rerender(<AddWordScreen initialWord="huis" batchItemId="queued" />)
-  expect(view.getByLabelText(INPUT).props.value).toBe('huis')
-  expect(DictionaryFollowingTransferPanel).toHaveBeenLastCalledWith(
-    expect.objectContaining({ ownerId: OWNER_B, collections: [] }),
-    undefined
-  )
-})
-it('requires an owner in following mode and mounts legacy only when following is OFF', () => {
-  jest
-    .mocked(useApplicationStore)
-    .mockImplementation(selector =>
-      selector({ currentUserId: null, collections: [] } as never)
+it.each([false, true])(
+  'keeps the familiar input, analysis and collection screen when following is %s',
+  following => {
+    jest.mocked(isDictionaryFollowingEnabled).mockReturnValue(following)
+    const view = render(
+      <AddWordScreen
+        preselectedCollectionId={OWNER_B}
+        initialWord="huis"
+        batchItemId="queued"
+      />
     )
-  const view = render(<AddWordScreen />)
-  expect(view.getByText('Sign in to add a shared meaning.')).toBeTruthy()
-  expect(LegacyAddWordScreen).not.toHaveBeenCalled()
-  jest.mocked(isDictionaryFollowingEnabled).mockReturnValue(false)
-  view.rerender(<AddWordScreen />)
-  expect(view.getByText('Legacy add word')).toBeTruthy()
-})
+    expect(view.getByText('Legacy add word')).toBeTruthy()
+    expect(LegacyAddWordScreen).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        preselectedCollectionId: OWNER_B,
+        initialWord: 'huis',
+        batchItemId: 'queued',
+      }),
+      undefined
+    )
+    expect(view.queryByLabelText(FIND)).toBeNull()
+    expect(lookupPublishedMeanings).not.toHaveBeenCalled()
+  }
+)

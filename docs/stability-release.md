@@ -2,7 +2,8 @@
 
 The synchronization and swipe lifetime fixes are merged independently of a release.
 Automatic Vercel Git deployments are disabled for `main` and
-`feature/app-stability-after-transition` in `apps/web/vercel.json`, so publishing
+`feature/app-stability-after-transition`, and `feature/add-word-screen-recovery`
+in `apps/web/vercel.json`, so publishing
 the review branch and merging it do not publish a new website version. Other
 branches retain their existing deployment behavior.
 

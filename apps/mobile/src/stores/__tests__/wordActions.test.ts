@@ -349,20 +349,39 @@ describe('wordActions', () => {
     })
   })
 
-  it('blocks lower personal word saving in following mode before duplicate lookup or writes', async () => {
+  it('saves a fresh personal card without replacing existing cards when following reads are enabled', async () => {
     jest.mocked(isDictionaryFollowingEnabled).mockReturnValue(true)
+    const existing = createMockWord({
+      word_id: WORD_ID,
+      dutch_lemma: 'fiets',
+      repetition_count: 7,
+    })
+    mockGet.mockReturnValue({
+      currentUserId: USER_ID,
+      words: [existing],
+      error: null,
+    })
     try {
       const guarded = createWordActions(mockSet, mockGet)
-      await expect(
-        guarded.saveAnalyzedWord({
+      const result = await guarded.saveAnalyzedWord(
+        {
           dutch_lemma: 'huis',
           part_of_speech: 'noun',
           translations: { en: ['house'] },
           examples: [],
+        },
+        COLLECTION_ID
+      )
+      expect(result.word_id).not.toBe(existing.word_id)
+      expect(wordRepository.addWord).toHaveBeenCalledWith(
+        expect.objectContaining({
+          dutch_lemma: 'huis',
+          user_id: USER_ID,
+          collection_id: COLLECTION_ID,
         })
-      ).rejects.toThrow('Use published shared meanings')
-      expect(wordRepository.getWordBySemanticKey).not.toHaveBeenCalled()
-      expect(mockSet).not.toHaveBeenCalled()
+      )
+      expect(mockSet).toHaveBeenCalledWith({ words: [existing, result] })
+      expect(wordRepository.updateAnalyzedWord).not.toHaveBeenCalled()
     } finally {
       jest.mocked(isDictionaryFollowingEnabled).mockReturnValue(false)
     }

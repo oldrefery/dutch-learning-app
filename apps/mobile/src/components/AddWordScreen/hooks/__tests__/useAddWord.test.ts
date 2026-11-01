@@ -250,15 +250,19 @@ describe('useAddWord', () => {
       ToastType.ERROR
     )
   })
-  it('blocks legacy collection creation and personal saving in following mode', async () => {
+  it('adds the analyzed personal word to the selected collection with following reads enabled', async () => {
     process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
     process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED = 'true'
     try {
+      saveAnalyzedWord.mockResolvedValue(savedWord)
       const { result } = renderHook(() => useAddWord())
       await act(async () => {
-        await expect(result.current.addWord(analysis)).resolves.toBe(false)
+        await expect(result.current.addWord(analysis)).resolves.toBe(true)
       })
-      expect(saveAnalyzedWord).not.toHaveBeenCalled()
+      expect(saveAnalyzedWord).toHaveBeenCalledWith(
+        analysis,
+        collection.collection_id
+      )
       expect(createNewCollection).not.toHaveBeenCalled()
     } finally {
       delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED

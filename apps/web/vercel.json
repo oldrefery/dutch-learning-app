@@ -4,7 +4,8 @@
   "git": {
     "deploymentEnabled": {
       "main": false,
-      "feature/app-stability-after-transition": false
+      "feature/app-stability-after-transition": false,
+      "feature/add-word-screen-recovery": false
     }
   }
 }

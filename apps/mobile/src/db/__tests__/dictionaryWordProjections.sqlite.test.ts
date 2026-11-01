@@ -8,6 +8,7 @@ import { createMockWord } from '@/__tests__/helpers/factories'
 import { dictionaryFollowingRepository as cache } from '../dictionaryFollowingRepository'
 import { dictionaryContentRepository as legacy } from '../dictionaryContentRepository'
 import { dictionaryModeReconciliationRepository as modes } from '../dictionaryModeReconciliationRepository'
+import { wordRepository } from '../wordRepository'
 import {
   getDictionaryWordMaterializations,
   getDictionaryWordProjections,
@@ -111,6 +112,41 @@ describe('bounded dictionary display projection on real SQLite', () => {
     ])
     return actual
   }
+  it('queues a new personal card while preserving existing following content and learning', async () => {
+    await hydrate('follow')
+    const before = await getDictionaryWordProjections(OWNER_A, input())
+    const originalRows = db
+      .prepare('SELECT * FROM words ORDER BY word_id')
+      .all()
+    const fresh = createMockWord({
+      word_id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+      user_id: OWNER_A,
+      collection_id: null,
+      dutch_lemma: 'lopen',
+      translations: { en: ['walk'] },
+    })
+    await wordRepository.addWord(fresh)
+    expect(await getDictionaryWordProjections(OWNER_A, input())).toEqual(before)
+    expect(
+      db
+        .prepare('SELECT * FROM words WHERE word_id IN (?, ?) ORDER BY word_id')
+        .all(...ids)
+    ).toEqual(originalRows)
+    const commands = await legacy.getPendingCommands(OWNER_A)
+    expect(commands).toHaveLength(1)
+    expect(commands[0].command).toMatchObject({
+      kind: 'create-private',
+      word_id: fresh.word_id,
+      expected_content_version: 0,
+    })
+    const materialized = await legacy.getMaterializedContent(OWNER_A, [
+      fresh.word_id,
+    ])
+    expect(
+      materialized.get(fresh.word_id)?.effective.content?.dutch_lemma
+    ).toBe('lopen')
+    expect(materialized.get(fresh.word_id)?.reference).toBeNull()
+  })
   it.each(['follow', 'legacy'] as const)(
     'preserves %s projection, flag withdrawal, selection, pending edits and required reconciliation',
     async mode => {
