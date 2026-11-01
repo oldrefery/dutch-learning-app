@@ -257,14 +257,25 @@ describe('streakUtils', () => {
   })
 
   describe('edge cases', () => {
-    it('should handle very long streaks (30+ days)', () => {
-      const words: Word[] = []
-      for (let i = 0; i < 30; i++) {
-        const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-        words.push(createWord(date.toISOString(), `word-${i}`))
-      }
+    it.each<[string, Date]>([
+      ['after the autumn clock change', new Date(2026, 9, 31, 23, 30)],
+      ['after the spring clock change', new Date(2026, 2, 31, 0, 30)],
+    ])('should count 30 calendar days %s', (_label, now) => {
+      jest.useFakeTimers()
+      jest.setSystemTime(now)
+      try {
+        const words: Word[] = []
+        for (let i = 0; i < 30; i++) {
+          const date = new Date(now)
+          // Calendar days can span 23 or 25 hours across clock changes.
+          date.setDate(now.getDate() - i)
+          words.push(createWord(date.toISOString(), `word-${i}`))
+        }
 
-      expect(calculateStreak(words)).toBe(30)
+        expect(calculateStreak(words)).toBe(30)
+      } finally {
+        jest.useRealTimers()
+      }
     })
 
     it('should handle large word lists with sparse reviews', () => {

@@ -21,5 +21,6 @@ npx lint-staged
 
 # Run the mobile and web suites with their framework-specific Jest configs.
 # --silent keeps pre-commit output focused on real test failures.
-CI=true npm test -- --no-watch --no-coverage --bail --watchman=false --silent
+# Match the mobile CI worker bound for SQLite-heavy tests.
+CI=true npm test -- --no-watch --no-coverage --bail --watchman=false --silent --maxWorkers=2
 CI=true npm run web:test -- --no-coverage --bail --silent

@@ -10,6 +10,11 @@ import {
 } from '../../supabase/functions/dictionary-analysis/semanticModel.ts'
 import { createCluster } from './cluster.mjs'
 import { owner, other, seedUsers, literal, asUser } from './fixtures.mjs'
+import {
+  paidRelease,
+  modelLimits,
+  claimPaid,
+} from './dictionary-paid.fixture.mjs'
 
 // Transform parameter properties in memory for this isolated Node test process;
 // the Deno/domain sources and installed packages remain unchanged.
@@ -90,6 +95,15 @@ const profileArgs = p => ({
 })
 const common = { p_actor: 'uuid', p_operation: 'uuid', p_fence: 'text' }
 const signatures = {
+  claim_dictionary_paid_attempt_v1: {
+    p_actor: 'uuid',
+    p_invocation_key: 'text',
+    p_model: 'text',
+    p_binding_sha256: 'text',
+    p_request_sha256: 'text',
+    p_request_bytes: 'integer',
+    p_output_tokens: 'integer',
+  },
   [ACCEPT]: {
     p_command: 'jsonb',
     p_model: 'text',
@@ -213,6 +227,19 @@ async function insertPolicy(policy) {
     ON CONFLICT(validator_version,policy_sha256) DO UPDATE SET enabled=TRUE;`)
 }
 async function fixture() {
+  const release = await paidRelease(db, {
+    limit: '1000000',
+    models: {
+      [GENERATOR]: modelLimits(GENERATOR, {
+        max_request_bytes: '32768',
+        max_input_tokens: '32768',
+      }),
+      [JUDGE]: modelLimits(JUDGE, {
+        max_request_bytes: '32768',
+        max_input_tokens: '32768',
+      }),
+    },
+  })
   const entry = randomUUID(),
     revision = randomUUID(),
     source = randomUUID(),
@@ -236,6 +263,9 @@ async function fixture() {
       VALUES('${anchor}','${entry}','${source}','A financial institution holding money and providing loans.','["Ik heb geld bij de bank."]','${owner}',NOW(),'fixture://endpoint-anchor','${'a'.repeat(64)}');
     INSERT INTO private.dictionary_meaning_anchor_heads(entry_id,anchor_id) VALUES('${entry}','${anchor}');`)
   return {
+    paidReleaseBinding: await db.sql(
+      `SELECT binding_sha256 FROM private.dictionary_paid_releases WHERE release_id='${release}';`
+    ),
     policy,
     command: {
       protocol_version: 2,
@@ -278,6 +308,13 @@ async function providerReply(request, url, mode, providerCalls) {
     }
   }
   return Response.json({
+    usageMetadata: {
+      promptTokenCount: 20,
+      cachedContentTokenCount: 5,
+      candidatesTokenCount: 6,
+      thoughtsTokenCount: 4,
+      totalTokenCount: 30,
+    },
     ...(mode.missingVersion === (judge ? 'judge' : 'generation')
       ? {}
       : {
@@ -312,6 +349,7 @@ async function endpoint(f, mode = {}) {
     semanticModelVersion: JUDGE,
     mediaUrlPrefixes: [],
     allowedOrigins: ['https://web.example.invalid'],
+    paidReleaseBinding: f.paidReleaseBinding,
     fetch: async (input, init) => {
       const request = new Request(input, init),
         url = new URL(request.url)
@@ -507,6 +545,11 @@ test('bound operation rejects a different judge policy before its quota reservat
   const f = await fixture(),
     r = await accept(f)
   await dispatch(f, r)
+  await claimPaid(
+    db,
+    { actor: owner, key: `${f.command.operation_id}:${r.fence}` },
+    { hash: 'b'.repeat(64) }
+  )
   const otherPolicy = await buildSemanticPolicy(
     JUDGE,
     ['https://media.example.invalid/shared/'],
