@@ -9,7 +9,10 @@ The current-schema suites are `dictionary-analysis-endpoint`,
 `dictionary-analysis-actor`, `dictionary-paid-spend`, `dictionary-paid-cohort`
 `dictionary-paid-lifecycle`, `dictionary-paid-usage-shape` and
 `dictionary-paid-late-usage` and `dictionary-paid-provider-compatibility`.
-They use the latest migration and verify caller/service separation, all four paid
+`dictionary-observed-versions` also uses the latest schema, with synthetic paid
+releases and one-use claims for both phases. It verifies version rejection,
+pending judgements, late results and accepted publication through the paid gates.
+These current-schema suites use the latest migration and verify caller/service separation, all four paid
 transitions, two complete workflows, replay, uncertainty, monetary concurrency,
 revocation, administrator reconciliation and durable redaction-safe accounting.
 The Edge tests inject transports and HTTP; no real provider is allowed.
@@ -67,3 +70,9 @@ The local harness creates only an invocation-owned disposable PostgreSQL cluster
 Its Docker fallback requires the already cached pinned image, a local Unix
 socket, no network or exposed ports, and removes only its own container. No hosted
 database, application environment, real account or provider credential is loaded.
+
+One explicitly named historical case in `dictionary-history-rollback` runs on the
+pre-paid boundary because it uses the retired direct-analysis acceptance protocol
+to exercise publication/rollback overlap. It has its own disposable cluster; all
+other history/rollback cases still apply every migration. The historical case is
+not evidence that the retired protocol can obtain a paid grant on the current schema.

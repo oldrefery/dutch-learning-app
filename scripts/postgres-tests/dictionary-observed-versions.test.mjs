@@ -13,13 +13,19 @@ import {
 } from './dictionary-creation-dispatch.fixture.mjs'
 import {
   content,
-  judge,
+  judge as dispatchJudge,
   verdict,
   record,
   validate,
   publish,
 } from './dictionary-creation-publication.fixture.mjs'
 import { buildSemanticPolicy } from '../../supabase/functions/dictionary-analysis/semanticModel.ts'
+import {
+  paidRelease,
+  claimPaid,
+  modelLimits,
+  usage,
+} from './dictionary-paid.fixture.mjs'
 
 let db
 const GENERATOR = 'gemini-generator-fixture',
@@ -27,6 +33,10 @@ const GENERATOR = 'gemini-generator-fixture',
 const UNQUALIFIED = 'gemini-unqualified-version'
 const REVIEW = 'review-required'
 const VERSIONS = { generation: `${GENERATOR}-001`, judge: `${JUDGE}-001` }
+const providerResponse = version => ({
+  ...(version === null ? {} : { modelVersion: version }),
+  usageMetadata: usage(),
+})
 let policy
 before(async () => {
   db = await createCluster()
@@ -38,6 +48,12 @@ after(async () => {
 })
 
 async function fixture(version = VERSIONS.generation) {
+  await paidRelease(db, {
+    models: {
+      [GENERATOR]: modelLimits(VERSIONS.generation),
+      [JUDGE]: modelLimits(VERSIONS.judge),
+    },
+  })
   await configure(db)
   await db.sql(`UPDATE private.dictionary_content_runtime SET creation_judgement_enabled=TRUE,creation_publication_enabled=TRUE;
     INSERT INTO private.dictionary_analysis_validator_policies(validator_version,policy_sha256,enabled,audit_reference,semantic_method,semantic_model,semantic_prompt_sha256,generation_model,generation_model_version,semantic_model_version)
@@ -46,11 +62,29 @@ async function fixture(version = VERSIONS.generation) {
     UPDATE private.dictionary_creation_profile SET validator_version='${policy.validator_version}',policy_sha256='${policy.policy_sha256}' WHERE singleton;`)
   const f = await ready(db),
     dispatch = (await start(db, f)).dispatch
+  assert.equal(
+    (await claimPaid(db, f, { key: `${f.run}:generation:1` })).allowed,
+    true
+  )
   const result = {
     content: content(),
-    provider_response: version === null ? {} : { modelVersion: version },
+    provider_response: providerResponse(version),
   }
   return { ...f, dispatch, result }
+}
+async function judge(database, f) {
+  const response = await dispatchJudge(database, f)
+  if (response.dispatch)
+    assert.equal(
+      (
+        await claimPaid(database, f, {
+          key: `${f.run}:judgement:${response.dispatch.fence}`,
+          model: JUDGE,
+        })
+      ).allowed,
+      true
+    )
+  return response
 }
 const charged = f =>
   db.sql(
@@ -82,7 +116,7 @@ for (const version of [VERSIONS.judge, UNQUALIFIED])
     assert.equal((await judge(db, f)).dispatch, null)
     const raw = {
       ...verdict(d),
-      provider_response: { modelVersion: version },
+      provider_response: providerResponse(version),
     }
     const saved = await record(db, f, d, raw)
     assert.equal(saved.status, 'validating')
@@ -126,7 +160,7 @@ for (const version of [null, UNQUALIFIED, 7])
     const d = (await judge(db, f)).dispatch
     const raw = {
       ...verdict(d),
-      provider_response: version === null ? {} : { modelVersion: version },
+      provider_response: providerResponse(version),
     }
     await record(db, f, d, raw)
     const v = await validate(db, f)
@@ -144,7 +178,7 @@ test('matching observed versions permit one creation publication and exact repla
   const d = (await judge(db, f)).dispatch
   await record(db, f, d, {
     ...verdict(d),
-    provider_response: { modelVersion: VERSIONS.judge },
+    provider_response: providerResponse(VERSIONS.judge),
   })
   const v = await validate(db, f)
   assert.equal(v.outcome, 'accepted')
@@ -178,7 +212,7 @@ for (const phase of ['generation', 'judgement'])
     else
       await record(db, f, grant, {
         ...verdict(grant),
-        provider_response: { modelVersion: UNQUALIFIED },
+        provider_response: providerResponse(UNQUALIFIED),
       })
     const table =
       phase === 'generation'
