@@ -110,7 +110,8 @@ function reviewsBeforeBoundary(
   })
 }
 
-type SyncErrorType = 'auth_expired' | 'rls' | 'other'
+type SyncErrorType =
+  'auth_expired' | 'rls' | 'database_locked' | 'dictionary_protocol' | 'other'
 type SyncStage =
   | 'check_protocol'
   | 'pull_dictionary_content'
@@ -125,6 +126,13 @@ type SyncStage =
   | 'push_words'
   | 'push_progress'
   | 'push_review_events'
+
+class DictionaryProtocolUnavailableError extends Error {
+  constructor() {
+    super('Dictionary content protocol is unavailable')
+    this.name = 'DictionaryProtocolUnavailableError'
+  }
+}
 
 class ControlledSyncError extends Error {
   constructor(message: string) {
@@ -455,7 +463,7 @@ export class SyncManager {
           () => dictionaryContentSync.isAvailable(userId)
         )
         if (isDictionaryContentEnabled() && !dictionaryContentAvailable)
-          throw new Error('Dictionary content protocol is unavailable')
+          throw new DictionaryProtocolUnavailableError()
       })
       // Keep content/placement protections when capability fails. Dictionary
       // failure must not select legacy snapshot writes or stop learning delivery.
@@ -880,7 +888,7 @@ export class SyncManager {
       return await operation()
     } catch (error) {
       const syncErrorType = this.categorizeSyncError(error)
-      if (syncErrorType === 'other') {
+      if (syncErrorType !== 'auth_expired' && syncErrorType !== 'rls') {
         throw error
       }
 
@@ -926,7 +934,7 @@ export class SyncManager {
         return await operation()
       } catch (retryError) {
         const retryErrorType = this.categorizeSyncError(retryError)
-        if (retryErrorType !== 'other') {
+        if (retryErrorType === 'auth_expired' || retryErrorType === 'rls') {
           Sentry.captureException(this.toError(retryError), {
             tags: {
               module: 'syncManager',
@@ -965,6 +973,11 @@ export class SyncManager {
     if (code === '42501') {
       return 'rls'
     }
+
+    if (error instanceof DictionaryProtocolUnavailableError)
+      return 'dictionary_protocol'
+    if (/\bdatabase (?:table )?is locked\b/i.test(this.getErrorMessage(error)))
+      return 'database_locked'
 
     return 'other'
   }

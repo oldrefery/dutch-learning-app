@@ -165,6 +165,10 @@ jest.mock('@/db/collectionRepository', () => ({
 }))
 
 describe('SyncManager', () => {
+  const SYNC_ERROR_FINGERPRINT = 'sync-manager'
+  const DICTIONARY_PROTOCOL_UNAVAILABLE =
+    'Dictionary content protocol is unavailable'
+  const JWT_EXPIRED = 'JWT expired'
   // Helper functions to generate random test data
   const SYNC_AUTH_PRECHECK_ERROR =
     'Authentication expired. Please sign in again to sync.'
@@ -451,6 +455,158 @@ describe('SyncManager', () => {
     ;(
       reviewEventRepository.getPendingSyncEvents as jest.Mock
     ).mockResolvedValue([])
+  })
+
+  describe('production failure grouping', () => {
+    const runtimeGlobal = globalThis as typeof globalThis & { __DEV__: boolean }
+    let previousDev: boolean
+    let previousDictionaryGate: string | undefined
+
+    beforeEach(() => {
+      previousDev = runtimeGlobal.__DEV__
+      previousDictionaryGate =
+        process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+      runtimeGlobal.__DEV__ = false
+      process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'false'
+    })
+
+    afterEach(() => {
+      runtimeGlobal.__DEV__ = previousDev
+      if (previousDictionaryGate === undefined)
+        delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+      else
+        process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED =
+          previousDictionaryGate
+    })
+
+    const failCollectionWrite = (error: Error) => {
+      jest.mocked(supabase.from).mockReturnValueOnce({
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockResolvedValue({
+            data: [createMockCollection({ user_id: userId })],
+            error: null,
+            count: 1,
+          }),
+        }),
+      } as unknown as ReturnType<typeof supabase.from>)
+      jest
+        .mocked(collectionRepository.saveCollections)
+        .mockRejectedValueOnce(error)
+    }
+
+    it.each([
+      "Call to function 'NativeStatement.finalizeAsync' has been rejected. → Caused by: Error code \u0005: database is locked",
+      "FunctionCallException: Calling 'finalizeAsync' failed → SQLiteErrorException: Error code 5: database is locked",
+      'database table is locked',
+    ])(
+      'separates exhausted native locks from other sync failures: %s',
+      async message => {
+        const error = new Error(message)
+        failCollectionWrite(error)
+
+        const result = await syncManager.performSync(userId)
+
+        expect(collectionRepository.saveCollections).toHaveBeenCalledTimes(1)
+        expect(result).toMatchObject({ success: false, error: message })
+        expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+        expect(Sentry.captureException).toHaveBeenCalledWith(
+          error,
+          expect.objectContaining({
+            tags: expect.objectContaining({
+              sync_error_type: 'database_locked',
+            }),
+            fingerprint: [SYNC_ERROR_FINGERPRINT, 'database_locked'],
+          })
+        )
+        expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+        expect(supabase.auth.refreshSession).not.toHaveBeenCalled()
+      }
+    )
+
+    it('separates unavailable dictionary capability without acknowledging delivery', async () => {
+      process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+      jest
+        .mocked(dictionaryContentSync.isAvailable)
+        .mockResolvedValueOnce(false)
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result).toMatchObject({
+        success: false,
+        error: DICTIONARY_PROTOCOL_UNAVAILABLE,
+      })
+      expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureException).toHaveBeenCalledWith(
+        expect.any(Error),
+        expect.objectContaining({
+          tags: expect.objectContaining({
+            sync_error_type: 'dictionary_protocol',
+          }),
+          fingerprint: [SYNC_ERROR_FINGERPRINT, 'dictionary_protocol'],
+        })
+      )
+      expect(dictionaryContentSync.push).not.toHaveBeenCalled()
+      expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+      expect(supabase.auth.refreshSession).not.toHaveBeenCalled()
+    })
+
+    it('reports a lock after session recovery once without another refresh', async () => {
+      const lock = new Error('database is locked')
+      jest
+        .mocked(collectionRepository.getPendingSyncCollections)
+        .mockRejectedValueOnce(new Error(JWT_EXPIRED))
+        .mockRejectedValueOnce(lock)
+
+      const result = await syncManager.performSync(userId)
+
+      expect(result).toMatchObject({ success: false, error: lock.message })
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureException).toHaveBeenCalledWith(
+        lock,
+        expect.objectContaining({
+          fingerprint: [SYNC_ERROR_FINGERPRINT, 'database_locked'],
+        })
+      )
+    })
+
+    it('keeps schema failures in the fallback group without refreshing auth', async () => {
+      const error = new Error('no such table: collections')
+      failCollectionWrite(error)
+      const result = await syncManager.performSync(userId)
+      expect(result.success).toBe(false)
+      expect(Sentry.captureException).toHaveBeenCalledWith(
+        error,
+        expect.objectContaining({
+          fingerprint: [SYNC_ERROR_FINGERPRINT, 'other'],
+        })
+      )
+      expect(supabase.auth.refreshSession).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      [
+        Object.assign(new Error('database is locked'), { code: '42501' }),
+        'rls',
+      ],
+      [new Error('JWT expired; database is locked'), 'auth_expired'],
+    ])('keeps session recovery precedence for %s', async (error, category) => {
+      jest
+        .mocked(collectionRepository.getPendingSyncCollections)
+        .mockRejectedValueOnce(error)
+        .mockRejectedValueOnce(error)
+      const result = await syncManager.performSync(userId)
+      expect(result.success).toBe(false)
+      expect(supabase.auth.refreshSession).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureException).toHaveBeenCalledTimes(1)
+      expect(Sentry.captureException).toHaveBeenCalledWith(
+        error,
+        expect.objectContaining({
+          tags: expect.objectContaining({ sync_error_type: category }),
+          fingerprint: ['sync-retry-failed', 'pull_collections', category],
+        })
+      )
+    })
   })
 
   describe('sync status subscriptions', () => {
@@ -1071,7 +1227,7 @@ describe('SyncManager', () => {
         .fn()
         .mockResolvedValueOnce({
           data: null,
-          error: { message: 'JWT expired' },
+          error: { message: JWT_EXPIRED },
         })
         .mockResolvedValueOnce({
           data: [],
@@ -1121,7 +1277,7 @@ describe('SyncManager', () => {
     it('should return controlled sync error when retry refresh fails', async () => {
       const wordsRange = jest.fn().mockResolvedValueOnce({
         data: null,
-        error: { message: 'JWT expired' },
+        error: { message: JWT_EXPIRED },
       })
 
       ;(supabase.auth.refreshSession as jest.Mock).mockResolvedValue({
@@ -2500,7 +2656,7 @@ describe('SyncManager', () => {
         const result = await syncManager.performSync(userId)
         expect(result).toMatchObject({
           success: false,
-          error: 'Dictionary content protocol is unavailable',
+          error: DICTIONARY_PROTOCOL_UNAVAILABLE,
         })
         expect(upsert).toHaveBeenCalledWith(
           [expect.objectContaining({ event_id: eventId })],
@@ -2540,7 +2696,7 @@ describe('SyncManager', () => {
         const result = await syncManager.performSync(userId)
         expect(result).toMatchObject({
           success: false,
-          error: 'Dictionary content protocol is unavailable',
+          error: DICTIONARY_PROTOCOL_UNAVAILABLE,
         })
         expect(query.gte).toHaveBeenCalledTimes(1)
         expect(query.in).toHaveBeenCalledWith('word_id', [REMOTE_WORD_ID])
