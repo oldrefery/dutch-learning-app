@@ -228,6 +228,58 @@ describe('SimpleAuthProvider', () => {
     expect(supabase.auth.startAutoRefresh).toHaveBeenCalledTimes(1)
   })
 
+  it.each(['response', 'rejection'])(
+    'reports initial DNS failure as connectivity while preserving identity (%s)',
+    async mode => {
+      const error = Object.assign(
+        new Error(
+          'fetch failed: java.net.UnknownHostException: Unable to resolve host "test.supabase.co"'
+        ),
+        { name: 'AuthRetryableFetchError', status: 0 }
+      )
+      if (mode === 'response')
+        Object.assign(supabase.auth, {
+          getSession: jest
+            .fn()
+            .mockResolvedValue({ data: { session: null }, error }),
+        })
+      else jest.mocked(supabase.auth.getSession).mockRejectedValue(error)
+      renderHook(() => useSimpleAuth(), { wrapper })
+      await act(async () => {})
+      expect(mockInitializeApp).not.toHaveBeenCalled()
+      expect(Sentry.captureException).not.toHaveBeenCalled()
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(
+        'Network request unavailable',
+        expect.objectContaining({
+          level: 'warning',
+          tags: expect.objectContaining({ errorCode: 'network' }),
+        })
+      )
+    }
+  )
+
+  it('retains exception reporting for a server-side session failure', async () => {
+    const error = Object.assign(new Error('fetch failed'), {
+      name: 'AuthRetryableFetchError',
+      status: 503,
+    })
+    Object.assign(supabase.auth, {
+      getSession: jest
+        .fn()
+        .mockResolvedValue({ data: { session: null }, error }),
+    })
+    renderHook(() => useSimpleAuth(), { wrapper })
+    await act(async () => {})
+    expect(mockInitializeApp).not.toHaveBeenCalled()
+    expect(Sentry.captureException).toHaveBeenCalledWith(
+      error,
+      expect.objectContaining({
+        tags: { operation: 'simpleAuthProviderSessionCheck' },
+      })
+    )
+    expect(Sentry.captureMessage).not.toHaveBeenCalled()
+  })
+
   it('keeps local identity when the initial session check throws offline', async () => {
     jest
       .mocked(supabase.auth.getSession)

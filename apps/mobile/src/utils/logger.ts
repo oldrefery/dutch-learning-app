@@ -26,6 +26,33 @@ export function isNetworkError(message: string): boolean {
   )
 }
 
+/** Transport failure only: server responses retain their authorization/database meaning. */
+export function isConnectivityError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+  const candidate = error as {
+    message?: unknown
+    status?: unknown
+    code?: unknown
+  }
+  if (typeof candidate.status === 'number' && candidate.status > 0) return false
+  if (typeof candidate.code === 'string' && candidate.code.length > 0)
+    return false
+  return (
+    typeof candidate.message === 'string' &&
+    /network request failed|network error|fetch failed|failed to fetch|unknownhostexception|unable to resolve host|\be(?:connrefused|notfound|netunreach)\b/i.test(
+      candidate.message
+    )
+  )
+}
+
+export function logConnectivityFailure(operation: string): void {
+  Sentry.captureMessage('Network request unavailable', {
+    level: 'warning',
+    tags: { operation, errorCode: 'network' },
+    fingerprint: ['supabase-network-error', operation],
+  })
+}
+
 interface LogContext {
   [key: string]: unknown
 }

@@ -9,6 +9,7 @@
 import { Sentry } from '@/lib/sentry'
 import {
   isNetworkError,
+  isConnectivityError,
   logDebug,
   logInfo,
   logWarning,
@@ -349,5 +350,23 @@ describe('logger', () => {
       expect(logger.error).toBe(logError)
       expect(logger.supabaseError).toBe(logSupabaseError)
     })
+  })
+})
+
+describe('transport errors versus server rejections', () => {
+  it.each([
+    [{ message: 'fetch failed', status: 0 }, true],
+    [{ message: 'Unable to resolve host "test.supabase.co"' }, true],
+    [{ message: 'Network request failed' }, true],
+    [{ message: 'fetch failed', status: 503 }, false],
+    [{ message: 'network error', code: '42501' }, false],
+    [
+      { message: 'fetch failed', code: 'invalid_credentials', status: 400 },
+      false,
+    ],
+    [{ message: 'statement timeout' }, false],
+    [null, false],
+  ])('classifies %j as transport failure: %s', (error, expected) => {
+    expect(isConnectivityError(error)).toBe(expected)
   })
 })

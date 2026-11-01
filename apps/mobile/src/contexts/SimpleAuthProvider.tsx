@@ -17,6 +17,7 @@ import { Sentry } from '@/lib/sentry'
 import { initiateGoogleOAuth } from '@/lib/googleAuth'
 import { initiateAppleSignIn } from '@/lib/appleAuth'
 import { isNetworkAvailable } from '@/utils/network'
+import { isConnectivityError, logConnectivityFailure } from '@/utils/logger'
 import {
   createPasswordRecoveryClient,
   type PasswordRecoveryClient,
@@ -149,6 +150,10 @@ export function SimpleAuthProvider({
         if (!active || revision !== authRevision) return
 
         if (sessionError) {
+          if (isConnectivityError(sessionError)) {
+            logConnectivityFailure('simpleAuthProviderSessionCheck')
+            return
+          }
           Sentry.captureException(sessionError, {
             tags: { operation: 'simpleAuthProviderSessionCheck' },
             extra: { message: 'Session check error' },
@@ -164,6 +169,10 @@ export function SimpleAuthProvider({
         }
       } catch (error) {
         if (!active || revision !== authRevision) return
+        if (isConnectivityError(error)) {
+          logConnectivityFailure('simpleAuthProviderCheckSession')
+          return
+        }
         Sentry.captureException(error, {
           tags: { operation: 'simpleAuthProviderCheckSession' },
           extra: { message: 'Error checking session' },
