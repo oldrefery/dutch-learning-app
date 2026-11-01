@@ -28,6 +28,10 @@ export const createDictionaryCreationRuntime = async (
     )
     if (!Array.isArray(origins) || !origins.every(p => typeof p === 'string'))
       return unavailable
+    const paidReleaseBinding = required(
+      'DICTIONARY_PAID_RELEASE_BINDING_SHA256'
+    )
+    if (!/^[0-9a-f]{64}$/.test(paidReleaseBinding)) return unavailable
     return await load({
       url: required('SUPABASE_URL'),
       anonKey: required('SUPABASE_ANON_KEY'),
@@ -46,6 +50,7 @@ export const createDictionaryCreationRuntime = async (
       policySha256: required('DICTIONARY_CREATION_POLICY_SHA256'),
       promptSha256: required('DICTIONARY_CREATION_PROMPT_SHA256'),
       allowedOrigins: origins,
+      paidReleaseBinding,
     })
   } catch {
     // Configuration and loader errors may contain secrets. Never expose them.

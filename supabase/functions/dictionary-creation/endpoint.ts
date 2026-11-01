@@ -37,7 +37,7 @@ export const createDictionaryCreationEndpoint = (options: {
         const { data, error } = await verifier.auth.getUser(token)
         return error ? null : (data.user?.id ?? null)
       },
-      forCaller: token => ({
+      forCaller: (token, actor) => ({
         store: createCreationStore(
           createClient(options.url, options.anonKey, {
             auth,
@@ -48,7 +48,10 @@ export const createDictionaryCreationEndpoint = (options: {
           }),
           service
         ),
-        transport: options.transport,
+        transport: {
+          invoke: (phase, grant) =>
+            options.transport.invoke(phase, grant, actor),
+        },
         profile: options.profile,
       }),
     }),

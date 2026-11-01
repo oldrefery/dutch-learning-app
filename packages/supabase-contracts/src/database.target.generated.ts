@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261025093000_add_dictionary_capability_release_gate.sql.
+// Generated from local migrations through 20261027234500_support_dictionary_provider_limits_and_usage.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -1250,6 +1250,22 @@ export type Database = {
         Args: { p_method_id: string }
         Returns: Json
       }
+      claim_dictionary_paid_attempt_v1: {
+        Args: {
+          p_actor: string
+          p_binding_sha256: string
+          p_invocation_key: string
+          p_model: string
+          p_output_tokens: number
+          p_request_bytes: number
+          p_request_sha256: string
+        }
+        Returns: Json
+      }
+      close_dictionary_paid_unissued_v1: {
+        Args: { p_attempt: string; p_evidence_sha256: string }
+        Returns: undefined
+      }
       consume_edge_function_quota: {
         Args: {
           p_capability: string
@@ -1763,6 +1779,15 @@ export type Database = {
           p_fence: string
           p_result_sha256: string
           p_run: string
+        }
+        Returns: Json
+      }
+      reconcile_dictionary_paid_attempt_v1: {
+        Args: {
+          p_attempt: string
+          p_evidence_sha256: string
+          p_review_sha256: string
+          p_usage: Json
         }
         Returns: Json
       }

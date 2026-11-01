@@ -505,24 +505,38 @@ test('real overlap: identical rollback replays once; concurrent distinct choices
   )
   assert.equal((await effects(g)).head, g.original)
 })
-test('real overlap: validated publication-first conflicts rollback; rollback-first fences waiting validated publication without extra quota', async () => {
-  const f = await fixture(),
-    publish = await ready(f)
-  assert.equal(
-    JSON.parse(await overlap(db, publish, rollbackSql(command(f)))).outcome,
-    CONFLICT
-  )
-  const g = await fixture(),
-    waiting = await ready(g),
-    request = command(g),
-    before = await effects(g)
-  assert.equal(
-    JSON.parse(await overlap(db, rollbackSql(request), waiting)).status,
-    CONFLICT
-  )
-  assert.equal((await effects(g)).head, g.original)
-  assert.equal((await effects(g)).quota, before.quota)
-  assert.equal((await effects(g)).revisions, before.revisions)
+test('historical pre-paid overlap: validated publication-first conflicts rollback; rollback-first fences waiting publication', async () => {
+  // This scenario uses the retired direct-analysis acceptance protocol. All other
+  // history/rollback cases in this file retain the complete current schema.
+  const current = db
+  const historical = await createCluster({
+    throughMigration:
+      '20261025093000_add_dictionary_capability_release_gate.sql',
+  })
+  try {
+    db = historical
+    await seedUsers(db)
+    const f = await fixture(),
+      publish = await ready(f)
+    assert.equal(
+      JSON.parse(await overlap(db, publish, rollbackSql(command(f)))).outcome,
+      CONFLICT
+    )
+    const g = await fixture(),
+      waiting = await ready(g),
+      request = command(g),
+      before = await effects(g)
+    assert.equal(
+      JSON.parse(await overlap(db, rollbackSql(request), waiting)).status,
+      CONFLICT
+    )
+    assert.equal((await effects(g)).head, g.original)
+    assert.equal((await effects(g)).quota, before.quota)
+    assert.equal((await effects(g)).revisions, before.revisions)
+  } finally {
+    db = current
+    await historical.close()
+  }
 })
 test('real overlap: administrator revocation wins before rollback authorization; rollback holds authority through its commit', async () => {
   const f = await fixture(),

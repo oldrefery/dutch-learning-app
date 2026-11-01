@@ -7,7 +7,7 @@ import { AnalysisAcceptanceError } from './store.ts'
 
 export interface AnalysisHandlerDependencies {
   verifyUser(token: string): Promise<string | null>
-  forCaller(token: string): AnalysisWorkerDependencies
+  forCaller(token: string, actor: string): AnalysisWorkerDependencies
 }
 const reply = (status: number, body: unknown): Response =>
   Response.json(body, {
@@ -67,7 +67,7 @@ export const createDictionaryAnalysisHandler =
       const result = await runDictionaryAnalysis(
         actor,
         parsed.data,
-        dependencies.forCaller(token)
+        dependencies.forCaller(token, actor)
       )
       return reply(
         'outcome' in result ||
