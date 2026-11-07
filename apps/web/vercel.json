@@ -6,7 +6,8 @@
       "main": false,
       "feature/app-stability-after-transition": false,
       "feature/add-word-screen-recovery": false,
-      "feature/add-word-selection-loop": false
+      "feature/add-word-selection-loop": false,
+      "feature/dictionary-sync-upload-recovery": false
     }
   }
 }

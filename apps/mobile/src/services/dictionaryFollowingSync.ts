@@ -1,3 +1,4 @@
+import { IncompleteDictionaryBatchError } from './dictionaryFollowingErrors'
 import {
   DICTIONARY_EFFECTIVE_BATCH_LIMIT,
   requireFollowingImportCard,
@@ -88,7 +89,7 @@ const fetchBatches = async (
       batch.cards.length !== requested.size ||
       batch.cards.some(card => !requested.has(card.word_id))
     )
-      throw new Error('Incomplete dictionary following batch')
+      throw new IncompleteDictionaryBatchError()
     batches.push(batch)
   }
   return batches
