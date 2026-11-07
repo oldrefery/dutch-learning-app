@@ -10,6 +10,7 @@ import type {
 import { createDictionaryAnalysisHandler } from './handler.ts'
 import { createAnalysisStore, type RpcClient } from './store.ts'
 import { createGeminiTransport, journalPacket } from './geminiTransport.ts'
+import type { ProviderObservation } from './providerObservation.ts'
 import {
   prepareGeminiRequest,
   parseProtectedAnalysisInput,
@@ -783,7 +784,9 @@ Deno.test(
       return original(...args)
     }
     let calls = 0
+    const observations: ProviderObservation[] = []
     f.dependencies.transport = createGeminiTransport({
+      observe: event => observations.push(event),
       apiKey: 'private-fixture-key',
       fetch: () => {
         calls++
@@ -802,6 +805,9 @@ Deno.test(
     })
     const result = await runDictionaryAnalysis(actor, command, f.dependencies)
     assert.equal('status' in result && result.status, 'provider-failed')
+    assert.equal(observations.length, 1)
+    assert.equal(observations[0].reason, 'http-error')
+    assert.equal(observations[0].http_status, 400)
     assert.equal(argsSeen.length, 1)
     assert.equal(argsSeen[0].length, 5)
     assert.match(String(argsSeen[0][4]), /^[a-f0-9]{64}$/)
@@ -810,10 +816,15 @@ Deno.test(
       false
     )
     assert.equal(
+      JSON.stringify([result, argsSeen]).includes('attempt_sha256'),
+      false
+    )
+    assert.equal(
       JSON.stringify([result, argsSeen]).includes('private-fixture'),
       false
     )
     await runDictionaryAnalysis(actor, command, f.dependencies)
     assert.equal(calls, 1)
+    assert.equal(observations.length, 1)
   }
 )

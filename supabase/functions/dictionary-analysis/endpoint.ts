@@ -7,6 +7,7 @@ import { buildSemanticPolicy } from './semanticModel.ts'
 import { createGeminiTransport } from './geminiTransport.ts'
 import { withAnalysisCors } from './cors.ts'
 import { withDictionaryPaidSpend } from '../_shared/dictionaryPaidSpend.ts'
+import { logProviderObservation } from './providerObservation.ts'
 
 export interface IndependentEndpointOptions {
   url: string
@@ -50,6 +51,7 @@ export const createIndependentDictionaryAnalysisEndpoint = async (
   const transport = createGeminiTransport({
     apiKey: options.apiKey,
     fetch: http,
+    observe: observation => logProviderObservation('analysis', observation),
   })
   return withAnalysisCors(
     createDictionaryAnalysisHandler({
