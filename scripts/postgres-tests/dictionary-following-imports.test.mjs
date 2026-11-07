@@ -14,6 +14,7 @@ import {
 } from './fixtures.mjs'
 import { overlap } from './concurrency-fixtures.mjs'
 import { importFixture } from './dictionary-import-recovery-fixtures.mjs'
+import { paidRelease } from './dictionary-paid.fixture.mjs'
 import { canonicalizeJson } from '../../packages/domain/src/shared-dictionary.ts'
 import { canonicalizeOfficialContent } from '../../packages/content/src/manifest.ts'
 const json = value => `${literal(JSON.stringify(value))}::JSONB`
@@ -706,4 +707,193 @@ test('retired follow content remains portable but its exported IDs cannot create
     f.updated.analysis_notes
   )
   await assert.rejects(apply(f.intent), /import-review-required/)
+})
+
+async function scopedImportFixture(options = {}) {
+  const f = await fixture()
+  const release = await paidRelease(db, options)
+  await db.sql(
+    `UPDATE private.dictionary_content_runtime SET following_import_release_id='${release}';`
+  )
+  return { ...f, release }
+}
+
+async function clearImportScope() {
+  await db.sql(
+    'UPDATE private.dictionary_content_runtime SET following_import_release_id=NULL;'
+  )
+}
+
+test('scoped imports reject another actor without writing a personal card or receipt', async () => {
+  const f = await scopedImportFixture()
+  try {
+    const foreign = {
+      ...f.intent,
+      word_id: randomUUID(),
+      operation_id: randomUUID(),
+      collection_id: f.sourceCollection,
+    }
+    await assert.rejects(
+      apply(foreign, other),
+      /following-import-cohort-required/
+    )
+    const recovery = {
+      protocol_version: 2,
+      operation_id: randomUUID(),
+      original_intent: foreign,
+      expected_recovery_version: 0,
+      expected_collection_id: null,
+      target_collection_id: f.sourceCollection,
+    }
+    await assert.rejects(
+      read(
+        asUser(
+          other,
+          `SELECT public.recover_dictionary_import_v2(${json(recovery)});`
+        )
+      ),
+      /following-import-cohort-required/
+    )
+    assert.equal(
+      await db.sql(
+        `SELECT count(*) FROM public.words WHERE word_id='${foreign.word_id}';`
+      ),
+      '0'
+    )
+    assert.equal(
+      await db.sql(
+        `SELECT count(*) FROM private.dictionary_import_receipts WHERE operation_id='${foreign.operation_id}';`
+      ),
+      '0'
+    )
+    assert.equal((await apply(f.intent)).outcome, 'inserted')
+  } finally {
+    await clearImportScope()
+  }
+})
+
+test('cohort members can save published content after the paid budget and call limit are exhausted', async () => {
+  const f = await scopedImportFixture({ calls: 4 })
+  try {
+    await db.sql(
+      `UPDATE public.user_access_levels SET access_level='read_only' WHERE user_id='${owner}';`
+    )
+    await db.sql(
+      `UPDATE private.dictionary_paid_releases SET calls_issued=call_limit,settled_nanousd=limit_nanousd WHERE release_id='${f.release}';`
+    )
+    const before = await db.sql(
+      `SELECT row_to_json(r)::text FROM private.dictionary_paid_releases r WHERE release_id='${f.release}';`
+    )
+    assert.equal((await apply(f.intent)).outcome, 'inserted')
+    assert.equal(
+      await db.sql(
+        `SELECT row_to_json(r)::text FROM private.dictionary_paid_releases r WHERE release_id='${f.release}';`
+      ),
+      before
+    )
+  } finally {
+    await clearImportScope()
+  }
+})
+
+test('expired, future and disabled releases cannot admit new following imports', async () => {
+  const yesterday = new Date(Date.now() - 86400000).toISOString()
+  const tomorrow = new Date(Date.now() + 86400000).toISOString()
+  const later = new Date(Date.now() + 172800000).toISOString()
+  for (const options of [
+    { until: new Date(Date.now() - 60000).toISOString(), from: yesterday },
+    { from: tomorrow, until: later },
+    { enabled: false },
+  ]) {
+    const f = await scopedImportFixture(options)
+    try {
+      await assert.rejects(apply(f.intent), /following-import-cohort-required/)
+    } finally {
+      await clearImportScope()
+    }
+  }
+})
+
+test('revoked or expired memberships block new imports without changing the legacy null-scope behavior', async () => {
+  for (const change of [
+    'enabled=FALSE',
+    "expires_at=CLOCK_TIMESTAMP()-INTERVAL '1 minute'",
+  ]) {
+    const f = await scopedImportFixture()
+    try {
+      await db.sql(
+        `UPDATE private.dictionary_paid_cohort SET ${change} WHERE release_id='${f.release}' AND user_id='${owner}';`
+      )
+      await assert.rejects(apply(f.intent), /following-import-cohort-required/)
+      await clearImportScope()
+      assert.equal((await apply(f.intent)).outcome, 'inserted')
+    } finally {
+      await clearImportScope()
+    }
+  }
+})
+
+test('receipt replay and moving an existing imported card survive cohort shutdown', async () => {
+  const f = await scopedImportFixture()
+  try {
+    assert.equal((await apply(f.intent)).outcome, 'inserted')
+    await db.sql(
+      `UPDATE private.dictionary_paid_releases SET enabled=FALSE WHERE release_id='${f.release}';`
+    )
+    assert.equal((await apply(f.intent)).idempotent, true)
+    const target = await db.sql(
+      `INSERT INTO public.collections(user_id,name) VALUES('${owner}','Recovered placement') RETURNING collection_id;`
+    )
+    const recovery = {
+      protocol_version: 2,
+      operation_id: randomUUID(),
+      original_intent: f.intent,
+      expected_recovery_version: 0,
+      expected_collection_id: f.target,
+      target_collection_id: target,
+    }
+    assert.equal(
+      (
+        await read(
+          asUser(
+            owner,
+            `SELECT public.recover_dictionary_import_v2(${json(recovery)});`
+          )
+        )
+      ).outcome,
+      'applied'
+    )
+    const fresh = {
+      ...f.intent,
+      word_id: randomUUID(),
+      operation_id: randomUUID(),
+    }
+    await assert.rejects(apply(fresh), /following-import-cohort-required/)
+  } finally {
+    await clearImportScope()
+  }
+})
+
+test('concurrent release or membership withdrawal wins before a waiting import can insert', async () => {
+  for (const table of ['dictionary_paid_releases', 'dictionary_paid_cohort']) {
+    const f = await scopedImportFixture()
+    try {
+      await assert.rejects(
+        overlap(
+          db,
+          `RESET ROLE; UPDATE private.${table} SET enabled=FALSE WHERE release_id='${f.release}';`,
+          rpc(f.intent)
+        ),
+        /following-import-cohort-required/
+      )
+      assert.equal(
+        await db.sql(
+          `SELECT count(*) FROM public.words WHERE word_id='${f.intent.word_id}';`
+        ),
+        '0'
+      )
+    } finally {
+      await clearImportScope()
+    }
+  }
 })
