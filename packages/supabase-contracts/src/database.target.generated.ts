@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261027234500_support_dictionary_provider_limits_and_usage.sql.
+// Generated from local migrations through 20261107113000_scope_dictionary_following_imports.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
