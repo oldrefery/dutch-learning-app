@@ -1,3 +1,4 @@
+import { IncompleteDictionaryBatchError } from './dictionaryFollowingErrors'
 import { DictionaryModeReconciliationRequiredError } from '@/db/dictionaryModeReconciliationRepository'
 import { collectionService, supabase, wordService } from '@/lib/supabase'
 import { learningOperationQueue } from './learningOperationQueue'
@@ -405,11 +406,12 @@ export class SyncManager {
     const startedAt = Date.now()
     let outcome: SyncOutcome = 'error'
     let dictionaryError: unknown = null
+    let initialDictionaryPullError: unknown = null
     const attemptDictionarySync = async (action: () => Promise<unknown>) => {
       try {
         await action()
       } catch (error) {
-        dictionaryError = error
+        dictionaryError ??= error
       }
     }
 
@@ -493,23 +495,11 @@ export class SyncManager {
       if (dictionaryContentAvailable) {
         await wordRepository.preserveLegacyPendingContent(userId)
         console.log('[Sync] Stage 2.5: pull dictionary content')
-        await attemptDictionarySync(async () => {
-          await this.runSyncStageWithSessionRetry(
-            'pull_dictionary_content',
-            userId,
-            () =>
-              dictionaryContentSync.pullRequired(
-                userId,
-                pulledWords
-                  .filter(word => !word.deleted_at)
-                  .map(word => word.word_id)
-              )
-          )
-          await this.runSyncStageWithSessionRetry(
-            'pull_dictionary_content',
-            userId,
-            () => dictionaryContentSync.refreshChanges(userId)
-          )
+        await this.pullDictionaryContent(
+          userId,
+          pulledWords.filter(word => !word.deleted_at).map(word => word.word_id)
+        ).catch((error: unknown) => {
+          initialDictionaryPullError = error
         })
       }
 
@@ -582,13 +572,25 @@ export class SyncManager {
       }
 
       if (dictionaryContentAvailable && pushedWordsCount > 0) {
-        await attemptDictionarySync(() =>
-          this.runSyncStageWithSessionRetry(
+        await attemptDictionarySync(async () => {
+          await this.runSyncStageWithSessionRetry(
             'pull_dictionary_content',
             userId,
             () => dictionaryContentSync.pullRequired(userId)
           )
-        )
+          if (
+            initialDictionaryPullError instanceof IncompleteDictionaryBatchError
+          ) {
+            // The initial batch can include a personal word not uploaded yet.
+            // Finish its skipped refresh before clearing only this read failure.
+            await this.runSyncStageWithSessionRetry(
+              'pull_dictionary_content',
+              userId,
+              () => dictionaryContentSync.refreshChanges(userId)
+            )
+            initialDictionaryPullError = null
+          }
+        })
       }
 
       // Step 5: Push pending progress to Supabase
@@ -621,7 +623,9 @@ export class SyncManager {
       )
       await this.refreshDictionaryPersonalRows(userId)
 
-      if (dictionaryError) throw dictionaryError
+      const remainingDictionaryError =
+        dictionaryError ?? initialDictionaryPullError
+      if (remainingDictionaryError) throw remainingDictionaryError
       const timestamp = new Date().toISOString()
       // Status metadata must not turn an acknowledged data sync into a failure.
       await setLastSyncTimestamp(userId, timestamp).catch(() => {
@@ -671,6 +675,22 @@ export class SyncManager {
     } finally {
       await this.health.record(userId, outcome, startedAt)
     }
+  }
+
+  private async pullDictionaryContent(
+    userId: string,
+    candidateWordIds: readonly string[]
+  ): Promise<void> {
+    await this.runSyncStageWithSessionRetry(
+      'pull_dictionary_content',
+      userId,
+      () => dictionaryContentSync.pullRequired(userId, candidateWordIds)
+    )
+    await this.runSyncStageWithSessionRetry(
+      'pull_dictionary_content',
+      userId,
+      () => dictionaryContentSync.refreshChanges(userId)
+    )
   }
 
   private async refreshDictionaryPersonalRows(userId: string): Promise<void> {

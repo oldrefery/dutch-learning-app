@@ -1,3 +1,4 @@
+import { IncompleteDictionaryBatchError } from '../dictionaryFollowingErrors'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -716,5 +717,40 @@ describe('dormant protocol2 sync against file-backed SQLite', () => {
     expect(db.prepare(CARDS_SQL).all()).toEqual([])
     expect(await repository.getChangeCursor(OWNER_A)).toBe('0')
     expect(await repository.getMissingCardWordIds(OWNER_A)).toHaveLength(4)
+  })
+
+  it('preserves missing-card debt until the new personal word is uploaded', async () => {
+    addWord(WORD_A2)
+    db.prepare(
+      "UPDATE words SET sync_status = 'pending' WHERE word_id = ?"
+    ).run(WORD_A2)
+    let uploaded = false
+    rpc.mockImplementation(async (name, args) => {
+      if (name === EFFECTIVE_RPC) {
+        const visible = (args?.p_word_ids ?? []).filter(
+          id => uploaded || id !== WORD_A2
+        )
+        return response(followingBatch(sequence, revision, visible))
+      }
+      return defaultRpc(name, args)
+    })
+    const before = db.prepare(WORDS_SQL).all()
+    await expect(sync.pullRequired(OWNER_A)).rejects.toBeInstanceOf(
+      IncompleteDictionaryBatchError
+    )
+    expect(db.prepare(WORDS_SQL).all()).toEqual(before)
+    expect(db.prepare(CARDS_SQL).all()).toEqual([])
+    expect(await repository.getPendingRefreshWordIds(OWNER_A)).toEqual(
+      expect.arrayContaining([WORD_A, WORD_A2])
+    )
+    uploaded = true
+    db.prepare("UPDATE words SET sync_status = 'synced' WHERE word_id = ?").run(
+      WORD_A2
+    )
+    const uploadedRows = db.prepare(WORDS_SQL).all()
+    expect(await sync.pullRequired(OWNER_A)).toBe(2)
+    expect(db.prepare(CARDS_SQL).all()).toHaveLength(2)
+    expect(await repository.getPendingRefreshWordIds(OWNER_A)).toEqual([])
+    expect(db.prepare(WORDS_SQL).all()).toEqual(uploadedRows)
   })
 })

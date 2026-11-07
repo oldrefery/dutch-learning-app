@@ -1,3 +1,4 @@
+import { IncompleteDictionaryBatchError } from '../dictionaryFollowingErrors'
 import { DictionaryModeReconciliationRequiredError } from '@/db/dictionaryModeReconciliationRepository'
 import { dictionaryImportRecoverySync } from '../dictionaryImportRecoverySync'
 import { dictionaryImportDeliveryRepository } from '@/db/dictionaryImportDeliveryRepository'
@@ -3853,6 +3854,137 @@ describe('SyncManager', () => {
           ['word-2', DEFAULT_TIMESTAMP],
         ])
       )
+    })
+  })
+  describe('dictionary hydration recovery after word upload', () => {
+    const STILL_MISSING = 'still missing'
+    const REFRESH_FAILURE = 'refresh failure'
+    const COMMAND_CONFLICT = 'command conflict'
+    const UPLOAD_FAILURE = 'upload failure'
+    let previousFlag: string | undefined
+    beforeEach(() => {
+      previousFlag = process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+      process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+      jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
+      jest
+        .mocked(dictionaryContentSync.pullRequired)
+        .mockRejectedValueOnce(new IncompleteDictionaryBatchError())
+        .mockResolvedValue(1)
+      jest
+        .spyOn(
+          syncManager as unknown as {
+            pushWordsToSupabase: (owner: string) => Promise<number>
+          },
+          'pushWordsToSupabase'
+        )
+        .mockResolvedValue(1)
+    })
+    afterEach(() => {
+      if (previousFlag === undefined)
+        delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
+      else process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = previousFlag
+    })
+
+    it('completes skipped change refresh before reporting recovered hydration', async () => {
+      const result = await syncManager.performSync(userId)
+      expect(result.success).toBe(true)
+      expect(dictionaryContentSync.pullRequired).toHaveBeenCalledTimes(2)
+      expect(dictionaryContentSync.refreshChanges).toHaveBeenCalledTimes(1)
+      expect(
+        jest.mocked(dictionaryContentSync.refreshChanges).mock
+          .invocationCallOrder[0]
+      ).toBeGreaterThan(
+        jest.mocked(dictionaryContentSync.pullRequired).mock
+          .invocationCallOrder[1]
+      )
+      expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledWith(
+        userId,
+        expect.any(String)
+      )
+    })
+
+    it.each([
+      STILL_MISSING,
+      REFRESH_FAILURE,
+      COMMAND_CONFLICT,
+      'no upload',
+      UPLOAD_FAILURE,
+      'auth failure',
+    ])(
+      'retains %s while preserving learning delivery when possible',
+      async scenario => {
+        const failure =
+          scenario === COMMAND_CONFLICT
+            ? new DictionaryContentConflictError('Unresolved command conflict')
+            : new Error(scenario)
+        if (scenario === STILL_MISSING) {
+          jest
+            .mocked(dictionaryContentSync.pullRequired)
+            .mockReset()
+            .mockRejectedValue(new IncompleteDictionaryBatchError())
+        }
+        if (scenario === REFRESH_FAILURE)
+          jest
+            .mocked(dictionaryContentSync.refreshChanges)
+            .mockRejectedValue(failure)
+        if (scenario === COMMAND_CONFLICT)
+          jest.mocked(dictionaryContentSync.push).mockRejectedValue(failure)
+        const upload = jest.mocked(
+          (
+            syncManager as unknown as {
+              pushWordsToSupabase: (owner: string) => Promise<number>
+            }
+          ).pushWordsToSupabase
+        )
+        if (scenario === 'no upload') upload.mockResolvedValue(0)
+        if (scenario === UPLOAD_FAILURE) upload.mockRejectedValue(failure)
+        if (scenario === 'auth failure') {
+          jest
+            .mocked(dictionaryContentSync.pullRequired)
+            .mockReset()
+            .mockRejectedValueOnce(failure)
+            .mockResolvedValue(1)
+        }
+        const result = await syncManager.performSync(userId)
+        expect(result.success).toBe(false)
+        expect(result.error).toBe(
+          [STILL_MISSING, 'no upload'].includes(scenario)
+            ? new IncompleteDictionaryBatchError().message
+            : failure.message
+        )
+        expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+        if (scenario !== UPLOAD_FAILURE)
+          expect(
+            reviewEventRepository.getPendingSyncEvents
+          ).toHaveBeenCalledWith(userId, 500)
+        if (scenario === COMMAND_CONFLICT)
+          expect(result.dictionaryConflict).toBe(true)
+      }
+    )
+    it('preserves a command conflict when the recovery read also fails', async () => {
+      const conflict = new DictionaryContentConflictError(
+        'Pending command conflict'
+      )
+      jest.mocked(dictionaryContentSync.push).mockRejectedValue(conflict)
+      jest
+        .mocked(dictionaryContentSync.pullRequired)
+        .mockRejectedValue(new IncompleteDictionaryBatchError())
+      const result = await syncManager.performSync(userId)
+      expect(result).toMatchObject({
+        success: false,
+        dictionaryConflict: true,
+        error: conflict.message,
+      })
+      expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+    })
+
+    it('does not repeat a completed change refresh for an ordinary successful upload', async () => {
+      jest
+        .mocked(dictionaryContentSync.pullRequired)
+        .mockReset()
+        .mockResolvedValue(1)
+      expect((await syncManager.performSync(userId)).success).toBe(true)
+      expect(dictionaryContentSync.refreshChanges).toHaveBeenCalledTimes(1)
     })
   })
 })
