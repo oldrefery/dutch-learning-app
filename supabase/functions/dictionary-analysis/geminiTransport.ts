@@ -3,6 +3,10 @@ import {
   providerDiagnostics,
   type ProviderDiagnostics,
 } from './providerDiagnostics.ts'
+import type {
+  ProviderObservation,
+  TransportReason,
+} from './providerObservation.ts'
 
 const RESPONSE_BYTE_LIMIT = 32768
 export type ProviderOutcome =
@@ -24,8 +28,14 @@ export interface GeminiTransport {
   ): Promise<ProviderOutcome>
 }
 
+class ResponseReadError extends Error {
+  constructor(readonly reason: TransportReason) {
+    super(reason)
+  }
+}
+
 const readBoundedResponse = async (response: Response): Promise<string> => {
-  if (!response.body) throw new Error('missing-provider-response')
+  if (!response.body) throw new ResponseReadError('missing-response-body')
   const reader = response.body.getReader()
   const chunks: Uint8Array[] = []
   let size = 0
@@ -34,13 +44,16 @@ const readBoundedResponse = async (response: Response): Promise<string> => {
       const chunk = await reader.read()
       if (chunk.done) break
       size += chunk.value.byteLength
-      if (size > RESPONSE_BYTE_LIMIT)
-        throw new Error('oversized-provider-response')
+      if (size > RESPONSE_BYTE_LIMIT) {
+        throw new ResponseReadError('response-too-large')
+      }
       chunks.push(chunk.value)
     }
   } catch (error) {
     await reader.cancel().catch(() => undefined)
-    throw error
+    throw error instanceof ResponseReadError
+      ? error
+      : new ResponseReadError('response-read-failed')
   } finally {
     reader.releaseLock()
   }
@@ -50,7 +63,11 @@ const readBoundedResponse = async (response: Response): Promise<string> => {
     bytes.set(chunk, offset)
     offset += chunk.byteLength
   }
-  return new TextDecoder('utf-8', { fatal: true }).decode(bytes)
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes)
+  } catch {
+    throw new ResponseReadError('response-decode-failed')
+  }
 }
 
 // Preserve the provider envelope, including blocked/truncated/malformed output.
@@ -110,6 +127,7 @@ export const createGeminiTransport = (options: {
   apiKey: string
   fetch: typeof fetch
   timeoutMs?: number
+  observe?: (observation: ProviderObservation) => void
 }): GeminiTransport => {
   const timeoutMs = options.timeoutMs ?? 60000
   if (
@@ -125,6 +143,11 @@ export const createGeminiTransport = (options: {
         throw new Error('invalid-provider-configuration')
       const controller = new AbortController()
       const timer = setTimeout(() => controller.abort(), timeoutMs)
+      const startedAt = performance.now()
+      let httpStatus: number | null = null
+      let googleStatus: string | null = null
+      let reason: TransportReason = 'fetch-failed'
+      let outcome: ProviderObservation['outcome'] = 'provider-outcome-unknown'
       let unsuccessfulStatus: number | null = null
       try {
         // No retry, redirect or SDK retry middleware for a non-idempotent paid call.
@@ -141,27 +164,36 @@ export const createGeminiTransport = (options: {
             signal: controller.signal,
           }
         )
+        httpStatus = response.status
+        reason = 'response-read-failed'
         if (!response.ok) unsuccessfulStatus = response.status
         const body = await readBoundedResponse(response)
+        reason = 'response-processing-failed'
         if (!response.ok) {
+          const diagnostics = providerDiagnostics(response.status, body)
+          googleStatus = diagnostics.google_status
+          reason = 'http-error'
           // An explicit client/rate-limit rejection is known. A server failure may
           // occur after generation; do not assume a 5xx permits another paid call.
           if (
             response.status >= 400 &&
             response.status < 500 &&
             response.status !== 408
-          )
+          ) {
+            const evidence = await sha256(
+              JSON.stringify({ status: response.status, body })
+            )
+            outcome = 'provider-failed'
             return {
               kind: 'provider-failed',
-              evidence_sha256: await sha256(
-                JSON.stringify({ status: response.status, body })
-              ),
-              diagnostics: providerDiagnostics(response.status, body),
+              evidence_sha256: evidence,
+              diagnostics,
             }
+          }
           return {
             kind: 'provider-outcome-unknown',
             evidence_sha256: null,
-            diagnostics: providerDiagnostics(response.status, body),
+            diagnostics,
           }
         }
         const result = journalPacket(body)
@@ -172,8 +204,12 @@ export const createGeminiTransport = (options: {
             ? providerId
             : `worker:${attemptId}`
         if (requestId.length > 200) throw new Error('invalid-attempt-id')
+        reason = 'response-received'
+        outcome = 'returned'
         return { kind: 'returned', result, requestId }
-      } catch {
+      } catch (error) {
+        if (controller.signal.aborted) reason = 'timeout'
+        else if (error instanceof ResponseReadError) reason = error.reason
         // Aborting locally does not cancel/undo processing at the provider.
         return {
           kind: 'provider-outcome-unknown',
@@ -184,6 +220,25 @@ export const createGeminiTransport = (options: {
         }
       } finally {
         clearTimeout(timer)
+        if (options.observe) {
+          try {
+            // Hash internal invocation keys; do not expose raw identifiers,
+            // request/response content, headers, URLs or exception messages.
+            options.observe({
+              attempt_sha256: await sha256(attemptId),
+              outcome,
+              reason,
+              http_status: httpStatus,
+              google_status: googleStatus,
+              elapsed_ms: Math.max(
+                0,
+                Math.round(performance.now() - startedAt)
+              ),
+            })
+          } catch {
+            // Logging failure must never change a paid result or cause a retry.
+          }
+        }
       }
     },
   }

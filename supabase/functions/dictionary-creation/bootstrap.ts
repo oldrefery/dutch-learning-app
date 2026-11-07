@@ -3,6 +3,7 @@ import { createDictionaryCreationEndpoint } from './endpoint.ts'
 import { buildCreationGeminiProfile } from './geminiModel.ts'
 import { createCreationGeminiTransport } from './geminiTransport.ts'
 import { createClient } from '@supabase/supabase-js'
+import { logProviderObservation } from '../dictionary-analysis/providerObservation.ts'
 
 export interface CreationRuntimeOptions {
   url: string
@@ -25,12 +26,17 @@ export const createConfiguredCreationEndpoint = async (
   if (
     profile.policy_sha256 !== options.policySha256 ||
     profile.prompt_sha256 !== options.promptSha256
-  )
+  ) {
     throw new Error('creation-profile-binding-mismatch')
+  }
   const http = options.fetch ?? fetch
   const transport = await createCreationGeminiTransport({
     profile,
-    transport: createGeminiTransport({ apiKey: options.apiKey, fetch: http }),
+    transport: createGeminiTransport({
+      apiKey: options.apiKey,
+      fetch: http,
+      observe: observation => logProviderObservation('creation', observation),
+    }),
     paid: {
       bindingSha256: options.paidReleaseBinding,
       service: createClient(options.url, options.serviceRoleKey, {
