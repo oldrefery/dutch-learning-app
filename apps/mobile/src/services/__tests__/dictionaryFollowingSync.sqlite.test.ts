@@ -255,6 +255,112 @@ describe('dormant protocol2 sync against file-backed SQLite', () => {
     expect(await cached([WORD_B])).toEqual(new Map())
   })
 
+  it('reuses the initial snapshot across covered pages without another effective read', async () => {
+    addWord(WORD_A2)
+    const cursorDuringFeed: string[] = []
+    rpc.mockImplementation(async (name, args) => {
+      if (name !== CHANGES_RPC) return defaultRpc(name, args)
+      cursorDuringFeed.push(await repository.getChangeCursor(OWNER_A))
+      if (args?.p_after === '0')
+        return response({
+          ...followingPage('0', '7'),
+          latest_cursor: '9',
+          has_more: true,
+        })
+      return defaultRpc(name, args)
+    })
+    await sync.pullRequiredAndRefresh(OWNER_A, [WORD_A, WORD_A2])
+    expect(
+      rpc.mock.calls.filter(([name]) => name === EFFECTIVE_RPC)
+    ).toHaveLength(1)
+    expect(cursorDuringFeed).toEqual(['0', '7'])
+    restart()
+    expect(await repository.getChangeCursor(OWNER_A)).toBe('9')
+    expect((await cached([WORD_A, WORD_A2])).size).toBe(2)
+    expect(await repository.getPendingRefreshWordIds(OWNER_A)).toEqual([])
+    expect(await repository.getLegacyRefreshWordIds(OWNER_A)).toEqual([])
+  })
+
+  const NEWER_GENERATION = 'newer generation'
+  const NEWER_PAGE = 'newer page'
+
+  it.each(['matching', NEWER_GENERATION, 'legacy debt', NEWER_PAGE])(
+    'uses the published bootstrap snapshot only while its fence matches (%s)',
+    async reason => {
+      const initial = await repository.prepareHydration(OWNER_A, [WORD_A])
+      const bootstrap = {
+        batches: [followingBatch(sequence, revision)],
+        versions: initial.refreshVersions,
+      }
+      if (reason === NEWER_GENERATION)
+        await repository.prepareHydration(OWNER_A, [WORD_A])
+      if (reason === 'legacy debt')
+        await legacy.requireCardRefresh(OWNER_A, [WORD_A])
+      if (reason !== 'matching') {
+        sequence = '10'
+        revision = REVISION_2
+      }
+      await sync.pullRequiredAndRefresh(OWNER_A, [], bootstrap)
+      expect(
+        rpc.mock.calls.filter(([name]) => name === EFFECTIVE_RPC)
+      ).toHaveLength(reason === 'matching' ? 0 : 1)
+      expect(await repository.getChangeCursor(OWNER_A)).toBe(sequence)
+      expect((await cached()).get(WORD_A)?.revision?.revision_id).toBe(revision)
+      expect(await repository.getPendingRefreshWordIds(OWNER_A)).toEqual([])
+      expect(await repository.getLegacyRefreshWordIds(OWNER_A)).toEqual([])
+    }
+  )
+
+  it.each([NEWER_PAGE, NEWER_GENERATION, 'later legacy debt'])(
+    'fetches fresh content after a %s invalidates snapshot reuse',
+    async reason => {
+      rpc.mockImplementation(async (name, args) => {
+        if (name === CHANGES_RPC) {
+          if (reason === NEWER_PAGE) {
+            sequence = '10'
+            revision = REVISION_2
+          }
+          if (reason === NEWER_GENERATION)
+            await repository.prepareHydration(OWNER_A, [WORD_A])
+          if (reason === 'later legacy debt')
+            await legacy.requireCardRefresh(OWNER_A, [WORD_A])
+        }
+        return defaultRpc(name, args)
+      })
+      await sync.pullRequiredAndRefresh(OWNER_A, [WORD_A])
+      expect(
+        rpc.mock.calls.filter(([name]) => name === EFFECTIVE_RPC)
+      ).toHaveLength(2)
+      expect(await repository.getChangeCursor(OWNER_A)).toBe(sequence)
+      expect((await cached()).get(WORD_A)?.revision?.revision_id).toBe(revision)
+      expect(await repository.getPendingRefreshWordIds(OWNER_A)).toEqual([])
+      expect(await repository.getLegacyRefreshWordIds(OWNER_A)).toEqual([])
+    }
+  )
+
+  it('refetches the full entry if a cached sibling appears after the initial snapshot', async () => {
+    rpc.mockImplementation(async (name, args) => {
+      if (name === CHANGES_RPC) {
+        addWord(WORD_A2)
+        const request = await repository.prepareHydration(OWNER_A, [WORD_A2])
+        await repository.commitHydration(
+          request,
+          [followingBatch(sequence, revision, [WORD_A2])],
+          () => {}
+        )
+      }
+      return defaultRpc(name, args)
+    })
+    await sync.pullRequiredAndRefresh(OWNER_A, [WORD_A])
+    const effective = rpc.mock.calls.filter(([name]) => name === EFFECTIVE_RPC)
+    expect(effective).toEqual([
+      [EFFECTIVE_RPC, { p_word_ids: [WORD_A] }],
+      [EFFECTIVE_RPC, { p_word_ids: [WORD_A, WORD_A2].sort() }],
+    ])
+    expect(await repository.getChangeCursor(OWNER_A)).toBe(sequence)
+    expect((await cached([WORD_A, WORD_A2])).size).toBe(2)
+  })
+
   it('acknowledges an exact BIGINT page only with every affected reference and dependency', async () => {
     addWord(WORD_A2)
     await seed([WORD_A, WORD_A2])
@@ -753,4 +859,115 @@ describe('dormant protocol2 sync against file-backed SQLite', () => {
     expect(await repository.getPendingRefreshWordIds(OWNER_A)).toEqual([])
     expect(db.prepare(WORDS_SQL).all()).toEqual(uploadedRows)
   })
+  const locallyEditedRecovery = 'local-edit'
+  const completedRecovery = 'completed'
+  it.each([completedRecovery, 'missing', 'wrong-owner', locallyEditedRecovery])(
+    'ordinary sync safely handles managed recovery: %s',
+    async outcome => {
+      const previous =
+        process.env.EXPO_PUBLIC_DICTIONARY_MANAGED_RECOVERY_ENABLED
+      process.env.EXPO_PUBLIC_DICTIONARY_MANAGED_RECOVERY_ENABLED = 'true'
+      try {
+        for (const [key, value] of Object.entries(followingContent)) {
+          const stored =
+            typeof value === 'boolean'
+              ? Number(value)
+              : value && typeof value === 'object'
+                ? JSON.stringify(value)
+                : value
+          db.prepare(`UPDATE words SET ${key}=? WHERE word_id=?`).run(
+            stored,
+            WORD_A
+          )
+        }
+        await seed()
+        const before = db.prepare(WORDS_SQL).all()
+        const restored = {
+          protocol_version: 2,
+          watermark: '9007199254740995',
+          revisions: [],
+          cards: [
+            {
+              word_id: WORD_A,
+              mode: 'legacy',
+              content_version: '9007199254740993',
+              reference: null,
+              adopted_revision_id: null,
+              head_sequence: null,
+              legacy_content: followingContent,
+              removed_fields: [],
+              cefr: { level: null, status: 'unknown', confidence: null },
+            },
+          ],
+        }
+        rpc.mockImplementation(async (name, args) => {
+          if (name === EFFECTIVE_RPC) return response(restored)
+          if (name === 'get_dictionary_managed_recoveries_v1') {
+            if (outcome === 'missing') return failure('PGRST202')
+            return response({
+              protocol_version: 1,
+              recoveries: [
+                {
+                  run_id: WORD_A2,
+                  operation_id: REVISION_2,
+                  user_id: outcome === 'wrong-owner' ? OWNER_B : OWNER_A,
+                  word_id: WORD_A,
+                  entry_id: ENTRY,
+                  revision_id: REVISION_1,
+                  from_version: '9007199254740992',
+                  to_version: '9007199254740993',
+                  original_content: followingContent,
+                  published_content: followingContent,
+                  restored_content: followingContent,
+                },
+              ],
+            })
+          }
+          return defaultRpc(name, args)
+        })
+        if (outcome === locallyEditedRecovery)
+          db.prepare('UPDATE words SET analysis_notes=? WHERE word_id=?').run(
+            'New personal edit',
+            WORD_A
+          )
+        if (outcome === completedRecovery) {
+          expect(await sync.pull(OWNER_A, [WORD_A])).toBe(1)
+          restart()
+          expect((await cached()).get(WORD_A)?.card.mode).toBe('legacy')
+          expect(db.prepare(WORDS_SQL).all()).toEqual(before)
+          expect(await sync.pull(OWNER_A, [WORD_A])).toBe(1)
+          expect(
+            db
+              .prepare(
+                'SELECT count(*) AS n FROM dictionary_mode_reconciliations'
+              )
+              .get()?.n
+          ).toBe(1)
+        } else {
+          await expect(sync.pull(OWNER_A, [WORD_A])).rejects.toThrow()
+          restart()
+          expect((await cached()).get(WORD_A)?.card.mode).toBe('follow')
+          expect(
+            db
+              .prepare(
+                'SELECT count(*) AS n FROM dictionary_mode_reconciliations'
+              )
+              .get()?.n
+          ).toBe(0)
+          if (outcome === locallyEditedRecovery)
+            expect(
+              db
+                .prepare('SELECT analysis_notes FROM words WHERE word_id=?')
+                .get(WORD_A)?.analysis_notes
+            ).toBe('New personal edit')
+          else expect(db.prepare(WORDS_SQL).all()).toEqual(before)
+        }
+      } finally {
+        if (previous === undefined)
+          delete process.env.EXPO_PUBLIC_DICTIONARY_MANAGED_RECOVERY_ENABLED
+        else
+          process.env.EXPO_PUBLIC_DICTIONARY_MANAGED_RECOVERY_ENABLED = previous
+      }
+    }
+  )
 })

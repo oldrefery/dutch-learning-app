@@ -24,6 +24,7 @@ const calls: {
 let cached: Record<string, unknown>[] = []
 let providerCefr: unknown = analysis.cefr
 let providerArticle: string | null = 'het'
+let providerOverrides: Record<string, unknown> = {}
 let duplicate = false
 for (const [key, value] of Object.entries({
   SUPABASE_URL: 'http://127.0.0.1:54321',
@@ -61,6 +62,7 @@ globalThis.fetch = async (input, init) => {
                   ...analysis,
                   article: providerArticle,
                   cefr: providerCefr,
+                  ...providerOverrides,
                 }),
               },
             ],
@@ -103,7 +105,11 @@ try {
 // Settle the module-level cache client initialization before test leak tracking.
 await new Promise(resolve => setTimeout(resolve, 0))
 
-const request = async (enabled: boolean) => {
+const request = async (
+  enabled: boolean,
+  expectedStatus = 200,
+  word = 'het huis'
+) => {
   calls.length = 0
   if (enabled) Deno.env.set('CEFR_ANALYSIS_ENABLED', 'true')
   else Deno.env.delete('CEFR_ANALYSIS_ENABLED')
@@ -114,10 +120,10 @@ const request = async (enabled: boolean) => {
         authorization: 'Bearer synthetic-user-token',
         'content-type': 'application/json',
       },
-      body: JSON.stringify({ word: 'het huis' }),
+      body: JSON.stringify({ word }),
     })
   )
-  assertEquals(response.status, 200)
+  assertEquals(response.status, expectedStatus)
   const data = await response.json()
   // The existing cache write is asynchronous; give its fake transport one turn.
   await new Promise(resolve => setTimeout(resolve, 0))
@@ -290,6 +296,136 @@ Deno.test(
     } finally {
       cached = []
       duplicate = false
+    }
+  }
+)
+
+Deno.test(
+  'bad Russian cached variants and exact hits are skipped before usage; valid provider result is cached',
+  async () => {
+    cached = [
+      {
+        ...analysis,
+        translations: { en: ['house'], ru: ['dom'] },
+        cache_id: '22222222-2222-4222-8222-222222222222',
+      },
+    ]
+    providerOverrides = {
+      translations: { en: ['house'], ru: ['дом'] },
+      examples: [
+        { nl: 'Dit is een huis.', en: 'This is a house.', ru: 'Это дом.' },
+      ],
+    }
+    try {
+      for (const word of ['het huis', 'huis']) {
+        const result = await request(false, 200, word)
+        assertEquals(result.data.translations.ru, ['дом'])
+        assertEquals(calls.filter(x => x.path.includes('/models/')).length, 1)
+        assertEquals(
+          calls.filter(x => x.path.includes('increment_cache_usage')).length,
+          0
+        )
+        assert(
+          calls.some(
+            x =>
+              x.path === '/rest/v1/word_analysis_cache' && x.method === 'POST'
+          )
+        )
+      }
+    } finally {
+      providerOverrides = {}
+      cached = []
+    }
+  }
+)
+
+Deno.test(
+  'provider transliteration fails before media or cache writes without automatic retry',
+  async () => {
+    cached = []
+    providerOverrides = {
+      translations: { en: ['aftereffects'], ru: ['posledstviya', 'otголоски'] },
+    }
+    try {
+      const result = await request(false, 500)
+      assertEquals(result.success, false)
+      assert(result.error.includes('Russian analysis must use Cyrillic'))
+      assertEquals(calls.filter(x => x.path.includes('/models/')).length, 1)
+      assertEquals(
+        calls.some(
+          x => x.path === '/rest/v1/word_analysis_cache' && x.method !== 'GET'
+        ),
+        false
+      )
+      assertEquals(
+        calls.some(
+          x => x.path.includes('images') || x.path.includes('unsplash')
+        ),
+        false
+      )
+    } finally {
+      providerOverrides = {}
+    }
+  }
+)
+
+Deno.test(
+  'direct cache write rejects invalid Russian before persistence',
+  async () => {
+    const { saveToCache } = await import('./cacheUtils.ts')
+    calls.length = 0
+    let rejected = false
+    try {
+      await saveToCache({
+        dutch_original: 'huis',
+        dutch_lemma: 'huis',
+        part_of_speech: 'noun',
+        is_irregular: false,
+        is_reflexive: false,
+        is_expression: false,
+        is_separable: false,
+        translations: { en: ['house'], ru: ['dom'] },
+        examples: [],
+        synonyms: [],
+        antonyms: [],
+        analysis_notes: '',
+        usage_notes: null,
+      })
+    } catch (error) {
+      rejected =
+        error instanceof Error &&
+        error.message.includes('Russian analysis must use Cyrillic')
+    }
+    assertEquals(rejected, true)
+    assertEquals(calls.length, 0)
+  }
+)
+
+Deno.test(
+  'valid Cyrillic cache remains a free hit without provider calls',
+  async () => {
+    cached = [
+      {
+        ...analysis,
+        translations: { en: ['house'], ru: ['дом'] },
+        cache_id: '22222222-2222-4222-8222-222222222222',
+      },
+    ]
+    try {
+      for (const word of ['het huis', 'huis']) {
+        const result = await request(false, 200, word)
+        assertEquals(result.data.translations.ru, ['дом'])
+        assertEquals(
+          calls.some(
+            x =>
+              x.path.includes('/models/') ||
+              x.path.includes('consume_edge_function_quota')
+          ),
+          false
+        )
+      }
+    } finally {
+      cached = []
     }
   }
 )

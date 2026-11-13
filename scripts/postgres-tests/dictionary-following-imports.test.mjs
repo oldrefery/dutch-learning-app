@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { createHash, randomUUID } from 'node:crypto'
 import { after, before, test } from 'node:test'
+import { readFile } from 'node:fs/promises'
 import { createCluster } from './cluster.mjs'
 import {
   asUser,
@@ -164,7 +165,18 @@ test('read-only import records original revision but follows the current head wi
   const s = await state(db, f.intent.word_id)
   assert.equal(s.word.dictionary_content_mode, 'follow')
   assert.equal(s.word.dictionary_revision_id, f.first)
-  assert.equal(s.word.analysis_notes, f.updated.analysis_notes)
+  assert.equal(s.word.analysis_notes, null)
+  assert.deepEqual(s.word.translations, { en: [], ru: [] })
+  const published = await read(
+    asUser(
+      owner,
+      `SELECT public.get_dictionary_effective_content_v2(ARRAY['${f.intent.word_id}']::UUID[]);`
+    )
+  )
+  assert.equal(
+    published.revisions[0].content.analysis_notes,
+    f.updated.analysis_notes
+  )
   assert.equal(s.word.repetition_count, 0)
   assert.equal(s.word.interval_days, 1)
   assert.equal(s.word.easiness_factor, 2.5)
@@ -895,5 +907,117 @@ test('concurrent release or membership withdrawal wins before a waiting import c
     } finally {
       await clearImportScope()
     }
+  }
+})
+
+test('following creation never writes even a transient full copy; learning still works', async () => {
+  const f = await fixture()
+  await db.sql(`CREATE FUNCTION public.assert_d143_sparse_insert() RETURNS TRIGGER LANGUAGE plpgsql AS $$
+    BEGIN
+      IF NEW.word_id='${f.intent.word_id}' AND (NEW.dictionary_content_mode <> 'follow'
+        OR NEW.translations <> '{"en":[],"ru":[]}'::jsonb OR NEW.analysis_notes IS NOT NULL
+        OR NEW.dutch_original IS NOT NULL OR NEW.image_url IS NOT NULL OR NEW.tts_url <> '') THEN
+        RAISE EXCEPTION 'transient-copy-forbidden';
+      END IF;
+      RETURN NEW;
+    END; $$;
+    CREATE TRIGGER assert_d143_sparse_insert AFTER INSERT ON public.words
+      FOR EACH ROW EXECUTE FUNCTION public.assert_d143_sparse_insert();`)
+  try {
+    assert.equal((await apply(f.intent)).outcome, 'inserted')
+    await review(db, assessment(f.intent.word_id))
+    const learned = await state(db, f.intent.word_id)
+    assert.equal(learned.events.length, 1)
+    assert.deepEqual(learned.word.translations, { en: [], ru: [] })
+    assert.equal(learned.word.dictionary_revision_id, f.first)
+  } finally {
+    await db.sql(
+      'DROP TRIGGER assert_d143_sparse_insert ON public.words; DROP FUNCTION public.assert_d143_sparse_insert();'
+    )
+  }
+})
+
+test('legacy projection refuses following rows without changing identity, history or sparse content', async () => {
+  const f = await fixture()
+  await apply(f.intent)
+  await review(db, assessment(f.intent.word_id))
+  const before = await state(db, f.intent.word_id)
+  await assert.rejects(
+    db.sql(
+      `SELECT private.project_dictionary_content_to_word('${f.intent.word_id}','${owner}',${json({ ...f.c, dutch_lemma: 'must-not-change' })});`
+    ),
+    /legacy-content-upgrade-required/
+  )
+  assert.deepEqual(await state(db, f.intent.word_id), before)
+  await assert.rejects(
+    db.sql(
+      `SELECT private.project_dictionary_content_to_word('${f.intent.word_id}','${other}',${json(f.c)});`
+    ),
+    /not-found-or-not-owned/
+  )
+})
+
+test('private projection and queued v1 creation remain complete with unchanged learning', async () => {
+  const f = await importFixture(db)
+  await f.apply()
+  await review(db, assessment(f.intent.word_id))
+  const before = await state(db, f.intent.word_id)
+  const updated = {
+    ...f.intent.source.content,
+    analysis_notes: 'Private correction',
+    translations: { en: ['private meaning'], ru: ['личное значение'] },
+  }
+  await db.sql(
+    `SELECT private.project_dictionary_content_to_word('${f.intent.word_id}','${owner}',${json(updated)});`
+  )
+  const after = await state(db, f.intent.word_id)
+  assert.deepEqual(after.events, before.events)
+  assert.equal(after.word.repetition_count, before.word.repetition_count)
+  assert.deepEqual(after.word.translations, updated.translations)
+  assert.equal(after.word.analysis_notes, updated.analysis_notes)
+  assert.equal(after.word.dictionary_content_mode, 'legacy')
+})
+
+test('function-only rollback preserves existing sparse cards and new learning; reapply restores sparse creation', async () => {
+  const f = await fixture()
+  await apply(f.intent)
+  await review(db, assessment(f.intent.word_id))
+  const before = await state(db, f.intent.word_id)
+  const rollback = await readFile(
+    new URL('../shared-dictionary/d143-writer-rollback.sql', import.meta.url),
+    'utf8'
+  )
+  const upgrade = await readFile(
+    new URL(
+      '../../supabase/migrations/20261113190000_retire_following_compatibility_writes.sql',
+      import.meta.url
+    ),
+    'utf8'
+  )
+  try {
+    await db.sql(rollback)
+    assert.deepEqual(await state(db, f.intent.word_id), before)
+    const old = await fixture()
+    await advance(old)
+    await apply(old.intent)
+    assert.equal(
+      (await state(db, old.intent.word_id)).word.analysis_notes,
+      old.updated.analysis_notes
+    )
+    await db.sql(upgrade)
+    assert.deepEqual(await state(db, f.intent.word_id), before)
+    const fresh = await fixture()
+    await apply(fresh.intent)
+    assert.deepEqual(
+      (await state(db, fresh.intent.word_id)).word.translations,
+      { en: [], ru: [] }
+    )
+    // Rollback-created rows are not silently pruned by reinstallation.
+    assert.equal(
+      (await state(db, old.intent.word_id)).word.analysis_notes,
+      old.updated.analysis_notes
+    )
+  } finally {
+    await db.sql(upgrade)
   }
 })

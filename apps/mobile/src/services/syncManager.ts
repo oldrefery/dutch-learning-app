@@ -1,4 +1,7 @@
-import { IncompleteDictionaryBatchError } from './dictionaryFollowingErrors'
+import {
+  IncompleteDictionaryBatchError,
+  PendingLegacyDictionaryCommandsError,
+} from './dictionaryFollowingErrors'
 import { DictionaryModeReconciliationRequiredError } from '@/db/dictionaryModeReconciliationRepository'
 import { collectionService, supabase, wordService } from '@/lib/supabase'
 import { learningOperationQueue } from './learningOperationQueue'
@@ -65,7 +68,15 @@ import {
   dictionaryImportSync,
   DictionaryImportConflictError,
 } from './dictionaryImportSync'
-import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
+import {
+  isDictionaryContentEnabled,
+  isDictionaryFollowingEnabled,
+  isDictionaryLightWordsEnabled,
+  isDictionaryProjectedWordsEnabled,
+} from '@/constants/dictionaryContent'
+import { dictionaryFollowingSync } from './dictionaryFollowingSync'
+import { pullPersonalMetadata } from './dictionaryPersonalMetadataSync'
+import type { DictionaryBootstrapSnapshot } from './dictionaryFollowingSync'
 import type { PendingReviewCorrection } from '@/types/ReviewCorrection'
 
 export interface SyncResult {
@@ -74,6 +85,8 @@ export interface SyncResult {
   success: boolean
   wordsSynced: number
   progressSynced: number
+  learningSynced?: number
+  dictionaryPending?: boolean
   error?: string
   timestamp: string
 }
@@ -109,6 +122,18 @@ function reviewsBeforeBoundary(
       throw new Error('Missing durable review sequence')
     return event.local_sequence < boundary
   })
+}
+
+function canRetryInitialDictionaryPull(
+  failure: unknown,
+  uploadedWords: number,
+  acknowledgedCommands: number
+): boolean {
+  return (
+    (uploadedWords > 0 && failure instanceof IncompleteDictionaryBatchError) ||
+    (acknowledgedCommands > 0 &&
+      failure instanceof PendingLegacyDictionaryCommandsError)
+  )
 }
 
 type SyncErrorType =
@@ -264,6 +289,21 @@ const requireRequestedPersonalWords = (
   }
 }
 
+const isValidProjectedWord = (
+  word: SyncWord,
+  userId: string,
+  seen: ReadonlySet<string>,
+  requested?: ReadonlySet<string>
+): boolean =>
+  Boolean(word) &&
+  word.user_id === userId &&
+  typeof word.word_id === 'string' &&
+  typeof word.dutch_lemma === 'string' &&
+  word.dutch_lemma.trim().length > 0 &&
+  Number.isFinite(Date.parse(word.updated_at)) &&
+  !seen.has(word.word_id) &&
+  (!requested || requested.has(word.word_id))
+
 interface SyncProgress extends ProgressRecord {
   deleted_at: string | null
 }
@@ -405,6 +445,19 @@ export class SyncManager {
   private async performSyncPass(userId: string): Promise<SyncResult> {
     const startedAt = Date.now()
     let outcome: SyncOutcome = 'error'
+    const light = isDictionaryLightWordsEnabled()
+    let deliveredProgress = 0
+    let deliveredLearning = 0
+    const progressReceipts = new Set<string>()
+    const learningReceipts = new Set<string>()
+    const recordProgress = (ids: readonly string[]) => {
+      ids.forEach(id => progressReceipts.add(id))
+      deliveredProgress = progressReceipts.size
+    }
+    const recordLearning = (ids: readonly string[]) => {
+      ids.forEach(id => learningReceipts.add(id))
+      deliveredLearning = learningReceipts.size
+    }
     let dictionaryError: unknown = null
     let initialDictionaryPullError: unknown = null
     const attemptDictionarySync = async (action: () => Promise<unknown>) => {
@@ -457,6 +510,13 @@ export class SyncManager {
         userId,
         () => reviewCorrectionSync.isAvailable(userId)
       )
+      await this.sendEarlyLearning(
+        userId,
+        correctionsAvailable,
+        light,
+        recordProgress,
+        recordLearning
+      )
       let dictionaryContentAvailable = false
       await attemptDictionarySync(async () => {
         dictionaryContentAvailable = await this.runSyncStageWithSessionRetry(
@@ -483,25 +543,32 @@ export class SyncManager {
       // Step 1: Pull new words from Supabase
       console.log('[Sync] Stage 2: pull words')
       const wordCursor = await getSyncCursor(userId, 'words')
+      let bootstrap: DictionaryBootstrapSnapshot | undefined
       const pulledWords = await this.runSyncStageWithSessionRetry(
         'pull_words',
         userId,
-        async () => this.pullWordsFromSupabase(userId, wordCursor)
+        () =>
+          this.pullWordsFromSupabase(
+            userId,
+            wordCursor,
+            undefined,
+            undefined,
+            undefined,
+            snapshot => {
+              bootstrap = snapshot
+            }
+          )
       )
 
       // Clean up local orphan words after pull
       await this.cleanupOrphanWords(userId)
 
-      if (dictionaryContentAvailable) {
-        await wordRepository.preserveLegacyPendingContent(userId)
-        console.log('[Sync] Stage 2.5: pull dictionary content')
-        await this.pullDictionaryContent(
-          userId,
-          pulledWords.filter(word => !word.deleted_at).map(word => word.word_id)
-        ).catch((error: unknown) => {
-          initialDictionaryPullError = error
-        })
-      }
+      initialDictionaryPullError = await this.pullInitialDictionaryContent(
+        userId,
+        dictionaryContentAvailable,
+        light,
+        pulledWords
+      )
 
       // Step 2: Pull progress after words so local foreign keys can resolve
       console.log('[Sync] Stage 3: pull progress')
@@ -561,57 +628,53 @@ export class SyncManager {
               async () => this.pushWordsToSupabase(userId)
             )
 
+      let acknowledgedDictionaryCommands = 0
       if (dictionaryContentAvailable) {
-        await attemptDictionarySync(() =>
-          this.runSyncStageWithSessionRetry(
-            'push_dictionary_content',
-            userId,
-            () => dictionaryContentSync.push(userId)
-          )
-        )
-      }
-
-      if (dictionaryContentAvailable && pushedWordsCount > 0) {
         await attemptDictionarySync(async () => {
-          await this.runSyncStageWithSessionRetry(
-            'pull_dictionary_content',
-            userId,
-            () => dictionaryContentSync.pullRequired(userId)
-          )
-          if (
-            initialDictionaryPullError instanceof IncompleteDictionaryBatchError
-          ) {
-            // The initial batch can include a personal word not uploaded yet.
-            // Finish its skipped refresh before clearing only this read failure.
+          acknowledgedDictionaryCommands =
             await this.runSyncStageWithSessionRetry(
-              'pull_dictionary_content',
+              'push_dictionary_content',
               userId,
-              () => dictionaryContentSync.refreshChanges(userId)
+              () => dictionaryContentSync.push(userId)
             )
-            initialDictionaryPullError = null
-          }
         })
       }
 
+      initialDictionaryPullError = await this.retryInitialDictionaryContent(
+        userId,
+        dictionaryContentAvailable && !light,
+        initialDictionaryPullError,
+        pushedWordsCount,
+        acknowledgedDictionaryCommands,
+        attemptDictionarySync
+      )
+
       // Step 5: Push pending progress to Supabase
       console.log('[Sync] Stage 7: push progress')
-      const pushedProgressCount = await this.runSyncStageWithSessionRetry(
+      await this.runSyncStageWithSessionRetry(
         'push_progress',
         userId,
-        async () => this.pushProgressToSupabase(userId)
+        async () =>
+          this.pushProgressToSupabase(userId, false, undefined, recordProgress)
       )
 
       console.log('[Sync] Stage 8: push review events')
-      const pushedReviewEventsCount = await this.runSyncStageWithSessionRetry(
+      await this.runSyncStageWithSessionRetry(
         'push_review_events',
         userId,
         async () =>
-          this.pushReviewEventsToSupabase(userId, correctionsAvailable)
+          this.pushReviewEventsToSupabase(
+            userId,
+            correctionsAvailable,
+            false,
+            undefined,
+            recordLearning
+          )
       )
 
       const canonicalRefreshRequired =
         pushedWordsCount > 0 ||
-        pushedReviewEventsCount > 0 ||
+        deliveredLearning > 0 ||
         pulledReviewEvents.length > 0 ||
         pulledCorrections > 0
       await this.refreshCanonicalLearningState(
@@ -621,7 +684,13 @@ export class SyncManager {
         correctionsAvailable,
         canonicalRefreshRequired
       )
-      await this.refreshDictionaryPersonalRows(userId)
+      await this.finishDictionaryContent(
+        userId,
+        light,
+        dictionaryContentAvailable,
+        attemptDictionarySync,
+        bootstrap
+      )
 
       const remainingDictionaryError =
         dictionaryError ?? initialDictionaryPullError
@@ -635,14 +704,15 @@ export class SyncManager {
       const result: SyncResult = {
         success: true,
         wordsSynced: pulledWords.length + pushedWordsCount,
-        progressSynced: pulledProgress.length + pushedProgressCount,
+        progressSynced: pulledProgress.length + deliveredProgress,
+        ...this.learningDeliveryStatus(light, deliveredLearning),
         timestamp,
       }
 
       console.log('[Sync] Sync completed successfully:', result)
       outcome = 'success'
       console.log(
-        `[Sync] Review events synchronized: ${pulledReviewEvents.length + pushedReviewEventsCount}`
+        `[Sync] Review events synchronized: ${pulledReviewEvents.length + deliveredLearning}`
       )
       this.notifySyncStatus({ ...result, userId })
 
@@ -661,7 +731,12 @@ export class SyncManager {
           error instanceof DictionaryContentConflictError ||
           error instanceof DictionaryImportConflictError,
         wordsSynced: 0,
-        progressSynced: 0,
+        progressSynced: light ? deliveredProgress : 0,
+        ...this.learningDeliveryStatus(
+          light,
+          deliveredLearning,
+          Boolean(dictionaryError ?? initialDictionaryPullError)
+        ),
         error: errorMessage,
         timestamp: new Date().toISOString(),
       }
@@ -677,10 +752,131 @@ export class SyncManager {
     }
   }
 
+  private learningDeliveryStatus(
+    light: boolean,
+    learningSynced: number,
+    dictionaryPending?: boolean
+  ) {
+    if (!light) return {}
+    return dictionaryPending === undefined
+      ? { learningSynced }
+      : { learningSynced, dictionaryPending }
+  }
+
+  private async sendEarlyLearning(
+    userId: string,
+    correctionsAvailable: boolean,
+    light: boolean,
+    recordProgress: (ids: readonly string[]) => void,
+    recordLearning: (ids: readonly string[]) => void
+  ) {
+    if (!light) return
+    return withDictionaryOwner(userId, async owner => {
+      await this.runSyncStageWithSessionRetry('push_progress', userId, () =>
+        this.pushProgressToSupabase(userId, true, owner.assert, recordProgress)
+      )
+      await this.runSyncStageWithSessionRetry(
+        'push_review_events',
+        userId,
+        () =>
+          this.pushReviewEventsToSupabase(
+            userId,
+            correctionsAvailable,
+            true,
+            owner.assert,
+            recordLearning
+          )
+      )
+      owner.assert()
+    })
+  }
+
+  private async finishDictionaryContent(
+    userId: string,
+    light: boolean,
+    available: boolean,
+    attempt: (action: () => Promise<unknown>) => Promise<void>,
+    bootstrap?: DictionaryBootstrapSnapshot
+  ): Promise<void> {
+    if (light && available) {
+      // A failed hydration must not cause another dictionary read via import readback.
+      await attempt(async () => {
+        await this.pullDictionaryContent(userId, [], bootstrap)
+        await this.refreshDictionaryPersonalRows(userId)
+      })
+      return
+    }
+    if (!light) await this.refreshDictionaryPersonalRows(userId)
+  }
+
+  private async pullInitialDictionaryContent(
+    userId: string,
+    available: boolean,
+    light: boolean,
+    words: readonly Pick<SyncWord, 'word_id' | 'deleted_at'>[]
+  ): Promise<unknown> {
+    if (!available) return null
+    await wordRepository.preserveLegacyPendingContent(userId)
+    if (light) return null
+    return this.pullDictionaryContent(
+      userId,
+      words.filter(word => !word.deleted_at).map(word => word.word_id)
+    ).then(
+      () => null,
+      (error: unknown) => error
+    )
+  }
+
+  private async retryInitialDictionaryContent(
+    userId: string,
+    available: boolean,
+    error: unknown,
+    pushedWords: number,
+    acknowledged: number,
+    attempt: (action: () => Promise<unknown>) => Promise<void>
+  ): Promise<unknown> {
+    const retry = canRetryInitialDictionaryPull(
+      error,
+      pushedWords,
+      acknowledged
+    )
+    if (!available || (!pushedWords && !retry)) return error
+    await attempt(async () => {
+      await this.runSyncStageWithSessionRetry(
+        'pull_dictionary_content',
+        userId,
+        () => dictionaryContentSync.pullRequired(userId)
+      )
+      if (retry) {
+        await this.runSyncStageWithSessionRetry(
+          'pull_dictionary_content',
+          userId,
+          () => dictionaryContentSync.refreshChanges(userId)
+        )
+        error = null
+      }
+    })
+    return error
+  }
+
   private async pullDictionaryContent(
     userId: string,
-    candidateWordIds: readonly string[]
+    candidateWordIds: readonly string[],
+    bootstrap?: DictionaryBootstrapSnapshot
   ): Promise<void> {
+    if (isDictionaryFollowingEnabled()) {
+      await this.runSyncStageWithSessionRetry(
+        'pull_dictionary_content',
+        userId,
+        () =>
+          dictionaryFollowingSync.pullRequiredAndRefresh(
+            userId,
+            candidateWordIds,
+            ...(bootstrap ? ([bootstrap] as const) : ([] as const))
+          )
+      )
+      return
+    }
     await this.runSyncStageWithSessionRetry(
       'pull_dictionary_content',
       userId,
@@ -1089,28 +1285,72 @@ export class SyncManager {
     cursor: SyncCursor | null,
     wordIds?: readonly string[],
     followingOwner?: DictionaryOwnerGuard,
+    expectedFollowingEntryId?: string,
+    onBootstrap?: (snapshot: DictionaryBootstrapSnapshot) => void
+  ): Promise<Pick<SyncWord, 'word_id' | 'deleted_at'>[]> {
+    if (isDictionaryLightWordsEnabled())
+      return pullPersonalMetadata(
+        userId,
+        cursor,
+        wordIds,
+        followingOwner,
+        expectedFollowingEntryId,
+        onBootstrap
+      )
+    return this.pullFullWordsFromSupabase(
+      userId,
+      cursor,
+      wordIds,
+      followingOwner,
+      expectedFollowingEntryId
+    )
+  }
+
+  private async recoverSparsePersonalRows(
+    userId: string,
+    wordIds?: readonly string[]
+  ): Promise<void> {
+    if (!wordIds) {
+      const sparse = await wordRepository.getSparsePersonalWordIds(userId)
+      for (
+        let offset = 0;
+        offset < sparse.length;
+        offset += WORD_SYNC_PAGE_SIZE
+      )
+        await this.pullFullWordsFromSupabase(
+          userId,
+          null,
+          sparse.slice(offset, offset + WORD_SYNC_PAGE_SIZE)
+        )
+    }
+  }
+
+  private async pullFullWordsFromSupabase(
+    userId: string,
+    cursor: SyncCursor | null,
+    wordIds?: readonly string[],
+    followingOwner?: DictionaryOwnerGuard,
     expectedFollowingEntryId?: string
   ): Promise<SyncWord[]> {
+    await this.recoverSparsePersonalRows(userId, wordIds)
+    const projected = isDictionaryProjectedWordsEnabled()
     let data: SyncWord[] | null = null
     let error: SupabaseLikeError | null = null
 
     try {
-      const initialResult = await this.fetchWordPages(
-        userId,
-        cursor,
-        '*',
-        wordIds
-      )
+      const initialResult = projected
+        ? await this.fetchProjectedWordPages(userId, cursor, wordIds)
+        : await this.fetchWordPages(userId, cursor, '*', wordIds)
       data = initialResult.data
       error = initialResult.error
     } catch (queryError) {
-      if (!this.isMissingWordsRegisterColumnError(queryError)) {
+      if (projected || !this.isMissingWordsRegisterColumnError(queryError)) {
         throw queryError
       }
       error = this.toSupabaseLikeError(queryError)
     }
 
-    if (error && this.isMissingWordsRegisterColumnError(error)) {
+    if (error && !projected && this.isMissingWordsRegisterColumnError(error)) {
       this.wordsRegisterColumnAvailable = false
       console.warn(
         '[Sync] Remote words table has no register column. Falling back to compatible pull query.'
@@ -1208,7 +1448,10 @@ export class SyncManager {
 
     await wordRepository.saveRemoteWordTombstones(tombstones)
     await wordRepository.reconcileAcknowledgedLearning(userId, activeWords)
-    await wordRepository.saveWords(activeWords, { preserveUnsynced: true })
+    await wordRepository.saveWords(activeWords, {
+      preserveUnsynced: true,
+      completePersonalRead: true,
+    })
 
     if (this.dictionaryContentProtected) {
       // Persist the hydration obligation before advancing the legacy cursor.
@@ -1269,6 +1512,42 @@ export class SyncManager {
       }
 
       from += WORD_SYNC_PAGE_SIZE
+    }
+  }
+
+  private async fetchProjectedWordPages(
+    userId: string,
+    cursor: SyncCursor | null,
+    wordIds?: readonly string[]
+  ): Promise<{ data: SyncWord[] | null; error: SupabaseLikeError | null }> {
+    const words: SyncWord[] = []
+    const seen = new Set<string>()
+    const requested = wordIds && new Set(wordIds)
+    let after: SyncWord | undefined
+
+    while (true) {
+      const response = await supabase
+        .rpc('d14_read_personal_words', {
+          p_word_ids: wordIds ? [...wordIds] : null,
+          p_since_updated_at: cursor?.updatedAt ?? null,
+          p_after_updated_at: after?.updated_at ?? null,
+          p_after_word_id: after?.word_id ?? null,
+          p_limit: WORD_SYNC_PAGE_SIZE,
+        })
+        .order('updated_at', { ascending: true })
+        .order('word_id', { ascending: true })
+      const { data: page, error } = this.toWordsSelectResult(response)
+      if (error) return { data: null, error }
+      if (!page || page.length > WORD_SYNC_PAGE_SIZE)
+        throw new Error('Invalid personal word projection page')
+      for (const word of page) {
+        if (!isValidProjectedWord(word, userId, seen, requested))
+          throw new Error('Invalid personal word projection row')
+        seen.add(word.word_id)
+        words.push(word)
+      }
+      if (page.length < WORD_SYNC_PAGE_SIZE) return { data: words, error: null }
+      after = page[page.length - 1]
     }
   }
 
@@ -1464,11 +1743,15 @@ export class SyncManager {
 
   private async pushReviewEventsToSupabase(
     userId: string,
-    correctionsAvailable: boolean
+    correctionsAvailable: boolean,
+    existingOnly = false,
+    assertOwner: () => void = () => {},
+    onConfirmed: (ids: readonly string[]) => void = () => {}
   ): Promise<number> {
     let totalPushed = 0
 
     while (true) {
+      assertOwner()
       const reset = await learningResetRepository.getNext(userId)
       const correction = await reviewCorrectionRepository.getNext(userId)
       const boundary = Math.min(
@@ -1479,14 +1762,25 @@ export class SyncManager {
         userId,
         REVIEW_EVENT_SYNC_PAGE_SIZE
       )
-      const pendingEvents = reviewsBeforeBoundary(allPendingEvents, boundary)
+      const events = reviewsBeforeBoundary(allPendingEvents, boundary)
+      const pendingEvents = await this.readyLearningPrefix(
+        userId,
+        events,
+        reset,
+        correction,
+        existingOnly
+      )
+      assertOwner()
+      if (!pendingEvents) return totalPushed
       if (pendingEvents.length === 0) {
         if (
           await this.pushNextControlCommand(
             userId,
             reset,
             correction,
-            correctionsAvailable
+            correctionsAvailable,
+            assertOwner,
+            onConfirmed
           )
         ) {
           totalPushed += 1
@@ -1516,6 +1810,7 @@ export class SyncManager {
         .upsert(payloads, { onConflict: 'event_id' })
         .select(REVIEW_EVENT_ACKNOWLEDGEMENT_COLUMNS)
 
+      assertOwner()
       if (error) {
         throw new Error(`Failed to push review events: ${error.message}`)
       }
@@ -1524,6 +1819,7 @@ export class SyncManager {
         data,
         pendingEvents.map(event => event.event_id)
       )
+      onConfirmed(acknowledgements.map(row => `review:${row.event_id}`))
       await reviewEventRepository.reconcilePushedEvents(
         userId,
         acknowledgements
@@ -1541,28 +1837,71 @@ export class SyncManager {
     }
   }
 
+  private async readyLearningPrefix(
+    userId: string,
+    events: Awaited<
+      ReturnType<typeof reviewEventRepository.getPendingSyncEvents>
+    >,
+    reset: PendingLearningReset | null,
+    correction: PendingReviewCorrection | null,
+    existingOnly: boolean
+  ): Promise<typeof events | null> {
+    if (!existingOnly) return events
+    if (!events.length) {
+      const control =
+        correction && correction.sequence < (reset?.sequence ?? Infinity)
+          ? correction
+          : reset
+      if (!control) return []
+      const ready = await this.fetchExistingPersonalIds(userId, [
+        control.word_id,
+      ])
+      return ready.has(control.word_id) ? [] : null
+    }
+    const ready = await this.fetchExistingPersonalIds(
+      userId,
+      events.map(event => event.word_id)
+    )
+    const blocked = events.findIndex(event => !ready.has(event.word_id))
+    if (blocked === 0) return null
+    return blocked < 0 ? events : events.slice(0, blocked)
+  }
+
   private async pushNextControlCommand(
     userId: string,
     reset: PendingLearningReset | null,
     correction: PendingReviewCorrection | null,
-    correctionsAvailable: boolean
+    correctionsAvailable: boolean,
+    assertOwner: () => void,
+    onConfirmed: (ids: readonly string[]) => void
   ): Promise<boolean> {
+    assertOwner()
     if (correction && correction.sequence < (reset?.sequence ?? Infinity)) {
       if (!correctionsAvailable)
         throw new Error(
           'Review corrections require an updated backend. Pending edits are retained.'
         )
-      await reviewCorrectionSync.push(userId, correction)
+      let confirmed = false
+      const confirm = () => {
+        if (confirmed) return
+        assertOwner()
+        onConfirmed([`correction:${correction.correction_id}`])
+        confirmed = true
+      }
+      await reviewCorrectionSync.push(userId, correction, confirm)
+      confirm()
       return true
     }
     if (!reset) return false
-    await this.pushLearningReset(userId, reset)
+    await this.pushLearningReset(userId, reset, assertOwner, onConfirmed)
     return true
   }
 
   private async pushLearningReset(
     userId: string,
-    reset: PendingLearningReset
+    reset: PendingLearningReset,
+    assertOwner: () => void,
+    onConfirmed: (ids: readonly string[]) => void
   ): Promise<void> {
     const { data, error } = await supabase.rpc('reset_word_learning_progress', {
       p_word_id: reset.word_id,
@@ -1580,18 +1919,36 @@ export class SyncManager {
         `Failed to reset learning progress: ${error?.message ?? 'missing acknowledgement'}`
       )
     }
+    assertOwner()
+    onConfirmed([`reset:${reset.operation_id}`])
     await learningResetRepository.acknowledge(userId, reset.operation_id)
   }
 
-  private async pushProgressToSupabase(userId: string): Promise<number> {
-    const deletedProgress = await progressRepository.getDeletedProgress(userId)
+  private async pushProgressToSupabase(
+    userId: string,
+    existingOnly = false,
+    assertOwner: () => void = () => {},
+    onConfirmed: (ids: readonly string[]) => void = () => {}
+  ): Promise<number> {
+    let deletedProgress = await progressRepository.getDeletedProgress(userId)
+    let pendingProgress =
+      await progressRepository.getPendingSyncProgress(userId)
+    assertOwner()
+    if (existingOnly) {
+      const ready = await this.fetchExistingPersonalIds(
+        userId,
+        [...deletedProgress, ...pendingProgress].map(row => row.word_id)
+      )
+      deletedProgress = deletedProgress.filter(row => ready.has(row.word_id))
+      pendingProgress = pendingProgress.filter(row => ready.has(row.word_id))
+    }
+    assertOwner()
     const deletedCount = await this.pushProgressTombstones(
       userId,
-      deletedProgress
+      deletedProgress,
+      assertOwner,
+      onConfirmed
     )
-    const pendingProgress =
-      await progressRepository.getPendingSyncProgress(userId)
-
     if (pendingProgress.length === 0) {
       console.log('[Sync] No pending progress to sync')
       return deletedCount
@@ -1607,6 +1964,7 @@ export class SyncManager {
       last_reviewed_at: p.last_reviewed_at,
     }))
 
+    assertOwner()
     const { data, error } = await supabase
       .from('user_progress')
       .upsert(progressToSync)
@@ -1616,11 +1974,13 @@ export class SyncManager {
       throw new Error(`Failed to push progress: ${error.message}`)
     }
 
+    assertOwner()
     const progressIds = pendingProgress.map(p => p.progress_id)
     const acknowledgements = this.requireProgressAcknowledgements(
       data,
       progressIds
     )
+    onConfirmed(acknowledgements.map(row => row.progress_id))
     await progressRepository.reconcilePushedProgress(
       acknowledgements,
       new Map(
@@ -1723,7 +2083,9 @@ export class SyncManager {
     userId: string,
     deletedProgress: Awaited<
       ReturnType<typeof progressRepository.getDeletedProgress>
-    >
+    >,
+    assertOwner: () => void,
+    onConfirmed: (ids: readonly string[]) => void
   ): Promise<number> {
     if (deletedProgress.length === 0) return 0
 
@@ -1740,10 +2102,12 @@ export class SyncManager {
       throw new Error(`Failed to push progress tombstones: ${error.message}`)
     }
 
+    assertOwner()
     const acknowledgements = this.requireProgressAcknowledgements(
       data,
       progressIds
     )
+    onConfirmed(acknowledgements.map(row => row.progress_id))
     await progressRepository.reconcilePushedProgress(
       acknowledgements,
       new Map(
@@ -2444,17 +2808,25 @@ export class SyncManager {
   private async fetchExistingDictionaryWordIds(
     payloads: SupabaseWordsUpsertPayload[]
   ): Promise<Set<string>> {
+    return this.fetchExistingPersonalIds(
+      payloads[0].user_id,
+      payloads.map(row => row.word_id)
+    )
+  }
+
+  private async fetchExistingPersonalIds(
+    userId: string,
+    requested: readonly string[]
+  ): Promise<Set<string>> {
     const ids = new Set<string>()
-    for (let offset = 0; offset < payloads.length; offset += 400) {
-      const chunk = payloads.slice(offset, offset + 400)
+    const wordIds = [...new Set(requested)]
+    for (let offset = 0; offset < wordIds.length; offset += 400) {
+      const chunk = wordIds.slice(offset, offset + 400)
       const { data, error } = await supabase
         .from('words')
         .select('word_id')
-        .eq('user_id', chunk[0].user_id)
-        .in(
-          'word_id',
-          chunk.map(row => row.word_id)
-        )
+        .eq('user_id', userId)
+        .in('word_id', chunk)
         .is('deleted_at', null)
         .range(0, chunk.length - 1)
       if (error) throw error
@@ -2464,7 +2836,7 @@ export class SyncManager {
         if (
           !this.isRecord(row) ||
           typeof row.word_id !== 'string' ||
-          !chunk.some(payload => payload.word_id === row.word_id)
+          !chunk.includes(row.word_id)
         ) {
           throw new Error(
             'Personal identity lookup returned an unrequested word'
@@ -2474,6 +2846,31 @@ export class SyncManager {
       }
     }
     return ids
+  }
+
+  private async requireBootstrapIdentities(
+    userId: string,
+    newPayloads: SupabaseWordsUpsertPayload[]
+  ): Promise<void> {
+    if (newPayloads.length === 0) return
+    const importedIds = new Set(
+      await dictionaryImportRepository.getAcknowledgedWordIds(userId)
+    )
+    if (
+      newPayloads.length &&
+      (await wordRepository.hasSparsePersonalRows(
+        userId,
+        newPayloads.map(row => row.word_id)
+      ))
+    )
+      throw new Error(
+        'Following personal identity is unavailable; cached content is preserved'
+      )
+    if (newPayloads.some(payload => importedIds.has(payload.word_id))) {
+      throw new Error(
+        'Imported personal identity is unavailable. Local content and learning queues are preserved.'
+      )
+    }
   }
 
   private async executeDictionaryWordMetadataUpsert(
@@ -2521,16 +2918,7 @@ export class SyncManager {
     const newPayloads = toWrite.filter(
       payload => !existingIds.has(payload.word_id)
     )
-    const importedIds = new Set(
-      await dictionaryImportRepository.getAcknowledgedWordIds(
-        payloads[0].user_id
-      )
-    )
-    if (newPayloads.some(payload => importedIds.has(payload.word_id))) {
-      throw new Error(
-        'Imported personal identity is unavailable. Local content and learning queues are preserved.'
-      )
-    }
+    await this.requireBootstrapIdentities(payloads[0].user_id, newPayloads)
     const acknowledgements: WordSyncAcknowledgement[] = [
       ...prepared.acknowledgements,
     ]

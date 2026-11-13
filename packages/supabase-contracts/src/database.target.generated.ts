@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261107113000_scope_dictionary_following_imports.sql.
+// Generated from local migrations through 20261113190000_retire_following_compatibility_writes.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -1298,6 +1298,24 @@ export type Database = {
           last_reviewed_at: string
           next_review_date: string
           repetition_count: number
+          word_id: string
+        }[]
+      }
+      d14_read_following_bootstrap_v1: {
+        Args: { p_word_ids: string[] }
+        Returns: Json
+      }
+      d14_read_personal_metadata_v1: {
+        Args: {
+          p_after_updated_at?: string
+          p_after_word_id?: string
+          p_limit?: number
+          p_since_updated_at?: string
+          p_word_ids?: string[]
+        }
+        Returns: {
+          payload: Json
+          updated_at: string
           word_id: string
         }[]
       }

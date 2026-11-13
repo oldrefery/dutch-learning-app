@@ -1,4 +1,7 @@
-import { IncompleteDictionaryBatchError } from '../dictionaryFollowingErrors'
+import {
+  IncompleteDictionaryBatchError,
+  PendingLegacyDictionaryCommandsError,
+} from '../dictionaryFollowingErrors'
 import { DictionaryModeReconciliationRequiredError } from '@/db/dictionaryModeReconciliationRepository'
 import { dictionaryImportRecoverySync } from '../dictionaryImportRecoverySync'
 import { dictionaryImportDeliveryRepository } from '@/db/dictionaryImportDeliveryRepository'
@@ -118,6 +121,8 @@ jest.mock('@/utils/network')
 jest.mock('@/db/wordRepository', () => ({
   wordRepository: {
     getWordsByUserId: jest.fn().mockResolvedValue([]),
+    hasSparsePersonalRows: jest.fn().mockResolvedValue(false),
+    getSparsePersonalWordIds: jest.fn().mockResolvedValue([]),
     preserveLegacyPendingContent: jest.fn().mockResolvedValue(undefined),
     saveWords: jest.fn().mockResolvedValue(undefined),
     getAcknowledgedLearningWordIds: jest.fn().mockResolvedValue([]),
@@ -777,7 +782,7 @@ describe('SyncManager', () => {
             repetition_count: 12,
           }),
         ],
-        { preserveUnsynced: true }
+        { preserveUnsynced: true, completePersonalRead: true }
       )
       expect(dictionaryContentSync.pull).toHaveBeenCalledWith(userId, [
         REMOTE_WORD_ID,
@@ -2105,7 +2110,7 @@ describe('SyncManager', () => {
             },
           }),
         ],
-        { preserveUnsynced: true }
+        { preserveUnsynced: true, completePersonalRead: true }
       )
       expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
         updatedAt: nextUpdatedAt,
@@ -2142,7 +2147,7 @@ describe('SyncManager', () => {
 
       expect(wordRepository.saveWords).toHaveBeenCalledWith(
         [expect.objectContaining({ word_id: 'word-c' })],
-        { preserveUnsynced: true }
+        { preserveUnsynced: true, completePersonalRead: true }
       )
       expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
         updatedAt,
@@ -2199,7 +2204,7 @@ describe('SyncManager', () => {
           expect.objectContaining({ word_id: 'word-000' }),
           expect.objectContaining({ word_id: 'word-500' }),
         ]),
-        { preserveUnsynced: true }
+        { preserveUnsynced: true, completePersonalRead: true }
       )
       expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
         updatedAt: nextUpdatedAt,
@@ -2269,6 +2274,7 @@ describe('SyncManager', () => {
       ])
       expect(wordRepository.saveWords).toHaveBeenCalledWith([], {
         preserveUnsynced: true,
+        completePersonalRead: true,
       })
       expect(networkUtils.setSyncCursor).toHaveBeenCalledWith(userId, 'words', {
         updatedAt: deletedAt,
@@ -2708,7 +2714,7 @@ describe('SyncManager', () => {
         ])
         expect(wordRepository.saveWords).toHaveBeenCalledWith(
           [expect.objectContaining({ word_id: REMOTE_WORD_ID })],
-          { preserveUnsynced: true }
+          { preserveUnsynced: true, completePersonalRead: true }
         )
         expect(networkUtils.setSyncCursor).not.toHaveBeenCalledWith(
           userId,
@@ -2892,7 +2898,11 @@ describe('SyncManager', () => {
       expect(upsert.mock.invocationCallOrder[0]).toBeLessThan(editOrder)
       expect(editOrder).toBeLessThan(resetOrder)
       expect(resetOrder).toBeLessThan(upsert.mock.invocationCallOrder[1])
-      expect(reviewCorrectionSync.push).toHaveBeenCalledWith(userId, correction)
+      expect(reviewCorrectionSync.push).toHaveBeenCalledWith(
+        userId,
+        correction,
+        expect.any(Function)
+      )
       expect(reviewCorrectionSync.pull).toHaveBeenCalledTimes(2)
       expect(wordsRange.mock.invocationCallOrder.at(-1)).toBeGreaterThan(
         jest.mocked(reviewCorrectionSync.pull).mock.invocationCallOrder[1]
@@ -3856,6 +3866,93 @@ describe('SyncManager', () => {
       )
     })
   })
+  describe('dictionary hydration recovery after a v1 acknowledgement', () => {
+    const pendingCommands = new PendingLegacyDictionaryCommandsError()
+
+    beforeEach(() => {
+      jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(true)
+      jest.mocked(dictionaryContentSync.push).mockResolvedValue(1)
+      jest
+        .mocked(dictionaryContentSync.pullRequired)
+        .mockRejectedValueOnce(pendingCommands)
+    })
+
+    it('completes the skipped read and change refresh before reporting success', async () => {
+      expect((await syncManager.performSync(userId)).success).toBe(true)
+      expect(dictionaryContentSync.push).toHaveBeenCalledTimes(1)
+      expect(dictionaryContentSync.pullRequired).toHaveBeenCalledTimes(2)
+      expect(dictionaryContentSync.refreshChanges).toHaveBeenCalledTimes(1)
+      expect(
+        jest.mocked(dictionaryContentSync.refreshChanges).mock
+          .invocationCallOrder[0]
+      ).toBeGreaterThan(
+        jest.mocked(dictionaryContentSync.pullRequired).mock
+          .invocationCallOrder[1]
+      )
+      expect(networkUtils.setLastSyncTimestamp).toHaveBeenCalledTimes(1)
+    })
+
+    it('retains the pending-command failure when no command was acknowledged', async () => {
+      jest.mocked(dictionaryContentSync.push).mockResolvedValue(0)
+      expect(await syncManager.performSync(userId)).toMatchObject({
+        success: false,
+        error: pendingCommands.message,
+      })
+      expect(dictionaryContentSync.pullRequired).toHaveBeenCalledTimes(1)
+      expect(dictionaryContentSync.refreshChanges).not.toHaveBeenCalled()
+      expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+    })
+
+    it('keeps a genuine conflict actionable', async () => {
+      const conflict = new DictionaryContentConflictError(
+        'Pending command conflict'
+      )
+      jest.mocked(dictionaryContentSync.push).mockRejectedValue(conflict)
+      expect(await syncManager.performSync(userId)).toMatchObject({
+        success: false,
+        dictionaryConflict: true,
+        error: conflict.message,
+      })
+      expect(dictionaryContentSync.pullRequired).toHaveBeenCalledTimes(1)
+      expect(dictionaryContentSync.refreshChanges).not.toHaveBeenCalled()
+      expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+    })
+
+    it('retains an unrelated initial read failure even after acknowledgement', async () => {
+      const failure = new Error('Initial dictionary read failed')
+      jest
+        .mocked(dictionaryContentSync.pullRequired)
+        .mockReset()
+        .mockRejectedValueOnce(failure)
+      expect(await syncManager.performSync(userId)).toMatchObject({
+        success: false,
+        error: failure.message,
+      })
+      expect(dictionaryContentSync.push).toHaveBeenCalledTimes(1)
+      expect(dictionaryContentSync.pullRequired).toHaveBeenCalledTimes(1)
+      expect(dictionaryContentSync.refreshChanges).not.toHaveBeenCalled()
+      expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+    })
+
+    it.each(['pullRequired', 'refreshChanges'] as const)(
+      'retains a failed %s during recovery and continues learning sync',
+      async stage => {
+        const failure = new Error('Dictionary recovery read failed')
+        jest.mocked(dictionaryContentSync[stage]).mockRejectedValue(failure)
+        expect(await syncManager.performSync(userId)).toMatchObject({
+          success: false,
+          error: failure.message,
+        })
+        expect(dictionaryContentSync.push).toHaveBeenCalledTimes(1)
+        expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
+        expect(reviewEventRepository.getPendingSyncEvents).toHaveBeenCalledWith(
+          userId,
+          500
+        )
+      }
+    )
+  })
+
   describe('dictionary hydration recovery after word upload', () => {
     const STILL_MISSING = 'still missing'
     const REFRESH_FAILURE = 'refresh failure'
@@ -3985,6 +4082,319 @@ describe('SyncManager', () => {
         .mockResolvedValue(1)
       expect((await syncManager.performSync(userId)).success).toBe(true)
       expect(dictionaryContentSync.refreshChanges).toHaveBeenCalledTimes(1)
+    })
+  })
+  describe('D14 light early delivery audit', () => {
+    const FIRST_AUDIT_EVENT = 'audit-event-1'
+    type PendingEvent = Awaited<
+      ReturnType<typeof reviewEventRepository.getPendingSyncEvents>
+    >[number]
+    type Reset = Awaited<ReturnType<typeof learningResetRepository.getNext>>
+    type Correction = Awaited<
+      ReturnType<typeof reviewCorrectionRepository.getNext>
+    >
+    type EarlyManager = {
+      pushReviewEventsToSupabase: (
+        owner: string,
+        corrections: boolean,
+        early: boolean,
+        assertOwner: () => void
+      ) => Promise<number>
+      fetchExistingPersonalIds: (
+        owner: string,
+        ids: readonly string[]
+      ) => Promise<Set<string>>
+    }
+    const event = (sequence: number, word = REMOTE_WORD_ID): PendingEvent => ({
+      event_id: `audit-event-${sequence}`,
+      user_id: userId,
+      word_id: word,
+      assessment: 'good',
+      review_mode: 'recognition',
+      answered_correctly: true,
+      response_time_ms: 300,
+      previous_interval_days: 1,
+      next_interval_days: 3,
+      previous_easiness_factor: 2.5,
+      next_easiness_factor: 2.5,
+      reviewed_at: DEFAULT_TIMESTAMP,
+      created_at: null,
+      sync_status: 'pending',
+      last_sync_attempt_at: null,
+      synced_at: null,
+      local_sequence: sequence,
+    })
+    const setup = (
+      events: PendingEvent[],
+      initialReset: Reset,
+      initialCorrection: Correction
+    ) => {
+      jest.mocked(reviewCorrectionSync.push).mockReset()
+      jest.mocked(reviewCorrectionRepository.getNext).mockReset()
+      jest.mocked(learningResetRepository.getNext).mockReset()
+      jest.mocked(reviewEventRepository.getPendingSyncEvents).mockReset()
+      jest.mocked(supabase.rpc).mockReset()
+      const manager = syncManager as unknown as EarlyManager
+      let pending = [...events]
+      let reset = initialReset
+      let correction = initialCorrection
+      const order: string[] = []
+      let failReviewAck = false
+      const serverEvents = new Set<string>()
+      jest
+        .spyOn(manager, 'fetchExistingPersonalIds')
+        .mockImplementation(
+          async (_owner, ids) =>
+            new Set(ids.filter(id => id === REMOTE_WORD_ID))
+        )
+      jest
+        .mocked(reviewEventRepository.getPendingSyncEvents)
+        .mockImplementation(async () => [...pending])
+      jest
+        .mocked(learningResetRepository.getNext)
+        .mockImplementation(async () => reset)
+      jest
+        .mocked(reviewCorrectionRepository.getNext)
+        .mockImplementation(async () => correction)
+      jest.mocked(reviewCorrectionSync.push).mockImplementation(async () => {
+        order.push('correction')
+        correction = null
+      })
+      jest
+        .mocked(learningResetRepository.acknowledge)
+        .mockImplementation(async () => {
+          order.push('reset')
+          reset = null
+        })
+      jest.mocked(supabase.rpc).mockResolvedValue({
+        data: [{ word_id: REMOTE_WORD_ID }],
+        error: null,
+        count: null,
+        status: 200,
+        statusText: 'OK',
+      })
+      const select = jest.fn()
+      const upsert = jest.fn((rows: { event_id: string }[]) => {
+        for (const row of rows) {
+          serverEvents.add(row.event_id)
+          order.push(row.event_id)
+        }
+        select.mockResolvedValue(
+          failReviewAck
+            ? { data: null, error: { message: 'audit response lost' } }
+            : {
+                data: rows.map(row => ({
+                  event_id: row.event_id,
+                  created_at: SERVER_TIMESTAMP,
+                })),
+                error: null,
+              }
+        )
+        return { select }
+      })
+      jest
+        .mocked(supabase.from)
+        .mockReturnValue({ upsert } as unknown as ReturnType<
+          typeof supabase.from
+        >)
+      jest
+        .mocked(reviewEventRepository.reconcilePushedEvents)
+        .mockImplementation(async (_owner, ack) => {
+          const ids = new Set(ack.map(row => row.event_id))
+          pending = pending.filter(row => !ids.has(row.event_id))
+        })
+      return {
+        manager,
+        order,
+        serverEvents,
+        remaining: () => pending,
+        fail: (value: boolean) => {
+          failReviewAck = value
+        },
+      }
+    }
+    it('sends review/correction/reset/review before dictionary work and stops at the missing creation', async () => {
+      const reset: Reset = {
+        sequence: 3,
+        operation_id: 'audit-reset',
+        word_id: REMOTE_WORD_ID,
+        reset_at: DEFAULT_TIMESTAMP,
+        review_date: DEFAULT_REVIEW_DATE,
+      }
+      const correction: Correction = {
+        sequence: 2,
+        correction_id: 'audit-correction',
+        event_id: FIRST_AUDIT_EVENT,
+        word_id: REMOTE_WORD_ID,
+        user_id: userId,
+        expected_revision: 0,
+        assessment: 'hard',
+        status: 'pending',
+        error: null,
+      }
+      const state = setup(
+        [event(1), event(4), event(5, 'not-created'), event(6)],
+        reset,
+        correction
+      )
+      expect(
+        await state.manager.pushReviewEventsToSupabase(
+          userId,
+          true,
+          true,
+          () => {}
+        )
+      ).toBe(4)
+      expect(state.order).toEqual([
+        FIRST_AUDIT_EVENT,
+        'correction',
+        'reset',
+        'audit-event-4',
+      ])
+      expect(state.remaining().map(row => row.event_id)).toEqual([
+        'audit-event-5',
+        'audit-event-6',
+      ])
+      expect(dictionaryContentSync.isAvailable).not.toHaveBeenCalled()
+      expect(dictionaryContentSync.pullRequired).not.toHaveBeenCalled()
+    })
+    it('does not skip an absent reset target to send a later ready review', async () => {
+      const state = setup(
+        [event(2)],
+        {
+          sequence: 1,
+          operation_id: 'reset-missing',
+          word_id: 'not-created',
+          reset_at: DEFAULT_TIMESTAMP,
+          review_date: DEFAULT_REVIEW_DATE,
+        },
+        null
+      )
+      expect(
+        await state.manager.pushReviewEventsToSupabase(
+          userId,
+          true,
+          true,
+          () => {}
+        )
+      ).toBe(0)
+      expect(state.order).toEqual([])
+      expect(state.remaining()).toHaveLength(1)
+    })
+    it('retains the event on a lost response and retries the same immutable identity', async () => {
+      const state = setup([event(1)], null, null)
+      state.fail(true)
+      await expect(
+        state.manager.pushReviewEventsToSupabase(userId, true, true, () => {})
+      ).rejects.toThrow('audit response lost')
+      expect(state.remaining()).toHaveLength(1)
+      state.fail(false)
+      expect(
+        await state.manager.pushReviewEventsToSupabase(
+          userId,
+          true,
+          true,
+          () => {}
+        )
+      ).toBe(1)
+      expect(state.remaining()).toHaveLength(0)
+      expect([...state.serverEvents]).toEqual([FIRST_AUDIT_EVENT])
+      expect(state.order).toEqual([FIRST_AUDIT_EVENT, FIRST_AUDIT_EVENT])
+    })
+    it('keeps the local event pending if the owner guard fails after dispatch', async () => {
+      const state = setup([event(1)], null, null)
+      await expect(
+        state.manager.pushReviewEventsToSupabase(userId, true, true, () => {
+          if (state.serverEvents.size) throw new Error('audit owner changed')
+        })
+      ).rejects.toThrow('audit owner changed')
+      expect(state.remaining()).toHaveLength(1)
+      expect(reviewEventRepository.reconcilePushedEvents).not.toHaveBeenCalled()
+    })
+    it('reports an early review receipt when the published bootstrap cannot resolve its head', async () => {
+      const state = setup([event(1)], null, null)
+      process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+      process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED = 'true'
+      process.env.EXPO_PUBLIC_DICTIONARY_LIGHT_WORDS_ENABLED = 'true'
+      jest.mocked(supabase.rpc).mockResolvedValue({
+        data: 2,
+        error: null,
+        count: null,
+        status: 200,
+        statusText: 'OK',
+      })
+      const manager = syncManager as unknown as {
+        pullWordsFromSupabase: (...args: unknown[]) => Promise<unknown>
+        pullCollectionsFromSupabase: (...args: unknown[]) => Promise<unknown>
+      }
+      const collections = jest
+        .spyOn(manager, 'pullCollectionsFromSupabase')
+        .mockResolvedValue([])
+      const pull = jest
+        .spyOn(manager, 'pullWordsFromSupabase')
+        .mockImplementation(async () => {
+          expect(state.remaining()).toHaveLength(0)
+          throw new Error('missing-dictionary-head')
+        })
+      try {
+        const result = await syncManager.performSync(userId)
+        expect(result).toMatchObject({
+          success: false,
+          error: 'missing-dictionary-head',
+          learningSynced: 1,
+        })
+        expect(pull).toHaveBeenCalledTimes(1)
+        expect(
+          reviewEventRepository.reconcilePushedEvents
+        ).toHaveBeenCalledTimes(1)
+      } finally {
+        pull.mockRestore()
+        collections.mockRestore()
+        delete process.env.EXPO_PUBLIC_DICTIONARY_LIGHT_WORDS_ENABLED
+      }
+    })
+
+    it('reports a confirmed early review when the following reset fails', async () => {
+      const state = setup(
+        [event(1)],
+        {
+          sequence: 2,
+          operation_id: 'reset-fails',
+          word_id: REMOTE_WORD_ID,
+          reset_at: DEFAULT_TIMESTAMP,
+          review_date: DEFAULT_REVIEW_DATE,
+        },
+        null
+      )
+      process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED = 'true'
+      process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED = 'true'
+      process.env.EXPO_PUBLIC_DICTIONARY_LIGHT_WORDS_ENABLED = 'true'
+      jest.mocked(supabase.rpc).mockImplementation(
+        (name: string) =>
+          Promise.resolve({
+            data: name === 'learning_sync_protocol' ? 2 : null,
+            error:
+              name === 'learning_sync_protocol'
+                ? null
+                : { message: 'audit reset unavailable' },
+            count: null,
+            status: 200,
+            statusText: 'OK',
+          }) as unknown as ReturnType<typeof supabase.rpc>
+      )
+      try {
+        const result = await syncManager.performSync(userId)
+        expect(result.success).toBe(false)
+        expect(result.error).toContain('audit reset unavailable')
+        expect(state.remaining()).toHaveLength(0)
+        expect(
+          reviewEventRepository.reconcilePushedEvents
+        ).toHaveBeenCalledTimes(1)
+        expect(result.learningSynced).toBe(1)
+        expect(learningResetRepository.acknowledge).not.toHaveBeenCalled()
+      } finally {
+        delete process.env.EXPO_PUBLIC_DICTIONARY_LIGHT_WORDS_ENABLED
+      }
     })
   })
 })

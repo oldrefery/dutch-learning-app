@@ -568,7 +568,7 @@ describe('protocol2 atomic hydration on file-backed SQLite', () => {
     ).rejects.toThrow('batch count')
   })
 
-  it('hydrates and reads more than one SQL chunk in a single snapshot with bounded queries', async () => {
+  it('hydrates and reads more than one SQL chunk with bounded atomic card/revision queries', async () => {
     const ids = Array.from(
       { length: 405 },
       (_, index) => `dddddddd-dddd-4ddd-8ddd-${String(index).padStart(12, '0')}`
@@ -585,7 +585,7 @@ describe('protocol2 atomic hydration on file-backed SQLite', () => {
     const query = jest.spyOn(adapter, 'getAllAsync')
     const result = await repository.getCachedCards(OWNER_A, ids)
     expect(result.size).toBe(405)
-    expect(transaction).toHaveBeenCalledTimes(1)
+    expect(transaction).not.toHaveBeenCalled()
     expect(query).toHaveBeenCalledTimes(2)
     expect(db.prepare(REVISIONS_QUERY).all()).toHaveLength(1)
     const first = result.get(ids[0])

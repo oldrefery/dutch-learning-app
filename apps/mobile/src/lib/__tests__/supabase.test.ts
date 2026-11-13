@@ -85,25 +85,15 @@ describe('wordService duplicate handling', () => {
     expect(is).toHaveBeenCalledWith('deleted_at', null)
   })
 
-  it('should escape ILIKE wildcards in every semantic duplicate lookup', async () => {
-    const result = { data: [], error: null }
-    const is = jest.fn().mockResolvedValue(result)
+  it('should escape ILIKE wildcards in the active semantic identity lookup', async () => {
+    const is = jest.fn().mockResolvedValue({ data: [], error: null })
     const ilike = jest.fn().mockReturnValue({ is })
-    const selectChain = {
-      eq: jest.fn().mockReturnValue({ ilike }),
-    }
-
     ;(supabase.from as jest.Mock).mockReturnValue({
-      select: jest.fn().mockReturnValue(selectChain),
+      select: jest.fn().mockReturnValue({
+        eq: jest.fn().mockReturnValue({ ilike }),
+      }),
     })
-
-    await wordService.checkSemanticDuplicate(
-      USER_ID,
-      '%Huis_',
-      undefined,
-      undefined
-    )
-
+    await wordService.checkWordExists(USER_ID, '%Huis_')
     expect(ilike).toHaveBeenCalledWith('dutch_lemma', '\\%huis\\_')
   })
 

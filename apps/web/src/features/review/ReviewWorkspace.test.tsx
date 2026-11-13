@@ -77,6 +77,21 @@ const makeWordDetail = (overrides: Partial<WordDetail> = {}): WordDetail => ({
   ...overrides,
 })
 
+const makeFollowingWordDetail = () =>
+  makeWordDetail({
+    dictionary: {
+      protocolVersion: 2,
+      contentVersion: '9',
+      source: 'following',
+      mode: 'follow',
+      reference: null,
+      adoptedRevisionId: null,
+      headSequence: '10',
+      watermark: '10',
+      cefr: { level: null, status: 'unknown', confidence: null },
+    },
+  })
+
 beforeEach(() => {
   router.refresh.mockReset()
   jest.useFakeTimers().setSystemTime(new Date('2026-09-06T12:00:00Z'))
@@ -575,6 +590,47 @@ test('reanalyzes an open review card and reloads fresh details without submittin
   expect(persist).not.toHaveBeenCalled()
 })
 
+test('opens shared analysis in a separate tab and keeps the current review intact', async () => {
+  details.mockResolvedValue({
+    status: 'success',
+    word: makeFollowingWordDetail(),
+  })
+  renderWorkspace()
+  await start()
+  fireEvent.click(screen.getByRole('button', { name: 'Full details' }))
+  await flush()
+
+  const link = screen.getByRole('link', {
+    name: 'Open shared analysis (new tab)',
+  })
+  expect(link).toHaveAttribute(
+    'href',
+    '/app/collections/collection-1/words/word-1'
+  )
+  expect(link).toHaveAttribute('target', '_blank')
+  expect(link).toHaveAttribute('rel', 'noopener')
+  expect(
+    screen.queryByRole('button', { name: 'Reanalyze with AI' })
+  ).not.toBeInTheDocument()
+  fireEvent.click(link)
+  await flush()
+  expect(reanalyze).not.toHaveBeenCalled()
+  expect(persist).not.toHaveBeenCalled()
+  expect(submitReviewCorrection).not.toHaveBeenCalled()
+
+  fireEvent.click(screen.getByRole('button', { name: 'Back to question' }))
+  expect(
+    screen.getByRole('heading', { name: 'woord-word-1' })
+  ).toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Continue · Again' }))
+  await flush()
+
+  expect(persist).toHaveBeenCalledTimes(1)
+  expect(persist).toHaveBeenCalledWith(
+    expect.objectContaining({ wordId: 'word-1', assessment: 'again' })
+  )
+})
+
 test('shows review reanalysis failures without replacing the open card', async () => {
   details.mockResolvedValue({ status: 'success', word: makeWordDetail() })
   reanalyze.mockResolvedValue({
@@ -594,13 +650,19 @@ test('shows review reanalysis failures without replacing the open card', async (
   expect(details).toHaveBeenCalledTimes(1)
 })
 
-test('hides review reanalysis for accounts without AI access', async () => {
-  details.mockResolvedValue({ status: 'success', word: makeWordDetail() })
+test.each([makeWordDetail(), makeFollowingWordDetail()])(
+  'hides review reanalysis for accounts without AI access (case %#)',
+  async word => {
+    details.mockResolvedValue({ status: 'success', word })
 
-  render(<ReviewDetails userId="test-user" wordId="word-1" />)
-  await flush()
+    render(<ReviewDetails userId="test-user" wordId="word-1" />)
+    await flush()
 
-  expect(
-    screen.queryByRole('button', { name: 'Reanalyze with AI' })
-  ).not.toBeInTheDocument()
-})
+    expect(
+      screen.queryByRole('button', { name: 'Reanalyze with AI' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', { name: /Open shared analysis/ })
+    ).not.toBeInTheDocument()
+  }
+)

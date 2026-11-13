@@ -1,3 +1,4 @@
+import { assertRussianScript } from '../_shared/russianText.ts'
 // Edge Function for secure Gemini AI integration
 import { CORS_HEADERS } from './constants.ts'
 import { getMultipleImagesForWord } from './imageUtils.ts'
@@ -229,6 +230,7 @@ Deno.serve(async (req: Request) => {
       formatWordAnalysisPrompt(word) + (cefrEnabled ? ANALYSIS_CEFR_PROMPT : '')
     const geminiResponse = await callGeminiAPI(prompt)
     const analysis = parseGeminiResponse(geminiResponse)
+    assertRussianScript(analysis)
 
     // Clean and format data
     const cleanedExamples = cleanExamples(analysis.examples)

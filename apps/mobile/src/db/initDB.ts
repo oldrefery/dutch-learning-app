@@ -27,6 +27,7 @@ import {
 import { MIGRATION_V20_DICTIONARY_FOLLOWING_IMPORTS } from './dictionaryFollowingImportSchema'
 import { MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS } from './dictionaryFollowingTransferSchema'
 import { MIGRATION_V22_DICTIONARY_CREATION } from './dictionaryCreationSchema'
+import { MIGRATION_V24_DICTIONARY_PERSONAL_STATE } from './dictionaryPersonalStateSchema'
 import { MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION } from './dictionaryModeReconciliationSchema'
 import { MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY } from './dictionaryImportRecoverySchema'
 import { MIGRATION_V17_DICTIONARY_FOLLOWING } from './dictionaryFollowingSchema'
@@ -37,7 +38,7 @@ import {
 
 const DB_NAME = 'dutch_learning.db'
 const SCHEMA_VERSION_KEY = 'db_schema_version'
-const SCHEMA_VERSION = 23
+const SCHEMA_VERSION = 24
 
 // Type for duplicate word record
 interface DuplicateWordRecord {
@@ -293,6 +294,7 @@ async function applyPendingMigrations(
     { version: 21, sql: MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS },
     { version: 22, sql: MIGRATION_V22_DICTIONARY_CREATION },
     { version: 23, sql: MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION },
+    { version: 24, sql: MIGRATION_V24_DICTIONARY_PERSONAL_STATE },
   ]
   for (const migration of transactionalMigrations) {
     if (currentVersion < migration.version) {

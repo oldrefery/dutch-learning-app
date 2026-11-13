@@ -106,12 +106,25 @@ export const hydrateOwnedWords = async <Row extends { word_id: string }>(
   client: SupabaseClient<Database>,
   rows: Row[]
 ): Promise<(Row & { dictionary?: DictionaryCardMetadata })[]> => {
-  if (!isDictionaryContentEnabled() || rows.length === 0) return rows
+  if (!isDictionaryContentEnabled()) return rows
+  return hydrateDictionaryWords(client, rows, isDictionaryFollowingEnabled())
+}
+
+export const hydrateFollowingWords = <Row extends { word_id: string }>(
+  client: SupabaseClient<Database>,
+  rows: Row[]
+) => hydrateDictionaryWords(client, rows, true)
+
+async function hydrateDictionaryWords<Row extends { word_id: string }>(
+  client: SupabaseClient<Database>,
+  rows: Row[],
+  following: boolean
+) {
+  if (rows.length === 0) return []
   const dictionaryClient =
     client as unknown as SupabaseClient<DictionaryDatabase>
   const ids = [...new Set(rows.map(row => row.word_id))]
   const cards = new Map<string, EffectiveCard>()
-  const following = isDictionaryFollowingEnabled()
   for (let offset = 0; offset < ids.length; offset += 1000) {
     const requested = ids.slice(offset, offset + 1000)
     const { data, error } = await dictionaryClient.rpc(

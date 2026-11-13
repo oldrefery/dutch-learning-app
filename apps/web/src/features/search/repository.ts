@@ -1,15 +1,10 @@
 import 'server-only'
 
-import { hydrateOwnedWords } from '@/features/dictionary/repository'
+import { listOwnedDisplayWords } from '@/features/dictionary/owned-display-repository'
 
-import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import { createClient } from '@/lib/supabase/server'
 import { buildWordSearchResults, normalizeWordSearchQuery } from './word-search'
-import type {
-  WordSearchCollectionRow,
-  WordSearchResult,
-  WordSearchRow,
-} from './word-search'
+import type { WordSearchResult } from './word-search'
 
 export async function searchOwnedWords(
   userId: string,
@@ -23,31 +18,22 @@ export async function searchOwnedWords(
     .from('collections')
     .select('collection_id, name')
     .eq('user_id', userId)
-  const wordsRequest = fetchAllRows<WordSearchRow>((from, to) =>
-    supabase
-      .from('words')
-      .select(
-        'collection_id, dutch_lemma, dutch_original, part_of_speech, translations, word_id'
-      )
-      .eq('user_id', userId)
-      .is('deleted_at', null)
-      .order('dutch_lemma', { ascending: true })
-      .order('word_id', { ascending: true })
-      .range(from, to)
-  )
+  const wordsRequest = listOwnedDisplayWords(supabase, userId, {
+    view: 'search',
+  })
 
-  const [collectionsResult, wordsResult] = await Promise.all([
+  const [collectionsResult, words] = await Promise.all([
     collectionsRequest,
     wordsRequest,
   ])
 
-  if (collectionsResult.error || wordsResult.error) {
+  if (collectionsResult.error) {
     throw new Error('Could not search your words.')
   }
 
   return buildWordSearchResults(
-    await hydrateOwnedWords(supabase, wordsResult.data ?? []),
-    (collectionsResult.data ?? []) as WordSearchCollectionRow[],
+    words,
+    collectionsResult.data ?? [],
     normalizedQuery
   )
 }

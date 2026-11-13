@@ -29,6 +29,39 @@ import { queueImportDeletion } from './dictionaryImportDeletionRepository'
 import { dictionaryImportRepository } from './dictionaryImportRepository'
 import { canonicalDictionaryJson } from './dictionaryFollowingHydration'
 
+import {
+  comparePersonalTimestamps,
+  personalStorageWord,
+  type PersonalMetadataRow,
+  requirePersonalBootstrap,
+} from './dictionaryPersonalMetadata'
+import { WORD_CONTENT_READY } from './dictionaryPersonalStateSchema'
+import { dictionaryFollowingRepository } from './dictionaryFollowingRepository'
+import { applyDictionaryMaterialization } from './dictionaryWordMaterialization'
+
+const PERSONAL_OWNER_MISMATCH = 'Personal metadata owner mismatch'
+
+const READABLE_WORD_COLUMNS = `words.*, (SELECT sparse FROM dictionary_personal_state s
+  WHERE s.word_id = words.word_id AND s.user_id = words.user_id) AS personal_sparse`
+
+type PersonalState = {
+  mode: string
+  entry_id: string | null
+  adopted_revision_id: string | null
+  content_version: string
+  observed_updated_at: string
+  sparse: number
+}
+
+const matchesPersonalState = (
+  state: PersonalState,
+  row: PersonalMetadataRow
+): boolean =>
+  state.mode === row.dictionary_content_mode &&
+  state.entry_id === row.dictionary_entry_id &&
+  state.adopted_revision_id === row.dictionary_revision_id &&
+  state.content_version === row.content_version
+
 const requireDictionaryOverrides = (value: unknown) => {
   const result = parseDictionaryContentOverrides(value)
   if (!result.success) throw new Error('Invalid local dictionary overrides')
@@ -57,6 +90,7 @@ interface ExistingWordCheck {
 interface SaveWordsOptions {
   preserveUnsynced?: boolean
   syncedAt?: string
+  completePersonalRead?: boolean
 }
 
 interface SaveWordStatements {
@@ -334,6 +368,20 @@ export class WordRepository {
     options: SaveWordsOptions = {}
   ): Promise<void> {
     const db = await getDatabase()
+    if (options.completePersonalRead) {
+      await db.withExclusiveTransactionAsync(async transaction => {
+        const statements = await this.prepareSaveWordStatements(transaction)
+        try {
+          for (const word of words) {
+            await this.restoreFullPersonalRow(transaction, statements, word)
+            await this.persistWord(word, statements, options)
+          }
+        } finally {
+          await this.finalizeSaveWordStatements(statements)
+        }
+      })
+      return
+    }
     const statements = await this.prepareSaveWordStatements(db)
 
     try {
@@ -385,6 +433,7 @@ export class WordRepository {
           throw new Error(
             'Personal word identity conflict. Existing card is preserved.'
           )
+        await this.restoreFullPersonalRow(transaction, statements, word)
         // A response fetched before a newer local/remote merge must not move it back.
         if (
           !existing ||
@@ -404,6 +453,491 @@ export class WordRepository {
       }
       assertOwner()
     })
+  }
+
+  async getSparsePersonalWordIds(userId: string): Promise<string[]> {
+    const db = await getDatabase()
+    const rows = await db.getAllAsync<{ word_id: string }>(
+      `SELECT s.word_id FROM dictionary_personal_state s JOIN words w ON w.word_id=s.word_id
+       AND w.user_id=s.user_id WHERE s.user_id=? AND s.sparse=1 AND w.deleted_at IS NULL
+       AND w.sync_status <> 'deleted' ORDER BY s.word_id`,
+      userId
+    )
+    return rows.map(row => row.word_id)
+  }
+
+  async getPersonalBootstrapWordIds(
+    userId: string,
+    rows: readonly PersonalMetadataRow[]
+  ): Promise<string[]> {
+    const db = await getDatabase()
+    const requested = rows.filter(
+      row => !row.deleted_at && row.dictionary_content_mode === 'follow'
+    )
+    if (rows.some(row => row.user_id !== userId))
+      throw new Error(PERSONAL_OWNER_MISMATCH)
+    const required: string[] = []
+    for (let offset = 0; offset < requested.length; offset += 400) {
+      const chunk = requested
+        .slice(offset, offset + 400)
+        .map(row => row.word_id)
+      const existing = await db.getAllAsync<{
+        word_id: string
+        sparse: number | null
+      }>(
+        `SELECT w.word_id,s.sparse FROM words w LEFT JOIN dictionary_personal_state s ON s.word_id=w.word_id
+         WHERE w.user_id=? AND w.word_id IN (${chunk.map(() => '?').join(',')})`,
+        userId,
+        ...chunk
+      )
+      const complete = new Set(
+        existing.filter(row => row.sparse !== 1).map(row => row.word_id)
+      )
+      required.push(...chunk.filter(id => !complete.has(id)))
+    }
+    return required
+  }
+
+  private async restorePersonalBaseline(
+    transaction: SQLiteDatabase,
+    statements: SaveWordStatements,
+    word: Word,
+    placeholder?: Word
+  ): Promise<boolean> {
+    const raw = await transaction.getFirstAsync<Record<string, unknown>>(
+      'SELECT * FROM words WHERE word_id=? AND user_id=?',
+      [word.word_id, word.user_id]
+    )
+    if (!raw || raw.deleted_at || raw.sync_status === 'deleted') return false
+    const command = await transaction.getFirstAsync(
+      'SELECT 1 FROM dictionary_content_commands WHERE word_id=? AND user_id=?',
+      [word.word_id, word.user_id]
+    )
+    if (command)
+      throw new Error(
+        'Personal bootstrap conflicts with a pending content edit'
+      )
+    const existing = this.parseWordRow(raw)
+    // Repair only the old synthetic lexical copy; retain all personal study,
+    // placement, identity and delivery state, including in-flight commands.
+    const withLocalState = (content: Word): Word => ({
+      ...content,
+      word_id: existing.word_id,
+      user_id: existing.user_id,
+      collection_id: existing.collection_id,
+      dutch_lemma: existing.dutch_lemma,
+      part_of_speech: existing.part_of_speech,
+      article: existing.article,
+      interval_days: existing.interval_days,
+      repetition_count: existing.repetition_count,
+      easiness_factor: existing.easiness_factor,
+      next_review_date: existing.next_review_date,
+      last_reviewed_at: existing.last_reviewed_at,
+      created_at: existing.created_at,
+      updated_at: existing.updated_at,
+    })
+    const restored = withLocalState(word)
+    if (placeholder) {
+      const comparable = (value: Word) =>
+        JSON.stringify(
+          this.getContentAndProgressValues(value, canonicalDictionaryJson)
+        )
+      const current = comparable(existing)
+      // A pending review can coexist with an older unsent lexical edit.
+      // Only replace the synthetic copy or a copy that already matches.
+      if (
+        current !== comparable(withLocalState(placeholder)) &&
+        current !== comparable(restored)
+      )
+        return false
+    }
+    const result = await statements.update.executeAsync(
+      existing.word_id,
+      ...this.getMutableWordValues(
+        restored,
+        existing.deleted_at,
+        existing.sync_status,
+        existing.synced_at
+      ),
+      existing.word_id,
+      existing.user_id,
+      0
+    )
+    return result.changes === 1
+  }
+
+  private async restoreFullPersonalRow(
+    transaction: SQLiteDatabase,
+    statements: SaveWordStatements,
+    word: Word
+  ): Promise<void> {
+    const state = await transaction.getFirstAsync<PersonalState>(
+      'SELECT * FROM dictionary_personal_state WHERE word_id=? AND user_id=?',
+      [word.word_id, word.user_id]
+    )
+    if (!state) return
+    if (
+      comparePersonalTimestamps(word.updated_at, state.observed_updated_at) < 0
+    )
+      throw new Error('Stale full personal row')
+    if (state.sparse)
+      await this.restorePersonalBaseline(transaction, statements, word)
+    // A complete personal response restores the old-reader contract. Retain a
+    // fresh hydration generation, but retire the obsolete metadata-only fence.
+    await transaction.runAsync(
+      `INSERT INTO dictionary_following_refresh_queue(word_id,user_id,refresh_version)
+      VALUES (?,?,1) ON CONFLICT(word_id) DO UPDATE SET refresh_version=refresh_version+1
+      WHERE user_id=excluded.user_id`,
+      word.word_id,
+      word.user_id
+    )
+    await transaction.runAsync(
+      'DELETE FROM dictionary_personal_state WHERE word_id=? AND user_id=?',
+      word.word_id,
+      word.user_id
+    )
+  }
+
+  async savePersonalMetadata(
+    userId: string,
+    rows: readonly PersonalMetadataRow[],
+    assertOwner: () => void,
+    exactImport = false,
+    bootstrapVersions?: ReadonlyMap<string, number>
+  ): Promise<ReadonlyMap<string, number>> {
+    const db = await getDatabase()
+    const syncedAt = new Date().toISOString()
+    let savedVersions = new Map<string, number>()
+    await db.withExclusiveTransactionAsync(async transaction => {
+      assertOwner()
+      const bootstrapIds = [...(bootstrapVersions?.keys() ?? [])]
+      const before = await dictionaryFollowingRepository.readBootstrapVersions(
+        userId,
+        bootstrapIds,
+        transaction
+      )
+      const appliedBootstrapIds: string[] = []
+      const statements = await this.prepareSaveWordStatements(transaction)
+      const tombstones = await transaction.prepareAsync(
+        UPSERT_WORD_TOMBSTONE_SQL
+      )
+      try {
+        for (const row of rows) {
+          assertOwner()
+          if (row.user_id !== userId) throw new Error(PERSONAL_OWNER_MISMATCH)
+          const existing = await transaction.getFirstAsync<
+            ExistingWordCheck & { user_id: string }
+          >(
+            'SELECT user_id, word_id, updated_at, deleted_at, sync_status FROM words WHERE word_id = ?',
+            [row.word_id]
+          )
+          if (existing && existing.user_id !== userId)
+            throw new Error(PERSONAL_OWNER_MISMATCH)
+          if (
+            exactImport &&
+            (existing?.deleted_at || existing?.sync_status === 'deleted')
+          )
+            throw new Error('Imported personal row is deleted')
+          if (row.deleted_at) {
+            await tombstones.executeAsync(
+              ...this.getInsertValues(
+                personalStorageWord(row),
+                row.deleted_at,
+                'synced',
+                syncedAt
+              )
+            )
+            continue
+          }
+          if (existing?.deleted_at || existing?.sync_status === 'deleted')
+            continue
+          const applied = await this.applyPersonalMetadata(
+            transaction,
+            statements,
+            row,
+            existing,
+            syncedAt
+          )
+          if (applied) appliedBootstrapIds.push(row.word_id)
+        }
+        assertOwner()
+      } finally {
+        await this.finalizeSaveWordStatements(statements)
+        await tombstones.finalizeAsync()
+      }
+      savedVersions = await dictionaryFollowingRepository.readBootstrapVersions(
+        userId,
+        appliedBootstrapIds.filter(
+          id => before.has(id) && before.get(id) === bootstrapVersions?.get(id)
+        ),
+        transaction
+      )
+      assertOwner()
+    })
+    return savedVersions
+  }
+
+  private async preparePersonalStorage(
+    transaction: SQLiteDatabase,
+    statements: SaveWordStatements,
+    row: PersonalMetadataRow,
+    state: PersonalState | null,
+    existing: ExistingWordCheck | null
+  ) {
+    const needsBaseline =
+      row.dictionary_content_mode === 'follow' &&
+      (!existing || state?.sparse === 1)
+    const baseline = needsBaseline
+      ? requirePersonalBootstrap(row.bootstrapWord, row)
+      : undefined
+    if (
+      existing &&
+      baseline &&
+      !(await this.restorePersonalBaseline(
+        transaction,
+        statements,
+        baseline,
+        existing.sync_status === 'pending'
+          ? personalStorageWord(row)
+          : undefined
+      ))
+    )
+      throw new Error(
+        'Personal bootstrap conflicts with a pending content edit'
+      )
+    return { storage: baseline ?? personalStorageWord(row), baseline }
+  }
+
+  private async saveCompleteLegacyPersonalRow(
+    transaction: SQLiteDatabase,
+    statements: SaveWordStatements,
+    row: PersonalMetadataRow,
+    word: Word,
+    match: ExistingWordCheck | null,
+    sparse: number,
+    syncedAt: string
+  ): Promise<boolean> {
+    const options = { preserveUnsynced: true, syncedAt }
+    if (sparse && match && this.shouldPreserveExistingWord(match, options)) {
+      if (match.has_pending_dictionary || match.has_pending_import) return false
+      return this.restorePersonalBaseline(
+        transaction,
+        statements,
+        word,
+        personalStorageWord({ ...row, legacyWord: undefined })
+      )
+    }
+    return (await this.persistWord(word, statements, options)) !== null
+  }
+
+  private async applyPersonalMetadata(
+    transaction: SQLiteDatabase,
+    statements: SaveWordStatements,
+    row: PersonalMetadataRow,
+    existing: ExistingWordCheck | null,
+    syncedAt: string
+  ): Promise<boolean> {
+    const {
+      user_id: owner,
+      word_id: id,
+      dictionary_content_mode: mode,
+      dictionary_entry_id: entry,
+      dictionary_revision_id: adopted,
+      content_version: version,
+    } = row
+    const state = await transaction.getFirstAsync<PersonalState>(
+      'SELECT * FROM dictionary_personal_state WHERE word_id = ? AND user_id = ?',
+      [id, owner]
+    )
+    const observed =
+      state?.observed_updated_at ??
+      (existing?.sync_status === 'synced' ? existing.updated_at : null)
+    if (observed && comparePersonalTimestamps(row.updated_at, observed) < 0)
+      return false
+    await this.requirePersonalCollection(transaction, row.collection_id, owner)
+    const { storage, baseline } = await this.preparePersonalStorage(
+      transaction,
+      statements,
+      row,
+      state,
+      existing
+    )
+    const match = await this.findExistingWord(statements.checkExisting, storage)
+    if (match && match.word_id !== id)
+      throw new Error(
+        'Personal word identity conflict. Existing card is preserved.'
+      )
+    const cache = await transaction.getFirstAsync<{
+      mode: string
+      entry_id: string | null
+      adopted: string | null
+      content_version: string
+    }>(
+      `SELECT mode, entry_id, json_extract(card_json, '$.adopted_revision_id') AS adopted, content_version
+       FROM dictionary_effective_card_cache WHERE word_id = ? AND user_id = ?`,
+      [id, owner]
+    )
+    const { bindingMatches, cacheCurrent, sparse, pending } =
+      this.personalReadiness(row, cache, state, Boolean(existing))
+    let complete = Boolean(baseline)
+    if (!existing) {
+      await statements.insert.executeAsync(
+        ...this.getInsertValues(storage, null, 'synced', syncedAt)
+      )
+    } else if (row.legacyWord && !pending) {
+      complete = await this.saveCompleteLegacyPersonalRow(
+        transaction,
+        statements,
+        row,
+        storage,
+        match,
+        sparse,
+        syncedAt
+      )
+    } else {
+      await this.applyPersonalFields(
+        transaction,
+        row,
+        match,
+        mode === 'follow' && bindingMatches
+      )
+    }
+    await transaction.runAsync(
+      `INSERT INTO dictionary_personal_state(word_id,user_id,mode,entry_id,adopted_revision_id,
+        content_version,observed_updated_at,content_pending,sparse)
+       VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(word_id) DO UPDATE SET mode=excluded.mode,
+        entry_id=excluded.entry_id, adopted_revision_id=excluded.adopted_revision_id,
+        content_version=excluded.content_version, observed_updated_at=excluded.observed_updated_at,
+        content_pending=excluded.content_pending, sparse=excluded.sparse WHERE user_id=excluded.user_id`,
+      id,
+      owner,
+      mode,
+      entry,
+      adopted,
+      version,
+      row.updated_at,
+      pending,
+      complete ? 0 : sparse
+    )
+    const changed = !state || !matchesPersonalState(state, row)
+    if (!cacheCurrent || (state && changed)) {
+      await transaction.runAsync(
+        `INSERT INTO dictionary_following_refresh_queue(word_id,user_id,refresh_version)
+         VALUES (?,?,1) ON CONFLICT(word_id) DO UPDATE SET refresh_version = refresh_version + 1
+         WHERE user_id = excluded.user_id AND (? = 1 OR refresh_version = completed_refresh_version)`,
+        id,
+        owner,
+        Number(changed)
+      )
+    }
+    return Boolean(baseline)
+  }
+
+  private personalReadiness(
+    row: PersonalMetadataRow,
+    cache: {
+      mode: string
+      entry_id: string | null
+      adopted: string | null
+      content_version: string
+    } | null,
+    state: PersonalState | null,
+    exists: boolean
+  ) {
+    const mode = row.dictionary_content_mode
+    const bindingMatches =
+      cache?.mode === mode && cache.entry_id === row.dictionary_entry_id
+    const cacheCurrent =
+      bindingMatches &&
+      cache.adopted === row.dictionary_revision_id &&
+      cache.content_version === row.content_version
+    return {
+      bindingMatches,
+      cacheCurrent,
+      sparse: state?.sparse ?? Number(!exists && mode === 'follow'),
+      pending: Number(
+        mode === 'follow' ? !bindingMatches : cache?.mode === 'follow'
+      ),
+    }
+  }
+
+  private async requirePersonalCollection(
+    transaction: SQLiteDatabase,
+    collection: string | null,
+    owner: string
+  ): Promise<void> {
+    if (!collection) return
+    const found = await transaction.getFirstAsync(
+      "SELECT collection_id FROM collections WHERE collection_id = ? AND user_id = ? AND sync_status <> 'deleted'",
+      [collection, owner]
+    )
+    if (!found)
+      throw new Error('Personal collection must be synchronized first')
+  }
+
+  private async applyPersonalFields(
+    transaction: SQLiteDatabase,
+    row: PersonalMetadataRow,
+    match: ExistingWordCheck | null,
+    knownFollowing: boolean
+  ): Promise<void> {
+    if (
+      match &&
+      !this.shouldPreserveExistingWord(match, { preserveUnsynced: true })
+    )
+      await transaction.runAsync(
+        `UPDATE words SET collection_id=?, dutch_lemma=?, part_of_speech=?, article=?,
+         updated_at=? WHERE word_id=? AND user_id=?`,
+        row.collection_id,
+        row.dutch_lemma,
+        row.part_of_speech,
+        row.article,
+        row.updated_at,
+        row.word_id,
+        row.user_id
+      )
+    // A known following card has no unqueued lexical edit. Settle only a
+    // review residue with the same personal placement/key and no other commands.
+    if (knownFollowing && match?.sync_status === 'pending') {
+      const acknowledged = await transaction.getFirstAsync(
+        `${ACKNOWLEDGED_LEARNING_WORD_SQL} AND word_id = ? AND collection_id IS ?
+          AND dutch_lemma = ? AND part_of_speech IS ? AND article IS ?`,
+        [
+          row.user_id,
+          row.word_id,
+          row.collection_id,
+          row.dutch_lemma,
+          row.part_of_speech,
+          row.article,
+        ]
+      )
+      if (acknowledged)
+        await transaction.runAsync(
+          "UPDATE words SET sync_status='synced', updated_at=?, synced_at=? WHERE word_id=? AND user_id=?",
+          row.updated_at,
+          new Date().toISOString(),
+          row.word_id,
+          row.user_id
+        )
+    }
+    // Keep provisional study fields until ordered commands and correction recovery settle.
+    await transaction.runAsync(
+      `UPDATE words SET interval_days=?, repetition_count=?, easiness_factor=?, next_review_date=?, last_reviewed_at=?
+       WHERE word_id=? AND user_id=? AND NOT EXISTS (
+         SELECT 1 FROM learning_commands l WHERE l.word_id=words.word_id
+       ) AND NOT EXISTS (
+         SELECT 1 FROM review_correction_recovery r WHERE r.word_id=words.word_id
+       ) AND NOT EXISTS (
+         SELECT 1 FROM review_events e WHERE e.word_id=words.word_id AND e.sync_status <> 'synced'
+       )`,
+      row.interval_days,
+      row.repetition_count,
+      row.easiness_factor,
+      row.next_review_date,
+      row.last_reviewed_at,
+      row.word_id,
+      row.user_id
+    )
   }
 
   async saveRemoteWordTombstones(words: RemoteWordTombstone[]): Promise<void> {
@@ -504,10 +1038,11 @@ export class WordRepository {
       )
     }
 
-    await statements.update.executeAsync(
+    const result = await statements.update.executeAsync(
       ...this.getUpdateValues(word, existingWord.word_id, syncedAt),
       options.preserveUnsynced ? 1 : 0
     )
+    if (result?.changes === 0) return null
     return {
       dutch_lemma: word.dutch_lemma,
       existing_id: existingWord.word_id,
@@ -649,15 +1184,42 @@ export class WordRepository {
     })
   }
 
+  private async parseReadableWords(
+    rows: Record<string, unknown>[]
+  ): Promise<LocalWord[]> {
+    const words = rows.map(row => this.parseWordRow(row))
+    const sparse = words.filter((_, index) => rows[index].personal_sparse === 1)
+    if (!sparse.length) return words
+    const cache = await dictionaryFollowingRepository.getCachedCards(
+      sparse[0].user_id,
+      sparse.map(word => word.word_id)
+    )
+    return words.flatMap((word, index) => {
+      if (rows[index].personal_sparse !== 1) return [word]
+      const item = cache.get(word.word_id)
+      if (!item || item.card.word_id !== word.word_id) return []
+      return [
+        {
+          ...word,
+          ...applyDictionaryMaterialization(word, {
+            ...item,
+            dependency_status: 'ready',
+            has_conflict: false,
+          }),
+        },
+      ]
+    })
+  }
+
   async getWordsByUserId(userId: string): Promise<LocalWord[]> {
     const db = await getDatabase()
 
     const result = await db.getAllAsync<Record<string, unknown>>(
-      'SELECT * FROM words WHERE user_id = ? AND deleted_at IS NULL ORDER BY created_at DESC',
+      `SELECT ${READABLE_WORD_COLUMNS} FROM words WHERE user_id = ? AND deleted_at IS NULL AND ${WORD_CONTENT_READY} ORDER BY created_at DESC`,
       [userId]
     )
 
-    return result.map(row => this.parseWordRow(row))
+    return this.parseReadableWords(result)
   }
 
   async getWordByIdAndUserId(
@@ -667,11 +1229,13 @@ export class WordRepository {
     const db = await getDatabase()
 
     const result = await db.getFirstAsync<Record<string, unknown>>(
-      'SELECT * FROM words WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL',
+      `SELECT ${READABLE_WORD_COLUMNS} FROM words WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL AND ${WORD_CONTENT_READY}`,
       [wordId, userId]
     )
 
-    return result ? this.parseWordRow(result) : null
+    return result
+      ? ((await this.parseReadableWords([result]))[0] ?? null)
+      : null
   }
 
   async getWordBySemanticKey(
@@ -687,8 +1251,9 @@ export class WordRepository {
       article && article.trim() !== '' ? article.trim() : ''
 
     const result = await db.getFirstAsync<Record<string, unknown>>(
-      `SELECT * FROM words
+      `SELECT ${READABLE_WORD_COLUMNS} FROM words
        WHERE user_id = ?
+         AND ${WORD_CONTENT_READY}
          AND deleted_at IS NULL
          AND lower(dutch_lemma) = ?
          AND COALESCE(part_of_speech, 'unknown') = ?
@@ -698,18 +1263,20 @@ export class WordRepository {
       [userId, normalizedLemma, normalizedPartOfSpeech, normalizedArticle]
     )
 
-    return result ? this.parseWordRow(result) : null
+    return result
+      ? ((await this.parseReadableWords([result]))[0] ?? null)
+      : null
   }
 
   async getWordsByCollectionId(collectionId: string): Promise<LocalWord[]> {
     const db = await getDatabase()
 
     const result = await db.getAllAsync<Record<string, unknown>>(
-      'SELECT * FROM words WHERE collection_id = ? AND deleted_at IS NULL ORDER BY created_at DESC',
+      `SELECT ${READABLE_WORD_COLUMNS} FROM words WHERE collection_id = ? AND deleted_at IS NULL AND ${WORD_CONTENT_READY} ORDER BY created_at DESC`,
       [collectionId]
     )
 
-    return result.map(row => this.parseWordRow(row))
+    return this.parseReadableWords(result)
   }
 
   async updateWordProgress(
@@ -772,11 +1339,28 @@ export class WordRepository {
     const db = await getDatabase()
 
     const result = await db.getAllAsync<Record<string, unknown>>(
-      'SELECT * FROM words WHERE user_id = ? AND updated_at > ? ORDER BY updated_at DESC',
+      `SELECT ${READABLE_WORD_COLUMNS} FROM words WHERE user_id = ? AND updated_at > ? AND ${WORD_CONTENT_READY} ORDER BY updated_at DESC`,
       [userId, timestamp]
     )
 
-    return result.map(row => this.parseWordRow(row))
+    return this.parseReadableWords(result)
+  }
+
+  async hasSparsePersonalRows(
+    userId: string,
+    ids: readonly string[]
+  ): Promise<boolean> {
+    const db = await getDatabase()
+    for (let start = 0; start < ids.length; start += 400) {
+      const chunk = ids.slice(start, start + 400)
+      const row = await db.getFirstAsync(
+        `SELECT word_id FROM dictionary_personal_state WHERE user_id=? AND sparse=1
+         AND word_id IN (${chunk.map(() => '?').join(',')}) LIMIT 1`,
+        [userId, ...chunk]
+      )
+      if (row) return true
+    }
+    return false
   }
 
   async getPendingSyncWords(userId: string): Promise<LocalWord[]> {
@@ -784,11 +1368,11 @@ export class WordRepository {
 
     const result = await db.getAllAsync<Record<string, unknown>>(
       isDictionaryContentEnabled()
-        ? `SELECT * FROM words WHERE user_id = ? AND deleted_at IS NULL AND (sync_status = 'pending'
+        ? `SELECT * FROM words WHERE user_id = ? AND deleted_at IS NULL AND ${WORD_CONTENT_READY} AND (sync_status = 'pending'
            OR EXISTS (SELECT 1 FROM dictionary_import_delivery d WHERE d.word_id = words.word_id
              AND d.user_id = words.user_id AND d.local_placement_revision > d.acknowledged_placement_revision))
            ORDER BY updated_at ASC`
-        : "SELECT * FROM words WHERE user_id = ? AND sync_status = 'pending' AND deleted_at IS NULL ORDER BY updated_at ASC",
+        : `SELECT * FROM words WHERE user_id = ? AND sync_status = 'pending' AND deleted_at IS NULL AND ${WORD_CONTENT_READY} AND NOT EXISTS (SELECT 1 FROM dictionary_personal_state s WHERE s.word_id=words.word_id AND s.sparse=1) ORDER BY updated_at ASC`,
       [userId]
     )
 
@@ -1321,6 +1905,7 @@ export class WordRepository {
          LEFT JOIN dictionary_card_content cards ON cards.word_id = words.word_id
          WHERE words.user_id = ? AND words.deleted_at IS NULL
            AND words.sync_status = 'pending' AND cards.word_id IS NULL
+           AND NOT EXISTS (SELECT 1 FROM dictionary_personal_state s WHERE s.word_id=words.word_id AND (s.sparse=1 OR s.mode='follow'))
            AND NOT EXISTS (
              SELECT 1 FROM dictionary_effective_card_cache effective
              WHERE effective.word_id = words.word_id
@@ -1707,7 +2292,7 @@ export class WordRepository {
         `UPDATE words SET interval_days = 1, repetition_count = 0,
          easiness_factor = 2.5, next_review_date = ?, last_reviewed_at = NULL,
          updated_at = ?, sync_status = 'pending'
-         WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL`,
+         WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL AND ${WORD_CONTENT_READY}`,
         toLocalDateKey(addLocalCalendarDays(now, 1)),
         now.toISOString(),
         wordId,

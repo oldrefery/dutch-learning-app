@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { hydrateOwnedWords } from '@/features/dictionary/repository'
+import { listOwnedDisplayWords } from '@/features/dictionary/owned-display-repository'
 
 import { cache } from 'react'
 import { createClient } from '@/lib/supabase/server'
@@ -61,7 +61,7 @@ const queryCollectionOverviewsFallback = async (
     supabase
       .from('words')
       .select(
-        'collection_id, dutch_lemma, easiness_factor, interval_days, next_review_date, repetition_count, word_id'
+        'collection_id, easiness_factor, interval_days, next_review_date, repetition_count, word_id'
       )
       .eq('user_id', userId)
       .is('deleted_at', null)
@@ -176,26 +176,9 @@ export async function getOwnedCollectionDetail(
 
   if (!collection) return null
 
-  const { data: words, error: wordsError } = await fetchAllRows((from, to) =>
-    supabase
-      .from('words')
-      .select(
-        'article, collection_id, created_at, dutch_lemma, dutch_original, easiness_factor, image_url, interval_days, next_review_date, part_of_speech, repetition_count, translations, word_id'
-      )
-      .eq('collection_id', collectionId)
-      .eq('user_id', userId)
-      .is('deleted_at', null)
-      .order('dutch_lemma', { ascending: true })
-      .order('word_id', { ascending: true })
-      .range(from, to)
-  )
-
-  if (wordsError) {
-    throw new Error('Could not load collection words.')
-  }
-
-  return buildCollectionDetail(
-    collection,
-    await hydrateOwnedWords(supabase, words ?? [])
-  )
+  const words = await listOwnedDisplayWords(supabase, userId, {
+    view: 'collection',
+    collectionId,
+  })
+  return buildCollectionDetail(collection, words)
 }

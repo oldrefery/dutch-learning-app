@@ -1,9 +1,7 @@
 import 'server-only'
 
-import {
-  hydrateOwnedWords,
-  getAvailableRevision,
-} from '@/features/dictionary/repository'
+import { getAvailableRevision } from '@/features/dictionary/repository'
+import { readOwnedDisplayWord } from '@/features/dictionary/owned-display-repository'
 
 import { createClient } from '@/lib/supabase/server'
 import { buildWordDetail, isUuid } from './word-detail'
@@ -34,33 +32,29 @@ export async function getOwnedWordPageData(
     .eq('collection_id', collectionId)
     .eq('user_id', userId)
     .maybeSingle()
-  const wordRequest = supabase
-    .from('words')
-    .select('*')
-    .eq('word_id', wordId)
-    .eq('collection_id', collectionId)
-    .eq('user_id', userId)
-    .is('deleted_at', null)
-    .maybeSingle()
+  const wordRequest = readOwnedDisplayWord(
+    supabase,
+    userId,
+    wordId,
+    collectionId
+  )
   const collectionsRequest = supabase
     .from('collections')
     .select('collection_id, name')
     .eq('user_id', userId)
     .order('name', { ascending: true })
 
-  const [collectionResult, wordResult, collectionsResult] = await Promise.all([
+  const [collectionResult, word, collectionsResult] = await Promise.all([
     collectionRequest,
     wordRequest,
     collectionsRequest,
   ])
 
-  if (collectionResult.error || wordResult.error || collectionsResult.error) {
+  if (collectionResult.error || collectionsResult.error) {
     throw new Error('Could not load the word.')
   }
 
-  if (!collectionResult.data || !wordResult.data) return null
-
-  const [word] = await hydrateOwnedWords(supabase, [wordResult.data])
+  if (!collectionResult.data || !word) return null
   if (word.dictionary?.reference && word.dictionary.mode !== 'follow') {
     word.dictionary.availableRevision = await getAvailableRevision(
       supabase,
