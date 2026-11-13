@@ -56,6 +56,13 @@ configuration still declares build 86. Do not use this integration as authority
 for a new native build or infer OTA compatibility from that number; qualify
 version, runtime fingerprints, environment flags and bundle hashes separately.
 
+During integration, Expo Doctor required the next patch versions of six SDK 57
+packages. The dependency manifest and lockfile were aligned with that same-SDK
+recommendation, including required transitive Expo tooling. The original release
+snapshots retain their original dependency lock. This maintenance change is not
+a mobile release: new native/runtime compatibility and device acceptance must be
+qualified before publishing a subsequent build or OTA. CI checks remain enabled.
+
 The managed-recovery client consumes `get_dictionary_managed_recoveries_v1`.
 Its owner-bound receipt implementation and before-images belong to the private
 operator deployment, not the general migration set. A missing RPC is not proof
