@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
 import type { Database } from '@woordenaar/supabase-contracts'
 import { createClient } from '@/lib/supabase/server'
 import { getOwnedCollectionDetail } from '@/features/collections/repository'
