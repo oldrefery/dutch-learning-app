@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState, useTransition } from 'react'
 import { Button } from '@/components/ui/Button'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
@@ -71,8 +72,9 @@ export function ReviewDetails({
       </div>
     )
   const collectionId = result.word.collectionId
+  const followsDictionary = result.word.dictionary?.mode === 'follow'
   const handleReanalyze = () => {
-    if (!collectionId) return
+    if (!collectionId || followsDictionary) return
 
     setReanalysisMessage(null)
     startReanalysis(async () => {
@@ -117,7 +119,20 @@ export function ReviewDetails({
   return (
     <div>
       <WordDetailCard word={result.word} />
-      {canUseAi && collectionId && (
+      {canUseAi && collectionId && followsDictionary && (
+        <div className="mt-4">
+          <Link
+            className="dw-button dw-button--secondary"
+            href={`/app/collections/${collectionId}/words/${wordId}`}
+            prefetch={false}
+            rel="noopener"
+            target="_blank"
+          >
+            Open shared analysis (new tab)
+          </Link>
+        </div>
+      )}
+      {canUseAi && collectionId && !followsDictionary && (
         <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
           <Button
             disabled={isReanalyzing}
@@ -134,7 +149,7 @@ export function ReviewDetails({
           </span>
         </div>
       )}
-      {reanalysisMessage && (
+      {reanalysisMessage && !followsDictionary && (
         <p
           aria-live="polite"
           className={`mt-3 text-sm ${

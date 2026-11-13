@@ -23,6 +23,7 @@ import {
 import { MIGRATION_V20_DICTIONARY_FOLLOWING_IMPORTS } from '../dictionaryFollowingImportSchema'
 import { MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS } from '../dictionaryFollowingTransferSchema'
 import { MIGRATION_V22_DICTIONARY_CREATION } from '../dictionaryCreationSchema'
+import { MIGRATION_V24_DICTIONARY_PERSONAL_STATE } from '../dictionaryPersonalStateSchema'
 import { MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION } from '../dictionaryModeReconciliationSchema'
 import { MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY } from '../dictionaryImportRecoverySchema'
 import { MIGRATION_V17_DICTIONARY_FOLLOWING } from '../dictionaryFollowingSchema'
@@ -64,7 +65,7 @@ describe('initializeDatabase', () => {
       async callback => callback(mockDatabase)
     )
     ;(SQLite.openDatabaseAsync as jest.Mock).mockResolvedValue(mockDatabase)
-    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('23')
+    ;(AsyncStorage.getItem as jest.Mock).mockResolvedValue('24')
     ;(AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined)
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
@@ -153,7 +154,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V13_DICTIONARY_CONTENT
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '23')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '24')
   })
 
   it('treats a malformed stored version as a fresh database', async () => {
@@ -167,7 +168,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V3_UNIQUE_INDEX
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '23')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '24')
   })
 
   it('continues when an idempotent column migration finds the column', async () => {
@@ -183,7 +184,7 @@ describe('initializeDatabase', () => {
     expect(mockDatabase.execAsync).toHaveBeenCalledWith(
       MIGRATION_V5_TOMBSTONE_INDEXES
     )
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '23')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '24')
   })
 
   it('discards a failed connection so initialization can retry', async () => {
@@ -201,7 +202,7 @@ describe('initializeDatabase', () => {
     await initializeDatabase()
 
     expect(SQLite.openDatabaseAsync).toHaveBeenCalledTimes(2)
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '23')
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '24')
   })
 
   it.each([false, true])(
@@ -229,13 +230,14 @@ describe('initializeDatabase', () => {
         [MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS],
         [MIGRATION_V22_DICTIONARY_CREATION],
         [MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION],
+        [MIGRATION_V24_DICTIONARY_PERSONAL_STATE],
       ])
       expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalledTimes(
-        12
+        13
       )
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         'db_schema_version',
-        '23'
+        '24'
       )
     }
   )
@@ -258,8 +260,9 @@ describe('initializeDatabase', () => {
       [MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS],
       [MIGRATION_V22_DICTIONARY_CREATION],
       [MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION],
+      [MIGRATION_V24_DICTIONARY_PERSONAL_STATE],
     ])
-    expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalledTimes(11)
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '23')
+    expect(mockDatabase.withExclusiveTransactionAsync).toHaveBeenCalledTimes(12)
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('db_schema_version', '24')
   })
 })

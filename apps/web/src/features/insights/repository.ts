@@ -2,7 +2,7 @@ import 'server-only'
 
 import type { Database } from '@woordenaar/supabase-contracts'
 import { createClient } from '@/lib/supabase/server'
-import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
+import { listOwnedDisplayWords } from '@/features/dictionary/owned-display-repository'
 import type { InsightCollection, InsightsData, InsightWord } from './types'
 
 type CollectionRow = Pick<
@@ -30,36 +30,37 @@ const mapCollection = (row: CollectionRow): InsightCollection => ({
   name: row.name,
 })
 
-const mapWord = (row: WordRow): InsightWord => ({ ...row })
+const mapWord = (row: WordRow): InsightWord => ({
+  article: row.article,
+  collection_id: row.collection_id,
+  dutch_lemma: row.dutch_lemma,
+  dutch_original: row.dutch_original,
+  easiness_factor: row.easiness_factor,
+  interval_days: row.interval_days,
+  next_review_date: row.next_review_date,
+  part_of_speech: row.part_of_speech,
+  repetition_count: row.repetition_count,
+  translations: row.translations,
+  word_id: row.word_id,
+})
 
 export async function getInsightsData(userId: string): Promise<InsightsData> {
   const supabase = await createClient()
-  const [collectionsResult, wordsResult] = await Promise.all([
+  const [collectionsResult, words] = await Promise.all([
     supabase
       .from('collections')
       .select('collection_id, name')
       .eq('user_id', userId)
       .order('name'),
-    fetchAllRows<WordRow>((from, to) =>
-      supabase
-        .from('words')
-        .select(
-          'article, collection_id, dutch_lemma, dutch_original, easiness_factor, interval_days, next_review_date, part_of_speech, repetition_count, translations, word_id'
-        )
-        .eq('user_id', userId)
-        .is('deleted_at', null)
-        .order('dutch_lemma')
-        .order('word_id')
-        .range(from, to)
-    ),
+    listOwnedDisplayWords(supabase, userId, { view: 'insights' }),
   ])
 
-  if (collectionsResult.error || wordsResult.error) {
+  if (collectionsResult.error) {
     throw new Error('Could not load learning insights.')
   }
 
   return {
     collections: (collectionsResult.data ?? []).map(mapCollection),
-    words: (wordsResult.data ?? []).map(mapWord),
+    words: words.map(mapWord),
   }
 }

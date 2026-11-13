@@ -20,6 +20,7 @@ import {
 import { MIGRATION_V20_DICTIONARY_FOLLOWING_IMPORTS } from '../dictionaryFollowingImportSchema'
 import { MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS } from '../dictionaryFollowingTransferSchema'
 import { MIGRATION_V22_DICTIONARY_CREATION } from '../dictionaryCreationSchema'
+import { MIGRATION_V24_DICTIONARY_PERSONAL_STATE } from '../dictionaryPersonalStateSchema'
 import { MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION } from '../dictionaryModeReconciliationSchema'
 import { MIGRATION_V16_DICTIONARY_IMPORT_RECOVERY } from '../dictionaryImportRecoverySchema'
 import { MIGRATION_V17_DICTIONARY_FOLLOWING } from '../dictionaryFollowingSchema'
@@ -55,6 +56,7 @@ export const createTestDatabase = (
     database.exec(MIGRATION_V21_DICTIONARY_FOLLOWING_TRANSFERS)
     database.exec(MIGRATION_V22_DICTIONARY_CREATION)
     database.exec(MIGRATION_V23_DICTIONARY_MODE_RECONCILIATION)
+    database.exec(MIGRATION_V24_DICTIONARY_PERSONAL_STATE)
   }
   const runAsync = async (sql: string, ...values: SQLInputValue[]) =>
     database.prepare(sql).run(...values)
@@ -79,6 +81,9 @@ export const createTestDatabase = (
           beforeStatement?.(sql)
           const rows = statement.all(...values)
           return {
+            changes: Number(
+              database.prepare('SELECT changes() AS count').get()?.count
+            ),
             getFirstAsync: async () => rows[0] ?? null,
             getAllAsync: async () => rows,
           }

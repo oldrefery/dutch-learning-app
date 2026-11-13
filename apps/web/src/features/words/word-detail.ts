@@ -1,5 +1,8 @@
 import type { Database, Json } from '@woordenaar/supabase-contracts'
-import type { DictionaryCardMetadata } from '@/features/dictionary/content'
+import type {
+  DictionaryCardMetadata,
+  EffectiveCard,
+} from '@/features/dictionary/content'
 
 export type WordRow = Database['public']['Tables']['words']['Row']
 
@@ -168,9 +171,21 @@ export const canRenderWordImage = (imageUrl: string) => {
   }
 }
 
-export const buildWordDetail = (
-  row: WordRow & { dictionary?: DictionaryCardMetadata }
-): WordDetail => ({
+type WordDetailRow = EffectiveCard['content'] &
+  Pick<
+    WordRow,
+    | 'word_id'
+    | 'collection_id'
+    | 'created_at'
+    | 'updated_at'
+    | 'last_reviewed_at'
+    | 'next_review_date'
+    | 'interval_days'
+    | 'easiness_factor'
+    | 'repetition_count'
+  > & { dictionary?: DictionaryCardMetadata }
+
+export const buildWordDetail = (row: WordDetailRow): WordDetail => ({
   ...(row.dictionary ? { dictionary: row.dictionary } : {}),
   id: row.word_id,
   collectionId: row.collection_id,

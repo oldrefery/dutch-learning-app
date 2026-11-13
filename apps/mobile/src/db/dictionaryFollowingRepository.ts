@@ -1,4 +1,8 @@
 import {
+  managedRecoveryDecision,
+  type ManagedRecovery,
+} from './dictionaryManagedRecovery'
+import {
   parseDictionaryAnalysisClientOperation,
   requireSameAnalysisOperation,
   type DictionaryAnalysisClientOperation,
@@ -10,6 +14,7 @@ import {
   type DictionaryRevision,
   type DictionaryContentCommand,
 } from '@woordenaar/domain'
+import { PendingLegacyDictionaryCommandsError } from '@/services/dictionaryFollowingErrors'
 import { getDatabase } from './initDB'
 import { acknowledgeFollowingCommands } from './dictionaryFollowingAcknowledgement'
 import {
@@ -36,6 +41,7 @@ export interface DictionaryHydrationRequest {
   userId: string
   wordIds: readonly string[]
   refreshVersions: ReadonlyMap<string, number>
+  reuseBootstrap?: boolean
 }
 
 interface CacheRow {
@@ -126,18 +132,62 @@ const requireReviewedModeReturn = (
 }
 
 export class DictionaryFollowingRepository {
+  // Legacy debt has no generation. Any such request requires a fresh read.
+  async readBootstrapVersions(
+    userId: string,
+    wordIds: readonly string[],
+    db?: Database
+  ): Promise<Map<string, number>> {
+    const connection = db ?? (await getDatabase())
+    const versions = new Map<string, number>()
+    for (let offset = 0; offset < wordIds.length; offset += CHUNK_SIZE) {
+      const chunk = wordIds.slice(offset, offset + CHUNK_SIZE)
+      const slots = chunk.map(() => '?').join(',')
+      const following = await connection.getAllAsync<{
+        word_id: string
+        refresh_version: number
+      }>(
+        `SELECT word_id, refresh_version FROM dictionary_following_refresh_queue
+         WHERE user_id = ? AND word_id IN (${slots})`,
+        [userId, ...chunk]
+      )
+      const legacy = await connection.getAllAsync<{ word_id: string }>(
+        `SELECT word_id FROM dictionary_card_refresh_queue
+         WHERE user_id = ? AND word_id IN (${slots})`,
+        [userId, ...chunk]
+      )
+      for (const id of chunk) versions.set(id, 0)
+      for (const row of following)
+        versions.set(row.word_id, row.refresh_version)
+      for (const row of legacy) versions.delete(row.word_id)
+    }
+    return versions
+  }
+
   /** Persist debt before any RPC. A newer refresh request fences a late response. */
   async prepareHydration(
     userId: string,
     requestedIds: readonly string[],
-    assertOwner: () => void = () => {}
+    assertOwner: () => void = () => {},
+    bootstrapVersions?: ReadonlyMap<string, number>
   ): Promise<DictionaryHydrationRequest> {
     assertOwner()
     const wordIds = boundedIds(requestedIds)
     const refreshVersions = new Map<string, number>()
     const db = await getDatabase()
+    let reuseBootstrap = false
     await db.withExclusiveTransactionAsync(async transaction => {
       assertOwner()
+      if (bootstrapVersions?.size) {
+        const current = await this.readBootstrapVersions(
+          userId,
+          [...bootstrapVersions.keys()],
+          transaction
+        )
+        reuseBootstrap = [...bootstrapVersions].every(
+          ([id, version]) => current.get(id) === version
+        )
+      }
       for (const wordId of wordIds) {
         await transaction.runAsync(
           `INSERT INTO dictionary_following_refresh_queue(word_id, user_id, refresh_version)
@@ -167,7 +217,7 @@ export class DictionaryFollowingRepository {
       }
       assertOwner()
     })
-    return { userId, wordIds, refreshVersions }
+    return { userId, wordIds, refreshVersions, reuseBootstrap }
   }
 
   async getChangeCursor(userId: string): Promise<string> {
@@ -245,9 +295,12 @@ export class DictionaryFollowingRepository {
            ON current.word_id = words.word_id AND current.user_id = words.user_id
          LEFT JOIN dictionary_card_content legacy
            ON legacy.word_id = words.word_id AND legacy.user_id = words.user_id
+         LEFT JOIN dictionary_personal_state personal
+           ON personal.word_id = words.word_id AND personal.user_id = words.user_id
          WHERE words.user_id = ? AND words.deleted_at IS NULL
-           AND CASE WHEN current.word_id IS NULL THEN legacy.entry_id ELSE current.entry_id END IN (${placeholders})`,
-        [userId, ...chunk]
+           AND (personal.entry_id IN (${placeholders}) OR
+             CASE WHEN current.word_id IS NULL THEN legacy.entry_id ELSE current.entry_id END IN (${placeholders}))`,
+        [userId, ...chunk, ...chunk]
       )
       rows.forEach(row => ids.add(row.word_id))
     }
@@ -308,6 +361,122 @@ export class DictionaryFollowingRepository {
     }
   }
 
+  /** Only acknowledge a page against cards already committed by the same request.
+   * A later generation, legacy refresh or local edit must use normal hydration. */
+  async reuseHydratedPage(
+    request: DictionaryHydrationRequest,
+    cards: ReadonlyMap<
+      string,
+      Pick<CachedDictionaryEffectiveCard, 'card' | 'watermark'>
+    >,
+    page: DictionaryChangePageV2,
+    assertOwner: () => void
+  ): Promise<boolean> {
+    assertOwner()
+    const db = await getDatabase()
+    let reused = false
+    await db.withExclusiveTransactionAsync(async transaction => {
+      assertOwner()
+      if ((await this.readCursor(transaction, request.userId)) !== page.after)
+        return
+      const entryIds = [...new Set(page.changes.map(change => change.entry_id))]
+      const affected = await this.readAffectedWordIds(
+        transaction,
+        request.userId,
+        entryIds
+      )
+      if (affected.length === 0) return
+      const requiredHeads = new Map<string, string>()
+      for (const change of page.changes)
+        if (change.kind === 'revision-head')
+          requiredHeads.set(change.entry_id, change.cursor)
+      for (const wordId of affected) {
+        const item = cards.get(wordId)
+        const generation = request.refreshVersions.get(wordId)
+        if (
+          !item ||
+          generation === undefined ||
+          !this.snapshotCoversPage(item, page, requiredHeads)
+        )
+          return
+        if (
+          !(await this.hasUnchangedHydratedCard(
+            transaction,
+            request.userId,
+            item,
+            generation
+          ))
+        )
+          return
+      }
+      await this.writeChangeCursor(
+        transaction,
+        request.userId,
+        page,
+        new Date().toISOString()
+      )
+      assertOwner()
+      reused = true
+    })
+    return reused
+  }
+
+  private snapshotCoversPage(
+    {
+      card,
+      watermark,
+    }: Pick<CachedDictionaryEffectiveCard, 'card' | 'watermark'>,
+    page: DictionaryChangePageV2,
+    requiredHeads: ReadonlyMap<string, string>
+  ): boolean {
+    if (compareDictionarySequences(watermark, page.next_cursor) < 0)
+      return false
+    if (card.mode !== 'follow') return true
+    const requiredHead = requiredHeads.get(card.reference.entry_id)
+    return (
+      requiredHead === undefined ||
+      compareDictionarySequences(card.head_sequence, requiredHead) >= 0
+    )
+  }
+
+  private async hasUnchangedHydratedCard(
+    transaction: Database,
+    userId: string,
+    {
+      card,
+      watermark,
+    }: Pick<CachedDictionaryEffectiveCard, 'card' | 'watermark'>,
+    generation: number
+  ): Promise<boolean> {
+    const found = await transaction.getFirstAsync<{ matches: number }>(
+      `SELECT 1 AS matches
+       FROM dictionary_effective_card_cache AS c
+       JOIN words AS w ON w.word_id = c.word_id AND w.user_id = c.user_id
+       JOIN dictionary_following_refresh_queue AS q
+         ON q.word_id = c.word_id AND q.user_id = c.user_id
+       WHERE c.user_id = ? AND c.word_id = ? AND w.deleted_at IS NULL
+         AND c.card_json = ? AND c.watermark = ?
+         AND q.refresh_version = ? AND q.completed_refresh_version = ?
+         AND NOT EXISTS (
+           SELECT 1 FROM dictionary_card_refresh_queue AS d
+           WHERE d.user_id = c.user_id AND d.word_id = c.word_id
+         )
+         AND NOT EXISTS (
+           SELECT 1 FROM dictionary_content_commands AS d
+           WHERE d.user_id = c.user_id AND d.word_id = c.word_id
+         )`,
+      [
+        userId,
+        card.word_id,
+        canonicalJson(card),
+        watermark,
+        generation,
+        generation,
+      ]
+    )
+    return found?.matches === 1
+  }
+
   /** The sole mode-return exception is bound to an immutable, reviewed decision.
    * Preservation, command retirement, dependency writes and debt completion roll back together. */
   async commitReviewedMode(
@@ -361,6 +530,21 @@ export class DictionaryFollowingRepository {
       )
       if (canonicalJson(local) !== canonicalJson(decision.local))
         throw new Error('Saved content changed. Reload the comparison.')
+      if ('managedRecovery' in decision) {
+        managedRecoveryDecision(
+          decision.managedRecovery as ManagedRecovery,
+          local,
+          fresh
+        )
+        const pending = await transaction.getFirstAsync<{ blocked: number }>(
+          `SELECT EXISTS(SELECT 1 FROM dictionary_import_intents WHERE word_id=?)
+           OR EXISTS(SELECT 1 FROM dictionary_import_recovery_outbox WHERE word_id=?)
+           OR EXISTS(SELECT 1 FROM dictionary_analysis_client_operations WHERE word_id=?) AS blocked`,
+          [decision.wordId, decision.wordId, decision.wordId]
+        )
+        if (pending?.blocked)
+          throw new Error('Managed recovery preserves pending content work')
+      }
       await transaction.runAsync(
         `INSERT INTO dictionary_mode_reconciliations(operation_id, user_id, word_id, decision_json, applied_at)
          VALUES (?, ?, ?, ?, ?)`,
@@ -424,17 +608,25 @@ export class DictionaryFollowingRepository {
       )
     for (const item of cards.values())
       await this.saveCard(transaction, request, item, cachedAt, reviewedWordId)
-    if (page) {
-      await transaction.runAsync(
-        `INSERT INTO dictionary_following_cursors(user_id, committed_cursor, updated_at)
-           VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET
-             committed_cursor = excluded.committed_cursor, updated_at = excluded.updated_at`,
-        request.userId,
-        page.next_cursor,
-        cachedAt
-      )
-    }
+    if (page)
+      await this.writeChangeCursor(transaction, request.userId, page, cachedAt)
     assertOwner()
+  }
+
+  private async writeChangeCursor(
+    transaction: Database,
+    userId: string,
+    page: DictionaryChangePageV2,
+    cachedAt: string
+  ): Promise<void> {
+    await transaction.runAsync(
+      `INSERT INTO dictionary_following_cursors(user_id, committed_cursor, updated_at)
+       VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET
+         committed_cursor = excluded.committed_cursor, updated_at = excluded.updated_at`,
+      userId,
+      page.next_cursor,
+      cachedAt
+    )
   }
 
   private async saveHead(
@@ -526,12 +718,33 @@ export class DictionaryFollowingRepository {
     reviewedWordId?: string
   ): Promise<void> {
     const { card, watermark } = item
+    const personal = await transaction.getFirstAsync<{
+      mode: string
+      entry_id: string | null
+      adopted_revision_id: string | null
+      content_version: string
+    }>(
+      'SELECT mode,entry_id,adopted_revision_id,content_version FROM dictionary_personal_state WHERE user_id=? AND word_id=? AND content_pending=1',
+      [request.userId, card.word_id]
+    )
+    if (
+      personal &&
+      reviewedWordId !== card.word_id &&
+      (personal.mode !== card.mode ||
+        personal.entry_id !== (card.reference?.entry_id ?? null) ||
+        personal.adopted_revision_id !== card.adopted_revision_id ||
+        compareDictionarySequences(
+          card.content_version,
+          personal.content_version
+        ) < 0)
+    )
+      throw new Error('Personal metadata changed before dictionary hydration')
     const pending = await transaction.getFirstAsync<{ count: number }>(
       'SELECT COUNT(*) AS count FROM dictionary_content_commands WHERE user_id = ? AND word_id = ?',
       [request.userId, card.word_id]
     )
     if (pending && pending.count > 0)
-      throw new Error('Legacy dictionary commands require reconciliation')
+      throw new PendingLegacyDictionaryCommandsError()
     const debt = await transaction.getFirstAsync<{ refresh_version: number }>(
       'SELECT refresh_version FROM dictionary_following_refresh_queue WHERE user_id = ? AND word_id = ?',
       [request.userId, card.word_id]
@@ -593,6 +806,21 @@ export class DictionaryFollowingRepository {
       cardJson,
       cachedAt
     )
+    await transaction.runAsync(
+      `UPDATE dictionary_personal_state SET content_pending = 0
+       WHERE user_id = ? AND word_id = ? AND mode = ? AND entry_id IS ?
+         AND adopted_revision_id IS ? AND
+         (length(content_version) < length(?) OR
+          (length(content_version) = length(?) AND content_version <= ?))`,
+      request.userId,
+      card.word_id,
+      card.mode,
+      card.reference?.entry_id ?? null,
+      card.adopted_revision_id,
+      card.content_version,
+      card.content_version,
+      card.content_version
+    )
     if (card.mode === 'follow')
       await transaction.runAsync(
         'DELETE FROM dictionary_mode_reconciliation_requests WHERE user_id = ? AND word_id = ?',
@@ -624,14 +852,18 @@ export class DictionaryFollowingRepository {
     const result = new Map<string, T>()
     if (ids.length === 0) return result
     const db = await getDatabase()
-    await db.withExclusiveTransactionAsync(async transaction => {
-      for (let offset = 0; offset < ids.length; offset += CHUNK_SIZE) {
-        const chunk = ids.slice(offset, offset + CHUNK_SIZE)
-        // Send one bounded JSON value across the native SQLite boundary instead
-        // of separately converting every cell in hundreds of result objects.
-        // The existing strict card/revision parser still validates every row.
-        const packed = await transaction.getAllAsync<{ rows_json: string }>(
-          `SELECT json_group_array(json_object(
+    // Each joined SELECT materializes a coherent card/revision pair. Do not
+    // keep a read transaction open across chunks or JS parsing: in rollback
+    // journal mode it prevents a concurrent sync transaction from committing.
+    // A later chunk may see a newer committed head, which is safe for display;
+    // reuseHydratedPage rechecks generations and cursor inside its write transaction.
+    for (let offset = 0; offset < ids.length; offset += CHUNK_SIZE) {
+      const chunk = ids.slice(offset, offset + CHUNK_SIZE)
+      // Send one bounded JSON value across the native SQLite boundary instead
+      // of separately converting every cell in hundreds of result objects.
+      // The existing strict card/revision parser still validates every row.
+      const packed = await db.getAllAsync<{ rows_json: string }>(
+        `SELECT json_group_array(json_object(
            'word_id', cards.word_id, 'card_json', cards.card_json,
            'watermark', cards.watermark, 'cached_entry_id', cards.entry_id,
            'cached_revision_id', cards.revision_id, 'cached_mode', cards.mode,
@@ -647,42 +879,41 @@ export class DictionaryFollowingRepository {
          JOIN words ON words.word_id = cards.word_id AND words.user_id = cards.user_id
          LEFT JOIN dictionary_revision_cache revisions ON revisions.entry_id = cards.entry_id AND revisions.revision_id = cards.revision_id
          WHERE cards.user_id = ? AND words.deleted_at IS NULL AND cards.word_id IN (${chunk.map(() => '?').join(',')})`,
-          [userId, ...chunk]
+        [userId, ...chunk]
+      )
+      const rows = JSON.parse(packed[0].rows_json) as CacheRow[]
+      for (const row of rows) {
+        const revision = readRevision(row)
+        const batch: DictionaryEffectiveBatchV2 = parsed(
+          parseDictionaryEffectiveBatchV2({
+            protocol_version: 2,
+            watermark: row.watermark,
+            cards: [JSON.parse(row.card_json) as unknown],
+            revisions: revision === null ? [] : [revision],
+          })
         )
-        const rows = JSON.parse(packed[0].rows_json) as CacheRow[]
-        for (const row of rows) {
-          const revision = readRevision(row)
-          const batch: DictionaryEffectiveBatchV2 = parsed(
-            parseDictionaryEffectiveBatchV2({
-              protocol_version: 2,
-              watermark: row.watermark,
-              cards: [JSON.parse(row.card_json) as unknown],
-              revisions: revision === null ? [] : [revision],
-            })
-          )
-          const card = batch.cards[0]
-          if (
-            card.word_id !== row.word_id ||
-            card.mode !== row.cached_mode ||
-            card.content_version !== row.cached_content_version ||
-            card.head_sequence !== row.cached_head_sequence ||
-            (card.reference?.entry_id ?? null) !== row.cached_entry_id ||
-            (card.reference?.revision_id ?? null) !== row.cached_revision_id
-          )
-            throw new Error('Dictionary cached card identity conflict')
-          // Project only after validation. A display reader can release raw
-          // revisions between chunks instead of retaining a second full cache.
-          result.set(
-            row.word_id,
-            project({
-              card: batch.cards[0],
-              revision: batch.revisions[0] ?? null,
-              watermark: batch.watermark,
-            })
-          )
-        }
+        const card = batch.cards[0]
+        if (
+          card.word_id !== row.word_id ||
+          card.mode !== row.cached_mode ||
+          card.content_version !== row.cached_content_version ||
+          card.head_sequence !== row.cached_head_sequence ||
+          (card.reference?.entry_id ?? null) !== row.cached_entry_id ||
+          (card.reference?.revision_id ?? null) !== row.cached_revision_id
+        )
+          throw new Error('Dictionary cached card identity conflict')
+        // Project only after validation. A display reader can release raw
+        // revisions between chunks instead of retaining a second full cache.
+        result.set(
+          row.word_id,
+          project({
+            card: batch.cards[0],
+            revision: batch.revisions[0] ?? null,
+            watermark: batch.watermark,
+          })
+        )
       }
-    })
+    }
     return result
   }
 }

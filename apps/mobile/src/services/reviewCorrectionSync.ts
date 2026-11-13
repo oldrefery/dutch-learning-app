@@ -148,7 +148,11 @@ export const reviewCorrectionSync = {
     }
   },
 
-  async push(userId: string, command: PendingReviewCorrection): Promise<void> {
+  async push(
+    userId: string,
+    command: PendingReviewCorrection,
+    onConfirmed: () => void = () => {}
+  ): Promise<void> {
     if (command.user_id !== userId)
       throw new Error('Foreign correction command')
     if (command.status === 'conflict') throw new Error(CONFLICT_MESSAGE)
@@ -192,6 +196,7 @@ export const reviewCorrectionSync = {
     const receipt = parseReceipt(result.data, userId)
     if (receipt.correction_id !== command.correction_id)
       throw new Error('Wrong correction receipt')
+    onConfirmed()
     await persistReceipts(userId, [receipt])
   },
 }

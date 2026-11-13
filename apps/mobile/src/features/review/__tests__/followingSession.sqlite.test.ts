@@ -46,6 +46,7 @@ jest.mock('@/lib/supabase', () => ({
 jest.mock('@/constants/dictionaryContent', () => ({
   isDictionaryContentEnabled: () => true,
   isDictionaryFollowingEnabled: () => true,
+  isDictionaryManagedRecoveryEnabled: () => false,
 }))
 
 type ReadArgs = { p_word_ids?: string[]; p_after?: string }

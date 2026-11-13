@@ -133,7 +133,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       ['pending-b', 'qa-a'],
       ['pending-c', 'qa-b'],
     ])
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(
       db
         .prepare(
@@ -166,6 +166,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       'dictionary_mode_reconciliation_requests',
       'dictionary_mode_reconciliations',
       'dictionary_personal_refresh_queue',
+      'dictionary_personal_state',
       'dictionary_revision_cache',
     ])
     expect(db.prepare('PRAGMA foreign_keys').get()).toEqual({ foreign_keys: 1 })
@@ -400,7 +401,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     await expect(initializeDatabase()).rejects.toThrow(MIGRATION_INTERRUPTION)
     expect(version).toBe('17')
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(
       preservedTables.map(table => db.prepare(`SELECT * FROM ${table}`).all())
     ).toEqual(snapshots)
@@ -461,7 +462,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       inspected.close()
     }
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(db.prepare(SELECT_DELIVERY).all()).toEqual(imports)
     expect(db.prepare(SELECT_ANALYSIS).all()).toEqual(analysis)
     expect(words()).toEqual(personal)
@@ -495,7 +496,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       inspected.close()
     }
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(db.prepare(SELECT_ANALYSIS).all()).toEqual(operations)
     expect(
       db.prepare('SELECT * FROM dictionary_analysis_client_history').all()
@@ -520,7 +521,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     version = '10'
     await closeDatabase()
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(words()).toEqual(wordsBefore)
     expect(events()).toEqual(history)
     expect(commands()).toEqual(queue)
@@ -563,7 +564,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
 
     await initializeDatabase()
 
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(words()).toEqual(wordSnapshot)
     expect(events()).toEqual(eventSnapshot)
     expect(commands()).toEqual(commandSnapshot)
@@ -601,7 +602,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     expect(version).toBe('14')
     fault = null
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(words()).toEqual(beforeWords)
     expect(commands()).toEqual(beforeCommands)
     expect(db.prepare(SELECT_IMPORTS).all()).toEqual(beforeImports)
@@ -641,7 +642,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
       inspected.close()
     }
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(words()).toEqual(beforeWords)
     expect(commands()).toEqual(beforeCommands)
     expect(db.prepare(SELECT_IMPORTS).all()).toEqual(beforeImports)
@@ -697,7 +698,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     await expect(initializeDatabase()).rejects.toThrow(MIGRATION_INTERRUPTION)
     expect(version).toBe('16')
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(
       names.map(name => db.prepare(`SELECT * FROM ${name}`).all())
     ).toEqual(before)
@@ -735,7 +736,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     proof.close()
     expect(version).toBe('22')
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(words()).toEqual(beforeWords)
     expect(commands()).toEqual(beforeCommands)
     expect(db.prepare(CHECK_FOREIGN_KEYS).all()).toEqual([])
@@ -775,10 +776,10 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     proof.close()
     expect(AsyncStorage.setItem).not.toHaveBeenLastCalledWith(
       'db_schema_version',
-      '23'
+      '24'
     )
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(words()).toEqual(oldWords)
     expect(events()).toEqual(oldEvents)
     expect(commands()).toEqual(oldLearning)
@@ -810,7 +811,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     await expect(initializeDatabase()).rejects.toThrow(MIGRATION_INTERRUPTION)
     expect(version).toBe('20')
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(words()).toEqual(oldWords)
     expect(commands()).toEqual(oldLearning)
     expect(
@@ -841,7 +842,7 @@ describe('v8 to current migration recovery on file-backed SQLite', () => {
     version = '13'
     await closeDatabase()
     await initializeDatabase()
-    expect(version).toBe('23')
+    expect(version).toBe('24')
     expect(words()).toEqual(oldWords)
     expect(commands()).toEqual(oldLearning)
     expect(db.prepare('SELECT * FROM dictionary_card_content').all()).toEqual(

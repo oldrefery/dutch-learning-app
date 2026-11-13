@@ -1,3 +1,4 @@
+import { recoverManagedDictionaryModes } from './dictionaryManagedRecovery'
 import { IncompleteDictionaryBatchError } from './dictionaryFollowingErrors'
 import {
   DICTIONARY_EFFECTIVE_BATCH_LIMIT,
@@ -15,10 +16,15 @@ import {
   type DictionaryContentCommand,
 } from '@woordenaar/domain'
 import { isDictionaryFollowingEnabled } from '@/constants/dictionaryContent'
-import { dictionaryFollowingRepository as repository } from '@/db/dictionaryFollowingRepository'
+import {
+  dictionaryFollowingRepository as repository,
+  type DictionaryHydrationRequest,
+} from '@/db/dictionaryFollowingRepository'
 import {
   boundedDictionaryWordIds,
+  parseFollowingHydration,
   requireFollowingValue as parsed,
+  type CachedDictionaryEffectiveCard,
 } from '@/db/dictionaryFollowingHydration'
 import type { DictionaryReviewedModeDecision } from '@/db/dictionaryModeReconciliationRepository'
 import { supabase } from '@/lib/supabase'
@@ -30,6 +36,33 @@ import {
 const PAGE_SIZE = 200
 const MAX_CHANGE_PAGES = 50
 const MAX_HYDRATION_PASSES = 3
+
+export interface DictionaryBootstrapSnapshot {
+  batches: DictionaryEffectiveBatchV2[]
+  versions: ReadonlyMap<string, number>
+}
+
+type HydratedSnapshot = {
+  request: DictionaryHydrationRequest
+  cards: ReadonlyMap<
+    string,
+    Pick<CachedDictionaryEffectiveCard, 'card' | 'watermark'>
+  >
+}
+
+function captureSnapshot(
+  request: DictionaryHydrationRequest,
+  batches: readonly DictionaryEffectiveBatchV2[]
+): HydratedSnapshot {
+  const cards = new Map<
+    string,
+    Pick<CachedDictionaryEffectiveCard, 'card' | 'watermark'>
+  >()
+  for (const batch of batches)
+    for (const card of batch.cards)
+      cards.set(card.word_id, { card, watermark: batch.watermark })
+  return { request, cards }
+}
 
 const assertEnabled = (owner: DictionaryOwnerGuard): void => {
   owner.assert()
@@ -95,6 +128,43 @@ const fetchBatches = async (
   return batches
 }
 
+const reuseBootstrapBatches = async (
+  request: DictionaryHydrationRequest,
+  bootstrap: DictionaryBootstrapSnapshot,
+  owner: DictionaryOwnerGuard
+): Promise<DictionaryEffectiveBatchV2[] | undefined> => {
+  if (!request.reuseBootstrap) return
+  const ids = new Set(request.wordIds)
+  const covered = new Set(
+    bootstrap.batches.flatMap(batch => batch.cards.map(card => card.word_id))
+  )
+  if ([...covered].some(id => !ids.has(id) || !bootstrap.versions.has(id)))
+    return
+  const remaining = request.wordIds.filter(id => !covered.has(id))
+  const batches = [
+    ...bootstrap.batches,
+    ...(await fetchBatches(remaining, owner)),
+  ]
+  if (new Set(batches.map(batch => batch.watermark)).size !== 1) return
+  try {
+    parseFollowingHydration(request.wordIds, batches)
+  } catch {
+    // A head or revision changed between the two responses.
+    return
+  }
+  return batches
+}
+
+const loadHydrationBatches = async (
+  request: DictionaryHydrationRequest,
+  owner: DictionaryOwnerGuard,
+  bootstrap?: DictionaryBootstrapSnapshot
+) => {
+  const reused =
+    bootstrap && (await reuseBootstrapBatches(request, bootstrap, owner))
+  return reused ?? fetchBatches(request.wordIds, owner)
+}
+
 /** A newly discovered shared reference may require its already-cached siblings.
  * Refetch the complete group; never combine snapshots from different passes. */
 const hydrate = async (
@@ -106,16 +176,22 @@ const hydrate = async (
   analysisOperation?: DictionaryAnalysisClientOperation,
   importOperation?: FollowingImportOperation,
   importKind: FollowingImportHydrationKind = 'imported',
-  modeDecision?: DictionaryReviewedModeDecision
+  modeDecision?: DictionaryReviewedModeDecision,
+  onHydrated?: (snapshot: HydratedSnapshot) => void,
+  bootstrap?: DictionaryBootstrapSnapshot
 ): Promise<number> => {
   let wordIds = uniqueBoundedIds(ids)
+  let prefetched = bootstrap
   for (let pass = 0; pass < MAX_HYDRATION_PASSES; pass++) {
     assertEnabled(owner)
-    const request = await repository.prepareHydration(userId, wordIds, () =>
-      assertEnabled(owner)
+    const request = await repository.prepareHydration(
+      userId,
+      wordIds,
+      () => assertEnabled(owner),
+      prefetched?.versions
     )
     if (pass === 0 && !page) await requireAvailability(owner)
-    const batches = await fetchBatches(request.wordIds, owner)
+    const batches = await loadHydrationBatches(request, owner, prefetched)
     const entryIds = [
       ...new Set(
         batches.flatMap(batch =>
@@ -130,6 +206,7 @@ const hydrate = async (
     assertEnabled(owner)
     if (expanded.length !== wordIds.length) {
       wordIds = expanded
+      prefetched = undefined
       continue
     }
     if (analysisOperation)
@@ -158,6 +235,10 @@ const hydrate = async (
       )
       return wordIds.length
     }
+    await recoverManagedDictionaryModes(request, batches, {
+      ...owner,
+      assert: () => assertEnabled(owner),
+    })
     await repository.commitHydration(
       request,
       batches,
@@ -166,6 +247,7 @@ const hydrate = async (
       acknowledgedCommands,
       analysisOperation
     )
+    if (onHydrated) onHydrated(captureSnapshot(request, batches))
     return wordIds.length
   }
   throw new Error(
@@ -175,7 +257,8 @@ const hydrate = async (
 
 const refreshPages = async (
   userId: string,
-  owner: DictionaryOwnerGuard
+  owner: DictionaryOwnerGuard,
+  snapshot?: HydratedSnapshot
 ): Promise<number> => {
   let after = await repository.getChangeCursor(userId)
   let refreshedChanges = 0
@@ -194,10 +277,20 @@ const refreshPages = async (
     const page = parsed(parseDictionaryChangePageV2(data))
     if (page.after !== after || page.changes.length > PAGE_SIZE)
       throw new Error('Invalid dictionary following page boundary')
-    const wordIds = await repository.getWordIdsByEntryIds(userId, [
-      ...new Set(page.changes.map(change => change.entry_id)),
-    ])
-    await hydrate(userId, wordIds, owner, page)
+    const reused =
+      snapshot &&
+      (await repository.reuseHydratedPage(
+        snapshot.request,
+        snapshot.cards,
+        page,
+        () => assertEnabled(owner)
+      ))
+    if (!reused) {
+      const wordIds = await repository.getWordIdsByEntryIds(userId, [
+        ...new Set(page.changes.map(change => change.entry_id)),
+      ])
+      await hydrate(userId, wordIds, owner, page)
+    }
     refreshedChanges += page.changes.length
     after = page.next_cursor
     if (!page.has_more) return refreshedChanges
@@ -205,6 +298,18 @@ const refreshPages = async (
   throw new Error(
     'Dictionary change refresh limit reached; retry synchronization'
   )
+}
+
+const requiredWordIds = async (
+  userId: string,
+  candidateWordIds: readonly string[]
+) => {
+  const candidates = uniqueBoundedIds(candidateWordIds)
+  const [missing, legacyDebt] = await Promise.all([
+    repository.getMissingCardWordIds(userId),
+    repository.getLegacyRefreshWordIds(userId),
+  ])
+  return uniqueBoundedIds([...candidates, ...missing, ...legacyDebt])
 }
 
 /** Build-time opt-in v2 reads. Verified legacy receipts are acknowledged together
@@ -287,15 +392,41 @@ export const dictionaryFollowingSync = {
     candidateWordIds: readonly string[] = []
   ): Promise<number> {
     if (!isDictionaryFollowingEnabled()) return 0
-    const candidates = uniqueBoundedIds(candidateWordIds)
+    uniqueBoundedIds(candidateWordIds)
     return withDictionaryOwner(userId, async owner => {
-      const [missing, legacyDebt] = await Promise.all([
-        repository.getMissingCardWordIds(userId),
-        repository.getLegacyRefreshWordIds(userId),
-      ])
-      const ids = uniqueBoundedIds([...candidates, ...missing, ...legacyDebt])
-      if (ids.length === 0) return 0
-      return hydrate(userId, ids, owner)
+      const ids = await requiredWordIds(userId, candidateWordIds)
+      return ids.length === 0 ? 0 : hydrate(userId, ids, owner)
+    })
+  },
+
+  async pullRequiredAndRefresh(
+    userId: string,
+    candidateWordIds: readonly string[],
+    bootstrap?: DictionaryBootstrapSnapshot
+  ): Promise<void> {
+    if (!isDictionaryFollowingEnabled()) return
+    uniqueBoundedIds(candidateWordIds)
+    return withDictionaryOwner(userId, async owner => {
+      const ids = await requiredWordIds(userId, candidateWordIds)
+      let snapshot: HydratedSnapshot | undefined
+      if (ids.length > 0)
+        await hydrate(
+          userId,
+          ids,
+          owner,
+          undefined,
+          [],
+          undefined,
+          undefined,
+          'imported',
+          undefined,
+          value => {
+            snapshot = value
+          },
+          bootstrap
+        )
+      await requireAvailability(owner)
+      await refreshPages(userId, owner, snapshot)
     })
   },
 

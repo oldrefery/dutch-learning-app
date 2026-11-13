@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { hydrateOwnedWords } from '@/features/dictionary/repository'
+import { readOwnedDisplayWord } from '@/features/dictionary/owned-display-repository'
 
 import { createClient } from '@/lib/supabase/server'
 import {
@@ -16,16 +16,6 @@ export async function getOwnedReviewWordDetail(
   if (!isUuid(wordId)) return null
 
   const client = await createClient()
-  const { data, error } = await client
-    .from('words')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('word_id', wordId)
-    .is('deleted_at', null)
-    .maybeSingle()
-
-  if (error) throw new Error('Review word details unavailable')
-  if (!data) return null
-  const [word] = await hydrateOwnedWords(client, [data])
-  return buildWordDetail(word)
+  const word = await readOwnedDisplayWord(client, userId, wordId)
+  return word ? buildWordDetail(word) : null
 }

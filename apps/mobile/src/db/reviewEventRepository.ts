@@ -1,3 +1,4 @@
+import { WORD_CONTENT_READY } from './dictionaryPersonalStateSchema'
 import type { SRSResult } from '@/types/database'
 import type { ReviewEvent, ReviewEventDraft } from '@/types/ReviewTypes'
 import { getDatabase } from './initDB'
@@ -114,7 +115,7 @@ export class ReviewEventRepository {
           sync_status = 'pending',
           last_sync_attempt_at = NULL,
           synced_at = NULL
-        WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL`,
+        WHERE word_id = ? AND user_id = ? AND deleted_at IS NULL AND ${WORD_CONTENT_READY}`,
         progress.interval_days,
         progress.repetition_count,
         progress.easiness_factor,
