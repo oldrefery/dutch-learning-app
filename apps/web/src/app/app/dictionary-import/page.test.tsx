@@ -17,8 +17,12 @@ import DictionaryImportPage from './page'
 import CollectionDetailPage from '../collections/[collectionId]/page'
 import CollectionsPage from '../collections/page'
 
+jest.mock('next/headers', () => ({
+  cookies: jest.fn(async () => ({ get: () => undefined })),
+}))
 jest.mock('server-only', () => ({}))
 jest.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: jest.fn() }),
   notFound: jest.fn(() => {
     throw new Error('Not found')
   }),

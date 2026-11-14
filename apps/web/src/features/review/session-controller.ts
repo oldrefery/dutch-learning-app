@@ -259,11 +259,17 @@ export function createReviewSessionController(
       scope: ReviewScope,
       collectionId: string | null,
       mode: ReviewSessionMode,
-      manualRecognition: boolean
+      manualRecognition: boolean,
+      referenceDate = new Date()
     ) => {
       if (unsettled() || snapshot.preparation.status === 'preparing')
         return 'blocked' as const
-      const selected = selectReviewWords(snapshot.words, scope, collectionId)
+      const selected = selectReviewWords(
+        snapshot.words,
+        scope,
+        collectionId,
+        referenceDate
+      )
       if (!selected.length) return 'empty' as const
       retry = null
       const generation = ++preparationGeneration

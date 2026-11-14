@@ -13,6 +13,10 @@ import {
   readOwnedDisplayWord,
 } from './owned-display-repository'
 
+jest.mock('next/headers', () => ({
+  cookies: jest.fn(async () => ({ get: () => undefined })),
+}))
+
 jest.mock('@/lib/supabase/server', () => ({ createClient: jest.fn() }))
 const { createClient: createSdkClient } = jest.requireActual<
   typeof import('@supabase/supabase-js')

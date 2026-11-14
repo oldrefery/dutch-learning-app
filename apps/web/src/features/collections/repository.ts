@@ -1,8 +1,15 @@
 import 'server-only'
 
+import {
+  calendarDateKey,
+  calendarReferenceDate,
+} from '@/lib/review-calendar/calendar'
+import { getReviewCalendar } from '@/lib/review-calendar/server'
+
 import { listOwnedDisplayWords } from '@/features/dictionary/owned-display-repository'
 
 import { cache } from 'react'
+import { toLocalDateKey } from '@woordenaar/domain'
 import { createClient } from '@/lib/supabase/server'
 import { fetchAllRows } from '@/lib/supabase/fetch-all-rows'
 import { buildCollectionDetail, isCollectionId } from './collection-detail'
@@ -49,7 +56,8 @@ export const isMissingCollectionOverviewsRpc = (
 ): boolean => error?.code === 'PGRST202' || error?.code === '42883'
 
 const queryCollectionOverviewsFallback = async (
-  userId: string
+  userId: string,
+  today: Date
 ): Promise<CollectionOverview[]> => {
   const supabase = await createClient()
   const collectionsRequest = supabase
@@ -80,7 +88,8 @@ const queryCollectionOverviewsFallback = async (
 
   return buildCollectionOverviews(
     collectionsResult.data ?? [],
-    wordsResult.data ?? []
+    wordsResult.data ?? [],
+    today
   )
 }
 
@@ -88,9 +97,10 @@ const queryCollectionOverviews = async (
   userId: string
 ): Promise<CollectionOverview[]> => {
   const supabase = await createClient()
+  const calendar = await getReviewCalendar()
   const { data, error } = await supabase.rpc(
     'get_web_collection_overviews_v1',
-    { p_today: toLocalDateKey(new Date()) }
+    { p_today: calendar.dateKey }
   )
 
   if (!error) {
@@ -98,7 +108,10 @@ const queryCollectionOverviews = async (
   }
 
   if (isMissingCollectionOverviewsRpc(error)) {
-    return queryCollectionOverviewsFallback(userId)
+    return queryCollectionOverviewsFallback(
+      userId,
+      calendarReferenceDate(calendar.dateKey)
+    )
   }
 
   throw new Error('Could not load collections.')
@@ -106,22 +119,18 @@ const queryCollectionOverviews = async (
 
 export const listCollectionOverviews = cache(queryCollectionOverviews)
 
-const toLocalDateKey = (date: Date): string =>
-  [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0'),
-  ].join('-')
-
 export const calculateReviewStreak = (
   reviewDates: readonly string[],
-  now: Date = new Date()
+  now: Date = new Date(),
+  timeZone?: string
 ): number => {
   const reviewedDays = new Set(
     reviewDates
       .map(value => new Date(value))
       .filter(value => !Number.isNaN(value.getTime()))
-      .map(toLocalDateKey)
+      .map(date =>
+        timeZone ? calendarDateKey(date, timeZone) : toLocalDateKey(date)
+      )
   )
   const cursor = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12)
 
@@ -151,7 +160,12 @@ export async function getReviewStreak(userId: string): Promise<number> {
     throw new Error('Could not load the review streak.')
   }
 
-  return calculateReviewStreak((data ?? []).map(event => event.reviewed_at))
+  const calendar = await getReviewCalendar()
+  return calculateReviewStreak(
+    (data ?? []).map(event => event.reviewed_at),
+    calendarReferenceDate(calendar.dateKey),
+    calendar.timeZone
+  )
 }
 
 export async function getOwnedCollectionDetail(
@@ -180,5 +194,10 @@ export async function getOwnedCollectionDetail(
     view: 'collection',
     collectionId,
   })
-  return buildCollectionDetail(collection, words)
+  const calendar = await getReviewCalendar()
+  return buildCollectionDetail(
+    collection,
+    words,
+    calendarReferenceDate(calendar.dateKey)
+  )
 }

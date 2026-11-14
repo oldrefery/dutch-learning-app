@@ -1,3 +1,5 @@
+import { getReviewCalendar } from '@/lib/review-calendar/server'
+import { ReviewCalendarProvider } from '@/lib/review-calendar/ReviewCalendarProvider'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { AuthenticatedShell } from '@/components/app/AuthenticatedShell'
@@ -17,6 +19,7 @@ export default async function AppLayout({
   children: React.ReactNode
 }) {
   const auth = await requireAuthContext()
+  const calendar = await getReviewCalendar()
   const userLabel = auth.email?.trim() || `User ${auth.userId.slice(0, 8)}`
   const navigation = (
     <Suspense
@@ -33,9 +36,11 @@ export default async function AppLayout({
   )
 
   return (
-    <AuthenticatedShell auth={auth} navigation={navigation}>
-      {isDictionaryContentEnabled() && <DictionaryFreshness />}
-      {children}
-    </AuthenticatedShell>
+    <ReviewCalendarProvider calendar={calendar}>
+      <AuthenticatedShell auth={auth} navigation={navigation}>
+        {isDictionaryContentEnabled() && <DictionaryFreshness />}
+        {children}
+      </AuthenticatedShell>
+    </ReviewCalendarProvider>
   )
 }
