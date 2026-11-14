@@ -1,5 +1,6 @@
 'use client'
 
+import { useReviewCalendarDate } from '@/lib/review-calendar/ReviewCalendarProvider'
 import { buildReviewInsights } from '@woordenaar/domain'
 import type { DistributionBucket, ForecastDay } from '@woordenaar/domain'
 import type { Json } from '@woordenaar/supabase-contracts'
@@ -165,7 +166,11 @@ function DifficultWord({
 }
 
 export function InsightsDashboard({ data }: { data: InsightsData }) {
-  const insights = useMemo(() => buildReviewInsights(data.words), [data.words])
+  const today = useReviewCalendarDate()
+  const insights = useMemo(
+    () => buildReviewInsights(data.words, today),
+    [data.words, today]
+  )
   const collectionNames = useMemo(
     () =>
       new Map(

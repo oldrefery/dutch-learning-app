@@ -1,3 +1,5 @@
+import { getReviewCalendar } from '@/lib/review-calendar/server'
+import { ReviewCalendarSnapshot } from '@/lib/review-calendar/ReviewCalendarProvider'
 import { BarChart3, MoreHorizontal, Plus, Share2 } from 'lucide-react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/Badge'
@@ -115,6 +117,7 @@ function CollectionRow({
 
 export default async function CollectionsPage() {
   const auth = await requireAuthContext()
+  const calendar = await getReviewCalendar()
   const [collections, streak] = await Promise.all([
     listCollectionOverviews(auth.userId),
     getReviewStreak(auth.userId),
@@ -134,6 +137,7 @@ export default async function CollectionsPage() {
 
   return (
     <section className={styles.page}>
+      <ReviewCalendarSnapshot dateKey={calendar.dateKey} />
       <div className={styles.intro}>
         <div className={styles.introCopy}>
           <p className={styles.eyebrow}>

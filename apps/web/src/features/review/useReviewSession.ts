@@ -22,6 +22,7 @@ import {
   skipAssistedReview,
   summarizeReviewFlow,
 } from '@woordenaar/domain'
+import { useReviewCalendarDate } from '@/lib/review-calendar/ReviewCalendarProvider'
 import { submitReviewAssessment } from './actions'
 import { submitReviewCorrection } from './correction-actions'
 import { loadReviewCorrectionState } from './correction-refresh'
@@ -50,6 +51,7 @@ export function useReviewSession(
   refreshingDictionary = false
 ) {
   const freshness = useReviewFreshness()
+  const today = useReviewCalendarDate()
   const [controller] = useState(() =>
     createReviewSessionController(
       userId,
@@ -109,8 +111,8 @@ export function useReviewSession(
   const [manualRecognition, setManualPreference] = useState(false)
   const [emptyMessage, setEmptyMessage] = useState<string | null>(null)
   const dueWords = useMemo(
-    () => selectReviewWords(words, scope, collectionId),
-    [words, scope, collectionId]
+    () => selectReviewWords(words, scope, collectionId, today),
+    [words, scope, collectionId, today]
   )
 
   useEffect(() => {
@@ -166,7 +168,7 @@ export function useReviewSession(
     // ignored. Apply the latest props before starting the next frozen session.
     if (data.dictionaryContentEnabled) controller.refreshWorkspace(data)
     void controller
-      .start(scope, collectionId, mode, manualRecognition)
+      .start(scope, collectionId, mode, manualRecognition, today)
       .then(result => {
         if (result === 'empty') {
           if (!controller.exit()) return
