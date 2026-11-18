@@ -39,6 +39,10 @@ const SCOPE_OPTIONS: readonly { label: string; value: ReviewScope }[] = [
 ]
 
 interface ReviewSetupProps {
+  batchSize?: number
+  batchLoading?: boolean
+  batchFailed?: boolean
+  onRetryBatch?: () => void
   adaptiveReviewEnabled: boolean
   collectionId: string | null
   collections: ReviewCollection[]
@@ -56,6 +60,10 @@ interface ReviewSetupProps {
 
 export function ReviewSetup({
   adaptiveReviewEnabled,
+  batchSize,
+  batchLoading,
+  batchFailed,
+  onRetryBatch,
   collectionId,
   collections,
   dueCount,
@@ -69,7 +77,8 @@ export function ReviewSetup({
   ready = true,
   scope,
 }: ReviewSetupProps) {
-  const estimateMinutes = Math.max(1, Math.ceil(dueCount * 0.35))
+  const sessionSize = batchSize ?? dueCount
+  const estimateMinutes = Math.max(1, Math.ceil(sessionSize * 0.35))
 
   return (
     <section className={styles.setup}>
@@ -146,7 +155,10 @@ export function ReviewSetup({
             >
               {option.label}
               <span className={styles.scopeCount}>
-                {scope === option.value ? dueCount : '—'} due
+                {scope === option.value && !batchLoading && !batchFailed
+                  ? dueCount
+                  : '—'}{' '}
+                due
               </span>
             </button>
           ))}
@@ -178,22 +190,43 @@ export function ReviewSetup({
         </p>
       )}
 
+      {batchFailed && (
+        <p role="alert">
+          Could not load the review queue.{' '}
+          <Button onClick={onRetryBatch} type="button">
+            Retry loading review
+          </Button>
+        </p>
+      )}
       <div className={styles.startRow}>
         <p className={styles.estimate}>
-          {dueCount} {dueCount === 1 ? 'word' : 'words'} · about{' '}
-          {estimateMinutes} min
+          {batchLoading ? (
+            'Loading review queue…'
+          ) : batchFailed ? null : (
+            <>
+              {sessionSize} {sessionSize === 1 ? 'word' : 'words'}
+              {batchSize !== undefined ? ' this session' : ''} · about{' '}
+              {estimateMinutes} min
+            </>
+          )}
         </p>
         <div className={styles.startActions}>
           <Link className={styles.audioLink} href="/app/review/audio">
             <Headphones aria-hidden="true" size={16} /> Audio review
           </Link>
           <Button
-            disabled={!ready || dueCount === 0 || preparing}
+            disabled={
+              !ready ||
+              sessionSize === 0 ||
+              preparing ||
+              batchLoading ||
+              batchFailed
+            }
             onClick={onStart}
             type="button"
           >
             <Play aria-hidden="true" fill="currentColor" size={15} />
-            {preparing ? 'Preparing…' : `Start · ${dueCount}`}
+            {preparing ? 'Preparing…' : `Start · ${sessionSize}`}
             <span className="dw-key">Enter</span>
           </Button>
         </div>

@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261113190000_retire_following_compatibility_writes.sql.
+// Generated from local migrations through 20261114120000_add_bounded_web_review_snapshot.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -1471,6 +1471,15 @@ export type Database = {
           total_words: number
           updated_at: string
         }[]
+      }
+      get_web_review_bounded_snapshot: {
+        Args: {
+          p_collection_id?: string
+          p_limit?: number
+          p_scope: string
+          p_today: string
+        }
+        Returns: Json
       }
       get_web_review_snapshot_v1: { Args: never; Returns: Json }
       get_web_review_snapshot_v2: { Args: never; Returns: Json }

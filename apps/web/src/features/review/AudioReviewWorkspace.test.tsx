@@ -39,7 +39,10 @@ test('uses the authenticated account and explicit Meaning recall mode', () => {
     'all-due',
     null,
     'account-a',
-    'meaning-recall'
+    'meaning-recall',
+    undefined,
+    false,
+    false
   )
   expect(
     screen.getByRole('button', { name: 'Start Audio Review' })

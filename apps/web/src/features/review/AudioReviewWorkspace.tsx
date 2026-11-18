@@ -50,17 +50,32 @@ const toWordDetail = (
 export function AudioReviewWorkspace({
   data,
   userId,
+  bounded = false,
 }: {
   data: ReviewWorkspaceData
   userId: string
+  bounded?: boolean
 }) {
   const session = useReviewSession(
     data,
     'all-due',
     null,
     userId,
-    'meaning-recall'
+    'meaning-recall',
+    undefined,
+    false,
+    bounded
   )
+  const batchBusy = session.batchLoading || session.batchFailed
+  const batchLoading = session.batchLoading ? 'Loading review queue…' : null
+  const batchError = session.batchFailed ? (
+    <p role="alert">
+      Could not load the review queue.{' '}
+      <button className="underline" type="button" onClick={session.retryBatch}>
+        Retry loading review
+      </button>
+    </p>
+  ) : null
   const playback = useAudioReviewPlayback()
   const playedWordIdRef = useRef<string | null>(null)
   const translation = session.currentWord
@@ -134,9 +149,18 @@ export function AudioReviewWorkspace({
           it. Playback pauses when this tab goes into the background.
         </p>
         <p className="mt-6 text-sm text-neutral-600 dark:text-neutral-400">
-          {session.dueCount} {session.dueCount === 1 ? 'word is' : 'words are'}{' '}
-          due.
+          {batchLoading ??
+            (session.batchFailed ? null : (
+              <>
+                {session.dueCount}{' '}
+                {session.dueCount === 1 ? 'word is' : 'words are'} due.
+                {bounded &&
+                  session.dueCount > 0 &&
+                  ` ${session.batchSize} this session.`}
+              </>
+            ))}
         </p>
+        {batchError}
         {session.preparation.status === 'preparing' && (
           <div
             aria-live="polite"
@@ -165,6 +189,7 @@ export function AudioReviewWorkspace({
           <button
             className="rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-950"
             disabled={
+              batchBusy ||
               session.dueCount === 0 ||
               session.preparation.status === 'preparing'
             }
@@ -199,9 +224,11 @@ export function AudioReviewWorkspace({
           Again: {session.assessmentCounts.again} · Good:{' '}
           {session.assessmentCounts.good}
         </p>
+        {batchError}
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
             className="rounded-xl bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white dark:bg-neutral-100 dark:text-neutral-950"
+            disabled={bounded && (batchBusy || session.dueCount === 0)}
             onClick={start}
             type="button"
           >
