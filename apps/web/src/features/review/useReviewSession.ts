@@ -21,15 +21,18 @@ import {
   setReviewManualRecognition,
   skipAssistedReview,
   summarizeReviewFlow,
+  toLocalDateKey,
 } from '@woordenaar/domain'
 import { useReviewCalendarDate } from '@/lib/review-calendar/ReviewCalendarProvider'
 import { submitReviewAssessment } from './actions'
 import { submitReviewCorrection } from './correction-actions'
 import { loadReviewCorrectionState } from './correction-refresh'
 import { useReviewFreshness } from '@/components/app/ReviewFreshnessProvider'
+import { useBoundedReview } from './useBoundedReview'
 import { createReviewSessionController } from './session-controller'
 import {
   getPreferredTranslation,
+  getLocalReviewDate,
   getRussianTranslation,
   getReviewAnswer,
   selectReviewWords,
@@ -48,7 +51,8 @@ export function useReviewSession(
   userId: string,
   initialMode: ReviewSessionMode = 'adaptive',
   refreshDictionary?: () => void,
-  refreshingDictionary = false
+  refreshingDictionary = false,
+  bounded = false
 ) {
   const freshness = useReviewFreshness()
   const today = useReviewCalendarDate()
@@ -108,6 +112,13 @@ export function useReviewSession(
   }, [controller, data])
   const [scope, setScope] = useState(initialScope)
   const [collectionId, setCollectionId] = useState(initialCollectionId)
+  const batch = useBoundedReview(
+    bounded,
+    scope,
+    collectionId,
+    toLocalDateKey(today)
+  )
+  const refresh = bounded ? batch.refresh : refreshDictionary
   const [manualRecognition, setManualPreference] = useState(false)
   const [emptyMessage, setEmptyMessage] = useState<string | null>(null)
   const dueWords = useMemo(
@@ -163,10 +174,22 @@ export function useReviewSession(
     [controller]
   )
   const start = () => {
-    if (refreshingDictionary) return
+    if (
+      refreshingDictionary ||
+      (bounded &&
+        (!batch.payload || batch.payload.dateKey !== getLocalReviewDate()))
+    )
+      return
     // A server snapshot received during the previous session was deliberately
     // ignored. Apply the latest props before starting the next frozen session.
-    if (data.dictionaryContentEnabled) controller.refreshWorkspace(data)
+    if (
+      bounded &&
+      batch.payload &&
+      !controller.refreshWorkspace(batch.payload.workspace)
+    )
+      return
+    if (!bounded && data.dictionaryContentEnabled)
+      controller.refreshWorkspace(data)
     void controller
       .start(scope, collectionId, mode, manualRecognition, today)
       .then(result => {
@@ -199,9 +222,9 @@ export function useReviewSession(
   useEffect(() => {
     if (summary?.finished) {
       freshness.flushAtBoundary()
-      refreshDictionary?.()
+      refresh?.()
     }
-  }, [freshness, refreshDictionary, summary?.finished])
+  }, [freshness, refresh, summary?.finished])
 
   return {
     correction,
@@ -238,7 +261,14 @@ export function useReviewSession(
         : (flow?.history.length ?? 0),
     currentWord,
     dueWords,
-    dueCount: dueWords.length,
+    dueCount: bounded ? (batch.payload?.dueCount ?? 0) : dueWords.length,
+    batchSize: bounded
+      ? (batch.payload?.workspace.words.length ?? 0)
+      : undefined,
+    batchCollections: batch.collections,
+    batchLoading: batch.loading,
+    batchFailed: batch.failed,
+    retryBatch: batch.refresh,
     effectiveMode,
     emptyMessage,
     error: flow?.active?.submission?.error ?? null,
@@ -277,7 +307,7 @@ export function useReviewSession(
     changeMode: () => {
       if (controller.exit()) {
         freshness.flushAtBoundary()
-        refreshDictionary?.()
+        refresh?.()
       }
     },
     goTo: (direction: -1 | 1) =>

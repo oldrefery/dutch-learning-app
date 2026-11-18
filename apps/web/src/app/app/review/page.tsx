@@ -1,3 +1,5 @@
+import { isBoundedReviewEnabled } from '@/features/review/bounded-review-config'
+import { isUuid } from '@/features/words/word-detail'
 import { ReviewWorkspace } from '@/features/review/ReviewWorkspace'
 import { getReviewWorkspaceData } from '@/features/review/repository'
 import { serializeReviewWorkspace } from '@/features/review/review-serialization'
@@ -19,16 +21,24 @@ export default async function ReviewPage({
 }) {
   const auth = await requireAuthContext()
   const query = await searchParams
-  const data = await getReviewWorkspaceData(auth.userId)
+  const bounded = isBoundedReviewEnabled()
+  const data = bounded
+    ? { collections: [], words: [], events: [] }
+    : await getReviewWorkspaceData(auth.userId)
   const requestedCollectionId = getQueryValue(query.collectionId) ?? null
-  const initialCollectionId = data.collections.some(
-    collection => collection.id === requestedCollectionId
-  )
-    ? requestedCollectionId
-    : null
+  const initialCollectionId = bounded
+    ? requestedCollectionId && isUuid(requestedCollectionId)
+      ? requestedCollectionId
+      : null
+    : data.collections.some(
+          collection => collection.id === requestedCollectionId
+        )
+      ? requestedCollectionId
+      : null
 
   return (
     <ReviewWorkspace
+      bounded={bounded}
       canUseAi={auth.accessLevel === 'full_access'}
       data={serializeReviewWorkspace(data)}
       initialCollectionId={initialCollectionId}

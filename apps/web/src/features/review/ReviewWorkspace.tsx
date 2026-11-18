@@ -107,6 +107,7 @@ function Completion({
 
 function AccountReviewWorkspace({
   canUseAi,
+  bounded = false,
   data,
   initialCollectionId,
   initialScope,
@@ -125,8 +126,10 @@ function AccountReviewWorkspace({
     userId,
     'adaptive',
     data.dictionaryContentEnabled ? refreshDictionary : undefined,
-    refreshingDictionary
+    refreshingDictionary,
+    bounded
   )
+  const collections = session.batchCollections ?? data.collections
   const [detailCache] = useState(() => new ReviewDetailCache())
   const { play: playAudio, stop: stopAudio } = useAudioReviewPlayback()
   const { isHydrated, settings, update } = useWebSettings(userId)
@@ -149,7 +152,12 @@ function AccountReviewWorkspace({
   }, [session.currentWord?.id, session.detailsVisible, stopAudio])
 
   useEffect(() => {
-    if (!isHydrated || appliedPreferencesRef.current) return
+    if (
+      !isHydrated ||
+      appliedPreferencesRef.current ||
+      (bounded && !session.batchCollections)
+    )
+      return
     appliedPreferencesRef.current = true
 
     const preferredMode =
@@ -163,7 +171,7 @@ function AccountReviewWorkspace({
     if (
       !initialCollectionId &&
       settings.lastSelectedCollectionId &&
-      data.collections.some(
+      collections.some(
         collection => collection.id === settings.lastSelectedCollectionId
       )
     ) {
@@ -171,7 +179,9 @@ function AccountReviewWorkspace({
     }
     setPreferencesApplied(true)
   }, [
-    data.collections,
+    bounded,
+    collections,
+    session.batchCollections,
     initialCollectionId,
     isHydrated,
     setSessionCollectionId,
@@ -250,7 +260,11 @@ function AccountReviewWorkspace({
           ready={preferencesApplied}
           adaptiveReviewEnabled={settings.adaptiveReviewEnabled}
           collectionId={session.collectionId}
-          collections={data.collections}
+          collections={collections}
+          batchSize={session.batchSize}
+          batchLoading={session.batchLoading}
+          batchFailed={session.batchFailed}
+          onRetryBatch={session.retryBatch}
           dueCount={session.dueCount}
           emptyMessage={session.emptyMessage}
           mode={session.mode}
@@ -265,7 +279,7 @@ function AccountReviewWorkspace({
           onScopeChange={value => {
             session.setScope(value)
             if (value === 'collection-due' && !session.collectionId) {
-              session.setCollectionId(data.collections[0]?.id ?? null)
+              session.setCollectionId(collections[0]?.id ?? null)
             }
           }}
           onStart={session.start}
@@ -287,9 +301,19 @@ function AccountReviewWorkspace({
           counts={session.assessmentCounts}
           onChangeMode={session.changeMode}
           onRestart={session.start}
-          refreshing={refreshingDictionary}
+          refreshing={
+            refreshingDictionary ||
+            session.batchLoading ||
+            session.batchFailed ||
+            (bounded && session.dueCount === 0)
+          }
           total={session.summary?.assessed ?? 0}
         />
+        {session.batchFailed && (
+          <Button onClick={session.retryBatch} type="button">
+            Retry loading review
+          </Button>
+        )}
         {!!session.summary?.skipped && (
           <p>{session.summary.skipped} skipped without changing progress.</p>
         )}
@@ -410,6 +434,7 @@ function AccountReviewWorkspace({
 }
 
 interface ReviewWorkspaceProps {
+  bounded?: boolean
   canUseAi: boolean
   data: ReviewWorkspaceData | SerializedReviewWorkspaceData
   initialCollectionId: string | null
