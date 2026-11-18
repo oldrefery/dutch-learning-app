@@ -1,4 +1,5 @@
 import type {
+  DictionaryCollectionExportV2,
   BatchCaptureDuplicate,
   BatchCaptureDraftItem,
   BatchCaptureItemStatus,
@@ -9,6 +10,7 @@ import type {
 } from '../analysis/analysis-contract'
 
 export interface WebBatchCaptureItem extends BatchCaptureDraftItem {
+  published?: DictionaryCollectionExportV2 | null
   analysis: WordAnalysis | null
   analysisMetadata: AnalysisMetadata | null
   bypassLemmaDuplicate: boolean
@@ -29,6 +31,3 @@ export interface WebBatchCaptureState {
   targetCollectionId: string
   version: 1
 }
-
-export type BatchSaveResult =
-  { success: true; wordId: string } | { success: false; message: string }

@@ -14,7 +14,15 @@ import { persistAnalyzedWord } from './persistence-repository'
 export async function requireLegacyWordAnalysis(): Promise<void> {
   if (isDictionaryFollowingEnabled())
     throw new Error('Use published shared meanings to add a word.')
+  await requireWordAnalysisAccess()
+}
+
+export async function requireWordAnalysisAccess(
+  ownerId?: string
+): Promise<void> {
   const auth = await requireAuthContext()
+  if (ownerId && auth.userId !== ownerId)
+    throw new Error('Your account changed. Analyze the word again.')
   if (auth.accessLevel !== 'full_access')
     throw new Error('Full access is required to analyze words.')
 }
@@ -27,64 +35,74 @@ export async function findOwnedSemanticDuplicate(
   return getOwnedSemanticDuplicate(auth.userId, analysis)
 }
 
-export async function saveAnalyzedWord(
-  previousState: AddWordActionState,
-  formData: FormData
-): Promise<AddWordActionState> {
-  void previousState
-  if (isDictionaryFollowingEnabled())
-    return {
-      status: 'error',
-      message: 'Use published shared meanings to add a word.',
-    }
+type SaveWordResult =
+  | { success: true; wordId: string }
+  | { success: false; message: string; field?: 'analysis' | 'collectionId' }
 
+export async function saveWordToCollection(
+  ownerId: string,
+  collectionId: string,
+  serializedAnalysis: string
+): Promise<SaveWordResult> {
   const auth = await requireAuthContext()
-  if (auth.accessLevel !== 'full_access') {
+  if (auth.accessLevel !== 'full_access')
     return {
-      status: 'error',
+      success: false,
       message: 'Full access is required to save analyzed words.',
     }
-  }
-
-  const collectionId = formData.get('collectionId')
-  if (typeof collectionId !== 'string' || !isUuid(collectionId)) {
+  if (auth.userId !== ownerId)
     return {
-      status: 'error',
-      message: null,
-      fieldErrors: { collectionId: 'Choose a valid collection.' },
+      success: false,
+      message: 'Your account changed. Analyze the word again.',
     }
-  }
+  if (!isUuid(collectionId))
+    return {
+      success: false,
+      field: 'collectionId',
+      message: 'Choose a valid collection.',
+    }
 
   let analysis: WordAnalysis
   try {
-    analysis = parseSerializedWordAnalysis(formData.get('analysis'))
+    analysis = parseSerializedWordAnalysis(serializedAnalysis)
   } catch (error) {
     return {
-      status: 'error',
-      message: null,
-      fieldErrors: {
-        analysis:
-          error instanceof Error ? error.message : 'Analysis data is invalid.',
-      },
+      success: false,
+      field: 'analysis',
+      message:
+        error instanceof Error ? error.message : 'Analysis data is invalid.',
     }
   }
 
   const result = await persistAnalyzedWord(auth.userId, collectionId, analysis)
-  if (!result.success && result.code === 'collection') {
+  if (!result.success)
     return {
-      status: 'error',
-      message: null,
-      fieldErrors: { collectionId: result.message },
-    }
-  }
-  if (!result.success) {
-    return {
-      status: 'error',
+      success: false,
       message: result.message,
+      field: result.code === 'collection' ? 'collectionId' : undefined,
     }
-  }
-
   revalidatePath('/app/collections')
   revalidatePath(`/app/collections/${collectionId}`)
+  return result
+}
+
+export async function saveAnalyzedWord(
+  _previousState: AddWordActionState,
+  formData: FormData
+): Promise<AddWordActionState> {
+  const collectionId = String(formData.get('collectionId') ?? '')
+  const result = await saveWordToCollection(
+    String(formData.get('ownerId') ?? ''),
+    collectionId,
+    String(formData.get('analysis') ?? '')
+  )
+  if (!result.success)
+    return result.field
+      ? {
+          status: 'error',
+          message: null,
+          fieldErrors: { [result.field]: result.message },
+        }
+      : { status: 'error', message: result.message }
   redirect(`/app/collections/${collectionId}/words/${result.wordId}`)
 }

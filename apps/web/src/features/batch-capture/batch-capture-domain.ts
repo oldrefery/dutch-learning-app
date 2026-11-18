@@ -1,3 +1,4 @@
+import { parseDictionaryCollectionExportV2 } from '@woordenaar/domain'
 import type {
   BatchCaptureDraftItem,
   BatchCaptureItemStatus,
@@ -11,6 +12,18 @@ import type {
   WordAnalysis,
 } from '../analysis/analysis-contract'
 import type { WebBatchCaptureItem, WebBatchCaptureState } from './types'
+
+function parsePublished(value: unknown) {
+  try {
+    const document = parseDictionaryCollectionExportV2(value)
+    return document.entries.length &&
+      document.entries.every(entry => entry.shared_reference)
+      ? document
+      : null
+  } catch {
+    return null
+  }
+}
 
 type UnknownRecord = Record<string, unknown>
 
@@ -85,9 +98,10 @@ const parsePersistedItem = (
   }
 
   const analysis = parseAnalysis(value.analysis)
+  const published = parsePublished(value.published)
   const interrupted = ACTIVE_NETWORK_STATUSES.includes(value.status)
   const awaitingReviewWithoutAnalysis =
-    value.status === 'awaiting_review' && !analysis
+    value.status === 'awaiting_review' && !analysis && !published
   const status =
     interrupted || awaitingReviewWithoutAnalysis ? 'queued' : value.status
 
@@ -104,6 +118,7 @@ const parsePersistedItem = (
     duplicate: parseDuplicate(value.duplicate),
     semanticDuplicate: parseDuplicate(value.semanticDuplicate),
     bypassLemmaDuplicate: value.bypassLemmaDuplicate === true,
+    ...(status === 'awaiting_review' && published ? { published } : {}),
     analysis: status === 'awaiting_review' ? analysis : null,
     analysisMetadata:
       status === 'awaiting_review'

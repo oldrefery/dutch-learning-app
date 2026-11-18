@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { AddWordWorkflow } from '@/features/analysis/AddWordWorkflow'
 import { listOwnedCollectionOptions } from '@/features/analysis/repository'
 import { isDictionaryFollowingEnabled } from '@/features/dictionary/repository'
@@ -16,13 +15,13 @@ export default async function AddWordPage() {
       </p>
       <h1 className="dw-page-title mt-2">Add a Dutch word</h1>
       <p className="dw-support mt-3 max-w-2xl">
-        {followingEnabled
+        {followingEnabled && auth.accessLevel !== 'full_access'
           ? 'Find a published Dutch meaning and select the meanings to add to a collection.'
           : 'Enter the word exactly as you met it. Review the analysis before saving it to a collection.'}
       </p>
 
       <div className="mt-8">
-        {followingEnabled ? (
+        {followingEnabled && auth.accessLevel !== 'full_access' ? (
           <AddWordWorkflow
             key={`${auth.userId}:following`}
             followingEnabled
@@ -41,23 +40,12 @@ export default async function AddWordPage() {
               You can still review existing words and import shared collections.
             </p>
           </div>
-        ) : collections.length === 0 ? (
-          <div className="dw-surface border-dashed p-6">
-            <h2 className="text-lg font-semibold">Create a collection first</h2>
-            <p className="dw-support mt-2">
-              Every analyzed word needs a collection before it can be saved.
-            </p>
-            <Link
-              className="dw-button dw-button--primary mt-5"
-              href="/app/collections"
-            >
-              Open collections
-            </Link>
-          </div>
         ) : (
           <AddWordWorkflow
             collections={collections}
-            initialCollectionId={collections[0].id}
+            canAnalyze
+            followingEnabled={followingEnabled}
+            initialCollectionId={collections[0]?.id ?? ''}
             useStoredCollectionPreference
             userId={auth.userId}
           />

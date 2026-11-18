@@ -1,6 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import type { DictionaryCollectionExportV2 } from '@woordenaar/domain'
+import { analyzeForCollection } from './analyze-for-collection'
+import { PublishedWordReview } from './PublishedWordReview'
 import { useActionState, useMemo, useState, useSyncExternalStore } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -120,13 +124,14 @@ interface AddWordWorkflowProps {
   initialCollectionId: string
   useStoredCollectionPreference?: boolean
   userId: string
+  canAnalyze?: boolean
   followingEnabled?: boolean
 }
 
 export function AddWordWorkflow(props: AddWordWorkflowProps) {
-  if (props.followingEnabled)
+  if (props.followingEnabled && !props.canAnalyze)
     return <FollowingAddWordWorkflow key={props.userId} {...props} />
-  return <LegacyAddWordWorkflow {...props} />
+  return <AnalyzeWordWorkflow key={props.userId} {...props} />
 }
 
 function FollowingAddWordWorkflow(props: AddWordWorkflowProps) {
@@ -152,17 +157,17 @@ function FollowingAddWordWorkflow(props: AddWordWorkflowProps) {
   )
 }
 
-function LegacyAddWordWorkflow({
+function AnalyzeWordWorkflow({
   collections,
   initialCollectionId,
   useStoredCollectionPreference = false,
   userId,
-}: {
-  collections: CollectionOption[]
-  initialCollectionId: string
-  useStoredCollectionPreference?: boolean
-  userId: string
-}) {
+  followingEnabled = false,
+}: AddWordWorkflowProps) {
+  const router = useRouter()
+  const [showDictionaryTools, setShowDictionaryTools] = useState(false)
+  const [published, setPublished] =
+    useState<DictionaryCollectionExportV2 | null>(null)
   const [inputWord, setInputWord] = useState('')
   const [analysis, setAnalysis] = useState<WordAnalysis | null>(null)
   const [metadata, setMetadata] = useState<AnalysisMetadata | null>(null)
@@ -231,17 +236,23 @@ function LegacyAddWordWorkflow({
     setImageOffset(0)
     setDuplicateError(null)
     if (!forceRefresh) {
+      setPublished(null)
       setAnalysis(null)
       setMetadata(null)
       setDuplicate(null)
     }
 
     try {
-      const result = await analyzeWordWithAi(
-        userId,
-        validation.value,
-        forceRefresh
-      )
+      const result = forceRefresh
+        ? {
+            kind: 'analysis' as const,
+            ...(await analyzeWordWithAi(userId, validation.value, true)),
+          }
+        : await analyzeForCollection(userId, validation.value, followingEnabled)
+      if (result.kind === 'published') {
+        setPublished(result.document)
+        return
+      }
       setAnalysis(result.analysis)
       setMetadata(result.metadata)
       await checkDuplicate(result.analysis)
@@ -263,7 +274,7 @@ function LegacyAddWordWorkflow({
     setImageError(null)
 
     try {
-      const nextImages = await findWordImages(analysis, nextOffset)
+      const nextImages = await findWordImages(analysis, nextOffset, true)
       setImages(current =>
         loadMore ? mergeWordImageOptions(current, nextImages) : nextImages
       )
@@ -278,6 +289,7 @@ function LegacyAddWordWorkflow({
   }
 
   const startOver = () => {
+    setPublished(null)
     setInputWord('')
     setAnalysis(null)
     setMetadata(null)
@@ -314,7 +326,10 @@ function LegacyAddWordWorkflow({
             disabled={isAnalyzing}
             id="dutch-word"
             maxLength={120}
-            onChange={event => setInputWord(event.target.value)}
+            onChange={event => {
+              startOver()
+              setInputWord(event.target.value)
+            }}
             placeholder="e.g. het huis or meenemen"
             required
             value={inputWord}
@@ -370,6 +385,19 @@ function LegacyAddWordWorkflow({
         )}
       </form>
 
+      {published && (
+        <PublishedWordReview
+          document={published}
+          collectionId={selectedCollectionId}
+          userId={userId}
+          onSaved={id =>
+            router.push(`/app/collections/${selectedCollectionId}/words/${id}`)
+          }
+        />
+      )}
+      {collections.length === 0 && (
+        <Link href="/app/collections">Create a collection to save words</Link>
+      )}
       {analysis && metadata && (
         <>
           <div className={styles.resultHeader}>
@@ -439,6 +467,7 @@ function LegacyAddWordWorkflow({
           )}
 
           <form action={saveAction} className={styles.savePanel}>
+            <input name="ownerId" type="hidden" value={userId} />
             <input
               name="analysis"
               type="hidden"
@@ -461,7 +490,12 @@ function LegacyAddWordWorkflow({
                   </option>
                 ))}
               </select>
-              <Button disabled={isSaving || Boolean(duplicate)} type="submit">
+              <Button
+                disabled={
+                  isSaving || !selectedCollectionId || Boolean(duplicate)
+                }
+                type="submit"
+              >
                 {isSaving ? 'Saving…' : 'Save word'}
               </Button>
             </div>
@@ -486,6 +520,21 @@ function LegacyAddWordWorkflow({
             )}
           </form>
         </>
+      )}
+      {followingEnabled && (
+        <details
+          onToggle={event => setShowDictionaryTools(event.currentTarget.open)}
+        >
+          <summary>Shared dictionary requests and imports</summary>
+          {showDictionaryTools && (
+            <FollowingAddWordWorkflow
+              collections={collections}
+              initialCollectionId={initialCollectionId}
+              userId={userId}
+              followingEnabled
+            />
+          )}
+        </details>
       )}
     </div>
   )

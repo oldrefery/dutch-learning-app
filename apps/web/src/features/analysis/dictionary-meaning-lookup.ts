@@ -16,7 +16,8 @@ export const lookupPublishedMeanings = (
   userId: string,
   input: string,
   followingEnabled: boolean,
-  assertCurrent: () => void
+  assertCurrent: () => void,
+  previewOnly = false
 ) => {
   const client =
     createClient() as unknown as SupabaseClient<DictionaryMeaningLookupDatabase>
@@ -32,10 +33,12 @@ export const lookupPublishedMeanings = (
           },
           check: owner.check,
         },
+        previewOnly,
         enabled: () =>
           followingEnabled &&
-          process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED ===
-            'true',
+          (previewOnly ||
+            process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED ===
+              'true'),
         capability: () => client.rpc('dictionary_content_capability_v2'),
         entries: query =>
           client

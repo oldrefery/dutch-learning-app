@@ -6,7 +6,7 @@ import { serializeWordAnalysis } from '@/features/analysis/analysis-contract'
 import { buildAnalysisPreview } from '@/features/analysis/analysis-preview'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
 import { markAnalysisHistorySaved } from '@/features/history/analysis-history'
-import { saveBatchAnalyzedWord } from './actions'
+import { saveWordToCollection } from '@/features/analysis/actions'
 import type { WebBatchCaptureItem } from './types'
 
 interface BatchReviewPanelProps {
@@ -36,7 +36,8 @@ export function BatchReviewPanel({
     setSaving(true)
     setSaveError(null)
     try {
-      const result = await saveBatchAnalyzedWord(
+      const result = await saveWordToCollection(
+        userId,
         collectionId,
         serializeWordAnalysis(item.analysis)
       )

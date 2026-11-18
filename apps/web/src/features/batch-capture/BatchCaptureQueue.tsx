@@ -98,7 +98,14 @@ export function BatchCaptureQueue({
           <div className={styles.queueActions}>
             {!finished && (
               <Button
-                disabled={Boolean(activeItemId)}
+                disabled={
+                  Boolean(activeItemId) ||
+                  items.some(
+                    item =>
+                      item.status === 'awaiting_review' ||
+                      item.status === 'possible_duplicate'
+                  )
+                }
                 onClick={isPaused ? onStart : onPause}
                 type="button"
                 variant="secondary"
