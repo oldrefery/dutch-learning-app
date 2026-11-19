@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261119160000_full_access_shared_reanalysis.sql.
+// Generated from local migrations through 20261119190000_monthly_shared_analysis_budget.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
