@@ -28,10 +28,12 @@ export function FollowingWordDetail({
   word,
   userId,
   followingEnabled,
+  allowStart = true,
 }: {
   word: WordDetail
   userId: string
   followingEnabled: boolean
+  allowStart?: boolean
 }) {
   const router = useRouter()
   const sessionChanged = useRef(false)
@@ -174,7 +176,8 @@ export function FollowingWordDetail({
     [action, userId]
   )
   const visible =
-    state.loaded && (state.operation || state.allowed || state.error)
+    state.loaded &&
+    (state.operation || (allowStart && state.allowed) || state.error)
   const status = dictionaryAnalysisActionMessage(state.operation)
   const resolution = dictionaryAnalysisResolutionMessage(state.operation)
   return (
@@ -200,7 +203,7 @@ export function FollowingWordDetail({
             </p>
           )}
           {resolution && <p className="mt-3 text-sm">{resolution}</p>}
-          {state.nextAllowed && !state.blocked && (
+          {allowStart && state.nextAllowed && !state.blocked && (
             <button
               type="button"
               disabled={state.busy}
@@ -212,22 +215,25 @@ export function FollowingWordDetail({
               Start new analysis
             </button>
           )}
-          {state.allowed && !state.operation?.submitted && !state.blocked && (
-            <button
-              type="button"
-              disabled={state.busy}
-              className="mt-3 rounded-xl border px-5 py-3 disabled:opacity-60"
-              onClick={() => {
-                void action.submit()
-              }}
-            >
-              {state.busy
-                ? 'Analyzing…'
-                : state.operation
-                  ? 'Continue analysis'
-                  : 'Analyze again'}
-            </button>
-          )}
+          {allowStart &&
+            state.allowed &&
+            !state.operation?.submitted &&
+            !state.blocked && (
+              <button
+                type="button"
+                disabled={state.busy}
+                className="mt-3 rounded-xl border px-5 py-3 disabled:opacity-60"
+                onClick={() => {
+                  void action.submit()
+                }}
+              >
+                {state.busy
+                  ? 'Analyzing…'
+                  : state.operation
+                    ? 'Continue analysis'
+                    : 'Analyze again'}
+              </button>
+            )}
           {state.operation?.response &&
             !('outcome' in state.operation.response) &&
             ['published', 'no-change'].includes(

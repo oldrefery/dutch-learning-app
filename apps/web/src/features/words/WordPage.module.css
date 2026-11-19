@@ -20,6 +20,11 @@
   color: var(--accent);
 }
 
+.sharedAnalysis {
+  margin: 0 auto 16px;
+  max-width: 840px;
+}
+
 .cardWrap {
   display: flex;
   justify-content: center;
