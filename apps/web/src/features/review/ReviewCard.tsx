@@ -2,6 +2,7 @@ import { CefrBadge } from '@/features/dictionary/CefrBadge'
 import { Volume2 } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { getHeadwordArticle } from '@/features/words/dutch-headword'
 import type { RecognitionOption, ReviewMode, ReviewWord } from './types'
 import styles from './Review.module.css'
 
@@ -39,6 +40,7 @@ export function ReviewCard({
   word,
 }: ReviewCardProps) {
   const prompt = mode === 'dutch-production' ? translation : word.dutchLemma
+  const article = getHeadwordArticle(word.dutchLemma, word.article)
 
   return (
     <>
@@ -75,7 +77,7 @@ export function ReviewCard({
         {mode !== 'dutch-production' && (
           <>
             <div className={styles.wordMeta}>
-              {word.article && <Badge tone="accent">{word.article}</Badge>}
+              {article && <Badge tone="accent">{article}</Badge>}
               {word.partOfSpeech && <Badge>{word.partOfSpeech}</Badge>}
               <CefrBadge dictionary={word.dictionary} />
             </div>

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { DictionaryCollectionExportV2 } from '@woordenaar/domain'
 import { Button } from '@/components/ui/Button'
+import { formatDutchHeadword } from '@/features/words/dutch-headword'
 import { lookupPublishedMeanings } from './dictionary-meaning-lookup'
 import { formatWordTranslations } from './format-word-translations'
 import { refreshPublishedMeaning } from './refresh-published-meaning'
@@ -109,7 +110,7 @@ export function CollectionSharedAnalysis({
               const id = shared_reference!.reference.entry_id
               return (
                 <option key={id} value={id}>
-                  {content.article} {content.dutch_lemma} ·{' '}
+                  {formatDutchHeadword(content.dutch_lemma, content.article)} ·{' '}
                   {formatWordTranslations(content.translations)}
                 </option>
               )

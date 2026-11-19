@@ -26,3 +26,47 @@ Deno.test(
     assertEquals(prompt.includes('{{WORD}}'), false)
   }
 )
+
+Deno.test(
+  'word analysis pairs English and Russian equivalents by sense',
+  () => {
+    const prompt = formatWordAnalysisPrompt('kloppen')
+    assertStringIncludes(
+      prompt,
+      'entries at the same index must cover the same Dutch sense'
+    )
+    assertStringIncludes(
+      prompt,
+      '"to be correct" with "быть верным" or "быть правильным"'
+    )
+    assertStringIncludes(prompt, 'a protected anchor specifies one sense')
+  }
+)
+
+Deno.test(
+  'word analysis keeps optional prepositions out of the headword',
+  () => {
+    const prompt = formatWordAnalysisPrompt('stellen een vraag')
+    assertStringIncludes(
+      prompt,
+      'Use a non-null value only if the preposition is obligatory'
+    )
+    assertStringIncludes(prompt, '"een vraag stellen" with preposition null')
+    assertStringIncludes(prompt, '"Mag ik u een vraag stellen?"')
+    assertStringIncludes(
+      prompt,
+      '"genieten", "part_of_speech": "verb", "preposition": null'
+    )
+    assertStringIncludes(
+      prompt,
+      'preserve it in the headword (e.g. "werken aan")'
+    )
+  }
+)
+
+Deno.test('calendar examples use bare names for ordinary dates', () => {
+  const prompt = formatWordAnalysisPrompt('dinsdag')
+  assertStringIncludes(prompt, 'the bare weekday or month name')
+  assertStringIncludes(prompt, '"op dinsdag", "in december"')
+  assertStringIncludes(prompt, '"de dinsdag na Pasen"')
+})

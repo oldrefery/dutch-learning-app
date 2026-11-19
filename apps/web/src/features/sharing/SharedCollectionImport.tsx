@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { formatDutchHeadword } from '@/features/words/dutch-headword'
 import type { SharedDictionaryCollectionV2 } from '@woordenaar/domain'
 import { DictionaryFollowingTransferPanel } from './DictionaryFollowingTransferPanel'
 import { useActionState, useMemo, useState } from 'react'
@@ -235,8 +236,7 @@ function LegacySharedCollectionImport({
               <span className="min-w-0">
                 <span className="flex flex-wrap items-baseline gap-x-2">
                   <span className="font-semibold">
-                    {word.article ? `${word.article} ` : ''}
-                    {word.dutchLemma}
+                    {formatDutchHeadword(word.dutchLemma, word.article)}
                   </span>
                   <span className="text-xs uppercase tracking-wide text-neutral-500">
                     {word.partOfSpeech ?? 'unknown'}
