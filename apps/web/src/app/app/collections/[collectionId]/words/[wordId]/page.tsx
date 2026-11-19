@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { CollectionSharedAnalysis } from '@/features/analysis/CollectionSharedAnalysis'
 import { DictionaryRevisionForm } from '@/features/dictionary/DictionaryRevisionForm'
 import { notFound } from 'next/navigation'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
@@ -21,6 +22,9 @@ export default async function WordDetailPage({
   const data = await getOwnedWordPageData(auth.userId, collectionId, wordId)
 
   if (!data) notFound()
+  const followingEnabled = isDictionaryFollowingEnabled()
+  const canRefreshShared =
+    auth.accessLevel === 'full_access' && followingEnabled
 
   return (
     <section className={styles.page}>
@@ -37,13 +41,27 @@ export default async function WordDetailPage({
         <span>/</span> <strong>{data.word.dutchLemma}</strong>
       </nav>
 
+      {canRefreshShared && (
+        <div className={styles.sharedAnalysis}>
+          <CollectionSharedAnalysis
+            key={`${auth.userId}:${data.word.id}`}
+            userId={auth.userId}
+            lemma={data.word.dutchLemma}
+            article={data.word.article}
+            partOfSpeech={data.word.partOfSpeech}
+            entryId={data.word.dictionary?.reference?.entry_id}
+          />
+        </div>
+      )}
+
       <div className={styles.cardWrap}>
         {data.word.dictionary?.mode === 'follow' ? (
           <FollowingWordDetail
             key={`${auth.userId}:${data.word.id}:${'headSequence' in data.word.dictionary ? data.word.dictionary.headSequence : ''}`}
             word={data.word}
             userId={auth.userId}
-            followingEnabled={isDictionaryFollowingEnabled()}
+            followingEnabled={followingEnabled}
+            allowStart={!canRefreshShared}
           />
         ) : (
           <WordDetailCard headingLevel="h1" word={data.word} />
