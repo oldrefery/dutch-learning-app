@@ -3,6 +3,7 @@ import { PublishedMeaningAddWord } from './PublishedMeaningAddWord'
 import { AddWordWorkflow } from './AddWordWorkflow'
 import GlobalAddWordPage from '@/app/app/add/page'
 import { analyzeWordWithAi } from './analysis-client'
+import { saveWordToCollection } from './actions'
 import AddWordPage from '@/app/app/collections/[collectionId]/words/new/page'
 import { DictionaryFollowingTransferPanel } from '@/features/sharing/DictionaryFollowingTransferPanel'
 import { lookupPublishedMeanings } from './dictionary-meaning-lookup'
@@ -27,7 +28,10 @@ jest.mock('@/features/sharing/DictionaryFollowingTransferPanel', () => ({
 jest.mock('./dictionary-meaning-lookup', () => ({
   lookupPublishedMeanings: jest.fn(),
 }))
+jest.mock('@/features/words/AudioButton', () => ({ AudioButton: () => null }))
+jest.mock('next/navigation', () => ({ useRouter: () => ({ push: jest.fn() }) }))
 jest.mock('./actions', () => ({
+  saveWordToCollection: jest.fn(),
   findOwnedSemanticDuplicate: jest.fn(),
   saveAnalyzedWord: jest.fn(),
 }))
@@ -245,5 +249,38 @@ it('honors a stored owned target on the global route without overriding an expli
   expect(DictionaryFollowingTransferPanel).toHaveBeenLastCalledWith(
     expect.objectContaining({ collections: rows }),
     undefined
+  )
+})
+
+it('offers Analyze and Add a list to full-access users, previews the published word and saves only on confirmation', async () => {
+  delete process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED
+  jest.mocked(requireAuthContext).mockResolvedValue({
+    userId: TRANSFER_OWNER,
+    accessLevel: 'full_access',
+  } as never)
+  const candidate = document.entries[0]
+  jest
+    .mocked(lookupPublishedMeanings)
+    .mockResolvedValue({ ...document, entries: [candidate] })
+  jest
+    .mocked(saveWordToCollection)
+    .mockResolvedValue({ success: true, wordId: TRANSFER_OTHER })
+  render(await GlobalAddWordPage())
+  expect(screen.getByRole('link', { name: 'Add a list' })).toHaveAttribute(
+    'href',
+    '/app/batch-capture'
+  )
+  fireEvent.change(screen.getByLabelText(INPUT), { target: { value: 'huis' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Analyze' }))
+  const save = await screen.findByRole('button', { name: 'Save personal copy' })
+  expect(analyzeWordWithAi).not.toHaveBeenCalled()
+  expect(saveWordToCollection).not.toHaveBeenCalled()
+  fireEvent.click(save)
+  await waitFor(() =>
+    expect(saveWordToCollection).toHaveBeenCalledWith(
+      TRANSFER_OWNER,
+      TRANSFER_OTHER,
+      JSON.stringify(candidate.content)
+    )
   )
 })

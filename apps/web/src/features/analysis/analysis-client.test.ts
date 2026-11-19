@@ -1,4 +1,4 @@
-import { requireLegacyWordAnalysis } from './actions'
+import { requireLegacyWordAnalysis, requireWordAnalysisAccess } from './actions'
 import { createClient } from '@/lib/supabase/client'
 import { recordAnalysisHistory } from '@/features/history/analysis-history'
 import {
@@ -8,7 +8,10 @@ import {
 } from './analysis-client'
 import type { WordAnalysis } from './analysis-contract'
 
-jest.mock('./actions', () => ({ requireLegacyWordAnalysis: jest.fn() }))
+jest.mock('./actions', () => ({
+  requireLegacyWordAnalysis: jest.fn(),
+  requireWordAnalysisAccess: jest.fn(),
+}))
 
 const mockInvoke = jest.fn()
 
@@ -100,12 +103,15 @@ describe('analysis client', () => {
   })
 })
 
-test('refuses provider and image calls when the authoritative legacy guard rejects', async () => {
+test('refuses provider and image calls when the respective access checks reject', async () => {
   jest
     .mocked(requireLegacyWordAnalysis)
     .mockRejectedValue(new Error('Use shared meanings'))
+  jest
+    .mocked(requireWordAnalysisAccess)
+    .mockRejectedValue(new Error('Full access required'))
   await expect(analyzeWordWithAi('user-1', 'huis')).rejects.toThrow(
-    'Use shared meanings'
+    'Full access required'
   )
   await expect(findWordImages({} as WordAnalysis)).rejects.toThrow(
     'Use shared meanings'

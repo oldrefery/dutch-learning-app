@@ -32,6 +32,7 @@ export const normalizeDictionaryMeaningQuery = (input: string): string => {
 type QueryResult = PromiseLike<{ data: unknown; error: unknown }>
 export interface DictionaryMeaningLookupPorts {
   owner: DictionaryAnalysisClientOwner
+  previewOnly?: boolean
   enabled: () => boolean
   capability: () => QueryResult
   entries: (query: string) => QueryResult
@@ -113,7 +114,8 @@ export async function findPublishedDictionaryMeanings(
     !capability.success ||
     !capability.data.following_enabled ||
     !capability.data.read_protocol_versions.includes(2) ||
-    !capability.data.command_protocol_versions.includes(2)
+    (!ports.previewOnly &&
+      !capability.data.command_protocol_versions.includes(2))
   )
     throw new Error('Published meaning lookup is unavailable')
   const entries = parseEntries(await read(() => ports.entries(query)), query)

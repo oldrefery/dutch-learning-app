@@ -112,15 +112,14 @@ export function usePersistentBatchCapture(
 
   const createQueue = useCallback(
     (drafts: BatchCaptureDraftItem[], targetCollectionId: string) => {
-      commitBrowserState(
-        createBatchCaptureState(
-          userId,
-          targetCollectionId,
-          drafts,
-          () => window.crypto.randomUUID(),
-          new Date().toISOString()
-        )
+      const queue = createBatchCaptureState(
+        userId,
+        targetCollectionId,
+        drafts,
+        () => window.crypto.randomUUID(),
+        new Date().toISOString()
       )
+      commitBrowserState({ ...queue, isPaused: false })
     },
     [userId]
   )
@@ -171,6 +170,7 @@ export function usePersistentBatchCapture(
           : {
               ...item,
               status: 'cancelled',
+              published: null,
               analysis: null,
               analysisMetadata: null,
               error: null,

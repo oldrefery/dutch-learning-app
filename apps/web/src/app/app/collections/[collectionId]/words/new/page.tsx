@@ -38,7 +38,7 @@ export default async function AddWordPage({
           Add a Dutch word
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-          {followingEnabled
+          {followingEnabled && auth.accessLevel !== 'full_access'
             ? 'Find a published Dutch meaning, review it, and choose which meanings to add to your collection.'
             : 'Analyze a word, review the complete result, choose an image, and save it to one of your collections.'}
         </p>
@@ -48,6 +48,7 @@ export default async function AddWordPage({
         {followingEnabled || auth.accessLevel === 'full_access' ? (
           <AddWordWorkflow
             key={`${auth.userId}:${followingEnabled}`}
+            canAnalyze={auth.accessLevel === 'full_access'}
             followingEnabled={followingEnabled}
             collections={collections}
             initialCollectionId={collectionId}

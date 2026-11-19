@@ -161,3 +161,17 @@ it('keeps query failures distinct from an empty lookup, including offline Auth',
   await expect(invoke()).rejects.toThrow()
   expect(queries).toHaveLength(1)
 })
+it('can preview a published head when reads are enabled and imports are off', async () => {
+  process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED = 'false'
+  rpc.mockResolvedValue(
+    result({ ...CAPABILITY, command_protocol_versions: [1] })
+  )
+  const preview = await lookupPublishedMeanings(
+    OWNER_A,
+    'huis',
+    true,
+    guard,
+    true
+  )
+  expect(preview.entries[0].content).toEqual(transferRevision.content)
+})

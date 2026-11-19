@@ -1,9 +1,11 @@
 /** @jest-environment @stryker-mutator/jest-runner/jest-env/node */
-import { requireLegacyWordAnalysis, saveAnalyzedWord } from './actions'
-import { persistAnalyzedWord } from './persistence-repository'
+import {
+  requireLegacyWordAnalysis,
+  requireWordAnalysisAccess,
+  saveAnalyzedWord,
+} from './actions'
 import { requireAuthContext } from '@/lib/auth/session'
 import { createClient } from '@/lib/supabase/server'
-import type { WordAnalysis } from './analysis-contract'
 jest.mock('next/cache', () => ({ revalidatePath: jest.fn() }))
 jest.mock('next/navigation', () => ({ redirect: jest.fn() }))
 jest.mock('@/lib/auth/session', () => ({ requireAuthContext: jest.fn() }))
@@ -18,16 +20,23 @@ afterEach(() => {
   delete process.env.DICTIONARY_CONTENT_ENABLED
   delete process.env.DICTIONARY_FOLLOWING_ENABLED
 })
-it('rejects legacy analysis, image permission and private persistence before Auth or any database write in following mode', async () => {
+it('keeps legacy editing fenced and requires full access for new analysis and personal saves', async () => {
   await expect(requireLegacyWordAnalysis()).rejects.toThrow(message)
+  jest
+    .mocked(requireAuthContext)
+    .mockResolvedValue({ userId: 'owner', accessLevel: 'read_only' } as never)
+  await expect(requireWordAnalysisAccess()).rejects.toThrow('Full access')
   expect(
     await saveAnalyzedWord({ status: 'idle', message: null }, new FormData())
-  ).toMatchObject({ status: 'error', message })
-  expect(
-    await persistAnalyzedWord('owner', 'collection', {} as WordAnalysis)
-  ).toEqual({ success: false, code: 'insert', message })
-  expect(requireAuthContext).not.toHaveBeenCalled()
+  ).toMatchObject({
+    status: 'error',
+    message: expect.stringMatching(/Full access/),
+  })
   expect(createClient).not.toHaveBeenCalled()
+  jest
+    .mocked(requireAuthContext)
+    .mockResolvedValue({ userId: 'owner', accessLevel: 'full_access' } as never)
+  await expect(requireWordAnalysisAccess()).resolves.toBeUndefined()
 })
 it('requires full access for legacy provider calls when following is OFF', async () => {
   process.env.DICTIONARY_FOLLOWING_ENABLED = 'false'

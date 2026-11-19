@@ -3,7 +3,8 @@
 import type { BatchCaptureDraftItem } from '@woordenaar/domain'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { findOwnedSemanticDuplicate } from '@/features/analysis/actions'
-import { analyzeWordWithAi } from '@/features/analysis/analysis-client'
+import { analyzeForCollection } from '@/features/analysis/analyze-for-collection'
+import { PublishedWordReview } from '@/features/analysis/PublishedWordReview'
 import { serializeWordAnalysis } from '@/features/analysis/analysis-contract'
 import { useWebSettings } from '@/features/settings/useWebSettings'
 import type { CollectionOption } from '@/features/words/repository'
@@ -15,12 +16,14 @@ import { usePersistentBatchCapture } from './usePersistentBatchCapture'
 import type { WebBatchCaptureItem } from './types'
 
 interface BatchCaptureWorkspaceProps {
+  followingEnabled: boolean
   collections: CollectionOption[]
   userId: string
 }
 
 export function BatchCaptureWorkspace({
   collections,
+  followingEnabled,
   userId,
 }: BatchCaptureWorkspaceProps) {
   const collectionIds = useMemo(
@@ -88,7 +91,21 @@ export function BatchCaptureWorkspace({
       }
 
       patchItem(item.id, { status: 'analyzing', error: null })
-      const result = await analyzeWordWithAi(userId, item.dutchText)
+      const result = await analyzeForCollection(
+        userId,
+        item.dutchText,
+        followingEnabled
+      )
+      if (result.kind === 'published') {
+        patchItem(item.id, {
+          status: 'awaiting_review',
+          published: result.document,
+          analysis: null,
+          error: null,
+        })
+        setPaused(true)
+        return
+      }
       let semanticDuplicate = null
       let duplicateWarning: string | null = null
       try {
@@ -109,7 +126,7 @@ export function BatchCaptureWorkspace({
       })
       setPaused(true)
     },
-    [patchItem, setPaused, userId]
+    [followingEnabled, patchItem, setPaused, userId]
   )
 
   useEffect(() => {
@@ -152,6 +169,7 @@ export function BatchCaptureWorkspace({
       status,
       analysis: null,
       analysisMetadata: null,
+      published: null,
       semanticDuplicate: null,
       error: null,
     })
@@ -171,7 +189,8 @@ export function BatchCaptureWorkspace({
   }
 
   const reviewItem = state.items.find(
-    item => item.status === 'awaiting_review' && item.analysis
+    item =>
+      item.status === 'awaiting_review' && (item.published || item.analysis)
   )
   const targetCollection =
     collections.find(
@@ -180,7 +199,17 @@ export function BatchCaptureWorkspace({
 
   return (
     <div className="grid gap-6">
-      {reviewItem && targetCollection && (
+      {reviewItem?.published && targetCollection && (
+        <PublishedWordReview
+          key={reviewItem.id}
+          document={reviewItem.published}
+          userId={userId}
+          collectionId={targetCollection.id}
+          onSaved={() => resolveItem(reviewItem.id, 'completed')}
+          onSkip={() => resolveItem(reviewItem.id, 'skipped')}
+        />
+      )}
+      {reviewItem?.analysis && targetCollection && (
         <BatchReviewPanel
           collectionId={targetCollection.id}
           collectionName={targetCollection.name}

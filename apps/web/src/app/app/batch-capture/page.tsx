@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { isDictionaryFollowingEnabled } from '@/features/dictionary/repository'
 import { BatchCaptureWorkspace } from '@/features/batch-capture/BatchCaptureWorkspace'
 import { listOwnedCollectionOptions } from '@/features/analysis/repository'
 import { requireAuthContext } from '@/lib/auth/session'
@@ -46,6 +47,8 @@ export default async function BatchCapturePage() {
           </div>
         ) : (
           <BatchCaptureWorkspace
+            followingEnabled={isDictionaryFollowingEnabled()}
+            key={auth.userId}
             collections={collections}
             userId={auth.userId}
           />

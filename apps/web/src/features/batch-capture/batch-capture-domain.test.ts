@@ -1,3 +1,4 @@
+import { transferSession } from '@/features/sharing/__fixtures__/following-transfer'
 import { parseWordAnalysis } from '../analysis/analysis-contract'
 import {
   createBatchCaptureState,
@@ -153,5 +154,36 @@ describe('web batch capture domain', () => {
         analysisMetadata: expect.objectContaining({ cacheHit: true }),
       })
     )
+  })
+})
+
+it('restores published results for approval without reanalyzing or saving', () => {
+  const doc = transferSession().document
+  const published = { ...doc, entries: [doc.entries[0]] }
+  const state = createBatchCaptureState(
+    USER_ID,
+    COLLECTION_ID,
+    [{ dutchText: 'huis', translationHint: null, sourceLine: 1 }],
+    () => 'item',
+    NOW
+  )
+  state.items = updateBatchCaptureItem(
+    state.items,
+    'item',
+    { status: 'awaiting_review', published },
+    NOW
+  )
+  const restored = recoverBatchCaptureState(
+    serializeBatchCaptureState(state),
+    USER_ID,
+    [COLLECTION_ID],
+    COLLECTION_ID,
+    NOW
+  )
+  expect(restored.isPaused).toBe(true)
+  expect(restored.items[0]).toMatchObject({
+    status: 'awaiting_review',
+    published,
+    analysis: null,
   })
 })
