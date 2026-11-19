@@ -2,6 +2,10 @@ import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
 import { qualificationCorpus } from '../../../scripts/shared-dictionary/semantic-qualification-corpus.ts'
 import { contextFor } from '../../../scripts/shared-dictionary/semantic-qualification.ts'
+import {
+  ANALYSIS_GENERATION_RESPONSE_SCHEMA,
+  ANALYSIS_SEMANTIC_RESPONSE_SCHEMA,
+} from './analysisResponseSchema.ts'
 import { journalPacket } from './geminiTransport.ts'
 import { inspectCandidate } from './candidateGuards.ts'
 import {
@@ -174,7 +178,7 @@ Deno.test(
     const requests = [
       [
         await prepareGeminiRequest(ctx.input, 'gemini-fixture-model'),
-        GENERATION_RESPONSE_SCHEMA,
+        ANALYSIS_GENERATION_RESPONSE_SCHEMA,
       ],
       [
         await prepareSemanticRequest(
@@ -190,7 +194,7 @@ Deno.test(
             }
           )
         ),
-        SEMANTIC_RESPONSE_SCHEMA,
+        ANALYSIS_SEMANTIC_RESPONSE_SCHEMA,
       ],
     ] as const
     for (const [request, schema] of requests) {
@@ -248,5 +252,30 @@ Deno.test(
       const config = JSON.parse(request.body).generationConfig
       assert.deepEqual(config.thinkingConfig, { thinkingLevel: 'low' })
     }
+  }
+)
+
+Deno.test(
+  'shared generation requires usage guidance while permitting absent technical notes and media',
+  () => {
+    const valid = validator.compile(ANALYSIS_GENERATION_RESPONSE_SCHEMA)
+    const content = {
+      ...fixture.content,
+      analysis_notes: null,
+      image_url: null,
+    }
+    assert.equal(valid({ content: { ...content, usage_notes: null } }), false)
+    assert.equal(
+      valid({
+        content: {
+          ...content,
+          usage_notes: {
+            summary: 'Use it for a financial institution.',
+            contrasts: [],
+          },
+        },
+      }),
+      true
+    )
   }
 )

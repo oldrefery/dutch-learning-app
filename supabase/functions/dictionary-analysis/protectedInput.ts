@@ -1,7 +1,5 @@
-import {
-  GENERATION_RESPONSE_SCHEMA,
-  jsonGenerationConfig,
-} from './responseSchemas.ts'
+import { ANALYSIS_GENERATION_RESPONSE_SCHEMA } from './analysisResponseSchema.ts'
+import { jsonGenerationConfig } from './responseSchemas.ts'
 import { canonicalizeJson } from '../../../packages/domain/src/shared-dictionary.ts'
 
 export interface ProtectedAnalysisInput {
@@ -140,6 +138,17 @@ export const GENERATION_SYSTEM_PROMPT =
   'Each contrast example is null or an object with exactly nl, en and ru; nl/en are strings and ru is a string or null. Never use a bare string example. ' +
   'Set image_url and tts_url to null. Do not assess CEFR. Do not claim human approval or semantic validation.'
 
+export const ANALYSIS_GENERATION_OUTPUT_TEMPLATE = {
+  ...GENERATION_OUTPUT_TEMPLATE,
+  usage_notes: { summary: '', contrasts: [] },
+}
+
+export const ANALYSIS_GENERATION_SYSTEM_PROMPT =
+  GENERATION_SYSTEM_PROMPT +
+  ' Always provide a short, non-empty English usage_notes.summary with one or two common modern constructions for this sense. ' +
+  'Include a contrast only when it helps learners avoid confusing this sense with a similar word. Use an empty contrasts array otherwise. ' +
+  'Use analysis_notes for a useful grammatical detail such as a non-obvious plural, conjugation, or restriction. Leave it null when there is no useful detail and avoid repeating the usage guidance.'
+
 export interface PreparedGeminiRequest {
   model: string
   body: string
@@ -156,7 +165,7 @@ export const prepareGeminiRequest = async (
     systemInstruction: {
       parts: [
         {
-          text: GENERATION_SYSTEM_PROMPT,
+          text: ANALYSIS_GENERATION_SYSTEM_PROMPT,
         },
       ],
     },
@@ -167,13 +176,16 @@ export const prepareGeminiRequest = async (
           {
             text: canonicalizeJson({
               protected_input: payload,
-              content_template: GENERATION_OUTPUT_TEMPLATE,
+              content_template: ANALYSIS_GENERATION_OUTPUT_TEMPLATE,
             }),
           },
         ],
       },
     ],
-    generationConfig: jsonGenerationConfig(GENERATION_RESPONSE_SCHEMA, model),
+    generationConfig: jsonGenerationConfig(
+      ANALYSIS_GENERATION_RESPONSE_SCHEMA,
+      model
+    ),
   })
   return {
     model,
