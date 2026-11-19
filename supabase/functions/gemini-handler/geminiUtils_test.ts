@@ -353,3 +353,25 @@ Deno.test('normalizeUsageNotes - limits contrasts and text length', () => {
   assertEquals(result?.summary.length, 420)
   assertEquals(result?.contrasts.length, 3)
 })
+
+Deno.test(
+  'parseGeminiResponse joins answer text and skips thought parts',
+  () => {
+    const response = {
+      candidates: [
+        {
+          content: {
+            parts: [
+              { thought: true, text: 'Planning { ... }' },
+              { text: '{"translations":' },
+              { text: '{"en":["together"]}}' },
+            ],
+          },
+        },
+      ],
+    }
+    assertEquals(parseGeminiResponse(response), {
+      translations: { en: ['together'] },
+    })
+  }
+)

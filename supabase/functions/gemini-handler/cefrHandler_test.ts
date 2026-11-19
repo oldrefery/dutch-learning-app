@@ -429,3 +429,39 @@ Deno.test(
     }
   }
 )
+
+Deno.test(
+  'empty cached translations fall through for both lookup strategies',
+  async () => {
+    cached = [{ ...analysis, translations: { en: [], ru: [] } }]
+    try {
+      for (const word of ['huis', 'het huis']) {
+        const result = await request(false, 200, word)
+        assertEquals(result.meta.source, 'gemini')
+        assertEquals(result.data.translations.en, ['house'])
+        assert(!calls.some(call => call.path.includes('increment_cache_usage')))
+      }
+    } finally {
+      cached = []
+    }
+  }
+)
+
+Deno.test(
+  'a provider response without usable English never reaches the cache',
+  async () => {
+    providerOverrides = { translations: { en: [' ', 42], ru: [] } }
+    try {
+      const result = await request(false, 500)
+      assert(result.error.includes('English translation'))
+      assert(
+        !calls.some(
+          call =>
+            call.path.endsWith('/word_analysis_cache') && call.method !== 'GET'
+        )
+      )
+    } finally {
+      providerOverrides = {}
+    }
+  }
+)

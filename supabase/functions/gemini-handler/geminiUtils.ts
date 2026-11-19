@@ -52,7 +52,15 @@ export async function callGeminiAPI(prompt: string): Promise<any> {
 // Helper function to parse Gemini response
 export function parseGeminiResponse(response: any): any {
   try {
-    const content = response.candidates?.[0]?.content?.parts?.[0]?.text
+    const parts = response?.candidates?.[0]?.content?.parts
+    const content = Array.isArray(parts)
+      ? parts
+          .filter(
+            part => part?.thought !== true && typeof part?.text === 'string'
+          )
+          .map(part => part.text)
+          .join('')
+      : ''
     if (!content) {
       return { content: 'No content available' }
     }
@@ -104,6 +112,29 @@ export function cleanExamples(
       ru: ex.ru ? ex.ru.trim() : undefined,
     }))
     .slice(0, 6) // Limit to 6 examples
+}
+
+export function hasEnglishTranslation(translations: unknown): boolean {
+  if (
+    !translations ||
+    typeof translations !== 'object' ||
+    !('en' in translations)
+  )
+    return false
+  return (
+    Array.isArray(translations.en) &&
+    translations.en.some(
+      text => typeof text === 'string' && text.trim().length > 0
+    )
+  )
+}
+
+export function assertEnglishTranslation(translations: unknown): void {
+  if (!hasEnglishTranslation(translations)) {
+    throw new Error(
+      'The analysis did not include an English translation. Please try again.'
+    )
+  }
 }
 
 // Helper function to format translations
