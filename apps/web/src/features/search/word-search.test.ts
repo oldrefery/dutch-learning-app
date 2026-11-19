@@ -3,6 +3,7 @@ import { buildWordSearchResults, normalizeWordSearchQuery } from './word-search'
 const collections = [{ collection_id: 'collection-1', name: 'Essentials' }]
 const rows = [
   {
+    article: null,
     collection_id: 'collection-1',
     dutch_lemma: 'uitwaaien',
     dutch_original: 'uitwaaien',
@@ -37,6 +38,67 @@ describe('word search', () => {
     }
   )
 
+  it.each(['stad', '  De   stad  ', 'stad (de)'])(
+    'finds the same headword first for %s',
+    query => {
+      const city = {
+        ...rows[0],
+        article: 'de',
+        dutch_lemma: 'stad',
+        dutch_original: 'steden',
+        part_of_speech: 'noun',
+        translations: { en: ['city'], ru: ['город'] },
+        word_id: 'word-city',
+      }
+      const capital = {
+        ...city,
+        dutch_lemma: 'hoofdstad',
+        dutch_original: 'hoofdstad',
+        word_id: 'word-capital',
+      }
+
+      expect(
+        buildWordSearchResults([capital, city], collections, query, 1)
+      ).toEqual([expect.objectContaining({ wordId: 'word-city' })])
+    }
+  )
+
+  it('matches het for older nouns without article metadata', () => {
+    const house = {
+      ...rows[0],
+      dutch_lemma: 'huis',
+      dutch_original: null,
+      part_of_speech: 'noun',
+    }
+
+    expect(
+      buildWordSearchResults([house], collections, 'het huis')
+    ).toHaveLength(1)
+    expect(
+      buildWordSearchResults(
+        [{ ...house, article: 'het' }],
+        collections,
+        'de huis'
+      )
+    ).toEqual([])
+  })
+
+  it('preserves literal expressions beginning with a Dutch article', () => {
+    const expression = {
+      ...rows[0],
+      dutch_lemma: 'de kat uit de boom kijken',
+      dutch_original: null,
+      part_of_speech: 'expression',
+    }
+
+    expect(
+      buildWordSearchResults([expression], collections, 'de kat')
+    ).toHaveLength(1)
+    expect(buildWordSearchResults(rows, collections, 'het uitwaaien')).toEqual(
+      []
+    )
+  })
+
   it('returns no results for an empty normalized query', () => {
     expect(buildWordSearchResults(rows, collections, '   ')).toEqual([])
   })
@@ -44,6 +106,7 @@ describe('word search', () => {
   it('filters malformed translations and supplies display fallbacks', () => {
     const malformedRows = [
       {
+        article: null,
         collection_id: 'collection-1',
         dutch_lemma: 'appel',
         dutch_original: null,
@@ -55,6 +118,7 @@ describe('word search', () => {
         word_id: 'word-2',
       },
       {
+        article: null,
         collection_id: 'collection-1',
         dutch_lemma: 'banaan',
         dutch_original: null,

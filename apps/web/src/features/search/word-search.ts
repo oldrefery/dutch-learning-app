@@ -4,6 +4,7 @@ export interface WordSearchCollectionRow {
 }
 
 export interface WordSearchRow {
+  article: string | null
   collection_id: string | null
   dutch_lemma: string
   dutch_original: string | null
@@ -43,6 +44,10 @@ export const buildWordSearchResults = (
   const normalizedQuery = normalizeWordSearchQuery(query)
   if (!normalizedQuery) return []
 
+  const prefix = /^(de|het) (.+)$/.exec(normalizedQuery)
+  const suffix = /^(.+) \((de|het)\)$/.exec(normalizedQuery)
+  const requestedArticle = suffix?.[2] ?? prefix?.[1]
+  const requestedLemma = suffix?.[1] ?? prefix?.[2]
   const collectionNames = new Map(
     collections.map(collection => [collection.collection_id, collection.name])
   )
@@ -50,11 +55,18 @@ export const buildWordSearchResults = (
   return rows
     .flatMap(row => {
       const translations = collectTranslations(row.translations)
+      const lemma = row.dutch_lemma.toLocaleLowerCase('nl')
+      const exactLemmaMatch =
+        lemma === normalizedQuery ||
+        (lemma === requestedLemma &&
+          (row.article === requestedArticle ||
+            (!row.article &&
+              (!row.part_of_speech || row.part_of_speech === 'noun'))))
       const searchable = [
         row.dutch_lemma,
         row.dutch_original ?? '',
         ...translations,
-      ].map(value => value.toLocaleLowerCase('nl'))
+      ]
       const collectionName = row.collection_id
         ? collectionNames.get(row.collection_id)
         : null
@@ -62,24 +74,33 @@ export const buildWordSearchResults = (
       if (
         !row.collection_id ||
         !collectionName ||
-        !searchable.some(value => value.includes(normalizedQuery))
+        (!exactLemmaMatch &&
+          !searchable.some(value =>
+            value.toLocaleLowerCase('nl').includes(normalizedQuery)
+          ))
       ) {
         return []
       }
 
       return [
         {
-          collectionId: row.collection_id,
-          collectionName,
-          dutchLemma: row.dutch_lemma,
-          partOfSpeech: row.part_of_speech ?? 'other',
-          primaryTranslation: translations[0] ?? 'Translation unavailable',
-          wordId: row.word_id,
+          exactLemmaMatch,
+          result: {
+            collectionId: row.collection_id,
+            collectionName,
+            dutchLemma: row.dutch_lemma,
+            partOfSpeech: row.part_of_speech ?? 'other',
+            primaryTranslation: translations[0] ?? 'Translation unavailable',
+            wordId: row.word_id,
+          },
         },
       ]
     })
-    .sort((left, right) =>
-      left.dutchLemma.localeCompare(right.dutchLemma, 'nl')
+    .sort(
+      (left, right) =>
+        Number(right.exactLemmaMatch) - Number(left.exactLemmaMatch) ||
+        left.result.dutchLemma.localeCompare(right.result.dutchLemma, 'nl')
     )
     .slice(0, limit)
+    .map(({ result }) => result)
 }
