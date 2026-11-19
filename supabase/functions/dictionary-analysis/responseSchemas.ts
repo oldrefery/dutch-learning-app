@@ -39,9 +39,7 @@ const strings = (maxItems: number, minItems = 0): ResponseSchema => ({
   maxItems,
 })
 const example = object({ nl: text, en: text, ru: nullableText })
-const contentProperties = {
-  dutch_lemma: text,
-  dutch_original: nullableText,
+const learningFields = {
   part_of_speech: nullableText,
   article: { type: ['string', 'null'], enum: ['de', 'het', null] },
   translations: object({ en: strings(30, 1), ru: strings(30) }),
@@ -84,6 +82,11 @@ const contentProperties = {
       },
     })
   ),
+} satisfies Partial<Record<keyof DictionaryContent, ResponseSchema>>
+const contentProperties = {
+  dutch_lemma: text,
+  dutch_original: nullableText,
+  ...learningFields,
   image_url: { type: 'null' },
   tts_url: { type: 'null' },
 } satisfies Record<keyof DictionaryContent, ResponseSchema>
@@ -91,6 +94,35 @@ const contentProperties = {
 export const GENERATION_RESPONSE_SCHEMA = object({
   content: object(contentProperties),
 })
+// The interactive analyzer returns the learning content directly, before media enrichment.
+export function wordAnalysisResponseSchema(
+  includeCefr: boolean
+): ResponseSchema {
+  return object({
+    dutch_lemma: text,
+    ...learningFields,
+    original_input: text,
+    confidence_score: { type: 'number' },
+    translations: object({ en: strings(30, 1), ru: strings(30, 1) }),
+    examples: {
+      type: 'array',
+      items: object({ nl: text, en: text, ru: text }),
+      minItems: 4,
+      maxItems: 6,
+    },
+    ...(includeCefr
+      ? {
+          cefr: object({
+            level: {
+              type: ['string', 'null'],
+              enum: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', null],
+            },
+            confidence: { type: ['number', 'null'] },
+          }),
+        }
+      : {}),
+  })
+}
 export const SEMANTIC_RESPONSE_SCHEMA = object({
   content: object({
     schema_version: { type: 'integer', enum: [1] },

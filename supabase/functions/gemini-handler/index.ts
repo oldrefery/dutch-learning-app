@@ -229,7 +229,7 @@ Deno.serve(async (req: Request) => {
 
     const prompt =
       formatWordAnalysisPrompt(word) + (cefrEnabled ? ANALYSIS_CEFR_PROMPT : '')
-    const geminiResponse = await callGeminiAPI(prompt)
+    const geminiResponse = await callGeminiAPI(prompt, cefrEnabled)
     const analysis = parseGeminiResponse(geminiResponse)
     assertEnglishTranslation(analysis?.translations)
     assertRussianScript(analysis)
@@ -237,6 +237,11 @@ Deno.serve(async (req: Request) => {
     // Clean and format data
     const cleanedExamples = cleanExamples(analysis.examples)
     const formattedTranslations = formatTranslations(analysis.translations)
+    if (!formattedTranslations.ru.some(Boolean)) {
+      throw new Error(
+        'The analysis did not include a Russian translation. Please try again.'
+      )
+    }
     const usageNotes = normalizeUsageNotes(analysis.usage_notes)
 
     // Get multiple image options

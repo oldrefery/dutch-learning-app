@@ -30,3 +30,18 @@ Trial a provider JSON schema on the same cases. Check the generated result in th
 ## 4. Release and verify
 
 Publish the evaluated prompt and model via the existing Edge Function. Check single and batch analysis under a test account and repeat a previously uncached word to confirm the cache hit. Review old shared records for the specific defects that were demonstrated. Treat a learner's saved copies separately from the analysis cache.
+
+## November 19 screening results
+
+The 74 live requests used eight unique inputs. Each model received 37 requests across the original comparison, a schema probe, a candidate prompt, and the final prompt. Google reported `gemini-3.6-flash` for every request addressed to `gemini-3.5-flash`. The final comparison used eight requests per model with CEFR and eight without. All requests used low thinking and an 8,192-token output limit.
+
+| Requested model | Passed field checks, CEFR off | Passed field checks, CEFR on | Median response | Input / output tokens across the final 16 |
+| --------------- | ----------------------------: | ---------------------------: | --------------: | ----------------------------------------: |
+| 3.5 Flash       |                           7/8 |                          6/8 |          10.4 s |                           76,376 / 11,772 |
+| 3.8 Flash       |                           8/8 |                          8/8 |          12.8 s |                           76,376 / 13,171 |
+
+The checks covered each input's expected lemma and part of speech, preposition, irregularity and separability, the inflected forms, bilingual examples, and the application's Cyrillic check. The older route returned transliterated Russian for both final `de meneer` requests and marked `spelen` irregular once. Earlier candidates from both models sometimes attached the construction's preposition to the past participle. The final instructions cover this explicitly.
+
+Use 3.8 Flash for fresh interactive analysis. The combined model-call cost for its final 16 responses is approximately USD 0.107 at the November standard rate, or USD 0.0067 per returned card. Wall time includes the test network path. The sample covers the reported bugs. Manual inspection found that 3.8 also attributed rising debts to `aanlopen` in one example, where a learner should use `oplopen`. Passing the field checks does not establish lexical accuracy for every example or sense. Broader vocabulary coverage remains a follow-up.
+
+[Gemini Developer API pricing](https://ai.google.dev/gemini-api/docs/pricing) · [Model alias documentation](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash)
