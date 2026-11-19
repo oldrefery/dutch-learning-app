@@ -1,3 +1,4 @@
+import { wordAnalysisResponseSchema } from '../dictionary-analysis/responseSchemas.ts'
 import { API_CONFIG } from './constants.ts'
 import type {
   WordUsageContrast,
@@ -6,7 +7,10 @@ import type {
 } from './types.ts'
 
 // Helper function to call Gemini API
-export async function callGeminiAPI(prompt: string): Promise<any> {
+export async function callGeminiAPI(
+  prompt: string,
+  includeCefr: boolean
+): Promise<any> {
   const apiKey = Deno.env.get('GEMINI_API_KEY')!
 
   if (!apiKey) {
@@ -35,6 +39,7 @@ export async function callGeminiAPI(prompt: string): Promise<any> {
         },
         maxOutputTokens: 8192,
         responseMimeType: 'application/json',
+        responseJsonSchema: wordAnalysisResponseSchema(includeCefr),
       },
     }),
   })

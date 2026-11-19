@@ -6,7 +6,7 @@ const analysis = {
   dutch_lemma: 'huis',
   part_of_speech: 'noun',
   article: 'het',
-  translations: { en: ['house'], ru: [] },
+  translations: { en: ['house'], ru: ['дом'] },
   examples: [{ nl: 'Dit is een huis.', en: 'This is a house.' }],
   cefr: {
     level: 'A1',
@@ -462,6 +462,49 @@ Deno.test(
       )
     } finally {
       providerOverrides = {}
+    }
+  }
+)
+
+Deno.test(
+  'new bilingual analyses require a Russian translation before caching',
+  async () => {
+    cached = []
+    providerOverrides = { translations: { en: ['house'], ru: ['  '] } }
+    try {
+      const result = await request(false, 500)
+      assert(result.error.includes('Russian translation'))
+      assert(
+        !calls.some(
+          call =>
+            call.path.endsWith('/word_analysis_cache') && call.method !== 'GET'
+        )
+      )
+    } finally {
+      providerOverrides = {}
+    }
+  }
+)
+
+Deno.test(
+  'provider schema follows the CEFR switch and excludes derived media',
+  async () => {
+    cached = []
+    for (const enabled of [false, true]) {
+      await request(enabled)
+      const provider = calls.find(call => call.path.includes('/models/'))
+      assert(provider)
+      const config = provider.body.generationConfig as {
+        responseJsonSchema: {
+          required: string[]
+          properties: Record<string, unknown>
+        }
+      }
+      const schema = config.responseJsonSchema
+      assertEquals(schema.required.includes('cefr'), enabled)
+      assertEquals(Object.hasOwn(schema.properties, 'cefr'), enabled)
+      assert(schema.required.includes('translations'))
+      assert(!Object.hasOwn(schema.properties, 'image_url'))
     }
   }
 )

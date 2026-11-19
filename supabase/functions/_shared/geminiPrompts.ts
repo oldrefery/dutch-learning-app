@@ -2,11 +2,11 @@
 
 export const GEMINI_PROMPTS = {
   WORD_ANALYSIS: `
-You are an expert Dutch language teacher and linguist. Your primary goal is to provide a comprehensive, accurate analysis of the Dutch word or phrase "{{WORD}}".
+You are an expert Dutch language teacher and linguist. Your primary goal is to provide a comprehensive, accurate analysis of the Dutch input supplied at the end.
 
 **PROCESS OVERVIEW - FOLLOW THESE STEPS IN ORDER:**
 
-1.  **TYPO CHECK:** First, determine if the input "{{WORD}}" is a likely typo of a common Dutch word.
+1.  **TYPO CHECK:** First, determine if the supplied input is a likely typo of a common Dutch word.
     * **If it IS a typo:**
         * Identify the CORRECT word.
         * In your final JSON, the 'dutch_lemma' MUST be the CORRECT word.
@@ -14,10 +14,10 @@ You are an expert Dutch language teacher and linguist. Your primary goal is to p
         * **CRITICAL: All subsequent fields (translations, examples, etc.) MUST be generated for the CORRECTED word, NOT the original typo.**
     * **If it is NOT a typo:** Proceed to the next step.
 
-2.  **PRIMARY USAGE ANALYSIS:** This step is crucial for ambiguous words like 'opgelicht', which can be an adjective or a past participle. Your first task is to determine the **most common usage** of "{{WORD}}" in modern Dutch.
+2.  **PRIMARY USAGE ANALYSIS:** This step is crucial for ambiguous words like 'opgelicht', which can be an adjective or a past participle. Your first task is to determine the **most common usage** of the supplied input in modern Dutch.
 
     * **Step A: Determine the Most Common Part of Speech.**
-        * Based on authoritative sources (like Van Dale) and general language usage, decide if "{{WORD}}" is more frequently used as a verb form (participle) or as a standalone adjective/noun.
+        * Based on authoritative sources (like Van Dale) and general language usage, decide if the supplied input is more frequently used as a verb form (participle) or as a standalone adjective/noun.
         * Your choice here will dictate the entire rest of the analysis.
 
     * **Step B: Generate Analysis Based on the Determined Primary Usage.**
@@ -28,7 +28,7 @@ You are an expert Dutch language teacher and linguist. Your primary goal is to p
             * **CRITICAL:** All subsequent fields (examples, translations, etc.) **MUST** be for the infinitive verb.
 
         * **If the most common usage is an ADJECTIVE (e.g., you determine 'opgelicht' is most often used as an adjective meaning 'scammed' or 'relieved'):**
-            * The 'dutch_lemma' **MUST** be the word itself (e.g., 'pgelicht').
+            * The 'dutch_lemma' **MUST** be the word itself (e.g., 'opgelicht').
             * The 'part_of_speech' **MUST** be '"adjective"'.
             * The 'analysis_notes' **MUST** state this decision, for example: "Input 'opgelicht' is analyzed as an adjective, which is its most common usage."
             * **CRITICAL:** All subsequent fields (examples, translations, etc.) **MUST** be for the adjective itself.
@@ -39,7 +39,7 @@ You are an expert Dutch language teacher and linguist. Your primary goal is to p
 
 **JSON STRUCTURE:**
 {
-  "original_input": "{{WORD}}",
+  "original_input": "The exact supplied input",
   "dutch_lemma": "The corrected, core word or infinitive, without articles",
   "part_of_speech": "noun|verb|adjective|adverb|preposition|conjunction|interjection|pronoun|expression",
   "translations": { "en": ["..."], "ru": ["..."] },
@@ -98,14 +98,15 @@ You are an expert Dutch language teacher and linguist. Your primary goal is to p
   - **"fixed_expression"**: Fixed multi-word expressions (e.g., "met andere woorden" = in other words, "in ieder geval" = in any case)
   - **"interjection"**: Exclamations (e.g., "Jeetje!" = Gosh!, "Verdorie!" = Darn!)
   - **"abbreviation"**: Acronyms and abbreviations (e.g., "btw" = by the way, "KLM" = Royal Dutch Airlines)
-- **FIXED PREPOSITIONS:** Analyze if the word consistently requires a specific preposition (e.g., "genieten van", "zich voorbereiden op"). If so, populate the \`preposition\` field ONLY with that preposition (e.g., "van", "op"). If there are multiple options or no single fixed preposition, this field MUST be \`null\`.
-- **IRREGULAR VERBS:** If a verb is irregular (\`"is_irregular": true\`), the examples MUST demonstrate this. Include at least one example in the present tense (e.g., "ik eet"), one in the simple past tense (e.g., "ik at"), and one in the present perfect (e.g., "ik heb gegeten").
+- **PREPOSITIONS AND SENSES:** For a bare verb, give its ordinary standalone meanings. Set \`preposition\` to null if a preposition belongs to just one construction or sense. Give common constructions in usage_notes.summary and examples. For "werken", the lemma is "werken", preposition is null, and the meanings include employment and functioning. Mention "werken aan iets" (work on something) as a usage tip. Never attach a location, employer, instrument or other incidental preposition to the headword.
+  - If the learner explicitly supplies a verb plus preposition, preserve the whole construction as the headword (e.g. "werken aan"), give translations and examples specific to that construction, and set preposition to null because it is already part of the headword. For a verb plus preposition, keep part_of_speech "verb". Give the inflected verb alone in conjugation; for example, the participle of "werken aan" is "gewerkt". Keep the preposition and its object in the example sentences. For separable verbs such as "opbellen", retain the separable particle in each form. For a genuinely fixed complement selected by the headword, use the separate preposition field only when that preposition is not already present.
+- **VERB FORMS:** Determine is_irregular from the Dutch conjugation. A regular weak verb such as "werken" (werk, werkte, werkten, gewerkt) has is_irregular false. A strong verb such as "lopen" (loop, liep, liepen, gelopen) has is_irregular true for this learner-facing flag. Separable prefixes and ordinary spelling adjustments alone do not indicate irregularity. Verify that the flag, the conjugation, and the explanation agree. For irregular verbs show present, simple past and perfect examples.
 - **RUSSIAN SCRIPT:** Write every Russian translation in native Cyrillic, including translations.ru, examples[].ru and usage_notes.contrasts[].example.ru. Never use Latin transliteration or mix Latin and Cyrillic letters within a Russian word. Proper names/acronyms may retain their original spelling inside an otherwise Russian sentence.
-- **TRANSLATIONS:** Provide multiple, distinct meanings. **The first translation in the array MUST be the most common and primary meaning.** For "aflopen", include primary meanings like "to come to an end" first, followed by others like "to slope down", "to visit (shops)", "to go off (alarm)". Provide Russian translations that correspond to ALL English meanings in the same order of importance.
-- **EXAMPLES:** Provide examples that show the word in different common contexts or collocations. For the verb "lopen", examples should include not just literal walking (e.g., "naar school lopen"), but also figurative uses (e.g., "tegen problemen aanlopen").
+- **TRANSLATIONS:** Provide multiple, distinct meanings. **The first translation in the array MUST be the most common and primary meaning.** Include only natural equivalents for the analyzed word or construction; a single meaning is enough if no other common one fits. For "aflopen", include primary meanings like "to come to an end" first, followed by others like "to slope down", "to visit (shops)", "to go off (alarm)". Provide Russian translations that correspond to ALL English meanings in the same order of importance.
+- **EXAMPLES:** Provide examples that show the word in different common contexts or collocations. For the verb "lopen", examples should include not just literal walking (e.g., "naar school lopen"), but also figurative uses of the same lemma (e.g., "De vergadering loopt uit de hand"). For every example, reconstruct the infinitive from the sentence, including separated particles and reflexive pronouns. If it belongs to another lemma, replace the example. Use a related construction only in usage notes, or explicitly label it as such.
 - **SYNONYMS:** Provide an array of common synonyms for the \`dutch_lemma\`. If no common synonyms are found, return an empty array \`[]\`.
 - **ANTONYMS:** Provide an array of common antonyms. If none, return an empty array \`[]\`.
-- **NOUNS:** For nouns, ALWAYS provide the definite article ("de" or "het") and the plural form in the \`plural\` field. For non-nouns, \`plural\` and \`article\` must be \`null\`.
+- **NOUNS:** For nouns, provide the usual definite article ("de" or "het") and the attested plural (null for nouns with no usual plural) in the \`plural\` field. For non-nouns, \`plural\` and \`article\` must be \`null\`.
 - **PRONOUNS:** For pronouns, both \`article\` and \`plural\` fields MUST be \`null\`. Provide comprehensive translations covering all cases (subject, object, possessive). Examples should demonstrate the pronoun in different grammatical functions.
 - **VERBS (Conjugation):** For verbs, populate the \`conjugation\` object. For the \`present\` and \`simple_past\` fields, you MUST provide the first-person singular form (the "ik-vorm", e.g., for "lopen" it is "loop" and "liep"). The \`simple_past_plural\` field MUST contain the plural form (the "wij-vorm", e.g., "liepen"). Do NOT use the \`jij\` or \`hij/zij\` form. The \`past_participle\` should be the completed verb form (e.g., "gelopen"). This field must be \`null\` for non-verbs.
 - **REGISTER (Formality):** Analyze the formality level of the word:
@@ -188,5 +189,5 @@ Respond ONLY with valid JSON, no additional text.`,
 
 // Helper function to format prompt with word
 export function formatWordAnalysisPrompt(word: string): string {
-  return GEMINI_PROMPTS.WORD_ANALYSIS.replace('{{WORD}}', word)
+  return `${GEMINI_PROMPTS.WORD_ANALYSIS}\n\nDutch input (JSON string): ${JSON.stringify(word)}`
 }
