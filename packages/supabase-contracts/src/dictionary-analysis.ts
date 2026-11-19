@@ -7,6 +7,8 @@ export type DictionaryAnalysisDatabase = Omit<Database, 'public'> & {
     Functions: Database['public']['Functions'] &
       Pick<
         TargetDatabase['public']['Functions'],
+        | 'get_dictionary_entry_history_v2'
+        | 'prepare_published_analysis_v1'
         | 'dictionary_analysis_actor_v1'
         | 'dictionary_content_capability_v2'
         | 'get_dictionary_analysis_operation_v2'

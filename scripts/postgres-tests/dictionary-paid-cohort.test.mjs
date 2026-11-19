@@ -281,3 +281,61 @@ test('direct generic analysis grants cannot bypass planned profile or reservatio
     /permission denied/
   )
 })
+
+test('analysis-only release admits full access without beta membership and preserves the spending cap', async () => {
+  const release = await paidRelease(db, {
+    fullAccessAnalysis: true,
+    actors: [],
+    calls: 2,
+  })
+  const signal = () =>
+    json(db, asUser(other, 'SELECT public.dictionary_analysis_actor_v1();'))
+  assert.equal((await signal()).may_analyze, true)
+  const attempt = await grantPair(db, { actor: other })
+  assert.equal((await claimPaid(db, attempt)).allowed, true)
+  assert.equal((await paidState(db, release)).calls, 1)
+  await assert.rejects(
+    grantPair(db, { actor: other, workflow: 'creation' }),
+    /shared-analysis-disabled|dictionary-creation-disabled/
+  )
+  await db.sql(
+    `UPDATE public.user_access_levels SET access_level='read_only' WHERE user_id='${other}';`
+  )
+  assert.equal((await signal()).may_analyze, false)
+  await assert.rejects(grantPair(db, { actor: other }), /permission-required/)
+})
+
+test('an approved editorial revision supplies one shared anchor without assigning the requester as reviewer', async () => {
+  await paidRelease(db, { fullAccessAnalysis: true, actors: [] })
+  const entry = randomUUID(),
+    revision = randomUUID(),
+    source = randomUUID()
+  const digest = 'a'.repeat(64)
+  await db.sql(`UPDATE private.dictionary_content_runtime SET reads_enabled=TRUE,analysis_history_enabled=TRUE;
+    INSERT INTO private.dictionary_sources(source_id,source_kind,provenance_locator,review_state,reviewed_by,reviewed_at,approved_content_sha256)
+      VALUES('${source}','editorial','fixture://editorial','approved','${owner}',NOW(),'${digest}');
+    INSERT INTO public.dictionary_entries(entry_id,language_code,lemma,part_of_speech,sense_key)
+      VALUES('${entry}','nl','zich vergissen','verb','${entry}');
+    INSERT INTO public.dictionary_revisions(revision_id,entry_id,revision_no,content,content_sha256,cefr_input_sha256,source_id,review_status,reviewed_at,published_at)
+      VALUES('${revision}','${entry}',1,'{"translations":{"en":["to be mistaken"]},"examples":[{"nl":"Ik vergis me."}]}','${digest}','${digest}','${source}','published',NOW(),NOW());
+    INSERT INTO public.dictionary_entry_heads(entry_id,revision_id) VALUES('${entry}','${revision}');
+    UPDATE public.dictionary_entries SET state='published' WHERE entry_id='${entry}';`)
+  const prepare = rev =>
+    db.sql(
+      asUser(
+        other,
+        `SELECT public.prepare_published_analysis_v1('${entry}','${rev}');`
+      )
+    )
+  assert.equal(await prepare(randomUUID()), 'head-conflict')
+  assert.deepEqual(await Promise.all([prepare(revision), prepare(revision)]), [
+    'ready',
+    'ready',
+  ])
+  assert.equal(
+    await db.sql(
+      `SELECT count(*) FROM private.dictionary_meaning_anchors WHERE entry_id='${entry}' AND verified_by='${owner}' AND gloss='to be mistaken';`
+    ),
+    '1'
+  )
+})

@@ -5,6 +5,7 @@ import type {
   DictionaryCollectionExportV2,
   FollowingImportOperation,
 } from '@woordenaar/domain'
+import { refreshPublishedMeaning } from './refresh-published-meaning'
 import { formatWordTranslations } from './format-word-translations'
 import { Button } from '@/components/ui/Button'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
@@ -20,17 +21,21 @@ export function PublishedWordReview({
   collectionId,
   userId,
   onSaved,
+  onUpdated,
   onSkip,
 }: {
   document: DictionaryCollectionExportV2
   collectionId: string
   userId: string
   onSaved: (wordId: string) => void
+  onUpdated?: (document: DictionaryCollectionExportV2) => void
   onSkip?: () => void
 }) {
   const [index, setIndex] = useState(0)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [refreshing, setRefreshing] = useState(false)
+  const [notice, setNotice] = useState('')
   const operation = useRef<FollowingImportOperation | null>(null)
   const entry = document.entries[index]
   const preview = buildWordDetail({
@@ -46,6 +51,33 @@ export function PublishedWordReview({
     updated_at: null,
   })
   const linked = isLinkedWordImportEnabled()
+  async function refresh() {
+    if (!onUpdated || busy || refreshing) return
+    setRefreshing(true)
+    setError('')
+    setNotice('')
+    try {
+      const { updated, message } = await refreshPublishedMeaning(userId, entry)
+      if (updated) {
+        operation.current = null
+        onUpdated({
+          ...document,
+          entries: document.entries.map((item, i) =>
+            i === index ? updated : item
+          ),
+        })
+      }
+      setNotice(message ?? 'Check the shared analysis status again.')
+    } catch (failure) {
+      setError(
+        failure instanceof Error
+          ? failure.message
+          : 'Could not refresh the shared meaning.'
+      )
+    } finally {
+      setRefreshing(false)
+    }
+  }
   async function save() {
     setError('')
     setBusy(true)
@@ -80,10 +112,11 @@ export function PublishedWordReview({
           <select
             className="dw-field"
             value={index}
-            disabled={busy}
+            disabled={busy || refreshing}
             onChange={e => {
               setIndex(Number(e.target.value))
               setError('')
+              setNotice('')
             }}
           >
             {document.entries.map(({ content, shared_reference }, i) => (
@@ -95,11 +128,27 @@ export function PublishedWordReview({
           </select>
         </label>
       )}
-      <WordDetailCard showProgress={false} word={preview} />
+      {entry.shared_reference && onUpdated && (
+        <div>
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={busy || refreshing}
+            onClick={() => void refresh()}
+          >
+            {refreshing ? 'Refreshing…' : 'Refresh shared analysis'}
+          </Button>
+          <p className="dw-support">
+            Updates this meaning in the shared dictionary for everyone.
+          </p>
+        </div>
+      )}
+      {notice && <p role="status">{notice}</p>}
       {error && <p role="alert">{error}</p>}
+      <WordDetailCard showProgress={false} word={preview} />
       <Button
         type="button"
-        disabled={busy || !collectionId}
+        disabled={busy || refreshing || !collectionId}
         onClick={() => void save()}
       >
         {busy ? 'Saving…' : linked ? 'Save word' : 'Save personal copy'}
@@ -108,7 +157,7 @@ export function PublishedWordReview({
         <Button
           type="button"
           variant="secondary"
-          disabled={busy}
+          disabled={busy || refreshing}
           onClick={onSkip}
         >
           Skip this item

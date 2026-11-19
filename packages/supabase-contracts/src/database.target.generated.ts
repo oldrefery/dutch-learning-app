@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261114120000_add_bounded_web_review_snapshot.sql.
+// Generated from local migrations through 20261119160000_full_access_shared_reanalysis.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -1743,6 +1743,10 @@ export type Database = {
           p_source_id: string
         }
         Returns: Json
+      }
+      prepare_published_analysis_v1: {
+        Args: { p_entry: string; p_revision: string }
+        Returns: string
       }
       promote_official_content_pack_version: {
         Args: { p_pack_id: string; p_promoted_at: string; p_version: string }

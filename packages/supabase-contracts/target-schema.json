@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "source": "disposable-local-postgres",
   "schemas": ["public"],
-  "migrationHead": "20261114120000_add_bounded_web_review_snapshot.sql",
+  "migrationHead": "20261119160000_full_access_shared_reanalysis.sql",
   "postgresImage": "postgres@sha256:20edbde7749f822887a1a022ad526fde0a47d6b2be9a8364433605cf65099416",
   "generator": "supabase-postgres-meta",
   "generatorVersion": "0.99.0",
