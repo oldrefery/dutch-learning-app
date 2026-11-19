@@ -304,6 +304,30 @@ export const createDictionaryAnalysisClient = (ports: {
       owner.assert()
       return client.submit(prepared, owner)
     },
+    // An explicit retry keeps the original command ID. The server serializes
+    // acceptance and never issues a second provider grant for that operation.
+    async retryUnconfirmed(
+      expected: DictionaryAnalysisClientOperation,
+      owner: DictionaryAnalysisClientOwner
+    ) {
+      if (expected.user_id !== ports.userId || !expected.submitted)
+        throw new Error('Expected a submitted shared analysis operation')
+      const current = await recover(expected, owner)
+      if (current.response && !('outcome' in current.response)) return current
+      await ports.requireAvailable(owner)
+      await owner.check()
+      const response = await ports.submit(current.command, owner)
+      await owner.check()
+      const saved = await ports.journal.save(current, response, owner.assert)
+      if (
+        saved.response &&
+        !('outcome' in saved.response) &&
+        ['published', 'no-change'].includes(saved.response.status)
+      )
+        await ports.refresh(saved, owner)
+      await owner.check()
+      return saved
+    },
     async recover(
       userId: string,
       wordId: string,

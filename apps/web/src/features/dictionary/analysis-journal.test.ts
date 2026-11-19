@@ -89,6 +89,25 @@ describe('browser shared analysis durable operation journal', () => {
     assertHead = jest.fn(async () => {})
   })
 
+  it('checks the receipt before an explicit retry and dispatches only the original command', async () => {
+    const current = ports()
+    const client = createDictionaryAnalysisClient(current)
+    current.submit.mockRejectedValueOnce(new Error('Request disconnected'))
+    await expect(client.submit(intent(), owner)).rejects.toThrow(
+      'Request disconnected'
+    )
+    const saved = (await current.journal.read(OWNER_A, WORD))!
+    current.readReceipt.mockResolvedValueOnce(
+      null as unknown as DictionaryAnalysisReceiptV2
+    )
+    const result = await client.retryUnconfirmed(saved, owner)
+    expect(result.response).toEqual(receipt())
+    expect(current.submit).toHaveBeenNthCalledWith(1, saved.command, owner)
+    expect(current.submit).toHaveBeenNthCalledWith(2, saved.command, owner)
+    await client.retryUnconfirmed(saved, owner)
+    expect(current.submit).toHaveBeenCalledTimes(2)
+  })
+
   it('submits once across two tabs, with owner-scoped metadata saved before dispatch', async () => {
     const first = ports(),
       second = ports()

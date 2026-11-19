@@ -36,6 +36,7 @@ import {
   verdict,
 } from './dictionary-creation-publication.fixture.mjs'
 
+const actorSignalSql = 'SELECT public.dictionary_analysis_actor_v1();'
 let db
 before(async () => {
   db = await createCluster()
@@ -47,8 +48,7 @@ after(async () => {
 
 test('cohort is an AND gate and never grants full_access or administrator membership', async () => {
   await paidRelease(db)
-  const signal = actor =>
-    json(db, asUser(actor, 'SELECT public.dictionary_analysis_actor_v1();'))
+  const signal = actor => json(db, asUser(actor, actorSignalSql))
   assert.equal((await signal(owner)).may_analyze, true)
   assert.equal(
     await db.sql(`SELECT private.may_analyze_dictionary('${other}');`),
@@ -150,10 +150,7 @@ test('revocation stops new claims while committed accounting can still close', a
 test('a fully reserved budget does not revoke the actor signal needed to resume already-funded work', async () => {
   await paidRelease(db, { limit: '16584' })
   await grantPair(db)
-  const signal = await json(
-    db,
-    asUser(owner, 'SELECT public.dictionary_analysis_actor_v1();')
-  )
+  const signal = await json(db, asUser(owner, actorSignalSql))
   assert.equal(signal.may_analyze, true)
   await assert.rejects(grantPair(db), /rate-limit-exceeded/)
 })
@@ -288,8 +285,7 @@ test('analysis-only release admits full access without beta membership and prese
     actors: [],
     calls: 2,
   })
-  const signal = () =>
-    json(db, asUser(other, 'SELECT public.dictionary_analysis_actor_v1();'))
+  const signal = () => json(db, asUser(other, actorSignalSql))
   assert.equal((await signal()).may_analyze, true)
   const attempt = await grantPair(db, { actor: other })
   assert.equal((await claimPaid(db, attempt)).allowed, true)

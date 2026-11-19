@@ -59,7 +59,7 @@ export async function refreshPublishedMeaning(userId: string, entry: Entry) {
         throw new Error(
           'The shared meaning has changed. Analyze the word again to load it.'
         )
-    }, true)
+    }, `${entry_id}:${revision_id}`)
     const client = createDictionaryAnalysisRemoteClient({
       userId,
       journal,
@@ -98,12 +98,12 @@ export async function refreshPublishedMeaning(userId: string, entry: Entry) {
       previous?.submitted &&
       !isDictionaryAnalysisTerminal(previous.response)
     ) {
-      const recovered = await client.recover(userId, entry_id, owner)
+      const recovered = await client.retryUnconfirmed(previous, owner)
       return { updated, message: dictionaryAnalysisActionMessage(recovered) }
     }
     if (!(await client.isAvailable(owner)))
       throw new Error(
-        'Publishing a fresh shared analysis is currently unavailable for this account.'
+        'Shared dictionary publishing is currently unavailable. The existing meaning is still available to save.'
       )
     const head = await readHead()
     if (head.current_revision_id !== revision_id) {
