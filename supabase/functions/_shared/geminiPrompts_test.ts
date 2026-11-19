@@ -15,3 +15,14 @@ Deno.test('word analysis prompt requests bounded usage guidance', () => {
     true
   )
 })
+
+Deno.test(
+  'the literal learner input appears once and no placeholders remain',
+  () => {
+    const input = 'proefinvoer "één"'
+    const prompt = formatWordAnalysisPrompt(input)
+    assertEquals(prompt.split(JSON.stringify(input)).length, 2)
+    assertEquals(prompt.endsWith(JSON.stringify(input)), true)
+    assertEquals(prompt.includes('{{WORD}}'), false)
+  }
+)
