@@ -1,7 +1,6 @@
-import {
-  ANALYSIS_GENERATION_RESPONSE_SCHEMA,
-  ANALYSIS_SEMANTIC_RESPONSE_SCHEMA,
-} from './analysisResponseSchema.ts'
+import { ANALYSIS_SEMANTIC_RESPONSE_SCHEMA } from './analysisResponseSchema.ts'
+import { GEMINI_PROMPTS } from '../_shared/geminiPrompts.ts'
+import { wordAnalysisGenerationConfig } from '../_shared/wordAnalysisRequest.ts'
 import { canonicalizeJson } from '../../../packages/domain/src/shared-dictionary.ts'
 import type { EvaluationContext } from './worker.ts'
 import type { CandidateInspection } from './candidateGuards.ts'
@@ -9,8 +8,7 @@ import { validObservedModelVersion } from './observedModel.ts'
 import {
   record,
   sha256,
-  ANALYSIS_GENERATION_SYSTEM_PROMPT,
-  ANALYSIS_GENERATION_OUTPUT_TEMPLATE,
+  PROTECTED_SENSE_INSTRUCTION,
   type PreparedGeminiRequest,
 } from './protectedInput.ts'
 
@@ -82,12 +80,14 @@ export const buildSemanticPolicy = async (
     model,
     model_version: versions.judge,
     prompt_sha256: await sha256(ANALYSIS_SEMANTIC_SYSTEM_PROMPT),
-    generation_prompt_sha256: await sha256(ANALYSIS_GENERATION_SYSTEM_PROMPT),
-    generation_template: ANALYSIS_GENERATION_OUTPUT_TEMPLATE,
-    generation_config: jsonGenerationConfig(
-      ANALYSIS_GENERATION_RESPONSE_SCHEMA,
-      generationModel
+    generation_prompt_sha256: await sha256(
+      canonicalizeJson([
+        GEMINI_PROMPTS.WORD_ANALYSIS,
+        PROTECTED_SENSE_INSTRUCTION,
+      ])
     ),
+    generation_config: wordAnalysisGenerationConfig(false),
+    generation_content_contract: 'word-analysis-v1',
     semantic_config: jsonGenerationConfig(
       ANALYSIS_SEMANTIC_RESPONSE_SCHEMA,
       model

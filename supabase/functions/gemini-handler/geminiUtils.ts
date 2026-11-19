@@ -1,4 +1,4 @@
-import { wordAnalysisResponseSchema } from '../dictionary-analysis/responseSchemas.ts'
+import { wordAnalysisRequest } from '../_shared/wordAnalysisRequest.ts'
 import { API_CONFIG } from './constants.ts'
 import type {
   WordUsageContrast,
@@ -23,25 +23,7 @@ export async function callGeminiAPI(
       'Content-Type': 'application/json',
       'x-goog-api-key': apiKey,
     },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            {
-              text: prompt,
-            },
-          ],
-        },
-      ],
-      generationConfig: {
-        thinkingConfig: {
-          thinkingLevel: API_CONFIG.GEMINI_THINKING_LEVEL,
-        },
-        maxOutputTokens: 8192,
-        responseMimeType: 'application/json',
-        responseJsonSchema: wordAnalysisResponseSchema(includeCefr),
-      },
-    }),
+    body: JSON.stringify(wordAnalysisRequest(prompt, includeCefr)),
   })
 
   if (!response.ok) {

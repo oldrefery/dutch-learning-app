@@ -2,10 +2,9 @@ import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
 import { qualificationCorpus } from '../../../scripts/shared-dictionary/semantic-qualification-corpus.ts'
 import { contextFor } from '../../../scripts/shared-dictionary/semantic-qualification.ts'
-import {
-  ANALYSIS_GENERATION_RESPONSE_SCHEMA,
-  ANALYSIS_SEMANTIC_RESPONSE_SCHEMA,
-} from './analysisResponseSchema.ts'
+import { formatWordAnalysisPrompt } from '../_shared/geminiPrompts.ts'
+import { wordAnalysisRequest } from '../_shared/wordAnalysisRequest.ts'
+import { ANALYSIS_SEMANTIC_RESPONSE_SCHEMA } from './analysisResponseSchema.ts'
 import { journalPacket } from './geminiTransport.ts'
 import { inspectCandidate } from './candidateGuards.ts'
 import {
@@ -169,42 +168,47 @@ Deno.test(
   }
 )
 Deno.test(
-  'both requests use current structured responseFormat with the full JSON schema and unchanged call limits',
+  'shared and interactive generation use the same linguistic prompt and settings',
   async () => {
     const ctx = await contextFor(fixture),
       candidate = await inspectCandidate(ctx, [])
     assert.equal(candidate.valid, true)
     if (!candidate.valid) return
-    const requests = [
-      [
-        await prepareGeminiRequest(ctx.input, 'gemini-fixture-model'),
-        ANALYSIS_GENERATION_RESPONSE_SCHEMA,
-      ],
-      [
-        await prepareSemanticRequest(
-          ctx,
-          candidate,
-          await buildSemanticPolicy(
-            'gemini-fixture-model',
-            [],
-            'gemini-fixture-model',
-            {
-              generation: 'gemini-fixture-model',
-              judge: 'gemini-fixture-model',
-            }
-          )
-        ),
-        ANALYSIS_SEMANTIC_RESPONSE_SCHEMA,
-      ],
-    ] as const
-    for (const [request, schema] of requests) {
-      const config = JSON.parse(request.body).generationConfig
-      assert.deepEqual(config, {
-        candidateCount: 1,
-        maxOutputTokens: 8192,
-        responseFormat: { text: { mimeType: 'APPLICATION_JSON', schema } },
+    const model = 'gemini-fixture-model'
+    const generation = await prepareGeminiRequest(ctx.input, model)
+    const { lemma, article } = ctx.input.entry
+    const word = article ? `${article} ${lemma}` : lemma
+    const interactive = wordAnalysisRequest(
+      formatWordAnalysisPrompt(word),
+      false
+    )
+    const shared = JSON.parse(generation.body)
+    assert.deepEqual(shared.generationConfig, interactive.generationConfig)
+    assert.ok(
+      shared.contents[0].parts[0].text.endsWith(
+        interactive.contents[0].parts[0].text
+      )
+    )
+
+    const judgement = await prepareSemanticRequest(
+      ctx,
+      candidate,
+      await buildSemanticPolicy(model, [], model, {
+        generation: model,
+        judge: model,
       })
-    }
+    )
+    const config = JSON.parse(judgement.body).generationConfig
+    assert.deepEqual(config, {
+      candidateCount: 1,
+      maxOutputTokens: 8192,
+      responseFormat: {
+        text: {
+          mimeType: 'APPLICATION_JSON',
+          schema: ANALYSIS_SEMANTIC_RESPONSE_SCHEMA,
+        },
+      },
+    })
     assert.match(
       GENERATION_SYSTEM_PROMPT,
       /contrast example is null or an object with exactly nl, en and ru/
@@ -256,26 +260,46 @@ Deno.test(
 )
 
 Deno.test(
-  'shared generation requires usage guidance while permitting absent technical notes and media',
+  'ordinary analysis output retains notes for publication and rejects invalid Russian or missing usage guidance',
   () => {
-    const valid = validator.compile(ANALYSIS_GENERATION_RESPONSE_SCHEMA)
-    const content = {
-      ...fixture.content,
-      analysis_notes: null,
-      image_url: null,
+    const { dutch_original, image_url, tts_url, ...fields } = fixture.content
+    const analysis = {
+      ...fields,
+      original_input: dutch_original ?? fixture.content.dutch_lemma,
+      confidence_score: 0.99,
+      usage_notes: {
+        summary: 'Use it for a financial institution.',
+        contrasts: [],
+      },
+      analysis_notes: 'A countable noun.',
     }
-    assert.equal(valid({ content: { ...content, usage_notes: null } }), false)
-    assert.equal(
-      valid({
-        content: {
-          ...content,
-          usage_notes: {
-            summary: 'Use it for a financial institution.',
-            contrasts: [],
-          },
-        },
-      }),
-      true
-    )
+    const toEnvelope = (candidate: unknown) =>
+      providerEnvelope({
+        text: JSON.stringify(candidate),
+      })
+    const envelope = toEnvelope(analysis)
+    assert.deepEqual(journalPacket(JSON.stringify(envelope), 'word-analysis'), {
+      content: {
+        ...fields,
+        dutch_original: analysis.original_input,
+        image_url: null,
+        tts_url: null,
+        analysis_notes: analysis.analysis_notes,
+        usage_notes: analysis.usage_notes,
+      },
+      provider_response: envelope,
+    })
+    for (const candidate of [
+      { ...analysis, usage_notes: null },
+      { ...analysis, translations: { en: ['bank'], ru: ['bank'] } },
+      { ...analysis, image_url: 'https://example.invalid/photo' },
+      { content: fields },
+    ]) {
+      const result = journalPacket(
+        JSON.stringify(toEnvelope(candidate)),
+        'word-analysis'
+      )
+      assert.equal(result.content, null)
+    }
   }
 )

@@ -498,6 +498,17 @@ Deno.test(
   'transport validates fixed URL/key header/body and separates thought parts from output',
   async () => {
     const request = await prepareGeminiRequest(input, 'gemini-fixture-model')
+    const { dutch_original, image_url, tts_url, ...fields } = content
+    const usage_notes = {
+      summary: 'Use this for a financial institution.',
+      contrasts: [],
+    }
+    const analysis = {
+      ...fields,
+      original_input: dutch_original ?? 'de bank',
+      confidence_score: 1,
+      usage_notes,
+    }
     const transport = createGeminiTransport({
       apiKey: 'synthetic-key',
       fetch: (url, init?: RequestInit) => {
@@ -511,7 +522,7 @@ Deno.test(
           new Headers(init?.headers).get('x-goog-api-key'),
           'synthetic-key'
         )
-        const response = envelope()
+        const response = envelope(JSON.stringify(analysis))
         response.candidates[0].content.parts.unshift({
           text: 'private reasoning',
           thought: true,
@@ -522,7 +533,11 @@ Deno.test(
     const result = await transport.invoke(request, 'fixture')
     assert.equal(result.kind, 'returned')
     if (result.kind === 'returned') {
-      assert.deepEqual(result.result.content, content)
+      assert.deepEqual(result.result.content, {
+        ...content,
+        dutch_original: analysis.original_input,
+        usage_notes,
+      })
       assert.equal(result.requestId, 'synthetic-response-1')
     }
   }

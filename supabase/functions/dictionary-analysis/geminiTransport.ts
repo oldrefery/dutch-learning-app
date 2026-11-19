@@ -1,3 +1,5 @@
+import { parseDictionaryContent } from '../../../packages/domain/src/shared-dictionary.ts'
+import { invalidRussianFields } from '../_shared/russianText.ts'
 import { record, sha256, type PreparedGeminiRequest } from './protectedInput.ts'
 import {
   providerDiagnostics,
@@ -72,7 +74,38 @@ const readBoundedResponse = async (response: Response): Promise<string> => {
 
 // Preserve the provider envelope, including blocked/truncated/malformed output.
 // Schema/meaning acceptance belongs to an independent evaluator, never this parser.
-export const journalPacket = (body: string): Record<string, unknown> => {
+const dictionaryContentFromWordAnalysis = (
+  analysis: Record<string, unknown>
+) => {
+  const { original_input, confidence_score, ...fields } = analysis
+  if (
+    typeof original_input !== 'string' ||
+    typeof confidence_score !== 'number' ||
+    !Number.isFinite(confidence_score) ||
+    !analysis.usage_notes ||
+    ['dutch_original', 'image_url', 'tts_url'].some(key =>
+      Object.hasOwn(fields, key)
+    ) ||
+    invalidRussianFields(analysis).length > 0
+  )
+    return null
+  const parsed = parseDictionaryContent({
+    ...fields,
+    analysis_notes:
+      typeof fields.analysis_notes === 'string' && !fields.analysis_notes.trim()
+        ? null
+        : fields.analysis_notes,
+    dutch_original: original_input,
+    image_url: null,
+    tts_url: null,
+  })
+  return parsed.success ? parsed.data : null
+}
+
+export const journalPacket = (
+  body: string,
+  resultFormat?: PreparedGeminiRequest['resultFormat']
+): Record<string, unknown> => {
   let envelope: Record<string, unknown>
   try {
     envelope = record(JSON.parse(body))
@@ -108,7 +141,9 @@ export const journalPacket = (body: string): Record<string, unknown> => {
             const parsed = record(
               JSON.parse(output.map(part => part.text).join(''))
             )
-            if (
+            if (resultFormat === 'word-analysis') {
+              candidateContent = dictionaryContentFromWordAnalysis(parsed)
+            } else if (
               Object.keys(parsed).length === 1 &&
               Object.hasOwn(parsed, 'content')
             )
@@ -196,7 +231,7 @@ export const createGeminiTransport = (options: {
             diagnostics,
           }
         }
-        const result = journalPacket(body)
+        const result = journalPacket(body, request.resultFormat)
         const providerId = record(result.provider_response).responseId
         const requestId =
           typeof providerId === 'string' &&
