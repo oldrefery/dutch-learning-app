@@ -1,3 +1,6 @@
+import { ANALYSIS_SEMANTIC_RESPONSE_SCHEMA } from './analysisResponseSchema.ts'
+import { GEMINI_PROMPTS } from '../_shared/geminiPrompts.ts'
+import { wordAnalysisGenerationConfig } from '../_shared/wordAnalysisRequest.ts'
 import { canonicalizeJson } from '../../../packages/domain/src/shared-dictionary.ts'
 import type { EvaluationContext } from './worker.ts'
 import type { CandidateInspection } from './candidateGuards.ts'
@@ -5,17 +8,11 @@ import { validObservedModelVersion } from './observedModel.ts'
 import {
   record,
   sha256,
-  GENERATION_SYSTEM_PROMPT,
-  GENERATION_OUTPUT_TEMPLATE,
+  PROTECTED_SENSE_INSTRUCTION,
   type PreparedGeminiRequest,
 } from './protectedInput.ts'
 
-import {
-  GENERATION_RESPONSE_SCHEMA,
-  SEMANTIC_RESPONSE_SCHEMA,
-  SEMANTIC_DIMENSIONS,
-  jsonGenerationConfig,
-} from './responseSchemas.ts'
+import { SEMANTIC_DIMENSIONS, jsonGenerationConfig } from './responseSchemas.ts'
 export { SEMANTIC_DIMENSIONS } from './responseSchemas.ts'
 export type SemanticDimension = (typeof SEMANTIC_DIMENSIONS)[number]
 export interface SemanticVerdict {
@@ -43,6 +40,10 @@ export const SEMANTIC_SYSTEM_PROMPT =
   'Return different-meaning if any check is contradicted; uncertain if any check is uncertain; same-meaning only if all six are preserved. ' +
   'Return only JSON with one key content. Its value has exactly schema_version:1, anchor_sha256, content_sha256, result_sha256, decision and checks. ' +
   'Use content_sha256, never candidate_sha256. Echo the supplied hashes exactly. Each check has exactly dimension, verdict, reason, anchor_quote. No confidence, chain of thought, extra fields or CEFR assessment.'
+
+const ANALYSIS_SEMANTIC_SYSTEM_PROMPT =
+  SEMANTIC_SYSTEM_PROMPT +
+  ' Return checks in this exact order: translations-en, translations-ru, examples, related-words, notes, grammar. Each dimension appears exactly once; never substitute a duplicate label for a missing dimension.'
 
 export interface SemanticPolicy {
   validator_version: string
@@ -78,11 +79,19 @@ export const buildSemanticPolicy = async (
     generation_model_version: versions.generation,
     model,
     model_version: versions.judge,
-    prompt_sha256: await sha256(SEMANTIC_SYSTEM_PROMPT),
-    generation_prompt_sha256: await sha256(GENERATION_SYSTEM_PROMPT),
-    generation_template: GENERATION_OUTPUT_TEMPLATE,
-    generation_config: jsonGenerationConfig(GENERATION_RESPONSE_SCHEMA),
-    semantic_config: jsonGenerationConfig(SEMANTIC_RESPONSE_SCHEMA),
+    prompt_sha256: await sha256(ANALYSIS_SEMANTIC_SYSTEM_PROMPT),
+    generation_prompt_sha256: await sha256(
+      canonicalizeJson([
+        GEMINI_PROMPTS.WORD_ANALYSIS,
+        PROTECTED_SENSE_INSTRUCTION,
+      ])
+    ),
+    generation_config: wordAnalysisGenerationConfig(false),
+    generation_content_contract: 'word-analysis-v1',
+    semantic_config: jsonGenerationConfig(
+      ANALYSIS_SEMANTIC_RESPONSE_SCHEMA,
+      model
+    ),
     provider_text_part_contract: 'text-thought-signature-v2',
     media_url_prefixes: [...mediaPrefixes],
     dimensions: SEMANTIC_DIMENSIONS,
@@ -90,6 +99,7 @@ export const buildSemanticPolicy = async (
     checks_required: 6,
     accepted_provider_attempts: 2,
     evaluator_contract_version: 3,
+    semantic_response_contract: 'fixed-dimensions-v1',
     unknown_redispatch: false,
   }
   return {
@@ -117,7 +127,7 @@ export const prepareSemanticRequest = async (
   if (canonicalizeJson(policy) !== canonicalizeJson(expectedPolicy))
     throw new Error('invalid-semantic-policy')
   const body = canonicalizeJson({
-    systemInstruction: { parts: [{ text: SEMANTIC_SYSTEM_PROMPT }] },
+    systemInstruction: { parts: [{ text: ANALYSIS_SEMANTIC_SYSTEM_PROMPT }] },
     contents: [
       {
         role: 'user',
@@ -137,7 +147,10 @@ export const prepareSemanticRequest = async (
         ],
       },
     ],
-    generationConfig: jsonGenerationConfig(SEMANTIC_RESPONSE_SCHEMA),
+    generationConfig: jsonGenerationConfig(
+      ANALYSIS_SEMANTIC_RESPONSE_SCHEMA,
+      policy.model
+    ),
   })
   return {
     model: policy.model,

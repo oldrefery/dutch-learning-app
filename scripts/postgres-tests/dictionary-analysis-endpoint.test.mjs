@@ -64,7 +64,7 @@ const content = {
     {
       nl: 'Ik heb geld bij de bank.',
       en: 'I keep money at the bank.',
-      ru: null,
+      ru: 'Я храню деньги в банке.',
     },
   ],
   is_irregular: false,
@@ -81,7 +81,10 @@ const content = {
   conjugation: null,
   preposition: null,
   analysis_notes: 'Reviewed financial meaning.',
-  usage_notes: null,
+  usage_notes: {
+    summary: 'Use it for a financial institution.',
+    contrasts: [],
+  },
   image_url: null,
   tts_url: null,
 }
@@ -306,6 +309,9 @@ async function providerReply(request, url, mode, providerCalls) {
         anchor_quote: 'financial institution',
       })),
     }
+  } else {
+    const { dutch_original, image_url, tts_url, ...fields } = result
+    result = { ...fields, original_input: dutch_original, confidence_score: 1 }
   }
   return Response.json({
     usageMetadata: {
@@ -327,7 +333,9 @@ async function providerReply(request, url, mode, providerCalls) {
       {
         finishReason: 'STOP',
         content: {
-          parts: [{ text: JSON.stringify({ content: result }) }],
+          parts: [
+            { text: JSON.stringify(judge ? { content: result } : result) },
+          ],
         },
       },
     ],

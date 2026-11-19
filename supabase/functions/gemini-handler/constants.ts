@@ -1,3 +1,8 @@
+import {
+  WORD_ANALYSIS_MODEL,
+  WORD_ANALYSIS_THINKING_LEVEL,
+} from '../_shared/wordAnalysisRequest.ts'
+
 // CORS headers for Edge Functions
 export const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -23,9 +28,8 @@ export const SEARCH_CONFIG = {
 
 // API configuration
 export const API_CONFIG = {
-  GEMINI_API_URL:
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
-  GEMINI_THINKING_LEVEL: 'low',
+  GEMINI_API_URL: `https://generativelanguage.googleapis.com/v1beta/models/${WORD_ANALYSIS_MODEL}:generateContent`,
+  GEMINI_THINKING_LEVEL: WORD_ANALYSIS_THINKING_LEVEL,
   UNSPLASH_API_URL: 'https://api.unsplash.com/search/photos',
   PICSUM_BASE_URL: 'https://picsum.photos',
   REQUEST_TIMEOUT: 30000, // 30 seconds

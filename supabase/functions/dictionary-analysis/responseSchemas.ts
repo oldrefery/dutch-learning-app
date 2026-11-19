@@ -149,8 +149,14 @@ export const SEMANTIC_RESPONSE_SCHEMA = object({
     },
   }),
 })
-export const jsonGenerationConfig = (schema: ResponseSchema) => ({
+export const jsonGenerationConfig = (
+  schema: ResponseSchema,
+  model?: string
+) => ({
   candidateCount: 1,
   maxOutputTokens: 8192,
+  ...(model === 'gemini-3.8-flash'
+    ? { thinkingConfig: { thinkingLevel: 'low' } }
+    : {}),
   responseFormat: { text: { mimeType: 'APPLICATION_JSON', schema } },
 })
