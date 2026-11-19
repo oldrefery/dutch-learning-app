@@ -34,11 +34,19 @@ export const createDictionaryAnalysisRuntime = async (
     )
     if (!/^[0-9a-f]{64}$/.test(paidReleaseBinding))
       throw new Error('invalid-paid-release-binding')
+    const keySource =
+      readEnv('DICTIONARY_ANALYSIS_GEMINI_KEY_SOURCE') ?? 'dedicated'
+    if (keySource !== 'dedicated' && keySource !== 'interactive')
+      throw new Error('invalid-endpoint-configuration')
     return await load({
       url: required('SUPABASE_URL'),
       anonKey: required('SUPABASE_ANON_KEY'),
       serviceRoleKey: required('SUPABASE_SERVICE_ROLE_KEY'),
-      apiKey: required('DICTIONARY_ANALYSIS_GEMINI_API_KEY'),
+      apiKey: required(
+        keySource === 'interactive'
+          ? 'GEMINI_API_KEY'
+          : 'DICTIONARY_ANALYSIS_GEMINI_API_KEY'
+      ),
       model: required('DICTIONARY_ANALYSIS_GENERATION_MODEL'),
       modelVersion: required('DICTIONARY_ANALYSIS_GENERATION_MODEL_VERSION'),
       semanticModel: required('DICTIONARY_ANALYSIS_SEMANTIC_MODEL'),
