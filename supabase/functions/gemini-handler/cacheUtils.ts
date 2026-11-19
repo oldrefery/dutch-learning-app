@@ -1,4 +1,8 @@
 import {
+  assertEnglishTranslation,
+  hasEnglishTranslation,
+} from './geminiUtils.ts'
+import {
   invalidRussianFields,
   assertRussianScript,
 } from '../_shared/russianText.ts'
@@ -128,7 +132,11 @@ export async function getCachedAnalysis(
     }
 
     if (data && data.length > 0) {
-      if (invalidRussianFields(data[0]).length) return null
+      if (
+        !hasEnglishTranslation(data[0].translations) ||
+        invalidRussianFields(data[0]).length
+      )
+        return null
       // Update usage statistics
       await updateCacheUsage(data[0].cache_id)
       return data[0] as CacheEntry
@@ -181,7 +189,9 @@ export async function getCachedVariants(
     }
 
     return ((data || []) as CacheEntry[]).filter(
-      entry => invalidRussianFields(entry).length === 0
+      entry =>
+        hasEnglishTranslation(entry.translations) &&
+        invalidRussianFields(entry).length === 0
     )
   } catch (error) {
     console.error('❌ getCachedVariants exception:', error)
@@ -219,6 +229,7 @@ async function updateCacheUsage(cacheId: string): Promise<void> {
 export async function saveToCache(
   analysisData: WordAnalysisData
 ): Promise<void> {
+  assertEnglishTranslation(analysisData.translations)
   assertRussianScript(analysisData)
   let cacheWriteError: unknown = null
 

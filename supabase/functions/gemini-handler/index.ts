@@ -3,6 +3,7 @@ import { assertRussianScript } from '../_shared/russianText.ts'
 import { CORS_HEADERS } from './constants.ts'
 import { getMultipleImagesForWord } from './imageUtils.ts'
 import {
+  assertEnglishTranslation,
   callGeminiAPI,
   parseGeminiResponse,
   validateWordInput,
@@ -230,6 +231,7 @@ Deno.serve(async (req: Request) => {
       formatWordAnalysisPrompt(word) + (cefrEnabled ? ANALYSIS_CEFR_PROMPT : '')
     const geminiResponse = await callGeminiAPI(prompt)
     const analysis = parseGeminiResponse(geminiResponse)
+    assertEnglishTranslation(analysis?.translations)
     assertRussianScript(analysis)
 
     // Clean and format data
