@@ -230,3 +230,23 @@ Deno.test(
       )
   }
 )
+
+Deno.test(
+  'Flash 3.8 generation and semantic check both request low thinking',
+  async () => {
+    const model = 'gemini-3.8-flash'
+    const ctx = await contextFor(fixture)
+    const candidate = await inspectCandidate(ctx, [])
+    if (!candidate.valid) throw new Error('Fixture invalid')
+    const policy = await buildSemanticPolicy(model, [], model, {
+      generation: model,
+      judge: model,
+    })
+    const generation = await prepareGeminiRequest(ctx.input, model)
+    const judgement = await prepareSemanticRequest(ctx, candidate, policy)
+    for (const request of [generation, judgement]) {
+      const config = JSON.parse(request.body).generationConfig
+      assert.deepEqual(config.thinkingConfig, { thinkingLevel: 'low' })
+    }
+  }
+)

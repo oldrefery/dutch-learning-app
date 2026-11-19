@@ -173,7 +173,7 @@ export const prepareGeminiRequest = async (
         ],
       },
     ],
-    generationConfig: jsonGenerationConfig(GENERATION_RESPONSE_SCHEMA),
+    generationConfig: jsonGenerationConfig(GENERATION_RESPONSE_SCHEMA, model),
   })
   return {
     model,

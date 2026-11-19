@@ -81,8 +81,11 @@ export const buildSemanticPolicy = async (
     prompt_sha256: await sha256(SEMANTIC_SYSTEM_PROMPT),
     generation_prompt_sha256: await sha256(GENERATION_SYSTEM_PROMPT),
     generation_template: GENERATION_OUTPUT_TEMPLATE,
-    generation_config: jsonGenerationConfig(GENERATION_RESPONSE_SCHEMA),
-    semantic_config: jsonGenerationConfig(SEMANTIC_RESPONSE_SCHEMA),
+    generation_config: jsonGenerationConfig(
+      GENERATION_RESPONSE_SCHEMA,
+      generationModel
+    ),
+    semantic_config: jsonGenerationConfig(SEMANTIC_RESPONSE_SCHEMA, model),
     provider_text_part_contract: 'text-thought-signature-v2',
     media_url_prefixes: [...mediaPrefixes],
     dimensions: SEMANTIC_DIMENSIONS,
@@ -137,7 +140,10 @@ export const prepareSemanticRequest = async (
         ],
       },
     ],
-    generationConfig: jsonGenerationConfig(SEMANTIC_RESPONSE_SCHEMA),
+    generationConfig: jsonGenerationConfig(
+      SEMANTIC_RESPONSE_SCHEMA,
+      policy.model
+    ),
   })
   return {
     model: policy.model,
