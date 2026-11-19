@@ -111,7 +111,11 @@ export function usePersistentBatchCapture(
   )
 
   const createQueue = useCallback(
-    (drafts: BatchCaptureDraftItem[], targetCollectionId: string) => {
+    (
+      drafts: BatchCaptureDraftItem[],
+      targetCollectionId: string,
+      autoSave: boolean
+    ) => {
       const queue = createBatchCaptureState(
         userId,
         targetCollectionId,
@@ -119,7 +123,7 @@ export function usePersistentBatchCapture(
         () => window.crypto.randomUUID(),
         new Date().toISOString()
       )
-      commitBrowserState({ ...queue, isPaused: false })
+      commitBrowserState({ ...queue, isPaused: false, autoSave })
     },
     [userId]
   )
@@ -145,6 +149,10 @@ export function usePersistentBatchCapture(
     },
     [updateState]
   )
+
+  const stopAutoSave = useCallback(() => {
+    updateState(current => ({ ...current, autoSave: false }))
+  }, [updateState])
 
   const setPaused = useCallback(
     (isPaused: boolean) => {
@@ -177,6 +185,7 @@ export function usePersistentBatchCapture(
               updatedAt: now,
             }
       ),
+      autoSave: false,
       isPaused: true,
       activeItemId: null,
     }))
@@ -193,6 +202,7 @@ export function usePersistentBatchCapture(
     createQueue,
     patchItem,
     setPaused,
+    stopAutoSave,
     setTargetCollectionId,
     cancelRemaining,
     clearQueue,

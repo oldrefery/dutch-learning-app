@@ -14,7 +14,8 @@ interface BatchCaptureComposerProps {
   defaultCollectionId: string
   onCreateQueue: (
     items: ReturnType<typeof parseBatchCaptureInput>['items'],
-    targetCollectionId: string
+    targetCollectionId: string,
+    autoSave: boolean
   ) => void
 }
 
@@ -23,6 +24,7 @@ export function BatchCaptureComposer({
   defaultCollectionId,
   onCreateQueue,
 }: BatchCaptureComposerProps) {
+  const [autoSave, setAutoSave] = useState(false)
   const [rawInput, setRawInput] = useState('')
   const [targetCollectionId, setTargetCollectionId] =
     useState(defaultCollectionId)
@@ -39,8 +41,8 @@ export function BatchCaptureComposer({
       </h2>
       <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
         Enter one Dutch word or expression per line. Add an optional, unverified
-        translation hint after a semicolon. Every AI result must be reviewed
-        before it is saved.
+        translation hint after a semicolon. Review the whole list and save it in
+        one step, or save ready words automatically.
       </p>
 
       <label className={styles.fieldLabel} htmlFor="batch-input">
@@ -55,6 +57,15 @@ export function BatchCaptureComposer({
         spellCheck={false}
         value={rawInput}
       />
+
+      <label className="mt-3 flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={autoSave}
+          onChange={event => setAutoSave(event.target.checked)}
+        />
+        Automatically save ready words to the target collection
+      </label>
 
       <div className={styles.composerFooter}>
         <div>
@@ -75,10 +86,13 @@ export function BatchCaptureComposer({
         </div>
         <Button
           disabled={disabled}
-          onClick={() => onCreateQueue(parsed.items, targetCollectionId)}
+          onClick={() =>
+            onCreateQueue(parsed.items, targetCollectionId, autoSave)
+          }
           type="button"
         >
-          Analyze {parsed.items.length} words
+          {autoSave ? 'Analyze and save' : 'Analyze'} {parsed.items.length}{' '}
+          words
         </Button>
       </div>
 

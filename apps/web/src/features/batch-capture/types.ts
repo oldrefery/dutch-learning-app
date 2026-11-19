@@ -1,5 +1,6 @@
 import type {
   DictionaryCollectionExportV2,
+  FollowingImportOperation,
   BatchCaptureDuplicate,
   BatchCaptureDraftItem,
   BatchCaptureItemStatus,
@@ -10,6 +11,8 @@ import type {
 } from '../analysis/analysis-contract'
 
 export interface WebBatchCaptureItem extends BatchCaptureDraftItem {
+  meaningIndex?: number
+  importIntent?: FollowingImportOperation
   published?: DictionaryCollectionExportV2 | null
   analysis: WordAnalysis | null
   analysisMetadata: AnalysisMetadata | null
@@ -24,6 +27,7 @@ export interface WebBatchCaptureItem extends BatchCaptureDraftItem {
 }
 
 export interface WebBatchCaptureState {
+  autoSave?: boolean
   activeItemId: string | null
   isPaused: boolean
   items: WebBatchCaptureItem[]

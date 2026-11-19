@@ -1,4 +1,7 @@
-import { parseDictionaryCollectionExportV2 } from '@woordenaar/domain'
+import {
+  parseDictionaryCollectionExportV2,
+  parseFollowingImportOperation,
+} from '@woordenaar/domain'
 import type {
   BatchCaptureDraftItem,
   BatchCaptureItemStatus,
@@ -23,6 +26,29 @@ function parsePublished(value: unknown) {
   } catch {
     return null
   }
+}
+
+function parseImportIntent(value: unknown) {
+  if (value === undefined) return undefined
+  try {
+    const intent = parseFollowingImportOperation(value)
+    return intent.kind === 'import' ? intent : undefined
+  } catch {
+    return undefined
+  }
+}
+
+export function selectedMeaningIndex(item: WebBatchCaptureItem) {
+  if (item.published?.entries.length === 1) return 0
+  return item.meaningIndex
+}
+
+export function isBatchItemReadyToSave(item: WebBatchCaptureItem) {
+  return (
+    item.status === 'awaiting_review' &&
+    !item.semanticDuplicate &&
+    (Boolean(item.analysis) || selectedMeaningIndex(item) !== undefined)
+  )
 }
 
 type UnknownRecord = Record<string, unknown>
@@ -99,6 +125,13 @@ const parsePersistedItem = (
 
   const analysis = parseAnalysis(value.analysis)
   const published = parsePublished(value.published)
+  const meaningIndex =
+    typeof value.meaningIndex === 'number' &&
+    Number.isInteger(value.meaningIndex) &&
+    published?.entries[value.meaningIndex]
+      ? value.meaningIndex
+      : undefined
+  const importIntent = parseImportIntent(value.importIntent)
   const interrupted = ACTIVE_NETWORK_STATUSES.includes(value.status)
   const awaitingReviewWithoutAnalysis =
     value.status === 'awaiting_review' && !analysis && !published
@@ -118,7 +151,9 @@ const parsePersistedItem = (
     duplicate: parseDuplicate(value.duplicate),
     semanticDuplicate: parseDuplicate(value.semanticDuplicate),
     bypassLemmaDuplicate: value.bypassLemmaDuplicate === true,
-    ...(status === 'awaiting_review' && published ? { published } : {}),
+    ...(status === 'awaiting_review' && published
+      ? { published, meaningIndex, importIntent }
+      : {}),
     analysis: status === 'awaiting_review' ? analysis : null,
     analysisMetadata:
       status === 'awaiting_review'

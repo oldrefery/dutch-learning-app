@@ -46,7 +46,7 @@ export const persistAnalyzedWord = async (
   } catch {
     return {
       success: false,
-      code: 'duplicate',
+      code: 'insert',
       message: 'Could not verify duplicate words. Please try again.',
     }
   }

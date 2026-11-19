@@ -21,8 +21,8 @@ export default async function BatchCapturePage() {
         <p className="dw-label">AI-assisted acquisition</p>
         <h1 className="dw-page-title mt-2">Batch capture</h1>
         <p className="dw-support mt-3">
-          Build a recoverable queue of up to 30 Dutch words. Analysis runs one
-          item at a time, and nothing is saved without your approval.
+          Analyze up to 30 Dutch words in one run. Save the ready results
+          together or choose automatic saving before you start.
         </p>
       </div>
 

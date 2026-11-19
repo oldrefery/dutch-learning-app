@@ -7,8 +7,10 @@ import type {
 } from '@woordenaar/domain'
 import { Button } from '@/components/ui/Button'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
-import { createWebFollowingImportService } from '@/features/sharing/following-import-client'
-import { saveWordToCollection } from './actions'
+import {
+  isLinkedWordImportEnabled,
+  savePublishedWord,
+} from './save-published-word'
 import { buildWordDetail } from '@/features/words/word-detail'
 import { projectDictionaryContent } from '@/features/dictionary/content'
 
@@ -42,57 +44,22 @@ export function PublishedWordReview({
     created_at: '',
     updated_at: null,
   })
-  const linked =
-    process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED === 'true'
+  const linked = isLinkedWordImportEnabled()
   async function save() {
     setError('')
     setBusy(true)
     try {
-      if (linked) {
-        if (!entry.shared_reference)
-          throw new Error('This shared reference is unavailable.')
-        const source = {
-          kind: 'published-reference' as const,
-          ...entry.shared_reference,
-        }
-        let intent = operation.current
-        if (
-          intent?.kind !== 'import' ||
-          intent.request.collection_id !== collectionId ||
-          intent.request.source.reference.revision_id !==
-            source.reference.revision_id
-        ) {
-          intent = {
-            kind: 'import',
-            user_id: userId,
-            result: null,
-            request: {
-              protocol_version: 2,
-              collection_id: collectionId,
-              word_id: crypto.randomUUID(),
-              operation_id: crypto.randomUUID(),
-              source,
-            },
-          }
+      const result = await savePublishedWord({
+        userId,
+        collectionId,
+        entry,
+        previousIntent: operation.current,
+        onIntent: intent => {
           operation.current = intent
-        }
-        const imports = createWebFollowingImportService(userId, true)
-        const saved = await imports.prepare(intent)
-        const receipt = await imports.deliver(saved)
-        if (receipt.kind !== 'import' || !receipt.result)
-          throw new Error('Could not confirm the import.')
-        if (receipt.result.outcome === 'identity-conflict')
-          throw new Error('This word already exists in your vocabulary.')
-        onSaved(receipt.result.word_id)
-      } else {
-        const result = await saveWordToCollection(
-          userId,
-          collectionId,
-          JSON.stringify(entry.content)
-        )
-        if (!result.success) throw new Error(result.message)
-        onSaved(result.wordId)
-      }
+        },
+      })
+      if (!result.success) throw new Error(result.message)
+      onSaved(result.wordId)
     } catch (failure) {
       setError(
         failure instanceof Error
