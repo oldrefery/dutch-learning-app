@@ -52,7 +52,7 @@ function TranslationBlock({
       </span>
       {alternates.length > 0 && (
         <div className={styles.alternates}>
-          {alternates.slice(0, 5).map(translation => (
+          {alternates.map(translation => (
             <span className={styles.alternate} key={translation}>
               {translation}
             </span>

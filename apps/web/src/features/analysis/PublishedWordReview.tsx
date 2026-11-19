@@ -5,6 +5,7 @@ import type {
   DictionaryCollectionExportV2,
   FollowingImportOperation,
 } from '@woordenaar/domain'
+import { formatWordTranslations } from './format-word-translations'
 import { Button } from '@/components/ui/Button'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
 import {
@@ -88,7 +89,7 @@ export function PublishedWordReview({
             {document.entries.map(({ content, shared_reference }, i) => (
               <option key={shared_reference?.reference.entry_id ?? i} value={i}>
                 {content.article} {content.dutch_lemma} ·{' '}
-                {content.translations.en.join(', ')}
+                {formatWordTranslations(content.translations)}
               </option>
             ))}
           </select>

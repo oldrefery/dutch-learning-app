@@ -1,4 +1,11 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { randomUUID } from 'crypto'
 import { clearPersistentBatchCapture } from './usePersistentBatchCapture'
 import { BatchCaptureWorkspace } from './BatchCaptureWorkspace'
@@ -42,7 +49,17 @@ async function startBatch(autoSave = false, ambiguous = false) {
   const first = original.entries[0]
   const second = {
     ...first,
-    content: { ...first.content, translations: { en: ['household'], ru: [] } },
+    shared_reference: first.shared_reference && {
+      ...first.shared_reference,
+      reference: { entry_id: randomUUID(), revision_id: randomUUID() },
+    },
+    content: {
+      ...first.content,
+      translations: {
+        en: ['household', 'family'],
+        ru: ['домохозяйство', 'семья'],
+      },
+    },
   }
   const document = {
     ...original,
@@ -133,6 +150,13 @@ it('leaves ambiguous meanings for selection while automatically saving the rest'
   await startBatch(true, true)
   await screen.findByText('0 ready · 1 saved · 1 remaining')
   expect(saveWordToCollection).toHaveBeenCalledTimes(1)
+  const meanings = within(
+    screen.getByRole('list', { name: 'Published meanings for huis' })
+  )
+  expect(meanings.getAllByRole('listitem')).toHaveLength(2)
+  expect(
+    meanings.getByText('household, family · домохозяйство, семья')
+  ).toBeInTheDocument()
   fireEvent.change(screen.getByLabelText('Meaning for huis'), {
     target: { value: '1' },
   })

@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/Button'
+import { formatWordTranslations } from '@/features/analysis/format-word-translations'
 import type { CollectionOption } from '@/features/words/repository'
 import styles from './BatchCapture.module.css'
 import {
@@ -191,22 +192,30 @@ export function BatchCaptureQueue({
         </div>
         {items.map((item, index) => {
           const meaningIndex = selectedMeaningIndex(item)
-          const publishedEntry = item.published?.entries[meaningIndex ?? -1]
-          const translations =
-            publishedEntry?.content.translations ?? item.analysis?.translations
-          const needsMeaning = (item.published?.entries.length ?? 0) > 1
+          const meanings = item.published?.entries ?? []
+          const needsMeaning = meanings.length > 1
           return (
             <article className={styles.row} key={item.id}>
               <span className={styles.index}>
                 {String(index + 1).padStart(2, '0')}
               </span>
               <span className={styles.entry}>{item.dutchText}</span>
-              <span className={styles.hint}>
-                {translations?.en.join(', ') ||
-                  translations?.ru.join(', ') ||
-                  item.translationHint ||
-                  '—'}
-              </span>
+              <div className={styles.hint}>
+                {meanings.length ? (
+                  <ul aria-label={`Published meanings for ${item.dutchText}`}>
+                    {meanings.map(({ content, shared_reference }) => (
+                      <li key={shared_reference?.reference.entry_id}>
+                        {formatWordTranslations(content.translations) ||
+                          content.dutch_lemma}
+                      </li>
+                    ))}
+                  </ul>
+                ) : item.analysis ? (
+                  formatWordTranslations(item.analysis.translations)
+                ) : (
+                  item.translationHint || '—'
+                )}
+              </div>
               <span
                 className={`${styles.state} ${statusClassName(item.status)}`}
               >
@@ -234,10 +243,12 @@ export function BatchCaptureQueue({
                     }
                   >
                     <option value="">Choose meaning</option>
-                    {item.published?.entries.map(({ content }, index) => (
-                      <option key={index} value={index}>
-                        {content.translations.en.join(', ') ||
-                          content.translations.ru.join(', ') ||
+                    {meanings.map(({ content, shared_reference }, index) => (
+                      <option
+                        key={shared_reference?.reference.entry_id}
+                        value={index}
+                      >
+                        {formatWordTranslations(content.translations) ||
                           content.dutch_lemma}
                       </option>
                     ))}
