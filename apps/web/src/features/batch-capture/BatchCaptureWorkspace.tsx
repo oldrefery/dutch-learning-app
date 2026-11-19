@@ -1,17 +1,23 @@
 'use client'
 
-import type { BatchCaptureDraftItem } from '@woordenaar/domain'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { findOwnedSemanticDuplicate } from '@/features/analysis/actions'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  findOwnedSemanticDuplicate,
+  saveWordToCollection,
+} from '@/features/analysis/actions'
 import { analyzeForCollection } from '@/features/analysis/analyze-for-collection'
-import { PublishedWordReview } from '@/features/analysis/PublishedWordReview'
+import { savePublishedWord } from '@/features/analysis/save-published-word'
+import { markAnalysisHistorySaved } from '@/features/history/analysis-history'
 import { serializeWordAnalysis } from '@/features/analysis/analysis-contract'
 import { useWebSettings } from '@/features/settings/useWebSettings'
 import type { CollectionOption } from '@/features/words/repository'
 import { findOwnedLemmaDuplicateForBatch } from './actions'
 import { BatchCaptureComposer } from './BatchCaptureComposer'
 import { BatchCaptureQueue } from './BatchCaptureQueue'
-import { BatchReviewPanel } from './BatchReviewPanel'
+import {
+  isBatchItemReadyToSave,
+  selectedMeaningIndex,
+} from './batch-capture-domain'
 import { usePersistentBatchCapture } from './usePersistentBatchCapture'
 import type { WebBatchCaptureItem } from './types'
 
@@ -44,6 +50,7 @@ export function BatchCaptureWorkspace({
     createQueue,
     patchItem,
     setPaused,
+    stopAutoSave,
     setTargetCollectionId,
     state,
   } = usePersistentBatchCapture({
@@ -52,6 +59,15 @@ export function BatchCaptureWorkspace({
     userId,
   })
   const processingRef = useRef(false)
+  const savingRef = useRef(false)
+  const [saving, setSaving] = useState(false)
+  const analysisPending =
+    state.activeItemId !== null ||
+    state.items.some(item => item.status === 'queued')
+  const targetCollection =
+    collections.find(
+      collection => collection.id === state.targetCollectionId
+    ) ?? collections[0]
 
   useEffect(() => {
     if (
@@ -72,7 +88,9 @@ export function BatchCaptureWorkspace({
   ])
 
   const processItem = useCallback(
-    async (item: WebBatchCaptureItem) => {
+    async (
+      item: WebBatchCaptureItem
+    ): Promise<Partial<WebBatchCaptureItem>> => {
       if (!item.bypassLemmaDuplicate) {
         patchItem(item.id, {
           status: 'checking_duplicate',
@@ -80,13 +98,7 @@ export function BatchCaptureWorkspace({
         })
         const duplicate = await findOwnedLemmaDuplicateForBatch(item.dutchText)
         if (duplicate) {
-          patchItem(item.id, {
-            status: 'possible_duplicate',
-            duplicate,
-            error: null,
-          })
-          setPaused(true)
-          return
+          return { status: 'possible_duplicate', duplicate, error: null }
         }
       }
 
@@ -97,14 +109,12 @@ export function BatchCaptureWorkspace({
         followingEnabled
       )
       if (result.kind === 'published') {
-        patchItem(item.id, {
+        return {
           status: 'awaiting_review',
           published: result.document,
           analysis: null,
           error: null,
-        })
-        setPaused(true)
-        return
+        }
       }
       let semanticDuplicate = null
       let duplicateWarning: string | null = null
@@ -117,16 +127,23 @@ export function BatchCaptureWorkspace({
           'Duplicate check is temporarily unavailable. Saving will check again.'
       }
 
-      patchItem(item.id, {
+      if (semanticDuplicate) {
+        return {
+          status: 'skipped',
+          duplicate: semanticDuplicate,
+          error: 'Already exists in your vocabulary.',
+        }
+      }
+
+      return {
         status: 'awaiting_review',
         analysis: result.analysis,
         analysisMetadata: result.metadata,
-        semanticDuplicate,
+        semanticDuplicate: null,
         error: duplicateWarning,
-      })
-      setPaused(true)
+      }
     },
-    [followingEnabled, patchItem, setPaused, userId]
+    [followingEnabled, patchItem, userId]
   )
 
   useEffect(() => {
@@ -139,20 +156,18 @@ export function BatchCaptureWorkspace({
 
     processingRef.current = true
     void processItem(nextItem)
-      .catch(error => {
-        patchItem(nextItem.id, {
-          status: 'failed',
-          error:
-            error instanceof Error
-              ? error.message
-              : 'Could not analyze this item.',
-        })
-        setPaused(true)
-      })
-      .finally(() => {
+      .catch((error: unknown): Partial<WebBatchCaptureItem> => ({
+        status: 'failed',
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Could not analyze this item.',
+      }))
+      .then(update => {
         processingRef.current = false
+        patchItem(nextItem.id, update)
       })
-  }, [patchItem, processItem, setPaused, state])
+  }, [patchItem, processItem, state])
 
   const resumeItem = (itemId: string, bypassLemmaDuplicate: boolean) => {
     patchItem(itemId, {
@@ -164,63 +179,123 @@ export function BatchCaptureWorkspace({
     setPaused(false)
   }
 
-  const resolveItem = (itemId: string, status: 'completed' | 'skipped') => {
-    patchItem(itemId, {
-      status,
-      analysis: null,
-      analysisMetadata: null,
-      published: null,
-      semanticDuplicate: null,
-      error: null,
-    })
-    setPaused(false)
-  }
+  const resolveItem = useCallback(
+    (
+      itemId: string,
+      status: 'completed' | 'skipped',
+      error: string | null = null
+    ) => {
+      patchItem(itemId, {
+        status,
+        analysis: null,
+        analysisMetadata: null,
+        published: null,
+        semanticDuplicate: null,
+        importIntent: undefined,
+        error,
+      })
+    },
+    [patchItem]
+  )
+
+  const saveReady = useCallback(async () => {
+    if (analysisPending || savingRef.current || !targetCollection) return
+    const ready = state.items.filter(isBatchItemReadyToSave)
+    if (!ready.length) {
+      if (state.autoSave) stopAutoSave()
+      return
+    }
+    savingRef.current = true
+    setSaving(true)
+    stopAutoSave()
+    try {
+      for (const item of ready) {
+        const entry = item.published?.entries[selectedMeaningIndex(item) ?? -1]
+        try {
+          const result = entry
+            ? await savePublishedWord({
+                userId,
+                collectionId: targetCollection.id,
+                entry,
+                previousIntent: item.importIntent,
+                onIntent: importIntent => patchItem(item.id, { importIntent }),
+              })
+            : item.analysis &&
+              (await saveWordToCollection(
+                userId,
+                targetCollection.id,
+                serializeWordAnalysis(item.analysis)
+              ))
+          if (!result) continue
+          if (!result.success) {
+            if (result.duplicate)
+              resolveItem(item.id, 'skipped', result.message)
+            else patchItem(item.id, { error: result.message })
+            continue
+          }
+          if (item.analysis) {
+            markAnalysisHistorySaved(
+              userId,
+              item.analysis.dutchLemma,
+              targetCollection.name
+            )
+          }
+          resolveItem(item.id, 'completed')
+        } catch (error) {
+          patchItem(item.id, {
+            error:
+              error instanceof Error
+                ? error.message
+                : 'Could not save this word.',
+          })
+        }
+      }
+    } finally {
+      savingRef.current = false
+      setSaving(false)
+    }
+  }, [
+    analysisPending,
+    patchItem,
+    resolveItem,
+    state.autoSave,
+    state.items,
+    stopAutoSave,
+    targetCollection,
+    userId,
+  ])
+
+  useEffect(() => {
+    if (!state.autoSave || state.isPaused || analysisPending) return
+    const timer = window.setTimeout(() => {
+      void saveReady()
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [analysisPending, saveReady, state.autoSave, state.isPaused])
 
   if (state.items.length === 0) {
     return (
       <BatchCaptureComposer
         collections={collections}
         defaultCollectionId={defaultCollectionId}
-        onCreateQueue={(items: BatchCaptureDraftItem[], collectionId) =>
-          createQueue(items, collectionId)
-        }
+        onCreateQueue={createQueue}
       />
     )
   }
 
-  const reviewItem = state.items.find(
-    item =>
-      item.status === 'awaiting_review' && (item.published || item.analysis)
-  )
-  const targetCollection =
-    collections.find(
-      collection => collection.id === state.targetCollectionId
-    ) ?? collections[0]
-
   return (
     <div className="grid gap-6">
-      {reviewItem?.published && targetCollection && (
-        <PublishedWordReview
-          key={reviewItem.id}
-          document={reviewItem.published}
-          userId={userId}
-          collectionId={targetCollection.id}
-          onSaved={() => resolveItem(reviewItem.id, 'completed')}
-          onSkip={() => resolveItem(reviewItem.id, 'skipped')}
-        />
-      )}
-      {reviewItem?.analysis && targetCollection && (
-        <BatchReviewPanel
-          collectionId={targetCollection.id}
-          collectionName={targetCollection.name}
-          item={reviewItem}
-          onSaved={itemId => resolveItem(itemId, 'completed')}
-          onSkip={itemId => resolveItem(itemId, 'skipped')}
-          userId={userId}
-        />
-      )}
       <BatchCaptureQueue
         activeItemId={state.activeItemId}
+        analysisPending={analysisPending}
+        autoSave={state.autoSave === true}
+        saving={saving}
+        onSaveReady={() => {
+          void saveReady()
+        }}
+        onSelectMeaning={(id, meaningIndex) =>
+          patchItem(id, { meaningIndex, error: null })
+        }
         collections={collections}
         isPaused={state.isPaused}
         items={state.items}

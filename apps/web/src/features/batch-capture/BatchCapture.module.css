@@ -164,9 +164,19 @@
 .hint {
   color: var(--text-secondary);
   font-size: 13px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.hint li + li {
+  border-top: 1px solid var(--divider);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.itemActions select {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .state {

@@ -1,5 +1,13 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { randomUUID } from 'crypto'
+import { clearPersistentBatchCapture } from './usePersistentBatchCapture'
 import { BatchCaptureWorkspace } from './BatchCaptureWorkspace'
 import { analyzeForCollection } from '@/features/analysis/analyze-for-collection'
 import { saveWordToCollection } from '@/features/analysis/actions'
@@ -26,14 +34,37 @@ jest.mock('@/features/settings/useWebSettings', () => ({
   }),
 }))
 
-it('previews each line and advances on save or skip, starting from Analyze', async () => {
+beforeEach(() => {
+  jest.clearAllMocks()
+  clearPersistentBatchCapture()
+})
+
+async function startBatch(autoSave = false, ambiguous = false) {
   Object.defineProperty(window.crypto, 'randomUUID', {
     configurable: true,
     value: randomUUID,
   })
   delete process.env.NEXT_PUBLIC_DICTIONARY_FOLLOWING_IMPORTS_ENABLED
   const original = transferSession().document
-  const document = { ...original, entries: [original.entries[0]] }
+  const first = original.entries[0]
+  const second = {
+    ...first,
+    shared_reference: first.shared_reference && {
+      ...first.shared_reference,
+      reference: { entry_id: randomUUID(), revision_id: randomUUID() },
+    },
+    content: {
+      ...first.content,
+      translations: {
+        en: ['household', 'family'],
+        ru: ['домохозяйство', 'семья'],
+      },
+    },
+  }
+  const document = {
+    ...original,
+    entries: ambiguous ? [first, second] : [first],
+  }
   jest
     .mocked(analyzeForCollection)
     .mockResolvedValueOnce({ kind: 'published', document })
@@ -63,21 +94,77 @@ it('previews each line and advances on save or skip, starting from Analyze', asy
   fireEvent.change(screen.getByLabelText('Dutch words'), {
     target: { value: 'huis\nfiets' },
   })
-  fireEvent.click(screen.getByRole('button', { name: 'Analyze 2 words' }))
-  const save = await screen.findByRole('button', { name: 'Save personal copy' })
-  expect(analyzeForCollection).toHaveBeenCalledTimes(1)
+  if (autoSave) {
+    fireEvent.click(
+      screen.getByRole('checkbox', { name: /Automatically save ready words/ })
+    )
+  }
+  await act(async () => {
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: autoSave ? 'Analyze and save 2 words' : 'Analyze 2 words',
+      })
+    )
+  })
+}
+
+it('analyzes the entire list before saving all ready results on one click', async () => {
+  await startBatch()
+  const save = await screen.findByRole('button', { name: 'Save 2 ready words' })
+  expect(analyzeForCollection).toHaveBeenCalledTimes(2)
   expect(saveWordToCollection).not.toHaveBeenCalled()
   fireEvent.click(save)
-  await screen.findByRole('button', { name: 'Approve and save' })
-  const skip = screen.getByRole('button', { name: 'Skip this item' })
-  expect(analyzeForCollection).toHaveBeenLastCalledWith(
-    TRANSFER_OWNER,
-    'fiets',
-    true
+  await screen.findByText('0 ready · 2 saved · 0 remaining')
+  expect(saveWordToCollection).toHaveBeenCalledTimes(2)
+})
+
+it('automatically saves ready results after analyzing the entire list', async () => {
+  await startBatch(true)
+  await screen.findByText('0 ready · 2 saved · 0 remaining')
+  expect(analyzeForCollection).toHaveBeenCalledTimes(2)
+  expect(saveWordToCollection).toHaveBeenCalledTimes(2)
+})
+
+it('continues after a save failure and retries only the unsaved result', async () => {
+  await startBatch()
+  jest
+    .mocked(saveWordToCollection)
+    .mockResolvedValueOnce({ success: false, message: 'Try again' })
+    .mockResolvedValue({ success: true, wordId: 'saved' })
+  fireEvent.click(
+    await screen.findByRole('button', { name: 'Save 2 ready words' })
   )
-  fireEvent.click(skip)
+  await screen.findByText('1 ready · 1 saved · 1 remaining')
+  await screen.findByText('Try again')
+  fireEvent.click(screen.getByRole('button', { name: 'Save 1 ready word' }))
   await waitFor(() =>
-    expect(screen.getByText('1 saved · 0 remaining')).toBeInTheDocument()
+    expect(
+      screen.getByText('0 ready · 2 saved · 0 remaining')
+    ).toBeInTheDocument()
   )
+  expect(saveWordToCollection).toHaveBeenCalledTimes(3)
+  expect(analyzeForCollection).toHaveBeenCalledTimes(2)
+})
+
+it('leaves ambiguous meanings for selection while automatically saving the rest', async () => {
+  await startBatch(true, true)
+  await screen.findByText('0 ready · 1 saved · 1 remaining')
   expect(saveWordToCollection).toHaveBeenCalledTimes(1)
+  const meanings = within(
+    screen.getByRole('list', { name: 'Published meanings for huis' })
+  )
+  expect(meanings.getAllByRole('listitem')).toHaveLength(2)
+  expect(
+    meanings.getByText('household, family · домохозяйство, семья')
+  ).toBeInTheDocument()
+  fireEvent.change(screen.getByLabelText('Meaning for huis'), {
+    target: { value: '1' },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Save 1 ready word' }))
+  await screen.findByText('0 ready · 2 saved · 0 remaining')
+  expect(saveWordToCollection).toHaveBeenLastCalledWith(
+    TRANSFER_OWNER,
+    TRANSFER_OTHER,
+    expect.stringContaining('household')
+  )
 })

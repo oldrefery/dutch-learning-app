@@ -35,9 +35,14 @@ export async function findOwnedSemanticDuplicate(
   return getOwnedSemanticDuplicate(auth.userId, analysis)
 }
 
-type SaveWordResult =
+export type SaveWordResult =
   | { success: true; wordId: string }
-  | { success: false; message: string; field?: 'analysis' | 'collectionId' }
+  | {
+      success: false
+      message: string
+      duplicate?: boolean
+      field?: 'analysis' | 'collectionId'
+    }
 
 export async function saveWordToCollection(
   ownerId: string,
@@ -79,6 +84,7 @@ export async function saveWordToCollection(
     return {
       success: false,
       message: result.message,
+      duplicate: result.code === 'duplicate',
       field: result.code === 'collection' ? 'collectionId' : undefined,
     }
   revalidatePath('/app/collections')
