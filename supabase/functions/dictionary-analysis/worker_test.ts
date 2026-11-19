@@ -653,6 +653,54 @@ Deno.test(
   }
 )
 Deno.test(
+  'word generation and semantic validation use their configured timeouts',
+  async () => {
+    const request = await prepareGeminiRequest(input, 'gemini-fixture-model')
+    const deadlines: number[] = []
+    const setTimer = globalThis.setTimeout
+    const descriptor = Object.getOwnPropertyDescriptor(
+      globalThis,
+      'setTimeout'
+    )!
+    Object.defineProperty(globalThis, 'setTimeout', {
+      configurable: true,
+      value: (...args: Parameters<typeof setTimer>) => {
+        const delay = args[1]
+        if (delay === 90_000 || delay === 45_000) {
+          deadlines.push(delay)
+          args[1] = 0
+        }
+        return setTimer(...args)
+      },
+    })
+    try {
+      const transport = createGeminiTransport({
+        apiKey: 'synthetic-key',
+        timeoutMs: 45_000,
+        wordAnalysisTimeoutMs: 90_000,
+        fetch: (_url, init?: RequestInit) =>
+          new Promise((_resolve, reject) => {
+            init?.signal?.addEventListener(
+              'abort',
+              () => reject(new DOMException('Aborted', 'AbortError')),
+              { once: true }
+            )
+          }),
+      })
+      const generation = await transport.invoke(request, 'generation')
+      const judgement = await transport.invoke(
+        { ...request, resultFormat: undefined },
+        'judgement'
+      )
+      assert.equal(generation.kind, 'provider-outcome-unknown')
+      assert.equal(judgement.kind, 'provider-outcome-unknown')
+      assert.deepEqual(deadlines, [90_000, 45_000])
+    } finally {
+      Object.defineProperty(globalThis, 'setTimeout', descriptor)
+    }
+  }
+)
+Deno.test(
   'RPC adapter uses caller credentials only for acceptance; privileged calls use verified actor',
   async () => {
     const calls: {
