@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { randomUUID } from 'crypto'
+import { refreshPublishedMeaning } from './refresh-published-meaning'
 import { PublishedWordReview } from './PublishedWordReview'
 import { saveWordToCollection } from './actions'
 import { createWebFollowingImportService } from '@/features/sharing/following-import-client'
@@ -8,6 +9,9 @@ import {
   TRANSFER_OWNER,
   TRANSFER_OTHER,
 } from '@/features/sharing/__fixtures__/following-transfer'
+jest.mock('./refresh-published-meaning', () => ({
+  refreshPublishedMeaning: jest.fn(),
+}))
 jest.mock('./actions', () => ({ saveWordToCollection: jest.fn() }))
 jest.mock('@/features/sharing/following-import-client', () => ({
   createWebFollowingImportService: jest.fn(),
@@ -64,5 +68,49 @@ it('imports the chosen published reference with the same intent on retry and nev
     request: { collection_id: TRANSFER_OTHER, source: second.shared_reference },
   })
   expect(prepare.mock.calls[1]).toEqual(prepare.mock.calls[0])
+  expect(saveWordToCollection).not.toHaveBeenCalled()
+})
+
+it('refreshes the selected shared meaning without saving a personal word', async () => {
+  const doc = transferSession().document
+  const first = doc.entries[0]
+  const second = {
+    ...first,
+    shared_reference: {
+      ...first.shared_reference!,
+      reference: { entry_id: randomUUID(), revision_id: randomUUID() },
+    },
+  }
+  const updated = {
+    ...second,
+    content: {
+      ...second.content,
+      translations: { en: ['new shared analysis'], ru: [] },
+    },
+  }
+  jest
+    .mocked(refreshPublishedMeaning)
+    .mockResolvedValue({ updated, message: 'Shared analysis published.' })
+  const onUpdated = jest.fn()
+  render(
+    <PublishedWordReview
+      document={{ ...doc, entries: [first, second] }}
+      userId={TRANSFER_OWNER}
+      collectionId=""
+      onSaved={jest.fn()}
+      onUpdated={onUpdated}
+    />
+  )
+  fireEvent.change(screen.getByLabelText('Choose a meaning'), {
+    target: { value: '1' },
+  })
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Refresh shared analysis' })
+  )
+  expect(await screen.findByRole('status')).toHaveTextContent(
+    'Shared analysis published.'
+  )
+  expect(refreshPublishedMeaning).toHaveBeenCalledWith(TRANSFER_OWNER, second)
+  expect(onUpdated).toHaveBeenCalledWith({ ...doc, entries: [first, updated] })
   expect(saveWordToCollection).not.toHaveBeenCalled()
 })

@@ -387,7 +387,13 @@ function AnalyzeWordWorkflow({
 
       {published && (
         <PublishedWordReview
+          key={published.entries
+            .map(e => e.shared_reference?.reference.entry_id)
+            .join(',')}
           document={published}
+          onUpdated={next =>
+            setPublished(current => (current === published ? next : current))
+          }
           collectionId={selectedCollectionId}
           userId={userId}
           onSaved={id =>

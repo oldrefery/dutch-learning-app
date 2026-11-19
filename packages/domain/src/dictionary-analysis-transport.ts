@@ -35,6 +35,7 @@ export function createDictionaryAnalysisRemoteClient(options: {
   userId: string
   journal: DictionaryAnalysisClientJournal
   remote: DictionaryAnalysisRemote
+  publishedEntryOnly?: boolean
   enabled: () => boolean
   refresh: (
     operation: DictionaryAnalysisClientOperation,
@@ -48,21 +49,22 @@ export function createDictionaryAnalysisRemoteClient(options: {
   const requireAvailable = async (owner: DictionaryAnalysisClientOwner) => {
     requireEnabled()
     await owner.check()
-    const { data, error } = await options.remote.rpc(
-      'dictionary_content_capability_v2'
-    )
-    await owner.check()
-    const parsed = parseDictionaryFollowingCapability(data)
-    if (
-      error ||
-      !parsed.success ||
-      !parsed.data.following_enabled ||
-      !parsed.data.shared_analysis_enabled ||
-      !parsed.data.command_protocol_versions.includes(2)
-    )
-      throw new Error('Shared dictionary analysis is unavailable')
-    requireEnabled()
-
+    if (!options.publishedEntryOnly) {
+      const { data, error } = await options.remote.rpc(
+        'dictionary_content_capability_v2'
+      )
+      await owner.check()
+      const parsed = parseDictionaryFollowingCapability(data)
+      if (
+        error ||
+        !parsed.success ||
+        !parsed.data.following_enabled ||
+        !parsed.data.shared_analysis_enabled ||
+        !parsed.data.command_protocol_versions.includes(2)
+      )
+        throw new Error('Shared dictionary analysis is unavailable')
+      requireEnabled()
+    }
     const actor = await options.remote.rpc('dictionary_analysis_actor_v1')
     await owner.check()
     const permission = parseDictionaryAnalysisActorV1(actor.data)

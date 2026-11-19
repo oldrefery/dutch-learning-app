@@ -19,13 +19,16 @@ type ExclusiveLock = <T>(name: string, action: () => Promise<T>) => Promise<T>
 /** Metadata only. All writers for an owner use one exclusive browser lock.
  * No unlocked fallback, automatic eviction or clear; explicit replacement retains terminal history. */
 export function createBrowserDictionaryAnalysisJournal(ports: {
+  entryScope?: string
   storage: Pick<Storage, 'getItem' | 'setItem'>
   withLock: ExclusiveLock
   assertHead(operation: DictionaryAnalysisClientOperation): Promise<void>
 }): DictionaryAnalysisAttemptJournal {
   const key = (userId: string) => {
     if (!UUID.test(userId)) throw new Error('Invalid shared analysis owner')
-    return `${PREFIX}${userId}`
+    return ports.entryScope
+      ? `dictionary-entry-analysis-v2:${userId}:${ports.entryScope}`
+      : `${PREFIX}${userId}`
   }
   const readAll = (
     userId: string
@@ -213,11 +216,13 @@ export function createBrowserDictionaryAnalysisJournal(ports: {
 }
 
 export function createBrowserAnalysisJournal(
-  assertHead: (operation: DictionaryAnalysisClientOperation) => Promise<void>
+  assertHead: (operation: DictionaryAnalysisClientOperation) => Promise<void>,
+  entryScope?: string
 ): DictionaryAnalysisAttemptJournal {
   if (typeof window === 'undefined' || !navigator.locks)
     throw new Error('Durable shared analysis storage is unavailable')
   return createBrowserDictionaryAnalysisJournal({
+    entryScope,
     storage: window.localStorage,
     withLock: async (name, action) =>
       await navigator.locks.request(name, { mode: 'exclusive' }, action),
