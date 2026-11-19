@@ -108,7 +108,7 @@ export async function listOwnedDisplayWords(
 
   if (scope.view === 'search') {
     const { data, error } = await list(
-      'collection_id, dutch_lemma, dutch_original, part_of_speech, translations, word_id'
+      'article, collection_id, dutch_lemma, dutch_original, part_of_speech, translations, word_id'
     )
     if (error) throw new Error(errorMessage)
     return hydrateOwnedWords(client, data ?? [])
