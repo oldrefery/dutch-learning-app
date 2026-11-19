@@ -51,6 +51,9 @@ export const createIndependentDictionaryAnalysisEndpoint = async (
   const transport = createGeminiTransport({
     apiKey: options.apiKey,
     fetch: http,
+    // Leave time for database work within the 150-second gateway deadline.
+    timeoutMs: 45_000,
+    wordAnalysisTimeoutMs: 90_000,
     observe: observation => logProviderObservation('analysis', observation),
   })
   return withAnalysisCors(

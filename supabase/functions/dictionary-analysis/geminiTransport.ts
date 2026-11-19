@@ -162,14 +162,17 @@ export const createGeminiTransport = (options: {
   apiKey: string
   fetch: typeof fetch
   timeoutMs?: number
+  wordAnalysisTimeoutMs?: number
   observe?: (observation: ProviderObservation) => void
 }): GeminiTransport => {
-  const timeoutMs = options.timeoutMs ?? 60000
+  const timeoutMs = options.timeoutMs ?? 60_000
+  const wordAnalysisTimeoutMs = options.wordAnalysisTimeoutMs ?? timeoutMs
+  const validTimeout = (ms: number) =>
+    Number.isInteger(ms) && ms >= 1 && ms <= 120_000
   if (
     !options.apiKey.trim() ||
-    !Number.isInteger(timeoutMs) ||
-    timeoutMs < 1 ||
-    timeoutMs > 120000
+    !validTimeout(timeoutMs) ||
+    !validTimeout(wordAnalysisTimeoutMs)
   )
     throw new Error('invalid-provider-configuration')
   return {
@@ -177,7 +180,12 @@ export const createGeminiTransport = (options: {
       if (!/^gemini-[a-z0-9][a-z0-9.-]{0,100}$/.test(request.model))
         throw new Error('invalid-provider-configuration')
       const controller = new AbortController()
-      const timer = setTimeout(() => controller.abort(), timeoutMs)
+      const timer = setTimeout(
+        () => controller.abort(),
+        request.resultFormat === 'word-analysis'
+          ? wordAnalysisTimeoutMs
+          : timeoutMs
+      )
       const startedAt = performance.now()
       let httpStatus: number | null = null
       let googleStatus: string | null = null
