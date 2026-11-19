@@ -58,37 +58,62 @@ Deno.test(
     })
   }
 )
-Deno.test(
-  'runtime loads only exact explicit keys/models/origins with no fallback',
-  async () => {
-    const env: Record<string, string> = {
-      DICTIONARY_ANALYSIS_ENDPOINT_ENABLED: 'true',
-      SUPABASE_URL: options.url,
-      SUPABASE_ANON_KEY: options.anonKey,
-      SUPABASE_SERVICE_ROLE_KEY: options.serviceRoleKey,
-      DICTIONARY_ANALYSIS_GEMINI_API_KEY: options.apiKey,
-      DICTIONARY_ANALYSIS_GENERATION_MODEL: options.model,
-      DICTIONARY_ANALYSIS_GENERATION_MODEL_VERSION: options.modelVersion,
-      DICTIONARY_ANALYSIS_SEMANTIC_MODEL: options.semanticModel,
-      DICTIONARY_ANALYSIS_SEMANTIC_MODEL_VERSION: options.semanticModelVersion,
-      DICTIONARY_ANALYSIS_MEDIA_URL_PREFIXES: '[]',
-      DICTIONARY_ANALYSIS_ALLOWED_ORIGINS: JSON.stringify(
-        options.allowedOrigins
-      ),
-      DICTIONARY_PAID_RELEASE_BINDING_SHA256: options.paidReleaseBinding,
-    }
-    const handler = await createDictionaryAnalysisRuntime(
-      name => env[name],
-      loaded => {
-        assert.deepEqual(loaded, options)
-        return Promise.resolve(() =>
-          Promise.resolve(new Response(null, { status: 204 }))
-        )
+for (const [source, expectedKey] of [
+  [undefined, options.apiKey],
+  ['dedicated', options.apiKey],
+  ['interactive', 'synthetic-interactive-provider'],
+  ['missing-interactive', null],
+  ['invalid', null],
+] as const) {
+  Deno.test(
+    `runtime uses only the selected Gemini credential (${source})`,
+    async () => {
+      const env: Record<string, string | undefined> = {
+        DICTIONARY_ANALYSIS_ENDPOINT_ENABLED: 'true',
+        DICTIONARY_ANALYSIS_GEMINI_KEY_SOURCE:
+          source === 'missing-interactive' ? 'interactive' : source,
+        SUPABASE_URL: options.url,
+        SUPABASE_ANON_KEY: options.anonKey,
+        SUPABASE_SERVICE_ROLE_KEY: options.serviceRoleKey,
+        DICTIONARY_ANALYSIS_GEMINI_API_KEY: options.apiKey,
+        GEMINI_API_KEY:
+          source === 'missing-interactive'
+            ? undefined
+            : 'synthetic-interactive-provider',
+        DICTIONARY_ANALYSIS_GENERATION_MODEL: options.model,
+        DICTIONARY_ANALYSIS_GENERATION_MODEL_VERSION: options.modelVersion,
+        DICTIONARY_ANALYSIS_SEMANTIC_MODEL: options.semanticModel,
+        DICTIONARY_ANALYSIS_SEMANTIC_MODEL_VERSION:
+          options.semanticModelVersion,
+        DICTIONARY_ANALYSIS_MEDIA_URL_PREFIXES: '[]',
+        DICTIONARY_ANALYSIS_ALLOWED_ORIGINS: JSON.stringify(
+          options.allowedOrigins
+        ),
+        DICTIONARY_PAID_RELEASE_BINDING_SHA256: options.paidReleaseBinding,
       }
-    )
-    assert.equal((await handler(new Request(options.url))).status, 204)
-  }
-)
+      let loaded = false
+      const handler = await createDictionaryAnalysisRuntime(
+        name => {
+          if (source === 'interactive' || source === 'missing-interactive')
+            assert.notEqual(name, 'DICTIONARY_ANALYSIS_GEMINI_API_KEY')
+          return env[name]
+        },
+        configured => {
+          loaded = true
+          assert.deepEqual(configured, { ...options, apiKey: expectedKey })
+          return Promise.resolve(() =>
+            Promise.resolve(new Response(null, { status: 204 }))
+          )
+        }
+      )
+      assert.equal(loaded, expectedKey !== null)
+      assert.equal(
+        (await handler(new Request(options.url))).status,
+        expectedKey ? 204 : 503
+      )
+    }
+  )
+}
 Deno.test(
   'CORS admits configured browser preflight and native calls, rejecting other origins before work',
   async () => {
