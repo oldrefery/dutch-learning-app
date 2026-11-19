@@ -83,7 +83,17 @@ globalThis.fetch = async (input, init) => {
   if (url.pathname === '/rest/v1/rpc/increment_cache_usage')
     return new Response(null, { status: 204 })
   if (url.pathname === '/rest/v1/word_analysis_cache') {
-    if (req.method === 'GET') return reply(cached)
+    if (req.method === 'GET') {
+      const cutoff = url.searchParams.get('last_used_at')?.replace(/^gte\./, '')
+      return reply(
+        cached.filter(
+          row =>
+            !cutoff ||
+            typeof row.last_used_at !== 'string' ||
+            row.last_used_at >= cutoff
+        )
+      )
+    }
     if (req.method === 'POST' && duplicate)
       return reply({ code: '23505', message: 'Synthetic duplicate' }, 409)
     return new Response(null, { status: 201 })
@@ -507,6 +517,35 @@ Deno.test(
       assertEquals(Object.hasOwn(schema.properties, 'cefr'), enabled)
       assert(schema.required.includes('translations'))
       assert(!Object.hasOwn(schema.properties, 'image_url'))
+    }
+  }
+)
+
+Deno.test(
+  'four-year-old analyses are reused and six-year-old analyses expire',
+  async () => {
+    try {
+      for (const age of [4, 6]) {
+        cached = [
+          {
+            ...analysis,
+            translations: { en: ['house'], ru: ['дом'] },
+            cache_id: '22222222-2222-4222-8222-222222222222',
+            last_used_at: new Date(
+              Date.UTC(new Date().getUTCFullYear() - age, 5, 15)
+            ).toISOString(),
+          },
+        ]
+        for (const word of ['het huis', 'huis']) {
+          await request(false, 200, word)
+          assertEquals(
+            calls.some(call => call.path.includes('/models/')),
+            age === 6
+          )
+        }
+      }
+    } finally {
+      cached = []
     }
   }
 )
