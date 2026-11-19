@@ -11,7 +11,11 @@ import type {
   WordAnalysisResult,
   WordImageOption,
 } from './analysis-contract'
-import { getEdgeFunctionErrorMessage } from './edge-errors'
+import { reportAnalysisFailure, type AnalysisMode } from './analysis-telemetry'
+import {
+  getEdgeFunctionErrorMessage,
+  readEdgeFunctionError,
+} from './edge-errors'
 import { recordAnalysisHistory } from '@/features/history/analysis-history'
 
 const IMAGE_PAGE_SIZE = 6
@@ -19,27 +23,42 @@ const IMAGE_PAGE_SIZE = 6
 export const analyzeWordWithAi = async (
   userId: string,
   word: string,
-  forceRefresh = false
+  forceRefresh = false,
+  mode: AnalysisMode = 'single'
 ): Promise<WordAnalysisResult> => {
   await requireWordAnalysisAccess(userId)
   const supabase = createClient()
-  const { data, error } = await supabase.functions.invoke<unknown>(
-    'gemini-handler',
-    {
-      body: { word, forceRefresh },
-    }
-  )
-
-  if (error) {
-    throw new Error(
-      await getEdgeFunctionErrorMessage(
-        error,
-        'Could not analyze this word. Please try again.'
-      )
+  let data: unknown
+  try {
+    const response = await supabase.functions.invoke<unknown>(
+      'gemini-handler',
+      {
+        body: { word, forceRefresh },
+      }
     )
+    if (response.error) throw response.error
+    data = response.data
+  } catch (error) {
+    const detail = await readEdgeFunctionError(
+      error,
+      'Could not analyze this word. Please try again.'
+    )
+    const failure = new Error(detail.message)
+    reportAnalysisFailure(mode, 'invoke', failure, detail.meta, detail.status)
+    throw failure
   }
 
-  const result = parseAnalysisFunctionResponse(data)
+  let result: WordAnalysisResult
+  try {
+    result = parseAnalysisFunctionResponse(data)
+  } catch (error) {
+    const meta =
+      typeof data === 'object' && data !== null && 'meta' in data
+        ? data.meta
+        : undefined
+    reportAnalysisFailure(mode, 'response', error, meta)
+    throw error
+  }
   recordAnalysisHistory(userId, word, result)
   return result
 }

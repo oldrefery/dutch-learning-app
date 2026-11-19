@@ -50,7 +50,7 @@ Deno.serve(async (req: Request) => {
     )
   }
 
-  let requestBody: { word?: unknown; forceRefresh?: unknown } | null = null
+  const meta: { source?: 'gemini' | 'cache'; model?: string } = {}
 
   try {
     const parsedBody: unknown = await req.json()
@@ -67,7 +67,7 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    requestBody = parsedBody as {
+    const requestBody = parsedBody as {
       word?: unknown
       forceRefresh?: unknown
     }
@@ -145,6 +145,7 @@ Deno.serve(async (req: Request) => {
       }
 
       if (cachedAnalysis) {
+        meta.source = 'cache'
         // Build result from the cache
         const result = {
           dutch_original: word,
@@ -229,7 +230,10 @@ Deno.serve(async (req: Request) => {
 
     const prompt =
       formatWordAnalysisPrompt(word) + (cefrEnabled ? ANALYSIS_CEFR_PROMPT : '')
+    meta.source = 'gemini'
     const geminiResponse = await callGeminiAPI(prompt, cefrEnabled)
+    if (typeof geminiResponse?.modelVersion === 'string')
+      meta.model = geminiResponse.modelVersion
     const analysis = parseGeminiResponse(geminiResponse)
     assertEnglishTranslation(analysis?.translations)
     assertRussianScript(analysis)
@@ -334,7 +338,7 @@ Deno.serve(async (req: Request) => {
         success: true,
         data: { ...result, ...(cefrEnabled ? { cefr } : {}) },
         meta: {
-          source: 'gemini',
+          ...meta,
           cache_hit: false,
           force_refresh: forceRefresh || false,
           processed_at: new Date().toISOString(),
@@ -353,46 +357,10 @@ Deno.serve(async (req: Request) => {
       error instanceof Error ? error.stack : 'No stack trace'
     )
 
-    // Send it to Sentry
-    try {
-      const sentryDsn = Deno.env.get('SENTRY_DSN')
-      if (sentryDsn) {
-        await fetch('https://sentry.io/api/0/envelope/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-sentry-envelope',
-          },
-          body: JSON.stringify({
-            event_id: crypto.randomUUID(),
-            timestamp: new Date().toISOString(),
-            platform: 'javascript',
-            sdk: { name: 'custom', version: '1.0.0' },
-            exception: {
-              values: [
-                {
-                  type: error instanceof Error ? error.name : 'Error',
-                  value:
-                    error instanceof Error ? error.message : 'Unknown error',
-                  stacktrace:
-                    error instanceof Error ? { frames: [] } : undefined,
-                },
-              ],
-            },
-            extra: {
-              context: 'gemini-handler',
-              word: requestBody?.word,
-              forceRefresh: requestBody?.forceRefresh,
-            },
-          }),
-        }).catch(() => {}) // Silent fail for Sentry
-      }
-    } catch (sentryError) {
-      // Silent fail for Sentry reporting
-    }
-
     return new Response(
       JSON.stringify({
         success: false,
+        meta,
         error:
           error instanceof Error ? error.message : 'Unknown error occurred',
       }),

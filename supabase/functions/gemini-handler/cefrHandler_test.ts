@@ -53,6 +53,7 @@ globalThis.fetch = async (input, init) => {
     })
   if (url.hostname === 'generativelanguage.googleapis.com') {
     return reply({
+      modelVersion: 'gemini-3.8-flash',
       candidates: [
         {
           content: {
@@ -350,6 +351,7 @@ Deno.test(
       const result = await request(false, 500)
       assertEquals(result.success, false)
       assert(result.error.includes('Russian analysis must use Cyrillic'))
+      assertEquals(result.meta, { source: 'gemini', model: 'gemini-3.8-flash' })
       assertEquals(calls.filter(x => x.path.includes('/models/')).length, 1)
       assertEquals(
         calls.some(

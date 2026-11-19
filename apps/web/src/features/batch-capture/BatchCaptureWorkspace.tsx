@@ -106,7 +106,8 @@ export function BatchCaptureWorkspace({
       const result = await analyzeForCollection(
         userId,
         item.dutchText,
-        followingEnabled
+        followingEnabled,
+        'batch'
       )
       if (result.kind === 'published') {
         return {
