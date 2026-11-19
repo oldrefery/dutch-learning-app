@@ -9,6 +9,7 @@ import { refreshPublishedMeaning } from './refresh-published-meaning'
 import { formatWordTranslations } from './format-word-translations'
 import { Button } from '@/components/ui/Button'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
+import { formatDutchHeadword } from '@/features/words/dutch-headword'
 import {
   isLinkedWordImportEnabled,
   savePublishedWord,
@@ -121,7 +122,7 @@ export function PublishedWordReview({
           >
             {document.entries.map(({ content, shared_reference }, i) => (
               <option key={shared_reference?.reference.entry_id ?? i} value={i}>
-                {content.article} {content.dutch_lemma} ·{' '}
+                {formatDutchHeadword(content.dutch_lemma, content.article)} ·{' '}
                 {formatWordTranslations(content.translations)}
               </option>
             ))}

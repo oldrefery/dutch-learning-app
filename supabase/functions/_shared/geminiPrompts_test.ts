@@ -63,3 +63,10 @@ Deno.test(
     )
   }
 )
+
+Deno.test('calendar examples use bare names for ordinary dates', () => {
+  const prompt = formatWordAnalysisPrompt('dinsdag')
+  assertStringIncludes(prompt, 'the bare weekday or month name')
+  assertStringIncludes(prompt, '"op dinsdag", "in december"')
+  assertStringIncludes(prompt, '"de dinsdag na Pasen"')
+})

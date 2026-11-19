@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { OfficialContentManifest } from '@woordenaar/content/manifest'
 import { DictionaryFollowingTransferPanel } from '@/features/sharing/DictionaryFollowingTransferPanel'
+import { formatDutchHeadword } from '@/features/words/dutch-headword'
 import { useActionState, useMemo, useState } from 'react'
 import { importStarterPack } from './actions'
 import { INITIAL_STARTER_PACK_IMPORT_STATE } from './form-state'
@@ -242,8 +243,7 @@ export function StarterPackImport({
               <span className="min-w-0">
                 <span className="flex flex-wrap items-baseline gap-x-2">
                   <span className="font-semibold">
-                    {entry.article ? `${entry.article} ` : ''}
-                    {entry.dutchLemma}
+                    {formatDutchHeadword(entry.dutchLemma, entry.article)}
                   </span>
                   <span className="text-xs uppercase tracking-wide text-neutral-500">
                     {entry.partOfSpeech}

@@ -7,6 +7,7 @@ import {
 } from '@woordenaar/domain'
 import { Badge } from '@/components/ui/Badge'
 import { AudioButton } from './AudioButton'
+import { getHeadwordArticle } from './dutch-headword'
 import { canRenderWordImage } from './word-detail'
 import type { WordDetail, WordExample } from './word-detail'
 import styles from './WordDetailCard.module.css'
@@ -241,6 +242,7 @@ export function WordDetailCard({
   word: WordDetail
 }) {
   const Heading = headingLevel
+  const article = getHeadwordArticle(word.dutchLemma, word.article)
   const grammarBadges = [
     word.partOfSpeech,
     word.isReflexive ? 'Reflexive' : null,
@@ -260,9 +262,7 @@ export function WordDetailCard({
         <div className={styles.headerCopy}>
           <div className={styles.lemmaRow}>
             <Heading className={styles.lemma}>
-              {word.article && (
-                <span className={styles.article}>{word.article} </span>
-              )}
+              {article && <span className={styles.article}>{article} </span>}
               {word.dutchLemma}
               {word.preposition && (
                 <span className={styles.preposition}> {word.preposition}</span>

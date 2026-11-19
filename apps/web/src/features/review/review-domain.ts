@@ -5,6 +5,7 @@ import {
   toLocalDateKey,
 } from '@woordenaar/domain'
 import type { Json } from '@woordenaar/supabase-contracts'
+import { formatDutchHeadword } from '@/features/words/dutch-headword'
 import type {
   AdaptiveReviewModeDecision,
   RecognitionOption,
@@ -102,9 +103,10 @@ const getRussianSecondaryTranslation = (word: ReviewWord, label: string) => {
 }
 
 export const getDutchProductionAnswer = (word: ReviewWord) =>
-  word.partOfSpeech === 'noun' && word.article
-    ? `${word.article} ${word.dutchLemma}`
-    : word.dutchLemma
+  formatDutchHeadword(
+    word.dutchLemma,
+    word.partOfSpeech === 'noun' ? word.article : null
+  )
 
 export const getReviewAnswer = (word: ReviewWord, mode: ReviewMode) =>
   mode === 'dutch-production'

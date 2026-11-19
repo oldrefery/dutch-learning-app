@@ -7,6 +7,7 @@ import type { Json } from '@woordenaar/supabase-contracts'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
+import { formatDutchHeadword } from '@/features/words/dutch-headword'
 import type { InsightsData, InsightWord } from './types'
 import styles from './Insights.module.css'
 
@@ -139,7 +140,7 @@ function DifficultWord({
   const content = (
     <>
       <span className={styles.wordName}>
-        {[word.article, word.dutch_lemma].filter(Boolean).join(' ')}
+        {formatDutchHeadword(word.dutch_lemma, word.article)}
       </span>
       <span className={styles.wordTranslation}>
         {getTranslation(word.translations) ?? 'Translation unavailable'}

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Ellipsis, Play, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
+import { getHeadwordArticle } from '@/features/words/dutch-headword'
 import { filterCollectionWords } from './collection-detail'
 import type { CollectionWordListItem } from './collection-detail'
 import styles from './CollectionDetail.module.css'
@@ -155,11 +156,12 @@ export function CollectionWordList({
 
           {filteredWords.map(word => {
             const detailsHref = `/app/collections/${collectionId}/words/${word.id}`
+            const article = getHeadwordArticle(word.dutchLemma, word.article)
             return (
               <article className={styles.row} key={word.id}>
                 <Link className={styles.word} href={detailsHref}>
-                  {word.article && (
-                    <span className={styles.article}>{word.article} </span>
+                  {article && (
+                    <span className={styles.article}>{article} </span>
                   )}
                   {word.dutchLemma}
                 </Link>
