@@ -34,11 +34,11 @@ export async function paidRelease(db, options = {}) {
       VALUES('paid-ledger-fixture','${PAID_POLICY}',TRUE,'fixture://paid-policy','independent-gemini-v1','${JUDGE}','${'c'.repeat(64)}','${GENERATOR}')
       ON CONFLICT(validator_version,policy_sha256) DO UPDATE SET enabled=TRUE;
     UPDATE public.user_access_levels SET access_level='full_access' WHERE user_id IN ('${owner}','${other}');
-    INSERT INTO private.dictionary_paid_releases(release_id,binding_sha256,enabled,valid_from,valid_until,limit_nanousd,call_limit,models,credential_revision,audit_reference,full_access_analysis_only)
+    INSERT INTO private.dictionary_paid_releases(release_id,binding_sha256,enabled,valid_from,valid_until,limit_nanousd,call_limit,models,credential_revision,audit_reference,full_access_analysis_only,monthly_limit_nanousd)
     VALUES('${id}',${literal(options.binding ?? createHash('sha256').update(id).digest('hex'))},${options.enabled ?? true},
       ${options.from ? literal(options.from) : "CLOCK_TIMESTAMP()-INTERVAL '1 day'"},
       ${options.until ? literal(options.until) : "CLOCK_TIMESTAMP()+INTERVAL '1 day'"},
-      ${literal(options.limit ?? '100000')},${options.calls ?? 100},${literal(JSON.stringify(models))}::JSONB,'fixture-only','fixture://paid-release',${options.fullAccessAnalysis === true});`)
+      ${literal(options.limit ?? '100000')},${options.calls ?? 100},${literal(JSON.stringify(models))}::JSONB,'fixture-only','fixture://paid-release',${options.fullAccessAnalysis === true},${literal(options.monthlyLimit ?? null)});`)
   for (const actor of options.actors ?? [owner])
     await db.sql(`INSERT INTO private.dictionary_paid_cohort(release_id,user_id,enabled,expires_at,audit_reference)
       VALUES('${id}',${literal(actor)},TRUE,CLOCK_TIMESTAMP()+INTERVAL '2 days','fixture://paid-cohort');`)
