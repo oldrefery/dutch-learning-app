@@ -17,6 +17,11 @@ type WordRegister = 'formal' | 'informal' | 'neutral'
 
 export const CURRENT_ANALYSIS_CACHE_VERSION = 2
 
+const ANALYSIS_CACHE_TTL_MS = 5 * 365 * 24 * 60 * 60 * 1000
+
+const cacheCutoff = () =>
+  new Date(Date.now() - ANALYSIS_CACHE_TTL_MS).toISOString()
+
 // Supabase client for cache operations (using a service role)
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -120,10 +125,7 @@ export async function getCachedAnalysis(
       .eq('part_of_speech', normalizedPartOfSpeech)
       .eq('article', normalizedArticle)
       .eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)
-      .gte(
-        'last_used_at',
-        new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString()
-      ) // 180 days TTL (based on last usage, not creation)
+      .gte('last_used_at', cacheCutoff())
       .order('last_used_at', { ascending: false })
       .limit(1)
 
@@ -161,10 +163,7 @@ export async function getCachedVariants(
       .select('*')
       .eq('dutch_lemma', normalizedWord)
       .eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)
-      .gte(
-        'last_used_at',
-        new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString()
-      ) // 180 days TTL (based on last usage, not creation)
+      .gte('last_used_at', cacheCutoff())
       .order('usage_count', { ascending: false })
 
     if (error) {
