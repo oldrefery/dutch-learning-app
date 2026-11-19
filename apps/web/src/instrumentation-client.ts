@@ -2,6 +2,8 @@ import * as Sentry from '@sentry/nextjs'
 
 import { resolveSentryEnvironment } from '@/lib/observability/sentryEnvironment'
 
+import { sanitizeAnalysisEvent } from '@/features/analysis/analysis-telemetry'
+
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
 const environment = resolveSentryEnvironment(
   process.env.NEXT_PUBLIC_VERCEL_ENV,
@@ -12,6 +14,7 @@ Sentry.init({
   dsn,
   enabled: Boolean(dsn),
   environment,
+  beforeSend: sanitizeAnalysisEvent,
   sendDefaultPii: false,
   tracesSampleRate: 1,
 })

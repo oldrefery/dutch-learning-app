@@ -40,7 +40,12 @@ it.each([true, false])(
       kind: 'analysis',
       metadata: { cacheHit },
     })
-    expect(analyzeWordWithAi).toHaveBeenCalledWith('owner', 'lopen')
+    expect(analyzeWordWithAi).toHaveBeenCalledWith(
+      'owner',
+      'lopen',
+      false,
+      'single'
+    )
   }
 )
 it('does not treat a failed lookup as a cache miss', async () => {
