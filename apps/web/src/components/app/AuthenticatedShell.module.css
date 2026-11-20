@@ -300,83 +300,13 @@
   display: none;
 }
 
-@media (min-width: 768px) {
-  .sidebar:global(.dw-compact-nav) .brandName,
-  .sidebar:global(.dw-compact-nav) .navLabel,
-  .sidebar:global(.dw-compact-nav) .groupLabel,
-  .sidebar:global(.dw-compact-nav) .accountText,
-  .sidebar:global(.dw-compact-nav) .syncLine span:not(.syncDot) {
-    display: none;
-  }
-
-  .sidebar:global(.dw-compact-nav) .brand,
-  .sidebar:global(.dw-compact-nav) .navItem,
-  .sidebar:global(.dw-compact-nav) .syncLine {
-    justify-content: center;
-    padding-inline: 0;
-  }
-
-  .sidebar:global(.dw-compact-nav) .account {
-    display: flex;
-    justify-content: center;
-    padding-inline: 0;
-  }
-
-  .sidebar:global(.dw-compact-nav) .signOut {
-    display: none;
-  }
-}
-
 @media (max-width: 1023px) and (min-width: 768px) {
-  .shell {
-    grid-template-columns: 64px minmax(0, 1fr);
+  .topbar {
+    padding-inline: 24px;
   }
 
-  .sidebar {
-    padding-inline: 10px;
-  }
-
-  .brand {
-    justify-content: center;
-    padding: 0;
-  }
-
-  .brandName,
-  .navLabel,
-  .groupLabel,
-  .accountText,
-  .syncLine span:not(.syncDot) {
-    display: none;
-  }
-
-  .navItem {
-    justify-content: center;
-    padding: 0;
-  }
-
-  .dueBadge {
-    font-size: 9px;
-    margin: 0;
-    min-width: 18px;
-    padding: 1px 4px;
-    position: absolute;
-    right: 0;
-    top: 2px;
-  }
-
-  .syncLine {
-    justify-content: center;
-    padding: 0;
-  }
-
-  .account {
-    display: flex;
-    justify-content: center;
-    padding: 8px 0 0;
-  }
-
-  .signOut {
-    display: none;
+  .search {
+    width: clamp(160px, 22vw, 216px);
   }
 
   .main {

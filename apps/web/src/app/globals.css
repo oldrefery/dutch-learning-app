@@ -192,24 +192,6 @@ body:has(.dw-review-focus) .dw-app-main {
   padding: 0;
 }
 
-@media (min-width: 768px) {
-  .dw-app-shell:has(.dw-compact-nav) {
-    grid-template-columns: 64px minmax(0, 1fr);
-  }
-
-  .dw-compact-nav {
-    padding-inline: 10px !important;
-  }
-
-  .dw-compact-nav .dw-app-sidebar-label {
-    display: none;
-  }
-
-  .dw-app-shell:has(.dw-compact-nav) .dw-app-topbar {
-    display: none;
-  }
-}
-
 .dw-mono,
 .dw-label,
 .dw-chip,

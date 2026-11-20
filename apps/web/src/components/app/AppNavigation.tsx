@@ -154,9 +154,7 @@ function NavLink({
       title={item.label}
     >
       <Icon aria-hidden="true" className={styles.navIcon} size={19} />
-      <span className={`${styles.navLabel} dw-app-sidebar-label`}>
-        {item.label}
-      </span>
+      <span className={styles.navLabel}>{item.label}</span>
       {item.label === 'Review' && dueCount > 0 && (
         <span className={styles.dueBadge}>
           {dueCount > 99 ? '99+' : dueCount}
@@ -182,9 +180,6 @@ export function AppNavigation({
     getConnectivityServerSnapshot
   )
   const pageContext = getPageContext(pathname)
-  const compactCollectionShell = /^\/app\/collections\/[^/]+(?:\/.*)?$/.test(
-    pathname
-  )
   const initials = userLabel.slice(0, 2).toUpperCase()
   const mobileItems = PRIMARY_ITEMS.filter(item =>
     isItemVisible(item, accessLevel)
@@ -196,14 +191,10 @@ export function AppNavigation({
 
   return (
     <>
-      <aside
-        className={`${styles.sidebar} dw-app-sidebar ${compactCollectionShell ? 'dw-compact-nav' : ''}`}
-      >
+      <aside className={`${styles.sidebar} dw-app-sidebar`}>
         <Link className={styles.brand} href="/app/collections">
           <span className={styles.brandMark}>W</span>
-          <span className={`${styles.brandName} dw-app-sidebar-label`}>
-            De Woordenaar
-          </span>
+          <span className={styles.brandName}>De Woordenaar</span>
         </Link>
 
         <nav aria-label="Primary navigation" className={styles.navigation}>

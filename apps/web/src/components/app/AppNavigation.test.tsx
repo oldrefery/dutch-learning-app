@@ -60,6 +60,34 @@ describe('AppNavigation', () => {
     ).toHaveTextContent('LE')
   })
 
+  test('keeps the desktop sidebar expanded when opening a saved word', () => {
+    mockUsePathname.mockReturnValue('/app/add')
+    const navigation = (
+      <AppNavigation
+        accessLevel="full_access"
+        dueCount={0}
+        userLabel="learner@example.com"
+      />
+    )
+    const { rerender } = render(navigation)
+    const sidebar = screen.getByRole('complementary')
+    const initialClassName = sidebar.className
+
+    mockUsePathname.mockReturnValue(
+      '/app/collections/collection-1/words/word-1'
+    )
+    rerender(
+      <AppNavigation
+        accessLevel="full_access"
+        dueCount={0}
+        userLabel="learner@example.com"
+      />
+    )
+
+    expect(sidebar.className).toBe(initialClassName)
+    expect(sidebar).not.toHaveClass('dw-compact-nav')
+  })
+
   test('hides write destinations for read-only users', () => {
     render(
       <AppNavigation
