@@ -168,6 +168,23 @@ it('keeps collection gesture registrations stable during equal-data refreshes', 
     expect(mockGestures.filter(record => record.kind === kind)).toHaveLength(1)
 })
 
+it('uses the supplied surface color on the collection row above the swipe actions', () => {
+  const screen = render(
+    <SwipeableCollectionCard
+      collection={{ ...collection, name: 'Visible collection' }}
+      words={[word]}
+      backgroundColor="#FFFFFF"
+      onPress={jest.fn()}
+      onDelete={jest.fn()}
+      onRename={jest.fn()}
+    />
+  )
+
+  expect(screen.getByTestId('collection-row-visible-collection')).toHaveStyle({
+    backgroundColor: '#FFFFFF',
+  })
+})
+
 it.each(['word', 'collection'] as const)(
   'dispatches a retained %s tap to the latest committed callback',
   kind => {

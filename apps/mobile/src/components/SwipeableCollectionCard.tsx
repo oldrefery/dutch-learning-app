@@ -31,6 +31,7 @@ import { ToastType } from '@/constants/ToastConstants'
 interface SwipeableCollectionCardProps {
   collection: Collection
   words: Word[]
+  backgroundColor?: string
   onPress: () => void
   onDelete: (collectionId: string) => void
   onRename: (collectionId: string, currentName: string) => Promise<void>
@@ -42,6 +43,7 @@ interface SwipeableCollectionCardProps {
 function SwipeableCollectionCardContent({
   collection,
   words,
+  backgroundColor,
   onPress,
   onDelete,
   onRename,
@@ -309,9 +311,10 @@ function SwipeableCollectionCardContent({
             animatedStyle,
             {
               backgroundColor:
-                colorScheme === 'dark'
+                backgroundColor ??
+                (colorScheme === 'dark'
                   ? Colors.dark.backgroundSecondary
-                  : Colors.background.primary,
+                  : Colors.background.primary),
             },
           ]}
           testID={collectionRowTestId}
