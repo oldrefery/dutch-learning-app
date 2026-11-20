@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
+import { getHeadwordArticle } from '@woordenaar/domain'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { PronunciationButton } from './PronunciationButton'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
@@ -99,12 +100,17 @@ export function WordHeader({
     return parts.join(' • ')
   }
 
+  const article = getHeadwordArticle(
+    currentWord.dutch_lemma,
+    currentWord.article
+  )
+
   return (
     <ViewThemed style={styles.wordHeader}>
       <ViewThemed style={styles.wordWithPronunciationSmall}>
         <TextThemed style={styles.dutchWordSmall}>
-          {currentWord.part_of_speech === 'noun' && currentWord.article
-            ? `${currentWord.article} `
+          {currentWord.part_of_speech === 'noun' && article
+            ? `${article} `
             : ''}
           {currentWord.dutch_lemma}
         </TextThemed>
