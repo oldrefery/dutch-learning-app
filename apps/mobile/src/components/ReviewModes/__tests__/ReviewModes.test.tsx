@@ -85,6 +85,33 @@ describe('RecognitionCard', () => {
     mockUseNormalizedColorScheme.mockReturnValue('light')
   })
 
+  it.each(['december', 'dinsdag'])(
+    'renders %s without its stored article in both review modes',
+    lemma => {
+      const calendarWord = createMockWord({ dutch_lemma: lemma, article: 'de' })
+      const { getAllByText, queryByText } = render(
+        <>
+          <RecognitionCard
+            word={calendarWord}
+            options={[]}
+            selectedOptionId={null}
+            isPlayingAudio={false}
+            onPlayPronunciation={noOp}
+            onSelectOption={noOp}
+          />
+          <MeaningRecallCard
+            word={calendarWord}
+            isPlayingAudio={false}
+            onPlayPronunciation={noOp}
+          />
+        </>
+      )
+
+      expect(getAllByText(lemma)).toHaveLength(2)
+      expect(queryByText(`de ${lemma}`)).toBeNull()
+    }
+  )
+
   it('reports a selected option without advancing the session', () => {
     const onSelectOption = jest.fn()
     const onAssessment = jest.fn()

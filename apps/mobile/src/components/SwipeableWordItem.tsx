@@ -15,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
 import { Ionicons } from '@expo/vector-icons'
+import { getHeadwordArticle } from '@woordenaar/domain'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { WordStatusType } from '@/components/WordDetailModal/types'
@@ -146,6 +147,7 @@ export default function SwipeableWordItem({
   }
 
   const statusStyle = getStatusStyle()
+  const article = getHeadwordArticle(word.dutch_lemma, word.article)
   const isDueForReview = new Date(word.next_review_date) <= new Date()
   const wordRowTestId = (() => {
     const rawLabel = (
@@ -332,7 +334,7 @@ export default function SwipeableWordItem({
                 <TextThemed style={styles.wordText}>
                   {word.dutch_original || word.dutch_lemma}
                 </TextThemed>
-                {word.article && (
+                {article && (
                   <TextThemed
                     style={[
                       styles.articleText,
@@ -344,7 +346,7 @@ export default function SwipeableWordItem({
                       },
                     ]}
                   >
-                    ({word.article})
+                    ({article})
                   </TextThemed>
                 )}
               </ViewThemed>

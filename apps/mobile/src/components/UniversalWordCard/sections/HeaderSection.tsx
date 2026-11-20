@@ -1,4 +1,5 @@
 import React from 'react'
+import { getHeadwordArticle } from '@woordenaar/domain'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { CopyButton } from '@/components/CopyButton'
 import { GlassIconButton } from '@/components/glass/buttons/GlassIconButton'
@@ -51,6 +52,7 @@ export function HeaderSection({
     return null
   }
 
+  const article = getHeadwordArticle(word.dutch_lemma, word.article)
   const ttsUrl = getTTSUrl()
   const canPlayAudio =
     config.enablePronunciation && ttsUrl && onPlayPronunciation
@@ -115,10 +117,10 @@ export function HeaderSection({
             </TextThemed>
           </ViewThemed>
 
-          {word.article && (
+          {article && (
             <ViewThemed style={styles.grammarTag}>
               <TextThemed style={styles.grammarTagText} selectable>
-                {word.article}
+                {article}
               </TextThemed>
             </ViewThemed>
           )}

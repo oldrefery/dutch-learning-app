@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { getHeadwordArticle } from '@woordenaar/domain'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { WordStatusType } from '@/components/WordDetailModal/types'
@@ -26,6 +27,7 @@ export default function WordItem({ word, onPress }: WordItemProps) {
     return WordStatusType.NEW
   }
 
+  const article = getHeadwordArticle(word.dutch_lemma, word.article)
   const isDueForReview = new Date(word.next_review_date) <= new Date()
 
   return (
@@ -35,8 +37,8 @@ export default function WordItem({ word, onPress }: WordItemProps) {
           <TextThemed style={styles.wordText}>
             {word.dutch_original || word.dutch_lemma}
           </TextThemed>
-          {word.article && (
-            <TextThemed style={styles.articleText}>({word.article})</TextThemed>
+          {article && (
+            <TextThemed style={styles.articleText}>({article})</TextThemed>
           )}
         </ViewThemed>
 

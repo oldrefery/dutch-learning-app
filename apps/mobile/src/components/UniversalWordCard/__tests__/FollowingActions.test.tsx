@@ -3,9 +3,17 @@ import { render, fireEvent } from '@testing-library/react-native'
 import { createMockWord } from '@/__tests__/helpers/factories'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { ActionsSection } from '../sections/ActionsSection'
+import { HeaderSection } from '../sections/HeaderSection'
 import { ImageSection } from '../sections/ImageSection'
 import type { WordCardConfig } from '../types'
 
+jest.mock('@/components/CopyButton', () => ({ CopyButton: () => null }))
+jest.mock('@/components/DictionaryConflictResolver', () => ({
+  DictionaryConflictResolver: () => null,
+}))
+jest.mock('@/components/DictionaryImportConflictResolver', () => ({
+  DictionaryImportConflictResolver: () => null,
+}))
 jest.mock('react-native-worklets', () => ({ scheduleOnRN: jest.fn() }))
 jest.mock('@/hooks/useNormalizedColorScheme', () => ({
   useNormalizedColorScheme: jest.fn(() => 'light'),
@@ -112,3 +120,30 @@ describe.each(['light', 'dark'] as const)('%s following actions', theme => {
     expect(onChangeImage).toHaveBeenCalledTimes(1)
   })
 })
+
+it.each([
+  ['december', false],
+  ['dinsdag', false],
+  ['stad', true],
+] as const)(
+  'shows the article badge for an analysis of %s only when appropriate',
+  (lemma, showsArticle) => {
+    const word = {
+      dutch_lemma: lemma,
+      part_of_speech: 'noun',
+      article: 'de' as const,
+      is_irregular: false,
+      translations: { en: [lemma] },
+      examples: [],
+    }
+    const { getByText, queryByText } = render(
+      <HeaderSection
+        word={word}
+        config={defaultConfig}
+        metadata={{ source: 'cache' }}
+      />
+    )
+    expect(getByText('noun')).toBeTruthy()
+    expect(Boolean(queryByText('de'))).toBe(showsArticle)
+  }
+)
