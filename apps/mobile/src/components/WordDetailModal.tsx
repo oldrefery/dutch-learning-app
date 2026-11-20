@@ -2,10 +2,12 @@ import React, { useMemo, useEffect, useCallback } from 'react'
 import {
   TouchableOpacity,
   Dimensions,
+  Platform,
   StatusBar,
   useColorScheme,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -64,6 +66,7 @@ export default function WordDetailModal({
   const scrollOffset = useSharedValue(0)
   const isDragging = useSharedValue(false)
   const colorScheme = useColorScheme() ?? 'light'
+  const { bottom } = useSafeAreaInsets()
   const { playWord, isPlaying } = useAudio()
 
   const handlePlayAudio = useCallback(async () => {
@@ -189,10 +192,12 @@ export default function WordDetailModal({
         />
         <GestureDetector gesture={panGesture}>
           <Animated.View
+            testID="word-detail-sheet"
             style={[
               styles.container,
               animatedContainerStyle,
               {
+                bottom: Platform.OS === 'android' ? bottom : 0,
                 backgroundColor:
                   colorScheme === 'dark'
                     ? Colors.dark.background

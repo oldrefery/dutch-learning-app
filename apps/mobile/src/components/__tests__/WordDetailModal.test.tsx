@@ -1,5 +1,6 @@
 import React from 'react'
 import { act, render } from '@testing-library/react-native'
+import { Platform } from 'react-native'
 import WordDetailModal from '../WordDetailModal'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { createMockWord } from '@/__tests__/helpers/factories'
@@ -12,6 +13,15 @@ function mockNativeModule(): NativeModule {
 }
 
 jest.mock('@/lib/supabaseClient')
+const mockSafeAreaInsets = jest.fn(() => ({
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+}))
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => mockSafeAreaInsets(),
+}))
 jest.mock('@/contexts/AudioContext', () => ({
   useAudio: () => ({ playWord: jest.fn(), isPlaying: false }),
 }))
@@ -65,6 +75,32 @@ beforeEach(() => {
     words: [selectedWord],
   })
 })
+
+afterEach(() => {
+  jest.restoreAllMocks()
+  mockSafeAreaInsets.mockClear()
+})
+
+it.each([
+  ['android', 48, 48],
+  ['android', 0, 0],
+  ['ios', 34, 0],
+] as const)(
+  'positions the sheet for %s with a bottom inset of %s',
+  (platform, bottom, expected) => {
+    jest.replaceProperty(Platform, 'OS', platform)
+    mockSafeAreaInsets.mockReturnValueOnce({
+      top: 0,
+      right: 0,
+      bottom,
+      left: 0,
+    })
+
+    expect(renderDetails().getByTestId('word-detail-sheet')).toHaveStyle({
+      bottom: expected,
+    })
+  }
+)
 
 it('refreshes open details after choosing server content without changing the selected snapshot', () => {
   const screen = renderDetails()

@@ -3,13 +3,14 @@ import React, { useState, useRef, useCallback } from 'react'
 import {
   FlatList,
   ActivityIndicator,
+  Platform,
   TouchableOpacity,
   RefreshControl,
-  useColorScheme,
   View,
   StyleSheet,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { PlatformBlurView } from '@/components/PlatformBlurView'
 import * as Clipboard from 'expo-clipboard'
 import { ToastService } from '@/components/AppToast'
@@ -38,7 +39,11 @@ import { DictionaryImportRecoveryLink } from '@/components/DictionaryImportRecov
 
 export default function CollectionsScreen() {
   const insets = useSafeAreaInsets()
-  const colorScheme = useColorScheme() ?? 'light'
+  const colorScheme = useNormalizedColorScheme()
+  const isDarkMode = colorScheme === 'dark'
+  const androidSurfaceColor = Platform.select({
+    android: Colors[colorScheme].backgroundSecondary,
+  })
   const [refreshing, setRefreshing] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
@@ -326,7 +331,12 @@ export default function CollectionsScreen() {
             </TextThemed>
           </ViewThemed>
         ) : (
-          <ViewThemed style={styles.collectionsListContainer}>
+          <ViewThemed
+            style={[
+              styles.collectionsListContainer,
+              androidSurfaceColor && { backgroundColor: androidSurfaceColor },
+            ]}
+          >
             <PlatformBlurView
               style={styles.collectionsListBlur}
               intensity={100}
@@ -338,7 +348,7 @@ export default function CollectionsScreen() {
                   styles.collectionsListContent,
                   {
                     backgroundColor:
-                      colorScheme === 'dark'
+                      isDarkMode && !androidSurfaceColor
                         ? Colors.transparent.iosDarkSurface95
                         : Colors.transparent.clear,
                     borderColor:
@@ -379,6 +389,7 @@ export default function CollectionsScreen() {
                             <SwipeableCollectionCard
                               collection={item}
                               words={safedWords}
+                              backgroundColor={androidSurfaceColor}
                               onPress={() => handleCollectionPress(item)}
                               onDelete={handleDeleteCollection}
                               onRename={handleRenameCollection}
@@ -439,9 +450,10 @@ export default function CollectionsScreen() {
                     : GlassHeaderDefaults.intensityLight
                 }
                 fallbackColor={
-                  colorScheme === 'dark'
+                  androidSurfaceColor ??
+                  (isDarkMode
                     ? Colors.transparent.white05
-                    : Colors.transparent.white50
+                    : Colors.transparent.white50)
                 }
                 style={StyleSheet.absoluteFill}
                 blurMethod="dimezisBlurView"
