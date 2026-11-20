@@ -12,7 +12,7 @@ import { Colors } from '@/constants/Colors'
 import type { CardBackProps } from './types'
 
 interface CardBackPropsWithRef extends CardBackProps {
-  pronunciationRef?: React.RefObject<View | null>
+  pronunciationRef?: React.RefObject<React.ComponentRef<typeof View> | null>
 }
 
 export function CardBack({

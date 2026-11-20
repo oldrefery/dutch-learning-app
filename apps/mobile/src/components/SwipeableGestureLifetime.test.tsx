@@ -103,9 +103,9 @@ jest.mock('react-native-worklets', () => ({
   ) => callback(...args),
 }))
 
-const press = (record: RecordedGesture) =>
+const press = async (record: RecordedGesture) =>
   act(() => record.end?.({ translationX: 0 }))
-const pan = (record: RecordedGesture, translationX: number) =>
+const pan = async (record: RecordedGesture, translationX: number) =>
   act(() => record.end?.({ translationX }))
 const first = (kind: GestureKind) =>
   mockGestures.find(record => record.kind === kind)!
@@ -116,7 +116,7 @@ beforeEach(() => {
   mockStoreState.userAccessLevel = 'full_access'
 })
 
-it('keeps word gesture registrations stable during equal-data refreshes', () => {
+it('keeps word gesture registrations stable during equal-data refreshes', async () => {
   const props = {
     word,
     index: 0,
@@ -126,9 +126,9 @@ it('keeps word gesture registrations stable during equal-data refreshes', () => 
     onMoveToCollection: jest.fn(),
     onLongPress: jest.fn(),
   }
-  const { rerender } = render(<SwipeableWordItem {...props} />)
+  const { rerender } = await render(<SwipeableWordItem {...props} />)
   for (let index = 0; index < 5; index++) {
-    rerender(
+    await rerender(
       <SwipeableWordItem
         {...props}
         word={{ ...word }}
@@ -143,7 +143,7 @@ it('keeps word gesture registrations stable during equal-data refreshes', () => 
     expect(mockGestures.filter(record => record.kind === kind)).toHaveLength(1)
 })
 
-it('keeps collection gesture registrations stable during equal-data refreshes', () => {
+it('keeps collection gesture registrations stable during equal-data refreshes', async () => {
   const props = {
     collection,
     words: [word],
@@ -151,9 +151,9 @@ it('keeps collection gesture registrations stable during equal-data refreshes', 
     onDelete: jest.fn(),
     onRename: jest.fn().mockResolvedValue(undefined),
   }
-  const { rerender } = render(<SwipeableCollectionCard {...props} />)
+  const { rerender } = await render(<SwipeableCollectionCard {...props} />)
   for (let index = 0; index < 5; index++) {
-    rerender(
+    await rerender(
       <SwipeableCollectionCard
         {...props}
         collection={{ ...collection }}
@@ -168,8 +168,8 @@ it('keeps collection gesture registrations stable during equal-data refreshes', 
     expect(mockGestures.filter(record => record.kind === kind)).toHaveLength(1)
 })
 
-it('uses the supplied surface color on the collection row above the swipe actions', () => {
-  const screen = render(
+it('uses the supplied surface color on the collection row above the swipe actions', async () => {
+  const screen = await render(
     <SwipeableCollectionCard
       collection={{ ...collection, name: 'Visible collection' }}
       words={[word]}
@@ -187,7 +187,7 @@ it('uses the supplied surface color on the collection row above the swipe action
 
 it.each(['word', 'collection'] as const)(
   'dispatches a retained %s tap to the latest committed callback',
-  kind => {
+  async kind => {
     const oldPress = jest.fn(),
       latestPress = jest.fn(),
       onDelete = jest.fn()
@@ -209,16 +209,16 @@ it.each(['word', 'collection'] as const)(
           onRename={jest.fn().mockResolvedValue(undefined)}
         />
       )
-    const { rerender } = render(view(oldPress))
+    const { rerender } = await render(view(oldPress))
     const retainedTap = first('tap')
-    rerender(view(latestPress))
-    press(retainedTap)
+    await rerender(view(latestPress))
+    await press(retainedTap)
     expect(latestPress).toHaveBeenCalledTimes(1)
     expect(oldPress).not.toHaveBeenCalled()
   }
 )
 
-it('updates the word pan configuration when move capability changes', () => {
+it('updates the word pan configuration when move capability changes', async () => {
   const props = {
     word,
     index: 0,
@@ -226,15 +226,17 @@ it('updates the word pan configuration when move capability changes', () => {
     onPress: jest.fn(),
     onDelete: jest.fn(),
   }
-  const { rerender } = render(<SwipeableWordItem {...props} />)
-  rerender(<SwipeableWordItem {...props} onMoveToCollection={jest.fn()} />)
+  const { rerender } = await render(<SwipeableWordItem {...props} />)
+  await rerender(
+    <SwipeableWordItem {...props} onMoveToCollection={jest.fn()} />
+  )
   expect(mockGestures.filter(record => record.kind === 'pan')).toHaveLength(2)
 })
 
-it('does not delete a word before its confirmation is accepted', () => {
+it('does not delete a word before its confirmation is accepted', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {})
   const onDelete = jest.fn()
-  render(
+  await render(
     <SwipeableWordItem
       word={word}
       index={0}
@@ -243,9 +245,9 @@ it('does not delete a word before its confirmation is accepted', () => {
       onDelete={onDelete}
     />
   )
-  pan(first('pan'), -170)
+  await pan(first('pan'), -170)
   expect(onDelete).not.toHaveBeenCalled()
-  act(() =>
+  await act(() =>
     alert.mock.calls[0][2]
       ?.find(button => button.text === 'Delete')
       ?.onPress?.()
@@ -254,11 +256,11 @@ it('does not delete a word before its confirmation is accepted', () => {
   alert.mockRestore()
 })
 
-it('preserves the last-collection read-only deletion guard', () => {
+it('preserves the last-collection read-only deletion guard', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {})
   mockStoreState.userAccessLevel = 'read_only'
   const onDelete = jest.fn()
-  render(
+  await render(
     <SwipeableCollectionCard
       collection={collection}
       words={[word]}
@@ -267,24 +269,24 @@ it('preserves the last-collection read-only deletion guard', () => {
       onRename={jest.fn().mockResolvedValue(undefined)}
     />
   )
-  pan(first('pan'), -170)
+  await pan(first('pan'), -170)
   expect(ToastService.show).toHaveBeenCalledTimes(1)
   expect(alert).not.toHaveBeenCalled()
   expect(onDelete).not.toHaveBeenCalled()
   alert.mockRestore()
 })
 
-it('keeps confirmation bound to the delete action that opened the dialog', () => {
+it('keeps confirmation bound to the delete action that opened the dialog', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {})
   const originalDelete = jest.fn(),
     replacementDelete = jest.fn()
   const props = { word, index: 0, highlighted: false, onPress: jest.fn() }
-  const { rerender } = render(
+  const { rerender } = await render(
     <SwipeableWordItem {...props} onDelete={originalDelete} />
   )
-  pan(first('pan'), -170)
-  rerender(<SwipeableWordItem {...props} onDelete={replacementDelete} />)
-  act(() =>
+  await pan(first('pan'), -170)
+  await rerender(<SwipeableWordItem {...props} onDelete={replacementDelete} />)
+  await act(() =>
     alert.mock.calls[0][2]
       ?.find(button => button.text === 'Delete')
       ?.onPress?.()
@@ -294,7 +296,7 @@ it('keeps confirmation bound to the delete action that opened the dialog', () =>
   alert.mockRestore()
 })
 
-it('applies the latest deletion permission to a retained collection pan', () => {
+it('applies the latest deletion permission to a retained collection pan', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {})
   const onDelete = jest.fn()
   const props = {
@@ -304,11 +306,11 @@ it('applies the latest deletion permission to a retained collection pan', () => 
     onDelete,
     onRename: jest.fn().mockResolvedValue(undefined),
   }
-  const { rerender } = render(<SwipeableCollectionCard {...props} />)
+  const { rerender } = await render(<SwipeableCollectionCard {...props} />)
   const retainedPan = first('pan')
   mockStoreState.userAccessLevel = 'read_only'
-  rerender(<SwipeableCollectionCard {...props} />)
-  pan(retainedPan, -170)
+  await rerender(<SwipeableCollectionCard {...props} />)
+  await pan(retainedPan, -170)
   expect(ToastService.show).toHaveBeenCalledTimes(1)
   expect(alert).not.toHaveBeenCalled()
   expect(onDelete).not.toHaveBeenCalled()
@@ -317,7 +319,7 @@ it('applies the latest deletion permission to a retained collection pan', () => 
 
 it.each(['word', 'collection'] as const)(
   'ignores a queued %s long press after the row unmounts',
-  kind => {
+  async kind => {
     const haptics = jest
       .spyOn(Haptics, 'impactAsync')
       .mockResolvedValue(undefined)
@@ -341,10 +343,10 @@ it.each(['word', 'collection'] as const)(
             onRename={jest.fn().mockResolvedValue(undefined)}
           />
         )
-      const { unmount } = render(node)
+      const { unmount } = await render(node)
       const retained = first('long')
-      unmount()
-      act(() => retained.start?.())
+      await unmount()
+      await act(() => retained.start?.())
       expect(haptics).not.toHaveBeenCalled()
     } finally {
       haptics.mockRestore()

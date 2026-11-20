@@ -280,29 +280,32 @@ beforeEach(() => {
   } as never)
 })
 
-const button = (view: ReturnType<typeof render>, name: string) =>
+const button = (view: Awaited<ReturnType<typeof render>>, name: string) =>
   view.getByLabelText(name)
-const press = (view: ReturnType<typeof render>, name: string) =>
+const press = async (view: Awaited<ReturnType<typeof render>>, name: string) =>
   fireEvent.press(button(view, name))
-const type = (view: ReturnType<typeof render>, label: string, value: string) =>
-  fireEvent.changeText(view.getByLabelText(label), value)
-const disabled = (view: ReturnType<typeof render>, name: string) =>
+const type = async (
+  view: Awaited<ReturnType<typeof render>>,
+  label: string,
+  value: string
+) => fireEvent.changeText(view.getByLabelText(label), value)
+const disabled = (view: Awaited<ReturnType<typeof render>>, name: string) =>
   button(view, name).props.accessibilityState.disabled
 
-const ready = (view: ReturnType<typeof render>) =>
+const ready = (view: Awaited<ReturnType<typeof render>>) =>
   waitFor(() => expect(button(view, LOAD)).toBeTruthy())
 it.each(['light', 'dark'] as const)(
   'restores before offering an explicit meaning hint in %s theme',
   async theme => {
     jest.mocked(useNormalizedColorScheme).mockReturnValue(theme)
-    const view = render(<DictionaryCreationPanel {...props} />)
+    const view = await render(<DictionaryCreationPanel {...props} />)
     await ready(view)
     await waitFor(() => expect(view.getByLabelText(HINT)).toBeTruthy())
     expect(sdk.list).toHaveBeenCalledTimes(1)
     expect(sdk.resolve).not.toHaveBeenCalled()
     expect(sdk.submit).not.toHaveBeenCalled()
-    type(view, HINT, '  Original intended meaning.  ')
-    press(view, RESOLVE)
+    await type(view, HINT, '  Original intended meaning.  ')
+    await press(view, RESOLVE)
     await ready(view)
     await waitFor(() => expect(button(view, CREATE)).toBeTruthy())
     expect(sdk.resolve.mock.calls[0][0].session.request).toMatchObject({
@@ -310,7 +313,7 @@ it.each(['light', 'dark'] as const)(
       meaning_hint: '  Original intended meaning.  ',
     })
     expect(sdk.submit).not.toHaveBeenCalled()
-    press(view, CREATE)
+    await press(view, CREATE)
     await ready(view)
     await waitFor(() => expect(button(view, STATUS)).toBeTruthy())
     await ready(view)
@@ -321,11 +324,13 @@ it.each(['light', 'dark'] as const)(
 )
 it('keeps new creation behind explicit no-match while retained recovery remains visible', async () => {
   rows = [sent()]
-  const view = render(<DictionaryCreationPanel {...props} noMatch={false} />)
+  const view = await render(
+    <DictionaryCreationPanel {...props} noMatch={false} />
+  )
   await ready(view)
   await waitFor(() => expect(button(view, STATUS)).toBeTruthy())
   expect(view.queryByLabelText(HINT)).toBeNull()
-  press(view, STATUS)
+  await press(view, STATUS)
   await ready(view)
   await waitFor(() => expect(sdk.recover).toHaveBeenCalledTimes(1))
   expect(sdk.resolve).not.toHaveBeenCalled()
@@ -348,7 +353,7 @@ it.each([
       result_sha256: status === 'review-required' ? 'a'.repeat(64) : null,
     })
     rows = [row]
-    const view = render(<DictionaryCreationPanel {...props} />)
+    const view = await render(<DictionaryCreationPanel {...props} />)
     await ready(view)
     await waitFor(() => expect(button(view, STATUS)).toBeTruthy())
     expect(
@@ -356,7 +361,7 @@ it.each([
     ).toBeTruthy()
     expect(view.queryByLabelText(HINT)).toBeNull()
     expect(view.queryByText(CREATE)).toBeNull()
-    press(view, STATUS)
+    await press(view, STATUS)
     await ready(view)
     await waitFor(() => expect(sdk.recover).toHaveBeenCalledTimes(1))
     expect(sdk.submit).not.toHaveBeenCalled()
@@ -364,22 +369,22 @@ it.each([
 )
 it('uses saved unresolved intent, status reads and explicit same-request resolution', async () => {
   rows = [initial()]
-  const view = render(<DictionaryCreationPanel {...props} />)
+  const view = await render(<DictionaryCreationPanel {...props} />)
   await ready(view)
   await waitFor(() =>
     expect(button(view, 'Resolve saved meaning')).toBeTruthy()
   )
-  press(view, STATUS)
+  await press(view, STATUS)
   await ready(view)
   await waitFor(() => expect(sdk.recoverResolution).toHaveBeenCalledTimes(1))
-  press(view, 'Resolve saved meaning')
+  await press(view, 'Resolve saved meaning')
   await ready(view)
   await waitFor(() => expect(sdk.resolve).toHaveBeenCalledWith(initial()))
   expect(view.queryByLabelText(HINT)).toBeNull()
 })
 it('does not pretend that a published result is a personal card', async () => {
   rows = [published(sent())]
-  const view = render(<DictionaryCreationPanel {...props} />)
+  const view = await render(<DictionaryCreationPanel {...props} />)
   await ready(view)
   await waitFor(() =>
     expect(
@@ -392,11 +397,11 @@ it('does not pretend that a published result is a personal card', async () => {
 it('disables new creation when the local opt-in is OFF, keeping status available', async () => {
   jest.mocked(isDictionarySharedAnalysisEnabled).mockReturnValue(false)
   rows = [prepared(initial())]
-  const view = render(<DictionaryCreationPanel {...props} />)
+  const view = await render(<DictionaryCreationPanel {...props} />)
   await ready(view)
   await waitFor(() => expect(button(view, CREATE)).toBeTruthy())
   expect(disabled(view, CREATE)).toBe(true)
-  press(view, STATUS)
+  await press(view, STATUS)
   await ready(view)
   await waitFor(() => expect(sdk.recoverResolution).toHaveBeenCalledTimes(1))
   expect(sdk.submit).not.toHaveBeenCalled()
@@ -407,42 +412,42 @@ it('retains a submitted claim after a lost reply and exposes no send-again actio
     save({ ...row, session: { ...row.session, submitted: true } })
     throw new Error('Lost reply')
   })
-  const view = render(<DictionaryCreationPanel {...props} />)
+  const view = await render(<DictionaryCreationPanel {...props} />)
   await ready(view)
   await waitFor(() => expect(button(view, CREATE)).toBeTruthy())
-  press(view, CREATE)
+  await press(view, CREATE)
   await ready(view)
   await waitFor(() =>
     expect(view.getByText(/Saved requests are retained/)).toBeTruthy()
   )
   expect(view.queryByText(CREATE)).toBeNull()
   expect(view.queryByLabelText(HINT)).toBeNull()
-  press(view, STATUS)
+  await press(view, STATUS)
   await ready(view)
   await waitFor(() => expect(sdk.recover).toHaveBeenCalledTimes(1))
   expect(sdk.submit).toHaveBeenCalledTimes(1)
 })
 it('fails closed on storage failure and restores explicitly without a network submit', async () => {
   sdk.list.mockRejectedValue(new Error('Storage blocked'))
-  const view = render(<DictionaryCreationPanel {...props} />)
+  const view = await render(<DictionaryCreationPanel {...props} />)
   await ready(view)
   await waitFor(() =>
     expect(view.getByText(/Saved requests are retained/)).toBeTruthy()
   )
   expect(view.queryByLabelText(HINT)).toBeNull()
   sdk.list.mockResolvedValue([])
-  press(view, LOAD)
+  await press(view, LOAD)
   await ready(view)
   await waitFor(() => expect(view.getByLabelText(HINT)).toBeTruthy())
   expect(sdk.submit).not.toHaveBeenCalled()
 })
 it('aborts stale UI work and latches A-B-A before exposing any retained request', async () => {
   rows = [prepared(initial())]
-  const view = render(<DictionaryCreationPanel {...props} />)
+  const view = await render(<DictionaryCreationPanel {...props} />)
   await ready(view)
   await waitFor(() => expect(button(view, CREATE)).toBeTruthy())
   const guard = guards.at(-1)!
-  act(() => {
+  await act(() => {
     emit(OTHER)
     emit(OWNER)
   })
@@ -454,7 +459,7 @@ it('aborts stale UI work and latches A-B-A before exposing any retained request'
   expect(sdk.submit).not.toHaveBeenCalled()
 })
 it('cancels on unmount and renews lifecycle guards under Strict Mode', async () => {
-  const view = render(
+  const view = await render(
     <StrictMode>
       <DictionaryCreationPanel {...props} />
     </StrictMode>
@@ -463,7 +468,7 @@ it('cancels on unmount and renews lifecycle guards under Strict Mode', async () 
   await waitFor(() => expect(view.getByLabelText(HINT)).toBeTruthy())
   const guard = guards.at(-1)!
   expect(guard.signal.aborted).toBe(false)
-  view.unmount()
+  await view.unmount()
   expect(guard.signal.aborted).toBe(true)
   expect(guard.assert).toThrow()
   expect(listeners.size).toBe(0)
@@ -471,16 +476,16 @@ it('cancels on unmount and renews lifecycle guards under Strict Mode', async () 
 })
 it('pages retained requests and lets the owner explicitly open an older word', async () => {
   rows = Array.from({ length: 11 }, (_, n) => initial(n + 1))
-  const view = render(
+  const view = await render(
     <DictionaryCreationPanel {...props} originalQuery="huis" />
   )
   await ready(view)
   await waitFor(() => expect(button(view, 'More saved requests')).toBeTruthy())
-  press(view, 'More saved requests')
-  press(view, 'Open saved request 11:   BANK  ')
+  await press(view, 'More saved requests')
+  await press(view, 'Open saved request 11:   BANK  ')
   await ready(view)
   await waitFor(() => expect(button(view, STATUS)).toBeTruthy())
-  press(view, STATUS)
+  await press(view, STATUS)
   await ready(view)
   await waitFor(() =>
     expect(sdk.recoverResolution).toHaveBeenCalledWith(
@@ -489,7 +494,7 @@ it('pages retained requests and lets the owner explicitly open an older word', a
   )
 })
 it('mounts forms in published lookup, then cancels the old creation lifecycle when the word changes', async () => {
-  const view = render(
+  const view = await render(
     <PublishedMeaningAddWord
       ownerId={OWNER}
       collections={[]}
@@ -499,12 +504,12 @@ it('mounts forms in published lookup, then cancels the old creation lifecycle wh
   await ready(view)
   await waitFor(() => expect(sdk.list).toHaveBeenCalled())
   expect(view.queryByLabelText(HINT)).toBeNull()
-  type(view, 'Dutch word or expression', 'bank')
-  press(view, 'Find published meanings')
+  await type(view, 'Dutch word or expression', 'bank')
+  await press(view, 'Find published meanings')
   await ready(view)
   await waitFor(() => expect(view.getByLabelText(HINT)).toBeTruthy())
   const old = guards.at(-1)!
-  type(view, 'Dutch word or expression', 'huis')
+  await type(view, 'Dutch word or expression', 'huis')
   await ready(view)
   expect(old.signal.aborted).toBe(true)
   expect(old.assert).toThrow()
@@ -514,14 +519,14 @@ it('mounts forms in published lookup, then cancels the old creation lifecycle wh
 
 it('keeps adoption and cache loading explicit after publication', async () => {
   rows = [published(sent())]
-  const view = render(<DictionaryCreationPanel {...props} />)
+  const view = await render(<DictionaryCreationPanel {...props} />)
   await ready(view)
   await waitFor(() =>
     expect(button(view, 'Add published meaning')).toBeTruthy()
   )
   expect(adoptionSdk.submit).not.toHaveBeenCalled()
   expect(adoptionSdk.load).not.toHaveBeenCalled()
-  press(view, 'Add published meaning')
+  await press(view, 'Add published meaning')
   await ready(view)
   await waitFor(() => expect(button(view, LOAD_CARD)).toBeTruthy())
   expect(adoptionSdk.prepare).toHaveBeenCalledTimes(1)
@@ -529,7 +534,7 @@ it('keeps adoption and cache loading explicit after publication', async () => {
     rows[0].session.command!.operation_id
   )
   expect(adoptionSdk.load).not.toHaveBeenCalled()
-  press(view, LOAD_CARD)
+  await press(view, LOAD_CARD)
   await ready(view)
   await waitFor(() =>
     expect(
@@ -543,10 +548,10 @@ it('retains the import receipt across a cache failure and retries loading only',
   rows = [await adoptionSdk.submit(adoption(published(sent())))]
   adoptionSdk.submit.mockClear()
   adoptionSdk.load.mockRejectedValueOnce(new Error('Cache offline'))
-  const view = render(<DictionaryCreationPanel {...props} />)
+  const view = await render(<DictionaryCreationPanel {...props} />)
   await ready(view)
   await waitFor(() => expect(button(view, LOAD_CARD)).toBeTruthy())
-  press(view, LOAD_CARD)
+  await press(view, LOAD_CARD)
   await ready(view)
   await waitFor(() =>
     expect(view.getByText(/Saved requests are retained/)).toBeTruthy()
@@ -554,7 +559,7 @@ it('retains the import receipt across a cache failure and retries loading only',
   expect(
     view.queryByText(/personal card and shared content.*loaded/i)
   ).toBeNull()
-  press(view, LOAD_CARD)
+  await press(view, LOAD_CARD)
   await ready(view)
   await waitFor(() =>
     expect(
@@ -569,16 +574,16 @@ it('offers read-only status before confirming a retained uncertain import with n
   const row = adoption(published(sent()))
   rows = [{ ...row, adoption: { ...row.adoption!, submitted: true } }]
   jest.mocked(isDictionaryFollowingImportsEnabled).mockReturnValue(false)
-  const view = render(<DictionaryCreationPanel {...props} />)
+  const view = await render(<DictionaryCreationPanel {...props} />)
   await ready(view)
   await waitFor(() => expect(button(view, 'Check saved import')).toBeTruthy())
   expect(disabled(view, CONFIRM_IMPORT)).toBe(true)
   expect(adoptionSdk.confirm).not.toHaveBeenCalled()
-  press(view, 'Check saved import')
+  await press(view, 'Check saved import')
   await ready(view)
   await waitFor(() => expect(disabled(view, CONFIRM_IMPORT)).toBe(false))
   expect(adoptionSdk.confirm).not.toHaveBeenCalled()
-  press(view, CONFIRM_IMPORT)
+  await press(view, CONFIRM_IMPORT)
   await ready(view)
   await waitFor(() => expect(button(view, LOAD_CARD)).toBeTruthy())
   expect(adoptionSdk.confirm).toHaveBeenCalledTimes(1)
@@ -588,12 +593,12 @@ it('offers read-only status before confirming a retained uncertain import with n
 it('calls batch completion only after an explicit successful imported-card load', async () => {
   rows = [await adoptionSdk.submit(adoption(published(sent())))]
   const onLoaded = jest.fn()
-  const view = render(
+  const view = await render(
     <DictionaryCreationPanel {...props} onLoaded={onLoaded} />
   )
   await ready(view)
   expect(onLoaded).not.toHaveBeenCalled()
-  press(view, LOAD_CARD)
+  await press(view, LOAD_CARD)
   await ready(view)
   await waitFor(() => expect(onLoaded).toHaveBeenCalledTimes(1))
   expect(onLoaded.mock.calls[0][0]).toEqual(rows[0])
@@ -604,11 +609,11 @@ it('awaits batch completion and retains the receipt when its persisted-card chec
   const onLoaded = jest
     .fn()
     .mockRejectedValue(new Error('Batch card unavailable'))
-  const view = render(
+  const view = await render(
     <DictionaryCreationPanel {...props} onLoaded={onLoaded} />
   )
   await ready(view)
-  press(view, LOAD_CARD)
+  await press(view, LOAD_CARD)
   await ready(view)
   await waitFor(() =>
     expect(view.getByText(/Saved requests are retained/)).toBeTruthy()

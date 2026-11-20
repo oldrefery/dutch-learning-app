@@ -8,11 +8,11 @@ jest.mock('@/hooks/useNormalizedColorScheme', () => ({
 
 it.each(['light', 'dark'] as const)(
   'renders an accessible %s retry screen',
-  theme => {
+  async theme => {
     jest.mocked(useNormalizedColorScheme).mockReturnValue(theme)
     const retry = jest.fn()
-    const screen = render(<SessionUnavailableScreen onRetry={retry} />)
-    fireEvent.press(screen.getByRole('button'))
+    const screen = await render(<SessionUnavailableScreen onRetry={retry} />)
+    await fireEvent.press(screen.getByRole('button'))
     expect(retry).toHaveBeenCalledTimes(1)
     expect(screen.toJSON()).toMatchSnapshot()
   }

@@ -7,7 +7,7 @@ interface MeaningRecallCardProps {
   word: Word
   isPlayingAudio: boolean
   onPlayPronunciation: (url?: string) => void
-  pronunciationRef?: React.RefObject<View | null>
+  pronunciationRef?: React.RefObject<React.ComponentRef<typeof View> | null>
 }
 
 export function MeaningRecallCard({

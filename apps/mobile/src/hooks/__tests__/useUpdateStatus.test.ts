@@ -37,7 +37,7 @@ describe('useUpdateStatus', () => {
       ;(Updates as Record<string, unknown>).isEnabled = false
 
       try {
-        const { result, unmount } = renderHook(() => useUpdateStatus())
+        const { result, unmount } = await renderHook(() => useUpdateStatus())
 
         await act(async () => {
           await result.current.checkForUpdate()
@@ -49,14 +49,14 @@ describe('useUpdateStatus', () => {
         expect(Updates.checkForUpdateAsync).not.toHaveBeenCalled()
         expect(Updates.fetchUpdateAsync).not.toHaveBeenCalled()
         expect(Updates.reloadAsync).not.toHaveBeenCalled()
-        unmount()
+        await unmount()
       } finally {
         runtimeGlobal.__DEV__ = previousDev
       }
     })
 
-    it('should reflect Updates constants in initial status', () => {
-      const { result } = renderHook(() => useUpdateStatus())
+    it('should reflect Updates constants in initial status', async () => {
+      const { result } = await renderHook(() => useUpdateStatus())
 
       expect(result.current.status.isEnabled).toBe(true)
       expect(result.current.status.currentUpdateId).toBe('update-123')
@@ -75,7 +75,7 @@ describe('useUpdateStatus', () => {
         isAvailable: true,
       })
 
-      const { result } = renderHook(() => useUpdateStatus())
+      const { result } = await renderHook(() => useUpdateStatus())
       let isAvailable: boolean | undefined
 
       await act(async () => {
@@ -93,7 +93,7 @@ describe('useUpdateStatus', () => {
         isAvailable: false,
       })
 
-      const { result } = renderHook(() => useUpdateStatus())
+      const { result } = await renderHook(() => useUpdateStatus())
       let isAvailable: boolean | undefined
 
       await act(async () => {
@@ -109,7 +109,7 @@ describe('useUpdateStatus', () => {
         new Error('Network error')
       )
 
-      const { result } = renderHook(() => useUpdateStatus())
+      const { result } = await renderHook(() => useUpdateStatus())
       let isAvailable: boolean | undefined
 
       await act(async () => {
@@ -126,7 +126,7 @@ describe('useUpdateStatus', () => {
         'string error'
       )
 
-      const { result } = renderHook(() => useUpdateStatus())
+      const { result } = await renderHook(() => useUpdateStatus())
 
       await act(async () => {
         await result.current.checkForUpdate()
@@ -138,7 +138,7 @@ describe('useUpdateStatus', () => {
     it('should no-op when updates are disabled', async () => {
       ;(Updates as Record<string, unknown>).isEnabled = false
 
-      const { result } = renderHook(() => useUpdateStatus())
+      const { result } = await renderHook(() => useUpdateStatus())
 
       await act(async () => {
         await result.current.checkForUpdate()
@@ -154,7 +154,7 @@ describe('useUpdateStatus', () => {
         isNew: true,
       })
 
-      const { result } = renderHook(() => useUpdateStatus())
+      const { result } = await renderHook(() => useUpdateStatus())
       let applied: boolean | undefined
 
       await act(async () => {
@@ -170,7 +170,7 @@ describe('useUpdateStatus', () => {
         isNew: false,
       })
 
-      const { result } = renderHook(() => useUpdateStatus())
+      const { result } = await renderHook(() => useUpdateStatus())
       let applied: boolean | undefined
 
       await act(async () => {
@@ -187,7 +187,7 @@ describe('useUpdateStatus', () => {
         new Error('Download error')
       )
 
-      const { result } = renderHook(() => useUpdateStatus())
+      const { result } = await renderHook(() => useUpdateStatus())
       let applied: boolean | undefined
 
       await act(async () => {
@@ -202,7 +202,7 @@ describe('useUpdateStatus', () => {
     it('should no-op when updates are disabled', async () => {
       ;(Updates as Record<string, unknown>).isEnabled = false
 
-      const { result } = renderHook(() => useUpdateStatus())
+      const { result } = await renderHook(() => useUpdateStatus())
       let applied: boolean | undefined
 
       await act(async () => {

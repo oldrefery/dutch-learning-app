@@ -74,11 +74,11 @@ beforeEach(() => {
   jest.mocked(readSharedFollowingCollection).mockResolvedValue(original)
 })
 it('opens retained sessions without a remote read or legacy preview and loads only on request', async () => {
-  const view = render(<ImportSelectionScreen />)
+  const view = await render(<ImportSelectionScreen />)
   expect(view.getByText(RETAINED_PANEL)).toBeTruthy()
   expect(useImportSelection).not.toHaveBeenCalled()
   expect(readSharedFollowingCollection).not.toHaveBeenCalled()
-  fireEvent.press(view.getByLabelText(LOAD_SHARE))
+  await fireEvent.press(view.getByLabelText(LOAD_SHARE))
   await waitFor(() =>
     expect(DictionaryFollowingTransferPanel).toHaveBeenLastCalledWith(
       expect.objectContaining({
@@ -99,7 +99,7 @@ it('shows a failed read while retaining local sessions and permits a later expli
   jest
     .mocked(readSharedFollowingCollection)
     .mockRejectedValueOnce(new Error(REVOKED_SHARE))
-  const view = render(
+  const view = await render(
     <SharedFollowingCollectionImport
       ownerId={OWNER_A}
       shareToken={token}
@@ -107,10 +107,10 @@ it('shows a failed read while retaining local sessions and permits a later expli
       onClose={() => {}}
     />
   )
-  fireEvent.press(view.getByLabelText(LOAD_SHARE))
+  await fireEvent.press(view.getByLabelText(LOAD_SHARE))
   await waitFor(() => expect(view.getByText(REVOKED_SHARE)).toBeTruthy())
   expect(view.getByText(RETAINED_PANEL)).toBeTruthy()
-  fireEvent.press(view.getByLabelText(LOAD_SHARE))
+  await fireEvent.press(view.getByLabelText(LOAD_SHARE))
   await waitFor(() => expect(view.queryByText(REVOKED_SHARE)).toBeNull())
   expect(readSharedFollowingCollection).toHaveBeenCalledTimes(2)
 })
@@ -125,35 +125,35 @@ it('rejects late preview completion after unmount', async () => {
         resolve = done
       })
     })
-  const view = render(<ImportSelectionScreen />)
-  fireEvent.press(view.getByLabelText(LOAD_SHARE))
-  view.unmount()
+  const view = await render(<ImportSelectionScreen />)
+  await fireEvent.press(view.getByLabelText(LOAD_SHARE))
+  await view.unmount()
   expect(guard).toBeDefined()
   expect(() => guard?.()).toThrow('view changed')
   resolve?.(original)
 })
-it('fails closed when signed out and keeps the legacy route with opt-in off', () => {
+it('fails closed when signed out and keeps the legacy route with opt-in off', async () => {
   jest
     .mocked(useApplicationStore)
     .mockImplementation(selector =>
       selector({ currentUserId: null, collections } as never)
     )
-  const view = render(<ImportSelectionScreen />)
+  const view = await render(<ImportSelectionScreen />)
   expect(view.getByText('Sign in to verify a shared collection.')).toBeTruthy()
   expect(useImportSelection).not.toHaveBeenCalled()
   jest.mocked(isDictionaryFollowingImportsEnabled).mockReturnValue(false)
-  view.rerender(<ImportSelectionScreen />)
+  await view.rerender(<ImportSelectionScreen />)
   expect(view.getByText('Legacy loading')).toBeTruthy()
 })
 
-it('remounts retained state on owner change and excludes foreign destination collections', () => {
+it('remounts retained state on owner change and excludes foreign destination collections', async () => {
   jest
     .mocked(DictionaryFollowingTransferPanel)
     .mockImplementation(({ ownerId }) => {
       const [capturedOwner] = useState(ownerId)
       return <MockText>{capturedOwner}</MockText>
     })
-  const view = render(<ImportSelectionScreen />)
+  const view = await render(<ImportSelectionScreen />)
   expect(view.getByText(OWNER_A)).toBeTruthy()
   jest.mocked(useApplicationStore).mockImplementation(selector =>
     selector({
@@ -161,7 +161,7 @@ it('remounts retained state on owner change and excludes foreign destination col
       collections: [{ ...collections[0], user_id: OWNER_A }],
     } as never)
   )
-  view.rerender(<ImportSelectionScreen />)
+  await view.rerender(<ImportSelectionScreen />)
   expect(view.getByText(OWNER_B)).toBeTruthy()
   expect(view.queryByText(OWNER_A)).toBeNull()
   expect(

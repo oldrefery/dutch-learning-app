@@ -103,7 +103,7 @@ describe('useImportSelection', () => {
     ;(useApplicationStore.getState as jest.Mock).mockImplementation(
       () => storeState
     )
-    const { result } = renderHook(() => useImportSelection(SHARED_TOKEN))
+    const { result } = await renderHook(() => useImportSelection(SHARED_TOKEN))
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
     })

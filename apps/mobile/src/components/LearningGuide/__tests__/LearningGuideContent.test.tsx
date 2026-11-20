@@ -22,8 +22,8 @@ describe.each(['light', 'dark'] as const)('%s LearningGuideContent', theme => {
     mockUseNormalizedColorScheme.mockReturnValue(theme)
   })
 
-  it('renders every section in accessible reading order inside a scroll view', () => {
-    const { getByTestId, getByLabelText } = render(
+  it('renders every section in accessible reading order inside a scroll view', async () => {
+    const { getByTestId, getByLabelText } = await render(
       <LearningGuideContent onComplete={jest.fn()} onNavigate={jest.fn()} />
     )
 
@@ -44,33 +44,33 @@ describe('LearningGuideContent actions', () => {
     mockUseNormalizedColorScheme.mockReturnValue('light')
   })
 
-  it('only reports safe navigation intent when a section action is pressed', () => {
+  it('only reports safe navigation intent when a section action is pressed', async () => {
     const onNavigate = jest.fn()
     const onComplete = jest.fn()
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <LearningGuideContent onComplete={onComplete} onNavigate={onNavigate} />
     )
 
-    fireEvent.press(getByTestId('learning-guide-action-start-learning'))
+    await fireEvent.press(getByTestId('learning-guide-action-start-learning'))
 
     expect(onNavigate).toHaveBeenCalledWith('/(tabs)/add-word')
     expect(onComplete).not.toHaveBeenCalled()
   })
 
-  it('requires an explicit completion action', () => {
+  it('requires an explicit completion action', async () => {
     const onComplete = jest.fn()
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <LearningGuideContent onComplete={onComplete} onNavigate={jest.fn()} />
     )
 
     expect(onComplete).not.toHaveBeenCalled()
-    fireEvent.press(getByTestId('complete-learning-guide-button'))
+    await fireEvent.press(getByTestId('complete-learning-guide-button'))
 
     expect(onComplete).toHaveBeenCalledTimes(1)
   })
 
-  it('allows system font scaling and keeps all content scrollable', () => {
-    const { getByText, getByTestId } = render(
+  it('allows system font scaling and keeps all content scrollable', async () => {
+    const { getByText, getByTestId } = await render(
       <LearningGuideContent onComplete={jest.fn()} onNavigate={jest.fn()} />
     )
 

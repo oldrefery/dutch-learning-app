@@ -180,10 +180,7 @@ export default function WordDetailModal({
 
   return (
     <>
-      <StatusBar
-        backgroundColor={Colors.transparent.modalOverlay}
-        barStyle="light-content"
-      />
+      <StatusBar barStyle="light-content" />
       <Animated.View style={[styles.overlay, animatedBackdropStyle]}>
         <TouchableOpacity
           style={styles.backdrop}

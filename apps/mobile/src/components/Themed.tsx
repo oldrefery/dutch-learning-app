@@ -13,8 +13,8 @@ type ThemeProps = {
   darkColor?: string
 }
 
-export type TextProps = ThemeProps & Text['props']
-export type ViewProps = ThemeProps & View['props']
+export type TextProps = ThemeProps & React.ComponentProps<typeof Text>
+export type ViewProps = ThemeProps & React.ComponentProps<typeof View>
 
 export function useThemeColor(
   props: { light?: string; dark?: string },

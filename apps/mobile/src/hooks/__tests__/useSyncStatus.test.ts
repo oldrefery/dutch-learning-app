@@ -76,7 +76,7 @@ describe('focused sync status', () => {
   })
 
   it('refreshes on automatic sync without starting another sync', async () => {
-    const { result } = renderHook(() => useSyncStatus('user-1'))
+    const { result } = await renderHook(() => useSyncStatus('user-1'))
     await act(async () => undefined)
     expect(result.current.snapshot?.lastSyncAt).toBeNull()
     jest
@@ -92,7 +92,7 @@ describe('focused sync status', () => {
   it('uses the latest request when responses arrive out of order', async () => {
     const old = deferred()
     jest.mocked(syncStatusService.getSnapshot).mockReturnValueOnce(old.promise)
-    const { result } = renderHook(() => useSyncStatus('user-1'))
+    const { result } = await renderHook(() => useSyncStatus('user-1'))
     jest
       .mocked(syncStatusService.getSnapshot)
       .mockResolvedValue(snapshot(syncResult.timestamp))
@@ -108,8 +108,8 @@ describe('focused sync status', () => {
       .mocked(syncStatusService.getSnapshot)
       .mockReturnValueOnce(old.promise)
       .mockReturnValueOnce(fresh.promise)
-    const { result } = renderHook(() => useSyncStatus('user-1'))
-    act(() => listener(syncResult))
+    const { result } = await renderHook(() => useSyncStatus('user-1'))
+    await act(() => listener(syncResult))
     await act(async () => old.reject(new Error('Old failure')))
     expect(result.current.isLoading).toBe(true)
     expect(ToastService.show).not.toHaveBeenCalled()
@@ -121,7 +121,7 @@ describe('focused sync status', () => {
   it('hides the previous account and ignores its delayed response', async () => {
     const old = deferred()
     const fresh = deferred()
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       ({ id }: { id: string | null }) => useSyncStatus(id),
       { initialProps: { id: 'user-1' } }
     )
@@ -130,14 +130,14 @@ describe('focused sync status', () => {
       .mocked(syncStatusService.getSnapshot)
       .mockReturnValueOnce(old.promise)
       .mockReturnValueOnce(fresh.promise)
-    act(() => listener(syncResult))
-    rerender({ id: 'user-2' })
+    await act(() => listener(syncResult))
+    await rerender({ id: 'user-2' })
     expect(result.current.snapshot).toBeNull()
     await act(async () => old.resolve(snapshot('2025-01-01T00:00:00Z')))
     expect(result.current.snapshot).toBeNull()
     await act(async () => fresh.resolve(snapshot(syncResult.timestamp)))
     expect(result.current.snapshot?.lastSyncAt).toBe(syncResult.timestamp)
-    rerender({ id: null })
+    await rerender({ id: null })
     expect(result.current.snapshot).toBeNull()
     expect(result.current.isLoading).toBe(false)
     expect(unsubscribe).toHaveBeenCalledTimes(2)
@@ -148,12 +148,12 @@ describe('focused sync status', () => {
     jest
       .mocked(syncStatusService.getSnapshot)
       .mockReturnValueOnce(pending.promise)
-    const { result, rerender, unmount } = renderHook(() =>
+    const { result, rerender, unmount } = await renderHook(() =>
       useSyncStatus('user-1')
     )
     const queued = listener
     focused = false
-    rerender({})
+    await rerender({})
     await act(async () => {
       queued(syncResult)
       pending.reject(new Error('Screen closed'))
@@ -163,23 +163,23 @@ describe('focused sync status', () => {
     expect(syncStatusService.getSnapshot).toHaveBeenCalledTimes(1)
     expect(ToastService.show).not.toHaveBeenCalled()
     focused = true
-    rerender({})
+    await rerender({})
     await act(async () => undefined)
     expect(syncStatusService.getSnapshot).toHaveBeenCalledTimes(2)
-    unmount()
-    act(() => listener(syncResult))
+    await unmount()
+    await act(() => listener(syncResult))
     expect(unsubscribe).toHaveBeenCalledTimes(2)
     expect(syncStatusService.getSnapshot).toHaveBeenCalledTimes(2)
   })
 
   it('settles repeated refocus and sync notifications without starting a feedback sync', async () => {
-    const { result, rerender } = renderHook(() => useSyncStatus('user-1'))
+    const { result, rerender } = await renderHook(() => useSyncStatus('user-1'))
     await act(async () => {})
     for (let cycle = 0; cycle < 20; cycle++) {
       focused = false
-      rerender({})
+      await rerender({})
       focused = true
-      rerender({})
+      await rerender({})
       await act(async () => {
         listener(syncResult)
       })
@@ -194,7 +194,7 @@ describe('focused sync status', () => {
   })
 
   it('retains the last snapshot on failure and allows a manual retry', async () => {
-    const { result } = renderHook(() => useSyncStatus('user-1'))
+    const { result } = await renderHook(() => useSyncStatus('user-1'))
     await act(async () => undefined)
     const previous = result.current.snapshot
     const error = new Error('Status unavailable')

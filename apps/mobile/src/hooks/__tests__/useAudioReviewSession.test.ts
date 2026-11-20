@@ -119,13 +119,13 @@ describe('useAudioReviewSession', () => {
   })
 
   it('plays the Dutch prompt automatically and stops audio on unmount', async () => {
-    const { unmount } = renderHook(() => useAudioReviewSession())
+    const { unmount } = await renderHook(() => useAudioReviewSession())
 
     await waitFor(() =>
       expect(playWord).toHaveBeenCalledWith('huis', AUDIO_URL)
     )
 
-    unmount()
+    await unmount()
 
     expect(stopAudio).toHaveBeenCalled()
   })
@@ -140,7 +140,7 @@ describe('useAudioReviewSession', () => {
       })
     )
 
-    renderHook(() => useAudioReviewSession())
+    await renderHook(() => useAudioReviewSession())
 
     await waitFor(() =>
       expect(startSession).toHaveBeenCalledWith({
@@ -150,7 +150,7 @@ describe('useAudioReviewSession', () => {
     )
   })
 
-  it('preserves an existing collection-scoped session', () => {
+  it('preserves an existing collection-scoped session', async () => {
     mockUseReviewScreen.mockReturnValue(
       createReviewState({
         reviewSession: {
@@ -164,7 +164,7 @@ describe('useAudioReviewSession', () => {
       })
     )
 
-    const { result } = renderHook(() => useAudioReviewSession())
+    const { result } = await renderHook(() => useAudioReviewSession())
 
     expect(startSession).not.toHaveBeenCalled()
     expect(result.current.isStarting).toBe(false)
@@ -172,7 +172,7 @@ describe('useAudioReviewSession', () => {
   })
 
   it('does not assess a hidden answer', async () => {
-    const { result } = renderHook(() => useAudioReviewSession())
+    const { result } = await renderHook(() => useAudioReviewSession())
 
     await act(async () => {
       await result.current.submitAgain()
@@ -187,7 +187,7 @@ describe('useAudioReviewSession', () => {
     mockUseReviewScreen.mockReturnValue(
       createReviewState({ currentWord: null, isFlipped: true })
     )
-    const { result } = renderHook(() => useAudioReviewSession())
+    const { result } = await renderHook(() => useAudioReviewSession())
 
     await act(async () => {
       await result.current.revealAnswer()
@@ -208,7 +208,7 @@ describe('useAudioReviewSession', () => {
       mockUseReviewScreen.mockReturnValue(
         createReviewState({ isFlipped: true })
       )
-      const { result } = renderHook(() => useAudioReviewSession())
+      const { result } = await renderHook(() => useAudioReviewSession())
 
       await act(async () => {
         await result.current[action]()
@@ -225,9 +225,9 @@ describe('useAudioReviewSession', () => {
   )
 
   it('replays a paused prompt from the beginning', async () => {
-    const { result } = renderHook(() => useAudioReviewSession())
+    const { result } = await renderHook(() => useAudioReviewSession())
 
-    act(() => result.current.togglePause())
+    await act(() => result.current.togglePause())
     expect(pauseAudio).toHaveBeenCalledTimes(1)
     expect(result.current.isPaused).toBe(true)
     playWord.mockClear()
@@ -241,7 +241,7 @@ describe('useAudioReviewSession', () => {
   })
 
   it('stops audio before leaving the session', async () => {
-    const { result } = renderHook(() => useAudioReviewSession())
+    const { result } = await renderHook(() => useAudioReviewSession())
 
     await act(async () => {
       await result.current.exitSession()
@@ -255,7 +255,7 @@ describe('useAudioReviewSession', () => {
   })
 
   it('reveals and announces the answer before replaying Dutch audio', async () => {
-    const { result } = renderHook(() => useAudioReviewSession())
+    const { result } = await renderHook(() => useAudioReviewSession())
     playWord.mockClear()
 
     await act(async () => {
@@ -279,10 +279,10 @@ describe('useAudioReviewSession', () => {
         })
     )
     mockUseReviewScreen.mockReturnValue(createReviewState({ isFlipped: true }))
-    const { result } = renderHook(() => useAudioReviewSession())
+    const { result } = await renderHook(() => useAudioReviewSession())
 
     let firstSubmission: Promise<void> | undefined
-    act(() => {
+    await act(() => {
       firstSubmission = result.current.submitGood()
       void result.current.submitGood()
     })
@@ -295,32 +295,32 @@ describe('useAudioReviewSession', () => {
     })
   })
 
-  it('stops playback and exposes a recoverable paused state in background', () => {
-    const { result } = renderHook(() => useAudioReviewSession())
+  it('stops playback and exposes a recoverable paused state in background', async () => {
+    const { result } = await renderHook(() => useAudioReviewSession())
 
-    act(() => {
+    await act(() => {
       appStateHandler?.('background')
     })
 
     expect(stopAudio).toHaveBeenCalled()
     expect(result.current.isPaused).toBe(true)
 
-    act(() => {
+    await act(() => {
       result.current.togglePause()
     })
 
     expect(resumeAudio).toHaveBeenCalled()
     expect(result.current.isPaused).toBe(false)
   })
-  it('does not replay audio when unrelated word metadata changes', () => {
-    const { rerender } = renderHook(() => useAudioReviewSession())
+  it('does not replay audio when unrelated word metadata changes', async () => {
+    const { rerender } = await renderHook(() => useAudioReviewSession())
     expect(playWord).toHaveBeenCalledTimes(1)
     mockUseReviewScreen.mockReturnValue(
       createReviewState({
         currentWord: { ...word, repetition_count: 5 },
       })
     )
-    rerender({})
+    await rerender({})
     expect(playWord).toHaveBeenCalledTimes(1)
   })
 })

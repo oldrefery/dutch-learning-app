@@ -12,21 +12,21 @@ import { renderHook } from '@testing-library/react-native'
 import { useNormalizedColorScheme } from '../useNormalizedColorScheme'
 
 describe('useNormalizedColorScheme', () => {
-  it('should return "light" in test environment (null scheme is normalized)', () => {
-    const { result } = renderHook(() => useNormalizedColorScheme())
+  it('should return "light" in test environment (null scheme is normalized)', async () => {
+    const { result } = await renderHook(() => useNormalizedColorScheme())
 
     // In node test env, useColorScheme returns null, which normalizes to 'light'
     expect(result.current).toBe('light')
   })
 
-  it('should only return "light" or "dark"', () => {
-    const { result } = renderHook(() => useNormalizedColorScheme())
+  it('should only return "light" or "dark"', async () => {
+    const { result } = await renderHook(() => useNormalizedColorScheme())
 
     expect(['light', 'dark']).toContain(result.current)
   })
 
-  it('should return a string type', () => {
-    const { result } = renderHook(() => useNormalizedColorScheme())
+  it('should return a string type', async () => {
+    const { result } = await renderHook(() => useNormalizedColorScheme())
 
     expect(typeof result.current).toBe('string')
   })

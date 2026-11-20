@@ -66,7 +66,7 @@ jest.mock('../WordDetailModal/components', () => ({
 
 const LOCAL_VERSION = 'local version'
 const selectedWord = createMockWord({ translations: { en: [LOCAL_VERSION] } })
-const renderDetails = () =>
+const renderDetails = async () =>
   render(<WordDetailModal visible onClose={jest.fn()} word={selectedWord} />)
 
 beforeEach(() => {
@@ -87,7 +87,7 @@ it.each([
   ['ios', 34, 0],
 ] as const)(
   'positions the sheet for %s with a bottom inset of %s',
-  (platform, bottom, expected) => {
+  async (platform, bottom, expected) => {
     jest.replaceProperty(Platform, 'OS', platform)
     mockSafeAreaInsets.mockReturnValueOnce({
       top: 0,
@@ -96,16 +96,18 @@ it.each([
       left: 0,
     })
 
-    expect(renderDetails().getByTestId('word-detail-sheet')).toHaveStyle({
+    expect(
+      (await renderDetails()).getByTestId('word-detail-sheet')
+    ).toHaveStyle({
       bottom: expected,
     })
   }
 )
 
-it('refreshes open details after choosing server content without changing the selected snapshot', () => {
-  const screen = renderDetails()
+it('refreshes open details after choosing server content without changing the selected snapshot', async () => {
+  const screen = await renderDetails()
   expect(screen.getByText(LOCAL_VERSION)).toBeTruthy()
-  act(() => {
+  await act(() => {
     useApplicationStore.setState({
       words: [{ ...selectedWord, translations: { en: ['server version'] } }],
     })
@@ -116,9 +118,9 @@ it('refreshes open details after choosing server content without changing the se
 
 it.each(['account change', 'deletion'])(
   'hides stale details after %s',
-  cause => {
-    const screen = renderDetails()
-    act(() => {
+  async cause => {
+    const screen = await renderDetails()
+    await act(() => {
       useApplicationStore.setState(
         cause === 'deletion' ? { words: [] } : { currentUserId: 'other-owner' }
       )

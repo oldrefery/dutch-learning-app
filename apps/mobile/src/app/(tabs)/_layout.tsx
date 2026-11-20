@@ -1,18 +1,10 @@
-import React, { useMemo, ComponentProps } from 'react'
-import FontAwesome from '@expo/vector-icons/FontAwesome'
-import { NativeTabs } from 'expo-router/unstable-native-tabs'
+import React, { useMemo } from 'react'
+import { NativeTabs } from 'expo-router/native-tabs'
 import { Redirect } from 'expo-router'
-import {
-  StyleSheet,
-  Platform,
-  PlatformColor,
-  DynamicColorIOS,
-  ViewStyle,
-} from 'react-native'
+import { DynamicColorIOS, Platform } from 'react-native'
 import * as Haptics from 'expo-haptics'
 
 import { Colors } from '@/constants/Colors'
-import { useClientOnlyValue } from '@/components/useClientOnlyValue'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { useSessionGate } from '@/hooks/useSessionGate'
 import { LoadingScreen } from '@/components/LoadingScreen'
@@ -22,26 +14,12 @@ import { useReviewWordsCount } from '@/hooks/useReviewWordsCount'
 import { useApplicationStore } from '@/stores/useApplicationStore'
 import { useSyncManager } from '@/hooks/useSyncManager'
 
-// Extended types for NativeTabs components with runtime-supported props
-type TabTriggerProps = ComponentProps<typeof NativeTabs.Trigger> & {
-  onPress?: () => void | Promise<void>
-  testID?: string
+const lightFeedback = {
+  tabPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
 }
-
-type BadgeWithStyleProps = ComponentProps<typeof NativeTabs.Trigger.Badge> & {
-  style?: ViewStyle | ViewStyle[]
+const mediumFeedback = {
+  tabPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
 }
-
-type NativeTabsLabelStyle = {
-  color?: string | ReturnType<typeof DynamicColorIOS>
-  tintColor?: string | ReturnType<typeof DynamicColorIOS>
-  fontSize?: number
-  fontWeight?: string
-}
-
-const TabTrigger = NativeTabs.Trigger as React.ComponentType<TabTriggerProps>
-const StyledBadge = NativeTabs.Trigger
-  .Badge as React.ComponentType<BadgeWithStyleProps>
 
 export default function TabLayout() {
   const colorScheme = useNormalizedColorScheme()
@@ -66,32 +44,23 @@ export default function TabLayout() {
   // Initialize offline-first sync (only when authenticated)
   useSyncManager(syncOptions)
 
-  // Call this unconditionally to follow the rules of hooks (not used in Native Tabs)
-  useClientOnlyValue(false, true)
-
-  const labelStyle: NativeTabsLabelStyle = useMemo(
-    () => ({
-      color:
-        Platform.OS === 'ios'
-          ? DynamicColorIOS({
-              dark: Colors.dark.text,
-              light: Colors.light.text,
-            })
-          : colorScheme === 'dark'
-            ? Colors.dark.text
-            : Colors.light.text,
-      tintColor:
-        Platform.OS === 'ios'
-          ? DynamicColorIOS({
-              dark: Colors.dark.tint,
-              light: Colors.light.tint,
-            })
-          : colorScheme === 'dark'
-            ? Colors.dark.tint
-            : Colors.light.tint,
-    }),
-    [colorScheme]
-  )
+  const labelColor =
+    Platform.OS === 'ios'
+      ? DynamicColorIOS({ light: Colors.light.text, dark: Colors.dark.text })
+      : Colors[colorScheme].text
+  const tintColor =
+    Platform.OS === 'ios'
+      ? DynamicColorIOS({ light: Colors.light.tint, dark: Colors.dark.tint })
+      : Colors[colorScheme].tint
+  const badgeColor =
+    Platform.OS === 'ios'
+      ? DynamicColorIOS({
+          light: Colors.error.DEFAULT,
+          dark: Colors.error.darkMode,
+        })
+      : colorScheme === 'dark'
+        ? Colors.error.darkMode
+        : Colors.error.DEFAULT
 
   if (session.status === 'unavailable') {
     return <SessionUnavailableScreen onRetry={session.retry} />
@@ -106,155 +75,68 @@ export default function TabLayout() {
 
   return (
     <NativeTabs
-      labelStyle={labelStyle as ComponentProps<typeof NativeTabs>['labelStyle']}
+      labelStyle={{
+        default: { color: labelColor },
+        selected: { color: tintColor },
+      }}
+      tintColor={tintColor}
+      badgeBackgroundColor={badgeColor}
       labelVisibilityMode="labeled"
     >
       {/* Primary navigation - left side (the most frequent use) */}
-      <TabTrigger
+      <NativeTabs.Trigger
         name="index"
         testID="tab-collections"
-        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+        listeners={lightFeedback}
       >
         <NativeTabs.Trigger.Label>Collections</NativeTabs.Trigger.Label>
-        {Platform.OS === 'ios' ? (
-          <NativeTabs.Trigger.Icon sf="house.fill" />
-        ) : (
-          <NativeTabs.Trigger.Icon
-            src={
-              <NativeTabs.Trigger.VectorIcon family={FontAwesome} name="home" />
-            }
-          />
-        )}
-      </TabTrigger>
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
+      </NativeTabs.Trigger>
 
       {/* Secondary navigation */}
-      <TabTrigger
+      <NativeTabs.Trigger
         name="history"
         testID="tab-history"
-        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+        listeners={lightFeedback}
       >
         <NativeTabs.Trigger.Label>History</NativeTabs.Trigger.Label>
-        {Platform.OS === 'ios' ? (
-          <NativeTabs.Trigger.Icon sf="clock.fill" />
-        ) : (
-          <NativeTabs.Trigger.Icon
-            src={
-              <NativeTabs.Trigger.VectorIcon
-                family={FontAwesome}
-                name="history"
-              />
-            }
-          />
-        )}
-      </TabTrigger>
+        <NativeTabs.Trigger.Icon sf="clock.fill" md="history" />
+      </NativeTabs.Trigger>
 
-      <TabTrigger
+      <NativeTabs.Trigger
         name="settings"
         testID="tab-settings"
-        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+        listeners={lightFeedback}
       >
         <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
-        {Platform.OS === 'ios' ? (
-          <NativeTabs.Trigger.Icon sf="gear" />
-        ) : (
-          <NativeTabs.Trigger.Icon
-            src={
-              <NativeTabs.Trigger.VectorIcon family={FontAwesome} name="cog" />
-            }
-          />
-        )}
-      </TabTrigger>
+        <NativeTabs.Trigger.Icon sf="gear" md="settings" />
+      </NativeTabs.Trigger>
 
       {/* Primary actions - right side for thumb accessibility */}
-      <TabTrigger
+      <NativeTabs.Trigger
         name="review"
         testID="tab-review"
-        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
+        listeners={mediumFeedback}
       >
         <NativeTabs.Trigger.Label>Review</NativeTabs.Trigger.Label>
         {/* Smart badge showing review words count */}
         {reviewWordsCount > 0 && (
-          <StyledBadge
-            style={[
-              styles.reviewBadge,
-              {
-                backgroundColor:
-                  Platform.OS === 'ios'
-                    ? DynamicColorIOS({
-                        light: Colors.error.DEFAULT,
-                        dark: Colors.error.darkMode,
-                      })
-                    : colorScheme === 'dark'
-                      ? Colors.error.darkMode
-                      : Colors.error.DEFAULT,
-              },
-            ]}
-          >
+          <NativeTabs.Trigger.Badge>
             {reviewWordsCount > 99 ? '99+' : reviewWordsCount.toString()}
-          </StyledBadge>
+          </NativeTabs.Trigger.Badge>
         )}
-        {Platform.OS === 'ios' ? (
-          <NativeTabs.Trigger.Icon sf="brain.head.profile" />
-        ) : (
-          <NativeTabs.Trigger.Icon
-            src={
-              <NativeTabs.Trigger.VectorIcon
-                family={FontAwesome}
-                name="graduation-cap"
-              />
-            }
-          />
-        )}
-      </TabTrigger>
+        <NativeTabs.Trigger.Icon sf="brain.head.profile" md="school" />
+      </NativeTabs.Trigger>
 
-      <TabTrigger
+      <NativeTabs.Trigger
         name="add-word"
         testID="tab-add-word"
         hidden={userAccessLevel !== 'full_access'}
-        onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
+        listeners={mediumFeedback}
       >
         <NativeTabs.Trigger.Label>Add Word</NativeTabs.Trigger.Label>
-        {Platform.OS === 'ios' ? (
-          <NativeTabs.Trigger.Icon sf="plus.circle.fill" />
-        ) : (
-          <NativeTabs.Trigger.Icon
-            src={
-              <NativeTabs.Trigger.VectorIcon
-                family={FontAwesome}
-                name="plus-circle"
-              />
-            }
-          />
-        )}
-      </TabTrigger>
+        <NativeTabs.Trigger.Icon sf="plus.circle.fill" md="add_circle" />
+      </NativeTabs.Trigger>
     </NativeTabs>
   )
 }
-
-const styles = StyleSheet.create({
-  // HIG-compliant badge styling for review count with platform-specific colors
-  reviewBadge: {
-    minWidth: 20,
-    height: 20,
-    borderRadius: 10,
-    paddingHorizontal: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    top: -8,
-    right: -8,
-    borderWidth: 2,
-    borderColor:
-      Platform.OS === 'ios'
-        ? DynamicColorIOS({
-            light: Colors.background.primary,
-            dark: Colors.dark.background,
-          })
-        : Colors.background.primary,
-    shadowColor: Platform.OS === 'ios' ? PlatformColor('systemGray') : '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: Platform.OS === 'ios' ? 0.3 : 0.25,
-    shadowRadius: 4,
-    elevation: 6,
-  },
-})

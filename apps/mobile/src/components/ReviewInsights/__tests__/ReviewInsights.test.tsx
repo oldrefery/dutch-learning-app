@@ -44,8 +44,8 @@ describe.each(['light', 'dark'] as const)('%s ReviewInsightsSummary', theme => {
     mockUseNormalizedColorScheme.mockReturnValue(theme)
   })
 
-  it('renders an accessible forecast and matches the theme snapshot', () => {
-    const screen = render(
+  it('renders an accessible forecast and matches the theme snapshot', async () => {
+    const screen = await render(
       <ReviewInsightsSummary
         insights={insights}
         isStartingReview={false}
@@ -65,9 +65,9 @@ describe('ReviewInsights interactions and empty state', () => {
     mockUseNormalizedColorScheme.mockReturnValue('light')
   })
 
-  it('starts a due difficult review from the explicit action', () => {
+  it('starts a due difficult review from the explicit action', async () => {
     const onStartDifficultReview = jest.fn()
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ReviewInsightsSummary
         insights={insights}
         isStartingReview={false}
@@ -75,24 +75,26 @@ describe('ReviewInsights interactions and empty state', () => {
       />
     )
 
-    fireEvent.press(getByTestId('review-due-difficult-words'))
+    await fireEvent.press(getByTestId('review-due-difficult-words'))
 
     expect(onStartDifficultReview).toHaveBeenCalledTimes(1)
   })
 
-  it('renders a refreshable empty state', () => {
+  it('renders a refreshable empty state', async () => {
     const onRefresh = jest.fn()
-    const { getByRole, getByTestId } = render(
+    const { getByRole, getByTestId } = await render(
       <ReviewInsightsEmptyState onRefresh={onRefresh} />
     )
 
     expect(getByTestId('review-insights-empty-state')).toBeTruthy()
-    fireEvent.press(getByRole('button', { name: 'Refresh review insights' }))
+    await fireEvent.press(
+      getByRole('button', { name: 'Refresh review insights' })
+    )
     expect(onRefresh).toHaveBeenCalledTimes(1)
   })
 
-  it('renders an explicit load error when no cached words exist', () => {
-    const { getByTestId, getByText } = render(
+  it('renders an explicit load error when no cached words exist', async () => {
+    const { getByTestId, getByText } = await render(
       <ReviewInsightsEmptyState
         onRefresh={jest.fn()}
         errorMessage="Local cache is unavailable"
@@ -106,14 +108,14 @@ describe('ReviewInsights interactions and empty state', () => {
     expect(getByText('Local cache is unavailable')).toBeTruthy()
   })
 
-  it('opens a difficult word without invoking review logic', () => {
+  it('opens a difficult word without invoking review logic', async () => {
     const onPress = jest.fn()
     const word = insights.difficultWords[0]
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <DifficultWordRow word={word} onPress={onPress} />
     )
 
-    fireEvent.press(getByTestId(`difficult-word-${word.word_id}`))
+    await fireEvent.press(getByTestId(`difficult-word-${word.word_id}`))
     expect(onPress).toHaveBeenCalledTimes(1)
   })
 })

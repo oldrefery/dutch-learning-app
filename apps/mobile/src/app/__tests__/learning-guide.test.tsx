@@ -22,6 +22,7 @@ describe('LearningGuideScreen', () => {
     dismissTo: jest.fn(),
     canDismiss: jest.fn(),
     canGoBack: jest.fn(),
+    setTransitionMode: jest.fn(),
     setParams: jest.fn(),
     reload: jest.fn(),
     prefetch: jest.fn(),
@@ -43,16 +44,16 @@ describe('LearningGuideScreen', () => {
     }
   })
 
-  it('does not mark a manually opened guide as seen', () => {
-    render(<LearningGuideScreen />)
+  it('does not mark a manually opened guide as seen', async () => {
+    await render(<LearningGuideScreen />)
 
     expect(useSettingsStore.getState().learningGuideVersionSeen).toBe(0)
   })
 
-  it('persists the current version only after completion and returns', () => {
-    const { getByTestId } = render(<LearningGuideScreen />)
+  it('persists the current version only after completion and returns', async () => {
+    const { getByTestId } = await render(<LearningGuideScreen />)
 
-    fireEvent.press(getByTestId('complete-learning-guide-button'))
+    await fireEvent.press(getByTestId('complete-learning-guide-button'))
 
     expect(useSettingsStore.getState().learningGuideVersionSeen).toBe(
       LEARNING_GUIDE_VERSION
@@ -60,17 +61,17 @@ describe('LearningGuideScreen', () => {
     expect(router.back).toHaveBeenCalledTimes(1)
   })
 
-  it('ignores the E2E reset parameter in normal builds', () => {
+  it('ignores the E2E reset parameter in normal builds', async () => {
     mockUseLocalSearchParams.mockReturnValue({ resetForE2E: '1' })
     useSettingsStore.setState({ learningGuideVersionSeen: 2 })
 
-    render(<LearningGuideScreen />)
+    await render(<LearningGuideScreen />)
 
     expect(useSettingsStore.getState().learningGuideVersionSeen).toBe(2)
     expect(router.replace).not.toHaveBeenCalled()
   })
 
-  it('resets only the guide flag in the dedicated E2E build', () => {
+  it('resets only the guide flag in the dedicated E2E build', async () => {
     process.env.EXPO_PUBLIC_E2E_TEST_MODE = 'true'
     mockUseLocalSearchParams.mockReturnValue({ resetForE2E: '1' })
     useSettingsStore.setState({
@@ -78,7 +79,7 @@ describe('LearningGuideScreen', () => {
       learningGuideVersionSeen: 2,
     })
 
-    render(<LearningGuideScreen />)
+    await render(<LearningGuideScreen />)
 
     expect(useSettingsStore.getState().learningGuideVersionSeen).toBe(0)
     expect(useSettingsStore.getState().autoPlayPronunciation).toBe(true)

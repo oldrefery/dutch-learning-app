@@ -151,7 +151,7 @@ describe('useStarterPackImport', () => {
   })
 
   const renderAndWait = async () => {
-    const hook = renderHook(() => useStarterPackImport())
+    const hook = await renderHook(() => useStarterPackImport())
     await waitFor(() => expect(hook.result.current.loading).toBe(false))
     return hook
   }
@@ -261,7 +261,7 @@ describe('useStarterPackImport', () => {
       source: 'network',
     })
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStarterPackImport({
         packId: manifest.pack_id,
         version: manifest.version,
@@ -278,7 +278,7 @@ describe('useStarterPackImport', () => {
   })
 
   it('rejects an incomplete remote route without leaving the screen loading', async () => {
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStarterPackImport({ packId: REMOTE_A2_PACK_ID })
     )
 
@@ -304,13 +304,13 @@ describe('useStarterPackImport', () => {
       .mockReturnValueOnce(pendingA.promise)
       .mockReturnValueOnce(pendingB.promise)
 
-    const hook = renderHook<
+    const hook = await renderHook<
       ReturnType<typeof useStarterPackImport>,
       { packId: string }
     >(({ packId }) => useStarterPackImport({ packId, version: '1.0.0' }), {
       initialProps: { packId: manifestA.pack_id },
     })
-    hook.rerender({ packId: manifestB.pack_id })
+    await hook.rerender({ packId: manifestB.pack_id })
 
     await act(async () => {
       pendingB.resolve({
@@ -342,7 +342,7 @@ describe('useStarterPackImport', () => {
       .mockRejectedValueOnce(new Error('offline'))
       .mockResolvedValueOnce({ manifest: manifest as never, source: 'network' })
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useStarterPackImport({
         packId: manifest.pack_id,
         version: manifest.version,
@@ -351,7 +351,7 @@ describe('useStarterPackImport', () => {
     await waitFor(() => expect(result.current.loading).toBe(false))
     expect(result.current.error).toContain('could not be downloaded')
 
-    act(() => result.current.retryRemotePack())
+    await act(() => result.current.retryRemotePack())
 
     await waitFor(() => expect(result.current.loading).toBe(false))
     expect(result.current.error).toBeNull()
@@ -364,11 +364,11 @@ describe('useStarterPackImport', () => {
     jest
       .mocked(officialContentCatalogService.getPack)
       .mockReturnValueOnce(pending.promise)
-    const hook = renderHook(() =>
+    const hook = await renderHook(() =>
       useStarterPackImport({ packId: REMOTE_A2_PACK_ID, version: '1.0.0' })
     )
 
-    hook.unmount()
+    await hook.unmount()
     await act(async () => {
       pending.reject(new Error('late failure'))
       await expect(pending.promise).rejects.toThrow('late failure')
@@ -380,8 +380,8 @@ describe('useStarterPackImport', () => {
   it('imports only the selected entry after an explicit action', async () => {
     const { result } = await renderAndWait()
 
-    act(() => result.current.toggleSelectAll())
-    act(() => result.current.toggleWordSelection('a1-035-opstaan'))
+    await act(() => result.current.toggleSelectAll())
+    await act(() => result.current.toggleWordSelection('a1-035-opstaan'))
     expect(result.current.selectedCount).toBe(1)
 
     await act(async () => {
@@ -533,7 +533,9 @@ describe('useStarterPackImport', () => {
     storeState.addWordsToCollection.mockResolvedValue(false)
     const { result } = await renderAndWait()
 
-    act(() => result.current.setTargetCollectionId(collection.collection_id))
+    await act(() =>
+      result.current.setTargetCollectionId(collection.collection_id)
+    )
     await act(async () => {
       await result.current.handleImport()
     })
@@ -547,7 +549,7 @@ describe('useStarterPackImport', () => {
     const { result } = await renderAndWait()
 
     let firstImport!: Promise<void>
-    act(() => {
+    await act(() => {
       firstImport = result.current.handleImport()
     })
     await waitFor(() =>

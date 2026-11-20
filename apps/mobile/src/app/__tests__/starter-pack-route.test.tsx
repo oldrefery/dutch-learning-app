@@ -67,14 +67,14 @@ jest.mock('@/components/SharedCollectionErrorScreen', () => ({
 
 const mockUseLocalSearchParams = jest.mocked(useLocalSearchParams)
 
-it('remounts all pack-bound state when route identity changes rapidly', () => {
+it('remounts all pack-bound state when route identity changes rapidly', async () => {
   mockUseLocalSearchParams.mockReturnValue({
     packId: 'dutch-a2-01',
     version: '1.0.0',
   })
-  const screen = render(<StarterPackScreen />)
+  const screen = await render(<StarterPackScreen />)
 
-  fireEvent.press(screen.getByTestId(mockMutatePackStateTestId))
+  await fireEvent.press(screen.getByTestId(mockMutatePackStateTestId))
   expect(
     screen.getByText(
       'dutch-a2-01:selection=changed,target=pack-a,success=complete'
@@ -85,7 +85,7 @@ it('remounts all pack-bound state when route identity changes rapidly', () => {
     packId: 'dutch-b1-01',
     version: '1.0.0',
   })
-  screen.rerender(<StarterPackScreen />)
+  await screen.rerender(<StarterPackScreen />)
 
   expect(
     screen.getByText('dutch-b1-01:selection=fresh,target=fresh,success=empty')
@@ -93,19 +93,19 @@ it('remounts all pack-bound state when route identity changes rapidly', () => {
   expect(screen.queryByText(/selection=changed/)).toBeNull()
 })
 
-it('resets personal import state when the signed-in account changes', () => {
+it('resets personal import state when the signed-in account changes', async () => {
   mockApplicationState.currentUserId = 'qa-user-a'
   mockUseLocalSearchParams.mockReturnValue({
     packId: 'dutch-a2-01',
     version: '1.0.0',
   })
-  const screen = render(<StarterPackScreen />)
+  const screen = await render(<StarterPackScreen />)
 
-  fireEvent.press(screen.getByTestId(mockMutatePackStateTestId))
+  await fireEvent.press(screen.getByTestId(mockMutatePackStateTestId))
   expect(screen.getByText(/selection=changed/)).toBeTruthy()
 
   mockApplicationState.currentUserId = 'qa-user-b'
-  screen.rerender(<StarterPackScreen />)
+  await screen.rerender(<StarterPackScreen />)
 
   expect(
     screen.getByText('dutch-a2-01:selection=fresh,target=fresh,success=empty')

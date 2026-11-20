@@ -23,25 +23,25 @@ describe('useAudioPlayer', () => {
     })
   })
 
-  it('should return isReady as true always', () => {
-    const { result } = renderHook(() => useAudioPlayer())
+  it('should return isReady as true always', async () => {
+    const { result } = await renderHook(() => useAudioPlayer())
 
     expect(result.current.isReady).toBe(true)
   })
 
-  it('should return isPlaying from context', () => {
+  it('should return isPlaying from context', async () => {
     ;(useAudio as jest.Mock).mockReturnValue({
       playWord: mockPlayWord,
       isPlaying: true,
     })
 
-    const { result } = renderHook(() => useAudioPlayer())
+    const { result } = await renderHook(() => useAudioPlayer())
 
     expect(result.current.isPlaying).toBe(true)
   })
 
   it('should call playWord with custom URL when provided', async () => {
-    const { result } = renderHook(() => useAudioPlayer())
+    const { result } = await renderHook(() => useAudioPlayer())
 
     await act(async () => {
       await result.current.playAudio(
@@ -58,7 +58,7 @@ describe('useAudioPlayer', () => {
   })
 
   it('should call playWord with ttsUrl when no custom URL', async () => {
-    const { result } = renderHook(() => useAudioPlayer())
+    const { result } = await renderHook(() => useAudioPlayer())
 
     await act(async () => {
       await result.current.playAudio(
@@ -75,7 +75,7 @@ describe('useAudioPlayer', () => {
   })
 
   it('should do nothing when fallbackWord is falsy', async () => {
-    const { result } = renderHook(() => useAudioPlayer())
+    const { result } = await renderHook(() => useAudioPlayer())
 
     await act(async () => {
       await result.current.playAudio('https://audio.mp3', '', null)

@@ -1,11 +1,6 @@
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import React, { useRef, useEffect, useState, useMemo } from 'react'
-import {
-  FlatList,
-  RefreshControl,
-  useColorScheme,
-  StyleSheet,
-  Platform,
-} from 'react-native'
+import { FlatList, RefreshControl, StyleSheet, Platform } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
@@ -55,7 +50,7 @@ export default function CollectionContent({
   onScrollYChange,
   topInset,
 }: CollectionContentProps) {
-  const colorScheme = useColorScheme() ?? 'light'
+  const colorScheme = useNormalizedColorScheme()
   const flatListRef = useRef<FlatList>(null)
   const scrollRetryRef = useRef(false)
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)

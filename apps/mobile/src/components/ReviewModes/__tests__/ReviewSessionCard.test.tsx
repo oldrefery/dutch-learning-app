@@ -92,7 +92,7 @@ jest.mock('@/components/UniversalWordCard', () => ({
 }))
 
 describe('ReviewSessionCard revealed actions', () => {
-  it('keeps detail, audio, image, delete, and re-analysis actions available', () => {
+  it('keeps detail, audio, image, delete, and re-analysis actions available', async () => {
     const callbacks = {
       onPlayAudio: jest.fn(),
       onOpenDetails: jest.fn(),
@@ -100,7 +100,7 @@ describe('ReviewSessionCard revealed actions', () => {
       onReanalyze: jest.fn(),
       onChangeImage: jest.fn(),
     }
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ReviewSessionCard
         word={createMockWord({ word_id: 'revealed-word' })}
         configuredMode={REVIEW_MODE.MEANING_RECALL}
@@ -121,11 +121,11 @@ describe('ReviewSessionCard revealed actions', () => {
       />
     )
 
-    fireEvent.press(getByTestId('review-details-button'))
-    fireEvent.press(getByTestId('mock-audio'))
-    fireEvent.press(getByTestId(mockImageTestId))
-    fireEvent.press(getByTestId('mock-delete'))
-    fireEvent.press(getByTestId(mockReanalyzeTestId))
+    await fireEvent.press(getByTestId('review-details-button'))
+    await fireEvent.press(getByTestId('mock-audio'))
+    await fireEvent.press(getByTestId(mockImageTestId))
+    await fireEvent.press(getByTestId('mock-delete'))
+    await fireEvent.press(getByTestId(mockReanalyzeTestId))
 
     expect(callbacks.onOpenDetails).toHaveBeenCalledTimes(1)
     expect(callbacks.onPlayAudio).toHaveBeenCalledWith('audio')
@@ -134,8 +134,8 @@ describe('ReviewSessionCard revealed actions', () => {
     expect(callbacks.onReanalyze).toHaveBeenCalledTimes(1)
   })
 
-  it('omits cost-bearing actions when callbacks are unavailable', () => {
-    const { queryByTestId } = render(
+  it('omits cost-bearing actions when callbacks are unavailable', async () => {
+    const { queryByTestId } = await render(
       <ReviewSessionCard
         word={createMockWord({ word_id: 'read-only-word' })}
         configuredMode={REVIEW_MODE.MEANING_RECALL}

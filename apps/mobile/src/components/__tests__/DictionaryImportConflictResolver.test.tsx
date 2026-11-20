@@ -1,5 +1,11 @@
 import React from 'react'
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native'
+import {
+  act,
+  fireEvent,
+  render,
+  userEvent,
+  waitFor,
+} from '@testing-library/react-native'
 import { DictionaryImportConflictResolver } from '../DictionaryImportConflictResolver'
 import { DictionaryImportRecoveryLink } from '../DictionaryImportRecoveryLink'
 import DictionaryRecoveryScreen from '@/app/dictionary-recovery'
@@ -112,20 +118,22 @@ it.each(['light', 'dark'] as const)(
   'requires a read, owned target and explicit confirmation in %s theme, retaining offline recovery',
   async theme => {
     jest.mocked(useNormalizedColorScheme).mockReturnValue(theme)
-    const screen = render(<DictionaryImportConflictResolver word={word} />)
+    const screen = await render(
+      <DictionaryImportConflictResolver word={word} />
+    )
     expect(dictionaryImportRecovery.readCurrent).not.toHaveBeenCalled()
     expect(screen.queryByText(CONFIRM)).toBeNull()
-    fireEvent.press(screen.getByText(READ))
+    await fireEvent.press(screen.getByText(READ))
     await waitFor(() =>
       expect(
         screen.getByText('Current server placement: No collection')
       ).toBeTruthy()
     )
     expect(screen.queryByText('Foreign target')).toBeNull()
-    fireEvent.press(screen.getByText(CONFIRM))
+    await fireEvent.press(screen.getByText(CONFIRM))
     expect(dictionaryImportRecovery.prepare).not.toHaveBeenCalled()
-    fireEvent.press(screen.getByText(TARGET_NAME))
-    fireEvent.press(screen.getByText(CONFIRM))
+    await fireEvent.press(screen.getByText(TARGET_NAME))
+    await fireEvent.press(screen.getByText(CONFIRM))
     await waitFor(() => expect(screen.getByText(SYNC_ERROR)).toBeTruthy())
     expect(dictionaryImportRecovery.prepare).toHaveBeenCalledWith(
       snapshot,
@@ -149,12 +157,14 @@ it('keeps semantic conflicts visible and requires another read after a stale pro
   jest
     .mocked(dictionaryImportRecovery.prepare)
     .mockRejectedValueOnce(new Error('Recovery changed'))
-  const screen = render(<DictionaryImportConflictResolver word={conflict} />)
+  const screen = await render(
+    <DictionaryImportConflictResolver word={conflict} />
+  )
   expect(screen.getByText(/Resolve that card on its device/)).toBeTruthy()
-  fireEvent.press(screen.getByText(READ))
+  await fireEvent.press(screen.getByText(READ))
   await waitFor(() => expect(screen.getByText(TARGET_NAME)).toBeTruthy())
-  fireEvent.press(screen.getByText(TARGET_NAME))
-  fireEvent.press(screen.getByText(CONFIRM))
+  await fireEvent.press(screen.getByText(TARGET_NAME))
+  await fireEvent.press(screen.getByText(CONFIRM))
   await waitFor(() => expect(screen.getByText('Recovery changed')).toBeTruthy())
   expect(screen.queryByText(CONFIRM)).toBeNull()
   expect(dictionaryImportRecovery.readCurrent).toHaveBeenCalledTimes(1)
@@ -167,8 +177,10 @@ it.each(['unavailable', 'cancelled'] as const)(
     jest
       .mocked(dictionaryImportRecovery.readCurrent)
       .mockResolvedValue({ ...snapshot, state: { ...snapshot.state, state } })
-    const screen = render(<DictionaryImportConflictResolver word={word} />)
-    fireEvent.press(screen.getByText(READ))
+    const screen = await render(
+      <DictionaryImportConflictResolver word={word} />
+    )
+    await fireEvent.press(screen.getByText(READ))
     await waitFor(() =>
       expect(screen.getByText(/cannot be recreated by recovery/)).toBeTruthy()
     )
@@ -177,10 +189,10 @@ it.each(['unavailable', 'cancelled'] as const)(
   }
 )
 
-it('retains marker-only pre-upgrade data with a visible gate and no inferred recovery', () => {
+it('retains marker-only pre-upgrade data with a visible gate and no inferred recovery', async () => {
   const old = { ...word, dictionary_import_recovery: 'unverified' as const }
   useApplicationStore.getState().words = [old]
-  const screen = render(<DictionaryImportConflictResolver word={old} />)
+  const screen = await render(<DictionaryImportConflictResolver word={old} />)
   expect(screen.getByText(/exact import record is missing/)).toBeTruthy()
   expect(screen.queryByText(READ)).toBeNull()
   expect(dictionaryImportRecovery.readCurrent).not.toHaveBeenCalled()
@@ -193,17 +205,17 @@ it('suppresses a late read after account change and hides deleted-card controls'
       finish = resolve
     })
   )
-  const screen = render(<DictionaryImportConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(READ))
+  const screen = await render(<DictionaryImportConflictResolver word={word} />)
+  await userEvent.setup().press(screen.getByText(READ))
   useApplicationStore.getState().currentUserId = 'another-owner'
-  screen.rerender(<DictionaryImportConflictResolver word={word} />)
+  await screen.rerender(<DictionaryImportConflictResolver word={word} />)
   await act(async () => finish(snapshot))
   expect(screen.queryByText(CONFIRM)).toBeNull()
   useApplicationStore.getState().currentUserId = word.user_id
   useApplicationStore.getState().words = []
-  screen.rerender(<DictionaryImportConflictResolver word={word} />)
+  await screen.rerender(<DictionaryImportConflictResolver word={word} />)
   expect(screen.queryByText(READ)).toBeNull()
-  screen.unmount()
+  await screen.unmount()
   expect(dictionaryImportRecovery.prepare).not.toHaveBeenCalled()
 })
 
@@ -219,11 +231,11 @@ it('invalidates an open snapshot on sign-out even if the same owner signs back i
         },
       }
     })
-  const screen = render(<DictionaryImportConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(READ))
+  const screen = await render(<DictionaryImportConflictResolver word={word} />)
+  await fireEvent.press(screen.getByText(READ))
   await waitFor(() => expect(screen.getByText(CONFIRM)).toBeTruthy())
-  act(() => listener('SIGNED_OUT', null))
-  act(() =>
+  await act(() => listener('SIGNED_OUT', null))
+  await act(() =>
     listener('SIGNED_IN', { user: { id: word.user_id } } as NonNullable<
       Parameters<typeof listener>[1]
     >)
@@ -233,7 +245,7 @@ it('invalidates an open snapshot on sign-out even if the same owner signs back i
   expect(dictionaryImportRecovery.prepare).not.toHaveBeenCalled()
 })
 
-it('keeps an orphaned retained import reachable from the collection screen without exposing another owner', () => {
+it('keeps an orphaned retained import reachable from the collection screen without exposing another owner', async () => {
   const orphan = { ...word, collection_id: null }
   useApplicationStore.getState().words = [
     orphan,
@@ -244,10 +256,10 @@ it('keeps an orphaned retained import reachable from the collection screen witho
       dutch_lemma: 'secret-word',
     },
   ]
-  const link = render(<DictionaryImportRecoveryLink />)
-  fireEvent.press(link.getByText('Saved imports (1)'))
+  const link = await render(<DictionaryImportRecoveryLink />)
+  await fireEvent.press(link.getByText('Saved imports (1)'))
   expect(router.push).toHaveBeenCalledWith(ROUTES.DICTIONARY_RECOVERY)
-  const screen = render(<DictionaryRecoveryScreen />)
+  const screen = await render(<DictionaryRecoveryScreen />)
   expect(screen.getByText(new RegExp(word.dutch_lemma))).toBeTruthy()
   expect(screen.queryByText(/secret-word/)).toBeNull()
   expect(screen.getByText(READ)).toBeTruthy()
@@ -255,13 +267,13 @@ it('keeps an orphaned retained import reachable from the collection screen witho
 
 it('has no recovery write path without an existing owned target', async () => {
   useApplicationStore.getState().collections = []
-  const screen = render(<DictionaryImportConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(READ))
+  const screen = await render(<DictionaryImportConflictResolver word={word} />)
+  await fireEvent.press(screen.getByText(READ))
   await waitFor(() =>
     expect(
       screen.getByText('No existing collection is available for recovery.')
     ).toBeTruthy()
   )
-  fireEvent.press(screen.getByText(CONFIRM))
+  await fireEvent.press(screen.getByText(CONFIRM))
   expect(dictionaryImportRecovery.prepare).not.toHaveBeenCalled()
 })

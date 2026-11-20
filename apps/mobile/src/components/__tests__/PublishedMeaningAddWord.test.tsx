@@ -67,12 +67,12 @@ it.each(['light', 'dark'] as const)(
   'requires explicit lookup in %s theme, passing full results to retained adoption without automatic analysis',
   async theme => {
     jest.mocked(useNormalizedColorScheme).mockReturnValue(theme)
-    const view = render(
+    const view = await render(
       <PublishedMeaningAddWord {...props} initialWord="huis" />
     )
     expect(view.getByText(RETAINED)).toBeTruthy()
     expect(lookupPublishedMeanings).not.toHaveBeenCalled()
-    fireEvent.press(view.getByLabelText(FIND))
+    await fireEvent.press(view.getByLabelText(FIND))
     await waitFor(() =>
       expect(DictionaryFollowingTransferPanel).toHaveBeenLastCalledWith(
         expect.objectContaining({ document, ownerId: OWNER_A, collections }),
@@ -91,15 +91,17 @@ it('retains local sessions on unresolved input or network failure and permits ex
     .mocked(lookupPublishedMeanings)
     .mockResolvedValueOnce({ ...document, entries: [] })
     .mockRejectedValueOnce(new Error('Offline'))
-  const view = render(<PublishedMeaningAddWord {...props} initialWord="huis" />)
-  fireEvent.press(view.getByLabelText(FIND))
+  const view = await render(
+    <PublishedMeaningAddWord {...props} initialWord="huis" />
+  )
+  await fireEvent.press(view.getByLabelText(FIND))
   await waitFor(() =>
     expect(view.getByText(/No published meaning matches/)).toBeTruthy()
   )
-  fireEvent.press(view.getByLabelText(FIND))
+  await fireEvent.press(view.getByLabelText(FIND))
   await waitFor(() => expect(view.getByText('Offline')).toBeTruthy())
   expect(view.getByText(RETAINED)).toBeTruthy()
-  fireEvent.press(view.getByLabelText(FIND))
+  await fireEvent.press(view.getByLabelText(FIND))
   await waitFor(() =>
     expect(DictionaryFollowingTransferPanel).toHaveBeenLastCalledWith(
       expect.objectContaining({ document }),
@@ -115,9 +117,11 @@ it('invalidates a pending result when input changes, clearing old candidates bef
         finish = resolve
       })
   )
-  const view = render(<PublishedMeaningAddWord {...props} initialWord="huis" />)
-  fireEvent.press(view.getByLabelText(FIND))
-  fireEvent.changeText(view.getByLabelText(INPUT), 'lopen')
+  const view = await render(
+    <PublishedMeaningAddWord {...props} initialWord="huis" />
+  )
+  await fireEvent.press(view.getByLabelText(FIND))
+  await fireEvent.changeText(view.getByLabelText(INPUT), 'lopen')
   await act(async () => finish(document))
   expect(DictionaryFollowingTransferPanel).toHaveBeenLastCalledWith(
     expect.objectContaining({ document: undefined }),
@@ -135,9 +139,11 @@ it('fences an unmounted pending lookup', async () => {
         finish = resolve
       })
   )
-  const view = render(<PublishedMeaningAddWord {...props} initialWord="huis" />)
-  fireEvent.press(view.getByLabelText(FIND))
-  view.unmount()
+  const view = await render(
+    <PublishedMeaningAddWord {...props} initialWord="huis" />
+  )
+  await fireEvent.press(view.getByLabelText(FIND))
+  await view.unmount()
   await act(async () => finish(document))
   expect(() => jest.mocked(lookupPublishedMeanings).mock.calls[0][2]()).toThrow(
     'Word input changed'
@@ -145,9 +151,9 @@ it('fences an unmounted pending lookup', async () => {
 })
 it.each([false, true])(
   'keeps the familiar input, analysis and collection screen when following is %s',
-  following => {
+  async following => {
     jest.mocked(isDictionaryFollowingEnabled).mockReturnValue(following)
-    const view = render(
+    const view = await render(
       <AddWordScreen
         preselectedCollectionId={OWNER_B}
         initialWord="huis"

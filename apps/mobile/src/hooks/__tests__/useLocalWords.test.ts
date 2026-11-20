@@ -84,11 +84,11 @@ describe('useLocalWords', () => {
           })
       )
       .mockResolvedValueOnce(nextWords)
-    const { result, rerender } = renderHook(() => useLocalWords())
+    const { result, rerender } = await renderHook(() => useLocalWords())
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       currentUserId: 'next-user',
     })
-    rerender({})
+    await rerender({})
     await waitFor(() => expect(result.current.words).toEqual(nextWords))
     await act(async () => {
       finishPrevious([createMockWord()])
@@ -97,7 +97,7 @@ describe('useLocalWords', () => {
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       currentUserId: null,
     })
-    rerender({})
+    await rerender({})
     expect(result.current.words).toEqual([])
     expect(result.current.isLoading).toBe(false)
   })
@@ -112,7 +112,7 @@ describe('useLocalWords', () => {
         mockWords
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await act(async () => {
         await result.current.fetchWords()
@@ -127,9 +127,9 @@ describe('useLocalWords', () => {
         () => new Promise(resolve => setTimeout(() => resolve([]), 100))
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
-      act(() => {
+      await act(() => {
         result.current.fetchWords()
       })
 
@@ -144,7 +144,7 @@ describe('useLocalWords', () => {
       const error = new Error('Fetch failed')
       ;(wordRepository.getWordsByUserId as jest.Mock).mockRejectedValue(error)
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await act(async () => {
         await result.current.fetchWords()
@@ -159,7 +159,7 @@ describe('useLocalWords', () => {
         currentUserId: null,
       })
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await act(async () => {
         await result.current.fetchWords()
@@ -174,7 +174,7 @@ describe('useLocalWords', () => {
         mockWords
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await waitFor(() => {
         expect(result.current.words).toEqual(mockWords)
@@ -186,7 +186,7 @@ describe('useLocalWords', () => {
         currentUserId: null,
       })
 
-      renderHook(() => useLocalWords())
+      await renderHook(() => useLocalWords())
 
       await waitFor(() => {
         expect(wordRepository.getWordsByUserId).not.toHaveBeenCalled()
@@ -204,7 +204,7 @@ describe('useLocalWords', () => {
         mockWords
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await act(async () => {
         await result.current.fetchWordsByCollection(COLLECTION_ID)
@@ -221,9 +221,9 @@ describe('useLocalWords', () => {
         () => new Promise(resolve => setTimeout(() => resolve([]), 100))
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
-      act(() => {
+      await act(() => {
         result.current.fetchWordsByCollection(COLLECTION_ID)
       })
 
@@ -240,7 +240,7 @@ describe('useLocalWords', () => {
         error
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await act(async () => {
         await result.current.fetchWordsByCollection(COLLECTION_ID)
@@ -257,7 +257,7 @@ describe('useLocalWords', () => {
         mockWord
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       let fetchedWord: LocalWord | null = null
       await act(async () => {
@@ -276,7 +276,7 @@ describe('useLocalWords', () => {
         null
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       let fetchedWord: LocalWord | null = { word_id: 'dummy' } as LocalWord
       await act(async () => {
@@ -292,7 +292,7 @@ describe('useLocalWords', () => {
         error
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       let fetchedWord: LocalWord | null = { word_id: 'dummy' } as LocalWord
       await act(async () => {
@@ -307,7 +307,7 @@ describe('useLocalWords', () => {
         currentUserId: null,
       })
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       let fetchedWord: LocalWord | null = { word_id: 'dummy' } as LocalWord
       await act(async () => {
@@ -329,7 +329,7 @@ describe('useLocalWords', () => {
         undefined
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       const progressUpdate = { repetition_count: 1 }
 
@@ -350,7 +350,7 @@ describe('useLocalWords', () => {
         currentUserId: null,
       })
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       const progressUpdate = { repetition_count: 1 }
 
@@ -367,7 +367,7 @@ describe('useLocalWords', () => {
         updateError
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       const progressUpdate = { repetition_count: 1 }
 
@@ -387,7 +387,7 @@ describe('useLocalWords', () => {
         undefined
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       const updates = [
         { repetition_count: 1 },
@@ -409,7 +409,7 @@ describe('useLocalWords', () => {
     it('should provide all expected methods', async () => {
       ;(wordRepository.getWordsByUserId as jest.Mock).mockResolvedValue([])
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       expect(result.current).toHaveProperty('words')
       expect(result.current).toHaveProperty('isLoading')
@@ -419,10 +419,10 @@ describe('useLocalWords', () => {
       expect(result.current).toHaveProperty('updateWordProgress')
     })
 
-    it('should initialize with empty words and false loading', () => {
+    it('should initialize with empty words and false loading', async () => {
       ;(wordRepository.getWordsByUserId as jest.Mock).mockResolvedValue([])
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       // Initial state before auto-fetch completes
       expect(Array.isArray(result.current.words)).toBe(true)
@@ -440,7 +440,7 @@ describe('useLocalWords', () => {
         wordRepository.getWordsByCollectionId as jest.Mock
       ).mockResolvedValueOnce(mockWords2)
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await act(async () => {
         await result.current.fetchWordsByCollection('collection-1')
@@ -460,7 +460,7 @@ describe('useLocalWords', () => {
     it('should handle empty word lists', async () => {
       ;(wordRepository.getWordsByUserId as jest.Mock).mockResolvedValue([])
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await waitFor(() => {
         expect(result.current.words).toEqual([])
@@ -476,7 +476,7 @@ describe('useLocalWords', () => {
         minimalWord,
       ])
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await waitFor(() => {
         expect(result.current.words.length).toBeGreaterThan(0)
@@ -492,7 +492,7 @@ describe('useLocalWords', () => {
         new Error(UPDATE_FAILED)
       )
 
-      const { result } = renderHook(() => useLocalWords())
+      const { result } = await renderHook(() => useLocalWords())
 
       await waitFor(() => {
         expect(result.current.words).toEqual(mockWords)

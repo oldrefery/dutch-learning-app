@@ -65,7 +65,7 @@ jest.mock('react-native-worklets', () => ({
   ) => callback(...args),
 }))
 
-it('opens each long-swipe dialog once and deletes only after confirmation', () => {
+it('opens each long-swipe dialog once and deletes only after confirmation', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {})
   const onDelete = jest.fn()
   const onMoveToCollection = jest.fn()
@@ -78,23 +78,23 @@ it('opens each long-swipe dialog once and deletes only after confirmation', () =
     onMoveToCollection,
     highlighted: false,
   }
-  const { rerender } = render(<SwipeableWordItem {...props} />)
-  act(() => mockPanEnd({ translationX: 170 }))
+  const { rerender } = await render(<SwipeableWordItem {...props} />)
+  await act(() => mockPanEnd({ translationX: 170 }))
   expect(onMoveToCollection).toHaveBeenCalledTimes(1)
   expect(onMoveToCollection).toHaveBeenCalledWith(word.word_id)
-  rerender(
+  await rerender(
     <SwipeableWordItem
       {...props}
       moveModalVisible
       wordBeingMoved={word.word_id}
     />
   )
-  rerender(<SwipeableWordItem {...props} moveModalVisible={false} />)
+  await rerender(<SwipeableWordItem {...props} moveModalVisible={false} />)
   expect(onMoveToCollection).toHaveBeenCalledTimes(1)
-  act(() => mockPanEnd({ translationX: -170 }))
+  await act(() => mockPanEnd({ translationX: -170 }))
   expect(alert).toHaveBeenCalledTimes(1)
   expect(onDelete).not.toHaveBeenCalled()
-  act(() =>
+  await act(() =>
     alert.mock.calls[0][2]
       ?.find(button => button.text === 'Delete')
       ?.onPress?.()

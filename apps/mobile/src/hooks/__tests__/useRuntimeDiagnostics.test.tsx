@@ -17,6 +17,8 @@ describe('useRuntimeDiagnostics', () => {
   beforeEach(() => {
     jest.useFakeTimers()
     jest.clearAllMocks()
+    jest.spyOn(global, 'setInterval')
+    jest.spyOn(global, 'clearInterval')
     removals.length = 0
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true })
     Object.defineProperty(AppState, 'currentState', {
@@ -41,38 +43,44 @@ describe('useRuntimeDiagnostics', () => {
     Object.defineProperty(Platform, 'OS', { value: os, configurable: true })
   })
 
-  it('subscribes once, pauses in background and removes observers and timers', () => {
-    const { rerender, unmount } = renderHook(() => useRuntimeDiagnostics())
+  it('subscribes once, pauses in background and removes observers and timers', async () => {
+    const { rerender, unmount } = await renderHook(() =>
+      useRuntimeDiagnostics()
+    )
     expect(Sentry.setContext).toHaveBeenLastCalledWith(
       'runtime_diagnostics',
       expect.objectContaining({ route: 'settings' })
     )
-    rerender({})
+    await rerender({})
     expect(AppState.addEventListener).toHaveBeenCalledTimes(2)
-    expect(jest.getTimerCount()).toBe(1)
-    act(() => callbacks.change('background'))
-    expect(jest.getTimerCount()).toBe(0)
-    act(() => {
+    expect(global.setInterval).toHaveBeenCalledTimes(1)
+    await act(() => callbacks.change('background'))
+    expect(global.clearInterval).toHaveBeenCalledWith(
+      jest.mocked(global.setInterval).mock.results[0].value
+    )
+    await act(() => {
       jest.advanceTimersByTime(600000)
       callbacks.change('active')
     })
-    expect(jest.getTimerCount()).toBe(1)
-    act(() => callbacks.memoryWarning())
+    expect(global.setInterval).toHaveBeenCalledTimes(2)
+    await act(() => callbacks.memoryWarning())
     expect(Sentry.setContext).toHaveBeenLastCalledWith(
       'runtime_diagnostics',
       expect.objectContaining({ memory_warning_count: 1, js_stall_count: 0 })
     )
-    unmount()
+    await unmount()
     expect(removals.every(remove => remove.mock.calls.length === 1)).toBe(true)
-    expect(jest.getTimerCount()).toBe(0)
+    expect(global.clearInterval).toHaveBeenCalledWith(
+      jest.mocked(global.setInterval).mock.results[1].value
+    )
   })
 
-  it('does not install native monitoring on web', () => {
+  it('does not install native monitoring on web', async () => {
     Object.defineProperty(Platform, 'OS', { value: 'web', configurable: true })
-    const { unmount } = renderHook(() => useRuntimeDiagnostics())
+    const { unmount } = await renderHook(() => useRuntimeDiagnostics())
     expect(AppState.addEventListener).not.toHaveBeenCalled()
     expect(Sentry.setContext).not.toHaveBeenCalled()
-    expect(jest.getTimerCount()).toBe(0)
-    unmount()
+    expect(global.setInterval).not.toHaveBeenCalled()
+    await unmount()
   })
 })

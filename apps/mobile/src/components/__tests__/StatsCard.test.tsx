@@ -24,13 +24,13 @@ describe.each(['light', 'dark'] as const)('%s StatsCard', theme => {
     mockUseNormalizedColorScheme.mockReturnValue(theme)
   })
 
-  it('opens review insights and matches the theme snapshot', () => {
+  it('opens review insights and matches the theme snapshot', async () => {
     const onOpenInsights = jest.fn()
-    const screen = render(
+    const screen = await render(
       <StatsCard stats={stats} onOpenInsights={onOpenInsights} />
     )
 
-    fireEvent.press(screen.getByTestId('stats-card-open-insights'))
+    await fireEvent.press(screen.getByTestId('stats-card-open-insights'))
 
     expect(onOpenInsights).toHaveBeenCalledTimes(1)
     expect(screen.toJSON()).toMatchSnapshot()

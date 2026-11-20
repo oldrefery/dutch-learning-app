@@ -39,16 +39,16 @@ describe('useReviewWordsCount', () => {
   })
 
   describe('reviewWordsCount', () => {
-    it('should return 0 when no words', () => {
+    it('should return 0 when no words', async () => {
       mockStoreState.words = []
       mockStoreState.collections = []
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       expect(result.current.reviewWordsCount).toBe(0)
     })
 
-    it('should return 0 when no words are due for review', () => {
+    it('should return 0 when no words are due for review', async () => {
       const collection = createMockCollection({ collection_id: 'col-1' })
       const futureDate = new Date(
         Date.now() + 24 * 60 * 60 * 1000
@@ -61,12 +61,12 @@ describe('useReviewWordsCount', () => {
       mockStoreState.words = [word]
       mockStoreState.collections = [collection]
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       expect(result.current.reviewWordsCount).toBe(0)
     })
 
-    it('should count words where next_review_date <= now', () => {
+    it('should count words where next_review_date <= now', async () => {
       const collection = createMockCollection({ collection_id: 'col-1' })
       const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
       const word = createMockWord({
@@ -77,12 +77,12 @@ describe('useReviewWordsCount', () => {
       mockStoreState.words = [word]
       mockStoreState.collections = [collection]
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       expect(result.current.reviewWordsCount).toBe(1)
     })
 
-    it('should exclude words without collection_id', () => {
+    it('should exclude words without collection_id', async () => {
       const collection = createMockCollection({ collection_id: 'col-1' })
       const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
       const word = createMockWord({
@@ -93,12 +93,12 @@ describe('useReviewWordsCount', () => {
       mockStoreState.words = [word]
       mockStoreState.collections = [collection]
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       expect(result.current.reviewWordsCount).toBe(0)
     })
 
-    it('should exclude words whose collection is not in collections list', () => {
+    it('should exclude words whose collection is not in collections list', async () => {
       const collection = createMockCollection({ collection_id: 'col-1' })
       const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
       const word = createMockWord({
@@ -109,12 +109,12 @@ describe('useReviewWordsCount', () => {
       mockStoreState.words = [word]
       mockStoreState.collections = [collection]
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       expect(result.current.reviewWordsCount).toBe(0)
     })
 
-    it('should exclude words without next_review_date', () => {
+    it('should exclude words without next_review_date', async () => {
       const collection = createMockCollection({ collection_id: 'col-1' })
       const word = createMockWord({
         collection_id: 'col-1',
@@ -124,12 +124,12 @@ describe('useReviewWordsCount', () => {
       mockStoreState.words = [word]
       mockStoreState.collections = [collection]
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       expect(result.current.reviewWordsCount).toBe(0)
     })
 
-    it('should handle mixed due/not-due words correctly', () => {
+    it('should handle mixed due/not-due words correctly', async () => {
       const collection = createMockCollection({ collection_id: 'col-1' })
       const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
       const futureDate = new Date(
@@ -147,7 +147,7 @@ describe('useReviewWordsCount', () => {
       mockStoreState.words = [dueWord, notDueWord]
       mockStoreState.collections = [collection]
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       expect(result.current.reviewWordsCount).toBe(1)
     })
@@ -158,7 +158,7 @@ describe('useReviewWordsCount', () => {
       mockStoreState.words = []
       mockStoreState.collections = []
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       await act(async () => {
         await result.current.refreshCount()
@@ -169,22 +169,22 @@ describe('useReviewWordsCount', () => {
   })
 
   describe('isLoading', () => {
-    it('should return true when wordsLoading is true', () => {
+    it('should return true when wordsLoading is true', async () => {
       mockStoreState.wordsLoading = true
       mockStoreState.words = []
       mockStoreState.collections = []
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       expect(result.current.isLoading).toBe(true)
     })
 
-    it('should return false when neither is loading', () => {
+    it('should return false when neither is loading', async () => {
       mockStoreState.wordsLoading = false
       mockStoreState.words = []
       mockStoreState.collections = []
 
-      const { result } = renderHook(() => useReviewWordsCount())
+      const { result } = await renderHook(() => useReviewWordsCount())
 
       expect(result.current.isLoading).toBe(false)
     })

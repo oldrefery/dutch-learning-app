@@ -107,27 +107,31 @@
     "deno": "2.9.4",
     "dotenv": "^17.2.2",
     "eslint": "^9.35.0",
-    "eslint-config-expo": "~57.0.2",
+    "eslint-config-expo": "~58.0.4",
     "eslint-plugin-sonarjs": "^4.2.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
     "patch-package": "^8.0.1",
     "prettier": "^3.6.2",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "typescript": "~6.0.3"
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "~6.0.3",
+    "react-native": "0.88.1",
+    "expo-modules-core": "~58.1.0",
+    "react-native-reanimated": "4.7.1"
   },
   "engines": {
     "node": "24.x",
     "npm": "11.x"
   },
   "overrides": {
-    "react-test-renderer": "19.2.3",
     "@humanfs/node": "0.16.8",
     "@xmldom/xmldom": "0.8.15",
-    "@types/react": "~19.2.10",
+    "@types/react": "~19.3.0",
     "browserslist": "4.28.9",
-    "react-server-dom-webpack": "19.2.8"
+    "react-server-dom-webpack": "19.3.0",
+    "react-native-reanimated": "$react-native-reanimated",
+    "react-native-worklets": "0.13.0"
   },
   "packageManager": "npm@11.19.0",
   "allowScripts": {
@@ -138,6 +142,8 @@
     "fsevents@2.3.3": true,
     "fsevents@2.3.2": true,
     "unrs-resolver@1.11.1": true,
-    "unrs-resolver@1.12.2": true
+    "unrs-resolver@1.12.2": true,
+    "@parcel/watcher@2.6.0": true,
+    "@sentry/cli@3.8.0": true
   }
 }

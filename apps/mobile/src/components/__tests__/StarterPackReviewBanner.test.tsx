@@ -20,8 +20,8 @@ describe.each(['light', 'dark'] as const)(
       mockUseNormalizedColorScheme.mockReturnValue(theme)
     })
 
-    it('shows the completed internal review and matches the theme snapshot', () => {
-      const screen = render(
+    it('shows the completed internal review and matches the theme snapshot', async () => {
+      const screen = await render(
         <StarterPackReviewBanner
           manifest={loadOfficialDutchA1Pack()}
           importEnabled={true}

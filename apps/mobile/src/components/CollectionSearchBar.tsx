@@ -31,7 +31,7 @@ export default function CollectionSearchBar({
   const colorScheme = useColorScheme() ?? 'light'
   const [isFocused, setIsFocused] = useState(false)
   const [localValue, setLocalValue] = useState(searchQuery)
-  const inputRef = useRef<TextInput>(null)
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
 
   const [previousQuery, setPreviousQuery] = useState(searchQuery)
   if (previousQuery !== searchQuery) {
