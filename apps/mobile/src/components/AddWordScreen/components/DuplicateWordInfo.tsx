@@ -2,6 +2,7 @@ import React from 'react'
 import { TouchableOpacity, useColorScheme } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { formatDutchHeadword } from '@woordenaar/domain'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import type { Collection } from '@/types/database'
@@ -32,8 +33,10 @@ export function DuplicateWordInfo({
   const collection = collections.find(
     c => c.collection_id === duplicateWord.collection_id
   )
-  const articleText = duplicateWord.article ? `${duplicateWord.article} ` : ''
-  const wordDisplay = `${articleText}${duplicateWord.dutch_lemma}`
+  const wordDisplay = formatDutchHeadword(
+    duplicateWord.dutch_lemma,
+    duplicateWord.article
+  )
 
   const handleNavigateToCollection = () => {
     onNavigateToCollection?.()

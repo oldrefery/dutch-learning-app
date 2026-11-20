@@ -2,6 +2,7 @@ import React from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { NonSwipeableArea } from '@/components/NonSwipeableArea'
 import { PronunciationButton } from '@/components/ReviewCard/PronunciationButton'
+import { formatDutchHeadword } from '@woordenaar/domain'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { REVIEW_SCREEN_CONSTANTS } from '@/constants/ReviewScreenConstants'
@@ -32,10 +33,10 @@ export function RecognitionCard({
 }: RecognitionCardProps) {
   const colorScheme = useNormalizedColorScheme()
   const theme = Colors[colorScheme]
-  const displayWord =
-    word.part_of_speech === 'noun' && word.article
-      ? `${word.article} ${word.dutch_lemma}`
-      : word.dutch_lemma
+  const displayWord = formatDutchHeadword(
+    word.dutch_lemma,
+    word.part_of_speech === 'noun' ? word.article : null
+  )
 
   return (
     <ViewThemed style={styles.container} testID="recognition-card">
