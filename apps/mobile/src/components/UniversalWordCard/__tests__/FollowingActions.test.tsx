@@ -1,6 +1,8 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react-native'
+import { StyleSheet } from 'react-native'
 import { createMockWord } from '@/__tests__/helpers/factories'
+import { Colors } from '@/constants/Colors'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { ActionsSection } from '../sections/ActionsSection'
 import { HeaderSection } from '../sections/HeaderSection'
@@ -70,6 +72,27 @@ describe.each(['light', 'dark'] as const)('%s following actions', theme => {
   beforeEach(() => {
     jest.mocked(useNormalizedColorScheme).mockReturnValue(theme)
   })
+
+  it('uses the card background for all learning statistics', async () => {
+    const { getByText } = await render(
+      <ActionsSection
+        word={createMockWord({ easiness_factor: 2.5 })}
+        actions={{ showProgressInfo: true, showStatusInfo: true }}
+      />
+    )
+
+    for (const label of ['Reviews:', 'Ease Factor:', 'Next Review:']) {
+      const row = getByText(label).parent
+      expect(row).toBeTruthy()
+      expect(
+        StyleSheet.flatten(row?.props.style).backgroundColor
+      ).toBeUndefined()
+      expect(row?.parent).toHaveStyle({
+        backgroundColor: Colors[theme].backgroundSecondary,
+      })
+    }
+  })
+
   it('hides private reanalysis and image changes while keeping learning and the shared image visible', async () => {
     const onReanalyze = jest.fn()
     const onChangeImage = jest.fn()

@@ -142,33 +142,33 @@ export function ActionsSection({ word, actions }: ActionsSectionProps) {
           >
             {actions.showProgressInfo && (
               <>
-                <ViewThemed style={styles.statusRow}>
+                <View style={styles.statusRow}>
                   <TextThemed style={styles.statusLabel}>Reviews:</TextThemed>
                   <TextThemed style={styles.statusValue}>
                     {word.repetition_count || 0}
                   </TextThemed>
-                </ViewThemed>
+                </View>
 
                 {word.easiness_factor && (
-                  <ViewThemed style={styles.statusRow}>
+                  <View style={styles.statusRow}>
                     <TextThemed style={styles.statusLabel}>
                       Ease Factor:
                     </TextThemed>
                     <TextThemed style={styles.statusValue}>
                       {word.easiness_factor.toFixed(1)}
                     </TextThemed>
-                  </ViewThemed>
+                  </View>
                 )}
               </>
             )}
 
             {actions.showStatusInfo && (
-              <ViewThemed style={styles.statusRow}>
+              <View style={styles.statusRow}>
                 <TextThemed style={styles.statusLabel}>Next Review:</TextThemed>
                 <TextThemed style={styles.statusValue}>
                   {formatDate(word.next_review_date)}
                 </TextThemed>
-              </ViewThemed>
+              </View>
             )}
           </ViewThemed>
         )}

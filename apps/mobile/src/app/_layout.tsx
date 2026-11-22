@@ -12,6 +12,7 @@ import {
   useRouter,
 } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
+import { StatusBar } from 'expo-status-bar'
 import * as Linking from 'expo-linking'
 import { useEffect, useRef } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -22,7 +23,7 @@ import { AppToast } from '@/components/AppToast'
 import { Colors } from '@/constants/Colors'
 import { ROUTES } from '@/constants/Routes'
 
-import { useColorScheme } from 'react-native'
+import { Platform, useColorScheme } from 'react-native'
 import {
   SimpleAuthProvider,
   useSimpleAuth,
@@ -170,6 +171,7 @@ function RootLayoutNav() {
       <ThemeProvider
         value={colorScheme === 'dark' ? CustomDarkTheme : DefaultTheme}
       >
+        {Platform.OS === 'android' && <StatusBar style="auto" />}
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
